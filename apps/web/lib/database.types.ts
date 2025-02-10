@@ -605,6 +605,51 @@ export type Database = {
           },
         ]
       }
+      testimonials: {
+        Row: {
+          content: string
+          created_at: string
+          customer_avatar_url: string | null
+          customer_company_name: string | null
+          customer_name: string
+          id: string
+          link: string | null
+          rating: number
+          source: string
+          status: Database["public"]["Enums"]["testimonial_status"]
+          updated_at: string
+          video_url: string | null
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          customer_avatar_url?: string | null
+          customer_company_name?: string | null
+          customer_name: string
+          id?: string
+          link?: string | null
+          rating: number
+          source?: string
+          status?: Database["public"]["Enums"]["testimonial_status"]
+          updated_at?: string
+          video_url?: string | null
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          customer_avatar_url?: string | null
+          customer_company_name?: string | null
+          customer_name?: string
+          id?: string
+          link?: string | null
+          rating?: number
+          source?: string
+          status?: Database["public"]["Enums"]["testimonial_status"]
+          updated_at?: string
+          video_url?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       user_account_workspace: {
@@ -902,6 +947,7 @@ export type Database = {
         | "incomplete"
         | "incomplete_expired"
         | "paused"
+      testimonial_status: "pending" | "approved" | "rejected"
     }
     CompositeTypes: {
       invitation: {
