@@ -54,6 +54,19 @@ export function AdminSidebar() {
                   <span>Accounts</span>
                 </Link>
               </SidebarMenuButton>
+
+              <SidebarMenuButton
+                isActive={path.includes('/admin/tesimonials')}
+                asChild
+              >
+                <Link
+                  className={'flex size-full gap-2.5'}
+                  href={'/admin/testimonials'}
+                >
+                  <Users className={'h-4'} />
+                  <span>Testimonials</span>
+                </Link>
+              </SidebarMenuButton>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
