@@ -121,7 +121,6 @@ function Home() {
         </ContainerScroll>
       </div>
 
-      {/* Rest of the sections remain unchanged */}
       {/* Logo Cloud Section */}
       <div className="bg-background dark:bg-background relative w-full border-y border-gray-100 dark:border-gray-800">
         <div className={`${containerBase} ${widths.navigation}`}>
@@ -140,7 +139,7 @@ function Home() {
         className={`w-full ${spacing.section} bg-background dark:bg-background`}
       >
         <div className={`${containerBase} ${widths.content} mb-[20vh]`}>
-          <h2 className="text-h3 sm:text-h2 mb-3 text-center leading-snug sm:mb-4">
+          <h2 className="mb-3 text-center text-3xl leading-snug font-bold sm:mb-4 md:text-4xl lg:text-5xl">
             {homepageContentConfig.sticky.title}
           </h2>
           <p className="text-body sm:text-body-lg mx-auto max-w-4xl text-center leading-relaxed text-gray-600 dark:text-gray-300">
@@ -177,7 +176,7 @@ function Home() {
         className={`${spacing.section} dark:bg-background bg-gray-50/50`}
       >
         <div className={`${containerBase} ${widths.content}`}>
-          <h2 className="text-h3 sm:text-h2 mb-3 text-center leading-snug sm:mb-4">
+          <h2 className="mb-3 text-center text-3xl leading-snug font-bold sm:mb-4 md:text-4xl lg:text-5xl">
             {homepageContentConfig.features.title}
           </h2>
           <p className="text-body sm:text-body-lg mx-auto mb-8 max-w-4xl text-center leading-relaxed text-gray-600 sm:mb-12 dark:text-gray-300">
@@ -207,7 +206,7 @@ function Home() {
         className={`${spacing.section} bg-background dark:bg-background`}
       >
         <div className={`${containerBase} ${widths.content}`}>
-          <h2 className="text-h3 sm:text-h2 mb-3 text-center leading-snug sm:mb-4">
+          <h2 className="mb-3 text-center text-3xl leading-snug font-bold sm:mb-4 md:text-4xl lg:text-5xl">
             {homepageContentConfig.testimonials.title}
           </h2>
           <p className="text-body sm:text-body-lg mx-auto mb-8 max-w-4xl text-center leading-relaxed text-gray-600 sm:mb-12 dark:text-gray-300">
@@ -261,7 +260,7 @@ function Home() {
         className={`${spacing.section} bg-background dark:bg-background pb-12`}
       >
         <div className={`${containerBase} ${widths.content}`}>
-          <h2 className="text-h3 sm:text-h2 mb-3 text-center leading-snug sm:mb-4">
+          <h2 className="mb-3 text-center text-3xl leading-snug font-bold sm:mb-4 md:text-4xl lg:text-5xl">
             {homepageContentConfig.essentialReads.title}
           </h2>
           <p className="text-body sm:text-body-lg mx-auto mb-8 max-w-4xl text-center leading-relaxed text-gray-600 sm:mb-12 dark:text-gray-300">

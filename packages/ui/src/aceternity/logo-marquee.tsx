@@ -157,7 +157,7 @@ const LogoItem = ({ logo }: { logo: Logo }) => {
   }, [logo.scale]);
 
   return (
-    <div className="mx-8 md:mx-12 h-16 flex items-center">
+    <div className="mx-8 flex h-16 items-center md:mx-12">
       <MotionDiv
         whileHover={{
           scale: 1.1,
@@ -216,7 +216,7 @@ export function LogoCloudMarquee({
       >
         <h2
           className={cn(
-            'h2 text-center font-heading font-bold',
+            'font-heading text-center text-3xl font-bold md:text-4xl lg:text-5xl',
             'bg-gradient-to-b from-neutral-900 to-neutral-600 bg-clip-text text-transparent dark:from-white dark:to-neutral-600',
           )}
         >
@@ -239,8 +239,8 @@ export function LogoCloudMarquee({
 
       <div className="relative mt-20 flex w-full flex-col items-center justify-center gap-4">
         <div className="relative w-full">
-          <div className="pointer-events-none absolute inset-y-0 left-0 z-[2] w-1/3 bg-gradient-to-r from-background via-background/90 to-transparent" />
-          <div className="pointer-events-none absolute inset-y-0 right-0 z-[2] w-1/3 bg-gradient-to-l from-background via-background/90 to-transparent" />
+          <div className="from-background via-background/90 pointer-events-none absolute inset-y-0 left-0 z-[2] w-1/3 bg-gradient-to-r to-transparent" />
+          <div className="from-background via-background/90 pointer-events-none absolute inset-y-0 right-0 z-[2] w-1/3 bg-gradient-to-l to-transparent" />
           <div className="relative z-[1]">
             <Marquee pauseOnHover direction="right" gradient={false} speed={30}>
               <div className="flex items-center justify-center gap-4">
@@ -253,8 +253,8 @@ export function LogoCloudMarquee({
         </div>
 
         <div className="relative w-full">
-          <div className="pointer-events-none absolute inset-y-0 left-0 z-[2] w-1/3 bg-gradient-to-r from-background via-background/90 to-transparent" />
-          <div className="pointer-events-none absolute inset-y-0 right-0 z-[2] w-1/3 bg-gradient-to-l from-background via-background/90 to-transparent" />
+          <div className="from-background via-background/90 pointer-events-none absolute inset-y-0 left-0 z-[2] w-1/3 bg-gradient-to-r to-transparent" />
+          <div className="from-background via-background/90 pointer-events-none absolute inset-y-0 right-0 z-[2] w-1/3 bg-gradient-to-l to-transparent" />
           <div className="relative z-[1]">
             <Marquee pauseOnHover direction="left" speed={25} gradient={false}>
               <div className="flex items-center justify-center gap-4">
