@@ -1,4 +1,13 @@
-import { CreditCard, Home, User } from 'lucide-react';
+import {
+  BookCheck,
+  BrainIcon,
+  CreditCard,
+  GraduationCap,
+  Home,
+  Kanban,
+  MessageCircle,
+  User,
+} from 'lucide-react';
 import { z } from 'zod';
 
 import { NavigationConfigSchema } from '@kit/ui/navigation-schema';
@@ -17,6 +26,31 @@ const routes = [
         path: pathsConfig.app.home,
         Icon: <Home className={iconClasses} />,
         end: true,
+      },
+      {
+        label: 'common:routes.course',
+        path: pathsConfig.app.course,
+        Icon: <GraduationCap className={iconClasses} />,
+      },
+      {
+        label: 'common:routes.ai',
+        path: pathsConfig.app.ai,
+        Icon: <BrainIcon className={iconClasses} />,
+      },
+      {
+        label: 'common:routes.kanban',
+        path: pathsConfig.app.kanban,
+        Icon: <Kanban className={iconClasses} />,
+      },
+      {
+        label: 'common:routes.coaching',
+        path: pathsConfig.app.coaching,
+        Icon: <MessageCircle className={iconClasses} />,
+      },
+      {
+        label: 'common:routes.assessment',
+        path: pathsConfig.app.assessment,
+        Icon: <BookCheck className={iconClasses} />,
       },
     ],
   },

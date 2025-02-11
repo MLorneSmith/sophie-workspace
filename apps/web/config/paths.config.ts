@@ -26,6 +26,7 @@ const PathsSchema = z.object({
     deepdives: z.string().min(1),
     kanban: z.string().min(1),
     ai: z.string().min(1),
+    blocks: z.string().min(1),
   }),
 });
 
@@ -55,6 +56,7 @@ const pathsConfig = PathsSchema.parse({
     deepdives: '/home/deepdives',
     kanban: '/home/kanban',
     ai: '/home/ai',
+    blocks: '/home/ai/blocks',
   },
 } satisfies z.infer<typeof PathsSchema>);
 
