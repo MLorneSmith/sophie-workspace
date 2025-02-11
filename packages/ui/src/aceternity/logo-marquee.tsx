@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import Image from 'next/image';
 
 import { motion } from 'framer-motion';
 import Marquee from 'react-fast-marquee';
@@ -125,37 +125,6 @@ const defaultLogos = [
 const MotionDiv = motion.div;
 
 const LogoItem = ({ logo }: { logo: Logo }) => {
-  const lightImgRef = useRef<HTMLImageElement>(null);
-  const darkImgRef = useRef<HTMLImageElement>(null);
-
-  const applyScale = (img: HTMLImageElement | null, scale: number = 1.0) => {
-    if (!img) return;
-    const { naturalWidth, naturalHeight } = img;
-    const aspectRatio = naturalWidth / naturalHeight;
-    const targetWidth = 120;
-    const targetHeight = targetWidth / aspectRatio;
-
-    img.style.width = `${targetWidth * scale}px`;
-    img.style.height = `${targetHeight * scale}px`;
-  };
-
-  useEffect(() => {
-    const lightImg = lightImgRef.current;
-    const darkImg = darkImgRef.current;
-    const scale = logo.scale || 1.0;
-
-    const handleLightLoad = () => applyScale(lightImg, scale);
-    const handleDarkLoad = () => applyScale(darkImg, scale);
-
-    lightImg?.addEventListener('load', handleLightLoad);
-    darkImg?.addEventListener('load', handleDarkLoad);
-
-    return () => {
-      lightImg?.removeEventListener('load', handleLightLoad);
-      darkImg?.removeEventListener('load', handleDarkLoad);
-    };
-  }, [logo.scale]);
-
   return (
     <div className="mx-8 flex h-16 items-center md:mx-12">
       <MotionDiv
@@ -168,20 +137,22 @@ const LogoItem = ({ logo }: { logo: Logo }) => {
         }}
       >
         <div className="flex items-center justify-center">
-          <img
-            ref={lightImgRef}
+          <Image
             src={logo.src}
             alt={logo.name}
+            width={120}
+            height={60}
             className="block opacity-70 transition-all duration-300 hover:opacity-100 dark:hidden"
             style={{
               objectFit: 'contain',
               objectPosition: 'center',
             }}
           />
-          <img
-            ref={darkImgRef}
-            src={logo.grayscaleSrc}
+          <Image
+            src={logo.grayscaleSrc || logo.src}
             alt={logo.name}
+            width={120 * (logo.scale || 1.0)}
+            height={60 * (logo.scale || 1.0)}
             className="hidden opacity-70 transition-all duration-300 hover:opacity-100 dark:block"
             style={{
               objectFit: 'contain',
