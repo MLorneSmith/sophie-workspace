@@ -1,8 +1,5 @@
 import { Suspense } from 'react';
 
-import Image from 'next/image';
-import Link from 'next/link';
-
 import { PricingTable } from '@kit/billing-gateway/marketing';
 import { BackgroundBoxes } from '@kit/ui/background-boxes';
 import { BlogPostCard } from '@kit/ui/blog-post-card';

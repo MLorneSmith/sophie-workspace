@@ -3,6 +3,7 @@
 import React from 'react';
 
 import { motion, useScroll, useSpring, useTransform } from 'framer-motion';
+import { MotionValue } from 'framer-motion';
 
 import { cn } from '../lib/utils';
 
@@ -11,9 +12,9 @@ interface ContainerScrollProps {
 }
 
 interface CardProps {
-  rotate: any;
-  scale: any;
-  translate: any;
+  rotate: MotionValue<number>;
+  scale: MotionValue<number>;
+  translate: MotionValue<number>;
   children: React.ReactNode;
 }
 

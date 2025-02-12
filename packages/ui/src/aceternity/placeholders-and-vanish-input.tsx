@@ -9,6 +9,19 @@ import { Button } from '@kit/ui/button';
 
 import { cn } from '../lib/utils';
 
+interface PixelData {
+  x: number;
+  y: number;
+  r: number;
+  color: string;
+}
+
+interface RawPixelData {
+  x: number;
+  y: number;
+  color: [number, number, number, number];
+}
+
 interface PlaceholdersAndVanishInputProps {
   placeholders: string[];
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -32,7 +45,7 @@ export function PlaceholdersAndVanishInput({
   const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const startAnimation = () => {
+  const startAnimation = useCallback(() => {
     // Clear any existing interval
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
@@ -45,9 +58,9 @@ export function PlaceholdersAndVanishInput({
     intervalRef.current = setInterval(() => {
       setCurrentPlaceholder((prev) => (prev + 1) % placeholders.length);
     }, 2500); // Fixed 2.5 second interval
-  };
+  }, [placeholders.length]);
 
-  const handleVisibilityChange = () => {
+  const handleVisibilityChange = useCallback(() => {
     if (document.visibilityState !== 'visible') {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
@@ -56,7 +69,7 @@ export function PlaceholdersAndVanishInput({
     } else {
       startAnimation();
     }
-  };
+  }, [startAnimation]);
 
   useEffect(() => {
     startAnimation();
@@ -68,10 +81,10 @@ export function PlaceholdersAndVanishInput({
       }
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, [placeholders]);
+  }, [placeholders, handleVisibilityChange, startAnimation]);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const newDataRef = useRef<any[]>([]);
+  const newDataRef = useRef<PixelData[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const [value, setValue] = useState('');
   const [animating, setAnimating] = useState(false);
@@ -95,26 +108,27 @@ export function PlaceholdersAndVanishInput({
 
     const imageData = ctx.getImageData(0, 0, 800, 800);
     const pixelData = imageData.data;
-    const newData: any[] = [];
+    const newData: RawPixelData[] = [];
 
     for (let t = 0; t < 800; t++) {
-      let i = 4 * t * 800;
+      const i = 4 * t * 800;
       for (let n = 0; n < 800; n++) {
-        let e = i + 4 * n;
+        const e = i + 4 * n;
         if (
           pixelData[e] !== 0 &&
           pixelData[e + 1] !== 0 &&
           pixelData[e + 2] !== 0
         ) {
+          const color: [number, number, number, number] = [
+            pixelData[e] ?? 0,
+            pixelData[e + 1] ?? 0,
+            pixelData[e + 2] ?? 0,
+            pixelData[e + 3] ?? 0,
+          ];
           newData.push({
             x: n,
             y: t,
-            color: [
-              pixelData[e],
-              pixelData[e + 1],
-              pixelData[e + 2],
-              pixelData[e + 3],
-            ],
+            color,
           });
         }
       }
@@ -135,20 +149,25 @@ export function PlaceholdersAndVanishInput({
   const animate = (start: number) => {
     const animateFrame = (pos: number = 0) => {
       requestAnimationFrame(() => {
-        const newArr = [];
+        const newArr: PixelData[] = [];
         for (let i = 0; i < newDataRef.current.length; i++) {
           const current = newDataRef.current[i];
+          if (!current) continue;
+
           if (current.x < pos) {
-            newArr.push(current);
+            newArr.push({ ...current });
           } else {
             if (current.r <= 0) {
               current.r = 0;
               continue;
             }
-            current.x += Math.random() > 0.5 ? 1 : -1;
-            current.y += Math.random() > 0.5 ? 1 : -1;
-            current.r -= 0.05 * Math.random();
-            newArr.push(current);
+            const updatedPixel: PixelData = {
+              x: current.x + (Math.random() > 0.5 ? 1 : -1),
+              y: current.y + (Math.random() > 0.5 ? 1 : -1),
+              r: current.r - 0.05 * Math.random(),
+              color: current.color,
+            };
+            newArr.push(updatedPixel);
           }
         }
         newDataRef.current = newArr;
@@ -204,20 +223,20 @@ export function PlaceholdersAndVanishInput({
   };
 
   return (
-    <div className="flex items-center gap-4 w-full max-w-[1000px] mx-auto">
-      <label className="w-28 text-base font-medium leading-tight text-gray-600 dark:text-gray-300">
+    <div className="mx-auto flex w-full max-w-[1000px] items-center gap-4">
+      <label className="w-28 text-base leading-tight font-medium text-gray-600 dark:text-gray-300">
         Name your presentation
       </label>
       <form
         className={cn(
-          'relative h-12 flex-1 min-w-[600px] overflow-hidden rounded-md bg-white border border-gray-200 dark:border-gray-700 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),_0px_1px_0px_0px_rgba(25,28,33,0.02),_0px_0px_0px_1px_rgba(25,28,33,0.08)] transition duration-200 dark:bg-zinc-800/50 focus-within:border-[#24a9e0] dark:focus-within:border-[#24a9e0]',
+          'relative h-12 min-w-[600px] flex-1 overflow-hidden rounded-md border border-gray-200 bg-white shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),_0px_1px_0px_0px_rgba(25,28,33,0.02),_0px_0px_0px_1px_rgba(25,28,33,0.08)] transition duration-200 focus-within:border-[#24a9e0] dark:border-gray-700 dark:bg-zinc-800/50 dark:focus-within:border-[#24a9e0]',
           value && 'bg-gray-50',
         )}
         onSubmit={handleSubmit}
       >
         <canvas
           className={cn(
-            'pointer-events-none absolute left-2 top-[20%] origin-top-left scale-50 transform pr-20 text-base invert filter dark:invert-0 sm:left-4',
+            'pointer-events-none absolute top-[20%] left-2 origin-top-left scale-50 transform pr-20 text-base invert filter sm:left-4 dark:invert-0',
             !animating ? 'opacity-0' : 'opacity-100',
           )}
           ref={canvasRef}
@@ -234,7 +253,7 @@ export function PlaceholdersAndVanishInput({
           value={value}
           type="text"
           className={cn(
-            'text-base relative z-50 h-full w-full rounded-md border-none bg-transparent pl-4 pr-20 text-black focus:outline-none focus:ring-0 dark:text-white',
+            'relative z-50 h-full w-full rounded-md border-none bg-transparent pr-20 pl-4 text-base text-black focus:ring-0 focus:outline-none dark:text-white',
             animating && 'text-transparent dark:text-transparent',
           )}
         />
@@ -244,7 +263,7 @@ export function PlaceholdersAndVanishInput({
           type="submit"
           variant="default"
           size="icon"
-          className="group absolute right-2 top-1/2 z-50 h-8 w-8 -translate-y-1/2 !bg-[#24a9e0] hover:!bg-[#24a9e0]/90 dark:!bg-[#24a9e0] dark:hover:!bg-[#24a9e0]/90"
+          className="group absolute top-1/2 right-2 z-50 h-8 w-8 -translate-y-1/2 !bg-[#24a9e0] hover:!bg-[#24a9e0]/90 dark:!bg-[#24a9e0] dark:hover:!bg-[#24a9e0]/90"
         >
           <ArrowRightIcon className="h-4 w-4 text-white transition-transform duration-500 group-hover:translate-x-1" />
         </Button>
@@ -252,7 +271,7 @@ export function PlaceholdersAndVanishInput({
         <div className="pointer-events-none absolute inset-0 flex items-center rounded-md">
           <AnimatePresence mode="wait">
             {!value && (
-              <div className="text-base w-[calc(100%-2rem)] truncate pl-4 text-left font-normal text-neutral-500 dark:text-zinc-400">
+              <div className="w-[calc(100%-2rem)] truncate pl-4 text-left text-base font-normal text-neutral-500 dark:text-zinc-400">
                 <motion.span
                   initial={{ y: 5, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}

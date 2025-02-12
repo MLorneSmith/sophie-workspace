@@ -1,6 +1,16 @@
 {
   "homeTabLabel": "Home",
   "homeTabDescription": "Welcome to your home page",
+  "courseTabLabel": "Deck for Decision Makers",
+  "courseTabDescription": "Complete our flagship course: Decks for Decision Makers",
+  "aiTabLabel": "AI Tab Label",
+  "aiTabDescription": "Create your presentation with AI",
+  "kanbanTabLabel": "Kanban Tab Label",
+  "kanbanTabDescription": "Manage your project with our Kanban tool",
+  "coachingTabLabel": "Coaching Tab Label",
+  "coachingTabDescription": "Book a Coaching Session",
+  "assessmentTabLabel": "Assessment Tab Label",
+  "assessmentTabDescription": "Complete your Self-Assessment",
   "accountMembers": "Team Members",
   "membersTabDescription": "Here you can manage the members of your team.",
   "billingTabLabel": "Billing",
@@ -63,7 +73,12 @@
     "dashboard": "Dashboard",
     "settings": "Settings",
     "profile": "Profile",
-    "application": "Application"
+    "application": "Application",
+    "course": "Course",
+    "ai": "AI Tools",
+    "kanban": "Kanban",
+    "coaching": "Coaching",
+    "assessment": "Self-Assessment"
   },
   "roles": {
     "owner": {
