@@ -132,7 +132,8 @@
     "./logo-marquee": "./src/aceternity/logo-marquee.tsx",
     "./placeholders-and-vanish-input": "./src/aceternity/placeholders-and-vanish-input.tsx",
     "./sticky-scroll-reveal": "./src/aceternity/sticky-scroll-reveal.tsx",
-    "./testimonial-masonary-grid": "./src/aceternity/testimonial-masonary-grid.tsx"
+    "./testimonial-masonary-grid": "./src/aceternity/testimonial-masonary-grid.tsx",
+    "./progress": "./src/shadcn/progress.tsx"
   },
   "typesVersions": {
     "*": {

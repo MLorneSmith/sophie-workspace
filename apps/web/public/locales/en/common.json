@@ -5,6 +5,8 @@
   "courseTabDescription": "Complete our flagship course: Decks for Decision Makers",
   "aiTabLabel": "AI Tab Label",
   "aiTabDescription": "Create your presentation with AI",
+  "blocksTabLabel": "Blocks Tab Label",
+  "blocksTabDescription": "Assemble the Building Blocks of your presentation",
   "kanbanTabLabel": "Kanban Tab Label",
   "kanbanTabDescription": "Manage your project with our Kanban tool",
   "coachingTabLabel": "Coaching Tab Label",

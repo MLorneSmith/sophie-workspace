@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 
+import Link from 'next/link';
+
 import {
   Edit,
   FileIcon as FilePresentation,
@@ -10,7 +12,7 @@ import {
   Minimize2,
 } from 'lucide-react';
 
-import { Button } from '@kit/ui/button';
+import { Button, buttonVariants } from '@kit/ui/button';
 
 import { Combobox } from './combobox';
 
@@ -58,7 +60,15 @@ export default function AiToolsHome() {
             <p className="mb-4 text-gray-600">
               Start by assembling the building blocks of a presentation
             </p>
-            <Button className="w-full">Get Started</Button>
+            <Link
+              href="/home/ai/blocks"
+              className={buttonVariants({
+                variant: 'outline',
+                className: 'w-full',
+              })}
+            >
+              Get Started
+            </Link>
           </div>
 
           <div className="rounded-lg bg-gray-50 p-6 shadow-md transition-shadow hover:shadow-lg">
