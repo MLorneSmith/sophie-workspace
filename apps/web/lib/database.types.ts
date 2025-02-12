@@ -184,6 +184,51 @@ export type Database = {
           },
         ]
       }
+      canvas_submissions: {
+        Row: {
+          answer: string | null
+          audience: string | null
+          complication: string | null
+          created_at: string | null
+          id: string
+          outline: string | null
+          presentation_type: string | null
+          question_type: string | null
+          situation: string | null
+          title: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          answer?: string | null
+          audience?: string | null
+          complication?: string | null
+          created_at?: string | null
+          id?: string
+          outline?: string | null
+          presentation_type?: string | null
+          question_type?: string | null
+          situation?: string | null
+          title: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          answer?: string | null
+          audience?: string | null
+          complication?: string | null
+          created_at?: string | null
+          id?: string
+          outline?: string | null
+          presentation_type?: string | null
+          question_type?: string | null
+          situation?: string | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       config: {
         Row: {
           billing_provider: Database["public"]["Enums"]["billing_provider"]
