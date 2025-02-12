@@ -1,0 +1,103 @@
+'use client';
+
+import { useState } from 'react';
+
+import {
+  Edit,
+  FileIcon as FilePresentation,
+  FileText,
+  Maximize2,
+  Minimize2,
+} from 'lucide-react';
+
+import { Button } from '@kit/ui/button';
+
+import { Combobox } from './combobox';
+
+export default function AiToolsHome() {
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+      setIsFullscreen(true);
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+        setIsFullscreen(false);
+      }
+    }
+  };
+
+  return (
+    <main className="min-h-screen bg-gradient-to-br p-8">
+      <Button
+        variant="outline"
+        size="icon"
+        className="absolute top-4 right-4"
+        onClick={toggleFullscreen}
+      >
+        {isFullscreen ? (
+          <Minimize2 className="h-4 w-4" />
+        ) : (
+          <Maximize2 className="h-4 w-4" />
+        )}
+      </Button>
+
+      <div className="mx-auto mt-16 max-w-4xl">
+        <h1 className="mb-12 text-center text-4xl font-bold text-gray-800">
+          What would you like to write today?
+        </h1>
+
+        <div className="grid gap-8 md:grid-cols-3">
+          <div className="rounded-lg bg-gray-50 p-6 shadow-md transition-shadow hover:shadow-lg">
+            <FileText className="mb-4 h-12 w-12 text-black" />
+            <h2 className="mb-2 text-xl font-semibold">
+              Build New Presentation
+            </h2>
+            <p className="mb-4 text-gray-600">
+              Start by assembling the building blocks of a presentation
+            </p>
+            <Button className="w-full">Get Started</Button>
+          </div>
+
+          <div className="rounded-lg bg-gray-50 p-6 shadow-md transition-shadow hover:shadow-lg">
+            <Edit className="mb-4 h-12 w-12 text-black" />
+            <h2 className="mb-2 text-xl font-semibold">
+              Edit Existing Presentation
+            </h2>
+            <p className="mb-4 text-gray-600">
+              Use our Canvas editor to refine your outline
+            </p>
+            <Combobox
+              options={[
+                { label: 'Presentation 1', value: '1' },
+                { label: 'Presentation 2', value: '2' },
+                { label: 'Presentation 3', value: '3' },
+              ]}
+              placeholder="Select a presentation"
+            />
+          </div>
+
+          <div className="rounded-lg bg-gray-50 p-6 shadow-md transition-shadow hover:shadow-lg">
+            <FilePresentation className="mb-4 h-12 w-12 text-black" />
+            <h2 className="mb-2 text-xl font-semibold">
+              Generate your PowerPoint
+            </h2>
+            <p className="mb-4 text-gray-600">
+              Publish your outline into a PowerPoint file
+            </p>
+            <Combobox
+              options={[
+                { label: 'Outline 1', value: '1' },
+                { label: 'Outline 2', value: '2' },
+                { label: 'Outline 3', value: '3' },
+              ]}
+              placeholder="Select an outline"
+            />
+          </div>
+        </div>
+      </div>
+    </main>
+  );
+}

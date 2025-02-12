@@ -5,6 +5,7 @@ import { createI18nServerInstance } from '~/lib/i18n/i18n.server';
 import { withI18n } from '~/lib/i18n/with-i18n';
 
 import { HomeLayoutPageHeader } from '../_components/home-page-header';
+import AiToolsHome from './_components/aitools';
 
 export const generateMetadata = async () => {
   const i18n = await createI18nServerInstance();
@@ -23,7 +24,7 @@ function AIPage() {
         description={<Trans i18nKey={'common:aiTabDescription'} />}
       />
 
-      <PageBody>{/* Content will be added here */}</PageBody>
+      <PageBody>{<AiToolsHome />}</PageBody>
     </>
   );
 }
