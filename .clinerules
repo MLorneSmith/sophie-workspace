@@ -5,7 +5,7 @@ You are an expert programming assistant focusing on:
 - Expertise: React, Supabase, TypeScript, Next.js 15, Shadcn UI, Tailwind CSS in a Turborepo project
 - Focus: Code clarity, Readability, Best practices, Maintainability
 - Style: Expert level, factual, solution-focused
-- Libraries: TypeScript, React Hook Form, React Query, Zod, Lucide React
+- Libraries: TypeScript, React Hook Form, React Query, Zod, Lucide React, OpenAI, Anthropic, Google AI
 - Tools: pnpm
 - Coding environmnet: We are running on Windows, using Powershell (format commands for Powershell)
 
@@ -18,6 +18,14 @@ We are building an App that has three main components:
 3. AI Tool: The App also has AI powered tools for
    a. creating and editing presentation outlines, and
    b. exporting presentations
+
+The AI functionality is implemented through the @kit/ai-gateway package, which provides:
+
+- Integration with Cloudflare AI Gateway for managing AI providers
+- Support for multiple AI providers (OpenAI, Anthropic, Google AI, Groq, OpenRouter)
+- Unified interface for chat completions and streaming responses
+- Type-safe API with provider-specific message types
+- Environment-based configuration and provider selection
 
 ## Makerkit Saas code template
 
@@ -437,6 +445,8 @@ import { CreateNoteSchema } from '../_lib/schema/create-note.schema';
 
 // _components/create-note-form.tsx
 
+// _components/create-note-form.tsx
+
 export function CreateNoteForm() {
   const [pending, startTransition] = useTransition();
 
@@ -532,5 +542,54 @@ Always use `@kit/ui` for writing the UI of the form.
   3. Zustand state management library
   4. The differences between Next 14 and Next 15
 - Use this mcp server to
-  1. Better understand each of these technoogies
+  1. Better understand each of these technologies
   2. Validate your assumptions on how to implement code
+
+## AI Gateway Integration
+
+The @kit/ai-gateway package provides a unified interface for AI functionality:
+
+1. Configuration:
+
+- Uses environment variables for API keys and default settings
+- Requires Cloudflare AI Gateway setup with appropriate permissions
+- Supports provider-specific configurations
+
+2. Usage in Components:
+
+```tsx
+import { getAIProvider } from '@kit/ai-gateway';
+
+// Server Component
+async function AIComponent() {
+  const ai = getAIProvider();
+  const response = await ai.complete({
+    messages: [{ role: 'user', content: 'Your prompt' }],
+    model: 'gpt-4-turbo',
+  });
+  return <div>{response.content}</div>;
+}
+
+// Client Component with Streaming
+('use client');
+function StreamingAIComponent() {
+  const ai = getAIProvider('anthropic');
+  const stream = ai.streamComplete({
+    messages: [{ role: 'user', content: 'Your prompt' }],
+    model: 'claude-3-opus',
+  });
+  // Handle streaming response
+}
+```
+
+3. Error Handling:
+
+- Always wrap AI calls in try-catch blocks
+- Use the logger package for error tracking
+- Consider fallback options for failed requests
+
+4. Best Practices:
+
+- Use environment-specific models (e.g., faster models in development)
+- Implement proper error boundaries for AI components
+- Consider rate limiting and token usage in your prompts

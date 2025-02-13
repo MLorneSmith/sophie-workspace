@@ -1,4 +1,4 @@
-import { FormData } from '../_components/SetupFormContext';
+import { FormData } from '../_components/SetupFormContextOld';
 
 type PresentationTypeId = 'general' | 'sales' | 'consulting' | 'fundraising';
 
@@ -36,7 +36,8 @@ export const presentationTypes: PresentationType[] = [
   {
     id: 'general',
     label: 'General Business Presentation',
-    description: 'For internal meetings, updates, or general business communications',
+    description:
+      'For internal meetings, updates, or general business communications',
   },
   {
     id: 'sales',
@@ -72,7 +73,8 @@ export const questions = {
     label: 'What type of question are you answering?',
     type: 'multiple_choice' as const,
     section: 'Define your question type',
-    description: 'Select the type of question that best matches what you are trying to answer.',
+    description:
+      'Select the type of question that best matches what you are trying to answer.',
     options: [
       {
         id: 'strategy',
@@ -132,12 +134,17 @@ export const questions = {
     },
     type: 'input' as const,
     section: 'Define your audience',
-    description: 'Describe your audience, their background, and what matters to them.',
+    description:
+      'Describe your audience, their background, and what matters to them.',
     descriptions: {
-      general: 'Which team members or departments will attend? What is their level of familiarity with the topic?',
-      sales: 'Who are the decision-makers? What are their pain points and priorities?',
-      consulting: 'Who are the key stakeholders? What is their level of technical expertise?',
-      fundraising: 'Which investors are you targeting? What is their investment focus?',
+      general:
+        'Which team members or departments will attend? What is their level of familiarity with the topic?',
+      sales:
+        'Who are the decision-makers? What are their pain points and priorities?',
+      consulting:
+        'Who are the key stakeholders? What is their level of technical expertise?',
+      fundraising:
+        'Which investors are you targeting? What is their investment focus?',
     },
     image: placeholderImage,
   },
@@ -149,7 +156,8 @@ export const questions = {
     description: 'Describe the current state or context.',
     descriptions: {
       general: '',
-      sales: 'What challenges or inefficiencies is your prospect currently facing?',
+      sales:
+        'What challenges or inefficiencies is your prospect currently facing?',
       consulting: 'What is the current state of the business or problem area?',
       fundraising: '',
     },
@@ -164,8 +172,10 @@ export const questions = {
     description: 'Explain what has changed to create the need for action.',
     descriptions: {
       general: '',
-      sales: 'What market changes or new challenges make solving this problem urgent?',
-      consulting: 'What new factors or changes have made the current situation problematic?',
+      sales:
+        'What market changes or new challenges make solving this problem urgent?',
+      consulting:
+        'What new factors or changes have made the current situation problematic?',
       fundraising: '',
     },
     paths: ['sales', 'consulting'],
@@ -179,8 +189,10 @@ export const questions = {
     description: 'Present your solution and its benefits clearly.',
     descriptions: {
       general: '',
-      sales: 'How does your product or service solve their specific challenges?',
-      consulting: 'What are your key recommendations and their expected impact?',
+      sales:
+        'How does your product or service solve their specific challenges?',
+      consulting:
+        'What are your key recommendations and their expected impact?',
       fundraising: '',
     },
     paths: ['sales', 'consulting'],
@@ -195,10 +207,35 @@ type PathConfig = {
 };
 
 export const presentationPaths: PathConfig = {
-  general: ['presentation_type', 'audience', 'question_type', 'situation', 'complication', 'answer'],
-  sales: ['presentation_type', 'audience', 'situation', 'complication', 'answer'],
-  consulting: ['presentation_type', 'audience', 'situation', 'complication', 'answer'],
-  fundraising: ['presentation_type', 'audience', 'situation', 'complication', 'answer'],
+  general: [
+    'presentation_type',
+    'audience',
+    'question_type',
+    'situation',
+    'complication',
+    'answer',
+  ],
+  sales: [
+    'presentation_type',
+    'audience',
+    'situation',
+    'complication',
+    'answer',
+  ],
+  consulting: [
+    'presentation_type',
+    'audience',
+    'situation',
+    'complication',
+    'answer',
+  ],
+  fundraising: [
+    'presentation_type',
+    'audience',
+    'situation',
+    'complication',
+    'answer',
+  ],
 };
 
 export type PresentationPathType = keyof typeof presentationPaths;
@@ -214,7 +251,10 @@ export function getPath(type: PresentationPathType): QuestionField[] {
 }
 
 // Helper function to get the next question in a path
-export function getNextQuestion(currentField: QuestionField, type: PresentationPathType): QuestionField | undefined {
+export function getNextQuestion(
+  currentField: QuestionField,
+  type: PresentationPathType,
+): QuestionField | undefined {
   const path = presentationPaths[type];
   if (!path) return undefined;
 
@@ -225,13 +265,19 @@ export function getNextQuestion(currentField: QuestionField, type: PresentationP
 }
 
 // Helper function to check if a field is valid for the current presentation type
-export function isFieldInPath(field: QuestionField, type: PresentationPathType): boolean {
+export function isFieldInPath(
+  field: QuestionField,
+  type: PresentationPathType,
+): boolean {
   const path = presentationPaths[type];
   return path ? path.includes(field) : false;
 }
 
 // Helper function to get the description for a specific presentation type
-export function getQuestionDescription(field: QuestionField, type: PresentationPathType): string {
+export function getQuestionDescription(
+  field: QuestionField,
+  type: PresentationPathType,
+): string {
   const question = questions[field] as QuestionType;
   if (question.descriptions && question.descriptions[type]) {
     return question.descriptions[type];
@@ -240,7 +286,10 @@ export function getQuestionDescription(field: QuestionField, type: PresentationP
 }
 
 // Helper function to get the label for a specific presentation type
-export function getQuestionLabel(field: QuestionField, type: PresentationPathType): string {
+export function getQuestionLabel(
+  field: QuestionField,
+  type: PresentationPathType,
+): string {
   const question = questions[field] as QuestionType;
   if (question.labels && question.labels[type]) {
     return question.labels[type];
