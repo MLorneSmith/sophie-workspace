@@ -1,46 +1,27 @@
-import { getAIGatewayConfig } from '../config/ai-gateway.config';
-import type { AIProvider, AIProviderClient } from '../types';
+import { type AIProvider, type AIProviderClient } from '../types';
 import { AnthropicProvider } from './anthropic';
 import { GoogleAIProvider } from './google-ai';
 import { GroqProvider } from './groq';
 import { OpenAIProvider } from './openai';
 import { OpenRouterProvider } from './openrouter';
+import { UniversalProvider } from './universal';
 
-const providers = new Map<AIProvider, AIProviderClient>();
-
-export const getAIProvider = (provider?: AIProvider): AIProviderClient => {
-  const config = getAIGatewayConfig();
-  const selectedProvider = provider || config.defaultProvider;
-
-  // Return cached provider if available
-  const cachedProvider = providers.get(selectedProvider);
-  if (cachedProvider) {
-    return cachedProvider;
-  }
-
-  // Create new provider instance
-  let newProvider: AIProviderClient;
-  switch (selectedProvider) {
+export function getAIProvider(provider?: AIProvider): AIProviderClient {
+  switch (provider) {
     case 'openai':
-      newProvider = new OpenAIProvider();
-      break;
-    case 'groq':
-      newProvider = new GroqProvider();
-      break;
+      return new OpenAIProvider();
     case 'anthropic':
-      newProvider = new AnthropicProvider();
-      break;
+      return new AnthropicProvider();
     case 'google-ai':
-      newProvider = new GoogleAIProvider();
-      break;
+      return new GoogleAIProvider();
+    case 'groq':
+      return new GroqProvider();
     case 'openrouter':
-      newProvider = new OpenRouterProvider();
-      break;
+      return new OpenRouterProvider();
+    case 'universal':
+      return new UniversalProvider();
     default:
-      throw new Error(`Unsupported AI provider: ${selectedProvider}`);
+      // Default to universal provider if none specified
+      return new UniversalProvider();
   }
-
-  // Cache the provider instance
-  providers.set(selectedProvider, newProvider);
-  return newProvider;
-};
+}

@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 
 import debounce from 'lodash/debounce';
 
+import { getAIProvider } from '@kit/ai-gateway';
 import { Button } from '@kit/ui/button';
 import {
   Card,
@@ -19,143 +20,103 @@ import { Spinner } from '@kit/ui/spinner';
 import { Textarea } from '@kit/ui/textarea';
 
 import { Progress } from '../../../../../../../../packages/ui/src/shadcn/progress';
-import { generateGroqText } from '../../_utils/groq_generateText';
 import { submitCanvasAction } from '../_actions/submitCanvasAction';
+import {
+  type QuestionField,
+  type QuestionType,
+  getQuestion,
+  presentationTypes,
+} from '../_config/formContent';
 import { type FormData, useSetupForm } from './SetupFormContext';
-
-type QuestionType = {
-  field: keyof FormData;
-  label: string;
-  type: 'input' | 'textarea' | 'select';
-  section: string;
-  description: string;
-};
-
-const questions: QuestionType[] = [
-  {
-    field: 'title',
-    label: 'Enter your presentation title below',
-    type: 'input',
-    section: 'Setup our presentation narrative',
-    description:
-      'Great titles are short and descriptive. They can include the questions being answered, the main topic, or the audience we are presenting to.',
-  },
-  {
-    field: 'audience',
-    label: 'Who is your audience?',
-    type: 'input',
-    section: 'Setup our presentation narrative',
-    description:
-      'Describe your audience in detail. Consider their background, interests and expectations.',
-  },
-  {
-    field: 'presentation_type',
-    label: 'What type of presentation is this?',
-    type: 'select',
-    section: 'Categorize the type of problem our presentation answers',
-    description:
-      'Presentations answer a question in the mind of the audience. Most presentations answer one of the following questions. Which question fits best with your presentation?',
-  },
-  {
-    field: 'situation',
-    label: 'Describe the Situation or Context behind this presentation',
-    type: 'textarea',
-    section: 'Establish the foundation of our Introduction',
-    description:
-      "Describe the undesired state of today. Describe the problem. Describe the 'Opening Scene'",
-  },
-  {
-    field: 'complication',
-    label:
-      'Describe the Complication that has created the need for this presentation',
-    type: 'textarea',
-    section: 'Establish the foundation of our Introduction',
-    description: 'Describe what has changed to create the problem',
-  },
-  {
-    field: 'answer',
-    label: 'Describe your solution to the problem',
-    type: 'textarea',
-    section: 'Structure our Answer',
-    description: 'Attempt to structure your answer',
-  },
-];
-
-const presentationTypes = [
-  {
-    id: 'strategy',
-    label: 'What should we do?',
-    description: 'A strategy deck, investment pitch, or internal plan',
-  },
-  {
-    id: 'sales',
-    label: 'You have a problem',
-    description: 'A sales proposal or pitch',
-  },
-  {
-    id: 'assessment',
-    label: 'Should we do what we are thinking of doing?',
-    description: 'An assessment of a plan',
-  },
-  {
-    id: 'implementation',
-    label: 'How do we implement the solution',
-    description: 'An implementation plan',
-  },
-  {
-    id: 'diagnostic',
-    label: 'Do we have a problem?',
-    description: 'A strategy assessment, A diagnostic',
-  },
-  {
-    id: 'alternatives',
-    label: 'Which alternative should we choose',
-    description: 'An alternatives assessment',
-  },
-  {
-    id: 'postmortem',
-    label: "Why didn't it work?",
-    description: 'A post mortem. An evaluation',
-  },
-];
 
 function useSuggestions() {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
 
   const fetchSuggestions = useCallback(
-    debounce(async (title: string, field: keyof FormData) => {
-      setIsLoadingSuggestions(true);
-      try {
-        console.log('Fetching suggestions for:', field, 'with title:', title);
-        let prompt = '';
-        if (field === 'audience') {
-          prompt = `Based on "${title}" provide 4 possible audiences for a presentation. Limit each suggestion to 4 words maximum`;
-        } else {
-          throw new Error('Invalid field for suggestions');
+    debounce(
+      async (
+        field: keyof FormData,
+        presentationType?: string,
+        title?: string,
+      ) => {
+        setIsLoadingSuggestions(true);
+        try {
+          console.log('Fetching suggestions for:', field);
+          const ai = getAIProvider('universal');
+          let prompt = '';
+
+          if (field === 'title' && presentationType) {
+            switch (presentationType) {
+              case 'general':
+                prompt =
+                  'Generate 4 clear and informative titles for an internal business presentation. Each title should be 5-8 words maximum.';
+                break;
+              case 'sales':
+                prompt =
+                  'Generate 4 compelling sales presentation titles that focus on value proposition. Each title should be 5-8 words maximum.';
+                break;
+              case 'consulting':
+                prompt =
+                  'Generate 4 professional consulting presentation titles focusing on analysis and recommendations. Each title should be 5-8 words maximum.';
+                break;
+              case 'fundraising':
+                prompt =
+                  'Generate 4 impactful fundraising presentation titles emphasizing growth potential. Each title should be 5-8 words maximum.';
+                break;
+              default:
+                prompt =
+                  'Generate 4 professional presentation titles. Each title should be 5-8 words maximum.';
+            }
+          } else if (field === 'audience' && title) {
+            prompt = `Based on "${title}" provide 4 possible audiences for a presentation. Limit each suggestion to 4 words maximum`;
+          } else {
+            throw new Error(
+              'Invalid field or missing required parameters for suggestions',
+            );
+          }
+
+          console.log('Generated prompt:', prompt);
+          const response = await ai.complete({
+            messages: [
+              {
+                role: 'user',
+                content: prompt,
+              },
+            ],
+            model: 'mixtral-8x7b',
+            provider: 'groq',
+            temperature: 0.7,
+            stream: false,
+          });
+
+          console.log('Raw result from AI Gateway:', response.content);
+          const cleanedSuggestions = cleanSuggestions(response.content);
+          console.log('Cleaned suggestions:', cleanedSuggestions);
+          setSuggestions(cleanedSuggestions);
+        } catch (error) {
+          console.error('Error in fetchSuggestions:', error);
+          if (error instanceof Error) {
+            console.error('Error details:', error.message, error.stack);
+          } else {
+            console.error('Unexpected error type:', typeof error);
+          }
+          setSuggestions(['Error fetching suggestions']);
+        } finally {
+          setIsLoadingSuggestions(false);
         }
-        console.log('Generated prompt:', prompt);
-        const result = await generateGroqText(prompt);
-        console.log('Raw result from generateGroqText:', result);
-        const cleanedSuggestions = cleanSuggestions(result);
-        console.log('Cleaned suggestions:', cleanedSuggestions);
-        setSuggestions(cleanedSuggestions);
-      } catch (error) {
-        console.error('Error in fetchSuggestions:', error);
-        if (error instanceof Error) {
-          console.error('Error details:', error.message, error.stack);
-        } else {
-          console.error('Unexpected error type:', typeof error);
-        }
-        setSuggestions(['Error fetching suggestions']);
-      } finally {
-        setIsLoadingSuggestions(false);
-      }
-    }, 300),
+      },
+      300,
+    ),
     [],
   );
 
-  return { suggestions, isLoadingSuggestions, fetchSuggestions };
+  return {
+    suggestions,
+    isLoadingSuggestions,
+    fetchSuggestions,
+    setSuggestions,
+  };
 }
 
 const SuggestionsList = ({
@@ -206,14 +167,14 @@ const PresentationTypeQuestion = ({
         onClick={() => onChange(type.id)}
         className={`focus:ring-primary w-full rounded-lg p-4 text-left transition-colors duration-200 ease-in-out focus:ring-2 focus:outline-none ${
           value === type.id
-            ? 'bg-primary text-foreground'
+            ? 'bg-primary text-white'
             : 'bg-background hover:bg-muted'
         }`}
       >
         <div className="font-medium">{type.label}</div>
         <div
           className={`text-sm ${
-            value === type.id ? 'text-foreground' : 'text-muted-foreground'
+            value === type.id ? 'text-white' : 'text-muted-foreground'
           }`}
         >
           {type.description}
@@ -229,6 +190,7 @@ export function SetupForm() {
     formData,
     setFormData,
     currentQuestion,
+    currentPath,
     handleNext,
     handlePrevious,
     handleSubmit,
@@ -243,8 +205,12 @@ export function SetupForm() {
     new Set(),
   );
 
-  const { suggestions, isLoadingSuggestions, fetchSuggestions } =
-    useSuggestions();
+  const {
+    suggestions,
+    isLoadingSuggestions,
+    fetchSuggestions,
+    setSuggestions,
+  } = useSuggestions();
 
   const router = useRouter();
 
@@ -257,30 +223,75 @@ export function SetupForm() {
   }, [formData, setErrors]);
 
   useEffect(() => {
-    const currentQuestionData = questions[currentQuestion];
-    if (currentQuestion === 1 && formData.title && currentQuestionData) {
-      console.log(
-        'Triggering fetchSuggestions for:',
-        currentQuestionData.field,
-      );
-      fetchSuggestions(formData.title, currentQuestionData.field);
-    }
-  }, [currentQuestion, formData.title, fetchSuggestions]);
+    const currentField = currentPath[currentQuestion];
+    if (!currentField) return;
+
+    // Clear suggestions when field changes
+    setSuggestions([]);
+
+    const fetchSuggestionsForField = async () => {
+      if (currentField === 'title') {
+        if (formData.presentation_type) {
+          console.log(
+            'Triggering title suggestions for presentation type:',
+            formData.presentation_type,
+          );
+          await fetchSuggestions('title', formData.presentation_type);
+        }
+      } else if (currentField === 'audience') {
+        if (formData.title) {
+          console.log(
+            'Triggering audience suggestions for title:',
+            formData.title,
+          );
+          await fetchSuggestions('audience', undefined, formData.title);
+        }
+      }
+    };
+
+    // Small delay to let the UI update before fetching suggestions
+    const timer = setTimeout(fetchSuggestionsForField, 100);
+    return () => clearTimeout(timer);
+  }, [
+    currentQuestion,
+    formData.title,
+    formData.presentation_type,
+    fetchSuggestions,
+    currentPath,
+    setSuggestions,
+  ]);
 
   const handleInputChange =
     (field: keyof FormData) =>
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      setFormData({ ...formData, [field]: e.target.value });
+      const value = e.target.value;
+      setFormData({ ...formData, [field]: value });
       setTouchedFields(new Set(touchedFields).add(field));
+
+      // Trigger suggestions when input changes
+      if (
+        field === 'title' &&
+        currentField === 'title' &&
+        formData.presentation_type
+      ) {
+        fetchSuggestions('title', formData.presentation_type);
+      } else if (field === 'title' && currentField === 'audience') {
+        // When title changes and we're on the audience field, update audience suggestions
+        fetchSuggestions('audience', undefined, value);
+      }
     };
 
-  const handleSelectChange = (value: string) => {
+  const handleSelectChange = async (value: string) => {
     console.log('Selected presentation type:', value);
     setFormData({ ...formData, presentation_type: value });
     setTouchedFields(new Set(touchedFields).add('presentation_type'));
+
     const isValid = validateField('presentation_type');
     console.log('Is presentation type valid:', isValid);
+
     if (isValid) {
+      // Small delay to allow path update effect to run
+      await new Promise((resolve) => setTimeout(resolve, 100));
       handleNext();
     }
   };
@@ -324,27 +335,44 @@ export function SetupForm() {
 
   const handleNextClick = async () => {
     setIsValidating(true);
-    const currentQuestionData = questions[currentQuestion];
-    if (currentQuestionData) {
-      const isValid = validateField(currentQuestionData.field);
-      console.log(
-        'Current field:',
-        currentQuestionData.field,
-        'Is valid:',
-        isValid,
-      );
-      if (isValid) {
-        await new Promise((resolve) => setTimeout(resolve, 500));
-        handleNext();
+    try {
+      const currentField = currentPath[currentQuestion];
+      if (currentField) {
+        console.log('Validating field:', currentField);
+
+        const isValid = validateField(currentField);
+        console.log('Field validation result:', currentField, isValid);
+
+        if (isValid) {
+          // Add field to touched fields to ensure error state is shown
+          setTouchedFields(new Set(touchedFields).add(currentField));
+
+          // Small delay for UX
+          await new Promise((resolve) => setTimeout(resolve, 300));
+
+          console.log('Moving to next question');
+          handleNext();
+          setErrors({}); // Clear errors after successful navigation
+        } else {
+          console.log('Validation failed, showing error');
+          // Ensure the field is marked as touched to show the error
+          setTouchedFields(new Set(touchedFields).add(currentField));
+        }
+      } else {
+        console.error('No current field found for index:', currentQuestion);
       }
+    } catch (error) {
+      console.error('Error in handleNextClick:', error);
+    } finally {
+      setIsValidating(false);
     }
-    setIsValidating(false);
   };
 
   const renderQuestion = () => {
-    const question = questions[currentQuestion];
-    if (!question) return null;
+    const currentField = currentPath[currentQuestion];
+    if (!currentField) return null;
 
+    const question = getQuestion(currentField as QuestionField);
     const field = question.field;
 
     const commonProps = {
@@ -395,8 +423,11 @@ export function SetupForm() {
     }
   };
 
-  const currentQuestionData = questions[currentQuestion];
-  const fallbackQuestionData = questions[0];
+  const currentField = currentPath[currentQuestion];
+  const currentQuestionData = currentField
+    ? getQuestion(currentField as QuestionField)
+    : null;
+  const fallbackQuestionData = getQuestion(currentPath[0] as QuestionField);
 
   return (
     <div className="container mx-auto p-4">
@@ -404,7 +435,7 @@ export function SetupForm() {
         {currentQuestionData?.section || fallbackQuestionData?.section}
       </h2>
       <Progress
-        value={((currentQuestion + 1) / questions.length) * 100}
+        value={((currentQuestion + 1) / currentPath.length) * 100}
         className="mb-6"
       />
       <Card>
@@ -420,34 +451,40 @@ export function SetupForm() {
         <CardContent>
           <form onSubmit={handleFormSubmit} className="space-y-8">
             {renderQuestion()}
-            {currentQuestionData?.field &&
-              currentQuestionData.field === 'audience' && (
-                <SuggestionsList
-                  suggestions={suggestions}
-                  isLoading={isLoadingSuggestions}
-                  onSelect={(suggestion: string) => {
-                    if (currentQuestionData.field === 'audience') {
-                      setFormData({
-                        ...formData,
-                        [currentQuestionData.field]: suggestion,
-                      });
-                      setTouchedFields(
-                        new Set(touchedFields).add(currentQuestionData.field),
-                      );
-                      validateField(currentQuestionData.field);
-                    }
-                  }}
-                />
+            {(currentField === 'audience' || currentField === 'title') && (
+              <SuggestionsList
+                suggestions={suggestions}
+                isLoading={isLoadingSuggestions}
+                onSelect={(suggestion: string) => {
+                  if (currentField === 'title') {
+                    setFormData({
+                      ...formData,
+                      title: suggestion,
+                    });
+                    setTouchedFields(new Set(touchedFields).add('title'));
+                    validateField('title');
+                  } else if (currentField === 'audience') {
+                    setFormData({
+                      ...formData,
+                      audience: suggestion,
+                    });
+                    setTouchedFields(new Set(touchedFields).add('audience'));
+                    validateField('audience');
+                  }
+                }}
+              />
+            )}
+            <div className="mt-4 flex justify-end space-x-4">
+              {currentQuestion > 0 && (
+                <Button
+                  type="button"
+                  onClick={handlePrevious}
+                  disabled={isValidating || isSubmitting}
+                >
+                  Previous
+                </Button>
               )}
-            <div className="mt-4 flex justify-between">
-              <Button
-                type="button"
-                onClick={handlePrevious}
-                disabled={currentQuestion === 0 || isValidating || isSubmitting}
-              >
-                Previous
-              </Button>
-              {currentQuestion === questions.length - 1 ? (
+              {currentQuestion === currentPath.length - 1 ? (
                 <Button type="submit" disabled={isValidating || isSubmitting}>
                   {isSubmitting ? 'Submitting...' : 'Submit'}
                 </Button>

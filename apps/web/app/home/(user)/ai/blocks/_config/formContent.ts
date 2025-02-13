@@ -1,4 +1,4 @@
-import { FormData } from '../_components/SetupFormContextOld';
+import { FormData } from '../_components/SetupFormContext';
 
 type PresentationTypeId = 'general' | 'sales' | 'consulting' | 'fundraising';
 
@@ -209,6 +209,7 @@ type PathConfig = {
 export const presentationPaths: PathConfig = {
   general: [
     'presentation_type',
+    'title',
     'audience',
     'question_type',
     'situation',
@@ -217,6 +218,7 @@ export const presentationPaths: PathConfig = {
   ],
   sales: [
     'presentation_type',
+    'title',
     'audience',
     'situation',
     'complication',
@@ -224,6 +226,7 @@ export const presentationPaths: PathConfig = {
   ],
   consulting: [
     'presentation_type',
+    'title',
     'audience',
     'situation',
     'complication',
@@ -231,12 +234,13 @@ export const presentationPaths: PathConfig = {
   ],
   fundraising: [
     'presentation_type',
+    'title',
     'audience',
     'situation',
     'complication',
     'answer',
   ],
-};
+} as const;
 
 export type PresentationPathType = keyof typeof presentationPaths;
 

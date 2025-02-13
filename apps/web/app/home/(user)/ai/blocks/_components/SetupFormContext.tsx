@@ -22,7 +22,7 @@ interface FormContextType {
   formData: FormData;
   setFormData: (data: FormData) => void;
   currentQuestion: number;
-  currentPath: string[];
+  currentPath: QuestionField[];
   handleNext: () => void;
   handlePrevious: () => void;
   handleSubmit: (e: React.FormEvent) => Promise<void>;
@@ -45,16 +45,20 @@ export function SetupFormProvider({ children }: { children: React.ReactNode }) {
   });
 
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [currentPath, setCurrentPath] = useState<string[]>([
+  const [currentPath, setCurrentPath] = useState<QuestionField[]>([
     'presentation_type',
   ]);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Update path when presentation type changes
+  // Initialize with default path and update when presentation type changes
   useEffect(() => {
-    if (formData.presentation_type) {
-      const type = formData.presentation_type as PresentationPathType;
+    // When presentation type changes, update the path to the full path for that type
+    const type = formData.presentation_type as PresentationPathType;
+
+    if (type) {
+      console.log('Updating path for presentation type:', type);
       const newPath = getPath(type);
+      console.log('New path:', newPath);
       setCurrentPath(newPath);
     }
   }, [formData.presentation_type]);
@@ -67,8 +71,10 @@ export function SetupFormProvider({ children }: { children: React.ReactNode }) {
     if (!value || value.trim() === '') {
       newErrors[field] = 'This field is required';
       isValid = false;
+      console.log(`Validation failed for ${field}: Field is required`);
     } else {
       delete newErrors[field];
+      console.log(`Validation passed for ${field}`);
     }
 
     setErrors(newErrors);
@@ -76,12 +82,21 @@ export function SetupFormProvider({ children }: { children: React.ReactNode }) {
   };
 
   const handleNext = () => {
-    const currentField = currentPath[currentQuestion] as QuestionField;
-    if (!currentField) return;
+    const currentField = currentPath[currentQuestion];
+    if (!currentField) {
+      console.log('No current field found');
+      return;
+    }
 
     // Move to next question if we're not at the end
     if (currentQuestion < currentPath.length - 1) {
+      console.log(
+        `Moving from question ${currentQuestion} to ${currentQuestion + 1}`,
+      );
+      console.log(`Current path: ${currentPath.join(', ')}`);
       setCurrentQuestion((prev) => prev + 1);
+    } else {
+      console.log('Reached end of questions');
     }
   };
 
@@ -93,14 +108,17 @@ export function SetupFormProvider({ children }: { children: React.ReactNode }) {
     e.preventDefault();
 
     // Only validate fields that are in the current path
-    const type = formData.presentation_type as PresentationPathType;
-    const pathToValidate = getPath(type);
-    const validations = pathToValidate.map((field) =>
-      validateField(field as keyof FormData),
-    );
+    const validations = currentPath.map((field) => validateField(field));
 
     if (validations.every((valid) => valid)) {
       console.log('Form submitted:', formData);
+    } else {
+      console.log('Form validation failed');
+      // Find the first invalid field and set it as current
+      const firstInvalidIndex = validations.findIndex((valid) => !valid);
+      if (firstInvalidIndex !== -1) {
+        setCurrentQuestion(firstInvalidIndex);
+      }
     }
   };
 

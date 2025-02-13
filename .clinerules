@@ -21,11 +21,13 @@ We are building an App that has three main components:
 
 The AI functionality is implemented through the @kit/ai-gateway package, which provides:
 
-- Integration with Cloudflare AI Gateway for managing AI providers
+- Integration with Cloudflare AI Gateway's universal endpoint for managing AI providers
 - Support for multiple AI providers (OpenAI, Anthropic, Google AI, Groq, OpenRouter)
 - Unified interface for chat completions and streaming responses
 - Type-safe API with provider-specific message types
 - Environment-based configuration and provider selection
+- Server-side API route for secure credential management
+- Support for both direct provider endpoints and universal endpoint
 
 ## Makerkit Saas code template
 
@@ -447,6 +449,12 @@ import { CreateNoteSchema } from '../_lib/schema/create-note.schema';
 
 // _components/create-note-form.tsx
 
+// _components/create-note-form.tsx
+
+// _components/create-note-form.tsx
+
+// _components/create-note-form.tsx
+
 export function CreateNoteForm() {
   const [pending, startTransition] = useTransition();
 
@@ -562,10 +570,11 @@ import { getAIProvider } from '@kit/ai-gateway';
 
 // Server Component
 async function AIComponent() {
-  const ai = getAIProvider();
+  const ai = getAIProvider('universal');
   const response = await ai.complete({
     messages: [{ role: 'user', content: 'Your prompt' }],
     model: 'gpt-4-turbo',
+    provider: 'openai',
   });
   return <div>{response.content}</div>;
 }
@@ -573,10 +582,12 @@ async function AIComponent() {
 // Client Component with Streaming
 ('use client');
 function StreamingAIComponent() {
-  const ai = getAIProvider('anthropic');
+  const ai = getAIProvider('universal');
   const stream = ai.streamComplete({
     messages: [{ role: 'user', content: 'Your prompt' }],
     model: 'claude-3-opus',
+    provider: 'anthropic',
+    stream: true,
   });
   // Handle streaming response
 }

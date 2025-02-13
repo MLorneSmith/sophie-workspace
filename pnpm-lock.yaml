@@ -59,6 +59,9 @@ importers:
       '@kit/admin':
         specifier: workspace:*
         version: link:../../packages/features/admin
+      '@kit/ai-gateway':
+        specifier: workspace:*
+        version: link:../../packages/ai-gateway
       '@kit/analytics':
         specifier: workspace:*
         version: link:../../packages/analytics
@@ -131,12 +134,18 @@ importers:
       '@tanstack/react-table':
         specifier: ^8.21.2
         version: 8.21.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      '@types/lodash':
+        specifier: ^4.17.15
+        version: 4.17.15
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
       lucide-react:
         specifier: ^0.475.0
         version: 0.475.0(react@19.0.0)
@@ -4331,6 +4340,9 @@ packages:
 
   '@types/lodash@4.17.14':
     resolution: {integrity: sha512-jsxagdikDiDBeIRaPYtArcT8my4tN1og7MtMRquFT3XNA6axxyHDRUemqDz/taRDdOUn0GnGHRCuff4q48sW9A==}
+
+  '@types/lodash@4.17.15':
+    resolution: {integrity: sha512-w/P33JFeySuhN6JLkysYUK2gEmy9kHHFN7E8ro0tkfmlDOgxBDzWEZ/J8cWA+fHqFevpswDTFZnDx+R9lbL6xw==}
 
   '@types/markdown-it@12.2.3':
     resolution: {integrity: sha512-GKMHFfv3458yYy+v/N8gjufHO6MSZKCOXpZc5GXIWWy8uldwfmPn98vp81gZ5f9SVw8YYBctgfJ22a2d7AOMeQ==}
@@ -12133,6 +12145,8 @@ snapshots:
     optional: true
 
   '@types/lodash@4.17.14': {}
+
+  '@types/lodash@4.17.15': {}
 
   '@types/markdown-it@12.2.3':
     dependencies:

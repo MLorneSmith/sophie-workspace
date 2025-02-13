@@ -3,9 +3,9 @@
 import { PageBody } from '@kit/ui/page';
 
 import { ErrorProvider } from './/error/ErrorContext';
-import { SetupFormProvider } from './_components/SetupFormContextOld';
+import { SetupForm } from './_components/SetupForm';
+import { SetupFormProvider } from './_components/SetupFormContext';
 import { SetupFormErrorBoundary } from './_components/SetupFormErrorBoundary';
-import { SetupForm } from './_components/SetupFormOld';
 
 export default function SetupMultistepForm() {
   return (

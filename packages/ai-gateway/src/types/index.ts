@@ -38,7 +38,8 @@ export type AIProvider =
   | 'anthropic'
   | 'google-ai'
   | 'groq'
-  | 'openrouter';
+  | 'openrouter'
+  | 'universal';
 
 export interface AIMessage {
   role: 'system' | 'user' | 'assistant';
@@ -48,6 +49,7 @@ export interface AIMessage {
 export interface AICompletionOptions {
   messages: AIMessage[];
   model: AIModel;
+  provider?: AIProvider;
   temperature?: number;
   maxTokens?: number;
   stream?: boolean;
@@ -103,4 +105,5 @@ export type ProviderMessage =
   | GroqMessage
   | AnthropicMessage
   | GoogleAIMessage
-  | OpenRouterMessage;
+  | OpenRouterMessage
+  | AIMessage;
