@@ -5,6 +5,10 @@ import { createI18nServerInstance } from '~/lib/i18n/i18n.server';
 import { withI18n } from '~/lib/i18n/with-i18n';
 
 import { HomeLayoutPageHeader } from '../_components/home-page-header';
+// Cal.com calendar component
+import Calendar from './_components/calendar';
+
+// local imports
 
 export const generateMetadata = async () => {
   const i18n = await createI18nServerInstance();
@@ -23,7 +27,7 @@ function CoachingPage() {
         description={<Trans i18nKey={'common:coachingTabDescription'} />}
       />
 
-      <PageBody>{/* Content will be added here */}</PageBody>
+      <PageBody>{<Calendar />}</PageBody>
     </>
   );
 }

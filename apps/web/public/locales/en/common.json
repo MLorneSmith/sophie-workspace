@@ -80,7 +80,8 @@
     "ai": "AI Tools",
     "kanban": "Kanban",
     "coaching": "Coaching",
-    "assessment": "Self-Assessment"
+    "assessment": "Self-Assessment",
+    "blocks": "Building Blocks"
   },
   "roles": {
     "owner": {

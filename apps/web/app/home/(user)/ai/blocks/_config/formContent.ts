@@ -1,4 +1,4 @@
-import { FormData } from '../_components/SetupFormContext';
+import { FormData } from '../_components/BlocksFormContext';
 
 type PresentationTypeId = 'general' | 'sales' | 'consulting' | 'fundraising';
 

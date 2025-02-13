@@ -5,7 +5,8 @@ import { createI18nServerInstance } from '~/lib/i18n/i18n.server';
 import { withI18n } from '~/lib/i18n/with-i18n';
 
 import { HomeLayoutPageHeader } from '../../_components/home-page-header';
-import SetupMultistepForm from './SetupMultistepForm';
+import SetupMultistepForm from './BlocksMultistepForm';
+import { getAIConfig } from './_components/AIConfigProvider';
 
 export const generateMetadata = async () => {
   const i18n = await createI18nServerInstance();
@@ -16,7 +17,9 @@ export const generateMetadata = async () => {
   };
 };
 
-function BlocksPage() {
+async function BlocksPage() {
+  const aiConfig = await getAIConfig();
+
   return (
     <>
       <HomeLayoutPageHeader
@@ -24,7 +27,9 @@ function BlocksPage() {
         description={<Trans i18nKey={'common:blocksTabDescription'} />}
       />
 
-      <PageBody>{<SetupMultistepForm />}</PageBody>
+      <PageBody>
+        <SetupMultistepForm aiConfig={aiConfig} />
+      </PageBody>
     </>
   );
 }

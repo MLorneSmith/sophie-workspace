@@ -46,6 +46,19 @@ export interface AIMessage {
   content: string;
 }
 
+export interface AIProviderConfig {
+  provider: string;
+  endpoint: string;
+  headers: Record<string, string>;
+  query: {
+    messages: AIMessage[];
+    model: string;
+    temperature?: number;
+    stream?: boolean;
+    [key: string]: any;
+  };
+}
+
 export interface AICompletionOptions {
   messages: AIMessage[];
   model: AIModel;
@@ -53,6 +66,8 @@ export interface AICompletionOptions {
   temperature?: number;
   maxTokens?: number;
   stream?: boolean;
+  endpoint?: string;
+  headers?: Record<string, string>;
 }
 
 export interface AICompletionResponse {
@@ -69,11 +84,19 @@ export interface AIGatewayConfig {
   defaultModel: AIModel;
 }
 
+export interface AIGatewayProviderConfig {
+  accountId?: string;
+  gatewayId?: string;
+  apiToken?: string;
+  groqApiKey?: string;
+}
+
 export interface AIProviderClient {
   complete(options: AICompletionOptions): Promise<AICompletionResponse>;
   streamComplete(
     options: AICompletionOptions,
   ): AsyncIterable<AICompletionResponse>;
+  configure?(config: AIGatewayProviderConfig): void;
 }
 
 export interface BaseMessage {

@@ -1,4 +1,8 @@
-import { type AIProvider, type AIProviderClient } from '../types';
+import {
+  type AIGatewayProviderConfig,
+  type AIProvider,
+  type AIProviderClient,
+} from '../types';
 import { AnthropicProvider } from './anthropic';
 import { GoogleAIProvider } from './google-ai';
 import { GroqProvider } from './groq';
@@ -6,7 +10,10 @@ import { OpenAIProvider } from './openai';
 import { OpenRouterProvider } from './openrouter';
 import { UniversalProvider } from './universal';
 
-export function getAIProvider(provider?: AIProvider): AIProviderClient {
+export function getAIProvider(
+  provider?: AIProvider,
+  config?: AIGatewayProviderConfig,
+): AIProviderClient {
   switch (provider) {
     case 'openai':
       return new OpenAIProvider();
@@ -19,7 +26,7 @@ export function getAIProvider(provider?: AIProvider): AIProviderClient {
     case 'openrouter':
       return new OpenRouterProvider();
     case 'universal':
-      return new UniversalProvider();
+      return new UniversalProvider(config);
     default:
       // Default to universal provider if none specified
       return new UniversalProvider();

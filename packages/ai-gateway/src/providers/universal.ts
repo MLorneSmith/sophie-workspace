@@ -1,24 +1,75 @@
 import type {
   AICompletionOptions,
   AICompletionResponse,
+  AIGatewayProviderConfig,
   AIMessage,
   AIProviderClient,
+  AIProviderConfig,
 } from '../types';
 
 export class UniversalProvider implements AIProviderClient {
+  private accountId: string = '';
+  private gatewayId: string = '';
+  private apiToken: string = '';
+  private groqApiKey: string = '';
+  private baseURL: string = '';
+
+  constructor(config?: AIGatewayProviderConfig) {
+    if (config) {
+      this.configure(config);
+    }
+  }
+
+  configure(config: AIGatewayProviderConfig): void {
+    this.accountId = config.accountId ?? '';
+    this.gatewayId = config.gatewayId ?? '';
+    this.apiToken = config.apiToken ?? '';
+    this.groqApiKey = config.groqApiKey ?? '';
+    this.baseURL = `https://gateway.ai.cloudflare.com/v1/${this.accountId}/${this.gatewayId}`;
+  }
+
+  private validateConfig() {
+    if (!this.accountId || !this.gatewayId || !this.apiToken) {
+      throw new Error('Missing required Cloudflare configuration');
+    }
+    if (!this.groqApiKey) {
+      throw new Error('Missing required Groq API key');
+    }
+  }
+
+  private createProviderConfig(
+    options: AICompletionOptions,
+  ): AIProviderConfig[] {
+    this.validateConfig();
+    const config: AIProviderConfig = {
+      provider: options.provider ?? 'groq',
+      endpoint: options.endpoint ?? 'chat/completions',
+      headers: {
+        Authorization: `Bearer ${this.groqApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      query: {
+        messages: options.messages,
+        model: options.model,
+        temperature: options.temperature,
+        stream: options.stream,
+      },
+    };
+
+    return [config];
+  }
+
   async complete(options: AICompletionOptions): Promise<AICompletionResponse> {
     try {
-      const response = await fetch('/api/ai', {
+      const configs = this.createProviderConfig(options);
+
+      const response = await fetch(this.baseURL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${this.apiToken}`,
         },
-        body: JSON.stringify({
-          messages: options.messages,
-          model: options.model,
-          provider: options.provider,
-          temperature: options.temperature,
-        }),
+        body: JSON.stringify(configs),
       });
 
       if (!response.ok) {
@@ -44,18 +95,18 @@ export class UniversalProvider implements AIProviderClient {
     options: AICompletionOptions,
   ): AsyncIterable<AICompletionResponse> {
     try {
-      const response = await fetch('/api/ai', {
+      const configs = this.createProviderConfig({
+        ...options,
+        stream: true,
+      });
+
+      const response = await fetch(this.baseURL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${this.apiToken}`,
         },
-        body: JSON.stringify({
-          messages: options.messages,
-          model: options.model,
-          provider: options.provider,
-          temperature: options.temperature,
-          stream: true,
-        }),
+        body: JSON.stringify(configs),
       });
 
       if (!response.ok) {

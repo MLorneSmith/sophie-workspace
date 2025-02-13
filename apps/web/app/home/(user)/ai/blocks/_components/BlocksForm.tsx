@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 
 import debounce from 'lodash/debounce';
 
-import { getAIProvider } from '@kit/ai-gateway';
+import { type AIGatewayProviderConfig, getAIProvider } from '@kit/ai-gateway';
 import { Button } from '@kit/ui/button';
 import {
   Card,
@@ -16,20 +16,23 @@ import {
   CardTitle,
 } from '@kit/ui/card';
 import { Input } from '@kit/ui/input';
+import { Progress } from '@kit/ui/progress';
 import { Spinner } from '@kit/ui/spinner';
 import { Textarea } from '@kit/ui/textarea';
 
-import { Progress } from '../../../../../../../../packages/ui/src/shadcn/progress';
 import { submitCanvasAction } from '../_actions/submitCanvasAction';
 import {
   type QuestionField,
-  type QuestionType,
   getQuestion,
   presentationTypes,
 } from '../_config/formContent';
-import { type FormData, useSetupForm } from './SetupFormContext';
+import { type FormData, useSetupForm } from './BlocksFormContext';
 
-function useSuggestions() {
+interface SetupFormProps {
+  aiConfig: AIGatewayProviderConfig;
+}
+
+function useSuggestions(aiConfig: AIGatewayProviderConfig) {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
 
@@ -43,7 +46,7 @@ function useSuggestions() {
         setIsLoadingSuggestions(true);
         try {
           console.log('Fetching suggestions for:', field);
-          const ai = getAIProvider('universal');
+          const ai = getAIProvider('universal', aiConfig);
           let prompt = '';
 
           if (field === 'title' && presentationType) {
@@ -77,6 +80,7 @@ function useSuggestions() {
           }
 
           console.log('Generated prompt:', prompt);
+          console.log('Sending AI request with prompt:', prompt);
           const response = await ai.complete({
             messages: [
               {
@@ -86,8 +90,8 @@ function useSuggestions() {
             ],
             model: 'mixtral-8x7b',
             provider: 'groq',
+            endpoint: 'chat/completions',
             temperature: 0.7,
-            stream: false,
           });
 
           console.log('Raw result from AI Gateway:', response.content);
@@ -98,17 +102,26 @@ function useSuggestions() {
           console.error('Error in fetchSuggestions:', error);
           if (error instanceof Error) {
             console.error('Error details:', error.message, error.stack);
+            setSuggestions([`Error: ${error.message}`]);
           } else {
             console.error('Unexpected error type:', typeof error);
+            setSuggestions(['An unexpected error occurred']);
           }
-          setSuggestions(['Error fetching suggestions']);
+
+          // Log additional context for debugging
+          console.error('Request context:', {
+            field,
+            presentationType,
+            title,
+            prompt,
+          });
         } finally {
           setIsLoadingSuggestions(false);
         }
       },
       300,
     ),
-    [],
+    [aiConfig],
   );
 
   return {
@@ -185,7 +198,7 @@ const PresentationTypeQuestion = ({
   </div>
 );
 
-export function SetupForm() {
+export function SetupForm({ aiConfig }: SetupFormProps) {
   const {
     formData,
     setFormData,
@@ -210,7 +223,7 @@ export function SetupForm() {
     isLoadingSuggestions,
     fetchSuggestions,
     setSuggestions,
-  } = useSuggestions();
+  } = useSuggestions(aiConfig);
 
   const router = useRouter();
 
