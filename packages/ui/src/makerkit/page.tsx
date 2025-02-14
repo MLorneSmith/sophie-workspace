@@ -35,7 +35,7 @@ function PageWithSidebar(props: PageProps) {
   const { Navigation, Children, MobileNavigation } = getSlotsFromPage(props);
 
   return (
-    <div className={cn('flex flex-1', props.className)}>
+    <div className={cn('flex min-w-0 flex-1', props.className)}>
       {Navigation}
 
       <div
@@ -177,7 +177,7 @@ export function PageHeader({
             <If condition={displaySidebarTrigger}>
               <Separator
                 orientation="vertical"
-                className="hidden h-4 w-px lg:block"
+                className="hidden h-4 w-px lg:group-data-[minimized]:block"
               />
             </If>
 
