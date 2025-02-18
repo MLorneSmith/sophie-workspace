@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { type Role } from '../index';
+
 /**
  * Schema for prompt variables
  */
@@ -20,38 +22,18 @@ export class PromptManager {
   private static templateCache: Record<string, string> = {};
 
   /**
-   * Cache for loaded partials
-   */
-  private static partialsCache: Record<string, string> = {};
-
-  /**
    * Loads a prompt template
    * @param name Template name to load
-   * @returns Template content
+   * @returns Array of chat messages with system and user roles
    */
-  static loadTemplate(name: string): string {
+  static loadTemplate(name: string): { role: Role; content: string }[] {
     if (this.templateCache[name]) {
-      return this.templateCache[name];
+      return JSON.parse(this.templateCache[name]);
     }
 
     const template = require(`./templates/${name}`).default;
-    this.templateCache[name] = template;
+    this.templateCache[name] = JSON.stringify(template);
     return template;
-  }
-
-  /**
-   * Loads a prompt partial
-   * @param name Partial name to load
-   * @returns Partial content
-   */
-  static loadPartial(name: string): string {
-    if (this.partialsCache[name]) {
-      return this.partialsCache[name];
-    }
-
-    const partial = require(`./partials/${name}`).default;
-    this.partialsCache[name] = partial;
-    return partial;
   }
 
   /**
@@ -67,24 +49,6 @@ export class PromptManager {
     for (const [key, value] of Object.entries(variables)) {
       const regex = new RegExp(`{{\\s*${key}\\s*}}`, 'g');
       result = result.replace(regex, value);
-    }
-
-    return result;
-  }
-
-  /**
-   * Merges partials into a template
-   * @param template Template string
-   * @param partials Array of partial names to merge
-   * @returns Template with merged partials
-   */
-  static mergePartials(template: string, partials: string[]): string {
-    let result = template;
-
-    for (const partial of partials) {
-      const partialContent = this.loadPartial(partial);
-      const regex = new RegExp(`{{>\\s*${partial}\\s*}}`, 'g');
-      result = result.replace(regex, partialContent);
     }
 
     return result;

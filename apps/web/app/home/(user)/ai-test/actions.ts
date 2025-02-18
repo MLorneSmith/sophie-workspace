@@ -71,25 +71,23 @@ function getTestMessages(
 ): ChatMessage[] {
   switch (testType) {
     case 'outline':
-      // Load and compile the test outline template
-      const template = PromptManager.loadTemplate('test-outline');
-      const compiledPrompt = PromptManager.compile(template, {
-        topic: (formData.get('topic') as string) || 'AI Technology',
-        presentation_goal: 'Technical Overview',
-        target_audience: 'Technical Team',
-        duration: '30',
-        tone: 'professional',
-        specific_requirements:
-          'include technical details and implementation considerations',
-        context: 'Team planning session',
-      });
+      // Load the message-based template
+      const messages = PromptManager.loadTemplate('test-outline');
 
-      return [
-        {
-          role: 'system',
-          content: compiledPrompt,
-        },
-      ];
+      // Compile each message's content
+      return messages.map((message) => ({
+        ...message,
+        content: PromptManager.compile(message.content, {
+          topic: (formData.get('topic') as string) || 'AI Technology',
+          presentation_goal: 'Technical Overview',
+          target_audience: 'Technical Team',
+          duration: '30',
+          tone: 'professional',
+          specific_requirements:
+            'include technical details and implementation considerations',
+          context: 'Team planning session',
+        }),
+      }));
 
     case 'simple':
     default:
