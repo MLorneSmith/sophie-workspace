@@ -13,7 +13,7 @@ export type SubmitFormData = {
   answer: string;
 };
 
-export async function submitCanvasAction(data: SubmitFormData) {
+export async function submitBuildingBlocksAction(data: SubmitFormData) {
   const client = getSupabaseServerClient<Database>();
 
   try {
@@ -27,7 +27,7 @@ export async function submitCanvasAction(data: SubmitFormData) {
 
     // Check if a submission already exists with the same data
     const { data: existingSubmission } = await client
-      .from('canvas_submissions')
+      .from('building_blocks_submissions')
       .select('id')
       .match({
         user_id: user.id,
@@ -47,7 +47,7 @@ export async function submitCanvasAction(data: SubmitFormData) {
 
     // Create new submission if none exists
     const { data: result, error } = await client
-      .from('canvas_submissions')
+      .from('building_blocks_submissions')
       .insert({
         user_id: user.id,
         title: data.title,
@@ -61,13 +61,13 @@ export async function submitCanvasAction(data: SubmitFormData) {
       .single();
 
     if (error) {
-      console.error('Error submitting canvas:', error);
-      throw new Error('Failed to submit canvas');
+      console.error('Error submitting building blocks:', error);
+      throw new Error('Failed to submit building blocks');
     }
 
     return { success: true, submissionId: result.id };
   } catch (error) {
-    console.error('Error in submitCanvasAction:', error);
-    throw new Error('Failed to submit canvas');
+    console.error('Error in submitBuildingBlocksAction:', error);
+    throw new Error('Failed to submit building blocks');
   }
 }

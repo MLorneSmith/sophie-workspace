@@ -20,9 +20,10 @@ import { Spinner } from '@kit/ui/spinner';
 import { Textarea } from '@kit/ui/textarea';
 
 import { getSuggestions } from '../_actions/ai-suggestions-action';
-import { submitCanvasAction } from '../_actions/submitCanvasAction';
+import { submitBuildingBlocksAction } from '../_actions/submitBuildingBlocksAction';
 import {
   type QuestionField,
+  type QuestionOption,
   getQuestion,
   presentationTypes,
 } from '../_config/formContent';
@@ -111,6 +112,43 @@ const SuggestionsList = ({
         ))
       )}
     </div>
+  </div>
+);
+
+const MultipleChoiceQuestion = ({
+  value,
+  onChange,
+  options,
+  error,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  options: QuestionOption[];
+  error?: string;
+}) => (
+  <div className="space-y-2">
+    {options.map((option) => (
+      <button
+        key={option.id}
+        type="button"
+        onClick={() => onChange(option.id)}
+        className={`focus:ring-primary w-full rounded-lg p-4 text-left transition-colors duration-200 ease-in-out focus:ring-2 focus:outline-none ${
+          value === option.id
+            ? 'bg-primary text-white'
+            : 'bg-background hover:bg-muted'
+        }`}
+      >
+        <div className="font-medium">{option.label}</div>
+        <div
+          className={`text-sm ${
+            value === option.id ? 'text-white' : 'text-muted-foreground'
+          }`}
+        >
+          {option.description}
+        </div>
+      </button>
+    ))}
+    {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
   </div>
 );
 
@@ -267,7 +305,7 @@ export function SetupForm({ userId }: SetupFormProps) {
     setIsSubmitting(true);
     try {
       await handleSubmit(e);
-      // First submit to canvas_submissions table
+      // First submit to building_blocks_submissions table
       const {
         title,
         audience,
@@ -276,7 +314,7 @@ export function SetupForm({ userId }: SetupFormProps) {
         complication,
         answer,
       } = formData;
-      await submitCanvasAction({
+      await submitBuildingBlocksAction({
         title,
         audience,
         presentation_type,
@@ -284,9 +322,8 @@ export function SetupForm({ userId }: SetupFormProps) {
         complication,
         answer,
       });
-      // Then navigate to canvas page
-      const encodedFormData = encodeURIComponent(JSON.stringify(formData));
-      router.push(`/home/ai/canvas?formData=${encodedFormData}`);
+      // Navigate back to AI home page
+      router.push('/home/ai');
     } catch (error) {
       console.error('Error submitting form:', error);
     } finally {
@@ -376,6 +413,19 @@ export function SetupForm({ userId }: SetupFormProps) {
           <PresentationTypeQuestion
             value={formData.presentation_type}
             onChange={handleSelectChange}
+            error={touchedFields.has(field) ? errors[field] : undefined}
+          />
+        );
+      case 'multiple_choice':
+        return (
+          <MultipleChoiceQuestion
+            value={formData[field]}
+            onChange={(value) => {
+              setFormData({ ...formData, [field]: value });
+              setTouchedFields(new Set(touchedFields).add(field));
+              validateField(field);
+            }}
+            options={question.options || []}
             error={touchedFields.has(field) ? errors[field] : undefined}
           />
         );

@@ -1,7 +1,10 @@
 'use server';
 
-import { submitCanvasAction, type SubmitFormData } from './submitCanvasAction';
 import { setCanvasIdCookie } from './canvasAction';
+import {
+  type SubmitFormData,
+  submitCanvasAction,
+} from './submitBuildingBlocksAction';
 
 export async function submitForm(data: SubmitFormData) {
   try {

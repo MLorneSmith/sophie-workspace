@@ -2,7 +2,7 @@ import { FormData } from '../_components/BlocksFormContext';
 
 type PresentationTypeId = 'general' | 'sales' | 'consulting' | 'fundraising';
 
-type QuestionOption = {
+export type QuestionOption = {
   id: string;
   label: string;
   description: string;
@@ -220,6 +220,7 @@ export const presentationPaths: PathConfig = {
     'presentation_type',
     'title',
     'audience',
+    'question_type',
     'situation',
     'complication',
     'answer',
@@ -228,6 +229,7 @@ export const presentationPaths: PathConfig = {
     'presentation_type',
     'title',
     'audience',
+    'question_type',
     'situation',
     'complication',
     'answer',
@@ -236,6 +238,7 @@ export const presentationPaths: PathConfig = {
     'presentation_type',
     'title',
     'audience',
+    'question_type',
     'situation',
     'complication',
     'answer',

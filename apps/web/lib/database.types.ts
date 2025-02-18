@@ -184,7 +184,7 @@ export type Database = {
           },
         ]
       }
-      canvas_submissions: {
+      building_blocks_submissions: {
         Row: {
           answer: string | null
           audience: string | null
