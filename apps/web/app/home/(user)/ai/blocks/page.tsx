@@ -1,3 +1,5 @@
+import { requireUser } from '@kit/supabase/require-user';
+import { getSupabaseServerClient } from '@kit/supabase/server-client';
 import { PageBody } from '@kit/ui/page';
 import { Trans } from '@kit/ui/trans';
 
@@ -6,7 +8,6 @@ import { withI18n } from '~/lib/i18n/with-i18n';
 
 import { HomeLayoutPageHeader } from '../../_components/home-page-header';
 import SetupMultistepForm from './BlocksMultistepForm';
-import { getAIConfig } from './_components/AIConfigProvider';
 
 export const generateMetadata = async () => {
   const i18n = await createI18nServerInstance();
@@ -18,7 +19,12 @@ export const generateMetadata = async () => {
 };
 
 async function BlocksPage() {
-  const aiConfig = await getAIConfig();
+  const client = getSupabaseServerClient();
+  const auth = await requireUser(client);
+
+  if (auth.error) {
+    throw new Error('Unauthorized');
+  }
 
   return (
     <>
@@ -28,7 +34,7 @@ async function BlocksPage() {
       />
 
       <PageBody>
-        <SetupMultistepForm aiConfig={aiConfig} />
+        <SetupMultistepForm userId={auth.data.id} />
       </PageBody>
     </>
   );

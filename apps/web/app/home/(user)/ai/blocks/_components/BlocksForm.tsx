@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 
 import debounce from 'lodash/debounce';
 
-import { type AIGatewayProviderConfig, getAIProvider } from '@kit/ai-gateway';
 import { Button } from '@kit/ui/button';
 import {
   Card,
@@ -20,6 +19,7 @@ import { Progress } from '@kit/ui/progress';
 import { Spinner } from '@kit/ui/spinner';
 import { Textarea } from '@kit/ui/textarea';
 
+import { getSuggestions } from '../_actions/ai-suggestions-action';
 import { submitCanvasAction } from '../_actions/submitCanvasAction';
 import {
   type QuestionField,
@@ -29,99 +29,48 @@ import {
 import { type FormData, useSetupForm } from './BlocksFormContext';
 
 interface SetupFormProps {
-  aiConfig: AIGatewayProviderConfig;
+  userId: string; // For cache namespacing
 }
 
-function useSuggestions(aiConfig: AIGatewayProviderConfig) {
+function useSuggestions(userId: string) {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
 
   const fetchSuggestions = useCallback(
     debounce(
       async (
-        field: keyof FormData,
+        field: 'title' | 'audience' | 'situation' | 'complication' | 'answer',
         presentationType?: string,
         title?: string,
       ) => {
+        // Only require title for non-title suggestions
+        if (field !== 'title' && !title) return;
+
         setIsLoadingSuggestions(true);
         try {
-          console.log('Fetching suggestions for:', field);
-          const ai = getAIProvider('universal', aiConfig);
-          let prompt = '';
-
-          if (field === 'title' && presentationType) {
-            switch (presentationType) {
-              case 'general':
-                prompt =
-                  'Generate 4 clear and informative titles for an internal business presentation. Each title should be 5-8 words maximum.';
-                break;
-              case 'sales':
-                prompt =
-                  'Generate 4 compelling sales presentation titles that focus on value proposition. Each title should be 5-8 words maximum.';
-                break;
-              case 'consulting':
-                prompt =
-                  'Generate 4 professional consulting presentation titles focusing on analysis and recommendations. Each title should be 5-8 words maximum.';
-                break;
-              case 'fundraising':
-                prompt =
-                  'Generate 4 impactful fundraising presentation titles emphasizing growth potential. Each title should be 5-8 words maximum.';
-                break;
-              default:
-                prompt =
-                  'Generate 4 professional presentation titles. Each title should be 5-8 words maximum.';
-            }
-          } else if (field === 'audience' && title) {
-            prompt = `Based on "${title}" provide 4 possible audiences for a presentation. Limit each suggestion to 4 words maximum`;
-          } else {
-            throw new Error(
-              'Invalid field or missing required parameters for suggestions',
-            );
-          }
-
-          console.log('Generated prompt:', prompt);
-          console.log('Sending AI request with prompt:', prompt);
-          const response = await ai.complete({
-            messages: [
-              {
-                role: 'user',
-                content: prompt,
-              },
-            ],
-            model: 'mixtral-8x7b',
-            provider: 'groq',
-            endpoint: 'chat/completions',
-            temperature: 0.7,
-          });
-
-          console.log('Raw result from AI Gateway:', response.content);
-          const cleanedSuggestions = cleanSuggestions(response.content);
-          console.log('Cleaned suggestions:', cleanedSuggestions);
-          setSuggestions(cleanedSuggestions);
-        } catch (error) {
-          console.error('Error in fetchSuggestions:', error);
-          if (error instanceof Error) {
-            console.error('Error details:', error.message, error.stack);
-            setSuggestions([`Error: ${error.message}`]);
-          } else {
-            console.error('Unexpected error type:', typeof error);
-            setSuggestions(['An unexpected error occurred']);
-          }
-
-          // Log additional context for debugging
-          console.error('Request context:', {
+          const result = await getSuggestions({
+            title: title || '',
             field,
             presentationType,
-            title,
-            prompt,
           });
+
+          if (result.success && result.data) {
+            setSuggestions(result.data);
+          } else {
+            setSuggestions([
+              `Error: ${result.error || 'Failed to get suggestions'}`,
+            ]);
+          }
+        } catch (error) {
+          console.error('Error in fetchSuggestions:', error);
+          setSuggestions(['An unexpected error occurred']);
         } finally {
           setIsLoadingSuggestions(false);
         }
       },
       300,
     ),
-    [aiConfig],
+    [],
   );
 
   return {
@@ -135,16 +84,18 @@ function useSuggestions(aiConfig: AIGatewayProviderConfig) {
 const SuggestionsList = ({
   suggestions,
   isLoading,
+  isFromSuggestion,
   onSelect,
 }: {
   suggestions: string[];
   isLoading: boolean;
+  isFromSuggestion: boolean;
   onSelect: (suggestion: string) => void;
 }) => (
   <div className="mt-4">
     <h3 className="mb-2 text-sm font-medium">Suggestions:</h3>
     <div className="flex flex-wrap gap-2">
-      {isLoading ? (
+      {isLoading && !isFromSuggestion ? (
         <Spinner className="h-5 w-5" />
       ) : (
         suggestions.map((suggestion, index) => (
@@ -198,7 +149,7 @@ const PresentationTypeQuestion = ({
   </div>
 );
 
-export function SetupForm({ aiConfig }: SetupFormProps) {
+export function SetupForm({ userId }: SetupFormProps) {
   const {
     formData,
     setFormData,
@@ -214,6 +165,7 @@ export function SetupForm({ aiConfig }: SetupFormProps) {
 
   const [isValidating, setIsValidating] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isFromSuggestion, setIsFromSuggestion] = useState(false);
   const [touchedFields, setTouchedFields] = useState<Set<keyof FormData>>(
     new Set(),
   );
@@ -223,7 +175,7 @@ export function SetupForm({ aiConfig }: SetupFormProps) {
     isLoadingSuggestions,
     fetchSuggestions,
     setSuggestions,
-  } = useSuggestions(aiConfig);
+  } = useSuggestions(userId);
 
   const router = useRouter();
 
@@ -242,36 +194,33 @@ export function SetupForm({ aiConfig }: SetupFormProps) {
     // Clear suggestions when field changes
     setSuggestions([]);
 
-    const fetchSuggestionsForField = async () => {
-      if (currentField === 'title') {
-        if (formData.presentation_type) {
-          console.log(
-            'Triggering title suggestions for presentation type:',
-            formData.presentation_type,
-          );
-          await fetchSuggestions('title', formData.presentation_type);
-        }
-      } else if (currentField === 'audience') {
-        if (formData.title) {
-          console.log(
-            'Triggering audience suggestions for title:',
-            formData.title,
-          );
-          await fetchSuggestions('audience', undefined, formData.title);
-        }
-      }
-    };
-
-    // Small delay to let the UI update before fetching suggestions
-    const timer = setTimeout(fetchSuggestionsForField, 100);
-    return () => clearTimeout(timer);
+    // Only fetch initial suggestions when entering the field
+    // or when presentation type changes
+    if (currentField === 'title' && formData.presentation_type) {
+      console.log('Fetching initial title suggestions');
+      void fetchSuggestions('title', formData.presentation_type);
+    }
   }, [
     currentQuestion,
-    formData.title,
     formData.presentation_type,
     fetchSuggestions,
     currentPath,
     setSuggestions,
+  ]);
+
+  // Separate effect for audience suggestions that depend on title changes
+  useEffect(() => {
+    const currentField = currentPath[currentQuestion];
+    if (currentField === 'audience' && formData.title && !isFromSuggestion) {
+      console.log('Fetching audience suggestions for title:', formData.title);
+      void fetchSuggestions('audience', undefined, formData.title);
+    }
+  }, [
+    currentQuestion,
+    formData.title,
+    currentPath,
+    fetchSuggestions,
+    isFromSuggestion,
   ]);
 
   const handleInputChange =
@@ -281,16 +230,15 @@ export function SetupForm({ aiConfig }: SetupFormProps) {
       setFormData({ ...formData, [field]: value });
       setTouchedFields(new Set(touchedFields).add(field));
 
-      // Trigger suggestions when input changes
-      if (
-        field === 'title' &&
-        currentField === 'title' &&
-        formData.presentation_type
-      ) {
-        fetchSuggestions('title', formData.presentation_type);
-      } else if (field === 'title' && currentField === 'audience') {
-        // When title changes and we're on the audience field, update audience suggestions
-        fetchSuggestions('audience', undefined, value);
+      // Only fetch suggestions on manual input, not when selecting a suggestion
+      if (field === 'title' && !isFromSuggestion) {
+        if (currentField === 'title' && formData.presentation_type) {
+          // Update title suggestions as user types
+          void fetchSuggestions('title', formData.presentation_type);
+        } else if (currentField === 'audience') {
+          // When title changes and we're on the audience field, update audience suggestions
+          void fetchSuggestions('audience', undefined, value);
+        }
       }
     };
 
@@ -468,21 +416,27 @@ export function SetupForm({ aiConfig }: SetupFormProps) {
               <SuggestionsList
                 suggestions={suggestions}
                 isLoading={isLoadingSuggestions}
+                isFromSuggestion={isFromSuggestion}
                 onSelect={(suggestion: string) => {
-                  if (currentField === 'title') {
-                    setFormData({
-                      ...formData,
-                      title: suggestion,
-                    });
-                    setTouchedFields(new Set(touchedFields).add('title'));
-                    validateField('title');
-                  } else if (currentField === 'audience') {
-                    setFormData({
-                      ...formData,
-                      audience: suggestion,
-                    });
-                    setTouchedFields(new Set(touchedFields).add('audience'));
-                    validateField('audience');
+                  setIsFromSuggestion(true);
+                  try {
+                    if (currentField === 'title') {
+                      setFormData({
+                        ...formData,
+                        title: suggestion,
+                      });
+                      setTouchedFields(new Set(touchedFields).add('title'));
+                      validateField('title');
+                    } else if (currentField === 'audience') {
+                      setFormData({
+                        ...formData,
+                        audience: suggestion,
+                      });
+                      setTouchedFields(new Set(touchedFields).add('audience'));
+                      validateField('audience');
+                    }
+                  } finally {
+                    setIsFromSuggestion(false);
                   }
                 }}
               />

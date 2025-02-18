@@ -1,6 +1,5 @@
 'use client';
 
-import { type AIGatewayProviderConfig } from '@kit/ai-gateway';
 import { PageBody } from '@kit/ui/page';
 
 import { SetupForm } from './_components/BlocksForm';
@@ -9,18 +8,18 @@ import { SetupFormErrorBoundary } from './_components/BlocksFormErrorBoundary';
 import { ErrorProvider } from './error/ErrorContext';
 
 interface SetupMultistepFormProps {
-  aiConfig: AIGatewayProviderConfig;
+  userId: string;
 }
 
 export default function SetupMultistepForm({
-  aiConfig,
+  userId,
 }: SetupMultistepFormProps) {
   return (
     <PageBody>
       <ErrorProvider>
         <SetupFormErrorBoundary componentName="setup-multistep-form">
           <SetupFormProvider>
-            <SetupForm aiConfig={aiConfig} />
+            <SetupForm userId={userId} />
           </SetupFormProvider>
         </SetupFormErrorBoundary>
       </ErrorProvider>

@@ -16,7 +16,7 @@ import { Button, buttonVariants } from '@kit/ui/button';
 
 import { Combobox } from './combobox';
 
-export default function AiToolsHome() {
+export default function AIWorkspaceDashboard() {
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   const toggleFullscreen = () => {
