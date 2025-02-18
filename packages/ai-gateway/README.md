@@ -42,13 +42,20 @@ This package provides a secure and type-safe integration with the Portkey AI Gat
 
    ```typescript
    import { getChatCompletion } from '@kit/ai-gateway';
+   import { createBalancedOptimizedConfig } from '@kit/ai-gateway/configs/templates';
 
    const messages = [
      { role: 'system', content: 'You are a helpful assistant.' },
      { role: 'user', content: 'Hello!' },
    ];
 
-   const response = await getChatCompletion(messages);
+   // Create a balanced configuration with cache namespacing
+   const config = createBalancedOptimizedConfig({
+     userId: 'user-123',
+     teamId: 'team-456',
+   });
+
+   const response = await getChatCompletion(messages, { config });
    ```
 
 3. **With Server Actions**
@@ -79,69 +86,190 @@ This package provides a secure and type-safe integration with the Portkey AI Gat
    - Proper error handling and recovery
    - Type safety to prevent runtime errors
 
-## Configuration System
+## Configuration and Prompt Management System
 
-1. **Predefined Templates**
+### Configuration System
+
+1. **Directory Structure**
+
+   ```
+   src/configs/
+   ├── templates/       # Optimization-focused config templates
+   ├── use-cases/      # Task-specific configs
+   ├── utils/          # Cache and force refresh utilities
+   ├── manager.ts      # Config management utilities
+   └── types.ts        # Type definitions
+   ```
+
+2. **Optimization-Focused Templates**
 
    ```typescript
-   import { configTemplates, getChatCompletion } from '@kit/ai-gateway';
+   import {
+     createBalancedOptimizedConfig,
+     createQualityOptimizedConfig,
+     createReasoningOptimizedConfig,
+     createSpeedOptimizedConfig,
+   } from '@kit/ai-gateway/configs/templates';
 
-   // Use reliable configuration with retries and fallbacks
+   // Speed-optimized for quick responses
+   const speedConfig = createSpeedOptimizedConfig({
+     userId: 'user-123',
+     teamId: 'team-456',
+     context: 'quick-suggestions',
+   });
+
+   // Quality-optimized with content versioning
+   const qualityConfig = createQualityOptimizedConfig(
+     {
+       userId: 'user-123',
+       teamId: 'team-456',
+     },
+     'content-version-1',
+   );
+
    const response = await getChatCompletion(messages, {
-     config: configTemplates.reliableConfig,
+     config: qualityConfig,
    });
    ```
 
    Available templates:
 
-   - `basicConfig`: Simple configuration with semantic caching and retry mechanism
-   - `loadBalanceConfig`: Load balancing between multiple providers
-   - `fallbackConfig`: Fallback strategy for handling errors
-   - `reliableConfig`: Optimized for high reliability
-   - `costOptimizedConfig`: Optimized for cost with appropriate model selection
+   - `speedOptimized`: Fast responses optimized for speed and low cost
+     - Uses Groq with llama-3.1-8b-instant
+     - Short token limits and higher temperature
+     - Quick cache refresh cycles
+     - Best for: Quick suggestions, real-time completions
+   - `qualityOptimized`: High-quality responses with structured output
+     - Uses GPT-4 with Claude-3-Opus fallback
+     - Low temperature for precision
+     - JSON output format
+     - Best for: Critical content, structured data needs
+   - `reasoningOptimized`: Balanced reasoning capabilities
+     - Uses o3-mini with Claude-3-Sonnet fallback
+     - Balanced temperature settings
+     - Longer token limits for detailed analysis
+     - Best for: Complex transformations, logical analysis
+   - `balancedOptimized`: Optimal speed/quality balance
+     - Uses llama-3.3-70b with Claude-3-Haiku fallback
+     - Moderate settings for general use
+     - Efficient cache and retry strategies
+     - Best for: General-purpose use, interactive features
 
-2. **Custom Configuration**
+   Use-case specific configurations:
+
+   - `outlineGeneration`: Optimized for presentation outline creation
+
+3. **Cache Namespacing and Force Refresh**
 
    ```typescript
-   import { Config, getChatCompletion } from '@kit/ai-gateway';
-
-   const customConfig: Config = {
-     strategy: {
-       mode: 'loadbalance',
-     },
-     targets: [
-       {
-         provider: 'openai',
-         weight: 0.7,
-       },
-       {
-         provider: 'anthropic',
-         weight: 0.3,
-       },
-     ],
-     cache: {
-       mode: 'semantic',
-       max_age: 3600,
-     },
-     retry: {
-       attempts: 3,
-       on_status_codes: [429, 503],
-     },
+   // Cache namespacing options
+   type CacheNamespaceOptions = {
+     userId: string;
+     teamId?: string;
+     presentationId?: string;
+     context?: string;
    };
 
-   const response = await getChatCompletion(messages, {
-     config: customConfig,
-   });
+   // Force refresh conditions
+   const config = createQualityOptimizedConfig(
+     {
+       userId: 'user-123',
+       teamId: 'team-456',
+     },
+     'content-version-2', // Content version for force refresh
+   );
    ```
 
-3. **Configuration Features**
+   Features:
 
-   - **Load Balancing**: Distribute requests across multiple providers
-   - **Fallbacks**: Automatic failover to backup providers
-   - **Caching**: Both simple and semantic caching options
-   - **Retries**: Automatic retry with customizable attempts and status codes
-   - **Provider Selection**: Support for multiple AI providers
-   - **Parameter Override**: Model-specific parameter customization
+   - **Cache Namespacing**
+
+     - User-specific cache isolation
+     - Team-level cache partitioning
+     - Context-aware caching
+     - Presentation-specific caching
+
+   - **Force Refresh Conditions**
+     - Time-based refresh (hourly/daily)
+     - Content version changes
+     - User-requested refresh
+     - Custom refresh triggers
+
+### Prompt Management System
+
+1. **Directory Structure**
+
+   ```
+   src/prompts/
+   ├── messages/          # Message components
+   │   ├── system/       # System role definitions
+   │   └── user/         # User message templates
+   ├── templates/        # Combined message templates
+   └── prompt-manager.ts # Prompt management utilities
+   ```
+
+2. **Message-Based Architecture**
+
+   ```typescript
+   // 1. System Message (messages/system/test-outline-creator.ts)
+   const testOutlineCreatorSystem = `You are an expert presentation outline creator.
+   Your role is to create well-structured, professional outlines that:
+   - Follow hierarchical organization
+   - Use impactful headings
+   - Consider audience: {{target_audience}}
+   - Adapt to duration: {{duration}} minutes`;
+
+   // 2. User Message (messages/user/test-outline-request.ts)
+   const testOutlineRequestUser = `Create an outline for:
+   Topic: {{topic}}
+   Context: {{context}}
+   Requirements: {{specific_requirements}}`;
+
+   // 3. Combined Template (templates/test-outline.ts)
+   const testOutlineTemplate: ChatMessage[] = [
+     { role: 'system', content: testOutlineCreatorSystem },
+     { role: 'user', content: testOutlineRequestUser },
+   ];
+   ```
+
+3. **Using Message Templates**
+
+   ```typescript
+   import { PromptManager } from '@kit/ai-gateway/prompts/prompt-manager';
+
+   // Load and compile the template
+   const template = PromptManager.loadTemplate('test-outline');
+   const compiledMessages = template.map((message) => ({
+     ...message,
+     content: PromptManager.compile(message.content, {
+       topic: 'AI in Business',
+       target_audience: 'Executives',
+       duration: '30',
+       context: 'Strategy Meeting',
+       specific_requirements: 'Focus on ROI',
+     }),
+   }));
+
+   // Use with chat completion
+   const response = await getChatCompletion(compiledMessages, { config });
+   ```
+
+4. **Key Benefits**
+
+   - **Clear Role Separation**: System messages define behavior, user messages handle specifics
+   - **Reusable Components**: Messages can be mixed and matched for different use cases
+   - **Maintainable Structure**: Each message type has its own directory
+   - **Type Safety**: Full TypeScript support for message roles and content
+   - **Variable Validation**: Automatic checking of required variables
+   - **Versioning**: Support for message and template versioning
+
+5. **Best Practices**
+
+   - System messages define the AI's role and behavior
+   - User messages contain specific task requirements
+   - Templates combine messages in the correct order
+   - Variables use consistent naming across messages
+   - Each message focuses on a single responsibility
 
 ## Streaming Support
 
@@ -149,29 +277,18 @@ This package provides a secure and type-safe integration with the Portkey AI Gat
 
    ```typescript
    import { getStreamingChatCompletion } from '@kit/ai-gateway';
+   import { createBalancedOptimizedConfig } from '@kit/ai-gateway/configs/templates';
 
    const messages = [
      { role: 'system', content: 'You are a helpful assistant.' },
      { role: 'user', content: 'Tell me a story.' },
    ];
 
-   for await (const chunk of getStreamingChatCompletion(messages)) {
-     process.stdout.write(chunk);
-   }
-   ```
+   const config = createBalancedOptimizedConfig({
+     userId: 'user-123',
+   });
 
-2. **Streaming with Configuration**
-
-   ```typescript
-   import {
-     configTemplates,
-     getStreamingChatCompletion,
-   } from '@kit/ai-gateway';
-
-   for await (const chunk of getStreamingChatCompletion(messages, {
-     config: configTemplates.reliableConfig,
-     temperature: 0.7,
-   })) {
+   for await (const chunk of getStreamingChatCompletion(messages, { config })) {
      process.stdout.write(chunk);
    }
    ```
@@ -182,3 +299,5 @@ This package provides a secure and type-safe integration with the Portkey AI Gat
 2. Implement semantic search capabilities
 3. Add support for additional AI providers
 4. Enhance monitoring and analytics
+5. Add more optimization-focused templates for specific use cases
+6. Implement automatic model selection based on input characteristics

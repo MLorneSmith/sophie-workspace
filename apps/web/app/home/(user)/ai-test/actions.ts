@@ -5,23 +5,34 @@ import {
   type ChatMessage,
   getChatCompletion,
 } from '@kit/ai-gateway';
-import { ConfigManager } from '@kit/ai-gateway/src/configs/manager';
+import { ConfigManager } from '@kit/ai-gateway/src/configs/config-manager';
 import {
-  basicConfig,
-  costOptimizedConfig,
-  fallbackConfig,
-  loadBalanceConfig,
-  reliableConfig,
+  createBalancedOptimizedConfig,
+  createQualityOptimizedConfig,
+  createReasoningOptimizedConfig,
+  createSpeedOptimizedConfig,
 } from '@kit/ai-gateway/src/configs/templates';
 import { type Config } from '@kit/ai-gateway/src/configs/types';
+import outlineGenerationConfig from '@kit/ai-gateway/src/configs/use-cases/outline-generation/config';
+import { PromptManager } from '@kit/ai-gateway/src/prompts/prompt-manager';
 
 export type AIResponse = {
   message: string | null;
   error: string | null;
   configType?: string;
+  testType?: string;
 };
 
-const testMessages: ChatMessage[] = [
+export type ConfigType =
+  | 'speedOptimized'
+  | 'qualityOptimized'
+  | 'reasoningOptimized'
+  | 'balancedOptimized'
+  | 'outlineGeneration';
+
+export type TestType = 'simple' | 'outline';
+
+const simpleTestMessages: ChatMessage[] = [
   {
     role: 'system',
     content: 'You are a helpful assistant.',
@@ -32,27 +43,57 @@ const testMessages: ChatMessage[] = [
   },
 ];
 
-export type ConfigType =
-  | 'basic'
-  | 'loadBalance'
-  | 'fallback'
-  | 'reliable'
-  | 'costOptimized';
-
 function getConfigForType(type: ConfigType): Config {
+  // Create namespace options for cache isolation
+  const namespaceOptions = {
+    userId: 'test-user', // TODO: Get from auth context
+  };
+
   switch (type) {
-    case 'basic':
-      return basicConfig;
-    case 'loadBalance':
-      return loadBalanceConfig;
-    case 'fallback':
-      return fallbackConfig;
-    case 'reliable':
-      return reliableConfig;
-    case 'costOptimized':
-      return costOptimizedConfig;
+    case 'speedOptimized':
+      return createSpeedOptimizedConfig(namespaceOptions);
+    case 'qualityOptimized':
+      return createQualityOptimizedConfig(namespaceOptions);
+    case 'reasoningOptimized':
+      return createReasoningOptimizedConfig(namespaceOptions);
+    case 'balancedOptimized':
+      return createBalancedOptimizedConfig(namespaceOptions);
+    case 'outlineGeneration':
+      return outlineGenerationConfig;
     default:
-      return basicConfig;
+      return createBalancedOptimizedConfig(namespaceOptions);
+  }
+}
+
+function getTestMessages(
+  testType: TestType,
+  formData: FormData,
+): ChatMessage[] {
+  switch (testType) {
+    case 'outline':
+      // Load and compile the test outline template
+      const template = PromptManager.loadTemplate('test-outline');
+      const compiledPrompt = PromptManager.compile(template, {
+        topic: (formData.get('topic') as string) || 'AI Technology',
+        presentation_goal: 'Technical Overview',
+        target_audience: 'Technical Team',
+        duration: '30',
+        tone: 'professional',
+        specific_requirements:
+          'include technical details and implementation considerations',
+        context: 'Team planning session',
+      });
+
+      return [
+        {
+          role: 'system',
+          content: compiledPrompt,
+        },
+      ];
+
+    case 'simple':
+    default:
+      return simpleTestMessages;
   }
 }
 
@@ -61,12 +102,14 @@ export async function testAI(
   formData: FormData,
 ): Promise<AIResponse> {
   const configType = formData.get('configType') as ConfigType;
+  const testType = (formData.get('testType') as TestType) || 'simple';
 
   if (!configType) {
     return {
       message: null,
       error: 'Config type is required',
       configType: undefined,
+      testType,
     };
   }
 
@@ -78,7 +121,8 @@ export async function testAI(
       throw new Error('Failed to normalize config');
     }
 
-    const response = await getChatCompletion(testMessages, {
+    const messages = getTestMessages(testType, formData);
+    const response = await getChatCompletion(messages, {
       config: normalizedConfig,
     } as ChatCompletionOptions);
 
@@ -86,6 +130,7 @@ export async function testAI(
       message: response,
       error: null,
       configType,
+      testType,
     };
   } catch (err) {
     console.error('Error testing AI:', err);
@@ -93,6 +138,7 @@ export async function testAI(
       message: null,
       error: err instanceof Error ? err.message : 'An error occurred',
       configType,
+      testType,
     };
   }
 }

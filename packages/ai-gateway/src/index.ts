@@ -1,7 +1,7 @@
 import { OpenAI } from 'openai';
 import { z } from 'zod';
 
-import openai from './config';
+import openai from './gateway-client';
 
 // Types for chat messages
 export type Role = 'system' | 'user' | 'assistant';

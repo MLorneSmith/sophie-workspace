@@ -6,6 +6,7 @@ import { useFormStatus } from 'react-dom';
 
 import { Button } from '@kit/ui/button';
 import { Card } from '@kit/ui/card';
+import { Input } from '@kit/ui/input';
 import {
   Select,
   SelectContent,
@@ -14,7 +15,12 @@ import {
   SelectValue,
 } from '@kit/ui/select';
 
-import { type AIResponse, type ConfigType, testAI } from './actions';
+import {
+  type AIResponse,
+  type ConfigType,
+  type TestType,
+  testAI,
+} from './actions';
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -26,11 +32,21 @@ function SubmitButton() {
 }
 
 const configDescriptions: Record<ConfigType, string> = {
-  basic: 'Basic configuration with OpenAI GPT-3.5',
-  loadBalance: 'Load balancing between GPT-3.5 and GPT-4',
-  fallback: 'Fallback strategy with automatic retries',
-  reliable: 'High reliability with semantic caching and retries',
-  costOptimized: 'Cost optimization with caching and load balancing',
+  speedOptimized:
+    'Fast responses using Groq (llama-3.1-8b-instant) with GPT-3.5 fallback',
+  qualityOptimized:
+    'High-quality responses using GPT-4 with Claude-3-Opus fallback',
+  reasoningOptimized:
+    'Balanced reasoning using o3-mini with Claude-3-Sonnet fallback',
+  balancedOptimized:
+    'Speed/quality balance using llama-3.3-70b with Claude-3-Haiku fallback',
+  outlineGeneration:
+    'Optimized for presentation outline creation with Claude-3',
+};
+
+const testTypeDescriptions: Record<TestType, string> = {
+  simple: 'Simple response test',
+  outline: 'Presentation outline generation test',
 };
 
 export default function AITestPage() {
@@ -48,10 +64,28 @@ export default function AITestPage() {
       <Card className="mb-4 p-4">
         <form action={formAction}>
           <div className="mb-4">
+            <label className="mb-2 block text-sm font-medium">Test Type</label>
+            <Select name="testType" defaultValue="simple">
+              <SelectTrigger>
+                <SelectValue placeholder="Select a test type" />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.entries(testTypeDescriptions).map(
+                  ([type, description]) => (
+                    <SelectItem key={type} value={type}>
+                      {description}
+                    </SelectItem>
+                  ),
+                )}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="mb-4">
             <label className="mb-2 block text-sm font-medium">
               Configuration Type
             </label>
-            <Select name="configType" defaultValue="basic">
+            <Select name="configType" defaultValue="balancedOptimized">
               <SelectTrigger>
                 <SelectValue placeholder="Select a configuration" />
               </SelectTrigger>
@@ -66,6 +100,19 @@ export default function AITestPage() {
               </SelectContent>
             </Select>
           </div>
+
+          {state?.testType === 'outline' && (
+            <div className="mb-4">
+              <label className="mb-2 block text-sm font-medium">
+                Presentation Topic
+              </label>
+              <Input
+                name="topic"
+                placeholder="Enter presentation topic"
+                defaultValue="AI Technology"
+              />
+            </div>
+          )}
 
           <SubmitButton />
         </form>
@@ -85,6 +132,15 @@ export default function AITestPage() {
               {state.configType
                 ? configDescriptions[state.configType as ConfigType]
                 : 'No configuration selected'}
+            </p>
+          </div>
+
+          <div className="mb-4">
+            <h2 className="mb-2 font-semibold">Test Type:</h2>
+            <p className="text-muted-foreground text-sm">
+              {state.testType
+                ? testTypeDescriptions[state.testType as TestType]
+                : 'Simple test'}
             </p>
           </div>
 
