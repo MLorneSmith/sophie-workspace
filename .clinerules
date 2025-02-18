@@ -455,6 +455,12 @@ import { CreateNoteSchema } from '../_lib/schema/create-note.schema';
 
 // _components/create-note-form.tsx
 
+// _components/create-note-form.tsx
+
+// _components/create-note-form.tsx
+
+// _components/create-note-form.tsx
+
 export function CreateNoteForm() {
   const [pending, startTransition] = useTransition();
 
@@ -555,52 +561,119 @@ Always use `@kit/ui` for writing the UI of the form.
 
 ## AI Gateway Integration
 
-The @kit/ai-gateway package provides a unified interface for AI functionality:
+The @kit/ai-gateway package provides a secure, type-safe integration with the Portkey AI Gateway:
 
-1. Configuration:
+1. Key Features:
 
-- Uses environment variables for API keys and default settings
-- Requires Cloudflare AI Gateway setup with appropriate permissions
-- Supports provider-specific configurations
+- Server-side only access for enhanced security
+- Virtual keys system for secure API key management
+- Support for multiple AI providers through Portkey's universal API
+- Type-safe responses with Zod validation
+- Next.js 15 Server Actions integration
+- Advanced configuration management with predefined templates
+- Support for load balancing, fallback strategies, and caching
 
-2. Usage in Components:
+2. Configuration:
+
+- Environment Variables:
+  ```env
+  PORTKEY_API_KEY=your-portkey-api-key
+  PORTKEY_VIRTUAL_KEY=your-virtual-key
+  ```
+- Virtual keys stored securely in Portkey's vault
+- No provider API keys exposed in codebase
+- Predefined config templates in @kit/ai-gateway/configs/templates:
+  - basicConfig: Simple OpenAI GPT-3.5 configuration
+  - loadBalanceConfig: Load balancing between models
+  - fallbackConfig: Automatic retries with fallback strategy
+  - reliableConfig: High reliability with semantic caching
+  - costOptimizedConfig: Optimized for cost efficiency
+
+3. Usage Pattern:
 
 ```tsx
-import { getAIProvider } from '@kit/ai-gateway';
+// actions.ts - Server-side code
+'use server';
 
-// Server Component
-async function AIComponent() {
-  const ai = getAIProvider('universal');
-  const response = await ai.complete({
-    messages: [{ role: 'user', content: 'Your prompt' }],
-    model: 'gpt-4-turbo',
-    provider: 'openai',
-  });
-  return <div>{response.content}</div>;
+import {
+  type ChatCompletionOptions,
+  type ChatMessage,
+  getChatCompletion,
+} from '@kit/ai-gateway';
+import { ConfigManager } from '@kit/ai-gateway/configs/manager';
+import { reliableConfig } from '@kit/ai-gateway/configs/templates';
+
+// actions.ts - Server-side code
+
+export type AIResponse = {
+  message: string | null;
+  error: string | null;
+};
+
+export async function generateAIResponse(
+  state: AIResponse,
+): Promise<AIResponse> {
+  const messages: ChatMessage[] = [{ role: 'user', content: 'Your prompt' }];
+
+  try {
+    // Use a predefined config template
+    const config = ConfigManager.normalizeConfig(reliableConfig);
+
+    const response = await getChatCompletion(messages, {
+      config,
+    } as ChatCompletionOptions);
+
+    return { message: response, error: null };
+  } catch (err) {
+    console.error('Error:', err);
+    return {
+      message: null,
+      error: err instanceof Error ? err.message : 'An error occurred',
+    };
+  }
 }
 
-// Client Component with Streaming
+// page.tsx - Client-side component
 ('use client');
-function StreamingAIComponent() {
-  const ai = getAIProvider('universal');
-  const stream = ai.streamComplete({
-    messages: [{ role: 'user', content: 'Your prompt' }],
-    model: 'claude-3-opus',
-    provider: 'anthropic',
-    stream: true,
+
+export default function AIComponent() {
+  const [state, formAction] = useActionState(generateAIResponse, {
+    message: null,
+    error: null,
   });
-  // Handle streaming response
+
+  return (
+    <form action={formAction}>
+      <button type="submit">Generate Response</button>
+      {state?.message && <p>{state.message}</p>}
+    </form>
+  );
 }
 ```
 
-3. Error Handling:
+4. Configuration Features:
 
-- Always wrap AI calls in try-catch blocks
+- Load Balancing: Distribute traffic between different models or providers
+- Fallback Strategies: Automatic retries with fallback to backup models
+- Caching: Both simple and semantic caching with configurable TTL
+- Retry Mechanisms: Configurable retry attempts and status codes
+- Virtual Keys: Secure credential management through Portkey's vault
+
+5. Best Practices:
+
+- Keep all AI calls server-side only
+- Use Next.js 15 Server Actions for form handling
+- Implement proper error handling and logging
+- Use type-safe responses with proper validation
+- Consider rate limiting and budget controls through Portkey
+- Use virtual keys for secure provider key management
+- Leverage predefined config templates for common scenarios
+- Use ConfigManager for config validation and normalization
+
+6. Error Handling:
+
+- Wrap all AI calls in try-catch blocks
+- Return structured error responses
 - Use the logger package for error tracking
-- Consider fallback options for failed requests
-
-4. Best Practices:
-
-- Use environment-specific models (e.g., faster models in development)
-- Implement proper error boundaries for AI components
-- Consider rate limiting and token usage in your prompts
+- Consider fallback providers through Portkey's routing
+- Utilize retry configurations for transient errors

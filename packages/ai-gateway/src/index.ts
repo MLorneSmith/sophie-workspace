@@ -21,7 +21,6 @@ const ChatMessagesSchema = z.array(ChatMessageSchema);
 
 export interface ChatCompletionOptions {
   model?: string;
-  provider?: string;
   temperature?: number;
 }
 

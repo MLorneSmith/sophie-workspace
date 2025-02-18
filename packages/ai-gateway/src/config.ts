@@ -1,5 +1,4 @@
 import OpenAI from 'openai';
-import { Portkey } from 'portkey-ai';
 
 if (!process.env.PORTKEY_API_KEY) {
   throw new Error('PORTKEY_API_KEY environment variable is not set');
