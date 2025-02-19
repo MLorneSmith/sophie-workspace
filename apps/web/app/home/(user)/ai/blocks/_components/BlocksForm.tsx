@@ -31,10 +31,10 @@ import {
 import { type FormData, useSetupForm } from './BlocksFormContext';
 
 interface SetupFormProps {
-  userId: string; // For cache namespacing
+  _userId: string; // For cache namespacing
 }
 
-function useSuggestions(userId: string) {
+function useSuggestions(_userId: string) {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
 
@@ -188,7 +188,7 @@ const PresentationTypeQuestion = ({
   </div>
 );
 
-export function SetupForm({ userId }: SetupFormProps) {
+export function SetupForm({ _userId }: SetupFormProps) {
   const {
     formData,
     setFormData,
@@ -214,7 +214,7 @@ export function SetupForm({ userId }: SetupFormProps) {
     isLoadingSuggestions,
     fetchSuggestions,
     setSuggestions,
-  } = useSuggestions(userId);
+  } = useSuggestions(_userId);
 
   const router = useRouter();
 
@@ -535,7 +535,7 @@ export function SetupForm({ userId }: SetupFormProps) {
   );
 }
 
-const cleanSuggestions = (rawSuggestions: string): string[] => {
+const _cleanSuggestions = (rawSuggestions: string): string[] => {
   console.log('Cleaning suggestions. Raw input:', rawSuggestions);
   const lines = rawSuggestions.split('\n');
   const startIndex = lines.findIndex((line) => /^\d+\./.test(line.trim()));

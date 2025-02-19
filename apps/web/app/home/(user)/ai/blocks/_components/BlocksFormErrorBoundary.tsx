@@ -49,6 +49,24 @@ interface State {
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000;
 
+// Separate component to handle error context
+function ErrorHandler({
+  error,
+  componentName,
+  onError,
+}: {
+  error: Error;
+  componentName?: string;
+  onError?: (error: Error, errorInfo: React.ErrorInfo) => void;
+}) {
+  const { coordinator } = useError();
+  React.useEffect(() => {
+    coordinator.handleError(error, componentName);
+  }, [coordinator, error, componentName]);
+
+  return null;
+}
+
 export class SetupFormErrorBoundary extends React.Component<Props, State> {
   private retryTimeoutId: NodeJS.Timeout | null = null;
 
@@ -72,10 +90,6 @@ export class SetupFormErrorBoundary extends React.Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    // Use error context to handle errors
-    const { coordinator } = useError();
-    coordinator.handleError(error, this.props.componentName);
-
     // Log error
     console.error('SetupFormErrorBoundary caught an error:', error, errorInfo);
 
@@ -168,6 +182,26 @@ export class SetupFormErrorBoundary extends React.Component<Props, State> {
   render() {
     const componentName = this.props.componentName || 'setup-form';
 
+    // Render error handler if there's an error
+    if (this.state.error) {
+      return (
+        <>
+          <ErrorHandler
+            error={this.state.error}
+            componentName={this.props.componentName}
+            onError={this.props.onError}
+          />
+          {this.renderErrorContent()}
+        </>
+      );
+    }
+
+    return this.props.children;
+  }
+
+  private renderErrorContent() {
+    const componentName = this.props.componentName || 'setup-form';
+
     if (this.state.isRecovering) {
       return (
         <div className="flex h-full w-full items-center justify-center">
@@ -248,7 +282,7 @@ export class SetupFormErrorBoundary extends React.Component<Props, State> {
       );
     }
 
-    return this.props.children;
+    return null;
   }
 }
 

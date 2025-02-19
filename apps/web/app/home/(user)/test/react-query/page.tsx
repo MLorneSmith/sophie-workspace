@@ -55,7 +55,7 @@ export default function ReactQueryTestPage() {
   });
 
   // Mutation for optimistic updates
-  const mutation = useMutation({
+  const _mutation = useMutation({
     mutationFn: async ({ name, email }: { name: string; email: string }) => {
       const result = await createAccountAction({ name, email });
       return result;

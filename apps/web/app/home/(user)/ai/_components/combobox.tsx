@@ -21,14 +21,14 @@ interface ComboboxProps {
   options: { label: string; value: string }[];
   placeholder?: string;
   onSelect?: (value: string) => void;
-  isLoading?: boolean;
+  _isLoading?: boolean;
 }
 
 export function Combobox({
   options,
   placeholder,
   onSelect,
-  isLoading,
+  _isLoading,
 }: ComboboxProps) {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState('');

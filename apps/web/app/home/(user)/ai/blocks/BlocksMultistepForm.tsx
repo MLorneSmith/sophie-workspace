@@ -12,14 +12,14 @@ interface SetupMultistepFormProps {
 }
 
 export default function SetupMultistepForm({
-  userId,
+  userId: _userId,
 }: SetupMultistepFormProps) {
   return (
     <PageBody>
       <ErrorProvider>
         <SetupFormErrorBoundary componentName="setup-multistep-form">
           <SetupFormProvider>
-            <SetupForm userId={userId} />
+            <SetupForm _userId={_userId} />
           </SetupFormProvider>
         </SetupFormErrorBoundary>
       </ErrorProvider>

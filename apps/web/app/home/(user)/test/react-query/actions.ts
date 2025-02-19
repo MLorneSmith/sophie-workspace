@@ -1,7 +1,5 @@
 'use server';
 
-import { cookies } from 'next/headers';
-
 import { prefetchQuery } from '@supabase-cache-helpers/postgrest-react-query';
 import { QueryClient } from '@tanstack/react-query';
 import { z } from 'zod';
@@ -23,7 +21,6 @@ const CreateAccountSchema = z.object({
 });
 
 export async function prefetchAccounts() {
-  const cookieStore = cookies();
   const supabase = getSupabaseServerClient();
   const queryClient = new QueryClient();
 
@@ -33,8 +30,7 @@ export async function prefetchAccounts() {
 }
 
 export const createAccountAction = enhanceAction(
-  async function (data, user) {
-    const cookieStore = cookies();
+  async function (data, _user) {
     const supabase = getSupabaseServerClient();
 
     try {

@@ -69,10 +69,12 @@ function getTestMessages(
   testType: TestType,
   formData: FormData,
 ): ChatMessage[] {
+  let messages: ChatMessage[];
+
   switch (testType) {
     case 'outline':
       // Load the message-based template
-      const messages = PromptManager.loadTemplate('test-outline');
+      messages = PromptManager.loadTemplate('test-outline');
 
       // Compile each message's content
       return messages.map((message) => ({
