@@ -8,18 +8,20 @@ import {
 } from '@kit/ui/resizable';
 
 import { ActionToolbar } from './action-toolbar';
+import { TabContent } from './editor/tab-content';
 
-export function EditorPanel() {
+interface EditorPanelProps {
+  sectionType: 'situation' | 'complication' | 'answer' | 'outline';
+}
+
+export function EditorPanel({ sectionType }: EditorPanelProps) {
   return (
     <div className="flex h-[calc(100vh-300px)] flex-col">
       <ResizablePanelGroup direction="horizontal">
         <ResizablePanel defaultSize={66}>
           <div className="flex h-full flex-col">
             <div className="flex-1 p-4">
-              {/* Editor content will go here */}
-              <div className="h-full rounded-lg border p-4">
-                Editor content placeholder
-              </div>
+              <TabContent sectionType={sectionType} />
             </div>
             <ActionToolbar />
           </div>

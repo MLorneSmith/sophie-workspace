@@ -25,10 +25,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@kit/ui/tabs';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@kit/ui/tooltip';
 
 import { HomeLayoutPageHeader } from '../../_components/home-page-header';
+import TabContent from './components/tabs/TabContent';
 
 interface CanvasPageProps {
   title: string;
   description: string;
+  submissionId?: string;
 }
 
 function TopBar() {
@@ -119,17 +121,22 @@ function ActionToolbar() {
   );
 }
 
-function EditorPanel() {
+interface EditorPanelProps {
+  submissionId: string;
+  sectionType: 'situation' | 'complication' | 'answer' | 'outline';
+}
+
+function EditorPanel({ submissionId, sectionType }: EditorPanelProps) {
   return (
     <div className="flex h-[calc(100vh-300px)] flex-col">
       <ResizablePanelGroup direction="horizontal">
         <ResizablePanel defaultSize={66}>
           <div className="flex h-full flex-col">
             <div className="flex-1 p-4">
-              {/* Editor content will go here */}
-              <div className="h-full rounded-lg border p-4">
-                Editor content placeholder
-              </div>
+              <TabContent
+                submissionId={submissionId}
+                sectionType={sectionType}
+              />
             </div>
             <ActionToolbar />
           </div>
@@ -148,8 +155,16 @@ function EditorPanel() {
   );
 }
 
-export default function CanvasPage({ title, description }: CanvasPageProps) {
+export default function CanvasPage({
+  title,
+  description,
+  submissionId,
+}: CanvasPageProps) {
   const [activeTab, setActiveTab] = useState('situation');
+
+  if (!submissionId) {
+    return <div>No submission ID provided</div>;
+  }
 
   return (
     <>
@@ -190,16 +205,22 @@ export default function CanvasPage({ title, description }: CanvasPageProps) {
               </TabsTrigger>
             </TabsList>
             <TabsContent value="situation" className="mt-0">
-              <EditorPanel />
+              <EditorPanel
+                submissionId={submissionId}
+                sectionType="situation"
+              />
             </TabsContent>
             <TabsContent value="complication" className="mt-0">
-              <EditorPanel />
+              <EditorPanel
+                submissionId={submissionId}
+                sectionType="complication"
+              />
             </TabsContent>
             <TabsContent value="answer" className="mt-0">
-              <EditorPanel />
+              <EditorPanel submissionId={submissionId} sectionType="answer" />
             </TabsContent>
             <TabsContent value="outline" className="mt-0">
-              <EditorPanel />
+              <EditorPanel submissionId={submissionId} sectionType="outline" />
             </TabsContent>
           </Tabs>
         </div>

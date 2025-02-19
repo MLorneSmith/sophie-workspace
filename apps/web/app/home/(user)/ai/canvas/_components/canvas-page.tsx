@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 
+import { useSearchParams } from 'next/navigation';
+
 import { PageBody } from '@kit/ui/page';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@kit/ui/tabs';
 
@@ -15,6 +17,12 @@ interface CanvasPageProps {
 }
 
 export function CanvasPage({ title, description }: CanvasPageProps) {
+  const searchParams = useSearchParams();
+  const id = searchParams.get('id');
+
+  if (!id) {
+    return <div>No submission ID provided</div>;
+  }
   const [activeTab, setActiveTab] = useState('situation');
 
   return (
@@ -56,16 +64,16 @@ export function CanvasPage({ title, description }: CanvasPageProps) {
               </TabsTrigger>
             </TabsList>
             <TabsContent value="situation" className="mt-0">
-              <EditorPanel />
+              <EditorPanel sectionType="situation" />
             </TabsContent>
             <TabsContent value="complication" className="mt-0">
-              <EditorPanel />
+              <EditorPanel sectionType="complication" />
             </TabsContent>
             <TabsContent value="answer" className="mt-0">
-              <EditorPanel />
+              <EditorPanel sectionType="answer" />
             </TabsContent>
             <TabsContent value="outline" className="mt-0">
-              <EditorPanel />
+              <EditorPanel sectionType="outline" />
             </TabsContent>
           </Tabs>
         </div>
