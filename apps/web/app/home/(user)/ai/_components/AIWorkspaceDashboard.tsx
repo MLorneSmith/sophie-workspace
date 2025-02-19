@@ -3,6 +3,7 @@
 import { useState } from 'react';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 import {
   Edit,
@@ -15,6 +16,7 @@ import {
 import { Button, buttonVariants } from '@kit/ui/button';
 
 import { Combobox } from './combobox';
+import { EditPresentationCombobox } from './edit-presentation-combobox';
 
 export default function AIWorkspaceDashboard() {
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -79,14 +81,7 @@ export default function AIWorkspaceDashboard() {
             <p className="mb-4 text-gray-600">
               Use our Canvas editor to refine your outline
             </p>
-            <Combobox
-              options={[
-                { label: 'Presentation 1', value: '1' },
-                { label: 'Presentation 2', value: '2' },
-                { label: 'Presentation 3', value: '3' },
-              ]}
-              placeholder="Select a presentation"
-            />
+            <EditPresentationCombobox />
           </div>
 
           <div className="rounded-lg bg-gray-50 p-6 shadow-md transition-shadow hover:shadow-lg">

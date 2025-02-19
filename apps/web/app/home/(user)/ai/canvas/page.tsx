@@ -5,6 +5,7 @@ import { createI18nServerInstance } from '~/lib/i18n/i18n.server';
 import { withI18n } from '~/lib/i18n/with-i18n';
 
 import { HomeLayoutPageHeader } from '../../_components/home-page-header';
+import { PresentationDetails } from './_components/presentation-details';
 
 export const generateMetadata = async () => {
   const i18n = await createI18nServerInstance();
@@ -23,7 +24,9 @@ function AICanvasPage() {
         description={<Trans i18nKey={'common:aiCanvasTabDescription'} />}
       />
 
-      <PageBody>{/* Content will be added here */}</PageBody>
+      <PageBody>
+        <PresentationDetails />
+      </PageBody>
     </>
   );
 }

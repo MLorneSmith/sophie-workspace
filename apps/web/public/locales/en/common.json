@@ -7,6 +7,8 @@
   "aiTabDescription": "Create your presentation with AI",
   "blocksTabLabel": "Blocks Tab Label",
   "blocksTabDescription": "Assemble the Building Blocks of your presentation",
+  "aiCanvasTabLabel": "AI Tab Label",
+  "aiCanvasTabDescription": "AI-powered Presentation Outline Editor",
   "kanbanTabLabel": "Kanban Tab Label",
   "kanbanTabDescription": "Manage your project with our Kanban tool",
   "coachingTabLabel": "Coaching Tab Label",
@@ -81,7 +83,8 @@
     "kanban": "Kanban",
     "coaching": "Coaching",
     "assessment": "Self-Assessment",
-    "blocks": "Building Blocks"
+    "blocks": "Building Blocks",
+    "aiCanvas": "AI Editor"
   },
   "roles": {
     "owner": {

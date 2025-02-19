@@ -20,9 +20,16 @@ import { cn } from '~/lib/utils';
 interface ComboboxProps {
   options: { label: string; value: string }[];
   placeholder?: string;
+  onSelect?: (value: string) => void;
+  isLoading?: boolean;
 }
 
-export function Combobox({ options, placeholder }: ComboboxProps) {
+export function Combobox({
+  options,
+  placeholder,
+  onSelect,
+  isLoading,
+}: ComboboxProps) {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState('');
 
@@ -50,9 +57,13 @@ export function Combobox({ options, placeholder }: ComboboxProps) {
               {options.map((option) => (
                 <CommandItem
                   key={option.value}
-                  onSelect={(currentValue) => {
-                    setValue(currentValue === value ? '' : currentValue);
+                  onSelect={() => {
+                    const newValue = option.value === value ? '' : option.value;
+                    setValue(newValue);
                     setOpen(false);
+                    if (onSelect && newValue) {
+                      onSelect(newValue);
+                    }
                   }}
                 >
                   <Check
