@@ -21,14 +21,14 @@ interface ComboboxProps {
   options: { label: string; value: string }[];
   placeholder?: string;
   onSelect?: (value: string) => void;
-  _isLoading?: boolean;
+  isLoading?: boolean;
 }
 
 export function Combobox({
   options,
   placeholder,
   onSelect,
-  _isLoading,
+  isLoading,
 }: ComboboxProps) {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState('');
@@ -41,10 +41,13 @@ export function Combobox({
           role="combobox"
           aria-expanded={open}
           className="w-full justify-between"
+          disabled={isLoading}
         >
-          {value
-            ? options.find((option) => option.value === value)?.label
-            : placeholder || 'Select option...'}
+          {isLoading
+            ? 'Loading...'
+            : value
+              ? options.find((option) => option.value === value)?.label
+              : placeholder || 'Select option...'}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -52,29 +55,36 @@ export function Combobox({
         <Command>
           <CommandInput placeholder="Search options..." />
           <CommandList>
-            <CommandEmpty>No option found.</CommandEmpty>
+            <CommandEmpty>
+              {isLoading ? 'Loading options...' : 'No option found.'}
+            </CommandEmpty>
             <CommandGroup>
-              {options.map((option) => (
-                <CommandItem
-                  key={option.value}
-                  onSelect={() => {
-                    const newValue = option.value === value ? '' : option.value;
-                    setValue(newValue);
-                    setOpen(false);
-                    if (onSelect && newValue) {
-                      onSelect(newValue);
-                    }
-                  }}
-                >
-                  <Check
-                    className={cn(
-                      'mr-2 h-4 w-4',
-                      value === option.value ? 'opacity-100' : 'opacity-0',
-                    )}
-                  />
-                  {option.label}
-                </CommandItem>
-              ))}
+              {isLoading ? (
+                <CommandItem disabled>Loading...</CommandItem>
+              ) : (
+                options.map((option) => (
+                  <CommandItem
+                    key={option.value}
+                    onSelect={() => {
+                      const newValue =
+                        option.value === value ? '' : option.value;
+                      setValue(newValue);
+                      setOpen(false);
+                      if (onSelect && newValue) {
+                        onSelect(newValue);
+                      }
+                    }}
+                  >
+                    <Check
+                      className={cn(
+                        'mr-2 h-4 w-4',
+                        value === option.value ? 'opacity-100' : 'opacity-0',
+                      )}
+                    />
+                    {option.label}
+                  </CommandItem>
+                ))
+              )}
             </CommandGroup>
           </CommandList>
         </Command>
