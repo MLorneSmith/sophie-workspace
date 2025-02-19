@@ -234,6 +234,13 @@ INSERT INTO "public"."testimonials" ("id", "customer_name", "customer_company_na
   ('88888888-8888-8888-8888-888888888888', 'James Wilson', 'Education Specialist', '/images/testimonials/michael.webp', 'Perfect for creating engaging educational content. The AI assistance helps me explain complex topics in a clear, visual way.', 5, 'approved', NOW(), NOW());
 
 
+--
+-- Data for Building Blocks Submissions:
+--
+
+INSERT INTO "public"."building_blocks_submissions" ("id", "user_id", "title", "audience", "presentation_type", "question_type", "situation", "complication", "answer", "outline", "created_at", "updated_at") VALUES
+  ('4f4836f7-d142-4c57-9da0-0758e308d847', '62a54e54-8b54-46fb-a286-e38dc8f28b88', 'Turnaround plan for Global Universal Bank', 'Executives', 'Consulting Presentation', 'What should we do?', '- Global Universal Bank is 150 years old and one of the largest banks in the world.\n- Global Universal Bank''s revenue growth has stalled, expenses ballooned, and ROE is bad.\n- Rumors are flying that the CEO and the CFO could be fired by the Board.', '- There is a Board meeting next month and they want answers', '- Global Universal Bank can cut costs by close to $50 million per year\n  - Streamline central functional activities to save $25MM per year\n  - Close 25% of rural, low use branches to save $15MM\n  - Increase branch efficiencies to save $10MM per year\n  - Outsource IT functions to save $5MM per year', NULL, '2025-02-19T14:58:18.089Z', '2025-02-19T14:58:18.089Z');
+
 
 --
 -- Name: refresh_tokens_id_seq; Type: SEQUENCE SET; Schema: auth; Owner: supabase_auth_admin

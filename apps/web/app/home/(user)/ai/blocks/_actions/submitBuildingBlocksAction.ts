@@ -8,6 +8,7 @@ export type SubmitFormData = {
   title: string;
   audience: string;
   presentation_type: string;
+  question_type: string;
   situation: string;
   complication: string;
   answer: string;
@@ -34,6 +35,7 @@ export async function submitBuildingBlocksAction(data: SubmitFormData) {
         title: data.title,
         audience: data.audience,
         presentation_type: data.presentation_type,
+        question_type: data.question_type,
         situation: data.situation,
         complication: data.complication,
         answer: data.answer,
@@ -53,6 +55,7 @@ export async function submitBuildingBlocksAction(data: SubmitFormData) {
         title: data.title,
         audience: data.audience,
         presentation_type: data.presentation_type,
+        question_type: data.question_type,
         situation: data.situation,
         complication: data.complication,
         answer: data.answer,

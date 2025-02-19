@@ -26,6 +26,7 @@ import {
   type QuestionOption,
   getQuestion,
   presentationTypes,
+  questions,
 } from '../_config/formContent';
 import { type FormData, useSetupForm } from './BlocksFormContext';
 
@@ -300,6 +301,16 @@ export function SetupForm({ userId }: SetupFormProps) {
     validateField(field);
   };
 
+  const getPresentationTypeLabel = (id: string) => {
+    const type = presentationTypes.find((t) => t.id === id);
+    return type?.label || id;
+  };
+
+  const getQuestionTypeLabel = (id: string) => {
+    const option = questions.question_type.options?.find((o) => o.id === id);
+    return option?.label || id;
+  };
+
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -310,6 +321,7 @@ export function SetupForm({ userId }: SetupFormProps) {
         title,
         audience,
         presentation_type,
+        question_type,
         situation,
         complication,
         answer,
@@ -317,7 +329,8 @@ export function SetupForm({ userId }: SetupFormProps) {
       await submitBuildingBlocksAction({
         title,
         audience,
-        presentation_type,
+        presentation_type: getPresentationTypeLabel(presentation_type),
+        question_type: getQuestionTypeLabel(question_type),
         situation,
         complication,
         answer,
