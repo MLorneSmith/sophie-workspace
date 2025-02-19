@@ -52,7 +52,7 @@ importers:
         version: 2.5.3-cloudflare-rc1(next@15.1.7(@opentelemetry/api@1.9.0)(@playwright/test@1.50.1)(babel-plugin-react-compiler@19.0.0-beta-21e868a-20250216)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))
       '@hookform/resolvers':
         specifier: ^4.1.0
-        version: 4.1.0(react-hook-form@7.54.2(react@19.0.0))
+        version: 4.1.0(react-hook-form@7.54.2)
       '@kit/accounts':
         specifier: workspace:*
         version: link:../../packages/features/accounts
@@ -118,7 +118,7 @@ importers:
         version: 0.0.8(@supabase/postgrest-js@1.18.1)(@supabase/supabase-js@2.48.1)
       '@makerkit/data-loader-supabase-nextjs':
         specifier: ^1.2.3
-        version: 1.2.3(@supabase/postgrest-js@1.18.1)(@supabase/supabase-js@2.48.1)(@tanstack/react-query@5.66.7(react@19.0.0))(next@15.1.7(@opentelemetry/api@1.9.0)(@playwright/test@1.50.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)
+        version: 1.2.3(@supabase/postgrest-js@1.18.1)(@supabase/supabase-js@2.48.1)(@tanstack/react-query@5.66.7(react@19.0.0))(next@15.1.7(@opentelemetry/api@1.9.0)(@playwright/test@1.50.1)(babel-plugin-react-compiler@19.0.0-beta-21e868a-20250216)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)
       '@marsidev/react-turnstile':
         specifier: ^1.1.0
         version: 1.1.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -312,7 +312,7 @@ importers:
     devDependencies:
       '@hookform/resolvers':
         specifier: ^4.1.0
-        version: 4.1.0(react-hook-form@7.54.2(react@19.0.0))
+        version: 4.1.0(react-hook-form@7.54.2)
       '@kit/billing':
         specifier: workspace:*
         version: link:../core
@@ -626,7 +626,7 @@ importers:
     devDependencies:
       '@hookform/resolvers':
         specifier: ^4.1.0
-        version: 4.1.0(react-hook-form@7.54.2(react@19.0.0))
+        version: 4.1.0(react-hook-form@7.54.2)
       '@kit/billing-gateway':
         specifier: workspace:*
         version: link:../../billing/gateway
@@ -707,7 +707,7 @@ importers:
     devDependencies:
       '@hookform/resolvers':
         specifier: ^4.1.0
-        version: 4.1.0(react-hook-form@7.54.2(react@19.0.0))
+        version: 4.1.0(react-hook-form@7.54.2)
       '@kit/eslint-config':
         specifier: workspace:*
         version: link:../../../tooling/eslint
@@ -734,7 +734,7 @@ importers:
         version: 0.0.8(@supabase/postgrest-js@1.18.1)(@supabase/supabase-js@2.48.1)
       '@makerkit/data-loader-supabase-nextjs':
         specifier: ^1.2.3
-        version: 1.2.3(@supabase/postgrest-js@1.18.1)(@supabase/supabase-js@2.48.1)(@tanstack/react-query@5.66.7(react@19.0.0))(next@15.1.7(@opentelemetry/api@1.9.0)(@playwright/test@1.50.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)
+        version: 1.2.3(@supabase/postgrest-js@1.18.1)(@supabase/supabase-js@2.48.1)(@tanstack/react-query@5.66.7(react@19.0.0))(next@15.1.7(@opentelemetry/api@1.9.0)(@playwright/test@1.50.1)(babel-plugin-react-compiler@19.0.0-beta-21e868a-20250216)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)
       '@supabase/supabase-js':
         specifier: 2.48.1
         version: 2.48.1
@@ -770,7 +770,7 @@ importers:
     devDependencies:
       '@hookform/resolvers':
         specifier: ^4.1.0
-        version: 4.1.0(react-hook-form@7.54.2(react@19.0.0))
+        version: 4.1.0(react-hook-form@7.54.2)
       '@kit/eslint-config':
         specifier: workspace:*
         version: link:../../../tooling/eslint
@@ -809,7 +809,7 @@ importers:
         version: 0.475.0(react@19.0.0)
       next:
         specifier: 15.1.7
-        version: 15.1.7(@opentelemetry/api@1.9.0)(@playwright/test@1.50.1)(babel-plugin-react-compiler@19.0.0-beta-21e868a-20250216)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        version: 15.1.7(@babel/core@7.26.8)(@opentelemetry/api@1.9.0)(@playwright/test@1.50.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       react-hook-form:
         specifier: ^7.54.2
         version: 7.54.2(react@19.0.0)
@@ -870,7 +870,7 @@ importers:
     devDependencies:
       '@hookform/resolvers':
         specifier: ^4.1.0
-        version: 4.1.0(react-hook-form@7.54.2(react@19.0.0))
+        version: 4.1.0(react-hook-form@7.54.2)
       '@kit/accounts':
         specifier: workspace:*
         version: link:../accounts
@@ -1250,7 +1250,7 @@ importers:
     devDependencies:
       '@hookform/resolvers':
         specifier: ^4.1.0
-        version: 4.1.0(react-hook-form@7.54.2(react@19.0.0))
+        version: 4.1.0(react-hook-form@7.54.2)
       '@kit/eslint-config':
         specifier: workspace:*
         version: link:../../../tooling/eslint
@@ -1274,7 +1274,7 @@ importers:
         version: link:../../ui
       '@makerkit/data-loader-supabase-nextjs':
         specifier: ^1.2.3
-        version: 1.2.3(@supabase/postgrest-js@1.18.1)(@supabase/supabase-js@2.48.1)(@tanstack/react-query@5.66.7(react@19.0.0))(next@15.1.7(@opentelemetry/api@1.9.0)(@playwright/test@1.50.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)
+        version: 1.2.3(@supabase/postgrest-js@1.18.1)(@supabase/supabase-js@2.48.1)(@tanstack/react-query@5.66.7(react@19.0.0))(next@15.1.7(@opentelemetry/api@1.9.0)(@playwright/test@1.50.1)(babel-plugin-react-compiler@19.0.0-beta-21e868a-20250216)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)
       '@supabase/supabase-js':
         specifier: 2.48.1
         version: 2.48.1
@@ -1371,7 +1371,7 @@ importers:
     dependencies:
       '@hookform/resolvers':
         specifier: ^4.1.0
-        version: 4.1.0(react-hook-form@7.54.2(react@19.0.0))
+        version: 4.1.0(react-hook-form@7.54.2)
       '@kit/prettier-config':
         specifier: workspace:*
         version: link:../../tooling/prettier
@@ -1453,6 +1453,9 @@ importers:
       lucide-react:
         specifier: ^0.475.0
         version: 0.475.0(react@19.0.0)
+      react-resizable-panels:
+        specifier: ^2.1.7
+        version: 2.1.7(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       react-top-loading-bar:
         specifier: 3.0.2
         version: 3.0.2(react@19.0.0)
@@ -2129,8 +2132,8 @@ packages:
   '@marsidev/react-turnstile@1.1.0':
     resolution: {integrity: sha512-X7bP9ZYutDd+E+klPYF+/BJHqEyyVkN4KKmZcNRr84zs3DcMoftlMAuoKqNSnqg0HE7NQ1844+TLFSJoztCdSA==}
     peerDependencies:
-      react: ^17.0.2 || ^18.0.0 || ^19.0
-      react-dom: ^17.0.2 || ^18.0.0 || ^19.0
+      react: 19.0.0-rc-45804af1-20241021
+      react-dom: 19.0.0-rc-45804af1-20241021
 
   '@next/bundle-analyzer@15.1.7':
     resolution: {integrity: sha512-tESiAwTUEpzzxKMLDbQuPHvD+PFDjY+0O3R4T5bpjIo0cr5fvppbbllQbtksQbBEquT55Eu8JmDoOlc9YFv6Kw==}
@@ -2837,7 +2840,7 @@ packages:
   '@radix-ui/react-focus-guards@1.1.1':
     resolution: {integrity: sha512-pSIwfrT1a6sIoDASCSpFwOasEwKTZWDw/iBdtnqKO7v6FeOzYJ7U53cPzYFVR3geGGXgVHaH+CdngrrAzqUGxg==}
     peerDependencies:
-      '@types/react': '*'
+      '@types/react': npm:types-react@19.0.0-rc.1
       react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
     peerDependenciesMeta:
       '@types/react':
@@ -2859,7 +2862,7 @@ packages:
   '@radix-ui/react-icons@1.3.2':
     resolution: {integrity: sha512-fyQIhGDhzfc9pK2kH6Pl9c4BDJGfMkPqkyIgYDthyNYoNg3wVhoJMMh19WS4Up/1KMPFVpNsT2q3WmXn2N1m6g==}
     peerDependencies:
-      react: ^16.x || ^17.x || ^18.x || ^19.0.0 || ^19.0.0-rc
+      react: 19.0.0-rc-45804af1-20241021
 
   '@radix-ui/react-id@1.1.0':
     resolution: {integrity: sha512-EJUrI8yYh7WOjNOqpoJaf1jlFIH2LvtgAl+YcFqNCa+4hj64ZXmPkAKOFs/ukjz3byN6bdb/AVUqHkI8/uWWMA==}
@@ -7368,6 +7371,12 @@ packages:
       '@types/react':
         optional: true
 
+  react-resizable-panels@2.1.7:
+    resolution: {integrity: sha512-JtT6gI+nURzhMYQYsx8DKkx6bSoOGFp7A3CwMrOb8y5jFHFyqwo9m68UhmXRw57fRVJksFn1TSlm3ywEQ9vMgA==}
+    peerDependencies:
+      react: ^16.14.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
+      react-dom: ^16.14.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
+
   react-smooth@4.0.4:
     resolution: {integrity: sha512-gnGKTpYwqL0Iii09gHobNolvX4Kiq4PKx6eWBCYYix+8cdw+cGo3do906l1NBPKkSWx1DghC1dlWG9L2uGd61Q==}
     peerDependencies:
@@ -8793,7 +8802,7 @@ snapshots:
       protobufjs: 7.4.0
       yargs: 17.7.2
 
-  '@hookform/resolvers@4.1.0(react-hook-form@7.54.2(react@19.0.0))':
+  '@hookform/resolvers@4.1.0(react-hook-form@7.54.2)':
     dependencies:
       caniuse-lite: 1.0.30001700
       react-hook-form: 7.54.2(react@19.0.0)
@@ -9141,7 +9150,7 @@ snapshots:
       '@supabase/supabase-js': 2.48.1
       ts-case-convert: 2.1.0
 
-  '@makerkit/data-loader-supabase-nextjs@1.2.3(@supabase/postgrest-js@1.18.1)(@supabase/supabase-js@2.48.1)(@tanstack/react-query@5.66.7(react@19.0.0))(next@15.1.7(@opentelemetry/api@1.9.0)(@playwright/test@1.50.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)':
+  '@makerkit/data-loader-supabase-nextjs@1.2.3(@supabase/postgrest-js@1.18.1)(@supabase/supabase-js@2.48.1)(@tanstack/react-query@5.66.7(react@19.0.0))(next@15.1.7(@opentelemetry/api@1.9.0)(@playwright/test@1.50.1)(babel-plugin-react-compiler@19.0.0-beta-21e868a-20250216)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)':
     dependencies:
       '@makerkit/data-loader-supabase-core': 0.0.8(@supabase/postgrest-js@1.18.1)(@supabase/supabase-js@2.48.1)
       '@supabase/supabase-js': 2.48.1
@@ -15649,6 +15658,11 @@ snapshots:
       use-sidecar: 1.1.3(@types/react@19.0.10)(react@19.0.0)
     optionalDependencies:
       '@types/react': 19.0.10
+
+  react-resizable-panels@2.1.7(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
+    dependencies:
+      react: 19.0.0
+      react-dom: 19.0.0(react@19.0.0)
 
   react-smooth@4.0.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
     dependencies:
