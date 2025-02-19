@@ -2,7 +2,7 @@
 
 import { INSERT_UNORDERED_LIST_COMMAND } from '@lexical/list';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import { $getSelection, $isRangeSelection, FORMAT_TEXT_COMMAND } from 'lexical';
+import { FORMAT_TEXT_COMMAND } from 'lexical';
 import {
   AlignCenter,
   AlignLeft,

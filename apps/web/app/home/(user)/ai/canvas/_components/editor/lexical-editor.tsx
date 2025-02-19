@@ -56,9 +56,6 @@ export function LexicalEditor({
   const debouncedSave = useCallback(
     debounce((editorState: EditorState) => {
       editorState.read(() => {
-        const root = $getRoot();
-        const selection = $getSelection();
-
         // Convert editor state to JSON
         const json = JSON.stringify(editorState);
         updateContent(json);

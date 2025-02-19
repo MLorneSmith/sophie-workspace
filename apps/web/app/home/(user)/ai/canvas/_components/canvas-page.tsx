@@ -19,11 +19,11 @@ interface CanvasPageProps {
 export function CanvasPage({ title, description }: CanvasPageProps) {
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
+  const [activeTab, setActiveTab] = useState('situation');
 
   if (!id) {
     return <div>No submission ID provided</div>;
   }
-  const [activeTab, setActiveTab] = useState('situation');
 
   return (
     <>

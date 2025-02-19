@@ -6,11 +6,12 @@ import { useFormStatus } from 'react-dom';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { type Database } from '@kit/supabase/database';
 import { useSupabase } from '@kit/supabase/hooks/use-supabase';
 import { Button } from '@kit/ui/button';
 import { Card } from '@kit/ui/card';
 import { Input } from '@kit/ui/input';
+
+import { type Database } from '~/lib/database.types';
 
 import { type QueryTestResponse, createAccountAction } from './actions';
 import { getAccounts } from './queries/test-queries';

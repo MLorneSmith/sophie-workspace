@@ -72,7 +72,7 @@ function useSuggestions(_userId: string) {
       },
       300,
     ),
-    [],
+    [setIsLoadingSuggestions, setSuggestions],
   );
 
   return {

@@ -35,8 +35,8 @@ interface Props {
   children: ReactNode;
   fallback?: React.ComponentType<FallbackProps> | ReactNode;
   onError?: (error: Error, errorInfo: React.ErrorInfo) => void;
-  resetKeys?: any[];
-  componentName?: string;
+  resetKeys?: Array<string | number | boolean>;
+  _componentName?: string;
 }
 
 interface State {
@@ -52,17 +52,17 @@ const RETRY_DELAY = 1000;
 // Separate component to handle error context
 function ErrorHandler({
   error,
-  componentName,
-  onError,
+  _componentName,
+  _onError,
 }: {
   error: Error;
-  componentName?: string;
-  onError?: (error: Error, errorInfo: React.ErrorInfo) => void;
+  _componentName?: string;
+  _onError?: (error: Error, errorInfo: React.ErrorInfo) => void;
 }) {
   const { coordinator } = useError();
   React.useEffect(() => {
-    coordinator.handleError(error, componentName);
-  }, [coordinator, error, componentName]);
+    coordinator.handleError(error, _componentName);
+  }, [coordinator, error, _componentName]);
 
   return null;
 }
@@ -180,7 +180,7 @@ export class SetupFormErrorBoundary extends React.Component<Props, State> {
   };
 
   render() {
-    const componentName = this.props.componentName || 'setup-form';
+    const componentName = this.props._componentName || 'setup-form';
 
     // Render error handler if there's an error
     if (this.state.error) {
@@ -188,8 +188,8 @@ export class SetupFormErrorBoundary extends React.Component<Props, State> {
         <>
           <ErrorHandler
             error={this.state.error}
-            componentName={this.props.componentName}
-            onError={this.props.onError}
+            _componentName={this.props._componentName}
+            _onError={this.props.onError}
           />
           {this.renderErrorContent()}
         </>
@@ -200,7 +200,7 @@ export class SetupFormErrorBoundary extends React.Component<Props, State> {
   }
 
   private renderErrorContent() {
-    const componentName = this.props.componentName || 'setup-form';
+    const componentName = this.props._componentName || 'setup-form';
 
     if (this.state.isRecovering) {
       return (

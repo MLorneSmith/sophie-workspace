@@ -10,7 +10,7 @@ import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
 import { ListPlugin } from '@lexical/react/LexicalListPlugin';
 import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
 import { useMutation } from '@tanstack/react-query';
-import { $getRoot, $getSelection, EditorState } from 'lexical';
+import { EditorState } from 'lexical';
 import debounce from 'lodash/debounce';
 
 import { getSupabaseServerClient } from '@kit/supabase/server-client';
@@ -55,19 +55,16 @@ export default function LexicalEditor({
   const debouncedSave = useCallback(
     debounce((editorState: EditorState) => {
       editorState.read(() => {
-        const root = $getRoot();
-        const selection = $getSelection();
-
         // Convert editor state to JSON
         const json = JSON.stringify(editorState);
         updateContent(json);
       });
     }, 1000),
-    [updateContent],
+    [updateContent, sectionType, submissionId],
   );
 
   // Editor change handler
-  const onChange = useCallback(
+  const _onChange = useCallback(
     (editorState: EditorState) => {
       debouncedSave(editorState);
     },
