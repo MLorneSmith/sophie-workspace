@@ -11,13 +11,9 @@ import {
   $createParagraphNode,
   $getSelection,
   $isRangeSelection,
-  FORMAT_ELEMENT_COMMAND,
   FORMAT_TEXT_COMMAND,
 } from 'lexical';
 import {
-  AlignCenter,
-  AlignLeft,
-  AlignRight,
   Bold,
   Heading1,
   Italic,
@@ -34,10 +30,6 @@ export function EditorToolbar() {
 
   const formatText = (format: 'bold' | 'italic' | 'underline') => {
     editor.dispatchCommand(FORMAT_TEXT_COMMAND, format);
-  };
-
-  const formatAlignment = (alignment: 'left' | 'center' | 'right') => {
-    editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, alignment);
   };
 
   const insertUnorderedList = () => {
@@ -68,6 +60,40 @@ export function EditorToolbar() {
 
   return (
     <div className="flex items-center gap-1 border-b p-2">
+      {/* Group 1: H1 button */}
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button variant="ghost" size="icon" onClick={toggleHeading}>
+            <Heading1 className="h-4 w-4" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>Toggle Heading</TooltipContent>
+      </Tooltip>
+
+      <div className="bg-border mx-2 h-4 w-px" />
+
+      {/* Group 2: List buttons */}
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button variant="ghost" size="icon" onClick={insertUnorderedList}>
+            <List className="h-4 w-4" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>Bullet List</TooltipContent>
+      </Tooltip>
+
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button variant="ghost" size="icon" onClick={insertOrderedList}>
+            <ListOrdered className="h-4 w-4" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>Numbered List</TooltipContent>
+      </Tooltip>
+
+      <div className="bg-border mx-2 h-4 w-px" />
+
+      {/* Group 3: Text formatting buttons */}
       <Tooltip>
         <TooltipTrigger asChild>
           <Button
@@ -105,74 +131,6 @@ export function EditorToolbar() {
           </Button>
         </TooltipTrigger>
         <TooltipContent>Underline</TooltipContent>
-      </Tooltip>
-
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button variant="ghost" size="icon" onClick={toggleHeading}>
-            <Heading1 className="h-4 w-4" />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>Toggle Heading</TooltipContent>
-      </Tooltip>
-
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button variant="ghost" size="icon" onClick={insertUnorderedList}>
-            <List className="h-4 w-4" />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>Bullet List</TooltipContent>
-      </Tooltip>
-
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button variant="ghost" size="icon" onClick={insertOrderedList}>
-            <ListOrdered className="h-4 w-4" />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>Numbered List</TooltipContent>
-      </Tooltip>
-
-      <div className="bg-border mx-2 h-4 w-px" />
-
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => formatAlignment('left')}
-          >
-            <AlignLeft className="h-4 w-4" />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>Align Left</TooltipContent>
-      </Tooltip>
-
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => formatAlignment('center')}
-          >
-            <AlignCenter className="h-4 w-4" />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>Align Center</TooltipContent>
-      </Tooltip>
-
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => formatAlignment('right')}
-          >
-            <AlignRight className="h-4 w-4" />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>Align Right</TooltipContent>
       </Tooltip>
     </div>
   );
