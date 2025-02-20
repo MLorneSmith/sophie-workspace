@@ -85,12 +85,14 @@ export function LexicalEditor({
 
   return (
     <LexicalComposer initialConfig={initialConfig}>
-      <div className="relative min-h-[200px] rounded-lg border">
+      <div className="relative flex h-full flex-col">
         <EditorToolbar />
-        <div className="p-4">
+        <div className="flex-1 rounded-lg border p-4">
           <RichTextPlugin
             contentEditable={
-              <ContentEditable className="min-h-[200px] outline-none" />
+              <div className="h-full">
+                <ContentEditable className="h-full outline-none" />
+              </div>
             }
             placeholder={
               <div className="pointer-events-none absolute top-[1.125rem] text-gray-400 select-none">

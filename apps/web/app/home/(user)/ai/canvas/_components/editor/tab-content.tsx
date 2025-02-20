@@ -57,10 +57,12 @@ export function TabContent({ sectionType }: TabContentProps) {
   }
 
   return (
-    <LexicalEditor
-      content={content}
-      submissionId={id}
-      sectionType={sectionType}
-    />
+    <div className="h-full">
+      <LexicalEditor
+        content={content}
+        submissionId={id}
+        sectionType={sectionType}
+      />
+    </div>
   );
 }

@@ -35,7 +35,7 @@ export function CanvasPage({ title, description }: CanvasPageProps) {
           <Tabs
             value={activeTab}
             onValueChange={setActiveTab}
-            className="flex-1"
+            className="flex-1 px-4"
           >
             <TabsList className="w-full justify-start rounded-none border-b bg-transparent p-0">
               <TabsTrigger

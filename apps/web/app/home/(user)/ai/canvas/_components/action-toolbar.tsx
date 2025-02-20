@@ -7,7 +7,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@kit/ui/tooltip';
 
 export function ActionToolbar() {
   return (
-    <div className="flex gap-2 border-t p-4">
+    <div className="flex gap-2">
       <Tooltip>
         <TooltipTrigger asChild>
           <Button variant="outline" size="sm">
