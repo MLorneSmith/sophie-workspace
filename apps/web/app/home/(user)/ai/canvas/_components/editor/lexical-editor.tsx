@@ -14,6 +14,7 @@ import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
 import { HeadingNode } from '@lexical/rich-text';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { EditorState, LexicalEditor as LexicalEditorType } from 'lexical';
+import { UNDO_COMMAND } from 'lexical';
 import debounce from 'lodash/debounce';
 
 import { useSupabase } from '@kit/supabase/hooks/use-supabase';
@@ -334,6 +335,27 @@ export function LexicalEditor({
     }
   }, [content]);
 
+  // Create a KeyboardEventHandler component to handle keyboard shortcuts
+  function KeyboardEventHandler() {
+    const [editor] = useLexicalComposerContext();
+
+    useEffect(() => {
+      const handleKeyDown = (event: KeyboardEvent) => {
+        if ((event.ctrlKey || event.metaKey) && event.key === 'z') {
+          editor.dispatchCommand(UNDO_COMMAND, undefined);
+          event.preventDefault();
+        }
+      };
+
+      window.addEventListener('keydown', handleKeyDown);
+      return () => {
+        window.removeEventListener('keydown', handleKeyDown);
+      };
+    }, [editor]);
+
+    return null;
+  }
+
   const initialConfig = {
     namespace: `slideheroes-${sectionType}`,
     theme,
@@ -345,12 +367,6 @@ export function LexicalEditor({
     onChange,
     editable: true,
     onBlur,
-    onKeyDown: (event: KeyboardEvent) => {
-      if ((event.ctrlKey || event.metaKey) && event.key === 'z') {
-        editor.dispatchCommand(UNDO_COMMAND, undefined);
-        event.preventDefault();
-      }
-    },
   };
 
   return (
@@ -360,6 +376,7 @@ export function LexicalEditor({
     >
       <EditorRefPlugin editorRef={editorRef} />
       <OnChangePlugin onChange={onChange} />
+      <KeyboardEventHandler />
       <div className="editor-shell relative flex h-full flex-col rounded-lg border">
         <EditorToolbar />
         <div className="flex-1 p-4">
