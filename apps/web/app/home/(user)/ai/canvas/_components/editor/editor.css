@@ -1,0 +1,31 @@
+/* Custom list styles */
+.list-circle {
+  list-style-type: circle;
+}
+
+/* Nested list styles */
+.editor-shell ol ol {
+  list-style-type: lower-alpha;
+}
+
+.editor-shell ol ol ol {
+  list-style-type: lower-roman;
+}
+
+.editor-shell ul ul {
+  list-style-type: circle;
+}
+
+.editor-shell ul ul ul {
+  list-style-type: square;
+}
+
+/* List spacing */
+.editor-shell ul,
+.editor-shell ol {
+  margin-left: 1rem;
+}
+
+.editor-shell li {
+  margin-bottom: 0.25rem;
+}

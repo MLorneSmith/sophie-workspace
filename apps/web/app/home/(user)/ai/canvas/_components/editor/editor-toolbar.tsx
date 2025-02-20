@@ -1,15 +1,28 @@
 'use client';
 
-import { INSERT_UNORDERED_LIST_COMMAND } from '@lexical/list';
+import {
+  INSERT_ORDERED_LIST_COMMAND,
+  INSERT_UNORDERED_LIST_COMMAND,
+} from '@lexical/list';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import { FORMAT_ELEMENT_COMMAND, FORMAT_TEXT_COMMAND } from 'lexical';
+import { $createHeadingNode, HeadingNode } from '@lexical/rich-text';
+import { $setBlocksType } from '@lexical/selection';
+import {
+  $createParagraphNode,
+  $getSelection,
+  $isRangeSelection,
+  FORMAT_ELEMENT_COMMAND,
+  FORMAT_TEXT_COMMAND,
+} from 'lexical';
 import {
   AlignCenter,
   AlignLeft,
   AlignRight,
   Bold,
+  Heading1,
   Italic,
   List,
+  ListOrdered,
   Underline,
 } from 'lucide-react';
 
@@ -27,8 +40,30 @@ export function EditorToolbar() {
     editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, alignment);
   };
 
-  const insertList = () => {
+  const insertUnorderedList = () => {
     editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined);
+  };
+
+  const insertOrderedList = () => {
+    editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined);
+  };
+
+  const toggleHeading = () => {
+    editor.update(() => {
+      const selection = $getSelection();
+      if (!$isRangeSelection(selection)) return;
+
+      const isHeading = selection.getNodes().some((node) => {
+        const parent = node.getParent();
+        return parent instanceof HeadingNode;
+      });
+
+      if (isHeading) {
+        $setBlocksType(selection, () => $createParagraphNode());
+      } else {
+        $setBlocksType(selection, () => $createHeadingNode('h2'));
+      }
+    });
   };
 
   return (
@@ -72,15 +107,31 @@ export function EditorToolbar() {
         <TooltipContent>Underline</TooltipContent>
       </Tooltip>
 
-      <div className="bg-border mx-2 h-4 w-px" />
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button variant="ghost" size="icon" onClick={toggleHeading}>
+            <Heading1 className="h-4 w-4" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>Toggle Heading</TooltipContent>
+      </Tooltip>
 
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button variant="ghost" size="icon" onClick={insertList}>
+          <Button variant="ghost" size="icon" onClick={insertUnorderedList}>
             <List className="h-4 w-4" />
           </Button>
         </TooltipTrigger>
         <TooltipContent>Bullet List</TooltipContent>
+      </Tooltip>
+
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button variant="ghost" size="icon" onClick={insertOrderedList}>
+            <ListOrdered className="h-4 w-4" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>Numbered List</TooltipContent>
       </Tooltip>
 
       <div className="bg-border mx-2 h-4 w-px" />

@@ -9,6 +9,7 @@ import LexicalErrorBoundary from '@lexical/react/LexicalErrorBoundary';
 import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
 import { ListPlugin } from '@lexical/react/LexicalListPlugin';
 import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
+import { HeadingNode } from '@lexical/rich-text';
 import { useMutation } from '@tanstack/react-query';
 import { EditorState } from 'lexical';
 import debounce from 'lodash/debounce';
@@ -16,6 +17,7 @@ import debounce from 'lodash/debounce';
 import { useSupabase } from '@kit/supabase/hooks/use-supabase';
 
 import { EditorToolbar } from './editor-toolbar';
+import './editor.css';
 
 interface LexicalEditorProps {
   content: string;
@@ -30,6 +32,18 @@ const theme = {
     bold: 'font-bold',
     italic: 'italic',
     underline: 'underline',
+  },
+  list: {
+    ul: 'list-disc ml-4',
+    ol: 'list-decimal ml-4',
+    listitem: 'mb-1',
+  },
+  nestedList: {
+    list: 'ml-4',
+    listitem: 'list-circle',
+  },
+  heading: {
+    h2: 'text-xl font-bold mb-2',
   },
 };
 
@@ -79,13 +93,13 @@ export function LexicalEditor({
       console.error('Lexical Editor Error:', error);
     },
     editorState: content,
-    nodes: [ListNode, ListItemNode],
+    nodes: [ListNode, ListItemNode, HeadingNode],
     onChange,
   };
 
   return (
     <LexicalComposer initialConfig={initialConfig}>
-      <div className="relative flex h-full flex-col">
+      <div className="editor-shell relative flex h-full flex-col">
         <EditorToolbar />
         <div className="flex-1 rounded-lg border p-4">
           <RichTextPlugin

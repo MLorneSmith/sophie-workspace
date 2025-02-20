@@ -119,6 +119,15 @@ importers:
       '@lexical/react':
         specifier: ^0.24.0
         version: 0.24.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(yjs@13.6.21)
+      '@lexical/rich-text':
+        specifier: ^0.24.0
+        version: 0.24.0
+      '@lexical/selection':
+        specifier: ^0.24.0
+        version: 0.24.0
+      '@lexical/utils':
+        specifier: ^0.24.0
+        version: 0.24.0
       '@makerkit/data-loader-supabase-core':
         specifier: ^0.0.8
         version: 0.0.8(@supabase/postgrest-js@1.18.1)(@supabase/supabase-js@2.48.1)
