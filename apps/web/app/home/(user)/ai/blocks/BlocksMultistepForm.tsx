@@ -17,7 +17,7 @@ export default function SetupMultistepForm({
   return (
     <PageBody>
       <ErrorProvider>
-        <SetupFormErrorBoundary componentName="setup-multistep-form">
+        <SetupFormErrorBoundary _componentName="setup-multistep-form">
           <SetupFormProvider>
             <SetupForm _userId={_userId} />
           </SetupFormProvider>
