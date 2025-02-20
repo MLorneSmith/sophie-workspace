@@ -5,7 +5,7 @@ import { useCallback, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Check, Maximize2, Minimize2, Redo2, Save, Undo2 } from 'lucide-react';
+import { Check, Maximize2, Minimize2, Save } from 'lucide-react';
 
 import { Button, buttonVariants } from '@kit/ui/button';
 import { Input } from '@kit/ui/input';
@@ -61,22 +61,6 @@ export function TopBar() {
         />
       </div>
       <div className="flex gap-2">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button variant="ghost" size="icon">
-              <Undo2 className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Undo</TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button variant="ghost" size="icon">
-              <Redo2 className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Redo</TooltipContent>
-        </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
             <Button

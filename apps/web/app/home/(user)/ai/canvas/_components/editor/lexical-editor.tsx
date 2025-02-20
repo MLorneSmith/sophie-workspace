@@ -345,6 +345,12 @@ export function LexicalEditor({
     onChange,
     editable: true,
     onBlur,
+    onKeyDown: (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key === 'z') {
+        editor.dispatchCommand(UNDO_COMMAND, undefined);
+        event.preventDefault();
+      }
+    },
   };
 
   return (

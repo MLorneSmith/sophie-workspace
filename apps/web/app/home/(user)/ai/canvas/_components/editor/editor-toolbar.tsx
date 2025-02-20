@@ -12,6 +12,7 @@ import {
   $getSelection,
   $isRangeSelection,
   FORMAT_TEXT_COMMAND,
+  UNDO_COMMAND,
 } from 'lexical';
 import {
   Bold,
@@ -20,6 +21,7 @@ import {
   List,
   ListOrdered,
   Underline,
+  Undo,
 } from 'lucide-react';
 
 import { Button } from '@kit/ui/button';
@@ -131,6 +133,22 @@ export function EditorToolbar() {
           </Button>
         </TooltipTrigger>
         <TooltipContent>Underline</TooltipContent>
+      </Tooltip>
+
+      <div className="bg-border mx-2 h-4 w-px" />
+
+      {/* Group 4: Undo button */}
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => editor.dispatchCommand(UNDO_COMMAND, undefined)}
+          >
+            <Undo className="h-4 w-4" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>Undo (Ctrl+Z)</TooltipContent>
       </Tooltip>
     </div>
   );
