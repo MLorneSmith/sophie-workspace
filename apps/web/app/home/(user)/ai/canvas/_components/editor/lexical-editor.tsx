@@ -10,7 +10,7 @@ import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
 import { ListPlugin } from '@lexical/react/LexicalListPlugin';
 import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
 import { useMutation } from '@tanstack/react-query';
-import { $getRoot, $getSelection, EditorState } from 'lexical';
+import { EditorState } from 'lexical';
 import debounce from 'lodash/debounce';
 
 import { useSupabase } from '@kit/supabase/hooks/use-supabase';

@@ -180,8 +180,6 @@ export class SetupFormErrorBoundary extends React.Component<Props, State> {
   };
 
   render() {
-    const componentName = this.props._componentName || 'setup-form';
-
     // Render error handler if there's an error
     if (this.state.error) {
       return (

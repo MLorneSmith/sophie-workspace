@@ -6,7 +6,7 @@ import { enhanceAction } from '@kit/next/actions';
 import { getSupabaseServerClient } from '@kit/supabase/server-client';
 
 export const updateBuildingBlockTitleAction = enhanceAction(
-  async function (data: { id: string; title: string }, user) {
+  async function (data: { id: string; title: string }, _user) {
     const client = getSupabaseServerClient();
     const { error } = await client
       .from('building_blocks_submissions')
