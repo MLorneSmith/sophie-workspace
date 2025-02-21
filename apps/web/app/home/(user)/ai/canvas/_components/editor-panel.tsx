@@ -2,9 +2,13 @@
 
 import { Suspense, useCallback, useRef } from 'react';
 
-import { useQuery } from '@tanstack/react-query';
+import { useSearchParams } from 'next/navigation';
 
-import { type SituationImprovement } from '@kit/ai-gateway/src/configs/use-cases/situation-improvements/types';
+import { $createHeadingNode } from '@lexical/rich-text';
+import { useQuery } from '@tanstack/react-query';
+import { $createParagraphNode, $createTextNode, $getRoot } from 'lexical';
+
+import { type BaseImprovement } from '@kit/ai-gateway/src/prompts/types/improvements';
 import { useSupabase } from '@kit/supabase/hooks/use-supabase';
 import {
   ResizableHandle,
@@ -41,13 +45,16 @@ function ErrorBoundary({ error }: { error: Error }) {
 }
 
 export function EditorPanel({ sectionType }: EditorPanelProps) {
+  const searchParams = useSearchParams();
+  const submissionId = searchParams.get('id') ?? '';
   const supabase = useSupabase<Database>();
   const { data: content = '' } = useQuery<string>({
-    queryKey: ['submission', 'content', sectionType],
+    queryKey: ['submission', submissionId, 'content', sectionType],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('building_blocks_submissions')
         .select('*')
+        .eq('id', submissionId)
         .single();
 
       if (error) throw error;
@@ -60,13 +67,27 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
   const editorRef = useRef<LexicalEditorRef>(null);
 
   const handleAcceptImprovement = useCallback(
-    (improvement: SituationImprovement) => {
+    (improvement: BaseImprovement) => {
       if (editorRef.current) {
-        editorRef.current.insertContent(
-          `${improvement.summaryPoint}\n\n${improvement.supportingPoints
-            .map((point) => `• ${point}`)
-            .join('\n')}`,
-        );
+        editorRef.current.update(() => {
+          const root = $getRoot();
+
+          // Create heading for summary point
+          const headingNode = $createHeadingNode('h2');
+          const summaryTextNode = $createTextNode(
+            improvement.implementedSummaryPoint,
+          );
+          headingNode.append(summaryTextNode);
+          root.append(headingNode);
+
+          // Create paragraph for supporting points
+          const paragraphNode = $createParagraphNode();
+          improvement.implementedSupportingPoints.forEach((point) => {
+            const pointNode = $createTextNode(`• ${point}\n`);
+            paragraphNode.append(pointNode);
+          });
+          root.append(paragraphNode);
+        });
       }
     },
     [editorRef],
@@ -92,6 +113,8 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
           <Suspense fallback={<LoadingFallback />}>
             <SuggestionsPane
               content={content}
+              submissionId={submissionId}
+              type={sectionType}
               onAcceptImprovement={handleAcceptImprovement}
             />
           </Suspense>

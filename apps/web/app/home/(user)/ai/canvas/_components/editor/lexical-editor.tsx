@@ -24,7 +24,7 @@ import type { EditorState, LexicalEditor as LexicalEditorType } from 'lexical';
 import { UNDO_COMMAND } from 'lexical';
 import debounce from 'lodash/debounce';
 
-import { type SituationImprovement } from '@kit/ai-gateway/src/configs/use-cases/situation-improvements/types';
+import { type BaseImprovement } from '@kit/ai-gateway/src/prompts/types/improvements';
 import { useSupabase } from '@kit/supabase/hooks/use-supabase';
 
 import { useSaveContext } from '../../_lib/contexts/save-context';
@@ -46,11 +46,12 @@ interface LexicalEditorProps {
   content: string;
   submissionId: string;
   sectionType: 'situation' | 'complication' | 'answer' | 'outline';
-  onAcceptImprovement?: (improvement: SituationImprovement) => void;
+  onAcceptImprovement?: (improvement: BaseImprovement) => void;
 }
 
 export interface LexicalEditorRef {
   insertContent: (content: string) => void;
+  update: (fn: () => void) => void;
 }
 
 interface SubmissionData {
@@ -124,6 +125,11 @@ export const LexicalEditor = forwardRef<LexicalEditorRef, LexicalEditorProps>(
             paragraphNode.append(textNode);
             root.append(paragraphNode);
           });
+        }
+      },
+      update: (fn: () => void) => {
+        if (editorRef.current) {
+          editorRef.current.update(fn);
         }
       },
     }));
@@ -396,18 +402,20 @@ export const LexicalEditor = forwardRef<LexicalEditorRef, LexicalEditorProps>(
     };
 
     const handleAcceptImprovement = useCallback(
-      (improvement: SituationImprovement) => {
+      (improvement: BaseImprovement) => {
         if (editorRef.current) {
           editorRef.current.update(() => {
             const root = $getRoot();
             const paragraphNode = $createParagraphNode();
 
             // Add summary point
-            const summaryNode = $createTextNode(improvement.summaryPoint);
+            const summaryNode = $createTextNode(
+              improvement.implementedSummaryPoint,
+            );
             paragraphNode.append(summaryNode);
 
             // Add supporting points
-            improvement.supportingPoints.forEach((point) => {
+            improvement.implementedSupportingPoints.forEach((point: string) => {
               const pointNode = $createTextNode(`\n• ${point}`);
               paragraphNode.append(pointNode);
             });
