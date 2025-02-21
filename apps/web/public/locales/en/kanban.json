@@ -1,0 +1,38 @@
+{
+  "task": {
+    "create": "Create Task",
+    "edit": "Edit Task",
+    "delete": "Delete Task",
+    "reset": "Reset Board",
+    "resetTooltip": "Reset to default tasks",
+    "status": {
+      "do": "To Do",
+      "doing": "In Progress",
+      "done": "Done"
+    },
+    "priority": {
+      "low": "Low Priority",
+      "medium": "Medium Priority",
+      "high": "High Priority"
+    },
+    "form": {
+      "title": "Title",
+      "titlePlaceholder": "Enter task title",
+      "description": "Description",
+      "descriptionPlaceholder": "Enter task description",
+      "status": "Status",
+      "priority": "Priority",
+      "subtasks": "Subtasks",
+      "addSubtask": "Add Subtask",
+      "subtaskPlaceholder": "Enter subtask",
+      "image": "Image",
+      "imagePlaceholder": "Click or drag to upload image (max 1MB)"
+    },
+    "dropHint": "Drop tasks here",
+    "actions": {
+      "create": "Create Task",
+      "update": "Update Task",
+      "delete": "Delete Task"
+    }
+  }
+}

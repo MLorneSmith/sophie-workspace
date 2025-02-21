@@ -650,6 +650,77 @@ export type Database = {
           },
         ]
       }
+      subtasks: {
+        Row: {
+          created_at: string
+          id: string
+          is_completed: boolean | null
+          task_id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_completed?: boolean | null
+          task_id: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_completed?: boolean | null
+          task_id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subtasks_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tasks: {
+        Row: {
+          account_id: string
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          priority: Database["public"]["Enums"]["task_priority"]
+          status: Database["public"]["Enums"]["task_status"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          account_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          priority?: Database["public"]["Enums"]["task_priority"]
+          status?: Database["public"]["Enums"]["task_status"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          account_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          priority?: Database["public"]["Enums"]["task_priority"]
+          status?: Database["public"]["Enums"]["task_status"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       testimonials: {
         Row: {
           content: string
@@ -992,6 +1063,8 @@ export type Database = {
         | "incomplete"
         | "incomplete_expired"
         | "paused"
+      task_priority: "low" | "medium" | "high"
+      task_status: "do" | "doing" | "done"
       testimonial_status: "pending" | "approved" | "rejected"
     }
     CompositeTypes: {
