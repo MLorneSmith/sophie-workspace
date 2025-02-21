@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useCallback, useRef } from 'react';
+import { Suspense, useCallback, useRef, useState } from 'react';
 
 import { useSearchParams } from 'next/navigation';
 
@@ -19,9 +19,11 @@ import { Spinner } from '@kit/ui/spinner';
 
 import { Database } from '~/lib/database.types';
 
+import { generateIdeasAction } from '../_actions/generate-ideas';
 import { ActionToolbar } from './action-toolbar';
 import { type LexicalEditorRef } from './editor/lexical-editor';
 import { TabContent } from './editor/tab-content';
+import { LOADING_MESSAGES } from './suggestions/loading-messages';
 import { SuggestionsPane } from './suggestions/suggestions-pane';
 
 interface EditorPanelProps {
@@ -65,6 +67,9 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
   });
 
   const editorRef = useRef<LexicalEditorRef>(null);
+  const [suggestions, setSuggestions] = useState<BaseImprovement[]>([]);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [messageIndex, setMessageIndex] = useState(0);
 
   const handleAcceptImprovement = useCallback(
     (improvement: BaseImprovement) => {
@@ -93,6 +98,38 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
     [editorRef],
   );
 
+  const handleGenerateIdeas = useCallback(async () => {
+    if (!editorRef.current || !submissionId) return;
+
+    // Increment message index before starting loading
+    setMessageIndex((current) => (current + 1) % LOADING_MESSAGES.length);
+    setIsGenerating(true);
+
+    // Get content outside of try block since it's synchronous
+    let content = '';
+    editorRef.current.update(() => {
+      const root = $getRoot();
+      content = root.getTextContent();
+    });
+
+    try {
+      const result = await generateIdeasAction({
+        content,
+        submissionId,
+        type: sectionType,
+      });
+
+      if (result.success && result.data?.improvements) {
+        setSuggestions(result.data.improvements);
+      }
+    } catch (error) {
+      console.error('Failed to generate ideas:', error);
+      // Could add toast notification here if needed
+    } finally {
+      setIsGenerating(false);
+    }
+  }, [editorRef, submissionId, sectionType]);
+
   return (
     <div className="flex h-[calc(100vh-180px)] flex-col">
       <ResizablePanelGroup direction="horizontal" className="mt-4 flex-1 gap-4">
@@ -104,7 +141,11 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
               </Suspense>
             </div>
             <div className="p-4">
-              <ActionToolbar />
+              <ActionToolbar
+                editorRef={editorRef}
+                sectionType={sectionType}
+                onGenerateImprovements={handleGenerateIdeas}
+              />
             </div>
           </div>
         </ResizablePanel>
@@ -116,6 +157,10 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
               submissionId={submissionId}
               type={sectionType}
               onAcceptImprovement={handleAcceptImprovement}
+              improvements={suggestions}
+              onGenerateImprovements={handleGenerateIdeas}
+              isLoading={isGenerating}
+              messageIndex={messageIndex}
             />
           </Suspense>
         </ResizablePanel>

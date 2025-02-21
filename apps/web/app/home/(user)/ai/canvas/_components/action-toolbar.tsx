@@ -1,16 +1,130 @@
 'use client';
 
-import { FileText, LayoutTemplate, Lightbulb, Zap } from 'lucide-react';
+import { useCallback, useState } from 'react';
 
+import { useSearchParams } from 'next/navigation';
+
+import { $createHeadingNode } from '@lexical/rich-text';
+import { $createParagraphNode, $createTextNode, $getRoot } from 'lexical';
+import { FileText, LayoutTemplate, Lightbulb } from 'lucide-react';
+
+import { useUserWorkspace } from '@kit/accounts/hooks/use-user-workspace';
+import {
+  type BaseImprovement,
+  type ImprovementType,
+} from '@kit/ai-gateway/src/prompts/types/improvements';
+import { type SimplifiedContent } from '@kit/ai-gateway/src/utils/parse-simplified';
 import { Button } from '@kit/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@kit/ui/tooltip';
 
-export function ActionToolbar() {
+import { generateIdeasAction } from '../_actions/generate-ideas';
+import { simplifyTextAction } from '../_actions/simplify-text';
+import { type LexicalEditorRef } from './editor/lexical-editor';
+
+interface ActionToolbarProps {
+  editorRef: React.RefObject<LexicalEditorRef | null>;
+  sectionType: ImprovementType;
+  onGenerateImprovements?: (improvements: BaseImprovement[]) => void;
+}
+
+export function ActionToolbar({
+  editorRef,
+  sectionType,
+  onGenerateImprovements,
+}: ActionToolbarProps) {
+  const [isSimplifying, setIsSimplifying] = useState(false);
+  const { user } = useUserWorkspace();
+  const searchParams = useSearchParams();
+  const canvasId = searchParams.get('id');
+
+  const handleSimplifyText = useCallback(async () => {
+    if (!editorRef.current || !canvasId || !user) return;
+
+    try {
+      setIsSimplifying(true);
+
+      // Get current editor content
+      let content = '';
+      editorRef.current.update(() => {
+        const root = $getRoot();
+        content = root.getTextContent();
+      });
+
+      // Call the simplify text action
+      const result = await simplifyTextAction({
+        content,
+        userId: user.id,
+        canvasId,
+        sectionType,
+      });
+
+      if (result.success && result.response) {
+        try {
+          const simplified = JSON.parse(result.response) as SimplifiedContent;
+
+          // Clear current content and insert simplified sections
+          editorRef.current.update(() => {
+            const root = $getRoot();
+            root.clear();
+
+            simplified.sections.forEach((section) => {
+              if (section.type === 'heading') {
+                const headingNode = $createHeadingNode('h2');
+                const textNode = $createTextNode(section.content);
+                headingNode.append(textNode);
+                root.append(headingNode);
+              } else {
+                const paragraphNode = $createParagraphNode();
+                const textNode = $createTextNode(`• ${section.content}`);
+                paragraphNode.append(textNode);
+                root.append(paragraphNode);
+              }
+            });
+          });
+        } catch (parseError) {
+          console.error('Failed to parse simplified content:', parseError);
+          return;
+        }
+      } else {
+        console.error('Failed to simplify text:', result.error);
+      }
+    } catch (error) {
+      console.error('Error simplifying text:', error);
+    } finally {
+      setIsSimplifying(false);
+    }
+  }, [editorRef, canvasId, user, sectionType]);
+
+  const handleGenerateIdeas = useCallback(async () => {
+    if (!editorRef.current || !canvasId || !user) return;
+
+    let content = '';
+    editorRef.current.update(() => {
+      const root = $getRoot();
+      content = root.getTextContent();
+    });
+
+    const result = await generateIdeasAction({
+      content,
+      submissionId: canvasId,
+      type: sectionType,
+    });
+
+    if (result.success && result.data?.improvements && onGenerateImprovements) {
+      onGenerateImprovements(result.data.improvements);
+    }
+  }, [editorRef, canvasId, user, sectionType, onGenerateImprovements]);
+
   return (
     <div className="flex gap-2">
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button variant="outline" size="sm">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleSimplifyText}
+            disabled={isSimplifying}
+          >
             <FileText className="mr-2 h-4 w-4" />
             Simplify Text
           </Button>
@@ -19,16 +133,7 @@ export function ActionToolbar() {
       </Tooltip>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button variant="outline" size="sm">
-            <Zap className="mr-2 h-4 w-4" />
-            Add Action Verbs
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>Enhance with dynamic action verbs</TooltipContent>
-      </Tooltip>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={handleGenerateIdeas}>
             <Lightbulb className="mr-2 h-4 w-4" />
             Add Ideas
           </Button>

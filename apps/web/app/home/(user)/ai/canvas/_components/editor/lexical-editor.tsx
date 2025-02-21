@@ -28,8 +28,8 @@ import { type BaseImprovement } from '@kit/ai-gateway/src/prompts/types/improvem
 import { useSupabase } from '@kit/supabase/hooks/use-supabase';
 
 import { useSaveContext } from '../../_lib/contexts/save-context';
-import { EditorToolbar } from './editor-toolbar';
 import './editor.css';
+import { ToolbarPlugin } from './toolbar-plugin';
 
 interface LexicalState {
   root: {
@@ -314,56 +314,73 @@ export const LexicalEditor = forwardRef<LexicalEditorRef, LexicalEditorProps>(
       };
     }, [saveContent]);
 
-    const EMPTY_EDITOR_STATE = JSON.stringify({
+    const DEFAULT_EDITOR_STATE = {
       root: {
         children: [
           {
-            children: [],
-            direction: null,
+            children: [
+              {
+                detail: 0,
+                format: 0,
+                mode: 'normal',
+                style: '',
+                text: '',
+                type: 'text',
+                version: 1,
+              },
+            ],
+            direction: 'ltr',
             format: '',
             indent: 0,
             type: 'paragraph',
             version: 1,
+            textFormat: 0,
+            textStyle: '',
           },
         ],
-        direction: null,
+        direction: 'ltr',
         format: '',
         indent: 0,
         type: 'root',
         version: 1,
       },
-    });
+    };
 
     // Parse initial content if it's a string
     const initialContent = useCallback(() => {
       if (!content) {
-        console.debug('No content provided, using empty state');
-        return EMPTY_EDITOR_STATE;
+        console.debug('No content provided, using default state');
+        return JSON.stringify(DEFAULT_EDITOR_STATE);
       }
 
       try {
-        // If content is already a string, validate it's a proper Lexical state
-        if (typeof content === 'string') {
-          const parsed = JSON.parse(content);
-          if (parsed?.root) {
-            return content; // Valid Lexical state JSON string
-          }
-        }
+        const parsed =
+          typeof content === 'string' ? JSON.parse(content) : content;
 
-        // If content is an object, validate and stringify it
+        // Validate the parsed content has the required structure and at least one text node
         if (
-          typeof content === 'object' &&
-          content !== null &&
-          'root' in content
+          parsed?.root?.children?.[0]?.children?.[0]?.type === 'text' &&
+          parsed.root.children[0].type === 'paragraph'
         ) {
-          return JSON.stringify(content);
+          // Ensure direction is set to prevent empty root node error
+          if (!parsed.root.direction) {
+            parsed.root.direction = 'ltr';
+          }
+          if (!parsed.root.children[0].direction) {
+            parsed.root.children[0].direction = 'ltr';
+          }
+
+          return JSON.stringify(parsed);
         }
 
-        console.debug('Invalid content format, using empty state:', content);
-        return EMPTY_EDITOR_STATE;
+        console.debug(
+          'Invalid content structure, using default state:',
+          content,
+        );
+        return JSON.stringify(DEFAULT_EDITOR_STATE);
       } catch (e) {
         console.debug('Failed to parse content:', e);
-        return EMPTY_EDITOR_STATE;
+        return JSON.stringify(DEFAULT_EDITOR_STATE);
       }
     }, [content]);
 
@@ -440,7 +457,7 @@ export const LexicalEditor = forwardRef<LexicalEditorRef, LexicalEditorProps>(
         <OnChangePlugin onChange={onChange} />
         <KeyboardEventHandler />
         <div className="editor-shell relative flex h-full flex-col rounded-lg border">
-          <EditorToolbar />
+          <ToolbarPlugin />
           <div className="flex-1 p-4">
             <RichTextPlugin
               contentEditable={

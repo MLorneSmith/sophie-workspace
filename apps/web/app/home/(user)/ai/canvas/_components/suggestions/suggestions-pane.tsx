@@ -1,8 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
-
-import { useMutation } from '@tanstack/react-query';
+import { useCallback, useEffect, useState } from 'react';
 
 import {
   type BaseImprovement,
@@ -11,14 +9,19 @@ import {
 import { Button } from '@kit/ui/button';
 import { Spinner } from '@kit/ui/spinner';
 
-import { generateImprovementsAction } from '../../actions/generate-improvements';
 import { ImprovementCard } from './improvement-card';
+import { LoadingAnimation } from './loading-animation';
+import { LOADING_MESSAGES } from './loading-messages';
 
 interface SuggestionsPaneProps {
   content: string;
   submissionId: string;
   type: ImprovementType;
   onAcceptImprovement: (improvement: BaseImprovement) => void;
+  improvements?: BaseImprovement[];
+  onGenerateImprovements?: () => void;
+  isLoading?: boolean;
+  messageIndex: number;
 }
 
 export function SuggestionsPane({
@@ -26,25 +29,33 @@ export function SuggestionsPane({
   submissionId,
   type,
   onAcceptImprovement,
+  improvements = [],
+  onGenerateImprovements,
+  isLoading = false,
+  messageIndex,
 }: SuggestionsPaneProps) {
   const [visibleIds, setVisibleIds] = useState<Set<string>>(new Set());
+  const [cyclingIndex, setCyclingIndex] = useState(messageIndex);
 
-  const { mutate, isPending, data, error } = useMutation({
-    mutationFn: () =>
-      generateImprovementsAction({ content, submissionId, type }),
-    onSuccess: (data) => {
-      if (data?.success && data.data?.improvements) {
-        // Set all new improvements as visible
-        setVisibleIds(
-          new Set(data.data.improvements.map((imp: BaseImprovement) => imp.id)),
-        );
-      }
-    },
-  });
+  // Reset cycling index when base index changes
+  useEffect(() => {
+    setCyclingIndex(messageIndex);
+  }, [messageIndex]);
 
-  const handleGenerateImprovements = useCallback(() => {
-    mutate();
-  }, [mutate]);
+  // Only cycle when loading
+  useEffect(() => {
+    if (isLoading) {
+      const interval = setInterval(() => {
+        setCyclingIndex((current) => (current + 1) % LOADING_MESSAGES.length);
+      }, 3000);
+      return () => clearInterval(interval);
+    }
+  }, [isLoading]);
+
+  // Update visible IDs when improvements change
+  useEffect(() => {
+    setVisibleIds(new Set(improvements.map((imp) => imp.id)));
+  }, [improvements]);
 
   const handleAcceptImprovement = useCallback(
     (improvement: BaseImprovement) => {
@@ -73,41 +84,35 @@ export function SuggestionsPane({
 
   return (
     <div className="bg-background/50 relative flex h-full flex-col rounded-md border">
-      {(error instanceof Error || data?.success === false) && (
-        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-600">
-          {error instanceof Error
-            ? error.message
-            : (data?.error ?? 'An error occurred')}
-        </div>
-      )}
-
-      <div className="flex-1 space-y-4 overflow-auto p-4">
-        {data?.success &&
-          data.data?.improvements
-            ?.filter((improvement: BaseImprovement) =>
-              visibleIds.has(improvement.id),
-            )
-            .map((improvement: BaseImprovement) => (
-              <ImprovementCard
-                key={improvement.id}
-                improvement={improvement}
-                isAccepted={false}
-                onAccept={handleAcceptImprovement}
-                onReject={handleRejectImprovement}
-              />
-            ))}
+      <div className="flex-1 overflow-auto">
+        {isLoading ? (
+          <LoadingAnimation messageIndex={cyclingIndex} />
+        ) : (
+          <div className="space-y-4 p-4">
+            {improvements
+              .filter((improvement) => visibleIds.has(improvement.id))
+              .map((improvement) => (
+                <ImprovementCard
+                  key={improvement.id}
+                  improvement={improvement}
+                  isAccepted={false}
+                  onAccept={handleAcceptImprovement}
+                  onReject={handleRejectImprovement}
+                />
+              ))}
+          </div>
+        )}
       </div>
-
       <div className="bg-muted/5 border-t p-4">
         <Button
-          onClick={handleGenerateImprovements}
-          disabled={isPending}
+          onClick={onGenerateImprovements}
           className="w-full"
+          disabled={isLoading}
         >
-          {isPending ? (
+          {isLoading ? (
             <>
               <Spinner className="mr-2 h-4 w-4" />
-              Generating suggestions...
+              Generating...
             </>
           ) : (
             'Generate Suggestions'
