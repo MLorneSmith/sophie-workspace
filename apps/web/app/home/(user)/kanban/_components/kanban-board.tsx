@@ -57,7 +57,12 @@ export function KanbanBoard() {
   const activeTask = tasks?.find((task) => task.id === activeId);
 
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, {
+      // Require movement before activating drag
+      activationConstraint: {
+        distance: 8, // 8px of movement required before drag starts
+      },
+    }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     }),

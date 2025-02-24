@@ -29,7 +29,13 @@ const config = {
   /** Enables hot reloading for local packages without a build step */
   transpilePackages: INTERNAL_PACKAGES,
   images: {
-    remotePatterns: getRemotePatterns(),
+    remotePatterns: [
+      ...getRemotePatterns(),
+      {
+        protocol: 'https',
+        hostname: '*.supabase.co',
+      },
+    ],
   },
   logging: {
     fetches: {

@@ -296,7 +296,15 @@ const updateSubtaskAction = enhanceAction(
       logger.info(ctx, 'Subtask updated successfully');
       revalidatePath('/home/kanban');
 
-      return { success: true };
+      return {
+        success: true,
+        data: {
+          id: data.id,
+          task_id: data.task_id,
+          is_completed: data.is_completed,
+          title: data.title,
+        },
+      };
     } catch (error) {
       logger.error(ctx, 'Failed to update subtask', { error });
       return { success: false, error: 'Failed to update subtask' };

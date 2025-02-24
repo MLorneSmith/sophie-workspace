@@ -1,23 +1,116 @@
 'use server';
 
-import { del, put } from '@vercel/blob';
+import { randomUUID } from 'crypto';
 
 import { enhanceAction } from '@kit/next/actions';
+import { getSupabaseServerAdminClient } from '@kit/supabase/server-admin-client';
+import { getSupabaseServerClient } from '@kit/supabase/server-client';
+
+const BUCKET_NAME = 'task-images';
+const ALLOWED_MIME_TYPES = [
+  'image/jpeg',
+  'image/png',
+  'image/gif',
+  'image/webp',
+];
+const MAX_FILE_SIZE = 1024 * 1024; // 1MB
 
 export const uploadTaskImageAction = enhanceAction(
   async function (data: { file: File }, user) {
     try {
-      const blob = await put(data.file.name, data.file, {
-        access: 'public',
-        addRandomSuffix: true,
-        contentType: data.file.type,
-      });
+      // Validate file
+      if (!ALLOWED_MIME_TYPES.includes(data.file.type)) {
+        throw new Error('Invalid file type. Only images are allowed.');
+      }
+      if (data.file.size > MAX_FILE_SIZE) {
+        throw new Error('File size too large. Maximum size is 1MB.');
+      }
+
+      // Use admin client for bucket operations
+      const adminClient = getSupabaseServerAdminClient();
+      const { data: buckets } = await adminClient.storage.listBuckets();
+      if (!buckets?.find((b) => b.name === BUCKET_NAME)) {
+        // Create bucket
+        const { error: bucketError } = await adminClient.storage.createBucket(
+          BUCKET_NAME,
+          {
+            public: false,
+            fileSizeLimit: MAX_FILE_SIZE,
+          },
+        );
+        if (bucketError) throw bucketError;
+
+        // Enable RLS and create policies using admin client
+        await adminClient.from('storage').rpc('create_policies', {
+          bucket_id: BUCKET_NAME,
+          policies: [
+            {
+              name: 'Allow users to upload files',
+              definition: `
+                CREATE POLICY "Allow users to upload files"
+                ON storage.objects
+                FOR INSERT
+                TO authenticated
+                WITH CHECK (
+                  bucket_id = '${BUCKET_NAME}' AND
+                  (storage.foldername(name))[1] = auth.uid()::text
+                );
+              `,
+            },
+            {
+              name: 'Allow users to read files',
+              definition: `
+                CREATE POLICY "Allow users to read files"
+                ON storage.objects
+                FOR SELECT
+                TO authenticated
+                USING (bucket_id = '${BUCKET_NAME}');
+              `,
+            },
+            {
+              name: 'Allow users to delete their own files',
+              definition: `
+                CREATE POLICY "Allow users to delete their own files"
+                ON storage.objects
+                FOR DELETE
+                TO authenticated
+                USING (
+                  bucket_id = '${BUCKET_NAME}' AND
+                  (storage.foldername(name))[1] = auth.uid()::text
+                );
+              `,
+            },
+          ],
+        });
+      }
+
+      // Use regular client for file operations
+      const client = getSupabaseServerClient();
+      const fileExt = data.file.name.split('.').pop();
+      const fileName = `${user.id}/${randomUUID()}.${fileExt}`;
+
+      const { data: uploadData, error: uploadError } = await client.storage
+        .from(BUCKET_NAME)
+        .upload(fileName, data.file, {
+          upsert: false,
+          contentType: data.file.type,
+        });
+
+      if (uploadError) throw uploadError;
+
+      const { data: signedData, error: signedError } = await client.storage
+        .from(BUCKET_NAME)
+        .createSignedUrl(fileName, 60 * 60 * 24 * 7); // 7 days
+
+      if (signedError || !signedData) {
+        throw new Error('Failed to create signed URL');
+      }
 
       return {
         success: true,
         error: null,
         data: {
-          url: blob.url,
+          url: signedData.signedUrl,
         },
       };
     } catch (error) {
@@ -38,7 +131,21 @@ export const uploadTaskImageAction = enhanceAction(
 export const deleteTaskImageAction = enhanceAction(
   async function (data: { url: string }, user) {
     try {
-      await del(data.url);
+      const client = getSupabaseServerClient();
+
+      // Extract path from signed URL
+      const url = new URL(data.url);
+      const path = url.pathname.split('/').pop();
+      if (!path) throw new Error('Invalid file URL');
+
+      const filePath = `${user.id}/${path}`;
+
+      const { error } = await client.storage
+        .from(BUCKET_NAME)
+        .remove([filePath]);
+
+      if (error) throw error;
+
       return {
         success: true,
         error: null,

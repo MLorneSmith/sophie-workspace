@@ -15,6 +15,7 @@ import {
   createTaskAction,
   deleteTaskAction,
   resetTasksAction,
+  updateSubtaskAction,
   updateTaskAction,
   updateTaskStatusAction,
 } from '../server/server-actions';
@@ -211,6 +212,48 @@ export function useDeleteTask() {
         taskId: variables.id,
       };
       logger.error(ctx, 'Failed to delete task', { error });
+    },
+  });
+}
+
+export function useUpdateSubtask() {
+  const queryClient = useQueryClient();
+  const { user } = useUserWorkspace();
+
+  return useMutation({
+    mutationFn: updateSubtaskAction,
+    onMutate: async (variables) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ['tasks', user.id] });
+
+      // Snapshot the previous value
+      const previousTasks = queryClient.getQueryData(['tasks', user.id]);
+
+      // Optimistically update
+      queryClient.setQueryData(['tasks', user.id], (old: Task[] | undefined) =>
+        old?.map((t) =>
+          t.id === variables.task_id
+            ? {
+                ...t,
+                subtasks: t.subtasks?.map((s) =>
+                  s.id === variables.id
+                    ? { ...s, is_completed: variables.is_completed }
+                    : s,
+                ),
+              }
+            : t,
+        ),
+      );
+
+      return { previousTasks };
+    },
+    onError: (err, variables, context) => {
+      // Revert the optimistic update
+      queryClient.setQueryData(['tasks', user.id], context?.previousTasks);
+    },
+    onSettled: () => {
+      // Always refetch after error or success
+      queryClient.invalidateQueries({ queryKey: ['tasks', user.id] });
     },
   });
 }

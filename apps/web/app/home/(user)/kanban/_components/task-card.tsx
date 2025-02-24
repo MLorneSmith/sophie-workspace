@@ -2,9 +2,10 @@
 
 import { forwardRef, useState } from 'react';
 
+import Image from 'next/image';
+
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { useQueryClient } from '@tanstack/react-query';
 import { AlertCircleIcon, CheckCircle2Icon, Loader2Icon } from 'lucide-react';
 
 import { Alert, AlertDescription } from '@kit/ui/alert';
@@ -19,8 +20,8 @@ import { Checkbox } from '@kit/ui/checkbox';
 import { Trans } from '@kit/ui/trans';
 import { cn } from '@kit/ui/utils';
 
+import { useUpdateSubtask } from '../_lib/hooks/use-tasks';
 import type { Subtask, Task } from '../_lib/schema/task.schema';
-import { updateSubtaskAction } from '../_lib/server/server-actions';
 import { TaskDialog } from './task-dialog';
 
 interface TaskCardProps {
@@ -30,7 +31,7 @@ interface TaskCardProps {
 export const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
   ({ task }, ref) => {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const queryClient = useQueryClient();
+    const updateSubtask = useUpdateSubtask();
     const {
       attributes,
       listeners,
@@ -65,29 +66,24 @@ export const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
               task.priority === 'low' &&
                 'border-l-success hover:border-l-success/80 border-l-4',
             )}
+            onClick={(e) => {
+              if (!isDragging) {
+                setIsDialogOpen(true);
+              }
+            }}
             {...attributes}
             {...listeners}
           >
-            <button
-              type="button"
-              className="absolute inset-0 z-10 h-full w-full cursor-pointer bg-transparent"
-              onClick={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                if (!isDragging) {
-                  setIsDialogOpen(true);
-                }
-              }}
-            />
             <CardHeader className="space-y-3 p-4 pb-2">
               <CardTitle className="text-base">{task.title}</CardTitle>
               {task.image_url && (
                 <div className="relative h-32 w-full overflow-hidden rounded-lg">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
+                  <Image
                     src={task.image_url}
                     alt={task.title}
-                    className="h-full w-full object-cover"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, 33vw"
                   />
                 </div>
               )}
@@ -117,77 +113,25 @@ export const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
                           e.stopPropagation();
                           e.preventDefault();
                         }}
+                        onMouseDown={(e) => {
+                          // Prevent drag initiation when clicking subtasks
+                          e.stopPropagation();
+                        }}
                       >
                         <div className="relative z-20">
                           <Checkbox
                             id={subtask.id}
                             checked={subtask.is_completed}
                             disabled={(subtask as Subtask).isUpdating}
-                            onCheckedChange={async (checked) => {
-                              // Cast the subtask to include database fields
-                              const dbSubtask = subtask as Subtask;
-                              const optimisticSubtask: Subtask = {
-                                ...dbSubtask,
-                                isUpdating: true,
-                                error: false,
-                              };
-
-                              // Optimistically update the UI
-                              queryClient.setQueryData(
-                                ['tasks'],
-                                (old: Task[] | undefined) =>
-                                  old?.map((t) =>
-                                    t.id === task.id
-                                      ? {
-                                          ...t,
-                                          subtasks: t.subtasks?.map((s) =>
-                                            s.id === subtask.id
-                                              ? optimisticSubtask
-                                              : s,
-                                          ),
-                                        }
-                                      : t,
-                                  ),
-                              );
-
-                              try {
-                                await updateSubtaskAction({
-                                  id: subtask.id!,
-                                  task_id: task.id,
-                                  title: subtask.title,
-                                  is_completed: checked as boolean,
-                                });
-                              } catch (error) {
-                                // Show error state
-                                queryClient.setQueryData(
-                                  ['tasks'],
-                                  (old: Task[] | undefined) =>
-                                    old?.map((t) =>
-                                      t.id === task.id
-                                        ? {
-                                            ...t,
-                                            subtasks: t.subtasks?.map((s) =>
-                                              s.id === subtask.id
-                                                ? {
-                                                    ...(s as Subtask),
-                                                    isUpdating: false,
-                                                    error: true,
-                                                  }
-                                                : s,
-                                            ),
-                                          }
-                                        : t,
-                                    ),
-                                );
-                              }
+                            onCheckedChange={(checked) => {
+                              updateSubtask.mutate({
+                                id: subtask.id!,
+                                task_id: task.id,
+                                title: subtask.title,
+                                is_completed: checked as boolean,
+                              });
                             }}
                           />
-                          {(subtask as Subtask).isUpdating && (
-                            <Loader2Icon className="absolute top-0 -right-6 h-4 w-4 animate-spin" />
-                          )}
-                          {(subtask as Subtask).error && (
-                            <AlertCircleIcon className="text-destructive absolute top-0 -right-6 h-4 w-4" />
-                          )}
                         </div>
                         <label
                           htmlFor={subtask.id}

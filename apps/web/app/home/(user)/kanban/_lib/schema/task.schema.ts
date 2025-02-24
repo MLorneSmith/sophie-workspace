@@ -26,7 +26,10 @@ export const CreateTaskSchema = z.object({
       (file) => !file || file.size <= MAX_FILE_SIZE,
       'Image must be less than 1MB',
     ),
-  image_url: z.string().url().optional(),
+  image_url: z
+    .union([z.string().url(), z.string().startsWith('/')])
+    .nullable()
+    .optional(),
 });
 
 export const UpdateTaskSchema = CreateTaskSchema.extend({
