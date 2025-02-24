@@ -31,7 +31,13 @@ import { useSupabase } from '@kit/supabase/hooks/use-supabase';
 import { useSaveContext } from '../../_lib/contexts/save-context';
 import { LoadingAnimation } from '../suggestions/loading-animation';
 import './editor.css';
+import { FormatPreservationPlugin } from './plugins/format-preservation.plugin';
+import { FormattedElementNode } from './plugins/format/nodes/formatted-element.node';
 import { ToolbarPlugin } from './toolbar-plugin';
+import {
+  enhanceEditorStateForSerialization,
+  parseAndEnhanceContent,
+} from './utils/format-serialization';
 
 interface LexicalState {
   root: {
@@ -207,12 +213,15 @@ export const LexicalEditor = forwardRef<LexicalEditorRef, LexicalEditorProps>(
       },
     });
 
-    // Save handler
+    // Save handler with clone to prevent modification during serialization
     const saveContent = useCallback(
       async (editorState: EditorState) => {
         return new Promise<void>((resolve, reject) => {
           try {
-            const editorStateJSON = editorState.toJSON();
+            // Clone the state to prevent modification during serialization
+            const editorStateClone = editorState.clone();
+            const editorStateJSON = editorStateClone.toJSON();
+
             console.debug('Serializing editor state:', {
               sectionType,
               state: editorStateJSON,
@@ -220,8 +229,12 @@ export const LexicalEditor = forwardRef<LexicalEditorRef, LexicalEditorProps>(
 
             // Ensure we have a valid Lexical state object
             if (typeof editorStateJSON === 'object' && editorStateJSON.root) {
-              // Call updateContent and wait for the mutation to complete
-              updateContent(editorStateJSON, {
+              // Enhance the editor state JSON for serialization
+              const enhancedStateJSON =
+                enhanceEditorStateForSerialization(editorStateJSON);
+
+              // Call updateContent with the enhanced state and wait for the mutation to complete
+              updateContent(enhancedStateJSON, {
                 onSuccess: () => resolve(),
                 onError: (error) => {
                   console.error('Failed to save content:', error);
@@ -279,12 +292,17 @@ export const LexicalEditor = forwardRef<LexicalEditorRef, LexicalEditorProps>(
                 // Parse and validate the last good state
                 const parsedState = JSON.parse(JSON.stringify(lastGoodState));
                 if (parsedState?.root?.children?.length) {
-                  // Update the editor state outside of an update callback
-                  editorRef.current.setEditorState(
-                    editorRef.current.parseEditorState(
-                      JSON.stringify(parsedState),
-                    ),
-                  );
+                  // Enhance the state JSON for serialization
+                  const enhancedState =
+                    enhanceEditorStateForSerialization(parsedState);
+
+                  // Create a new editor state with format preservation
+                  const stateJson = JSON.stringify(enhancedState);
+                  const recoveredState =
+                    editorRef.current.parseEditorState(stateJson);
+
+                  // Apply the recovered state immediately
+                  editorRef.current.setEditorState(recoveredState);
                 }
               }
             } catch (recoveryError) {
@@ -423,42 +441,9 @@ export const LexicalEditor = forwardRef<LexicalEditorRef, LexicalEditorProps>(
       },
     };
 
-    // Parse initial content if it's a string
+    // Parse initial content using the format serialization utility
     const initialContent = useCallback(() => {
-      if (!content) {
-        console.debug('No content provided, using default state');
-        return JSON.stringify(DEFAULT_EDITOR_STATE);
-      }
-
-      try {
-        const parsed =
-          typeof content === 'string' ? JSON.parse(content) : content;
-
-        // Validate the parsed content has the required structure and at least one text node
-        if (
-          parsed?.root?.children?.[0]?.children?.[0]?.type === 'text' &&
-          parsed.root.children[0].type === 'paragraph'
-        ) {
-          // Ensure direction is set to prevent empty root node error
-          if (!parsed.root.direction) {
-            parsed.root.direction = 'ltr';
-          }
-          if (!parsed.root.children[0].direction) {
-            parsed.root.children[0].direction = 'ltr';
-          }
-
-          return JSON.stringify(parsed);
-        }
-
-        console.debug(
-          'Invalid content structure, using default state:',
-          content,
-        );
-        return JSON.stringify(DEFAULT_EDITOR_STATE);
-      } catch (e) {
-        console.debug('Failed to parse content:', e);
-        return JSON.stringify(DEFAULT_EDITOR_STATE);
-      }
+      return parseAndEnhanceContent(content);
     }, [content]);
 
     // Create a KeyboardEventHandler component to handle keyboard shortcuts
@@ -489,7 +474,7 @@ export const LexicalEditor = forwardRef<LexicalEditorRef, LexicalEditorProps>(
         console.error('Lexical Editor Error:', error);
       },
       editorState: initialContent(), // Pass JSON string directly
-      nodes: [ListNode, ListItemNode, HeadingNode],
+      nodes: [ListNode, ListItemNode, HeadingNode, FormattedElementNode],
       onChange,
       editable: true,
       onBlur,
@@ -538,6 +523,9 @@ export const LexicalEditor = forwardRef<LexicalEditorRef, LexicalEditorProps>(
         <EditorRefPlugin editorRef={editorRef} />
         <OnChangePlugin onChange={onChange} />
         <KeyboardEventHandler />
+
+        {/* Single focused format preservation plugin */}
+        <FormatPreservationPlugin />
         <div className="editor-shell relative flex h-full flex-col rounded-lg border">
           <ToolbarPlugin />
           <div className="flex-1 p-4">
