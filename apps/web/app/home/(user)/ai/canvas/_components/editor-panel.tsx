@@ -5,7 +5,6 @@ import { Suspense, useCallback, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 import { $createHeadingNode } from '@lexical/rich-text';
-import { useQuery } from '@tanstack/react-query';
 import { $createParagraphNode, $createTextNode, $getRoot } from 'lexical';
 
 import { type BaseImprovement } from '@kit/ai-gateway/src/prompts/types/improvements';
@@ -20,9 +19,12 @@ import { Spinner } from '@kit/ui/spinner';
 import { Database } from '~/lib/database.types';
 
 import { generateIdeasAction } from '../_actions/generate-ideas';
+import { useOutlineContent } from '../_lib/hooks/use-outline-content';
 import { ActionToolbar } from './action-toolbar';
 import { type LexicalEditorRef } from './editor/lexical-editor';
+import { OutlineTabContent } from './editor/outline-tab-content';
 import { TabContent } from './editor/tab-content';
+import { LoadingAnimation } from './suggestions/loading-animation';
 import { LOADING_MESSAGES } from './suggestions/loading-messages';
 import { SuggestionsPane } from './suggestions/suggestions-pane';
 
@@ -50,26 +52,16 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
   const searchParams = useSearchParams();
   const submissionId = searchParams.get('id') ?? '';
   const supabase = useSupabase<Database>();
-  const { data: content = '' } = useQuery<string>({
-    queryKey: ['submission', submissionId, 'content', sectionType],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('building_blocks_submissions')
-        .select('*')
-        .eq('id', submissionId)
-        .single();
-
-      if (error) throw error;
-      if (!data) return '';
-
-      return (data as Record<string, string>)[sectionType] || '';
-    },
-  });
+  const { data: content = '', regenerateOutline } =
+    useOutlineContent(submissionId);
+  const contentString =
+    typeof content === 'string' ? content : JSON.stringify(content);
 
   const editorRef = useRef<LexicalEditorRef>(null);
   const [suggestions, setSuggestions] = useState<BaseImprovement[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [messageIndex, setMessageIndex] = useState(0);
+  const [isRegeneratingOutline, setIsRegeneratingOutline] = useState(false);
 
   const handleAcceptImprovement = useCallback(
     (improvement: BaseImprovement) => {
@@ -97,6 +89,13 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
     },
     [editorRef],
   );
+
+  const handleImproveStructure = useCallback(async () => {
+    if (!editorRef.current || !submissionId) return;
+
+    // TODO: Implement improve structure functionality
+    console.log('Improve structure clicked');
+  }, [editorRef, submissionId]);
 
   const handleGenerateIdeas = useCallback(async () => {
     if (!editorRef.current || !submissionId) return;
@@ -137,7 +136,17 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
           <div className="flex h-full flex-col">
             <div className="flex-1 overflow-auto">
               <Suspense fallback={<LoadingFallback />}>
-                <TabContent ref={editorRef} sectionType={sectionType} />
+                {sectionType === 'outline' ? (
+                  isRegeneratingOutline ? (
+                    <div className="h-full">
+                      <LoadingAnimation messageIndex={messageIndex} />
+                    </div>
+                  ) : (
+                    <OutlineTabContent ref={editorRef} />
+                  )
+                ) : (
+                  <TabContent ref={editorRef} sectionType={sectionType} />
+                )}
               </Suspense>
             </div>
             <div className="p-4">
@@ -145,6 +154,26 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
                 editorRef={editorRef}
                 sectionType={sectionType}
                 onGenerateImprovements={handleGenerateIdeas}
+                onResetOutline={
+                  sectionType === 'outline'
+                    ? async () => {
+                        setMessageIndex(
+                          (current) => (current + 1) % LOADING_MESSAGES.length,
+                        );
+                        setIsRegeneratingOutline(true);
+                        try {
+                          await regenerateOutline();
+                        } catch (error) {
+                          console.error('Failed to regenerate outline:', error);
+                        } finally {
+                          setIsRegeneratingOutline(false);
+                        }
+                      }
+                    : undefined
+                }
+                onImproveStructure={
+                  sectionType === 'answer' ? handleImproveStructure : undefined
+                }
               />
             </div>
           </div>
@@ -153,7 +182,7 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
         <ResizablePanel defaultSize={34}>
           <Suspense fallback={<LoadingFallback />}>
             <SuggestionsPane
-              content={content}
+              content={contentString}
               submissionId={submissionId}
               type={sectionType}
               onAcceptImprovement={handleAcceptImprovement}

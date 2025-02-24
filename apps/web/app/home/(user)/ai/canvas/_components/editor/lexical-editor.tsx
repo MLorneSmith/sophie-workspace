@@ -5,6 +5,7 @@ import {
   useCallback,
   useEffect,
   useImperativeHandle,
+  useMemo,
   useRef,
 } from 'react';
 
@@ -28,6 +29,7 @@ import { type BaseImprovement } from '@kit/ai-gateway/src/prompts/types/improvem
 import { useSupabase } from '@kit/supabase/hooks/use-supabase';
 
 import { useSaveContext } from '../../_lib/contexts/save-context';
+import { LoadingAnimation } from '../suggestions/loading-animation';
 import './editor.css';
 import { ToolbarPlugin } from './toolbar-plugin';
 
@@ -47,6 +49,7 @@ interface LexicalEditorProps {
   submissionId: string;
   sectionType: 'situation' | 'complication' | 'answer' | 'outline';
   onAcceptImprovement?: (improvement: BaseImprovement) => void;
+  isLoading?: boolean;
 }
 
 export interface LexicalEditorRef {
@@ -145,7 +148,7 @@ export const LexicalEditor = forwardRef<LexicalEditorRef, LexicalEditorProps>(
         console.debug('Saving content:', { sectionType, newContent });
         const { data, error } = await supabase
           .from('building_blocks_submissions')
-          .update({ [sectionType]: newContent })
+          .update({ [sectionType]: JSON.stringify(newContent) })
           .eq('id', submissionId)
           .select()
           .single();
@@ -241,37 +244,109 @@ export const LexicalEditor = forwardRef<LexicalEditorRef, LexicalEditorProps>(
       [sectionType, updateContent],
     );
 
-    // Register save callback
+    // Save handler with validation and optimized state management
+    const saveWithValidation = useCallback(
+      async (editorState: EditorState) => {
+        try {
+          setSaveStatus('saving');
+
+          // Validate editor state structure
+          const stateJSON = editorState.toJSON();
+          if (!stateJSON?.root?.children?.length) {
+            throw new Error('Invalid editor state structure');
+          }
+
+          // Save content with discrete update for synchronous commit
+          await saveContent(editorState);
+          setSaveStatus('saved');
+          setTimeout(() => setSaveStatus('idle'), 2000);
+        } catch (error) {
+          console.error('Error saving content:', error);
+          setSaveStatus('error');
+          setTimeout(() => setSaveStatus('idle'), 3000);
+
+          // Only attempt recovery if the editor instance still exists
+          if (editorRef.current) {
+            try {
+              // Get the last known good state
+              const lastGoodState = queryClient.getQueryData([
+                'submission',
+                submissionId,
+                sectionType,
+              ]);
+
+              if (lastGoodState) {
+                // Parse and validate the last good state
+                const parsedState = JSON.parse(JSON.stringify(lastGoodState));
+                if (parsedState?.root?.children?.length) {
+                  // Update the editor state outside of an update callback
+                  editorRef.current.setEditorState(
+                    editorRef.current.parseEditorState(
+                      JSON.stringify(parsedState),
+                    ),
+                  );
+                }
+              }
+            } catch (recoveryError) {
+              console.error('Failed to recover editor state:', recoveryError);
+            }
+          }
+        }
+      },
+      [
+        saveContent,
+        setSaveStatus,
+        editorRef,
+        queryClient,
+        submissionId,
+        sectionType,
+      ],
+    );
+
+    // Register save callback with validation
     useEffect(() => {
       const callback = async () => {
         if (editorRef.current) {
           try {
             const editorState = editorRef.current.getEditorState();
-            await saveContent(editorState);
+            await saveWithValidation(editorState);
           } catch (error) {
             console.error('Save callback failed:', error);
           }
         }
       };
       registerSaveCallback(callback);
-    }, [registerSaveCallback, saveContent]);
+    }, [registerSaveCallback, saveWithValidation]);
 
-    // Debounced save handler with status updates
-    const debouncedSave = useCallback(
-      debounce(async (editorState: EditorState) => {
-        try {
-          setSaveStatus('saving');
-          await saveContent(editorState);
-          setSaveStatus('saved');
-          setTimeout(() => setSaveStatus('idle'), 2000);
-        } catch (error) {
-          setSaveStatus('error');
-          setTimeout(() => setSaveStatus('idle'), 3000);
-          console.error('Error saving content:', error);
-        }
-      }, 500),
-      [saveContent, setSaveStatus],
+    // Debounced save handler
+    const debouncedSave = useMemo(
+      () =>
+        debounce(async (editorState: EditorState) => {
+          const stateToSave = editorState.clone();
+
+          // Implement a basic retry mechanism with exponential backoff
+          const attemptSave = async (retries = 3, delay = 1000) => {
+            try {
+              await saveWithValidation(stateToSave);
+            } catch (error) {
+              if (retries > 0) {
+                console.log(`Retrying save... (${retries} attempts remaining)`);
+                setTimeout(() => attemptSave(retries - 1, delay * 2), delay);
+              }
+            }
+          };
+
+          attemptSave();
+        }, 1000),
+      [saveWithValidation],
     );
+
+    // Cleanup debounced save on unmount
+    useEffect(() => {
+      return () => {
+        debouncedSave.cancel();
+      };
+    }, [debouncedSave]);
 
     // Editor change handler
     const onChange = useCallback(
@@ -281,38 +356,40 @@ export const LexicalEditor = forwardRef<LexicalEditorRef, LexicalEditorProps>(
       [debouncedSave],
     );
 
-    // Save on blur
+    // Save on blur with validation
     const onBlur = useCallback(() => {
       if (editorRef.current) {
-        debouncedSave(editorRef.current.getEditorState());
+        const currentState = editorRef.current.getEditorState();
+        saveWithValidation(currentState);
       }
-    }, [debouncedSave]);
+    }, [saveWithValidation]);
 
-    // Save before unload
+    // Save before unload with validation
     useEffect(() => {
       const handleBeforeUnload = () => {
         if (editorRef.current) {
-          // Force immediate save without debounce
-          saveContent(editorRef.current.getEditorState());
+          const currentState = editorRef.current.getEditorState();
+          // Force immediate save with validation
+          saveWithValidation(currentState);
         }
       };
 
       window.addEventListener('beforeunload', handleBeforeUnload);
       return () =>
         window.removeEventListener('beforeunload', handleBeforeUnload);
-    }, [saveContent]);
+    }, [saveWithValidation]);
 
-    // Save on unmount
+    // Save on unmount with validation
     useEffect(() => {
       return () => {
         if (editorRef.current) {
           const editorState = editorRef.current.getEditorState();
-          saveContent(editorState).catch((error) => {
+          saveWithValidation(editorState).catch((error) => {
             console.error('Failed to save on unmount:', error);
           });
         }
       };
-    }, [saveContent]);
+    }, [saveWithValidation]);
 
     const DEFAULT_EDITOR_STATE = {
       root: {
@@ -453,6 +530,11 @@ export const LexicalEditor = forwardRef<LexicalEditorRef, LexicalEditorProps>(
         initialConfig={initialConfig}
         key={`${submissionId}-${sectionType}`}
       >
+        {props.isLoading && (
+          <div className="bg-background/80 absolute inset-0 z-50 backdrop-blur-sm">
+            <LoadingAnimation messageIndex={0} />
+          </div>
+        )}
         <EditorRefPlugin editorRef={editorRef} />
         <OnChangePlugin onChange={onChange} />
         <KeyboardEventHandler />

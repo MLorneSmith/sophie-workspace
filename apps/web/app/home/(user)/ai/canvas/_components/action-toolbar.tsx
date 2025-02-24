@@ -6,7 +6,7 @@ import { useSearchParams } from 'next/navigation';
 
 import { $createHeadingNode } from '@lexical/rich-text';
 import { $createParagraphNode, $createTextNode, $getRoot } from 'lexical';
-import { FileText, LayoutTemplate, Lightbulb } from 'lucide-react';
+import { FileText, LayoutTemplate, Lightbulb, RotateCcw } from 'lucide-react';
 
 import { useUserWorkspace } from '@kit/accounts/hooks/use-user-workspace';
 import {
@@ -25,12 +25,16 @@ interface ActionToolbarProps {
   editorRef: React.RefObject<LexicalEditorRef | null>;
   sectionType: ImprovementType;
   onGenerateImprovements?: (improvements: BaseImprovement[]) => void;
+  onResetOutline?: () => Promise<void>;
+  onImproveStructure?: () => Promise<void>;
 }
 
 export function ActionToolbar({
   editorRef,
   sectionType,
   onGenerateImprovements,
+  onResetOutline,
+  onImproveStructure,
 }: ActionToolbarProps) {
   const [isSimplifying, setIsSimplifying] = useState(false);
   const { user } = useUserWorkspace();
@@ -117,38 +121,64 @@ export function ActionToolbar({
 
   return (
     <div className="flex gap-2">
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleSimplifyText}
-            disabled={isSimplifying}
-          >
-            <FileText className="mr-2 h-4 w-4" />
-            Simplify Text
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>Make the text clearer and simpler</TooltipContent>
-      </Tooltip>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button variant="outline" size="sm" onClick={handleGenerateIdeas}>
-            <Lightbulb className="mr-2 h-4 w-4" />
-            Add Ideas
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>Generate additional ideas</TooltipContent>
-      </Tooltip>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button variant="outline" size="sm">
-            <LayoutTemplate className="mr-2 h-4 w-4" />
-            Improve Structure
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>Enhance document structure</TooltipContent>
-      </Tooltip>
+      {/* Reset Outline - Only for outline tab */}
+      {sectionType === 'outline' && onResetOutline && (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="outline" size="sm" onClick={onResetOutline}>
+              <RotateCcw className="mr-2 h-4 w-4" />
+              Reset Outline
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            Regenerate outline from current situation, complication, and answer
+          </TooltipContent>
+        </Tooltip>
+      )}
+
+      {/* Simplify Text - For all tabs except outline */}
+      {sectionType !== 'outline' && (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleSimplifyText}
+              disabled={isSimplifying}
+            >
+              <FileText className="mr-2 h-4 w-4" />
+              Simplify Text
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Make the text clearer and simpler</TooltipContent>
+        </Tooltip>
+      )}
+
+      {/* Add Ideas - For all tabs except outline */}
+      {sectionType !== 'outline' && (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="outline" size="sm" onClick={handleGenerateIdeas}>
+              <Lightbulb className="mr-2 h-4 w-4" />
+              Add Ideas
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Generate additional ideas</TooltipContent>
+        </Tooltip>
+      )}
+
+      {/* Improve Structure - Only for answer tab */}
+      {sectionType === 'answer' && onImproveStructure && (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="outline" size="sm" onClick={onImproveStructure}>
+              <LayoutTemplate className="mr-2 h-4 w-4" />
+              Improve Structure
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Enhance document structure</TooltipContent>
+        </Tooltip>
+      )}
     </div>
   );
 }
