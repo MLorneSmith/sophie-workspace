@@ -41,46 +41,25 @@ export const uploadTaskImageAction = enhanceAction(
         if (bucketError) throw bucketError;
 
         // Enable RLS and create policies using admin client
-        await adminClient.from('storage').rpc('create_policies', {
-          bucket_id: BUCKET_NAME,
-          policies: [
-            {
-              name: 'Allow users to upload files',
-              definition: `
-                CREATE POLICY "Allow users to upload files"
-                ON storage.objects
-                FOR INSERT
-                TO authenticated
-                WITH CHECK (
-                  bucket_id = '${BUCKET_NAME}' AND
-                  (storage.foldername(name))[1] = auth.uid()::text
-                );
-              `,
-            },
-            {
-              name: 'Allow users to read files',
-              definition: `
-                CREATE POLICY "Allow users to read files"
-                ON storage.objects
-                FOR SELECT
-                TO authenticated
-                USING (bucket_id = '${BUCKET_NAME}');
-              `,
-            },
-            {
-              name: 'Allow users to delete their own files',
-              definition: `
-                CREATE POLICY "Allow users to delete their own files"
-                ON storage.objects
-                FOR DELETE
-                TO authenticated
-                USING (
-                  bucket_id = '${BUCKET_NAME}' AND
-                  (storage.foldername(name))[1] = auth.uid()::text
-                );
-              `,
-            },
-          ],
+        // Create upload policy
+        await adminClient.storage.from(BUCKET_NAME).createPolicy({
+          name: 'Allow users to upload files',
+          allowed_operations: ['INSERT'],
+          definition: `bucket_id = '${BUCKET_NAME}' AND (storage.foldername(name))[1] = auth.uid()::text`,
+        });
+
+        // Create read policy
+        await adminClient.storage.from(BUCKET_NAME).createPolicy({
+          name: 'Allow users to read files',
+          allowed_operations: ['SELECT'],
+          definition: `bucket_id = '${BUCKET_NAME}'`,
+        });
+
+        // Create delete policy
+        await adminClient.storage.from(BUCKET_NAME).createPolicy({
+          name: 'Allow users to delete their own files',
+          allowed_operations: ['DELETE'],
+          definition: `bucket_id = '${BUCKET_NAME}' AND (storage.foldername(name))[1] = auth.uid()::text`,
         });
       }
 
