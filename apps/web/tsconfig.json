@@ -6,7 +6,10 @@
       "~/*": ["./app/*"],
       "~/config/*": ["./config/*"],
       "~/components/*": ["./components/*"],
-      "~/lib/*": ["./lib/*"]
+      "~/lib/*": ["./lib/*"],
+      "@kit/*": ["../../packages/*/src"],
+      "@kit/payload": ["../../packages/cms/payload/src"],
+      "@kit/payload/renderer": ["../../packages/cms/payload/src/renderer"]
     },
     "plugins": [
       {

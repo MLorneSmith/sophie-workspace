@@ -39,6 +39,12 @@ async function getContentRenderer(type: CmsType) {
       return WordpressContentRenderer;
     }
 
+    case 'payload': {
+      const { PayloadContentRenderer } = await import('@kit/payload/renderer');
+
+      return PayloadContentRenderer;
+    }
+
     default: {
       console.error(`Unknown CMS client: ${type as string}`);
 

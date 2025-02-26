@@ -21,6 +21,12 @@ cmsRegistry.register('keystatic', async () => {
   return createKeystaticClient();
 });
 
+// Register the Payload CMS client implementation
+cmsRegistry.register('payload', async () => {
+  const { createPayloadClient } = await import('@kit/payload');
+  return createPayloadClient();
+});
+
 /**
  * Creates a CMS client based on the specified type.
  *

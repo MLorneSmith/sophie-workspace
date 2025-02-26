@@ -15,7 +15,13 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "noUncheckedIndexedAccess": true
+    "noUncheckedIndexedAccess": true,
+    "baseUrl": ".",
+    "paths": {
+      "@kit/*": ["packages/*/src"],
+      "@kit/payload": ["packages/cms/payload/src"],
+      "@kit/payload/renderer": ["packages/cms/payload/src/renderer"]
+    }
   },
   "exclude": ["node_modules"]
 }

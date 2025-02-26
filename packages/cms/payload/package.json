@@ -1,0 +1,30 @@
+{
+  "name": "@kit/payload",
+  "version": "0.1.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w"
+  },
+  "dependencies": {
+    "@kit/cms-types": "workspace:*",
+    "payload": "^1.0.0",
+    "react": "19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.4",
+    "@types/react": "19.0.10",
+    "typescript": "^5.7.3"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./renderer": {
+      "import": "./dist/renderer.js",
+      "types": "./dist/renderer.d.ts"
+    }
+  }
+}
