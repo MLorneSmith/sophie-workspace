@@ -3,14 +3,6 @@ module.exports = {
   siteUrl:
     process.env.NEXT_PUBLIC_SITE_URL ||
     'https://2025slideheroes-web.vercel.app',
-  generateRobotsTxt: true,
-  robotsTxtOptions: {
-    policies: [
-      {
-        userAgent: '*',
-        allow: '/',
-      },
-    ],
-  },
+  generateRobotsTxt: false,
   outDir: './public',
 };
