@@ -6,6 +6,20 @@ import { enhanceAction } from '@kit/next/actions';
 import { getSupabaseServerAdminClient } from '@kit/supabase/server-admin-client';
 import { getSupabaseServerClient } from '@kit/supabase/server-client';
 
+// Define a type for the createPolicy method
+interface StoragePolicy {
+  name: string;
+  allowed_operations: string[];
+  definition: string;
+}
+
+// Define a type for the storage bucket with createPolicy method
+interface StorageBucketWithPolicy {
+  createPolicy(
+    policy: StoragePolicy,
+  ): Promise<{ data: unknown; error: unknown }>;
+}
+
 const BUCKET_NAME = 'task-images';
 const ALLOWED_MIME_TYPES = [
   'image/jpeg',
@@ -42,21 +56,33 @@ export const uploadTaskImageAction = enhanceAction(
 
         // Enable RLS and create policies using admin client
         // Create upload policy
-        await (adminClient.storage.from(BUCKET_NAME) as any).createPolicy({
+        await (
+          adminClient.storage.from(
+            BUCKET_NAME,
+          ) as unknown as StorageBucketWithPolicy
+        ).createPolicy({
           name: 'Allow users to upload files',
           allowed_operations: ['INSERT'],
           definition: `bucket_id = '${BUCKET_NAME}' AND (storage.foldername(name))[1] = auth.uid()::text`,
         });
 
         // Create read policy
-        await (adminClient.storage.from(BUCKET_NAME) as any).createPolicy({
+        await (
+          adminClient.storage.from(
+            BUCKET_NAME,
+          ) as unknown as StorageBucketWithPolicy
+        ).createPolicy({
           name: 'Allow users to read files',
           allowed_operations: ['SELECT'],
           definition: `bucket_id = '${BUCKET_NAME}'`,
         });
 
         // Create delete policy
-        await (adminClient.storage.from(BUCKET_NAME) as any).createPolicy({
+        await (
+          adminClient.storage.from(
+            BUCKET_NAME,
+          ) as unknown as StorageBucketWithPolicy
+        ).createPolicy({
           name: 'Allow users to delete their own files',
           allowed_operations: ['DELETE'],
           definition: `bucket_id = '${BUCKET_NAME}' AND (storage.foldername(name))[1] = auth.uid()::text`,
@@ -68,7 +94,7 @@ export const uploadTaskImageAction = enhanceAction(
       const fileExt = data.file.name.split('.').pop();
       const fileName = `${user.id}/${randomUUID()}.${fileExt}`;
 
-      const { data: uploadData, error: uploadError } = await client.storage
+      const { data: _uploadData, error: uploadError } = await client.storage
         .from(BUCKET_NAME)
         .upload(fileName, data.file, {
           upsert: false,
