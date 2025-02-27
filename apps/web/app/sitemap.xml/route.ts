@@ -2,8 +2,6 @@ import { getServerSideSitemap } from 'next-sitemap';
 
 import { createCmsClient } from '@kit/cms';
 
-import appConfig from '~/config/app.config';
-
 /**
  * @description The maximum age of the sitemap in seconds.
  * This is used to set the cache-control header for the sitemap. The cache-control header is used to control how long the sitemap is cached.
@@ -38,50 +36,76 @@ function getPaths() {
     // add more paths here
   ];
 
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    'https://2025slideheroes-web.vercel.app';
+
   return paths.map((path) => {
     return {
-      loc: new URL(path, appConfig.url).href,
+      loc: new URL(path, siteUrl).href,
       lastmod: new Date().toISOString(),
     };
   });
 }
 
 async function getContentItems() {
-  const client = await createCmsClient();
+  try {
+    const client = await createCmsClient();
+    const siteUrl =
+      process.env.NEXT_PUBLIC_SITE_URL ||
+      'https://2025slideheroes-web.vercel.app';
 
-  // do not paginate the content items
-  const limit = Infinity;
-  const posts = client
-    .getContentItems({
-      collection: 'posts',
-      content: false,
-      limit,
-    })
-    .then((response) => response.items)
-    .then((posts) =>
-      posts.map((post) => ({
-        loc: new URL(`/blog/${post.slug}`, appConfig.url).href,
-        lastmod: post.publishedAt
-          ? new Date(post.publishedAt).toISOString()
-          : new Date().toISOString(),
-      })),
+    // do not paginate the content items
+    const limit = Infinity;
+
+    // Fetch posts with error handling
+    const postsPromise = client
+      .getContentItems({
+        collection: 'posts',
+        content: false,
+        limit,
+      })
+      .then((response) => response.items)
+      .then((posts) =>
+        posts.map((post) => ({
+          loc: new URL(`/blog/${post.slug}`, siteUrl).href,
+          lastmod: post.publishedAt
+            ? new Date(post.publishedAt).toISOString()
+            : new Date().toISOString(),
+        })),
+      )
+      .catch((error) => {
+        console.error('Error fetching posts for sitemap:', error);
+        return []; // Return empty array on error
+      });
+
+    // Fetch docs with error handling
+    const docsPromise = client
+      .getContentItems({
+        collection: 'documentation',
+        content: false,
+        limit,
+      })
+      .then((response) => response.items)
+      .then((docs) =>
+        docs.map((doc) => ({
+          loc: new URL(`/docs/${doc.slug}`, siteUrl).href,
+          lastmod: doc.publishedAt
+            ? new Date(doc.publishedAt).toISOString()
+            : new Date().toISOString(),
+        })),
+      )
+      .catch((error) => {
+        console.error('Error fetching docs for sitemap:', error);
+        return []; // Return empty array on error
+      });
+
+    // Combine results
+    return Promise.all([postsPromise, docsPromise]).then((items) =>
+      items.flat(),
     );
-
-  const docs = client
-    .getContentItems({
-      collection: 'documentation',
-      content: false,
-      limit,
-    })
-    .then((response) => response.items)
-    .then((docs) =>
-      docs.map((doc) => ({
-        loc: new URL(`/docs/${doc.slug}`, appConfig.url).href,
-        lastmod: doc.publishedAt
-          ? new Date(doc.publishedAt).toISOString()
-          : new Date().toISOString(),
-      })),
-    );
-
-  return Promise.all([posts, docs]).then((items) => items.flat());
+  } catch (error) {
+    console.error('Error generating content items for sitemap:', error);
+    return []; // Return empty array if CMS client creation fails
+  }
 }
