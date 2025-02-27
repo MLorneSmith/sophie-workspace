@@ -54,7 +54,7 @@ function generateMessages(
       throw new Error('Presentation type required for title suggestions');
 
     const messages = PromptManager.loadTemplate('title-suggestions');
-    return messages.map((message) => ({
+    return messages.map((message: ChatMessage) => ({
       ...message,
       content: PromptManager.compile(message.content, {
         presentation_type: presentationType,
@@ -69,7 +69,7 @@ function generateMessages(
     }
 
     const messages = PromptManager.loadTemplate('audience-suggestions');
-    return messages.map((message) => ({
+    return messages.map((message: ChatMessage) => ({
       ...message,
       content: PromptManager.compile(message.content, {
         title,

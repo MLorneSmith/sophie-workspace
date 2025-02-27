@@ -77,7 +77,7 @@ function getTestMessages(
       messages = PromptManager.loadTemplate('test-outline');
 
       // Compile each message's content
-      return messages.map((message) => ({
+      return messages.map((message: ChatMessage) => ({
         ...message,
         content: PromptManager.compile(message.content, {
           topic: (formData.get('topic') as string) || 'AI Technology',
