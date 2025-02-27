@@ -1,0 +1,22 @@
+{
+  "name": "@kit/content-migrations",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "migrate:docs": "tsx src/scripts/migrate-docs.ts",
+    "migrate:all": "tsx src/scripts/migrate-all.ts",
+    "test:env": "tsx src/scripts/test-env.ts"
+  },
+  "dependencies": {
+    "@payloadcms/db-postgres": "latest",
+    "dotenv": "^16.3.1",
+    "gray-matter": "^4.0.3",
+    "payload": "3.24.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.4",
+    "tsx": "^4.7.0",
+    "typescript": "^5.7.3"
+  }
+}
