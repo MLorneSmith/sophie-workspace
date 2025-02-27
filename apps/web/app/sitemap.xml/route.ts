@@ -2,6 +2,8 @@ import { getServerSideSitemap } from 'next-sitemap';
 
 import { createCmsClient } from '@kit/cms';
 
+import appConfig from '~/config/app.config';
+
 /**
  * @description The maximum age of the sitemap in seconds.
  * This is used to set the cache-control header for the sitemap. The cache-control header is used to control how long the sitemap is cached.
@@ -36,13 +38,9 @@ function getPaths() {
     // add more paths here
   ];
 
-  const siteUrl =
-    process.env.NEXT_PUBLIC_SITE_URL ||
-    'https://2025slideheroes-web.vercel.app';
-
   return paths.map((path) => {
     return {
-      loc: new URL(path, siteUrl).href,
+      loc: new URL(path, appConfig.url).href,
       lastmod: new Date().toISOString(),
     };
   });
@@ -51,9 +49,6 @@ function getPaths() {
 async function getContentItems() {
   try {
     const client = await createCmsClient();
-    const siteUrl =
-      process.env.NEXT_PUBLIC_SITE_URL ||
-      'https://2025slideheroes-web.vercel.app';
 
     // do not paginate the content items
     const limit = Infinity;
@@ -68,7 +63,7 @@ async function getContentItems() {
       .then((response) => response.items)
       .then((posts) =>
         posts.map((post) => ({
-          loc: new URL(`/blog/${post.slug}`, siteUrl).href,
+          loc: new URL(`/blog/${post.slug}`, appConfig.url).href,
           lastmod: post.publishedAt
             ? new Date(post.publishedAt).toISOString()
             : new Date().toISOString(),
@@ -89,7 +84,7 @@ async function getContentItems() {
       .then((response) => response.items)
       .then((docs) =>
         docs.map((doc) => ({
-          loc: new URL(`/docs/${doc.slug}`, siteUrl).href,
+          loc: new URL(`/docs/${doc.slug}`, appConfig.url).href,
           lastmod: doc.publishedAt
             ? new Date(doc.publishedAt).toISOString()
             : new Date().toISOString(),
