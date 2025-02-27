@@ -2,9 +2,15 @@
  * Script to run all content migration scripts
  */
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-// Load environment variables
-dotenv.config();
+// Get the current file's directory
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load environment variables from the package's .env file
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
 /**
  * Runs all content migration scripts
