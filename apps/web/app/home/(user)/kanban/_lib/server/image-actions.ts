@@ -42,21 +42,21 @@ export const uploadTaskImageAction = enhanceAction(
 
         // Enable RLS and create policies using admin client
         // Create upload policy
-        await adminClient.storage.from(BUCKET_NAME).createPolicy({
+        await (adminClient.storage.from(BUCKET_NAME) as any).createPolicy({
           name: 'Allow users to upload files',
           allowed_operations: ['INSERT'],
           definition: `bucket_id = '${BUCKET_NAME}' AND (storage.foldername(name))[1] = auth.uid()::text`,
         });
 
         // Create read policy
-        await adminClient.storage.from(BUCKET_NAME).createPolicy({
+        await (adminClient.storage.from(BUCKET_NAME) as any).createPolicy({
           name: 'Allow users to read files',
           allowed_operations: ['SELECT'],
           definition: `bucket_id = '${BUCKET_NAME}'`,
         });
 
         // Create delete policy
-        await adminClient.storage.from(BUCKET_NAME).createPolicy({
+        await (adminClient.storage.from(BUCKET_NAME) as any).createPolicy({
           name: 'Allow users to delete their own files',
           allowed_operations: ['DELETE'],
           definition: `bucket_id = '${BUCKET_NAME}' AND (storage.foldername(name))[1] = auth.uid()::text`,
