@@ -1,4 +1,27 @@
-import { MigrateDownArgs, MigrateUpArgs, sql } from '@payloadcms/db-postgres';
+/**
+ * DOCUMENTATION SAMPLE ONLY - NOT FOR EXECUTION
+ *
+ * This file is for documentation purposes only and is not meant to be executed.
+ * It demonstrates the structure of a Payload CMS migration file.
+ *
+ * In a real migration file, you would import from '@payloadcms/db-postgres'.
+ */
+
+// Mock types for documentation purposes
+type MigrateUpArgs = {
+  db: { execute: (query: any) => Promise<any> };
+  payload: any;
+  req: any;
+};
+
+type MigrateDownArgs = {
+  db: { execute: (query: any) => Promise<any> };
+  payload: any;
+  req: any;
+};
+
+const sql = (strings: TemplateStringsArray, ...values: any[]) =>
+  strings.join('');
 
 /**
  * This is a sample migration file that demonstrates how to create a new collection.
