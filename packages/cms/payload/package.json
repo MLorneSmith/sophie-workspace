@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@kit/cms-types": "workspace:*",
-    "payload": "^1.0.0",
+    "payload": "3.24.0",
     "react": "19.0.0"
   },
   "devDependencies": {

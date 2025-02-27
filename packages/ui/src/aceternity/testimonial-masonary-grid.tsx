@@ -6,6 +6,10 @@ import { QuoteIcon } from 'lucide-react';
 
 import { cn } from '../lib/utils';
 
+// Base64 encoded SVG placeholder for avatars
+const AVATAR_PLACEHOLDER =
+  'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDE1MCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHJlY3Qgd2lkdGg9IjE1MCIgaGVpZ2h0PSIxNTAiIHJ4PSI3NSIgZmlsbD0iI0UyRThGMCIvPgogIDxwYXRoIGQ9Ik03NSA3NUM4Ni4wNDU3IDc1IDk1IDY2LjA0NTcgOTUgNTVDOTUgNDMuOTU0MyA4Ni4wNDU3IDM1IDc1IDM1QzYzLjk1NDMgMzUgNTUgNDMuOTU0MyA1NSA1NUM1NSA2Ni4wNDU3IDYzLjk1NDMgNzUgNzUgNzVaIiBmaWxsPSIjOTRBM0I4Ii8+CiAgPHBhdGggZD0iTTc1IDg1QzUzLjUgODUgMzUgOTguNSAzNSAxMTVWMTI1SDExNVYxMTVDMTE1IDk4LjUgOTYuNSA4NSA3NSA4NVoiIGZpbGw9IiM5NEEzQjgiLz4KPC9zdmc+';
+
 interface Testimonial {
   avatar_url?: string;
   name: string;
@@ -44,7 +48,7 @@ export function TestimonialsMasonaryGrid({
                 <Quote>{testimonial.content}</Quote>
                 <div className="mt-8 flex items-center gap-2">
                   <Image
-                    src={testimonial.avatar_url || 'https://i.pravatar.cc/150'}
+                    src={testimonial.avatar_url || AVATAR_PLACEHOLDER}
                     alt={testimonial.name}
                     width={40}
                     height={40}
@@ -82,7 +86,7 @@ export const Card = ({
         className,
       )}
     >
-      <QuoteIcon className="absolute left-2 top-2 scale-x-[-1] text-neutral-300" />
+      <QuoteIcon className="absolute top-2 left-2 scale-x-[-1] text-neutral-300" />
       {children}
     </div>
   );
