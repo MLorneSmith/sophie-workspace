@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useMemo as _useMemo, useCallback, useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ImageIcon, Loader2Icon, TrashIcon } from 'lucide-react';
@@ -72,6 +72,7 @@ export function TaskDialog({ open, onOpenChange, task }: TaskDialogProps) {
 
   const onSubmit = useCallback(
     async (data: any) => {
+      // TODO: Replace with proper type
       try {
         if (task) {
           await updateTask.mutateAsync({ ...data, id: task.id });
@@ -248,7 +249,9 @@ export function TaskDialog({ open, onOpenChange, task }: TaskDialogProps) {
             <FormField
               control={form.control}
               name="image"
-              render={({ field: { value, onChange, ...field } }) => (
+              render={({
+                field: { value: _value, onChange: _onChange, ...field },
+              }) => (
                 <FormItem>
                   <FormLabel>
                     <Trans i18nKey="kanban:task.form.image" />

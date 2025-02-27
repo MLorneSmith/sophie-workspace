@@ -15,8 +15,8 @@ import { improvementProcess } from '@kit/ai-gateway/src/prompts/partials/improve
 import { presentationContext } from '@kit/ai-gateway/src/prompts/partials/presentation-context';
 import { sectionAnalysis } from '@kit/ai-gateway/src/prompts/partials/section-analysis';
 import {
-  type BaseImprovement,
-  type ImprovementType,
+  type BaseImprovement as _BaseImprovement,
+  type ImprovementType as _ImprovementType,
 } from '@kit/ai-gateway/src/prompts/types/improvements';
 import { parseImprovements } from '@kit/ai-gateway/src/utils/parse-improvements';
 import { enhanceAction } from '@kit/next/actions';

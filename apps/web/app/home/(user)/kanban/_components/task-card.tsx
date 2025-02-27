@@ -6,9 +6,16 @@ import Image from 'next/image';
 
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { AlertCircleIcon, CheckCircle2Icon, Loader2Icon } from 'lucide-react';
+import {
+  CheckCircle2Icon,
+  AlertCircleIcon as _AlertCircleIcon,
+  Loader2Icon as _Loader2Icon,
+} from 'lucide-react';
 
-import { Alert, AlertDescription } from '@kit/ui/alert';
+import {
+  Alert as _Alert,
+  AlertDescription as _AlertDescription,
+} from '@kit/ui/alert';
 import {
   Card,
   CardContent,
@@ -29,7 +36,7 @@ interface TaskCardProps {
 }
 
 export const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
-  ({ task }, ref) => {
+  ({ task }, _ref) => {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const updateSubtask = useUpdateSubtask();
     const {
@@ -66,7 +73,7 @@ export const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
               task.priority === 'low' &&
                 'border-l-success hover:border-l-success/80 border-l-4',
             )}
-            onClick={(e) => {
+            onClick={(_e) => {
               if (!isDragging) {
                 setIsDialogOpen(true);
               }

@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback as _useCallback } from 'react';
 
 import { type SupabaseClient } from '@supabase/supabase-js';
 
@@ -6,8 +6,9 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { pino } from 'pino';
 
 import { useUserWorkspace } from '@kit/accounts/hooks/use-user-workspace';
-import { type Database } from '@kit/supabase/database';
 import { useSupabase } from '@kit/supabase/hooks/use-supabase';
+
+import { type Database } from '~/lib/database.types';
 
 import { DEFAULT_TASKS } from '../config/default-tasks';
 import type { Task } from '../schema/task.schema';
@@ -120,7 +121,7 @@ export function useCreateTask() {
 
   return useMutation({
     mutationFn: createTaskAction,
-    onSuccess: (_, variables) => {
+    onSuccess: (_, _variables) => {
       const ctx = {
         name: 'create-task',
         userId: user.id,
@@ -247,7 +248,7 @@ export function useUpdateSubtask() {
 
       return { previousTasks };
     },
-    onError: (err, variables, context) => {
+    onError: (err, _variables, context) => {
       // Revert the optimistic update
       queryClient.setQueryData(['tasks', user.id], context?.previousTasks);
     },

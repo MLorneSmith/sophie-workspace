@@ -74,7 +74,7 @@ const GenerateOutlineSchema = z.object({
 });
 
 export const generateOutlineAction = enhanceAction(
-  async function (data: z.infer<typeof GenerateOutlineSchema>, user) {
+  async function (data: z.infer<typeof GenerateOutlineSchema>, _user) {
     try {
       const supabase = getSupabaseServerClient();
 
