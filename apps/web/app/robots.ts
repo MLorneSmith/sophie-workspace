@@ -1,13 +1,15 @@
 import { MetadataRoute } from 'next';
 
-import appConfig from '~/config/app.config';
-
 export default function robots(): MetadataRoute.Robots {
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    'https://2025slideheroes-web.vercel.app';
+
   return {
     rules: {
       userAgent: '*',
       allow: '/',
     },
-    sitemap: `${appConfig.url}/server-sitemap.xml`,
+    sitemap: `${siteUrl}/server-sitemap.xml`,
   };
 }
