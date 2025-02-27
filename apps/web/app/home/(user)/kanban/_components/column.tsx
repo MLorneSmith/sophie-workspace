@@ -17,7 +17,12 @@ interface ColumnProps {
   updatingTaskId: string | null;
 }
 
-export function Column({ id, title, tasks, updatingTaskId }: ColumnProps) {
+export function Column({
+  id,
+  title: _title,
+  tasks,
+  updatingTaskId,
+}: ColumnProps) {
   const { setNodeRef } = useDroppable({
     id,
   });

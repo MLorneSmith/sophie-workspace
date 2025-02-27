@@ -20,10 +20,10 @@ const SimplifyTextSchema = z.object({
 });
 
 export const simplifyTextAction = enhanceAction(
-  async function (data, user) {
+  async function (data, _user) {
     try {
       // Create config with cache namespacing
-      const config = createReasoningOptimizedConfig({
+      const _config = createReasoningOptimizedConfig({
         userId: data.userId,
         presentationId: data.canvasId,
         context: `simplify-${data.sectionType}`,
