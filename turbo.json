@@ -47,6 +47,10 @@
     "topo": {
       "dependsOn": ["^topo"]
     },
+    "migrate": {
+      "cache": false,
+      "outputs": []
+    },
     "build": {
       "dependsOn": ["^build"],
       "outputs": [".next/**", "!.next/cache/**", "next-env.d.ts", "dist/**"]
