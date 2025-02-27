@@ -138,6 +138,9 @@ importers:
       cross-env:
         specifier: ^7.0.3
         version: 7.0.3
+      dotenv:
+        specifier: ^16.3.1
+        version: 16.4.7
       graphql:
         specifier: ^16.8.1
         version: 16.10.0
