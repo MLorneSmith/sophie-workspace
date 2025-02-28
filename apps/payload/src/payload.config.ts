@@ -29,7 +29,9 @@ export default buildConfig({
     'https://2025slideheroes-web.vercel.app',
   ],
   collections: [Users, Media, Documentation],
-  editor: lexicalEditor(),
+  editor: lexicalEditor({
+    // Use the default configuration which should work well for most cases
+  }),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
