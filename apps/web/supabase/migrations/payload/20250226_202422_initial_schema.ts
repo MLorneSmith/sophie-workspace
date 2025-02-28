@@ -1,6 +1,10 @@
 import { MigrateDownArgs, MigrateUpArgs, sql } from '@payloadcms/db-postgres';
 
 export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
+  // First create the payload schema if it doesn't exist
+  await db.execute(sql`CREATE SCHEMA IF NOT EXISTS "payload";`);
+
+  // Then create the enum and tables
   await db.execute(sql`
    CREATE TYPE "payload"."enum_documentation_status" AS ENUM('draft', 'published');
   CREATE TABLE IF NOT EXISTS "payload"."users" (
@@ -193,6 +197,7 @@ export async function down({
   payload,
   req,
 }: MigrateDownArgs): Promise<void> {
+  // Drop all tables and types
   await db.execute(sql`
    DROP TABLE "payload"."users" CASCADE;
   DROP TABLE "payload"."media" CASCADE;
@@ -205,4 +210,7 @@ export async function down({
   DROP TABLE "payload"."payload_preferences_rels" CASCADE;
   DROP TABLE "payload"."payload_migrations" CASCADE;
   DROP TYPE "payload"."enum_documentation_status";`);
+
+  // Drop the schema itself
+  await db.execute(sql`DROP SCHEMA IF EXISTS "payload";`);
 }
