@@ -1,7 +1,12 @@
 import { CollectionConfig } from 'payload'
+import { lexicalEditor } from '@payloadcms/richtext-lexical'
 
 export const Documentation: CollectionConfig = {
   slug: 'documentation',
+  labels: {
+    singular: 'Documentation',
+    plural: 'Documentation',
+  },
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'status', 'publishedAt'],
@@ -32,6 +37,13 @@ export const Documentation: CollectionConfig = {
       name: 'content',
       type: 'richText',
       required: true,
+      editor: lexicalEditor({
+        // Field-specific editor configuration
+      }),
+      admin: {
+        description: 'The main content of the documentation',
+        condition: () => true,
+      },
     },
     {
       name: 'publishedAt',
