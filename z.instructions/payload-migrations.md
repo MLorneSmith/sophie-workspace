@@ -15,6 +15,15 @@ The overall process consists of three main steps:
 2. **Deployment to Production**: Commit and push the migration files to the repository
 3. **Run Migrations on Remote Database**: Automatically run migrations during deployment
 
+## Prerequisites
+
+Before running migrations, ensure you have:
+
+1. **PostgreSQL Database**: A PostgreSQL database with appropriate access credentials
+2. **Payload Schema**: The "payload" schema must exist in your PostgreSQL database
+3. **Admin User**: An admin user created in Payload CMS for content migrations
+4. **Environment Variables**: Proper environment variables set for both schema and content migrations
+
 ## 1. Local Development
 
 ### Making Schema Changes
