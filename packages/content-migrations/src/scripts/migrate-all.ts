@@ -26,6 +26,13 @@ async function runAllMigrations() {
       // so we don't need to do anything here
     });
 
+    // Import and run the docs content update
+    console.log('Running documentation content update...');
+    await import('./update-docs-content.js').then((module) => {
+      // The update-docs-content script runs automatically when imported
+      // so we don't need to do anything here
+    });
+
     // Add more migrations here as needed
     // For example:
     // console.log('Running testimonials migration...');

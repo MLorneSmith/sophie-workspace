@@ -1,5 +1,5 @@
 /**
- * Script to migrate documentation from Markdown files to Payload CMS
+ * Script to update existing documentation records with properly formatted Lexical content
  */
 import { $convertFromMarkdownString } from '@payloadcms/richtext-lexical';
 import { createHeadlessEditor } from '@payloadcms/richtext-lexical/lexical/headless';
@@ -15,9 +15,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 /**
- * Migrates documentation from Markdown files to Payload CMS
+ * Updates existing documentation records with properly formatted Lexical content
  */
-async function migrateDocsToPayload() {
+async function updateDocsContent() {
   // Get the Payload client
   const payload = await getPayloadClient();
 
@@ -60,69 +60,80 @@ async function migrateDocsToPayload() {
 
   // Get all .mdoc files
   const mdocFiles = readMdocFiles(docsDir);
-  console.log(`Found ${mdocFiles.length} documentation files to migrate.`);
+  console.log(`Found ${mdocFiles.length} documentation files to update.`);
 
-  // Migrate each file to Payload
+  // Get all existing documentation records
+  const { docs } = await payload.find({
+    collection: 'documentation',
+    limit: 100, // Adjust as needed
+  });
+
+  console.log(`Found ${docs.length} existing documentation records.`);
+
+  // Update each document with properly formatted Lexical content
   for (const file of mdocFiles) {
     const filePath = path.join(docsDir, file);
 
     try {
-      const content = fs.readFileSync(filePath, 'utf8');
-      const { data, content: mdContent } = matter(content);
-
       // Generate a slug from the file path
       const slug = file
         .replace(/\.mdoc$/, '')
         .replace(/\\/g, '/')
         .replace(/^\//, '');
 
-      // Create a document in the documentation collection
-      await payload.create({
+      // Find the corresponding document in the database
+      const existingDoc = docs.find((doc) => doc.slug === slug);
+
+      if (!existingDoc) {
+        console.log(`No existing document found for slug: ${slug}`);
+        continue;
+      }
+
+      console.log(
+        `Updating document: ${existingDoc.title} (ID: ${existingDoc.id})`,
+      );
+
+      // Read the markdown content
+      const content = fs.readFileSync(filePath, 'utf8');
+      const { data, content: mdContent } = matter(content);
+
+      // Convert Markdown content to Lexical format using Payload's converter
+      const lexicalContent = (() => {
+        // Create a headless editor instance
+        const headlessEditor = createHeadlessEditor({});
+
+        // Convert Markdown to Lexical format
+        headlessEditor.update(
+          () => {
+            $convertFromMarkdownString(mdContent);
+          },
+          { discrete: true },
+        );
+
+        // Get the Lexical JSON
+        return headlessEditor.getEditorState().toJSON();
+      })();
+
+      // Update the document with the new Lexical content
+      await payload.update({
         collection: 'documentation',
+        id: existingDoc.id,
         data: {
-          title: data.title || path.basename(file, '.mdoc'),
-          slug,
-          description: data.description || '',
-          // Convert Markdown content to Lexical format using Payload's converter
-          content: (() => {
-            // Create a headless editor instance
-            const headlessEditor = createHeadlessEditor({});
-
-            // Convert Markdown to Lexical format
-            headlessEditor.update(
-              () => {
-                $convertFromMarkdownString(mdContent);
-              },
-              { discrete: true },
-            );
-
-            // Get the Lexical JSON
-            return headlessEditor.getEditorState().toJSON();
-          })(),
-          publishedAt: data.publishedAt
-            ? new Date(data.publishedAt).toISOString()
-            : new Date().toISOString(),
-          status: data.status || 'published',
-          order: data.order || 0,
-          categories: data.categories
-            ? data.categories.map((category: string) => ({ category }))
-            : [],
-          tags: data.tags ? data.tags.map((tag: string) => ({ tag })) : [],
-          // Handle parent relationship if needed
+          content: lexicalContent,
         },
       });
 
-      console.log(`Migrated: ${file}`);
+      console.log(`Updated: ${file}`);
     } catch (error) {
-      console.error(`Error migrating ${file}:`, error);
+      console.error(`Error updating ${file}:`, error);
     }
   }
 
-  console.log('Migration complete!');
+  console.log('Update complete!');
 }
 
-// Run the migration
-migrateDocsToPayload().catch((error) => {
-  console.error('Migration failed:', error);
+// Run the update
+updateDocsContent().catch((error) => {
+  console.error('Update failed:', error);
   process.exit(1);
 });
