@@ -6,10 +6,13 @@
   "scripts": {
     "migrate:docs": "tsx src/scripts/migrate-docs.ts",
     "migrate:all": "tsx src/scripts/migrate-all.ts",
-    "test:env": "tsx src/scripts/test-env.ts"
+    "test:env": "tsx src/scripts/test-env.ts",
+    "create:admin": "tsx src/scripts/create-admin-user.ts",
+    "migrate:testimonials": "tsx src/scripts/migrate-testimonials.ts"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "latest",
+    "@supabase/supabase-js": "2.48.1",
     "dotenv": "^16.3.1",
     "gray-matter": "^4.0.3",
     "payload": "3.24.0"
