@@ -1,8 +1,8 @@
-# Supabase Content Migration Guide
+# Supabase Content Migration Guide: Local to Remote
 
-This document outlines the process for migrating content from a local Supabase database to a remote Supabase database, as well as the challenges we've encountered and solutions we've implemented.
+This document outlines the process for migrating content from your **local Supabase database** to the **remote Supabase database**. This is particularly useful for development workflows where content is created and tested locally before being deployed to production.
 
-## Current Process
+## Migration Approaches
 
 ### Schema Migration
 
@@ -22,116 +22,153 @@ This document outlines the process for migrating content from a local Supabase d
 
 ### Content Migration
 
-For migrating actual content/data (not just schema), we've explored several approaches:
+For migrating actual content/data (not just schema), we've implemented a flexible, collection-agnostic migration system:
 
-1. **Data Dump and Execute**:
+## Current Implementation: Collection-Agnostic Migration
 
-   - We can dump data from specific tables in the local database:
-     ```bash
-     supabase db dump --data-only --local -f data_dump.sql --exclude [tables_to_exclude]
-     ```
-   - However, executing this dump on the remote database has proven challenging due to CLI version differences and command syntax issues.
+We've implemented a flexible migration system that transfers collection data from your **local Supabase database** to the **remote Supabase database**. This system can handle any Payload CMS collection with minimal configuration.
 
-2. **Custom Script Approach** (Recommended):
-   - Create a TypeScript script that:
-     - Connects to both local and remote Supabase instances
-     - Fetches data from the local database
-     - Inserts/upserts the data into the remote database
-   - This approach provides more control and error handling
+### Key Features
 
-## Challenges and Solutions
+- Migrates collection data from **local development database** to **remote production database**
+- Supports migration of any collection type stored in Supabase
+- Handles different field structures automatically
+- Provides options for batch processing and error handling
+- Supports collection-specific data transformations
+- Maintains idempotency (can be run multiple times safely)
 
-### CLI Version Issues
+### How It Works
 
-**Challenge**: The installed Supabase CLI (v2.12.1) has different command syntax than the latest version (v2.15.8).
+1. Connects to both local and remote Payload CMS instances
+2. Retrieves collection data from your local Supabase database
+3. For each item, either creates a new record or updates an existing one in the remote database
+4. Provides detailed logging of the migration process
 
-**Solution Options**:
+### Usage
 
-1. ~~Update the Supabase CLI~~ - Not viable as global installation is not supported
-2. Use custom scripts with the Supabase JavaScript client
-3. Use direct database connections if possible
+#### Basic Usage
 
-### Data Migration Specifics
+To migrate all configured collections from local to remote:
 
-**Challenge**: Different content types require different migration approaches.
+```bash
+pnpm --filter @kit/content-migrations migrate:collections:remote
+```
 
-**Solution**:
+> **Note for Windows Users**: The migration script uses `cross-env` to ensure environment variables work correctly across all platforms, including Windows.
 
-- Create specific migration scripts for each content type (testimonials, documentation, etc.)
-- Use the Supabase admin client for write access to the remote database
-- Implement proper error handling and logging
+This command:
+
+1. Connects to your local Supabase database (using development environment variables)
+2. Connects to your remote Supabase database (using production environment variables)
+3. Transfers the configured collections from local to remote
+
+#### Adding a New Collection
+
+To add a new collection to the migration process, update the `COLLECTIONS_TO_MIGRATE` array in `src/scripts/migrate-collections-local-to-remote.ts`:
+
+```typescript
+const COLLECTIONS_TO_MIGRATE = [
+  {
+    name: 'documentation',
+    options: { matchField: 'slug', updateExisting: true },
+  },
+  {
+    name: 'your-new-collection',
+    options: { matchField: 'slug', updateExisting: true },
+  },
+];
+```
+
+#### Configuration Options
+
+Each collection can be configured with the following options:
+
+- `matchField`: Field to use for matching documents between local and remote (default: 'slug')
+- `updateExisting`: Whether to update documents that already exist in the remote database (default: true)
+- `skipExisting`: Whether to skip documents that already exist in the remote database (default: false)
+- `batchSize`: Number of documents to process in each batch (default: 50)
+- `transformData`: Optional function to transform document data before migration
+- `logLevel`: Level of detail in logging ('minimal', 'normal', or 'verbose')
+
+#### Custom Data Transformations
+
+You can apply custom transformations to your data before migration:
+
+```typescript
+{
+  name: 'blog',
+  options: {
+    matchField: 'slug',
+    transformData: (data) => {
+      // Remove sensitive data
+      delete data.internalNotes;
+
+      // Add migration metadata
+      data.migratedAt = new Date().toISOString();
+
+      return data;
+    },
+  },
+}
+```
+
+## Implementation Details
+
+The migration system consists of several components:
+
+1. **Utility Function**: `migrateCollectionLocalToRemote` in `utils/migrate-collection-local-to-remote.ts`
+2. **Main Script**: `migrate-collections-local-to-remote.ts` in `scripts/`
+3. **Enhanced Payload Client**: Updated to support environment-specific connections and query filtering
+
+### Technical Architecture
+
+```
+packages/content-migrations/
+├── src/
+│   ├── utils/
+│   │   ├── migrate-collection-local-to-remote.ts  # Core migration utility
+│   │   └── payload-client.ts                      # Enhanced Payload client
+│   └── scripts/
+│       └── migrate-collections-local-to-remote.ts # Main migration script
+```
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Authentication Failures**:
+
+   - Ensure your PAYLOAD_ADMIN_EMAIL and PAYLOAD_ADMIN_PASSWORD are correct in both .env.development and .env.production
+   - Verify that the user has appropriate permissions in both environments
+
+2. **Connection Issues**:
+
+   - Check that both local and remote Payload CMS servers are running
+   - Verify the PAYLOAD_PUBLIC_SERVER_URL in both environment files
+
+3. **Data Validation Errors**:
+   - If documents fail to migrate due to validation errors, use the transformData option to modify the data to meet the validation requirements
+
+### Logging and Debugging
+
+The migration system provides detailed logging at different levels:
+
+- `minimal`: Only essential information and errors
+- `normal`: Standard progress information (default)
+- `verbose`: Detailed information about each document processed
 
 ## Next Steps
 
-1. **Create Migration Scripts**:
+1. **Automate Migrations**:
 
-   - Implement a script for testimonials migration
-   - Extend the approach to other content types as needed
+   - Consider integrating migrations into your CI/CD pipeline
+   - Create a pre-deployment check to ensure content is synchronized
 
-2. **Determine Migration Triggers**:
+2. **Extend to Other Collections**:
 
-   - Decide when migrations should run (manual, CI/CD, post-deployment)
-   - Consider automating migrations as part of the deployment process
+   - Add more collections to the migration process as needed
+   - Implement collection-specific transformations for complex data
 
-3. **Testing and Verification**:
-
-   - Develop a process to verify successful migrations
-   - Implement rollback mechanisms for failed migrations
-
-4. **Documentation**:
-   - Update this guide with successful approaches
-   - Document any environment-specific considerations
-
-## Example: Testimonials Migration Script
-
-```typescript
-// packages/content-migrations/src/scripts/migrate-testimonials.ts
-import { getSupabaseServerAdminClient } from '@kit/supabase/server-admin-client';
-import { getSupabaseServerClient } from '@kit/supabase/server-client';
-
-async function migrateTestimonials() {
-  console.log('Starting testimonials migration...');
-
-  // Get local client
-  const localClient = getSupabaseServerClient();
-
-  // Get remote client (admin for write access)
-  const remoteClient = getSupabaseServerAdminClient();
-
-  try {
-    // Get testimonials from local database
-    const { data: testimonials, error } = await localClient
-      .from('testimonials')
-      .select('*');
-
-    if (error) {
-      throw error;
-    }
-
-    console.log(`Found ${testimonials.length} testimonials to migrate`);
-
-    // Insert testimonials into remote database
-    const { error: insertError } = await remoteClient
-      .from('testimonials')
-      .upsert(testimonials, {
-        onConflict: 'id',
-        ignoreDuplicates: false,
-      });
-
-    if (insertError) {
-      throw insertError;
-    }
-
-    console.log('Successfully migrated testimonials to remote database');
-  } catch (error) {
-    console.error('Error migrating testimonials:', error);
-  }
-}
-
-// Run the migration
-migrateTestimonials();
-```
-
-## Conclusion
-
-Content migration between Supabase instances requires a combination of CLI tools for schema synchronization and custom scripts for data migration. By following the approaches outlined in this document, we can ensure that both schema and content are properly synchronized between environments.
+3. **Monitoring and Reporting**:
+   - Enhance logging and reporting for better visibility into migration status
+   - Implement notification mechanisms for failed migrations

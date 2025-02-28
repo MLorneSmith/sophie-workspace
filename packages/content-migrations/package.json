@@ -8,10 +8,13 @@
     "migrate:all": "tsx src/scripts/migrate-all.ts",
     "test:env": "tsx src/scripts/test-env.ts",
     "create:admin": "tsx src/scripts/create-admin-user.ts",
-    "migrate:testimonials": "tsx src/scripts/migrate-testimonials.ts"
+    "migrate:testimonials": "tsx src/scripts/migrate-testimonials.ts",
+    "update:docs": "tsx src/scripts/update-docs-content.ts",
+    "migrate:collections:remote": "cross-env NODE_ENV=production tsx src/scripts/migrate-collections-local-to-remote.ts"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "latest",
+    "@payloadcms/richtext-lexical": "^3.25.0",
     "@supabase/supabase-js": "2.48.1",
     "dotenv": "^16.3.1",
     "gray-matter": "^4.0.3",
@@ -19,6 +22,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.13.4",
+    "cross-env": "^7.0.3",
     "tsx": "^4.7.0",
     "typescript": "^5.7.3"
   }
