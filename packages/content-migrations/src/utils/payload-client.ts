@@ -31,6 +31,7 @@ export interface PayloadClient {
     id: string | number;
     data: any;
   }) => Promise<any>;
+  delete: (params: { collection: string; id: string | number }) => Promise<any>;
 }
 
 // Cache the Payload client instances for different environments
@@ -190,7 +191,65 @@ export async function getPayloadClient(
       }
     },
 
+    delete: async ({ collection, id }) => {
+      console.log(`Deleting document in ${collection} with ID ${id}`);
+
+      try {
+        // First, try to authenticate with Payload CMS
+        console.log(
+          `Authenticating with email: ${process.env.PAYLOAD_ADMIN_EMAIL}`,
+        );
+
+        const authResponse = await fetch(`${serverUrl}/api/users/login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: process.env.PAYLOAD_ADMIN_EMAIL,
+            password: process.env.PAYLOAD_ADMIN_PASSWORD,
+          }),
+        });
+
+        if (!authResponse.ok) {
+          const authError = await authResponse.json();
+          console.error('Authentication failed:', authError);
+          throw new Error(
+            `Authentication failed: ${JSON.stringify(authError)}`,
+          );
+        }
+
+        console.log('Authentication successful');
+
+        // Get the authentication response data
+        const authData = await authResponse.json();
+        const token = authData.token;
+
+        // Delete the document
+        const response = await fetch(`${serverUrl}/api/${collection}/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `JWT ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(
+            `Failed to delete document: ${JSON.stringify(errorData)}`,
+          );
+        }
+
+        return await response.json();
+      } catch (error) {
+        console.error(`Error deleting document in ${collection}:`, error);
+        throw error;
+      }
+    },
+
     find: async ({ collection, limit = 100, query = {} }) => {
+      console.log(`Finding documents in ${collection} with query:`, query);
       try {
         // First, try to authenticate with Payload CMS
         console.log(

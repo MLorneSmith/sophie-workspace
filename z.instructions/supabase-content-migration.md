@@ -24,7 +24,7 @@ This document outlines the process for migrating content from your **local Supab
 
 For migrating actual content/data (not just schema), we've implemented a flexible, collection-agnostic migration system:
 
-## Current Implementation: Collection-Agnostic Migration
+## Current Implementation: Local to Remote Collection Migration
 
 We've implemented a flexible migration system that transfers collection data from your **local Supabase database** to the **remote Supabase database**. This system can handle any Payload CMS collection with minimal configuration.
 
@@ -36,6 +36,7 @@ We've implemented a flexible migration system that transfers collection data fro
 - Provides options for batch processing and error handling
 - Supports collection-specific data transformations
 - Maintains idempotency (can be run multiple times safely)
+- Includes verification to ensure all documents are properly migrated
 
 ### How It Works
 
@@ -43,24 +44,35 @@ We've implemented a flexible migration system that transfers collection data fro
 2. Retrieves collection data from your local Supabase database
 3. For each item, either creates a new record or updates an existing one in the remote database
 4. Provides detailed logging of the migration process
+5. Verifies that all documents were properly migrated
 
 ### Usage
 
 #### Basic Usage
 
-To migrate all configured collections from local to remote:
+We provide two main approaches for migrating data:
+
+1. **Standard Migration** - Updates existing documents and creates new ones:
 
 ```bash
 pnpm --filter @kit/content-migrations migrate:collections:remote
 ```
 
-> **Note for Windows Users**: The migration script uses `cross-env` to ensure environment variables work correctly across all platforms, including Windows.
+2. **Clean Migration** - Removes all documents from remote before migrating (recommended for fixing issues):
 
-This command:
+```bash
+pnpm --filter @kit/content-migrations cleanup:and:migrate:remote
+```
 
-1. Connects to your local Supabase database (using development environment variables)
-2. Connects to your remote Supabase database (using production environment variables)
-3. Transfers the configured collections from local to remote
+> **Note for Windows Users**: All migration scripts use `cross-env` to ensure environment variables work correctly across all platforms, including Windows.
+
+The cleanup and migrate command:
+
+1. Deletes all existing documents from the remote database
+2. Connects to your local Supabase database (using development environment variables)
+3. Connects to your remote Supabase database (using production environment variables)
+4. Transfers all documents from local to remote
+5. Verifies that all documents were properly migrated
 
 #### Adding a New Collection
 
@@ -111,6 +123,26 @@ You can apply custom transformations to your data before migration:
   },
 }
 ```
+
+#### Troubleshooting Migration Issues
+
+If you encounter issues with the migration process, such as:
+
+- Missing documents in the remote database
+- Duplicate documents in the remote database
+- Documents with incorrect content
+
+The recommended approach is to use the cleanup and migrate script:
+
+```bash
+pnpm --filter @kit/content-migrations cleanup:and:migrate:remote
+```
+
+This script will:
+
+1. Delete all existing documents from the remote database
+2. Migrate all documents from the local database to the remote database
+3. Verify that all documents were properly migrated
 
 ## Implementation Details
 

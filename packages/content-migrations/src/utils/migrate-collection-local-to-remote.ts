@@ -116,7 +116,7 @@ export async function migrateCollectionLocalToRemote(
     // Get all documents from local database
     const { docs: localDocs, totalDocs } = await localClient.find({
       collection,
-      limit: batchSize,
+      limit: 1000, // Use a high limit to ensure we get all documents
     });
 
     if (!minimal)
@@ -143,12 +143,11 @@ export async function migrateCollectionLocalToRemote(
           );
         }
 
-        // Find matching document in remote database
+        // Find matching document in remote database by matchField
         const { docs: remoteDocs } = await remoteClient.find({
           collection,
           limit: 1,
-          // We would need to enhance the payload client to support this kind of query
-          // For now, we'll assume it can find by the match field
+          query: { [matchField]: matchValue },
         });
 
         if (remoteDocs.length > 0) {
