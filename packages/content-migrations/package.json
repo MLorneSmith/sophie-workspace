@@ -10,7 +10,9 @@
     "create:admin": "tsx src/scripts/create-admin-user.ts",
     "migrate:testimonials": "tsx src/scripts/migrate-testimonials.ts",
     "update:docs": "tsx src/scripts/update-docs-content.ts",
-    "migrate:collections:remote": "cross-env NODE_ENV=production tsx src/scripts/migrate-collections-local-to-remote.ts"
+    "migrate:collections:remote": "cross-env NODE_ENV=production tsx src/scripts/migrate-collections-local-to-remote.ts",
+    "cleanup:remote:docs": "cross-env NODE_ENV=production tsx src/scripts/cleanup-remote-documentation.ts",
+    "cleanup:and:migrate:remote": "cross-env NODE_ENV=production tsx src/scripts/cleanup-and-migrate-remote.ts"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "latest",
