@@ -69,6 +69,7 @@ export interface Config {
     users: User;
     media: Media;
     documentation: Documentation;
+    posts: Post;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -78,6 +79,7 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     documentation: DocumentationSelect<false> | DocumentationSelect<true>;
+    posts: PostsSelect<false> | PostsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -164,7 +166,10 @@ export interface Documentation {
    */
   slug: string;
   description?: string | null;
-  content: {
+  /**
+   * The main content of the documentation
+   */
+  content?: {
     root: {
       type: string;
       children: {
@@ -178,7 +183,7 @@ export interface Documentation {
       version: number;
     };
     [k: string]: unknown;
-  };
+  } | null;
   publishedAt?: string | null;
   status: 'draft' | 'published';
   order?: number | null;
@@ -195,6 +200,82 @@ export interface Documentation {
       }[]
     | null;
   parent?: (number | null) | Documentation;
+  breadcrumbs?:
+    | {
+        doc?: (number | null) | Documentation;
+        url?: string | null;
+        label?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Blog posts for the website
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "posts".
+ */
+export interface Post {
+  id: number;
+  title: string;
+  /**
+   * The URL-friendly identifier for this post
+   */
+  slug: string;
+  /**
+   * A brief summary of the post
+   */
+  description?: string | null;
+  /**
+   * The main content of the blog post
+   */
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * The date and time this post was published
+   */
+  publishedAt?: string | null;
+  /**
+   * Featured image for the blog post
+   */
+  image?: (number | null) | Media;
+  /**
+   * Only published posts will be visible on the website
+   */
+  status: 'draft' | 'published';
+  /**
+   * Categories for this post
+   */
+  categories?:
+    | {
+        category?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Tags for this post
+   */
+  tags?:
+    | {
+        tag?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -216,6 +297,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'documentation';
         value: number | Documentation;
+      } | null)
+    | ({
+        relationTo: 'posts';
+        value: number | Post;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -317,6 +402,41 @@ export interface DocumentationSelect<T extends boolean = true> {
         id?: T;
       };
   parent?: T;
+  breadcrumbs?:
+    | T
+    | {
+        doc?: T;
+        url?: T;
+        label?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "posts_select".
+ */
+export interface PostsSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  description?: T;
+  content?: T;
+  publishedAt?: T;
+  image?: T;
+  status?: T;
+  categories?:
+    | T
+    | {
+        category?: T;
+        id?: T;
+      };
+  tags?:
+    | T
+    | {
+        tag?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }

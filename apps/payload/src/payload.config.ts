@@ -1,6 +1,7 @@
 // storage-adapter-import-placeholder
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { payloadCloudPlugin } from '@payloadcms/payload-cloud'
+import { nestedDocsPlugin } from '@payloadcms/plugin-nested-docs'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import path from 'path'
 import { buildConfig } from 'payload'
@@ -9,6 +10,7 @@ import { fileURLToPath } from 'url'
 
 import { Documentation } from './collections/Documentation'
 import { Media } from './collections/Media'
+import { Posts } from './collections/Posts'
 import { Users } from './collections/Users'
 
 const filename = fileURLToPath(import.meta.url)
@@ -28,7 +30,7 @@ export default buildConfig({
     'https://www.slideheroes.com',
     'https://2025slideheroes-web.vercel.app',
   ],
-  collections: [Users, Media, Documentation],
+  collections: [Users, Media, Documentation, Posts],
   editor: lexicalEditor({
     // Use the default configuration which should work well for most cases
   }),
@@ -51,5 +53,11 @@ export default buildConfig({
   plugins: [
     payloadCloudPlugin(),
     // storage-adapter-placeholder
+    nestedDocsPlugin({
+      collections: ['documentation'],
+      generateLabel: ((_: any, doc: any) => doc?.title || '') as any,
+      generateURL: ((docs: any) =>
+        docs.reduce((url: string, doc: any) => `${url}/${doc.slug}`, '')) as any,
+    }),
   ],
 })

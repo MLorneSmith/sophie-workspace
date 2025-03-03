@@ -18,6 +18,13 @@ export namespace Cms {
     parentId: string | undefined;
     collapsible?: boolean;
     collapsed?: boolean;
+    breadcrumbs?: Breadcrumb[];
+  }
+
+  export interface Breadcrumb {
+    label: string;
+    url?: string;
+    doc?: any;
   }
 
   export type ContentItemStatus = 'draft' | 'published' | 'review' | 'pending';
@@ -52,12 +59,14 @@ export namespace Cms {
     slugs?: string[];
     limit?: number;
     offset?: number;
+    collection?: string;
   }
 
   export interface GetTagsOptions {
     slugs?: string[];
     limit?: number;
     offset?: number;
+    collection?: string;
   }
 }
 
@@ -99,7 +108,10 @@ export abstract class CmsClient {
    * @param slug - The slug of the category.
    * @returns A promise that resolves to the category, or undefined if not found.
    */
-  abstract getCategoryBySlug(slug: string): Promise<Cms.Category | undefined>;
+  abstract getCategoryBySlug(
+    slug: string,
+    collection?: string,
+  ): Promise<Cms.Category | undefined>;
 
   /**
    * Retrieves tags based on the provided options.
@@ -113,5 +125,8 @@ export abstract class CmsClient {
    * @param slug - The slug of the tag.
    * @returns A promise that resolves to the tag, or undefined if not found.
    */
-  abstract getTagBySlug(slug: string): Promise<Cms.Tag | undefined>;
+  abstract getTagBySlug(
+    slug: string,
+    collection?: string,
+  ): Promise<Cms.Tag | undefined>;
 }

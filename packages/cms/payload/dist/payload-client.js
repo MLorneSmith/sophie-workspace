@@ -6,12 +6,28 @@ export class PayloadClient {
         const offset = (options === null || options === void 0 ? void 0 : options.offset) || 0;
         const status = (options === null || options === void 0 ? void 0 : options.status) || 'published';
         try {
-            // Fetch from Payload API
+            // Fetch all documents
             const response = await fetch(`${process.env.PAYLOAD_PUBLIC_SERVER_URL}/api/${collection}?limit=${limit}&page=${Math.floor(offset / limit) + 1}&where[status][equals]=${status}`);
             const data = await response.json();
+            // Map items
+            const items = data.docs.map((doc) => this.mapContentItem(doc));
+            // Create a map of items by ID for quick lookup
+            const itemsMap = new Map();
+            items.forEach((item) => {
+                itemsMap.set(item.id, item);
+            });
+            // Populate children arrays
+            items.forEach((item) => {
+                if (item.parentId && itemsMap.has(item.parentId)) {
+                    const parent = itemsMap.get(item.parentId);
+                    if (parent) {
+                        parent.children.push(item);
+                    }
+                }
+            });
             return {
                 total: data.totalDocs,
-                items: data.docs.map(this.mapContentItem),
+                items,
             };
         }
         catch (error) {
@@ -25,13 +41,20 @@ export class PayloadClient {
     async getContentItemBySlug(params) {
         const { slug, collection, status = 'published' } = params;
         try {
-            // Fetch from Payload API
+            // Fetch the main document
             const response = await fetch(`${process.env.PAYLOAD_PUBLIC_SERVER_URL}/api/${collection}?where[slug][equals]=${slug}&where[status][equals]=${status}`);
             const data = await response.json();
             if (data.docs.length === 0) {
                 return undefined;
             }
-            return this.mapContentItem(data.docs[0]);
+            // Get the main item
+            const item = this.mapContentItem(data.docs[0]);
+            // Fetch child documents
+            const childrenResponse = await fetch(`${process.env.PAYLOAD_PUBLIC_SERVER_URL}/api/${collection}?where[parent][equals]=${item.id}&where[status][equals]=${status}`);
+            const childrenData = await childrenResponse.json();
+            // Add children to the main item
+            item.children = childrenData.docs.map((doc) => this.mapContentItem(doc));
+            return item;
         }
         catch (error) {
             console.error('Error fetching content item by slug from Payload:', error);
@@ -39,9 +62,10 @@ export class PayloadClient {
         }
     }
     async getCategories(options) {
-        // Extract unique categories from documentation collection
+        // Extract unique categories from the specified collection or documentation by default
+        const collection = (options === null || options === void 0 ? void 0 : options.collection) || 'documentation';
         try {
-            const response = await fetch(`${process.env.PAYLOAD_PUBLIC_SERVER_URL}/api/documentation?limit=100`);
+            const response = await fetch(`${process.env.PAYLOAD_PUBLIC_SERVER_URL}/api/${collection}?limit=100`);
             const data = await response.json();
             const categoriesSet = new Set();
             data.docs.forEach((doc) => {
@@ -60,14 +84,15 @@ export class PayloadClient {
             return [];
         }
     }
-    async getCategoryBySlug(slug) {
-        const categories = await this.getCategories();
+    async getCategoryBySlug(slug, collection) {
+        const categories = await this.getCategories({ collection });
         return categories.find((category) => category.slug === slug);
     }
     async getTags(options) {
-        // Extract unique tags from documentation collection
+        // Extract unique tags from the specified collection or documentation by default
+        const collection = (options === null || options === void 0 ? void 0 : options.collection) || 'documentation';
         try {
-            const response = await fetch(`${process.env.PAYLOAD_PUBLIC_SERVER_URL}/api/documentation?limit=100`);
+            const response = await fetch(`${process.env.PAYLOAD_PUBLIC_SERVER_URL}/api/${collection}?limit=100`);
             const data = await response.json();
             const tagsSet = new Set();
             data.docs.forEach((doc) => {
@@ -86,12 +111,14 @@ export class PayloadClient {
             return [];
         }
     }
-    async getTagBySlug(slug) {
-        const tags = await this.getTags();
+    async getTagBySlug(slug, collection) {
+        const tags = await this.getTags({ collection });
         return tags.find((tag) => tag.slug === slug);
     }
     mapContentItem(item) {
-        return {
+        var _a;
+        // Map the item
+        const mappedItem = {
             id: item.id,
             title: item.title,
             label: item.title,
@@ -100,7 +127,7 @@ export class PayloadClient {
             description: item.description,
             content: item.content,
             publishedAt: item.publishedAt,
-            image: item.image,
+            image: ((_a = item.image) === null || _a === void 0 ? void 0 : _a.url) || (typeof item.image === 'string' ? item.image : null),
             status: item.status,
             categories: (item.categories || []).map((category) => ({
                 id: category.category,
@@ -112,9 +139,17 @@ export class PayloadClient {
                 name: tag.tag,
                 slug: tag.tag.toLowerCase().replace(/\s+/g, '-'),
             })),
-            parentId: item.parent,
+            parentId: item.parent ? item.parent.id : null,
             order: item.order || 0,
             children: [],
+            breadcrumbs: item.breadcrumbs || [],
         };
+        // Map children if they exist
+        if (item.children &&
+            Array.isArray(item.children) &&
+            item.children.length > 0) {
+            mappedItem.children = item.children.map((child) => this.mapContentItem(child));
+        }
+        return mappedItem;
     }
 }
