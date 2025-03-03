@@ -17,7 +17,7 @@ export function buildDocumentationTree(pages: Cms.ContentItem[]) {
 
   pages.forEach((page) => {
     if (page.parentId) {
-      const parent = pages.find((item) => item.slug === page.parentId);
+      const parent = pages.find((item) => item.id === page.parentId);
 
       if (!parent) {
         return;
@@ -27,7 +27,11 @@ export function buildDocumentationTree(pages: Cms.ContentItem[]) {
         parent.children = [];
       }
 
-      parent.children.push(page);
+      // Check if the child is already in the parent's children array to avoid duplication
+      const isDuplicate = parent.children.some((child) => child.id === page.id);
+      if (!isDuplicate) {
+        parent.children.push(page);
+      }
 
       // sort children by order
       parent.children.sort((a, b) => a.order - b.order);
@@ -36,7 +40,15 @@ export function buildDocumentationTree(pages: Cms.ContentItem[]) {
     }
   });
 
-  return tree.sort((a, b) => a.order - b.order);
+  // Filter out items that are already children of other items to avoid duplication
+  const filteredTree = tree.filter((item) => {
+    // Keep items that don't have a parent or whose parent is not in the pages array
+    return !item.parentId || !pages.some((page) => page.id === item.parentId);
+  });
+
+  const sortedTree = filteredTree.sort((a, b) => a.order - b.order);
+
+  return sortedTree;
 }
 
 /**

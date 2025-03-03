@@ -12,8 +12,12 @@ interface NavItem {
 export function DocsTableOfContents(props: { data: NavItem[] }) {
   const navData = props.data;
 
+  if (!navData || navData.length === 0) {
+    return null;
+  }
+
   return (
-    <div className="bg-background sticky inset-y-0 hidden h-svh max-h-full min-w-[14em] border-l p-4 lg:block">
+    <div className="bg-background sticky inset-y-0 h-svh max-h-full min-w-[14em] p-4">
       <ol
         role="list"
         className="relative text-sm text-gray-600 dark:text-gray-400"

@@ -25,6 +25,7 @@
     "@payloadcms/db-postgres": "latest",
     "@payloadcms/next": "latest",
     "@payloadcms/payload-cloud": "latest",
+    "@payloadcms/plugin-nested-docs": "^3.25.0",
     "@payloadcms/richtext-lexical": "latest",
     "cross-env": "^7.0.3",
     "dotenv": "^16.3.1",

@@ -58,10 +58,16 @@ async function DocumentationPage({ params }: DocumentationPageProps) {
     },
   );
 
+  const hasHeadings = headings && headings.length > 0;
+
   return (
     <div className={'flex flex-1 flex-col gap-y-4 overflow-y-hidden py-5'}>
-      <div className={'flex overflow-y-hidden'}>
-        <article className={cn('gap-y-12 overflow-y-auto px-6')}>
+      <div className={'flex w-full justify-between overflow-y-hidden'}>
+        <article
+          className={cn('flex-1 gap-y-12 px-6', {
+            'max-w-full': !hasHeadings,
+          })}
+        >
           <section className={'flex flex-col gap-y-2.5'}>
             <h1 className={'text-foreground text-3xl font-semibold'}>
               {page.title}
@@ -75,7 +81,7 @@ async function DocumentationPage({ params }: DocumentationPageProps) {
           </div>
         </article>
 
-        <DocsTableOfContents data={headings} />
+        {hasHeadings && <DocsTableOfContents data={headings} />}
       </div>
 
       <If condition={page.children.length > 0}>

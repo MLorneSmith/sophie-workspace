@@ -14,7 +14,7 @@ export declare class PayloadClient implements CmsClient {
         name: string;
         slug: string;
     }[]>;
-    getCategoryBySlug(slug: string): Promise<{
+    getCategoryBySlug(slug: string, collection?: string): Promise<{
         id: string;
         name: string;
         slug: string;
@@ -24,7 +24,7 @@ export declare class PayloadClient implements CmsClient {
         name: string;
         slug: string;
     }[]>;
-    getTagBySlug(slug: string): Promise<{
+    getTagBySlug(slug: string, collection?: string): Promise<{
         id: string;
         name: string;
         slug: string;

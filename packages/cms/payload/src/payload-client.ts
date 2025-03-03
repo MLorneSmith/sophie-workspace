@@ -9,15 +9,34 @@ export class PayloadClient implements CmsClient {
     const status = options?.status || 'published';
 
     try {
-      // Fetch from Payload API
+      // Fetch all documents
       const response = await fetch(
         `${process.env.PAYLOAD_PUBLIC_SERVER_URL}/api/${collection}?limit=${limit}&page=${Math.floor(offset / limit) + 1}&where[status][equals]=${status}`,
       );
       const data = await response.json();
 
+      // Map items
+      const items = data.docs.map((doc: any) => this.mapContentItem(doc));
+
+      // Create a map of items by ID for quick lookup
+      const itemsMap = new Map<string, Cms.ContentItem>();
+      items.forEach((item: Cms.ContentItem) => {
+        itemsMap.set(item.id, item);
+      });
+
+      // Populate children arrays
+      items.forEach((item: Cms.ContentItem) => {
+        if (item.parentId && itemsMap.has(item.parentId)) {
+          const parent = itemsMap.get(item.parentId);
+          if (parent) {
+            parent.children.push(item);
+          }
+        }
+      });
+
       return {
         total: data.totalDocs,
-        items: data.docs.map(this.mapContentItem),
+        items,
       };
     } catch (error) {
       console.error('Error fetching content items from Payload:', error);
@@ -36,7 +55,7 @@ export class PayloadClient implements CmsClient {
     const { slug, collection, status = 'published' } = params;
 
     try {
-      // Fetch from Payload API
+      // Fetch the main document
       const response = await fetch(
         `${process.env.PAYLOAD_PUBLIC_SERVER_URL}/api/${collection}?where[slug][equals]=${slug}&where[status][equals]=${status}`,
       );
@@ -46,7 +65,21 @@ export class PayloadClient implements CmsClient {
         return undefined;
       }
 
-      return this.mapContentItem(data.docs[0]);
+      // Get the main item
+      const item = this.mapContentItem(data.docs[0]);
+
+      // Fetch child documents
+      const childrenResponse = await fetch(
+        `${process.env.PAYLOAD_PUBLIC_SERVER_URL}/api/${collection}?where[parent][equals]=${item.id}&where[status][equals]=${status}`,
+      );
+      const childrenData = await childrenResponse.json();
+
+      // Add children to the main item
+      item.children = childrenData.docs.map((doc: any) =>
+        this.mapContentItem(doc),
+      );
+
+      return item;
     } catch (error) {
       console.error('Error fetching content item by slug from Payload:', error);
       return undefined;
@@ -54,10 +87,11 @@ export class PayloadClient implements CmsClient {
   }
 
   async getCategories(options?: Cms.GetCategoriesOptions) {
-    // Extract unique categories from documentation collection
+    // Extract unique categories from the specified collection or documentation by default
+    const collection = options?.collection || 'documentation';
     try {
       const response = await fetch(
-        `${process.env.PAYLOAD_PUBLIC_SERVER_URL}/api/documentation?limit=100`,
+        `${process.env.PAYLOAD_PUBLIC_SERVER_URL}/api/${collection}?limit=100`,
       );
       const data = await response.json();
 
@@ -79,16 +113,17 @@ export class PayloadClient implements CmsClient {
     }
   }
 
-  async getCategoryBySlug(slug: string) {
-    const categories = await this.getCategories();
+  async getCategoryBySlug(slug: string, collection?: string) {
+    const categories = await this.getCategories({ collection });
     return categories.find((category) => category.slug === slug);
   }
 
   async getTags(options?: Cms.GetTagsOptions) {
-    // Extract unique tags from documentation collection
+    // Extract unique tags from the specified collection or documentation by default
+    const collection = options?.collection || 'documentation';
     try {
       const response = await fetch(
-        `${process.env.PAYLOAD_PUBLIC_SERVER_URL}/api/documentation?limit=100`,
+        `${process.env.PAYLOAD_PUBLIC_SERVER_URL}/api/${collection}?limit=100`,
       );
       const data = await response.json();
 
@@ -110,13 +145,14 @@ export class PayloadClient implements CmsClient {
     }
   }
 
-  async getTagBySlug(slug: string) {
-    const tags = await this.getTags();
+  async getTagBySlug(slug: string, collection?: string) {
+    const tags = await this.getTags({ collection });
     return tags.find((tag) => tag.slug === slug);
   }
 
   private mapContentItem(item: any): Cms.ContentItem {
-    return {
+    // Map the item
+    const mappedItem: Cms.ContentItem = {
       id: item.id,
       title: item.title,
       label: item.title,
@@ -125,7 +161,8 @@ export class PayloadClient implements CmsClient {
       description: item.description,
       content: item.content,
       publishedAt: item.publishedAt,
-      image: item.image,
+      image:
+        item.image?.url || (typeof item.image === 'string' ? item.image : null),
       status: item.status,
       categories: (item.categories || []).map((category: any) => ({
         id: category.category,
@@ -137,9 +174,23 @@ export class PayloadClient implements CmsClient {
         name: tag.tag,
         slug: tag.tag.toLowerCase().replace(/\s+/g, '-'),
       })),
-      parentId: item.parent,
+      parentId: item.parent ? item.parent.id : null,
       order: item.order || 0,
       children: [],
+      breadcrumbs: item.breadcrumbs || [],
     };
+
+    // Map children if they exist
+    if (
+      item.children &&
+      Array.isArray(item.children) &&
+      item.children.length > 0
+    ) {
+      mappedItem.children = item.children.map((child: any) =>
+        this.mapContentItem(child),
+      );
+    }
+
+    return mappedItem;
   }
 }

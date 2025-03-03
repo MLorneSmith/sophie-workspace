@@ -1,16 +1,16 @@
 import { CollectionConfig } from 'payload'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 
-export const Documentation: CollectionConfig = {
-  slug: 'documentation',
+export const Posts: CollectionConfig = {
+  slug: 'posts',
   labels: {
-    singular: 'Documentation',
-    plural: 'Documentation',
+    singular: 'Post',
+    plural: 'Posts',
   },
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'status', 'publishedAt'],
-    description: 'Documentation content for the application',
+    description: 'Blog posts for the website',
   },
   access: {
     read: () => true,
@@ -26,12 +26,29 @@ export const Documentation: CollectionConfig = {
       type: 'text',
       required: true,
       admin: {
-        description: 'The URL-friendly identifier for this document',
+        description: 'The URL-friendly identifier for this post',
+      },
+      hooks: {
+        beforeValidate: [
+          ({ value, data }) => {
+            // If no slug is provided, generate one from the title
+            if (!value && data?.title) {
+              return data.title
+                .toLowerCase()
+                .replace(/[^\w\s]/g, '')
+                .replace(/\s+/g, '-')
+            }
+            return value
+          },
+        ],
       },
     },
     {
       name: 'description',
       type: 'textarea',
+      admin: {
+        description: 'A brief summary of the post',
+      },
     },
     {
       name: 'content',
@@ -41,8 +58,7 @@ export const Documentation: CollectionConfig = {
         // Field-specific editor configuration
       }),
       admin: {
-        description: 'The main content of the documentation',
-        condition: () => true,
+        description: 'The main content of the blog post',
       },
     },
     {
@@ -52,6 +68,16 @@ export const Documentation: CollectionConfig = {
         date: {
           pickerAppearance: 'dayAndTime',
         },
+        description: 'The date and time this post was published',
+      },
+      defaultValue: () => new Date().toISOString(),
+    },
+    {
+      name: 'image',
+      type: 'upload',
+      relationTo: 'media',
+      admin: {
+        description: 'Featured image for the blog post',
       },
     },
     {
@@ -63,15 +89,17 @@ export const Documentation: CollectionConfig = {
       ],
       defaultValue: 'draft',
       required: true,
-    },
-    {
-      name: 'order',
-      type: 'number',
-      defaultValue: 0,
+      admin: {
+        position: 'sidebar',
+        description: 'Only published posts will be visible on the website',
+      },
     },
     {
       name: 'categories',
       type: 'array',
+      admin: {
+        description: 'Categories for this post',
+      },
       fields: [
         {
           name: 'category',
@@ -82,6 +110,9 @@ export const Documentation: CollectionConfig = {
     {
       name: 'tags',
       type: 'array',
+      admin: {
+        description: 'Tags for this post',
+      },
       fields: [
         {
           name: 'tag',
@@ -89,12 +120,5 @@ export const Documentation: CollectionConfig = {
         },
       ],
     },
-    // The parent field is now automatically added by the nested-docs plugin
-    // {
-    //   name: 'parent',
-    //   type: 'relationship',
-    //   relationTo: 'documentation' as any,
-    //   hasMany: false,
-    // },
   ],
 }
