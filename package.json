@@ -1,6 +1,6 @@
 {
   "name": "next-supabase-saas-kit-turbo",
-  "version": "2.3.0",
+  "version": "2.5.3",
   "private": true,
   "sideEffects": false,
   "engines": {
@@ -30,6 +30,7 @@
     "supabase:web:stop": "pnpm --filter web supabase:stop",
     "supabase:web:typegen": "pnpm --filter web supabase:typegen",
     "supabase:web:reset": "pnpm --filter web supabase:reset",
+    "supabase:web:test": "pnpm --filter web supabase:test",
     "stripe:listen": "pnpm --filter '@kit/stripe' start",
     "env:generate": "turbo gen env",
     "env:validate": "turbo gen validate-env"
@@ -38,16 +39,17 @@
   "packageManager": "pnpm@9.12.0",
   "pnpm": {
     "overrides": {
-      "react-is": "19.0.0"
+      "react-is": "19.0.0",
+      "require-in-the-middle": "7.5.2"
     }
   },
   "devDependencies": {
     "@manypkg/cli": "^0.23.0",
-    "@turbo/gen": "^2.4.2",
+    "@turbo/gen": "^2.4.4",
     "cross-env": "^7.0.3",
     "prettier": "^3.5.2",
     "tailwind-merge": "^3.0.2",
-    "turbo": "2.4.2",
-    "typescript": "^5.7.3"
+    "turbo": "2.4.4",
+    "typescript": "^5.8.2"
   }
 }

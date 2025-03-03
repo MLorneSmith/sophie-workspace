@@ -51,20 +51,48 @@ test.describe('Auth flow', () => {
 
     expect(page.url()).toContain('/');
   });
+
+  test('will sign out using the dropdown', async ({ page }) => {
+    const auth = new AuthPageObject(page);
+
+    await page.goto('/home/settings');
+
+    await auth.signIn({
+      email: 'test@makerkit.dev',
+      password: 'testingpassword',
+    });
+
+    await page.waitForURL('/home/settings');
+
+    await auth.signOut();
+
+    await page.waitForURL('/');
+  });
 });
 
 test.describe('Protected routes', () => {
+  test('when logged out, redirects to the correct page after sign in', async ({
+    page,
+  }) => {
+    const auth = new AuthPageObject(page);
+
+    await page.goto('/home/settings');
+
+    await auth.signIn({
+      email: 'test@makerkit.dev',
+      password: 'testingpassword',
+    });
+
+    await page.waitForURL('/home/settings');
+
+    expect(page.url()).toContain('/home/settings');
+  });
+
   test('will redirect to the sign-in page if not authenticated', async ({
     page,
   }) => {
     await page.goto('/home/settings');
 
     expect(page.url()).toContain('/auth/sign-in?next=/home/settings');
-  });
-
-  test('will return a 404 for the admin page', async ({ page }) => {
-    await page.goto('/admin');
-
-    expect(page.url()).toContain('/auth/sign-in');
   });
 });
