@@ -16,11 +16,11 @@
   },
   "dependencies": {
     "@payloadcms/db-postgres": "latest",
-    "@payloadcms/richtext-lexical": "^3.25.0",
+    "@payloadcms/richtext-lexical": "^3.26.0",
     "@supabase/supabase-js": "2.49.1",
     "dotenv": "^16.3.1",
     "gray-matter": "^4.0.3",
-    "payload": "3.24.0"
+    "payload": "3.26.0"
   },
   "devDependencies": {
     "@types/node": "^22.13.4",

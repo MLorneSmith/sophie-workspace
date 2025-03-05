@@ -8,6 +8,9 @@ import { buildConfig } from 'payload'
 import sharp from 'sharp'
 import { fileURLToPath } from 'url'
 
+// Import custom SCSS for Tailwind CSS
+import './app/(payload)/custom.scss'
+
 import { Documentation } from './collections/Documentation'
 import { Media } from './collections/Media'
 import { Posts } from './collections/Posts'

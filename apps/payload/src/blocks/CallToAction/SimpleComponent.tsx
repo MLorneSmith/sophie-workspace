@@ -1,6 +1,9 @@
 'use client'
 
 import React, { useEffect } from 'react'
+import { Button } from '@kit/ui/button'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@kit/ui/card'
+import { cn } from '@kit/ui/utils'
 
 // Define the type for our component props
 type CallToActionProps = {
@@ -30,21 +33,23 @@ function generateHtmlContent(props: CallToActionProps): string {
   } = props || {}
 
   return `
-    <div class="my-6 p-6 bg-gray-100 rounded-lg flex flex-col md:flex-row justify-between items-center gap-6">
-      <div class="flex-1">
-        <h3 class="text-xl font-bold mb-2">${headline}</h3>
-        <p class="text-gray-700">${subheadline}</p>
+    <div class="my-6 rounded-lg border bg-card text-card-foreground shadow-sm">
+      <div class="flex flex-col space-y-1.5 p-6">
+        <h3 class="text-2xl font-semibold leading-none tracking-tight">${headline}</h3>
+        <p class="text-muted-foreground">${subheadline}</p>
       </div>
-      <div class="flex flex-col sm:flex-row gap-4">
+      <div class="p-6 pt-0 flex flex-col sm:flex-row justify-end gap-4">
         <div class="relative">
-          <img
-            src="/images/doodle.png"
-            alt="Doodle"
-            class="absolute -left-10 top-1/2 -translate-y-1/2 w-8 h-auto transform -rotate-90"
-          />
+          <div class="absolute -left-10 top-1/2 -translate-y-1/2">
+            <img
+              src="/images/doodle.png"
+              alt="Doodle"
+              class="w-8 h-auto transform -rotate-90"
+            />
+          </div>
           <a
             href="${leftButtonUrl}"
-            class="inline-flex items-center justify-center whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium bg-blue-600 text-white hover:bg-blue-700"
+            class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
           >
             ${leftButtonLabel}
           </a>
@@ -52,15 +57,13 @@ function generateHtmlContent(props: CallToActionProps): string {
         <div class="relative">
           <a
             href="${rightButtonUrl}"
-            class="inline-flex items-center justify-center whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium border border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
+            class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"
           >
             ${rightButtonLabel}
           </a>
-          <img
-            src="/images/doodle.png"
-            alt="Doodle"
-            class="absolute -right-10 top-1/2 -translate-y-1/2 w-8 h-auto transform rotate-90"
-          />
+          <div class="absolute -right-10 top-1/2 -translate-y-1/2">
+            <img src="/images/doodle.png" alt="Doodle" class="w-8 h-auto transform rotate-90" />
+          </div>
         </div>
       </div>
     </div>
@@ -108,16 +111,12 @@ export const SimpleComponent: React.FC<{ data: CallToActionProps }> = ({ data })
   }, [data, htmlContent])
 
   return (
-    <div className="my-6 p-6 bg-gray-100 rounded-lg flex flex-col md:flex-row justify-between items-center gap-6">
-      {/* Text content on the left */}
-      <div className="flex-1">
-        <h3 className="text-xl font-bold mb-2">{headline}</h3>
-        <p className="text-gray-700">{subheadline}</p>
-      </div>
-
-      {/* Buttons on the right */}
-      <div className="flex flex-col sm:flex-row gap-4">
-        {/* Left button with doodle */}
+    <Card className="my-6">
+      <CardHeader>
+        <CardTitle>{headline}</CardTitle>
+        <CardDescription>{subheadline}</CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col sm:flex-row justify-end gap-4">
         <div className="relative">
           <div className="absolute -left-10 top-1/2 -translate-y-1/2">
             <img
@@ -126,31 +125,23 @@ export const SimpleComponent: React.FC<{ data: CallToActionProps }> = ({ data })
               className="w-8 h-auto transform -rotate-90"
             />
           </div>
-          <a
-            href={leftButtonUrl}
-            className="inline-flex items-center justify-center whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium bg-blue-600 text-white hover:bg-blue-700"
-          >
-            {leftButtonLabel}
-          </a>
+          <Button variant="default" asChild>
+            <a href={leftButtonUrl}>{leftButtonLabel}</a>
+          </Button>
         </div>
-
-        {/* Right button with doodle */}
         <div className="relative">
-          <a
-            href={rightButtonUrl}
-            className="inline-flex items-center justify-center whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium border border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
-          >
-            {rightButtonLabel}
-          </a>
+          <Button variant="outline" asChild>
+            <a href={rightButtonUrl}>{rightButtonLabel}</a>
+          </Button>
           <div className="absolute -right-10 top-1/2 -translate-y-1/2">
             <img src="/images/doodle.png" alt="Doodle" className="w-8 h-auto transform rotate-90" />
           </div>
         </div>
-      </div>
+      </CardContent>
 
       {/* Hidden div with HTML content for serialization */}
       <div style={{ display: 'none' }} dangerouslySetInnerHTML={{ __html: htmlContent }} />
-    </div>
+    </Card>
   )
 }
 
