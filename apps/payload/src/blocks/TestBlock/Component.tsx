@@ -1,6 +1,8 @@
 'use client'
 
 import React, { useEffect } from 'react'
+import { Card, CardContent, CardHeader, CardTitle } from '@kit/ui/card'
+import { cn } from '@kit/ui/utils'
 
 type TestBlockProps = {
   blockType: string
@@ -17,21 +19,25 @@ function generateHtmlContent(props: TestBlockProps): string {
   const { text = 'Test Block' } = props || {}
 
   return `
-    <div class="my-6 p-6 bg-blue-100 rounded-lg">
-      <div class="flex items-center">
-        <img
-          src="/images/doodle.png"
-          alt="Doodle"
-          class="w-8 h-auto transform -rotate-45 mr-4"
-        />
-        <h3 class="text-xl font-bold mb-2">Test Block</h3>
-        <img
-          src="/images/doodle.png"
-          alt="Doodle"
-          class="w-8 h-auto transform rotate-45 ml-4"
-        />
+    <div class="my-6 rounded-lg border bg-blue-100 text-card-foreground shadow-sm">
+      <div class="flex flex-col space-y-1.5 p-6">
+        <div class="flex items-center">
+          <img
+            src="/images/doodle.png"
+            alt="Doodle"
+            class="w-8 h-auto transform -rotate-45 mr-4"
+          />
+          <h3 class="text-2xl font-semibold leading-none tracking-tight mb-2">Test Block</h3>
+          <img
+            src="/images/doodle.png"
+            alt="Doodle"
+            class="w-8 h-auto transform rotate-45 ml-4"
+          />
+        </div>
       </div>
-      <p class="text-gray-700">${text}</p>
+      <div class="p-6 pt-0">
+        <p class="text-muted-foreground">${text}</p>
+      </div>
     </div>
   `
 }
@@ -70,25 +76,29 @@ export const Component: React.FC<{ data: TestBlockProps }> = ({ data }) => {
   }, [data, htmlContent])
 
   return (
-    <div className="my-6 p-6 bg-blue-100 rounded-lg">
-      <div className="flex items-center">
-        <img
-          src="/images/doodle.png"
-          alt="Doodle"
-          className="w-8 h-auto transform -rotate-45 mr-4"
-        />
-        <h3 className="text-xl font-bold mb-2">Test Block</h3>
-        <img
-          src="/images/doodle.png"
-          alt="Doodle"
-          className="w-8 h-auto transform rotate-45 ml-4"
-        />
-      </div>
-      <p className="text-gray-700">{text}</p>
+    <Card className="my-6 bg-blue-100">
+      <CardHeader>
+        <div className="flex items-center">
+          <img
+            src="/images/doodle.png"
+            alt="Doodle"
+            className="w-8 h-auto transform -rotate-45 mr-4"
+          />
+          <CardTitle className="mb-2">Test Block</CardTitle>
+          <img
+            src="/images/doodle.png"
+            alt="Doodle"
+            className="w-8 h-auto transform rotate-45 ml-4"
+          />
+        </div>
+      </CardHeader>
+      <CardContent>
+        <p className="text-muted-foreground">{text}</p>
 
-      {/* Hidden div with HTML content for serialization */}
-      <div style={{ display: 'none' }} dangerouslySetInnerHTML={{ __html: htmlContent }} />
-    </div>
+        {/* Hidden div with HTML content for serialization */}
+        <div style={{ display: 'none' }} dangerouslySetInnerHTML={{ __html: htmlContent }} />
+      </CardContent>
+    </Card>
   )
 }
 
