@@ -11,7 +11,7 @@ test.describe('Password Reset Flow', () => {
     let email = '';
 
     await expect(async () => {
-      email = `test-${Math.random() * 10000}@makerkit.dev`;
+      email = auth.createRandomEmail();
 
       await page.goto('/auth/sign-up');
 

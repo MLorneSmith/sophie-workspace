@@ -8,16 +8,33 @@ import { Database } from '@kit/supabase/database';
 type Invitation = Database['public']['Tables']['invitations']['Row'];
 
 const invitePath = '/join';
+
 const siteURL = process.env.NEXT_PUBLIC_SITE_URL;
 const productName = process.env.NEXT_PUBLIC_PRODUCT_NAME ?? '';
 const emailSender = process.env.EMAIL_SENDER;
 
 const env = z
   .object({
-    invitePath: z.string().min(1),
-    siteURL: z.string().min(1),
-    productName: z.string(),
-    emailSender: z.string().email(),
+    invitePath: z
+      .string({
+        required_error: 'The property invitePath is required',
+      })
+      .min(1),
+    siteURL: z
+      .string({
+        required_error: 'NEXT_PUBLIC_SITE_URL is required',
+      })
+      .min(1),
+    productName: z
+      .string({
+        required_error: 'NEXT_PUBLIC_PRODUCT_NAME is required',
+      })
+      .min(1),
+    emailSender: z
+      .string({
+        required_error: 'EMAIL_SENDER is required',
+      })
+      .min(1),
   })
   .parse({
     invitePath,

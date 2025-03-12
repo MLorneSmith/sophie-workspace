@@ -127,7 +127,7 @@ class ConnectivityService {
     }
 
     const webhooksSecret = await getVariable(
-      'STRIPE_WEBHOOKS_SECRET',
+      'STRIPE_WEBHOOK_SECRET',
       this.mode,
     );
 

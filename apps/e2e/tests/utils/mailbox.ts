@@ -1,7 +1,45 @@
 import { Page } from '@playwright/test';
 import { parse } from 'node-html-parser';
 
+type MessageSummary = {
+  ID: string;
+  MessageID: string;
+  Read: boolean;
+  From: {
+    Name: string;
+    Address: string;
+  };
+  To: Array<{
+    Name: string;
+    Address: string;
+  }>;
+  Cc: Array<any>;
+  Bcc: Array<any>;
+  ReplyTo: Array<any>;
+  Subject: string;
+  Created: string;
+  Tags: Array<any>;
+  Size: number;
+  Attachments: number;
+  Snippet: string;
+};
+
+type MessagesResponse = {
+  total: number;
+  unread: number;
+  count: number;
+  messages_count: number;
+  start: number;
+  tags: Array<any>;
+  messages: MessageSummary[];
+};
+
+/**
+ * Mailbox class for interacting with the Mailpit mailbox API.
+ */
 export class Mailbox {
+  static URL = 'http://127.0.0.1:54324';
+
   constructor(private readonly page: Page) {}
 
   async visitMailbox(
@@ -11,28 +49,32 @@ export class Mailbox {
       subject?: string;
     },
   ) {
-    const mailbox = email.split('@')[0];
-
     console.log(`Visiting mailbox ${email} ...`);
 
-    if (!mailbox) {
+    if (!email) {
       throw new Error('Invalid email');
     }
 
-    const json = await this.getEmail(mailbox, params);
+    const json = await this.getEmail(email, params);
 
-    if (!json?.body) {
+    if (!json) {
       throw new Error('Email body was not found');
     }
 
-    console.log(`Email found for ${email}`, {
-      id: json.id,
-      subject: json.subject,
-      date: json.date,
+    console.log(`Email found for email: ${email}`, {
+      expectedEmail: email,
+      id: json.ID,
+      subject: json.Subject,
+      date: json.Date,
+      to: json.To[0],
+      text: json.Text,
     });
 
-    const html = (json.body as { html: string }).html;
-    const el = parse(html);
+    if (email !== json.To[0]!.Address) {
+      throw new Error(`Email address mismatch. Expected ${email}, got ${json.To[0]!.Address}`);
+    }
+
+    const el = parse(json.HTML);
 
     const linkHref = el.querySelector('a')?.getAttribute('href');
 
@@ -51,27 +93,27 @@ export class Mailbox {
    * @param deleteAfter Whether to delete the email after retrieving the OTP
    * @returns The OTP code
    */
-  async getOtpFromEmail(email: string, deleteAfter: boolean = true) {
-    const mailbox = email.split('@')[0];
-
+  async getOtpFromEmail(email: string, deleteAfter = false) {
     console.log(`Retrieving OTP from mailbox ${email} ...`);
 
-    if (!mailbox) {
+    if (!email) {
       throw new Error('Invalid email');
     }
 
-    const json = await this.getEmail(mailbox, {
+    const json = await this.getEmail(email, {
       deleteAfter,
       subject: `One-time password for Makerkit`,
     });
 
-    if (!json?.body) {
+    if (!json) {
       throw new Error('Email body was not found');
     }
 
-    const html = (json.body as { html: string }).html;
+    if (email !== json.To[0]!.Address) {
+      throw new Error(`Email address mismatch. Expected ${email}, got ${json.To[0]!.Address}`);
+    }
 
-    const text = html.match(
+    const text = json.HTML.match(
       new RegExp(`Your one-time password is: (\\d{6})`),
     )?.[1];
 
@@ -84,49 +126,66 @@ export class Mailbox {
   }
 
   async getEmail(
-    mailbox: string,
+    email: string,
     params: {
       deleteAfter: boolean;
       subject?: string;
     },
   ) {
-    const url = `http://127.0.0.1:54324/api/v1/mailbox/${mailbox}`;
+    console.log(`Retrieving email from mailbox ${email}...`);
 
+    const url = `${Mailbox.URL}/api/v1/search?query=to:${email}`;
     const response = await fetch(url);
 
     if (!response.ok) {
       throw new Error(`Failed to fetch emails: ${response.statusText}`);
     }
 
-    const json = (await response.json()) as Array<{
-      id: string;
-      subject: string;
-    }>;
+    const messagesResponse = (await response.json()) as MessagesResponse;
 
-    if (!json || !json.length) {
-      console.log(`No emails found for mailbox ${mailbox}`);
+    if (!messagesResponse || !messagesResponse.messages?.length) {
+      console.log(`No emails found for mailbox ${email}`);
 
       return;
     }
 
     const message = params.subject
       ? (() => {
-          const filtered = json.filter(
-            (item) => item.subject === params.subject,
+          const filtered = messagesResponse.messages.filter(
+            (item) => item.Subject === params.subject,
           );
 
           console.log(
             `Found ${filtered.length} emails with subject ${params.subject}`,
           );
 
-          return filtered[filtered.length - 1];
+          // retrieve the latest by timestamp
+          return filtered.reduce((acc, item) => {
+            if (
+              new Date(acc.Created).getTime() < new Date(item.Created).getTime()
+            ) {
+              return item;
+            }
+
+            return acc;
+          });
         })()
-      : json[0];
+      : messagesResponse.messages.reduce((acc, item) => {
+          if (
+            new Date(acc.Created).getTime() < new Date(item.Created).getTime()
+          ) {
+            return item;
+          }
 
-    console.log(`Message: ${JSON.stringify(message)}`);
+          return acc;
+        });
 
-    const messageId = message?.id;
-    const messageUrl = `${url}/${messageId}`;
+    if (!message) {
+      throw new Error('No message found');
+    }
+
+    const messageId = message.ID;
+    const messageUrl = `${Mailbox.URL}/api/v1/message/${messageId}`;
 
     const messageResponse = await fetch(messageUrl);
 
@@ -138,8 +197,9 @@ export class Mailbox {
     if (params.deleteAfter) {
       console.log(`Deleting email ${messageId} ...`);
 
-      const res = await fetch(messageUrl, {
+      const res = await fetch(`${Mailbox.URL}/api/v1/messages`, {
         method: 'DELETE',
+        body: JSON.stringify({ Ids: [messageId] }),
       });
 
       if (!res.ok) {
@@ -147,6 +207,35 @@ export class Mailbox {
       }
     }
 
-    return await messageResponse.json();
+    return (await messageResponse.json()) as Promise<{
+      ID: string;
+      MessageID: string;
+      From: {
+        Name: string;
+        Address: string;
+      };
+      To: Array<{
+        Name: string;
+        Address: string;
+      }>;
+      Cc: Array<any>;
+      Bcc: Array<any>;
+      ReplyTo: Array<any>;
+      ReturnPath: string;
+      Subject: string;
+      ListUnsubscribe: {
+        Header: string;
+        Links: Array<any>;
+        Errors: string;
+        HeaderPost: string;
+      };
+      Date: string;
+      Tags: Array<any>;
+      Text: string;
+      HTML: string;
+      Size: number;
+      Inline: Array<any>;
+      Attachments: Array<any>;
+    }>;
   }
 }
