@@ -97,20 +97,20 @@ function Home() {
 
               <FeatureCard
                 className={
-                  'relative col-span-1 w-full overflow-hidden lg:col-span-1'
+                  'relative col-span-1 w-full overflow-hidden'
                 }
                 label={'Authentication'}
                 description={`Makerkit provides a variety of providers to allow your users to sign in.`}
               ></FeatureCard>
 
               <FeatureCard
-                className={'relative col-span-2 overflow-hidden lg:col-span-1'}
+                className={'relative overflow-hidden col-span-1'}
                 label={'Multi Tenancy'}
                 description={`Multi tenant memberships for your SaaS business.`}
               />
 
               <FeatureCard
-                className={'relative col-span-1 overflow-hidden lg:col-span-2'}
+                className={'relative col-span-1 overflow-hidden md:col-span-2'}
                 label={'Billing'}
                 description={`Makerkit supports multiple payment gateways to charge your customers.`}
               />

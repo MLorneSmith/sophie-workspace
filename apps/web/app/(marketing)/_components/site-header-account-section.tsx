@@ -77,7 +77,7 @@ function AuthButtons() {
           </Link>
         </Button>
 
-        <Button asChild className="group" variant={'default'}>
+        <Button asChild className="text-xs md:text-sm" variant={'default'}>
           <Link href={pathsConfig.auth.signUp}>
             <Trans i18nKey={'auth:signUp'} />
           </Link>
