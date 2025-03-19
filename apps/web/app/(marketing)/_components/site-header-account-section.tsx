@@ -90,13 +90,11 @@ function AuthButtons() {
         </div>
       </div>
 
-<<<<<<< HEAD
       <BookDemoOverlay 
         isOpen={isBookDemoOpen}
         onClose={() => setIsBookDemoOpen(false)}
       />
-    </>
-=======
+
       <div className={'flex gap-x-2.5'}>
         <Button className={'hidden md:block'} asChild variant={'ghost'}>
           <Link href={pathsConfig.auth.signIn}>
@@ -110,7 +108,6 @@ function AuthButtons() {
           </Link>
         </Button>
       </div>
-    </div>
->>>>>>> fcb37e7d75598df9f79049f756a66049b70ac030
+    </>
   );
 }
