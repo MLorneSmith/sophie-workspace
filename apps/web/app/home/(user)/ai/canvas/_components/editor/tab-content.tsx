@@ -1,11 +1,10 @@
 'use client';
 
-import { forwardRef } from 'react';
+import { forwardRef, useEffect, useRef } from 'react';
 
 import { useSearchParams } from 'next/navigation';
 
 import { useQuery } from '@tanstack/react-query';
-import type { LexicalEditor as _LexicalEditor } from 'lexical';
 
 import { useSupabase } from '@kit/supabase/hooks/use-supabase';
 import { Spinner } from '@kit/ui/spinner';
@@ -57,6 +56,18 @@ export const TabContent = forwardRef<LexicalEditorRef, TabContentProps>(
     const searchParams = useSearchParams();
     const id = searchParams.get('id');
     const supabase = useSupabase<Database>();
+    // Add a ref to track component mount status
+    const isMountedRef = useRef(true);
+
+    useEffect(() => {
+      // Set mounted flag to true when component mounts
+      isMountedRef.current = true;
+
+      return () => {
+        // Set mounted flag to false on unmount
+        isMountedRef.current = false;
+      };
+    }, []);
 
     const { data: content, isLoading } = useQuery<LexicalState>({
       queryKey: ['submission', id, sectionType],

@@ -83,8 +83,13 @@ function EditorRefPlugin({
   editorRef: React.MutableRefObject<LexicalEditorType | null>;
 }) {
   const [editor] = useLexicalComposerContext();
+  // Add a ref to track component mount status
+  const isMountedRef = useRef(true);
 
   useEffect(() => {
+    // Set mounted flag to true when component mounts
+    isMountedRef.current = true;
+
     // Store the editor reference
     editorRef.current = editor;
 
@@ -92,9 +97,16 @@ function EditorRefPlugin({
     const currentEditor = editor;
 
     return () => {
-      // Only clear if it's still the same editor instance
-      if (editorRef.current === currentEditor) {
-        editorRef.current = null;
+      // Set mounted flag to false on unmount
+      isMountedRef.current = false;
+
+      // Only clear if it's still the same editor instance and component is unmounting
+      try {
+        if (editorRef.current === currentEditor) {
+          editorRef.current = null;
+        }
+      } catch (e) {
+        console.warn('Error during editor reference cleanup:', e);
       }
     };
   }, [editor, editorRef]);
