@@ -9,7 +9,6 @@ export type Json =
 export type Database = {
   graphql_public: {
     Tables: {
-<<<<<<< HEAD
       [_ in never]: never
     }
     Views: {
@@ -33,31 +32,6 @@ export type Database = {
       [_ in never]: never
     }
   }
-=======
-      [_ in never]: never;
-    };
-    Views: {
-      [_ in never]: never;
-    };
-    Functions: {
-      graphql: {
-        Args: {
-          operationName?: string;
-          query?: string;
-          variables?: Json;
-          extensions?: Json;
-        };
-        Returns: Json;
-      };
-    };
-    Enums: {
-      [_ in never]: never;
-    };
-    CompositeTypes: {
-      [_ in never]: never;
-    };
-  };
->>>>>>> 22f78b9a86b94532cc7016453e299c7a5770e02e
   public: {
     Tables: {
       accounts: {
@@ -90,7 +64,6 @@ export type Database = {
           updated_by?: string | null
         }
         Update: {
-<<<<<<< HEAD
           created_at?: string | null
           created_by?: string | null
           email?: string | null
@@ -106,23 +79,6 @@ export type Database = {
         }
         Relationships: []
       }
-=======
-          created_at?: string | null;
-          created_by?: string | null;
-          email?: string | null;
-          id?: string;
-          is_personal_account?: boolean;
-          name?: string;
-          picture_url?: string | null;
-          primary_owner_user_id?: string;
-          public_data?: Json;
-          slug?: string | null;
-          updated_at?: string | null;
-          updated_by?: string | null;
-        };
-        Relationships: [];
-      };
->>>>>>> 22f78b9a86b94532cc7016453e299c7a5770e02e
       accounts_memberships: {
         Row: {
           account_id: string
@@ -180,13 +136,8 @@ export type Database = {
             referencedRelation: "roles"
             referencedColumns: ["name"]
           },
-<<<<<<< HEAD
         ]
       }
-=======
-        ];
-      };
->>>>>>> 22f78b9a86b94532cc7016453e299c7a5770e02e
       billing_customers: {
         Row: {
           account_id: string
@@ -356,7 +307,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-<<<<<<< HEAD
             foreignKeyName: "invitations_role_fkey"
             columns: ["role"]
             isOneToOne: false
@@ -365,79 +315,63 @@ export type Database = {
           },
         ]
       }
-=======
-            foreignKeyName: 'invitations_role_fkey';
-            columns: ['role'];
-            isOneToOne: false;
-            referencedRelation: 'roles';
-            referencedColumns: ['name'];
-          },
-        ];
-      };
       nonces: {
         Row: {
-          client_token: string;
-          created_at: string;
-          description: string | null;
-          expires_at: string;
-          id: string;
-          last_verification_at: string | null;
-          last_verification_ip: unknown | null;
-          last_verification_user_agent: string | null;
-          metadata: Json | null;
-          nonce: string;
-          purpose: string;
-          revoked: boolean;
-          revoked_reason: string | null;
-          scopes: string[] | null;
-          tags: string[] | null;
-          used_at: string | null;
-          user_id: string | null;
-          verification_attempts: number;
-        };
+          client_token: string
+          created_at: string
+          expires_at: string
+          id: string
+          last_verification_at: string | null
+          last_verification_ip: unknown | null
+          last_verification_user_agent: string | null
+          metadata: Json | null
+          nonce: string
+          purpose: string
+          revoked: boolean
+          revoked_reason: string | null
+          scopes: string[] | null
+          used_at: string | null
+          user_id: string | null
+          verification_attempts: number
+        }
         Insert: {
-          client_token: string;
-          created_at?: string;
-          description?: string | null;
-          expires_at: string;
-          id?: string;
-          last_verification_at?: string | null;
-          last_verification_ip?: unknown | null;
-          last_verification_user_agent?: string | null;
-          metadata?: Json | null;
-          nonce: string;
-          purpose: string;
-          revoked?: boolean;
-          revoked_reason?: string | null;
-          scopes?: string[] | null;
-          tags?: string[] | null;
-          used_at?: string | null;
-          user_id?: string | null;
-          verification_attempts?: number;
-        };
+          client_token: string
+          created_at?: string
+          expires_at: string
+          id?: string
+          last_verification_at?: string | null
+          last_verification_ip?: unknown | null
+          last_verification_user_agent?: string | null
+          metadata?: Json | null
+          nonce: string
+          purpose: string
+          revoked?: boolean
+          revoked_reason?: string | null
+          scopes?: string[] | null
+          used_at?: string | null
+          user_id?: string | null
+          verification_attempts?: number
+        }
         Update: {
-          client_token?: string;
-          created_at?: string;
-          description?: string | null;
-          expires_at?: string;
-          id?: string;
-          last_verification_at?: string | null;
-          last_verification_ip?: unknown | null;
-          last_verification_user_agent?: string | null;
-          metadata?: Json | null;
-          nonce?: string;
-          purpose?: string;
-          revoked?: boolean;
-          revoked_reason?: string | null;
-          scopes?: string[] | null;
-          tags?: string[] | null;
-          used_at?: string | null;
-          user_id?: string | null;
-          verification_attempts?: number;
-        };
-        Relationships: [];
-      };
->>>>>>> 22f78b9a86b94532cc7016453e299c7a5770e02e
+          client_token?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          last_verification_at?: string | null
+          last_verification_ip?: unknown | null
+          last_verification_user_agent?: string | null
+          metadata?: Json | null
+          nonce?: string
+          purpose?: string
+          revoked?: boolean
+          revoked_reason?: string | null
+          scopes?: string[] | null
+          used_at?: string | null
+          user_id?: string | null
+          verification_attempts?: number
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           account_id: string
@@ -808,6 +742,81 @@ export type Database = {
           },
         ]
       }
+      survey_progress: {
+        Row: {
+          created_at: string | null
+          current_question_index: number | null
+          id: string
+          last_answered_at: string | null
+          progress_percentage: number | null
+          survey_id: string
+          total_questions: number
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          current_question_index?: number | null
+          id?: string
+          last_answered_at?: string | null
+          progress_percentage?: number | null
+          survey_id: string
+          total_questions: number
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          current_question_index?: number | null
+          id?: string
+          last_answered_at?: string | null
+          progress_percentage?: number | null
+          survey_id?: string
+          total_questions?: number
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      survey_responses: {
+        Row: {
+          category_scores: Json | null
+          completed: boolean | null
+          created_at: string | null
+          highest_scoring_category: string | null
+          id: string
+          lowest_scoring_category: string | null
+          responses: Json | null
+          survey_id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          category_scores?: Json | null
+          completed?: boolean | null
+          created_at?: string | null
+          highest_scoring_category?: string | null
+          id?: string
+          lowest_scoring_category?: string | null
+          responses?: Json | null
+          survey_id: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          category_scores?: Json | null
+          completed?: boolean | null
+          created_at?: string | null
+          highest_scoring_category?: string | null
+          id?: string
+          lowest_scoring_category?: string | null
+          responses?: Json | null
+          survey_id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       tasks: {
         Row: {
           account_id: string
@@ -950,7 +959,6 @@ export type Database = {
           role: string
         }
         Returns: {
-<<<<<<< HEAD
           account_id: string
           created_at: string
           email: string
@@ -962,32 +970,17 @@ export type Database = {
           updated_at: string
         }
       }
-=======
-          account_id: string;
-          created_at: string;
-          email: string;
-          expires_at: string;
-          id: number;
-          invite_token: string;
-          invited_by: string;
-          role: string;
-          updated_at: string;
-        };
-      };
       create_nonce: {
         Args: {
-          p_user_id?: string;
-          p_purpose?: string;
-          p_expires_in_seconds?: number;
-          p_metadata?: Json;
-          p_description?: string;
-          p_tags?: string[];
-          p_scopes?: string[];
-          p_revoke_previous?: boolean;
-        };
-        Returns: Json;
-      };
->>>>>>> 22f78b9a86b94532cc7016453e299c7a5770e02e
+          p_user_id?: string
+          p_purpose?: string
+          p_expires_in_seconds?: number
+          p_metadata?: Json
+          p_scopes?: string[]
+          p_revoke_previous?: boolean
+        }
+        Returns: Json
+      }
       create_team_account: {
         Args: {
           account_name: string
@@ -1043,21 +1036,15 @@ export type Database = {
         }[]
       }
       get_config: {
-<<<<<<< HEAD
         Args: Record<PropertyKey, never>
         Returns: Json
       }
-=======
-        Args: Record<PropertyKey, never>;
-        Returns: Json;
-      };
       get_nonce_status: {
         Args: {
-          p_id: string;
-        };
-        Returns: Json;
-      };
->>>>>>> 22f78b9a86b94532cc7016453e299c7a5770e02e
+          p_id: string
+        }
+        Returns: Json
+      }
       get_upper_system_role: {
         Args: Record<PropertyKey, never>
         Returns: string
@@ -1093,29 +1080,16 @@ export type Database = {
       }
       has_same_role_hierarchy_level: {
         Args: {
-<<<<<<< HEAD
           target_user_id: string
           target_account_id: string
           role_name: string
         }
         Returns: boolean
       }
-=======
-          target_user_id: string;
-          target_account_id: string;
-          role_name: string;
-        };
-        Returns: boolean;
-      };
-      install_extensions: {
-        Args: Record<PropertyKey, never>;
-        Returns: undefined;
-      };
       is_aal2: {
-        Args: Record<PropertyKey, never>;
-        Returns: boolean;
-      };
->>>>>>> 22f78b9a86b94532cc7016453e299c7a5770e02e
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
       is_account_owner: {
         Args: {
           account_id: string
@@ -1124,15 +1098,22 @@ export type Database = {
       }
       is_account_team_member: {
         Args: {
-<<<<<<< HEAD
           target_account_id: string
         }
+        Returns: boolean
+      }
+      is_mfa_compliant: {
+        Args: Record<PropertyKey, never>
         Returns: boolean
       }
       is_set: {
         Args: {
           field_name: string
         }
+        Returns: boolean
+      }
+      is_super_admin: {
+        Args: Record<PropertyKey, never>
         Returns: boolean
       }
       is_team_member: {
@@ -1142,40 +1123,13 @@ export type Database = {
         }
         Returns: boolean
       }
-=======
-          target_account_id: string;
-        };
-        Returns: boolean;
-      };
-      is_mfa_compliant: {
-        Args: Record<PropertyKey, never>;
-        Returns: boolean;
-      };
-      is_set: {
-        Args: {
-          field_name: string;
-        };
-        Returns: boolean;
-      };
-      is_super_admin: {
-        Args: Record<PropertyKey, never>;
-        Returns: boolean;
-      };
-      is_team_member: {
-        Args: {
-          account_id: string;
-          user_id: string;
-        };
-        Returns: boolean;
-      };
       revoke_nonce: {
         Args: {
-          p_id: string;
-          p_reason?: string;
-        };
-        Returns: boolean;
-      };
->>>>>>> 22f78b9a86b94532cc7016453e299c7a5770e02e
+          p_id: string
+          p_reason?: string
+        }
+        Returns: boolean
+      }
       team_account_workspace: {
         Args: {
           account_slug: string
@@ -1239,7 +1193,6 @@ export type Database = {
           trial_ends_at?: string
         }
         Returns: {
-<<<<<<< HEAD
           account_id: string
           active: boolean
           billing_customer_id: number
@@ -1256,38 +1209,19 @@ export type Database = {
           updated_at: string
         }
       }
-    }
-=======
-          account_id: string;
-          active: boolean;
-          billing_customer_id: number;
-          billing_provider: Database['public']['Enums']['billing_provider'];
-          cancel_at_period_end: boolean;
-          created_at: string;
-          currency: string;
-          id: string;
-          period_ends_at: string;
-          period_starts_at: string;
-          status: Database['public']['Enums']['subscription_status'];
-          trial_ends_at: string | null;
-          trial_starts_at: string | null;
-          updated_at: string;
-        };
-      };
       verify_nonce: {
         Args: {
-          p_token: string;
-          p_purpose: string;
-          p_user_id?: string;
-          p_required_scopes?: string[];
-          p_max_verification_attempts?: number;
-          p_ip?: unknown;
-          p_user_agent?: string;
-        };
-        Returns: Json;
-      };
-    };
->>>>>>> 22f78b9a86b94532cc7016453e299c7a5770e02e
+          p_token: string
+          p_purpose: string
+          p_user_id?: string
+          p_required_scopes?: string[]
+          p_max_verification_attempts?: number
+          p_ip?: unknown
+          p_user_agent?: string
+        }
+        Returns: Json
+      }
+    }
     Enums: {
       app_permissions:
         | "roles.manage"
@@ -1384,7 +1318,6 @@ export type Database = {
       }
       objects: {
         Row: {
-<<<<<<< HEAD
           bucket_id: string | null
           created_at: string | null
           id: string
@@ -1426,49 +1359,6 @@ export type Database = {
           user_metadata?: Json | null
           version?: string | null
         }
-=======
-          bucket_id: string | null;
-          created_at: string | null;
-          id: string;
-          last_accessed_at: string | null;
-          metadata: Json | null;
-          name: string | null;
-          owner: string | null;
-          owner_id: string | null;
-          path_tokens: string[] | null;
-          updated_at: string | null;
-          user_metadata: Json | null;
-          version: string | null;
-        };
-        Insert: {
-          bucket_id?: string | null;
-          created_at?: string | null;
-          id?: string;
-          last_accessed_at?: string | null;
-          metadata?: Json | null;
-          name?: string | null;
-          owner?: string | null;
-          owner_id?: string | null;
-          path_tokens?: string[] | null;
-          updated_at?: string | null;
-          user_metadata?: Json | null;
-          version?: string | null;
-        };
-        Update: {
-          bucket_id?: string | null;
-          created_at?: string | null;
-          id?: string;
-          last_accessed_at?: string | null;
-          metadata?: Json | null;
-          name?: string | null;
-          owner?: string | null;
-          owner_id?: string | null;
-          path_tokens?: string[] | null;
-          updated_at?: string | null;
-          user_metadata?: Json | null;
-          version?: string | null;
-        };
->>>>>>> 22f78b9a86b94532cc7016453e299c7a5770e02e
         Relationships: [
           {
             foreignKeyName: "objects_bucketId_fkey"
@@ -1481,7 +1371,6 @@ export type Database = {
       }
       s3_multipart_uploads: {
         Row: {
-<<<<<<< HEAD
           bucket_id: string
           created_at: string
           id: string
@@ -1514,40 +1403,6 @@ export type Database = {
           user_metadata?: Json | null
           version?: string
         }
-=======
-          bucket_id: string;
-          created_at: string;
-          id: string;
-          in_progress_size: number;
-          key: string;
-          owner_id: string | null;
-          upload_signature: string;
-          user_metadata: Json | null;
-          version: string;
-        };
-        Insert: {
-          bucket_id: string;
-          created_at?: string;
-          id: string;
-          in_progress_size?: number;
-          key: string;
-          owner_id?: string | null;
-          upload_signature: string;
-          user_metadata?: Json | null;
-          version: string;
-        };
-        Update: {
-          bucket_id?: string;
-          created_at?: string;
-          id?: string;
-          in_progress_size?: number;
-          key?: string;
-          owner_id?: string | null;
-          upload_signature?: string;
-          user_metadata?: Json | null;
-          version?: string;
-        };
->>>>>>> 22f78b9a86b94532cc7016453e299c7a5770e02e
         Relationships: [
           {
             foreignKeyName: "s3_multipart_uploads_bucket_id_fkey"
@@ -1610,21 +1465,12 @@ export type Database = {
             referencedRelation: "s3_multipart_uploads"
             referencedColumns: ["id"]
           },
-<<<<<<< HEAD
         ]
       }
     }
     Views: {
       [_ in never]: never
     }
-=======
-        ];
-      };
-    };
-    Views: {
-      [_ in never]: never;
-    };
->>>>>>> 22f78b9a86b94532cc7016453e299c7a5770e02e
     Functions: {
       can_insert_object: {
         Args: {
@@ -1685,7 +1531,6 @@ export type Database = {
           next_token?: string
         }
         Returns: {
-<<<<<<< HEAD
           name: string
           id: string
           metadata: Json
@@ -1696,18 +1541,6 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string
       }
-=======
-          name: string;
-          id: string;
-          metadata: Json;
-          updated_at: string;
-        }[];
-      };
-      operation: {
-        Args: Record<PropertyKey, never>;
-        Returns: string;
-      };
->>>>>>> 22f78b9a86b94532cc7016453e299c7a5770e02e
       search: {
         Args: {
           prefix: string
@@ -1720,7 +1553,6 @@ export type Database = {
           sortorder?: string
         }
         Returns: {
-<<<<<<< HEAD
           name: string
           id: string
           updated_at: string
@@ -1738,25 +1570,6 @@ export type Database = {
     }
   }
 }
-=======
-          name: string;
-          id: string;
-          updated_at: string;
-          created_at: string;
-          last_accessed_at: string;
-          metadata: Json;
-        }[];
-      };
-    };
-    Enums: {
-      [_ in never]: never;
-    };
-    CompositeTypes: {
-      [_ in never]: never;
-    };
-  };
-};
->>>>>>> 22f78b9a86b94532cc7016453e299c7a5770e02e
 
 type PublicSchema = Database[Extract<keyof Database, "public">]
 
@@ -1835,7 +1648,6 @@ export type Enums<
     ? keyof Database[PublicEnumNameOrOptions["schema"]]["Enums"]
     : never = never,
 > = PublicEnumNameOrOptions extends { schema: keyof Database }
-<<<<<<< HEAD
   ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
     ? PublicSchema["Enums"][PublicEnumNameOrOptions]
@@ -1856,24 +1668,3 @@ export type CompositeTypes<
     ? PublicSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never
 
-=======
-  ? Database[PublicEnumNameOrOptions['schema']]['Enums'][EnumName]
-  : PublicEnumNameOrOptions extends keyof PublicSchema['Enums']
-    ? PublicSchema['Enums'][PublicEnumNameOrOptions]
-    : never;
-
-export type CompositeTypes<
-  PublicCompositeTypeNameOrOptions extends
-    | keyof PublicSchema['CompositeTypes']
-    | { schema: keyof Database },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof Database;
-  }
-    ? keyof Database[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes']
-    : never = never,
-> = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes'][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof PublicSchema['CompositeTypes']
-    ? PublicSchema['CompositeTypes'][PublicCompositeTypeNameOrOptions]
-    : never;
->>>>>>> 22f78b9a86b94532cc7016453e299c7a5770e02e

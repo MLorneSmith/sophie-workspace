@@ -1,0 +1,104 @@
+import { CollectionConfig } from 'payload'
+
+export const SurveyQuestions: CollectionConfig = {
+  slug: 'survey_questions',
+  labels: {
+    singular: 'Survey Question',
+    plural: 'Survey Questions',
+  },
+  admin: {
+    useAsTitle: 'text',
+    defaultColumns: ['text', 'type', 'category', 'position'],
+    description: 'Questions for surveys',
+  },
+  access: {
+    read: () => true, // Public read access
+  },
+  fields: [
+    {
+      name: 'text',
+      type: 'text',
+      required: true,
+      admin: {
+        description: 'The question text',
+      },
+    },
+    {
+      name: 'type',
+      type: 'select',
+      options: [
+        { label: 'Multiple Choice', value: 'multiple_choice' },
+        // Future extensibility for other question types
+      ],
+      defaultValue: 'multiple_choice',
+      required: true,
+      admin: {
+        description: 'The type of question',
+      },
+    },
+    {
+      name: 'description',
+      type: 'textarea',
+      admin: {
+        description: 'Additional context or instructions for the question',
+      },
+    },
+    {
+      name: 'required',
+      type: 'checkbox',
+      defaultValue: true,
+      admin: {
+        description: 'Whether this question requires an answer',
+      },
+    },
+    {
+      name: 'options',
+      type: 'array',
+      admin: {
+        description: 'Answer options for this question',
+      },
+      fields: [
+        {
+          name: 'option',
+          type: 'text',
+          required: true,
+        },
+      ],
+      validate: (options) => {
+        if (!options || options.length < 2) {
+          return 'At least two options are required'
+        }
+        return true
+      },
+    },
+    {
+      name: 'category',
+      type: 'text',
+      required: true,
+      admin: {
+        description: 'The category this question belongs to (e.g., Structure, Story, Style)',
+      },
+    },
+    {
+      name: 'questionspin',
+      type: 'select',
+      options: [
+        { label: 'Positive', value: 'Positive' },
+        { label: 'Negative', value: 'Negative' },
+      ],
+      defaultValue: 'Positive',
+      required: true,
+      admin: {
+        description: 'Whether a high score is positive or negative for this question',
+      },
+    },
+    {
+      name: 'position',
+      type: 'number',
+      defaultValue: 0,
+      admin: {
+        description: 'Position in the survey (lower numbers appear first)',
+      },
+    },
+  ],
+}

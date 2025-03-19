@@ -19,23 +19,26 @@
     "migrate:status": "cross-env NODE_OPTIONS=--no-deprecation payload migrate:status",
     "migrate:down": "cross-env NODE_OPTIONS=--no-deprecation payload migrate:down",
     "migrate:refresh": "cross-env NODE_OPTIONS=--no-deprecation payload migrate:refresh",
-    "ci": "cross-env NODE_OPTIONS=--no-deprecation payload migrate && pnpm build"
+    "ci": "cross-env NODE_OPTIONS=--no-deprecation payload migrate && pnpm build",
+    "seed:assessment": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/seed-assessment-survey.ts"
   },
   "dependencies": {
     "@kit/ui": "workspace:*",
-    "@payloadcms/db-postgres": "latest",
-    "@payloadcms/next": "latest",
-    "@payloadcms/payload-cloud": "latest",
-    "@payloadcms/plugin-nested-docs": "^3.26.0",
-    "@payloadcms/richtext-lexical": "latest",
+    "@payloadcms/db-postgres": "3.28.1",
+    "@payloadcms/next": "3.28.1",
+    "@payloadcms/payload-cloud": "3.28.1",
+    "@payloadcms/plugin-nested-docs": "3.28.1",
+    "@payloadcms/richtext-lexical": "3.28.1",
     "cross-env": "^7.0.3",
     "dotenv": "^16.3.1",
     "graphql": "^16.8.1",
     "next": "15.2.3",
-    "payload": "3.26.0",
+    "node-fetch": "^3.3.2",
+    "payload": "3.28.1",
     "react": "19.0.0",
     "react-dom": "19.0.0",
-    "sharp": "0.32.6"
+    "sharp": "0.32.6",
+    "yaml": "^2.7.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
@@ -43,6 +46,7 @@
     "@types/node": "^22.13.10",
     "@types/react": "19.0.11",
     "@types/react-dom": "19.0.4",
+    "@types/yaml": "^1.9.7",
     "autoprefixer": "^10.4.20",
     "concurrently": "^9.1.2",
     "css-loader": "^7.1.2",
@@ -53,6 +57,7 @@
     "prettier": "^3.5.3",
     "tailwindcss": "4.0.14",
     "tailwindcss-animate": "^1.0.7",
+    "tsx": "^4.7.1",
     "typescript": "^5.8.2"
   },
   "engines": {

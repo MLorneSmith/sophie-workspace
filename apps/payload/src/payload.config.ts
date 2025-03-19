@@ -16,6 +16,8 @@ import TestBlock from './blocks/TestBlock'
 import { Documentation } from './collections/Documentation'
 import { Media } from './collections/Media'
 import { Posts } from './collections/Posts'
+import { SurveyQuestions } from './collections/SurveyQuestions'
+import { Surveys } from './collections/Surveys'
 import { Users } from './collections/Users'
 
 const filename = fileURLToPath(import.meta.url)
@@ -35,7 +37,7 @@ export default buildConfig({
     'https://www.slideheroes.com',
     'https://2025slideheroes-web.vercel.app',
   ],
-  collections: [Users, Media, Documentation, Posts],
+  collections: [Users, Media, Documentation, Posts, Surveys, SurveyQuestions],
   editor: lexicalEditor({
     // Global editor configuration with custom blocks
     features: ({ defaultFeatures }) => [
