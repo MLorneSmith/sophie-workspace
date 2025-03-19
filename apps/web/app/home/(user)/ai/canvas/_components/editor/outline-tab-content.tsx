@@ -1,6 +1,6 @@
 'use client';
 
-import { forwardRef } from 'react';
+import { forwardRef, useEffect, useRef } from 'react';
 
 import { useSearchParams } from 'next/navigation';
 
@@ -36,6 +36,18 @@ export const OutlineTabContent = forwardRef<LexicalEditorRef>(
   function OutlineTabContent(_, ref) {
     const searchParams = useSearchParams();
     const id = searchParams.get('id');
+    // Add a ref to track component mount status
+    const isMountedRef = useRef(true);
+
+    useEffect(() => {
+      // Set mounted flag to true when component mounts
+      isMountedRef.current = true;
+
+      return () => {
+        // Set mounted flag to false on unmount
+        isMountedRef.current = false;
+      };
+    }, []);
 
     const { data: content, isLoading } = useOutlineContent(id || '');
 

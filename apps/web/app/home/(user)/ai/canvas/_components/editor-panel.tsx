@@ -65,26 +65,37 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
 
   const handleAcceptImprovement = useCallback(
     (improvement: BaseImprovement) => {
-      if (editorRef.current) {
+      if (!editorRef.current) return;
+
+      try {
         editorRef.current.update(() => {
-          const root = $getRoot();
+          try {
+            const root = $getRoot();
 
-          // Create heading for summary point
-          const headingNode = $createHeadingNode('h2');
-          const summaryTextNode = $createTextNode(
-            improvement.implementedSummaryPoint,
-          );
-          headingNode.append(summaryTextNode);
-          root.append(headingNode);
+            // Create heading for summary point
+            const headingNode = $createHeadingNode('h2');
+            const summaryTextNode = $createTextNode(
+              improvement.implementedSummaryPoint,
+            );
+            headingNode.append(summaryTextNode);
+            root.append(headingNode);
 
-          // Create paragraph for supporting points
-          const paragraphNode = $createParagraphNode();
-          improvement.implementedSupportingPoints.forEach((point) => {
-            const pointNode = $createTextNode(`• ${point}\n`);
-            paragraphNode.append(pointNode);
-          });
-          root.append(paragraphNode);
+            // Create paragraph for supporting points
+            const paragraphNode = $createParagraphNode();
+            improvement.implementedSupportingPoints.forEach((point) => {
+              const pointNode = $createTextNode(`• ${point}\n`);
+              paragraphNode.append(pointNode);
+            });
+            root.append(paragraphNode);
+          } catch (error) {
+            console.warn(
+              'Error in editor update for accepting improvement:',
+              error,
+            );
+          }
         });
+      } catch (error) {
+        console.warn('Error accepting improvement:', error);
       }
     },
     [editorRef],
@@ -93,8 +104,15 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
   const handleImproveStructure = useCallback(async () => {
     if (!editorRef.current || !submissionId) return;
 
-    // TODO: Implement improve structure functionality
-    console.log('Improve structure clicked');
+    try {
+      // TODO: Implement improve structure functionality
+      console.log('Improve structure clicked');
+
+      // When implemented, this would use the same safety pattern as handleGenerateIdeas
+      // to safely get content from the editor
+    } catch (error) {
+      console.warn('Error improving structure:', error);
+    }
   }, [editorRef, submissionId]);
 
   const handleGenerateIdeas = useCallback(async () => {
@@ -104,16 +122,45 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
     setMessageIndex((current) => (current + 1) % LOADING_MESSAGES.length);
     setIsGenerating(true);
 
-    // Get content outside of try block since it's synchronous
+    // Get content safely with try/catch
     let content = '';
-    editorRef.current.update(() => {
-      const root = $getRoot();
-      content = root.getTextContent();
-    });
-
     try {
+      // Create a promise to get the content safely
+      const getContentPromise = new Promise<string>((resolve) => {
+        if (!editorRef.current) {
+          resolve('');
+          return;
+        }
+
+        try {
+          editorRef.current.update(() => {
+            try {
+              const root = $getRoot();
+              content = root.getTextContent();
+              resolve(content);
+            } catch (error) {
+              console.warn('Error getting root text content:', error);
+              resolve('');
+            }
+          });
+        } catch (error) {
+          console.warn('Error updating editor:', error);
+          resolve('');
+        }
+      });
+
+      // Wait for content with a timeout
+      content = await Promise.race([
+        getContentPromise,
+        new Promise<string>((resolve) => setTimeout(() => resolve(''), 1000)),
+      ]);
+
+      // Ensure content is not empty for the API call
+      const contentToSend =
+        content.trim() || 'Please suggest some initial ideas.';
+
       const result = await generateIdeasAction({
-        content,
+        content: contentToSend,
         submissionId,
         type: sectionType,
       });
@@ -157,15 +204,18 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
                 onResetOutline={
                   sectionType === 'outline'
                     ? async () => {
-                        setMessageIndex(
-                          (current) => (current + 1) % LOADING_MESSAGES.length,
-                        );
-                        setIsRegeneratingOutline(true);
                         try {
+                          setMessageIndex(
+                            (current) =>
+                              (current + 1) % LOADING_MESSAGES.length,
+                          );
+                          setIsRegeneratingOutline(true);
+
                           await regenerateOutline();
                         } catch (error) {
                           console.error('Failed to regenerate outline:', error);
                         } finally {
+                          // Always reset the loading state
                           setIsRegeneratingOutline(false);
                         }
                       }

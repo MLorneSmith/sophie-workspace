@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { $createListNode, $isListNode } from '@lexical/list';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
@@ -28,35 +28,84 @@ export function EditorToolbar() {
   const [isBold, setIsBold] = useState(false);
   const [isItalic, setIsItalic] = useState(false);
   const [isUnderline, setIsUnderline] = useState(false);
+  // Add a ref to track component mount status
+  const isMountedRef = useRef(true);
 
   useEffect(() => {
-    return editor.registerUpdateListener(({ editorState }) => {
-      editorState.read(() => {
-        const selection = $getSelection();
-        if (!$isRangeSelection(selection)) return;
+    // Set mounted flag to true when component mounts
+    isMountedRef.current = true;
 
-        // Check for heading
-        const anchorNode = selection.anchor.getNode();
-        const focusNode = selection.focus.getNode();
-        const parentHeading = anchorNode.getParent() || focusNode.getParent();
-        setIsH2(
-          $isHeadingNode(parentHeading) && parentHeading.getTag() === 'h2',
-        );
+    // Store a reference to the editor for cleanup
+    const editorRef = editor;
 
-        // Check for lists
-        const parentList = anchorNode.getParent();
-        const isList = $isListNode(parentList);
-        setIsBulletList(isList && parentList.getListType() === 'bullet');
-        setIsNumberedList(isList && parentList.getListType() === 'number');
+    const removeUpdateListener = editor.registerUpdateListener(
+      ({ editorState }) => {
+        // Skip processing if component is unmounting
+        if (!isMountedRef.current) return;
 
-        // Check for text formatting
-        if ($isRangeSelection(selection)) {
-          setIsBold(selection.hasFormat('bold'));
-          setIsItalic(selection.hasFormat('italic'));
-          setIsUnderline(selection.hasFormat('underline'));
+        try {
+          editorState.read(() => {
+            try {
+              const selection = $getSelection();
+              if (!$isRangeSelection(selection)) return;
+
+              // Check for heading
+              const anchorNode = selection.anchor.getNode();
+              const focusNode = selection.focus.getNode();
+              const parentHeading =
+                anchorNode.getParent() || focusNode.getParent();
+
+              if (isMountedRef.current) {
+                setIsH2(
+                  $isHeadingNode(parentHeading) &&
+                    parentHeading.getTag() === 'h2',
+                );
+
+                // Check for lists
+                const parentList = anchorNode.getParent();
+                const isList = $isListNode(parentList);
+                setIsBulletList(
+                  isList && parentList.getListType() === 'bullet',
+                );
+                setIsNumberedList(
+                  isList && parentList.getListType() === 'number',
+                );
+
+                // Check for text formatting
+                if ($isRangeSelection(selection)) {
+                  setIsBold(selection.hasFormat('bold'));
+                  setIsItalic(selection.hasFormat('italic'));
+                  setIsUnderline(selection.hasFormat('underline'));
+                }
+              }
+            } catch (error) {
+              console.warn('Error reading editor state in toolbar:', error);
+            }
+          });
+        } catch (error) {
+          console.warn('Error in editor update listener:', error);
         }
-      });
-    });
+      },
+    );
+
+    return () => {
+      // Set mounted flag to false on unmount
+      isMountedRef.current = false;
+
+      // Wrap cleanup in try/catch to handle errors safely
+      try {
+        // Only attempt to clean up if the editor is still valid and available
+        if (
+          editorRef &&
+          typeof editorRef.isEditable === 'function' &&
+          editorRef.isEditable()
+        ) {
+          removeUpdateListener();
+        }
+      } catch (e) {
+        console.warn('Error during EditorToolbar cleanup:', e);
+      }
+    };
   }, [editor]);
 
   const formatBold = useCallback(() => {

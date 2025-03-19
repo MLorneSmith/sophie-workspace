@@ -47,50 +47,91 @@ export function ActionToolbar({
     try {
       setIsSimplifying(true);
 
-      // Get current editor content
+      // Get current editor content safely with try/catch
       let content = '';
-      editorRef.current.update(() => {
-        const root = $getRoot();
-        content = root.getTextContent();
-      });
+      try {
+        // Create a promise to get the content safely
+        const getContentPromise = new Promise<string>((resolve) => {
+          if (!editorRef.current) {
+            resolve('');
+            return;
+          }
 
-      // Call the simplify text action
-      const result = await simplifyTextAction({
-        content,
-        userId: user.id,
-        canvasId,
-        sectionType,
-      });
-
-      if (result.success && result.response) {
-        try {
-          const simplified = JSON.parse(result.response) as SimplifiedContent;
-
-          // Clear current content and insert simplified sections
-          editorRef.current.update(() => {
-            const root = $getRoot();
-            root.clear();
-
-            simplified.sections.forEach((section) => {
-              if (section.type === 'heading') {
-                const headingNode = $createHeadingNode('h2');
-                const textNode = $createTextNode(section.content);
-                headingNode.append(textNode);
-                root.append(headingNode);
-              } else {
-                const paragraphNode = $createParagraphNode();
-                const textNode = $createTextNode(`• ${section.content}`);
-                paragraphNode.append(textNode);
-                root.append(paragraphNode);
+          try {
+            editorRef.current.update(() => {
+              try {
+                const root = $getRoot();
+                content = root.getTextContent();
+                resolve(content);
+              } catch (error) {
+                console.warn('Error getting root text content:', error);
+                resolve('');
               }
             });
-          });
-        } catch (parseError) {
-          console.error('Failed to parse simplified content:', parseError);
-          return;
+          } catch (error) {
+            console.warn('Error updating editor:', error);
+            resolve('');
+          }
+        });
+
+        // Wait for content with a timeout
+        content = await Promise.race([
+          getContentPromise,
+          new Promise<string>((resolve) => setTimeout(() => resolve(''), 1000)),
+        ]);
+
+        // Call the simplify text action
+        const result = await simplifyTextAction({
+          content,
+          userId: user.id,
+          canvasId,
+          sectionType,
+        });
+
+        if (result.success && result.response) {
+          try {
+            const simplified = JSON.parse(result.response) as SimplifiedContent;
+
+            // Clear current content and insert simplified sections safely
+            if (editorRef.current) {
+              try {
+                editorRef.current.update(() => {
+                  try {
+                    const root = $getRoot();
+                    root.clear();
+
+                    simplified.sections.forEach((section) => {
+                      if (section.type === 'heading') {
+                        const headingNode = $createHeadingNode('h2');
+                        const textNode = $createTextNode(section.content);
+                        headingNode.append(textNode);
+                        root.append(headingNode);
+                      } else {
+                        const paragraphNode = $createParagraphNode();
+                        const textNode = $createTextNode(
+                          `• ${section.content}`,
+                        );
+                        paragraphNode.append(textNode);
+                        root.append(paragraphNode);
+                      }
+                    });
+                  } catch (innerError) {
+                    console.warn('Error updating editor content:', innerError);
+                  }
+                });
+              } catch (updateError) {
+                console.warn('Error calling editor update:', updateError);
+              }
+            }
+          } catch (parseError) {
+            console.error('Failed to parse simplified content:', parseError);
+            return;
+          }
+        } else {
+          console.error('Failed to simplify text:', result.error);
         }
-      } else {
-        console.error('Failed to simplify text:', result.error);
+      } catch (contentError) {
+        console.warn('Error getting editor content:', contentError);
       }
     } catch (error) {
       console.error('Error simplifying text:', error);
@@ -102,20 +143,62 @@ export function ActionToolbar({
   const handleGenerateIdeas = useCallback(async () => {
     if (!editorRef.current || !canvasId || !user) return;
 
-    let content = '';
-    editorRef.current.update(() => {
-      const root = $getRoot();
-      content = root.getTextContent();
-    });
+    try {
+      // Get content safely with try/catch
+      let content = '';
+      try {
+        // Create a promise to get the content safely
+        const getContentPromise = new Promise<string>((resolve) => {
+          if (!editorRef.current) {
+            resolve('');
+            return;
+          }
 
-    const result = await generateIdeasAction({
-      content,
-      submissionId: canvasId,
-      type: sectionType,
-    });
+          try {
+            editorRef.current.update(() => {
+              try {
+                const root = $getRoot();
+                content = root.getTextContent();
+                resolve(content);
+              } catch (error) {
+                console.warn('Error getting root text content:', error);
+                resolve('');
+              }
+            });
+          } catch (error) {
+            console.warn('Error updating editor:', error);
+            resolve('');
+          }
+        });
 
-    if (result.success && result.data?.improvements && onGenerateImprovements) {
-      onGenerateImprovements(result.data.improvements);
+        // Wait for content with a timeout
+        content = await Promise.race([
+          getContentPromise,
+          new Promise<string>((resolve) => setTimeout(() => resolve(''), 1000)),
+        ]);
+
+        // Ensure content is not empty for the API call
+        const contentToSend =
+          content.trim() || 'Please suggest some initial ideas.';
+
+        const result = await generateIdeasAction({
+          content: contentToSend,
+          submissionId: canvasId,
+          type: sectionType,
+        });
+
+        if (
+          result.success &&
+          result.data?.improvements &&
+          onGenerateImprovements
+        ) {
+          onGenerateImprovements(result.data.improvements);
+        }
+      } catch (contentError) {
+        console.warn('Error getting editor content:', contentError);
+      }
+    } catch (error) {
+      console.error('Error generating ideas:', error);
     }
   }, [editorRef, canvasId, user, sectionType, onGenerateImprovements]);
 

@@ -28,6 +28,7 @@ const IdeasSchema = z.object({
   type: z.enum(['situation', 'complication', 'answer', 'outline']),
 });
 
+// Create a wrapper function that handles empty content
 export const generateIdeasAction = enhanceAction(
   async function (data: z.infer<typeof IdeasSchema>, user) {
     try {
@@ -48,9 +49,14 @@ export const generateIdeasAction = enhanceAction(
         throw new Error('Failed to fetch submission data');
       }
 
+      // If content is empty, use a placeholder
+      const contentToUse =
+        data.content.trim() ||
+        'No content provided yet. Please suggest some initial ideas.';
+
       // Debug log the request
       console.log('Ideas Request:', {
-        contentLength: data.content.length,
+        contentLength: contentToUse.length,
         userId: user.id,
         submissionId: data.submissionId,
         type: data.type,
@@ -82,11 +88,11 @@ export const generateIdeasAction = enhanceAction(
             .replace('{{complication}}', submission.complication || '')
             .replace('{{questionType}}', submission.question_type || '')
             .replace('{{answer}}', submission.answer || '')
-            .replace('{{content}}', data.content)
+            .replace('{{content}}', contentToUse)
             .replace(/{{sectionType}}/g, data.type)}
 
 Current content to enhance with new ideas:
-${data.content}
+${contentToUse}
 
 ${improvementFormat}`,
         },
