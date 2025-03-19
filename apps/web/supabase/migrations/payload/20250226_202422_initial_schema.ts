@@ -1,6 +1,6 @@
 import { MigrateDownArgs, MigrateUpArgs, sql } from '@payloadcms/db-postgres';
 
-export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
+export async function up({ db, _payload, _req }: MigrateUpArgs): Promise<void> {
   // First create the payload schema if it doesn't exist
   await db.execute(sql`CREATE SCHEMA IF NOT EXISTS "payload";`);
 
@@ -194,8 +194,8 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
 
 export async function down({
   db,
-  payload,
-  req,
+  _payload,
+  _req,
 }: MigrateDownArgs): Promise<void> {
   // Drop all tables and types
   await db.execute(sql`

@@ -40,7 +40,7 @@ function LoadingFallback() {
   );
 }
 
-function ErrorBoundary({ error }: { error: Error }) {
+function _ErrorBoundary({ error }: { error: Error }) {
   return (
     <div className="flex h-[200px] items-center justify-center text-red-500">
       <p>Error loading editor: {error.message}</p>
@@ -51,7 +51,7 @@ function ErrorBoundary({ error }: { error: Error }) {
 export function EditorPanel({ sectionType }: EditorPanelProps) {
   const searchParams = useSearchParams();
   const submissionId = searchParams.get('id') ?? '';
-  const supabase = useSupabase<Database>();
+  const _supabase = useSupabase<Database>();
   const { data: content = '', regenerateOutline } =
     useOutlineContent(submissionId);
   const contentString =
@@ -182,9 +182,9 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
         <ResizablePanel defaultSize={34}>
           <Suspense fallback={<LoadingFallback />}>
             <SuggestionsPane
-              content={contentString}
-              submissionId={submissionId}
-              type={sectionType}
+              _content={contentString}
+              _submissionId={submissionId}
+              _type={sectionType}
               onAcceptImprovement={handleAcceptImprovement}
               improvements={suggestions}
               onGenerateImprovements={handleGenerateIdeas}

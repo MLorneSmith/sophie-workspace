@@ -5,7 +5,7 @@ import { forwardRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 import { useQuery } from '@tanstack/react-query';
-import type { LexicalEditor } from 'lexical';
+import type { LexicalEditor as _LexicalEditor } from 'lexical';
 
 import { useSupabase } from '@kit/supabase/hooks/use-supabase';
 import { Spinner } from '@kit/ui/spinner';

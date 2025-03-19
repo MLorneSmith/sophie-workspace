@@ -14,9 +14,9 @@ import { LoadingAnimation } from './loading-animation';
 import { LOADING_MESSAGES } from './loading-messages';
 
 interface SuggestionsPaneProps {
-  content: string;
-  submissionId: string;
-  type: ImprovementType;
+  _content: string;
+  _submissionId: string;
+  _type: ImprovementType;
   onAcceptImprovement: (improvement: BaseImprovement) => void;
   improvements?: BaseImprovement[];
   onGenerateImprovements?: () => void;
@@ -25,9 +25,9 @@ interface SuggestionsPaneProps {
 }
 
 export function SuggestionsPane({
-  content,
-  submissionId,
-  type,
+  _content,
+  _submissionId,
+  _type,
   onAcceptImprovement,
   improvements = [],
   onGenerateImprovements,
