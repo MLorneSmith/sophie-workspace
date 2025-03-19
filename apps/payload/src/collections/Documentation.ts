@@ -1,5 +1,7 @@
 import { CollectionConfig } from 'payload'
-import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { BlocksFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
+import CallToAction from '../blocks/CallToAction'
+import TestBlock from '../blocks/TestBlock'
 
 export const Documentation: CollectionConfig = {
   slug: 'documentation',
@@ -38,7 +40,13 @@ export const Documentation: CollectionConfig = {
       type: 'richText',
       required: true,
       editor: lexicalEditor({
-        // Field-specific editor configuration
+        // Field-specific editor configuration with custom blocks
+        features: ({ defaultFeatures }) => [
+          ...defaultFeatures,
+          BlocksFeature({
+            blocks: [CallToAction, TestBlock],
+          }),
+        ],
       }),
       admin: {
         description: 'The main content of the documentation',

@@ -49,7 +49,7 @@ const CallToAction: Block = {
   admin: {
     components: {
       // We'll define the custom component for rendering in the Lexical editor
-      Block: './SimpleComponent',
+      Block: './Component',
     },
   },
 }

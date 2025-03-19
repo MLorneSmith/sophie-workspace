@@ -2,7 +2,7 @@
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { payloadCloudPlugin } from '@payloadcms/payload-cloud'
 import { nestedDocsPlugin } from '@payloadcms/plugin-nested-docs'
-import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { BlocksFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
 import path from 'path'
 import { buildConfig } from 'payload'
 import sharp from 'sharp'
@@ -11,6 +11,8 @@ import { fileURLToPath } from 'url'
 // Import custom SCSS for Tailwind CSS
 import './app/(payload)/custom.scss'
 
+import CallToAction from './blocks/CallToAction'
+import TestBlock from './blocks/TestBlock'
 import { Documentation } from './collections/Documentation'
 import { Media } from './collections/Media'
 import { Posts } from './collections/Posts'
@@ -35,7 +37,13 @@ export default buildConfig({
   ],
   collections: [Users, Media, Documentation, Posts],
   editor: lexicalEditor({
-    // Use the default configuration which should work well for most cases
+    // Global editor configuration with custom blocks
+    features: ({ defaultFeatures }) => [
+      ...defaultFeatures,
+      BlocksFeature({
+        blocks: [CallToAction, TestBlock],
+      }),
+    ],
   }),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
