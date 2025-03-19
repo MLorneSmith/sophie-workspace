@@ -479,6 +479,64 @@ const CallToAction: Block = {
 export default CallToAction;
 ```
 
+## Step 6: Fix ImportMap Generation for Custom Components
+
+When adding custom components to the Lexical editor, you need to ensure they are properly registered in the importMap. However, there's a known issue with SCSS imports causing errors during importMap generation. Here's how to fix it:
+
+### 1. Create a TypeScript Declaration File for SCSS
+
+Create a file named `scss.d.ts` in the `apps/payload/src` directory:
+
+```typescript
+declare module '*.scss' {
+  const content: { [className: string]: string };
+  export default content;
+}
+```
+
+This tells TypeScript how to handle SCSS imports without actually loading them during the importMap generation.
+
+### 2. Generate the ImportMap
+
+To generate the importMap with your custom components, you need to temporarily comment out the SCSS import in `payload.config.ts`:
+
+```typescript
+// Comment out this line temporarily
+// import './app/(payload)/custom.scss'
+```
+
+Then run the generate:importmap command:
+
+```bash
+cd apps/payload
+pnpm generate:importmap
+```
+
+After the importMap is generated, restore the SCSS import:
+
+```typescript
+// Restore the import
+import './app/(payload)/custom.scss';
+```
+
+### 3. Manually Update the ImportMap (if needed)
+
+If your custom components still don't appear in the Lexical editor, you may need to manually update the `apps/payload/src/app/(payload)/admin/importMap.js` file to include the BlocksFeatureClient and your custom components:
+
+```javascript
+import { BlocksFeatureClient as BlocksFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client';
+
+import { default as YourComponentName_e70f5e05f09f93e00b997edb1ef0c864 } from '../../../blocks/YourComponentName/Component';
+
+export const importMap = {
+  // ... existing mappings
+  '@payloadcms/richtext-lexical/client#BlocksFeatureClient':
+    BlocksFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
+  'blocks/YourComponentName/Component':
+    YourComponentName_e70f5e05f09f93e00b997edb1ef0c864,
+};
+```
+
 ## Troubleshooting
 
 If your component is not rendering correctly, check the following:
@@ -488,5 +546,7 @@ If your component is not rendering correctly, check the following:
 3. **Content Renderer**: Check if the content renderer is correctly handling your component type.
 4. **Console Logs**: Look for any error messages or debug logs in the console.
 5. **Component Registration**: Verify that your component is properly registered in the Posts collection.
+6. **ImportMap Generation**: If your components don't appear in the editor, check if the importMap includes the BlocksFeatureClient and your custom components.
+7. **SCSS Import Issues**: If you encounter errors related to SCSS imports during importMap generation, use the workaround described in Step 6.
 
 By following these guidelines, you should be able to create custom components for Payload CMS that work seamlessly in both the admin UI and the front end.
