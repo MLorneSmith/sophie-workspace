@@ -66,7 +66,6 @@ function Home() {
           <div
             className={`flex flex-col items-center ${componentSpacing.stack}`}
           >
-<<<<<<< HEAD
             <div className={`${containerBase} ${widths.focused} text-center`}>
               <Hero
                 title={
@@ -98,43 +97,6 @@ function Home() {
             </div>
           </div>
         </BackgroundBoxes>
-=======
-            <FeatureGrid>
-              <FeatureCard
-                className={'relative col-span-1 overflow-hidden'}
-                label={'Beautiful Dashboard'}
-                description={`Makerkit provides a beautiful dashboard to manage your SaaS business.`}
-              ></FeatureCard>
-
-              <FeatureCard
-                className={
-                  'relative col-span-1 w-full overflow-hidden'
-                }
-                label={'Authentication'}
-                description={`Makerkit provides a variety of providers to allow your users to sign in.`}
-              ></FeatureCard>
-
-              <FeatureCard
-                className={'relative overflow-hidden col-span-1'}
-                label={'Multi Tenancy'}
-                description={`Multi tenant memberships for your SaaS business.`}
-              />
-
-              <FeatureCard
-                className={'relative col-span-1 overflow-hidden md:col-span-2'}
-                label={'Billing'}
-                description={`Makerkit supports multiple payment gateways to charge your customers.`}
-              />
-
-              <FeatureCard
-                className={'relative col-span-1 overflow-hidden'}
-                label={'Plugins'}
-                description={`Extend your SaaS with plugins that you can install using the CLI.`}
-              />
-            </FeatureGrid>
-          </FeatureShowcase>
-        </div>
->>>>>>> fcb37e7d75598df9f79049f756a66049b70ac030
       </div>
 
       {/* ContainerScroll Section */}
