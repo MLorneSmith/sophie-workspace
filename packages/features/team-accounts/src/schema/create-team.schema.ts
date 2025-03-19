@@ -12,6 +12,8 @@ const RESERVED_NAMES_ARRAY = [
   // please add more reserved names here
 ];
 
+const SPECIAL_CHARACTERS_REGEX = /[!@#$%^&*()+=[\]{};':"\\|,.<>/?]/;
+
 /**
  * @name TeamNameSchema
  */
@@ -21,6 +23,15 @@ export const TeamNameSchema = z
   })
   .min(2)
   .max(50)
+  .refine(
+    (name) => {
+      console.log(name);
+      return !SPECIAL_CHARACTERS_REGEX.test(name);
+    },
+    {
+      message: 'teams:specialCharactersError',
+    },
+  )
   .refine(
     (name) => {
       return !RESERVED_NAMES_ARRAY.includes(name.toLowerCase());

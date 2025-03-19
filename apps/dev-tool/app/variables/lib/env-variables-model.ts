@@ -1046,6 +1046,39 @@ export const envVariables: EnvVariableModel[] = [
     },
   },
   {
+    name: 'NEXT_PUBLIC_SENTRY_DSN',
+    description: 'The Sentry DSN to use.',
+    category: 'Monitoring',
+    contextualValidation: {
+      dependencies: [
+        {
+          variable: 'NEXT_PUBLIC_MONITORING_PROVIDER',
+          condition: (value) => value === 'sentry',
+          message:
+            'NEXT_PUBLIC_SENTRY_DSN is required when NEXT_PUBLIC_MONITORING_PROVIDER is set to "sentry"',
+        },
+      ],
+      validate: ({ value }) => {
+        return z
+          .string()
+          .min(
+            1,
+            `The NEXT_PUBLIC_SENTRY_DSN variable must be at least 1 character`,
+          )
+          .safeParse(value);
+      },
+    },
+  },
+  {
+    name: 'NEXT_PUBLIC_SENTRY_ENVIRONMENT',
+    description: 'The Sentry environment to use.',
+    category: 'Monitoring',
+    required: true,
+    validate: ({ value }) => {
+      return z.string().optional().safeParse(value);
+    },
+  },
+  {
     name: 'NEXT_PUBLIC_BASELIME_KEY',
     description: 'The Baselime key to use.',
     category: 'Monitoring',

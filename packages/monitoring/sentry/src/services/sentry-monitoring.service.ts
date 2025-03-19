@@ -39,18 +39,25 @@ export class SentryMonitoringService implements MonitoringService {
   }
 
   private async initialize() {
+    const environment =
+      process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT ?? process.env.VERCEL_ENV;
+
     if (typeof document !== 'undefined') {
       const { initializeSentryBrowserClient } = await import(
         '../sentry.client.config'
       );
 
-      initializeSentryBrowserClient();
+      initializeSentryBrowserClient({
+        environment,
+      });
     } else {
       const { initializeSentryServerClient } = await import(
         '../sentry.server.config'
       );
 
-      initializeSentryServerClient();
+      initializeSentryServerClient({
+        environment,
+      });
     }
 
     this.readyResolver?.();

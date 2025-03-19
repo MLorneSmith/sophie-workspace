@@ -16,6 +16,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from '@kit/ui/form';
 import { Input } from '@kit/ui/input';
 import { Trans } from '@kit/ui/trans';
@@ -98,6 +99,8 @@ export const UpdateTeamAccountNameForm = (props: {
                       {...field}
                     />
                   </FormControl>
+
+                  <FormMessage />
                 </FormItem>
               );
             }}

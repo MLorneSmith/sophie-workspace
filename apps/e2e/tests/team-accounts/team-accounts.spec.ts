@@ -96,6 +96,99 @@ test.describe('Team Accounts', () => {
 
     await expect(teamAccounts.getTeamFromSelector(teamName)).toBeVisible();
   });
+
+  test('cannot create a Team account using reserved names', async ({
+    page,
+  }) => {
+    const teamAccounts = new TeamAccountsPageObject(page);
+    await teamAccounts.setup();
+
+    await teamAccounts.openAccountsSelector();
+    await page.click('[data-test="create-team-account-trigger"]');
+
+    await teamAccounts.tryCreateTeam('billing');
+
+    await expect(
+      page.getByText('This name is reserved. Please choose a different one.'),
+    ).toBeVisible();
+
+    await teamAccounts.tryCreateTeam('settings');
+
+    await expect(
+      page.getByText('This name is reserved. Please choose a different one.'),
+    ).toBeVisible();
+
+    function expectError() {
+      return expect(
+        page.getByText(
+          'This name cannot contain special characters. Please choose a different one.',
+        ),
+      ).toBeVisible();
+    }
+
+    await teamAccounts.tryCreateTeam('Test-Name#');
+    await expectError();
+
+    await teamAccounts.tryCreateTeam('Test,Name');
+    await expectError();
+
+    await teamAccounts.tryCreateTeam('Test Name/')
+    await expectError();
+
+    await teamAccounts.tryCreateTeam('Test Name\\')
+    await expectError();
+
+    await teamAccounts.tryCreateTeam('Test Name:')
+    await expectError();
+
+    await teamAccounts.tryCreateTeam('Test Name;')
+    await expectError();
+
+    await teamAccounts.tryCreateTeam('Test Name=');
+    await expectError();
+
+    await teamAccounts.tryCreateTeam('Test Name>');
+    await expectError();
+
+    await teamAccounts.tryCreateTeam('Test Name<');
+    await expectError();
+
+    await teamAccounts.tryCreateTeam('Test Name?');
+    await expectError();
+
+    await teamAccounts.tryCreateTeam('Test Name@');
+    await expectError();
+
+    await teamAccounts.tryCreateTeam('Test Name^');
+    await expectError();
+
+    await teamAccounts.tryCreateTeam('Test Name&');
+    await expectError();
+
+    await teamAccounts.tryCreateTeam('Test Name*');
+    await expectError();
+
+    await teamAccounts.tryCreateTeam('Test Name(');
+    await expectError();
+
+    await teamAccounts.tryCreateTeam('Test Name)');
+    await expectError();
+
+    await teamAccounts.tryCreateTeam('Test Name+');
+    await expectError();
+
+    await teamAccounts.tryCreateTeam('Test Name%');
+    await expectError();
+
+    await teamAccounts.tryCreateTeam('Test Name$');
+    await expectError();
+
+    await teamAccounts.tryCreateTeam('Test Name[');
+    await expectError();
+
+    await teamAccounts.tryCreateTeam('Test Name]');
+    await expectError();
+  });
 });
 
 test.describe('Team Account Deletion', () => {

@@ -105,7 +105,8 @@ class ConnectivityService {
     if (data.length === 0) {
       return {
         status: 'error' as const,
-        message: 'No accounts found in Supabase Admin. The data may not be seeded. Please run `pnpm run supabase:web:reset` to reset the database.',
+        message:
+          'No accounts found in Supabase Admin. The data may not be seeded. Please run `pnpm run supabase:web:reset` to reset the database.',
       };
     }
 
@@ -126,7 +127,7 @@ class ConnectivityService {
     }
 
     const webhooksSecret = await getVariable(
-      'STRIPE_WEBHOOKS_SECRET',
+      'STRIPE_WEBHOOK_SECRET',
       this.mode,
     );
 
@@ -153,7 +154,8 @@ class ConnectivityService {
       };
     }
 
-    const webhooks = await request.json();
+    const webhooksResponse = await request.json();
+    const webhooks = webhooksResponse.data ?? [];
 
     if (webhooks.length === 0) {
       return {
@@ -163,7 +165,7 @@ class ConnectivityService {
     }
 
     const allWebhooksShareTheSameSecret = webhooks.every(
-      (webhook: any) => webhook.secret === webhooksSecret,
+      (webhook: { secret: string }) => webhook.secret === webhooksSecret,
     );
 
     if (!allWebhooksShareTheSameSecret) {

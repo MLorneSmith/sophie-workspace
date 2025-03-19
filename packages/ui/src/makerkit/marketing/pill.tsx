@@ -5,7 +5,7 @@ import { GradientSecondaryText } from './gradient-secondary-text';
 
 export const Pill: React.FC<
   React.HTMLAttributes<HTMLHeadingElement> & {
-    label?: string;
+    label?: React.ReactNode;
     asChild?: boolean;
   }
 > = function PillComponent({ className, asChild, ...props }) {
@@ -14,7 +14,7 @@ export const Pill: React.FC<
   return (
     <Comp
       className={cn(
-        'bg-muted/50 flex items-center gap-x-1.5 rounded-full border px-2 py-1.5 pr-2 text-center text-sm font-medium text-transparent',
+        'bg-muted/50 flex items-center gap-x-1.5 rounded-full border px-2 py-1 pr-2 text-center text-sm font-medium text-transparent',
         className,
       )}
       {...props}

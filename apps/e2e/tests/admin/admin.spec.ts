@@ -144,10 +144,12 @@ test.describe('Admin', () => {
       await page.getByTestId('admin-ban-account-button').click();
       await page.fill('[placeholder="Type CONFIRM to confirm"]', 'CONFIRM');
       await page.getByRole('button', { name: 'Ban User' }).click();
+
       await expect(page.getByText('Banned')).toBeVisible();
 
       // Now reactivate
       await page.getByTestId('admin-reactivate-account-button').click();
+
       await expect(
         page.getByRole('heading', { name: 'Reactivate User' }),
       ).toBeVisible();
@@ -323,28 +325,30 @@ async function createUser(
   } = {},
 ) {
   const auth = new AuthPageObject(page);
+  const password = 'testingpassword';
+  const email = auth.createRandomEmail();
 
+  // sign up
   await page.goto('/auth/sign-up');
-
-  const email = `${(Math.random() * 1000000).toFixed(0)}@makerkit.dev`;
 
   await auth.signUp({
     email,
-    password: 'testingpassword',
-    repeatPassword: 'testingpassword',
+    password,
+    repeatPassword: password,
   });
 
+  // confirm email
   await auth.visitConfirmEmailLink(email);
-
-  await page.goto('/home');
 
   if (params.afterSignIn) {
     await params.afterSignIn();
   }
 
+  // sign out
   await auth.signOut();
   await page.waitForURL('/');
 
+  // return the email
   return email;
 }
 

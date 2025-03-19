@@ -18,12 +18,10 @@ export default async function DashboardPage(props: DashboardPageProps) {
     supabaseStatus,
     supabaseAdminStatus,
     stripeStatus,
-    stripeWebhookStatus,
   ] = await Promise.all([
     connectivityService.checkSupabaseConnectivity(),
     connectivityService.checkSupabaseAdminConnectivity(),
     connectivityService.checkStripeConnected(),
-    connectivityService.checkStripeWebhookEndpoints(),
   ]);
 
   return (
@@ -40,7 +38,6 @@ export default async function DashboardPage(props: DashboardPageProps) {
           <ServiceCard name={'Supabase API'} status={supabaseStatus} />
           <ServiceCard name={'Supabase Admin'} status={supabaseAdminStatus} />
           <ServiceCard name={'Stripe API'} status={stripeStatus} />
-          <ServiceCard name={'Stripe Webhook'} status={stripeWebhookStatus} />
         </div>
       </PageBody>
     </Page>
