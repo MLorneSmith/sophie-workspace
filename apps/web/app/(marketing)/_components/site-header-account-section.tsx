@@ -1,8 +1,9 @@
 'use client';
 
+import { useState } from 'react';
+
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { useState } from 'react';
 
 import type { User } from '@supabase/supabase-js';
 
@@ -15,6 +16,7 @@ import { Trans } from '@kit/ui/trans';
 
 import featuresFlagConfig from '~/config/feature-flags.config';
 import pathsConfig from '~/config/paths.config';
+
 import { BookDemoOverlay } from './book-demo-overlay';
 
 const ModeToggle = dynamic(() =>
@@ -74,7 +76,7 @@ function AuthButtons() {
             <ModeToggle />
           </If>
 
-          <Button 
+          <Button
             variant={'outline'}
             className="font-medium"
             onClick={() => setIsBookDemoOpen(true)}
@@ -90,24 +92,10 @@ function AuthButtons() {
         </div>
       </div>
 
-      <BookDemoOverlay 
+      <BookDemoOverlay
         isOpen={isBookDemoOpen}
         onClose={() => setIsBookDemoOpen(false)}
       />
-
-      <div className={'flex gap-x-2.5'}>
-        <Button className={'hidden md:block'} asChild variant={'ghost'}>
-          <Link href={pathsConfig.auth.signIn}>
-            <Trans i18nKey={'auth:signIn'} />
-          </Link>
-        </Button>
-
-        <Button asChild className="text-xs md:text-sm" variant={'default'}>
-          <Link href={pathsConfig.auth.signUp}>
-            <Trans i18nKey={'auth:signUp'} />
-          </Link>
-        </Button>
-      </div>
     </>
   );
 }

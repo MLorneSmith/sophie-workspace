@@ -38,40 +38,58 @@ function useSuggestions(_userId: string) {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
 
-  const fetchSuggestions = useCallback(
-    debounce(
-      async (
-        field: 'title' | 'audience' | 'situation' | 'complication' | 'answer',
-        presentationType?: string,
-        title?: string,
-      ) => {
-        // Only require title for non-title suggestions
-        if (field !== 'title' && !title) return;
+  // Create a debounced function outside of useCallback
+  const debouncedFetchSuggestions = debounce(
+    async (
+      field: 'title' | 'audience' | 'situation' | 'complication' | 'answer',
+      presentationType?: string,
+      title?: string,
+      setIsLoadingSuggestions?: (loading: boolean) => void,
+      setSuggestions?: (suggestions: string[]) => void,
+    ) => {
+      // Only require title for non-title suggestions
+      if (field !== 'title' && !title) return;
 
-        setIsLoadingSuggestions(true);
-        try {
-          const result = await getSuggestions({
-            title: title || '',
-            field,
-            presentationType,
-          });
+      if (setIsLoadingSuggestions) setIsLoadingSuggestions(true);
+      try {
+        const result = await getSuggestions({
+          title: title || '',
+          field,
+          presentationType,
+        });
 
-          if (result.success && result.data) {
-            setSuggestions(result.data);
-          } else {
-            setSuggestions([
-              `Error: ${result.error || 'Failed to get suggestions'}`,
-            ]);
-          }
-        } catch (error) {
-          console.error('Error in fetchSuggestions:', error);
-          setSuggestions(['An unexpected error occurred']);
-        } finally {
-          setIsLoadingSuggestions(false);
+        if (result.success && result.data && setSuggestions) {
+          setSuggestions(result.data);
+        } else if (setSuggestions) {
+          setSuggestions([
+            `Error: ${result.error || 'Failed to get suggestions'}`,
+          ]);
         }
-      },
-      300,
-    ),
+      } catch (error) {
+        console.error('Error in fetchSuggestions:', error);
+        if (setSuggestions) setSuggestions(['An unexpected error occurred']);
+      } finally {
+        if (setIsLoadingSuggestions) setIsLoadingSuggestions(false);
+      }
+    },
+    300,
+  );
+
+  // Use the debounced function inside useCallback
+  const fetchSuggestions = useCallback(
+    (
+      field: 'title' | 'audience' | 'situation' | 'complication' | 'answer',
+      presentationType?: string,
+      title?: string,
+    ) => {
+      debouncedFetchSuggestions(
+        field,
+        presentationType,
+        title,
+        setIsLoadingSuggestions,
+        setSuggestions,
+      );
+    },
     [setIsLoadingSuggestions, setSuggestions],
   );
 

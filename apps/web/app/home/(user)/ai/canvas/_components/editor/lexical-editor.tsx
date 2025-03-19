@@ -85,9 +85,17 @@ function EditorRefPlugin({
   const [editor] = useLexicalComposerContext();
 
   useEffect(() => {
+    // Store the editor reference
     editorRef.current = editor;
+
+    // Create a local variable to avoid the cleanup closure issue
+    const currentEditor = editor;
+
     return () => {
-      editorRef.current = null;
+      // Only clear if it's still the same editor instance
+      if (editorRef.current === currentEditor) {
+        editorRef.current = null;
+      }
     };
   }, [editor, editorRef]);
 
@@ -409,7 +417,7 @@ export const LexicalEditor = forwardRef<LexicalEditorRef, LexicalEditorProps>(
       };
     }, [saveWithValidation]);
 
-    const DEFAULT_EDITOR_STATE = {
+    const _DEFAULT_EDITOR_STATE = {
       root: {
         children: [
           {
@@ -470,8 +478,8 @@ export const LexicalEditor = forwardRef<LexicalEditorRef, LexicalEditorProps>(
     const initialConfig = {
       namespace: `slideheroes-${sectionType}`,
       theme,
-      onError: (error: Error) => {
-        console.error('Lexical Editor Error:', error);
+      onError: (_error: Error) => {
+        console.error('Lexical Editor Error:', _error);
       },
       editorState: initialContent(), // Pass JSON string directly
       nodes: [ListNode, ListItemNode, HeadingNode, FormattedElementNode],
@@ -480,7 +488,7 @@ export const LexicalEditor = forwardRef<LexicalEditorRef, LexicalEditorProps>(
       onBlur,
     };
 
-    const handleAcceptImprovement = useCallback(
+    const _handleAcceptImprovement = useCallback(
       (improvement: BaseImprovement) => {
         if (editorRef.current) {
           editorRef.current.update(() => {
