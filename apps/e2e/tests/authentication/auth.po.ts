@@ -79,7 +79,7 @@ export class AuthPageObject {
   }
 
   createRandomEmail() {
-    const value = Math.random() * 10000000000;
+    const value = Math.random() * 10000000000000;
 
     return `${value.toFixed(0)}@makerkit.dev`;
   }

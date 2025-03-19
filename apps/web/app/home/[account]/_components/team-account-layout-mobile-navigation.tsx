@@ -162,7 +162,7 @@ function TeamAccountsModal(props: {
           </DialogTitle>
         </DialogHeader>
 
-        <div className={'py-16'}>
+        <div className={'py-6'}>
           <AccountSelector
             className={'w-full max-w-full'}
             collisionPadding={0}

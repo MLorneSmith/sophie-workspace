@@ -158,5 +158,6 @@
   "joiningTeam": "Joining team...",
   "leaveTeamInputLabel": "Please type LEAVE to confirm leaving the team.",
   "leaveTeamInputDescription": "By leaving the team, you will no longer have access to it.",
-  "reservedNameError": "This name is reserved. Please choose a different one."
+  "reservedNameError": "This name is reserved. Please choose a different one.",
+  "specialCharactersError": "This name cannot contain special characters. Please choose a different one."
 }
