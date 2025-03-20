@@ -1,8 +1,10 @@
 export { createPayloadClient } from './create-payload-cms';
 export { PayloadContentRenderer } from './content-renderer';
 
-// Export survey API functions
+// Export API functions
 export { callPayloadAPI } from './api/payload-api';
+
+// Export survey API functions
 export {
   getSurvey,
   getSurveyQuestions,
@@ -11,3 +13,12 @@ export {
   updateSurveyResponse,
   completeSurvey,
 } from './api/survey';
+
+// Export course API functions
+export {
+  getCourses,
+  getCourseBySlug,
+  getCourseLessons,
+  getLessonBySlug,
+  getQuiz,
+} from './api/course';

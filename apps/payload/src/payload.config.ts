@@ -19,6 +19,9 @@ import { Posts } from './collections/Posts'
 import { SurveyQuestions } from './collections/SurveyQuestions'
 import { Surveys } from './collections/Surveys'
 import { Users } from './collections/Users'
+import { Courses } from './collections/Courses'
+import { CourseLessons } from './collections/CourseLessons'
+import { CourseQuizzes } from './collections/CourseQuizzes'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -37,7 +40,17 @@ export default buildConfig({
     'https://www.slideheroes.com',
     'https://2025slideheroes-web.vercel.app',
   ],
-  collections: [Users, Media, Documentation, Posts, Surveys, SurveyQuestions],
+  collections: [
+    Users,
+    Media,
+    Documentation,
+    Posts,
+    Surveys,
+    SurveyQuestions,
+    Courses,
+    CourseLessons,
+    CourseQuizzes,
+  ],
   editor: lexicalEditor({
     // Global editor configuration with custom blocks
     features: ({ defaultFeatures }) => [

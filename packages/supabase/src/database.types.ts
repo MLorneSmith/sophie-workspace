@@ -250,6 +250,42 @@ export type Database = {
         }
         Relationships: []
       }
+      course_progress: {
+        Row: {
+          certificate_generated: boolean | null
+          completed_at: string | null
+          completion_percentage: number | null
+          course_id: string
+          current_lesson_id: string | null
+          id: string
+          last_accessed_at: string | null
+          started_at: string | null
+          user_id: string
+        }
+        Insert: {
+          certificate_generated?: boolean | null
+          completed_at?: string | null
+          completion_percentage?: number | null
+          course_id: string
+          current_lesson_id?: string | null
+          id?: string
+          last_accessed_at?: string | null
+          started_at?: string | null
+          user_id: string
+        }
+        Update: {
+          certificate_generated?: boolean | null
+          completed_at?: string | null
+          completion_percentage?: number | null
+          course_id?: string
+          current_lesson_id?: string | null
+          id?: string
+          last_accessed_at?: string | null
+          started_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       invitations: {
         Row: {
           account_id: string
@@ -314,6 +350,36 @@ export type Database = {
             referencedColumns: ["name"]
           },
         ]
+      }
+      lesson_progress: {
+        Row: {
+          completed_at: string | null
+          completion_percentage: number | null
+          course_id: string
+          id: string
+          lesson_id: string
+          started_at: string | null
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          completion_percentage?: number | null
+          course_id: string
+          id?: string
+          lesson_id: string
+          started_at?: string | null
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          completion_percentage?: number | null
+          course_id?: string
+          id?: string
+          lesson_id?: string
+          started_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       nonces: {
         Row: {
@@ -535,6 +601,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      quiz_attempts: {
+        Row: {
+          answers: Json | null
+          completed_at: string | null
+          course_id: string
+          id: string
+          lesson_id: string
+          passed: boolean | null
+          quiz_id: string
+          score: number | null
+          started_at: string | null
+          user_id: string
+        }
+        Insert: {
+          answers?: Json | null
+          completed_at?: string | null
+          course_id: string
+          id?: string
+          lesson_id: string
+          passed?: boolean | null
+          quiz_id: string
+          score?: number | null
+          started_at?: string | null
+          user_id: string
+        }
+        Update: {
+          answers?: Json | null
+          completed_at?: string | null
+          course_id?: string
+          id?: string
+          lesson_id?: string
+          passed?: boolean | null
+          quiz_id?: string
+          score?: number | null
+          started_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       role_permissions: {
         Row: {
