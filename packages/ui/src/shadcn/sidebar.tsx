@@ -995,9 +995,11 @@ export function SidebarNavigation({
                                 </If>
                               </ContentContainer>
 
-                              <SidebarMenuAction>
-                                {child.renderAction}
-                              </SidebarMenuAction>
+                              <If condition={child.renderAction}>
+                                <SidebarMenuAction>
+                                  {child.renderAction}
+                                </SidebarMenuAction>
+                              </If>
                             </SidebarMenuItem>
                           </Container>
                         );
