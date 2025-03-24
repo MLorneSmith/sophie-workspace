@@ -4,9 +4,6 @@ import { Suspense, useCallback, useRef, useState } from 'react';
 
 import { useSearchParams } from 'next/navigation';
 
-import { $createHeadingNode } from '@lexical/rich-text';
-import { $createParagraphNode, $createTextNode, $getRoot } from 'lexical';
-
 import { type BaseImprovement } from '@kit/ai-gateway/src/prompts/types/improvements';
 import { useSupabase } from '@kit/supabase/hooks/use-supabase';
 import {
@@ -19,11 +16,12 @@ import { Spinner } from '@kit/ui/spinner';
 import { Database } from '~/lib/database.types';
 
 import { generateIdeasAction } from '../_actions/generate-ideas';
+import { EDITOR_CONFIG } from '../_lib/config';
 import { useOutlineContent } from '../_lib/hooks/use-outline-content';
 import { ActionToolbar } from './action-toolbar';
-import { type LexicalEditorRef } from './editor/lexical-editor';
-import { OutlineTabContent } from './editor/outline-tab-content';
-import { TabContent } from './editor/tab-content';
+import { insertImprovement } from './editor/tiptap/plugins/improvement-plugin';
+import { type TiptapEditorRef } from './editor/tiptap/tiptap-editor';
+import { TiptapTabContent } from './editor/tiptap/tiptap-tab-content';
 import { LoadingAnimation } from './suggestions/loading-animation';
 import { LOADING_MESSAGES } from './suggestions/loading-messages';
 import { SuggestionsPane } from './suggestions/suggestions-pane';
@@ -57,7 +55,7 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
   const contentString =
     typeof content === 'string' ? content : JSON.stringify(content);
 
-  const editorRef = useRef<LexicalEditorRef>(null);
+  const editorRef = useRef<TiptapEditorRef>(null);
   const [suggestions, setSuggestions] = useState<BaseImprovement[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [messageIndex, setMessageIndex] = useState(0);
@@ -69,29 +67,12 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
 
       try {
         editorRef.current.update(() => {
-          try {
-            const root = $getRoot();
-
-            // Create heading for summary point
-            const headingNode = $createHeadingNode('h2');
-            const summaryTextNode = $createTextNode(
-              improvement.implementedSummaryPoint,
-            );
-            headingNode.append(summaryTextNode);
-            root.append(headingNode);
-
-            // Create paragraph for supporting points
-            const paragraphNode = $createParagraphNode();
-            improvement.implementedSupportingPoints.forEach((point) => {
-              const pointNode = $createTextNode(`• ${point}\n`);
-              paragraphNode.append(pointNode);
-            });
-            root.append(paragraphNode);
-          } catch (error) {
-            console.warn(
-              'Error in editor update for accepting improvement:',
-              error,
-            );
+          if (editorRef.current) {
+            // The editor is passed to the function in the update callback
+            const editor = (editorRef.current as any).editor;
+            if (editor) {
+              insertImprovement(editor, improvement);
+            }
           }
         });
       } catch (error) {
@@ -135,11 +116,16 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
         try {
           editorRef.current.update(() => {
             try {
-              const root = $getRoot();
-              content = root.getTextContent();
-              resolve(content);
+              // Get content from Tiptap editor
+              const editor = (editorRef.current as any).editor;
+              if (editor) {
+                content = editor.getText();
+                resolve(content);
+              } else {
+                resolve('');
+              }
             } catch (error) {
-              console.warn('Error getting root text content:', error);
+              console.warn('Error getting editor content:', error);
               resolve('');
             }
           });
@@ -189,10 +175,10 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
                       <LoadingAnimation messageIndex={messageIndex} />
                     </div>
                   ) : (
-                    <OutlineTabContent ref={editorRef} />
+                    <TiptapTabContent ref={editorRef} sectionType="outline" />
                   )
                 ) : (
-                  <TabContent ref={editorRef} sectionType={sectionType} />
+                  <TiptapTabContent ref={editorRef} sectionType={sectionType} />
                 )}
               </Suspense>
             </div>

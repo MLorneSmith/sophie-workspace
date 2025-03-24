@@ -14,63 +14,63 @@ import { outlineRewriteInstructions } from '@kit/ai-gateway/src/prompts/partials
 import { enhanceAction } from '@kit/next/actions';
 import { getSupabaseServerClient } from '@kit/supabase/server-client';
 
-interface LexicalTextNode {
+import { lexicalToTiptap } from '../_components/editor/tiptap/utils/format-conversion';
+
+interface TiptapNode {
+  type: string;
+  content?: TiptapNode[];
+  attrs?: Record<string, any>;
+  marks?: { type: string }[];
   text?: string;
+}
+
+interface TiptapDocument {
   type: string;
-  version: number;
+  content: TiptapNode[];
 }
 
-interface LexicalParagraphNode {
-  children: LexicalTextNode[];
-  direction: string | null;
-  format: string;
-  indent: number;
-  type: string;
-  version: number;
-}
-
-interface LexicalState {
-  root: {
-    children: LexicalParagraphNode[];
-    direction: string;
-    format: string;
-    indent: number;
-    type: string;
-    version: number;
-  };
-}
-
-function parseLexicalState(content: string | null): LexicalState {
-  if (!content)
+function parseTiptapDocument(content: string | null): TiptapDocument {
+  if (!content) {
     return {
-      root: {
-        children: [],
-        direction: 'ltr',
-        format: '',
-        indent: 0,
-        type: 'root',
-        version: 1,
-      },
+      type: 'doc',
+      content: [],
     };
+  }
+
   try {
-    return JSON.parse(content) as LexicalState;
+    // Try to parse as Tiptap first
+    const parsed = JSON.parse(content);
+
+    // Check if it's already in Tiptap format
+    if (parsed.type === 'doc' && Array.isArray(parsed.content)) {
+      return parsed as TiptapDocument;
+    }
+
+    // If not, try to convert from Lexical format
+    return lexicalToTiptap(content);
   } catch {
     return {
-      root: {
-        children: [],
-        direction: 'ltr',
-        format: '',
-        indent: 0,
-        type: 'root',
-        version: 1,
-      },
+      type: 'doc',
+      content: [],
     };
   }
 }
 
-function getTextContent(state: LexicalState): string {
-  return state.root.children
-    .map((node) => node.children[0]?.text || '')
+function getTextContent(doc: TiptapDocument): string {
+  const extractText = (node: TiptapNode): string => {
+    if (node.type === 'text' && node.text) {
+      return node.text;
+    }
+
+    if (node.content && node.content.length > 0) {
+      return node.content.map(extractText).join('');
+    }
+
+    return '';
+  };
+
+  return doc.content
+    .map(extractText)
     .filter((text) => text.trim().length > 0)
     .join('\n');
 }
@@ -101,15 +101,15 @@ export const getOutlineSuggestionsAction = enhanceAction(
         context: 'outline-suggestions',
       });
 
-      // Parse Lexical states and extract text content
+      // Parse Tiptap documents and extract text content
       const situationContent = getTextContent(
-        parseLexicalState(submission.situation),
+        parseTiptapDocument(submission.situation),
       );
       const complicationContent = getTextContent(
-        parseLexicalState(submission.complication),
+        parseTiptapDocument(submission.complication),
       );
       const answerContent = getTextContent(
-        parseLexicalState(submission.answer),
+        parseTiptapDocument(submission.answer),
       );
 
       // Combine all SCQA content for context

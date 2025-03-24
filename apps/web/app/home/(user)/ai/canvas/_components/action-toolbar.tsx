@@ -4,8 +4,6 @@ import { useCallback, useState } from 'react';
 
 import { useSearchParams } from 'next/navigation';
 
-import { $createHeadingNode } from '@lexical/rich-text';
-import { $createParagraphNode, $createTextNode, $getRoot } from 'lexical';
 import { FileText, LayoutTemplate, Lightbulb, RotateCcw } from 'lucide-react';
 
 import { useUserWorkspace } from '@kit/accounts/hooks/use-user-workspace';
@@ -19,10 +17,10 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@kit/ui/tooltip';
 
 import { generateIdeasAction } from '../_actions/generate-ideas';
 import { simplifyTextAction } from '../_actions/simplify-text';
-import { type LexicalEditorRef } from './editor/lexical-editor';
+import { type TiptapEditorRef } from './editor/tiptap/tiptap-editor';
 
 interface ActionToolbarProps {
-  editorRef: React.RefObject<LexicalEditorRef | null>;
+  editorRef: React.RefObject<TiptapEditorRef | null>;
   sectionType: ImprovementType;
   onGenerateImprovements?: (improvements: BaseImprovement[]) => void;
   onResetOutline?: () => Promise<void>;
@@ -60,11 +58,16 @@ export function ActionToolbar({
           try {
             editorRef.current.update(() => {
               try {
-                const root = $getRoot();
-                content = root.getTextContent();
-                resolve(content);
+                // Get content from Tiptap editor
+                const editor = (editorRef.current as any).editor;
+                if (editor) {
+                  content = editor.getText();
+                  resolve(content);
+                } else {
+                  resolve('');
+                }
               } catch (error) {
-                console.warn('Error getting root text content:', error);
+                console.warn('Error getting editor content:', error);
                 resolve('');
               }
             });
@@ -97,22 +100,30 @@ export function ActionToolbar({
               try {
                 editorRef.current.update(() => {
                   try {
-                    const root = $getRoot();
-                    root.clear();
+                    // Get the editor instance
+                    const editor = (editorRef.current as any).editor;
+                    if (!editor) return;
 
+                    // Clear the editor content
+                    editor.commands.clearContent();
+
+                    // Insert each section
                     simplified.sections.forEach((section) => {
                       if (section.type === 'heading') {
-                        const headingNode = $createHeadingNode('h2');
-                        const textNode = $createTextNode(section.content);
-                        headingNode.append(textNode);
-                        root.append(headingNode);
+                        // Insert heading
+                        editor.commands.insertContent({
+                          type: 'heading',
+                          attrs: { level: 2 },
+                          content: [{ type: 'text', text: section.content }],
+                        });
+                        editor.commands.enter();
                       } else {
-                        const paragraphNode = $createParagraphNode();
-                        const textNode = $createTextNode(
-                          `• ${section.content}`,
-                        );
-                        paragraphNode.append(textNode);
-                        root.append(paragraphNode);
+                        // Insert bullet point
+                        editor.commands.insertContent({
+                          type: 'paragraph',
+                          content: [{ type: 'text', text: `• ${section.content}` }],
+                        });
+                        editor.commands.enter();
                       }
                     });
                   } catch (innerError) {
@@ -157,11 +168,16 @@ export function ActionToolbar({
           try {
             editorRef.current.update(() => {
               try {
-                const root = $getRoot();
-                content = root.getTextContent();
-                resolve(content);
+                // Get content from Tiptap editor
+                const editor = (editorRef.current as any).editor;
+                if (editor) {
+                  content = editor.getText();
+                  resolve(content);
+                } else {
+                  resolve('');
+                }
               } catch (error) {
-                console.warn('Error getting root text content:', error);
+                console.warn('Error getting editor content:', error);
                 resolve('');
               }
             });
