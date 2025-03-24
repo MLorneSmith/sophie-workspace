@@ -12,47 +12,26 @@ import { Spinner } from '@kit/ui/spinner';
 import { Database } from '~/lib/database.types';
 
 import {
-  LexicalEditor as LexicalEditorComponent,
-  type LexicalEditorRef,
-} from './lexical-editor';
+  TiptapEditor as TiptapEditorComponent,
+  type TiptapEditorRef,
+} from './tiptap-editor';
 
 interface TabContentProps {
   sectionType: 'situation' | 'complication' | 'answer' | 'outline';
 }
 
-interface LexicalState {
-  root: {
-    children: unknown[];
-    direction: string | null;
-    format: string;
-    indent: number;
-    type: string;
-    version: number;
-  };
-}
-
 const EMPTY_EDITOR_STATE = {
-  root: {
-    children: [
-      {
-        children: [],
-        direction: null,
-        format: '',
-        indent: 0,
-        type: 'paragraph',
-        version: 1,
-      },
-    ],
-    direction: null,
-    format: '',
-    indent: 0,
-    type: 'root',
-    version: 1,
-  },
+  type: 'doc',
+  content: [
+    {
+      type: 'paragraph',
+      content: [],
+    },
+  ],
 };
 
-export const TabContent = forwardRef<LexicalEditorRef, TabContentProps>(
-  function TabContent({ sectionType }, ref) {
+export const TiptapTabContent = forwardRef<TiptapEditorRef, TabContentProps>(
+  function TiptapTabContent({ sectionType }, ref) {
     const searchParams = useSearchParams();
     const id = searchParams.get('id');
     const supabase = useSupabase<Database>();
@@ -69,7 +48,7 @@ export const TabContent = forwardRef<LexicalEditorRef, TabContentProps>(
       };
     }, []);
 
-    const { data: content, isLoading } = useQuery<LexicalState>({
+    const { data: content, isLoading } = useQuery({
       queryKey: ['submission', id, sectionType],
       queryFn: async () => {
         if (!id) return EMPTY_EDITOR_STATE;
@@ -92,9 +71,10 @@ export const TabContent = forwardRef<LexicalEditorRef, TabContentProps>(
         if (
           typeof rawContent === 'object' &&
           rawContent !== null &&
-          'root' in rawContent
+          'type' in rawContent &&
+          rawContent.type === 'doc'
         ) {
-          return rawContent as LexicalState;
+          return rawContent;
         }
 
         // Try to parse string content as JSON
@@ -103,11 +83,26 @@ export const TabContent = forwardRef<LexicalEditorRef, TabContentProps>(
           if (
             typeof parsed === 'object' &&
             parsed !== null &&
+            'type' in parsed &&
+            parsed.type === 'doc'
+          ) {
+            return parsed;
+          }
+
+          // If it's Lexical format, convert it
+          if (
+            typeof parsed === 'object' &&
+            parsed !== null &&
             'root' in parsed
           ) {
-            return parsed as LexicalState;
+            // Import the conversion utility dynamically to avoid circular dependencies
+            const { lexicalToTiptap } = await import(
+              './utils/format-conversion'
+            );
+            return lexicalToTiptap(parsed);
           }
-          console.debug('Invalid Lexical state format:', parsed);
+
+          console.debug('Invalid Tiptap state format:', parsed);
           return EMPTY_EDITOR_STATE;
         } catch (e) {
           console.debug('Failed to parse content as JSON:', e);
@@ -131,7 +126,7 @@ export const TabContent = forwardRef<LexicalEditorRef, TabContentProps>(
 
     return (
       <div className="h-full">
-        <LexicalEditorComponent
+        <TiptapEditorComponent
           ref={ref}
           content={JSON.stringify(content ?? EMPTY_EDITOR_STATE)}
           submissionId={id}

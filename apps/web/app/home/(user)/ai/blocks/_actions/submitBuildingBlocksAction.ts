@@ -4,58 +4,7 @@ import { getSupabaseServerClient } from '@kit/supabase/server-client';
 
 import { Database } from '~/lib/database.types';
 
-// Utility function to convert plain text to Lexical JSON
-function createInitialEditorState(text: string) {
-  // Split text into paragraphs and remove empty lines
-  const paragraphs = text.split('\n').filter((line) => line.trim());
-
-  // Convert each paragraph into a Lexical node
-  const children = paragraphs.map((paragraph) => {
-    // Check if the line is a bullet point
-    const trimmedParagraph = paragraph.trim();
-    const isBulletPoint =
-      trimmedParagraph.startsWith('-') || trimmedParagraph.startsWith('•');
-
-    // Remove the bullet point character and trim whitespace
-    const textContent = isBulletPoint
-      ? trimmedParagraph.substring(1).trim()
-      : trimmedParagraph;
-
-    // Calculate indentation level based on leading spaces (for nested bullets)
-    const leadingSpaces = paragraph.match(/^\s*/)?.[0].length ?? 0;
-    const indentLevel = isBulletPoint ? Math.floor(leadingSpaces / 2) + 1 : 0;
-
-    return {
-      children: [
-        {
-          detail: 0,
-          format: 0,
-          mode: 'normal',
-          style: '',
-          text: textContent,
-          type: 'text',
-          version: 1,
-        },
-      ],
-      direction: 'ltr',
-      format: '',
-      indent: indentLevel,
-      type: 'paragraph',
-      version: 1,
-    };
-  });
-
-  return JSON.stringify({
-    root: {
-      children,
-      direction: 'ltr',
-      format: '',
-      indent: 0,
-      type: 'root',
-      version: 1,
-    },
-  });
-}
+import { createTiptapFromText } from './tiptap-format-utils';
 
 export type SubmitFormData = {
   title: string;
@@ -89,9 +38,9 @@ export async function submitBuildingBlocksAction(data: SubmitFormData) {
         audience: data.audience,
         presentation_type: data.presentation_type,
         question_type: data.question_type,
-        situation: createInitialEditorState(data.situation),
-        complication: createInitialEditorState(data.complication),
-        answer: createInitialEditorState(data.answer),
+        situation: createTiptapFromText(data.situation),
+        complication: createTiptapFromText(data.complication),
+        answer: createTiptapFromText(data.answer),
       })
       .maybeSingle();
 
@@ -109,9 +58,9 @@ export async function submitBuildingBlocksAction(data: SubmitFormData) {
         audience: data.audience,
         presentation_type: data.presentation_type,
         question_type: data.question_type,
-        situation: createInitialEditorState(data.situation),
-        complication: createInitialEditorState(data.complication),
-        answer: createInitialEditorState(data.answer),
+        situation: createTiptapFromText(data.situation),
+        complication: createTiptapFromText(data.complication),
+        answer: createTiptapFromText(data.answer),
       })
       .select('id')
       .single();

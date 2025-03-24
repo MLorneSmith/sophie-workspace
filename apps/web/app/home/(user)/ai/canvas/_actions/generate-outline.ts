@@ -5,67 +5,63 @@ import { z } from 'zod';
 import { enhanceAction } from '@kit/next/actions';
 import { getSupabaseServerClient } from '@kit/supabase/server-client';
 
-interface LexicalTextNode {
+import { lexicalToTiptap } from '../_components/editor/tiptap/utils/format-conversion';
+
+interface TiptapNode {
+  type: string;
+  content?: TiptapNode[];
+  attrs?: Record<string, any>;
+  marks?: { type: string }[];
   text?: string;
+}
+
+interface TiptapDocument {
   type: string;
-  version: number;
+  content: TiptapNode[];
 }
 
-interface LexicalParagraphNode {
-  children: LexicalTextNode[];
-  direction: string | null;
-  format: string;
-  indent: number;
-  type: string;
-  version: number;
-}
-
-interface LexicalState {
-  root: {
-    children: LexicalParagraphNode[];
-    direction: string;
-    format: string;
-    indent: number;
-    type: string;
-    version: number;
-  };
-}
-
-const EMPTY_LEXICAL_STATE: LexicalState = {
-  root: {
-    children: [],
-    direction: 'ltr',
-    format: '',
-    indent: 0,
-    type: 'root',
-    version: 1,
-  },
+const EMPTY_TIPTAP_DOCUMENT: TiptapDocument = {
+  type: 'doc',
+  content: [],
 };
 
-const SPACER_PARAGRAPH: LexicalParagraphNode = {
-  children: [{ text: '', type: 'text', version: 1 }],
-  direction: 'ltr',
-  format: '',
-  indent: 0,
+const SPACER_PARAGRAPH: TiptapNode = {
   type: 'paragraph',
-  version: 1,
+  content: [
+    {
+      type: 'text',
+      text: '',
+    },
+  ],
 };
 
-function parseLexicalState(content: string | null): LexicalState {
-  if (!content) return EMPTY_LEXICAL_STATE;
+function parseTiptapDocument(content: string | null): TiptapDocument {
+  if (!content) return EMPTY_TIPTAP_DOCUMENT;
   try {
-    return JSON.parse(content) as LexicalState;
+    // Try to parse as Tiptap first
+    const parsed = JSON.parse(content);
+
+    // Check if it's already in Tiptap format
+    if (parsed.type === 'doc' && Array.isArray(parsed.content)) {
+      return parsed as TiptapDocument;
+    }
+
+    // If not, try to convert from Lexical format
+    return lexicalToTiptap(content);
   } catch {
-    return EMPTY_LEXICAL_STATE;
+    return EMPTY_TIPTAP_DOCUMENT;
   }
 }
 
-function hasValidText(node: LexicalParagraphNode): boolean {
-  const firstChild = node.children[0];
-  return (
-    firstChild !== undefined &&
-    typeof firstChild.text === 'string' &&
-    firstChild.text.trim().length > 0
+function hasValidText(node: TiptapNode): boolean {
+  if (node.type !== 'paragraph' && node.type !== 'heading') return false;
+  if (!node.content || node.content.length === 0) return false;
+
+  return node.content.some(
+    (child) =>
+      child.type === 'text' &&
+      typeof child.text === 'string' &&
+      child.text.trim().length > 0,
   );
 }
 
@@ -90,40 +86,34 @@ export const generateOutlineAction = enhanceAction(
       }
 
       // Parse each section's content
-      const situationState = parseLexicalState(submission.situation);
-      const complicationState = parseLexicalState(submission.complication);
-      const answerState = parseLexicalState(submission.answer);
+      const situationDoc = parseTiptapDocument(submission.situation);
+      const complicationDoc = parseTiptapDocument(submission.complication);
+      const answerDoc = parseTiptapDocument(submission.answer);
 
-      // Create a combined Lexical state
-      const outlineContent: LexicalState = {
-        root: {
-          children: [
-            // Situation paragraphs
-            ...situationState.root.children.filter(hasValidText),
-            // Add spacing if there was content
-            ...(situationState.root.children.some(hasValidText)
-              ? [SPACER_PARAGRAPH]
-              : []),
+      // Create a combined Tiptap document
+      const outlineContent: TiptapDocument = {
+        type: 'doc',
+        content: [
+          // Situation paragraphs
+          ...situationDoc.content.filter(hasValidText),
+          // Add spacing if there was content
+          ...(situationDoc.content.some(hasValidText)
+            ? [SPACER_PARAGRAPH]
+            : []),
 
-            // Complication paragraphs
-            ...complicationState.root.children.filter(hasValidText),
-            // Add spacing if there was content
-            ...(complicationState.root.children.some(hasValidText)
-              ? [SPACER_PARAGRAPH]
-              : []),
+          // Complication paragraphs
+          ...complicationDoc.content.filter(hasValidText),
+          // Add spacing if there was content
+          ...(complicationDoc.content.some(hasValidText)
+            ? [SPACER_PARAGRAPH]
+            : []),
 
-            // Answer paragraphs
-            ...answerState.root.children.filter(hasValidText),
-          ],
-          direction: 'ltr',
-          format: '',
-          indent: 0,
-          type: 'root',
-          version: 1,
-        },
+          // Answer paragraphs
+          ...answerDoc.content.filter(hasValidText),
+        ],
       };
 
-      // Update the outline field in the database with stringified Lexical state
+      // Update the outline field in the database with stringified Tiptap document
       const { error: updateError } = await supabase
         .from('building_blocks_submissions')
         .update({ outline: JSON.stringify(outlineContent) })
@@ -135,7 +125,7 @@ export const generateOutlineAction = enhanceAction(
 
       return {
         success: true,
-        data: JSON.stringify(outlineContent),
+        data: outlineContent,
       };
     } catch (error) {
       console.error('Error in generate outline action:', error);

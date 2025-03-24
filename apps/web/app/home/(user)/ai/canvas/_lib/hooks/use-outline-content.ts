@@ -6,43 +6,41 @@ import { useSupabase } from '@kit/supabase/hooks/use-supabase';
 
 import { generateOutlineAction } from '../../_actions/generate-outline';
 
-interface LexicalTextNode {
+interface TiptapNode {
+  type: string;
+  content?: TiptapNode[];
+  attrs?: Record<string, any>;
+  marks?: { type: string }[];
   text?: string;
+}
+
+interface TiptapDocument {
   type: string;
-  version: number;
+  content: TiptapNode[];
 }
 
-interface LexicalParagraphNode {
-  children: LexicalTextNode[];
-  direction: string | null;
-  format: string;
-  indent: number;
-  type: string;
-  version: number;
-}
+function hasValidText(doc: TiptapDocument): boolean {
+  if (!doc.content || doc.content.length === 0) return false;
 
-interface LexicalState {
-  root: {
-    children: LexicalParagraphNode[];
-    direction: string;
-    format: string;
-    indent: number;
-    type: string;
-    version: number;
-  };
-}
+  // Check if any paragraph or heading has text content
+  return doc.content.some((node) => {
+    if (node.type === 'paragraph' || node.type === 'heading') {
+      if (!node.content) return false;
 
-function hasValidText(node: LexicalParagraphNode): boolean {
-  const firstChild = node.children[0];
-  return (
-    firstChild !== undefined &&
-    typeof firstChild.text === 'string' &&
-    firstChild.text.trim().length > 0
-  );
+      return node.content.some((child: TiptapNode) => {
+        return (
+          child.type === 'text' &&
+          typeof child.text === 'string' &&
+          child.text.trim().length > 0
+        );
+      });
+    }
+    return false;
+  });
 }
 
 export function useOutlineContent(submissionId: string) {
-  type QueryResult = string | LexicalState;
+  type QueryResult = string | TiptapDocument;
   const supabase = useSupabase();
   const queryClient = useQueryClient();
 
@@ -61,9 +59,9 @@ export function useOutlineContent(submissionId: string) {
       // If outline exists and has actual content, return it
       if (data.outline) {
         try {
-          const parsed = JSON.parse(data.outline) as LexicalState;
-          // Check if there's actual text content in the Lexical state
-          const hasContent = parsed.root.children.some(hasValidText);
+          const parsed = JSON.parse(data.outline) as TiptapDocument;
+          // Check if there's actual text content in the Tiptap document
+          const hasContent = hasValidText(parsed);
           if (hasContent) return data.outline;
         } catch {
           // If parsing fails, treat as empty
