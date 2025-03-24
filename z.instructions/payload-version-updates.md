@@ -157,7 +157,9 @@ Some plugins might not be immediately compatible with new Payload versions. Chec
 
 4. **Test Thoroughly:** Test all Payload-related functionality after updates, including admin UI, API endpoints, and any custom hooks or fields.
 
-5. **Update Documentation:** Update any internal documentation that might be affected by Payload version changes.
+5. **Check for Missing Dependencies:** After updating, run the application to ensure all dependencies are properly installed. If you encounter "Module not found" errors, check if any dependencies are missing from package.json files.
+
+6. **Update Documentation:** Update any internal documentation that might be affected by Payload version changes.
 
 ## Current Version Information
 
