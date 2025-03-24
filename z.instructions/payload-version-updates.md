@@ -14,8 +14,17 @@ When updating Payload CMS to a new version, the following files must be updated:
 
    - `packages/cms/payload/package.json`
 
-3. **Any Other Packages Using Payload:**
-   - Check for any other packages that might depend on Payload directly
+3. **Content Migrations Package:**
+
+   - `packages/content-migrations/package.json`
+
+4. **Web App Package:**
+
+   - `apps/web/package.json`
+
+5. **Any Other Packages Using Payload:**
+   - Always search for any other packages that might depend on Payload directly or use Payload-related dependencies
+   - Use search patterns like `"payload":` and `"@payloadcms/` in package.json files
 
 ## Payload-Related Dependencies
 
@@ -107,6 +116,7 @@ git commit -m "Update Payload CMS to version 3.28.1"
 
 | Payload Version | @payloadcms/db-postgres | @payloadcms/next | @payloadcms/plugin-nested-docs | @payloadcms/richtext-lexical | @payloadcms/payload-cloud |
 | --------------- | ----------------------- | ---------------- | ------------------------------ | ---------------------------- | ------------------------- |
+| 3.30.0          | 3.30.0                  | 3.30.0           | 3.30.0                         | 3.30.0                       | 3.30.0                    |
 | 3.28.1          | 3.28.1                  | 3.28.1           | 3.28.1                         | 3.28.1                       | 3.28.1                    |
 | 3.26.0          | 3.26.0                  | 3.26.0           | 3.26.0                         | 3.26.0                       | 3.26.0                    |
 
@@ -151,10 +161,10 @@ Some plugins might not be immediately compatible with new Payload versions. Chec
 
 ## Current Version Information
 
-As of the creation of this document, the project is using:
+As of the last update, the project is using:
 
-- Payload CMS: 3.26.0 (Updating to 3.28.1)
-- Payload plugins: Various versions (Some using `latest`)
+- Payload CMS: 3.30.0
+- Payload plugins: All pinned to 3.30.0
 
 ## Additional Resources
 
