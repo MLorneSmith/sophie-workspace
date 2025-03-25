@@ -1,80 +1,29 @@
 'use client'
 
-import React, { useEffect } from 'react'
+import React from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@kit/ui/card'
-import { cn } from '@kit/ui/utils'
 
-type TestBlockProps = {
-  blockType: string
-  blockName?: string
+// Define the type for the component props
+type TestBlockData = {
   text?: string
-  htmlContent?: string // Add htmlContent property to store the HTML
-  data?: Record<string, any> // Add data property for storing additional data
-  html?: string // Add html property for compatibility
-  toHTML?: () => string // Add toHTML method
+  [key: string]: any
 }
 
-// Function to generate HTML content
-function generateHtmlContent(props: TestBlockProps): string {
-  const { text = 'Test Block' } = props || {}
-
-  return `
-    <div class="my-6 rounded-lg border bg-blue-100 text-card-foreground shadow-sm">
-      <div class="flex flex-col space-y-1.5 p-6">
-        <div class="flex items-center">
-          <img
-            src="/images/doodle.png"
-            alt="Doodle"
-            class="w-8 h-auto transform -rotate-45 mr-4"
-          />
-          <h3 class="text-2xl font-semibold leading-none tracking-tight mb-2">Test Block</h3>
-          <img
-            src="/images/doodle.png"
-            alt="Doodle"
-            class="w-8 h-auto transform rotate-45 ml-4"
-          />
-        </div>
-      </div>
-      <div class="p-6 pt-0">
-        <p class="text-muted-foreground">${text}</p>
-      </div>
-    </div>
-  `
+// Define our own component props type
+type ComponentProps = {
+  data?: TestBlockData
+  [key: string]: any
 }
 
-export const Component: React.FC<{ data: TestBlockProps }> = ({ data }) => {
+// The component receives props from Lexical
+const Component: React.FC<ComponentProps> = (props) => {
+  // Destructure the important properties from props
+  const { data } = props
+
+  // Extract data with defaults if missing
   const { text = 'Test Block' } = data || {}
 
-  // Generate HTML content
-  const htmlContent = generateHtmlContent(data)
-
-  // Store the HTML content directly in the node data
-  useEffect(() => {
-    if (data) {
-      // Store HTML content in multiple locations for better compatibility
-      data.htmlContent = htmlContent
-      data.html = htmlContent
-
-      // Also store it in data.data for better compatibility
-      if (!data.data) {
-        data.data = {}
-      }
-      data.data.htmlContent = htmlContent
-      data.data.html = htmlContent
-
-      // Add a toHTML method to the data object
-      if (typeof data.toHTML !== 'function') {
-        data.toHTML = () => htmlContent
-      }
-
-      // Log for debugging
-      console.log('Stored HTML content in data:', {
-        htmlContent: data.htmlContent?.substring(0, 50) + '...',
-        dataHtmlContent: data.data?.htmlContent?.substring(0, 50) + '...',
-      })
-    }
-  }, [data, htmlContent])
-
+  // Render the component
   return (
     <Card className="my-6 bg-blue-100">
       <CardHeader>
@@ -94,9 +43,6 @@ export const Component: React.FC<{ data: TestBlockProps }> = ({ data }) => {
       </CardHeader>
       <CardContent>
         <p className="text-muted-foreground">{text}</p>
-
-        {/* Hidden div with HTML content for serialization */}
-        <div style={{ display: 'none' }} dangerouslySetInnerHTML={{ __html: htmlContent }} />
       </CardContent>
     </Card>
   )

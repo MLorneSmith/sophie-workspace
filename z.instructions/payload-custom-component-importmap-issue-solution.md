@@ -81,11 +81,7 @@ if (!blockType) {
 
 We created a DebugBlock component that displays detailed information about the props it receives. This helps diagnose issues with component resolution and provides a fallback for unknown block types.
 
-### 5. Fixed Front-end Error
-
-We created the missing `client-api.ts` file in the packages/cms/payload/src/api directory with inline type definitions. This resolved the "Module not found" error in the web app.
-
-### 6. Enhanced afterStartupHook
+### 5. Enhanced afterStartupHook
 
 We improved the afterStartupHook to better handle importMap enhancement:
 

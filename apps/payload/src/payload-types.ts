@@ -54,6 +54,7 @@ export type SupportedTimezones =
   | 'Asia/Singapore'
   | 'Asia/Tokyo'
   | 'Asia/Seoul'
+  | 'Australia/Brisbane'
   | 'Australia/Sydney'
   | 'Pacific/Guam'
   | 'Pacific/Noumea'
@@ -70,6 +71,11 @@ export interface Config {
     media: Media;
     documentation: Documentation;
     posts: Post;
+    surveys: Survey;
+    survey_questions: SurveyQuestion;
+    courses: Course;
+    course_lessons: CourseLesson;
+    course_quizzes: CourseQuizz;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -80,6 +86,11 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     documentation: DocumentationSelect<false> | DocumentationSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
+    surveys: SurveysSelect<false> | SurveysSelect<true>;
+    survey_questions: SurveyQuestionsSelect<false> | SurveyQuestionsSelect<true>;
+    courses: CoursesSelect<false> | CoursesSelect<true>;
+    course_lessons: CourseLessonsSelect<false> | CourseLessonsSelect<true>;
+    course_quizzes: CourseQuizzesSelect<false> | CourseQuizzesSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -280,6 +291,279 @@ export interface Post {
   createdAt: string;
 }
 /**
+ * Surveys for user assessment and feedback
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "surveys".
+ */
+export interface Survey {
+  id: number;
+  title: string;
+  /**
+   * The URL-friendly identifier for this survey
+   */
+  slug: string;
+  /**
+   * A brief summary of the survey
+   */
+  description?: string | null;
+  /**
+   * Introduction message shown before starting the survey
+   */
+  startMessage?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Message shown after completing the survey
+   */
+  endMessage?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Show a progress bar during the survey
+   */
+  showProgressBar?: boolean | null;
+  /**
+   * Questions included in this survey
+   */
+  questions?: (number | SurveyQuestion)[] | null;
+  /**
+   * Content shown on the summary page
+   */
+  summaryContent?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Only published surveys will be visible to users
+   */
+  status: 'draft' | 'published';
+  /**
+   * The date and time this survey was published
+   */
+  publishedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Questions for surveys
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "survey_questions".
+ */
+export interface SurveyQuestion {
+  id: number;
+  /**
+   * The question text
+   */
+  text: string;
+  /**
+   * The type of question
+   */
+  type: 'multiple_choice';
+  /**
+   * Additional context or instructions for the question
+   */
+  description?: string | null;
+  /**
+   * Whether this question requires an answer
+   */
+  required?: boolean | null;
+  /**
+   * Answer options for this question
+   */
+  options?:
+    | {
+        option: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * The category this question belongs to (e.g., Structure, Story, Style)
+   */
+  category: string;
+  /**
+   * Whether a high score is positive or negative for this question
+   */
+  questionspin: 'Positive' | 'Negative';
+  /**
+   * Position in the survey (lower numbers appear first)
+   */
+  position?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Courses for the learning management system
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "courses".
+ */
+export interface Course {
+  id: number;
+  title: string;
+  /**
+   * The URL-friendly identifier for this course
+   */
+  slug: string;
+  description?: string | null;
+  status: 'draft' | 'published';
+  featuredImage?: (number | null) | Media;
+  introContent?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  completionContent?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  estimatedDuration?: number | null;
+  showProgressBar?: boolean | null;
+  publishedAt?: string | null;
+  lessons?: (number | CourseLesson)[] | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Lessons for courses in the learning management system
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "course_lessons".
+ */
+export interface CourseLesson {
+  id: number;
+  title: string;
+  /**
+   * The URL-friendly identifier for this lesson
+   */
+  slug: string;
+  description?: string | null;
+  featuredImage?: (number | null) | Media;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Order in which this lesson appears in the course
+   */
+  lessonNumber: number;
+  estimatedDuration?: number | null;
+  course: number | Course;
+  quiz?: (number | null) | CourseQuizz;
+  publishedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Quizzes for course lessons in the learning management system
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "course_quizzes".
+ */
+export interface CourseQuizz {
+  id: number;
+  title: string;
+  description?: string | null;
+  passingScore: number;
+  questions: {
+    question: string;
+    type: 'multiple_choice';
+    options?:
+      | {
+          text: string;
+          isCorrect?: boolean | null;
+          id?: string | null;
+        }[]
+      | null;
+    explanation?: {
+      root: {
+        type: string;
+        children: {
+          type: string;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    id?: string | null;
+  }[];
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
@@ -301,6 +585,26 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'posts';
         value: number | Post;
+      } | null)
+    | ({
+        relationTo: 'surveys';
+        value: number | Survey;
+      } | null)
+    | ({
+        relationTo: 'survey_questions';
+        value: number | SurveyQuestion;
+      } | null)
+    | ({
+        relationTo: 'courses';
+        value: number | Course;
+      } | null)
+    | ({
+        relationTo: 'course_lessons';
+        value: number | CourseLesson;
+      } | null)
+    | ({
+        relationTo: 'course_quizzes';
+        value: number | CourseQuizz;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -435,6 +739,108 @@ export interface PostsSelect<T extends boolean = true> {
     | T
     | {
         tag?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "surveys_select".
+ */
+export interface SurveysSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  description?: T;
+  startMessage?: T;
+  endMessage?: T;
+  showProgressBar?: T;
+  questions?: T;
+  summaryContent?: T;
+  status?: T;
+  publishedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "survey_questions_select".
+ */
+export interface SurveyQuestionsSelect<T extends boolean = true> {
+  text?: T;
+  type?: T;
+  description?: T;
+  required?: T;
+  options?:
+    | T
+    | {
+        option?: T;
+        id?: T;
+      };
+  category?: T;
+  questionspin?: T;
+  position?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "courses_select".
+ */
+export interface CoursesSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  description?: T;
+  status?: T;
+  featuredImage?: T;
+  introContent?: T;
+  completionContent?: T;
+  estimatedDuration?: T;
+  showProgressBar?: T;
+  publishedAt?: T;
+  lessons?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "course_lessons_select".
+ */
+export interface CourseLessonsSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  description?: T;
+  featuredImage?: T;
+  content?: T;
+  lessonNumber?: T;
+  estimatedDuration?: T;
+  course?: T;
+  quiz?: T;
+  publishedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "course_quizzes_select".
+ */
+export interface CourseQuizzesSelect<T extends boolean = true> {
+  title?: T;
+  description?: T;
+  passingScore?: T;
+  questions?:
+    | T
+    | {
+        question?: T;
+        type?: T;
+        options?:
+          | T
+          | {
+              text?: T;
+              isCorrect?: T;
+              id?: T;
+            };
+        explanation?: T;
         id?: T;
       };
   updatedAt?: T;

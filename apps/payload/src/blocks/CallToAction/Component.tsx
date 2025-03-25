@@ -1,115 +1,40 @@
 'use client'
 
-import React, { useEffect } from 'react'
+import React from 'react'
 import { Button } from '@kit/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@kit/ui/card'
-import { cn } from '@kit/ui/utils'
-
-// Define the type for our component props
-type CallToActionProps = {
-  blockType: string
-  blockName?: string
+// Define the type for the component props
+type CallToActionData = {
   headline?: string
   subheadline?: string
   leftButtonLabel?: string
   leftButtonUrl?: string
   rightButtonLabel?: string
   rightButtonUrl?: string
-  htmlContent?: string // Add htmlContent property to store the HTML
-  data?: Record<string, any> // Add data property for storing additional data
-  html?: string // Add html property for compatibility
-  toHTML?: () => string // Add toHTML method
 }
 
-// Function to generate HTML content
-function generateHtmlContent(props: CallToActionProps): string {
-  const {
-    headline = 'FREE Course Trial',
-    subheadline = 'Start improving your presentations skills immediately with our free trail of the Decks for Decision Makers course.',
-    leftButtonLabel = 'Individuals',
-    leftButtonUrl = '/free-trial/individual',
-    rightButtonLabel = 'Teams',
-    rightButtonUrl = '/free-trial/teams',
-  } = props || {}
-
-  return `
-    <div class="my-6 rounded-lg border bg-card text-card-foreground shadow-sm">
-      <div class="flex flex-col space-y-1.5 p-6">
-        <h3 class="text-2xl font-semibold leading-none tracking-tight">${headline}</h3>
-        <p class="text-muted-foreground">${subheadline}</p>
-      </div>
-      <div class="p-6 pt-0 flex flex-col sm:flex-row justify-end gap-4">
-        <div class="relative">
-          <div class="absolute -left-10 top-1/2 -translate-y-1/2">
-            <img
-              src="/images/doodle.png"
-              alt="Doodle"
-              class="w-8 h-auto transform -rotate-90"
-            />
-          </div>
-          <a
-            href="${leftButtonUrl}"
-            class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
-          >
-            ${leftButtonLabel}
-          </a>
-        </div>
-        <div class="relative">
-          <a
-            href="${rightButtonUrl}"
-            class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"
-          >
-            ${rightButtonLabel}
-          </a>
-          <div class="absolute -right-10 top-1/2 -translate-y-1/2">
-            <img src="/images/doodle.png" alt="Doodle" class="w-8 h-auto transform rotate-90" />
-          </div>
-        </div>
-      </div>
-    </div>
-  `
+// Define our own component props type since BlockComponentProps is not exported
+type ComponentProps = {
+  data?: CallToActionData
+  [key: string]: any
 }
 
-export const Component: React.FC<{ data: CallToActionProps }> = ({ data }) => {
+// The component receives props from Lexical
+const Component: React.FC<ComponentProps> = (props) => {
+  // Destructure the important properties from props
+  const { data } = props
+
+  // Extract data with defaults if missing
   const {
     headline = 'FREE Course Trial',
-    subheadline = 'Start improving your presentations skills immediately with our free trail of the Decks for Decision Makers course.',
+    subheadline = 'Start improving your presentations skills immediately with our free trial of the Decks for Decision Makers course.',
     leftButtonLabel = 'Individuals',
     leftButtonUrl = '/free-trial/individual',
     rightButtonLabel = 'Teams',
     rightButtonUrl = '/free-trial/teams',
   } = data || {}
 
-  // Generate HTML content
-  const htmlContent = generateHtmlContent(data)
-
-  // Store the HTML content directly in the node data
-  useEffect(() => {
-    if (data) {
-      // Store HTML content in multiple locations for better compatibility
-      data.htmlContent = htmlContent
-      data.html = htmlContent
-
-      // Also store it in data.data for better compatibility
-      if (!data.data) {
-        data.data = {}
-      }
-      data.data.htmlContent = htmlContent
-      data.data.html = htmlContent
-
-      // Add a toHTML method to the data object
-      if (typeof data.toHTML !== 'function') {
-        data.toHTML = () => htmlContent
-      }
-
-      // Log for debugging
-      console.log('Stored HTML content in data:', {
-        htmlContent: data.htmlContent?.substring(0, 50) + '...',
-        dataHtmlContent: data.data?.htmlContent?.substring(0, 50) + '...',
-      })
-    }
-  }, [data, htmlContent])
-
+  // Render the component
   return (
     <Card className="my-6">
       <CardHeader>
@@ -138,9 +63,6 @@ export const Component: React.FC<{ data: CallToActionProps }> = ({ data }) => {
           </div>
         </div>
       </CardContent>
-
-      {/* Hidden div with HTML content for serialization */}
-      <div style={{ display: 'none' }} dangerouslySetInnerHTML={{ __html: htmlContent }} />
     </Card>
   )
 }
