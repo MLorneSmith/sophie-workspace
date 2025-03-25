@@ -1,14 +1,36 @@
-// Use dynamic import with type assertion to bypass TypeScript module resolution issues
-const { getSupabaseServerClient } = require('@kit/supabase/server-client');
 /**
  * Helper function to make authenticated requests to Payload CMS
  * @param endpoint The API endpoint to call (without the /api/ prefix)
  * @param options Additional fetch options
+ * @param supabaseClient Optional Supabase client (for client-side usage)
  * @returns The JSON response from the API
  */
-export async function callPayloadAPI(endpoint, options = {}) {
-    const supabase = getSupabaseServerClient();
-    const { data: { session }, } = await supabase.auth.getSession();
+export async function callPayloadAPI(endpoint, options = {}, supabaseClient) {
+    let session = null;
+    try {
+        if (supabaseClient) {
+            // Use provided client (useful for client components)
+            const { data } = await supabaseClient.auth.getSession();
+            session = data.session;
+        }
+        else {
+            // Try to use server client (may fail in some contexts)
+            try {
+                const { getSupabaseServerClient } = require('@kit/supabase/server-client');
+                const supabase = getSupabaseServerClient();
+                const { data } = await supabase.auth.getSession();
+                session = data.session;
+            }
+            catch (error) {
+                console.error('Failed to get Supabase server client:', error);
+                // Continue without authentication
+            }
+        }
+    }
+    catch (error) {
+        console.error('Error getting auth session:', error);
+        // Continue without authentication
+    }
     // Use port 3020 to match the actual Payload CMS server port
     const payloadUrl = process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3020';
     // Log the URL for debugging
