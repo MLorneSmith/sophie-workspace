@@ -7,12 +7,15 @@ import path from 'path'
 import { buildConfig } from 'payload'
 import sharp from 'sharp'
 import { fileURLToPath } from 'url'
+import { afterStartupHook } from './hooks/afterStartupHook'
 
 // Import custom SCSS for Tailwind CSS
-import './app/(payload)/custom.scss'
+// This import is causing issues with ESM, so we'll comment it out
+// import './app/(payload)/custom.scss'
 
 import CallToAction from './blocks/CallToAction'
 import TestBlock from './blocks/TestBlock'
+import DebugBlock from './blocks/DebugBlock'
 import { Documentation } from './collections/Documentation'
 import { Media } from './collections/Media'
 import { Posts } from './collections/Posts'
@@ -32,6 +35,9 @@ export default buildConfig({
     importMap: {
       baseDir: path.resolve(dirname),
     },
+  },
+  onInit: async (payload) => {
+    await afterStartupHook(payload)
   },
   // Add CORS configuration to allow requests from all web app domains
   cors: [
@@ -56,7 +62,7 @@ export default buildConfig({
     features: ({ defaultFeatures }) => [
       ...defaultFeatures,
       BlocksFeature({
-        blocks: [CallToAction, TestBlock],
+        blocks: [CallToAction, TestBlock, DebugBlock],
       }),
     ],
   }),

@@ -13,6 +13,11 @@ const CallToAction: Block = {
       type: 'text',
       defaultValue: 'FREE Course Trial',
       required: true,
+      admin: {
+        components: {
+          Field: './Field',
+        },
+      },
     },
     {
       name: 'subheadline',
@@ -48,7 +53,6 @@ const CallToAction: Block = {
   ],
   admin: {
     components: {
-      // We'll define the custom component for rendering in the Lexical editor
       Block: './Component',
     },
   },

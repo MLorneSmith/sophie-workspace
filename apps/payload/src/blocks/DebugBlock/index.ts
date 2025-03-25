@@ -1,16 +1,16 @@
 import { Block } from 'payload'
 
-const TestBlock: Block = {
-  slug: 'test-block',
+const DebugBlock: Block = {
+  slug: 'debug-block',
   labels: {
-    singular: 'Test Block',
-    plural: 'Test Blocks',
+    singular: 'Debug Block',
+    plural: 'Debug Blocks',
   },
   fields: [
     {
-      name: 'text',
+      name: 'debugInfo',
       type: 'text',
-      defaultValue: 'Test Block',
+      defaultValue: 'Debug information will appear here',
       admin: {
         components: {
           Field: './Field',
@@ -25,4 +25,4 @@ const TestBlock: Block = {
   },
 }
 
-export default TestBlock
+export default DebugBlock
