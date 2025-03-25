@@ -6,6 +6,7 @@ import { useTransition } from 'react';
 import Link from 'next/link';
 
 import { CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { toast } from 'sonner';
 
 import { PayloadContentRenderer } from '@kit/cms/payload';
 import { Button } from '@kit/ui/button';
@@ -17,6 +18,7 @@ import {
   CardTitle,
 } from '@kit/ui/card';
 import { Progress } from '@kit/ui/progress';
+import { Toaster } from '@kit/ui/sonner';
 
 import {
   submitQuizAttemptAction,
@@ -45,6 +47,7 @@ export function LessonViewClient({
   const [quizCompleted, setQuizCompleted] = useState(
     quizAttempts.length > 0 && quizAttempts[0].passed,
   );
+  const [isMarkingCompleted, setIsMarkingCompleted] = useState(false);
 
   // Calculate progress
   const progress = lessonProgress?.completion_percentage || 0;
@@ -65,13 +68,22 @@ export function LessonViewClient({
 
   // Mark lesson as completed
   const markLessonAsCompleted = () => {
+    setIsMarkingCompleted(true);
+    toast.success('Marking lesson as completed...');
+
     startTransition(async () => {
-      await updateLessonProgressAction({
-        courseId: lesson.course.id,
-        lessonId: lesson.id,
-        completionPercentage: 100,
-        completed: true,
-      });
+      try {
+        await updateLessonProgressAction({
+          courseId: lesson.course.id,
+          lessonId: lesson.id,
+          completionPercentage: 100,
+          completed: true,
+        });
+        toast.success('Lesson marked as completed!');
+      } catch (error) {
+        toast.error('Failed to mark lesson as completed. Please try again.');
+        setIsMarkingCompleted(false);
+      }
     });
   };
 
@@ -106,92 +118,94 @@ export function LessonViewClient({
   };
 
   return (
-    <div className="container mx-auto max-w-4xl p-4">
-      {/* Progress bar */}
-      <div className="mb-6">
-        <div className="flex justify-between text-sm">
-          <span>Lesson Progress</span>
-          <span>{Math.round(progress)}%</span>
-        </div>
-        <Progress value={progress} className="h-2" />
-      </div>
-
-      {/* Lesson content */}
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle>{lesson.title}</CardTitle>
-          <div className="text-muted-foreground text-sm">
-            {lesson.estimatedDuration || 0} minutes
-          </div>
-        </CardHeader>
-        <CardContent>
-          {!showQuiz ? (
-            <div className="prose prose-sm dark:prose-invert max-w-none">
-              <PayloadContentRenderer content={lesson.content} />
+    <>
+      <div className="container mx-auto max-w-4xl p-4">
+        {/* Lesson content */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>{lesson.title}</CardTitle>
+            <div className="text-muted-foreground text-sm">
+              {lesson.estimatedDuration || 0} minutes
             </div>
-          ) : (
-            quiz && (
-              <QuizComponent
-                quiz={quiz}
-                onSubmit={handleQuizSubmit}
-                previousAttempts={quizAttempts}
-              />
-            )
-          )}
-        </CardContent>
-        <CardFooter className="flex justify-between">
-          <Link href="/home/course">
-            <Button variant="outline">
-              <ChevronLeft className="mr-2 h-4 w-4" />
-              Back to Course
-            </Button>
-          </Link>
-
-          <div className="flex gap-2">
-            {!showQuiz && quiz && !quizCompleted && (
-              <Button
-                onClick={() => {
-                  markLessonAsViewed();
-                  setShowQuiz(true);
-                }}
-                disabled={isPending}
-              >
-                Take Quiz
-                <ChevronRight className="ml-2 h-4 w-4" />
-              </Button>
+          </CardHeader>
+          <CardContent>
+            {!showQuiz ? (
+              <div className="prose prose-sm dark:prose-invert max-w-none">
+                <PayloadContentRenderer content={lesson.content} />
+              </div>
+            ) : (
+              quiz && (
+                <QuizComponent
+                  quiz={quiz}
+                  onSubmit={handleQuizSubmit}
+                  previousAttempts={quizAttempts}
+                />
+              )
             )}
-
-            {!showQuiz && (!quiz || quizCompleted) && !isCompleted && (
-              <Button onClick={markLessonAsCompleted} disabled={isPending}>
-                Mark as Completed
-                <CheckCircle className="ml-2 h-4 w-4" />
+          </CardContent>
+          <CardFooter className="flex justify-between">
+            <Link href="/home/course">
+              <Button variant="outline">
+                <ChevronLeft className="mr-2 h-4 w-4" />
+                Back to Course
               </Button>
-            )}
+            </Link>
 
-            {showQuiz && (
-              <Button
-                variant="outline"
-                onClick={() => setShowQuiz(false)}
-                disabled={isPending}
-              >
-                Back to Lesson
-              </Button>
-            )}
+            <div className="flex gap-2">
+              {!showQuiz && quiz && !quizCompleted && (
+                <Button
+                  onClick={() => {
+                    markLessonAsViewed();
+                    setShowQuiz(true);
+                  }}
+                  disabled={isPending}
+                >
+                  Take Quiz
+                  <ChevronRight className="ml-2 h-4 w-4" />
+                </Button>
+              )}
+
+              {!showQuiz && (!quiz || quizCompleted) && !isCompleted && (
+                <Button
+                  onClick={markLessonAsCompleted}
+                  disabled={isPending || isMarkingCompleted}
+                  className={
+                    isMarkingCompleted ? 'bg-green-600 hover:bg-green-700' : ''
+                  }
+                >
+                  {isMarkingCompleted ? 'Marking...' : 'Mark as Completed'}
+                  <CheckCircle
+                    className={`ml-2 h-4 w-4 ${isMarkingCompleted ? 'text-green-200' : ''}`}
+                  />
+                </Button>
+              )}
+
+              {showQuiz && (
+                <Button
+                  variant="outline"
+                  onClick={() => setShowQuiz(false)}
+                  disabled={isPending}
+                >
+                  Back to Lesson
+                </Button>
+              )}
+            </div>
+          </CardFooter>
+        </Card>
+
+        {/* Completed status */}
+        {(isCompleted || isMarkingCompleted) && (
+          <div className="rounded-lg border border-green-200 bg-green-50 p-4 shadow-sm dark:border-green-800 dark:bg-green-900/50">
+            <h2 className="text-xl font-bold text-green-800 dark:text-green-300">
+              Lesson Completed! 🎉
+            </h2>
+            <p className="mt-2 text-green-700 dark:text-green-400">
+              You have successfully completed this lesson.
+            </p>
           </div>
-        </CardFooter>
-      </Card>
-
-      {/* Completed status */}
-      {isCompleted && (
-        <div className="rounded-lg border border-green-200 bg-green-50 p-4 shadow-sm dark:border-green-800 dark:bg-green-900/50">
-          <h2 className="text-xl font-bold text-green-800 dark:text-green-300">
-            Lesson Completed! 🎉
-          </h2>
-          <p className="mt-2 text-green-700 dark:text-green-400">
-            You have successfully completed this lesson.
-          </p>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+      <Toaster />
+    </>
   );
 }

@@ -70,8 +70,9 @@ export function CourseDashboardClient({
     return attempts.length > 0 ? attempts[0].score : null;
   };
 
+  // Loading state is handled by the loading.tsx file with GlobalLoader
   if (isLoading) {
-    return <div>Loading course...</div>;
+    return null;
   }
 
   return (

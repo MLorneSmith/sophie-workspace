@@ -543,21 +543,10 @@ export interface CourseQuizz {
           id?: string | null;
         }[]
       | null;
-    explanation?: {
-      root: {
-        type: string;
-        children: {
-          type: string;
-          version: number;
-          [k: string]: unknown;
-        }[];
-        direction: ('ltr' | 'rtl') | null;
-        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-        indent: number;
-        version: number;
-      };
-      [k: string]: unknown;
-    } | null;
+    /**
+     * Optional explanation for this question (plain text only)
+     */
+    explanation?: string | null;
     id?: string | null;
   }[];
   updatedAt: string;

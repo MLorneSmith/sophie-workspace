@@ -46,7 +46,7 @@ export async function getCourseLessons(
   supabaseClient?: any,
 ) {
   return callPayloadAPI(
-    `course_lessons?where[course][equals]=${courseId}&sort=lessonNumber&depth=0`,
+    `course_lessons?where[course][equals]=${courseId}&sort=lessonNumber&depth=0&limit=100`,
     {},
     supabaseClient,
   );
