@@ -7,8 +7,10 @@ import { getSupabaseServerClient } from '@kit/supabase/server-client';
 
 // Start or update course progress
 const UpdateCourseProgressSchema = z.object({
-  courseId: z.string(),
-  currentLessonId: z.string().optional(),
+  courseId: z.union([z.string(), z.number()]).transform((val) => String(val)),
+  currentLessonId: z
+    .union([z.string(), z.number(), z.undefined()])
+    .transform((val) => (val !== undefined ? String(val) : undefined)),
   completionPercentage: z.number().min(0).max(100).optional(),
   completed: z.boolean().optional(),
 });
@@ -74,8 +76,8 @@ export const updateCourseProgressAction = enhanceAction(
 
 // Update lesson progress
 const UpdateLessonProgressSchema = z.object({
-  courseId: z.string(),
-  lessonId: z.string(),
+  courseId: z.union([z.string(), z.number()]).transform((val) => String(val)),
+  lessonId: z.union([z.string(), z.number()]).transform((val) => String(val)),
   completionPercentage: z.number().min(0).max(100).optional(),
   completed: z.boolean().optional(),
 });
@@ -164,9 +166,9 @@ export const updateLessonProgressAction = enhanceAction(
 
 // Submit quiz attempt
 const SubmitQuizAttemptSchema = z.object({
-  courseId: z.string(),
-  lessonId: z.string(),
-  quizId: z.string(),
+  courseId: z.union([z.string(), z.number()]).transform((val) => String(val)),
+  lessonId: z.union([z.string(), z.number()]).transform((val) => String(val)),
+  quizId: z.union([z.string(), z.number()]).transform((val) => String(val)),
   answers: z.record(z.string(), z.any()),
   score: z.number().min(0).max(100),
   passed: z.boolean(),
