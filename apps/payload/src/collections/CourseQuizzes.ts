@@ -71,8 +71,11 @@ export const CourseQuizzes: CollectionConfig = {
         },
         {
           name: 'explanation',
-          type: 'richText',
-          editor: lexicalEditor({}),
+          type: 'text', // Changed from richText to text to avoid Lexical editor issues
+          required: false, // Make it optional
+          admin: {
+            description: 'Optional explanation for this question (plain text only)',
+          },
         },
       ],
     },

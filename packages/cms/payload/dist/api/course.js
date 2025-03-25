@@ -26,7 +26,7 @@ export async function getCourseBySlug(slug, options = {}, supabaseClient) {
  * @returns The course lessons
  */
 export async function getCourseLessons(courseId, options = {}, supabaseClient) {
-    return callPayloadAPI(`course_lessons?where[course][equals]=${courseId}&sort=lessonNumber&depth=0`, {}, supabaseClient);
+    return callPayloadAPI(`course_lessons?where[course][equals]=${courseId}&sort=lessonNumber&depth=0&limit=100`, {}, supabaseClient);
 }
 /**
  * Get a lesson by slug
