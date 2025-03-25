@@ -17,13 +17,13 @@
   "dependencies": {
     "@payloadcms/db-postgres": "3.30.0",
     "@payloadcms/richtext-lexical": "3.30.0",
-    "@supabase/supabase-js": "2.49.1",
+    "@supabase/supabase-js": "2.49.3",
     "dotenv": "^16.3.1",
     "gray-matter": "^4.0.3",
     "payload": "3.30.0"
   },
   "devDependencies": {
-    "@types/node": "^22.13.11",
+    "@types/node": "^22.13.13",
     "cross-env": "^7.0.3",
     "tsx": "^4.7.1",
     "typescript": "^5.8.2"
