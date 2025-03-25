@@ -17,20 +17,12 @@ export async function callPayloadAPI(
       // Use provided client (useful for client components)
       const { data } = await supabaseClient.auth.getSession();
       session = data.session;
-    } else {
-      // Try to use server client (may fail in some contexts)
-      try {
-        const { getSupabaseServerClient } =
-          require('@kit/supabase/server-client') as {
-            getSupabaseServerClient: () => any;
-          };
-        const supabase = getSupabaseServerClient();
-        const { data } = await supabase.auth.getSession();
-        session = data.session;
-      } catch (error) {
-        console.error('Failed to get Supabase server client:', error);
-        // Continue without authentication
-      }
+    } else if (typeof window === 'undefined') {
+      // Server-side: skip authentication in Payload CMS context
+      // This avoids the server-only dependency chain
+      console.log('Server-side context detected, skipping authentication');
+      // We'll continue without a session, which is fine for most Payload CMS operations
+      // The user will still be authenticated through the Next.js middleware
     }
   } catch (error) {
     console.error('Error getting auth session:', error);

@@ -1,17 +1,13 @@
-import { redirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 
 import { getLessonBySlug } from '@kit/cms/payload';
-import { requireUser } from '@kit/supabase/require-user';
-import { getSupabaseServerClient } from '@kit/supabase/server-client';
 import { PageBody } from '@kit/ui/page';
-import { Trans } from '@kit/ui/trans';
 
 import { createI18nServerInstance } from '~/lib/i18n/i18n.server';
 import { withI18n } from '~/lib/i18n/with-i18n';
 
 import { HomeLayoutPageHeader } from '../../../_components/home-page-header';
-import { updateLessonProgressAction } from '../../_lib/server/server-actions';
-// Import will be resolved when the component is created
+import { LessonDataProvider } from './_components/LessonDataProvider';
 import { LessonViewClient } from './_components/LessonViewClient';
 
 // Explicitly opt out of caching since Next.js 15 changes default behavior
@@ -20,13 +16,14 @@ export const dynamic = 'force-dynamic';
 export const generateMetadata = async ({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) => {
+  const resolvedParams = await params;
   const i18n = await createI18nServerInstance();
   const title = i18n.t('common:routes.course');
 
   // Get lesson data for metadata
-  const lessonData = await getLessonBySlug(params.slug);
+  const lessonData = await getLessonBySlug(resolvedParams.slug);
   const lesson = lessonData?.docs?.[0];
 
   return {
@@ -35,82 +32,26 @@ export const generateMetadata = async ({
   };
 };
 
-async function LessonPage({ params }: { params: { slug: string } }) {
-  // Get the authenticated user
-  const supabase = getSupabaseServerClient();
-  const auth = await requireUser(supabase);
-
-  // Check if the user needs redirect
-  if (auth.error) {
-    redirect(auth.redirectTo);
-  }
-
-  // User is authenticated
-  const user = auth.data;
+/**
+ * Lesson page component
+ * This page is simplified to avoid direct server component dependencies
+ * Authentication is handled by the layout component
+ * Data fetching is handled by the LessonDataProvider component
+ */
+async function LessonPage({ params }: { params: Promise<{ slug: string }> }) {
+  // Await the params to get the slug
+  const resolvedParams = await params;
 
   // Get lesson data
-  const lessonData = await getLessonBySlug(params.slug);
+  const lessonData = await getLessonBySlug(resolvedParams.slug);
   const lesson = lessonData?.docs?.[0];
 
   if (!lesson) {
-    return (
-      <>
-        <HomeLayoutPageHeader
-          title={<Trans i18nKey={'common:routes.course'} />}
-          description={<Trans i18nKey={'common:courseTabDescription'} />}
-        />
-        <PageBody>
-          <div className="container mx-auto px-4 py-8">
-            <h1 className="text-2xl font-bold">Lesson Not Found</h1>
-            <p className="mt-4 text-gray-600">
-              The lesson you are looking for does not exist.
-            </p>
-          </div>
-        </PageBody>
-      </>
-    );
+    notFound();
   }
 
-  // Get course data
+  // Get course ID for the data provider
   const courseId = lesson.course?.id || '';
-
-  // Get user's progress for this lesson
-  const { data: lessonProgress } = await supabase
-    .from('lesson_progress')
-    .select('*')
-    .eq('user_id', user.id)
-    .eq('lesson_id', lesson.id)
-    .single();
-
-  // If no progress record exists, create one
-  if (!lessonProgress) {
-    await updateLessonProgressAction({
-      courseId,
-      lessonId: lesson.id,
-      completionPercentage: 0,
-      completed: false,
-    });
-  }
-
-  // Get quiz data if lesson has a quiz
-  let quiz = null;
-  let quizAttempts: any[] = [];
-
-  if (lesson.quiz) {
-    // Get quiz data
-    const { getQuiz } = await import('@kit/cms/payload');
-    quiz = await getQuiz(lesson.quiz.id);
-
-    // Get user's quiz attempts for this quiz
-    const { data: attempts } = await supabase
-      .from('quiz_attempts')
-      .select('*')
-      .eq('user_id', user.id)
-      .eq('quiz_id', lesson.quiz.id)
-      .order('completed_at', { ascending: false });
-
-    quizAttempts = attempts || [];
-  }
 
   return (
     <>
@@ -120,13 +61,22 @@ async function LessonPage({ params }: { params: { slug: string } }) {
       />
 
       <PageBody>
-        <LessonViewClient
+        <LessonDataProvider
+          slug={resolvedParams.slug}
+          lessonId={String(lesson.id)}
+          courseId={String(courseId)}
           lesson={lesson}
-          quiz={quiz}
-          quizAttempts={quizAttempts}
-          lessonProgress={lessonProgress || null}
-          userId={user.id}
-        />
+        >
+          {(data) => (
+            <LessonViewClient
+              lesson={lesson}
+              quiz={data.quiz}
+              quizAttempts={data.quizAttempts}
+              lessonProgress={data.lessonProgress}
+              userId={data.userId}
+            />
+          )}
+        </LessonDataProvider>
       </PageBody>
     </>
   );
