@@ -50,10 +50,30 @@ export class PayloadClient {
             // Get the main item
             const item = this.mapContentItem(data.docs[0]);
             // Fetch child documents
-            const childrenResponse = await fetch(`${process.env.PAYLOAD_PUBLIC_SERVER_URL}/api/${collection}?where[parent][equals]=${item.id}&where[status][equals]=${status}`);
-            const childrenData = await childrenResponse.json();
-            // Add children to the main item
-            item.children = childrenData.docs.map((doc) => this.mapContentItem(doc));
+            try {
+                const childrenResponse = await fetch(`${process.env.PAYLOAD_PUBLIC_SERVER_URL}/api/${collection}?where[parent][equals]=${item.id}&where[status][equals]=${status}`);
+                // Check if the response is ok (status in the range 200-299)
+                if (childrenResponse.ok) {
+                    const childrenData = await childrenResponse.json();
+                    // Check if childrenData.docs exists and is an array before mapping
+                    if (childrenData && Array.isArray(childrenData.docs)) {
+                        // Add children to the main item
+                        item.children = childrenData.docs.map((doc) => this.mapContentItem(doc));
+                    }
+                    else {
+                        console.warn('No child documents found or invalid response format');
+                        item.children = []; // Ensure children is an empty array
+                    }
+                }
+                else {
+                    console.warn(`Error fetching child documents: ${childrenResponse.status} ${childrenResponse.statusText}`);
+                    item.children = []; // Ensure children is an empty array
+                }
+            }
+            catch (childError) {
+                console.error('Error fetching child documents:', childError);
+                item.children = []; // Ensure children is an empty array
+            }
             return item;
         }
         catch (error) {

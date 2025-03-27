@@ -894,6 +894,31 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CallToActionBlock".
+ */
+export interface CallToActionBlock {
+  headline: string;
+  subheadline: string;
+  leftButtonLabel: string;
+  leftButtonUrl: string;
+  rightButtonLabel: string;
+  rightButtonUrl: string;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'call-to-action';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TestBlock".
+ */
+export interface TestBlock {
+  text?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'test-block';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "auth".
  */
 export interface Auth {
