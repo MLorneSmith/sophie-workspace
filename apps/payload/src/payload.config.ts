@@ -25,6 +25,7 @@ import { Users } from './collections/Users'
 import { Courses } from './collections/Courses'
 import { CourseLessons } from './collections/CourseLessons'
 import { CourseQuizzes } from './collections/CourseQuizzes'
+import { QuizQuestions } from './collections/QuizQuestions'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -56,6 +57,7 @@ export default buildConfig({
     Courses,
     CourseLessons,
     CourseQuizzes,
+    QuizQuestions,
   ],
   editor: lexicalEditor({
     // Global editor configuration with custom blocks
@@ -74,12 +76,9 @@ export default buildConfig({
     pool: {
       connectionString: process.env.DATABASE_URI || '',
     },
-    // Use a custom schema to separate Payload tables from Makerkit tables
-    schemaName: 'payload',
-    // Store migrations in the Supabase migrations directory
-    migrationDir: path.resolve(process.cwd(), '../web/supabase/migrations/payload'),
-    // Automatically push schema changes in development
-    push: process.env.NODE_ENV === 'development',
+    // Enable schema push in development, disable in production
+    // This allows for rapid development while ensuring controlled schema changes in production
+    push: process.env.NODE_ENV !== 'production',
   }),
   sharp,
   plugins: [

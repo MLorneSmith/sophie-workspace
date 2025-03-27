@@ -33,10 +33,41 @@ async function runAllMigrations() {
       // so we don't need to do anything here
     });
 
-    // Add more migrations here as needed
-    // For example:
-    // console.log('Running testimonials migration...');
-    // await import('./migrate-testimonials.js');
+    // Import and run the course lessons migration
+    console.log('Running course lessons migration...');
+    await import('./migrate-course-lessons.js').then((module) => {
+      // The migrate-course-lessons script runs automatically when imported
+    });
+
+    // Import and run the course quizzes migration
+    console.log('Running course quizzes migration...');
+    await import('./migrate-course-quizzes.js').then((module) => {
+      // The migrate-course-quizzes script runs automatically when imported
+    });
+
+    // Import and run the quiz questions migration
+    console.log('Running quiz questions migration...');
+    await import('./migrate-quiz-questions.js').then((module) => {
+      // The migrate-quiz-questions script runs automatically when imported
+    });
+
+    // Import and run the blog posts migration
+    console.log('Running blog posts migration...');
+    await import('./migrate-posts.js').then((module) => {
+      // The migrate-posts script runs automatically when imported
+    });
+
+    // Import and run the payload documentation migration
+    console.log('Running payload documentation migration...');
+    await import('./migrate-payload-docs.js').then((module) => {
+      // The migrate-payload-docs script runs automatically when imported
+    });
+
+    // Import and run the payload quizzes migration
+    console.log('Running payload quizzes migration...');
+    await import('./migrate-payload-quizzes.js').then((module) => {
+      // The migrate-payload-quizzes script runs automatically when imported
+    });
 
     console.log('All migrations completed successfully!');
   } catch (error) {
