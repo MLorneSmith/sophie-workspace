@@ -13,7 +13,7 @@ import matter from 'gray-matter';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-import { getPayloadClient } from '../utils/payload-client.js';
+import { getEnhancedPayloadClient } from '../utils/enhanced-payload-client.js';
 
 // Load environment variables
 dotenv.config({ path: path.resolve(process.cwd(), '.env.development') });
@@ -26,33 +26,46 @@ const __dirname = path.dirname(__filename);
  * Get the course ID from the database
  */
 async function getCourseId() {
-  // Create a Supabase client
-  const supabaseUrl = process.env.LOCAL_SUPABASE_URL;
-  const supabaseKey = process.env.LOCAL_SUPABASE_ANON_KEY;
+  try {
+    // Get the Payload client
+    const payload = await getEnhancedPayloadClient();
 
-  if (!supabaseUrl || !supabaseKey) {
-    throw new Error('Supabase URL or key not found in environment variables');
-  }
+    // Find the course by slug
+    const { docs } = await payload.find({
+      collection: 'courses',
+      query: {
+        slug: 'decks-for-decision-makers',
+      },
+    });
 
-  const supabase = createClient(supabaseUrl, supabaseKey);
+    if (docs.length === 0) {
+      console.log('Course not found, creating it...');
 
-  // Get the course ID
-  const { data, error } = await supabase
-    .from('payload.courses')
-    .select('id')
-    .eq('slug', 'decks-for-decision-makers')
-    .single();
+      // Create the course if it doesn't exist
+      const course = await payload.create({
+        collection: 'courses',
+        data: {
+          title: 'Decks for Decision Makers',
+          slug: 'decks-for-decision-makers',
+          description:
+            'Learn how to create effective presentations for decision makers',
+          status: 'published',
+          showProgressBar: true,
+          estimatedDuration: 240, // 4 hours
+          publishedAt: new Date().toISOString(),
+        },
+      });
 
-  if (error) {
-    console.error('Error getting course ID:', error);
+      console.log('Course created with ID:', course.id);
+      return course.id;
+    }
+
+    console.log('Course found with ID:', docs[0].id);
+    return docs[0].id;
+  } catch (error) {
+    console.error('Error getting or creating course:', error);
     throw error;
   }
-
-  if (!data) {
-    throw new Error('Course not found');
-  }
-
-  return data.id;
 }
 
 /**
@@ -60,7 +73,7 @@ async function getCourseId() {
  */
 async function migrateCourseLessonsToPayload() {
   // Get the Payload client
-  const payload = await getPayloadClient();
+  const payload = await getEnhancedPayloadClient();
 
   // Get the course ID from the database
   console.log('Getting course ID from database...');

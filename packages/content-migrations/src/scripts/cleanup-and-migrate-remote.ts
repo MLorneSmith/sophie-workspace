@@ -1,177 +1,220 @@
 /**
- * Script to clean up all documentation in the remote database and then migrate all documents from local to remote
+ * Script to clean up and migrate collections from local to remote Supabase database
  */
+import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+import { migrateCollectionLocalToRemote } from '../utils/migrate-collection-local-to-remote.js';
 import { getPayloadClient } from '../utils/payload-client.js';
+import { validateMultipleCollectionSchemas } from '../utils/validate-schema.js';
+
+// Get the current file's directory
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load environment variables based on the NODE_ENV
+const envFile = '.env.production'; // Always use production for remote operations
+
+console.log(`Loading environment variables from ${envFile}`);
+dotenv.config({ path: path.resolve(__dirname, `../../${envFile}`) });
+
+// Define collections to clean up and migrate
+const COLLECTIONS_TO_MIGRATE = [
+  {
+    name: 'documentation',
+    options: {
+      matchField: 'slug',
+      updateExisting: true,
+    },
+  },
+  {
+    name: 'posts',
+    options: {
+      matchField: 'slug',
+      updateExisting: true,
+    },
+  },
+  {
+    name: 'courses',
+    options: {
+      matchField: 'slug',
+      updateExisting: true,
+    },
+  },
+  {
+    name: 'course_lessons',
+    options: {
+      matchField: 'slug',
+      updateExisting: true,
+    },
+  },
+  {
+    name: 'course_quizzes',
+    options: {
+      matchField: 'title',
+      updateExisting: true,
+    },
+  },
+  {
+    name: 'quiz_questions',
+    options: {
+      matchField: 'id',
+      updateExisting: true,
+    },
+  },
+  // {
+  //   name: 'quiz_questions_options',
+  //   options: {
+  //     matchField: 'id',
+  //     updateExisting: true,
+  //   },
+  // },
+  {
+    name: 'media',
+    options: {
+      matchField: 'filename',
+      updateExisting: true,
+    },
+  },
+];
 
 /**
- * Cleans up all documentation in the remote database
+ * Cleans up existing data in remote Payload CMS collections
  */
-async function cleanupAllRemoteDocumentation() {
-  console.log('Starting cleanup of all remote documentation...');
+async function cleanupRemoteCollections() {
+  console.log('Starting remote collection cleanup...');
 
   try {
-    // Connect to remote database
-    console.log('Connecting to remote Supabase database...');
-    const remoteClient = await getPayloadClient('production');
+    // Get the remote Payload client
+    const payload = await getPayloadClient('production');
 
-    // Get all documentation from remote
-    const { docs } = await remoteClient.find({
-      collection: 'documentation',
-      limit: 1000, // Set a high limit to ensure we get all documents
-    });
+    // Validate that all collections exist
+    const collectionNames = COLLECTIONS_TO_MIGRATE.map(
+      (collection) => collection.name,
+    );
+    const validationResult =
+      await validateMultipleCollectionSchemas(collectionNames);
 
-    console.log(`Found ${docs.length} documents in remote database to delete.`);
-
-    // Delete all documents
-    for (const doc of docs) {
-      console.log(
-        `Deleting document: ${doc.title} (ID: ${doc.id}, Slug: ${doc.slug})`,
-      );
-      await remoteClient.delete({
-        collection: 'documentation',
-        id: doc.id,
-      });
+    if (!validationResult) {
+      console.error('Schema validation failed. Aborting cleanup.');
+      process.exit(1);
     }
 
-    console.log('Cleanup complete!');
-    return true;
-  } catch (error) {
-    console.error('Cleanup failed:', error);
-    return false;
-  }
-}
-
-/**
- * Migrates all documentation from local to remote database
- */
-async function migrateAllDocsToRemote() {
-  console.log(
-    'Starting migration of all documentation from local to remote...',
-  );
-
-  try {
-    // Connect to local and remote databases
-    console.log('Connecting to local Supabase database...');
-    const localClient = await getPayloadClient('development');
-
-    console.log('Connecting to remote Supabase database...');
-    const remoteClient = await getPayloadClient('production');
-
-    // Get all documents from local database
-    console.log('Authenticating with local database...');
-    const { docs: localDocs } = await localClient.find({
-      collection: 'documentation',
-      limit: 1000,
-    });
-
-    // Log the raw response for debugging
-    console.log('Local database response:', JSON.stringify(localDocs, null, 2));
-
-    console.log(
-      `Found ${localDocs.length} documents in local database to migrate.`,
-    );
-
-    // Migrate each document
-    for (const localDoc of localDocs) {
-      // Remove ID as it will be auto-generated
-      const { id, ...dataWithoutId } = localDoc;
+    // Clean up each collection
+    for (const collection of COLLECTIONS_TO_MIGRATE) {
+      console.log(`Cleaning up remote collection: ${collection.name}`);
 
       try {
-        // Create document in remote database
-        const result = await remoteClient.create({
-          collection: 'documentation',
-          data: dataWithoutId,
+        // Get all documents in the collection
+        const { docs } = await payload.find({
+          collection: collection.name,
+          limit: 1000, // Use a high limit to ensure we get all documents
         });
 
+        console.log(`Found ${docs.length} documents in ${collection.name}`);
+
+        // Delete each document
+        for (const doc of docs) {
+          await payload.delete({
+            collection: collection.name,
+            id: doc.id,
+          });
+          console.log(
+            `Deleted document with ID ${doc.id} from ${collection.name}`,
+          );
+        }
+
         console.log(
-          `Created document in remote: ${localDoc.title} (Slug: ${localDoc.slug})`,
+          `Successfully cleaned up remote collection: ${collection.name}`,
         );
       } catch (error) {
-        console.error(`Failed to migrate document ${localDoc.title}:`, error);
+        console.error(
+          `Error cleaning up remote collection ${collection.name}:`,
+          error,
+        );
       }
     }
 
-    console.log('Migration complete!');
-    return true;
+    console.log('Remote collection cleanup complete!');
   } catch (error) {
-    console.error('Migration failed:', error);
-    return false;
+    console.error('Remote cleanup failed:', error);
+    process.exit(1);
   }
 }
 
 /**
- * Verifies that all documents were properly migrated
+ * Migrates collections from local to remote Supabase database
  */
-async function verifyMigration() {
-  console.log('Verifying migration...');
+async function migrateCollectionsLocalToRemote() {
+  console.log(
+    'Starting collections migration from local to remote Supabase database...',
+  );
 
   try {
-    // Connect to local and remote databases
+    // Get local client (using development environment)
+    console.log('Connecting to local Supabase database...');
     const localClient = await getPayloadClient('development');
+
+    // Get remote client (using production environment)
+    console.log('Connecting to remote Supabase database...');
     const remoteClient = await getPayloadClient('production');
 
-    // Get all documents from both databases
-    const { docs: localDocs } = await localClient.find({
-      collection: 'documentation',
-      limit: 1000,
-    });
+    // Migrate each collection
+    for (const collection of COLLECTIONS_TO_MIGRATE) {
+      console.log(`\n--- Migrating collection: ${collection.name} ---`);
 
-    const { docs: remoteDocs } = await remoteClient.find({
-      collection: 'documentation',
-      limit: 1000,
-    });
+      const result = await migrateCollectionLocalToRemote(
+        localClient,
+        remoteClient,
+        {
+          collection: collection.name,
+          ...collection.options,
+        },
+      );
 
-    // Check if all local documents exist in remote
-    const localSlugs = new Set(localDocs.map((doc) => doc.slug));
-    const remoteSlugs = new Set(remoteDocs.map((doc) => doc.slug));
-
-    const missing = [...localSlugs].filter((slug) => !remoteSlugs.has(slug));
-    const extra = [...remoteSlugs].filter((slug) => !localSlugs.has(slug));
-
-    if (missing.length === 0 && extra.length === 0) {
-      console.log('✅ Migration successful! All documents properly migrated.');
-      return true;
-    } else {
-      console.log('❌ Migration incomplete:');
-      if (missing.length > 0)
-        console.log(`Missing documents: ${missing.join(', ')}`);
-      if (extra.length > 0) console.log(`Extra documents: ${extra.join(', ')}`);
-      return false;
+      if (result.success) {
+        console.log(
+          `Successfully migrated collection '${collection.name}' from local to remote.`,
+        );
+        if (result.details) {
+          console.log(
+            `Results: ${result.details.created} created, ${result.details.updated} updated, ${result.details.skipped} skipped, ${result.details.failed} failed`,
+          );
+        }
+      } else {
+        console.error(
+          `Failed to migrate collection '${collection.name}' from local to remote:`,
+          result.error,
+        );
+      }
     }
+
+    console.log(
+      '\nAll collections migration from local to remote Supabase database complete!',
+    );
   } catch (error) {
-    console.error('Verification failed:', error);
-    return false;
+    console.error('Migration failed:', error);
+    process.exit(1);
   }
 }
 
 /**
- * Main function to run the entire process
+ * Main function to run the cleanup and migration process
  */
 async function cleanupAndMigrateRemote() {
-  console.log('Starting cleanup and migration process...');
+  try {
+    // First, clean up the remote collections
+    await cleanupRemoteCollections();
 
-  // Step 1: Clean up remote database
-  const cleanupSuccess = await cleanupAllRemoteDocumentation();
-  if (!cleanupSuccess) {
-    console.error('Cleanup failed, aborting migration.');
+    // Then, migrate the collections from local to remote
+    await migrateCollectionsLocalToRemote();
+
+    console.log('Cleanup and migration process completed successfully!');
+  } catch (error) {
+    console.error('Cleanup and migration process failed:', error);
     process.exit(1);
   }
-
-  // Step 2: Migrate all documents from local to remote
-  const migrationSuccess = await migrateAllDocsToRemote();
-  if (!migrationSuccess) {
-    console.error('Migration failed.');
-    process.exit(1);
-  }
-
-  // Step 3: Verify migration
-  const verificationSuccess = await verifyMigration();
-  if (!verificationSuccess) {
-    console.error('Verification failed, migration may be incomplete.');
-    process.exit(1);
-  }
-
-  console.log('Cleanup and migration process completed successfully!');
 }
 
 // Run the cleanup and migration process
