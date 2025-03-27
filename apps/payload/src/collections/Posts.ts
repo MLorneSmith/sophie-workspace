@@ -3,6 +3,7 @@ import { BlocksFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
 
 import CallToAction from '../blocks/CallToAction'
 import TestBlock from '../blocks/TestBlock'
+import BunnyVideo from '../blocks/BunnyVideo'
 
 export const Posts: CollectionConfig = {
   slug: 'posts',
@@ -61,7 +62,7 @@ export const Posts: CollectionConfig = {
         features: ({ defaultFeatures }) => [
           ...defaultFeatures,
           BlocksFeature({
-            blocks: [CallToAction, TestBlock],
+            blocks: [CallToAction, TestBlock, BunnyVideo],
           }),
         ],
       }),

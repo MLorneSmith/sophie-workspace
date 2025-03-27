@@ -1,5 +1,6 @@
 import { CollectionConfig } from 'payload'
-import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { BlocksFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
+import BunnyVideo from '../blocks/BunnyVideo'
 
 export const CourseLessons: CollectionConfig = {
   slug: 'course_lessons',
@@ -42,7 +43,14 @@ export const CourseLessons: CollectionConfig = {
     {
       name: 'content',
       type: 'richText',
-      editor: lexicalEditor({}),
+      editor: lexicalEditor({
+        features: ({ defaultFeatures }) => [
+          ...defaultFeatures,
+          BlocksFeature({
+            blocks: [BunnyVideo],
+          }),
+        ],
+      }),
     },
     {
       name: 'lessonNumber',

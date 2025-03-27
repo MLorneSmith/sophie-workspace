@@ -121,6 +121,93 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
                 );
               }
 
+              // Check for Bunny Video block
+              if (
+                node.type === 'bunny-video' ||
+                (node.fields && node.fields.blockType === 'bunny-video') ||
+                node.blockType === 'bunny-video'
+              ) {
+                console.log('Found Bunny Video block:', node);
+
+                // Try to extract the HTML content from various locations
+                let htmlContent = findHtmlContent(node);
+
+                if (htmlContent) {
+                  console.log(
+                    'Using HTML content for Bunny Video:',
+                    htmlContent.substring(0, 100) + '...',
+                  );
+                  return (
+                    <div
+                      key={i}
+                      dangerouslySetInnerHTML={{ __html: htmlContent }}
+                    />
+                  );
+                }
+
+                // Extract video data with defaults
+                const videoId = node.videoId || node.fields?.videoId || '';
+                const libraryId =
+                  node.libraryId || node.fields?.libraryId || '1234';
+                const title = node.title || node.fields?.title || 'Video';
+                const aspectRatio =
+                  node.aspectRatio || node.fields?.aspectRatio || '16:9';
+
+                // Calculate padding based on aspect ratio
+                const getPaddingBottom = () => {
+                  if (aspectRatio === '16:9') return '56.25%'; // 9/16 = 0.5625 = 56.25%
+                  if (aspectRatio === '4:3') return '75%'; // 3/4 = 0.75 = 75%
+                  if (aspectRatio === '1:1') return '100%'; // Square
+                  return '56.25%'; // Default to 16:9
+                };
+
+                // If no videoId is provided, show a placeholder
+                if (!videoId) {
+                  return (
+                    <div
+                      key={i}
+                      className="my-6 rounded-md border border-gray-200 bg-gray-50 p-4"
+                    >
+                      <h3 className="text-lg font-bold text-gray-700">
+                        {title}
+                      </h3>
+                      <div className="flex items-center justify-center rounded bg-gray-100 p-8">
+                        <p className="text-gray-500">
+                          Bunny.net Video (ID not provided)
+                        </p>
+                      </div>
+                    </div>
+                  );
+                }
+
+                // Render the Bunny.net video player
+                return (
+                  <div key={i} className="my-6">
+                    <h3 className="mb-2 text-lg font-bold">{title}</h3>
+                    <div
+                      className="relative"
+                      style={{ paddingBottom: getPaddingBottom() }}
+                    >
+                      <iframe
+                        src={`https://iframe.mediadelivery.net/embed/${libraryId}/${videoId}`}
+                        loading="lazy"
+                        style={{
+                          border: 'none',
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          height: '100%',
+                          width: '100%',
+                        }}
+                        allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
+                        allowFullScreen={true}
+                        title={title}
+                      />
+                    </div>
+                  </div>
+                );
+              }
+
               // Handle standard node types
               if (node.type === 'paragraph') {
                 // Check if node.children exists and is an array
@@ -253,6 +340,74 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
                           node.fields.content ||
                           'Test block content'}
                       </p>
+                    </div>
+                  );
+                }
+
+                // Check for Bunny Video block in fields
+                if (node.fields && node.fields.blockType === 'bunny-video') {
+                  console.log(
+                    'Found Bunny Video block in fields:',
+                    node.fields,
+                  );
+
+                  // Extract video data with defaults
+                  const videoId = node.fields.videoId || '';
+                  const libraryId = node.fields.libraryId || '1234';
+                  const title = node.fields.title || 'Video';
+                  const aspectRatio = node.fields.aspectRatio || '16:9';
+
+                  // Calculate padding based on aspect ratio
+                  const getPaddingBottom = () => {
+                    if (aspectRatio === '16:9') return '56.25%'; // 9/16 = 0.5625 = 56.25%
+                    if (aspectRatio === '4:3') return '75%'; // 3/4 = 0.75 = 75%
+                    if (aspectRatio === '1:1') return '100%'; // Square
+                    return '56.25%'; // Default to 16:9
+                  };
+
+                  // If no videoId is provided, show a placeholder
+                  if (!videoId) {
+                    return (
+                      <div
+                        key={i}
+                        className="my-6 rounded-md border border-gray-200 bg-gray-50 p-4"
+                      >
+                        <h3 className="text-lg font-bold text-gray-700">
+                          {title}
+                        </h3>
+                        <div className="flex items-center justify-center rounded bg-gray-100 p-8">
+                          <p className="text-gray-500">
+                            Bunny.net Video (ID not provided)
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  // Render the Bunny.net video player
+                  return (
+                    <div key={i} className="my-6">
+                      <h3 className="mb-2 text-lg font-bold">{title}</h3>
+                      <div
+                        className="relative"
+                        style={{ paddingBottom: getPaddingBottom() }}
+                      >
+                        <iframe
+                          src={`https://iframe.mediadelivery.net/embed/${libraryId}/${videoId}`}
+                          loading="lazy"
+                          style={{
+                            border: 'none',
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            height: '100%',
+                            width: '100%',
+                          }}
+                          allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
+                          allowFullScreen={true}
+                          title={title}
+                        />
+                      </div>
                     </div>
                   );
                 }

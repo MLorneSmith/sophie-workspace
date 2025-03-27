@@ -9,8 +9,10 @@ Custom components should be organized in the following structure:
 ```
 apps/payload/src/blocks/
   ├── YourCustomComponent/
-  │   ├── index.ts           # Block configuration
-  │   └── Component.tsx      # React component implementation
+  │   ├── config.ts          # Block configuration
+  │   ├── index.ts           # Export file
+  │   ├── Component.tsx      # React component for rendering in the frontend
+  │   └── Field.tsx          # React component for the input card in the editor
 ```
 
 ## Step 1: Create the Component Directory
@@ -28,178 +30,175 @@ Create a file named `Component.tsx` in your component directory with the followi
 ```tsx
 'use client';
 
-import React, { useEffect } from 'react';
+import React from 'react';
 
-// Define the type for your component props
+import { Card, CardContent, CardHeader, CardTitle } from '@kit/ui/card';
+
+// Define the type for the component props
 type YourComponentProps = {
-  blockType: string;
-  blockName?: string;
-  // Add your custom fields here
-  title?: string;
-  description?: string;
-  // Add these properties for HTML serialization
-  htmlContent?: string;
-  data?: Record<string, any>;
-  html?: string;
-  toHTML?: () => string;
+  text?: string;
+  [key: string]: any;
 };
 
-// Function to generate HTML content
-function generateHtmlContent(props: YourComponentProps): string {
-  const {
-    title = 'Default Title',
-    description = 'Default description text',
-    // Add default values for your other props
-  } = props || {};
+// Define our own component props type
+type ComponentProps = {
+  data?: YourComponentProps;
+  [key: string]: any;
+};
 
-  // Return an HTML string representation of your component
-  return `
-    <div class="my-6 p-6 bg-gray-100 rounded-lg">
-      <h3 class="text-xl font-bold mb-2">${title}</h3>
-      <p class="text-gray-700">${description}</p>
-      <!-- Add your custom HTML here -->
-    </div>
-  `;
-}
+// The component receives props from Lexical
+const Component: React.FC<ComponentProps> = (props) => {
+  // Destructure the important properties from props
+  const { data } = props;
 
-export const Component: React.FC<{ data: YourComponentProps }> = ({ data }) => {
-  const {
-    title = 'Default Title',
-    description = 'Default description text',
-    // Add default values for your other props
-  } = data || {};
+  // Extract data with defaults if missing
+  const { text = 'Default Text' } = data || {};
 
-  // Generate HTML content
-  const htmlContent = generateHtmlContent(data);
-
-  // Store the HTML content directly in the node data for serialization
-  useEffect(() => {
-    if (data) {
-      // Store HTML content in multiple locations for better compatibility
-      data.htmlContent = htmlContent;
-      data.html = htmlContent;
-
-      // Also store it in data.data for better compatibility
-      if (!data.data) {
-        data.data = {};
-      }
-      data.data.htmlContent = htmlContent;
-      data.data.html = htmlContent;
-
-      // Add a toHTML method to the data object
-      if (typeof data.toHTML !== 'function') {
-        data.toHTML = () => htmlContent;
-      }
-
-      // Log for debugging
-      console.log('Stored HTML content in data:', {
-        htmlContent: data.htmlContent?.substring(0, 50) + '...',
-        dataHtmlContent: data.data?.htmlContent?.substring(0, 50) + '...',
-      });
-    }
-  }, [data, htmlContent]);
-
-  // Return the React component for rendering in the admin UI
+  // Render the component
   return (
-    <div className="my-6 rounded-lg bg-gray-100 p-6">
-      <h3 className="mb-2 text-xl font-bold">{title}</h3>
-      <p className="text-gray-700">{description}</p>
-      {/* Add your custom JSX here */}
-
-      {/* Hidden div with HTML content for serialization */}
-      <div
-        style={{ display: 'none' }}
-        dangerouslySetInnerHTML={{ __html: htmlContent }}
-      />
-    </div>
+    <Card className="my-6 bg-blue-100">
+      <CardHeader>
+        <CardTitle className="mb-2">Your Component</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <p className="text-muted-foreground">{text}</p>
+      </CardContent>
+    </Card>
   );
 };
 
 export default Component;
 ```
 
-## Step 3: Create the Block Configuration
+## Step 3: Create the Field Component
 
-Create a file named `index.ts` in your component directory with the following structure:
+Create a file named `Field.tsx` in your component directory with the following structure:
+
+```tsx
+'use client';
+
+import React from 'react';
+
+import { Card, CardContent, CardHeader, CardTitle } from '@kit/ui/card';
+import { Input } from '@kit/ui/input';
+import { Label } from '@kit/ui/label';
+
+// Define the type for the field props
+type FieldProps = {
+  path: string;
+  name: string;
+  label?: string;
+  value?: any;
+  onChange?: (value: any) => void;
+  [key: string]: any;
+};
+
+/**
+ * This component is used for the input card in the Lexical editor
+ */
+const Field: React.FC<FieldProps> = (props) => {
+  const { path, value = {}, onChange } = props;
+
+  // Handle field changes
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (onChange) {
+      onChange(e.target.value);
+    }
+  };
+
+  return (
+    <Card className="mb-4 p-4">
+      <CardHeader>
+        <CardTitle>Your Component</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="space-y-2">
+          <Label>Text</Label>
+          <Input value={value || 'Default Text'} onChange={handleChange} />
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+export default Field;
+```
+
+## Step 4: Create the Block Configuration
+
+Create a file named `config.ts` in your component directory with the following structure:
 
 ```ts
-import { Block } from 'payload';
+import { Block } from 'payload/types';
 
-const YourCustomComponent: Block = {
+import Component from './Component';
+import Field from './Field';
+
+export const YourCustomComponent: Block = {
   slug: 'your-custom-component', // Unique identifier for the block
   labels: {
     singular: 'Your Custom Component',
     plural: 'Your Custom Components',
   },
-  // Optional image alt text for the block
-  imageAltText: 'Your Custom Component',
   // Define the fields for your component
   fields: [
     {
-      name: 'title',
+      name: 'text',
       type: 'text',
-      defaultValue: 'Default Title',
-      required: true,
-    },
-    {
-      name: 'description',
-      type: 'text',
-      defaultValue: 'Default description text',
+      defaultValue: 'Default Text',
       required: true,
     },
     // Add more fields as needed
   ],
+  // Register the components
   admin: {
     components: {
-      // Reference the component file
-      Block: './Component',
+      Field, // Input card in the editor
     },
   },
 };
+```
+
+## Step 5: Create the Index File
+
+Create a file named `index.ts` in your component directory to export the block configuration:
+
+```ts
+import { YourCustomComponent } from './config';
 
 export default YourCustomComponent;
 ```
 
-## Step 4: Register the Block in the Posts Collection
+## Step 6: Register the Block in the Payload Config
 
-Open `apps/payload/src/collections/Posts.ts` and add your custom component to the `BlocksFeature`:
+Open `apps/payload/src/payload.config.ts` and add your custom component to the `BlocksFeature`:
 
 ```ts
 import { BlocksFeature, lexicalEditor } from '@payloadcms/richtext-lexical';
-import { CollectionConfig } from 'payload';
+import { buildConfig } from 'payload';
 
-import CallToAction from '../blocks/CallToAction';
-import TestBlock from '../blocks/TestBlock';
-import YourCustomComponent from '../blocks/YourCustomComponent';
+import CallToAction from './blocks/CallToAction';
+import TestBlock from './blocks/TestBlock';
+import YourCustomComponent from './blocks/YourCustomComponent';
 
-export const Posts: CollectionConfig = {
+export default buildConfig({
   // ...existing configuration
-  fields: [
-    // ...existing fields
-    {
-      name: 'content',
-      type: 'richText',
-      required: true,
-      editor: lexicalEditor({
-        features: ({ defaultFeatures }) => [
-          ...defaultFeatures,
-          BlocksFeature({
-            blocks: [CallToAction, TestBlock, YourCustomComponent], // Add your component here
-          }),
-        ],
+  editor: lexicalEditor({
+    // Global editor configuration with custom blocks
+    features: ({ defaultFeatures }) => [
+      ...defaultFeatures,
+      BlocksFeature({
+        blocks: [CallToAction, TestBlock, YourCustomComponent], // Add your component here
       }),
-      admin: {
-        description: 'The main content of the blog post',
-      },
-    },
-    // ...other fields
-  ],
-};
+    ],
+  }),
+  // ...other configuration
+});
 ```
 
-## Step 5: Update the Content Renderer (if needed)
+## Step 7: Update the Content Renderer
 
-If your component has a unique structure or requires special handling, you may need to update the content renderer in `packages/cms/payload/src/content-renderer.tsx`. Add a new condition to handle your custom component:
+The content renderer in `packages/cms/payload/src/content-renderer.tsx` needs to handle your custom component. Add a condition to handle your component type:
 
 ```tsx
 // Check for Your Custom Component
@@ -213,24 +212,6 @@ if (
   // Try to extract the HTML content from various locations
   let htmlContent = findHtmlContent(node);
 
-  // If no HTML content was found, try to generate it
-  if (!htmlContent) {
-    console.log('No HTML content found, generating from data');
-    const {
-      title = 'Default Title',
-      description = 'Default description text',
-      // Add default values for your other props
-    } = node.data || node.fields || node;
-
-    htmlContent = `
-      <div class="my-6 p-6 bg-gray-100 rounded-lg">
-        <h3 class="text-xl font-bold mb-2">${title}</h3>
-        <p class="text-gray-700">${description}</p>
-        <!-- Add your custom HTML here -->
-      </div>
-    `;
-  }
-
   if (htmlContent) {
     console.log(
       'Using HTML content for Your Custom Component:',
@@ -242,21 +223,74 @@ if (
         dangerouslySetInnerHTML={{ __html: htmlContent }}
       />
     );
-  } else {
-    console.log('Failed to generate HTML content for Your Custom Component');
+  }
+
+  // Fallback rendering for Your Custom Component
+  return (
+    <div
+      key={i}
+      className="my-6 rounded-md border border-blue-100 bg-blue-50 p-4"
+    >
+      <h3 className="text-lg font-bold text-blue-700">
+        Your Custom Component
+      </h3>
+      <p className="mt-2 text-blue-600">
+        {node.text || node.content || 'Custom component content'}
+      </p>
+    </div>
+  );
+}
+```
+
+Also, make sure the content renderer can handle 'block' type nodes:
+
+```tsx
+// Handle block type nodes
+if (node.type === 'block') {
+  console.log('Found block type node:', node);
+
+  // Check for Your Custom Component in fields
+  if (node.fields && node.fields.blockType === 'your-custom-component') {
+    console.log('Found Your Custom Component in fields:', node.fields);
+
+    return (
+      <div
+        key={i}
+        className="my-6 rounded-md border border-blue-100 bg-blue-50 p-4"
+      >
+        <h3 className="text-lg font-bold text-blue-700">
+          {node.fields.headline || 'Your Custom Component'}
+        </h3>
+        <p className="mt-2 text-blue-600">
+          {node.fields.text || node.fields.content || 'Custom component content'}
+        </p>
+      </div>
+    );
   }
 }
 ```
+
+## Step 8: Generate the ImportMap
+
+After adding your custom component, you need to regenerate the importMap:
+
+```bash
+cd apps/payload
+npx payload generate:importmap
+```
+
+This will automatically register your component in the importMap.
 
 ## Best Practices
 
 1. **Consistent Naming**: Use consistent naming conventions for your components and files.
 2. **Type Safety**: Define proper TypeScript interfaces for your component props.
 3. **Default Values**: Always provide default values for your props to handle cases where data might be missing.
-4. **HTML Serialization**: Implement the `generateHtmlContent` function to ensure your component can be properly serialized to HTML.
+4. **Separation of Concerns**: Keep the Field component (editor UI) separate from the Component (frontend rendering).
 5. **Debugging**: Add console logs to help debug issues with your component.
 6. **Reusability**: Design your components to be reusable and configurable through the admin UI.
 7. **Styling**: Use Tailwind CSS classes for styling to maintain consistency with the rest of the application.
+8. **Error Handling**: Add robust error handling in the content renderer to prevent crashes.
 
 ## Example: Call To Action Component
 
@@ -267,150 +301,65 @@ Here's an example of a Call To Action component that follows these best practice
 ```tsx
 'use client';
 
-import React, { useEffect } from 'react';
+import React from 'react';
 
+import { Card, CardContent, CardHeader, CardTitle } from '@kit/ui/card';
+
+// Define the type for the component props
 type CallToActionProps = {
-  blockType: string;
-  blockName?: string;
   headline?: string;
   subheadline?: string;
   leftButtonLabel?: string;
   leftButtonUrl?: string;
   rightButtonLabel?: string;
   rightButtonUrl?: string;
-  htmlContent?: string;
-  data?: Record<string, any>;
-  html?: string;
-  toHTML?: () => string;
+  [key: string]: any;
 };
 
-function generateHtmlContent(props: CallToActionProps): string {
+// Define our own component props type
+type ComponentProps = {
+  data?: CallToActionProps;
+  [key: string]: any;
+};
+
+// The component receives props from Lexical
+const Component: React.FC<ComponentProps> = (props) => {
+  // Destructure the important properties from props
+  const { data } = props;
+
+  // Extract data with defaults if missing
   const {
     headline = 'FREE Course Trial',
-    subheadline = 'Start improving your presentations skills immediately with our free trail of the Decks for Decision Makers course.',
-    leftButtonLabel = 'Individuals',
-    leftButtonUrl = '/free-trial/individual',
-    rightButtonLabel = 'Teams',
-    rightButtonUrl = '/free-trial/teams',
-  } = props || {};
-
-  return `
-    <div class="my-6 p-6 bg-gray-100 rounded-lg flex flex-col md:flex-row justify-between items-center gap-6">
-      <div class="flex-1">
-        <h3 class="text-xl font-bold mb-2">${headline}</h3>
-        <p class="text-gray-700">${subheadline}</p>
-      </div>
-      <div class="flex flex-col sm:flex-row gap-4">
-        <div class="relative">
-          <img
-            src="/images/doodle.png"
-            alt="Doodle"
-            class="absolute -left-10 top-1/2 -translate-y-1/2 w-8 h-auto transform -rotate-90"
-          />
-          <a
-            href="${leftButtonUrl}"
-            class="inline-flex items-center justify-center whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium bg-blue-600 text-white hover:bg-blue-700"
-          >
-            ${leftButtonLabel}
-          </a>
-        </div>
-        <div class="relative">
-          <a
-            href="${rightButtonUrl}"
-            class="inline-flex items-center justify-center whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium border border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
-          >
-            ${rightButtonLabel}
-          </a>
-          <img
-            src="/images/doodle.png"
-            alt="Doodle"
-            class="absolute -right-10 top-1/2 -translate-y-1/2 w-8 h-auto transform rotate-90"
-          />
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-export const Component: React.FC<{ data: CallToActionProps }> = ({ data }) => {
-  const {
-    headline = 'FREE Course Trial',
-    subheadline = 'Start improving your presentations skills immediately with our free trail of the Decks for Decision Makers course.',
+    subheadline = 'Start improving your presentations skills immediately with our free trial of the Decks for Decision Makers course.',
     leftButtonLabel = 'Individuals',
     leftButtonUrl = '/free-trial/individual',
     rightButtonLabel = 'Teams',
     rightButtonUrl = '/free-trial/teams',
   } = data || {};
 
-  const htmlContent = generateHtmlContent(data);
-
-  useEffect(() => {
-    if (data) {
-      data.htmlContent = htmlContent;
-      data.html = htmlContent;
-
-      if (!data.data) {
-        data.data = {};
-      }
-      data.data.htmlContent = htmlContent;
-      data.data.html = htmlContent;
-
-      if (typeof data.toHTML !== 'function') {
-        data.toHTML = () => htmlContent;
-      }
-
-      console.log('Stored HTML content in data:', {
-        htmlContent: data.htmlContent?.substring(0, 50) + '...',
-        dataHtmlContent: data.data?.htmlContent?.substring(0, 50) + '...',
-      });
-    }
-  }, [data, htmlContent]);
-
+  // Render the component
   return (
-    <div className="my-6 flex flex-col items-center justify-between gap-6 rounded-lg bg-gray-100 p-6 md:flex-row">
-      <div className="flex-1">
-        <h3 className="mb-2 text-xl font-bold">{headline}</h3>
-        <p className="text-gray-700">{subheadline}</p>
-      </div>
-
-      <div className="flex flex-col gap-4 sm:flex-row">
-        <div className="relative">
-          <div className="absolute -left-10 top-1/2 -translate-y-1/2">
-            <img
-              src="/images/doodle.png"
-              alt="Doodle"
-              className="h-auto w-8 -rotate-90 transform"
-            />
-          </div>
+    <div className="my-6 rounded-md border border-blue-200 bg-blue-50 p-4">
+      <h3 className="text-lg font-bold text-blue-700">{headline}</h3>
+      <p className="mt-2 text-blue-600">{subheadline}</p>
+      <div className="mt-4 flex flex-wrap gap-4">
+        {leftButtonLabel && (
           <a
-            href={leftButtonUrl}
-            className="inline-flex items-center justify-center whitespace-nowrap rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+            href={leftButtonUrl || '#'}
+            className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
           >
             {leftButtonLabel}
           </a>
-        </div>
-
-        <div className="relative">
+        )}
+        {rightButtonLabel && (
           <a
-            href={rightButtonUrl}
-            className="inline-flex items-center justify-center whitespace-nowrap rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            href={rightButtonUrl || '#'}
+            className="rounded border border-blue-500 bg-white px-4 py-2 text-blue-500 hover:bg-blue-50"
           >
             {rightButtonLabel}
           </a>
-          <div className="absolute -right-10 top-1/2 -translate-y-1/2">
-            <img
-              src="/images/doodle.png"
-              alt="Doodle"
-              className="h-auto w-8 rotate-90 transform"
-            />
-          </div>
-        </div>
+        )}
       </div>
-
-      <div
-        style={{ display: 'none' }}
-        dangerouslySetInnerHTML={{ __html: htmlContent }}
-      />
     </div>
   );
 };
@@ -418,18 +367,116 @@ export const Component: React.FC<{ data: CallToActionProps }> = ({ data }) => {
 export default Component;
 ```
 
-### index.ts
+### Field.tsx
+
+```tsx
+'use client';
+
+import React from 'react';
+
+import { Card, CardContent, CardHeader, CardTitle } from '@kit/ui/card';
+import { Input } from '@kit/ui/input';
+import { Label } from '@kit/ui/label';
+
+// Define the type for the field props
+type FieldProps = {
+  path: string;
+  name: string;
+  label?: string;
+  value?: any;
+  onChange?: (value: any) => void;
+  [key: string]: any;
+};
+
+/**
+ * This component is used for the input card in the Lexical editor
+ */
+const Field: React.FC<FieldProps> = (props) => {
+  const { path, value = {}, onChange } = props;
+
+  // Handle field changes
+  const handleChange = (field: string, val: string) => {
+    if (onChange) {
+      onChange({
+        ...value,
+        [field]: val,
+      });
+    }
+  };
+
+  return (
+    <Card className="mb-4 p-4">
+      <CardHeader>
+        <CardTitle>Call To Action</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="space-y-2">
+          <Label>Headline</Label>
+          <Input
+            value={value?.headline || 'FREE Course Trial'}
+            onChange={(e) => handleChange('headline', e.target.value)}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label>Subheadline</Label>
+          <Input
+            value={
+              value?.subheadline ||
+              'Start improving your presentations skills...'
+            }
+            onChange={(e) => handleChange('subheadline', e.target.value)}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label>Left Button Label</Label>
+          <Input
+            value={value?.leftButtonLabel || 'Individuals'}
+            onChange={(e) => handleChange('leftButtonLabel', e.target.value)}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label>Left Button URL</Label>
+          <Input
+            value={value?.leftButtonUrl || '/free-trial/individual'}
+            onChange={(e) => handleChange('leftButtonUrl', e.target.value)}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label>Right Button Label</Label>
+          <Input
+            value={value?.rightButtonLabel || 'Teams'}
+            onChange={(e) => handleChange('rightButtonLabel', e.target.value)}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label>Right Button URL</Label>
+          <Input
+            value={value?.rightButtonUrl || '/free-trial/teams'}
+            onChange={(e) => handleChange('rightButtonUrl', e.target.value)}
+          />
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+export default Field;
+```
+
+### config.ts
 
 ```ts
-import { Block } from 'payload';
+import { Block } from 'payload/types';
 
-const CallToAction: Block = {
-  slug: 'custom-call-to-action',
+import Component from './Component';
+import Field from './Field';
+
+export const CallToAction: Block = {
+  slug: 'call-to-action',
   labels: {
     singular: 'Call To Action',
     plural: 'Call To Actions',
   },
-  imageAltText: 'Call To Action component',
   fields: [
     {
       name: 'headline',
@@ -441,7 +488,7 @@ const CallToAction: Block = {
       name: 'subheadline',
       type: 'text',
       defaultValue:
-        'Start improving your presentations skills immediately with our free trail of the Decks for Decision Makers course.',
+        'Start improving your presentations skills immediately with our free trial of the Decks for Decision Makers course.',
       required: true,
     },
     {
@@ -471,82 +518,36 @@ const CallToAction: Block = {
   ],
   admin: {
     components: {
-      Block: './Component',
+      Field,
     },
   },
 };
+```
+
+### index.ts
+
+```ts
+import { CallToAction } from './config';
 
 export default CallToAction;
-```
-
-## Step 6: Fix ImportMap Generation for Custom Components
-
-When adding custom components to the Lexical editor, you need to ensure they are properly registered in the importMap. However, there's a known issue with SCSS imports causing errors during importMap generation. Here's how to fix it:
-
-### 1. Create a TypeScript Declaration File for SCSS
-
-Create a file named `scss.d.ts` in the `apps/payload/src` directory:
-
-```typescript
-declare module '*.scss' {
-  const content: { [className: string]: string };
-  export default content;
-}
-```
-
-This tells TypeScript how to handle SCSS imports without actually loading them during the importMap generation.
-
-### 2. Generate the ImportMap
-
-To generate the importMap with your custom components, you need to temporarily comment out the SCSS import in `payload.config.ts`:
-
-```typescript
-// Comment out this line temporarily
-// import './app/(payload)/custom.scss'
-```
-
-Then run the generate:importmap command:
-
-```bash
-cd apps/payload
-pnpm generate:importmap
-```
-
-After the importMap is generated, restore the SCSS import:
-
-```typescript
-// Restore the import
-import './app/(payload)/custom.scss';
-```
-
-### 3. Manually Update the ImportMap (if needed)
-
-If your custom components still don't appear in the Lexical editor, you may need to manually update the `apps/payload/src/app/(payload)/admin/importMap.js` file to include the BlocksFeatureClient and your custom components:
-
-```javascript
-import { BlocksFeatureClient as BlocksFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client';
-
-import { default as YourComponentName_e70f5e05f09f93e00b997edb1ef0c864 } from '../../../blocks/YourComponentName/Component';
-
-export const importMap = {
-  // ... existing mappings
-  '@payloadcms/richtext-lexical/client#BlocksFeatureClient':
-    BlocksFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
-  'blocks/YourComponentName/Component':
-    YourComponentName_e70f5e05f09f93e00b997edb1ef0c864,
-};
 ```
 
 ## Troubleshooting
 
 If your component is not rendering correctly, check the following:
 
-1. **Import Paths**: Make sure the import paths in `importMap.js` are correct.
-2. **HTML Serialization**: Ensure your component is properly serializing to HTML.
-3. **Content Renderer**: Check if the content renderer is correctly handling your component type.
-4. **Console Logs**: Look for any error messages or debug logs in the console.
-5. **Component Registration**: Verify that your component is properly registered in the Posts collection.
-6. **ImportMap Generation**: If your components don't appear in the editor, check if the importMap includes the BlocksFeatureClient and your custom components.
-7. **SCSS Import Issues**: If you encounter errors related to SCSS imports during importMap generation, use the workaround described in Step 6.
+1. **Component Structure**: Make sure your component follows the recommended structure with separate Component.tsx and Field.tsx files.
+
+2. **Block Type Handling**: The content renderer needs to handle both direct block types and 'block' type nodes with blockType in fields.
+
+3. **ImportMap Generation**: After adding or modifying components, regenerate the importMap with `npx payload generate:importmap`.
+
+4. **Console Logs**: Add console logs to your components and the content renderer to debug issues.
+
+5. **Error Handling**: Add robust error handling in the content renderer to prevent crashes when data is missing or malformed.
+
+6. **Default Values**: Always provide default values for your props to handle cases where data might be missing.
+
+7. **PayloadClient Error Handling**: Make sure the PayloadClient has proper error handling for API calls, especially when fetching child documents.
 
 By following these guidelines, you should be able to create custom components for Payload CMS that work seamlessly in both the admin UI and the front end.
