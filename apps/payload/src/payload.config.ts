@@ -15,6 +15,7 @@ import { fileURLToPath } from 'url'
 import CallToAction from './blocks/CallToAction'
 import TestBlock from './blocks/TestBlock'
 import DebugBlock from './blocks/DebugBlock'
+import BunnyVideo from './blocks/BunnyVideo'
 import { Documentation } from './collections/Documentation'
 import { Media } from './collections/Media'
 import { Posts } from './collections/Posts'
@@ -61,7 +62,7 @@ export default buildConfig({
     features: ({ defaultFeatures }) => [
       ...defaultFeatures,
       BlocksFeature({
-        blocks: [CallToAction, TestBlock, DebugBlock],
+        blocks: [CallToAction, TestBlock, DebugBlock, BunnyVideo],
       }),
     ],
   }),
