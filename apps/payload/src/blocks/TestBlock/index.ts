@@ -1,28 +1,3 @@
-import { Block } from 'payload'
-
-const TestBlock: Block = {
-  slug: 'test-block',
-  labels: {
-    singular: 'Test Block',
-    plural: 'Test Blocks',
-  },
-  fields: [
-    {
-      name: 'text',
-      type: 'text',
-      defaultValue: 'Test Block',
-      admin: {
-        components: {
-          Field: './Field',
-        },
-      },
-    },
-  ],
-  admin: {
-    components: {
-      Block: './Component',
-    },
-  },
-}
+import { TestBlock } from './config'
 
 export default TestBlock

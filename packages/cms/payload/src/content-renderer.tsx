@@ -10,7 +10,7 @@ function findHtmlContent(node: any): string | null {
   if (typeof node.toHTML === 'function') return node.toHTML();
   if (node.fields?.htmlContent) return node.fields.htmlContent;
   if (node.fields?.html) return node.fields.html;
-  
+
   return null;
 }
 
@@ -23,140 +23,259 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
   // For Lexical content, extract the text and render it
   try {
     const lexicalContent = content as any;
-    if (lexicalContent.root && lexicalContent.root.children) {
+
+    // Check if lexicalContent.root exists
+    if (lexicalContent.root) {
+      // If children exists and is an array, render each child
+      if (Array.isArray(lexicalContent.root.children)) {
+        return (
+          <div className="payload-content">
+            {lexicalContent.root.children.map((node: any, i: number) => {
+              // Handle custom blocks
+              // Check for Call To Action block
+              if (
+                node.type === 'custom-call-to-action' ||
+                (node.fields &&
+                  node.fields.blockType === 'custom-call-to-action') ||
+                node.blockType === 'custom-call-to-action'
+              ) {
+                console.log('Found Call To Action block:', node);
+
+                // Try to extract the HTML content from various locations
+                let htmlContent = findHtmlContent(node);
+
+                if (htmlContent) {
+                  console.log(
+                    'Using HTML content for Call To Action:',
+                    htmlContent.substring(0, 100) + '...',
+                  );
+                  return (
+                    <div
+                      key={i}
+                      dangerouslySetInnerHTML={{ __html: htmlContent }}
+                    />
+                  );
+                }
+
+                // Fallback rendering for Call To Action block
+                return (
+                  <div
+                    key={i}
+                    className="my-6 rounded-md border border-blue-200 bg-blue-50 p-4"
+                  >
+                    <h3 className="text-lg font-bold text-blue-700">
+                      Call To Action
+                    </h3>
+                    <p className="mt-2 text-blue-600">
+                      {node.headline ||
+                        node.text ||
+                        node.content ||
+                        'Call to action content'}
+                    </p>
+                    {node.buttonText && (
+                      <button className="mt-4 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600">
+                        {node.buttonText}
+                      </button>
+                    )}
+                  </div>
+                );
+              }
+
+              // Check for Test Block
+              if (
+                node.type === 'test-block' ||
+                (node.fields && node.fields.blockType === 'test-block') ||
+                node.blockType === 'test-block'
+              ) {
+                console.log('Found Test Block:', node);
+
+                // Try to extract the HTML content from various locations
+                let htmlContent = findHtmlContent(node);
+
+                if (htmlContent) {
+                  console.log(
+                    'Using HTML content for Test Block:',
+                    htmlContent.substring(0, 100) + '...',
+                  );
+                  return (
+                    <div
+                      key={i}
+                      dangerouslySetInnerHTML={{ __html: htmlContent }}
+                    />
+                  );
+                }
+
+                // Fallback rendering for Test Block
+                return (
+                  <div
+                    key={i}
+                    className="my-6 rounded-md border border-blue-100 bg-blue-50 p-4"
+                  >
+                    <h3 className="text-lg font-bold text-blue-700">
+                      Test Block
+                    </h3>
+                    <p className="mt-2 text-blue-600">
+                      {node.text || node.content || 'Test block content'}
+                    </p>
+                  </div>
+                );
+              }
+
+              // Handle standard node types
+              if (node.type === 'paragraph') {
+                // Check if node.children exists and is an array
+                if (Array.isArray(node.children)) {
+                  return (
+                    <p key={i}>
+                      {node.children.map((textNode: any, j: number) => (
+                        <span key={j}>{textNode.text || ''}</span>
+                      ))}
+                    </p>
+                  );
+                } else {
+                  // Fallback for when children is not an array
+                  return <p key={i}>{node.text || ''}</p>;
+                }
+              }
+
+              if (node.type === 'heading') {
+                // Use a switch statement to handle different heading levels
+                const tag = node.tag || 'h2'; // Default to h2 if tag is not specified
+
+                // Check if node.children exists and is an array
+                if (!Array.isArray(node.children)) {
+                  // Fallback for when children is not an array
+                  // Use switch for the fallback case too
+                  switch (tag) {
+                    case 'h1':
+                      return <h1 key={i}>{node.text || ''}</h1>;
+                    case 'h2':
+                      return <h2 key={i}>{node.text || ''}</h2>;
+                    case 'h3':
+                      return <h3 key={i}>{node.text || ''}</h3>;
+                    case 'h4':
+                      return <h4 key={i}>{node.text || ''}</h4>;
+                    case 'h5':
+                      return <h5 key={i}>{node.text || ''}</h5>;
+                    case 'h6':
+                      return <h6 key={i}>{node.text || ''}</h6>;
+                    default:
+                      return <h2 key={i}>{node.text || ''}</h2>;
+                  }
+                }
+
+                // Render the appropriate heading with children
+                const headingContent = node.children.map(
+                  (textNode: any, j: number) => (
+                    <span key={j}>{textNode.text || ''}</span>
+                  ),
+                );
+
+                switch (tag) {
+                  case 'h1':
+                    return <h1 key={i}>{headingContent}</h1>;
+                  case 'h2':
+                    return <h2 key={i}>{headingContent}</h2>;
+                  case 'h3':
+                    return <h3 key={i}>{headingContent}</h3>;
+                  case 'h4':
+                    return <h4 key={i}>{headingContent}</h4>;
+                  case 'h5':
+                    return <h5 key={i}>{headingContent}</h5>;
+                  case 'h6':
+                    return <h6 key={i}>{headingContent}</h6>;
+                  default:
+                    return <h2 key={i}>{headingContent}</h2>;
+                }
+              }
+
+              // Handle block type nodes
+              if (node.type === 'block') {
+                console.log('Found block type node:', node);
+
+                // Check for Call To Action block in fields
+                if (node.fields && node.fields.blockType === 'call-to-action') {
+                  console.log(
+                    'Found Call To Action block in fields:',
+                    node.fields,
+                  );
+
+                  return (
+                    <div
+                      key={i}
+                      className="my-6 rounded-md border border-blue-200 bg-blue-50 p-4"
+                    >
+                      <h3 className="text-lg font-bold text-blue-700">
+                        {node.fields.headline || 'Call To Action'}
+                      </h3>
+                      <p className="mt-2 text-blue-600">
+                        {node.fields.subheadline ||
+                          node.fields.text ||
+                          node.fields.content ||
+                          'Call to action content'}
+                      </p>
+                      <div className="mt-4 flex flex-wrap gap-4">
+                        {node.fields.leftButtonLabel && (
+                          <a
+                            href={node.fields.leftButtonUrl || '#'}
+                            className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+                          >
+                            {node.fields.leftButtonLabel}
+                          </a>
+                        )}
+                        {node.fields.rightButtonLabel && (
+                          <a
+                            href={node.fields.rightButtonUrl || '#'}
+                            className="rounded border border-blue-500 bg-white px-4 py-2 text-blue-500 hover:bg-blue-50"
+                          >
+                            {node.fields.rightButtonLabel}
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  );
+                }
+
+                // Check for Test Block in fields
+                if (node.fields && node.fields.blockType === 'test-block') {
+                  console.log('Found Test Block in fields:', node.fields);
+
+                  return (
+                    <div
+                      key={i}
+                      className="my-6 rounded-md border border-blue-100 bg-blue-50 p-4"
+                    >
+                      <h3 className="text-lg font-bold text-blue-700">
+                        {node.fields.headline || 'Test Block'}
+                      </h3>
+                      <p className="mt-2 text-blue-600">
+                        {node.fields.text ||
+                          node.fields.content ||
+                          'Test block content'}
+                      </p>
+                    </div>
+                  );
+                }
+              }
+
+              // For any unhandled node types, log them for debugging
+              console.log('Unhandled node type:', node.type, node);
+              return null;
+            })}
+          </div>
+        );
+      }
+
+      // If root exists but children is not an array, try to render the root directly
+      console.log(
+        'Root exists but children is not an array:',
+        lexicalContent.root,
+      );
       return (
         <div className="payload-content">
-          {lexicalContent.root.children.map((node: any, i: number) => {
-            // Handle custom blocks
-            // Check for Call To Action block
-            if (
-              node.type === 'custom-call-to-action' ||
-              (node.fields && node.fields.blockType === 'custom-call-to-action') ||
-              node.blockType === 'custom-call-to-action'
-            ) {
-              console.log('Found Call To Action block:', node);
-              
-              // Try to extract the HTML content from various locations
-              let htmlContent = findHtmlContent(node);
-              
-              if (htmlContent) {
-                console.log(
-                  'Using HTML content for Call To Action:',
-                  htmlContent.substring(0, 100) + '...',
-                );
-                return (
-                  <div
-                    key={i}
-                    dangerouslySetInnerHTML={{ __html: htmlContent }}
-                  />
-                );
-              }
-            }
-            
-            // Check for Test Block
-            if (
-              node.type === 'test-block' ||
-              (node.fields && node.fields.blockType === 'test-block') ||
-              node.blockType === 'test-block'
-            ) {
-              console.log('Found Test Block:', node);
-              
-              // Try to extract the HTML content from various locations
-              let htmlContent = findHtmlContent(node);
-              
-              if (htmlContent) {
-                console.log(
-                  'Using HTML content for Test Block:',
-                  htmlContent.substring(0, 100) + '...',
-                );
-                return (
-                  <div
-                    key={i}
-                    dangerouslySetInnerHTML={{ __html: htmlContent }}
-                  />
-                );
-              }
-            }
-
-            // Handle standard node types
-            if (node.type === 'paragraph') {
-              return (
-                <p key={i}>
-                  {node.children.map((textNode: any, j: number) => (
-                    <span key={j}>{textNode.text}</span>
-                  ))}
-                </p>
-              );
-            }
-
-            if (node.type === 'heading') {
-              // Use a switch statement to handle different heading levels
-              const tag = node.tag || 'h2'; // Default to h2 if tag is not specified
-
-              switch (tag) {
-                case 'h1':
-                  return (
-                    <h1 key={i}>
-                      {node.children.map((textNode: any, j: number) => (
-                        <span key={j}>{textNode.text}</span>
-                      ))}
-                    </h1>
-                  );
-                case 'h2':
-                  return (
-                    <h2 key={i}>
-                      {node.children.map((textNode: any, j: number) => (
-                        <span key={j}>{textNode.text}</span>
-                      ))}
-                    </h2>
-                  );
-                case 'h3':
-                  return (
-                    <h3 key={i}>
-                      {node.children.map((textNode: any, j: number) => (
-                        <span key={j}>{textNode.text}</span>
-                      ))}
-                    </h3>
-                  );
-                case 'h4':
-                  return (
-                    <h4 key={i}>
-                      {node.children.map((textNode: any, j: number) => (
-                        <span key={j}>{textNode.text}</span>
-                      ))}
-                    </h4>
-                  );
-                case 'h5':
-                  return (
-                    <h5 key={i}>
-                      {node.children.map((textNode: any, j: number) => (
-                        <span key={j}>{textNode.text}</span>
-                      ))}
-                    </h5>
-                  );
-                case 'h6':
-                  return (
-                    <h6 key={i}>
-                      {node.children.map((textNode: any, j: number) => (
-                        <span key={j}>{textNode.text}</span>
-                      ))}
-                    </h6>
-                  );
-                default:
-                  return (
-                    <h2 key={i}>
-                      {node.children.map((textNode: any, j: number) => (
-                        <span key={j}>{textNode.text}</span>
-                      ))}
-                    </h2>
-                  );
-              }
-            }
-
-            // For any unhandled node types, log them for debugging
-            console.log('Unhandled node type:', node.type, node);
-            return null;
-          })}
+          <p>
+            {lexicalContent.root.text || JSON.stringify(lexicalContent.root)}
+          </p>
         </div>
       );
     }
