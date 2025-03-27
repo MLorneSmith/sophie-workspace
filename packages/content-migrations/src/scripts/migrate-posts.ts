@@ -1,6 +1,8 @@
 /**
  * Script to migrate blog posts from Markdown files to Payload CMS
  */
+import { ListItemNode, ListNode } from '@lexical/list';
+import { HeadingNode } from '@lexical/rich-text';
 import { $convertFromMarkdownString } from '@payloadcms/richtext-lexical';
 import { createHeadlessEditor } from '@payloadcms/richtext-lexical/lexical/headless';
 import fs from 'fs';
@@ -47,8 +49,10 @@ async function migratePostsToPayload() {
 
       // Convert Markdown content to Lexical format
       const lexicalContent = (() => {
-        // Create a headless editor instance
-        const headlessEditor = createHeadlessEditor({});
+        // Create a headless editor instance with list nodes and heading nodes registered
+        const headlessEditor = createHeadlessEditor({
+          nodes: [ListNode, ListItemNode, HeadingNode],
+        });
 
         // Convert Markdown to Lexical format
         headlessEditor.update(

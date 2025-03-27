@@ -1,6 +1,8 @@
 /**
  * Script to migrate documentation from Payload data directory to Payload CMS
  */
+import { ListItemNode, ListNode } from '@lexical/list';
+import { HeadingNode } from '@lexical/rich-text';
 import { $convertFromMarkdownString } from '@payloadcms/richtext-lexical';
 import { createHeadlessEditor } from '@payloadcms/richtext-lexical/lexical/headless';
 import fs from 'fs';
@@ -8,7 +10,7 @@ import matter from 'gray-matter';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-import { getPayloadClient } from '../utils/payload-client.js';
+import { getEnhancedPayloadClient } from '../utils/enhanced-payload-client.js';
 
 // Get the current file's directory
 const __filename = fileURLToPath(import.meta.url);
@@ -19,7 +21,7 @@ const __dirname = path.dirname(__filename);
  */
 async function migratePayloadDocsToPayload() {
   // Get the Payload client
-  const payload = await getPayloadClient();
+  const payload = await getEnhancedPayloadClient();
 
   // Path to the documentation files
   const docsDir = path.resolve(
@@ -78,15 +80,20 @@ async function migratePayloadDocsToPayload() {
         .replace(/\\/g, '/')
         .replace(/^\//, '');
 
-      // Convert Markdown content to Lexical format
+      // Convert Markdown content to Lexical format or use default empty content
       const lexicalContent = (() => {
-        // Create a headless editor instance
-        const headlessEditor = createHeadlessEditor({});
+        // Create a headless editor instance with list nodes and heading nodes registered
+        const headlessEditor = createHeadlessEditor({
+          nodes: [ListNode, ListItemNode, HeadingNode],
+        });
+
+        // If mdContent is empty, use a default paragraph
+        const contentToConvert = mdContent.trim() || 'No content provided.';
 
         // Convert Markdown to Lexical format
         headlessEditor.update(
           () => {
-            $convertFromMarkdownString(mdContent);
+            $convertFromMarkdownString(contentToConvert);
           },
           { discrete: true },
         );

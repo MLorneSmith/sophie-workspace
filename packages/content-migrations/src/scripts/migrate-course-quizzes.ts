@@ -6,7 +6,7 @@ import matter from 'gray-matter';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-import { getPayloadClient } from '../utils/payload-client.js';
+import { getEnhancedPayloadClient } from '../utils/enhanced-payload-client.js';
 
 // Get the current file's directory
 const __filename = fileURLToPath(import.meta.url);
@@ -17,7 +17,7 @@ const __dirname = path.dirname(__filename);
  */
 async function migrateQuizzesToPayload() {
   // Get the Payload client
-  const payload = await getPayloadClient();
+  const payload = await getEnhancedPayloadClient();
 
   // Path to the course quizzes files
   const quizzesDir = path.resolve(

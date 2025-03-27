@@ -4,8 +4,6 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "migrate:docs": "tsx src/scripts/migrate-docs.ts",
-    "migrate:all": "tsx src/scripts/migrate-all.ts",
     "test:env": "tsx src/scripts/test-env.ts",
     "create:admin": "tsx src/scripts/create-admin-user.ts",
     "create:course": "tsx src/scripts/create-course.ts",
@@ -19,7 +17,10 @@
     "migrate:payload-quizzes": "tsx src/scripts/migrate-payload-quizzes.ts",
     "migrate:collections:remote": "cross-env NODE_ENV=production tsx src/scripts/migrate-collections-local-to-remote.ts",
     "cleanup:remote:docs": "cross-env NODE_ENV=production tsx src/scripts/cleanup-remote-documentation.ts",
-    "cleanup:and:migrate:remote": "cross-env NODE_ENV=production tsx src/scripts/cleanup-and-migrate-remote.ts"
+    "cleanup:and:migrate:remote": "cross-env NODE_ENV=production tsx src/scripts/cleanup-and-migrate-remote.ts",
+    "cleanup:collections": "tsx src/scripts/cleanup-collections.ts",
+    "migrate:enhanced": "tsx src/scripts/migrate-enhanced.ts",
+    "test:auth": "tsx src/scripts/test-auth.ts"
   },
   "dependencies": {
     "@lexical/list": "^0.28.0",

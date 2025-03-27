@@ -1,6 +1,8 @@
 /**
  * Script to update existing documentation records with properly formatted Lexical content
  */
+import { ListItemNode, ListNode } from '@lexical/list';
+import { HeadingNode } from '@lexical/rich-text';
 import { $convertFromMarkdownString } from '@payloadcms/richtext-lexical';
 import { createHeadlessEditor } from '@payloadcms/richtext-lexical/lexical/headless';
 import fs from 'fs';
@@ -8,7 +10,7 @@ import matter from 'gray-matter';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-import { getPayloadClient } from '../utils/payload-client.js';
+import { getEnhancedPayloadClient } from '../utils/enhanced-payload-client.js';
 
 // Get the current file's directory
 const __filename = fileURLToPath(import.meta.url);
@@ -19,12 +21,12 @@ const __dirname = path.dirname(__filename);
  */
 async function updateDocsContent() {
   // Get the Payload client
-  const payload = await getPayloadClient();
+  const payload = await getEnhancedPayloadClient();
 
   // Path to the documentation files - using relative path from this script
   const docsDir = path.resolve(
     __dirname,
-    '../../../../apps/web/content/documentation',
+    '../../../../apps/payload/data/documentation',
   );
   console.log(`Documentation directory: ${docsDir}`);
 
@@ -82,7 +84,9 @@ async function updateDocsContent() {
         .replace(/^\//, '');
 
       // Find the corresponding document in the database
-      const existingDoc = docs.find((doc) => doc.slug === slug);
+      const existingDoc = docs.find(
+        (doc: { slug: string; title: string; id: string }) => doc.slug === slug,
+      );
 
       if (!existingDoc) {
         console.log(`No existing document found for slug: ${slug}`);
@@ -99,13 +103,18 @@ async function updateDocsContent() {
 
       // Convert Markdown content to Lexical format using Payload's converter
       const lexicalContent = (() => {
-        // Create a headless editor instance
-        const headlessEditor = createHeadlessEditor({});
+        // Create a headless editor instance with list nodes and heading nodes registered
+        const headlessEditor = createHeadlessEditor({
+          nodes: [ListNode, ListItemNode, HeadingNode],
+        });
+
+        // If mdContent is empty, use a default paragraph
+        const contentToConvert = mdContent.trim() || 'No content provided.';
 
         // Convert Markdown to Lexical format
         headlessEditor.update(
           () => {
-            $convertFromMarkdownString(mdContent);
+            $convertFromMarkdownString(contentToConvert);
           },
           { discrete: true },
         );

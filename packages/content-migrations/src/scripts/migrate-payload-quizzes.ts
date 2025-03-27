@@ -7,7 +7,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { v4 as uuidv4 } from 'uuid';
 
-import { getPayloadClient } from '../utils/payload-client.js';
+import { getEnhancedPayloadClient } from '../utils/enhanced-payload-client.js';
 
 // Get the current file's directory
 const __filename = fileURLToPath(import.meta.url);
@@ -18,7 +18,7 @@ const __dirname = path.dirname(__filename);
  */
 async function migratePayloadQuizzesToPayload() {
   // Get the Payload client
-  const payload = await getPayloadClient();
+  const payload = await getEnhancedPayloadClient();
 
   // Path to the quizzes files
   const quizzesDir = path.resolve(
@@ -89,7 +89,15 @@ async function migratePayloadQuizzesToPayload() {
         );
 
         for (let i = 0; i < data.questions.length; i++) {
-          const q = data.questions[i];
+          const q: {
+            question: string;
+            questiontype?: string;
+            explanation?: string;
+            answers?: Array<{
+              answer: string;
+              correct?: boolean;
+            }>;
+          } = data.questions[i];
 
           // Check if this question already exists
           const { docs: existingQuestions } = await payload.find({
@@ -108,7 +116,20 @@ async function migratePayloadQuizzesToPayload() {
           // Generate a unique ID for the question
           const questionId = uuidv4();
 
-          // Create the question
+          // Prepare options array for the question
+          const options =
+            q.answers && Array.isArray(q.answers) && q.answers.length >= 2
+              ? q.answers.map((option) => ({
+                  text: option.answer,
+                  isCorrect: option.correct || false,
+                }))
+              : [
+                  // Default options if none are provided or less than 2
+                  { text: 'Option 1', isCorrect: false },
+                  { text: 'Option 2', isCorrect: false },
+                ];
+
+          // Create the question with options included directly
           await payload.create({
             collection: 'quiz_questions',
             data: {
@@ -121,30 +142,9 @@ async function migratePayloadQuizzesToPayload() {
                   : 'multiple_choice',
               explanation: q.explanation || '',
               order: i,
+              options: options,
             },
           });
-
-          // Create options for the question
-          if (q.answers && Array.isArray(q.answers)) {
-            for (let j = 0; j < q.answers.length; j++) {
-              const option = q.answers[j];
-
-              // Generate a unique ID for the option
-              const optionId = uuidv4();
-
-              // Create the option
-              await payload.create({
-                collection: 'quiz_questions_options',
-                data: {
-                  id: optionId,
-                  _order: j,
-                  _parent_id: questionId,
-                  text: option.answer,
-                  is_correct: option.correct || false,
-                },
-              });
-            }
-          }
 
           console.log(`Migrated question ${i + 1} for quiz: ${slug}`);
         }

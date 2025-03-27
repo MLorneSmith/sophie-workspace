@@ -13,17 +13,55 @@ const COLLECTIONS_TO_MIGRATE = [
       updateExisting: true,
     },
   },
-  // Add more collections as needed
+  {
+    name: 'posts',
+    options: {
+      matchField: 'slug',
+      updateExisting: true,
+    },
+  },
+  {
+    name: 'courses',
+    options: {
+      matchField: 'slug',
+      updateExisting: true,
+    },
+  },
+  {
+    name: 'course_lessons',
+    options: {
+      matchField: 'slug',
+      updateExisting: true,
+    },
+  },
+  {
+    name: 'course_quizzes',
+    options: {
+      matchField: 'title',
+      updateExisting: true,
+    },
+  },
+  {
+    name: 'quiz_questions',
+    options: {
+      matchField: 'id',
+      updateExisting: true,
+    },
+  },
   // {
-  //   name: 'blog',
+  //   name: 'quiz_questions_options',
   //   options: {
-  //     matchField: 'slug',
-  //     transformData: (data) => {
-  //       // Custom transformations for blog data
-  //       return data;
-  //     },
+  //     matchField: 'id',
+  //     updateExisting: true,
   //   },
   // },
+  {
+    name: 'media',
+    options: {
+      matchField: 'filename',
+      updateExisting: true,
+    },
+  },
 ];
 
 /**
