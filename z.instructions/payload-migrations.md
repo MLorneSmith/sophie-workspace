@@ -20,9 +20,41 @@ The overall process consists of three main steps:
 Before running migrations, ensure you have:
 
 1. **PostgreSQL Database**: A PostgreSQL database with appropriate access credentials
-2. **Payload Schema**: The "payload" schema must exist in your PostgreSQL database
-3. **Admin User**: An admin user created in Payload CMS for content migrations
-4. **Environment Variables**: Proper environment variables set for both schema and content migrations
+2. **Admin User**: An admin user created in Payload CMS for content migrations
+3. **Environment Variables**: Proper environment variables set for both schema and content migrations
+
+## Schema Migration Approach
+
+We've implemented a "clean slate" approach using Payload's native migration system with TypeScript migrations instead of custom SQL migrations.
+
+### Key Components
+
+1. **PostgreSQL Adapter Configuration**:
+
+   ```typescript
+   db: postgresAdapter({
+     pool: {
+       connectionString: process.env.DATABASE_URI || '',
+     },
+     // Enable schema push in development, disable in production
+     push: process.env.NODE_ENV !== 'production',
+   }),
+   ```
+
+2. **Migration Directory**:
+
+   - Located at `apps/payload/src/migrations/`
+   - Contains TypeScript migration files
+   - Includes a README.md with documentation
+
+3. **Migration Scripts**:
+   ```json
+   "migrate": "cross-env NODE_OPTIONS=--no-deprecation payload migrate",
+   "migrate:create": "cross-env NODE_OPTIONS=--no-deprecation payload migrate:create",
+   "migrate:status": "cross-env NODE_OPTIONS=--no-deprecation payload migrate:status",
+   "migrate:down": "cross-env NODE_OPTIONS=--no-deprecation payload migrate:down",
+   "migrate:refresh": "cross-env NODE_OPTIONS=--no-deprecation payload migrate:refresh",
+   ```
 
 ## 1. Local Development
 
@@ -36,24 +68,39 @@ cd apps/payload
 pnpm dev
 ```
 
+In development environments, schema push is enabled by default. This means that changes to your collection definitions will automatically update the database schema. This allows for rapid development and iteration.
+
 ### Creating Migration Files
 
-1. Generate a migration file for your schema changes:
+After finalizing collection changes, create a migration to capture the schema changes:
 
 ```bash
 cd apps/payload
-pnpm migrate:create --name your-migration-name
+pnpm migrate:create your-migration-name
 ```
 
-This will create a new migration file in `apps/web/supabase/migrations/payload/` with a timestamp and the name you provided.
+This will generate a TypeScript migration file in `apps/payload/src/migrations/` with both `up` and `down` functions.
 
-2. Edit the migration file if needed to customize the schema changes.
+Example migration file:
 
-3. Test the migration locally:
+```typescript
+import { MigrateDownArgs, MigrateUpArgs, sql } from '@payloadcms/db-postgres';
 
-```bash
-cd apps/payload
-pnpm migrate
+export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
+  await db.execute(sql`
+    -- SQL statements to apply the migration
+  `);
+}
+
+export async function down({
+  db,
+  payload,
+  req,
+}: MigrateDownArgs): Promise<void> {
+  await db.execute(sql`
+    -- SQL statements to roll back the migration
+  `);
+}
 ```
 
 ## 2. Deployment to Production
@@ -61,7 +108,7 @@ pnpm migrate
 1. Commit the migration files to your repository:
 
 ```bash
-git add apps/web/supabase/migrations/payload/
+git add apps/payload/src/migrations/
 git commit -m "Add migration for [your changes]"
 git push
 ```
@@ -71,6 +118,8 @@ git push
    - Or manually from the Vercel dashboard
 
 ## 3. Run Migrations on Remote Database
+
+In production environments, schema push is disabled. Instead, migrations are run during deployment:
 
 Migrations will run automatically during deployment because:
 

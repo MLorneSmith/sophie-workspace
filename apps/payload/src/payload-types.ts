@@ -76,6 +76,7 @@ export interface Config {
     courses: Course;
     course_lessons: CourseLesson;
     course_quizzes: CourseQuizz;
+    quiz_questions: QuizQuestion;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -91,6 +92,7 @@ export interface Config {
     courses: CoursesSelect<false> | CoursesSelect<true>;
     course_lessons: CourseLessonsSelect<false> | CourseLessonsSelect<true>;
     course_quizzes: CourseQuizzesSelect<false> | CourseQuizzesSelect<true>;
+    quiz_questions: QuizQuestionsSelect<false> | QuizQuestionsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -533,22 +535,36 @@ export interface CourseQuizz {
   title: string;
   description?: string | null;
   passingScore: number;
-  questions: {
-    question: string;
-    type: 'multiple_choice';
-    options?:
-      | {
-          text: string;
-          isCorrect?: boolean | null;
-          id?: string | null;
-        }[]
-      | null;
-    /**
-     * Optional explanation for this question (plain text only)
-     */
-    explanation?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Questions for course quizzes
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "quiz_questions".
+ */
+export interface QuizQuestion {
+  id: number;
+  question: string;
+  /**
+   * The quiz this question belongs to
+   */
+  quiz: number | CourseQuizz;
+  type: 'multiple_choice';
+  options: {
+    text: string;
+    isCorrect?: boolean | null;
     id?: string | null;
   }[];
+  /**
+   * Optional explanation for this question (plain text only)
+   */
+  explanation?: string | null;
+  /**
+   * Order within the quiz (lower numbers appear first)
+   */
+  order?: number | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -594,6 +610,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'course_quizzes';
         value: number | CourseQuizz;
+      } | null)
+    | ({
+        relationTo: 'quiz_questions';
+        value: number | QuizQuestion;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -817,21 +837,26 @@ export interface CourseQuizzesSelect<T extends boolean = true> {
   title?: T;
   description?: T;
   passingScore?: T;
-  questions?:
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "quiz_questions_select".
+ */
+export interface QuizQuestionsSelect<T extends boolean = true> {
+  question?: T;
+  quiz?: T;
+  type?: T;
+  options?:
     | T
     | {
-        question?: T;
-        type?: T;
-        options?:
-          | T
-          | {
-              text?: T;
-              isCorrect?: T;
-              id?: T;
-            };
-        explanation?: T;
+        text?: T;
+        isCorrect?: T;
         id?: T;
       };
+  explanation?: T;
+  order?: T;
   updatedAt?: T;
   createdAt?: T;
 }

@@ -29,7 +29,10 @@
     "seed:build": "tsc -p src/scripts/tsconfig.json",
     "seed:survey": "tsx src/scripts/seed-all.ts survey data/surveys/self-assessment.yaml",
     "seed:course": "tsx src/scripts/seed-all.ts course data/courses/lessons data/courses/quizzes",
-    "seed:all": "tsx src/scripts/seed-all.ts all data/surveys/self-assessment.yaml data/courses/lessons data/courses/quizzes"
+    "seed:all": "tsx src/scripts/seed-all.ts all data/surveys/self-assessment.yaml data/courses/lessons data/courses/quizzes",
+    "generate:migration": "node scripts/generate-migration.js",
+    "apply:migrations": "pnpm --filter web run supabase:reset",
+    "migrate:complete": "pnpm run apply:migrations && pnpm --filter @kit/content-migrations migrate:all"
   },
   "dependencies": {
     "@kit/ui": "workspace:*",
@@ -79,5 +82,6 @@
     "onlyBuiltDependencies": [
       "sharp"
     ]
-  }
+  },
+  "packageManager": "pnpm@10.7.0+sha512.6b865ad4b62a1d9842b61d674a393903b871d9244954f652b8842c2b553c72176b278f64c463e52d40fff8aba385c235c8c9ecf5cc7de4fd78b8bb6d49633ab6"
 }

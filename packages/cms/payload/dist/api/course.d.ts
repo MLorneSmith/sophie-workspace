@@ -30,10 +30,10 @@ export declare function getCourseLessons(courseId: string, options?: {}, supabas
  */
 export declare function getLessonBySlug(slug: string, options?: {}, supabaseClient?: any): Promise<any>;
 /**
- * Get a quiz by ID
+ * Get a quiz by ID with its questions
  * @param quizId The ID of the quiz
  * @param options Additional options for the API call
  * @param supabaseClient Optional Supabase client (for client-side usage)
- * @returns The quiz data
+ * @returns The quiz data with questions
  */
 export declare function getQuiz(quizId: string, options?: {}, supabaseClient?: any): Promise<any>;

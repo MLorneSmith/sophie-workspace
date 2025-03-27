@@ -7,5 +7,9 @@
 
 // Export utility functions
 export { getPayloadClient } from './utils/payload-client.js';
+export {
+  validateCollectionSchema,
+  validateMultipleCollectionSchemas,
+} from './utils/validate-schema.js';
 
 // Note: Migration scripts are not exported as they are meant to be run directly

@@ -39,12 +39,17 @@ export async function getLessonBySlug(slug, options = {}, supabaseClient) {
     return callPayloadAPI(`course_lessons?where[slug][equals]=${slug}&depth=2`, {}, supabaseClient);
 }
 /**
- * Get a quiz by ID
+ * Get a quiz by ID with its questions
  * @param quizId The ID of the quiz
  * @param options Additional options for the API call
  * @param supabaseClient Optional Supabase client (for client-side usage)
- * @returns The quiz data
+ * @returns The quiz data with questions
  */
 export async function getQuiz(quizId, options = {}, supabaseClient) {
-    return callPayloadAPI(`course_quizzes/${quizId}`, {}, supabaseClient);
+    // Get the quiz metadata
+    const quiz = await callPayloadAPI(`course_quizzes/${quizId}`, {}, supabaseClient);
+    // Get the questions for this quiz
+    const questionsResponse = await callPayloadAPI(`quiz_questions?where[quiz][equals]=${quizId}&sort=order&depth=0`, {}, supabaseClient);
+    // Combine the data
+    return Object.assign(Object.assign({}, quiz), { questions: questionsResponse.docs || [] });
 }

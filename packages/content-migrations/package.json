@@ -8,22 +8,33 @@
     "migrate:all": "tsx src/scripts/migrate-all.ts",
     "test:env": "tsx src/scripts/test-env.ts",
     "create:admin": "tsx src/scripts/create-admin-user.ts",
+    "create:course": "tsx src/scripts/create-course.ts",
     "migrate:testimonials": "tsx src/scripts/migrate-testimonials.ts",
     "update:docs": "tsx src/scripts/update-docs-content.ts",
+    "migrate:course-lessons": "tsx src/scripts/migrate-course-lessons.ts",
+    "migrate:course-quizzes": "tsx src/scripts/migrate-course-quizzes.ts",
+    "migrate:quiz-questions": "tsx src/scripts/migrate-quiz-questions.ts",
+    "migrate:posts": "tsx src/scripts/migrate-posts.ts",
+    "migrate:payload-docs": "tsx src/scripts/migrate-payload-docs.ts",
+    "migrate:payload-quizzes": "tsx src/scripts/migrate-payload-quizzes.ts",
     "migrate:collections:remote": "cross-env NODE_ENV=production tsx src/scripts/migrate-collections-local-to-remote.ts",
     "cleanup:remote:docs": "cross-env NODE_ENV=production tsx src/scripts/cleanup-remote-documentation.ts",
     "cleanup:and:migrate:remote": "cross-env NODE_ENV=production tsx src/scripts/cleanup-and-migrate-remote.ts"
   },
   "dependencies": {
+    "@lexical/list": "^0.28.0",
+    "@lexical/rich-text": "^0.28.0",
     "@payloadcms/db-postgres": "3.30.0",
     "@payloadcms/richtext-lexical": "3.30.0",
     "@supabase/supabase-js": "2.49.3",
     "dotenv": "^16.3.1",
     "gray-matter": "^4.0.3",
-    "payload": "3.30.0"
+    "payload": "3.30.0",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@types/node": "^22.13.13",
+    "@types/uuid": "^9.0.7",
     "cross-env": "^7.0.3",
     "tsx": "^4.7.1",
     "typescript": "^5.8.2"
