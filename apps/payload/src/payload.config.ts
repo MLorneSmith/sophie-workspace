@@ -7,7 +7,6 @@ import path from 'path'
 import { buildConfig } from 'payload'
 import sharp from 'sharp'
 import { fileURLToPath } from 'url'
-import { afterStartupHook } from './hooks/afterStartupHook'
 
 // Import custom SCSS for Tailwind CSS
 // This import is causing issues with ESM, so we'll comment it out
@@ -37,9 +36,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  onInit: async (payload) => {
-    await afterStartupHook(payload)
-  },
+  // onInit hook removed as part of the custom component importMap fix
   // Add CORS configuration to allow requests from all web app domains
   cors: [
     'http://localhost:3000',
