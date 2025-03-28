@@ -23,9 +23,7 @@ export const metadata = {
 async function AccountsPage(props: AdminAccountsPageProps) {
   const client = getSupabaseServerClient();
   const searchParams = await props.searchParams;
-
   const page = searchParams.page ? parseInt(searchParams.page) : 1;
-  const filters = getFilters(searchParams);
 
   return (
     <>
@@ -36,7 +34,19 @@ async function AccountsPage(props: AdminAccountsPageProps) {
           table={'accounts'}
           client={client}
           page={page}
-          where={filters}
+          where={(queryBuilder) => {
+            const { account_type: type, query } = searchParams;
+
+            if (type && type !== 'all') {
+              queryBuilder.eq('is_personal_account', type === 'personal');
+            }
+
+            if (query) {
+              queryBuilder.or(`name.ilike.%${query}%,email.ilike.%${query}%`);
+            }
+
+            return queryBuilder;
+          }}
         >
           {({ data, page, pageSize, pageCount }) => {
             return (
@@ -56,30 +66,6 @@ async function AccountsPage(props: AdminAccountsPageProps) {
       </PageBody>
     </>
   );
-}
-
-function getFilters(params: SearchParams) {
-  const filters: Record<
-    string,
-    {
-      eq?: boolean | string;
-      like?: string;
-    }
-  > = {};
-
-  if (params.account_type && params.account_type !== 'all') {
-    filters.is_personal_account = {
-      eq: params.account_type === 'personal',
-    };
-  }
-
-  if (params.query) {
-    filters.name = {
-      like: `%${params.query}%`,
-    };
-  }
-
-  return filters;
 }
 
 export default AdminGuard(AccountsPage);
