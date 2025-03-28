@@ -16,7 +16,7 @@
     "@kit/eslint-config": "workspace:*",
     "@kit/prettier-config": "workspace:*",
     "@kit/tsconfig": "workspace:*",
-    "@types/node": "^22.13.13"
+    "@types/node": "^22.13.14"
   },
   "typesVersions": {
     "*": {
