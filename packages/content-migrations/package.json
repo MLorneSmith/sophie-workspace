@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "test:env": "tsx src/scripts/test-env.ts",
+    "test:auth": "tsx src/scripts/test-auth.ts",
+    "test:db": "tsx src/scripts/test-database-connection.ts",
     "create:admin": "tsx src/scripts/create-admin-user.ts",
     "create:course": "tsx src/scripts/create-course.ts",
     "migrate:testimonials": "tsx src/scripts/migrate-testimonials.ts",
@@ -19,8 +21,7 @@
     "cleanup:remote:docs": "cross-env NODE_ENV=production tsx src/scripts/cleanup-remote-documentation.ts",
     "cleanup:and:migrate:remote": "cross-env NODE_ENV=production tsx src/scripts/cleanup-and-migrate-remote.ts",
     "cleanup:collections": "tsx src/scripts/cleanup-collections.ts",
-    "migrate:enhanced": "tsx src/scripts/migrate-enhanced.ts",
-    "test:auth": "tsx src/scripts/test-auth.ts"
+    "migrate:enhanced": "tsx src/scripts/migrate-enhanced.ts"
   },
   "dependencies": {
     "@lexical/list": "^0.28.0",
@@ -28,9 +29,11 @@
     "@payloadcms/db-postgres": "3.31.0",
     "@payloadcms/richtext-lexical": "3.31.0",
     "@supabase/supabase-js": "2.49.3",
+    "@types/pg": "^8.11.11",
     "dotenv": "^16.3.1",
     "gray-matter": "^4.0.3",
     "payload": "3.31.0",
+    "pg": "^8.14.1",
     "uuid": "^9.0.1"
   },
   "devDependencies": {

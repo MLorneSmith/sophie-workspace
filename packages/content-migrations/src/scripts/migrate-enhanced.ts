@@ -251,7 +251,7 @@ async function migratePayloadQuizzes(): Promise<void> {
 }
 
 /**
- * Fix quiz questions by adding required options
+ * Fix quiz questions by adding required options and ensuring quiz IDs are integers
  */
 async function fixQuizQuestions(): Promise<void> {
   console.log('Starting quiz questions fix...');
@@ -262,9 +262,86 @@ async function fixQuizQuestions(): Promise<void> {
   // Path to the quizzes directory
   const quizzesDir = path.resolve(
     __dirname,
-    '../../../../apps/payload/data/quizzes',
+    '../../../../apps/payload/data/courses/quizzes',
   );
   console.log(`Quizzes directory: ${quizzesDir}`);
+
+  // Get all quizzes
+  console.log('Getting all quizzes...');
+  const { docs: quizzes } = await payload.find({
+    collection: 'course_quizzes',
+    limit: 100,
+  });
+
+  console.log(`Found ${quizzes.length} quizzes.`);
+
+  // Create a map of quiz IDs
+  const quizIdMap = new Map();
+  for (const quiz of quizzes) {
+    quizIdMap.set(quiz.id, quiz);
+  }
+
+  // Try to get all quiz questions
+  console.log('Getting all quiz questions...');
+  try {
+    const { docs: questions } = await payload.find({
+      collection: 'quiz_questions',
+      limit: 100,
+    });
+
+    console.log(`Found ${questions.length} quiz questions.`);
+
+    // Fix each question
+    for (const question of questions) {
+      try {
+        // Check if the quiz ID is a string
+        if (typeof question.quiz === 'string') {
+          console.log(
+            `Question ${question.id} has a string quiz ID: ${question.quiz}`,
+          );
+
+          // Convert the quiz ID to a number
+          const quizIdNumber = parseInt(question.quiz, 10);
+          if (isNaN(quizIdNumber)) {
+            console.error(
+              `Invalid quiz ID for question ${question.id}: ${question.quiz}`,
+            );
+            continue;
+          }
+
+          // Check if the quiz exists
+          if (!quizIdMap.has(quizIdNumber)) {
+            console.error(
+              `Quiz with ID ${quizIdNumber} not found for question ${question.id}`,
+            );
+            continue;
+          }
+
+          // Update the question with the numeric quiz ID
+          console.log(
+            `Updating question ${question.id} with numeric quiz ID: ${quizIdNumber}`,
+          );
+          await payload.update({
+            collection: 'quiz_questions',
+            id: question.id,
+            data: {
+              quiz: quizIdNumber,
+            },
+          });
+
+          console.log(`Updated question ${question.id}`);
+        } else {
+          console.log(
+            `Question ${question.id} already has a numeric quiz ID: ${question.quiz}`,
+          );
+        }
+      } catch (error) {
+        console.error(`Error fixing question ${question.id}:`, error);
+      }
+    }
+  } catch (error) {
+    console.error('Error getting quiz questions:', error);
+  }
 
   // Get all quiz files
   const quizFiles = fs
@@ -298,10 +375,18 @@ async function fixQuizQuestions(): Promise<void> {
       const quizId = quizzes[0].id;
       console.log(`Found quiz with ID: ${quizId}`);
 
+      // Ensure the quiz ID is a number
+      const quizIdNumber =
+        typeof quizId === 'string' ? parseInt(quizId, 10) : quizId;
+      if (isNaN(quizIdNumber)) {
+        console.error(`Invalid quiz ID for ${quizSlug}: ${quizId}. Skipping.`);
+        continue;
+      }
+
       // Find existing questions for this quiz
       const { docs: existingQuestions } = await payload.find({
         collection: 'quiz_questions',
-        query: { quiz: quizId },
+        query: { quiz: quizIdNumber },
       });
 
       console.log(
@@ -343,7 +428,7 @@ async function fixQuizQuestions(): Promise<void> {
           await payload.create({
             collection: 'quiz_questions',
             data: {
-              quiz: quizId,
+              quiz: quizId, // Use the quiz ID directly (could be string UUID or number)
               question: question.question,
               type: 'multiple_choice',
               options: question.options,

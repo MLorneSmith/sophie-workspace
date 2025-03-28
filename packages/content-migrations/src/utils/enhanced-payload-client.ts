@@ -82,6 +82,59 @@ const calculateBackoff = (
 };
 
 /**
+ * Tests the database connection to verify schema access
+ * @param serverUrl - The Payload server URL
+ * @param token - The authentication token
+ * @returns True if the connection is successful, false otherwise
+ */
+const testDatabaseConnection = async (
+  serverUrl: string,
+  token: string,
+): Promise<boolean> => {
+  try {
+    // Test query to verify schema access
+    console.log('Testing database connection...');
+
+    // First try the health endpoint
+    const healthResponse = await fetch(`${serverUrl}/api/_health`, {
+      method: 'GET',
+      headers: {
+        Authorization: `JWT ${token}`,
+      },
+    });
+
+    if (healthResponse.ok) {
+      console.log('Health check successful');
+    } else {
+      console.warn('Health check failed, but continuing...');
+    }
+
+    // Then try to fetch a single document from a collection to verify schema access
+    const testResponse = await fetch(`${serverUrl}/api/documentation?limit=1`, {
+      method: 'GET',
+      headers: {
+        Authorization: `JWT ${token}`,
+      },
+    });
+
+    if (testResponse.ok) {
+      const data = await testResponse.json();
+      console.log(
+        `Database connection test: Found ${data.totalDocs} documents in documentation collection`,
+      );
+      return true;
+    } else {
+      const errorData = await testResponse.json();
+      console.error('Database connection test failed:', errorData);
+      return false;
+    }
+  } catch (error) {
+    console.error('Database connection test failed:', error);
+    return false;
+  }
+};
+
+/**
  * Gets a Payload CMS client instance that uses the REST API
  * with token caching and retry logic
  * @param env - The environment to use ('development' for local, 'production' for remote)
@@ -232,6 +285,16 @@ export async function getEnhancedPayloadClient(
     // If we get here, all retry attempts failed
     throw lastError || new Error('Request failed after multiple attempts');
   };
+
+  // Test the database connection
+  const token = await getAuthToken();
+  const connectionSuccessful = await testDatabaseConnection(serverUrl, token);
+
+  if (!connectionSuccessful) {
+    console.warn(
+      'Database connection test failed, but continuing with client creation...',
+    );
+  }
 
   // Create a client that uses the Payload REST API
   const client: PayloadClient = {

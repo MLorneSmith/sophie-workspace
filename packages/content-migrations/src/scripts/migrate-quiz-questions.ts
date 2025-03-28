@@ -87,6 +87,16 @@ async function migrateQuizQuestionsToPayload() {
         continue;
       }
 
+      // Ensure the quiz ID is a number
+      const quizIdNumber =
+        typeof quizId === 'string' ? parseInt(quizId, 10) : quizId;
+      if (isNaN(quizIdNumber)) {
+        console.error(
+          `Invalid quiz ID for ${slug}: ${quizId}. Skipping questions.`,
+        );
+        continue;
+      }
+
       // Process questions
       if (data.questions && Array.isArray(data.questions)) {
         console.log(
@@ -96,16 +106,14 @@ async function migrateQuizQuestionsToPayload() {
         for (let i = 0; i < data.questions.length; i++) {
           const q = data.questions[i];
 
-          // Generate a unique ID for the question
-          const questionId = uuidv4();
-
           // Create the question
-          await payload.create({
+          // For UUID-based IDs, we don't need to specify the ID
+          // Let Payload generate a UUID automatically
+          const questionData = await payload.create({
             collection: 'quiz_questions',
             data: {
-              id: questionId,
               question: q.question,
-              quiz: quizId,
+              quiz: quizId, // Use the quiz ID directly (could be string UUID or number)
               type:
                 q.questiontype === 'multi-answer'
                   ? 'multiple_choice'
@@ -114,6 +122,8 @@ async function migrateQuizQuestionsToPayload() {
               order: i,
             },
           });
+
+          console.log(`Created question with ID: ${questionData.id}`);
 
           // Create options for the question
           if (q.answers && Array.isArray(q.answers)) {
