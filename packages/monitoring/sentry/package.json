@@ -16,7 +16,7 @@
     "./config/server": "./src/sentry.client.server.ts"
   },
   "dependencies": {
-    "@sentry/nextjs": "^9.9.0",
+    "@sentry/nextjs": "^9.10.0",
     "import-in-the-middle": "1.13.1"
   },
   "devDependencies": {
