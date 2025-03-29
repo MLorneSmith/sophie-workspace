@@ -80,12 +80,6 @@ export async function createStripeCheckout(
       : { customer_creation: 'always' };
 
   const lineItems = params.plan.lineItems.map((item) => {
-    if (item.type === 'metered') {
-      return {
-        price: item.id,
-      };
-    }
-
     // if we pass a custom quantity for the item ID
     // we use that - otherwise we set it to 1 by default
     const quantity =
