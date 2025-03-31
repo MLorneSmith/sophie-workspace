@@ -60,7 +60,8 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
     "salt" varchar,
     "hash" varchar,
     "login_attempts" numeric DEFAULT 0,
-    "lock_until" timestamp(3) with time zone
+    "lock_until" timestamp(3) with time zone,
+    "_parent_id" uuid DEFAULT NULL
   );
   
   CREATE TABLE IF NOT EXISTS "payload"."media" (

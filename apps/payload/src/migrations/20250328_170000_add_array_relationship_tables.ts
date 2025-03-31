@@ -6,7 +6,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
     CREATE TABLE IF NOT EXISTS "payload"."posts_categories" (
       "id" uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
       "order" integer,
-      "parent_id" uuid,
+      "_parent_id" uuid,
       "category" varchar,
       "updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
       "created_at" timestamp(3) with time zone DEFAULT now() NOT NULL
@@ -19,13 +19,13 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
     -- Add foreign key constraint
     ALTER TABLE "payload"."posts_categories" 
     ADD CONSTRAINT "posts_categories_parent_id_fkey" 
-    FOREIGN KEY ("parent_id") REFERENCES "payload"."posts"("id") ON DELETE CASCADE;
+    FOREIGN KEY ("_parent_id") REFERENCES "payload"."posts"("id") ON DELETE CASCADE;
     
     -- Create posts_tags table for the tags array field in Posts collection
     CREATE TABLE IF NOT EXISTS "payload"."posts_tags" (
       "id" uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
       "order" integer,
-      "parent_id" uuid,
+      "_parent_id" uuid,
       "tag" varchar,
       "updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
       "created_at" timestamp(3) with time zone DEFAULT now() NOT NULL
@@ -38,7 +38,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
     -- Add foreign key constraint
     ALTER TABLE "payload"."posts_tags" 
     ADD CONSTRAINT "posts_tags_parent_id_fkey" 
-    FOREIGN KEY ("parent_id") REFERENCES "payload"."posts"("id") ON DELETE CASCADE;
+    FOREIGN KEY ("_parent_id") REFERENCES "payload"."posts"("id") ON DELETE CASCADE;
   `)
 }
 
