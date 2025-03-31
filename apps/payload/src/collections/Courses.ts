@@ -45,7 +45,7 @@ export const Courses: CollectionConfig = {
       required: true,
     },
     {
-      name: 'featuredImage',
+      name: 'featured_image_id',
       type: 'upload',
       relationTo: 'media',
     },

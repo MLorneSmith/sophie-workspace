@@ -11,7 +11,7 @@ import {
   index,
   uniqueIndex,
   foreignKey,
-  serial,
+  uuid,
   timestamp,
   varchar,
   numeric,
@@ -19,6 +19,7 @@ import {
   jsonb,
   type AnyPgColumn,
   boolean,
+  serial,
 } from '@payloadcms/db-postgres/drizzle/pg-core'
 import { sql, relations } from '@payloadcms/db-postgres/drizzle'
 export const db_schema = pgSchema('payload')
@@ -43,7 +44,7 @@ export const enum_quiz_questions_type = db_schema.enum('enum_quiz_questions_type
 export const users = db_schema.table(
   'users',
   {
-    id: serial('id').primaryKey(),
+    id: uuid('id').defaultRandom().primaryKey(),
     updatedAt: timestamp('updated_at', { mode: 'string', withTimezone: true, precision: 3 })
       .defaultNow()
       .notNull(),
@@ -72,7 +73,7 @@ export const users = db_schema.table(
 export const media = db_schema.table(
   'media',
   {
-    id: serial('id').primaryKey(),
+    id: uuid('id').defaultRandom().primaryKey(),
     alt: varchar('alt').notNull(),
     updatedAt: timestamp('updated_at', { mode: 'string', withTimezone: true, precision: 3 })
       .defaultNow()
@@ -101,7 +102,7 @@ export const documentation_categories = db_schema.table(
   'documentation_categories',
   {
     _order: integer('_order').notNull(),
-    _parentID: integer('_parent_id').notNull(),
+    _parentID: uuid('_parent_id').notNull(),
     id: varchar('id').primaryKey(),
     category: varchar('category'),
   },
@@ -120,7 +121,7 @@ export const documentation_tags = db_schema.table(
   'documentation_tags',
   {
     _order: integer('_order').notNull(),
-    _parentID: integer('_parent_id').notNull(),
+    _parentID: uuid('_parent_id').notNull(),
     id: varchar('id').primaryKey(),
     tag: varchar('tag'),
   },
@@ -139,9 +140,9 @@ export const documentation_breadcrumbs = db_schema.table(
   'documentation_breadcrumbs',
   {
     _order: integer('_order').notNull(),
-    _parentID: integer('_parent_id').notNull(),
+    _parentID: uuid('_parent_id').notNull(),
     id: varchar('id').primaryKey(),
-    doc: integer('doc_id').references(() => documentation.id, {
+    doc: uuid('doc_id').references(() => documentation.id, {
       onDelete: 'set null',
     }),
     url: varchar('url'),
@@ -162,7 +163,7 @@ export const documentation_breadcrumbs = db_schema.table(
 export const documentation = db_schema.table(
   'documentation',
   {
-    id: serial('id').primaryKey(),
+    id: uuid('id').defaultRandom().primaryKey(),
     title: varchar('title').notNull(),
     slug: varchar('slug').notNull(),
     description: varchar('description'),
@@ -170,7 +171,7 @@ export const documentation = db_schema.table(
     publishedAt: timestamp('published_at', { mode: 'string', withTimezone: true, precision: 3 }),
     status: enum_documentation_status('status').notNull().default('draft'),
     order: numeric('order').default('0'),
-    parent: integer('parent_id').references((): AnyPgColumn => documentation.id, {
+    parent: uuid('parent_id').references((): AnyPgColumn => documentation.id, {
       onDelete: 'set null',
     }),
     updatedAt: timestamp('updated_at', { mode: 'string', withTimezone: true, precision: 3 })
@@ -191,7 +192,7 @@ export const posts_categories = db_schema.table(
   'posts_categories',
   {
     _order: integer('_order').notNull(),
-    _parentID: integer('_parent_id').notNull(),
+    _parentID: uuid('_parent_id').notNull(),
     id: varchar('id').primaryKey(),
     category: varchar('category'),
   },
@@ -210,7 +211,7 @@ export const posts_tags = db_schema.table(
   'posts_tags',
   {
     _order: integer('_order').notNull(),
-    _parentID: integer('_parent_id').notNull(),
+    _parentID: uuid('_parent_id').notNull(),
     id: varchar('id').primaryKey(),
     tag: varchar('tag'),
   },
@@ -228,13 +229,13 @@ export const posts_tags = db_schema.table(
 export const posts = db_schema.table(
   'posts',
   {
-    id: serial('id').primaryKey(),
+    id: uuid('id').defaultRandom().primaryKey(),
     title: varchar('title').notNull(),
     slug: varchar('slug').notNull(),
     description: varchar('description'),
     content: jsonb('content').notNull(),
     publishedAt: timestamp('published_at', { mode: 'string', withTimezone: true, precision: 3 }),
-    image: integer('image_id').references(() => media.id, {
+    image_id: uuid('image_id_id').references(() => media.id, {
       onDelete: 'set null',
     }),
     status: enum_posts_status('status').notNull().default('draft'),
@@ -246,7 +247,7 @@ export const posts = db_schema.table(
       .notNull(),
   },
   (columns) => ({
-    posts_image_idx: index('posts_image_idx').on(columns.image),
+    posts_image_id_idx: index('posts_image_id_idx').on(columns.image_id),
     posts_updated_at_idx: index('posts_updated_at_idx').on(columns.updatedAt),
     posts_created_at_idx: index('posts_created_at_idx').on(columns.createdAt),
   }),
@@ -255,7 +256,7 @@ export const posts = db_schema.table(
 export const surveys = db_schema.table(
   'surveys',
   {
-    id: serial('id').primaryKey(),
+    id: uuid('id').defaultRandom().primaryKey(),
     title: varchar('title').notNull(),
     slug: varchar('slug').notNull(),
     description: varchar('description'),
@@ -284,9 +285,9 @@ export const surveys_rels = db_schema.table(
   {
     id: serial('id').primaryKey(),
     order: integer('order'),
-    parent: integer('parent_id').notNull(),
+    parent: uuid('parent_id').notNull(),
     path: varchar('path').notNull(),
-    survey_questionsID: integer('survey_questions_id'),
+    survey_questionsID: uuid('survey_questions_id'),
   },
   (columns) => ({
     order: index('surveys_rels_order_idx').on(columns.order),
@@ -312,7 +313,7 @@ export const survey_questions_options = db_schema.table(
   'survey_questions_options',
   {
     _order: integer('_order').notNull(),
-    _parentID: integer('_parent_id').notNull(),
+    _parentID: uuid('_parent_id').notNull(),
     id: varchar('id').primaryKey(),
     option: varchar('option').notNull(),
   },
@@ -330,7 +331,7 @@ export const survey_questions_options = db_schema.table(
 export const survey_questions = db_schema.table(
   'survey_questions',
   {
-    id: serial('id').primaryKey(),
+    id: uuid('id').defaultRandom().primaryKey(),
     text: varchar('text').notNull(),
     type: enum_survey_questions_type('type').notNull().default('multiple_choice'),
     description: varchar('description'),
@@ -354,12 +355,12 @@ export const survey_questions = db_schema.table(
 export const courses = db_schema.table(
   'courses',
   {
-    id: serial('id').primaryKey(),
+    id: uuid('id').defaultRandom().primaryKey(),
     title: varchar('title').notNull(),
     slug: varchar('slug').notNull(),
     description: varchar('description'),
     status: enum_courses_status('status').notNull().default('draft'),
-    featuredImage: integer('featured_image_id').references(() => media.id, {
+    featured_image_id: uuid('featured_image_id_id').references(() => media.id, {
       onDelete: 'set null',
     }),
     introContent: jsonb('intro_content'),
@@ -376,7 +377,9 @@ export const courses = db_schema.table(
   },
   (columns) => ({
     courses_slug_idx: uniqueIndex('courses_slug_idx').on(columns.slug),
-    courses_featured_image_idx: index('courses_featured_image_idx').on(columns.featuredImage),
+    courses_featured_image_id_idx: index('courses_featured_image_id_idx').on(
+      columns.featured_image_id,
+    ),
     courses_updated_at_idx: index('courses_updated_at_idx').on(columns.updatedAt),
     courses_created_at_idx: index('courses_created_at_idx').on(columns.createdAt),
   }),
@@ -387,9 +390,9 @@ export const courses_rels = db_schema.table(
   {
     id: serial('id').primaryKey(),
     order: integer('order'),
-    parent: integer('parent_id').notNull(),
+    parent: uuid('parent_id').notNull(),
     path: varchar('path').notNull(),
-    course_lessonsID: integer('course_lessons_id'),
+    course_lessonsID: uuid('course_lessons_id'),
   },
   (columns) => ({
     order: index('courses_rels_order_idx').on(columns.order),
@@ -414,22 +417,22 @@ export const courses_rels = db_schema.table(
 export const course_lessons = db_schema.table(
   'course_lessons',
   {
-    id: serial('id').primaryKey(),
+    id: uuid('id').defaultRandom().primaryKey(),
     title: varchar('title').notNull(),
     slug: varchar('slug').notNull(),
     description: varchar('description'),
-    featuredImage: integer('featured_image_id').references(() => media.id, {
+    featured_image_id: uuid('featured_image_id_id').references(() => media.id, {
       onDelete: 'set null',
     }),
     content: jsonb('content'),
     lessonNumber: numeric('lesson_number').notNull(),
     estimatedDuration: numeric('estimated_duration'),
-    course: integer('course_id')
+    course_id: uuid('course_id_id')
       .notNull()
       .references(() => courses.id, {
         onDelete: 'set null',
       }),
-    quiz: integer('quiz_id').references(() => course_quizzes.id, {
+    quiz_id: uuid('quiz_id_id').references(() => course_quizzes.id, {
       onDelete: 'set null',
     }),
     publishedAt: timestamp('published_at', { mode: 'string', withTimezone: true, precision: 3 }),
@@ -442,11 +445,11 @@ export const course_lessons = db_schema.table(
   },
   (columns) => ({
     course_lessons_slug_idx: uniqueIndex('course_lessons_slug_idx').on(columns.slug),
-    course_lessons_featured_image_idx: index('course_lessons_featured_image_idx').on(
-      columns.featuredImage,
+    course_lessons_featured_image_id_idx: index('course_lessons_featured_image_id_idx').on(
+      columns.featured_image_id,
     ),
-    course_lessons_course_idx: index('course_lessons_course_idx').on(columns.course),
-    course_lessons_quiz_idx: index('course_lessons_quiz_idx').on(columns.quiz),
+    course_lessons_course_id_idx: index('course_lessons_course_id_idx').on(columns.course_id),
+    course_lessons_quiz_id_idx: index('course_lessons_quiz_id_idx').on(columns.quiz_id),
     course_lessons_updated_at_idx: index('course_lessons_updated_at_idx').on(columns.updatedAt),
     course_lessons_created_at_idx: index('course_lessons_created_at_idx').on(columns.createdAt),
   }),
@@ -455,7 +458,7 @@ export const course_lessons = db_schema.table(
 export const course_quizzes = db_schema.table(
   'course_quizzes',
   {
-    id: serial('id').primaryKey(),
+    id: uuid('id').defaultRandom().primaryKey(),
     title: varchar('title').notNull(),
     description: varchar('description'),
     passingScore: numeric('passing_score').notNull().default('70'),
@@ -476,7 +479,7 @@ export const quiz_questions_options = db_schema.table(
   'quiz_questions_options',
   {
     _order: integer('_order').notNull(),
-    _parentID: integer('_parent_id').notNull(),
+    _parentID: uuid('_parent_id').notNull(),
     id: varchar('id').primaryKey(),
     text: varchar('text').notNull(),
     isCorrect: boolean('is_correct').default(false),
@@ -495,9 +498,9 @@ export const quiz_questions_options = db_schema.table(
 export const quiz_questions = db_schema.table(
   'quiz_questions',
   {
-    id: serial('id').primaryKey(),
+    id: uuid('id').defaultRandom().primaryKey(),
     question: varchar('question').notNull(),
-    quiz: integer('quiz_id')
+    quiz_id: uuid('quiz_id_id')
       .notNull()
       .references(() => course_quizzes.id, {
         onDelete: 'set null',
@@ -513,7 +516,7 @@ export const quiz_questions = db_schema.table(
       .notNull(),
   },
   (columns) => ({
-    quiz_questions_quiz_idx: index('quiz_questions_quiz_idx').on(columns.quiz),
+    quiz_questions_quiz_id_idx: index('quiz_questions_quiz_id_idx').on(columns.quiz_id),
     quiz_questions_updated_at_idx: index('quiz_questions_updated_at_idx').on(columns.updatedAt),
     quiz_questions_created_at_idx: index('quiz_questions_created_at_idx').on(columns.createdAt),
   }),
@@ -522,7 +525,7 @@ export const quiz_questions = db_schema.table(
 export const payload_locked_documents = db_schema.table(
   'payload_locked_documents',
   {
-    id: serial('id').primaryKey(),
+    id: uuid('id').defaultRandom().primaryKey(),
     globalSlug: varchar('global_slug'),
     updatedAt: timestamp('updated_at', { mode: 'string', withTimezone: true, precision: 3 })
       .defaultNow()
@@ -549,18 +552,18 @@ export const payload_locked_documents_rels = db_schema.table(
   {
     id: serial('id').primaryKey(),
     order: integer('order'),
-    parent: integer('parent_id').notNull(),
+    parent: uuid('parent_id').notNull(),
     path: varchar('path').notNull(),
-    usersID: integer('users_id'),
-    mediaID: integer('media_id'),
-    documentationID: integer('documentation_id'),
-    postsID: integer('posts_id'),
-    surveysID: integer('surveys_id'),
-    survey_questionsID: integer('survey_questions_id'),
-    coursesID: integer('courses_id'),
-    course_lessonsID: integer('course_lessons_id'),
-    course_quizzesID: integer('course_quizzes_id'),
-    quiz_questionsID: integer('quiz_questions_id'),
+    usersID: uuid('users_id'),
+    mediaID: uuid('media_id'),
+    documentationID: uuid('documentation_id'),
+    postsID: uuid('posts_id'),
+    surveysID: uuid('surveys_id'),
+    survey_questionsID: uuid('survey_questions_id'),
+    coursesID: uuid('courses_id'),
+    course_lessonsID: uuid('course_lessons_id'),
+    course_quizzesID: uuid('course_quizzes_id'),
+    quiz_questionsID: uuid('quiz_questions_id'),
   },
   (columns) => ({
     order: index('payload_locked_documents_rels_order_idx').on(columns.order),
@@ -657,7 +660,7 @@ export const payload_locked_documents_rels = db_schema.table(
 export const payload_preferences = db_schema.table(
   'payload_preferences',
   {
-    id: serial('id').primaryKey(),
+    id: uuid('id').defaultRandom().primaryKey(),
     key: varchar('key'),
     value: jsonb('value'),
     updatedAt: timestamp('updated_at', { mode: 'string', withTimezone: true, precision: 3 })
@@ -683,9 +686,9 @@ export const payload_preferences_rels = db_schema.table(
   {
     id: serial('id').primaryKey(),
     order: integer('order'),
-    parent: integer('parent_id').notNull(),
+    parent: uuid('parent_id').notNull(),
     path: varchar('path').notNull(),
-    usersID: integer('users_id'),
+    usersID: uuid('users_id'),
   },
   (columns) => ({
     order: index('payload_preferences_rels_order_idx').on(columns.order),
@@ -710,7 +713,7 @@ export const payload_preferences_rels = db_schema.table(
 export const payload_migrations = db_schema.table(
   'payload_migrations',
   {
-    id: serial('id').primaryKey(),
+    id: uuid('id').defaultRandom().primaryKey(),
     name: varchar('name'),
     batch: numeric('batch'),
     updatedAt: timestamp('updated_at', { mode: 'string', withTimezone: true, precision: 3 })
@@ -795,10 +798,10 @@ export const relations_posts_tags = relations(posts_tags, ({ one }) => ({
   }),
 }))
 export const relations_posts = relations(posts, ({ one, many }) => ({
-  image: one(media, {
-    fields: [posts.image],
+  image_id: one(media, {
+    fields: [posts.image_id],
     references: [media.id],
-    relationName: 'image',
+    relationName: 'image_id',
   }),
   categories: many(posts_categories, {
     relationName: 'categories',
@@ -852,30 +855,30 @@ export const relations_courses_rels = relations(courses_rels, ({ one }) => ({
   }),
 }))
 export const relations_courses = relations(courses, ({ one, many }) => ({
-  featuredImage: one(media, {
-    fields: [courses.featuredImage],
+  featured_image_id: one(media, {
+    fields: [courses.featured_image_id],
     references: [media.id],
-    relationName: 'featuredImage',
+    relationName: 'featured_image_id',
   }),
   _rels: many(courses_rels, {
     relationName: '_rels',
   }),
 }))
 export const relations_course_lessons = relations(course_lessons, ({ one }) => ({
-  featuredImage: one(media, {
-    fields: [course_lessons.featuredImage],
+  featured_image_id: one(media, {
+    fields: [course_lessons.featured_image_id],
     references: [media.id],
-    relationName: 'featuredImage',
+    relationName: 'featured_image_id',
   }),
-  course: one(courses, {
-    fields: [course_lessons.course],
+  course_id: one(courses, {
+    fields: [course_lessons.course_id],
     references: [courses.id],
-    relationName: 'course',
+    relationName: 'course_id',
   }),
-  quiz: one(course_quizzes, {
-    fields: [course_lessons.quiz],
+  quiz_id: one(course_quizzes, {
+    fields: [course_lessons.quiz_id],
     references: [course_quizzes.id],
-    relationName: 'quiz',
+    relationName: 'quiz_id',
   }),
 }))
 export const relations_course_quizzes = relations(course_quizzes, () => ({}))
@@ -887,10 +890,10 @@ export const relations_quiz_questions_options = relations(quiz_questions_options
   }),
 }))
 export const relations_quiz_questions = relations(quiz_questions, ({ one, many }) => ({
-  quiz: one(course_quizzes, {
-    fields: [quiz_questions.quiz],
+  quiz_id: one(course_quizzes, {
+    fields: [quiz_questions.quiz_id],
     references: [course_quizzes.id],
-    relationName: 'quiz',
+    relationName: 'quiz_id',
   }),
   options: many(quiz_questions_options, {
     relationName: 'options',

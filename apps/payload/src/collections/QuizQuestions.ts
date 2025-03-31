@@ -8,7 +8,7 @@ export const QuizQuestions: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'question',
-    defaultColumns: ['question', 'quiz', 'type'],
+    defaultColumns: ['question', 'quiz_id', 'type'],
     description: 'Questions for course quizzes',
   },
   access: {
@@ -21,7 +21,7 @@ export const QuizQuestions: CollectionConfig = {
       required: true,
     },
     {
-      name: 'quiz',
+      name: 'quiz_id',
       type: 'relationship',
       relationTo: 'course_quizzes',
       required: true,

@@ -98,7 +98,7 @@ export interface Config {
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
   };
   db: {
-    defaultIDType: number;
+    defaultIDType: string;
   };
   globals: {};
   globalsSelect: {};
@@ -134,7 +134,7 @@ export interface UserAuthOperations {
  * via the `definition` "users".
  */
 export interface User {
-  id: number;
+  id: string;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -151,7 +151,7 @@ export interface User {
  * via the `definition` "media".
  */
 export interface Media {
-  id: number;
+  id: string;
   alt: string;
   updatedAt: string;
   createdAt: string;
@@ -172,7 +172,7 @@ export interface Media {
  * via the `definition` "documentation".
  */
 export interface Documentation {
-  id: number;
+  id: string;
   title: string;
   /**
    * The URL-friendly identifier for this document
@@ -212,10 +212,10 @@ export interface Documentation {
         id?: string | null;
       }[]
     | null;
-  parent?: (number | null) | Documentation;
+  parent?: (string | null) | Documentation;
   breadcrumbs?:
     | {
-        doc?: (number | null) | Documentation;
+        doc?: (string | null) | Documentation;
         url?: string | null;
         label?: string | null;
         id?: string | null;
@@ -231,7 +231,7 @@ export interface Documentation {
  * via the `definition` "posts".
  */
 export interface Post {
-  id: number;
+  id: string;
   title: string;
   /**
    * The URL-friendly identifier for this post
@@ -266,7 +266,7 @@ export interface Post {
   /**
    * Featured image for the blog post
    */
-  image?: (number | null) | Media;
+  image_id?: (string | null) | Media;
   /**
    * Only published posts will be visible on the website
    */
@@ -299,7 +299,7 @@ export interface Post {
  * via the `definition` "surveys".
  */
 export interface Survey {
-  id: number;
+  id: string;
   title: string;
   /**
    * The URL-friendly identifier for this survey
@@ -352,7 +352,7 @@ export interface Survey {
   /**
    * Questions included in this survey
    */
-  questions?: (number | SurveyQuestion)[] | null;
+  questions?: (string | SurveyQuestion)[] | null;
   /**
    * Content shown on the summary page
    */
@@ -389,7 +389,7 @@ export interface Survey {
  * via the `definition` "survey_questions".
  */
 export interface SurveyQuestion {
-  id: number;
+  id: string;
   /**
    * The question text
    */
@@ -437,7 +437,7 @@ export interface SurveyQuestion {
  * via the `definition` "courses".
  */
 export interface Course {
-  id: number;
+  id: string;
   title: string;
   /**
    * The URL-friendly identifier for this course
@@ -445,7 +445,7 @@ export interface Course {
   slug: string;
   description?: string | null;
   status: 'draft' | 'published';
-  featuredImage?: (number | null) | Media;
+  featured_image_id?: (string | null) | Media;
   introContent?: {
     root: {
       type: string;
@@ -479,7 +479,7 @@ export interface Course {
   estimatedDuration?: number | null;
   showProgressBar?: boolean | null;
   publishedAt?: string | null;
-  lessons?: (number | CourseLesson)[] | null;
+  lessons?: (string | CourseLesson)[] | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -490,14 +490,14 @@ export interface Course {
  * via the `definition` "course_lessons".
  */
 export interface CourseLesson {
-  id: number;
+  id: string;
   title: string;
   /**
    * The URL-friendly identifier for this lesson
    */
   slug: string;
   description?: string | null;
-  featuredImage?: (number | null) | Media;
+  featured_image_id?: (string | null) | Media;
   content?: {
     root: {
       type: string;
@@ -518,8 +518,8 @@ export interface CourseLesson {
    */
   lessonNumber: number;
   estimatedDuration?: number | null;
-  course: number | Course;
-  quiz?: (number | null) | CourseQuizz;
+  course_id: string | Course;
+  quiz_id?: (string | null) | CourseQuizz;
   publishedAt?: string | null;
   updatedAt: string;
   createdAt: string;
@@ -531,7 +531,7 @@ export interface CourseLesson {
  * via the `definition` "course_quizzes".
  */
 export interface CourseQuizz {
-  id: number;
+  id: string;
   title: string;
   description?: string | null;
   passingScore: number;
@@ -545,12 +545,12 @@ export interface CourseQuizz {
  * via the `definition` "quiz_questions".
  */
 export interface QuizQuestion {
-  id: number;
+  id: string;
   question: string;
   /**
    * The quiz this question belongs to
    */
-  quiz: number | CourseQuizz;
+  quiz_id: string | CourseQuizz;
   type: 'multiple_choice';
   options: {
     text: string;
@@ -573,52 +573,52 @@ export interface QuizQuestion {
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
-  id: number;
+  id: string;
   document?:
     | ({
         relationTo: 'users';
-        value: number | User;
+        value: string | User;
       } | null)
     | ({
         relationTo: 'media';
-        value: number | Media;
+        value: string | Media;
       } | null)
     | ({
         relationTo: 'documentation';
-        value: number | Documentation;
+        value: string | Documentation;
       } | null)
     | ({
         relationTo: 'posts';
-        value: number | Post;
+        value: string | Post;
       } | null)
     | ({
         relationTo: 'surveys';
-        value: number | Survey;
+        value: string | Survey;
       } | null)
     | ({
         relationTo: 'survey_questions';
-        value: number | SurveyQuestion;
+        value: string | SurveyQuestion;
       } | null)
     | ({
         relationTo: 'courses';
-        value: number | Course;
+        value: string | Course;
       } | null)
     | ({
         relationTo: 'course_lessons';
-        value: number | CourseLesson;
+        value: string | CourseLesson;
       } | null)
     | ({
         relationTo: 'course_quizzes';
-        value: number | CourseQuizz;
+        value: string | CourseQuizz;
       } | null)
     | ({
         relationTo: 'quiz_questions';
-        value: number | QuizQuestion;
+        value: string | QuizQuestion;
       } | null);
   globalSlug?: string | null;
   user: {
     relationTo: 'users';
-    value: number | User;
+    value: string | User;
   };
   updatedAt: string;
   createdAt: string;
@@ -628,10 +628,10 @@ export interface PayloadLockedDocument {
  * via the `definition` "payload-preferences".
  */
 export interface PayloadPreference {
-  id: number;
+  id: string;
   user: {
     relationTo: 'users';
-    value: number | User;
+    value: string | User;
   };
   key?: string | null;
   value?:
@@ -651,7 +651,7 @@ export interface PayloadPreference {
  * via the `definition` "payload-migrations".
  */
 export interface PayloadMigration {
-  id: number;
+  id: string;
   name?: string | null;
   batch?: number | null;
   updatedAt: string;
@@ -736,7 +736,7 @@ export interface PostsSelect<T extends boolean = true> {
   description?: T;
   content?: T;
   publishedAt?: T;
-  image?: T;
+  image_id?: T;
   status?: T;
   categories?:
     | T
@@ -801,7 +801,7 @@ export interface CoursesSelect<T extends boolean = true> {
   slug?: T;
   description?: T;
   status?: T;
-  featuredImage?: T;
+  featured_image_id?: T;
   introContent?: T;
   completionContent?: T;
   estimatedDuration?: T;
@@ -819,12 +819,12 @@ export interface CourseLessonsSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
   description?: T;
-  featuredImage?: T;
+  featured_image_id?: T;
   content?: T;
   lessonNumber?: T;
   estimatedDuration?: T;
-  course?: T;
-  quiz?: T;
+  course_id?: T;
+  quiz_id?: T;
   publishedAt?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -846,7 +846,7 @@ export interface CourseQuizzesSelect<T extends boolean = true> {
  */
 export interface QuizQuestionsSelect<T extends boolean = true> {
   question?: T;
-  quiz?: T;
+  quiz_id?: T;
   type?: T;
   options?:
     | T

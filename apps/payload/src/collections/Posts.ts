@@ -82,7 +82,7 @@ export const Posts: CollectionConfig = {
       defaultValue: () => new Date().toISOString(),
     },
     {
-      name: 'image',
+      name: 'image_id',
       type: 'upload',
       relationTo: 'media',
       admin: {

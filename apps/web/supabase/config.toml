@@ -76,8 +76,9 @@ redirect_uri = ""
 # or any other third-party OIDC providers.
 url = ""
 
-[auth.rate_limit]
-email_sent = 1000
+# Rate limiting is not supported in the current Supabase version
+# [auth.rate_limit]
+# email_sent = 1000
 
 [auth.email.template.invite]
 subject = "You are invited to Makerkit"
