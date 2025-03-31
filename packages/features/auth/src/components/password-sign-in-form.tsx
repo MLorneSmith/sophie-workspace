@@ -25,10 +25,12 @@ import { PasswordSignInSchema } from '../schemas/password-sign-in.schema';
 
 export function PasswordSignInForm({
   onSubmit,
-  loading,
+  loading = false,
+  redirecting = false,
 }: {
   onSubmit: (params: z.infer<typeof PasswordSignInSchema>) => unknown;
   loading: boolean;
+  redirecting: boolean;
 }) {
   const { t } = useTranslation('auth');
 
@@ -112,23 +114,30 @@ export function PasswordSignInForm({
           data-test="auth-submit-button"
           className={'group w-full'}
           type="submit"
-          disabled={loading}
+          disabled={loading || redirecting}
         >
-          <If
-            condition={loading}
-            fallback={
-              <>
-                <Trans i18nKey={'auth:signInWithEmail'} />
+          <If condition={redirecting}>
+            <span className={'animate-in fade-in slide-in-from-bottom-24'}>
+              <Trans i18nKey={'auth:redirecting'} />
+            </span>
+          </If>
 
-                <ArrowRight
-                  className={
-                    'zoom-in animate-in slide-in-from-left-2 fill-mode-both h-4 delay-500 duration-500'
-                  }
-                />
-              </>
-            }
-          >
-            <Trans i18nKey={'auth:signingIn'} />
+          <If condition={loading}>
+            <span className={'animate-in fade-in slide-in-from-bottom-24'}>
+              <Trans i18nKey={'auth:signingIn'} />
+            </span>
+          </If>
+
+          <If condition={!redirecting && !loading}>
+            <span className={'animate-out fade-out flex items-center'}>
+              <Trans i18nKey={'auth:signInWithEmail'} />
+
+              <ArrowRight
+                className={
+                  'zoom-in animate-in slide-in-from-left-2 fill-mode-both h-4 delay-500 duration-500'
+                }
+              />
+            </span>
           </If>
         </Button>
       </form>

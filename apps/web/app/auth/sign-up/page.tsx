@@ -57,7 +57,7 @@ async function SignUpPage({ searchParams }: Props) {
 
       <div className={'flex justify-center'}>
         <Button asChild variant={'link'} size={'sm'}>
-          <Link href={signInPath}>
+          <Link href={signInPath} prefetch={true}>
             <Trans i18nKey={'auth:alreadyHaveAnAccount'} />
           </Link>
         </Button>
