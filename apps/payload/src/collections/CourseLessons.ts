@@ -10,7 +10,7 @@ export const CourseLessons: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'lessonNumber', 'course'],
+    defaultColumns: ['title', 'lessonNumber', 'course_id'],
     description: 'Lessons for courses in the learning management system',
   },
   access: {
@@ -36,7 +36,7 @@ export const CourseLessons: CollectionConfig = {
       type: 'textarea',
     },
     {
-      name: 'featuredImage',
+      name: 'featured_image_id',
       type: 'upload',
       relationTo: 'media',
     },
@@ -68,13 +68,13 @@ export const CourseLessons: CollectionConfig = {
       label: 'Estimated duration (minutes)',
     },
     {
-      name: 'course',
+      name: 'course_id',
       type: 'relationship',
       relationTo: 'courses' as any,
       required: true,
     },
     {
-      name: 'quiz',
+      name: 'quiz_id',
       type: 'relationship',
       relationTo: 'course_quizzes' as any,
       hasMany: false,

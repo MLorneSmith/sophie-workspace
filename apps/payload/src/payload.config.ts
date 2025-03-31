@@ -73,10 +73,12 @@ export default buildConfig({
     pool: {
       connectionString: process.env.DATABASE_URI || '',
     },
-    // Disable schema push to avoid serial type errors
+    // Disable schema push to prevent parameter errors
     push: false,
     // Configure Postgres to use the "payload" schema
     schemaName: 'payload',
+    // Use UUID for ID columns
+    idType: 'uuid',
   }),
   sharp: sharp as any,
   plugins: [
