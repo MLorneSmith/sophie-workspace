@@ -11,7 +11,7 @@
     "@kit/cms-types": "workspace:*",
     "@kit/supabase": "workspace:*",
     "payload": "3.31.0",
-    "react": "19.0.0"
+    "react": "19.1.0"
   },
   "devDependencies": {
     "@types/node": "^22.13.14",
