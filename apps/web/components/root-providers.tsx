@@ -42,7 +42,7 @@ export function RootProviders({
   theme = appConfig.theme,
   children,
 }: React.PropsWithChildren<{
-  lang: string;
+  lang?: string;
   theme?: string;
 }>) {
   const i18nSettings = useMemo(() => getI18nSettings(lang), [lang]);
