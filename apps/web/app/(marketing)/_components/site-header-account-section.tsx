@@ -56,35 +56,27 @@ function AuthButtons() {
   const [isBookDemoOpen, setIsBookDemoOpen] = useState(false);
 
   return (
-<<<<<<< HEAD
     <>
-      <div className={'flex space-x-2'}>
-        <div className={'hidden space-x-2 md:flex'}>
+      <div className={'animate-in fade-in flex gap-x-2.5 duration-500'}>
+        <div className={'hidden md:flex'}>
           <If condition={features.enableThemeToggle}>
             <ModeToggle />
           </If>
-
-          <Button
-            variant={'outline'}
-            className="font-medium"
-            onClick={() => setIsBookDemoOpen(true)}
-          >
-            <Trans i18nKey={'common:bookDemo'} defaults="Book a demo" />
-          </Button>
-
-          <Button asChild variant={'default'}>
-            <Link href={pathsConfig.auth.signIn}>
-              <Trans i18nKey={'auth:signIn'} />
-            </Link>
-          </Button>
         </div>
-=======
-    <div className={'flex gap-x-2.5 animate-in fade-in duration-500'}>
-      <div className={'hidden md:flex'}>
-        <If condition={features.enableThemeToggle}>
-          <ModeToggle />
-        </If>
->>>>>>> 7b1e2617500942a59a5ccbffba76361e6eb9d446
+
+        <Button
+          variant={'outline'}
+          className="font-medium"
+          onClick={() => setIsBookDemoOpen(true)}
+        >
+          <Trans i18nKey={'common:bookDemo'} defaults="Book a demo" />
+        </Button>
+
+        <Button asChild variant={'default'}>
+          <Link href={pathsConfig.auth.signIn}>
+            <Trans i18nKey={'auth:signIn'} />
+          </Link>
+        </Button>
       </div>
 
       <BookDemoOverlay

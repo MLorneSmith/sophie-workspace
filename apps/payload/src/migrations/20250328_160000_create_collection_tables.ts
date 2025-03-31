@@ -18,7 +18,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
     CREATE TABLE IF NOT EXISTS "payload"."documentation_rels" (
       "id" uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
       "order" integer,
-      "parent_id" uuid,
+      "_parent_id" uuid,
       "path" varchar,
       "documentation_id" uuid,
       "updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
@@ -41,7 +41,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
     CREATE TABLE IF NOT EXISTS "payload"."posts_rels" (
       "id" uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
       "order" integer,
-      "parent_id" uuid,
+      "_parent_id" uuid,
       "path" varchar,
       "updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
       "created_at" timestamp(3) with time zone DEFAULT now() NOT NULL
@@ -61,7 +61,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
     CREATE TABLE IF NOT EXISTS "payload"."surveys_rels" (
       "id" uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
       "order" integer,
-      "parent_id" uuid,
+      "_parent_id" uuid,
       "path" varchar,
       "survey_questions_id" uuid,
       "updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
@@ -82,7 +82,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
     CREATE TABLE IF NOT EXISTS "payload"."survey_questions_rels" (
       "id" uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
       "order" integer,
-      "parent_id" uuid,
+      "_parent_id" uuid,
       "path" varchar,
       "updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
       "created_at" timestamp(3) with time zone DEFAULT now() NOT NULL
@@ -104,7 +104,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
     CREATE TABLE IF NOT EXISTS "payload"."courses_rels" (
       "id" uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
       "order" integer,
-      "parent_id" uuid,
+      "_parent_id" uuid,
       "path" varchar,
       "course_lessons_id" uuid,
       "updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
@@ -128,7 +128,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
     CREATE TABLE IF NOT EXISTS "payload"."course_lessons_rels" (
       "id" uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
       "order" integer,
-      "parent_id" uuid,
+      "_parent_id" uuid,
       "path" varchar,
       "updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
       "created_at" timestamp(3) with time zone DEFAULT now() NOT NULL
@@ -139,6 +139,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
       "id" uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
       "title" varchar NOT NULL,
       "slug" varchar NOT NULL,
+      "description" text,
       "updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
       "created_at" timestamp(3) with time zone DEFAULT now() NOT NULL
     );
@@ -147,7 +148,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
     CREATE TABLE IF NOT EXISTS "payload"."course_quizzes_rels" (
       "id" uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
       "order" integer,
-      "parent_id" uuid,
+      "_parent_id" uuid,
       "path" varchar,
       "quiz_questions_id" uuid,
       "updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
@@ -168,11 +169,26 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
     CREATE TABLE IF NOT EXISTS "payload"."quiz_questions_rels" (
       "id" uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
       "order" integer,
-      "parent_id" uuid,
+      "_parent_id" uuid,
       "path" varchar,
       "updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
       "created_at" timestamp(3) with time zone DEFAULT now() NOT NULL
     );
+    
+    -- Create quiz_questions_options table for the options array field
+    CREATE TABLE IF NOT EXISTS "payload"."quiz_questions_options" (
+      "id" uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
+      "_order" integer,
+      "_parent_id" uuid,
+      "text" varchar,
+      "is_correct" boolean DEFAULT false,
+      "updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
+      "created_at" timestamp(3) with time zone DEFAULT now() NOT NULL
+    );
+    
+    -- Create indexes for quiz_questions_options
+    CREATE INDEX IF NOT EXISTS "quiz_questions_options_updated_at_idx" ON "payload"."quiz_questions_options" USING btree ("updated_at");
+    CREATE INDEX IF NOT EXISTS "quiz_questions_options_created_at_idx" ON "payload"."quiz_questions_options" USING btree ("created_at");
     
     -- Create indexes for documentation
     CREATE INDEX IF NOT EXISTS "documentation_updated_at_idx" ON "payload"."documentation" USING btree ("updated_at");
@@ -244,7 +260,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
     
     ALTER TABLE "payload"."documentation_rels" 
     ADD CONSTRAINT "documentation_rels_parent_id_fkey" 
-    FOREIGN KEY ("parent_id") REFERENCES "payload"."documentation"("id") ON DELETE CASCADE;
+    FOREIGN KEY ("_parent_id") REFERENCES "payload"."documentation"("id") ON DELETE CASCADE;
     
     ALTER TABLE "payload"."surveys_rels" 
     ADD CONSTRAINT "surveys_rels_survey_questions_id_fkey" 
@@ -252,7 +268,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
     
     ALTER TABLE "payload"."surveys_rels" 
     ADD CONSTRAINT "surveys_rels_parent_id_fkey" 
-    FOREIGN KEY ("parent_id") REFERENCES "payload"."surveys"("id") ON DELETE CASCADE;
+    FOREIGN KEY ("_parent_id") REFERENCES "payload"."surveys"("id") ON DELETE CASCADE;
     
     ALTER TABLE "payload"."courses_rels" 
     ADD CONSTRAINT "courses_rels_course_lessons_id_fkey" 
@@ -260,7 +276,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
     
     ALTER TABLE "payload"."courses_rels" 
     ADD CONSTRAINT "courses_rels_parent_id_fkey" 
-    FOREIGN KEY ("parent_id") REFERENCES "payload"."courses"("id") ON DELETE CASCADE;
+    FOREIGN KEY ("_parent_id") REFERENCES "payload"."courses"("id") ON DELETE CASCADE;
     
     ALTER TABLE "payload"."course_quizzes_rels" 
     ADD CONSTRAINT "course_quizzes_rels_quiz_questions_id_fkey" 
@@ -268,7 +284,15 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
     
     ALTER TABLE "payload"."course_quizzes_rels" 
     ADD CONSTRAINT "course_quizzes_rels_parent_id_fkey" 
-    FOREIGN KEY ("parent_id") REFERENCES "payload"."course_quizzes"("id") ON DELETE CASCADE;
+    FOREIGN KEY ("_parent_id") REFERENCES "payload"."course_quizzes"("id") ON DELETE CASCADE;
+    
+    ALTER TABLE "payload"."quiz_questions_rels" 
+    ADD CONSTRAINT "quiz_questions_rels_parent_id_fkey" 
+    FOREIGN KEY ("_parent_id") REFERENCES "payload"."quiz_questions"("id") ON DELETE CASCADE;
+    
+    ALTER TABLE "payload"."quiz_questions_options" 
+    ADD CONSTRAINT "quiz_questions_options_parent_id_fkey" 
+    FOREIGN KEY ("_parent_id") REFERENCES "payload"."quiz_questions"("id") ON DELETE CASCADE;
   `)
 }
 
@@ -283,6 +307,8 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
     ALTER TABLE IF EXISTS "payload"."courses_rels" DROP CONSTRAINT IF EXISTS "courses_rels_parent_id_fkey";
     ALTER TABLE IF EXISTS "payload"."course_quizzes_rels" DROP CONSTRAINT IF EXISTS "course_quizzes_rels_quiz_questions_id_fkey";
     ALTER TABLE IF EXISTS "payload"."course_quizzes_rels" DROP CONSTRAINT IF EXISTS "course_quizzes_rels_parent_id_fkey";
+    ALTER TABLE IF EXISTS "payload"."quiz_questions_rels" DROP CONSTRAINT IF EXISTS "quiz_questions_rels_parent_id_fkey";
+    ALTER TABLE IF EXISTS "payload"."quiz_questions_options" DROP CONSTRAINT IF EXISTS "quiz_questions_options_parent_id_fkey";
     
     -- Drop foreign key constraints
     ALTER TABLE IF EXISTS "payload"."posts" DROP CONSTRAINT IF EXISTS "posts_image_id_fkey";
@@ -293,6 +319,7 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
     ALTER TABLE IF EXISTS "payload"."quiz_questions" DROP CONSTRAINT IF EXISTS "quiz_questions_quiz_id_fkey";
     
     -- Drop tables in reverse order to avoid foreign key constraint issues
+    DROP TABLE IF EXISTS "payload"."quiz_questions_options";
     DROP TABLE IF EXISTS "payload"."quiz_questions_rels";
     DROP TABLE IF EXISTS "payload"."quiz_questions";
     DROP TABLE IF EXISTS "payload"."course_quizzes_rels";

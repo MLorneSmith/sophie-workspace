@@ -5,8 +5,8 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
     -- Create survey_questions_options table for the options array field in SurveyQuestions collection
     CREATE TABLE IF NOT EXISTS "payload"."survey_questions_options" (
       "id" uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
-      "order" integer,
-      "parent_id" uuid,
+      "_order" integer,
+      "_parent_id" uuid,
       "option" varchar,
       "updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
       "created_at" timestamp(3) with time zone DEFAULT now() NOT NULL
@@ -19,7 +19,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
     -- Add foreign key constraint
     ALTER TABLE "payload"."survey_questions_options" 
     ADD CONSTRAINT "survey_questions_options_parent_id_fkey" 
-    FOREIGN KEY ("parent_id") REFERENCES "payload"."survey_questions"("id") ON DELETE CASCADE;
+    FOREIGN KEY ("_parent_id") REFERENCES "payload"."survey_questions"("id") ON DELETE CASCADE;
     
     -- Add missing fields to survey_questions table
     ALTER TABLE "payload"."survey_questions"
