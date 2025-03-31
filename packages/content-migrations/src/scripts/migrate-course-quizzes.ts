@@ -46,20 +46,38 @@ async function migrateQuizzesToPayload() {
       // Generate a slug from the file name
       const slug = path.basename(file, '.mdoc');
 
-      // Create a document in the course_quizzes collection
-      const quiz = await payload.create({
-        collection: 'course_quizzes',
-        data: {
-          title: data.title || slug,
-          description: data.description || '',
-          passing_score: data.passingScore || 70,
-        },
+      // Log the data we're trying to create
+      console.log(`Creating quiz with data:`, {
+        title: data.title || slug,
+        slug: slug, // Add the slug field
+        description: data.description || '',
+        passingScore: data.passingScore || 70,
       });
 
-      // Store the quiz ID for later use
-      quizIdMap.set(slug, quiz.id);
+      // Create a document in the course_quizzes collection
+      try {
+        const now = new Date().toISOString();
+        const quiz = await payload.create({
+          collection: 'course_quizzes',
+          data: {
+            title: data.title || slug,
+            slug: slug, // Add the slug field
+            description: data.description || '',
+            passingScore: data.passingScore || 70,
+            updated_at: now,
+            created_at: now,
+          },
+        });
 
-      console.log(`Migrated quiz: ${slug}`);
+        // Store the quiz ID for later use
+        quizIdMap.set(slug, quiz.id);
+
+        console.log(`Migrated quiz: ${slug} with ID: ${quiz.id}`);
+      } catch (error) {
+        console.error(`Error creating quiz ${slug}:`, error);
+        // Continue with the next quiz
+        continue;
+      }
     } catch (error) {
       console.error(`Error migrating ${file}:`, error);
     }

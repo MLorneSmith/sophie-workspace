@@ -36,6 +36,13 @@ import * as migration_20250331_150000_fix_column_naming_issues from './20250331_
 import * as migration_20250331_160000_fix_missing_columns from './20250331_160000_fix_missing_columns'
 import * as migration_20250331_160100_fix_documentation_parent_id from './20250331_160100_fix_documentation_parent_id'
 import * as migration_20250331_170000_cleanup_redundant_columns from './20250331_170000_cleanup_redundant_columns'
+import * as migration_20250331_180000_add_media_id_to_relationship_tables from './20250331_180000_add_media_id_to_relationship_tables'
+import * as migration_20250331_190000_add_documentation_id_to_relationship_tables from './20250331_190000_add_documentation_id_to_relationship_tables'
+import * as migration_20250331_200000_add_posts_id_to_relationship_tables from './20250331_200000_add_posts_id_to_relationship_tables'
+import * as migration_20250331_210000_add_surveys_id_to_relationship_tables from './20250331_210000_add_surveys_id_to_relationship_tables'
+import * as migration_20250331_220000_add_survey_questions_id_to_relationship_tables from './20250331_220000_add_survey_questions_id_to_relationship_tables'
+import * as migration_20250331_230000_add_courses_id_to_relationship_tables from './20250331_230000_add_courses_id_to_relationship_tables'
+import * as migration_20250331_240000_add_all_missing_relationship_columns from './20250331_240000_add_all_missing_relationship_columns'
 
 export const migrations = [
   {
@@ -203,5 +210,40 @@ export const migrations = [
     up: migration_20250331_170000_cleanup_redundant_columns.up,
     down: migration_20250331_170000_cleanup_redundant_columns.down,
     name: '20250331_170000_cleanup_redundant_columns',
+  },
+  {
+    up: migration_20250331_180000_add_media_id_to_relationship_tables.up,
+    down: migration_20250331_180000_add_media_id_to_relationship_tables.down,
+    name: '20250331_180000_add_media_id_to_relationship_tables',
+  },
+  {
+    up: migration_20250331_190000_add_documentation_id_to_relationship_tables.up,
+    down: migration_20250331_190000_add_documentation_id_to_relationship_tables.down,
+    name: '20250331_190000_add_documentation_id_to_relationship_tables',
+  },
+  {
+    up: migration_20250331_200000_add_posts_id_to_relationship_tables.up,
+    down: migration_20250331_200000_add_posts_id_to_relationship_tables.down,
+    name: '20250331_200000_add_posts_id_to_relationship_tables',
+  },
+  {
+    up: migration_20250331_210000_add_surveys_id_to_relationship_tables.up,
+    down: migration_20250331_210000_add_surveys_id_to_relationship_tables.down,
+    name: '20250331_210000_add_surveys_id_to_relationship_tables',
+  },
+  {
+    up: migration_20250331_220000_add_survey_questions_id_to_relationship_tables.up,
+    down: migration_20250331_220000_add_survey_questions_id_to_relationship_tables.down,
+    name: '20250331_220000_add_survey_questions_id_to_relationship_tables',
+  },
+  {
+    up: migration_20250331_230000_add_courses_id_to_relationship_tables.up,
+    down: migration_20250331_230000_add_courses_id_to_relationship_tables.down,
+    name: '20250331_230000_add_courses_id_to_relationship_tables',
+  },
+  {
+    up: migration_20250331_240000_add_all_missing_relationship_columns.up,
+    down: migration_20250331_240000_add_all_missing_relationship_columns.down,
+    name: '20250331_240000_add_all_missing_relationship_columns',
   },
 ]

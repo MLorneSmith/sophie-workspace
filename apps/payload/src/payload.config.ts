@@ -79,6 +79,42 @@ export default buildConfig({
     schemaName: 'payload',
     // Use UUID for ID columns
     idType: 'uuid',
+    // Add the beforeSchemaInit hook to ensure relationship columns exist
+    beforeSchemaInit: [
+      ({ schema, adapter }) => {
+        // Create a helper function to ensure relationship columns exist
+        const ensureRelationshipColumns = (tables: Record<string, any>) => {
+          const updatedTables = { ...tables }
+
+          // Add relationship columns to all relationship tables
+          Object.keys(tables).forEach((tableName) => {
+            if (tableName.endsWith('_rels')) {
+              const tableSchema = { ...updatedTables[tableName] }
+
+              // Add media_id if it doesn't already exist
+              if (!tableSchema.media_id) {
+                // Use the pgTable.uuid method from the adapter
+                tableSchema.media_id = { name: 'media_id', dataType: 'uuid' }
+                updatedTables[tableName] = tableSchema
+              }
+
+              // Add documentation_id if it doesn't already exist
+              if (!tableSchema.documentation_id) {
+                tableSchema.documentation_id = { name: 'documentation_id', dataType: 'uuid' }
+                updatedTables[tableName] = tableSchema
+              }
+            }
+          })
+
+          return updatedTables
+        }
+
+        return {
+          ...schema,
+          tables: ensureRelationshipColumns(schema.tables),
+        }
+      },
+    ],
   }),
   sharp: sharp as any,
   plugins: [

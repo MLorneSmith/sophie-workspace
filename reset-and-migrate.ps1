@@ -13,6 +13,15 @@ cd apps/payload
 Write-Host "  Running all migrations..." -ForegroundColor Yellow
 pnpm payload migrate
 
+cd ../..
+
+# Run repair scripts to fix relationship tables
+Write-Host "Running relationship repair scripts..." -ForegroundColor Cyan
+cd packages/content-migrations
+
+Write-Host "  Repairing all relationships..." -ForegroundColor Yellow
+pnpm run repair:all-relationships
+
 cd ..
 
 Write-Host "All migrations completed!" -ForegroundColor Green
