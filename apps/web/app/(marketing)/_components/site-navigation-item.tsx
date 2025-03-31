@@ -29,7 +29,7 @@ export function SiteNavigationItem({
 
   return (
     <NavigationMenuItem key={path}>
-      <Link className={className} href={path}>
+      <Link className={className} href={path} as={path} prefetch={true}>
         {children}
       </Link>
     </NavigationMenuItem>

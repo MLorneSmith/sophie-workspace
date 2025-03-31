@@ -111,7 +111,7 @@ export function AppLogo({
   label?: string;
 }) {
   return (
-    <Link aria-label={label ?? 'Home Page'} href={href ?? '/'}>
+    <Link aria-label={label ?? 'Home Page'} href={href ?? '/'} prefetch={true}>
       <LogoImage className={className} />
     </Link>
   );
