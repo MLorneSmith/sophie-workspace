@@ -23,7 +23,6 @@ export function createI18nSettings({
     fallbackLng: languages[0],
     detection: undefined,
     lng,
-    load: 'languageOnly' as const,
     preload: false as const,
     lowerCaseLng: true as const,
     fallbackNS: ns,

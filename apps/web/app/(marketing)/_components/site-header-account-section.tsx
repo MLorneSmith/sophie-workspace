@@ -5,11 +5,11 @@ import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 
-import type { User } from '@supabase/supabase-js';
+import { useQuery } from '@tanstack/react-query';
 
 import { PersonalAccountDropdown } from '@kit/accounts/personal-account-dropdown';
 import { useSignOut } from '@kit/supabase/hooks/use-sign-out';
-import { useUser } from '@kit/supabase/hooks/use-user';
+import { useSupabase } from '@kit/supabase/hooks/use-supabase';
 import { Button } from '@kit/ui/button';
 import { If } from '@kit/ui/if';
 import { Trans } from '@kit/ui/trans';
@@ -33,30 +33,17 @@ const features = {
   enableThemeToggle: featuresFlagConfig.enableThemeToggle,
 };
 
-export function SiteHeaderAccountSection({
-  user,
-}: React.PropsWithChildren<{
-  user: User | null;
-}>) {
-  if (!user) {
-    return <AuthButtons />;
-  }
-
-  return <SuspendedPersonalAccountDropdown user={user} />;
-}
-
-function SuspendedPersonalAccountDropdown(props: { user: User | null }) {
+export function SiteHeaderAccountSection() {
+  const session = useSession();
   const signOut = useSignOut();
-  const user = useUser(props.user);
-  const userData = user.data ?? props.user ?? null;
 
-  if (userData) {
+  if (session.data) {
     return (
       <PersonalAccountDropdown
         showProfileName={false}
         paths={paths}
         features={features}
-        user={userData}
+        user={session.data.user}
         signOutRequested={() => signOut.mutateAsync()}
       />
     );
@@ -69,6 +56,7 @@ function AuthButtons() {
   const [isBookDemoOpen, setIsBookDemoOpen] = useState(false);
 
   return (
+<<<<<<< HEAD
     <>
       <div className={'flex space-x-2'}>
         <div className={'hidden space-x-2 md:flex'}>
@@ -90,6 +78,13 @@ function AuthButtons() {
             </Link>
           </Button>
         </div>
+=======
+    <div className={'flex gap-x-2.5 animate-in fade-in duration-500'}>
+      <div className={'hidden md:flex'}>
+        <If condition={features.enableThemeToggle}>
+          <ModeToggle />
+        </If>
+>>>>>>> 7b1e2617500942a59a5ccbffba76361e6eb9d446
       </div>
 
       <BookDemoOverlay
@@ -98,4 +93,17 @@ function AuthButtons() {
       />
     </>
   );
+}
+
+function useSession() {
+  const client = useSupabase();
+
+  return useQuery({
+    queryKey: ['session'],
+    queryFn: async () => {
+      const { data } = await client.auth.getSession();
+
+      return data.session;
+    },
+  });
 }

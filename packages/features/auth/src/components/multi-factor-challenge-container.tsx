@@ -2,6 +2,8 @@
 
 import { useEffect } from 'react';
 
+import { useRouter } from 'next/navigation';
+
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 import { useMutation } from '@tanstack/react-query';
@@ -41,9 +43,11 @@ export function MultiFactorChallengeContainer({
     redirectPath: string;
   };
 }>) {
+  const router = useRouter();
+
   const verifyMFAChallenge = useVerifyMFAChallenge({
     onSuccess: () => {
-      window.location.replace(paths.redirectPath);
+      router.replace(paths.redirectPath);
     },
   });
 
@@ -156,14 +160,29 @@ export function MultiFactorChallengeContainer({
             data-test={'submit-mfa-button'}
             disabled={
               verifyMFAChallenge.isPending ||
+              verifyMFAChallenge.isSuccess ||
               !verificationCodeForm.formState.isValid
             }
           >
-            {verifyMFAChallenge.isPending ? (
-              <Trans i18nKey={'account:verifyingCode'} />
-            ) : (
+            <If condition={verifyMFAChallenge.isPending}>
+              <span className={'animate-in fade-in slide-in-from-bottom-24'}>
+                <Trans i18nKey={'account:verifyingCode'} />
+              </span>
+            </If>
+
+            <If condition={verifyMFAChallenge.isSuccess}>
+              <span className={'animate-in fade-in slide-in-from-bottom-24'}>
+                <Trans i18nKey={'auth:redirecting'} />
+              </span>
+            </If>
+
+            <If
+              condition={
+                !verifyMFAChallenge.isPending && !verifyMFAChallenge.isSuccess
+              }
+            >
               <Trans i18nKey={'account:submitVerificationCode'} />
-            )}
+            </If>
           </Button>
         </div>
       </form>
@@ -231,7 +250,7 @@ function FactorsListContainer({
       <div className={'flex flex-col items-center space-y-4 py-8'}>
         <Spinner />
 
-        <div>
+        <div className={'text-sm'}>
           <Trans i18nKey={'account:loadingFactors'} />
         </div>
       </div>
@@ -259,7 +278,7 @@ function FactorsListContainer({
   const verifiedFactors = factors?.totp ?? [];
 
   return (
-    <div className={'flex flex-col space-y-4'}>
+    <div className={'flex flex-col space-y-4 animate-in fade-in duration-500'}>
       <div>
         <span className={'font-medium'}>
           <Trans i18nKey={'account:selectFactor'} />

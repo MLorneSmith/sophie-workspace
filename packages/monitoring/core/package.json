@@ -18,7 +18,7 @@
     "@kit/prettier-config": "workspace:*",
     "@kit/tsconfig": "workspace:*",
     "@types/react": "19.0.12",
-    "react": "19.0.0"
+    "react": "19.1.0"
   },
   "typesVersions": {
     "*": {
