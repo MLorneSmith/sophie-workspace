@@ -106,43 +106,36 @@ async function migrateQuizQuestionsToPayload() {
         for (let i = 0; i < data.questions.length; i++) {
           const q = data.questions[i];
 
-          // Create the question
-          // For UUID-based IDs, we don't need to specify the ID
-          // Let Payload generate a UUID automatically
+          // Prepare options array for the question
+          const options = [];
+          if (q.answers && Array.isArray(q.answers)) {
+            for (let j = 0; j < q.answers.length; j++) {
+              const option = q.answers[j];
+              options.push({
+                text: option.answer,
+                isCorrect: option.correct || false,
+              });
+            }
+          }
+
+          // Create the question with options as an array field
           const questionData = await payload.create({
             collection: 'quiz_questions',
             data: {
               question: q.question,
-              quiz: quizId, // Use the quiz ID directly (could be string UUID or number)
+              quiz_id: quizId, // Use the quiz ID directly (could be string UUID or number)
               type:
                 q.questiontype === 'multi-answer'
                   ? 'multiple_choice'
                   : 'multiple_choice',
               explanation: q.explanation || '',
               order: i,
+              options: options, // Add options as an array field
             },
           });
 
           console.log(`Created question with ID: ${questionData.id}`);
-
-          // Create options for the question
-          if (q.answers && Array.isArray(q.answers)) {
-            for (let j = 0; j < q.answers.length; j++) {
-              const option = q.answers[j];
-
-              // Generate a unique ID for the option
-              const optionId = uuidv4();
-
-              // Instead of creating options in a separate collection, store them directly in the question
-              // This is because the quiz_questions_options collection might not exist or have a different name
-              console.log(
-                `Added option: ${option.answer} (correct: ${option.correct || false})`,
-              );
-
-              // Note: In a real implementation, we would need to update the quiz_questions schema
-              // to include an options array field, but for now we'll just log the options
-            }
-          }
+          console.log(`Added ${options.length} options to the question`);
 
           console.log(`Migrated question ${i + 1} for quiz: ${slug}`);
         }

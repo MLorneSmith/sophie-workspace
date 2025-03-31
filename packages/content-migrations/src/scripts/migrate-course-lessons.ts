@@ -123,6 +123,26 @@ async function migrateCourseLessonsToPayload() {
         return headlessEditor.getEditorState().toJSON();
       })();
 
+      // Check if this lesson has an associated quiz
+      let quizId = null;
+      if (data.quiz) {
+        // Try to find the quiz by slug
+        const quizSlug = data.quiz.toLowerCase().replace(/\s+/g, '-');
+        const { docs: quizzes } = await payload.find({
+          collection: 'course_quizzes',
+          query: {
+            slug: quizSlug,
+          },
+        });
+
+        if (quizzes.length > 0) {
+          quizId = quizzes[0].id;
+          console.log(`Found quiz with ID ${quizId} for lesson ${slug}`);
+        } else {
+          console.log(`Quiz not found for lesson ${slug}: ${data.quiz}`);
+        }
+      }
+
       // Create a document in the course_lessons collection
       await payload.create({
         collection: 'course_lessons',
@@ -131,19 +151,15 @@ async function migrateCourseLessonsToPayload() {
           slug,
           description: data.description || '',
           content: lexicalContent,
-          lessonID: data.lessonID || 0,
-          chapter: data.chapter || '',
           lessonNumber: data.lessonNumber || 0,
-          lessonLength: data.lessonLength || 0,
+          estimatedDuration: data.lessonLength || 0,
           publishedAt: data.publishedAt
             ? new Date(data.publishedAt).toISOString()
             : new Date().toISOString(),
-          status: data.status || 'draft',
-          order: data.order || 0,
-          language: data.language || 'en',
           // Add the course relationship
-          course: courseId,
-          // Handle image relationship if needed
+          course_id: courseId,
+          // Add quiz relationship if applicable
+          quiz_id: quizId,
         },
       });
 
