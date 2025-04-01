@@ -236,9 +236,15 @@ export async function getEnhancedPayloadClient(
     }
 
     // If we get here, all retry attempts failed
-    throw (
-      lastError || new Error('Authentication failed after multiple attempts')
-    );
+    const errorMessage =
+      'Authentication failed after multiple attempts. ' +
+      'Please ensure an admin user exists in the Payload CMS with the email and password ' +
+      'specified in the .env.development file. You may need to manually create an admin user ' +
+      'by accessing the Payload CMS admin panel at ' +
+      serverUrl +
+      '/admin';
+
+    throw lastError || new Error(errorMessage);
   };
 
   /**

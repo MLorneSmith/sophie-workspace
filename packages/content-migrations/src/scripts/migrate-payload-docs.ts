@@ -102,7 +102,7 @@ async function migratePayloadDocsToPayload() {
         return headlessEditor.getEditorState().toJSON();
       })();
 
-      // Create a document in the documentation collection
+      // Create a document in the documentation collection with simplified data
       const doc = await payload.create({
         collection: 'documentation',
         data: {
@@ -110,16 +110,9 @@ async function migratePayloadDocsToPayload() {
           slug,
           description: data.description || '',
           content: lexicalContent,
-          publishedAt: data.publishedAt
-            ? new Date(data.publishedAt).toISOString()
-            : new Date().toISOString(),
-          status: data.status || 'published',
-          order: data.order || 0,
-          categories: data.categories
-            ? data.categories.map((category: string) => ({ category }))
-            : [],
-          tags: data.tags ? data.tags.map((tag: string) => ({ tag })) : [],
-          // Parent will be set in the second pass
+          publishedAt: new Date().toISOString(),
+          status: 'published',
+          // Removed categories, tags, and order for debugging
         },
       });
 
@@ -132,42 +125,8 @@ async function migratePayloadDocsToPayload() {
     }
   }
 
-  // Second pass: Update parent relationships
-  for (const file of mdocFiles) {
-    const filePath = path.join(docsDir, file);
-
-    try {
-      const content = fs.readFileSync(filePath, 'utf8');
-      const { data } = matter(content);
-
-      // Generate a slug from the file path
-      const slug = file
-        .replace(/\.mdoc$/, '')
-        .replace(/\\/g, '/')
-        .replace(/^\//, '');
-
-      // Check if this document has a parent
-      if (data.parent) {
-        const parentId = docIdMap.get(data.parent);
-        if (parentId) {
-          // Update the document with the parent relationship
-          await payload.update({
-            collection: 'documentation',
-            id: docIdMap.get(slug),
-            data: {
-              parent: parentId,
-            },
-          });
-
-          console.log(`Updated parent relationship for: ${file}`);
-        } else {
-          console.warn(`Parent not found for: ${file}, parent: ${data.parent}`);
-        }
-      }
-    } catch (error) {
-      console.error(`Error updating parent for ${file}:`, error);
-    }
-  }
+  // Skip second pass for now to debug the issue
+  console.log('Skipping second pass (parent relationships) for debugging');
 
   console.log('Payload documentation migration complete!');
 }

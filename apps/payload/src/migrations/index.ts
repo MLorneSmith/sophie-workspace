@@ -43,6 +43,7 @@ import * as migration_20250331_210000_add_surveys_id_to_relationship_tables from
 import * as migration_20250331_220000_add_survey_questions_id_to_relationship_tables from './20250331_220000_add_survey_questions_id_to_relationship_tables'
 import * as migration_20250331_230000_add_courses_id_to_relationship_tables from './20250331_230000_add_courses_id_to_relationship_tables'
 import * as migration_20250331_240000_add_all_missing_relationship_columns from './20250331_240000_add_all_missing_relationship_columns'
+import * as migration_20250401_104500_seed_course_data from './20250401104500_seed_course_data'
 
 export const migrations = [
   {
@@ -245,5 +246,10 @@ export const migrations = [
     up: migration_20250331_240000_add_all_missing_relationship_columns.up,
     down: migration_20250331_240000_add_all_missing_relationship_columns.down,
     name: '20250331_240000_add_all_missing_relationship_columns',
+  },
+  {
+    up: migration_20250401_104500_seed_course_data.up,
+    down: migration_20250401_104500_seed_course_data.down,
+    name: '20250401104500_seed_course_data',
   },
 ]
