@@ -75,10 +75,11 @@ async function migrateQuizzesToDatabase() {
             passingScore: data.passingScore || 70,
           });
 
-          // Insert the quiz into the database
+          // Insert the quiz into the database, skip if it already exists
           const result = await client.query(
             `INSERT INTO payload.course_quizzes (id, title, slug, description, passing_score, updated_at, created_at)
              VALUES (gen_random_uuid(), $1, $2, $3, $4, NOW(), NOW())
+             ON CONFLICT (slug) DO NOTHING
              RETURNING id, title, slug`,
             [
               data.title || slug,
@@ -88,15 +89,41 @@ async function migrateQuizzesToDatabase() {
             ],
           );
 
-          const quiz = result.rows[0];
+          // If the quiz already exists, result.rows might be empty
+          if (result.rows.length > 0) {
+            const quiz = result.rows[0];
+            // Store the quiz ID for later use
+            quizIdMap.set(slug, quiz.id);
+            console.log(`Migrated quiz: ${slug} with ID: ${quiz.id}`);
+          } else {
+            // Quiz already exists, get its ID from the database
+            const existingQuiz = await client.query(
+              `SELECT id FROM payload.course_quizzes WHERE slug = $1`,
+              [slug],
+            );
 
-          // Store the quiz ID for later use
-          quizIdMap.set(slug, quiz.id);
-
-          console.log(`Migrated quiz: ${slug} with ID: ${quiz.id}`);
+            if (existingQuiz.rows.length > 0) {
+              const quizId = existingQuiz.rows[0].id;
+              quizIdMap.set(slug, quizId);
+              console.log(`Quiz already exists: ${slug} with ID: ${quizId}`);
+            } else {
+              console.log(`Could not find quiz with slug: ${slug}`);
+            }
+          }
         } catch (error) {
           console.error(`Error migrating ${file}:`, error);
         }
+      }
+
+      // Get all quizzes from the database to ensure we have the correct IDs
+      const allQuizzes = await client.query(
+        `SELECT id, slug FROM payload.course_quizzes ORDER BY slug`,
+      );
+
+      // Create a new map with the IDs from the database
+      const updatedQuizIdMap = new Map();
+      for (const quiz of allQuizzes.rows) {
+        updatedQuizIdMap.set(quiz.slug, quiz.id);
       }
 
       // Save the quiz ID map to a file for use in the quiz questions migration
@@ -109,7 +136,7 @@ async function migrateQuizzesToDatabase() {
 
       fs.writeFileSync(
         path.resolve(dataDir, 'quiz-id-map.json'),
-        JSON.stringify(Object.fromEntries(quizIdMap), null, 2),
+        JSON.stringify(Object.fromEntries(updatedQuizIdMap), null, 2),
       );
 
       console.log('Course quizzes migration complete!');
