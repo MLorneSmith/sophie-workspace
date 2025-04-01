@@ -139,20 +139,41 @@ export const updateLessonProgressAction = enhanceAction(
     if (courseData?.docs?.[0]) {
       const course = courseData.docs[0];
       const lessonsData = await getCourseLessons(course.id);
-      const totalLessons = lessonsData?.docs?.length || 0;
 
-      if (lessonProgress && totalLessons > 0) {
-        const completedLessons = lessonProgress.filter(
-          (p) => p.completed_at,
-        ).length;
-        const courseCompletionPercentage =
-          (completedLessons / totalLessons) * 100;
+      if (lessonsData?.docs && lessonProgress) {
+        // Filter out lessons 801 and 802 for completion calculation
+        const completableLessons = lessonsData.docs.filter(
+          (lesson: { lesson_number: string | number }) =>
+            !['801', '802'].includes(String(lesson.lesson_number)),
+        );
 
-        await updateCourseProgressAction({
-          courseId: data.courseId,
-          completionPercentage: courseCompletionPercentage,
-          completed: completedLessons === totalLessons,
-        });
+        const totalCompletableLessons = completableLessons.length;
+
+        if (totalCompletableLessons > 0) {
+          // Get the IDs of lessons 801 and 802 to exclude them from completion count
+          const excludeLessonIds = lessonsData.docs
+            .filter((lesson: { lesson_number: string | number }) =>
+              ['801', '802'].includes(String(lesson.lesson_number)),
+            )
+            .map((lesson: { id: string }) => lesson.id);
+
+          // Count completed lessons, excluding lessons 801 and 802
+          const completedLessons = lessonProgress.filter(
+            (p) => p.completed_at && !excludeLessonIds.includes(p.lesson_id),
+          ).length;
+
+          const courseCompletionPercentage =
+            (completedLessons / totalCompletableLessons) * 100;
+
+          // Course is completed when all completable lessons are done
+          const isCompleted = completedLessons >= totalCompletableLessons;
+
+          await updateCourseProgressAction({
+            courseId: data.courseId,
+            completionPercentage: courseCompletionPercentage,
+            completed: isCompleted,
+          });
+        }
       }
     }
 

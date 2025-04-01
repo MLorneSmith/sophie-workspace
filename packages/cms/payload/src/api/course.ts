@@ -46,7 +46,7 @@ export async function getCourseLessons(
   supabaseClient?: any,
 ) {
   return callPayloadAPI(
-    `course_lessons?where[course][equals]=${courseId}&sort=lessonNumber&depth=0&limit=100`,
+    `course_lessons?where[course_id][equals]=${courseId}&sort=lesson_number&depth=0&limit=100`,
     {},
     supabaseClient,
   );
@@ -92,7 +92,7 @@ export async function getQuiz(
 
   // Get the questions for this quiz
   const questionsResponse = await callPayloadAPI(
-    `quiz_questions?where[quiz][equals]=${quizId}&sort=order&depth=0`,
+    `quiz_questions?where[quiz_id][equals]=${quizId}&sort=order&depth=0`,
     {},
     supabaseClient,
   );

@@ -32,6 +32,7 @@ export function CourseDashboardClient({
 }: CourseDashboardClientProps) {
   const supabase = useSupabase();
   const [lessons, setLessons] = useState<any[]>([]);
+  const [displayedLessons, setDisplayedLessons] = useState<any[]>([]);
 
   // Fetch lessons for this course
   const { data: lessonsData, isLoading } = useQuery({
@@ -47,9 +48,37 @@ export function CourseDashboardClient({
 
   useEffect(() => {
     if (lessonsData) {
-      setLessons(lessonsData.docs || []);
+      // Sort lessons by lesson_number numerically
+      const sortedLessons = [...(lessonsData.docs || [])].sort((a, b) => {
+        return parseFloat(a.lesson_number) - parseFloat(b.lesson_number);
+      });
+      setLessons(sortedLessons);
     }
   }, [lessonsData]);
+
+  // Filter out lessons 801 and 802 unless course is completed
+  useEffect(() => {
+    if (lessons.length > 0) {
+      const completionLessons = lessons.filter(
+        (lesson) => !['801', '802'].includes(lesson.lesson_number),
+      );
+
+      const isCompleted =
+        courseProgress?.completed_at ||
+        (completionLessons.length > 0 &&
+          lessonProgress.filter((p) => p.completed_at).length >=
+            completionLessons.length);
+
+      // If course is completed, show all lessons, otherwise hide 801 and 802
+      const filtered = isCompleted
+        ? lessons
+        : lessons.filter(
+            (lesson) => !['801', '802'].includes(lesson.lesson_number),
+          );
+
+      setDisplayedLessons(filtered);
+    }
+  }, [lessons, lessonProgress, courseProgress]);
 
   // Get completion status for a specific lesson
   const getLessonCompletionStatus = (lessonId: string) => {
@@ -87,11 +116,26 @@ export function CourseDashboardClient({
 
       <CourseProgressBar
         percentage={courseProgress?.completion_percentage || 0}
-        totalLessons={lessons.length}
-        completedLessons={lessonProgress.filter((p) => p.completed_at).length}
+        totalLessons={
+          lessons.filter(
+            (lesson) => !['801', '802'].includes(lesson.lesson_number),
+          ).length
+        }
+        completedLessons={
+          lessonProgress.filter((p) => {
+            // Find the lesson for this progress
+            const lesson = lessons.find((l) => l.id === p.lesson_id);
+            // Only count if it's not lesson 801 or 802 and is completed
+            return (
+              p.completed_at &&
+              lesson &&
+              !['801', '802'].includes(lesson.lesson_number)
+            );
+          }).length
+        }
       />
 
-      {lessons.map((lesson) => {
+      {displayedLessons.map((lesson) => {
         const isCompleted = getLessonCompletionStatus(lesson.id);
         const quizScore = getLessonQuizScore(lesson.id);
 
