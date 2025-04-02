@@ -1,5 +1,5 @@
-import { CollectionConfig } from 'payload'
 import { BlocksFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
+import { CollectionConfig } from 'payload'
 import BunnyVideo from '../blocks/BunnyVideo'
 
 export const CourseLessons: CollectionConfig = {
@@ -10,7 +10,7 @@ export const CourseLessons: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'lessonNumber', 'course_id'],
+    defaultColumns: ['title', 'lesson_number', 'course_id'],
     description: 'Lessons for courses in the learning management system',
   },
   access: {
@@ -53,7 +53,7 @@ export const CourseLessons: CollectionConfig = {
       }),
     },
     {
-      name: 'lessonNumber',
+      name: 'lesson_number',
       type: 'number',
       required: true,
       min: 1,
@@ -78,6 +78,9 @@ export const CourseLessons: CollectionConfig = {
       type: 'relationship',
       relationTo: 'course_quizzes' as any,
       hasMany: false,
+      admin: {
+        description: 'The quiz associated with this lesson (if any)',
+      },
     },
     {
       name: 'publishedAt',

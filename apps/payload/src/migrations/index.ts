@@ -43,7 +43,22 @@ import * as migration_20250331_210000_add_surveys_id_to_relationship_tables from
 import * as migration_20250331_220000_add_survey_questions_id_to_relationship_tables from './20250331_220000_add_survey_questions_id_to_relationship_tables'
 import * as migration_20250331_230000_add_courses_id_to_relationship_tables from './20250331_230000_add_courses_id_to_relationship_tables'
 import * as migration_20250331_240000_add_all_missing_relationship_columns from './20250331_240000_add_all_missing_relationship_columns'
-import * as migration_20250401_104500_seed_course_data from './20250401104500_seed_course_data'
+import * as migration_20250401_104500_seed_course_data from './20250401_104500_seed_course_data'
+import * as migration_20250401_150000_add_quiz_id_column from './20250401_150000_add_quiz_id_column'
+// Removing redundant migrations that are now consolidated in fix_course_lessons_relationships_structure
+// import * as migration_20250402_100000_add_quiz_id_id_column from './20250402_100000_add_quiz_id_id_column'
+// import * as migration_20250402_110000_populate_quiz_id_id from './20250402_110000_populate_quiz_id_id'
+// import * as migration_20250402_120000_fix_quiz_id_id_column from './20250402_120000_fix_quiz_id_id_column'
+// import * as migration_20250402_130000_direct_update_quiz_id_id from './20250402_130000_direct_update_quiz_id_id'
+// import * as migration_20250402_140000_update_course_lessons_schema from './20250402_140000_update_course_lessons_schema'
+// import * as migration_20250402_150000_fix_course_lessons_relationships from './20250402_150000_fix_course_lessons_relationships'
+import * as migration_20250402_160000_fix_course_lessons_relationships_structure from './20250402_160000_fix_course_lessons_relationships_structure'
+// Removed redundant migrations that are now consolidated
+// import * as migration_20250403_100000_fix_course_lessons_quiz_relationships from './20250403_100000_fix_course_lessons_quiz_relationships'
+// import * as migration_20250404_100000_fix_quiz_id_relationships from './20250404_100000_fix_quiz_id_relationships'
+
+// New consolidated migration
+import * as migration_20250405_100000_consolidated_quiz_relationships_fix from './20250405_100000_consolidated_quiz_relationships_fix'
 
 export const migrations = [
   {
@@ -250,6 +265,65 @@ export const migrations = [
   {
     up: migration_20250401_104500_seed_course_data.up,
     down: migration_20250401_104500_seed_course_data.down,
-    name: '20250401104500_seed_course_data',
+    name: '20250401_104500_seed_course_data',
+  },
+  {
+    up: migration_20250401_150000_add_quiz_id_column.up,
+    down: migration_20250401_150000_add_quiz_id_column.down,
+    name: '20250401_150000_add_quiz_id_column',
+  },
+  // Removing redundant migrations that are now consolidated in fix_course_lessons_relationships_structure
+  // {
+  //   up: migration_20250402_100000_add_quiz_id_id_column.up,
+  //   down: migration_20250402_100000_add_quiz_id_id_column.down,
+  //   name: '20250402_100000_add_quiz_id_id_column',
+  // },
+  // {
+  //   up: migration_20250402_110000_populate_quiz_id_id.up,
+  //   down: migration_20250402_110000_populate_quiz_id_id.down,
+  //   name: '20250402_110000_populate_quiz_id_id',
+  // },
+  // {
+  //   up: migration_20250402_120000_fix_quiz_id_id_column.up,
+  //   down: migration_20250402_120000_fix_quiz_id_id_column.down,
+  //   name: '20250402_120000_fix_quiz_id_id_column',
+  // },
+  // {
+  //   up: migration_20250402_130000_direct_update_quiz_id_id.up,
+  //   down: migration_20250402_130000_direct_update_quiz_id_id.down,
+  //   name: '20250402_130000_direct_update_quiz_id_id',
+  // },
+  // {
+  //   up: migration_20250402_140000_update_course_lessons_schema.up,
+  //   down: migration_20250402_140000_update_course_lessons_schema.down,
+  //   name: '20250402_140000_update_course_lessons_schema',
+  // },
+  // {
+  //   up: migration_20250402_150000_fix_course_lessons_relationships.up,
+  //   down: migration_20250402_150000_fix_course_lessons_relationships.down,
+  //   name: '20250402_150000_fix_course_lessons_relationships',
+  // },
+  {
+    up: migration_20250402_160000_fix_course_lessons_relationships_structure.up,
+    down: migration_20250402_160000_fix_course_lessons_relationships_structure.down,
+    name: '20250402_160000_fix_course_lessons_relationships_structure',
+  },
+  // Removed redundant migrations that are now consolidated
+  // {
+  //   up: migration_20250403_100000_fix_course_lessons_quiz_relationships.up,
+  //   down: migration_20250403_100000_fix_course_lessons_quiz_relationships.down,
+  //   name: '20250403_100000_fix_course_lessons_quiz_relationships',
+  // },
+  // {
+  //   up: migration_20250404_100000_fix_quiz_id_relationships.up,
+  //   down: migration_20250404_100000_fix_quiz_id_relationships.down,
+  //   name: '20250404_100000_fix_quiz_id_relationships',
+  // },
+
+  // New consolidated migration
+  {
+    up: migration_20250405_100000_consolidated_quiz_relationships_fix.up,
+    down: migration_20250405_100000_consolidated_quiz_relationships_fix.down,
+    name: '20250405_100000_consolidated_quiz_relationships_fix',
   },
 ]

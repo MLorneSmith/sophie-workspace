@@ -53,6 +53,23 @@ export function LessonViewClient({
   const progress = lessonProgress?.completion_percentage || 0;
   const isCompleted = !!lessonProgress?.completed_at;
 
+  // Check if lesson has a quiz
+  const hasQuiz = !!quiz && !!(lesson.quiz_id || lesson.quiz_id_id);
+
+  // Debug quiz data
+  console.log('LessonViewClient - Quiz data:', {
+    lessonId: lesson.id,
+    lessonTitle: lesson.title,
+    quizExists: !!quiz,
+    quizId: quiz?.id,
+    lessonQuizId: lesson.quiz_id,
+    lessonQuizIdId: lesson.quiz_id_id,
+    hasQuiz,
+    quizCompleted,
+    quizAttemptsCount: quizAttempts.length,
+    isCompleted,
+  });
+
   // Mark lesson as viewed when component mounts
   const markLessonAsViewed = () => {
     if (!isCompleted) {
@@ -152,7 +169,7 @@ export function LessonViewClient({
             </Link>
 
             <div className="flex gap-2">
-              {!showQuiz && quiz && !quizCompleted && (
+              {!showQuiz && hasQuiz && !quizCompleted && (
                 <Button
                   onClick={() => {
                     markLessonAsViewed();
@@ -165,7 +182,7 @@ export function LessonViewClient({
                 </Button>
               )}
 
-              {!showQuiz && (!quiz || quizCompleted) && !isCompleted && (
+              {!showQuiz && (!hasQuiz || quizCompleted) && !isCompleted && (
                 <Button
                   onClick={markLessonAsCompleted}
                   disabled={isPending || isMarkingCompleted}

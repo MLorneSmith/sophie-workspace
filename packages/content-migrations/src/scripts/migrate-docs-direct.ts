@@ -136,8 +136,8 @@ async function migrateDocsToDatabase() {
 
           // Insert the document into the database, skip if it already exists
           await client.query(
-            `INSERT INTO payload.documentation (id, title, slug, description, content, status, published_at, updated_at, created_at)
-             VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW())
+            `INSERT INTO payload.documentation (id, title, slug, description, content, status, updated_at, created_at)
+             VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
              ON CONFLICT (slug) DO NOTHING`,
             [
               docId,
@@ -146,7 +146,6 @@ async function migrateDocsToDatabase() {
               data.description || '',
               JSON.stringify(simpleContent),
               'published',
-              new Date().toISOString(),
             ],
           );
 

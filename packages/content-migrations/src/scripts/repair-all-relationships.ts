@@ -8,6 +8,156 @@ import { fileURLToPath } from 'url';
 
 const { Pool } = pg;
 
+/**
+ * Repairs lesson-quiz relationships by matching lesson titles with quiz titles
+ * @param client The database client
+ */
+async function repairLessonQuizRelationships(client: pg.PoolClient) {
+  console.log('Repairing lesson-quiz relationships...');
+
+  // Check if the quiz_id column exists in the course_lessons_rels table
+  const columnExists = await client.query(
+    `
+    SELECT EXISTS (
+      SELECT FROM information_schema.columns 
+      WHERE table_schema = 'payload' 
+      AND table_name = 'course_lessons_rels'
+      AND column_name = 'quiz_id'
+    ) AS exists
+    `,
+  );
+
+  // If the column doesn't exist, add it
+  if (!columnExists.rows[0].exists) {
+    console.log('Adding quiz_id column to course_lessons_rels table...');
+    await client.query(
+      `
+      ALTER TABLE payload.course_lessons_rels
+      ADD COLUMN quiz_id uuid REFERENCES payload.course_quizzes(id) ON DELETE SET NULL
+      `,
+    );
+  }
+
+  // Get all lessons
+  const lessons = await client.query(
+    'SELECT id, title FROM payload.course_lessons ORDER BY lesson_number',
+  );
+
+  // Get all quizzes
+  const quizzes = await client.query(
+    'SELECT id, title FROM payload.course_quizzes ORDER BY title',
+  );
+
+  // Create a map of quiz titles to IDs for easier lookup
+  const quizMap = new Map();
+  for (const quiz of quizzes.rows) {
+    quizMap.set(quiz.title.toLowerCase(), quiz.id);
+  }
+
+  // Track successful matches
+  let matchCount = 0;
+
+  // For each lesson, try to find a matching quiz
+  for (const lesson of lessons.rows) {
+    const lessonTitle = lesson.title.toLowerCase();
+
+    // Try different matching patterns
+    let matchedQuizId = null;
+
+    // Direct match: "Lesson Title Quiz"
+    if (quizMap.has(`${lessonTitle} quiz`)) {
+      matchedQuizId = quizMap.get(`${lessonTitle} quiz`);
+    }
+
+    // If no direct match, try more sophisticated matching
+    if (!matchedQuizId) {
+      // Create normalized versions of the lesson title for matching
+      const normalizedTitle = lessonTitle
+        .replace(/overview of /i, '')
+        .replace(/the /i, '')
+        .replace(/:/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+      // Generate alternative patterns based on the lesson title
+      const patterns = [
+        normalizedTitle,
+        // Handle "The Why: Building the Introduction" -> "The Why (Introductions) Quiz"
+        normalizedTitle.replace(/building the introduction/i, 'introductions'),
+        // Handle "The Why: Next Steps" -> "The Why (Next Steps) Quiz"
+        normalizedTitle.replace(/next steps/i, 'next steps'),
+        // Handle cases where the lesson title is a substring of the quiz title
+        ...Array.from(quizMap.keys()).filter(
+          (quizTitle) =>
+            quizTitle.includes(normalizedTitle) ||
+            normalizedTitle.includes(quizTitle.replace(/ quiz$/i, '')),
+        ),
+      ];
+
+      // Try each pattern
+      for (const pattern of patterns) {
+        // Try exact match with "Quiz" suffix
+        if (!matchedQuizId && quizMap.has(`${pattern} quiz`)) {
+          matchedQuizId = quizMap.get(`${pattern} quiz`);
+          continue;
+        }
+
+        // Try fuzzy matching - find quiz titles that contain the pattern
+        if (!matchedQuizId) {
+          for (const [quizTitle, quizId] of quizMap.entries()) {
+            const normalizedQuizTitle = quizTitle.replace(/ quiz$/i, '');
+
+            // Check if the normalized quiz title contains the pattern or vice versa
+            if (
+              normalizedQuizTitle.includes(pattern) ||
+              pattern.includes(normalizedQuizTitle)
+            ) {
+              matchedQuizId = quizId;
+              console.log(
+                `Fuzzy matched: "${lesson.title}" with quiz "${quizTitle}"`,
+              );
+              break;
+            }
+          }
+        }
+      }
+    }
+
+    // If we found a match, update the relationship
+    if (matchedQuizId) {
+      console.log(
+        `Matched lesson "${lesson.title}" with quiz ID ${matchedQuizId}`,
+      );
+
+      // Update the direct relationship in course_lessons
+      await client.query(
+        'UPDATE payload.course_lessons SET quiz_id = $1 WHERE id = $2',
+        [matchedQuizId, lesson.id],
+      );
+
+      // Check if a relationship entry already exists
+      const existingRel = await client.query(
+        'SELECT id FROM payload.course_lessons_rels WHERE _parent_id = $1 AND quiz_id = $2',
+        [lesson.id, matchedQuizId],
+      );
+
+      // If no relationship exists, create one
+      if (existingRel.rows.length === 0) {
+        await client.query(
+          `INSERT INTO payload.course_lessons_rels (
+            id, _parent_id, quiz_id, updated_at, created_at
+          ) VALUES (gen_random_uuid(), $1, $2, NOW(), NOW())`,
+          [lesson.id, matchedQuizId],
+        );
+      }
+
+      matchCount++;
+    }
+  }
+
+  console.log(`Successfully matched ${matchCount} lessons with quizzes`);
+}
+
 // Get the current file's directory
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -176,6 +326,10 @@ async function repairAllRelationships() {
         EXECUTE FUNCTION payload.create_dynamic_uuid_table();
       `);
       */
+
+      // Repair lesson-quiz relationships specifically
+      console.log('\nRepairing lesson-quiz relationships specifically...');
+      await repairLessonQuizRelationships(client);
 
       console.log('All relationships repaired!');
     } finally {

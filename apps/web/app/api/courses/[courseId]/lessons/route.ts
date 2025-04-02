@@ -13,7 +13,22 @@ export const GET = enhanceRouteHandler(
     }
 
     try {
+      console.log(`API - Fetching lessons for course ID: ${params.courseId}`);
       const lessons = await getCourseLessons(params.courseId);
+
+      // Debug lessons data
+      console.log('API - Lessons data:', {
+        count: lessons.docs?.length || 0,
+        sampleLesson: lessons.docs?.[0]
+          ? {
+              id: lessons.docs[0].id,
+              title: lessons.docs[0].title,
+              lesson_number: lessons.docs[0].lesson_number,
+              quiz_id: lessons.docs[0].quiz_id,
+            }
+          : null,
+      });
+
       return NextResponse.json(lessons);
     } catch (error) {
       console.error('Error fetching course lessons:', error);

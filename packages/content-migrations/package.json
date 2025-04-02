@@ -6,6 +6,7 @@
   "scripts": {
     "test:db:direct": "tsx src/scripts/test-database-connection-direct.ts",
     "create:course": "tsx src/scripts/create-course.ts",
+    "seed:course:direct": "tsx src/scripts/run-seed-course-data.ts",
     "migrate:all:direct:fixed": "tsx src/scripts/migrate-all-direct-fixed.ts",
     "migrate:course-lessons:direct": "tsx src/scripts/migrate-course-lessons-direct.ts",
     "migrate:course-quizzes:direct": "tsx src/scripts/migrate-course-quizzes-direct.ts",

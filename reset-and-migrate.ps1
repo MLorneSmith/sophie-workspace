@@ -13,9 +13,6 @@ cd apps/payload
 Write-Host "  Running all migrations..." -ForegroundColor Yellow
 pnpm payload migrate
 
-# Course seed data is now applied via Supabase migrations
-Write-Host "  Course seed data is applied via Supabase migrations" -ForegroundColor Yellow
-
 cd ../..
 
 # Run content migrations with fixed scripts
