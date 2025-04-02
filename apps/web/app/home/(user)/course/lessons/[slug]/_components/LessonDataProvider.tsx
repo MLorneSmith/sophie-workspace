@@ -54,20 +54,37 @@ export async function LessonDataProvider({
   let quiz = null;
   let quizAttempts: any[] = [];
 
-  if (lesson.quiz) {
+  // Check for quiz relationship using quiz_id or quiz_id_id
+  const quizId = lesson.quiz_id || lesson.quiz_id_id;
+
+  // Debug lesson data
+  console.log('Lesson data:', {
+    id: lesson.id,
+    title: lesson.title,
+    lesson_number: lesson.lesson_number,
+    quiz_id: lesson.quiz_id,
+    quiz_id_id: lesson.quiz_id_id,
+    quizId,
+  });
+
+  if (quizId) {
+    console.log(`Lesson has quiz with ID: ${quizId}`);
+
     // Get quiz data
     const { getQuiz } = await import('@kit/cms/payload');
-    quiz = await getQuiz(lesson.quiz.id);
+    quiz = await getQuiz(quizId);
 
     // Get user's quiz attempts for this quiz
     const { data: attempts } = await supabase
       .from('quiz_attempts')
       .select('*')
       .eq('user_id', user.id)
-      .eq('quiz_id', lesson.quiz.id)
+      .eq('quiz_id', quizId)
       .order('completed_at', { ascending: false });
 
     quizAttempts = attempts || [];
+  } else {
+    console.log('Lesson does not have a quiz');
   }
 
   return children({

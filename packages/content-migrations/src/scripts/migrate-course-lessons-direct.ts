@@ -126,7 +126,7 @@ async function migrateCourseLessonsToDatabase() {
               published_at, 
               course_id, 
               course_id_id,
-              quiz_id_id,
+              quiz_id,
               updated_at,
               created_at
             ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW(), NOW())`,
@@ -143,7 +143,7 @@ async function migrateCourseLessonsToDatabase() {
                 : new Date().toISOString(),
               courseId, // course_id
               courseId, // course_id_id
-              quizId, // quiz_id_id
+              quizId, // quiz_id (correct field name)
             ],
           );
 

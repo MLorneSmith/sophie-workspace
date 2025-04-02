@@ -1,6 +1,7 @@
 import { MigrateDownArgs, MigrateUpArgs, sql } from '@payloadcms/db-postgres'
 
 export async function up({ payload }: MigrateUpArgs): Promise<void> {
+  console.log('RUNNING COURSE SEED MIGRATION - 20250401_104500_seed_course_data')
   await payload.db.drizzle.execute(sql`
     -- Insert the main course
     INSERT INTO payload.courses (

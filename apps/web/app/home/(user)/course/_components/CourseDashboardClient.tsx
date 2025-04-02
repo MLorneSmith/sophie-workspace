@@ -48,10 +48,31 @@ export function CourseDashboardClient({
 
   useEffect(() => {
     if (lessonsData) {
-      // Sort lessons by lesson_number numerically
-      const sortedLessons = [...(lessonsData.docs || [])].sort((a, b) => {
-        return parseFloat(a.lesson_number) - parseFloat(b.lesson_number);
+      // Debug lessons data
+      console.log('CourseDashboardClient - Lessons data:', {
+        lessonCount: lessonsData.docs?.length || 0,
+        lessons: lessonsData.docs?.map((l: any) => ({
+          id: l.id,
+          title: l.title,
+          lesson_number: l.lesson_number,
+          quiz_id: l.quiz_id,
+        })),
       });
+
+      // Sort lessons by lesson_number as strings to maintain hierarchical order
+      const sortedLessons = [...(lessonsData.docs || [])].sort((a, b) => {
+        // Ensure lesson_number is treated as a string for proper sorting
+        const aNum = String(a.lesson_number);
+        const bNum = String(b.lesson_number);
+        return aNum.localeCompare(bNum, undefined, { numeric: true });
+      });
+
+      // Debug sorted lessons
+      console.log(
+        'CourseDashboardClient - Sorted lessons:',
+        sortedLessons.map((l: any) => `${l.lesson_number}: ${l.title}`),
+      );
+
       setLessons(sortedLessons);
     }
   }, [lessonsData]);
@@ -59,15 +80,38 @@ export function CourseDashboardClient({
   // Filter out lessons 801 and 802 unless course is completed
   useEffect(() => {
     if (lessons.length > 0) {
+      // Get all lessons except completion lessons (801, 802)
       const completionLessons = lessons.filter(
         (lesson) => !['801', '802'].includes(lesson.lesson_number),
       );
 
+      // Get completed lessons (excluding 801, 802)
+      const completedLessons = lessonProgress.filter((p) => {
+        // Find the lesson for this progress
+        const lesson = lessons.find((l) => l.id === p.lesson_id);
+        // Only count if it's not lesson 801 or 802 and is completed
+        return (
+          p.completed_at &&
+          lesson &&
+          !['801', '802'].includes(lesson.lesson_number)
+        );
+      });
+
+      // Course is completed when all regular lessons are completed
       const isCompleted =
         courseProgress?.completed_at ||
         (completionLessons.length > 0 &&
-          lessonProgress.filter((p) => p.completed_at).length >=
-            completionLessons.length);
+          completedLessons.length >= completionLessons.length);
+
+      // Debug completion status
+      console.log('CourseDashboardClient - Completion status:', {
+        totalLessons: lessons.length,
+        completionLessonsCount: completionLessons.length,
+        completedLessonsCount: completedLessons.length,
+        courseProgressCompleted: !!courseProgress?.completed_at,
+        isCompleted,
+        completedLessonIds: completedLessons.map((p) => p.lesson_id),
+      });
 
       // If course is completed, show all lessons, otherwise hide 801 and 802
       const filtered = isCompleted

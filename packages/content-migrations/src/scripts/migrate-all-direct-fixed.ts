@@ -25,9 +25,9 @@ async function runAllMigrations() {
     console.log('\n=== Testing database connection and schema directly ===');
     await import('./test-database-connection-direct.js');
 
-    // Skip creating a course since it's already created by the seed file
-    console.log('\n=== Skipping course creation (created by seed file) ===');
-    // await import('./create-course.js');
+    // Seed the course data directly to the database
+    console.log('\n=== Seeding course data directly to the database ===');
+    await import('./seed-course-data.js');
 
     // Migrate course lessons directly to the database
     console.log('\n=== Migrating course lessons directly to the database ===');
