@@ -32,5 +32,14 @@ export const CourseQuizzes: CollectionConfig = {
       max: 100,
       defaultValue: 70,
     },
+    {
+      name: 'questions',
+      type: 'relationship',
+      relationTo: 'quiz_questions',
+      hasMany: true,
+      admin: {
+        description: 'Questions for this quiz',
+      },
+    },
   ],
 }

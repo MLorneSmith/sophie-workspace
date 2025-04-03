@@ -538,6 +538,10 @@ export interface CourseQuizz {
   title: string;
   description?: string | null;
   passingScore: number;
+  /**
+   * Questions for this quiz
+   */
+  questions?: (string | QuizQuestion)[] | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -840,6 +844,7 @@ export interface CourseQuizzesSelect<T extends boolean = true> {
   title?: T;
   description?: T;
   passingScore?: T;
+  questions?: T;
   updatedAt?: T;
   createdAt?: T;
 }
