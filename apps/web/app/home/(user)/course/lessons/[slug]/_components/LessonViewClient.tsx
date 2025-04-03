@@ -24,7 +24,7 @@ import {
   submitQuizAttemptAction,
   updateLessonProgressAction,
 } from '../../../_lib/server/server-actions';
-// Import will be resolved when the component is created
+// Import the QuizComponent
 import { QuizComponent } from './QuizComponent';
 
 interface LessonViewClientProps {
@@ -53,14 +53,16 @@ export function LessonViewClient({
   const progress = lessonProgress?.completion_percentage || 0;
   const isCompleted = !!lessonProgress?.completed_at;
 
-  // Check if lesson has a quiz
-  const hasQuiz = !!quiz && !!(lesson.quiz_id || lesson.quiz_id_id);
+  // Check if lesson has a quiz that was successfully loaded
+  const hasQuiz =
+    !!quiz && !!quiz.id && !!(lesson.quiz_id || lesson.quiz_id_id);
 
   // Debug quiz data
   console.log('LessonViewClient - Quiz data:', {
     lessonId: lesson.id,
     lessonTitle: lesson.title,
     quizExists: !!quiz,
+    quizHasId: !!quiz?.id,
     quizId: quiz?.id,
     lessonQuizId: lesson.quiz_id,
     lessonQuizIdId: lesson.quiz_id_id,
@@ -70,15 +72,63 @@ export function LessonViewClient({
     isCompleted,
   });
 
+  // Extract course ID safely
+  const getCourseId = () => {
+    // Handle different possible formats of course relationship
+    if (lesson.course) {
+      if (typeof lesson.course === 'object') {
+        // If course is an object with id property
+        if (lesson.course.id) {
+          return lesson.course.id;
+        }
+        // If course is an object with value property (relationship format)
+        if (lesson.course.value) {
+          return lesson.course.value;
+        }
+      }
+      // If course is a string ID
+      if (typeof lesson.course === 'string') {
+        return lesson.course;
+      }
+    }
+    // If course_id exists directly on the lesson
+    if (lesson.course_id) {
+      return typeof lesson.course_id === 'object' && lesson.course_id.id
+        ? lesson.course_id.id
+        : lesson.course_id;
+    }
+    // Fallback to empty string if no course ID found
+    console.error(
+      'LessonViewClient - No course ID found in lesson data:',
+      lesson,
+    );
+    return '';
+  };
+
+  // Get course ID
+  const courseId = getCourseId();
+
+  // Debug course data
+  console.log('LessonViewClient - Course data:', {
+    courseId,
+    courseObject: lesson.course,
+    courseIdField: lesson.course_id,
+  });
+
   // Mark lesson as viewed when component mounts
   const markLessonAsViewed = () => {
     if (!isCompleted) {
       startTransition(async () => {
-        await updateLessonProgressAction({
-          courseId: lesson.course.id,
-          lessonId: lesson.id,
-          completionPercentage: 50, // Mark as partially completed when viewed
-        });
+        try {
+          await updateLessonProgressAction({
+            courseId,
+            lessonId: lesson.id,
+            completionPercentage: 50, // Mark as partially completed when viewed
+          });
+        } catch (error) {
+          console.error('Error marking lesson as viewed:', error);
+          toast.error('Failed to update lesson progress. Please try again.');
+        }
       });
     }
   };
@@ -91,13 +141,14 @@ export function LessonViewClient({
     startTransition(async () => {
       try {
         await updateLessonProgressAction({
-          courseId: lesson.course.id,
+          courseId,
           lessonId: lesson.id,
           completionPercentage: 100,
           completed: true,
         });
         toast.success('Lesson marked as completed!');
       } catch (error) {
+        console.error('Error marking lesson as completed:', error);
         toast.error('Failed to mark lesson as completed. Please try again.');
         setIsMarkingCompleted(false);
       }
@@ -111,25 +162,40 @@ export function LessonViewClient({
     passed: boolean,
   ) => {
     startTransition(async () => {
-      await submitQuizAttemptAction({
-        courseId: lesson.course.id,
-        lessonId: lesson.id,
-        quizId: quiz.id,
-        answers,
-        score,
-        passed,
-      });
-
-      setQuizCompleted(passed);
-
-      // If quiz is passed, mark lesson as completed
-      if (passed) {
-        await updateLessonProgressAction({
-          courseId: lesson.course.id,
+      try {
+        // Log the quiz ID for debugging
+        console.log('LessonViewClient - Submitting quiz attempt:', {
+          quizId: quiz.id,
+          quizIdType: typeof quiz.id,
           lessonId: lesson.id,
-          completionPercentage: 100,
-          completed: true,
+          courseId,
         });
+
+        await submitQuizAttemptAction({
+          courseId,
+          lessonId: lesson.id,
+          quizId: quiz.id,
+          answers,
+          score,
+          passed,
+        });
+
+        setQuizCompleted(passed);
+
+        // If quiz is passed, mark lesson as completed
+        if (passed) {
+          await updateLessonProgressAction({
+            courseId,
+            lessonId: lesson.id,
+            completionPercentage: 100,
+            completed: true,
+          });
+        }
+
+        toast.success('Quiz submitted successfully!');
+      } catch (error) {
+        console.error('Error submitting quiz:', error);
+        toast.error('Failed to submit quiz. Please try again.');
       }
     });
   };
@@ -156,6 +222,9 @@ export function LessonViewClient({
                   quiz={quiz}
                   onSubmit={handleQuizSubmit}
                   previousAttempts={quizAttempts}
+                  courseId={courseId}
+                  currentLessonId={lesson.id}
+                  currentLessonNumber={lesson.lesson_number}
                 />
               )
             )}
@@ -200,10 +269,53 @@ export function LessonViewClient({
               {showQuiz && (
                 <Button
                   variant="outline"
-                  onClick={() => setShowQuiz(false)}
                   disabled={isPending}
+                  onClick={async () => {
+                    try {
+                      // Import the getCourseLessons function
+                      const { getCourseLessons } = await import(
+                        '@kit/cms/payload'
+                      );
+
+                      // Fetch all lessons for this course
+                      const lessonsData = await getCourseLessons(courseId);
+
+                      if (lessonsData?.docs && lessonsData.docs.length > 0) {
+                        // Sort lessons by lesson_number
+                        const sortedLessons = [...lessonsData.docs].sort(
+                          (a, b) => a.lesson_number - b.lesson_number,
+                        );
+
+                        // Find the index of the current lesson
+                        const currentIndex = sortedLessons.findIndex(
+                          (lessonItem) => lessonItem.id === lesson.id,
+                        );
+
+                        // If we found the current lesson and it's not the last one
+                        if (
+                          currentIndex !== -1 &&
+                          currentIndex < sortedLessons.length - 1
+                        ) {
+                          // Get the next lesson
+                          const nextLesson = sortedLessons[currentIndex + 1];
+
+                          // Navigate to the next lesson
+                          window.location.href = `/home/course/lessons/${nextLesson.slug}`;
+                          return;
+                        }
+                      }
+
+                      // If we couldn't find the next lesson or there was an error, go back to the course page
+                      window.location.href = '/home/course';
+                    } catch (error) {
+                      console.error('Error finding next lesson:', error);
+                      // Fallback to course page
+                      window.location.href = '/home/course';
+                    }
+                  }}
                 >
-                  Back to Lesson
+                  Next Lesson
+                  <ChevronRight className="ml-2 h-4 w-4" />
                 </Button>
               )}
             </div>

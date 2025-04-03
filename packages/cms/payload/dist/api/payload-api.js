@@ -30,23 +30,49 @@ export async function callPayloadAPI(endpoint, options = {}, supabaseClient) {
     // Log the URL for debugging
     console.log(`Calling Payload API at: ${payloadUrl}/api/${endpoint}`);
     try {
+        // Add request ID for tracking in logs
+        const requestId = Math.random().toString(36).substring(2, 15);
+        console.log(`[${requestId}] API Request: ${endpoint}`);
         const response = await fetch(`${payloadUrl}/api/${endpoint}`, Object.assign(Object.assign({}, options), { headers: Object.assign(Object.assign({}, options.headers), { 'Content-Type': 'application/json', Authorization: session ? `Bearer ${session.access_token}` : '' }) }));
         if (!response.ok) {
             // Try to parse error as JSON, but handle case where it's not valid JSON
             try {
-                const error = await response.json();
-                console.error('Payload API error:', error);
-                throw new Error(error.message ||
-                    `Failed to call Payload API: ${response.status} ${response.statusText}`);
+                const errorText = await response.text();
+                let errorMessage = '';
+                try {
+                    // Try to parse as JSON
+                    const errorJson = JSON.parse(errorText);
+                    console.error(`[${requestId}] Payload API error:`, errorJson);
+                    errorMessage =
+                        errorJson.message || errorJson.error || JSON.stringify(errorJson);
+                }
+                catch (parseError) {
+                    // Not valid JSON
+                    console.error(`[${requestId}] Payload API error (non-JSON):`, response.status, response.statusText, errorText);
+                    errorMessage =
+                        errorText || `${response.status} ${response.statusText}`;
+                }
+                // Throw a more detailed error
+                throw new Error(`Failed to call Payload API (${endpoint}): ${response.status} ${response.statusText} - ${errorMessage}`);
             }
             catch (jsonError) {
-                // If error response is not valid JSON
-                console.error('Payload API error (non-JSON):', response.status, response.statusText);
-                throw new Error(`Failed to call Payload API: ${response.status} ${response.statusText}`);
+                // If error response couldn't be read at all
+                console.error(`[${requestId}] Payload API error (unreadable):`, response.status, response.statusText);
+                throw new Error(`Failed to call Payload API (${endpoint}): ${response.status} ${response.statusText}`);
             }
         }
-        // Return the JSON response inside the try block
-        return response.json();
+        // Parse the JSON response
+        try {
+            const data = await response.json();
+            console.log(`[${requestId}] API Response successful for: ${endpoint}`);
+            return data;
+        }
+        catch (error) {
+            // Type guard for Error objects
+            const parseError = error instanceof Error ? error : new Error(String(error));
+            console.error(`[${requestId}] Error parsing JSON response:`, parseError);
+            throw new Error(`Failed to parse Payload API response: ${parseError.message}`);
+        }
     }
     catch (error) {
         // Catch network errors or other exceptions
