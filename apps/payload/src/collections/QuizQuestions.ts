@@ -25,8 +25,10 @@ export const QuizQuestions: CollectionConfig = {
       type: 'relationship',
       relationTo: 'course_quizzes',
       required: true,
+      maxDepth: 1, // Set maximum depth for relationship population
       admin: {
         description: 'The quiz this question belongs to',
+        position: 'sidebar', // Add position to ensure it appears at the top of the form
       },
     },
     {

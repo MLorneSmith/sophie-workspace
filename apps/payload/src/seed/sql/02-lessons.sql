@@ -16,7 +16,7 @@ INSERT INTO payload.course_lessons (
   created_at,
   updated_at
 ) VALUES (
-  '7a19a73f-2ff6-47dd-86ca-d8de41ae4365', -- Generated UUID for the lesson
+  'c3184dad-df10-4cd8-b332-a0769194bc0a', -- Generated UUID for the lesson
   'Standard Graphs',
   'basic-graphs',
   'How to properly use graphs to display information',
@@ -37,7 +37,7 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '7a19a73f-2ff6-47dd-86ca-d8de41ae4365',
+  'c3184dad-df10-4cd8-b332-a0769194bc0a',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
   NOW(),
@@ -56,7 +56,7 @@ INSERT INTO payload.course_lessons (
   created_at,
   updated_at
 ) VALUES (
-  '56780990-930d-4a87-9dba-79df1f4c5627', -- Generated UUID for the lesson
+  'c145126b-004e-4bec-993b-8802100aff4b', -- Generated UUID for the lesson
   'Before we begin...',
   'before-we-begin',
   'A three question survey to help me understand your goals so I can better help you achieve them',
@@ -77,7 +77,7 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '56780990-930d-4a87-9dba-79df1f4c5627',
+  'c145126b-004e-4bec-993b-8802100aff4b',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
   NOW(),
@@ -96,7 +96,7 @@ INSERT INTO payload.course_lessons (
   created_at,
   updated_at
 ) VALUES (
-  '69e59f72-f342-4540-91d1-689e36c246ae', -- Generated UUID for the lesson
+  'fa3394f9-2ef8-49f9-b46a-2dd29054daab', -- Generated UUID for the lesson
   'Before you go...',
   'before-you-go',
   'Feedback',
@@ -117,7 +117,7 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '69e59f72-f342-4540-91d1-689e36c246ae',
+  'fa3394f9-2ef8-49f9-b46a-2dd29054daab',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
   NOW(),
@@ -136,7 +136,7 @@ INSERT INTO payload.course_lessons (
   created_at,
   updated_at
 ) VALUES (
-  'ab1a80bc-19be-4226-b418-9fdb1f3a3b12', -- Generated UUID for the lesson
+  '05867399-887b-4762-a01d-5462692b812e', -- Generated UUID for the lesson
   'Congratulations',
   'congratulations',
   'Congratulations',
@@ -157,7 +157,7 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'ab1a80bc-19be-4226-b418-9fdb1f3a3b12',
+  '05867399-887b-4762-a01d-5462692b812e',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
   NOW(),
@@ -176,7 +176,7 @@ INSERT INTO payload.course_lessons (
   created_at,
   updated_at
 ) VALUES (
-  'ac692030-2998-4e3a-843c-675d968942d8', -- Generated UUID for the lesson
+  'c8d15cfc-23ec-47b9-afbe-40d0aa4d8680', -- Generated UUID for the lesson
   'Overview of Fact-based Persuasion',
   'fact-based-persuasion',
   'Facts and how to present them',
@@ -197,7 +197,7 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'ac692030-2998-4e3a-843c-675d968942d8',
+  'c8d15cfc-23ec-47b9-afbe-40d0aa4d8680',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
   NOW(),
@@ -216,7 +216,7 @@ INSERT INTO payload.course_lessons (
   created_at,
   updated_at
 ) VALUES (
-  '9114c1eb-2ffe-4023-b6f6-1078a803cbef', -- Generated UUID for the lesson
+  'ce059378-f0a6-402f-b669-a9109bd05f3d', -- Generated UUID for the lesson
   'The Fundamental Elements of Design in Detail',
   'fundamental-design-detail',
   'Let''s go deep',
@@ -237,7 +237,7 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '9114c1eb-2ffe-4023-b6f6-1078a803cbef',
+  'ce059378-f0a6-402f-b669-a9109bd05f3d',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
   NOW(),
@@ -256,7 +256,7 @@ INSERT INTO payload.course_lessons (
   created_at,
   updated_at
 ) VALUES (
-  'a917537c-8ec1-4506-9af5-9f2264660138', -- Generated UUID for the lesson
+  'e9dfe142-bb89-4a66-aff8-9af80c2bfa53', -- Generated UUID for the lesson
   'Overview of the Fundamental Elements of Design',
   'fundamental-design-overview',
   'A brief overview of the fundamentals',
@@ -277,7 +277,7 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'a917537c-8ec1-4506-9af5-9f2264660138',
+  'e9dfe142-bb89-4a66-aff8-9af80c2bfa53',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
   NOW(),
@@ -296,7 +296,7 @@ INSERT INTO payload.course_lessons (
   created_at,
   updated_at
 ) VALUES (
-  'f7c10b35-2415-4691-88eb-e79cae8067f9', -- Generated UUID for the lesson
+  'f3a63a8e-72a7-49b4-90e4-b00d1591da5c', -- Generated UUID for the lesson
   'Gestalt Principles of Visual Perception',
   'gestalt-principles',
   'How we can apply principles of visual perception to better communicate our ideas',
@@ -317,7 +317,7 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'f7c10b35-2415-4691-88eb-e79cae8067f9',
+  'f3a63a8e-72a7-49b4-90e4-b00d1591da5c',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
   NOW(),
@@ -336,7 +336,7 @@ INSERT INTO payload.course_lessons (
   created_at,
   updated_at
 ) VALUES (
-  'd1c7ddbb-efd6-4bf6-994a-521a3d253615', -- Generated UUID for the lesson
+  '427590c3-e635-49d9-acf7-31bc51f36969', -- Generated UUID for the lesson
   'Idea Generation',
   'idea-generation',
   'How do we generate ideas on how to answer the audience''s question?',
@@ -357,7 +357,7 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'd1c7ddbb-efd6-4bf6-994a-521a3d253615',
+  '427590c3-e635-49d9-acf7-31bc51f36969',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
   NOW(),
@@ -376,7 +376,7 @@ INSERT INTO payload.course_lessons (
   created_at,
   updated_at
 ) VALUES (
-  'a20e309a-7afe-4ec1-b0c1-6813d5fbcbc5', -- Generated UUID for the lesson
+  'ba4e1133-fc58-45e7-97e3-8342f5c65303', -- Generated UUID for the lesson
   'Welcome to DDM',
   'lesson-0',
   'A taster. A preview. An overview of SlideHeroes'' flagship presentations course - Decks for Decision Makers',
@@ -397,7 +397,7 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'a20e309a-7afe-4ec1-b0c1-6813d5fbcbc5',
+  'ba4e1133-fc58-45e7-97e3-8342f5c65303',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
   NOW(),
@@ -416,7 +416,7 @@ INSERT INTO payload.course_lessons (
   created_at,
   updated_at
 ) VALUES (
-  '31fc666f-809c-470f-a7b8-e4f4a9f1fa14', -- Generated UUID for the lesson
+  '8acf85c6-6ae5-452c-9116-24264c70a7cd', -- Generated UUID for the lesson
   'Our Process',
   'our-process',
   'Our blueprint for creating high quality presentations',
@@ -437,7 +437,7 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '31fc666f-809c-470f-a7b8-e4f4a9f1fa14',
+  '8acf85c6-6ae5-452c-9116-24264c70a7cd',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
   NOW(),
@@ -456,7 +456,7 @@ INSERT INTO payload.course_lessons (
   created_at,
   updated_at
 ) VALUES (
-  '2bb56d38-e7d0-4e4c-9dd4-b1af3c2b8783', -- Generated UUID for the lesson
+  '72d47bd9-2203-4289-9bda-a18c50bec957', -- Generated UUID for the lesson
   'Performance',
   'performance',
   'Tips and techniques to improve the delivery of your presentation',
@@ -477,7 +477,7 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '2bb56d38-e7d0-4e4c-9dd4-b1af3c2b8783',
+  '72d47bd9-2203-4289-9bda-a18c50bec957',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
   NOW(),
@@ -496,7 +496,7 @@ INSERT INTO payload.course_lessons (
   created_at,
   updated_at
 ) VALUES (
-  '51340607-eeb8-4fc4-b510-0eaed9e64fed', -- Generated UUID for the lesson
+  '096d2ced-bc95-4322-85d6-182b42d48d6c', -- Generated UUID for the lesson
   'Preparation and Practice',
   'preparation-practice',
   'How to prepare for your presentation',
@@ -517,7 +517,7 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '51340607-eeb8-4fc4-b510-0eaed9e64fed',
+  '096d2ced-bc95-4322-85d6-182b42d48d6c',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
   NOW(),
@@ -536,7 +536,7 @@ INSERT INTO payload.course_lessons (
   created_at,
   updated_at
 ) VALUES (
-  '8c3a025a-6486-42b1-b723-606573dacc89', -- Generated UUID for the lesson
+  '9a366618-44b5-4861-9cf6-7d3e6b1b9935', -- Generated UUID for the lesson
   'High-Stakes Presentation Skills Self-Assessment',
   'skills-self-assessment',
   'Twenty-five question long survey to identify your current strengths and weaknesses',
@@ -557,7 +557,7 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '8c3a025a-6486-42b1-b723-606573dacc89',
+  '9a366618-44b5-4861-9cf6-7d3e6b1b9935',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
   NOW(),
@@ -576,7 +576,7 @@ INSERT INTO payload.course_lessons (
   created_at,
   updated_at
 ) VALUES (
-  'a3224739-0110-479b-ac35-c3220611a476', -- Generated UUID for the lesson
+  '787f10ec-c0b6-4442-a5ff-fa2783025763', -- Generated UUID for the lesson
   'Slide Composition',
   'slide-composition',
   'How to best design slides',
@@ -597,7 +597,7 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'a3224739-0110-479b-ac35-c3220611a476',
+  '787f10ec-c0b6-4442-a5ff-fa2783025763',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
   NOW(),
@@ -616,7 +616,7 @@ INSERT INTO payload.course_lessons (
   created_at,
   updated_at
 ) VALUES (
-  '15a05a60-4ba6-42fd-903a-a24263ac20ce', -- Generated UUID for the lesson
+  '2a9a8352-ed99-41bf-a483-087bd88bfa7c', -- Generated UUID for the lesson
   'Specialist Graphs',
   'specialist-graphs',
   'Introduction to some common business graphs like the Marimekko and Waterfall',
@@ -637,7 +637,7 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '15a05a60-4ba6-42fd-903a-a24263ac20ce',
+  '2a9a8352-ed99-41bf-a483-087bd88bfa7c',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
   NOW(),
@@ -656,7 +656,7 @@ INSERT INTO payload.course_lessons (
   created_at,
   updated_at
 ) VALUES (
-  'd3809f21-457a-4efc-8ab8-d5c72f21db6d', -- Generated UUID for the lesson
+  'a60a4ba8-b61d-4d9c-a6ab-45a98991d35d', -- Generated UUID for the lesson
   'Storyboards in Film',
   'storyboards-film',
   'The origin of storyboarding',
@@ -677,7 +677,7 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'd3809f21-457a-4efc-8ab8-d5c72f21db6d',
+  'a60a4ba8-b61d-4d9c-a6ab-45a98991d35d',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
   NOW(),
@@ -696,7 +696,7 @@ INSERT INTO payload.course_lessons (
   created_at,
   updated_at
 ) VALUES (
-  'a3644d87-ea0d-48f4-9fb4-9b06009f5fcb', -- Generated UUID for the lesson
+  '747efe85-2513-4906-b62b-402b90538ad9', -- Generated UUID for the lesson
   'Storyboards in Presentations',
   'storyboards-presentations',
   '',
@@ -717,7 +717,7 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'a3644d87-ea0d-48f4-9fb4-9b06009f5fcb',
+  '747efe85-2513-4906-b62b-402b90538ad9',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
   NOW(),
@@ -736,7 +736,7 @@ INSERT INTO payload.course_lessons (
   created_at,
   updated_at
 ) VALUES (
-  '245efb13-3d64-4070-9ee7-90ee54b838f7', -- Generated UUID for the lesson
+  '7b50678a-7f1f-47db-ba0c-f63822ef34d6', -- Generated UUID for the lesson
   'Tables vs. Graphs',
   'tables-vs-graphs',
   'How to use graphs and tabl;es to present quantitative information',
@@ -757,7 +757,7 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '245efb13-3d64-4070-9ee7-90ee54b838f7',
+  '7b50678a-7f1f-47db-ba0c-f63822ef34d6',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
   NOW(),
@@ -776,7 +776,7 @@ INSERT INTO payload.course_lessons (
   created_at,
   updated_at
 ) VALUES (
-  '9985b32c-0e57-4a01-8406-4a01732ec32f', -- Generated UUID for the lesson
+  '004089bb-2eea-40a3-b18a-d2474b2e2104', -- Generated UUID for the lesson
   'The Who',
   'the-who',
   'Where do we start? We start with defining who our actual audience is',
@@ -797,7 +797,7 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '9985b32c-0e57-4a01-8406-4a01732ec32f',
+  '004089bb-2eea-40a3-b18a-d2474b2e2104',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
   NOW(),
@@ -816,7 +816,7 @@ INSERT INTO payload.course_lessons (
   created_at,
   updated_at
 ) VALUES (
-  'ec1d19f0-af53-40f2-9622-7d7db5b95560', -- Generated UUID for the lesson
+  '2a5d1217-7cd7-4043-9173-3c91b4a9f3a7', -- Generated UUID for the lesson
   'The Why: Building the Introduction',
   'the-why-introductions',
   'How to tee-up your presentation',
@@ -837,7 +837,7 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'ec1d19f0-af53-40f2-9622-7d7db5b95560',
+  '2a5d1217-7cd7-4043-9173-3c91b4a9f3a7',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
   NOW(),
@@ -856,7 +856,7 @@ INSERT INTO payload.course_lessons (
   created_at,
   updated_at
 ) VALUES (
-  '8c1a74c1-5831-420f-b9c6-12c7c85ddaa8', -- Generated UUID for the lesson
+  '956e6ab3-8507-48ba-9c88-8855caab47fb', -- Generated UUID for the lesson
   'The Why: Next Steps',
   'the-why-next-steps',
   'What do we want to accomplish from our presentation? What is our ultimate objective?',
@@ -877,7 +877,7 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '8c1a74c1-5831-420f-b9c6-12c7c85ddaa8',
+  '956e6ab3-8507-48ba-9c88-8855caab47fb',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
   NOW(),
@@ -896,7 +896,7 @@ INSERT INTO payload.course_lessons (
   created_at,
   updated_at
 ) VALUES (
-  '7f1f1b35-8e47-486e-87e2-c1820b9e9760', -- Generated UUID for the lesson
+  'fc9bbeeb-4d1d-493e-af9f-564028d6525a', -- Generated UUID for the lesson
   'Presentation Tools & Course Resources',
   'tools-and-resources',
   'Links to some recommended presentation tools + all course materials and downloads',
@@ -917,7 +917,7 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '7f1f1b35-8e47-486e-87e2-c1820b9e9760',
+  'fc9bbeeb-4d1d-493e-af9f-564028d6525a',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
   NOW(),
@@ -936,7 +936,7 @@ INSERT INTO payload.course_lessons (
   created_at,
   updated_at
 ) VALUES (
-  '71a2234f-d1a6-4506-a939-e063df319407', -- Generated UUID for the lesson
+  '5df3c7f6-8107-4086-b403-707ac7b15a0a', -- Generated UUID for the lesson
   'Using Stories',
   'using-stories',
   'Using stories to powerfully convey your ideas',
@@ -957,7 +957,7 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '71a2234f-d1a6-4506-a939-e063df319407',
+  '5df3c7f6-8107-4086-b403-707ac7b15a0a',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
   NOW(),
@@ -976,7 +976,7 @@ INSERT INTO payload.course_lessons (
   created_at,
   updated_at
 ) VALUES (
-  '8ebb57d1-a939-403a-b369-b8d5a8d46557', -- Generated UUID for the lesson
+  '9984d2b7-1b20-4bcd-8634-ea87f94e83c0', -- Generated UUID for the lesson
   'Visual Perception and Communication',
   'visual-perception',
   'What are the implications from how people process information?',
@@ -997,7 +997,7 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '8ebb57d1-a939-403a-b369-b8d5a8d46557',
+  '9984d2b7-1b20-4bcd-8634-ea87f94e83c0',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
   NOW(),
@@ -1016,7 +1016,7 @@ INSERT INTO payload.course_lessons (
   created_at,
   updated_at
 ) VALUES (
-  '85c911e2-b388-412c-818d-a1b1fa091b69', -- Generated UUID for the lesson
+  '461a377e-8726-4030-ae27-d4f3aaaad030', -- Generated UUID for the lesson
   'What is Structure?',
   'what-is-structure',
   'Techniques to develop ensure clarity through structure',
@@ -1037,7 +1037,7 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '85c911e2-b388-412c-818d-a1b1fa091b69',
+  '461a377e-8726-4030-ae27-d4f3aaaad030',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
   NOW(),

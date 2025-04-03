@@ -282,6 +282,32 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
       console.log('✅ All lesson relationships in quizzes have course_lessons_id set')
     }
 
+    // Step 6: Add global_slug column to payload_locked_documents if it doesn't exist
+    console.log('Adding global_slug column to payload_locked_documents table...')
+    await db.execute(sql`
+      DO $$
+      BEGIN
+        IF EXISTS (
+          SELECT FROM information_schema.tables 
+          WHERE table_schema = 'payload' 
+          AND table_name = 'payload_locked_documents'
+        ) AND NOT EXISTS (
+          SELECT FROM information_schema.columns 
+          WHERE table_schema = 'payload' 
+          AND table_name = 'payload_locked_documents' 
+          AND column_name = 'global_slug'
+        ) THEN
+          ALTER TABLE "payload"."payload_locked_documents"
+          ADD COLUMN "global_slug" varchar;
+          RAISE NOTICE 'Added global_slug column to payload_locked_documents table';
+        ELSE
+          RAISE NOTICE 'global_slug column already exists or payload_locked_documents table does not exist';
+        END IF;
+      END
+      $$;
+    `)
+    console.log('Fixed payload_locked_documents schema')
+
     // Commit transaction
     await db.execute(sql`COMMIT;`)
     console.log('Fix lesson quiz relationships migration completed successfully')
@@ -320,6 +346,27 @@ export async function down({ db }: MigrateDownArgs): Promise<void> {
       UPDATE payload.course_quizzes_rels
       SET course_lessons_id = NULL
       WHERE field = 'lesson' AND course_lessons_id IS NOT NULL;
+    `)
+
+    // Remove global_slug column if it exists
+    console.log('Removing global_slug column from payload_locked_documents table if it exists...')
+    await db.execute(sql`
+      DO $$
+      BEGIN
+        IF EXISTS (
+          SELECT FROM information_schema.columns 
+          WHERE table_schema = 'payload' 
+          AND table_name = 'payload_locked_documents' 
+          AND column_name = 'global_slug'
+        ) THEN
+          ALTER TABLE "payload"."payload_locked_documents"
+          DROP COLUMN "global_slug";
+          RAISE NOTICE 'Removed global_slug column from payload_locked_documents table';
+        ELSE
+          RAISE NOTICE 'global_slug column does not exist or payload_locked_documents table does not exist';
+        END IF;
+      END
+      $$;
     `)
 
     console.log('Fix lesson quiz relationships down migration completed successfully')
