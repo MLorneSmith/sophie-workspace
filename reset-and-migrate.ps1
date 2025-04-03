@@ -159,6 +159,19 @@ try {
         Log-Message "  Running all migrations..." "Yellow"
         Exec-Command -command "pnpm payload migrate" -description "Running Payload migrations"
 
+        # Add relationship ID columns to payload_locked_documents and payload_locked_documents_rels tables
+        Log-Message "  Adding relationship ID columns to locked documents tables..." "Yellow"
+        
+        # Temporarily change to the root directory to run the content-migrations script
+        Push-Location -Path "../.."
+        Log-Message "  Temporarily changed to directory: $(Get-Location)" "Gray"
+        
+        Exec-Command -command "pnpm --filter @kit/content-migrations run add:relationship-id-columns" -description "Adding relationship ID columns to locked documents tables"
+        
+        # Return to the payload directory
+        Pop-Location
+        Log-Message "  Returned to directory: $(Get-Location)" "Gray"
+
         # Check migration status again to confirm all migrations were applied
         Log-Message "  Verifying migration status..." "Yellow"
         $migrationStatus = Exec-Command -command "pnpm migrate:status" -description "Verifying migration status" -captureOutput
@@ -298,6 +311,30 @@ try {
             Log-Message "ERROR: Final database verification failed" "Red"
             $overallSuccess = $false
             throw "Final database verification failed"
+        }
+
+        # Verify course_lessons quiz_id_id column
+        Log-Message "  Verifying course_lessons quiz_id_id column..." "Yellow"
+        $courseLessonsVerification = Exec-Command -command "pnpm run verify:course-lessons-quiz-id-column" -description "Verifying course_lessons quiz_id_id column" -captureOutput
+        
+        if ($courseLessonsVerification -match "Error" -or $LASTEXITCODE -ne 0) {
+            Log-Message "ERROR: Course lessons quiz_id_id column verification failed" "Red"
+            $overallSuccess = $false
+            throw "Course lessons quiz_id_id column verification failed"
+        } else {
+            Log-Message "  Course lessons quiz_id_id column verification passed" "Green"
+        }
+
+        # Verify media_id columns
+        Log-Message "  Verifying media_id columns..." "Yellow"
+        $mediaColumnsVerification = Exec-Command -command "pnpm --filter @kit/content-migrations run verify:media-columns" -description "Verifying media_id columns" -captureOutput
+        
+        if ($mediaColumnsVerification -match "Error" -or $LASTEXITCODE -ne 0) {
+            Log-Message "ERROR: Media columns verification failed" "Red"
+            $overallSuccess = $false
+            throw "Media columns verification failed"
+        } else {
+            Log-Message "  Media columns verification passed" "Green"
         }
 
         Pop-Location

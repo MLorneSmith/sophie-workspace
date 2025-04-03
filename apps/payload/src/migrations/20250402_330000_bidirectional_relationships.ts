@@ -5,6 +5,9 @@ import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-postgres'
  *
  * This migration establishes bidirectional relationships between collections
  * by creating entries in both relationship tables.
+ *
+ * This is a rationalized version that uses the correct field names
+ * without the _id suffix issues.
  */
 export async function up({ db, payload }: MigrateUpArgs): Promise<void> {
   console.log('Running bidirectional relationship migration')
@@ -12,15 +15,6 @@ export async function up({ db, payload }: MigrateUpArgs): Promise<void> {
   try {
     // Start transaction
     await db.execute(sql`BEGIN;`)
-
-    // Update quiz_id_id column to match quiz_id column
-    const updateQuizIdResult = await db.execute(sql`
-      UPDATE payload.quiz_questions
-      SET quiz_id_id = quiz_id
-      WHERE quiz_id IS NOT NULL AND (quiz_id_id IS NULL OR quiz_id_id != quiz_id);
-    `)
-
-    console.log(`Updated ${updateQuizIdResult.rowCount} quiz_id_id values to match quiz_id`)
 
     // Create bidirectional relationships between surveys and questions
     const createSurveyRelsResult = await db.execute(sql`
@@ -106,6 +100,35 @@ export async function up({ db, payload }: MigrateUpArgs): Promise<void> {
       `Created ${createCourseQuizzesRelsResult.rowCount} bidirectional relationships in course_quizzes_rels table`,
     )
 
+    // Create bidirectional relationships between courses and lessons
+    const createCourseLessonsRelsResult = await db.execute(sql`
+      WITH lessons_to_link AS (
+        SELECT cl.id as lesson_id, cl.course_id
+        FROM payload.course_lessons cl
+        WHERE cl.course_id IS NOT NULL
+        AND NOT EXISTS (
+          SELECT 1 FROM payload.courses_rels cr
+          WHERE cr._parent_id = cl.course_id
+          AND cr.field = 'lessons'
+          AND cr.value = cl.id
+        )
+      )
+      INSERT INTO payload.courses_rels (id, _parent_id, field, value, course_lessons_id, updated_at, created_at)
+      SELECT 
+        gen_random_uuid(), 
+        course_id, 
+        'lessons', 
+        lesson_id,
+        lesson_id,
+        NOW(),
+        NOW()
+      FROM lessons_to_link;
+    `)
+
+    console.log(
+      `Created ${createCourseLessonsRelsResult.rowCount} bidirectional relationships in courses_rels table`,
+    )
+
     // Verify bidirectional relationships
     const verificationResult = await db.execute(sql`
       SELECT 
@@ -157,6 +180,12 @@ export async function down({ db, payload }: MigrateDownArgs): Promise<void> {
     await db.execute(sql`
       DELETE FROM payload.course_quizzes_rels
       WHERE field = 'questions';
+    `)
+
+    // Remove bidirectional relationships from courses_rels table
+    await db.execute(sql`
+      DELETE FROM payload.courses_rels
+      WHERE field = 'lessons';
     `)
 
     console.log('Bidirectional relationship down migration completed successfully')
