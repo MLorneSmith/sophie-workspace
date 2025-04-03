@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 
+import { ChevronRight } from 'lucide-react';
+
 import { Button } from '@kit/ui/button';
 import {
   Card,
@@ -22,6 +24,9 @@ interface QuizComponentProps {
     passed: boolean,
   ) => void;
   previousAttempts: any[];
+  courseId: string;
+  currentLessonId: string;
+  currentLessonNumber: number;
 }
 
 // Quiz Summary component
@@ -31,12 +36,14 @@ function QuizSummary({
   passingScore,
   passed,
   onRetry,
+  onNextLesson,
 }: {
   score: number;
   totalQuestions: number;
   passingScore: number;
   passed: boolean;
   onRetry: () => void;
+  onNextLesson: () => void;
 }) {
   const percentage = Math.round((score / totalQuestions) * 100);
 
@@ -77,7 +84,12 @@ function QuizSummary({
           </div>
         </CardContent>
         <CardFooter className="flex justify-center">
-          {!passed && (
+          {passed ? (
+            <Button onClick={onNextLesson} className="mr-2">
+              Next Lesson
+              <ChevronRight className="ml-2 h-4 w-4" />
+            </Button>
+          ) : (
             <Button onClick={onRetry} className="mr-2">
               Try Again
             </Button>
@@ -87,17 +99,36 @@ function QuizSummary({
     </div>
   );
 }
-
 export function QuizComponent({
   quiz,
   onSubmit,
   previousAttempts = [],
+  courseId,
+  currentLessonId,
+  currentLessonNumber,
 }: QuizComponentProps) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, any>>({});
   const [showSummary, setShowSummary] = useState(false);
   const [score, setScore] = useState(0);
   const [passed, setPassed] = useState(false);
+
+  // Validate quiz data
+  if (!quiz || !quiz.id) {
+    return (
+      <div className="space-y-4">
+        <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 shadow-sm dark:border-amber-800 dark:bg-amber-900/50">
+          <h2 className="text-xl font-bold text-amber-800 dark:text-amber-300">
+            Quiz Unavailable
+          </h2>
+          <p className="mt-2 text-amber-700 dark:text-amber-400">
+            The quiz for this lesson is currently unavailable. Please try again
+            later or contact support if the issue persists.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   // Check if there are previous attempts
   const hasPreviousAttempts = previousAttempts.length > 0;
@@ -121,6 +152,24 @@ export function QuizComponent({
   }
 
   const questions = quiz.questions || [];
+
+  // Check if questions are available
+  if (!questions.length) {
+    return (
+      <div className="space-y-4">
+        <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 shadow-sm dark:border-amber-800 dark:bg-amber-900/50">
+          <h2 className="text-xl font-bold text-amber-800 dark:text-amber-300">
+            Quiz Questions Unavailable
+          </h2>
+          <p className="mt-2 text-amber-700 dark:text-amber-400">
+            The questions for this quiz are currently unavailable. Please try
+            again later or contact support if the issue persists.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   const currentQuestion = questions[currentQuestionIndex];
   const totalQuestions = questions.length;
   const passingScore = quiz.passingScore || 70;
@@ -136,6 +185,7 @@ export function QuizComponent({
   // Move to next question
   const handleNextQuestion = () => {
     if (currentQuestionIndex < totalQuestions - 1) {
+      // Move to the next question
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
       // Calculate score
@@ -172,6 +222,7 @@ export function QuizComponent({
   // Move to previous question
   const handlePreviousQuestion = () => {
     if (currentQuestionIndex > 0) {
+      // Move to the previous question
       setCurrentQuestionIndex(currentQuestionIndex - 1);
     }
   };
@@ -183,6 +234,46 @@ export function QuizComponent({
     setShowSummary(false);
   };
 
+  // Function to find and navigate to the next lesson
+  const navigateToNextLesson = async () => {
+    try {
+      // Import the getCourseLessons function
+      const { getCourseLessons } = await import('@kit/cms/payload');
+
+      // Fetch all lessons for this course
+      const lessonsData = await getCourseLessons(courseId);
+
+      if (lessonsData?.docs && lessonsData.docs.length > 0) {
+        // Sort lessons by lesson_number
+        const sortedLessons = [...lessonsData.docs].sort(
+          (a, b) => a.lesson_number - b.lesson_number,
+        );
+
+        // Find the index of the current lesson
+        const currentIndex = sortedLessons.findIndex(
+          (lesson) => lesson.id === currentLessonId,
+        );
+
+        // If we found the current lesson and it's not the last one
+        if (currentIndex !== -1 && currentIndex < sortedLessons.length - 1) {
+          // Get the next lesson
+          const nextLesson = sortedLessons[currentIndex + 1];
+
+          // Navigate to the next lesson
+          window.location.href = `/home/course/lessons/${nextLesson.slug}`;
+          return;
+        }
+      }
+
+      // If we couldn't find the next lesson or there was an error, go back to the course page
+      window.location.href = '/home/course';
+    } catch (error) {
+      console.error('Error finding next lesson:', error);
+      // Fallback to course page
+      window.location.href = '/home/course';
+    }
+  };
+
   // If showing summary
   if (showSummary) {
     return (
@@ -192,6 +283,7 @@ export function QuizComponent({
         passingScore={passingScore}
         passed={passed}
         onRetry={handleRetry}
+        onNextLesson={navigateToNextLesson}
       />
     );
   }
@@ -220,6 +312,7 @@ export function QuizComponent({
         </CardHeader>
         <CardContent>
           <RadioGroup
+            key={`question-${currentQuestionIndex}`} // Add key to force re-render when question changes
             value={
               answers[currentQuestionIndex] !== undefined
                 ? answers[currentQuestionIndex].toString()
@@ -227,21 +320,31 @@ export function QuizComponent({
             }
             onValueChange={(value) => handleAnswerSelect(parseInt(value))}
           >
+            {/* Map and render options without exposing correct answer */}
             {(currentQuestion?.options || []).map(
-              (option: any, optionIndex: number) => (
-                <div
-                  key={optionIndex}
-                  className="hover:bg-accent flex items-center space-x-2 rounded-md p-2"
-                >
-                  <RadioGroupItem
-                    value={optionIndex.toString()}
-                    id={`q${currentQuestionIndex}-o${optionIndex}`}
-                  />
-                  <Label htmlFor={`q${currentQuestionIndex}-o${optionIndex}`}>
-                    {option.text}
-                  </Label>
-                </div>
-              ),
+              (option: any, optionIndex: number) => {
+                // Create a new option object without the isCorrect property
+                // to avoid any potential leakage to the UI
+                const sanitizedOption = {
+                  text: option.text,
+                  // Exclude isCorrect and any other properties that might reveal the answer
+                };
+
+                return (
+                  <div
+                    key={optionIndex}
+                    className="hover:bg-accent flex items-center space-x-2 rounded-md p-2"
+                  >
+                    <RadioGroupItem
+                      value={optionIndex.toString()}
+                      id={`q${currentQuestionIndex}-o${optionIndex}`}
+                    />
+                    <Label htmlFor={`q${currentQuestionIndex}-o${optionIndex}`}>
+                      {sanitizedOption.text}
+                    </Label>
+                  </div>
+                );
+              },
             )}
           </RadioGroup>
         </CardContent>

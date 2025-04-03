@@ -189,7 +189,20 @@ export const updateLessonProgressAction = enhanceAction(
 const SubmitQuizAttemptSchema = z.object({
   courseId: z.union([z.string(), z.number()]).transform((val) => String(val)),
   lessonId: z.union([z.string(), z.number()]).transform((val) => String(val)),
-  quizId: z.union([z.string(), z.number()]).transform((val) => String(val)),
+  quizId: z.any().transform((val) => {
+    if (typeof val === 'string' || typeof val === 'number') {
+      return String(val);
+    } else if (val && typeof val === 'object') {
+      // Handle relationship object format
+      if ('value' in val && typeof val.value === 'string') {
+        return String(val.value);
+      } else if ('id' in val && typeof val.id === 'string') {
+        return String(val.id);
+      }
+    }
+    // Fallback to stringifying the object
+    return String(val);
+  }),
   answers: z.record(z.string(), z.any()),
   score: z.number().min(0).max(100),
   passed: z.boolean(),
@@ -199,6 +212,11 @@ export const submitQuizAttemptAction = enhanceAction(
   async function (data, user) {
     const supabase = getSupabaseServerClient();
     const now = new Date().toISOString();
+
+    // Log the quiz ID for debugging
+    console.log(
+      `submitQuizAttemptAction - Quiz ID: ${data.quizId} (${typeof data.quizId})`,
+    );
 
     // Insert the quiz attempt
     await supabase.from('quiz_attempts').insert({
