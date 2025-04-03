@@ -51,7 +51,7 @@ async function runAllMigrations() {
 
     // Fix relationships directly in the database
     console.log('\n=== Fixing relationships directly in the database ===');
-    await import('./fix-relationships-direct.js');
+    await import('./repair/fix-relationships-direct.js');
 
     // Migrate documentation directly to the database
     console.log('\n=== Migrating documentation directly to the database ===');

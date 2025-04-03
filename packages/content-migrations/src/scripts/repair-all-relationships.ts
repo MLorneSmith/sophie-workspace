@@ -15,25 +15,71 @@ const { Pool } = pg;
 async function repairLessonQuizRelationships(client: pg.PoolClient) {
   console.log('Repairing lesson-quiz relationships...');
 
-  // Check if the quiz_id column exists in the course_lessons_rels table
-  const columnExists = await client.query(
+  // Check if the quiz_id_id column exists in the course_lessons table
+  const quizIdIdColumnExists = await client.query(
     `
     SELECT EXISTS (
       SELECT FROM information_schema.columns 
       WHERE table_schema = 'payload' 
-      AND table_name = 'course_lessons_rels'
-      AND column_name = 'quiz_id'
+      AND table_name = 'course_lessons'
+      AND column_name = 'quiz_id_id'
     ) AS exists
     `,
   );
 
   // If the column doesn't exist, add it
-  if (!columnExists.rows[0].exists) {
-    console.log('Adding quiz_id column to course_lessons_rels table...');
+  if (!quizIdIdColumnExists.rows[0].exists) {
+    console.log('Adding quiz_id_id column to course_lessons table...');
+    await client.query(
+      `
+      ALTER TABLE payload.course_lessons
+      ADD COLUMN quiz_id_id uuid REFERENCES payload.course_quizzes(id) ON DELETE SET NULL
+      `,
+    );
+  }
+
+  // Check if the field column exists in the course_lessons_rels table
+  const fieldColumnExists = await client.query(
+    `
+    SELECT EXISTS (
+      SELECT FROM information_schema.columns 
+      WHERE table_schema = 'payload' 
+      AND table_name = 'course_lessons_rels'
+      AND column_name = 'field'
+    ) AS exists
+    `,
+  );
+
+  // If the field column doesn't exist, add it
+  if (!fieldColumnExists.rows[0].exists) {
+    console.log('Adding field column to course_lessons_rels table...');
     await client.query(
       `
       ALTER TABLE payload.course_lessons_rels
-      ADD COLUMN quiz_id uuid REFERENCES payload.course_quizzes(id) ON DELETE SET NULL
+      ADD COLUMN field VARCHAR(255)
+      `,
+    );
+  }
+
+  // Check if the value column exists in the course_lessons_rels table
+  const valueColumnExists = await client.query(
+    `
+    SELECT EXISTS (
+      SELECT FROM information_schema.columns 
+      WHERE table_schema = 'payload' 
+      AND table_name = 'course_lessons_rels'
+      AND column_name = 'value'
+    ) AS exists
+    `,
+  );
+
+  // If the value column doesn't exist, add it
+  if (!valueColumnExists.rows[0].exists) {
+    console.log('Adding value column to course_lessons_rels table...');
+    await client.query(
+      `
+      ALTER TABLE payload.course_lessons_rels
+      ADD COLUMN value uuid
       `,
     );
   }
@@ -129,25 +175,25 @@ async function repairLessonQuizRelationships(client: pg.PoolClient) {
         `Matched lesson "${lesson.title}" with quiz ID ${matchedQuizId}`,
       );
 
-      // Update the direct relationship in course_lessons
+      // Update both quiz_id and quiz_id_id columns in course_lessons
       await client.query(
-        'UPDATE payload.course_lessons SET quiz_id = $1 WHERE id = $2',
+        'UPDATE payload.course_lessons SET quiz_id = $1, quiz_id_id = $1 WHERE id = $2',
         [matchedQuizId, lesson.id],
       );
 
-      // Check if a relationship entry already exists
+      // Check if a relationship entry already exists with field='quiz_id_id'
       const existingRel = await client.query(
-        'SELECT id FROM payload.course_lessons_rels WHERE _parent_id = $1 AND quiz_id = $2',
-        [lesson.id, matchedQuizId],
+        'SELECT id FROM payload.course_lessons_rels WHERE _parent_id = $1 AND field = $2 AND value = $3',
+        [lesson.id, 'quiz_id_id', matchedQuizId],
       );
 
-      // If no relationship exists, create one
+      // If no relationship exists, create one with field='quiz_id_id'
       if (existingRel.rows.length === 0) {
         await client.query(
           `INSERT INTO payload.course_lessons_rels (
-            id, _parent_id, quiz_id, updated_at, created_at
-          ) VALUES (gen_random_uuid(), $1, $2, NOW(), NOW())`,
-          [lesson.id, matchedQuizId],
+            id, _parent_id, field, value, updated_at, created_at
+          ) VALUES (gen_random_uuid(), $1, $2, $3, NOW(), NOW())`,
+          [lesson.id, 'quiz_id_id', matchedQuizId],
         );
       }
 
@@ -156,6 +202,146 @@ async function repairLessonQuizRelationships(client: pg.PoolClient) {
   }
 
   console.log(`Successfully matched ${matchCount} lessons with quizzes`);
+}
+
+/**
+ * Repairs quiz-question relationships by finding all questions for each quiz
+ * @param client The database client
+ */
+async function repairQuizQuestionRelationships(client: pg.PoolClient) {
+  console.log('Repairing quiz-question relationships...');
+
+  try {
+    // Check if the course_quizzes_rels table exists
+    const tableExists = await client.query(
+      `
+      SELECT EXISTS (
+        SELECT FROM information_schema.tables 
+        WHERE table_schema = 'payload' 
+        AND table_name = 'course_quizzes_rels'
+      ) AS exists
+      `,
+    );
+
+    // If the table doesn't exist, create it
+    if (!tableExists.rows[0].exists) {
+      console.log('Creating course_quizzes_rels table...');
+      await client.query(
+        `
+        CREATE TABLE payload.course_quizzes_rels (
+          id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+          _parent_id uuid NOT NULL REFERENCES payload.course_quizzes(id) ON DELETE CASCADE,
+          field VARCHAR(255),
+          value uuid,
+          created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+          updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+        )
+        `,
+      );
+    } else {
+      // Check if the field column exists
+      const fieldColumnExists = await client.query(
+        `
+        SELECT EXISTS (
+          SELECT FROM information_schema.columns 
+          WHERE table_schema = 'payload' 
+          AND table_name = 'course_quizzes_rels'
+          AND column_name = 'field'
+        ) AS exists
+        `,
+      );
+
+      // If the field column doesn't exist, add it
+      if (!fieldColumnExists.rows[0].exists) {
+        console.log('Adding field column to course_quizzes_rels table...');
+        await client.query(
+          `
+          ALTER TABLE payload.course_quizzes_rels
+          ADD COLUMN field VARCHAR(255)
+          `,
+        );
+      }
+
+      // Check if the value column exists
+      const valueColumnExists = await client.query(
+        `
+        SELECT EXISTS (
+          SELECT FROM information_schema.columns 
+          WHERE table_schema = 'payload' 
+          AND table_name = 'course_quizzes_rels'
+          AND column_name = 'value'
+        ) AS exists
+        `,
+      );
+
+      // If the value column doesn't exist, add it
+      if (!valueColumnExists.rows[0].exists) {
+        console.log('Adding value column to course_quizzes_rels table...');
+        await client.query(
+          `
+          ALTER TABLE payload.course_quizzes_rels
+          ADD COLUMN value uuid
+          `,
+        );
+      }
+    }
+
+    // Get all quizzes
+    const quizzes = await client.query(
+      'SELECT id, title FROM payload.course_quizzes ORDER BY title',
+    );
+
+    console.log(`Found ${quizzes.rows.length} quizzes to process`);
+
+    // Track successful relationships
+    let relationshipCount = 0;
+
+    // For each quiz, find all questions and create relationships
+    for (const quiz of quizzes.rows) {
+      // Get all questions for this quiz
+      const questions = await client.query(
+        'SELECT id, question FROM payload.quiz_questions WHERE quiz_id = $1',
+        [quiz.id],
+      );
+
+      console.log(
+        `Found ${questions.rows.length} questions for quiz "${quiz.title}"`,
+      );
+
+      // For each question, create a relationship entry in course_quizzes_rels
+      for (const question of questions.rows) {
+        // Check if a relationship entry already exists
+        const existingRel = await client.query(
+          `
+          SELECT id FROM payload.course_quizzes_rels 
+          WHERE _parent_id = $1 
+          AND field = $2 
+          AND value = $3
+          `,
+          [quiz.id, 'questions', question.id],
+        );
+
+        // If no relationship exists, create one
+        if (existingRel.rows.length === 0) {
+          await client.query(
+            `INSERT INTO payload.course_quizzes_rels (
+              id, _parent_id, field, value, updated_at, created_at
+            ) VALUES (gen_random_uuid(), $1, $2, $3, NOW(), NOW())`,
+            [quiz.id, 'questions', question.id],
+          );
+
+          relationshipCount++;
+        }
+      }
+    }
+
+    console.log(
+      `Successfully created ${relationshipCount} quiz-question relationships`,
+    );
+  } catch (error) {
+    console.error('Error repairing quiz-question relationships:', error);
+    console.log('Continuing with other repairs...');
+  }
 }
 
 // Get the current file's directory
@@ -330,6 +516,10 @@ async function repairAllRelationships() {
       // Repair lesson-quiz relationships specifically
       console.log('\nRepairing lesson-quiz relationships specifically...');
       await repairLessonQuizRelationships(client);
+
+      // Repair quiz-question relationships specifically
+      console.log('\nRepairing quiz-question relationships specifically...');
+      await repairQuizQuestionRelationships(client);
 
       console.log('All relationships repaired!');
     } finally {
