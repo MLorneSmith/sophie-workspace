@@ -1,112 +1,158 @@
-# Content Migrations
+# Content Migration System
 
-This package contains scripts for migrating content from various sources to the Payload CMS collections in our Makerkit-based Next.js 15 application.
+This package provides tools for migrating content from various sources to the Payload CMS collections in our Makerkit-based Next.js 15 application.
 
 ## Overview
 
 The content migration system is designed to:
 
-1. Migrate course lessons from Markdown files to Payload CMS
-2. Migrate course quizzes from Markdown files to Payload CMS
-3. Migrate quiz questions from Markdown files to Payload CMS
-4. Migrate documentation from Markdown files to Payload CMS
-5. Migrate blog posts from Markdown files to Payload CMS
+1. Process raw data files (`.mdoc`, `.yaml`, etc.) into a standardized format
+2. Generate SQL seed files for database population
+3. Provide utilities for verifying and repairing database state
 
-## Fixed Migration Scripts
+## Directory Structure
 
-We've created fixed versions of the migration scripts to address the following issues:
+```
+packages/content-migrations/
+├── src/
+│   ├── config/           # Configuration files
+│   ├── data/             # Data files
+│   │   ├── raw/          # Raw data files (.mdoc, .yaml)
+│   │   └── processed/    # Processed data ready for migration
+│   │       ├── sql/      # SQL seed files
+│   │       └── json/     # JSON data for direct insertion
+│   ├── scripts/          # Migration scripts
+│   │   ├── core/         # Core migration scripts
+│   │   ├── process/      # Data processing scripts
+│   │   ├── repair/       # Repair scripts
+│   │   ├── sql/          # SQL-related scripts
+│   │   ├── utils/        # Utility scripts
+│   │   └── verification/ # Verification scripts
+│   └── utils/            # Utility functions
+└── README.md             # This file
+```
 
-1. **Missing Unique Constraint**: Added a unique constraint on the `quiz_id` and `question` columns in the `quiz_questions` table to support the `ON CONFLICT` clause in the migration scripts.
-2. **UUID Format Issues**: Added validation to ensure all IDs are in proper UUID format for PostgreSQL.
-3. **Schema Inconsistencies**: Fixed field naming inconsistencies between the code and database schema.
-4. **Error Handling**: Improved error handling and logging in the migration scripts.
-5. **Admin User Creation**: Added a script to create an admin user directly in the PostgreSQL database without requiring the Payload server to be running.
-6. **Direct Database Access**: Converted all scripts to use direct database access instead of the Payload API, eliminating the need to start the Payload server during migrations.
+## Workflow
 
-## Running the Migrations
+The content migration workflow consists of two main phases:
 
-### Using the Reset Script
+### 1. Data Processing (One-time)
 
-The easiest way to run all migrations is to use the `reset-and-migrate.ps1` script in the root directory:
+This phase processes the raw data files and generates processed data files that can be used by the migration scripts. This is a one-time operation that only needs to be run when the raw data changes.
 
-```powershell
+```
+Raw Data Files (.mdoc, .yaml) → Processing Scripts → Processed Data (SQL, JSON)
+```
+
+### 2. Database Migration (Repeatable)
+
+This phase uses the processed data to populate the database tables. This can be run multiple times without reprocessing the raw data.
+
+```
+Processed Data → Migration Scripts → Database Tables
+```
+
+## Usage
+
+### Processing Raw Data
+
+To process the raw data files, run:
+
+```bash
+pnpm run process:raw-data
+```
+
+This will:
+
+1. Validate that all required raw data directories exist
+2. Process the raw data files into SQL seed files
+3. Copy the SQL seed files to the processed data directory
+4. Create a metadata file with the processing timestamp
+
+### Validating Raw Data
+
+To validate that all required raw data directories exist without processing the data, run:
+
+```bash
+pnpm run process:validate
+```
+
+### Running Migrations
+
+The migrations are integrated with the `reset-and-migrate.ps1` script at the root of the project. This script will:
+
+1. Reset the Supabase database
+2. Run Web app migrations
+3. Run Payload migrations
+4. Check if processed data exists and use it, or generate it if it doesn't exist
+5. Run content migrations via Payload migrations
+6. Verify database state
+
+To run the migrations, execute:
+
+```bash
 ./reset-and-migrate.ps1
 ```
 
-This script will:
+## Scripts
 
-1. Reset the Supabase database
-2. Run the Web app migrations
-3. Run the Payload migrations
-4. Create an admin user (michael@slideheroes.com)
-5. Run the fixed content migration scripts
-6. Repair all relationships
+### Core Scripts
 
-### Running Individual Migration Scripts
+- `migrate:all`: Run all direct migrations
+- `migrate:course-lessons`: Migrate course lessons
+- `migrate:course-quizzes`: Migrate course quizzes
+- `migrate:quiz-questions`: Migrate quiz questions
+- `migrate:posts`: Migrate blog posts
+- `migrate:docs`: Migrate documentation
 
-You can also run individual migration scripts using the following commands:
+### Process Scripts
 
-```bash
-# Test the environment
-pnpm run test:env
+- `process:raw-data`: Process all raw data files
+- `process:validate`: Validate raw data directories
 
-# Test the database connection
-pnpm run test:db
+### SQL Scripts
 
-# Create an admin user directly in the database
-pnpm run create:admin:direct
+- `sql:generate-seeds`: Generate SQL seed files
+- `sql:run-seeds`: Run SQL seed files
+- `sql:verify-schema`: Verify database schema
+- `sql:add-relationship-id-columns`: Add relationship ID columns to tables
 
-# Run all migrations with the fixed scripts
-pnpm run migrate:all:direct:fixed
+### Verification Scripts
 
-# Run individual fixed migration scripts
-pnpm run migrate:quiz-questions:direct:fixed
+- `verify:all`: Verify all relationships
+- `verify:course-lessons`: Verify course lessons quiz_id_id column
+- `verify:media-columns`: Verify media ID columns
+- `verify:database`: Verify database schema
+- `verify:schema`: Verify schema exists
+- `verify:table`: Verify table exists
 
-# Repair relationships
-pnpm run repair:all-relationships
-```
+### Repair Scripts
 
-## Troubleshooting
+- `repair:edge-cases`: Repair edge cases
+- `repair:relationships`: Fix relationships
+- `repair:all-relationships`: Repair all relationships
 
-If you encounter issues with the migration scripts, try the following:
+## Adding New Content
 
-1. **Database Connection Issues**: Ensure the `DATABASE_URI` environment variable is correctly set in the `.env.development` file.
-2. **UUID Format Issues**: Check that all IDs in the database are in proper UUID format.
-3. **Missing Constraints**: Verify that the unique constraint on the `quiz_questions` table has been created.
-4. **Relationship Issues**: Run the `repair:all-relationships` script to fix any missing relationships.
+When adding new content:
 
-## Migration Sequence
+1. Add the raw data files to the appropriate directory in `src/data/raw/`
+2. Run `pnpm run process:raw-data` to process the new data
+3. Run `./reset-and-migrate.ps1` to apply the migrations
 
-The migration scripts are executed in the following order:
+## Updating Existing Content
 
-1. Test database connection and schema
-2. Create admin user
-3. Migrate course lessons
-4. Migrate course quizzes
-5. Migrate quiz questions (using the fixed script)
-6. Fix relationships
-7. Migrate documentation
-8. Migrate blog posts
-9. Migrate additional quizzes from Payload data
-10. Final database connection test
+When updating existing content:
 
-## Database Schema
+1. Update the raw data files in `src/data/raw/`
+2. Run `pnpm run process:raw-data` to reprocess the data
+3. Run `./reset-and-migrate.ps1` to apply the migrations
 
-The migration scripts interact with the following tables in the `payload` schema:
+## Benefits of This Approach
 
-- `users`: Stores user accounts for Payload CMS
-- `course_quizzes`: Stores quiz metadata (title, description, passing score)
-- `quiz_questions`: Stores quiz questions with a foreign key to `course_quizzes`
-- `quiz_questions_options`: Stores quiz question options with a foreign key to `quiz_questions`
-- `course_lessons`: Stores course lessons
-- `documentation`: Stores documentation content
-- `posts`: Stores blog posts
-
-## Environment Variables
-
-The migration scripts require the following environment variables to be set in the `.env.development` file:
-
-```
-DATABASE_URI=postgresql://postgres:postgres@localhost:54322/postgres?schema=payload
-PAYLOAD_PUBLIC_SERVER_URL=http://localhost:3020
-```
+- **Efficiency**: Raw data is only processed once, reducing migration time
+- **Reliability**: Reduces potential for errors during migration
+- **Maintainability**: Clear separation of concerns
+- **Flexibility**: Easier to update content without running full migrations
+- **Consistency**: Standardized approach for all content types
+- **Verifiability**: Easier to verify and validate the migration process

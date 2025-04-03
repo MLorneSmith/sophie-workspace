@@ -15,23 +15,12 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { v4 as uuidv4 } from 'uuid';
 
-// Get the current file's directory
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Define paths
-const lessonsDir = path.resolve(
-  __dirname,
-  '../../../../../apps/payload/data/courses/lessons',
-);
-const quizzesDir = path.resolve(
-  __dirname,
-  '../../../../../apps/payload/data/courses/quizzes',
-);
-const sqlSeedDir = path.resolve(
-  __dirname,
-  '../../../../../apps/payload/src/seed/sql',
-);
+import {
+  PAYLOAD_SQL_SEED_DIR,
+  PROCESSED_SQL_DIR,
+  RAW_LESSONS_DIR,
+  RAW_QUIZZES_DIR,
+} from '../../config/paths.js';
 
 // Define the course ID (fixed UUID)
 const COURSE_ID = '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8';
@@ -44,44 +33,86 @@ async function generateSqlSeedFiles() {
 
   try {
     // Ensure SQL seed directory exists
-    if (!fs.existsSync(sqlSeedDir)) {
-      fs.mkdirSync(sqlSeedDir, { recursive: true });
+    if (!fs.existsSync(PAYLOAD_SQL_SEED_DIR)) {
+      fs.mkdirSync(PAYLOAD_SQL_SEED_DIR, { recursive: true });
     }
 
     // Generate a map of quiz slugs to UUIDs
-    const quizMap = generateQuizMap(quizzesDir);
+    const quizMap = generateQuizMap(RAW_QUIZZES_DIR);
 
     // Generate courses SQL (simple file with just the main course)
     console.log('Generating courses SQL...');
     const coursesSql = generateCoursesSql();
-    fs.writeFileSync(path.join(sqlSeedDir, '01-courses.sql'), coursesSql);
+    fs.writeFileSync(
+      path.join(PAYLOAD_SQL_SEED_DIR, '01-courses.sql'),
+      coursesSql,
+    );
 
     // Generate lessons SQL
     console.log('Generating lessons SQL...');
-    const lessonsSql = generateLessonsSql(lessonsDir);
-    fs.writeFileSync(path.join(sqlSeedDir, '02-lessons.sql'), lessonsSql);
+    const lessonsSql = generateLessonsSql(RAW_LESSONS_DIR);
+    fs.writeFileSync(
+      path.join(PAYLOAD_SQL_SEED_DIR, '02-lessons.sql'),
+      lessonsSql,
+    );
 
     // Generate quizzes SQL
     console.log('Generating quizzes SQL...');
-    const quizzesSql = generateQuizzesSql(quizzesDir, quizMap);
-    fs.writeFileSync(path.join(sqlSeedDir, '03-quizzes.sql'), quizzesSql);
+    const quizzesSql = generateQuizzesSql(RAW_QUIZZES_DIR, quizMap);
+    fs.writeFileSync(
+      path.join(PAYLOAD_SQL_SEED_DIR, '03-quizzes.sql'),
+      quizzesSql,
+    );
 
     // Generate questions SQL
     console.log('Generating questions SQL...');
-    const questionsSql = generateQuestionsSql(quizzesDir, quizMap);
-    fs.writeFileSync(path.join(sqlSeedDir, '04-questions.sql'), questionsSql);
+    const questionsSql = generateQuestionsSql(RAW_QUIZZES_DIR, quizMap);
+    fs.writeFileSync(
+      path.join(PAYLOAD_SQL_SEED_DIR, '04-questions.sql'),
+      questionsSql,
+    );
 
     // Generate surveys SQL (placeholder)
     console.log('Generating surveys SQL...');
     const surveysSql = generateSurveysSql();
-    fs.writeFileSync(path.join(sqlSeedDir, '05-surveys.sql'), surveysSql);
+    fs.writeFileSync(
+      path.join(PAYLOAD_SQL_SEED_DIR, '05-surveys.sql'),
+      surveysSql,
+    );
 
     // Generate survey questions SQL (placeholder)
     console.log('Generating survey questions SQL...');
     const surveyQuestionsSql = generateSurveyQuestionsSql();
     fs.writeFileSync(
-      path.join(sqlSeedDir, '06-survey-questions.sql'),
+      path.join(PAYLOAD_SQL_SEED_DIR, '06-survey-questions.sql'),
       surveyQuestionsSql,
+    );
+
+    // Also copy the files to the processed SQL directory
+    console.log('Copying SQL files to processed directory...');
+    fs.copyFileSync(
+      path.join(PAYLOAD_SQL_SEED_DIR, '01-courses.sql'),
+      path.join(PROCESSED_SQL_DIR, '01-courses.sql'),
+    );
+    fs.copyFileSync(
+      path.join(PAYLOAD_SQL_SEED_DIR, '02-lessons.sql'),
+      path.join(PROCESSED_SQL_DIR, '02-lessons.sql'),
+    );
+    fs.copyFileSync(
+      path.join(PAYLOAD_SQL_SEED_DIR, '03-quizzes.sql'),
+      path.join(PROCESSED_SQL_DIR, '03-quizzes.sql'),
+    );
+    fs.copyFileSync(
+      path.join(PAYLOAD_SQL_SEED_DIR, '04-questions.sql'),
+      path.join(PROCESSED_SQL_DIR, '04-questions.sql'),
+    );
+    fs.copyFileSync(
+      path.join(PAYLOAD_SQL_SEED_DIR, '05-surveys.sql'),
+      path.join(PROCESSED_SQL_DIR, '05-surveys.sql'),
+    );
+    fs.copyFileSync(
+      path.join(PAYLOAD_SQL_SEED_DIR, '06-survey-questions.sql'),
+      path.join(PROCESSED_SQL_DIR, '06-survey-questions.sql'),
     );
 
     console.log('SQL seed files generated successfully!');
