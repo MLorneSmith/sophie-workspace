@@ -1,12 +1,12 @@
 ﻿**********************
 Windows PowerShell transcript start
-Start time: 20250402180048
+Start time: 20250403120505
 Username: SLIDEHEROES_DEN\msmit
 RunAs User: SLIDEHEROES_DEN\msmit
 Configuration Name: 
 Machine: SLIDEHEROES_DEN (Microsoft Windows NT 10.0.26100.0)
 Host Application: C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -noexit -command try { . "c:\Users\msmit\AppData\Local\Programs\Microsoft VS Code\resources\app\out\vs\workbench\contrib\terminal\common\scripts\shellIntegration.ps1" } catch {}
-Process ID: 24616
+Process ID: 42756
 PSVersion: 5.1.26100.3624
 PSEdition: Desktop
 PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.3624
@@ -16,9 +16,9 @@ WSManStackVersion: 3.0
 PSRemotingProtocolVersion: 2.3
 SerializationVersion: 1.1.0.1
 **********************
-Transcript started, output file is D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-log-20250402-180048.txt
-Starting migration process at 04/02/2025 18:00:48
-Detailed logs will be saved to: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250402-180048.txt
+Transcript started, output file is D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-log-20250403-120505.txt
+Starting migration process at 04/03/2025 12:05:05
+Detailed logs will be saved to: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250403-120505.txt
 STEP 1: Resetting Supabase database and running Web app migrations...
 Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\apps\web
   Running supabase:reset...
@@ -43,6 +43,12 @@ DESCRIPTION: Checking migration status
 EXECUTING: pnpm payload migrate
 DESCRIPTION: Running Payload migrations
 
+  Adding relationship ID columns to locked documents tables...
+  Temporarily changed to directory: D:\SlideHeroes\App\repos\2025slideheroes
+EXECUTING: pnpm --filter @kit/content-migrations run add:relationship-id-columns
+DESCRIPTION: Adding relationship ID columns to locked documents tables
+
+  Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\apps\payload
   Verifying migration status...
 EXECUTING: pnpm migrate:status
 DESCRIPTION: Verifying migration status
@@ -94,10 +100,18 @@ Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-
   Verifying database schema...
 EXECUTING: pnpm run verify:sql-schema
 DESCRIPTION: Final database verification
+  Verifying course_lessons quiz_id_id column...
+EXECUTING: pnpm run verify:course-lessons-quiz-id-column
+DESCRIPTION: Verifying course_lessons quiz_id_id column
+  Course lessons quiz_id_id column verification passed
+  Verifying media_id columns...
+EXECUTING: pnpm --filter @kit/content-migrations run verify:media-columns
+DESCRIPTION: Verifying media_id columns
+  Media columns verification passed
 Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes
 All migrations and verifications completed successfully!
 Admin user created with email: michael@slideheroes.com
 **********************
 Windows PowerShell transcript end
-End time: 20250402180136
+End time: 20250403120557
 **********************

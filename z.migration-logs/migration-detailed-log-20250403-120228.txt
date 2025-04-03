@@ -1,16 +1,16 @@
-2025-04-02 18:04:37: Starting migration process at 04/02/2025 18:04:37
-2025-04-02 18:04:37: Detailed logs will be saved to: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250402-180437.txt
-2025-04-02 18:04:37: STEP 1: Resetting Supabase database and running Web app migrations...
-2025-04-02 18:04:37: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\apps\web
-2025-04-02 18:04:37:   Running supabase:reset...
-2025-04-02 18:04:37: EXECUTING: pnpm run supabase:reset
-2025-04-02 18:04:37: DESCRIPTION: Resetting Supabase database
-2025-04-02 18:05:06:   Running supabase migrations...
-2025-04-02 18:05:06: EXECUTING: supabase migration up
-2025-04-02 18:05:06: DESCRIPTION: Running Supabase migrations
-2025-04-02 18:05:07: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes
-2025-04-02 18:05:07: EXECUTING: pnpm --filter @kit/content-migrations run verify:schema public
-2025-04-02 18:05:07: DESCRIPTION: Verifying schema 'public' exists
+2025-04-03 12:02:28: Starting migration process at 04/03/2025 12:02:28
+2025-04-03 12:02:28: Detailed logs will be saved to: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250403-120228.txt
+2025-04-03 12:02:28: STEP 1: Resetting Supabase database and running Web app migrations...
+2025-04-03 12:02:28: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\apps\web
+2025-04-03 12:02:28:   Running supabase:reset...
+2025-04-03 12:02:28: EXECUTING: pnpm run supabase:reset
+2025-04-03 12:02:28: DESCRIPTION: Resetting Supabase database
+2025-04-03 12:02:58:   Running supabase migrations...
+2025-04-03 12:02:58: EXECUTING: supabase migration up
+2025-04-03 12:02:58: DESCRIPTION: Running Supabase migrations
+2025-04-03 12:02:58: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes
+2025-04-03 12:02:58: EXECUTING: pnpm --filter @kit/content-migrations run verify:schema public
+2025-04-03 12:02:58: DESCRIPTION: Verifying schema 'public' exists
 --- Command Output Start ---
 apps/payload                             | GÇëWARNGÇë The field "pnpm.onlyBuiltDependencies" was found in D:\SlideHeroes\App\repos\2025slideheroes\apps\payload/package.json. This will not take effect. You should configure "pnpm.onlyBuiltDependencies" at the root of the workspace instead.
 
@@ -23,20 +23,20 @@ Checking if schema 'public' exists...
 Schema 'public' exists
 
 --- Command Output End ---
-2025-04-02 18:05:07: âœ… Schema 'public' exists
-2025-04-02 18:05:07:   Web app migrations completed successfully
-2025-04-02 18:05:07: STEP 2: Running Payload migrations...
-2025-04-02 18:05:07: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\apps\payload
-2025-04-02 18:05:07:   Checking migration status...
-2025-04-02 18:05:07: EXECUTING: pnpm migrate:status
-2025-04-02 18:05:07: DESCRIPTION: Checking migration status
+2025-04-03 12:02:59: âœ… Schema 'public' exists
+2025-04-03 12:02:59:   Web app migrations completed successfully
+2025-04-03 12:02:59: STEP 2: Running Payload migrations...
+2025-04-03 12:02:59: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\apps\payload
+2025-04-03 12:02:59:   Checking migration status...
+2025-04-03 12:02:59: EXECUTING: pnpm migrate:status
+2025-04-03 12:02:59: DESCRIPTION: Checking migration status
 --- Command Output Start ---
 
 > payload-app@1.0.0 migrate:status D:\SlideHeroes\App\repos\2025slideheroes\apps\payload
 > cross-env NODE_OPTIONS=--no-deprecation payload migrate:status
 
-[18:05:10] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
-[18:05:10] [32mINFO[39m: [36mReading migration files from D:\SlideHeroes\App\repos\2025slideheroes\apps\payload\src\migrations[39m
+[12:03:01] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[12:03:01] [32mINFO[39m: [36mReading migration files from D:\SlideHeroes\App\repos\2025slideheroes\apps\payload\src\migrations[39m
 GöîGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGö¼GöÇGöÇGöÇGöÇGöÇGöÇGöÇGö¼GöÇGöÇGöÇGöÇGöÇGöÉ
 Göé[37m [0m[01m                                       Name[0m Göé[37m [0m[01mBatch[0m Göé[37m [0m[01mRan[0m Göé
 Gö£GöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGö+GöÇGöÇGöÇGöÇGöÇGöÇGöÇGö+GöÇGöÇGöÇGöÇGöÇGöñ
@@ -44,29 +44,31 @@ Göé[37m [0m[31m            20250402_100000_schema_creation[0m Göé[37m [0m
 Göé[37m [0m[31m                20250402_300000_base_schema[0m Göé[37m [0m[31m     [0m Göé[37m [0m[31m No[0m Göé
 Göé[37m [0m[31m           20250402_305000_seed_course_data[0m Göé[37m [0m[31m     [0m Göé[37m [0m[31m No[0m Göé
 Göé[37m [0m[31m     20250402_310000_relationship_structure[0m Göé[37m [0m[31m     [0m Göé[37m [0m[31m No[0m Göé
-Göé[37m [0m[31m               20250402_320000_field_naming[0m Göé[37m [0m[31m     [0m Göé[37m [0m[31m No[0m Göé
 Göé[37m [0m[31m20250402_330000_bidirectional_relationships[0m Göé[37m [0m[31m     [0m Göé[37m [0m[31m No[0m Göé
 Göé[37m [0m[31m            20250402_340000_add_users_table[0m Göé[37m [0m[31m     [0m Göé[37m [0m[31m No[0m Göé
 Göé[37m [0m[31m          20250402_350000_create_admin_user[0m Göé[37m [0m[31m     [0m Göé[37m [0m[31m No[0m Göé
-Göé[37m [0m[31m         20250402_360000_add_missing_tables[0m Göé[37m [0m[31m     [0m Göé[37m [0m[31m No[0m Göé
-Göé[37m [0m[31m        20250402_370000_add_missing_columns[0m Göé[37m [0m[31m     [0m Göé[37m [0m[31m No[0m Göé
 GööGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGö¦GöÇGöÇGöÇGöÇGöÇGöÇGöÇGö¦GöÇGöÇGöÇGöÇGöÇGöÿ
-[18:05:10] [32mINFO[39m: [36mDone.[39m
+[12:03:01] [32mINFO[39m: [36mDone.[39m
 
 --- Command Output End ---
-2025-04-02 18:05:10:   Running all migrations...
-2025-04-02 18:05:10: EXECUTING: pnpm payload migrate
-2025-04-02 18:05:10: DESCRIPTION: Running Payload migrations
-2025-04-02 18:05:13:   Verifying migration status...
-2025-04-02 18:05:13: EXECUTING: pnpm migrate:status
-2025-04-02 18:05:13: DESCRIPTION: Verifying migration status
+2025-04-03 12:03:01:   Running all migrations...
+2025-04-03 12:03:01: EXECUTING: pnpm payload migrate
+2025-04-03 12:03:01: DESCRIPTION: Running Payload migrations
+2025-04-03 12:03:05:   Adding relationship ID columns to locked documents tables...
+2025-04-03 12:03:05:   Temporarily changed to directory: D:\SlideHeroes\App\repos\2025slideheroes
+2025-04-03 12:03:05: EXECUTING: pnpm --filter @kit/content-migrations run add:relationship-id-columns
+2025-04-03 12:03:05: DESCRIPTION: Adding relationship ID columns to locked documents tables
+2025-04-03 12:03:06:   Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\apps\payload
+2025-04-03 12:03:06:   Verifying migration status...
+2025-04-03 12:03:06: EXECUTING: pnpm migrate:status
+2025-04-03 12:03:06: DESCRIPTION: Verifying migration status
 --- Command Output Start ---
 
 > payload-app@1.0.0 migrate:status D:\SlideHeroes\App\repos\2025slideheroes\apps\payload
 > cross-env NODE_OPTIONS=--no-deprecation payload migrate:status
 
-[18:05:15] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
-[18:05:15] [32mINFO[39m: [36mReading migration files from D:\SlideHeroes\App\repos\2025slideheroes\apps\payload\src\migrations[39m
+[12:03:08] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[12:03:08] [32mINFO[39m: [36mReading migration files from D:\SlideHeroes\App\repos\2025slideheroes\apps\payload\src\migrations[39m
 GöîGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGö¼GöÇGöÇGöÇGöÇGöÇGöÇGöÇGö¼GöÇGöÇGöÇGöÇGöÇGöÉ
 Göé[37m [0m[01m                                       Name[0m Göé[37m [0m[01mBatch[0m Göé[37m [0m[01mRan[0m Göé
 Gö£GöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGö+GöÇGöÇGöÇGöÇGöÇGöÇGöÇGö+GöÇGöÇGöÇGöÇGöÇGöñ
@@ -74,20 +76,17 @@ Göé[37m [0m[32m            20250402_100000_schema_creation[0m Göé[37m [0m
 Göé[37m [0m[32m                20250402_300000_base_schema[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
 Göé[37m [0m[32m           20250402_305000_seed_course_data[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
 Göé[37m [0m[32m     20250402_310000_relationship_structure[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
-Göé[37m [0m[32m               20250402_320000_field_naming[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
 Göé[37m [0m[32m20250402_330000_bidirectional_relationships[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
 Göé[37m [0m[32m            20250402_340000_add_users_table[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
 Göé[37m [0m[32m          20250402_350000_create_admin_user[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
-Göé[37m [0m[32m         20250402_360000_add_missing_tables[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
-Göé[37m [0m[32m        20250402_370000_add_missing_columns[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
 GööGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGö¦GöÇGöÇGöÇGöÇGöÇGöÇGöÇGö¦GöÇGöÇGöÇGöÇGöÇGöÿ
-[18:05:15] [32mINFO[39m: [36mDone.[39m
+[12:03:08] [32mINFO[39m: [36mDone.[39m
 
 --- Command Output End ---
-2025-04-02 18:05:15:   All migrations have been applied successfully
-2025-04-02 18:05:15: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes
-2025-04-02 18:05:15: EXECUTING: pnpm --filter @kit/content-migrations run verify:schema payload
-2025-04-02 18:05:15: DESCRIPTION: Verifying schema 'payload' exists
+2025-04-03 12:03:08:   All migrations have been applied successfully
+2025-04-03 12:03:08: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes
+2025-04-03 12:03:08: EXECUTING: pnpm --filter @kit/content-migrations run verify:schema payload
+2025-04-03 12:03:08: DESCRIPTION: Verifying schema 'payload' exists
 --- Command Output Start ---
 apps/payload                             | GÇëWARNGÇë The field "pnpm.onlyBuiltDependencies" was found in D:\SlideHeroes\App\repos\2025slideheroes\apps\payload/package.json. This will not take effect. You should configure "pnpm.onlyBuiltDependencies" at the root of the workspace instead.
 
@@ -100,9 +99,9 @@ Checking if schema 'payload' exists...
 Schema 'payload' exists
 
 --- Command Output End ---
-2025-04-02 18:05:16: âœ… Schema 'payload' exists
-2025-04-02 18:05:16: EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload courses
-2025-04-02 18:05:16: DESCRIPTION: Verifying table 'payload.courses' exists
+2025-04-03 12:03:09: âœ… Schema 'payload' exists
+2025-04-03 12:03:09: EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload courses
+2025-04-03 12:03:09: DESCRIPTION: Verifying table 'payload.courses' exists
 --- Command Output Start ---
 apps/payload                             | GÇëWARNGÇë The field "pnpm.onlyBuiltDependencies" was found in D:\SlideHeroes\App\repos\2025slideheroes\apps\payload/package.json. This will not take effect. You should configure "pnpm.onlyBuiltDependencies" at the root of the workspace instead.
 
@@ -115,9 +114,9 @@ Checking if table 'payload.courses' exists...
 Table 'payload.courses' exists
 
 --- Command Output End ---
-2025-04-02 18:05:16: âœ… Table 'payload.courses' exists
-2025-04-02 18:05:16: EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload course_lessons
-2025-04-02 18:05:16: DESCRIPTION: Verifying table 'payload.course_lessons' exists
+2025-04-03 12:03:10: âœ… Table 'payload.courses' exists
+2025-04-03 12:03:10: EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload course_lessons
+2025-04-03 12:03:10: DESCRIPTION: Verifying table 'payload.course_lessons' exists
 --- Command Output Start ---
 apps/payload                             | GÇëWARNGÇë The field "pnpm.onlyBuiltDependencies" was found in D:\SlideHeroes\App\repos\2025slideheroes\apps\payload/package.json. This will not take effect. You should configure "pnpm.onlyBuiltDependencies" at the root of the workspace instead.
 
@@ -130,9 +129,9 @@ Checking if table 'payload.course_lessons' exists...
 Table 'payload.course_lessons' exists
 
 --- Command Output End ---
-2025-04-02 18:05:17: âœ… Table 'payload.course_lessons' exists
-2025-04-02 18:05:17: EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload course_quizzes
-2025-04-02 18:05:17: DESCRIPTION: Verifying table 'payload.course_quizzes' exists
+2025-04-03 12:03:10: âœ… Table 'payload.course_lessons' exists
+2025-04-03 12:03:10: EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload course_quizzes
+2025-04-03 12:03:10: DESCRIPTION: Verifying table 'payload.course_quizzes' exists
 --- Command Output Start ---
 apps/payload                             | GÇëWARNGÇë The field "pnpm.onlyBuiltDependencies" was found in D:\SlideHeroes\App\repos\2025slideheroes\apps\payload/package.json. This will not take effect. You should configure "pnpm.onlyBuiltDependencies" at the root of the workspace instead.
 
@@ -145,9 +144,9 @@ Checking if table 'payload.course_quizzes' exists...
 Table 'payload.course_quizzes' exists
 
 --- Command Output End ---
-2025-04-02 18:05:18: âœ… Table 'payload.course_quizzes' exists
-2025-04-02 18:05:18: EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload quiz_questions
-2025-04-02 18:05:18: DESCRIPTION: Verifying table 'payload.quiz_questions' exists
+2025-04-03 12:03:11: âœ… Table 'payload.course_quizzes' exists
+2025-04-03 12:03:11: EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload quiz_questions
+2025-04-03 12:03:11: DESCRIPTION: Verifying table 'payload.quiz_questions' exists
 --- Command Output Start ---
 apps/payload                             | GÇëWARNGÇë The field "pnpm.onlyBuiltDependencies" was found in D:\SlideHeroes\App\repos\2025slideheroes\apps\payload/package.json. This will not take effect. You should configure "pnpm.onlyBuiltDependencies" at the root of the workspace instead.
 
@@ -160,9 +159,9 @@ Checking if table 'payload.quiz_questions' exists...
 Table 'payload.quiz_questions' exists
 
 --- Command Output End ---
-2025-04-02 18:05:18: âœ… Table 'payload.quiz_questions' exists
-2025-04-02 18:05:18: EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload surveys
-2025-04-02 18:05:18: DESCRIPTION: Verifying table 'payload.surveys' exists
+2025-04-03 12:03:12: âœ… Table 'payload.quiz_questions' exists
+2025-04-03 12:03:12: EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload surveys
+2025-04-03 12:03:12: DESCRIPTION: Verifying table 'payload.surveys' exists
 --- Command Output Start ---
 apps/payload                             | GÇëWARNGÇë The field "pnpm.onlyBuiltDependencies" was found in D:\SlideHeroes\App\repos\2025slideheroes\apps\payload/package.json. This will not take effect. You should configure "pnpm.onlyBuiltDependencies" at the root of the workspace instead.
 
@@ -175,9 +174,9 @@ Checking if table 'payload.surveys' exists...
 Table 'payload.surveys' exists
 
 --- Command Output End ---
-2025-04-02 18:05:19: âœ… Table 'payload.surveys' exists
-2025-04-02 18:05:19: EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload survey_questions
-2025-04-02 18:05:19: DESCRIPTION: Verifying table 'payload.survey_questions' exists
+2025-04-03 12:03:12: âœ… Table 'payload.surveys' exists
+2025-04-03 12:03:12: EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload survey_questions
+2025-04-03 12:03:12: DESCRIPTION: Verifying table 'payload.survey_questions' exists
 --- Command Output Start ---
 apps/payload                             | GÇëWARNGÇë The field "pnpm.onlyBuiltDependencies" was found in D:\SlideHeroes\App\repos\2025slideheroes\apps\payload/package.json. This will not take effect. You should configure "pnpm.onlyBuiltDependencies" at the root of the workspace instead.
 
@@ -190,15 +189,15 @@ Checking if table 'payload.survey_questions' exists...
 Table 'payload.survey_questions' exists
 
 --- Command Output End ---
-2025-04-02 18:05:20: âœ… Table 'payload.survey_questions' exists
-2025-04-02 18:05:20: STEP 3: Running content migrations and verification...
-2025-04-02 18:05:20: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
-2025-04-02 18:05:20:   Running fixed migration scripts...
-2025-04-02 18:05:20: EXECUTING: pnpm run migrate:all:direct:fixed
-2025-04-02 18:05:20: DESCRIPTION: Running fixed migration scripts
-2025-04-02 18:05:24:   Verifying database state...
-2025-04-02 18:05:24: EXECUTING: pnpm run verify:all-relationships
-2025-04-02 18:05:24: DESCRIPTION: Verifying database relationships
+2025-04-03 12:03:13: âœ… Table 'payload.survey_questions' exists
+2025-04-03 12:03:13: STEP 3: Running content migrations and verification...
+2025-04-03 12:03:13: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-04-03 12:03:13:   Running fixed migration scripts...
+2025-04-03 12:03:13: EXECUTING: pnpm run migrate:all:direct:fixed
+2025-04-03 12:03:13: DESCRIPTION: Running fixed migration scripts
+2025-04-03 12:03:17:   Verifying database state...
+2025-04-03 12:03:17: EXECUTING: pnpm run verify:all-relationships
+2025-04-03 12:03:17: DESCRIPTION: Verifying database relationships
 --- Command Output Start ---
 
 > @kit/content-migrations@0.1.0 verify:all-relationships D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
@@ -229,13 +228,13 @@ Verification completed
 Verification completed successfully
 
 --- Command Output End ---
-2025-04-02 18:05:24:   No issues found, skipping repairs
-2025-04-02 18:05:24: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes
-2025-04-02 18:05:24: STEP 4: Skipping SQL seed files (now handled by Payload migrations)...
-2025-04-02 18:05:24: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
-2025-04-02 18:05:24:   Verifying database schema...
-2025-04-02 18:05:24: EXECUTING: pnpm run verify:sql-schema
-2025-04-02 18:05:24: DESCRIPTION: Verifying database schema
+2025-04-03 12:03:18:   No issues found, skipping repairs
+2025-04-03 12:03:18: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes
+2025-04-03 12:03:18: STEP 4: Skipping SQL seed files (now handled by Payload migrations)...
+2025-04-03 12:03:18: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-04-03 12:03:18:   Verifying database schema...
+2025-04-03 12:03:18: EXECUTING: pnpm run verify:sql-schema
+2025-04-03 12:03:18: DESCRIPTION: Verifying database schema
 --- Command Output Start ---
 
 > @kit/content-migrations@0.1.0 verify:sql-schema D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
@@ -262,15 +261,15 @@ Database verification completed successfully
 Database verification completed successfully
 
 --- Command Output End ---
-2025-04-02 18:05:25:   Skipping SQL seed files generation and execution...
-2025-04-02 18:05:25:   NOTE: Course data is now seeded by Payload migration 20250402_305000_seed_course_data.ts
-2025-04-02 18:05:25:   NOTE: Lessons and quizzes are seeded by direct migrations in Step 3
-2025-04-02 18:05:25: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes
-2025-04-02 18:05:25: STEP 5: Performing comprehensive database verification...
-2025-04-02 18:05:25: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
-2025-04-02 18:05:25:   Verifying database schema...
-2025-04-02 18:05:25: EXECUTING: pnpm run verify:sql-schema
-2025-04-02 18:05:25: DESCRIPTION: Final database verification
+2025-04-03 12:03:18:   Skipping SQL seed files generation and execution...
+2025-04-03 12:03:18:   NOTE: Course data is now seeded by Payload migration 20250402_305000_seed_course_data.ts
+2025-04-03 12:03:18:   NOTE: Lessons and quizzes are seeded by direct migrations in Step 3
+2025-04-03 12:03:18: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes
+2025-04-03 12:03:18: STEP 5: Performing comprehensive database verification...
+2025-04-03 12:03:18: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-04-03 12:03:18:   Verifying database schema...
+2025-04-03 12:03:18: EXECUTING: pnpm run verify:sql-schema
+2025-04-03 12:03:18: DESCRIPTION: Final database verification
 --- Command Output Start ---
 
 > @kit/content-migrations@0.1.0 verify:sql-schema D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
@@ -297,9 +296,65 @@ Database verification completed successfully
 Database verification completed successfully
 
 --- Command Output End ---
-2025-04-02 18:05:26: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes
-2025-04-02 18:05:26: All migrations and verifications completed successfully!
-2025-04-02 18:05:26: Admin user created with email: michael@slideheroes.com
-2025-04-02 18:05:26: Migration logs saved to:
-2025-04-02 18:05:26:   - Transcript log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-log-20250402-180437.txt
-2025-04-02 18:05:26:   - Detailed log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250402-180437.txt
+2025-04-03 12:03:19:   Verifying course_lessons quiz_id_id column...
+2025-04-03 12:03:19: EXECUTING: pnpm run verify:course-lessons-quiz-id-column
+2025-04-03 12:03:19: DESCRIPTION: Verifying course_lessons quiz_id_id column
+--- Command Output Start ---
+
+> @kit/content-migrations@0.1.0 verify:course-lessons-quiz-id-column D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/scripts/verification/verify-course-lessons-quiz-id-column.ts
+
+Verifying course_lessons quiz_id_id column...
+Connected to database
+Checking if quiz_id_id column exists in course_lessons table...
+G£à Column quiz_id_id exists in course_lessons table
+Checking if values in quiz_id_id match quiz_id...
+G£à All quiz_id_id values match quiz_id values
+Checking if relationship entries exist in course_lessons_rels...
+G£à All relationships exist in course_lessons_rels table
+G£à Verification completed successfully
+Verification passed
+
+--- Command Output End ---
+2025-04-03 12:03:20:   Course lessons quiz_id_id column verification passed
+2025-04-03 12:03:20:   Verifying media_id columns...
+2025-04-03 12:03:20: EXECUTING: pnpm --filter @kit/content-migrations run verify:media-columns
+2025-04-03 12:03:20: DESCRIPTION: Verifying media_id columns
+--- Command Output Start ---
+../../apps/payload                       | GÇëWARNGÇë The field "pnpm.onlyBuiltDependencies" was found in D:\SlideHeroes\App\repos\2025slideheroes\apps\payload/package.json. This will not take effect. You should configure "pnpm.onlyBuiltDependencies" at the root of the workspace instead.
+
+> @kit/content-migrations@0.1.0 verify:media-columns D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/scripts/verification/verify-media-columns.ts
+
+Verifying media_id columns in Payload CMS tables...
+Connected to database
+Checking if media_id column exists in course_lessons table...
+G£à Column media_id exists in course_lessons table
+Checking if media_id column exists in course_quizzes table...
+G£à Column media_id exists in course_quizzes table
+Checking if media_id column exists in quiz_questions table...
+G£à Column media_id exists in quiz_questions table
+Checking if media_id column exists in payload_locked_documents table...
+G£à Column media_id exists in payload_locked_documents table
+Checking if media_id column exists in payload_locked_documents_rels table...
+G£à Column media_id exists in payload_locked_documents_rels table
+Checking if media_id columns have the correct data type and constraints...
+G£à All five tables have media_id columns
+G£à Column media_id in course_lessons has the correct data type (uuid)
+G£à Column media_id in course_quizzes has the correct data type (uuid)
+G£à Column media_id in payload_locked_documents has the correct data type (uuid)
+G£à Column media_id in payload_locked_documents_rels has the correct data type (uuid)
+G£à Column media_id in quiz_questions has the correct data type (uuid)
+Checking if media_id columns have foreign key constraints to the media table...
+G£à All five media_id columns have foreign key constraints to the media table
+G£à All media_id columns exist and are properly configured
+Verification passed
+
+--- Command Output End ---
+2025-04-03 12:03:20:   Media columns verification passed
+2025-04-03 12:03:20: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes
+2025-04-03 12:03:20: All migrations and verifications completed successfully!
+2025-04-03 12:03:20: Admin user created with email: michael@slideheroes.com
+2025-04-03 12:03:20: Migration logs saved to:
+2025-04-03 12:03:20:   - Transcript log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-log-20250403-120228.txt
+2025-04-03 12:03:20:   - Detailed log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250403-120228.txt
