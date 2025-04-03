@@ -166,7 +166,7 @@ try {
         Push-Location -Path "../.."
         Log-Message "  Temporarily changed to directory: $(Get-Location)" "Gray"
         
-        Exec-Command -command "pnpm --filter @kit/content-migrations run add:relationship-id-columns" -description "Adding relationship ID columns to locked documents tables"
+        Exec-Command -command "pnpm --filter @kit/content-migrations run sql:add-relationship-id-columns" -description "Adding relationship ID columns to locked documents tables"
         
         # Return to the payload directory
         Pop-Location
@@ -215,51 +215,116 @@ try {
         throw "Payload migration failed"
     }
 
-    #
-    # STEP 3: Run content migrations and verification
-    #
-    Log-Message "STEP 3: Running content migrations and verification..." "Cyan"
-    try {
-        # Use Push-Location/Pop-Location instead of cd to maintain path context
-        Push-Location -Path "packages/content-migrations"
-        Log-Message "Changed directory to: $(Get-Location)" "Gray"
+#
+# STEP 3: Check and process raw data if needed
+#
+Log-Message "STEP 3: Checking and processing raw data if needed..." "Cyan"
+try {
+    # Use Push-Location/Pop-Location instead of cd to maintain path context
+    Push-Location -Path "packages/content-migrations"
+    Log-Message "Changed directory to: $(Get-Location)" "Gray"
 
-        Log-Message "  Running fixed migration scripts..." "Yellow"
-        Exec-Command -command "pnpm run migrate:all:direct:fixed" -description "Running fixed migration scripts"
-
-        Log-Message "  Verifying database state..." "Yellow"
-        $verificationResult = Exec-Command -command "pnpm run verify:all-relationships" -description "Verifying database relationships" -captureOutput
+    # Check if processed data exists
+    $processedDataDir = "src/data/processed"
+    $metadataFile = "$processedDataDir/metadata.json"
+    
+    if (-not (Test-Path -Path $metadataFile)) {
+        Log-Message "  Processed data not found. Processing raw data..." "Yellow"
+        Exec-Command -command "pnpm run process:raw-data" -description "Processing raw data"
+    } else {
+        Log-Message "  Processed data found. Validating raw data directories..." "Yellow"
+        Exec-Command -command "pnpm run process:validate" -description "Validating raw data directories"
         
-        # Check if verification found any issues
-        if ($verificationResult -match "Warning" -or $verificationResult -match "Error") {
-            Log-Message "WARNING: Verification found issues, running edge case repairs..." "Yellow"
-            
-            Log-Message "  Running edge case repairs..." "Yellow"
-            Exec-Command -command "pnpm run repair:edge-cases" -description "Running edge case repairs"
+        # Get the timestamp from the metadata file
+        $metadata = Get-Content -Path $metadataFile | ConvertFrom-Json
+        Log-Message "  Processed data was generated at: $($metadata.processedAt)" "Gray"
+        
+        # Ask if the user wants to regenerate the processed data
+        $regenerate = $false
+        if ($env:FORCE_REGENERATE -eq "true") {
+            $regenerate = $true
+        } elseif (-not $env:CI) {
+            # Only ask in interactive mode
+            $response = Read-Host "Do you want to regenerate the processed data? (y/N)"
+            if ($response -eq "y" -or $response -eq "Y") {
+                $regenerate = $true
+            }
+        }
+        
+        if ($regenerate) {
+            Log-Message "  Regenerating processed data..." "Yellow"
+            Exec-Command -command "pnpm run process:raw-data" -description "Regenerating processed data"
+        } else {
+            Log-Message "  Using existing processed data." "Green"
+        }
+    }
 
-            Log-Message "  Final verification..." "Yellow"
-            $finalVerification = Exec-Command -command "pnpm run verify:all-relationships" -description "Final verification" -captureOutput
-            
-            if ($finalVerification -match "Warning" -or $finalVerification -match "Error") {
-                Log-Message "WARNING: Some issues could not be fixed automatically" "Yellow"
-                $overallSuccess = $false
-            }
-            else {
-                Log-Message "  All issues have been fixed" "Green"
-            }
+    Pop-Location
+    Log-Message "Returned to directory: $(Get-Location)" "Gray"
+}
+catch {
+    Log-Message "ERROR: Failed to process raw data: $_" "Red"
+    $overallSuccess = $false
+    throw "Raw data processing failed"
+}
+
+#
+# STEP 4: Run content migrations via Payload migrations
+#
+Log-Message "STEP 4: Running content migrations via Payload migrations..." "Cyan"
+try {
+    # Use Push-Location/Pop-Location instead of cd to maintain path context
+    Push-Location -Path "apps/payload"
+    Log-Message "Changed directory to: $(Get-Location)" "Gray"
+
+    # Run all migrations (including content migrations)
+    Log-Message "  Running all Payload migrations..." "Yellow"
+    Exec-Command -command "pnpm payload migrate" -description "Running Payload migrations"
+
+    # Verify migrations were applied
+    Log-Message "  Verifying migrations..." "Yellow"
+    $migrationStatus = Exec-Command -command "pnpm migrate:status" -description "Verifying migration status" -captureOutput
+
+    Pop-Location
+    Log-Message "Returned to directory: $(Get-Location)" "Gray"
+    
+    # Run verification scripts
+    Push-Location -Path "packages/content-migrations"
+    Log-Message "Changed directory to: $(Get-Location)" "Gray"
+    
+    Log-Message "  Verifying database state..." "Yellow"
+    $verificationResult = Exec-Command -command "pnpm run verify:all" -description "Verifying database relationships" -captureOutput
+    
+    # Check if verification found any issues
+    if ($verificationResult -match "Warning" -or $verificationResult -match "Error") {
+        Log-Message "WARNING: Verification found issues, running edge case repairs..." "Yellow"
+        
+        Log-Message "  Running edge case repairs..." "Yellow"
+        Exec-Command -command "pnpm run repair:edge-cases" -description "Running edge case repairs"
+
+        Log-Message "  Final verification..." "Yellow"
+        $finalVerification = Exec-Command -command "pnpm run verify:all" -description "Final verification" -captureOutput
+        
+        if ($finalVerification -match "Warning" -or $finalVerification -match "Error") {
+            Log-Message "WARNING: Some issues could not be fixed automatically" "Yellow"
+            $overallSuccess = $false
         }
         else {
-            Log-Message "  No issues found, skipping repairs" "Green"
+            Log-Message "  All issues have been fixed" "Green"
         }
+    }
+    else {
+        Log-Message "  No issues found, skipping repairs" "Green"
+    }
 
-        Pop-Location
-        Log-Message "Returned to directory: $(Get-Location)" "Gray"
-    }
-    catch {
-        Log-Message "ERROR: Failed to run content migrations: $_" "Red"
-        $overallSuccess = $false
-        throw "Content migration failed"
-    }
+    Pop-Location
+    Log-Message "Returned to directory: $(Get-Location)" "Gray"
+}
+catch {
+    Log-Message "ERROR: Failed to run content migrations: $_" "Red"
+    $overallSuccess = $false
+    throw "Content migration failed"
+}
 
     #
     # STEP 4: Skip SQL seed files (now handled by Payload migrations)
@@ -272,7 +337,7 @@ try {
 
         # Verify database schema
         Log-Message "  Verifying database schema..." "Yellow"
-        $schemaVerification = Exec-Command -command "pnpm run verify:sql-schema" -description "Verifying database schema" -captureOutput
+        $schemaVerification = Exec-Command -command "pnpm run sql:verify-schema" -description "Verifying database schema" -captureOutput
         
         if ($schemaVerification -match "Error" -or $LASTEXITCODE -ne 0) {
             Log-Message "ERROR: Database schema verification failed" "Red"
@@ -305,7 +370,7 @@ try {
 
         # Verify database schema using the new Node.js utility
         Log-Message "  Verifying database schema..." "Yellow"
-        $finalVerification = Exec-Command -command "pnpm run verify:sql-schema" -description "Final database verification" -captureOutput
+        $finalVerification = Exec-Command -command "pnpm run sql:verify-schema" -description "Final database verification" -captureOutput
         
         if ($finalVerification -match "Error" -or $LASTEXITCODE -ne 0) {
             Log-Message "ERROR: Final database verification failed" "Red"
@@ -315,7 +380,7 @@ try {
 
         # Verify course_lessons quiz_id_id column
         Log-Message "  Verifying course_lessons quiz_id_id column..." "Yellow"
-        $courseLessonsVerification = Exec-Command -command "pnpm run verify:course-lessons-quiz-id-column" -description "Verifying course_lessons quiz_id_id column" -captureOutput
+        $courseLessonsVerification = Exec-Command -command "pnpm run verify:course-lessons" -description "Verifying course_lessons quiz_id_id column" -captureOutput
         
         if ($courseLessonsVerification -match "Error" -or $LASTEXITCODE -ne 0) {
             Log-Message "ERROR: Course lessons quiz_id_id column verification failed" "Red"

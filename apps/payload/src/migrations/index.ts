@@ -13,6 +13,8 @@ import * as migration_20250402_310000_relationship_structure from './20250402_31
 import * as migration_20250402_330000_bidirectional_relationships from './20250402_330000_bidirectional_relationships'
 import * as migration_20250402_340000_add_users_table from './20250402_340000_add_users_table'
 import * as migration_20250402_350000_create_admin_user from './20250402_350000_create_admin_user'
+import * as migration_20250403_200000_process_content from './20250403_200000_process_content'
+import * as migration_20250404_100000_fix_lesson_quiz_relationships from './20250404_100000_fix_lesson_quiz_relationships'
 
 export const migrations = [
   // Add schema creation migration first
@@ -56,5 +58,17 @@ export const migrations = [
     up: migration_20250402_350000_create_admin_user.up,
     down: migration_20250402_350000_create_admin_user.down,
     name: '20250402_350000_create_admin_user',
+  },
+  // Add content processing migration
+  {
+    up: migration_20250403_200000_process_content.up,
+    down: migration_20250403_200000_process_content.down,
+    name: '20250403_200000_process_content',
+  },
+  // Add fix lesson quiz relationships migration
+  {
+    up: migration_20250404_100000_fix_lesson_quiz_relationships.up,
+    down: migration_20250404_100000_fix_lesson_quiz_relationships.down,
+    name: '20250404_100000_fix_lesson_quiz_relationships',
   },
 ]
