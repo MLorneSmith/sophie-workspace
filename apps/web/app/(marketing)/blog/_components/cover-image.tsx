@@ -1,6 +1,13 @@
+'use client';
+
 import Image from 'next/image';
 
 import { cn } from '@kit/ui/utils';
+
+import {
+  getPostPlaceholderImage,
+  transformImageUrl,
+} from '~/lib/utils/image-utils';
 
 type Props = {
   title: string;
@@ -10,6 +17,9 @@ type Props = {
 };
 
 export function CoverImage({ title, src, preloadImage, className }: Props) {
+  // Transform the image URL to use the custom domain
+  const transformedSrc = transformImageUrl(src) || '';
+
   return (
     <Image
       className={cn(
@@ -19,10 +29,16 @@ export function CoverImage({ title, src, preloadImage, className }: Props) {
           className,
         },
       )}
-      src={src}
+      src={transformedSrc}
       priority={preloadImage}
       alt={`Cover Image for ${title}`}
       fill
+      onError={(e) => {
+        // Fallback to placeholder if image fails to load
+        const target = e.target as HTMLImageElement;
+        target.src = getPostPlaceholderImage();
+        console.log(`Image load error for post: ${title}`);
+      }}
     />
   );
 }

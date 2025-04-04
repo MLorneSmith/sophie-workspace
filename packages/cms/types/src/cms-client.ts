@@ -9,6 +9,8 @@ export namespace Cms {
     content: unknown;
     publishedAt: string;
     image: string | undefined;
+    // Add image_id property to support Payload CMS relationship fields
+    image_id?: any;
     status: ContentItemStatus;
     slug: string;
     categories: Category[];
