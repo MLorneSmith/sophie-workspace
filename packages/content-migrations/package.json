@@ -43,7 +43,7 @@
     "@lexical/rich-text": "^0.28.0",
     "@payloadcms/db-postgres": "3.31.0",
     "@payloadcms/richtext-lexical": "3.31.0",
-    "@supabase/supabase-js": "2.49.3",
+    "@supabase/supabase-js": "2.49.4",
     "@types/bcrypt": "^5.0.2",
     "@types/js-yaml": "^4.0.9",
     "@types/node-fetch": "^2.6.12",
@@ -58,7 +58,7 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
-    "@types/node": "^22.13.14",
+    "@types/node": "^22.13.17",
     "@types/uuid": "^9.0.7",
     "cross-env": "^7.0.3",
     "tsx": "^4.7.1",
