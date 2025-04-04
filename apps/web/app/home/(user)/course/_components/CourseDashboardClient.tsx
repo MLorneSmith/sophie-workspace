@@ -15,6 +15,66 @@ import { Card, CardContent, CardHeader, CardTitle } from '@kit/ui/card';
 import { CourseProgressBar } from './CourseProgressBar';
 import { RadialProgress } from './RadialProgress';
 
+/**
+ * Transform image URLs to use the custom domain
+ * @param url - Original URL
+ * @returns Transformed URL or null if input is null
+ */
+function transformImageUrl(url: string | null): string | null {
+  if (!url) return null;
+
+  // If the URL contains r2.cloudflarestorage.com, transform it to the custom domain
+  if (url.includes('r2.cloudflarestorage.com')) {
+    const filename = url.split('/').pop();
+    return `https://images.slideheroes.com/${filename}`;
+  }
+
+  // If the URL is just a filename (no protocol/domain), add the custom domain
+  if (!url.startsWith('http') && !url.startsWith('/')) {
+    return `https://images.slideheroes.com/${url}`;
+  }
+
+  return url;
+}
+
+// Map of lesson keywords to placeholder images
+const LESSON_PLACEHOLDER_MAP: Record<string, string> = {
+  why: '/images/course-lessons/default-lesson.svg',
+  tools: '/images/course-lessons/default-lesson.svg',
+  design: '/images/course-lessons/default-lesson.svg',
+  graphs: '/images/course-lessons/default-lesson.svg',
+  presentation: '/images/course-lessons/default-lesson.svg',
+  elements: '/images/course-lessons/default-lesson.svg',
+  process: '/images/course-lessons/default-lesson.svg',
+  structure: '/images/course-lessons/default-lesson.svg',
+  perception: '/images/course-lessons/default-lesson.svg',
+  performance: '/images/course-lessons/default-lesson.svg',
+  practice: '/images/course-lessons/default-lesson.svg',
+  storyboard: '/images/course-lessons/default-lesson.svg',
+};
+
+// Default placeholder image path
+const DEFAULT_PLACEHOLDER = '/images/course-lessons/default-lesson.svg';
+
+/**
+ * Get the best placeholder image based on lesson title or filename
+ */
+function getPlaceholderImage(lesson: any): string {
+  if (!lesson?.title) return DEFAULT_PLACEHOLDER;
+
+  const title = lesson.title.toLowerCase();
+
+  // Check if any keywords match the lesson title
+  for (const [keyword, imagePath] of Object.entries(LESSON_PLACEHOLDER_MAP)) {
+    if (title.includes(keyword)) {
+      return imagePath;
+    }
+  }
+
+  // If no match found, return default
+  return DEFAULT_PLACEHOLDER;
+}
+
 interface CourseDashboardClientProps {
   course: any;
   courseProgress: any;
@@ -33,6 +93,10 @@ export function CourseDashboardClient({
   const supabase = useSupabase();
   const [lessons, setLessons] = useState<any[]>([]);
   const [displayedLessons, setDisplayedLessons] = useState<any[]>([]);
+  // Cache to remember failed image URLs to prevent repeated errors
+  const [failedImageUrls, setFailedImageUrls] = useState<Set<string>>(
+    new Set(),
+  );
 
   // Fetch lessons for this course
   const { data: lessonsData, isLoading } = useQuery({
@@ -204,17 +268,64 @@ export function CourseDashboardClient({
                   <div className="flex flex-col gap-4 sm:flex-row">
                     <div className="flex flex-1 flex-col gap-4 sm:flex-row">
                       <div className="relative h-[155px] w-[275px] flex-shrink-0">
-                        <Image
-                          src={
-                            lesson.featuredImage?.url ||
-                            '/placeholder.svg?height=155&width=275'
-                          }
-                          alt={`Illustration for ${lesson.title}`}
-                          className="rounded-lg object-cover"
-                          fill
-                          sizes="(max-width: 640px) 100vw, 275px"
-                          priority={true}
-                        />
+                        {/* Don't display images for lessons 801 and 802 */}
+                        {!['801', '802'].includes(lesson.lesson_number) ? (
+                          <Image
+                            src={(() => {
+                              // Get the R2 URL from the relationship
+                              let r2Url =
+                                lesson.featured_image_id?.url || // Direct URL property
+                                (lesson.featured_image_id &&
+                                typeof lesson.featured_image_id === 'object'
+                                  ? lesson.featured_image_id.url // Nested URL in object
+                                  : null);
+
+                              // Transform the URL to use the custom domain
+                              r2Url = transformImageUrl(r2Url);
+
+                              // If we have an R2 URL and it hasn't failed before, try it
+                              if (r2Url && !failedImageUrls.has(r2Url)) {
+                                return r2Url;
+                              }
+
+                              // Otherwise use our placeholder system
+                              return getPlaceholderImage(lesson);
+                            })()}
+                            alt={`Illustration for ${lesson.title}`}
+                            className="rounded-lg object-cover"
+                            fill
+                            sizes="(max-width: 640px) 100vw, 275px"
+                            priority={true}
+                            onError={(e) => {
+                              // Get the original source that failed
+                              const target = e.target as HTMLImageElement;
+                              const originalSrc = target.src;
+
+                              // Add to failed cache to prevent future attempts
+                              setFailedImageUrls((prev) => {
+                                const updated = new Set(prev);
+                                updated.add(originalSrc);
+                                return updated;
+                              });
+
+                              // Set placeholder based on lesson title
+                              target.src = getPlaceholderImage(lesson);
+
+                              // Log only once per lesson to reduce console spam
+                              if (!failedImageUrls.has(originalSrc)) {
+                                console.log(
+                                  `Image load error for lesson: ${lesson.title}, using placeholder instead`,
+                                );
+                              }
+                            }}
+                          />
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center bg-gray-100 dark:bg-gray-800">
+                            <span className="text-muted-foreground text-sm">
+                              No image required
+                            </span>
+                          </div>
+                        )}
                       </div>
                       <div className="flex-1">
                         <p className="text-muted-foreground mr-28 ml-2">

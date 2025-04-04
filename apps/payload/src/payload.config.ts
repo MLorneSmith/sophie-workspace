@@ -123,8 +123,7 @@ export default buildConfig({
       collections: {
         media: {
           disableLocalStorage: true,
-          generateFileURL: ({ filename }) =>
-            `https://${process.env.R2_BUCKET}.${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com/media/${filename}`,
+          generateFileURL: ({ filename }) => `https://images.slideheroes.com/${filename}`,
         },
       },
       bucket: process.env.R2_BUCKET || '',

@@ -200,7 +200,46 @@ async function fixRelationships(db: any) {
     `)
     console.log(`Added ${mediaRelationshipsAdded} missing lesson-to-media relationships`)
 
-    // 5. Fix Survey Questions Relationships
+    // 5. Fix Posts Media Relationships
+    console.log('Fixing posts media relationships...')
+
+    // Update image_id_id to match image_id
+    const { rowCount: postsImageUpdated } = await db.execute(sql`
+      UPDATE payload.posts 
+      SET image_id_id = image_id 
+      WHERE image_id IS NOT NULL AND image_id_id IS NULL
+    `)
+    console.log(`Updated image_id_id for ${postsImageUpdated} posts`)
+
+    // Create missing bidirectional relationships from posts to media
+    const { rowCount: postMediaRelationshipsAdded } = await db.execute(sql`
+      INSERT INTO payload.posts_rels (
+        id,
+        _parent_id,
+        field,
+        value,
+        created_at,
+        updated_at
+      )
+      SELECT 
+        gen_random_uuid(),
+        p.id,
+        'image_id',
+        p.image_id,
+        NOW(),
+        NOW()
+      FROM payload.posts p
+      WHERE p.image_id IS NOT NULL
+      AND NOT EXISTS (
+        SELECT 1 FROM payload.posts_rels r
+        WHERE r._parent_id = p.id
+        AND r.field = 'image_id'
+        AND r.value = p.image_id
+      )
+    `)
+    console.log(`Added ${postMediaRelationshipsAdded} missing post-to-media relationships`)
+
+    // 6. Fix Survey Questions Relationships
     console.log('Fixing survey_questions relationships...')
 
     // Convert questionspin string values to integer values if needed

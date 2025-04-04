@@ -17,14 +17,14 @@ INSERT INTO payload.course_lessons (
   created_at,
   updated_at
 ) VALUES (
-  '1e40e96b-ccc9-4a8e-94aa-5f1790a1dfb4', -- Generated UUID for the lesson
+  '7830fa58-9014-434f-be1f-abc00a437ef8', -- Generated UUID for the lesson
   'Standard Graphs',
   'basic-graphs',
   'How to properly use graphs to display information',
   '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"{% bunny bunnyvideoid=\"74be3c05-f774-4e3c-bbe0-495580a17931\" /%}","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}',
   603,
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8', -- Course ID
-  '7f34acb4-01e0-4bf8-8876-8cdcaf58b236',
+  'cbfcf4e7-5295-44ac-92a5-2574431998ba',
   NOW(),
   NOW()
 ) ON CONFLICT (id) DO NOTHING; -- Skip if the lesson already exists
@@ -39,7 +39,7 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '1e40e96b-ccc9-4a8e-94aa-5f1790a1dfb4',
+  '7830fa58-9014-434f-be1f-abc00a437ef8',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
   NOW(),
@@ -56,9 +56,9 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '1e40e96b-ccc9-4a8e-94aa-5f1790a1dfb4',
+  '7830fa58-9014-434f-be1f-abc00a437ef8',
   'featured_image',
-  '7f34acb4-01e0-4bf8-8876-8cdcaf58b236',
+  'cbfcf4e7-5295-44ac-92a5-2574431998ba',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -76,14 +76,14 @@ INSERT INTO payload.course_lessons (
   created_at,
   updated_at
 ) VALUES (
-  '223d6e5a-e53b-431e-a976-701bb720dc34', -- Generated UUID for the lesson
+  '0ec228c9-0dab-4863-bb79-08f14b72ff87', -- Generated UUID for the lesson
   'Before we begin...',
   'before-we-begin',
   'A three question survey to help me understand your goals so I can better help you achieve them',
   '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"{% tally\r\n   tallyembed=\"3yvYN6?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1\" /%}","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}',
   103,
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8', -- Course ID
-  'e4efff7f-a46b-4c75-853c-63f5bb50dfc5',
+  '3281d793-5a41-486c-8ed1-17584b57f701',
   NOW(),
   NOW()
 ) ON CONFLICT (id) DO NOTHING; -- Skip if the lesson already exists
@@ -98,7 +98,7 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '223d6e5a-e53b-431e-a976-701bb720dc34',
+  '0ec228c9-0dab-4863-bb79-08f14b72ff87',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
   NOW(),
@@ -115,9 +115,9 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '223d6e5a-e53b-431e-a976-701bb720dc34',
+  '0ec228c9-0dab-4863-bb79-08f14b72ff87',
   'featured_image',
-  'e4efff7f-a46b-4c75-853c-63f5bb50dfc5',
+  '3281d793-5a41-486c-8ed1-17584b57f701',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -135,7 +135,7 @@ INSERT INTO payload.course_lessons (
   created_at,
   updated_at
 ) VALUES (
-  'd87587f6-9d93-46d3-86f7-7b045da0ae1e', -- Generated UUID for the lesson
+  'a8758cb9-c39e-4016-ad6d-99053ec28029', -- Generated UUID for the lesson
   'Before you go...',
   'before-you-go',
   'Feedback',
@@ -157,7 +157,7 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'd87587f6-9d93-46d3-86f7-7b045da0ae1e',
+  'a8758cb9-c39e-4016-ad6d-99053ec28029',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
   NOW(),
@@ -177,7 +177,7 @@ INSERT INTO payload.course_lessons (
   created_at,
   updated_at
 ) VALUES (
-  '2447ba76-ab22-4486-abef-192e132dd530', -- Generated UUID for the lesson
+  '77845294-25c1-44d0-92d2-bb7abee2096e', -- Generated UUID for the lesson
   'Congratulations',
   'congratulations',
   'Congratulations',
@@ -199,7 +199,7 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '2447ba76-ab22-4486-abef-192e132dd530',
+  '77845294-25c1-44d0-92d2-bb7abee2096e',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
   NOW(),
@@ -219,14 +219,14 @@ INSERT INTO payload.course_lessons (
   created_at,
   updated_at
 ) VALUES (
-  'ac5de0a8-6c66-463a-b849-bbec699e64c3', -- Generated UUID for the lesson
+  '1b2510b2-84c2-40ba-a104-01d84821ce35', -- Generated UUID for the lesson
   'Overview of Fact-based Persuasion',
   'fact-based-persuasion',
   'Facts and how to present them',
   '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"{% bunny bunnyvideoid=\"1a745407-88b6-41ea-bfe1-fb1e5da7f2ef\" /%}","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}',
   604,
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8', -- Course ID
-  'fd4a3d8a-f464-43e7-b720-dd1c372c338d',
+  '0f7298f0-545f-468b-ae24-e0dd161c77b4',
   NOW(),
   NOW()
 ) ON CONFLICT (id) DO NOTHING; -- Skip if the lesson already exists
@@ -241,7 +241,7 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'ac5de0a8-6c66-463a-b849-bbec699e64c3',
+  '1b2510b2-84c2-40ba-a104-01d84821ce35',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
   NOW(),
@@ -258,9 +258,9 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'ac5de0a8-6c66-463a-b849-bbec699e64c3',
+  '1b2510b2-84c2-40ba-a104-01d84821ce35',
   'featured_image',
-  'fd4a3d8a-f464-43e7-b720-dd1c372c338d',
+  '0f7298f0-545f-468b-ae24-e0dd161c77b4',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -278,14 +278,14 @@ INSERT INTO payload.course_lessons (
   created_at,
   updated_at
 ) VALUES (
-  'be71e893-c696-4842-bb90-68392fa4554f', -- Generated UUID for the lesson
+  'be97ede7-4f6a-403a-b45a-26db9539eb6c', -- Generated UUID for the lesson
   'The Fundamental Elements of Design in Detail',
   'fundamental-design-detail',
   'Let''s go deep',
   '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"{% bunny bunnyvideoid=\"d91060f9-9a36-4827-8f15-aa56cf8f6b7c\" /%}","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}',
   503,
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8', -- Course ID
-  'a663df89-d6c5-40a4-8928-da4cc52697b8',
+  '27efdc0f-1c22-4702-b4ff-bc47f810069a',
   NOW(),
   NOW()
 ) ON CONFLICT (id) DO NOTHING; -- Skip if the lesson already exists
@@ -300,7 +300,7 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'be71e893-c696-4842-bb90-68392fa4554f',
+  'be97ede7-4f6a-403a-b45a-26db9539eb6c',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
   NOW(),
@@ -317,9 +317,9 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'be71e893-c696-4842-bb90-68392fa4554f',
+  'be97ede7-4f6a-403a-b45a-26db9539eb6c',
   'featured_image',
-  'a663df89-d6c5-40a4-8928-da4cc52697b8',
+  '27efdc0f-1c22-4702-b4ff-bc47f810069a',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -337,14 +337,14 @@ INSERT INTO payload.course_lessons (
   created_at,
   updated_at
 ) VALUES (
-  'ac3ac225-eea4-4882-85ec-5090e0168c9a', -- Generated UUID for the lesson
+  '15b1841a-5bc5-4a91-8aa7-76ac0bedf3fc', -- Generated UUID for the lesson
   'Overview of the Fundamental Elements of Design',
   'fundamental-design-overview',
   'A brief overview of the fundamentals',
   '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}',
   502,
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8', -- Course ID
-  'c92f0f32-f617-459b-9944-eae3cbad0ed3',
+  'e8cd40a1-9c50-4c8c-afe2-5457dba267d7',
   NOW(),
   NOW()
 ) ON CONFLICT (id) DO NOTHING; -- Skip if the lesson already exists
@@ -359,7 +359,7 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'ac3ac225-eea4-4882-85ec-5090e0168c9a',
+  '15b1841a-5bc5-4a91-8aa7-76ac0bedf3fc',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
   NOW(),
@@ -376,9 +376,9 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'ac3ac225-eea4-4882-85ec-5090e0168c9a',
+  '15b1841a-5bc5-4a91-8aa7-76ac0bedf3fc',
   'featured_image',
-  'c92f0f32-f617-459b-9944-eae3cbad0ed3',
+  'e8cd40a1-9c50-4c8c-afe2-5457dba267d7',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -396,14 +396,14 @@ INSERT INTO payload.course_lessons (
   created_at,
   updated_at
 ) VALUES (
-  '17bbf623-10d9-4460-900d-d3b61c094dc2', -- Generated UUID for the lesson
+  'f6122a4d-b085-47c0-a5f0-8f105b99662a', -- Generated UUID for the lesson
   'Gestalt Principles of Visual Perception',
   'gestalt-principles',
   'How we can apply principles of visual perception to better communicate our ideas',
   '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"{% bunny bunnyvideoid=\"e2256d0f-8a14-4567-9992-ac20713c9793\" /%}","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}',
   504,
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8', -- Course ID
-  '36ca2dcf-3a96-43c5-98cb-881748c0268a',
+  '80827652-f0d3-4574-ad12-fb4aaa75ad5b',
   NOW(),
   NOW()
 ) ON CONFLICT (id) DO NOTHING; -- Skip if the lesson already exists
@@ -418,7 +418,7 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '17bbf623-10d9-4460-900d-d3b61c094dc2',
+  'f6122a4d-b085-47c0-a5f0-8f105b99662a',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
   NOW(),
@@ -435,9 +435,9 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '17bbf623-10d9-4460-900d-d3b61c094dc2',
+  'f6122a4d-b085-47c0-a5f0-8f105b99662a',
   'featured_image',
-  '36ca2dcf-3a96-43c5-98cb-881748c0268a',
+  '80827652-f0d3-4574-ad12-fb4aaa75ad5b',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -455,14 +455,14 @@ INSERT INTO payload.course_lessons (
   created_at,
   updated_at
 ) VALUES (
-  'bc7027bd-d99a-42cb-a24b-2bd0774f556c', -- Generated UUID for the lesson
+  '9f42c883-d9dd-4024-9412-3278f3f0bf5c', -- Generated UUID for the lesson
   'Idea Generation',
   'idea-generation',
   'How do we generate ideas on how to answer the audience''s question?',
   '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"{% bunny bunnyvideoid=\"2caf80c4-e364-4565-b92e-a353d4e531ff\" /%}","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}',
   301,
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8', -- Course ID
-  '3c37c444-90ae-4ea3-81c0-2b057f412d8d',
+  'c38d165b-78a3-4d26-8b1d-d7925891b2c8',
   NOW(),
   NOW()
 ) ON CONFLICT (id) DO NOTHING; -- Skip if the lesson already exists
@@ -477,7 +477,7 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'bc7027bd-d99a-42cb-a24b-2bd0774f556c',
+  '9f42c883-d9dd-4024-9412-3278f3f0bf5c',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
   NOW(),
@@ -494,9 +494,9 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'bc7027bd-d99a-42cb-a24b-2bd0774f556c',
+  '9f42c883-d9dd-4024-9412-3278f3f0bf5c',
   'featured_image',
-  '3c37c444-90ae-4ea3-81c0-2b057f412d8d',
+  'c38d165b-78a3-4d26-8b1d-d7925891b2c8',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -514,14 +514,14 @@ INSERT INTO payload.course_lessons (
   created_at,
   updated_at
 ) VALUES (
-  'eb86ccca-c2a8-47cc-b440-88b9bfda9ed4', -- Generated UUID for the lesson
+  'ef73bd65-8497-4c42-b080-515f4ae219a0', -- Generated UUID for the lesson
   'Welcome to DDM',
   'lesson-0',
   'A taster. A preview. An overview of SlideHeroes'' flagship presentations course - Decks for Decision Makers',
   '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"{% bunny bunnyvideoid=\"2620df68-c2a8-4255-986e-24c1d4c1dbf2\" /%}","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}',
   101,
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8', -- Course ID
-  '2928b4fd-7523-4393-898c-e27adf3d7567',
+  '17d3fe83-23b7-4376-a9a4-eddca1ba073e',
   NOW(),
   NOW()
 ) ON CONFLICT (id) DO NOTHING; -- Skip if the lesson already exists
@@ -536,7 +536,7 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'eb86ccca-c2a8-47cc-b440-88b9bfda9ed4',
+  'ef73bd65-8497-4c42-b080-515f4ae219a0',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
   NOW(),
@@ -553,9 +553,9 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'eb86ccca-c2a8-47cc-b440-88b9bfda9ed4',
+  'ef73bd65-8497-4c42-b080-515f4ae219a0',
   'featured_image',
-  '2928b4fd-7523-4393-898c-e27adf3d7567',
+  '17d3fe83-23b7-4376-a9a4-eddca1ba073e',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -573,14 +573,14 @@ INSERT INTO payload.course_lessons (
   created_at,
   updated_at
 ) VALUES (
-  '42b331e2-24d9-4356-8727-e1a88ae22fe6', -- Generated UUID for the lesson
+  '1aa75ff8-4d91-41da-8a77-f24f925f5220', -- Generated UUID for the lesson
   'Our Process',
   'our-process',
   'Our blueprint for creating high quality presentations',
   '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"{% bunny bunnyvideoid=\"70b1f616-8e55-4c58-8898-c5cefa05417b\" /%}\r\n\r\nTo-Do\r\n\r\n- Complete the lesson quiz\r\n\r\nWatch\r\n\r\n- None\r\n\r\nRead\r\n\r\n- None\r\n\r\n{% custombullet status=\"right-arrow\" /%}Course Project\r\n\r\n- None\r\n\r\n### Lesson Downloads\r\n\r\n{% r2file\r\n   awsurl=\"https://pub-40e84da466344af19a7192a514a7400e.r2.dev/201%20Our%20Process.pdf\"\r\n   filedescription=\"''Our Process'' Lesson slides\" /%}\r\n\r\n{% r2file\r\n   awsurl=\"https://pub-40e84da466344af19a7192a514a7400e.r2.dev/202%20The%20Who.pdf\"\r\n   filedescription=\"Second download (The Who)\" /%}\r\n\r\nThis is an R2 File","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}',
   201,
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8', -- Course ID
-  '2e604779-7f83-42c7-bca2-26d1b9c84f16',
+  '467fd1e1-d463-4608-b723-b80115940f86',
   NOW(),
   NOW()
 ) ON CONFLICT (id) DO NOTHING; -- Skip if the lesson already exists
@@ -595,7 +595,7 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '42b331e2-24d9-4356-8727-e1a88ae22fe6',
+  '1aa75ff8-4d91-41da-8a77-f24f925f5220',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
   NOW(),
@@ -612,9 +612,9 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '42b331e2-24d9-4356-8727-e1a88ae22fe6',
+  '1aa75ff8-4d91-41da-8a77-f24f925f5220',
   'featured_image',
-  '2e604779-7f83-42c7-bca2-26d1b9c84f16',
+  '467fd1e1-d463-4608-b723-b80115940f86',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -632,14 +632,14 @@ INSERT INTO payload.course_lessons (
   created_at,
   updated_at
 ) VALUES (
-  '7c2209f0-9ec9-4824-9f82-6129eeaf4d53', -- Generated UUID for the lesson
+  '27f895a5-f9b2-49f2-86e2-60fde4045741', -- Generated UUID for the lesson
   'Performance',
   'performance',
   'Tips and techniques to improve the delivery of your presentation',
   '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"{% bunny bunnyvideoid=\"04697977-e686-43c2-b12b-cc81ba1e5aec\" /%}","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}',
   702,
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8', -- Course ID
-  'd5c41196-18f3-4678-a994-c5e0402813eb',
+  '1b265031-a5ba-411a-a43a-c70791990064',
   NOW(),
   NOW()
 ) ON CONFLICT (id) DO NOTHING; -- Skip if the lesson already exists
@@ -654,7 +654,7 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '7c2209f0-9ec9-4824-9f82-6129eeaf4d53',
+  '27f895a5-f9b2-49f2-86e2-60fde4045741',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
   NOW(),
@@ -671,9 +671,9 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '7c2209f0-9ec9-4824-9f82-6129eeaf4d53',
+  '27f895a5-f9b2-49f2-86e2-60fde4045741',
   'featured_image',
-  'd5c41196-18f3-4678-a994-c5e0402813eb',
+  '1b265031-a5ba-411a-a43a-c70791990064',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -691,14 +691,14 @@ INSERT INTO payload.course_lessons (
   created_at,
   updated_at
 ) VALUES (
-  '21b31fab-5667-4af6-b9dd-7fbb4408e713', -- Generated UUID for the lesson
+  '2e516a20-86ee-4495-886e-3fa13342f2d9', -- Generated UUID for the lesson
   'Preparation and Practice',
   'preparation-practice',
   'How to prepare for your presentation',
   '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"{% bunny bunnyvideoid=\"582ab921-8eec-45c2-9223-c54fed288be9\" /%}","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}',
   701,
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8', -- Course ID
-  '8bb2f292-ba02-489b-8824-9d821ef29a77',
+  'db009ec5-c578-423c-9ce4-00b1c5123e16',
   NOW(),
   NOW()
 ) ON CONFLICT (id) DO NOTHING; -- Skip if the lesson already exists
@@ -713,7 +713,7 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '21b31fab-5667-4af6-b9dd-7fbb4408e713',
+  '2e516a20-86ee-4495-886e-3fa13342f2d9',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
   NOW(),
@@ -730,68 +730,9 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '21b31fab-5667-4af6-b9dd-7fbb4408e713',
+  '2e516a20-86ee-4495-886e-3fa13342f2d9',
   'featured_image',
-  '8bb2f292-ba02-489b-8824-9d821ef29a77',
-  NOW(),
-  NOW()
-) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
-
--- Insert lesson: High-Stakes Presentation Skills Self-Assessment
-INSERT INTO payload.course_lessons (
-  id,
-  title,
-  slug,
-  description,
-  content,
-  lesson_number,
-  course_id,
-  featured_image_id,
-  created_at,
-  updated_at
-) VALUES (
-  'f74528f7-8779-4823-8356-3953c97b90d4', -- Generated UUID for the lesson
-  'High-Stakes Presentation Skills Self-Assessment',
-  'skills-self-assessment',
-  'Twenty-five question long survey to identify your current strengths and weaknesses',
-  '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"{% tally\r\n   tallyembed=\"nrPaep?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1\" /%}","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}',
-  102,
-  '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8', -- Course ID
-  'ef708d27-0fe5-4a70-8d1b-ddebc9b9ba8d',
-  NOW(),
-  NOW()
-) ON CONFLICT (id) DO NOTHING; -- Skip if the lesson already exists
-
--- Create relationship entry for the lesson to the course
-INSERT INTO payload.course_lessons_rels (
-  id,
-  _parent_id,
-  field,
-  value,
-  created_at,
-  updated_at
-) VALUES (
-  gen_random_uuid(),
-  'f74528f7-8779-4823-8356-3953c97b90d4',
-  'course',
-  '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
-  NOW(),
-  NOW()
-) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
-
--- Create relationship entry for the lesson to the media
-INSERT INTO payload.course_lessons_rels (
-  id,
-  _parent_id,
-  field,
-  value,
-  created_at,
-  updated_at
-) VALUES (
-  gen_random_uuid(),
-  'f74528f7-8779-4823-8356-3953c97b90d4',
-  'featured_image',
-  'ef708d27-0fe5-4a70-8d1b-ddebc9b9ba8d',
+  'db009ec5-c578-423c-9ce4-00b1c5123e16',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -809,14 +750,14 @@ INSERT INTO payload.course_lessons (
   created_at,
   updated_at
 ) VALUES (
-  '9f4610a1-bd41-4882-925a-66097191a97c', -- Generated UUID for the lesson
+  '5a7c2b54-cc90-48ad-969b-d8cc4cc31939', -- Generated UUID for the lesson
   'Slide Composition',
   'slide-composition',
   'How to best design slides',
   '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"{% bunny bunnyvideoid=\"08100ca6-f998-42dc-8924-4a6d7f8bffeb\" /%}","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}',
   511,
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8', -- Course ID
-  'bf025d24-5a07-425b-8777-4112450ded09',
+  '2107caf8-ca7e-4198-9e9f-912dafdbcfc5',
   NOW(),
   NOW()
 ) ON CONFLICT (id) DO NOTHING; -- Skip if the lesson already exists
@@ -831,7 +772,7 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '9f4610a1-bd41-4882-925a-66097191a97c',
+  '5a7c2b54-cc90-48ad-969b-d8cc4cc31939',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
   NOW(),
@@ -848,9 +789,9 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '9f4610a1-bd41-4882-925a-66097191a97c',
+  '5a7c2b54-cc90-48ad-969b-d8cc4cc31939',
   'featured_image',
-  'bf025d24-5a07-425b-8777-4112450ded09',
+  '2107caf8-ca7e-4198-9e9f-912dafdbcfc5',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -868,14 +809,14 @@ INSERT INTO payload.course_lessons (
   created_at,
   updated_at
 ) VALUES (
-  '7cd35aed-3da2-4072-87d3-59cd9dfb5bcc', -- Generated UUID for the lesson
+  'fb301cd2-079b-4f18-bcfb-d2a23f72612c', -- Generated UUID for the lesson
   'Specialist Graphs',
   'specialist-graphs',
   'Introduction to some common business graphs like the Marimekko and Waterfall',
   '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"{% bunny bunnyvideoid=\"579076d8-e225-497d-8ff3-52fad07c9640\" /%}","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}',
   611,
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8', -- Course ID
-  '777a6bb6-f7da-4de2-8dcd-afa60f678a3b',
+  '46278f0e-204b-4f72-b7d8-4e27eb3216b0',
   NOW(),
   NOW()
 ) ON CONFLICT (id) DO NOTHING; -- Skip if the lesson already exists
@@ -890,7 +831,7 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '7cd35aed-3da2-4072-87d3-59cd9dfb5bcc',
+  'fb301cd2-079b-4f18-bcfb-d2a23f72612c',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
   NOW(),
@@ -907,9 +848,9 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '7cd35aed-3da2-4072-87d3-59cd9dfb5bcc',
+  'fb301cd2-079b-4f18-bcfb-d2a23f72612c',
   'featured_image',
-  '777a6bb6-f7da-4de2-8dcd-afa60f678a3b',
+  '46278f0e-204b-4f72-b7d8-4e27eb3216b0',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -927,14 +868,14 @@ INSERT INTO payload.course_lessons (
   created_at,
   updated_at
 ) VALUES (
-  '1e7274d7-f20d-471c-b5c4-8d8b6192f468', -- Generated UUID for the lesson
+  '6cf58ab6-91c0-4a2e-944c-3d34ab315b4d', -- Generated UUID for the lesson
   'Storyboards in Film',
   'storyboards-film',
   'The origin of storyboarding',
   '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}',
   402,
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8', -- Course ID
-  '9d2ff5b9-8a5d-4f2b-9540-078e78afc272',
+  'f4788db4-19d2-4e7c-926c-3a9a2c35c0fd',
   NOW(),
   NOW()
 ) ON CONFLICT (id) DO NOTHING; -- Skip if the lesson already exists
@@ -949,7 +890,7 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '1e7274d7-f20d-471c-b5c4-8d8b6192f468',
+  '6cf58ab6-91c0-4a2e-944c-3d34ab315b4d',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
   NOW(),
@@ -966,9 +907,9 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '1e7274d7-f20d-471c-b5c4-8d8b6192f468',
+  '6cf58ab6-91c0-4a2e-944c-3d34ab315b4d',
   'featured_image',
-  '9d2ff5b9-8a5d-4f2b-9540-078e78afc272',
+  'f4788db4-19d2-4e7c-926c-3a9a2c35c0fd',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -986,14 +927,14 @@ INSERT INTO payload.course_lessons (
   created_at,
   updated_at
 ) VALUES (
-  '4f2bbf91-d72a-4e9c-bd5b-c650b50f2a49', -- Generated UUID for the lesson
+  'a125a292-11ad-429a-bc03-285d346ee05b', -- Generated UUID for the lesson
   'Storyboards in Presentations',
   'storyboards-presentations',
   '',
   '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"{% bunny bunnyvideoid=\"7f63356c-2bca-4c36-8765-4fe9efd59d71\" /%}","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}',
   403,
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8', -- Course ID
-  '1a936c74-1a30-49f5-a210-1b7380e6fded',
+  '427f7b1b-10c9-40d2-9099-35fb649fe290',
   NOW(),
   NOW()
 ) ON CONFLICT (id) DO NOTHING; -- Skip if the lesson already exists
@@ -1008,7 +949,7 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '4f2bbf91-d72a-4e9c-bd5b-c650b50f2a49',
+  'a125a292-11ad-429a-bc03-285d346ee05b',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
   NOW(),
@@ -1025,9 +966,9 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '4f2bbf91-d72a-4e9c-bd5b-c650b50f2a49',
+  'a125a292-11ad-429a-bc03-285d346ee05b',
   'featured_image',
-  '1a936c74-1a30-49f5-a210-1b7380e6fded',
+  '427f7b1b-10c9-40d2-9099-35fb649fe290',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -1045,14 +986,14 @@ INSERT INTO payload.course_lessons (
   created_at,
   updated_at
 ) VALUES (
-  'b584c187-352f-4b4e-9bc8-1636b24a147e', -- Generated UUID for the lesson
+  '1e0e1bb8-4e48-4641-8e2f-68087c5eaa34', -- Generated UUID for the lesson
   'Tables vs. Graphs',
   'tables-vs-graphs',
   'How to use graphs and tabl;es to present quantitative information',
   '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"{% bunny bunnyvideoid=\"aae42644-8e3a-4ef3-a186-869f802869eb\" /%}","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}',
   602,
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8', -- Course ID
-  '1798948f-362a-4699-819c-425f84dd240f',
+  '8f23fc1f-70c3-4332-a852-86dc9d04223c',
   NOW(),
   NOW()
 ) ON CONFLICT (id) DO NOTHING; -- Skip if the lesson already exists
@@ -1067,7 +1008,7 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'b584c187-352f-4b4e-9bc8-1636b24a147e',
+  '1e0e1bb8-4e48-4641-8e2f-68087c5eaa34',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
   NOW(),
@@ -1084,9 +1025,9 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'b584c187-352f-4b4e-9bc8-1636b24a147e',
+  '1e0e1bb8-4e48-4641-8e2f-68087c5eaa34',
   'featured_image',
-  '1798948f-362a-4699-819c-425f84dd240f',
+  '8f23fc1f-70c3-4332-a852-86dc9d04223c',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -1104,14 +1045,14 @@ INSERT INTO payload.course_lessons (
   created_at,
   updated_at
 ) VALUES (
-  '7bebee02-d8d6-4bef-b241-61bf51e6965f', -- Generated UUID for the lesson
+  'c5e4ba40-23f7-46fc-8a24-eadc4602f951', -- Generated UUID for the lesson
   'The Who',
   'the-who',
   'Where do we start? We start with defining who our actual audience is',
   '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"{% bunny bunnyvideoid=\"8e80b4f3-76d4-44a3-994b-29937ee870ec\" /%}","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}',
   202,
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8', -- Course ID
-  'b36e15e8-2989-4d55-939b-d822610b4ae8',
+  '78968838-1ebb-4361-8e33-8219bde0dede',
   NOW(),
   NOW()
 ) ON CONFLICT (id) DO NOTHING; -- Skip if the lesson already exists
@@ -1126,7 +1067,7 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '7bebee02-d8d6-4bef-b241-61bf51e6965f',
+  'c5e4ba40-23f7-46fc-8a24-eadc4602f951',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
   NOW(),
@@ -1143,9 +1084,9 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '7bebee02-d8d6-4bef-b241-61bf51e6965f',
+  'c5e4ba40-23f7-46fc-8a24-eadc4602f951',
   'featured_image',
-  'b36e15e8-2989-4d55-939b-d822610b4ae8',
+  '78968838-1ebb-4361-8e33-8219bde0dede',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -1163,14 +1104,14 @@ INSERT INTO payload.course_lessons (
   created_at,
   updated_at
 ) VALUES (
-  '19944294-d0b5-41e1-8ce4-d51ffe3f6eac', -- Generated UUID for the lesson
+  '9486f6bd-5047-4638-927d-1e7c870fa9d9', -- Generated UUID for the lesson
   'The Why: Building the Introduction',
   'the-why-introductions',
   'How to tee-up your presentation',
   '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"{% bunny bunnyvideoid=\"eaa1e745-ec67-42c4-b474-e34bd6bdc830\" /%}","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}',
   203,
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8', -- Course ID
-  'f5554ee8-ab31-4ff2-87b6-19d34aa6501b',
+  '1f51bf4e-bf5e-4a51-b10a-01d22399c18f',
   NOW(),
   NOW()
 ) ON CONFLICT (id) DO NOTHING; -- Skip if the lesson already exists
@@ -1185,7 +1126,7 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '19944294-d0b5-41e1-8ce4-d51ffe3f6eac',
+  '9486f6bd-5047-4638-927d-1e7c870fa9d9',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
   NOW(),
@@ -1202,9 +1143,9 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '19944294-d0b5-41e1-8ce4-d51ffe3f6eac',
+  '9486f6bd-5047-4638-927d-1e7c870fa9d9',
   'featured_image',
-  'f5554ee8-ab31-4ff2-87b6-19d34aa6501b',
+  '1f51bf4e-bf5e-4a51-b10a-01d22399c18f',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -1222,14 +1163,14 @@ INSERT INTO payload.course_lessons (
   created_at,
   updated_at
 ) VALUES (
-  '165599b7-8964-4119-978f-bcb88cf91860', -- Generated UUID for the lesson
+  '82a16f70-edb2-4b00-b1a8-041d2dbf5cbb', -- Generated UUID for the lesson
   'The Why: Next Steps',
   'the-why-next-steps',
   'What do we want to accomplish from our presentation? What is our ultimate objective?',
   '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"{% bunny bunnyvideoid=\"22511e58-40ce-4f11-9961-90070c1a3e94\" /%}","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}',
   204,
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8', -- Course ID
-  '1cb9d764-2216-403b-ad3d-20ac5ff10a81',
+  'f98ed742-8d66-4f40-bfef-0690db063296',
   NOW(),
   NOW()
 ) ON CONFLICT (id) DO NOTHING; -- Skip if the lesson already exists
@@ -1244,7 +1185,7 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '165599b7-8964-4119-978f-bcb88cf91860',
+  '82a16f70-edb2-4b00-b1a8-041d2dbf5cbb',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
   NOW(),
@@ -1261,9 +1202,9 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '165599b7-8964-4119-978f-bcb88cf91860',
+  '82a16f70-edb2-4b00-b1a8-041d2dbf5cbb',
   'featured_image',
-  '1cb9d764-2216-403b-ad3d-20ac5ff10a81',
+  'f98ed742-8d66-4f40-bfef-0690db063296',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -1281,14 +1222,14 @@ INSERT INTO payload.course_lessons (
   created_at,
   updated_at
 ) VALUES (
-  '583a0967-3af4-46bf-80ff-37338912960c', -- Generated UUID for the lesson
+  '14df5c91-b040-4354-93ee-48b1216cd1ae', -- Generated UUID for the lesson
   'Presentation Tools & Course Resources',
   'tools-and-resources',
   'Links to some recommended presentation tools + all course materials and downloads',
   '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"This page includes links to all course material and downloads.\r\n\r\nI have also included a table listing my current recommendations of the web''s best tools, reference sites, and apps for helping create great presentations.\r\n\r\nLet me know if I have missed any!\r\n\r\nBe sure to bookmark this page for your reference and convenience.\r\n\r\n**Course related downloads**\r\n\r\nSlideHeroes Business Presentation PowerPoint Template: Over 1,000 slide templates\r\n\r\nBlank Audience Map pdf\r\n\r\nLesson slides: pdfs of slides used for each lesson\r\n\r\nGolden Rules Pack: a pdf summary of the SlideHeroes Golden Rules\r\n\r\n**Recommended tools, websites, and resources**","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}',
   104,
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8', -- Course ID
-  '699270ef-318c-474d-92c7-191c7a53bdaa',
+  '7dd0c2a1-a4e0-4bcc-aa33-4848fb08a875',
   NOW(),
   NOW()
 ) ON CONFLICT (id) DO NOTHING; -- Skip if the lesson already exists
@@ -1303,7 +1244,7 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '583a0967-3af4-46bf-80ff-37338912960c',
+  '14df5c91-b040-4354-93ee-48b1216cd1ae',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
   NOW(),
@@ -1320,9 +1261,9 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '583a0967-3af4-46bf-80ff-37338912960c',
+  '14df5c91-b040-4354-93ee-48b1216cd1ae',
   'featured_image',
-  '699270ef-318c-474d-92c7-191c7a53bdaa',
+  '7dd0c2a1-a4e0-4bcc-aa33-4848fb08a875',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -1340,14 +1281,14 @@ INSERT INTO payload.course_lessons (
   created_at,
   updated_at
 ) VALUES (
-  '09fc5295-66bf-4cc9-859d-fc1fed38d273', -- Generated UUID for the lesson
+  'a3cbef1c-719f-49aa-94cc-08b8e89194e0', -- Generated UUID for the lesson
   'Using Stories',
   'using-stories',
   'Using stories to powerfully convey your ideas',
   '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"{% bunny bunnyvideoid=\"f311d324-c0ca-4157-afeb-bba29e71a9ce\" /%}","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}',
   401,
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8', -- Course ID
-  'ebb5a2ce-4238-41b4-9349-629a32bbec2e',
+  '8508a12f-2384-47d1-bc6f-3cae5346aea5',
   NOW(),
   NOW()
 ) ON CONFLICT (id) DO NOTHING; -- Skip if the lesson already exists
@@ -1362,7 +1303,7 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '09fc5295-66bf-4cc9-859d-fc1fed38d273',
+  'a3cbef1c-719f-49aa-94cc-08b8e89194e0',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
   NOW(),
@@ -1379,9 +1320,9 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '09fc5295-66bf-4cc9-859d-fc1fed38d273',
+  'a3cbef1c-719f-49aa-94cc-08b8e89194e0',
   'featured_image',
-  'ebb5a2ce-4238-41b4-9349-629a32bbec2e',
+  '8508a12f-2384-47d1-bc6f-3cae5346aea5',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -1399,14 +1340,14 @@ INSERT INTO payload.course_lessons (
   created_at,
   updated_at
 ) VALUES (
-  '125a599e-cdcf-4423-af2d-3fbd707bb54b', -- Generated UUID for the lesson
+  'b7df1bf0-9f85-43de-aeca-55c1f6f1ade0', -- Generated UUID for the lesson
   'Visual Perception and Communication',
   'visual-perception',
   'What are the implications from how people process information?',
   '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"{% bunny bunnyvideoid=\"5c9b5f03-f5d0-479a-84b2-2cd489fc8584\" /%}","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}',
   501,
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8', -- Course ID
-  '4c6a5aa8-82d6-424f-b4cc-a3baf93912a4',
+  '70e8e927-6dcf-4191-b292-d9529e3dcb64',
   NOW(),
   NOW()
 ) ON CONFLICT (id) DO NOTHING; -- Skip if the lesson already exists
@@ -1421,7 +1362,7 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '125a599e-cdcf-4423-af2d-3fbd707bb54b',
+  'b7df1bf0-9f85-43de-aeca-55c1f6f1ade0',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
   NOW(),
@@ -1438,9 +1379,9 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '125a599e-cdcf-4423-af2d-3fbd707bb54b',
+  'b7df1bf0-9f85-43de-aeca-55c1f6f1ade0',
   'featured_image',
-  '4c6a5aa8-82d6-424f-b4cc-a3baf93912a4',
+  '70e8e927-6dcf-4191-b292-d9529e3dcb64',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -1454,18 +1395,18 @@ INSERT INTO payload.course_lessons (
   content,
   lesson_number,
   course_id,
-  
+  featured_image_id,
   created_at,
   updated_at
 ) VALUES (
-  'cd774f38-7be7-4808-85e3-e83942ecd229', -- Generated UUID for the lesson
+  'f2addcdc-b55a-495c-a936-fa7e699faea0', -- Generated UUID for the lesson
   'What is Structure?',
   'what-is-structure',
   'Techniques to develop ensure clarity through structure',
   '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"{% bunny bunnyvideoid=\"17d23794-696e-41df-af6c-faf9b54bd87d\" /%}","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}',
   302,
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8', -- Course ID
-  
+  'a4f59826-7dc6-464c-a1bb-be2369327208',
   NOW(),
   NOW()
 ) ON CONFLICT (id) DO NOTHING; -- Skip if the lesson already exists
@@ -1480,9 +1421,26 @@ INSERT INTO payload.course_lessons_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'cd774f38-7be7-4808-85e3-e83942ecd229',
+  'f2addcdc-b55a-495c-a936-fa7e699faea0',
   'course',
   '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8',
+  NOW(),
+  NOW()
+) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
+
+-- Create relationship entry for the lesson to the media
+INSERT INTO payload.course_lessons_rels (
+  id,
+  _parent_id,
+  field,
+  value,
+  created_at,
+  updated_at
+) VALUES (
+  gen_random_uuid(),
+  'f2addcdc-b55a-495c-a936-fa7e699faea0',
+  'featured_image',
+  'a4f59826-7dc6-464c-a1bb-be2369327208',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
