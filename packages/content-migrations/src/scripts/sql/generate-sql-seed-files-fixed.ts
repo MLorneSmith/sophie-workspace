@@ -12,7 +12,6 @@
 import fs from 'fs';
 import matter from 'gray-matter';
 import path from 'path';
-import { fileURLToPath } from 'url';
 import { v4 as uuidv4 } from 'uuid';
 
 import {
@@ -21,6 +20,15 @@ import {
   RAW_LESSONS_DIR,
   RAW_QUIZZES_DIR,
 } from '../../config/paths.js';
+import {
+  lessonImageMappings,
+  postImageMappings,
+} from '../../data/mappings/image-mappings.js';
+
+// Declare global mediaIds property for TypeScript
+declare global {
+  var mediaIds: Record<string, string>;
+}
 
 // Define the course ID (fixed UUID)
 const COURSE_ID = '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8';
@@ -47,6 +55,11 @@ async function generateSqlSeedFiles() {
       path.join(PAYLOAD_SQL_SEED_DIR, '01-courses.sql'),
       coursesSql,
     );
+
+    // Generate media SQL
+    console.log('Generating media SQL...');
+    const mediaSql = generateMediaSql();
+    fs.writeFileSync(path.join(PAYLOAD_SQL_SEED_DIR, '07-media.sql'), mediaSql);
 
     // Generate lessons SQL
     console.log('Generating lessons SQL...');
@@ -93,6 +106,10 @@ async function generateSqlSeedFiles() {
     fs.copyFileSync(
       path.join(PAYLOAD_SQL_SEED_DIR, '01-courses.sql'),
       path.join(PROCESSED_SQL_DIR, '01-courses.sql'),
+    );
+    fs.copyFileSync(
+      path.join(PAYLOAD_SQL_SEED_DIR, '07-media.sql'),
+      path.join(PROCESSED_SQL_DIR, '07-media.sql'),
     );
     fs.copyFileSync(
       path.join(PAYLOAD_SQL_SEED_DIR, '02-lessons.sql'),
@@ -256,6 +273,114 @@ COMMIT;
  * @param lessonsDir - Directory containing lesson .mdoc files
  * @returns SQL for lessons
  */
+/**
+ * Generates SQL for media entries based on image mappings
+ * @returns SQL for media entries
+ */
+function generateMediaSql(): string {
+  // Start building the SQL
+  let sql = `-- Seed data for the media table
+-- This file should be run after the migrations to ensure the media table exists
+
+-- Start a transaction
+BEGIN;
+
+`;
+
+  // Create a map to store media IDs by frontmatter path
+  const mediaIds: Record<string, string> = {};
+  global.mediaIds = mediaIds;
+
+  // Process lesson images
+  Object.entries(lessonImageMappings).forEach(
+    ([frontmatterPath, actualFilename]) => {
+      const mediaId = uuidv4();
+      mediaIds[frontmatterPath] = mediaId;
+
+      sql += `-- Insert media for ${frontmatterPath}
+INSERT INTO payload.media (
+  id,
+  alt,
+  filename,
+  mime_type,
+  filesize,
+  url,
+  updated_at,
+  created_at
+) VALUES (
+  '${mediaId}',
+  '${path.basename(actualFilename, path.extname(actualFilename)).replace(/_/g, ' ')}',
+  '${actualFilename}',
+  '${getMimeType(actualFilename)}',
+  0,
+  '${actualFilename}',
+  NOW(),
+  NOW()
+) ON CONFLICT (id) DO NOTHING;
+
+`;
+    },
+  );
+
+  // Process post images
+  Object.entries(postImageMappings).forEach(
+    ([frontmatterPath, actualFilename]) => {
+      const mediaId = uuidv4();
+      mediaIds[frontmatterPath] = mediaId;
+
+      sql += `-- Insert media for ${frontmatterPath}
+INSERT INTO payload.media (
+  id,
+  alt,
+  filename,
+  mime_type,
+  filesize,
+  url,
+  updated_at,
+  created_at
+) VALUES (
+  '${mediaId}',
+  '${path.basename(actualFilename, path.extname(actualFilename)).replace(/_/g, ' ')}',
+  '${actualFilename}',
+  '${getMimeType(actualFilename)}',
+  0,
+  '${actualFilename}',
+  NOW(),
+  NOW()
+) ON CONFLICT (id) DO NOTHING;
+
+`;
+    },
+  );
+
+  // End the transaction
+  sql += `-- Commit the transaction
+COMMIT;
+`;
+
+  return sql;
+}
+
+/**
+ * Helper function to determine MIME type based on file extension
+ * @param filename - Filename
+ * @returns MIME type
+ */
+function getMimeType(filename: string): string {
+  const ext = path.extname(filename).toLowerCase();
+  switch (ext) {
+    case '.png':
+      return 'image/png';
+    case '.jpg':
+    case '.jpeg':
+      return 'image/jpeg';
+    case '.webp':
+      return 'image/webp';
+    default:
+      return 'application/octet-stream';
+  }
+}
+
 function generateLessonsSql(lessonsDir: string): string {
   // Get all .mdoc files in the lessons directory
   const lessonFiles = fs
@@ -283,6 +408,10 @@ BEGIN;
     // Convert the content to a simple Lexical JSON structure
     const lexicalContent = convertToLexical(content);
 
+    // Get the media ID for this lesson's image
+    const mediaId =
+      data.image && global.mediaIds ? global.mediaIds[data.image] : null;
+
     // Add the lesson to the SQL
     sql += `-- Insert lesson: ${data.title}
 INSERT INTO payload.course_lessons (
@@ -293,6 +422,7 @@ INSERT INTO payload.course_lessons (
   content,
   lesson_number,
   course_id,
+  ${mediaId ? 'featured_image_id,' : ''}
   created_at,
   updated_at
 ) VALUES (
@@ -303,13 +433,14 @@ INSERT INTO payload.course_lessons (
   '${lexicalContent.replace(/'/g, "''")}',
   ${data.lessonNumber || data.order || 0},
   '${COURSE_ID}', -- Course ID
+  ${mediaId ? `'${mediaId}',` : ''}
   NOW(),
   NOW()
 ) ON CONFLICT (id) DO NOTHING; -- Skip if the lesson already exists
 
 `;
 
-    // Add the relationship entry
+    // Add the relationship entry for the course
     sql += `-- Create relationship entry for the lesson to the course
 INSERT INTO payload.course_lessons_rels (
   id,
@@ -328,6 +459,28 @@ INSERT INTO payload.course_lessons_rels (
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
 
 `;
+
+    // Add the relationship entry for the media if available
+    if (mediaId) {
+      sql += `-- Create relationship entry for the lesson to the media
+INSERT INTO payload.course_lessons_rels (
+  id,
+  _parent_id,
+  field,
+  value,
+  created_at,
+  updated_at
+) VALUES (
+  gen_random_uuid(),
+  '${lessonId}',
+  'featured_image',
+  '${mediaId}',
+  NOW(),
+  NOW()
+) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
+
+`;
+    }
   }
 
   // End the transaction
