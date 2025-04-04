@@ -333,13 +333,17 @@ export function QuizComponent({
                 return (
                   <div
                     key={optionIndex}
-                    className="hover:bg-accent flex items-center space-x-2 rounded-md p-2"
+                    className="hover:bg-accent flex cursor-pointer items-center space-x-2 rounded-md p-2"
+                    onClick={() => handleAnswerSelect(optionIndex)}
                   >
                     <RadioGroupItem
                       value={optionIndex.toString()}
                       id={`q${currentQuestionIndex}-o${optionIndex}`}
                     />
-                    <Label htmlFor={`q${currentQuestionIndex}-o${optionIndex}`}>
+                    <Label
+                      htmlFor={`q${currentQuestionIndex}-o${optionIndex}`}
+                      className="flex-1 cursor-pointer"
+                    >
                       {sanitizedOption.text}
                     </Label>
                   </div>
