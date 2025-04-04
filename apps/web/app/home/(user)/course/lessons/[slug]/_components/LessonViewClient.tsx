@@ -1,7 +1,6 @@
 'use client';
 
-import { useState } from 'react';
-import { useTransition } from 'react';
+import { useState, useTransition } from 'react';
 
 import Link from 'next/link';
 
@@ -17,8 +16,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@kit/ui/card';
-import { Progress } from '@kit/ui/progress';
-import { Toaster } from '@kit/ui/sonner';
 
 import {
   submitQuizAttemptAction,
@@ -136,7 +133,7 @@ export function LessonViewClient({
   // Mark lesson as completed
   const markLessonAsCompleted = () => {
     setIsMarkingCompleted(true);
-    toast.success('Marking lesson as completed...');
+    // Remove the initial toast to reduce notification overload
 
     startTransition(async () => {
       try {
@@ -146,7 +143,10 @@ export function LessonViewClient({
           completionPercentage: 100,
           completed: true,
         });
+        // Add back a single toast notification in the bottom right
         toast.success('Lesson marked as completed!');
+        // Update the state to reflect completion
+        setIsMarkingCompleted(false);
       } catch (error) {
         console.error('Error marking lesson as completed:', error);
         toast.error('Failed to mark lesson as completed. Please try again.');
@@ -192,7 +192,7 @@ export function LessonViewClient({
           });
         }
 
-        toast.success('Quiz submitted successfully!');
+        // Removed success toast to avoid duplicate notifications
       } catch (error) {
         console.error('Error submitting quiz:', error);
         toast.error('Failed to submit quiz. Please try again.');
@@ -251,20 +251,32 @@ export function LessonViewClient({
                 </Button>
               )}
 
-              {!showQuiz && (!hasQuiz || quizCompleted) && !isCompleted && (
-                <Button
-                  onClick={markLessonAsCompleted}
-                  disabled={isPending || isMarkingCompleted}
-                  className={
-                    isMarkingCompleted ? 'bg-green-600 hover:bg-green-700' : ''
-                  }
-                >
-                  {isMarkingCompleted ? 'Marking...' : 'Mark as Completed'}
-                  <CheckCircle
-                    className={`ml-2 h-4 w-4 ${isMarkingCompleted ? 'text-green-200' : ''}`}
-                  />
-                </Button>
-              )}
+              {!showQuiz &&
+                (!hasQuiz || quizCompleted) &&
+                (isCompleted ? (
+                  <Button
+                    disabled={true}
+                    className="bg-green-600 hover:bg-green-700"
+                  >
+                    Completed
+                    <CheckCircle className="ml-2 h-4 w-4 text-green-200" />
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={markLessonAsCompleted}
+                    disabled={isPending || isMarkingCompleted}
+                    className={
+                      isMarkingCompleted
+                        ? 'bg-green-600 hover:bg-green-700'
+                        : ''
+                    }
+                  >
+                    {isMarkingCompleted ? 'Marking...' : 'Mark as Completed'}
+                    <CheckCircle
+                      className={`ml-2 h-4 w-4 ${isMarkingCompleted ? 'text-green-200' : ''}`}
+                    />
+                  </Button>
+                ))}
 
               {showQuiz && (
                 <Button
@@ -322,19 +334,8 @@ export function LessonViewClient({
           </CardFooter>
         </Card>
 
-        {/* Completed status */}
-        {(isCompleted || isMarkingCompleted) && (
-          <div className="rounded-lg border border-green-200 bg-green-50 p-4 shadow-sm dark:border-green-800 dark:bg-green-900/50">
-            <h2 className="text-xl font-bold text-green-800 dark:text-green-300">
-              Lesson Completed! 🎉
-            </h2>
-            <p className="mt-2 text-green-700 dark:text-green-400">
-              You have successfully completed this lesson.
-            </p>
-          </div>
-        )}
+        {/* Removed the green notification box to avoid duplicate notifications */}
       </div>
-      <Toaster />
     </>
   );
 }

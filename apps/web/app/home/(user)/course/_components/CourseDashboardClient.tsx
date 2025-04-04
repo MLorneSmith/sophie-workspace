@@ -191,6 +191,14 @@ export function CourseDashboardClient({
   // Get completion status for a specific lesson
   const getLessonCompletionStatus = (lessonId: string) => {
     const progress = lessonProgress.find((p) => p.lesson_id === lessonId);
+
+    // Debug lesson completion status
+    console.log(`Checking completion for lesson ${lessonId}:`, {
+      hasProgress: !!progress,
+      completedAt: progress?.completed_at,
+      isCompleted: !!progress?.completed_at,
+    });
+
     return progress?.completed_at ? true : false;
   };
 

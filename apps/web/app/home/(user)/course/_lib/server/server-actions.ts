@@ -107,19 +107,39 @@ export const updateLessonProgressAction = enhanceAction(
         updateData.completed_at = now;
       }
 
+      // Always update course_id to ensure it's set correctly
+      updateData.course_id = data.courseId;
+
       await supabase
         .from('lesson_progress')
         .update(updateData)
         .eq('id', existingProgress.id);
+
+      // Log the update for debugging
+      console.log('Updated lesson progress:', {
+        lessonId: data.lessonId,
+        courseId: data.courseId,
+        completed: data.completed,
+        existingId: existingProgress.id,
+      });
     } else {
       // Create new record
-      await supabase.from('lesson_progress').insert({
+      const newRecord = {
         user_id: user.id,
         course_id: data.courseId,
         lesson_id: data.lessonId,
         started_at: now,
         completed_at: data.completed ? now : null,
         completion_percentage: data.completionPercentage || 0,
+      };
+
+      await supabase.from('lesson_progress').insert(newRecord);
+
+      // Log the insert for debugging
+      console.log('Created new lesson progress:', {
+        lessonId: data.lessonId,
+        courseId: data.courseId,
+        completed: data.completed,
       });
     }
 
