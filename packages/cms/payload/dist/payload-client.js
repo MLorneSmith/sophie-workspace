@@ -135,8 +135,33 @@ export class PayloadClient {
         const tags = await this.getTags({ collection });
         return tags.find((tag) => tag.slug === slug);
     }
+    /**
+     * Transform image URLs to use the custom domain
+     * @param url - Original URL
+     * @returns Transformed URL or null if input is null
+     */
+    transformImageUrl(url) {
+        if (!url)
+            return null;
+        // If the URL contains r2.cloudflarestorage.com, transform it to the custom domain
+        if (url.includes('r2.cloudflarestorage.com')) {
+            const filename = url.split('/').pop();
+            return `https://images.slideheroes.com/${filename}`;
+        }
+        // If the URL is just a filename (no protocol/domain), add the custom domain
+        if (!url.startsWith('http') && !url.startsWith('/')) {
+            return `https://images.slideheroes.com/${url}`;
+        }
+        return url;
+    }
     mapContentItem(item) {
-        var _a;
+        var _a, _b;
+        // Get the image URL and transform it
+        // Check for both image and image_id fields
+        const imageUrl = ((_a = item.image_id) === null || _a === void 0 ? void 0 : _a.url) || // Check for image_id field first (used in Posts collection)
+            ((_b = item.image) === null || _b === void 0 ? void 0 : _b.url) || // Then check for image field (used in other collections)
+            (typeof item.image === 'string' ? item.image : null);
+        const transformedImageUrl = this.transformImageUrl(imageUrl);
         // Map the item
         const mappedItem = {
             id: item.id,
@@ -147,7 +172,9 @@ export class PayloadClient {
             description: item.description,
             content: item.content,
             publishedAt: item.publishedAt,
-            image: ((_a = item.image) === null || _a === void 0 ? void 0 : _a.url) || (typeof item.image === 'string' ? item.image : null),
+            image: transformedImageUrl || undefined, // Convert null to undefined
+            // Also include the original image_id for components that might need to access it directly
+            image_id: item.image_id,
             status: item.status,
             categories: (item.categories || []).map((category) => ({
                 id: category.category,

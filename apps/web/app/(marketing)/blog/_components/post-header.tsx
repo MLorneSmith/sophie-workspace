@@ -6,7 +6,11 @@ import { CoverImage } from './cover-image';
 import { DateFormatter } from './date-formatter';
 
 export function PostHeader({ post }: { post: Cms.ContentItem }) {
-  const { title, publishedAt, description, image } = post;
+  const { title, publishedAt, description } = post;
+
+  // Get the image URL from the relationship field
+  // Use type assertion to handle the image_id property which might not be in the type definition
+  const imageUrl = (post as any).image_id?.url || post.image || null;
 
   return (
     <div className={'flex flex-1 flex-col'}>
@@ -33,14 +37,14 @@ export function PostHeader({ post }: { post: Cms.ContentItem }) {
         </div>
       </div>
 
-      <If condition={image}>
-        {(imageUrl) => (
+      <If condition={imageUrl}>
+        {(url) => (
           <div className="relative mx-auto mt-8 flex h-[378px] w-full max-w-3xl justify-center">
             <CoverImage
               preloadImage
               className="rounded-md"
               title={title}
-              src={imageUrl}
+              src={url}
             />
           </div>
         )}

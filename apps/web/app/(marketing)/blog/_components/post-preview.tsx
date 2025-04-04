@@ -19,22 +19,22 @@ export function PostPreview({
   preloadImage,
   imageHeight,
 }: React.PropsWithChildren<Props>) {
-  const { title, image, publishedAt, description } = post;
+  const { title, publishedAt, description } = post;
   const height = imageHeight ?? DEFAULT_IMAGE_HEIGHT;
+
+  // Get the image URL from the relationship field
+  // Use type assertion to handle the image_id property which might not be in the type definition
+  const imageUrl = (post as any).image_id?.url || post.image || null;
 
   const slug = `/blog/${post.slug}`;
 
   return (
     <div className="transition-shadow-sm flex flex-col gap-y-4 rounded-lg duration-500">
-      <If condition={image}>
-        {(imageUrl) => (
+      <If condition={imageUrl}>
+        {(url) => (
           <div className="relative mb-2 w-full" style={{ height }}>
             <Link href={slug}>
-              <CoverImage
-                preloadImage={preloadImage}
-                title={title}
-                src={imageUrl}
-              />
+              <CoverImage preloadImage={preloadImage} title={title} src={url} />
             </Link>
           </div>
         )}

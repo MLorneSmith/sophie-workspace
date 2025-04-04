@@ -29,5 +29,11 @@ export declare class PayloadClient implements CmsClient {
         name: string;
         slug: string;
     } | undefined>;
+    /**
+     * Transform image URLs to use the custom domain
+     * @param url - Original URL
+     * @returns Transformed URL or null if input is null
+     */
+    private transformImageUrl;
     private mapContentItem;
 }
