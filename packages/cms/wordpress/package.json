@@ -20,7 +20,7 @@
     "@kit/prettier-config": "workspace:*",
     "@kit/tsconfig": "workspace:*",
     "@kit/ui": "workspace:*",
-    "@types/node": "^22.13.14",
+    "@types/node": "^22.13.17",
     "@types/react": "19.0.12",
     "wp-types": "^4.67.1"
   },
