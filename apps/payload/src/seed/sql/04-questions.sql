@@ -4,7 +4,7 @@
 -- Start a transaction
 BEGIN;
 
--- Questions for quiz: Standard Graphs Quiz (basic-graphs-quiz, ID: 62bc6213-eadf-40ce-87ab-ef45788fb31a)
+-- Questions for quiz: Standard Graphs Quiz (basic-graphs-quiz, ID: c2c51c38-7168-4d78-b7a2-b2ff458c59e0)
 -- Insert question 1 for quiz: Standard Graphs Quiz
 INSERT INTO payload.quiz_questions (
   id,
@@ -17,10 +17,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '71cdd697-ae35-4a5e-a636-f2a63ecbf5f5', -- Generated UUID for the question
+  'f8be3c45-d6f9-44e8-bb6f-7acd9c5308f2', -- Generated UUID for the question
   'There are many types of relationships that we use graphs to display. What chart type best communicates the ''Part-to-Whole'' relationship?',
-  '62bc6213-eadf-40ce-87ab-ef45788fb31a', -- Quiz ID
-  '62bc6213-eadf-40ce-87ab-ef45788fb31a', -- Quiz ID (duplicate)
+  'c2c51c38-7168-4d78-b7a2-b2ff458c59e0', -- Quiz ID
+  'c2c51c38-7168-4d78-b7a2-b2ff458c59e0', -- Quiz ID (duplicate)
   'single-answer',
   '',
   0,
@@ -40,7 +40,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '71cdd697-ae35-4a5e-a636-f2a63ecbf5f5',
+  'f8be3c45-d6f9-44e8-bb6f-7acd9c5308f2',
   'Line Charts',
   false,
   NOW(),
@@ -59,7 +59,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '71cdd697-ae35-4a5e-a636-f2a63ecbf5f5',
+  'f8be3c45-d6f9-44e8-bb6f-7acd9c5308f2',
   'Scatter Plots',
   false,
   NOW(),
@@ -78,7 +78,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '71cdd697-ae35-4a5e-a636-f2a63ecbf5f5',
+  'f8be3c45-d6f9-44e8-bb6f-7acd9c5308f2',
   'Maps',
   false,
   NOW(),
@@ -97,7 +97,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  '71cdd697-ae35-4a5e-a636-f2a63ecbf5f5',
+  'f8be3c45-d6f9-44e8-bb6f-7acd9c5308f2',
   'Box Plot',
   false,
   NOW(),
@@ -116,7 +116,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   4,
-  '71cdd697-ae35-4a5e-a636-f2a63ecbf5f5',
+  'f8be3c45-d6f9-44e8-bb6f-7acd9c5308f2',
   'Bar charts',
   true,
   NOW(),
@@ -133,9 +133,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '71cdd697-ae35-4a5e-a636-f2a63ecbf5f5',
+  'f8be3c45-d6f9-44e8-bb6f-7acd9c5308f2',
   'quiz_id',
-  '62bc6213-eadf-40ce-87ab-ef45788fb31a',
+  'c2c51c38-7168-4d78-b7a2-b2ff458c59e0',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -150,9 +150,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '62bc6213-eadf-40ce-87ab-ef45788fb31a',
+  'c2c51c38-7168-4d78-b7a2-b2ff458c59e0',
   'questions',
-  '71cdd697-ae35-4a5e-a636-f2a63ecbf5f5',
+  'f8be3c45-d6f9-44e8-bb6f-7acd9c5308f2',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -169,10 +169,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  'c0d19af8-8a87-4d32-b211-1ff7cfe20d5a', -- Generated UUID for the question
+  '9be94e4b-d907-4aff-b21f-88e3d98a4a57', -- Generated UUID for the question
   'What chart type best communicates the ''Correlation'' relationship?',
-  '62bc6213-eadf-40ce-87ab-ef45788fb31a', -- Quiz ID
-  '62bc6213-eadf-40ce-87ab-ef45788fb31a', -- Quiz ID (duplicate)
+  'c2c51c38-7168-4d78-b7a2-b2ff458c59e0', -- Quiz ID
+  'c2c51c38-7168-4d78-b7a2-b2ff458c59e0', -- Quiz ID (duplicate)
   'single-answer',
   '',
   1,
@@ -192,7 +192,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  'c0d19af8-8a87-4d32-b211-1ff7cfe20d5a',
+  '9be94e4b-d907-4aff-b21f-88e3d98a4a57',
   'Line Charts',
   false,
   NOW(),
@@ -211,7 +211,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  'c0d19af8-8a87-4d32-b211-1ff7cfe20d5a',
+  '9be94e4b-d907-4aff-b21f-88e3d98a4a57',
   'Scatter Plots',
   true,
   NOW(),
@@ -230,7 +230,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  'c0d19af8-8a87-4d32-b211-1ff7cfe20d5a',
+  '9be94e4b-d907-4aff-b21f-88e3d98a4a57',
   'Maps',
   false,
   NOW(),
@@ -249,7 +249,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  'c0d19af8-8a87-4d32-b211-1ff7cfe20d5a',
+  '9be94e4b-d907-4aff-b21f-88e3d98a4a57',
   'Box Plot',
   false,
   NOW(),
@@ -268,7 +268,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   4,
-  'c0d19af8-8a87-4d32-b211-1ff7cfe20d5a',
+  '9be94e4b-d907-4aff-b21f-88e3d98a4a57',
   'Bar Charts',
   false,
   NOW(),
@@ -285,9 +285,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'c0d19af8-8a87-4d32-b211-1ff7cfe20d5a',
+  '9be94e4b-d907-4aff-b21f-88e3d98a4a57',
   'quiz_id',
-  '62bc6213-eadf-40ce-87ab-ef45788fb31a',
+  'c2c51c38-7168-4d78-b7a2-b2ff458c59e0',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -302,9 +302,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '62bc6213-eadf-40ce-87ab-ef45788fb31a',
+  'c2c51c38-7168-4d78-b7a2-b2ff458c59e0',
   'questions',
-  'c0d19af8-8a87-4d32-b211-1ff7cfe20d5a',
+  '9be94e4b-d907-4aff-b21f-88e3d98a4a57',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -321,10 +321,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  'a5c1f5df-f082-4329-95a7-2a02890f79b5', -- Generated UUID for the question
+  '7ee4a0a9-1038-41d5-a2ce-64799c2329f6', -- Generated UUID for the question
   'What chart type best communicates the ''Time Series'' relationship?',
-  '62bc6213-eadf-40ce-87ab-ef45788fb31a', -- Quiz ID
-  '62bc6213-eadf-40ce-87ab-ef45788fb31a', -- Quiz ID (duplicate)
+  'c2c51c38-7168-4d78-b7a2-b2ff458c59e0', -- Quiz ID
+  'c2c51c38-7168-4d78-b7a2-b2ff458c59e0', -- Quiz ID (duplicate)
   'single-answer',
   '',
   2,
@@ -344,7 +344,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  'a5c1f5df-f082-4329-95a7-2a02890f79b5',
+  '7ee4a0a9-1038-41d5-a2ce-64799c2329f6',
   'Line Charts',
   true,
   NOW(),
@@ -363,7 +363,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  'a5c1f5df-f082-4329-95a7-2a02890f79b5',
+  '7ee4a0a9-1038-41d5-a2ce-64799c2329f6',
   'Scatter Plots',
   false,
   NOW(),
@@ -382,7 +382,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  'a5c1f5df-f082-4329-95a7-2a02890f79b5',
+  '7ee4a0a9-1038-41d5-a2ce-64799c2329f6',
   'Maps',
   false,
   NOW(),
@@ -401,7 +401,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  'a5c1f5df-f082-4329-95a7-2a02890f79b5',
+  '7ee4a0a9-1038-41d5-a2ce-64799c2329f6',
   'Box Plot',
   false,
   NOW(),
@@ -420,7 +420,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   4,
-  'a5c1f5df-f082-4329-95a7-2a02890f79b5',
+  '7ee4a0a9-1038-41d5-a2ce-64799c2329f6',
   'Bar Charts',
   false,
   NOW(),
@@ -437,9 +437,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'a5c1f5df-f082-4329-95a7-2a02890f79b5',
+  '7ee4a0a9-1038-41d5-a2ce-64799c2329f6',
   'quiz_id',
-  '62bc6213-eadf-40ce-87ab-ef45788fb31a',
+  'c2c51c38-7168-4d78-b7a2-b2ff458c59e0',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -454,9 +454,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '62bc6213-eadf-40ce-87ab-ef45788fb31a',
+  'c2c51c38-7168-4d78-b7a2-b2ff458c59e0',
   'questions',
-  'a5c1f5df-f082-4329-95a7-2a02890f79b5',
+  '7ee4a0a9-1038-41d5-a2ce-64799c2329f6',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -473,10 +473,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '185314d1-ec4c-4b97-8755-21352824f60a', -- Generated UUID for the question
+  '5d0d2e85-f279-4257-8abd-4cf8d8b6d779', -- Generated UUID for the question
   'What chart types best communicates the ''Deviation'' relationship?',
-  '62bc6213-eadf-40ce-87ab-ef45788fb31a', -- Quiz ID
-  '62bc6213-eadf-40ce-87ab-ef45788fb31a', -- Quiz ID (duplicate)
+  'c2c51c38-7168-4d78-b7a2-b2ff458c59e0', -- Quiz ID
+  'c2c51c38-7168-4d78-b7a2-b2ff458c59e0', -- Quiz ID (duplicate)
   'multi-answer',
   '',
   3,
@@ -496,7 +496,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '185314d1-ec4c-4b97-8755-21352824f60a',
+  '5d0d2e85-f279-4257-8abd-4cf8d8b6d779',
   'Line Charts',
   true,
   NOW(),
@@ -515,7 +515,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '185314d1-ec4c-4b97-8755-21352824f60a',
+  '5d0d2e85-f279-4257-8abd-4cf8d8b6d779',
   'Scatter Plots',
   false,
   NOW(),
@@ -534,7 +534,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '185314d1-ec4c-4b97-8755-21352824f60a',
+  '5d0d2e85-f279-4257-8abd-4cf8d8b6d779',
   'Maps',
   false,
   NOW(),
@@ -553,7 +553,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  '185314d1-ec4c-4b97-8755-21352824f60a',
+  '5d0d2e85-f279-4257-8abd-4cf8d8b6d779',
   'Box Plot',
   false,
   NOW(),
@@ -572,7 +572,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   4,
-  '185314d1-ec4c-4b97-8755-21352824f60a',
+  '5d0d2e85-f279-4257-8abd-4cf8d8b6d779',
   'Bar Charts',
   true,
   NOW(),
@@ -589,9 +589,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '185314d1-ec4c-4b97-8755-21352824f60a',
+  '5d0d2e85-f279-4257-8abd-4cf8d8b6d779',
   'quiz_id',
-  '62bc6213-eadf-40ce-87ab-ef45788fb31a',
+  'c2c51c38-7168-4d78-b7a2-b2ff458c59e0',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -606,9 +606,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '62bc6213-eadf-40ce-87ab-ef45788fb31a',
+  'c2c51c38-7168-4d78-b7a2-b2ff458c59e0',
   'questions',
-  '185314d1-ec4c-4b97-8755-21352824f60a',
+  '5d0d2e85-f279-4257-8abd-4cf8d8b6d779',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -625,10 +625,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '9a72f88a-6e4d-43ca-9ec5-97e4477775ad', -- Generated UUID for the question
+  '3689ae2b-cb4a-42bc-b849-6228d88fd751', -- Generated UUID for the question
   'What chart type best communicates the ''Distribution'' relationship?',
-  '62bc6213-eadf-40ce-87ab-ef45788fb31a', -- Quiz ID
-  '62bc6213-eadf-40ce-87ab-ef45788fb31a', -- Quiz ID (duplicate)
+  'c2c51c38-7168-4d78-b7a2-b2ff458c59e0', -- Quiz ID
+  'c2c51c38-7168-4d78-b7a2-b2ff458c59e0', -- Quiz ID (duplicate)
   'single-answer',
   '',
   4,
@@ -648,7 +648,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '9a72f88a-6e4d-43ca-9ec5-97e4477775ad',
+  '3689ae2b-cb4a-42bc-b849-6228d88fd751',
   'Line Charts',
   false,
   NOW(),
@@ -667,7 +667,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '9a72f88a-6e4d-43ca-9ec5-97e4477775ad',
+  '3689ae2b-cb4a-42bc-b849-6228d88fd751',
   'Scatter Plots',
   false,
   NOW(),
@@ -686,7 +686,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '9a72f88a-6e4d-43ca-9ec5-97e4477775ad',
+  '3689ae2b-cb4a-42bc-b849-6228d88fd751',
   'Maps',
   false,
   NOW(),
@@ -705,7 +705,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  '9a72f88a-6e4d-43ca-9ec5-97e4477775ad',
+  '3689ae2b-cb4a-42bc-b849-6228d88fd751',
   'Box Plot',
   true,
   NOW(),
@@ -724,7 +724,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   4,
-  '9a72f88a-6e4d-43ca-9ec5-97e4477775ad',
+  '3689ae2b-cb4a-42bc-b849-6228d88fd751',
   'Bar Charts',
   false,
   NOW(),
@@ -741,9 +741,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '9a72f88a-6e4d-43ca-9ec5-97e4477775ad',
+  '3689ae2b-cb4a-42bc-b849-6228d88fd751',
   'quiz_id',
-  '62bc6213-eadf-40ce-87ab-ef45788fb31a',
+  'c2c51c38-7168-4d78-b7a2-b2ff458c59e0',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -758,9 +758,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '62bc6213-eadf-40ce-87ab-ef45788fb31a',
+  'c2c51c38-7168-4d78-b7a2-b2ff458c59e0',
   'questions',
-  '9a72f88a-6e4d-43ca-9ec5-97e4477775ad',
+  '3689ae2b-cb4a-42bc-b849-6228d88fd751',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -777,10 +777,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '39ce1752-ec25-404d-9da0-58c386005c66', -- Generated UUID for the question
+  'dcf46d23-8923-4eda-ad72-f07f5a9d0c4c', -- Generated UUID for the question
   'What chart type best communicates the ''Nominal Comparison'' relationship',
-  '62bc6213-eadf-40ce-87ab-ef45788fb31a', -- Quiz ID
-  '62bc6213-eadf-40ce-87ab-ef45788fb31a', -- Quiz ID (duplicate)
+  'c2c51c38-7168-4d78-b7a2-b2ff458c59e0', -- Quiz ID
+  'c2c51c38-7168-4d78-b7a2-b2ff458c59e0', -- Quiz ID (duplicate)
   'single-answer',
   '',
   5,
@@ -800,7 +800,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '39ce1752-ec25-404d-9da0-58c386005c66',
+  'dcf46d23-8923-4eda-ad72-f07f5a9d0c4c',
   'Line Chart',
   false,
   NOW(),
@@ -819,7 +819,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '39ce1752-ec25-404d-9da0-58c386005c66',
+  'dcf46d23-8923-4eda-ad72-f07f5a9d0c4c',
   'Scatter Plot',
   false,
   NOW(),
@@ -838,7 +838,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '39ce1752-ec25-404d-9da0-58c386005c66',
+  'dcf46d23-8923-4eda-ad72-f07f5a9d0c4c',
   'Map',
   false,
   NOW(),
@@ -857,7 +857,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  '39ce1752-ec25-404d-9da0-58c386005c66',
+  'dcf46d23-8923-4eda-ad72-f07f5a9d0c4c',
   'Box Plot',
   false,
   NOW(),
@@ -876,7 +876,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   4,
-  '39ce1752-ec25-404d-9da0-58c386005c66',
+  'dcf46d23-8923-4eda-ad72-f07f5a9d0c4c',
   'Bar Chart',
   true,
   NOW(),
@@ -893,9 +893,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '39ce1752-ec25-404d-9da0-58c386005c66',
+  'dcf46d23-8923-4eda-ad72-f07f5a9d0c4c',
   'quiz_id',
-  '62bc6213-eadf-40ce-87ab-ef45788fb31a',
+  'c2c51c38-7168-4d78-b7a2-b2ff458c59e0',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -910,9 +910,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '62bc6213-eadf-40ce-87ab-ef45788fb31a',
+  'c2c51c38-7168-4d78-b7a2-b2ff458c59e0',
   'questions',
-  '39ce1752-ec25-404d-9da0-58c386005c66',
+  'dcf46d23-8923-4eda-ad72-f07f5a9d0c4c',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -929,10 +929,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '9fc84356-9213-44de-9cc6-1b365d7bc0e8', -- Generated UUID for the question
+  'a4d8ffc4-c629-45d3-ae6c-4b29356cd80b', -- Generated UUID for the question
   'What chart type best communicates the ''Geospatial'' relationship?',
-  '62bc6213-eadf-40ce-87ab-ef45788fb31a', -- Quiz ID
-  '62bc6213-eadf-40ce-87ab-ef45788fb31a', -- Quiz ID (duplicate)
+  'c2c51c38-7168-4d78-b7a2-b2ff458c59e0', -- Quiz ID
+  'c2c51c38-7168-4d78-b7a2-b2ff458c59e0', -- Quiz ID (duplicate)
   'single-answer',
   '',
   6,
@@ -952,7 +952,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '9fc84356-9213-44de-9cc6-1b365d7bc0e8',
+  'a4d8ffc4-c629-45d3-ae6c-4b29356cd80b',
   'Line Chart',
   false,
   NOW(),
@@ -971,7 +971,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '9fc84356-9213-44de-9cc6-1b365d7bc0e8',
+  'a4d8ffc4-c629-45d3-ae6c-4b29356cd80b',
   'Scatter Plot',
   false,
   NOW(),
@@ -990,7 +990,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '9fc84356-9213-44de-9cc6-1b365d7bc0e8',
+  'a4d8ffc4-c629-45d3-ae6c-4b29356cd80b',
   'Map',
   true,
   NOW(),
@@ -1009,7 +1009,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  '9fc84356-9213-44de-9cc6-1b365d7bc0e8',
+  'a4d8ffc4-c629-45d3-ae6c-4b29356cd80b',
   'Box Plot',
   false,
   NOW(),
@@ -1028,7 +1028,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   4,
-  '9fc84356-9213-44de-9cc6-1b365d7bc0e8',
+  'a4d8ffc4-c629-45d3-ae6c-4b29356cd80b',
   'Bar Chart',
   false,
   NOW(),
@@ -1045,9 +1045,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '9fc84356-9213-44de-9cc6-1b365d7bc0e8',
+  'a4d8ffc4-c629-45d3-ae6c-4b29356cd80b',
   'quiz_id',
-  '62bc6213-eadf-40ce-87ab-ef45788fb31a',
+  'c2c51c38-7168-4d78-b7a2-b2ff458c59e0',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -1062,9 +1062,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '62bc6213-eadf-40ce-87ab-ef45788fb31a',
+  'c2c51c38-7168-4d78-b7a2-b2ff458c59e0',
   'questions',
-  '9fc84356-9213-44de-9cc6-1b365d7bc0e8',
+  'a4d8ffc4-c629-45d3-ae6c-4b29356cd80b',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -1081,10 +1081,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '5c3328e2-ebe8-4799-90bf-171ba936199c', -- Generated UUID for the question
+  '80799a27-0f8e-4189-a125-71be9b8a8c09', -- Generated UUID for the question
   'When should we use Pie Charts?',
-  '62bc6213-eadf-40ce-87ab-ef45788fb31a', -- Quiz ID
-  '62bc6213-eadf-40ce-87ab-ef45788fb31a', -- Quiz ID (duplicate)
+  'c2c51c38-7168-4d78-b7a2-b2ff458c59e0', -- Quiz ID
+  'c2c51c38-7168-4d78-b7a2-b2ff458c59e0', -- Quiz ID (duplicate)
   'single-answer',
   '',
   7,
@@ -1104,7 +1104,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '5c3328e2-ebe8-4799-90bf-171ba936199c',
+  '80799a27-0f8e-4189-a125-71be9b8a8c09',
   'For part-to-whole relationships.',
   false,
   NOW(),
@@ -1123,7 +1123,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '5c3328e2-ebe8-4799-90bf-171ba936199c',
+  '80799a27-0f8e-4189-a125-71be9b8a8c09',
   'For time series relationships',
   false,
   NOW(),
@@ -1142,7 +1142,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '5c3328e2-ebe8-4799-90bf-171ba936199c',
+  '80799a27-0f8e-4189-a125-71be9b8a8c09',
   'For nominal comparison relationships',
   false,
   NOW(),
@@ -1161,7 +1161,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  '5c3328e2-ebe8-4799-90bf-171ba936199c',
+  '80799a27-0f8e-4189-a125-71be9b8a8c09',
   'Never.',
   true,
   NOW(),
@@ -1178,9 +1178,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '5c3328e2-ebe8-4799-90bf-171ba936199c',
+  '80799a27-0f8e-4189-a125-71be9b8a8c09',
   'quiz_id',
-  '62bc6213-eadf-40ce-87ab-ef45788fb31a',
+  'c2c51c38-7168-4d78-b7a2-b2ff458c59e0',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -1195,14 +1195,14 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '62bc6213-eadf-40ce-87ab-ef45788fb31a',
+  'c2c51c38-7168-4d78-b7a2-b2ff458c59e0',
   'questions',
-  '5c3328e2-ebe8-4799-90bf-171ba936199c',
+  '80799a27-0f8e-4189-a125-71be9b8a8c09',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
 
--- Questions for quiz: The Fundamental Elements of Design in Detail Quiz (elements-of-design-detail-quiz, ID: ff61892f-eb8b-4eb0-9507-969f4c5c329e)
+-- Questions for quiz: The Fundamental Elements of Design in Detail Quiz (elements-of-design-detail-quiz, ID: 5a579da9-d321-41f2-bb3b-d57d09ebec5a)
 -- Insert question 1 for quiz: The Fundamental Elements of Design in Detail Quiz
 INSERT INTO payload.quiz_questions (
   id,
@@ -1215,10 +1215,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '3ccb34ff-c5a4-478e-83ac-e89a9b679972', -- Generated UUID for the question
+  'c6eb0eda-e692-4ef6-998c-05db61ad50af', -- Generated UUID for the question
   'Why do we use contrast?',
-  'ff61892f-eb8b-4eb0-9507-969f4c5c329e', -- Quiz ID
-  'ff61892f-eb8b-4eb0-9507-969f4c5c329e', -- Quiz ID (duplicate)
+  '5a579da9-d321-41f2-bb3b-d57d09ebec5a', -- Quiz ID
+  '5a579da9-d321-41f2-bb3b-d57d09ebec5a', -- Quiz ID (duplicate)
   'single-answer',
   '',
   0,
@@ -1238,7 +1238,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '3ccb34ff-c5a4-478e-83ac-e89a9b679972',
+  'c6eb0eda-e692-4ef6-998c-05db61ad50af',
   'To make our computer monitor easier to read',
   false,
   NOW(),
@@ -1257,7 +1257,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '3ccb34ff-c5a4-478e-83ac-e89a9b679972',
+  'c6eb0eda-e692-4ef6-998c-05db61ad50af',
   'To fill up space',
   false,
   NOW(),
@@ -1276,7 +1276,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '3ccb34ff-c5a4-478e-83ac-e89a9b679972',
+  'c6eb0eda-e692-4ef6-998c-05db61ad50af',
   'Our eyes like it. It looks good',
   true,
   NOW(),
@@ -1293,9 +1293,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '3ccb34ff-c5a4-478e-83ac-e89a9b679972',
+  'c6eb0eda-e692-4ef6-998c-05db61ad50af',
   'quiz_id',
-  'ff61892f-eb8b-4eb0-9507-969f4c5c329e',
+  '5a579da9-d321-41f2-bb3b-d57d09ebec5a',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -1310,9 +1310,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'ff61892f-eb8b-4eb0-9507-969f4c5c329e',
+  '5a579da9-d321-41f2-bb3b-d57d09ebec5a',
   'questions',
-  '3ccb34ff-c5a4-478e-83ac-e89a9b679972',
+  'c6eb0eda-e692-4ef6-998c-05db61ad50af',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -1329,10 +1329,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '94d5b7bd-f74a-40af-a338-fa7a2f04a760', -- Generated UUID for the question
+  'a55e3e73-7076-472f-abfa-fadd0f25ea5d', -- Generated UUID for the question
   'How important is alignment?',
-  'ff61892f-eb8b-4eb0-9507-969f4c5c329e', -- Quiz ID
-  'ff61892f-eb8b-4eb0-9507-969f4c5c329e', -- Quiz ID (duplicate)
+  '5a579da9-d321-41f2-bb3b-d57d09ebec5a', -- Quiz ID
+  '5a579da9-d321-41f2-bb3b-d57d09ebec5a', -- Quiz ID (duplicate)
   'single-answer',
   '',
   1,
@@ -1352,7 +1352,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '94d5b7bd-f74a-40af-a338-fa7a2f04a760',
+  'a55e3e73-7076-472f-abfa-fadd0f25ea5d',
   'Critically important (make sure you have learned how to use PowerPoint''s alignment tools)',
   true,
   NOW(),
@@ -1369,9 +1369,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '94d5b7bd-f74a-40af-a338-fa7a2f04a760',
+  'a55e3e73-7076-472f-abfa-fadd0f25ea5d',
   'quiz_id',
-  'ff61892f-eb8b-4eb0-9507-969f4c5c329e',
+  '5a579da9-d321-41f2-bb3b-d57d09ebec5a',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -1386,9 +1386,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'ff61892f-eb8b-4eb0-9507-969f4c5c329e',
+  '5a579da9-d321-41f2-bb3b-d57d09ebec5a',
   'questions',
-  '94d5b7bd-f74a-40af-a338-fa7a2f04a760',
+  'a55e3e73-7076-472f-abfa-fadd0f25ea5d',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -1405,10 +1405,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '315b298d-ca52-4a0f-8447-dfdc171e7641', -- Generated UUID for the question
+  '53c57e87-f927-4a90-9d78-1c4a9a7f06a9', -- Generated UUID for the question
   'How is the principle of proximity helpful?',
-  'ff61892f-eb8b-4eb0-9507-969f4c5c329e', -- Quiz ID
-  'ff61892f-eb8b-4eb0-9507-969f4c5c329e', -- Quiz ID (duplicate)
+  '5a579da9-d321-41f2-bb3b-d57d09ebec5a', -- Quiz ID
+  '5a579da9-d321-41f2-bb3b-d57d09ebec5a', -- Quiz ID (duplicate)
   'single-answer',
   '',
   2,
@@ -1428,7 +1428,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '315b298d-ca52-4a0f-8447-dfdc171e7641',
+  '53c57e87-f927-4a90-9d78-1c4a9a7f06a9',
   'Helps us understand how groups are created (intentionally or unintentionally)',
   true,
   NOW(),
@@ -1447,7 +1447,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '315b298d-ca52-4a0f-8447-dfdc171e7641',
+  '53c57e87-f927-4a90-9d78-1c4a9a7f06a9',
   'Allows us to squeeze more onto the page',
   false,
   NOW(),
@@ -1466,7 +1466,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '315b298d-ca52-4a0f-8447-dfdc171e7641',
+  '53c57e87-f927-4a90-9d78-1c4a9a7f06a9',
   'Helps us get to know people',
   false,
   NOW(),
@@ -1483,9 +1483,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '315b298d-ca52-4a0f-8447-dfdc171e7641',
+  '53c57e87-f927-4a90-9d78-1c4a9a7f06a9',
   'quiz_id',
-  'ff61892f-eb8b-4eb0-9507-969f4c5c329e',
+  '5a579da9-d321-41f2-bb3b-d57d09ebec5a',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -1500,9 +1500,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'ff61892f-eb8b-4eb0-9507-969f4c5c329e',
+  '5a579da9-d321-41f2-bb3b-d57d09ebec5a',
   'questions',
-  '315b298d-ca52-4a0f-8447-dfdc171e7641',
+  '53c57e87-f927-4a90-9d78-1c4a9a7f06a9',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -1519,10 +1519,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '3cb139e5-b923-4c93-b536-50b42252f6eb', -- Generated UUID for the question
+  '7fee43cb-19a4-478a-a973-e907f8893cb7', -- Generated UUID for the question
   'How many different font types should you use in a single presentation?',
-  'ff61892f-eb8b-4eb0-9507-969f4c5c329e', -- Quiz ID
-  'ff61892f-eb8b-4eb0-9507-969f4c5c329e', -- Quiz ID (duplicate)
+  '5a579da9-d321-41f2-bb3b-d57d09ebec5a', -- Quiz ID
+  '5a579da9-d321-41f2-bb3b-d57d09ebec5a', -- Quiz ID (duplicate)
   'single-answer',
   '',
   3,
@@ -1542,7 +1542,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '3cb139e5-b923-4c93-b536-50b42252f6eb',
+  '7fee43cb-19a4-478a-a973-e907f8893cb7',
   'As many as you can',
   false,
   NOW(),
@@ -1561,7 +1561,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '3cb139e5-b923-4c93-b536-50b42252f6eb',
+  '7fee43cb-19a4-478a-a973-e907f8893cb7',
   '4',
   false,
   NOW(),
@@ -1580,7 +1580,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '3cb139e5-b923-4c93-b536-50b42252f6eb',
+  '7fee43cb-19a4-478a-a973-e907f8893cb7',
   '1',
   false,
   NOW(),
@@ -1599,7 +1599,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  '3cb139e5-b923-4c93-b536-50b42252f6eb',
+  '7fee43cb-19a4-478a-a973-e907f8893cb7',
   '2',
   true,
   NOW(),
@@ -1618,7 +1618,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   4,
-  '3cb139e5-b923-4c93-b536-50b42252f6eb',
+  '7fee43cb-19a4-478a-a973-e907f8893cb7',
   '3',
   false,
   NOW(),
@@ -1635,9 +1635,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '3cb139e5-b923-4c93-b536-50b42252f6eb',
+  '7fee43cb-19a4-478a-a973-e907f8893cb7',
   'quiz_id',
-  'ff61892f-eb8b-4eb0-9507-969f4c5c329e',
+  '5a579da9-d321-41f2-bb3b-d57d09ebec5a',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -1652,9 +1652,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'ff61892f-eb8b-4eb0-9507-969f4c5c329e',
+  '5a579da9-d321-41f2-bb3b-d57d09ebec5a',
   'questions',
-  '3cb139e5-b923-4c93-b536-50b42252f6eb',
+  '7fee43cb-19a4-478a-a973-e907f8893cb7',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -1671,10 +1671,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  'e6d4ec45-3af8-45e0-9831-1b5ef48126f9', -- Generated UUID for the question
+  '012e498d-427e-4206-a138-e9c168d1fd2a', -- Generated UUID for the question
   'How many colors should we use in a presentation?',
-  'ff61892f-eb8b-4eb0-9507-969f4c5c329e', -- Quiz ID
-  'ff61892f-eb8b-4eb0-9507-969f4c5c329e', -- Quiz ID (duplicate)
+  '5a579da9-d321-41f2-bb3b-d57d09ebec5a', -- Quiz ID
+  '5a579da9-d321-41f2-bb3b-d57d09ebec5a', -- Quiz ID (duplicate)
   'single-answer',
   '',
   4,
@@ -1694,7 +1694,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  'e6d4ec45-3af8-45e0-9831-1b5ef48126f9',
+  '012e498d-427e-4206-a138-e9c168d1fd2a',
   '2 more than the number of fonts',
   false,
   NOW(),
@@ -1713,7 +1713,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  'e6d4ec45-3af8-45e0-9831-1b5ef48126f9',
+  '012e498d-427e-4206-a138-e9c168d1fd2a',
   '7',
   false,
   NOW(),
@@ -1732,7 +1732,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  'e6d4ec45-3af8-45e0-9831-1b5ef48126f9',
+  '012e498d-427e-4206-a138-e9c168d1fd2a',
   '4 to 5',
   false,
   NOW(),
@@ -1751,7 +1751,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  'e6d4ec45-3af8-45e0-9831-1b5ef48126f9',
+  '012e498d-427e-4206-a138-e9c168d1fd2a',
   '2 to 3',
   true,
   NOW(),
@@ -1770,7 +1770,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   4,
-  'e6d4ec45-3af8-45e0-9831-1b5ef48126f9',
+  '012e498d-427e-4206-a138-e9c168d1fd2a',
   '1',
   false,
   NOW(),
@@ -1787,9 +1787,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'e6d4ec45-3af8-45e0-9831-1b5ef48126f9',
+  '012e498d-427e-4206-a138-e9c168d1fd2a',
   'quiz_id',
-  'ff61892f-eb8b-4eb0-9507-969f4c5c329e',
+  '5a579da9-d321-41f2-bb3b-d57d09ebec5a',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -1804,9 +1804,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'ff61892f-eb8b-4eb0-9507-969f4c5c329e',
+  '5a579da9-d321-41f2-bb3b-d57d09ebec5a',
   'questions',
-  'e6d4ec45-3af8-45e0-9831-1b5ef48126f9',
+  '012e498d-427e-4206-a138-e9c168d1fd2a',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -1823,10 +1823,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '4d93da47-66be-4e54-aa5a-4e98dc5c6a5c', -- Generated UUID for the question
+  'f9f409f6-6aaf-4506-b6aa-e02c1c6fd081', -- Generated UUID for the question
   'What should you do with whitespace?',
-  'ff61892f-eb8b-4eb0-9507-969f4c5c329e', -- Quiz ID
-  'ff61892f-eb8b-4eb0-9507-969f4c5c329e', -- Quiz ID (duplicate)
+  '5a579da9-d321-41f2-bb3b-d57d09ebec5a', -- Quiz ID
+  '5a579da9-d321-41f2-bb3b-d57d09ebec5a', -- Quiz ID (duplicate)
   'single-answer',
   '',
   5,
@@ -1846,7 +1846,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '4d93da47-66be-4e54-aa5a-4e98dc5c6a5c',
+  'f9f409f6-6aaf-4506-b6aa-e02c1c6fd081',
   'Ensure you are using enough of it',
   true,
   NOW(),
@@ -1865,7 +1865,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '4d93da47-66be-4e54-aa5a-4e98dc5c6a5c',
+  'f9f409f6-6aaf-4506-b6aa-e02c1c6fd081',
   'Color it blue, it is prettier',
   false,
   NOW(),
@@ -1884,7 +1884,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '4d93da47-66be-4e54-aa5a-4e98dc5c6a5c',
+  'f9f409f6-6aaf-4506-b6aa-e02c1c6fd081',
   'Fill it up with text!',
   false,
   NOW(),
@@ -1901,9 +1901,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '4d93da47-66be-4e54-aa5a-4e98dc5c6a5c',
+  'f9f409f6-6aaf-4506-b6aa-e02c1c6fd081',
   'quiz_id',
-  'ff61892f-eb8b-4eb0-9507-969f4c5c329e',
+  '5a579da9-d321-41f2-bb3b-d57d09ebec5a',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -1918,14 +1918,14 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'ff61892f-eb8b-4eb0-9507-969f4c5c329e',
+  '5a579da9-d321-41f2-bb3b-d57d09ebec5a',
   'questions',
-  '4d93da47-66be-4e54-aa5a-4e98dc5c6a5c',
+  'f9f409f6-6aaf-4506-b6aa-e02c1c6fd081',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
 
--- Questions for quiz: Overview of Fact-based Persuasion Quiz (fact-persuasion-quiz, ID: d4ed8d38-6831-4532-909b-00d135fda2e0)
+-- Questions for quiz: Overview of Fact-based Persuasion Quiz (fact-persuasion-quiz, ID: 783859c9-4f4a-4023-88d3-1a74586000ea)
 -- Insert question 1 for quiz: Overview of Fact-based Persuasion Quiz
 INSERT INTO payload.quiz_questions (
   id,
@@ -1938,10 +1938,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '80825547-3b1d-4d10-9da6-3ff809a16e3d', -- Generated UUID for the question
+  'ed00070a-8b37-477e-bb37-cc317e34f8ba', -- Generated UUID for the question
   'What is the bare assertion fallacy?',
-  'd4ed8d38-6831-4532-909b-00d135fda2e0', -- Quiz ID
-  'd4ed8d38-6831-4532-909b-00d135fda2e0', -- Quiz ID (duplicate)
+  '783859c9-4f4a-4023-88d3-1a74586000ea', -- Quiz ID
+  '783859c9-4f4a-4023-88d3-1a74586000ea', -- Quiz ID (duplicate)
   'multi-answer',
   '',
   0,
@@ -1961,7 +1961,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '80825547-3b1d-4d10-9da6-3ff809a16e3d',
+  'ed00070a-8b37-477e-bb37-cc317e34f8ba',
   'A premise in an argument that is assumed to be true merely because it says that it is true',
   true,
   NOW(),
@@ -1980,7 +1980,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '80825547-3b1d-4d10-9da6-3ff809a16e3d',
+  'ed00070a-8b37-477e-bb37-cc317e34f8ba',
   'A Dan Brown novel',
   false,
   NOW(),
@@ -1999,7 +1999,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '80825547-3b1d-4d10-9da6-3ff809a16e3d',
+  'ed00070a-8b37-477e-bb37-cc317e34f8ba',
   'Claiming to be right because you say you are right',
   true,
   NOW(),
@@ -2018,7 +2018,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  '80825547-3b1d-4d10-9da6-3ff809a16e3d',
+  'ed00070a-8b37-477e-bb37-cc317e34f8ba',
   'A dream where you are presenting naked',
   false,
   NOW(),
@@ -2035,9 +2035,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '80825547-3b1d-4d10-9da6-3ff809a16e3d',
+  'ed00070a-8b37-477e-bb37-cc317e34f8ba',
   'quiz_id',
-  'd4ed8d38-6831-4532-909b-00d135fda2e0',
+  '783859c9-4f4a-4023-88d3-1a74586000ea',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -2052,9 +2052,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'd4ed8d38-6831-4532-909b-00d135fda2e0',
+  '783859c9-4f4a-4023-88d3-1a74586000ea',
   'questions',
-  '80825547-3b1d-4d10-9da6-3ff809a16e3d',
+  'ed00070a-8b37-477e-bb37-cc317e34f8ba',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -2071,10 +2071,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '600ffe6b-c0a2-420e-b058-1a1779f66976', -- Generated UUID for the question
+  'bbd421b7-5b7e-4cef-b0a8-8ea1b66eec13', -- Generated UUID for the question
   'What is graphical excellence?',
-  'd4ed8d38-6831-4532-909b-00d135fda2e0', -- Quiz ID
-  'd4ed8d38-6831-4532-909b-00d135fda2e0', -- Quiz ID (duplicate)
+  '783859c9-4f4a-4023-88d3-1a74586000ea', -- Quiz ID
+  '783859c9-4f4a-4023-88d3-1a74586000ea', -- Quiz ID (duplicate)
   'multi-answer',
   '',
   1,
@@ -2094,7 +2094,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '600ffe6b-c0a2-420e-b058-1a1779f66976',
+  'bbd421b7-5b7e-4cef-b0a8-8ea1b66eec13',
   'Beautiful',
   false,
   NOW(),
@@ -2113,7 +2113,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '600ffe6b-c0a2-420e-b058-1a1779f66976',
+  'bbd421b7-5b7e-4cef-b0a8-8ea1b66eec13',
   'Honest',
   true,
   NOW(),
@@ -2132,7 +2132,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '600ffe6b-c0a2-420e-b058-1a1779f66976',
+  'bbd421b7-5b7e-4cef-b0a8-8ea1b66eec13',
   'Multivariate',
   true,
   NOW(),
@@ -2151,7 +2151,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  '600ffe6b-c0a2-420e-b058-1a1779f66976',
+  'bbd421b7-5b7e-4cef-b0a8-8ea1b66eec13',
   'Efficient',
   true,
   NOW(),
@@ -2170,7 +2170,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   4,
-  '600ffe6b-c0a2-420e-b058-1a1779f66976',
+  'bbd421b7-5b7e-4cef-b0a8-8ea1b66eec13',
   'Complicated',
   false,
   NOW(),
@@ -2189,7 +2189,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   5,
-  '600ffe6b-c0a2-420e-b058-1a1779f66976',
+  'bbd421b7-5b7e-4cef-b0a8-8ea1b66eec13',
   'Curved',
   false,
   NOW(),
@@ -2206,9 +2206,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '600ffe6b-c0a2-420e-b058-1a1779f66976',
+  'bbd421b7-5b7e-4cef-b0a8-8ea1b66eec13',
   'quiz_id',
-  'd4ed8d38-6831-4532-909b-00d135fda2e0',
+  '783859c9-4f4a-4023-88d3-1a74586000ea',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -2223,14 +2223,14 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'd4ed8d38-6831-4532-909b-00d135fda2e0',
+  '783859c9-4f4a-4023-88d3-1a74586000ea',
   'questions',
-  '600ffe6b-c0a2-420e-b058-1a1779f66976',
+  'bbd421b7-5b7e-4cef-b0a8-8ea1b66eec13',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
 
--- Questions for quiz: Gestalt Principles of Visual Perception Quiz (gestalt-principles-quiz, ID: 12fc63f7-2b8d-47c7-bd9f-ccd43f5317a9)
+-- Questions for quiz: Gestalt Principles of Visual Perception Quiz (gestalt-principles-quiz, ID: 59435a9e-f91e-4189-89c9-0f29bb677dc9)
 -- Insert question 1 for quiz: Gestalt Principles of Visual Perception Quiz
 INSERT INTO payload.quiz_questions (
   id,
@@ -2243,10 +2243,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '59983c6d-a767-488f-87ab-1cdbb9e5e178', -- Generated UUID for the question
+  'b94f4faa-e12c-4d08-992e-fba2b06276e1', -- Generated UUID for the question
   'Why have we repeated the principle of proximity in this lesson and the previous lesson?',
-  '12fc63f7-2b8d-47c7-bd9f-ccd43f5317a9', -- Quiz ID
-  '12fc63f7-2b8d-47c7-bd9f-ccd43f5317a9', -- Quiz ID (duplicate)
+  '59435a9e-f91e-4189-89c9-0f29bb677dc9', -- Quiz ID
+  '59435a9e-f91e-4189-89c9-0f29bb677dc9', -- Quiz ID (duplicate)
   'single-answer',
   '',
   0,
@@ -2266,7 +2266,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '59983c6d-a767-488f-87ab-1cdbb9e5e178',
+  'b94f4faa-e12c-4d08-992e-fba2b06276e1',
   'Didn''t notice. The course is brilliant. Carry on!',
   true,
   NOW(),
@@ -2285,7 +2285,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '59983c6d-a767-488f-87ab-1cdbb9e5e178',
+  'b94f4faa-e12c-4d08-992e-fba2b06276e1',
   'Because repetition ad nauseum helps me learn?...',
   false,
   NOW(),
@@ -2304,7 +2304,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '59983c6d-a767-488f-87ab-1cdbb9e5e178',
+  'b94f4faa-e12c-4d08-992e-fba2b06276e1',
   'Yo lazy',
   false,
   NOW(),
@@ -2321,9 +2321,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '59983c6d-a767-488f-87ab-1cdbb9e5e178',
+  'b94f4faa-e12c-4d08-992e-fba2b06276e1',
   'quiz_id',
-  '12fc63f7-2b8d-47c7-bd9f-ccd43f5317a9',
+  '59435a9e-f91e-4189-89c9-0f29bb677dc9',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -2338,9 +2338,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '12fc63f7-2b8d-47c7-bd9f-ccd43f5317a9',
+  '59435a9e-f91e-4189-89c9-0f29bb677dc9',
   'questions',
-  '59983c6d-a767-488f-87ab-1cdbb9e5e178',
+  'b94f4faa-e12c-4d08-992e-fba2b06276e1',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -2357,10 +2357,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  'd7bc6254-c180-4ee8-8784-4e81e677c42a', -- Generated UUID for the question
+  '91573355-d28e-47c7-a051-5fbf0352b1f8', -- Generated UUID for the question
   'The principle of similarity states that we tend to group things which share visual characteristics such as:',
-  '12fc63f7-2b8d-47c7-bd9f-ccd43f5317a9', -- Quiz ID
-  '12fc63f7-2b8d-47c7-bd9f-ccd43f5317a9', -- Quiz ID (duplicate)
+  '59435a9e-f91e-4189-89c9-0f29bb677dc9', -- Quiz ID
+  '59435a9e-f91e-4189-89c9-0f29bb677dc9', -- Quiz ID (duplicate)
   'multi-answer',
   '',
   1,
@@ -2380,7 +2380,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  'd7bc6254-c180-4ee8-8784-4e81e677c42a',
+  '91573355-d28e-47c7-a051-5fbf0352b1f8',
   'Size',
   true,
   NOW(),
@@ -2399,7 +2399,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  'd7bc6254-c180-4ee8-8784-4e81e677c42a',
+  '91573355-d28e-47c7-a051-5fbf0352b1f8',
   'Shape',
   true,
   NOW(),
@@ -2418,7 +2418,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  'd7bc6254-c180-4ee8-8784-4e81e677c42a',
+  '91573355-d28e-47c7-a051-5fbf0352b1f8',
   'Color',
   true,
   NOW(),
@@ -2437,7 +2437,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  'd7bc6254-c180-4ee8-8784-4e81e677c42a',
+  '91573355-d28e-47c7-a051-5fbf0352b1f8',
   'Orientation',
   true,
   NOW(),
@@ -2456,7 +2456,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   4,
-  'd7bc6254-c180-4ee8-8784-4e81e677c42a',
+  '91573355-d28e-47c7-a051-5fbf0352b1f8',
   'Sound',
   false,
   NOW(),
@@ -2475,7 +2475,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   5,
-  'd7bc6254-c180-4ee8-8784-4e81e677c42a',
+  '91573355-d28e-47c7-a051-5fbf0352b1f8',
   'Length',
   false,
   NOW(),
@@ -2494,7 +2494,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   6,
-  'd7bc6254-c180-4ee8-8784-4e81e677c42a',
+  '91573355-d28e-47c7-a051-5fbf0352b1f8',
   'Distance',
   false,
   NOW(),
@@ -2511,9 +2511,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'd7bc6254-c180-4ee8-8784-4e81e677c42a',
+  '91573355-d28e-47c7-a051-5fbf0352b1f8',
   'quiz_id',
-  '12fc63f7-2b8d-47c7-bd9f-ccd43f5317a9',
+  '59435a9e-f91e-4189-89c9-0f29bb677dc9',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -2528,9 +2528,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '12fc63f7-2b8d-47c7-bd9f-ccd43f5317a9',
+  '59435a9e-f91e-4189-89c9-0f29bb677dc9',
   'questions',
-  'd7bc6254-c180-4ee8-8784-4e81e677c42a',
+  '91573355-d28e-47c7-a051-5fbf0352b1f8',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -2547,10 +2547,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '157c9f57-a7ae-419a-a22b-1e1abbd7553a', -- Generated UUID for the question
+  'c6d306e7-271d-448f-a51d-6bd497f047bb', -- Generated UUID for the question
   'What is symmetry associated with?',
-  '12fc63f7-2b8d-47c7-bd9f-ccd43f5317a9', -- Quiz ID
-  '12fc63f7-2b8d-47c7-bd9f-ccd43f5317a9', -- Quiz ID (duplicate)
+  '59435a9e-f91e-4189-89c9-0f29bb677dc9', -- Quiz ID
+  '59435a9e-f91e-4189-89c9-0f29bb677dc9', -- Quiz ID (duplicate)
   'multi-answer',
   '',
   2,
@@ -2570,7 +2570,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '157c9f57-a7ae-419a-a22b-1e1abbd7553a',
+  'c6d306e7-271d-448f-a51d-6bd497f047bb',
   'Stability',
   true,
   NOW(),
@@ -2589,7 +2589,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '157c9f57-a7ae-419a-a22b-1e1abbd7553a',
+  'c6d306e7-271d-448f-a51d-6bd497f047bb',
   'Consistency',
   true,
   NOW(),
@@ -2608,7 +2608,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '157c9f57-a7ae-419a-a22b-1e1abbd7553a',
+  'c6d306e7-271d-448f-a51d-6bd497f047bb',
   'Structure',
   true,
   NOW(),
@@ -2627,7 +2627,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  '157c9f57-a7ae-419a-a22b-1e1abbd7553a',
+  'c6d306e7-271d-448f-a51d-6bd497f047bb',
   'Rhythm',
   false,
   NOW(),
@@ -2646,7 +2646,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   4,
-  '157c9f57-a7ae-419a-a22b-1e1abbd7553a',
+  'c6d306e7-271d-448f-a51d-6bd497f047bb',
   'Twins',
   false,
   NOW(),
@@ -2665,7 +2665,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   5,
-  '157c9f57-a7ae-419a-a22b-1e1abbd7553a',
+  'c6d306e7-271d-448f-a51d-6bd497f047bb',
   'Music',
   false,
   NOW(),
@@ -2682,9 +2682,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '157c9f57-a7ae-419a-a22b-1e1abbd7553a',
+  'c6d306e7-271d-448f-a51d-6bd497f047bb',
   'quiz_id',
-  '12fc63f7-2b8d-47c7-bd9f-ccd43f5317a9',
+  '59435a9e-f91e-4189-89c9-0f29bb677dc9',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -2699,9 +2699,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '12fc63f7-2b8d-47c7-bd9f-ccd43f5317a9',
+  '59435a9e-f91e-4189-89c9-0f29bb677dc9',
   'questions',
-  '157c9f57-a7ae-419a-a22b-1e1abbd7553a',
+  'c6d306e7-271d-448f-a51d-6bd497f047bb',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -2718,10 +2718,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  'd634bfcc-6251-4d2f-9ac8-eecfcbddc9a7', -- Generated UUID for the question
+  'bfb035fa-66b6-46f0-8fd0-20c9d1a7ae01', -- Generated UUID for the question
   'What does the principle of connection state?',
-  '12fc63f7-2b8d-47c7-bd9f-ccd43f5317a9', -- Quiz ID
-  '12fc63f7-2b8d-47c7-bd9f-ccd43f5317a9', -- Quiz ID (duplicate)
+  '59435a9e-f91e-4189-89c9-0f29bb677dc9', -- Quiz ID
+  '59435a9e-f91e-4189-89c9-0f29bb677dc9', -- Quiz ID (duplicate)
   'single-answer',
   '',
   3,
@@ -2741,7 +2741,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  'd634bfcc-6251-4d2f-9ac8-eecfcbddc9a7',
+  'bfb035fa-66b6-46f0-8fd0-20c9d1a7ae01',
   'Elements that are visually connected are perceived as more related than elements with no connection',
   true,
   NOW(),
@@ -2760,7 +2760,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  'd634bfcc-6251-4d2f-9ac8-eecfcbddc9a7',
+  'bfb035fa-66b6-46f0-8fd0-20c9d1a7ae01',
   'We need to connect our most important ideas',
   false,
   NOW(),
@@ -2779,7 +2779,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  'd634bfcc-6251-4d2f-9ac8-eecfcbddc9a7',
+  'bfb035fa-66b6-46f0-8fd0-20c9d1a7ae01',
   'I just can''t make no connection',
   false,
   NOW(),
@@ -2796,9 +2796,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'd634bfcc-6251-4d2f-9ac8-eecfcbddc9a7',
+  'bfb035fa-66b6-46f0-8fd0-20c9d1a7ae01',
   'quiz_id',
-  '12fc63f7-2b8d-47c7-bd9f-ccd43f5317a9',
+  '59435a9e-f91e-4189-89c9-0f29bb677dc9',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -2813,14 +2813,14 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '12fc63f7-2b8d-47c7-bd9f-ccd43f5317a9',
+  '59435a9e-f91e-4189-89c9-0f29bb677dc9',
   'questions',
-  'd634bfcc-6251-4d2f-9ac8-eecfcbddc9a7',
+  'bfb035fa-66b6-46f0-8fd0-20c9d1a7ae01',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
 
--- Questions for quiz: Idea Generation Quiz (idea-generation-quiz, ID: 8107fa8e-9fd3-43b8-b551-eae91c43e615)
+-- Questions for quiz: Idea Generation Quiz (idea-generation-quiz, ID: 0e488661-f74c-4c16-9121-477523907ba8)
 -- Insert question 1 for quiz: Idea Generation Quiz
 INSERT INTO payload.quiz_questions (
   id,
@@ -2833,10 +2833,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  'a99ccb51-a661-4d73-b393-ff7da68b5364', -- Generated UUID for the question
+  '0126f11b-f9bd-4a50-ab81-bab8c4a0ed2e', -- Generated UUID for the question
   'What is the key to making brainstorming as effective as possible?',
-  '8107fa8e-9fd3-43b8-b551-eae91c43e615', -- Quiz ID
-  '8107fa8e-9fd3-43b8-b551-eae91c43e615', -- Quiz ID (duplicate)
+  '0e488661-f74c-4c16-9121-477523907ba8', -- Quiz ID
+  '0e488661-f74c-4c16-9121-477523907ba8', -- Quiz ID (duplicate)
   'single-answer',
   '',
   0,
@@ -2856,7 +2856,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  'a99ccb51-a661-4d73-b393-ff7da68b5364',
+  '0126f11b-f9bd-4a50-ab81-bab8c4a0ed2e',
   'Conduct brainstorming sessions early in the day',
   false,
   NOW(),
@@ -2875,7 +2875,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  'a99ccb51-a661-4d73-b393-ff7da68b5364',
+  '0126f11b-f9bd-4a50-ab81-bab8c4a0ed2e',
   'Eat lots of sugar',
   false,
   NOW(),
@@ -2894,7 +2894,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  'a99ccb51-a661-4d73-b393-ff7da68b5364',
+  '0126f11b-f9bd-4a50-ab81-bab8c4a0ed2e',
   'Don''t use brainstorming, it doesn''t work',
   false,
   NOW(),
@@ -2913,7 +2913,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  'a99ccb51-a661-4d73-b393-ff7da68b5364',
+  '0126f11b-f9bd-4a50-ab81-bab8c4a0ed2e',
   'Engage in debate and dissent',
   true,
   NOW(),
@@ -2930,9 +2930,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'a99ccb51-a661-4d73-b393-ff7da68b5364',
+  '0126f11b-f9bd-4a50-ab81-bab8c4a0ed2e',
   'quiz_id',
-  '8107fa8e-9fd3-43b8-b551-eae91c43e615',
+  '0e488661-f74c-4c16-9121-477523907ba8',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -2947,9 +2947,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '8107fa8e-9fd3-43b8-b551-eae91c43e615',
+  '0e488661-f74c-4c16-9121-477523907ba8',
   'questions',
-  'a99ccb51-a661-4d73-b393-ff7da68b5364',
+  '0126f11b-f9bd-4a50-ab81-bab8c4a0ed2e',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -2966,10 +2966,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  'a4c744f0-fbbe-4fe6-a810-f95b5223b8c9', -- Generated UUID for the question
+  'ff9e1dd4-efad-47cb-90a1-d8c0cb9dbd05', -- Generated UUID for the question
   'What are our Cardinal Rules of brainstorming?',
-  '8107fa8e-9fd3-43b8-b551-eae91c43e615', -- Quiz ID
-  '8107fa8e-9fd3-43b8-b551-eae91c43e615', -- Quiz ID (duplicate)
+  '0e488661-f74c-4c16-9121-477523907ba8', -- Quiz ID
+  '0e488661-f74c-4c16-9121-477523907ba8', -- Quiz ID (duplicate)
   'multi-answer',
   '',
   1,
@@ -2989,7 +2989,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  'a4c744f0-fbbe-4fe6-a810-f95b5223b8c9',
+  'ff9e1dd4-efad-47cb-90a1-d8c0cb9dbd05',
   'Plan your participants',
   true,
   NOW(),
@@ -3008,7 +3008,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  'a4c744f0-fbbe-4fe6-a810-f95b5223b8c9',
+  'ff9e1dd4-efad-47cb-90a1-d8c0cb9dbd05',
   'Focus on ideas',
   true,
   NOW(),
@@ -3027,7 +3027,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  'a4c744f0-fbbe-4fe6-a810-f95b5223b8c9',
+  'ff9e1dd4-efad-47cb-90a1-d8c0cb9dbd05',
   'Structure the session',
   true,
   NOW(),
@@ -3046,7 +3046,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  'a4c744f0-fbbe-4fe6-a810-f95b5223b8c9',
+  'ff9e1dd4-efad-47cb-90a1-d8c0cb9dbd05',
   'Establish rules in advance',
   true,
   NOW(),
@@ -3065,7 +3065,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   4,
-  'a4c744f0-fbbe-4fe6-a810-f95b5223b8c9',
+  'ff9e1dd4-efad-47cb-90a1-d8c0cb9dbd05',
   'Free associate',
   false,
   NOW(),
@@ -3084,7 +3084,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   5,
-  'a4c744f0-fbbe-4fe6-a810-f95b5223b8c9',
+  'ff9e1dd4-efad-47cb-90a1-d8c0cb9dbd05',
   'Only invite the single people',
   false,
   NOW(),
@@ -3103,7 +3103,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   6,
-  'a4c744f0-fbbe-4fe6-a810-f95b5223b8c9',
+  'ff9e1dd4-efad-47cb-90a1-d8c0cb9dbd05',
   'Focus on having fun',
   false,
   NOW(),
@@ -3122,7 +3122,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   7,
-  'a4c744f0-fbbe-4fe6-a810-f95b5223b8c9',
+  'ff9e1dd4-efad-47cb-90a1-d8c0cb9dbd05',
   'Eat, drink, and be merry',
   false,
   NOW(),
@@ -3141,7 +3141,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   8,
-  'a4c744f0-fbbe-4fe6-a810-f95b5223b8c9',
+  'ff9e1dd4-efad-47cb-90a1-d8c0cb9dbd05',
   'Conduct sessions on a Friday',
   false,
   NOW(),
@@ -3158,9 +3158,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'a4c744f0-fbbe-4fe6-a810-f95b5223b8c9',
+  'ff9e1dd4-efad-47cb-90a1-d8c0cb9dbd05',
   'quiz_id',
-  '8107fa8e-9fd3-43b8-b551-eae91c43e615',
+  '0e488661-f74c-4c16-9121-477523907ba8',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -3175,9 +3175,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '8107fa8e-9fd3-43b8-b551-eae91c43e615',
+  '0e488661-f74c-4c16-9121-477523907ba8',
   'questions',
-  'a4c744f0-fbbe-4fe6-a810-f95b5223b8c9',
+  'ff9e1dd4-efad-47cb-90a1-d8c0cb9dbd05',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -3194,10 +3194,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '834b4aed-c903-4d80-83a6-f44e3f6379bf', -- Generated UUID for the question
+  'f662a368-0528-4bce-b3f8-ffd88f28c774', -- Generated UUID for the question
   'What was the golden rule talked about in this lesson?',
-  '8107fa8e-9fd3-43b8-b551-eae91c43e615', -- Quiz ID
-  '8107fa8e-9fd3-43b8-b551-eae91c43e615', -- Quiz ID (duplicate)
+  '0e488661-f74c-4c16-9121-477523907ba8', -- Quiz ID
+  '0e488661-f74c-4c16-9121-477523907ba8', -- Quiz ID (duplicate)
   'single-answer',
   '',
   2,
@@ -3217,7 +3217,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '834b4aed-c903-4d80-83a6-f44e3f6379bf',
+  'f662a368-0528-4bce-b3f8-ffd88f28c774',
   'Facts known by the audience go in the Introduction',
   false,
   NOW(),
@@ -3236,7 +3236,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '834b4aed-c903-4d80-83a6-f44e3f6379bf',
+  'f662a368-0528-4bce-b3f8-ffd88f28c774',
   'We are creating our presentation to answer a question in the mind of our audience',
   false,
   NOW(),
@@ -3255,7 +3255,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '834b4aed-c903-4d80-83a6-f44e3f6379bf',
+  'f662a368-0528-4bce-b3f8-ffd88f28c774',
   'Our audience is the hero',
   false,
   NOW(),
@@ -3274,7 +3274,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  '834b4aed-c903-4d80-83a6-f44e3f6379bf',
+  'f662a368-0528-4bce-b3f8-ffd88f28c774',
   'Our objective is to compel our audience to do something',
   false,
   NOW(),
@@ -3293,7 +3293,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   4,
-  '834b4aed-c903-4d80-83a6-f44e3f6379bf',
+  'f662a368-0528-4bce-b3f8-ffd88f28c774',
   'Follow a process',
   false,
   NOW(),
@@ -3312,7 +3312,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   5,
-  '834b4aed-c903-4d80-83a6-f44e3f6379bf',
+  'f662a368-0528-4bce-b3f8-ffd88f28c774',
   'Create ideas first, slides second',
   true,
   NOW(),
@@ -3329,9 +3329,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '834b4aed-c903-4d80-83a6-f44e3f6379bf',
+  'f662a368-0528-4bce-b3f8-ffd88f28c774',
   'quiz_id',
-  '8107fa8e-9fd3-43b8-b551-eae91c43e615',
+  '0e488661-f74c-4c16-9121-477523907ba8',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -3346,14 +3346,14 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '8107fa8e-9fd3-43b8-b551-eae91c43e615',
+  '0e488661-f74c-4c16-9121-477523907ba8',
   'questions',
-  '834b4aed-c903-4d80-83a6-f44e3f6379bf',
+  'f662a368-0528-4bce-b3f8-ffd88f28c774',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
 
--- Questions for quiz: The Why (Introductions) Quiz (introductions-quiz, ID: 9bde311e-ffbd-437d-ae37-760b240b384b)
+-- Questions for quiz: The Why (Introductions) Quiz (introductions-quiz, ID: 6a02b987-809a-48a8-90b9-ef4c3cc4b82d)
 -- Insert question 1 for quiz: The Why (Introductions) Quiz
 INSERT INTO payload.quiz_questions (
   id,
@@ -3366,10 +3366,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '566fbe29-521c-46e4-b0ab-9b8393303639', -- Generated UUID for the question
+  '6e19a760-29ff-47bb-8582-f553e08fdf60', -- Generated UUID for the question
   'Hypothetical example: We are in the finance department and are giving an update. What is the best way for us to frame our presentation?',
-  '9bde311e-ffbd-437d-ae37-760b240b384b', -- Quiz ID
-  '9bde311e-ffbd-437d-ae37-760b240b384b', -- Quiz ID (duplicate)
+  '6a02b987-809a-48a8-90b9-ef4c3cc4b82d', -- Quiz ID
+  '6a02b987-809a-48a8-90b9-ef4c3cc4b82d', -- Quiz ID (duplicate)
   'single-answer',
   '',
   0,
@@ -3389,7 +3389,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '566fbe29-521c-46e4-b0ab-9b8393303639',
+  '6e19a760-29ff-47bb-8582-f553e08fdf60',
   'Finance update',
   false,
   NOW(),
@@ -3408,7 +3408,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '566fbe29-521c-46e4-b0ab-9b8393303639',
+  '6e19a760-29ff-47bb-8582-f553e08fdf60',
   'Cost cutting recommendations',
   false,
   NOW(),
@@ -3427,7 +3427,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '566fbe29-521c-46e4-b0ab-9b8393303639',
+  '6e19a760-29ff-47bb-8582-f553e08fdf60',
   'Quarterly review',
   false,
   NOW(),
@@ -3446,7 +3446,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  '566fbe29-521c-46e4-b0ab-9b8393303639',
+  '6e19a760-29ff-47bb-8582-f553e08fdf60',
   'How did we perform last quarter, and what do we need to do differently?',
   true,
   NOW(),
@@ -3463,9 +3463,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '566fbe29-521c-46e4-b0ab-9b8393303639',
+  '6e19a760-29ff-47bb-8582-f553e08fdf60',
   'quiz_id',
-  '9bde311e-ffbd-437d-ae37-760b240b384b',
+  '6a02b987-809a-48a8-90b9-ef4c3cc4b82d',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -3480,9 +3480,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '9bde311e-ffbd-437d-ae37-760b240b384b',
+  '6a02b987-809a-48a8-90b9-ef4c3cc4b82d',
   'questions',
-  '566fbe29-521c-46e4-b0ab-9b8393303639',
+  '6e19a760-29ff-47bb-8582-f553e08fdf60',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -3499,10 +3499,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '7dfacba7-6771-4892-998a-7560f0823b3d', -- Generated UUID for the question
+  '1cfc5941-85a5-44ee-920e-8ee513dadb4b', -- Generated UUID for the question
   'Why are we creating our presentation?',
-  '9bde311e-ffbd-437d-ae37-760b240b384b', -- Quiz ID
-  '9bde311e-ffbd-437d-ae37-760b240b384b', -- Quiz ID (duplicate)
+  '6a02b987-809a-48a8-90b9-ef4c3cc4b82d', -- Quiz ID
+  '6a02b987-809a-48a8-90b9-ef4c3cc4b82d', -- Quiz ID (duplicate)
   'single-answer',
   '',
   1,
@@ -3522,7 +3522,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '7dfacba7-6771-4892-998a-7560f0823b3d',
+  '1cfc5941-85a5-44ee-920e-8ee513dadb4b',
   'To sell our product to a customer',
   false,
   NOW(),
@@ -3541,7 +3541,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '7dfacba7-6771-4892-998a-7560f0823b3d',
+  '1cfc5941-85a5-44ee-920e-8ee513dadb4b',
   'To answer a question in the mind of our audience',
   true,
   NOW(),
@@ -3560,7 +3560,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '7dfacba7-6771-4892-998a-7560f0823b3d',
+  '1cfc5941-85a5-44ee-920e-8ee513dadb4b',
   'To practice our PowerPoint skills',
   false,
   NOW(),
@@ -3579,7 +3579,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  '7dfacba7-6771-4892-998a-7560f0823b3d',
+  '1cfc5941-85a5-44ee-920e-8ee513dadb4b',
   'To raise money for our start-up',
   false,
   NOW(),
@@ -3598,7 +3598,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   4,
-  '7dfacba7-6771-4892-998a-7560f0823b3d',
+  '1cfc5941-85a5-44ee-920e-8ee513dadb4b',
   'Becuase we have been asked to by our boss',
   false,
   NOW(),
@@ -3615,9 +3615,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '7dfacba7-6771-4892-998a-7560f0823b3d',
+  '1cfc5941-85a5-44ee-920e-8ee513dadb4b',
   'quiz_id',
-  '9bde311e-ffbd-437d-ae37-760b240b384b',
+  '6a02b987-809a-48a8-90b9-ef4c3cc4b82d',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -3632,9 +3632,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '9bde311e-ffbd-437d-ae37-760b240b384b',
+  '6a02b987-809a-48a8-90b9-ef4c3cc4b82d',
   'questions',
-  '7dfacba7-6771-4892-998a-7560f0823b3d',
+  '1cfc5941-85a5-44ee-920e-8ee513dadb4b',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -3651,10 +3651,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '85b54648-bd57-4116-aaad-698c197ad416', -- Generated UUID for the question
+  '7ba92eb2-79f0-4457-b745-b2e0fefe1bbe', -- Generated UUID for the question
   'What are they four parts to our introduction?',
-  '9bde311e-ffbd-437d-ae37-760b240b384b', -- Quiz ID
-  '9bde311e-ffbd-437d-ae37-760b240b384b', -- Quiz ID (duplicate)
+  '6a02b987-809a-48a8-90b9-ef4c3cc4b82d', -- Quiz ID
+  '6a02b987-809a-48a8-90b9-ef4c3cc4b82d', -- Quiz ID (duplicate)
   'multi-answer',
   '',
   2,
@@ -3674,7 +3674,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '85b54648-bd57-4116-aaad-698c197ad416',
+  '7ba92eb2-79f0-4457-b745-b2e0fefe1bbe',
   'Context',
   true,
   NOW(),
@@ -3693,7 +3693,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '85b54648-bd57-4116-aaad-698c197ad416',
+  '7ba92eb2-79f0-4457-b745-b2e0fefe1bbe',
   'Catalyst',
   true,
   NOW(),
@@ -3712,7 +3712,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '85b54648-bd57-4116-aaad-698c197ad416',
+  '7ba92eb2-79f0-4457-b745-b2e0fefe1bbe',
   'Beginning',
   false,
   NOW(),
@@ -3731,7 +3731,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  '85b54648-bd57-4116-aaad-698c197ad416',
+  '7ba92eb2-79f0-4457-b745-b2e0fefe1bbe',
   'End',
   false,
   NOW(),
@@ -3750,7 +3750,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   4,
-  '85b54648-bd57-4116-aaad-698c197ad416',
+  '7ba92eb2-79f0-4457-b745-b2e0fefe1bbe',
   'Middle',
   false,
   NOW(),
@@ -3769,7 +3769,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   5,
-  '85b54648-bd57-4116-aaad-698c197ad416',
+  '7ba92eb2-79f0-4457-b745-b2e0fefe1bbe',
   'The Why',
   false,
   NOW(),
@@ -3788,7 +3788,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   6,
-  '85b54648-bd57-4116-aaad-698c197ad416',
+  '7ba92eb2-79f0-4457-b745-b2e0fefe1bbe',
   'Answer',
   true,
   NOW(),
@@ -3807,7 +3807,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   7,
-  '85b54648-bd57-4116-aaad-698c197ad416',
+  '7ba92eb2-79f0-4457-b745-b2e0fefe1bbe',
   'Question',
   true,
   NOW(),
@@ -3824,9 +3824,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '85b54648-bd57-4116-aaad-698c197ad416',
+  '7ba92eb2-79f0-4457-b745-b2e0fefe1bbe',
   'quiz_id',
-  '9bde311e-ffbd-437d-ae37-760b240b384b',
+  '6a02b987-809a-48a8-90b9-ef4c3cc4b82d',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -3841,9 +3841,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '9bde311e-ffbd-437d-ae37-760b240b384b',
+  '6a02b987-809a-48a8-90b9-ef4c3cc4b82d',
   'questions',
-  '85b54648-bd57-4116-aaad-698c197ad416',
+  '7ba92eb2-79f0-4457-b745-b2e0fefe1bbe',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -3860,10 +3860,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '5c064d03-e046-4448-927c-a1204aff6ffc', -- Generated UUID for the question
+  'b4b9e13b-001f-40ad-89db-f04b56c7f873', -- Generated UUID for the question
   'What is the Context part of the Introduction?',
-  '9bde311e-ffbd-437d-ae37-760b240b384b', -- Quiz ID
-  '9bde311e-ffbd-437d-ae37-760b240b384b', -- Quiz ID (duplicate)
+  '6a02b987-809a-48a8-90b9-ef4c3cc4b82d', -- Quiz ID
+  '6a02b987-809a-48a8-90b9-ef4c3cc4b82d', -- Quiz ID (duplicate)
   'single-answer',
   '',
   3,
@@ -3883,7 +3883,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '5c064d03-e046-4448-927c-a1204aff6ffc',
+  'b4b9e13b-001f-40ad-89db-f04b56c7f873',
   'The objective of the presentation',
   false,
   NOW(),
@@ -3902,7 +3902,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '5c064d03-e046-4448-927c-a1204aff6ffc',
+  'b4b9e13b-001f-40ad-89db-f04b56c7f873',
   'The background to the presentation that includes facts already known to your audience',
   true,
   NOW(),
@@ -3921,7 +3921,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '5c064d03-e046-4448-927c-a1204aff6ffc',
+  'b4b9e13b-001f-40ad-89db-f04b56c7f873',
   'The answer to the question',
   false,
   NOW(),
@@ -3938,9 +3938,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '5c064d03-e046-4448-927c-a1204aff6ffc',
+  'b4b9e13b-001f-40ad-89db-f04b56c7f873',
   'quiz_id',
-  '9bde311e-ffbd-437d-ae37-760b240b384b',
+  '6a02b987-809a-48a8-90b9-ef4c3cc4b82d',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -3955,9 +3955,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '9bde311e-ffbd-437d-ae37-760b240b384b',
+  '6a02b987-809a-48a8-90b9-ef4c3cc4b82d',
   'questions',
-  '5c064d03-e046-4448-927c-a1204aff6ffc',
+  'b4b9e13b-001f-40ad-89db-f04b56c7f873',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -3974,10 +3974,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '0106579b-58f8-4027-bbc7-e30fcbea6959', -- Generated UUID for the question
+  'fb32aec2-b78e-4573-bb1e-d3d3e8dc2e10', -- Generated UUID for the question
   'What is the Catalyst portion of the Introduction?',
-  '9bde311e-ffbd-437d-ae37-760b240b384b', -- Quiz ID
-  '9bde311e-ffbd-437d-ae37-760b240b384b', -- Quiz ID (duplicate)
+  '6a02b987-809a-48a8-90b9-ef4c3cc4b82d', -- Quiz ID
+  '6a02b987-809a-48a8-90b9-ef4c3cc4b82d', -- Quiz ID (duplicate)
   'multi-answer',
   '',
   4,
@@ -3997,7 +3997,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '0106579b-58f8-4027-bbc7-e30fcbea6959',
+  'fb32aec2-b78e-4573-bb1e-d3d3e8dc2e10',
   'An event or trigger, sometimes referred to as the complication',
   true,
   NOW(),
@@ -4016,7 +4016,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '0106579b-58f8-4027-bbc7-e30fcbea6959',
+  'fb32aec2-b78e-4573-bb1e-d3d3e8dc2e10',
   'The techniques that speed-up the development of a presentation',
   false,
   NOW(),
@@ -4035,7 +4035,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '0106579b-58f8-4027-bbc7-e30fcbea6959',
+  'fb32aec2-b78e-4573-bb1e-d3d3e8dc2e10',
   'A leading presentation development platform',
   false,
   NOW(),
@@ -4054,7 +4054,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  '0106579b-58f8-4027-bbc7-e30fcbea6959',
+  'fb32aec2-b78e-4573-bb1e-d3d3e8dc2e10',
   'What happened or changed that created the need for you to write this presentation',
   true,
   NOW(),
@@ -4071,9 +4071,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '0106579b-58f8-4027-bbc7-e30fcbea6959',
+  'fb32aec2-b78e-4573-bb1e-d3d3e8dc2e10',
   'quiz_id',
-  '9bde311e-ffbd-437d-ae37-760b240b384b',
+  '6a02b987-809a-48a8-90b9-ef4c3cc4b82d',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -4088,9 +4088,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '9bde311e-ffbd-437d-ae37-760b240b384b',
+  '6a02b987-809a-48a8-90b9-ef4c3cc4b82d',
   'questions',
-  '0106579b-58f8-4027-bbc7-e30fcbea6959',
+  'fb32aec2-b78e-4573-bb1e-d3d3e8dc2e10',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -4107,10 +4107,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '10b76f77-8d18-4e6d-929a-64357ba1ac51', -- Generated UUID for the question
+  'aaa73e82-e424-4225-8bf1-1c7885c2e779', -- Generated UUID for the question
   'What is the Question portion of the Introduction?',
-  '9bde311e-ffbd-437d-ae37-760b240b384b', -- Quiz ID
-  '9bde311e-ffbd-437d-ae37-760b240b384b', -- Quiz ID (duplicate)
+  '6a02b987-809a-48a8-90b9-ef4c3cc4b82d', -- Quiz ID
+  '6a02b987-809a-48a8-90b9-ef4c3cc4b82d', -- Quiz ID (duplicate)
   'multi-answer',
   '',
   5,
@@ -4130,7 +4130,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '10b76f77-8d18-4e6d-929a-64357ba1ac51',
+  'aaa73e82-e424-4225-8bf1-1c7885c2e779',
   'What we are trying to plant in the mind of the audience with the context and catalyst portions of the Introduction',
   true,
   NOW(),
@@ -4149,7 +4149,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '10b76f77-8d18-4e6d-929a-64357ba1ac51',
+  'aaa73e82-e424-4225-8bf1-1c7885c2e779',
   'The natural question that arises in the mind of the audience',
   true,
   NOW(),
@@ -4168,7 +4168,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '10b76f77-8d18-4e6d-929a-64357ba1ac51',
+  'aaa73e82-e424-4225-8bf1-1c7885c2e779',
   'The ''topic'' of the presentation',
   true,
   NOW(),
@@ -4185,9 +4185,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '10b76f77-8d18-4e6d-929a-64357ba1ac51',
+  'aaa73e82-e424-4225-8bf1-1c7885c2e779',
   'quiz_id',
-  '9bde311e-ffbd-437d-ae37-760b240b384b',
+  '6a02b987-809a-48a8-90b9-ef4c3cc4b82d',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -4202,14 +4202,14 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '9bde311e-ffbd-437d-ae37-760b240b384b',
+  '6a02b987-809a-48a8-90b9-ef4c3cc4b82d',
   'questions',
-  '10b76f77-8d18-4e6d-929a-64357ba1ac51',
+  'aaa73e82-e424-4225-8bf1-1c7885c2e779',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
 
--- Questions for quiz: Our Process Quiz (our-process-quiz, ID: 857f80ef-a4d4-4fcb-8285-5bfe76f86d34)
+-- Questions for quiz: Our Process Quiz (our-process-quiz, ID: 431ccf68-005e-40df-b4e2-234cb344fc61)
 -- Insert question 1 for quiz: Our Process Quiz
 INSERT INTO payload.quiz_questions (
   id,
@@ -4222,10 +4222,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '1c521379-62d9-43e0-988b-82e313924705', -- Generated UUID for the question
+  '6bfcc958-5a0f-4674-9dad-d91c355a3350', -- Generated UUID for the question
   'Why is it important to follow a process to develop a presentation?',
-  '857f80ef-a4d4-4fcb-8285-5bfe76f86d34', -- Quiz ID
-  '857f80ef-a4d4-4fcb-8285-5bfe76f86d34', -- Quiz ID (duplicate)
+  '431ccf68-005e-40df-b4e2-234cb344fc61', -- Quiz ID
+  '431ccf68-005e-40df-b4e2-234cb344fc61', -- Quiz ID (duplicate)
   'single-answer',
   '',
   0,
@@ -4245,7 +4245,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '1c521379-62d9-43e0-988b-82e313924705',
+  '6bfcc958-5a0f-4674-9dad-d91c355a3350',
   'If you are really good, you don''t need to follow a process!',
   false,
   NOW(),
@@ -4264,7 +4264,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '1c521379-62d9-43e0-988b-82e313924705',
+  '6bfcc958-5a0f-4674-9dad-d91c355a3350',
   'Because creating presentations is all about left brain thinking',
   false,
   NOW(),
@@ -4283,7 +4283,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '1c521379-62d9-43e0-988b-82e313924705',
+  '6bfcc958-5a0f-4674-9dad-d91c355a3350',
   'Because there is not such thing as creativity',
   false,
   NOW(),
@@ -4302,7 +4302,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  '1c521379-62d9-43e0-988b-82e313924705',
+  '6bfcc958-5a0f-4674-9dad-d91c355a3350',
   'Because it is very easy to focus on the wrong thing, and be led astray',
   true,
   NOW(),
@@ -4319,9 +4319,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '1c521379-62d9-43e0-988b-82e313924705',
+  '6bfcc958-5a0f-4674-9dad-d91c355a3350',
   'quiz_id',
-  '857f80ef-a4d4-4fcb-8285-5bfe76f86d34',
+  '431ccf68-005e-40df-b4e2-234cb344fc61',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -4336,9 +4336,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '857f80ef-a4d4-4fcb-8285-5bfe76f86d34',
+  '431ccf68-005e-40df-b4e2-234cb344fc61',
   'questions',
-  '1c521379-62d9-43e0-988b-82e313924705',
+  '6bfcc958-5a0f-4674-9dad-d91c355a3350',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -4355,10 +4355,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  'be206ac2-b395-4d78-b89b-564f85b6052c', -- Generated UUID for the question
+  '57de54b9-6c23-4625-832e-ebdc8dd392da', -- Generated UUID for the question
   'What is the 1st step of our process?',
-  '857f80ef-a4d4-4fcb-8285-5bfe76f86d34', -- Quiz ID
-  '857f80ef-a4d4-4fcb-8285-5bfe76f86d34', -- Quiz ID (duplicate)
+  '431ccf68-005e-40df-b4e2-234cb344fc61', -- Quiz ID
+  '431ccf68-005e-40df-b4e2-234cb344fc61', -- Quiz ID (duplicate)
   'single-answer',
   '',
   1,
@@ -4378,7 +4378,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  'be206ac2-b395-4d78-b89b-564f85b6052c',
+  '57de54b9-6c23-4625-832e-ebdc8dd392da',
   'Who is our audience?',
   true,
   NOW(),
@@ -4397,7 +4397,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  'be206ac2-b395-4d78-b89b-564f85b6052c',
+  '57de54b9-6c23-4625-832e-ebdc8dd392da',
   'Why are we speaking to our audience (identify their question)?',
   false,
   NOW(),
@@ -4416,7 +4416,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  'be206ac2-b395-4d78-b89b-564f85b6052c',
+  '57de54b9-6c23-4625-832e-ebdc8dd392da',
   'What is our answer?',
   false,
   NOW(),
@@ -4435,7 +4435,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  'be206ac2-b395-4d78-b89b-564f85b6052c',
+  '57de54b9-6c23-4625-832e-ebdc8dd392da',
   'How will we deliver this presentation?',
   false,
   NOW(),
@@ -4452,9 +4452,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'be206ac2-b395-4d78-b89b-564f85b6052c',
+  '57de54b9-6c23-4625-832e-ebdc8dd392da',
   'quiz_id',
-  '857f80ef-a4d4-4fcb-8285-5bfe76f86d34',
+  '431ccf68-005e-40df-b4e2-234cb344fc61',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -4469,9 +4469,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '857f80ef-a4d4-4fcb-8285-5bfe76f86d34',
+  '431ccf68-005e-40df-b4e2-234cb344fc61',
   'questions',
-  'be206ac2-b395-4d78-b89b-564f85b6052c',
+  '57de54b9-6c23-4625-832e-ebdc8dd392da',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -4488,10 +4488,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  'a1647513-fbab-46eb-96c4-333a874f198c', -- Generated UUID for the question
+  '55698d97-2878-4df0-913f-1d9d2ae2d9f5', -- Generated UUID for the question
   'What is the 2nd step of our process?',
-  '857f80ef-a4d4-4fcb-8285-5bfe76f86d34', -- Quiz ID
-  '857f80ef-a4d4-4fcb-8285-5bfe76f86d34', -- Quiz ID (duplicate)
+  '431ccf68-005e-40df-b4e2-234cb344fc61', -- Quiz ID
+  '431ccf68-005e-40df-b4e2-234cb344fc61', -- Quiz ID (duplicate)
   'single-answer',
   '',
   2,
@@ -4511,7 +4511,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  'a1647513-fbab-46eb-96c4-333a874f198c',
+  '55698d97-2878-4df0-913f-1d9d2ae2d9f5',
   'Who is our audience?',
   false,
   NOW(),
@@ -4530,7 +4530,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  'a1647513-fbab-46eb-96c4-333a874f198c',
+  '55698d97-2878-4df0-913f-1d9d2ae2d9f5',
   'Why are we speaking to our audience (identify their question)?',
   true,
   NOW(),
@@ -4549,7 +4549,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  'a1647513-fbab-46eb-96c4-333a874f198c',
+  '55698d97-2878-4df0-913f-1d9d2ae2d9f5',
   'What is our answer?',
   false,
   NOW(),
@@ -4568,7 +4568,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  'a1647513-fbab-46eb-96c4-333a874f198c',
+  '55698d97-2878-4df0-913f-1d9d2ae2d9f5',
   'How will we deliver this presentation?',
   false,
   NOW(),
@@ -4585,9 +4585,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'a1647513-fbab-46eb-96c4-333a874f198c',
+  '55698d97-2878-4df0-913f-1d9d2ae2d9f5',
   'quiz_id',
-  '857f80ef-a4d4-4fcb-8285-5bfe76f86d34',
+  '431ccf68-005e-40df-b4e2-234cb344fc61',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -4602,9 +4602,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '857f80ef-a4d4-4fcb-8285-5bfe76f86d34',
+  '431ccf68-005e-40df-b4e2-234cb344fc61',
   'questions',
-  'a1647513-fbab-46eb-96c4-333a874f198c',
+  '55698d97-2878-4df0-913f-1d9d2ae2d9f5',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -4621,10 +4621,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '9925a5c1-3e46-452a-be99-b6a79ea438c6', -- Generated UUID for the question
+  'bdd78c0d-8f0a-4e75-bade-c04d3c72b3c9', -- Generated UUID for the question
   'What is the 3rd step of our process?',
-  '857f80ef-a4d4-4fcb-8285-5bfe76f86d34', -- Quiz ID
-  '857f80ef-a4d4-4fcb-8285-5bfe76f86d34', -- Quiz ID (duplicate)
+  '431ccf68-005e-40df-b4e2-234cb344fc61', -- Quiz ID
+  '431ccf68-005e-40df-b4e2-234cb344fc61', -- Quiz ID (duplicate)
   'single-answer',
   '',
   3,
@@ -4644,7 +4644,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '9925a5c1-3e46-452a-be99-b6a79ea438c6',
+  'bdd78c0d-8f0a-4e75-bade-c04d3c72b3c9',
   'Who is our audience?',
   false,
   NOW(),
@@ -4663,7 +4663,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '9925a5c1-3e46-452a-be99-b6a79ea438c6',
+  'bdd78c0d-8f0a-4e75-bade-c04d3c72b3c9',
   'Why are we speaking to our audience (identify their question)?',
   false,
   NOW(),
@@ -4682,7 +4682,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '9925a5c1-3e46-452a-be99-b6a79ea438c6',
+  'bdd78c0d-8f0a-4e75-bade-c04d3c72b3c9',
   'What is our answer?',
   true,
   NOW(),
@@ -4701,7 +4701,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  '9925a5c1-3e46-452a-be99-b6a79ea438c6',
+  'bdd78c0d-8f0a-4e75-bade-c04d3c72b3c9',
   'How will we deliver this presentation?',
   false,
   NOW(),
@@ -4718,9 +4718,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '9925a5c1-3e46-452a-be99-b6a79ea438c6',
+  'bdd78c0d-8f0a-4e75-bade-c04d3c72b3c9',
   'quiz_id',
-  '857f80ef-a4d4-4fcb-8285-5bfe76f86d34',
+  '431ccf68-005e-40df-b4e2-234cb344fc61',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -4735,9 +4735,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '857f80ef-a4d4-4fcb-8285-5bfe76f86d34',
+  '431ccf68-005e-40df-b4e2-234cb344fc61',
   'questions',
-  '9925a5c1-3e46-452a-be99-b6a79ea438c6',
+  'bdd78c0d-8f0a-4e75-bade-c04d3c72b3c9',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -4754,10 +4754,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '96364d09-4927-4d64-bd0b-5dc0a4b1cfd8', -- Generated UUID for the question
+  '056d9371-b5f3-48d9-b9d3-f1c41d6595eb', -- Generated UUID for the question
   'What is the 4th step of our process?',
-  '857f80ef-a4d4-4fcb-8285-5bfe76f86d34', -- Quiz ID
-  '857f80ef-a4d4-4fcb-8285-5bfe76f86d34', -- Quiz ID (duplicate)
+  '431ccf68-005e-40df-b4e2-234cb344fc61', -- Quiz ID
+  '431ccf68-005e-40df-b4e2-234cb344fc61', -- Quiz ID (duplicate)
   'single-answer',
   '',
   4,
@@ -4777,7 +4777,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '96364d09-4927-4d64-bd0b-5dc0a4b1cfd8',
+  '056d9371-b5f3-48d9-b9d3-f1c41d6595eb',
   'Who is our audience?',
   false,
   NOW(),
@@ -4796,7 +4796,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '96364d09-4927-4d64-bd0b-5dc0a4b1cfd8',
+  '056d9371-b5f3-48d9-b9d3-f1c41d6595eb',
   'Why are we speaking to our audience (identify their question)?',
   false,
   NOW(),
@@ -4815,7 +4815,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '96364d09-4927-4d64-bd0b-5dc0a4b1cfd8',
+  '056d9371-b5f3-48d9-b9d3-f1c41d6595eb',
   'What is our answer?',
   false,
   NOW(),
@@ -4834,7 +4834,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  '96364d09-4927-4d64-bd0b-5dc0a4b1cfd8',
+  '056d9371-b5f3-48d9-b9d3-f1c41d6595eb',
   'How will we deliver this presentation?',
   true,
   NOW(),
@@ -4851,9 +4851,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '96364d09-4927-4d64-bd0b-5dc0a4b1cfd8',
+  '056d9371-b5f3-48d9-b9d3-f1c41d6595eb',
   'quiz_id',
-  '857f80ef-a4d4-4fcb-8285-5bfe76f86d34',
+  '431ccf68-005e-40df-b4e2-234cb344fc61',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -4868,9 +4868,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '857f80ef-a4d4-4fcb-8285-5bfe76f86d34',
+  '431ccf68-005e-40df-b4e2-234cb344fc61',
   'questions',
-  '96364d09-4927-4d64-bd0b-5dc0a4b1cfd8',
+  '056d9371-b5f3-48d9-b9d3-f1c41d6595eb',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -4887,10 +4887,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '43ad5c02-8427-4d6e-b593-61ee4f8fbb27', -- Generated UUID for the question
+  'e38a2c80-8cd7-41b1-9781-bcbb91e274a2', -- Generated UUID for the question
   'Our first step is ''The Who''. What do we mean by this?',
-  '857f80ef-a4d4-4fcb-8285-5bfe76f86d34', -- Quiz ID
-  '857f80ef-a4d4-4fcb-8285-5bfe76f86d34', -- Quiz ID (duplicate)
+  '431ccf68-005e-40df-b4e2-234cb344fc61', -- Quiz ID
+  '431ccf68-005e-40df-b4e2-234cb344fc61', -- Quiz ID (duplicate)
   'single-answer',
   '',
   5,
@@ -4910,7 +4910,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '43ad5c02-8427-4d6e-b593-61ee4f8fbb27',
+  'e38a2c80-8cd7-41b1-9781-bcbb91e274a2',
   'Determine who your audience truly is. Who are you speaking to?',
   true,
   NOW(),
@@ -4929,7 +4929,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '43ad5c02-8427-4d6e-b593-61ee4f8fbb27',
+  'e38a2c80-8cd7-41b1-9781-bcbb91e274a2',
   'The Who is a famous English rock band',
   false,
   NOW(),
@@ -4948,7 +4948,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '43ad5c02-8427-4d6e-b593-61ee4f8fbb27',
+  'e38a2c80-8cd7-41b1-9781-bcbb91e274a2',
   'Determining our answer to a key question',
   false,
   NOW(),
@@ -4965,9 +4965,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '43ad5c02-8427-4d6e-b593-61ee4f8fbb27',
+  'e38a2c80-8cd7-41b1-9781-bcbb91e274a2',
   'quiz_id',
-  '857f80ef-a4d4-4fcb-8285-5bfe76f86d34',
+  '431ccf68-005e-40df-b4e2-234cb344fc61',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -4982,9 +4982,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '857f80ef-a4d4-4fcb-8285-5bfe76f86d34',
+  '431ccf68-005e-40df-b4e2-234cb344fc61',
   'questions',
-  '43ad5c02-8427-4d6e-b593-61ee4f8fbb27',
+  'e38a2c80-8cd7-41b1-9781-bcbb91e274a2',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -5001,10 +5001,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '57473d28-7016-4a48-be9b-e15090c980e2', -- Generated UUID for the question
+  '8dfdefa2-c5f0-49d2-a2c3-982b0d8c0d36', -- Generated UUID for the question
   'The second step in our process is ''The Why''. What do we mean by this?',
-  '857f80ef-a4d4-4fcb-8285-5bfe76f86d34', -- Quiz ID
-  '857f80ef-a4d4-4fcb-8285-5bfe76f86d34', -- Quiz ID (duplicate)
+  '431ccf68-005e-40df-b4e2-234cb344fc61', -- Quiz ID
+  '431ccf68-005e-40df-b4e2-234cb344fc61', -- Quiz ID (duplicate)
   'single-answer',
   '',
   6,
@@ -5024,7 +5024,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '57473d28-7016-4a48-be9b-e15090c980e2',
+  '8dfdefa2-c5f0-49d2-a2c3-982b0d8c0d36',
   'Determine the question inside the mind of our audience and what we want the audience to do a the end',
   true,
   NOW(),
@@ -5043,7 +5043,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '57473d28-7016-4a48-be9b-e15090c980e2',
+  '8dfdefa2-c5f0-49d2-a2c3-982b0d8c0d36',
   'Determine our personal objective from creating the presentation',
   false,
   NOW(),
@@ -5062,7 +5062,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '57473d28-7016-4a48-be9b-e15090c980e2',
+  '8dfdefa2-c5f0-49d2-a2c3-982b0d8c0d36',
   'A process of deep existential soul searching to ensure you are a confident speaker',
   false,
   NOW(),
@@ -5079,9 +5079,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '57473d28-7016-4a48-be9b-e15090c980e2',
+  '8dfdefa2-c5f0-49d2-a2c3-982b0d8c0d36',
   'quiz_id',
-  '857f80ef-a4d4-4fcb-8285-5bfe76f86d34',
+  '431ccf68-005e-40df-b4e2-234cb344fc61',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -5096,9 +5096,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '857f80ef-a4d4-4fcb-8285-5bfe76f86d34',
+  '431ccf68-005e-40df-b4e2-234cb344fc61',
   'questions',
-  '57473d28-7016-4a48-be9b-e15090c980e2',
+  '8dfdefa2-c5f0-49d2-a2c3-982b0d8c0d36',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -5115,10 +5115,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '5e158b88-43ff-433a-981a-7a81d512162b', -- Generated UUID for the question
+  '155e0fbd-92a4-47e5-9bda-05fc4262220e', -- Generated UUID for the question
   'The third step in our process is ''The What''. What does ''The What'' focus on?',
-  '857f80ef-a4d4-4fcb-8285-5bfe76f86d34', -- Quiz ID
-  '857f80ef-a4d4-4fcb-8285-5bfe76f86d34', -- Quiz ID (duplicate)
+  '431ccf68-005e-40df-b4e2-234cb344fc61', -- Quiz ID
+  '431ccf68-005e-40df-b4e2-234cb344fc61', -- Quiz ID (duplicate)
   'single-answer',
   '',
   7,
@@ -5138,7 +5138,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '5e158b88-43ff-433a-981a-7a81d512162b',
+  '155e0fbd-92a4-47e5-9bda-05fc4262220e',
   'Themes from Biggie Smalls'' debut album ''Ready to Die'' which featured ''The What'' on track 9',
   false,
   NOW(),
@@ -5157,7 +5157,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '5e158b88-43ff-433a-981a-7a81d512162b',
+  '155e0fbd-92a4-47e5-9bda-05fc4262220e',
   'Determining what types of slides we need to create',
   false,
   NOW(),
@@ -5176,7 +5176,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '5e158b88-43ff-433a-981a-7a81d512162b',
+  '155e0fbd-92a4-47e5-9bda-05fc4262220e',
   'Determining what it is we want our Audience to do as a result of the presentation',
   false,
   NOW(),
@@ -5195,7 +5195,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  '5e158b88-43ff-433a-981a-7a81d512162b',
+  '155e0fbd-92a4-47e5-9bda-05fc4262220e',
   'Determining the answer to the question that has been planted in the mind of the audience',
   true,
   NOW(),
@@ -5212,9 +5212,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '5e158b88-43ff-433a-981a-7a81d512162b',
+  '155e0fbd-92a4-47e5-9bda-05fc4262220e',
   'quiz_id',
-  '857f80ef-a4d4-4fcb-8285-5bfe76f86d34',
+  '431ccf68-005e-40df-b4e2-234cb344fc61',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -5229,9 +5229,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '857f80ef-a4d4-4fcb-8285-5bfe76f86d34',
+  '431ccf68-005e-40df-b4e2-234cb344fc61',
   'questions',
-  '5e158b88-43ff-433a-981a-7a81d512162b',
+  '155e0fbd-92a4-47e5-9bda-05fc4262220e',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -5248,10 +5248,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  'bad64b3e-89ac-4a0e-a6f0-481e9daae527', -- Generated UUID for the question
+  '0c457d3a-c850-48f4-8b28-746cbced75f4', -- Generated UUID for the question
   'The final step in our process is ''The How''. What is the focus of ''The How''?',
-  '857f80ef-a4d4-4fcb-8285-5bfe76f86d34', -- Quiz ID
-  '857f80ef-a4d4-4fcb-8285-5bfe76f86d34', -- Quiz ID (duplicate)
+  '431ccf68-005e-40df-b4e2-234cb344fc61', -- Quiz ID
+  '431ccf68-005e-40df-b4e2-234cb344fc61', -- Quiz ID (duplicate)
   'single-answer',
   '',
   8,
@@ -5271,7 +5271,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  'bad64b3e-89ac-4a0e-a6f0-481e9daae527',
+  '0c457d3a-c850-48f4-8b28-746cbced75f4',
   'How to create beautiful slides',
   false,
   NOW(),
@@ -5290,7 +5290,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  'bad64b3e-89ac-4a0e-a6f0-481e9daae527',
+  '0c457d3a-c850-48f4-8b28-746cbced75f4',
   'How to answer our audience''s question',
   false,
   NOW(),
@@ -5309,7 +5309,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  'bad64b3e-89ac-4a0e-a6f0-481e9daae527',
+  '0c457d3a-c850-48f4-8b28-746cbced75f4',
   'This is how we do it!',
   false,
   NOW(),
@@ -5328,7 +5328,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  'bad64b3e-89ac-4a0e-a6f0-481e9daae527',
+  '0c457d3a-c850-48f4-8b28-746cbced75f4',
   'How we will deliver the presentation',
   true,
   NOW(),
@@ -5345,9 +5345,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'bad64b3e-89ac-4a0e-a6f0-481e9daae527',
+  '0c457d3a-c850-48f4-8b28-746cbced75f4',
   'quiz_id',
-  '857f80ef-a4d4-4fcb-8285-5bfe76f86d34',
+  '431ccf68-005e-40df-b4e2-234cb344fc61',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -5362,14 +5362,14 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '857f80ef-a4d4-4fcb-8285-5bfe76f86d34',
+  '431ccf68-005e-40df-b4e2-234cb344fc61',
   'questions',
-  'bad64b3e-89ac-4a0e-a6f0-481e9daae527',
+  '0c457d3a-c850-48f4-8b28-746cbced75f4',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
 
--- Questions for quiz: Overview of the Fundamental Elements of Design Quiz (overview-elements-of-design-quiz, ID: 5af2d5f2-911f-4091-8917-6c6277f65f6c)
+-- Questions for quiz: Overview of the Fundamental Elements of Design Quiz (overview-elements-of-design-quiz, ID: 0d40e5bc-3223-47ba-9d26-7731309247e8)
 -- Insert question 1 for quiz: Overview of the Fundamental Elements of Design Quiz
 INSERT INTO payload.quiz_questions (
   id,
@@ -5382,10 +5382,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  'aa42e9e0-0cde-4982-b358-3c255f927c6d', -- Generated UUID for the question
+  '10255c2c-b119-4f94-b2ab-97ad38cf3020', -- Generated UUID for the question
   'What are some of the fundamental elements and principles of design?',
-  '5af2d5f2-911f-4091-8917-6c6277f65f6c', -- Quiz ID
-  '5af2d5f2-911f-4091-8917-6c6277f65f6c', -- Quiz ID (duplicate)
+  '0d40e5bc-3223-47ba-9d26-7731309247e8', -- Quiz ID
+  '0d40e5bc-3223-47ba-9d26-7731309247e8', -- Quiz ID (duplicate)
   'multi-answer',
   '',
   0,
@@ -5405,7 +5405,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  'aa42e9e0-0cde-4982-b358-3c255f927c6d',
+  '10255c2c-b119-4f94-b2ab-97ad38cf3020',
   'Shape & Form',
   true,
   NOW(),
@@ -5424,7 +5424,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  'aa42e9e0-0cde-4982-b358-3c255f927c6d',
+  '10255c2c-b119-4f94-b2ab-97ad38cf3020',
   'Rick Astley',
   false,
   NOW(),
@@ -5443,7 +5443,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  'aa42e9e0-0cde-4982-b358-3c255f927c6d',
+  '10255c2c-b119-4f94-b2ab-97ad38cf3020',
   'Color',
   true,
   NOW(),
@@ -5462,7 +5462,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  'aa42e9e0-0cde-4982-b358-3c255f927c6d',
+  '10255c2c-b119-4f94-b2ab-97ad38cf3020',
   'Composition',
   true,
   NOW(),
@@ -5481,7 +5481,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   4,
-  'aa42e9e0-0cde-4982-b358-3c255f927c6d',
+  '10255c2c-b119-4f94-b2ab-97ad38cf3020',
   'Contrast',
   true,
   NOW(),
@@ -5500,7 +5500,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   5,
-  'aa42e9e0-0cde-4982-b358-3c255f927c6d',
+  '10255c2c-b119-4f94-b2ab-97ad38cf3020',
   'Line',
   true,
   NOW(),
@@ -5519,7 +5519,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   6,
-  'aa42e9e0-0cde-4982-b358-3c255f927c6d',
+  '10255c2c-b119-4f94-b2ab-97ad38cf3020',
   'Point',
   true,
   NOW(),
@@ -5538,7 +5538,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   7,
-  'aa42e9e0-0cde-4982-b358-3c255f927c6d',
+  '10255c2c-b119-4f94-b2ab-97ad38cf3020',
   'Negative Space',
   true,
   NOW(),
@@ -5555,9 +5555,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'aa42e9e0-0cde-4982-b358-3c255f927c6d',
+  '10255c2c-b119-4f94-b2ab-97ad38cf3020',
   'quiz_id',
-  '5af2d5f2-911f-4091-8917-6c6277f65f6c',
+  '0d40e5bc-3223-47ba-9d26-7731309247e8',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -5572,14 +5572,14 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '5af2d5f2-911f-4091-8917-6c6277f65f6c',
+  '0d40e5bc-3223-47ba-9d26-7731309247e8',
   'questions',
-  'aa42e9e0-0cde-4982-b358-3c255f927c6d',
+  '10255c2c-b119-4f94-b2ab-97ad38cf3020',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
 
--- Questions for quiz: Performance Quiz (performance-quiz, ID: 608a9b77-b7fe-41d7-bc2a-74f3eae8bfed)
+-- Questions for quiz: Performance Quiz (performance-quiz, ID: df6a9a59-90b3-444c-b182-0492f93fe2be)
 -- Insert question 1 for quiz: Performance Quiz
 INSERT INTO payload.quiz_questions (
   id,
@@ -5592,10 +5592,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  'c7d74049-f9ef-4ec5-979a-feb9177d150f', -- Generated UUID for the question
+  '837cbfc1-287e-4db4-bf66-a0cb13a0c7a2', -- Generated UUID for the question
   'What can we do to try and set the right tone?',
-  '608a9b77-b7fe-41d7-bc2a-74f3eae8bfed', -- Quiz ID
-  '608a9b77-b7fe-41d7-bc2a-74f3eae8bfed', -- Quiz ID (duplicate)
+  'df6a9a59-90b3-444c-b182-0492f93fe2be', -- Quiz ID
+  'df6a9a59-90b3-444c-b182-0492f93fe2be', -- Quiz ID (duplicate)
   'multi-answer',
   '',
   0,
@@ -5615,7 +5615,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  'c7d74049-f9ef-4ec5-979a-feb9177d150f',
+  '837cbfc1-287e-4db4-bf66-a0cb13a0c7a2',
   'Send a well prepared agenda in advance',
   true,
   NOW(),
@@ -5634,7 +5634,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  'c7d74049-f9ef-4ec5-979a-feb9177d150f',
+  '837cbfc1-287e-4db4-bf66-a0cb13a0c7a2',
   'Dress appropriately',
   true,
   NOW(),
@@ -5653,7 +5653,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  'c7d74049-f9ef-4ec5-979a-feb9177d150f',
+  '837cbfc1-287e-4db4-bf66-a0cb13a0c7a2',
   'Adopt the appropriate disposition for the meeting',
   true,
   NOW(),
@@ -5672,7 +5672,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  'c7d74049-f9ef-4ec5-979a-feb9177d150f',
+  '837cbfc1-287e-4db4-bf66-a0cb13a0c7a2',
   'Tell a joke',
   false,
   NOW(),
@@ -5691,7 +5691,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   4,
-  'c7d74049-f9ef-4ec5-979a-feb9177d150f',
+  '837cbfc1-287e-4db4-bf66-a0cb13a0c7a2',
   'Lead the group in song',
   false,
   NOW(),
@@ -5708,9 +5708,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'c7d74049-f9ef-4ec5-979a-feb9177d150f',
+  '837cbfc1-287e-4db4-bf66-a0cb13a0c7a2',
   'quiz_id',
-  '608a9b77-b7fe-41d7-bc2a-74f3eae8bfed',
+  'df6a9a59-90b3-444c-b182-0492f93fe2be',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -5725,9 +5725,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '608a9b77-b7fe-41d7-bc2a-74f3eae8bfed',
+  'df6a9a59-90b3-444c-b182-0492f93fe2be',
   'questions',
-  'c7d74049-f9ef-4ec5-979a-feb9177d150f',
+  '837cbfc1-287e-4db4-bf66-a0cb13a0c7a2',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -5744,10 +5744,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  'fbf27789-2089-49ec-9a69-f3e2f12d653b', -- Generated UUID for the question
+  '99dc46fa-a780-4bd6-a0c3-a3b598babbb2', -- Generated UUID for the question
   'What are some things you can do to manage stress?',
-  '608a9b77-b7fe-41d7-bc2a-74f3eae8bfed', -- Quiz ID
-  '608a9b77-b7fe-41d7-bc2a-74f3eae8bfed', -- Quiz ID (duplicate)
+  'df6a9a59-90b3-444c-b182-0492f93fe2be', -- Quiz ID
+  'df6a9a59-90b3-444c-b182-0492f93fe2be', -- Quiz ID (duplicate)
   'multi-answer',
   '',
   1,
@@ -5767,7 +5767,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  'fbf27789-2089-49ec-9a69-f3e2f12d653b',
+  '99dc46fa-a780-4bd6-a0c3-a3b598babbb2',
   'Quite your mind',
   true,
   NOW(),
@@ -5786,7 +5786,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  'fbf27789-2089-49ec-9a69-f3e2f12d653b',
+  '99dc46fa-a780-4bd6-a0c3-a3b598babbb2',
   'Laugh',
   true,
   NOW(),
@@ -5805,7 +5805,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  'fbf27789-2089-49ec-9a69-f3e2f12d653b',
+  '99dc46fa-a780-4bd6-a0c3-a3b598babbb2',
   'Primal therapy',
   false,
   NOW(),
@@ -5824,7 +5824,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  'fbf27789-2089-49ec-9a69-f3e2f12d653b',
+  '99dc46fa-a780-4bd6-a0c3-a3b598babbb2',
   'Prepare',
   true,
   NOW(),
@@ -5843,7 +5843,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   4,
-  'fbf27789-2089-49ec-9a69-f3e2f12d653b',
+  '99dc46fa-a780-4bd6-a0c3-a3b598babbb2',
   'Breathe',
   true,
   NOW(),
@@ -5862,7 +5862,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   5,
-  'fbf27789-2089-49ec-9a69-f3e2f12d653b',
+  '99dc46fa-a780-4bd6-a0c3-a3b598babbb2',
   'Don''t worry about the presentation until the last minute',
   false,
   NOW(),
@@ -5881,7 +5881,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   6,
-  'fbf27789-2089-49ec-9a69-f3e2f12d653b',
+  '99dc46fa-a780-4bd6-a0c3-a3b598babbb2',
   'Talk to yourself like a crazy person',
   false,
   NOW(),
@@ -5898,9 +5898,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'fbf27789-2089-49ec-9a69-f3e2f12d653b',
+  '99dc46fa-a780-4bd6-a0c3-a3b598babbb2',
   'quiz_id',
-  '608a9b77-b7fe-41d7-bc2a-74f3eae8bfed',
+  'df6a9a59-90b3-444c-b182-0492f93fe2be',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -5915,9 +5915,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '608a9b77-b7fe-41d7-bc2a-74f3eae8bfed',
+  'df6a9a59-90b3-444c-b182-0492f93fe2be',
   'questions',
-  'fbf27789-2089-49ec-9a69-f3e2f12d653b',
+  '99dc46fa-a780-4bd6-a0c3-a3b598babbb2',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -5934,10 +5934,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  'da540b85-376a-4b26-841b-a9f592703d21', -- Generated UUID for the question
+  'c25674c4-5d17-45e9-a034-26ef8ad843c5', -- Generated UUID for the question
   'What body language and delivery mistakes should you be on the lookout for?',
-  '608a9b77-b7fe-41d7-bc2a-74f3eae8bfed', -- Quiz ID
-  '608a9b77-b7fe-41d7-bc2a-74f3eae8bfed', -- Quiz ID (duplicate)
+  'df6a9a59-90b3-444c-b182-0492f93fe2be', -- Quiz ID
+  'df6a9a59-90b3-444c-b182-0492f93fe2be', -- Quiz ID (duplicate)
   'multi-answer',
   '',
   2,
@@ -5957,7 +5957,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  'da540b85-376a-4b26-841b-a9f592703d21',
+  'c25674c4-5d17-45e9-a034-26ef8ad843c5',
   'Verbal ticks',
   true,
   NOW(),
@@ -5976,7 +5976,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  'da540b85-376a-4b26-841b-a9f592703d21',
+  'c25674c4-5d17-45e9-a034-26ef8ad843c5',
   'Talking to the screen',
   true,
   NOW(),
@@ -5995,7 +5995,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  'da540b85-376a-4b26-841b-a9f592703d21',
+  'c25674c4-5d17-45e9-a034-26ef8ad843c5',
   'Closed posture',
   true,
   NOW(),
@@ -6014,7 +6014,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  'da540b85-376a-4b26-841b-a9f592703d21',
+  'c25674c4-5d17-45e9-a034-26ef8ad843c5',
   'Being over prepared',
   false,
   NOW(),
@@ -6033,7 +6033,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   4,
-  'da540b85-376a-4b26-841b-a9f592703d21',
+  'c25674c4-5d17-45e9-a034-26ef8ad843c5',
   'Not displaying any emotion',
   true,
   NOW(),
@@ -6050,9 +6050,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'da540b85-376a-4b26-841b-a9f592703d21',
+  'c25674c4-5d17-45e9-a034-26ef8ad843c5',
   'quiz_id',
-  '608a9b77-b7fe-41d7-bc2a-74f3eae8bfed',
+  'df6a9a59-90b3-444c-b182-0492f93fe2be',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -6067,14 +6067,14 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '608a9b77-b7fe-41d7-bc2a-74f3eae8bfed',
+  'df6a9a59-90b3-444c-b182-0492f93fe2be',
   'questions',
-  'da540b85-376a-4b26-841b-a9f592703d21',
+  'c25674c4-5d17-45e9-a034-26ef8ad843c5',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
 
--- Questions for quiz: Perparation & Practice Quiz (preparation-practice-quiz, ID: 036322c1-b5f8-40eb-9c16-acb3965f5bdd)
+-- Questions for quiz: Perparation & Practice Quiz (preparation-practice-quiz, ID: a251cbf9-2aae-4de1-8e28-d27e6ee21229)
 -- Insert question 1 for quiz: Perparation & Practice Quiz
 INSERT INTO payload.quiz_questions (
   id,
@@ -6087,10 +6087,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  'f978837f-07c8-4dcf-a30a-70d9de117a06', -- Generated UUID for the question
+  '587d2a0d-3841-42ff-8dc6-1c4110b83340', -- Generated UUID for the question
   'When preparing and practicing the delivery of your presentation, what four factors should you focus on?',
-  '036322c1-b5f8-40eb-9c16-acb3965f5bdd', -- Quiz ID
-  '036322c1-b5f8-40eb-9c16-acb3965f5bdd', -- Quiz ID (duplicate)
+  'a251cbf9-2aae-4de1-8e28-d27e6ee21229', -- Quiz ID
+  'a251cbf9-2aae-4de1-8e28-d27e6ee21229', -- Quiz ID (duplicate)
   'multi-answer',
   '',
   0,
@@ -6110,7 +6110,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  'f978837f-07c8-4dcf-a30a-70d9de117a06',
+  '587d2a0d-3841-42ff-8dc6-1c4110b83340',
   'Timing of your jokes',
   false,
   NOW(),
@@ -6129,7 +6129,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  'f978837f-07c8-4dcf-a30a-70d9de117a06',
+  '587d2a0d-3841-42ff-8dc6-1c4110b83340',
   'Clarity',
   true,
   NOW(),
@@ -6148,7 +6148,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  'f978837f-07c8-4dcf-a30a-70d9de117a06',
+  '587d2a0d-3841-42ff-8dc6-1c4110b83340',
   'Hair, make-up and clothes',
   false,
   NOW(),
@@ -6167,7 +6167,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  'f978837f-07c8-4dcf-a30a-70d9de117a06',
+  '587d2a0d-3841-42ff-8dc6-1c4110b83340',
   'Pace',
   true,
   NOW(),
@@ -6186,7 +6186,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   4,
-  'f978837f-07c8-4dcf-a30a-70d9de117a06',
+  '587d2a0d-3841-42ff-8dc6-1c4110b83340',
   'Engaging with the audience',
   true,
   NOW(),
@@ -6205,7 +6205,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   5,
-  'f978837f-07c8-4dcf-a30a-70d9de117a06',
+  '587d2a0d-3841-42ff-8dc6-1c4110b83340',
   'Timbre of your voice',
   false,
   NOW(),
@@ -6224,7 +6224,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   6,
-  'f978837f-07c8-4dcf-a30a-70d9de117a06',
+  '587d2a0d-3841-42ff-8dc6-1c4110b83340',
   'Smiling and making eye contact',
   true,
   NOW(),
@@ -6241,9 +6241,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'f978837f-07c8-4dcf-a30a-70d9de117a06',
+  '587d2a0d-3841-42ff-8dc6-1c4110b83340',
   'quiz_id',
-  '036322c1-b5f8-40eb-9c16-acb3965f5bdd',
+  'a251cbf9-2aae-4de1-8e28-d27e6ee21229',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -6258,9 +6258,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '036322c1-b5f8-40eb-9c16-acb3965f5bdd',
+  'a251cbf9-2aae-4de1-8e28-d27e6ee21229',
   'questions',
-  'f978837f-07c8-4dcf-a30a-70d9de117a06',
+  '587d2a0d-3841-42ff-8dc6-1c4110b83340',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -6277,10 +6277,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  'bb0cc8c2-8063-4506-abcc-722bf1054ab1', -- Generated UUID for the question
+  '066a023c-b0b1-43b0-ab11-5b3b39a749dc', -- Generated UUID for the question
   'What is the first step of the recommended preparation process?',
-  '036322c1-b5f8-40eb-9c16-acb3965f5bdd', -- Quiz ID
-  '036322c1-b5f8-40eb-9c16-acb3965f5bdd', -- Quiz ID (duplicate)
+  'a251cbf9-2aae-4de1-8e28-d27e6ee21229', -- Quiz ID
+  'a251cbf9-2aae-4de1-8e28-d27e6ee21229', -- Quiz ID (duplicate)
   'single-answer',
   '',
   1,
@@ -6300,7 +6300,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  'bb0cc8c2-8063-4506-abcc-722bf1054ab1',
+  '066a023c-b0b1-43b0-ab11-5b3b39a749dc',
   'Get a good night sleep and review the script once, maybe twice before the presentation',
   false,
   NOW(),
@@ -6319,7 +6319,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  'bb0cc8c2-8063-4506-abcc-722bf1054ab1',
+  '066a023c-b0b1-43b0-ab11-5b3b39a749dc',
   'Present to someone else. Get feedback',
   false,
   NOW(),
@@ -6338,7 +6338,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  'bb0cc8c2-8063-4506-abcc-722bf1054ab1',
+  '066a023c-b0b1-43b0-ab11-5b3b39a749dc',
   'Run through the presentation two or three time working on length, simplifying language, and identifying likely questions',
   false,
   NOW(),
@@ -6357,7 +6357,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  'bb0cc8c2-8063-4506-abcc-722bf1054ab1',
+  '066a023c-b0b1-43b0-ab11-5b3b39a749dc',
   'Speak the presentation out loud and improvise. Test turns of phrases, identify key points that you want to make for each phrase',
   true,
   NOW(),
@@ -6376,7 +6376,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   4,
-  'bb0cc8c2-8063-4506-abcc-722bf1054ab1',
+  '066a023c-b0b1-43b0-ab11-5b3b39a749dc',
   'Write down the verbal voice over and create a formal script',
   false,
   NOW(),
@@ -6395,7 +6395,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   5,
-  'bb0cc8c2-8063-4506-abcc-722bf1054ab1',
+  '066a023c-b0b1-43b0-ab11-5b3b39a749dc',
   'Test the length of the presentation. Revise the deck, eliminating or combining slide ideas',
   false,
   NOW(),
@@ -6414,7 +6414,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   6,
-  'bb0cc8c2-8063-4506-abcc-722bf1054ab1',
+  '066a023c-b0b1-43b0-ab11-5b3b39a749dc',
   'Run through the script a few more times and the put it aside',
   false,
   NOW(),
@@ -6431,9 +6431,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'bb0cc8c2-8063-4506-abcc-722bf1054ab1',
+  '066a023c-b0b1-43b0-ab11-5b3b39a749dc',
   'quiz_id',
-  '036322c1-b5f8-40eb-9c16-acb3965f5bdd',
+  'a251cbf9-2aae-4de1-8e28-d27e6ee21229',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -6448,9 +6448,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '036322c1-b5f8-40eb-9c16-acb3965f5bdd',
+  'a251cbf9-2aae-4de1-8e28-d27e6ee21229',
   'questions',
-  'bb0cc8c2-8063-4506-abcc-722bf1054ab1',
+  '066a023c-b0b1-43b0-ab11-5b3b39a749dc',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -6467,10 +6467,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  'bfcf0b67-bd5f-4fbc-aeb5-1dca55ab2f16', -- Generated UUID for the question
+  '297d4fe0-6764-458f-91a0-8ee0536c70df', -- Generated UUID for the question
   'What is the second step of the recommended preparation process?',
-  '036322c1-b5f8-40eb-9c16-acb3965f5bdd', -- Quiz ID
-  '036322c1-b5f8-40eb-9c16-acb3965f5bdd', -- Quiz ID (duplicate)
+  'a251cbf9-2aae-4de1-8e28-d27e6ee21229', -- Quiz ID
+  'a251cbf9-2aae-4de1-8e28-d27e6ee21229', -- Quiz ID (duplicate)
   'single-answer',
   '',
   2,
@@ -6490,7 +6490,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  'bfcf0b67-bd5f-4fbc-aeb5-1dca55ab2f16',
+  '297d4fe0-6764-458f-91a0-8ee0536c70df',
   'Get a good night sleep and review the script once, maybe twice before the presentation',
   false,
   NOW(),
@@ -6509,7 +6509,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  'bfcf0b67-bd5f-4fbc-aeb5-1dca55ab2f16',
+  '297d4fe0-6764-458f-91a0-8ee0536c70df',
   'Present to someone else. Get feedback',
   false,
   NOW(),
@@ -6528,7 +6528,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  'bfcf0b67-bd5f-4fbc-aeb5-1dca55ab2f16',
+  '297d4fe0-6764-458f-91a0-8ee0536c70df',
   'Run through the presentation two or three time working on length, simplifying language, and identifying likely questions',
   false,
   NOW(),
@@ -6547,7 +6547,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  'bfcf0b67-bd5f-4fbc-aeb5-1dca55ab2f16',
+  '297d4fe0-6764-458f-91a0-8ee0536c70df',
   'Speak the presentation out loud and improvise. Test turns of phrases, identify key points that you want to make for each phrase',
   false,
   NOW(),
@@ -6566,7 +6566,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   4,
-  'bfcf0b67-bd5f-4fbc-aeb5-1dca55ab2f16',
+  '297d4fe0-6764-458f-91a0-8ee0536c70df',
   'Write down the verbal voice over and create a formal script',
   true,
   NOW(),
@@ -6585,7 +6585,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   5,
-  'bfcf0b67-bd5f-4fbc-aeb5-1dca55ab2f16',
+  '297d4fe0-6764-458f-91a0-8ee0536c70df',
   'Test the length of the presentation. Revise the deck, eliminating or combining slide ideas',
   false,
   NOW(),
@@ -6604,7 +6604,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   6,
-  'bfcf0b67-bd5f-4fbc-aeb5-1dca55ab2f16',
+  '297d4fe0-6764-458f-91a0-8ee0536c70df',
   'Run through the script a few more times and the put it aside',
   false,
   NOW(),
@@ -6621,9 +6621,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'bfcf0b67-bd5f-4fbc-aeb5-1dca55ab2f16',
+  '297d4fe0-6764-458f-91a0-8ee0536c70df',
   'quiz_id',
-  '036322c1-b5f8-40eb-9c16-acb3965f5bdd',
+  'a251cbf9-2aae-4de1-8e28-d27e6ee21229',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -6638,9 +6638,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '036322c1-b5f8-40eb-9c16-acb3965f5bdd',
+  'a251cbf9-2aae-4de1-8e28-d27e6ee21229',
   'questions',
-  'bfcf0b67-bd5f-4fbc-aeb5-1dca55ab2f16',
+  '297d4fe0-6764-458f-91a0-8ee0536c70df',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -6657,10 +6657,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '25da5de5-2dcb-4bd5-8e56-7846de6c7841', -- Generated UUID for the question
+  'ca9ce256-1a7f-4966-acf1-f07561347c3c', -- Generated UUID for the question
   'What is the third step of the recommended preparation process?',
-  '036322c1-b5f8-40eb-9c16-acb3965f5bdd', -- Quiz ID
-  '036322c1-b5f8-40eb-9c16-acb3965f5bdd', -- Quiz ID (duplicate)
+  'a251cbf9-2aae-4de1-8e28-d27e6ee21229', -- Quiz ID
+  'a251cbf9-2aae-4de1-8e28-d27e6ee21229', -- Quiz ID (duplicate)
   'single-answer',
   '',
   3,
@@ -6680,7 +6680,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '25da5de5-2dcb-4bd5-8e56-7846de6c7841',
+  'ca9ce256-1a7f-4966-acf1-f07561347c3c',
   'Get a good night sleep and review the script once, maybe twice before the presentation',
   false,
   NOW(),
@@ -6699,7 +6699,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '25da5de5-2dcb-4bd5-8e56-7846de6c7841',
+  'ca9ce256-1a7f-4966-acf1-f07561347c3c',
   'Present to someone else. Get feedback',
   false,
   NOW(),
@@ -6718,7 +6718,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '25da5de5-2dcb-4bd5-8e56-7846de6c7841',
+  'ca9ce256-1a7f-4966-acf1-f07561347c3c',
   'Run through the presentation two or three time working on length, simplifying language, and identifying likely questions',
   true,
   NOW(),
@@ -6737,7 +6737,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  '25da5de5-2dcb-4bd5-8e56-7846de6c7841',
+  'ca9ce256-1a7f-4966-acf1-f07561347c3c',
   'Speak the presentation out loud and improvise. Test turns of phrases, identify key points that you want to make for each phrase',
   false,
   NOW(),
@@ -6756,7 +6756,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   4,
-  '25da5de5-2dcb-4bd5-8e56-7846de6c7841',
+  'ca9ce256-1a7f-4966-acf1-f07561347c3c',
   'Write down the verbal voice over and create a formal script',
   false,
   NOW(),
@@ -6775,7 +6775,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   5,
-  '25da5de5-2dcb-4bd5-8e56-7846de6c7841',
+  'ca9ce256-1a7f-4966-acf1-f07561347c3c',
   'Test the length of the presentation. Revise the deck, eliminating or combining slide ideas',
   false,
   NOW(),
@@ -6794,7 +6794,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   6,
-  '25da5de5-2dcb-4bd5-8e56-7846de6c7841',
+  'ca9ce256-1a7f-4966-acf1-f07561347c3c',
   'Run through the script a few more times and the put it aside',
   false,
   NOW(),
@@ -6811,9 +6811,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '25da5de5-2dcb-4bd5-8e56-7846de6c7841',
+  'ca9ce256-1a7f-4966-acf1-f07561347c3c',
   'quiz_id',
-  '036322c1-b5f8-40eb-9c16-acb3965f5bdd',
+  'a251cbf9-2aae-4de1-8e28-d27e6ee21229',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -6828,9 +6828,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '036322c1-b5f8-40eb-9c16-acb3965f5bdd',
+  'a251cbf9-2aae-4de1-8e28-d27e6ee21229',
   'questions',
-  '25da5de5-2dcb-4bd5-8e56-7846de6c7841',
+  'ca9ce256-1a7f-4966-acf1-f07561347c3c',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -6847,10 +6847,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '9fbac9ee-f533-444f-a75a-db06ddf72bdb', -- Generated UUID for the question
+  '2cec295d-1da0-449d-b83c-27f84c713be6', -- Generated UUID for the question
   'What is the fourth step of the recommended preparation process?',
-  '036322c1-b5f8-40eb-9c16-acb3965f5bdd', -- Quiz ID
-  '036322c1-b5f8-40eb-9c16-acb3965f5bdd', -- Quiz ID (duplicate)
+  'a251cbf9-2aae-4de1-8e28-d27e6ee21229', -- Quiz ID
+  'a251cbf9-2aae-4de1-8e28-d27e6ee21229', -- Quiz ID (duplicate)
   'single-answer',
   '',
   4,
@@ -6870,7 +6870,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '9fbac9ee-f533-444f-a75a-db06ddf72bdb',
+  '2cec295d-1da0-449d-b83c-27f84c713be6',
   'Get a good night sleep and review the script once, maybe twice before the presentation',
   false,
   NOW(),
@@ -6889,7 +6889,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '9fbac9ee-f533-444f-a75a-db06ddf72bdb',
+  '2cec295d-1da0-449d-b83c-27f84c713be6',
   'Present to someone else. Get feedback',
   false,
   NOW(),
@@ -6908,7 +6908,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '9fbac9ee-f533-444f-a75a-db06ddf72bdb',
+  '2cec295d-1da0-449d-b83c-27f84c713be6',
   'Run through the presentation two or three time working on length, simplifying language, and identifying likely questions',
   false,
   NOW(),
@@ -6927,7 +6927,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  '9fbac9ee-f533-444f-a75a-db06ddf72bdb',
+  '2cec295d-1da0-449d-b83c-27f84c713be6',
   'Speak the presentation out loud and improvise. Test turns of phrases, identify key points that you want to make for each phrase',
   false,
   NOW(),
@@ -6946,7 +6946,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   4,
-  '9fbac9ee-f533-444f-a75a-db06ddf72bdb',
+  '2cec295d-1da0-449d-b83c-27f84c713be6',
   'Write down the verbal voice over and create a formal script',
   false,
   NOW(),
@@ -6965,7 +6965,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   5,
-  '9fbac9ee-f533-444f-a75a-db06ddf72bdb',
+  '2cec295d-1da0-449d-b83c-27f84c713be6',
   'Test the length of the presentation. Revise the deck, eliminating or combining slide ideas',
   true,
   NOW(),
@@ -6984,7 +6984,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   6,
-  '9fbac9ee-f533-444f-a75a-db06ddf72bdb',
+  '2cec295d-1da0-449d-b83c-27f84c713be6',
   'Run through the script a few more times and the put it aside',
   false,
   NOW(),
@@ -7001,9 +7001,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '9fbac9ee-f533-444f-a75a-db06ddf72bdb',
+  '2cec295d-1da0-449d-b83c-27f84c713be6',
   'quiz_id',
-  '036322c1-b5f8-40eb-9c16-acb3965f5bdd',
+  'a251cbf9-2aae-4de1-8e28-d27e6ee21229',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -7018,9 +7018,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '036322c1-b5f8-40eb-9c16-acb3965f5bdd',
+  'a251cbf9-2aae-4de1-8e28-d27e6ee21229',
   'questions',
-  '9fbac9ee-f533-444f-a75a-db06ddf72bdb',
+  '2cec295d-1da0-449d-b83c-27f84c713be6',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -7037,10 +7037,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '8e9d30c8-ebe6-45a6-9217-a35a54e8bc33', -- Generated UUID for the question
+  'b3713af5-e082-4765-844c-4e70374c5c19', -- Generated UUID for the question
   'What is the fifth step pf the recommended preparation process?',
-  '036322c1-b5f8-40eb-9c16-acb3965f5bdd', -- Quiz ID
-  '036322c1-b5f8-40eb-9c16-acb3965f5bdd', -- Quiz ID (duplicate)
+  'a251cbf9-2aae-4de1-8e28-d27e6ee21229', -- Quiz ID
+  'a251cbf9-2aae-4de1-8e28-d27e6ee21229', -- Quiz ID (duplicate)
   'single-answer',
   '',
   5,
@@ -7060,7 +7060,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '8e9d30c8-ebe6-45a6-9217-a35a54e8bc33',
+  'b3713af5-e082-4765-844c-4e70374c5c19',
   'Get a good night sleep and review the script once, maybe twice before the presentation',
   false,
   NOW(),
@@ -7079,7 +7079,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '8e9d30c8-ebe6-45a6-9217-a35a54e8bc33',
+  'b3713af5-e082-4765-844c-4e70374c5c19',
   'Present to someone else. Get feedback',
   true,
   NOW(),
@@ -7098,7 +7098,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '8e9d30c8-ebe6-45a6-9217-a35a54e8bc33',
+  'b3713af5-e082-4765-844c-4e70374c5c19',
   'Run through the presentation two or three time working on length, simplifying language, and identifying likely questions',
   false,
   NOW(),
@@ -7117,7 +7117,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  '8e9d30c8-ebe6-45a6-9217-a35a54e8bc33',
+  'b3713af5-e082-4765-844c-4e70374c5c19',
   'Speak the presentation out loud and improvise. Test turns of phrases, identify key points that you want to make for each phrase',
   false,
   NOW(),
@@ -7136,7 +7136,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   4,
-  '8e9d30c8-ebe6-45a6-9217-a35a54e8bc33',
+  'b3713af5-e082-4765-844c-4e70374c5c19',
   'Write down the verbal voice over and create a formal script',
   false,
   NOW(),
@@ -7155,7 +7155,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   5,
-  '8e9d30c8-ebe6-45a6-9217-a35a54e8bc33',
+  'b3713af5-e082-4765-844c-4e70374c5c19',
   'Test the length of the presentation. Revise the deck, eliminating or combining slide ideas',
   false,
   NOW(),
@@ -7174,7 +7174,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   6,
-  '8e9d30c8-ebe6-45a6-9217-a35a54e8bc33',
+  'b3713af5-e082-4765-844c-4e70374c5c19',
   'Run through the script a few more times and the put it aside',
   false,
   NOW(),
@@ -7191,9 +7191,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '8e9d30c8-ebe6-45a6-9217-a35a54e8bc33',
+  'b3713af5-e082-4765-844c-4e70374c5c19',
   'quiz_id',
-  '036322c1-b5f8-40eb-9c16-acb3965f5bdd',
+  'a251cbf9-2aae-4de1-8e28-d27e6ee21229',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -7208,9 +7208,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '036322c1-b5f8-40eb-9c16-acb3965f5bdd',
+  'a251cbf9-2aae-4de1-8e28-d27e6ee21229',
   'questions',
-  '8e9d30c8-ebe6-45a6-9217-a35a54e8bc33',
+  'b3713af5-e082-4765-844c-4e70374c5c19',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -7227,10 +7227,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  'f1c364d1-047b-4a2e-b802-bf0be38246e6', -- Generated UUID for the question
+  '2477edc2-aa15-438d-96ca-a0cfe5dba16c', -- Generated UUID for the question
   'What is the sixth step of the recommended preparation process?',
-  '036322c1-b5f8-40eb-9c16-acb3965f5bdd', -- Quiz ID
-  '036322c1-b5f8-40eb-9c16-acb3965f5bdd', -- Quiz ID (duplicate)
+  'a251cbf9-2aae-4de1-8e28-d27e6ee21229', -- Quiz ID
+  'a251cbf9-2aae-4de1-8e28-d27e6ee21229', -- Quiz ID (duplicate)
   'single-answer',
   '',
   6,
@@ -7250,7 +7250,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  'f1c364d1-047b-4a2e-b802-bf0be38246e6',
+  '2477edc2-aa15-438d-96ca-a0cfe5dba16c',
   'Get a good night sleep and review the script once, maybe twice before the presentation',
   false,
   NOW(),
@@ -7269,7 +7269,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  'f1c364d1-047b-4a2e-b802-bf0be38246e6',
+  '2477edc2-aa15-438d-96ca-a0cfe5dba16c',
   'Present to someone else. Get feedback',
   false,
   NOW(),
@@ -7288,7 +7288,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  'f1c364d1-047b-4a2e-b802-bf0be38246e6',
+  '2477edc2-aa15-438d-96ca-a0cfe5dba16c',
   'Run through the presentation two or three time working on length, simplifying language, and identifying likely questions',
   false,
   NOW(),
@@ -7307,7 +7307,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  'f1c364d1-047b-4a2e-b802-bf0be38246e6',
+  '2477edc2-aa15-438d-96ca-a0cfe5dba16c',
   'Speak the presentation out loud and improvise. Test turns of phrases, identify key points that you want to make for each phrase',
   false,
   NOW(),
@@ -7326,7 +7326,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   4,
-  'f1c364d1-047b-4a2e-b802-bf0be38246e6',
+  '2477edc2-aa15-438d-96ca-a0cfe5dba16c',
   'Write down the verbal voice over and create a formal script',
   false,
   NOW(),
@@ -7345,7 +7345,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   5,
-  'f1c364d1-047b-4a2e-b802-bf0be38246e6',
+  '2477edc2-aa15-438d-96ca-a0cfe5dba16c',
   'Test the length of the presentation. Revise the deck, eliminating or combining slide ideas',
   false,
   NOW(),
@@ -7364,7 +7364,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   6,
-  'f1c364d1-047b-4a2e-b802-bf0be38246e6',
+  '2477edc2-aa15-438d-96ca-a0cfe5dba16c',
   'Run through the script a few more times and the put it aside',
   true,
   NOW(),
@@ -7381,9 +7381,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'f1c364d1-047b-4a2e-b802-bf0be38246e6',
+  '2477edc2-aa15-438d-96ca-a0cfe5dba16c',
   'quiz_id',
-  '036322c1-b5f8-40eb-9c16-acb3965f5bdd',
+  'a251cbf9-2aae-4de1-8e28-d27e6ee21229',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -7398,9 +7398,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '036322c1-b5f8-40eb-9c16-acb3965f5bdd',
+  'a251cbf9-2aae-4de1-8e28-d27e6ee21229',
   'questions',
-  'f1c364d1-047b-4a2e-b802-bf0be38246e6',
+  '2477edc2-aa15-438d-96ca-a0cfe5dba16c',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -7417,10 +7417,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '6a5804ba-89f5-4ed2-aaae-09afbb620973', -- Generated UUID for the question
+  'c6ab84dd-eaa7-4064-9474-ea5675a03938', -- Generated UUID for the question
   'What is the seventh step of the recommended preparation process?',
-  '036322c1-b5f8-40eb-9c16-acb3965f5bdd', -- Quiz ID
-  '036322c1-b5f8-40eb-9c16-acb3965f5bdd', -- Quiz ID (duplicate)
+  'a251cbf9-2aae-4de1-8e28-d27e6ee21229', -- Quiz ID
+  'a251cbf9-2aae-4de1-8e28-d27e6ee21229', -- Quiz ID (duplicate)
   'single-answer',
   '',
   7,
@@ -7440,7 +7440,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '6a5804ba-89f5-4ed2-aaae-09afbb620973',
+  'c6ab84dd-eaa7-4064-9474-ea5675a03938',
   'Get a good night sleep and review the script once, maybe twice before the presentation',
   true,
   NOW(),
@@ -7459,7 +7459,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '6a5804ba-89f5-4ed2-aaae-09afbb620973',
+  'c6ab84dd-eaa7-4064-9474-ea5675a03938',
   'Present to someone else. Get feedback',
   false,
   NOW(),
@@ -7478,7 +7478,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '6a5804ba-89f5-4ed2-aaae-09afbb620973',
+  'c6ab84dd-eaa7-4064-9474-ea5675a03938',
   'Run through the presentation two or three time working on length, simplifying language, and identifying likely questions',
   false,
   NOW(),
@@ -7497,7 +7497,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  '6a5804ba-89f5-4ed2-aaae-09afbb620973',
+  'c6ab84dd-eaa7-4064-9474-ea5675a03938',
   'Speak the presentation out loud and improvise. Test turns of phrases, identify key points that you want to make for each phrase',
   false,
   NOW(),
@@ -7516,7 +7516,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   4,
-  '6a5804ba-89f5-4ed2-aaae-09afbb620973',
+  'c6ab84dd-eaa7-4064-9474-ea5675a03938',
   'Write down the verbal voice over and create a formal script',
   false,
   NOW(),
@@ -7535,7 +7535,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   5,
-  '6a5804ba-89f5-4ed2-aaae-09afbb620973',
+  'c6ab84dd-eaa7-4064-9474-ea5675a03938',
   'Test the length of the presentation. Revise the deck, eliminating or combining slide ideas',
   false,
   NOW(),
@@ -7554,7 +7554,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   6,
-  '6a5804ba-89f5-4ed2-aaae-09afbb620973',
+  'c6ab84dd-eaa7-4064-9474-ea5675a03938',
   'Run through the script a few more times and the put it aside',
   false,
   NOW(),
@@ -7571,9 +7571,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '6a5804ba-89f5-4ed2-aaae-09afbb620973',
+  'c6ab84dd-eaa7-4064-9474-ea5675a03938',
   'quiz_id',
-  '036322c1-b5f8-40eb-9c16-acb3965f5bdd',
+  'a251cbf9-2aae-4de1-8e28-d27e6ee21229',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -7588,14 +7588,14 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '036322c1-b5f8-40eb-9c16-acb3965f5bdd',
+  'a251cbf9-2aae-4de1-8e28-d27e6ee21229',
   'questions',
-  '6a5804ba-89f5-4ed2-aaae-09afbb620973',
+  'c6ab84dd-eaa7-4064-9474-ea5675a03938',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
 
--- Questions for quiz: Slide Composition Quiz (slide-composition-quiz, ID: cf4f4139-7a76-4676-ab5c-e7c2ef8ff4de)
+-- Questions for quiz: Slide Composition Quiz (slide-composition-quiz, ID: 6dea5f7e-95ac-4755-9718-091a8d8ad2e0)
 -- Insert question 1 for quiz: Slide Composition Quiz
 INSERT INTO payload.quiz_questions (
   id,
@@ -7608,10 +7608,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '812e5804-b439-4035-9d78-74eb0b9703c1', -- Generated UUID for the question
+  '3f94db86-446a-47d0-84e9-2b0e2d566ccd', -- Generated UUID for the question
   'What goes in the headline?',
-  'cf4f4139-7a76-4676-ab5c-e7c2ef8ff4de', -- Quiz ID
-  'cf4f4139-7a76-4676-ab5c-e7c2ef8ff4de', -- Quiz ID (duplicate)
+  '6dea5f7e-95ac-4755-9718-091a8d8ad2e0', -- Quiz ID
+  '6dea5f7e-95ac-4755-9718-091a8d8ad2e0', -- Quiz ID (duplicate)
   'single-answer',
   '',
   0,
@@ -7631,7 +7631,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '812e5804-b439-4035-9d78-74eb0b9703c1',
+  '3f94db86-446a-47d0-84e9-2b0e2d566ccd',
   'Your footnotes',
   false,
   NOW(),
@@ -7650,7 +7650,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '812e5804-b439-4035-9d78-74eb0b9703c1',
+  '3f94db86-446a-47d0-84e9-2b0e2d566ccd',
   'Your voice-over script',
   false,
   NOW(),
@@ -7669,7 +7669,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '812e5804-b439-4035-9d78-74eb0b9703c1',
+  '3f94db86-446a-47d0-84e9-2b0e2d566ccd',
   'Your slide title',
   false,
   NOW(),
@@ -7688,7 +7688,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  '812e5804-b439-4035-9d78-74eb0b9703c1',
+  '3f94db86-446a-47d0-84e9-2b0e2d566ccd',
   'The main message of the slide',
   true,
   NOW(),
@@ -7705,9 +7705,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '812e5804-b439-4035-9d78-74eb0b9703c1',
+  '3f94db86-446a-47d0-84e9-2b0e2d566ccd',
   'quiz_id',
-  'cf4f4139-7a76-4676-ab5c-e7c2ef8ff4de',
+  '6dea5f7e-95ac-4755-9718-091a8d8ad2e0',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -7722,9 +7722,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'cf4f4139-7a76-4676-ab5c-e7c2ef8ff4de',
+  '6dea5f7e-95ac-4755-9718-091a8d8ad2e0',
   'questions',
-  '812e5804-b439-4035-9d78-74eb0b9703c1',
+  '3f94db86-446a-47d0-84e9-2b0e2d566ccd',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -7741,10 +7741,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '2fda2646-db05-49b5-a085-291f0781ca15', -- Generated UUID for the question
+  '19568d3e-65d2-48d3-a615-cbe8b03b044f', -- Generated UUID for the question
   'What goes in the body of the slide?',
-  'cf4f4139-7a76-4676-ab5c-e7c2ef8ff4de', -- Quiz ID
-  'cf4f4139-7a76-4676-ab5c-e7c2ef8ff4de', -- Quiz ID (duplicate)
+  '6dea5f7e-95ac-4755-9718-091a8d8ad2e0', -- Quiz ID
+  '6dea5f7e-95ac-4755-9718-091a8d8ad2e0', -- Quiz ID (duplicate)
   'single-answer',
   '',
   1,
@@ -7764,7 +7764,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '2fda2646-db05-49b5-a085-291f0781ca15',
+  '19568d3e-65d2-48d3-a615-cbe8b03b044f',
   'The supporting evidence that supports the main message',
   true,
   NOW(),
@@ -7783,7 +7783,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '2fda2646-db05-49b5-a085-291f0781ca15',
+  '19568d3e-65d2-48d3-a615-cbe8b03b044f',
   'Text',
   false,
   NOW(),
@@ -7802,7 +7802,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '2fda2646-db05-49b5-a085-291f0781ca15',
+  '19568d3e-65d2-48d3-a615-cbe8b03b044f',
   'Charts',
   false,
   NOW(),
@@ -7821,7 +7821,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  '2fda2646-db05-49b5-a085-291f0781ca15',
+  '19568d3e-65d2-48d3-a615-cbe8b03b044f',
   'Clip art',
   false,
   NOW(),
@@ -7838,9 +7838,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '2fda2646-db05-49b5-a085-291f0781ca15',
+  '19568d3e-65d2-48d3-a615-cbe8b03b044f',
   'quiz_id',
-  'cf4f4139-7a76-4676-ab5c-e7c2ef8ff4de',
+  '6dea5f7e-95ac-4755-9718-091a8d8ad2e0',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -7855,9 +7855,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'cf4f4139-7a76-4676-ab5c-e7c2ef8ff4de',
+  '6dea5f7e-95ac-4755-9718-091a8d8ad2e0',
   'questions',
-  '2fda2646-db05-49b5-a085-291f0781ca15',
+  '19568d3e-65d2-48d3-a615-cbe8b03b044f',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -7874,10 +7874,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  'd3aa7a4b-27a8-426b-a8ed-37f8152c0e7b', -- Generated UUID for the question
+  'c83e2912-6a7f-4745-bd46-bfa20f8b3560', -- Generated UUID for the question
   'What is a swipe file?',
-  'cf4f4139-7a76-4676-ab5c-e7c2ef8ff4de', -- Quiz ID
-  'cf4f4139-7a76-4676-ab5c-e7c2ef8ff4de', -- Quiz ID (duplicate)
+  '6dea5f7e-95ac-4755-9718-091a8d8ad2e0', -- Quiz ID
+  '6dea5f7e-95ac-4755-9718-091a8d8ad2e0', -- Quiz ID (duplicate)
   'single-answer',
   '',
   2,
@@ -7897,7 +7897,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  'd3aa7a4b-27a8-426b-a8ed-37f8152c0e7b',
+  'c83e2912-6a7f-4745-bd46-bfa20f8b3560',
   'Collection of useful slide designs and frameworks that you can utilize for inspiration',
   true,
   NOW(),
@@ -7916,7 +7916,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  'd3aa7a4b-27a8-426b-a8ed-37f8152c0e7b',
+  'c83e2912-6a7f-4745-bd46-bfa20f8b3560',
   'Hacker code to get free templates',
   false,
   NOW(),
@@ -7935,7 +7935,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  'd3aa7a4b-27a8-426b-a8ed-37f8152c0e7b',
+  'c83e2912-6a7f-4745-bd46-bfa20f8b3560',
   'Where you store illicit data',
   false,
   NOW(),
@@ -7954,7 +7954,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  'd3aa7a4b-27a8-426b-a8ed-37f8152c0e7b',
+  'c83e2912-6a7f-4745-bd46-bfa20f8b3560',
   'Another name for a garbage can',
   false,
   NOW(),
@@ -7971,9 +7971,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'd3aa7a4b-27a8-426b-a8ed-37f8152c0e7b',
+  'c83e2912-6a7f-4745-bd46-bfa20f8b3560',
   'quiz_id',
-  'cf4f4139-7a76-4676-ab5c-e7c2ef8ff4de',
+  '6dea5f7e-95ac-4755-9718-091a8d8ad2e0',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -7988,9 +7988,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'cf4f4139-7a76-4676-ab5c-e7c2ef8ff4de',
+  '6dea5f7e-95ac-4755-9718-091a8d8ad2e0',
   'questions',
-  'd3aa7a4b-27a8-426b-a8ed-37f8152c0e7b',
+  'c83e2912-6a7f-4745-bd46-bfa20f8b3560',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -8007,10 +8007,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '9c61ded3-08b7-423f-894a-2d8b60679554', -- Generated UUID for the question
+  '9f47f0a3-9e07-4a73-b760-c914c4fbcfe3', -- Generated UUID for the question
   'When is the best time to use clip art?',
-  'cf4f4139-7a76-4676-ab5c-e7c2ef8ff4de', -- Quiz ID
-  'cf4f4139-7a76-4676-ab5c-e7c2ef8ff4de', -- Quiz ID (duplicate)
+  '6dea5f7e-95ac-4755-9718-091a8d8ad2e0', -- Quiz ID
+  '6dea5f7e-95ac-4755-9718-091a8d8ad2e0', -- Quiz ID (duplicate)
   'single-answer',
   '',
   3,
@@ -8030,7 +8030,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '9c61ded3-08b7-423f-894a-2d8b60679554',
+  '9f47f0a3-9e07-4a73-b760-c914c4fbcfe3',
   'Never',
   true,
   NOW(),
@@ -8049,7 +8049,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '9c61ded3-08b7-423f-894a-2d8b60679554',
+  '9f47f0a3-9e07-4a73-b760-c914c4fbcfe3',
   'In marketing and sales presentations, but not in finance presentations',
   false,
   NOW(),
@@ -8068,7 +8068,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '9c61ded3-08b7-423f-894a-2d8b60679554',
+  '9f47f0a3-9e07-4a73-b760-c914c4fbcfe3',
   'No restrictions',
   false,
   NOW(),
@@ -8087,7 +8087,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  '9c61ded3-08b7-423f-894a-2d8b60679554',
+  '9f47f0a3-9e07-4a73-b760-c914c4fbcfe3',
   'When the clip art is of a cute cat',
   false,
   NOW(),
@@ -8104,9 +8104,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '9c61ded3-08b7-423f-894a-2d8b60679554',
+  '9f47f0a3-9e07-4a73-b760-c914c4fbcfe3',
   'quiz_id',
-  'cf4f4139-7a76-4676-ab5c-e7c2ef8ff4de',
+  '6dea5f7e-95ac-4755-9718-091a8d8ad2e0',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -8121,9 +8121,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'cf4f4139-7a76-4676-ab5c-e7c2ef8ff4de',
+  '6dea5f7e-95ac-4755-9718-091a8d8ad2e0',
   'questions',
-  '9c61ded3-08b7-423f-894a-2d8b60679554',
+  '9f47f0a3-9e07-4a73-b760-c914c4fbcfe3',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -8140,10 +8140,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '675943f9-8983-4a21-8694-41fdc9c782ff', -- Generated UUID for the question
+  'a25cf1c6-11c5-4857-b04d-6b0cd9709df1', -- Generated UUID for the question
   'What elements can be repeated on all slides?',
-  'cf4f4139-7a76-4676-ab5c-e7c2ef8ff4de', -- Quiz ID
-  'cf4f4139-7a76-4676-ab5c-e7c2ef8ff4de', -- Quiz ID (duplicate)
+  '6dea5f7e-95ac-4755-9718-091a8d8ad2e0', -- Quiz ID
+  '6dea5f7e-95ac-4755-9718-091a8d8ad2e0', -- Quiz ID (duplicate)
   'multi-answer',
   '',
   4,
@@ -8163,7 +8163,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '675943f9-8983-4a21-8694-41fdc9c782ff',
+  'a25cf1c6-11c5-4857-b04d-6b0cd9709df1',
   'Company logo',
   false,
   NOW(),
@@ -8182,7 +8182,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '675943f9-8983-4a21-8694-41fdc9c782ff',
+  'a25cf1c6-11c5-4857-b04d-6b0cd9709df1',
   'Location for a headline',
   true,
   NOW(),
@@ -8201,7 +8201,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '675943f9-8983-4a21-8694-41fdc9c782ff',
+  'a25cf1c6-11c5-4857-b04d-6b0cd9709df1',
   'Location for footnotes',
   true,
   NOW(),
@@ -8220,7 +8220,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  '675943f9-8983-4a21-8694-41fdc9c782ff',
+  'a25cf1c6-11c5-4857-b04d-6b0cd9709df1',
   'Trademark and confidentiality messages',
   false,
   NOW(),
@@ -8239,7 +8239,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   4,
-  '675943f9-8983-4a21-8694-41fdc9c782ff',
+  'a25cf1c6-11c5-4857-b04d-6b0cd9709df1',
   'Banners',
   false,
   NOW(),
@@ -8258,7 +8258,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   5,
-  '675943f9-8983-4a21-8694-41fdc9c782ff',
+  'a25cf1c6-11c5-4857-b04d-6b0cd9709df1',
   'Location  for page numbers',
   true,
   NOW(),
@@ -8275,9 +8275,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '675943f9-8983-4a21-8694-41fdc9c782ff',
+  'a25cf1c6-11c5-4857-b04d-6b0cd9709df1',
   'quiz_id',
-  'cf4f4139-7a76-4676-ab5c-e7c2ef8ff4de',
+  '6dea5f7e-95ac-4755-9718-091a8d8ad2e0',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -8292,14 +8292,14 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'cf4f4139-7a76-4676-ab5c-e7c2ef8ff4de',
+  '6dea5f7e-95ac-4755-9718-091a8d8ad2e0',
   'questions',
-  '675943f9-8983-4a21-8694-41fdc9c782ff',
+  'a25cf1c6-11c5-4857-b04d-6b0cd9709df1',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
 
--- Questions for quiz: Specialist Graphs Quiz (specialist-graphs-quiz, ID: 6126bbf2-7738-471c-beef-c027a8fec966)
+-- Questions for quiz: Specialist Graphs Quiz (specialist-graphs-quiz, ID: 4e310937-8969-4e2c-bee3-126bd2e0dbd7)
 -- Insert question 1 for quiz: Specialist Graphs Quiz
 INSERT INTO payload.quiz_questions (
   id,
@@ -8312,10 +8312,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '68730063-6e63-462f-8124-9b6566090058', -- Generated UUID for the question
+  '9b4f2388-81c9-4ea7-afef-76aa6ae56f44', -- Generated UUID for the question
   'What do we use Tornado diagrams for?',
-  '6126bbf2-7738-471c-beef-c027a8fec966', -- Quiz ID
-  '6126bbf2-7738-471c-beef-c027a8fec966', -- Quiz ID (duplicate)
+  '4e310937-8969-4e2c-bee3-126bd2e0dbd7', -- Quiz ID
+  '4e310937-8969-4e2c-bee3-126bd2e0dbd7', -- Quiz ID (duplicate)
   'single-answer',
   '',
   0,
@@ -8335,7 +8335,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '68730063-6e63-462f-8124-9b6566090058',
+  '9b4f2388-81c9-4ea7-afef-76aa6ae56f44',
   'Composition of markets',
   false,
   NOW(),
@@ -8354,7 +8354,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '68730063-6e63-462f-8124-9b6566090058',
+  '9b4f2388-81c9-4ea7-afef-76aa6ae56f44',
   'Nominal comparison',
   false,
   NOW(),
@@ -8373,7 +8373,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '68730063-6e63-462f-8124-9b6566090058',
+  '9b4f2388-81c9-4ea7-afef-76aa6ae56f44',
   'Sensitivity analysis',
   true,
   NOW(),
@@ -8392,7 +8392,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  '68730063-6e63-462f-8124-9b6566090058',
+  '9b4f2388-81c9-4ea7-afef-76aa6ae56f44',
   'To display how several variables change over time',
   false,
   NOW(),
@@ -8409,9 +8409,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '68730063-6e63-462f-8124-9b6566090058',
+  '9b4f2388-81c9-4ea7-afef-76aa6ae56f44',
   'quiz_id',
-  '6126bbf2-7738-471c-beef-c027a8fec966',
+  '4e310937-8969-4e2c-bee3-126bd2e0dbd7',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -8426,9 +8426,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '6126bbf2-7738-471c-beef-c027a8fec966',
+  '4e310937-8969-4e2c-bee3-126bd2e0dbd7',
   'questions',
-  '68730063-6e63-462f-8124-9b6566090058',
+  '9b4f2388-81c9-4ea7-afef-76aa6ae56f44',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -8445,10 +8445,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '59b3450f-089a-4e98-a5ad-2ebd939b3f25', -- Generated UUID for the question
+  'c1ac52d5-3930-4058-986c-951b59360b00', -- Generated UUID for the question
   'When do we use a Bubble Chart?',
-  '6126bbf2-7738-471c-beef-c027a8fec966', -- Quiz ID
-  '6126bbf2-7738-471c-beef-c027a8fec966', -- Quiz ID (duplicate)
+  '4e310937-8969-4e2c-bee3-126bd2e0dbd7', -- Quiz ID
+  '4e310937-8969-4e2c-bee3-126bd2e0dbd7', -- Quiz ID (duplicate)
   'single-answer',
   '',
   1,
@@ -8468,7 +8468,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '59b3450f-089a-4e98-a5ad-2ebd939b3f25',
+  'c1ac52d5-3930-4058-986c-951b59360b00',
   'For nominal comparisons',
   false,
   NOW(),
@@ -8487,7 +8487,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '59b3450f-089a-4e98-a5ad-2ebd939b3f25',
+  'c1ac52d5-3930-4058-986c-951b59360b00',
   'When your scatter plot is ugly',
   false,
   NOW(),
@@ -8506,7 +8506,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '59b3450f-089a-4e98-a5ad-2ebd939b3f25',
+  'c1ac52d5-3930-4058-986c-951b59360b00',
   'When you want to show three variables',
   true,
   NOW(),
@@ -8525,7 +8525,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  '59b3450f-089a-4e98-a5ad-2ebd939b3f25',
+  'c1ac52d5-3930-4058-986c-951b59360b00',
   'To show a time series',
   false,
   NOW(),
@@ -8542,9 +8542,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '59b3450f-089a-4e98-a5ad-2ebd939b3f25',
+  'c1ac52d5-3930-4058-986c-951b59360b00',
   'quiz_id',
-  '6126bbf2-7738-471c-beef-c027a8fec966',
+  '4e310937-8969-4e2c-bee3-126bd2e0dbd7',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -8559,9 +8559,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '6126bbf2-7738-471c-beef-c027a8fec966',
+  '4e310937-8969-4e2c-bee3-126bd2e0dbd7',
   'questions',
-  '59b3450f-089a-4e98-a5ad-2ebd939b3f25',
+  'c1ac52d5-3930-4058-986c-951b59360b00',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -8578,10 +8578,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '188007bc-bd75-47cc-b3a6-70b3713f11d3', -- Generated UUID for the question
+  '478f134c-9660-4a93-adad-837db3d8d515', -- Generated UUID for the question
   'What chart types should we try and avoid using?',
-  '6126bbf2-7738-471c-beef-c027a8fec966', -- Quiz ID
-  '6126bbf2-7738-471c-beef-c027a8fec966', -- Quiz ID (duplicate)
+  '4e310937-8969-4e2c-bee3-126bd2e0dbd7', -- Quiz ID
+  '4e310937-8969-4e2c-bee3-126bd2e0dbd7', -- Quiz ID (duplicate)
   'multi-answer',
   '',
   2,
@@ -8601,7 +8601,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '188007bc-bd75-47cc-b3a6-70b3713f11d3',
+  '478f134c-9660-4a93-adad-837db3d8d515',
   'Donut Chart',
   true,
   NOW(),
@@ -8620,7 +8620,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '188007bc-bd75-47cc-b3a6-70b3713f11d3',
+  '478f134c-9660-4a93-adad-837db3d8d515',
   'Waterfall Chart',
   false,
   NOW(),
@@ -8639,7 +8639,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '188007bc-bd75-47cc-b3a6-70b3713f11d3',
+  '478f134c-9660-4a93-adad-837db3d8d515',
   'Pie Chart',
   true,
   NOW(),
@@ -8658,7 +8658,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  '188007bc-bd75-47cc-b3a6-70b3713f11d3',
+  '478f134c-9660-4a93-adad-837db3d8d515',
   'Circle chart',
   true,
   NOW(),
@@ -8677,7 +8677,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   4,
-  '188007bc-bd75-47cc-b3a6-70b3713f11d3',
+  '478f134c-9660-4a93-adad-837db3d8d515',
   'Anything 3-D',
   true,
   NOW(),
@@ -8696,7 +8696,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   5,
-  '188007bc-bd75-47cc-b3a6-70b3713f11d3',
+  '478f134c-9660-4a93-adad-837db3d8d515',
   'Merimekko Chart',
   false,
   NOW(),
@@ -8713,9 +8713,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '188007bc-bd75-47cc-b3a6-70b3713f11d3',
+  '478f134c-9660-4a93-adad-837db3d8d515',
   'quiz_id',
-  '6126bbf2-7738-471c-beef-c027a8fec966',
+  '4e310937-8969-4e2c-bee3-126bd2e0dbd7',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -8730,9 +8730,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '6126bbf2-7738-471c-beef-c027a8fec966',
+  '4e310937-8969-4e2c-bee3-126bd2e0dbd7',
   'questions',
-  '188007bc-bd75-47cc-b3a6-70b3713f11d3',
+  '478f134c-9660-4a93-adad-837db3d8d515',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -8749,10 +8749,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '03d462ab-71c1-41dc-a78c-8d17935ea1f1', -- Generated UUID for the question
+  '353351f6-1d90-4a8f-baca-c55a516f9d2b', -- Generated UUID for the question
   'What is the best use of a Waterfall Chart?',
-  '6126bbf2-7738-471c-beef-c027a8fec966', -- Quiz ID
-  '6126bbf2-7738-471c-beef-c027a8fec966', -- Quiz ID (duplicate)
+  '4e310937-8969-4e2c-bee3-126bd2e0dbd7', -- Quiz ID
+  '4e310937-8969-4e2c-bee3-126bd2e0dbd7', -- Quiz ID (duplicate)
   'single-answer',
   '',
   3,
@@ -8772,7 +8772,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '03d462ab-71c1-41dc-a78c-8d17935ea1f1',
+  '353351f6-1d90-4a8f-baca-c55a516f9d2b',
   'To show a time series',
   false,
   NOW(),
@@ -8791,7 +8791,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '03d462ab-71c1-41dc-a78c-8d17935ea1f1',
+  '353351f6-1d90-4a8f-baca-c55a516f9d2b',
   'To show how increases and decreases in a balance affect that balance over time',
   true,
   NOW(),
@@ -8810,7 +8810,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '03d462ab-71c1-41dc-a78c-8d17935ea1f1',
+  '353351f6-1d90-4a8f-baca-c55a516f9d2b',
   'To show a part-to-whole relationship',
   false,
   NOW(),
@@ -8829,7 +8829,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  '03d462ab-71c1-41dc-a78c-8d17935ea1f1',
+  '353351f6-1d90-4a8f-baca-c55a516f9d2b',
   'As a fancy nominal comparison bar chart',
   false,
   NOW(),
@@ -8846,9 +8846,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '03d462ab-71c1-41dc-a78c-8d17935ea1f1',
+  '353351f6-1d90-4a8f-baca-c55a516f9d2b',
   'quiz_id',
-  '6126bbf2-7738-471c-beef-c027a8fec966',
+  '4e310937-8969-4e2c-bee3-126bd2e0dbd7',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -8863,9 +8863,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '6126bbf2-7738-471c-beef-c027a8fec966',
+  '4e310937-8969-4e2c-bee3-126bd2e0dbd7',
   'questions',
-  '03d462ab-71c1-41dc-a78c-8d17935ea1f1',
+  '353351f6-1d90-4a8f-baca-c55a516f9d2b',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -8882,10 +8882,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  'f9ec0ce8-118f-4d26-81bb-552c7479b1a5', -- Generated UUID for the question
+  'c16ddc62-8105-4e09-8540-3e5c18680daa', -- Generated UUID for the question
   'What is one of the more common uses of a Marimekko Chart?',
-  '6126bbf2-7738-471c-beef-c027a8fec966', -- Quiz ID
-  '6126bbf2-7738-471c-beef-c027a8fec966', -- Quiz ID (duplicate)
+  '4e310937-8969-4e2c-bee3-126bd2e0dbd7', -- Quiz ID
+  '4e310937-8969-4e2c-bee3-126bd2e0dbd7', -- Quiz ID (duplicate)
   'single-answer',
   '',
   4,
@@ -8905,7 +8905,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  'f9ec0ce8-118f-4d26-81bb-552c7479b1a5',
+  'c16ddc62-8105-4e09-8540-3e5c18680daa',
   'To confuse our audience',
   false,
   NOW(),
@@ -8924,7 +8924,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  'f9ec0ce8-118f-4d26-81bb-552c7479b1a5',
+  'c16ddc62-8105-4e09-8540-3e5c18680daa',
   'To show a time series',
   false,
   NOW(),
@@ -8943,7 +8943,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  'f9ec0ce8-118f-4d26-81bb-552c7479b1a5',
+  'c16ddc62-8105-4e09-8540-3e5c18680daa',
   'To show data on the Finnish textile industry',
   false,
   NOW(),
@@ -8962,7 +8962,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  'f9ec0ce8-118f-4d26-81bb-552c7479b1a5',
+  'c16ddc62-8105-4e09-8540-3e5c18680daa',
   'To display the composition of markets',
   true,
   NOW(),
@@ -8979,9 +8979,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'f9ec0ce8-118f-4d26-81bb-552c7479b1a5',
+  'c16ddc62-8105-4e09-8540-3e5c18680daa',
   'quiz_id',
-  '6126bbf2-7738-471c-beef-c027a8fec966',
+  '4e310937-8969-4e2c-bee3-126bd2e0dbd7',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -8996,9 +8996,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '6126bbf2-7738-471c-beef-c027a8fec966',
+  '4e310937-8969-4e2c-bee3-126bd2e0dbd7',
   'questions',
-  'f9ec0ce8-118f-4d26-81bb-552c7479b1a5',
+  'c16ddc62-8105-4e09-8540-3e5c18680daa',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -9015,10 +9015,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '8cabf47e-d20f-4702-acb0-268f4c16bdd7', -- Generated UUID for the question
+  '079152a9-92ed-4500-9ec6-1ef761aa9c42', -- Generated UUID for the question
   'What are Motion Charts used for?',
-  '6126bbf2-7738-471c-beef-c027a8fec966', -- Quiz ID
-  '6126bbf2-7738-471c-beef-c027a8fec966', -- Quiz ID (duplicate)
+  '4e310937-8969-4e2c-bee3-126bd2e0dbd7', -- Quiz ID
+  '4e310937-8969-4e2c-bee3-126bd2e0dbd7', -- Quiz ID (duplicate)
   'single-answer',
   '',
   5,
@@ -9038,7 +9038,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '8cabf47e-d20f-4702-acb0-268f4c16bdd7',
+  '079152a9-92ed-4500-9ec6-1ef761aa9c42',
   'To explore how several variables change over time',
   true,
   NOW(),
@@ -9057,7 +9057,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '8cabf47e-d20f-4702-acb0-268f4c16bdd7',
+  '079152a9-92ed-4500-9ec6-1ef761aa9c42',
   'Sensitivity analysis',
   false,
   NOW(),
@@ -9076,7 +9076,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '8cabf47e-d20f-4702-acb0-268f4c16bdd7',
+  '079152a9-92ed-4500-9ec6-1ef761aa9c42',
   'Nominal comparison',
   false,
   NOW(),
@@ -9095,7 +9095,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  '8cabf47e-d20f-4702-acb0-268f4c16bdd7',
+  '079152a9-92ed-4500-9ec6-1ef761aa9c42',
   'Composition of markets',
   false,
   NOW(),
@@ -9112,9 +9112,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '8cabf47e-d20f-4702-acb0-268f4c16bdd7',
+  '079152a9-92ed-4500-9ec6-1ef761aa9c42',
   'quiz_id',
-  '6126bbf2-7738-471c-beef-c027a8fec966',
+  '4e310937-8969-4e2c-bee3-126bd2e0dbd7',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -9129,14 +9129,14 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '6126bbf2-7738-471c-beef-c027a8fec966',
+  '4e310937-8969-4e2c-bee3-126bd2e0dbd7',
   'questions',
-  '8cabf47e-d20f-4702-acb0-268f4c16bdd7',
+  '079152a9-92ed-4500-9ec6-1ef761aa9c42',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
 
--- Questions for quiz: Storyboards in Film Quiz (storyboards-in-film-quiz, ID: b952c87d-61fe-48ea-be24-bf8443949079)
+-- Questions for quiz: Storyboards in Film Quiz (storyboards-in-film-quiz, ID: 61112599-1ba2-419f-af4d-0bd4e7ac7358)
 -- Insert question 1 for quiz: Storyboards in Film Quiz
 INSERT INTO payload.quiz_questions (
   id,
@@ -9149,10 +9149,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  'b1e2b7bc-e6ba-450f-8473-5332e8ffff5e', -- Generated UUID for the question
+  '848b21c4-9d78-43e1-89ef-7397b381879a', -- Generated UUID for the question
   'What is a storyboard?',
-  'b952c87d-61fe-48ea-be24-bf8443949079', -- Quiz ID
-  'b952c87d-61fe-48ea-be24-bf8443949079', -- Quiz ID (duplicate)
+  '61112599-1ba2-419f-af4d-0bd4e7ac7358', -- Quiz ID
+  '61112599-1ba2-419f-af4d-0bd4e7ac7358', -- Quiz ID (duplicate)
   'multiple_choice',
   '',
   0,
@@ -9172,7 +9172,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  'b1e2b7bc-e6ba-450f-8473-5332e8ffff5e',
+  '848b21c4-9d78-43e1-89ef-7397b381879a',
   'A blueprint of the movie',
   true,
   NOW(),
@@ -9191,7 +9191,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  'b1e2b7bc-e6ba-450f-8473-5332e8ffff5e',
+  '848b21c4-9d78-43e1-89ef-7397b381879a',
   'A cardboard board to pin up cartoon drawings',
   false,
   NOW(),
@@ -9210,7 +9210,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  'b1e2b7bc-e6ba-450f-8473-5332e8ffff5e',
+  '848b21c4-9d78-43e1-89ef-7397b381879a',
   'What happens when you are subject to a boring story',
   false,
   NOW(),
@@ -9229,7 +9229,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  'b1e2b7bc-e6ba-450f-8473-5332e8ffff5e',
+  '848b21c4-9d78-43e1-89ef-7397b381879a',
   'A Landyachts longboard design',
   false,
   NOW(),
@@ -9246,9 +9246,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'b1e2b7bc-e6ba-450f-8473-5332e8ffff5e',
+  '848b21c4-9d78-43e1-89ef-7397b381879a',
   'quiz_id',
-  'b952c87d-61fe-48ea-be24-bf8443949079',
+  '61112599-1ba2-419f-af4d-0bd4e7ac7358',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -9263,9 +9263,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'b952c87d-61fe-48ea-be24-bf8443949079',
+  '61112599-1ba2-419f-af4d-0bd4e7ac7358',
   'questions',
-  'b1e2b7bc-e6ba-450f-8473-5332e8ffff5e',
+  '848b21c4-9d78-43e1-89ef-7397b381879a',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -9282,10 +9282,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '626357b4-bb3b-402a-b20a-b4a131491e4d', -- Generated UUID for the question
+  'a440b42d-bff3-45c2-af1a-8bf79683503e', -- Generated UUID for the question
   'Who invented storyboards?',
-  'b952c87d-61fe-48ea-be24-bf8443949079', -- Quiz ID
-  'b952c87d-61fe-48ea-be24-bf8443949079', -- Quiz ID (duplicate)
+  '61112599-1ba2-419f-af4d-0bd4e7ac7358', -- Quiz ID
+  '61112599-1ba2-419f-af4d-0bd4e7ac7358', -- Quiz ID (duplicate)
   'multiple_choice',
   '',
   1,
@@ -9305,7 +9305,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '626357b4-bb3b-402a-b20a-b4a131491e4d',
+  'a440b42d-bff3-45c2-af1a-8bf79683503e',
   'Steve Jobs',
   false,
   NOW(),
@@ -9324,7 +9324,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '626357b4-bb3b-402a-b20a-b4a131491e4d',
+  'a440b42d-bff3-45c2-af1a-8bf79683503e',
   'John Lasseter',
   false,
   NOW(),
@@ -9343,7 +9343,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '626357b4-bb3b-402a-b20a-b4a131491e4d',
+  'a440b42d-bff3-45c2-af1a-8bf79683503e',
   'Eric Goldberg',
   false,
   NOW(),
@@ -9362,7 +9362,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  '626357b4-bb3b-402a-b20a-b4a131491e4d',
+  'a440b42d-bff3-45c2-af1a-8bf79683503e',
   'Walt Disney',
   true,
   NOW(),
@@ -9379,9 +9379,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '626357b4-bb3b-402a-b20a-b4a131491e4d',
+  'a440b42d-bff3-45c2-af1a-8bf79683503e',
   'quiz_id',
-  'b952c87d-61fe-48ea-be24-bf8443949079',
+  '61112599-1ba2-419f-af4d-0bd4e7ac7358',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -9396,9 +9396,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'b952c87d-61fe-48ea-be24-bf8443949079',
+  '61112599-1ba2-419f-af4d-0bd4e7ac7358',
   'questions',
-  '626357b4-bb3b-402a-b20a-b4a131491e4d',
+  'a440b42d-bff3-45c2-af1a-8bf79683503e',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -9415,10 +9415,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '3f51ccc2-2423-4b93-bc13-673a0cb30bc4', -- Generated UUID for the question
+  'e298a670-61cc-4273-ac62-8924e0cba990', -- Generated UUID for the question
   'What was the great innovation of storyboarding?',
-  'b952c87d-61fe-48ea-be24-bf8443949079', -- Quiz ID
-  'b952c87d-61fe-48ea-be24-bf8443949079', -- Quiz ID (duplicate)
+  '61112599-1ba2-419f-af4d-0bd4e7ac7358', -- Quiz ID
+  '61112599-1ba2-419f-af4d-0bd4e7ac7358', -- Quiz ID (duplicate)
   'multiple_choice',
   '',
   2,
@@ -9438,7 +9438,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '3f51ccc2-2423-4b93-bc13-673a0cb30bc4',
+  'e298a670-61cc-4273-ac62-8924e0cba990',
   'The introduction of sound (Talkies)',
   false,
   NOW(),
@@ -9457,7 +9457,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '3f51ccc2-2423-4b93-bc13-673a0cb30bc4',
+  'e298a670-61cc-4273-ac62-8924e0cba990',
   'Allowed film makers to edit the film before making it',
   true,
   NOW(),
@@ -9476,7 +9476,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '3f51ccc2-2423-4b93-bc13-673a0cb30bc4',
+  'e298a670-61cc-4273-ac62-8924e0cba990',
   'The introduction of color',
   false,
   NOW(),
@@ -9495,7 +9495,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  '3f51ccc2-2423-4b93-bc13-673a0cb30bc4',
+  'e298a670-61cc-4273-ac62-8924e0cba990',
   'The ability to draw your story',
   false,
   NOW(),
@@ -9512,9 +9512,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '3f51ccc2-2423-4b93-bc13-673a0cb30bc4',
+  'e298a670-61cc-4273-ac62-8924e0cba990',
   'quiz_id',
-  'b952c87d-61fe-48ea-be24-bf8443949079',
+  '61112599-1ba2-419f-af4d-0bd4e7ac7358',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -9529,14 +9529,14 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'b952c87d-61fe-48ea-be24-bf8443949079',
+  '61112599-1ba2-419f-af4d-0bd4e7ac7358',
   'questions',
-  '3f51ccc2-2423-4b93-bc13-673a0cb30bc4',
+  'e298a670-61cc-4273-ac62-8924e0cba990',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
 
--- Questions for quiz: Storyboards in Presentations Quiz (storyboards-in-presentations-quiz, ID: bde5abc4-5634-48b2-967d-7e378a795d7a)
+-- Questions for quiz: Storyboards in Presentations Quiz (storyboards-in-presentations-quiz, ID: b7d8d4fd-11c5-4cc8-9cc2-a4bea86f874d)
 -- Insert question 1 for quiz: Storyboards in Presentations Quiz
 INSERT INTO payload.quiz_questions (
   id,
@@ -9549,10 +9549,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  'e275eb76-91da-4502-946d-32c6a570a9ad', -- Generated UUID for the question
+  'e0d145f1-fb66-42c3-86dd-22f9c2b308c4', -- Generated UUID for the question
   'What are the two approaches discussed in the lesson?',
-  'bde5abc4-5634-48b2-967d-7e378a795d7a', -- Quiz ID
-  'bde5abc4-5634-48b2-967d-7e378a795d7a', -- Quiz ID (duplicate)
+  'b7d8d4fd-11c5-4cc8-9cc2-a4bea86f874d', -- Quiz ID
+  'b7d8d4fd-11c5-4cc8-9cc2-a4bea86f874d', -- Quiz ID (duplicate)
   'multiple_choice',
   '',
   0,
@@ -9572,7 +9572,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  'e275eb76-91da-4502-946d-32c6a570a9ad',
+  'e0d145f1-fb66-42c3-86dd-22f9c2b308c4',
   'Black & white and full color',
   false,
   NOW(),
@@ -9591,7 +9591,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  'e275eb76-91da-4502-946d-32c6a570a9ad',
+  'e0d145f1-fb66-42c3-86dd-22f9c2b308c4',
   'Animated and static',
   false,
   NOW(),
@@ -9610,7 +9610,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  'e275eb76-91da-4502-946d-32c6a570a9ad',
+  'e0d145f1-fb66-42c3-86dd-22f9c2b308c4',
   'Hand-drawn and computer assisted',
   false,
   NOW(),
@@ -9629,7 +9629,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  'e275eb76-91da-4502-946d-32c6a570a9ad',
+  'e0d145f1-fb66-42c3-86dd-22f9c2b308c4',
   'Text-based outlining and storyboarding',
   true,
   NOW(),
@@ -9646,9 +9646,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'e275eb76-91da-4502-946d-32c6a570a9ad',
+  'e0d145f1-fb66-42c3-86dd-22f9c2b308c4',
   'quiz_id',
-  'bde5abc4-5634-48b2-967d-7e378a795d7a',
+  'b7d8d4fd-11c5-4cc8-9cc2-a4bea86f874d',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -9663,9 +9663,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'bde5abc4-5634-48b2-967d-7e378a795d7a',
+  'b7d8d4fd-11c5-4cc8-9cc2-a4bea86f874d',
   'questions',
-  'e275eb76-91da-4502-946d-32c6a570a9ad',
+  'e0d145f1-fb66-42c3-86dd-22f9c2b308c4',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -9682,10 +9682,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '69dde8f1-03e0-4123-adeb-856cab2c105d', -- Generated UUID for the question
+  '62c77629-9156-4826-a5ee-359d362f1bed', -- Generated UUID for the question
   'What tools are recommended to use for storyboarding?',
-  'bde5abc4-5634-48b2-967d-7e378a795d7a', -- Quiz ID
-  'bde5abc4-5634-48b2-967d-7e378a795d7a', -- Quiz ID (duplicate)
+  'b7d8d4fd-11c5-4cc8-9cc2-a4bea86f874d', -- Quiz ID
+  'b7d8d4fd-11c5-4cc8-9cc2-a4bea86f874d', -- Quiz ID (duplicate)
   'multiple_choice',
   '',
   1,
@@ -9705,7 +9705,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '69dde8f1-03e0-4123-adeb-856cab2c105d',
+  '62c77629-9156-4826-a5ee-359d362f1bed',
   'A stone tablet and chisel',
   false,
   NOW(),
@@ -9724,7 +9724,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '69dde8f1-03e0-4123-adeb-856cab2c105d',
+  '62c77629-9156-4826-a5ee-359d362f1bed',
   'PowerPoint',
   false,
   NOW(),
@@ -9743,7 +9743,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '69dde8f1-03e0-4123-adeb-856cab2c105d',
+  '62c77629-9156-4826-a5ee-359d362f1bed',
   'Adobe Edge Animate',
   false,
   NOW(),
@@ -9762,7 +9762,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  '69dde8f1-03e0-4123-adeb-856cab2c105d',
+  '62c77629-9156-4826-a5ee-359d362f1bed',
   'Pen and paper',
   true,
   NOW(),
@@ -9779,9 +9779,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '69dde8f1-03e0-4123-adeb-856cab2c105d',
+  '62c77629-9156-4826-a5ee-359d362f1bed',
   'quiz_id',
-  'bde5abc4-5634-48b2-967d-7e378a795d7a',
+  'b7d8d4fd-11c5-4cc8-9cc2-a4bea86f874d',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -9796,14 +9796,14 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'bde5abc4-5634-48b2-967d-7e378a795d7a',
+  'b7d8d4fd-11c5-4cc8-9cc2-a4bea86f874d',
   'questions',
-  '69dde8f1-03e0-4123-adeb-856cab2c105d',
+  '62c77629-9156-4826-a5ee-359d362f1bed',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
 
--- Questions for quiz: What is Structure? Quiz (structure-quiz, ID: 4ef3a7ef-7225-4a44-89ce-23b5e5557879)
+-- Questions for quiz: What is Structure? Quiz (structure-quiz, ID: f284bb91-d192-4246-8d5c-768162622c44)
 -- Insert question 1 for quiz: What is Structure? Quiz
 INSERT INTO payload.quiz_questions (
   id,
@@ -9816,10 +9816,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  'a2790063-418d-464f-8e84-932dae297f6a', -- Generated UUID for the question
+  'aa2c4668-3d93-4465-a764-510d595978ed', -- Generated UUID for the question
   'What is the principle of Abstraction?',
-  '4ef3a7ef-7225-4a44-89ce-23b5e5557879', -- Quiz ID
-  '4ef3a7ef-7225-4a44-89ce-23b5e5557879', -- Quiz ID (duplicate)
+  'f284bb91-d192-4246-8d5c-768162622c44', -- Quiz ID
+  'f284bb91-d192-4246-8d5c-768162622c44', -- Quiz ID (duplicate)
   'single-answer',
   '',
   0,
@@ -9839,7 +9839,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  'a2790063-418d-464f-8e84-932dae297f6a',
+  'aa2c4668-3d93-4465-a764-510d595978ed',
   'A grouping principle, whereby a hierarchy is adhered to with higher levels of abstraction (less detail) placed near the top, with more specific concepts underneath ',
   true,
   NOW(),
@@ -9858,7 +9858,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  'a2790063-418d-464f-8e84-932dae297f6a',
+  'aa2c4668-3d93-4465-a764-510d595978ed',
   'A John Grisham novel',
   false,
   NOW(),
@@ -9877,7 +9877,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  'a2790063-418d-464f-8e84-932dae297f6a',
+  'aa2c4668-3d93-4465-a764-510d595978ed',
   'An approach whereby we simplify our question so profoundly that we reach a level of enlightenment',
   false,
   NOW(),
@@ -9894,9 +9894,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'a2790063-418d-464f-8e84-932dae297f6a',
+  'aa2c4668-3d93-4465-a764-510d595978ed',
   'quiz_id',
-  '4ef3a7ef-7225-4a44-89ce-23b5e5557879',
+  'f284bb91-d192-4246-8d5c-768162622c44',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -9911,9 +9911,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '4ef3a7ef-7225-4a44-89ce-23b5e5557879',
+  'f284bb91-d192-4246-8d5c-768162622c44',
   'questions',
-  'a2790063-418d-464f-8e84-932dae297f6a',
+  'aa2c4668-3d93-4465-a764-510d595978ed',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -9930,10 +9930,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '06daa467-895b-40ac-aa88-717102f8e8a3', -- Generated UUID for the question
+  '0c89668d-3e8a-47b4-bec8-108877d30b3e', -- Generated UUID for the question
   'Which lists are MECE (pick 2)',
-  '4ef3a7ef-7225-4a44-89ce-23b5e5557879', -- Quiz ID
-  '4ef3a7ef-7225-4a44-89ce-23b5e5557879', -- Quiz ID (duplicate)
+  'f284bb91-d192-4246-8d5c-768162622c44', -- Quiz ID
+  'f284bb91-d192-4246-8d5c-768162622c44', -- Quiz ID (duplicate)
   'multi-answer',
   '',
   1,
@@ -9953,7 +9953,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '06daa467-895b-40ac-aa88-717102f8e8a3',
+  '0c89668d-3e8a-47b4-bec8-108877d30b3e',
   'Profit=revenue minus expenses',
   true,
   NOW(),
@@ -9972,7 +9972,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '06daa467-895b-40ac-aa88-717102f8e8a3',
+  '0c89668d-3e8a-47b4-bec8-108877d30b3e',
   'Star Wars films: New Hope, Empire, Revenge of the Sith',
   false,
   NOW(),
@@ -9991,7 +9991,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '06daa467-895b-40ac-aa88-717102f8e8a3',
+  '0c89668d-3e8a-47b4-bec8-108877d30b3e',
   'The global population broken down into age groups of 0-20 year-olds, 21-40 year-olds, 41-60 year-olds, 61-80 year-olds, and 81 and over',
   true,
   NOW(),
@@ -10008,9 +10008,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '06daa467-895b-40ac-aa88-717102f8e8a3',
+  '0c89668d-3e8a-47b4-bec8-108877d30b3e',
   'quiz_id',
-  '4ef3a7ef-7225-4a44-89ce-23b5e5557879',
+  'f284bb91-d192-4246-8d5c-768162622c44',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -10025,9 +10025,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '4ef3a7ef-7225-4a44-89ce-23b5e5557879',
+  'f284bb91-d192-4246-8d5c-768162622c44',
   'questions',
-  '06daa467-895b-40ac-aa88-717102f8e8a3',
+  '0c89668d-3e8a-47b4-bec8-108877d30b3e',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -10044,10 +10044,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  'a0a57964-30df-4ca2-bdeb-36cdf54b9674', -- Generated UUID for the question
+  '1915a8a8-38bf-414c-809a-7e709167ca4c', -- Generated UUID for the question
   'What are the three Golden Rules to follow when applying the principle of abstraction and organizing your ideas?',
-  '4ef3a7ef-7225-4a44-89ce-23b5e5557879', -- Quiz ID
-  '4ef3a7ef-7225-4a44-89ce-23b5e5557879', -- Quiz ID (duplicate)
+  'f284bb91-d192-4246-8d5c-768162622c44', -- Quiz ID
+  'f284bb91-d192-4246-8d5c-768162622c44', -- Quiz ID (duplicate)
   'multi-answer',
   '',
   2,
@@ -10067,7 +10067,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  'a0a57964-30df-4ca2-bdeb-36cdf54b9674',
+  '1915a8a8-38bf-414c-809a-7e709167ca4c',
   'Concepts should be arranged in the shape of a triangle',
   false,
   NOW(),
@@ -10086,7 +10086,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  'a0a57964-30df-4ca2-bdeb-36cdf54b9674',
+  '1915a8a8-38bf-414c-809a-7e709167ca4c',
   'Concepts at any level must be presented in a strict logical order',
   true,
   NOW(),
@@ -10105,7 +10105,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  'a0a57964-30df-4ca2-bdeb-36cdf54b9674',
+  '1915a8a8-38bf-414c-809a-7e709167ca4c',
   'Concepts in any group are always the same kind of idea',
   true,
   NOW(),
@@ -10124,7 +10124,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  'a0a57964-30df-4ca2-bdeb-36cdf54b9674',
+  '1915a8a8-38bf-414c-809a-7e709167ca4c',
   'Concepts or ideas at any level of your argument must be more abstract summaries of the concepts that are grouped below',
   true,
   NOW(),
@@ -10143,7 +10143,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   4,
-  'a0a57964-30df-4ca2-bdeb-36cdf54b9674',
+  '1915a8a8-38bf-414c-809a-7e709167ca4c',
   'Concepts must be ordered alphabetically',
   false,
   NOW(),
@@ -10162,7 +10162,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   5,
-  'a0a57964-30df-4ca2-bdeb-36cdf54b9674',
+  '1915a8a8-38bf-414c-809a-7e709167ca4c',
   'Ideas should be clever',
   false,
   NOW(),
@@ -10179,9 +10179,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'a0a57964-30df-4ca2-bdeb-36cdf54b9674',
+  '1915a8a8-38bf-414c-809a-7e709167ca4c',
   'quiz_id',
-  '4ef3a7ef-7225-4a44-89ce-23b5e5557879',
+  'f284bb91-d192-4246-8d5c-768162622c44',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -10196,9 +10196,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '4ef3a7ef-7225-4a44-89ce-23b5e5557879',
+  'f284bb91-d192-4246-8d5c-768162622c44',
   'questions',
-  'a0a57964-30df-4ca2-bdeb-36cdf54b9674',
+  '1915a8a8-38bf-414c-809a-7e709167ca4c',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -10215,10 +10215,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '3a77c8c0-0bb1-4c6f-9ca9-b5cd574b0e75', -- Generated UUID for the question
+  '4c96caff-be13-4318-9618-7f4d54f1faba', -- Generated UUID for the question
   'Match the argument with whether it is deductive or inductive: ''Jill and Bob are friends. Jill likes to dance, cook and write. Bob likes to dance and cook. Therefore it can be assumed he also likes to write.',
-  '4ef3a7ef-7225-4a44-89ce-23b5e5557879', -- Quiz ID
-  '4ef3a7ef-7225-4a44-89ce-23b5e5557879', -- Quiz ID (duplicate)
+  'f284bb91-d192-4246-8d5c-768162622c44', -- Quiz ID
+  'f284bb91-d192-4246-8d5c-768162622c44', -- Quiz ID (duplicate)
   'single-answer',
   '',
   3,
@@ -10238,7 +10238,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '3a77c8c0-0bb1-4c6f-9ca9-b5cd574b0e75',
+  '4c96caff-be13-4318-9618-7f4d54f1faba',
   'Deductive',
   false,
   NOW(),
@@ -10257,7 +10257,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '3a77c8c0-0bb1-4c6f-9ca9-b5cd574b0e75',
+  '4c96caff-be13-4318-9618-7f4d54f1faba',
   'Inductive',
   true,
   NOW(),
@@ -10274,9 +10274,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '3a77c8c0-0bb1-4c6f-9ca9-b5cd574b0e75',
+  '4c96caff-be13-4318-9618-7f4d54f1faba',
   'quiz_id',
-  '4ef3a7ef-7225-4a44-89ce-23b5e5557879',
+  'f284bb91-d192-4246-8d5c-768162622c44',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -10291,9 +10291,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '4ef3a7ef-7225-4a44-89ce-23b5e5557879',
+  'f284bb91-d192-4246-8d5c-768162622c44',
   'questions',
-  '3a77c8c0-0bb1-4c6f-9ca9-b5cd574b0e75',
+  '4c96caff-be13-4318-9618-7f4d54f1faba',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -10310,10 +10310,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  'cb3e235b-78c6-48ce-9e4b-149cccac08d8', -- Generated UUID for the question
+  'af781d44-9349-47ad-92d9-1bbc634d6099', -- Generated UUID for the question
   'Match the argument with whether it is deductive or inductive: ''All dogs are mammals. All mammals have kidneys. Therefore all dogs have kidneys.',
-  '4ef3a7ef-7225-4a44-89ce-23b5e5557879', -- Quiz ID
-  '4ef3a7ef-7225-4a44-89ce-23b5e5557879', -- Quiz ID (duplicate)
+  'f284bb91-d192-4246-8d5c-768162622c44', -- Quiz ID
+  'f284bb91-d192-4246-8d5c-768162622c44', -- Quiz ID (duplicate)
   'single-answer',
   '',
   4,
@@ -10333,7 +10333,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  'cb3e235b-78c6-48ce-9e4b-149cccac08d8',
+  'af781d44-9349-47ad-92d9-1bbc634d6099',
   'Inductive',
   false,
   NOW(),
@@ -10352,7 +10352,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  'cb3e235b-78c6-48ce-9e4b-149cccac08d8',
+  'af781d44-9349-47ad-92d9-1bbc634d6099',
   'Deductive',
   true,
   NOW(),
@@ -10369,9 +10369,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'cb3e235b-78c6-48ce-9e4b-149cccac08d8',
+  'af781d44-9349-47ad-92d9-1bbc634d6099',
   'quiz_id',
-  '4ef3a7ef-7225-4a44-89ce-23b5e5557879',
+  'f284bb91-d192-4246-8d5c-768162622c44',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -10386,9 +10386,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '4ef3a7ef-7225-4a44-89ce-23b5e5557879',
+  'f284bb91-d192-4246-8d5c-768162622c44',
   'questions',
-  'cb3e235b-78c6-48ce-9e4b-149cccac08d8',
+  'af781d44-9349-47ad-92d9-1bbc634d6099',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -10405,10 +10405,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '79dcf32c-a07c-4a8b-b773-a5e99161747b', -- Generated UUID for the question
+  '999d995f-d3c8-433d-b847-5c71f79ab506', -- Generated UUID for the question
   'What is the rule of 7 (updated)?',
-  '4ef3a7ef-7225-4a44-89ce-23b5e5557879', -- Quiz ID
-  '4ef3a7ef-7225-4a44-89ce-23b5e5557879', -- Quiz ID (duplicate)
+  'f284bb91-d192-4246-8d5c-768162622c44', -- Quiz ID
+  'f284bb91-d192-4246-8d5c-768162622c44', -- Quiz ID (duplicate)
   'single-answer',
   '',
   5,
@@ -10428,7 +10428,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '79dcf32c-a07c-4a8b-b773-a5e99161747b',
+  '999d995f-d3c8-433d-b847-5c71f79ab506',
   'There is no such thing as 7 or 9 of anything. We should seek to structure our ideas into groups of 4-5 or less',
   true,
   NOW(),
@@ -10447,7 +10447,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '79dcf32c-a07c-4a8b-b773-a5e99161747b',
+  '999d995f-d3c8-433d-b847-5c71f79ab506',
   'Rule for calculating compound interest',
   false,
   NOW(),
@@ -10466,7 +10466,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '79dcf32c-a07c-4a8b-b773-a5e99161747b',
+  '999d995f-d3c8-433d-b847-5c71f79ab506',
   'Organize your ideas into groups of 7',
   false,
   NOW(),
@@ -10485,7 +10485,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  '79dcf32c-a07c-4a8b-b773-a5e99161747b',
+  '999d995f-d3c8-433d-b847-5c71f79ab506',
   'Movie staring Brad Pitt',
   false,
   NOW(),
@@ -10502,9 +10502,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '79dcf32c-a07c-4a8b-b773-a5e99161747b',
+  '999d995f-d3c8-433d-b847-5c71f79ab506',
   'quiz_id',
-  '4ef3a7ef-7225-4a44-89ce-23b5e5557879',
+  'f284bb91-d192-4246-8d5c-768162622c44',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -10519,14 +10519,14 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '4ef3a7ef-7225-4a44-89ce-23b5e5557879',
+  'f284bb91-d192-4246-8d5c-768162622c44',
   'questions',
-  '79dcf32c-a07c-4a8b-b773-a5e99161747b',
+  '999d995f-d3c8-433d-b847-5c71f79ab506',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
 
--- Questions for quiz: Tables vs Graphs Quiz (tables-vs-graphs-quiz, ID: 61744870-5b03-4391-98b9-6c1d2b6d760e)
+-- Questions for quiz: Tables vs Graphs Quiz (tables-vs-graphs-quiz, ID: 4fe1eec4-39b8-4b19-9d4f-193bf1b808c6)
 -- Insert question 1 for quiz: Tables vs Graphs Quiz
 INSERT INTO payload.quiz_questions (
   id,
@@ -10539,10 +10539,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  'c64f1737-6884-4000-895a-3a588f83a52e', -- Generated UUID for the question
+  '5c8a3af7-ad09-48af-85b6-07ac7c914de7', -- Generated UUID for the question
   'What are the two defining characteristics of Tables?',
-  '61744870-5b03-4391-98b9-6c1d2b6d760e', -- Quiz ID
-  '61744870-5b03-4391-98b9-6c1d2b6d760e', -- Quiz ID (duplicate)
+  '4fe1eec4-39b8-4b19-9d4f-193bf1b808c6', -- Quiz ID
+  '4fe1eec4-39b8-4b19-9d4f-193bf1b808c6', -- Quiz ID (duplicate)
   'multi-answer',
   '',
   0,
@@ -10562,7 +10562,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  'c64f1737-6884-4000-895a-3a588f83a52e',
+  '5c8a3af7-ad09-48af-85b6-07ac7c914de7',
   'Information is encoded as text (words and numbers)',
   true,
   NOW(),
@@ -10581,7 +10581,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  'c64f1737-6884-4000-895a-3a588f83a52e',
+  '5c8a3af7-ad09-48af-85b6-07ac7c914de7',
   'They are black and white',
   false,
   NOW(),
@@ -10600,7 +10600,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  'c64f1737-6884-4000-895a-3a588f83a52e',
+  '5c8a3af7-ad09-48af-85b6-07ac7c914de7',
   'They are not as nice to look at as graphs',
   false,
   NOW(),
@@ -10619,7 +10619,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  'c64f1737-6884-4000-895a-3a588f83a52e',
+  '5c8a3af7-ad09-48af-85b6-07ac7c914de7',
   'They are arranged in columns and rows',
   true,
   NOW(),
@@ -10636,9 +10636,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'c64f1737-6884-4000-895a-3a588f83a52e',
+  '5c8a3af7-ad09-48af-85b6-07ac7c914de7',
   'quiz_id',
-  '61744870-5b03-4391-98b9-6c1d2b6d760e',
+  '4fe1eec4-39b8-4b19-9d4f-193bf1b808c6',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -10653,9 +10653,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '61744870-5b03-4391-98b9-6c1d2b6d760e',
+  '4fe1eec4-39b8-4b19-9d4f-193bf1b808c6',
   'questions',
-  'c64f1737-6884-4000-895a-3a588f83a52e',
+  '5c8a3af7-ad09-48af-85b6-07ac7c914de7',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -10672,10 +10672,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '59a3d41e-11ce-4368-a263-e503043688d6', -- Generated UUID for the question
+  '22466692-7461-4148-9b97-ae647bcb8ea2', -- Generated UUID for the question
   'What re some of the primary benefits of a table?',
-  '61744870-5b03-4391-98b9-6c1d2b6d760e', -- Quiz ID
-  '61744870-5b03-4391-98b9-6c1d2b6d760e', -- Quiz ID (duplicate)
+  '4fe1eec4-39b8-4b19-9d4f-193bf1b808c6', -- Quiz ID
+  '4fe1eec4-39b8-4b19-9d4f-193bf1b808c6', -- Quiz ID (duplicate)
   'multi-answer',
   '',
   1,
@@ -10695,7 +10695,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '59a3d41e-11ce-4368-a263-e503043688d6',
+  '22466692-7461-4148-9b97-ae647bcb8ea2',
   'Tables make it easy to look up individual values',
   true,
   NOW(),
@@ -10714,7 +10714,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '59a3d41e-11ce-4368-a263-e503043688d6',
+  '22466692-7461-4148-9b97-ae647bcb8ea2',
   'Tables make it easy to compare pairs of related values',
   true,
   NOW(),
@@ -10733,7 +10733,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '59a3d41e-11ce-4368-a263-e503043688d6',
+  '22466692-7461-4148-9b97-ae647bcb8ea2',
   'Textual encoding provides a level of precision that you cannot get in graphs',
   true,
   NOW(),
@@ -10752,7 +10752,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  '59a3d41e-11ce-4368-a263-e503043688d6',
+  '22466692-7461-4148-9b97-ae647bcb8ea2',
   'Tables are easier to create than graphs',
   false,
   NOW(),
@@ -10771,7 +10771,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   4,
-  '59a3d41e-11ce-4368-a263-e503043688d6',
+  '22466692-7461-4148-9b97-ae647bcb8ea2',
   'Tables can handle larger data sets than graphs',
   false,
   NOW(),
@@ -10788,9 +10788,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '59a3d41e-11ce-4368-a263-e503043688d6',
+  '22466692-7461-4148-9b97-ae647bcb8ea2',
   'quiz_id',
-  '61744870-5b03-4391-98b9-6c1d2b6d760e',
+  '4fe1eec4-39b8-4b19-9d4f-193bf1b808c6',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -10805,9 +10805,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '61744870-5b03-4391-98b9-6c1d2b6d760e',
+  '4fe1eec4-39b8-4b19-9d4f-193bf1b808c6',
   'questions',
-  '59a3d41e-11ce-4368-a263-e503043688d6',
+  '22466692-7461-4148-9b97-ae647bcb8ea2',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -10824,10 +10824,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '3f861197-e7d1-4eb8-8945-659fa4f6e415', -- Generated UUID for the question
+  '83bd6a05-e3ef-4623-921d-0b26cf18b81b', -- Generated UUID for the question
   'What are some of the characteristics that define graphs?',
-  '61744870-5b03-4391-98b9-6c1d2b6d760e', -- Quiz ID
-  '61744870-5b03-4391-98b9-6c1d2b6d760e', -- Quiz ID (duplicate)
+  '4fe1eec4-39b8-4b19-9d4f-193bf1b808c6', -- Quiz ID
+  '4fe1eec4-39b8-4b19-9d4f-193bf1b808c6', -- Quiz ID (duplicate)
   'multi-answer',
   '',
   2,
@@ -10847,7 +10847,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '3f861197-e7d1-4eb8-8945-659fa4f6e415',
+  '83bd6a05-e3ef-4623-921d-0b26cf18b81b',
   'Information is encoded as text (words and numbers)',
   false,
   NOW(),
@@ -10866,7 +10866,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '3f861197-e7d1-4eb8-8945-659fa4f6e415',
+  '83bd6a05-e3ef-4623-921d-0b26cf18b81b',
   'Axes provide scales (quantitative and categorical) that are used to label and assign value to the visual objects',
   true,
   NOW(),
@@ -10885,7 +10885,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '3f861197-e7d1-4eb8-8945-659fa4f6e415',
+  '83bd6a05-e3ef-4623-921d-0b26cf18b81b',
   'They are nicer to look at than tables',
   false,
   NOW(),
@@ -10904,7 +10904,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  '3f861197-e7d1-4eb8-8945-659fa4f6e415',
+  '83bd6a05-e3ef-4623-921d-0b26cf18b81b',
   'They are typically in color',
   false,
   NOW(),
@@ -10923,7 +10923,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   4,
-  '3f861197-e7d1-4eb8-8945-659fa4f6e415',
+  '83bd6a05-e3ef-4623-921d-0b26cf18b81b',
   'Values are encoded as visual objects in relation to the axis',
   true,
   NOW(),
@@ -10942,7 +10942,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   5,
-  '3f861197-e7d1-4eb8-8945-659fa4f6e415',
+  '83bd6a05-e3ef-4623-921d-0b26cf18b81b',
   'Values are displayed within an area delineated by one or more axis',
   true,
   NOW(),
@@ -10959,9 +10959,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '3f861197-e7d1-4eb8-8945-659fa4f6e415',
+  '83bd6a05-e3ef-4623-921d-0b26cf18b81b',
   'quiz_id',
-  '61744870-5b03-4391-98b9-6c1d2b6d760e',
+  '4fe1eec4-39b8-4b19-9d4f-193bf1b808c6',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -10976,9 +10976,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '61744870-5b03-4391-98b9-6c1d2b6d760e',
+  '4fe1eec4-39b8-4b19-9d4f-193bf1b808c6',
   'questions',
-  '3f861197-e7d1-4eb8-8945-659fa4f6e415',
+  '83bd6a05-e3ef-4623-921d-0b26cf18b81b',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -10995,10 +10995,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  'd51d0268-2059-4c8a-96da-bdf3e10ed58a', -- Generated UUID for the question
+  'f4fb491d-1216-4dbf-b617-552538cdb9e4', -- Generated UUID for the question
   'When should you use graphs?',
-  '61744870-5b03-4391-98b9-6c1d2b6d760e', -- Quiz ID
-  '61744870-5b03-4391-98b9-6c1d2b6d760e', -- Quiz ID (duplicate)
+  '4fe1eec4-39b8-4b19-9d4f-193bf1b808c6', -- Quiz ID
+  '4fe1eec4-39b8-4b19-9d4f-193bf1b808c6', -- Quiz ID (duplicate)
   'multi-answer',
   '',
   3,
@@ -11018,7 +11018,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  'd51d0268-2059-4c8a-96da-bdf3e10ed58a',
+  'f4fb491d-1216-4dbf-b617-552538cdb9e4',
   'When the message or story is contained in the shape of the data',
   true,
   NOW(),
@@ -11037,7 +11037,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  'd51d0268-2059-4c8a-96da-bdf3e10ed58a',
+  'f4fb491d-1216-4dbf-b617-552538cdb9e4',
   'When the display will be used to reveal relationships among whole sets of values',
   true,
   NOW(),
@@ -11056,7 +11056,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  'd51d0268-2059-4c8a-96da-bdf3e10ed58a',
+  'f4fb491d-1216-4dbf-b617-552538cdb9e4',
   'When you need to ''sex-up'' a slide',
   false,
   NOW(),
@@ -11075,7 +11075,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  'd51d0268-2059-4c8a-96da-bdf3e10ed58a',
+  'f4fb491d-1216-4dbf-b617-552538cdb9e4',
   'When you have production support and they can create the graph for you',
   false,
   NOW(),
@@ -11092,9 +11092,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'd51d0268-2059-4c8a-96da-bdf3e10ed58a',
+  'f4fb491d-1216-4dbf-b617-552538cdb9e4',
   'quiz_id',
-  '61744870-5b03-4391-98b9-6c1d2b6d760e',
+  '4fe1eec4-39b8-4b19-9d4f-193bf1b808c6',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -11109,14 +11109,14 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '61744870-5b03-4391-98b9-6c1d2b6d760e',
+  '4fe1eec4-39b8-4b19-9d4f-193bf1b808c6',
   'questions',
-  'd51d0268-2059-4c8a-96da-bdf3e10ed58a',
+  'f4fb491d-1216-4dbf-b617-552538cdb9e4',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
 
--- Questions for quiz: The Who Quiz (the-who-quiz, ID: 02ec3fc0-b2bd-41bd-aaaa-14af53fe0ae7)
+-- Questions for quiz: The Who Quiz (the-who-quiz, ID: 3262dfef-44ce-4bc5-95f7-ed83c5a04799)
 -- Insert question 1 for quiz: The Who Quiz
 INSERT INTO payload.quiz_questions (
   id,
@@ -11129,10 +11129,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  'f2beac1f-ef5e-4ad5-987a-9df34864b7fe', -- Generated UUID for the question
+  'b2940333-00a9-40ad-bf0e-a1d247999a08', -- Generated UUID for the question
   'Who is the hero of our presentation?',
-  '02ec3fc0-b2bd-41bd-aaaa-14af53fe0ae7', -- Quiz ID
-  '02ec3fc0-b2bd-41bd-aaaa-14af53fe0ae7', -- Quiz ID (duplicate)
+  '3262dfef-44ce-4bc5-95f7-ed83c5a04799', -- Quiz ID
+  '3262dfef-44ce-4bc5-95f7-ed83c5a04799', -- Quiz ID (duplicate)
   'single-answer',
   '',
   0,
@@ -11152,7 +11152,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  'f2beac1f-ef5e-4ad5-987a-9df34864b7fe',
+  'b2940333-00a9-40ad-bf0e-a1d247999a08',
   'Batman baby!',
   false,
   NOW(),
@@ -11171,7 +11171,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  'f2beac1f-ef5e-4ad5-987a-9df34864b7fe',
+  'b2940333-00a9-40ad-bf0e-a1d247999a08',
   'I am dammit!',
   false,
   NOW(),
@@ -11190,7 +11190,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  'f2beac1f-ef5e-4ad5-987a-9df34864b7fe',
+  'b2940333-00a9-40ad-bf0e-a1d247999a08',
   'The audience',
   true,
   NOW(),
@@ -11209,7 +11209,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  'f2beac1f-ef5e-4ad5-987a-9df34864b7fe',
+  'b2940333-00a9-40ad-bf0e-a1d247999a08',
   'Superman owns Batman',
   false,
   NOW(),
@@ -11226,9 +11226,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'f2beac1f-ef5e-4ad5-987a-9df34864b7fe',
+  'b2940333-00a9-40ad-bf0e-a1d247999a08',
   'quiz_id',
-  '02ec3fc0-b2bd-41bd-aaaa-14af53fe0ae7',
+  '3262dfef-44ce-4bc5-95f7-ed83c5a04799',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -11243,9 +11243,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '02ec3fc0-b2bd-41bd-aaaa-14af53fe0ae7',
+  '3262dfef-44ce-4bc5-95f7-ed83c5a04799',
   'questions',
-  'f2beac1f-ef5e-4ad5-987a-9df34864b7fe',
+  'b2940333-00a9-40ad-bf0e-a1d247999a08',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -11262,10 +11262,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '66ec1afe-8303-4f71-9940-3f9d8a80ec25', -- Generated UUID for the question
+  'ef32d3d0-74f4-45ce-aa33-f22f44ecb366', -- Generated UUID for the question
   'What is the Audience Map used for?',
-  '02ec3fc0-b2bd-41bd-aaaa-14af53fe0ae7', -- Quiz ID
-  '02ec3fc0-b2bd-41bd-aaaa-14af53fe0ae7', -- Quiz ID (duplicate)
+  '3262dfef-44ce-4bc5-95f7-ed83c5a04799', -- Quiz ID
+  '3262dfef-44ce-4bc5-95f7-ed83c5a04799', -- Quiz ID (duplicate)
   'single-answer',
   '',
   1,
@@ -11285,7 +11285,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '66ec1afe-8303-4f71-9940-3f9d8a80ec25',
+  'ef32d3d0-74f4-45ce-aa33-f22f44ecb366',
   'To be used to find your presentation venue. X marks the spot.',
   false,
   NOW(),
@@ -11304,7 +11304,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '66ec1afe-8303-4f71-9940-3f9d8a80ec25',
+  'ef32d3d0-74f4-45ce-aa33-f22f44ecb366',
   'To help identify the main decision maker',
   false,
   NOW(),
@@ -11323,7 +11323,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '66ec1afe-8303-4f71-9940-3f9d8a80ec25',
+  'ef32d3d0-74f4-45ce-aa33-f22f44ecb366',
   'To develop a strategic approach for engaging with your ''room''',
   true,
   NOW(),
@@ -11340,9 +11340,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '66ec1afe-8303-4f71-9940-3f9d8a80ec25',
+  'ef32d3d0-74f4-45ce-aa33-f22f44ecb366',
   'quiz_id',
-  '02ec3fc0-b2bd-41bd-aaaa-14af53fe0ae7',
+  '3262dfef-44ce-4bc5-95f7-ed83c5a04799',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -11357,9 +11357,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '02ec3fc0-b2bd-41bd-aaaa-14af53fe0ae7',
+  '3262dfef-44ce-4bc5-95f7-ed83c5a04799',
   'questions',
-  '66ec1afe-8303-4f71-9940-3f9d8a80ec25',
+  'ef32d3d0-74f4-45ce-aa33-f22f44ecb366',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -11376,10 +11376,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  'd92a0eee-d8cc-4252-9a8b-cdfa698ae6dc', -- Generated UUID for the question
+  '445e7ff6-8bd8-4fbe-a02e-9f52f18ca9a8', -- Generated UUID for the question
   'What are the 4 quadrants of the Audience Map?',
-  '02ec3fc0-b2bd-41bd-aaaa-14af53fe0ae7', -- Quiz ID
-  '02ec3fc0-b2bd-41bd-aaaa-14af53fe0ae7', -- Quiz ID (duplicate)
+  '3262dfef-44ce-4bc5-95f7-ed83c5a04799', -- Quiz ID
+  '3262dfef-44ce-4bc5-95f7-ed83c5a04799', -- Quiz ID (duplicate)
   'single-answer',
   '',
   2,
@@ -11399,7 +11399,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  'd92a0eee-d8cc-4252-9a8b-cdfa698ae6dc',
+  '445e7ff6-8bd8-4fbe-a02e-9f52f18ca9a8',
   'Senior, Junior, Advocate, Foe',
   false,
   NOW(),
@@ -11418,7 +11418,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  'd92a0eee-d8cc-4252-9a8b-cdfa698ae6dc',
+  '445e7ff6-8bd8-4fbe-a02e-9f52f18ca9a8',
   'Personality, Power, Access, Resistance',
   true,
   NOW(),
@@ -11437,7 +11437,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  'd92a0eee-d8cc-4252-9a8b-cdfa698ae6dc',
+  '445e7ff6-8bd8-4fbe-a02e-9f52f18ca9a8',
   'Friend, Foe, Advocate, Neutral',
   false,
   NOW(),
@@ -11456,7 +11456,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  'd92a0eee-d8cc-4252-9a8b-cdfa698ae6dc',
+  '445e7ff6-8bd8-4fbe-a02e-9f52f18ca9a8',
   'North, South East and West',
   false,
   NOW(),
@@ -11473,9 +11473,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'd92a0eee-d8cc-4252-9a8b-cdfa698ae6dc',
+  '445e7ff6-8bd8-4fbe-a02e-9f52f18ca9a8',
   'quiz_id',
-  '02ec3fc0-b2bd-41bd-aaaa-14af53fe0ae7',
+  '3262dfef-44ce-4bc5-95f7-ed83c5a04799',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -11490,9 +11490,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '02ec3fc0-b2bd-41bd-aaaa-14af53fe0ae7',
+  '3262dfef-44ce-4bc5-95f7-ed83c5a04799',
   'questions',
-  'd92a0eee-d8cc-4252-9a8b-cdfa698ae6dc',
+  '445e7ff6-8bd8-4fbe-a02e-9f52f18ca9a8',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -11509,10 +11509,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  'e04776d0-e6bd-4ef7-88f6-029fbbbf5a8d', -- Generated UUID for the question
+  '5e358304-4969-41c7-bc43-cb6ad87b3c22', -- Generated UUID for the question
   'Pick the question that corresponds with the ''Personality'' quadrant',
-  '02ec3fc0-b2bd-41bd-aaaa-14af53fe0ae7', -- Quiz ID
-  '02ec3fc0-b2bd-41bd-aaaa-14af53fe0ae7', -- Quiz ID (duplicate)
+  '3262dfef-44ce-4bc5-95f7-ed83c5a04799', -- Quiz ID
+  '3262dfef-44ce-4bc5-95f7-ed83c5a04799', -- Quiz ID (duplicate)
   'single-answer',
   '',
   3,
@@ -11532,7 +11532,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  'e04776d0-e6bd-4ef7-88f6-029fbbbf5a8d',
+  '5e358304-4969-41c7-bc43-cb6ad87b3c22',
   'How do decisions get made?',
   false,
   NOW(),
@@ -11551,7 +11551,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  'e04776d0-e6bd-4ef7-88f6-029fbbbf5a8d',
+  '5e358304-4969-41c7-bc43-cb6ad87b3c22',
   'What is their style, energy level, and emotional state?',
   true,
   NOW(),
@@ -11570,7 +11570,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  'e04776d0-e6bd-4ef7-88f6-029fbbbf5a8d',
+  '5e358304-4969-41c7-bc43-cb6ad87b3c22',
   'Who are your ''friends in court''?',
   false,
   NOW(),
@@ -11589,7 +11589,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  'e04776d0-e6bd-4ef7-88f6-029fbbbf5a8d',
+  '5e358304-4969-41c7-bc43-cb6ad87b3c22',
   'How does your audience like to consume information?',
   false,
   NOW(),
@@ -11606,9 +11606,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'e04776d0-e6bd-4ef7-88f6-029fbbbf5a8d',
+  '5e358304-4969-41c7-bc43-cb6ad87b3c22',
   'quiz_id',
-  '02ec3fc0-b2bd-41bd-aaaa-14af53fe0ae7',
+  '3262dfef-44ce-4bc5-95f7-ed83c5a04799',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -11623,9 +11623,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '02ec3fc0-b2bd-41bd-aaaa-14af53fe0ae7',
+  '3262dfef-44ce-4bc5-95f7-ed83c5a04799',
   'questions',
-  'e04776d0-e6bd-4ef7-88f6-029fbbbf5a8d',
+  '5e358304-4969-41c7-bc43-cb6ad87b3c22',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -11642,10 +11642,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '7239df5a-0d68-49c0-bab7-fd782ca76ede', -- Generated UUID for the question
+  'cc4749ce-6ba1-421f-b984-807225c35740', -- Generated UUID for the question
   'Pick the question that corresponds with the ''Access'' quadrant',
-  '02ec3fc0-b2bd-41bd-aaaa-14af53fe0ae7', -- Quiz ID
-  '02ec3fc0-b2bd-41bd-aaaa-14af53fe0ae7', -- Quiz ID (duplicate)
+  '3262dfef-44ce-4bc5-95f7-ed83c5a04799', -- Quiz ID
+  '3262dfef-44ce-4bc5-95f7-ed83c5a04799', -- Quiz ID (duplicate)
   'single-answer',
   '',
   4,
@@ -11665,7 +11665,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '7239df5a-0d68-49c0-bab7-fd782ca76ede',
+  'cc4749ce-6ba1-421f-b984-807225c35740',
   'How does your audience like to consume information?',
   true,
   NOW(),
@@ -11684,7 +11684,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '7239df5a-0d68-49c0-bab7-fd782ca76ede',
+  'cc4749ce-6ba1-421f-b984-807225c35740',
   'What is their style, energy level, and emotional state?',
   false,
   NOW(),
@@ -11703,7 +11703,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '7239df5a-0d68-49c0-bab7-fd782ca76ede',
+  'cc4749ce-6ba1-421f-b984-807225c35740',
   'How do decisions get made?',
   false,
   NOW(),
@@ -11722,7 +11722,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  '7239df5a-0d68-49c0-bab7-fd782ca76ede',
+  'cc4749ce-6ba1-421f-b984-807225c35740',
   'Who are your ''friends in court''?',
   false,
   NOW(),
@@ -11739,9 +11739,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '7239df5a-0d68-49c0-bab7-fd782ca76ede',
+  'cc4749ce-6ba1-421f-b984-807225c35740',
   'quiz_id',
-  '02ec3fc0-b2bd-41bd-aaaa-14af53fe0ae7',
+  '3262dfef-44ce-4bc5-95f7-ed83c5a04799',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -11756,9 +11756,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '02ec3fc0-b2bd-41bd-aaaa-14af53fe0ae7',
+  '3262dfef-44ce-4bc5-95f7-ed83c5a04799',
   'questions',
-  '7239df5a-0d68-49c0-bab7-fd782ca76ede',
+  'cc4749ce-6ba1-421f-b984-807225c35740',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -11775,10 +11775,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '548c73ce-c1e3-4ede-a95f-517821008b96', -- Generated UUID for the question
+  '2540d290-27e8-408f-8de3-3e2f7f0c636b', -- Generated UUID for the question
   'Pick the question that corresponds with the ''Power'' quadrant',
-  '02ec3fc0-b2bd-41bd-aaaa-14af53fe0ae7', -- Quiz ID
-  '02ec3fc0-b2bd-41bd-aaaa-14af53fe0ae7', -- Quiz ID (duplicate)
+  '3262dfef-44ce-4bc5-95f7-ed83c5a04799', -- Quiz ID
+  '3262dfef-44ce-4bc5-95f7-ed83c5a04799', -- Quiz ID (duplicate)
   'single-answer',
   '',
   5,
@@ -11798,7 +11798,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '548c73ce-c1e3-4ede-a95f-517821008b96',
+  '2540d290-27e8-408f-8de3-3e2f7f0c636b',
   'How does your audience like to consume information?',
   false,
   NOW(),
@@ -11817,7 +11817,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '548c73ce-c1e3-4ede-a95f-517821008b96',
+  '2540d290-27e8-408f-8de3-3e2f7f0c636b',
   'Who are your ''friends in court''?',
   false,
   NOW(),
@@ -11836,7 +11836,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '548c73ce-c1e3-4ede-a95f-517821008b96',
+  '2540d290-27e8-408f-8de3-3e2f7f0c636b',
   'How do decisions get made?',
   true,
   NOW(),
@@ -11855,7 +11855,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  '548c73ce-c1e3-4ede-a95f-517821008b96',
+  '2540d290-27e8-408f-8de3-3e2f7f0c636b',
   'What is their style, energy level, and emotional state?',
   false,
   NOW(),
@@ -11872,9 +11872,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '548c73ce-c1e3-4ede-a95f-517821008b96',
+  '2540d290-27e8-408f-8de3-3e2f7f0c636b',
   'quiz_id',
-  '02ec3fc0-b2bd-41bd-aaaa-14af53fe0ae7',
+  '3262dfef-44ce-4bc5-95f7-ed83c5a04799',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -11889,9 +11889,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '02ec3fc0-b2bd-41bd-aaaa-14af53fe0ae7',
+  '3262dfef-44ce-4bc5-95f7-ed83c5a04799',
   'questions',
-  '548c73ce-c1e3-4ede-a95f-517821008b96',
+  '2540d290-27e8-408f-8de3-3e2f7f0c636b',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -11908,10 +11908,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '1db4316f-6812-4f51-9ef4-daae2716220b', -- Generated UUID for the question
+  'be0c1941-9315-4b5a-9453-fcb556a904af', -- Generated UUID for the question
   'Pick the question that corresponds with the ''Resistance'' quadrant',
-  '02ec3fc0-b2bd-41bd-aaaa-14af53fe0ae7', -- Quiz ID
-  '02ec3fc0-b2bd-41bd-aaaa-14af53fe0ae7', -- Quiz ID (duplicate)
+  '3262dfef-44ce-4bc5-95f7-ed83c5a04799', -- Quiz ID
+  '3262dfef-44ce-4bc5-95f7-ed83c5a04799', -- Quiz ID (duplicate)
   'single-answer',
   '',
   6,
@@ -11931,7 +11931,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '1db4316f-6812-4f51-9ef4-daae2716220b',
+  'be0c1941-9315-4b5a-9453-fcb556a904af',
   'How does your audience like to consume information?',
   false,
   NOW(),
@@ -11950,7 +11950,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '1db4316f-6812-4f51-9ef4-daae2716220b',
+  'be0c1941-9315-4b5a-9453-fcb556a904af',
   'Who are your ''friends in court''?',
   true,
   NOW(),
@@ -11969,7 +11969,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '1db4316f-6812-4f51-9ef4-daae2716220b',
+  'be0c1941-9315-4b5a-9453-fcb556a904af',
   'How do decisions get made?',
   false,
   NOW(),
@@ -11988,7 +11988,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  '1db4316f-6812-4f51-9ef4-daae2716220b',
+  'be0c1941-9315-4b5a-9453-fcb556a904af',
   'What is their style, energy level, and emotional state?',
   false,
   NOW(),
@@ -12005,9 +12005,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '1db4316f-6812-4f51-9ef4-daae2716220b',
+  'be0c1941-9315-4b5a-9453-fcb556a904af',
   'quiz_id',
-  '02ec3fc0-b2bd-41bd-aaaa-14af53fe0ae7',
+  '3262dfef-44ce-4bc5-95f7-ed83c5a04799',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -12022,14 +12022,14 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '02ec3fc0-b2bd-41bd-aaaa-14af53fe0ae7',
+  '3262dfef-44ce-4bc5-95f7-ed83c5a04799',
   'questions',
-  '1db4316f-6812-4f51-9ef4-daae2716220b',
+  'be0c1941-9315-4b5a-9453-fcb556a904af',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
 
--- Questions for quiz: Using Stories Quiz (using-stories-quiz, ID: a1c6b847-5cd1-4c26-9d6e-770ade320277)
+-- Questions for quiz: Using Stories Quiz (using-stories-quiz, ID: a19f8463-2bc2-4c10-89d5-09d7a7f1d8bd)
 -- Insert question 1 for quiz: Using Stories Quiz
 INSERT INTO payload.quiz_questions (
   id,
@@ -12042,10 +12042,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  'ee757550-c248-4101-97eb-66d1bd4d10f2', -- Generated UUID for the question
+  '1232503d-210c-48a0-8900-3237e6f0283b', -- Generated UUID for the question
   'Why are stories like a cup?',
-  'a1c6b847-5cd1-4c26-9d6e-770ade320277', -- Quiz ID
-  'a1c6b847-5cd1-4c26-9d6e-770ade320277', -- Quiz ID (duplicate)
+  'a19f8463-2bc2-4c10-89d5-09d7a7f1d8bd', -- Quiz ID
+  'a19f8463-2bc2-4c10-89d5-09d7a7f1d8bd', -- Quiz ID (duplicate)
   'single-answer',
   '',
   0,
@@ -12065,7 +12065,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  'ee757550-c248-4101-97eb-66d1bd4d10f2',
+  '1232503d-210c-48a0-8900-3237e6f0283b',
   'Because they are the brain''s natural container for information',
   true,
   NOW(),
@@ -12084,7 +12084,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  'ee757550-c248-4101-97eb-66d1bd4d10f2',
+  '1232503d-210c-48a0-8900-3237e6f0283b',
   'Because they are simple and straightforward',
   false,
   NOW(),
@@ -12103,7 +12103,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  'ee757550-c248-4101-97eb-66d1bd4d10f2',
+  '1232503d-210c-48a0-8900-3237e6f0283b',
   'Because you can put in them whatever you like',
   false,
   NOW(),
@@ -12122,7 +12122,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  'ee757550-c248-4101-97eb-66d1bd4d10f2',
+  '1232503d-210c-48a0-8900-3237e6f0283b',
   'Because they are delicate, and need to be handled carefully',
   false,
   NOW(),
@@ -12139,9 +12139,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'ee757550-c248-4101-97eb-66d1bd4d10f2',
+  '1232503d-210c-48a0-8900-3237e6f0283b',
   'quiz_id',
-  'a1c6b847-5cd1-4c26-9d6e-770ade320277',
+  'a19f8463-2bc2-4c10-89d5-09d7a7f1d8bd',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -12156,9 +12156,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'a1c6b847-5cd1-4c26-9d6e-770ade320277',
+  'a19f8463-2bc2-4c10-89d5-09d7a7f1d8bd',
   'questions',
-  'ee757550-c248-4101-97eb-66d1bd4d10f2',
+  '1232503d-210c-48a0-8900-3237e6f0283b',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -12175,10 +12175,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '23acf263-5272-490e-8366-0c06305a3a3b', -- Generated UUID for the question
+  '99be9267-1aee-403e-968f-16e17860790f', -- Generated UUID for the question
   'What do stories add to our presentations? Why should be use them?',
-  'a1c6b847-5cd1-4c26-9d6e-770ade320277', -- Quiz ID
-  'a1c6b847-5cd1-4c26-9d6e-770ade320277', -- Quiz ID (duplicate)
+  'a19f8463-2bc2-4c10-89d5-09d7a7f1d8bd', -- Quiz ID
+  'a19f8463-2bc2-4c10-89d5-09d7a7f1d8bd', -- Quiz ID (duplicate)
   'multi-answer',
   '',
   1,
@@ -12198,7 +12198,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '23acf263-5272-490e-8366-0c06305a3a3b',
+  '99be9267-1aee-403e-968f-16e17860790f',
   'Stories stop disagreement',
   true,
   NOW(),
@@ -12217,7 +12217,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '23acf263-5272-490e-8366-0c06305a3a3b',
+  '99be9267-1aee-403e-968f-16e17860790f',
   'Stories make people laugh',
   false,
   NOW(),
@@ -12236,7 +12236,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '23acf263-5272-490e-8366-0c06305a3a3b',
+  '99be9267-1aee-403e-968f-16e17860790f',
   'Stories lull your audience to sleep',
   false,
   NOW(),
@@ -12255,7 +12255,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  '23acf263-5272-490e-8366-0c06305a3a3b',
+  '99be9267-1aee-403e-968f-16e17860790f',
   'Stories make your message more memorable',
   true,
   NOW(),
@@ -12274,7 +12274,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   4,
-  '23acf263-5272-490e-8366-0c06305a3a3b',
+  '99be9267-1aee-403e-968f-16e17860790f',
   'Stories increase trust',
   true,
   NOW(),
@@ -12291,9 +12291,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '23acf263-5272-490e-8366-0c06305a3a3b',
+  '99be9267-1aee-403e-968f-16e17860790f',
   'quiz_id',
-  'a1c6b847-5cd1-4c26-9d6e-770ade320277',
+  'a19f8463-2bc2-4c10-89d5-09d7a7f1d8bd',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -12308,9 +12308,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'a1c6b847-5cd1-4c26-9d6e-770ade320277',
+  'a19f8463-2bc2-4c10-89d5-09d7a7f1d8bd',
   'questions',
-  '23acf263-5272-490e-8366-0c06305a3a3b',
+  '99be9267-1aee-403e-968f-16e17860790f',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -12327,10 +12327,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '1a369dd3-aed8-4b6a-8dec-02bbf6c1c583', -- Generated UUID for the question
+  '38f72263-1f7e-4b86-bf02-048dcf755928', -- Generated UUID for the question
   'What characteristics make stories memorable?',
-  'a1c6b847-5cd1-4c26-9d6e-770ade320277', -- Quiz ID
-  'a1c6b847-5cd1-4c26-9d6e-770ade320277', -- Quiz ID (duplicate)
+  'a19f8463-2bc2-4c10-89d5-09d7a7f1d8bd', -- Quiz ID
+  'a19f8463-2bc2-4c10-89d5-09d7a7f1d8bd', -- Quiz ID (duplicate)
   'multi-answer',
   '',
   2,
@@ -12350,7 +12350,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '1a369dd3-aed8-4b6a-8dec-02bbf6c1c583',
+  '38f72263-1f7e-4b86-bf02-048dcf755928',
   'Concreteness',
   true,
   NOW(),
@@ -12369,7 +12369,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '1a369dd3-aed8-4b6a-8dec-02bbf6c1c583',
+  '38f72263-1f7e-4b86-bf02-048dcf755928',
   'Unexpectedness',
   true,
   NOW(),
@@ -12388,7 +12388,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '1a369dd3-aed8-4b6a-8dec-02bbf6c1c583',
+  '38f72263-1f7e-4b86-bf02-048dcf755928',
   'Credibility',
   true,
   NOW(),
@@ -12407,7 +12407,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  '1a369dd3-aed8-4b6a-8dec-02bbf6c1c583',
+  '38f72263-1f7e-4b86-bf02-048dcf755928',
   'Simplicity',
   true,
   NOW(),
@@ -12426,7 +12426,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   4,
-  '1a369dd3-aed8-4b6a-8dec-02bbf6c1c583',
+  '38f72263-1f7e-4b86-bf02-048dcf755928',
   'Emotion',
   true,
   NOW(),
@@ -12443,9 +12443,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '1a369dd3-aed8-4b6a-8dec-02bbf6c1c583',
+  '38f72263-1f7e-4b86-bf02-048dcf755928',
   'quiz_id',
-  'a1c6b847-5cd1-4c26-9d6e-770ade320277',
+  'a19f8463-2bc2-4c10-89d5-09d7a7f1d8bd',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -12460,14 +12460,14 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'a1c6b847-5cd1-4c26-9d6e-770ade320277',
+  'a19f8463-2bc2-4c10-89d5-09d7a7f1d8bd',
   'questions',
-  '1a369dd3-aed8-4b6a-8dec-02bbf6c1c583',
+  '38f72263-1f7e-4b86-bf02-048dcf755928',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
 
--- Questions for quiz: Visual Perception and Communication Quiz (visual-perception-quiz, ID: 90e03bf3-f795-46f7-adf6-8412e54d9180)
+-- Questions for quiz: Visual Perception and Communication Quiz (visual-perception-quiz, ID: 09fedf13-0b88-4b7e-aa0e-90e77de8e13d)
 -- Insert question 1 for quiz: Visual Perception and Communication Quiz
 INSERT INTO payload.quiz_questions (
   id,
@@ -12480,10 +12480,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '202c62df-8351-450a-bfbd-3f54c6d18c01', -- Generated UUID for the question
+  '879e327a-abf6-4fb5-bcb1-4a2a01f121d7', -- Generated UUID for the question
   'What is visual thinking?',
-  '90e03bf3-f795-46f7-adf6-8412e54d9180', -- Quiz ID
-  '90e03bf3-f795-46f7-adf6-8412e54d9180', -- Quiz ID (duplicate)
+  '09fedf13-0b88-4b7e-aa0e-90e77de8e13d', -- Quiz ID
+  '09fedf13-0b88-4b7e-aa0e-90e77de8e13d', -- Quiz ID (duplicate)
   'single-answer',
   '',
   0,
@@ -12503,7 +12503,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '202c62df-8351-450a-bfbd-3f54c6d18c01',
+  '879e327a-abf6-4fb5-bcb1-4a2a01f121d7',
   'Doodling',
   false,
   NOW(),
@@ -12522,7 +12522,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '202c62df-8351-450a-bfbd-3f54c6d18c01',
+  '879e327a-abf6-4fb5-bcb1-4a2a01f121d7',
   'The phenomenon of thinking through visual processing',
   true,
   NOW(),
@@ -12541,7 +12541,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '202c62df-8351-450a-bfbd-3f54c6d18c01',
+  '879e327a-abf6-4fb5-bcb1-4a2a01f121d7',
   'A thought cloud',
   false,
   NOW(),
@@ -12560,7 +12560,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  '202c62df-8351-450a-bfbd-3f54c6d18c01',
+  '879e327a-abf6-4fb5-bcb1-4a2a01f121d7',
   'Complex visual charts',
   false,
   NOW(),
@@ -12577,9 +12577,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '202c62df-8351-450a-bfbd-3f54c6d18c01',
+  '879e327a-abf6-4fb5-bcb1-4a2a01f121d7',
   'quiz_id',
-  '90e03bf3-f795-46f7-adf6-8412e54d9180',
+  '09fedf13-0b88-4b7e-aa0e-90e77de8e13d',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -12594,9 +12594,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '90e03bf3-f795-46f7-adf6-8412e54d9180',
+  '09fedf13-0b88-4b7e-aa0e-90e77de8e13d',
   'questions',
-  '202c62df-8351-450a-bfbd-3f54c6d18c01',
+  '879e327a-abf6-4fb5-bcb1-4a2a01f121d7',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -12613,10 +12613,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  'dd70992d-43fa-48bf-ae47-f0f4cd577924', -- Generated UUID for the question
+  'd9b2e335-2664-49e1-9854-eb497e5053e3', -- Generated UUID for the question
   'Match the type of mental processing with the characteristic: ''Conscious, sequential, and slow/hard''',
-  '90e03bf3-f795-46f7-adf6-8412e54d9180', -- Quiz ID
-  '90e03bf3-f795-46f7-adf6-8412e54d9180', -- Quiz ID (duplicate)
+  '09fedf13-0b88-4b7e-aa0e-90e77de8e13d', -- Quiz ID
+  '09fedf13-0b88-4b7e-aa0e-90e77de8e13d', -- Quiz ID (duplicate)
   'single-answer',
   '',
   1,
@@ -12636,7 +12636,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  'dd70992d-43fa-48bf-ae47-f0f4cd577924',
+  'd9b2e335-2664-49e1-9854-eb497e5053e3',
   'Attentive processing',
   true,
   NOW(),
@@ -12655,7 +12655,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  'dd70992d-43fa-48bf-ae47-f0f4cd577924',
+  'd9b2e335-2664-49e1-9854-eb497e5053e3',
   'Pre-attentive processing',
   false,
   NOW(),
@@ -12672,9 +12672,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'dd70992d-43fa-48bf-ae47-f0f4cd577924',
+  'd9b2e335-2664-49e1-9854-eb497e5053e3',
   'quiz_id',
-  '90e03bf3-f795-46f7-adf6-8412e54d9180',
+  '09fedf13-0b88-4b7e-aa0e-90e77de8e13d',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -12689,9 +12689,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '90e03bf3-f795-46f7-adf6-8412e54d9180',
+  '09fedf13-0b88-4b7e-aa0e-90e77de8e13d',
   'questions',
-  'dd70992d-43fa-48bf-ae47-f0f4cd577924',
+  'd9b2e335-2664-49e1-9854-eb497e5053e3',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -12708,10 +12708,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '0e98dc52-2de8-46a8-909f-124b73ddaf82', -- Generated UUID for the question
+  '4f3bf0b9-92e8-44f1-ad8b-03a72a40cb31', -- Generated UUID for the question
   'Match the type of mental processing with the characteristic: ''Below the level of consciousness, very rapid''',
-  '90e03bf3-f795-46f7-adf6-8412e54d9180', -- Quiz ID
-  '90e03bf3-f795-46f7-adf6-8412e54d9180', -- Quiz ID (duplicate)
+  '09fedf13-0b88-4b7e-aa0e-90e77de8e13d', -- Quiz ID
+  '09fedf13-0b88-4b7e-aa0e-90e77de8e13d', -- Quiz ID (duplicate)
   'single-answer',
   '',
   2,
@@ -12731,7 +12731,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '0e98dc52-2de8-46a8-909f-124b73ddaf82',
+  '4f3bf0b9-92e8-44f1-ad8b-03a72a40cb31',
   'Attentive processing',
   false,
   NOW(),
@@ -12750,7 +12750,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '0e98dc52-2de8-46a8-909f-124b73ddaf82',
+  '4f3bf0b9-92e8-44f1-ad8b-03a72a40cb31',
   'Pre-attentive processing',
   true,
   NOW(),
@@ -12767,9 +12767,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '0e98dc52-2de8-46a8-909f-124b73ddaf82',
+  '4f3bf0b9-92e8-44f1-ad8b-03a72a40cb31',
   'quiz_id',
-  '90e03bf3-f795-46f7-adf6-8412e54d9180',
+  '09fedf13-0b88-4b7e-aa0e-90e77de8e13d',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -12784,9 +12784,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '90e03bf3-f795-46f7-adf6-8412e54d9180',
+  '09fedf13-0b88-4b7e-aa0e-90e77de8e13d',
   'questions',
-  '0e98dc52-2de8-46a8-909f-124b73ddaf82',
+  '4f3bf0b9-92e8-44f1-ad8b-03a72a40cb31',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -12803,10 +12803,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '79f433d0-b118-42a9-8429-22f4e39e5248', -- Generated UUID for the question
+  '02374c24-f98d-4314-974a-3179aeb29d48', -- Generated UUID for the question
   'What are the visual attribute triggers of pre-attentive processing?',
-  '90e03bf3-f795-46f7-adf6-8412e54d9180', -- Quiz ID
-  '90e03bf3-f795-46f7-adf6-8412e54d9180', -- Quiz ID (duplicate)
+  '09fedf13-0b88-4b7e-aa0e-90e77de8e13d', -- Quiz ID
+  '09fedf13-0b88-4b7e-aa0e-90e77de8e13d', -- Quiz ID (duplicate)
   'multi-answer',
   '',
   3,
@@ -12826,7 +12826,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '79f433d0-b118-42a9-8429-22f4e39e5248',
+  '02374c24-f98d-4314-974a-3179aeb29d48',
   'Length',
   true,
   NOW(),
@@ -12845,7 +12845,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '79f433d0-b118-42a9-8429-22f4e39e5248',
+  '02374c24-f98d-4314-974a-3179aeb29d48',
   '3D position',
   false,
   NOW(),
@@ -12864,7 +12864,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '79f433d0-b118-42a9-8429-22f4e39e5248',
+  '02374c24-f98d-4314-974a-3179aeb29d48',
   'Color',
   false,
   NOW(),
@@ -12883,7 +12883,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  '79f433d0-b118-42a9-8429-22f4e39e5248',
+  '02374c24-f98d-4314-974a-3179aeb29d48',
   'Size',
   true,
   NOW(),
@@ -12902,7 +12902,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   4,
-  '79f433d0-b118-42a9-8429-22f4e39e5248',
+  '02374c24-f98d-4314-974a-3179aeb29d48',
   'Motion',
   false,
   NOW(),
@@ -12921,7 +12921,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   5,
-  '79f433d0-b118-42a9-8429-22f4e39e5248',
+  '02374c24-f98d-4314-974a-3179aeb29d48',
   'Hue',
   true,
   NOW(),
@@ -12940,7 +12940,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   6,
-  '79f433d0-b118-42a9-8429-22f4e39e5248',
+  '02374c24-f98d-4314-974a-3179aeb29d48',
   'Texture',
   false,
   NOW(),
@@ -12959,7 +12959,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   7,
-  '79f433d0-b118-42a9-8429-22f4e39e5248',
+  '02374c24-f98d-4314-974a-3179aeb29d48',
   'Shape',
   true,
   NOW(),
@@ -12978,7 +12978,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   8,
-  '79f433d0-b118-42a9-8429-22f4e39e5248',
+  '02374c24-f98d-4314-974a-3179aeb29d48',
   'Width',
   true,
   NOW(),
@@ -12997,7 +12997,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   9,
-  '79f433d0-b118-42a9-8429-22f4e39e5248',
+  '02374c24-f98d-4314-974a-3179aeb29d48',
   'Orientation',
   true,
   NOW(),
@@ -13016,7 +13016,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   10,
-  '79f433d0-b118-42a9-8429-22f4e39e5248',
+  '02374c24-f98d-4314-974a-3179aeb29d48',
   'Enclosure',
   true,
   NOW(),
@@ -13035,7 +13035,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   11,
-  '79f433d0-b118-42a9-8429-22f4e39e5248',
+  '02374c24-f98d-4314-974a-3179aeb29d48',
   '2D position',
   true,
   NOW(),
@@ -13054,7 +13054,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   12,
-  '79f433d0-b118-42a9-8429-22f4e39e5248',
+  '02374c24-f98d-4314-974a-3179aeb29d48',
   'Intensity',
   true,
   NOW(),
@@ -13071,9 +13071,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '79f433d0-b118-42a9-8429-22f4e39e5248',
+  '02374c24-f98d-4314-974a-3179aeb29d48',
   'quiz_id',
-  '90e03bf3-f795-46f7-adf6-8412e54d9180',
+  '09fedf13-0b88-4b7e-aa0e-90e77de8e13d',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -13088,14 +13088,14 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '90e03bf3-f795-46f7-adf6-8412e54d9180',
+  '09fedf13-0b88-4b7e-aa0e-90e77de8e13d',
   'questions',
-  '79f433d0-b118-42a9-8429-22f4e39e5248',
+  '02374c24-f98d-4314-974a-3179aeb29d48',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
 
--- Questions for quiz: The Why (Next Steps) Quiz (why-next-steps-quiz, ID: 456da77a-3853-4d43-9663-5e7386fb61b0)
+-- Questions for quiz: The Why (Next Steps) Quiz (why-next-steps-quiz, ID: 77bff2ea-052c-4d92-88d2-b18db431253f)
 -- Insert question 1 for quiz: The Why (Next Steps) Quiz
 INSERT INTO payload.quiz_questions (
   id,
@@ -13108,10 +13108,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  'a898ab1d-c847-4b30-abc5-92834b34f368', -- Generated UUID for the question
+  '48d78433-142b-472d-8e05-d0bba4716316', -- Generated UUID for the question
   'Who is Cicero?',
-  '456da77a-3853-4d43-9663-5e7386fb61b0', -- Quiz ID
-  '456da77a-3853-4d43-9663-5e7386fb61b0', -- Quiz ID (duplicate)
+  '77bff2ea-052c-4d92-88d2-b18db431253f', -- Quiz ID
+  '77bff2ea-052c-4d92-88d2-b18db431253f', -- Quiz ID (duplicate)
   'single-answer',
   '',
   0,
@@ -13131,7 +13131,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  'a898ab1d-c847-4b30-abc5-92834b34f368',
+  '48d78433-142b-472d-8e05-d0bba4716316',
   'A PowerPoint macro',
   false,
   NOW(),
@@ -13150,7 +13150,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  'a898ab1d-c847-4b30-abc5-92834b34f368',
+  '48d78433-142b-472d-8e05-d0bba4716316',
   'Some Italian dude who wasn''t nearly as effective as Demosthenes',
   true,
   NOW(),
@@ -13169,7 +13169,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  'a898ab1d-c847-4b30-abc5-92834b34f368',
+  '48d78433-142b-472d-8e05-d0bba4716316',
   'Drake''s blind brother',
   false,
   NOW(),
@@ -13186,9 +13186,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'a898ab1d-c847-4b30-abc5-92834b34f368',
+  '48d78433-142b-472d-8e05-d0bba4716316',
   'quiz_id',
-  '456da77a-3853-4d43-9663-5e7386fb61b0',
+  '77bff2ea-052c-4d92-88d2-b18db431253f',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -13203,9 +13203,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '456da77a-3853-4d43-9663-5e7386fb61b0',
+  '77bff2ea-052c-4d92-88d2-b18db431253f',
   'questions',
-  'a898ab1d-c847-4b30-abc5-92834b34f368',
+  '48d78433-142b-472d-8e05-d0bba4716316',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -13222,10 +13222,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  'b2f37b53-1576-405a-8877-63b1b180bfcb', -- Generated UUID for the question
+  'c1048406-0616-4ba7-9e21-852b91e55e42', -- Generated UUID for the question
   'What is the ultimate objective of our presentation?',
-  '456da77a-3853-4d43-9663-5e7386fb61b0', -- Quiz ID
-  '456da77a-3853-4d43-9663-5e7386fb61b0', -- Quiz ID (duplicate)
+  '77bff2ea-052c-4d92-88d2-b18db431253f', -- Quiz ID
+  '77bff2ea-052c-4d92-88d2-b18db431253f', -- Quiz ID (duplicate)
   'single-answer',
   '',
   1,
@@ -13245,7 +13245,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  'b2f37b53-1576-405a-8877-63b1b180bfcb',
+  'c1048406-0616-4ba7-9e21-852b91e55e42',
   'To prompt action!',
   true,
   NOW(),
@@ -13264,7 +13264,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  'b2f37b53-1576-405a-8877-63b1b180bfcb',
+  'c1048406-0616-4ba7-9e21-852b91e55e42',
   'To get it over with',
   false,
   NOW(),
@@ -13283,7 +13283,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  'b2f37b53-1576-405a-8877-63b1b180bfcb',
+  'c1048406-0616-4ba7-9e21-852b91e55e42',
   'To get praise for our slick PowerPoint skills',
   false,
   NOW(),
@@ -13300,9 +13300,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'b2f37b53-1576-405a-8877-63b1b180bfcb',
+  'c1048406-0616-4ba7-9e21-852b91e55e42',
   'quiz_id',
-  '456da77a-3853-4d43-9663-5e7386fb61b0',
+  '77bff2ea-052c-4d92-88d2-b18db431253f',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -13317,9 +13317,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '456da77a-3853-4d43-9663-5e7386fb61b0',
+  '77bff2ea-052c-4d92-88d2-b18db431253f',
   'questions',
-  'b2f37b53-1576-405a-8877-63b1b180bfcb',
+  'c1048406-0616-4ba7-9e21-852b91e55e42',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -13336,10 +13336,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  'c318abe8-7420-4098-b5e0-414acf609899', -- Generated UUID for the question
+  '5119d345-721c-4fbf-b759-51899e285553', -- Generated UUID for the question
   'Which of the following are reasonable next steps to follow your presentation?',
-  '456da77a-3853-4d43-9663-5e7386fb61b0', -- Quiz ID
-  '456da77a-3853-4d43-9663-5e7386fb61b0', -- Quiz ID (duplicate)
+  '77bff2ea-052c-4d92-88d2-b18db431253f', -- Quiz ID
+  '77bff2ea-052c-4d92-88d2-b18db431253f', -- Quiz ID (duplicate)
   'multi-answer',
   '',
   2,
@@ -13359,7 +13359,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  'c318abe8-7420-4098-b5e0-414acf609899',
+  '5119d345-721c-4fbf-b759-51899e285553',
   'For your to develop a full proposal for the customer',
   false,
   NOW(),
@@ -13378,7 +13378,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  'c318abe8-7420-4098-b5e0-414acf609899',
+  '5119d345-721c-4fbf-b759-51899e285553',
   'For the customer to test your software as part of a trial',
   true,
   NOW(),
@@ -13397,7 +13397,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  'c318abe8-7420-4098-b5e0-414acf609899',
+  '5119d345-721c-4fbf-b759-51899e285553',
   'For the customer to schedule a follow-up demo with field staff',
   true,
   NOW(),
@@ -13414,9 +13414,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'c318abe8-7420-4098-b5e0-414acf609899',
+  '5119d345-721c-4fbf-b759-51899e285553',
   'quiz_id',
-  '456da77a-3853-4d43-9663-5e7386fb61b0',
+  '77bff2ea-052c-4d92-88d2-b18db431253f',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -13431,9 +13431,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '456da77a-3853-4d43-9663-5e7386fb61b0',
+  '77bff2ea-052c-4d92-88d2-b18db431253f',
   'questions',
-  'c318abe8-7420-4098-b5e0-414acf609899',
+  '5119d345-721c-4fbf-b759-51899e285553',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -13450,10 +13450,10 @@ INSERT INTO payload.quiz_questions (
   created_at,
   updated_at
 ) VALUES (
-  '31304eba-c50d-435d-8519-0994f0e07b2c', -- Generated UUID for the question
+  '624d10b0-107e-4fe0-bd85-34d3bf46611a', -- Generated UUID for the question
   'Where should the next steps go in your presentation?',
-  '456da77a-3853-4d43-9663-5e7386fb61b0', -- Quiz ID
-  '456da77a-3853-4d43-9663-5e7386fb61b0', -- Quiz ID (duplicate)
+  '77bff2ea-052c-4d92-88d2-b18db431253f', -- Quiz ID
+  '77bff2ea-052c-4d92-88d2-b18db431253f', -- Quiz ID (duplicate)
   'single-answer',
   '',
   3,
@@ -13473,7 +13473,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   0,
-  '31304eba-c50d-435d-8519-0994f0e07b2c',
+  '624d10b0-107e-4fe0-bd85-34d3bf46611a',
   'In your introduction, that is why you need to identify them at the beginning',
   false,
   NOW(),
@@ -13492,7 +13492,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   1,
-  '31304eba-c50d-435d-8519-0994f0e07b2c',
+  '624d10b0-107e-4fe0-bd85-34d3bf46611a',
   'In the footnotes',
   false,
   NOW(),
@@ -13511,7 +13511,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   2,
-  '31304eba-c50d-435d-8519-0994f0e07b2c',
+  '624d10b0-107e-4fe0-bd85-34d3bf46611a',
   'In a follow-up email',
   false,
   NOW(),
@@ -13530,7 +13530,7 @@ INSERT INTO payload.quiz_questions_options (
 ) VALUES (
   gen_random_uuid(),
   3,
-  '31304eba-c50d-435d-8519-0994f0e07b2c',
+  '624d10b0-107e-4fe0-bd85-34d3bf46611a',
   'At the end of the presentation, but we need to identify their nature early as it might inform the development of the rest of the presentation',
   true,
   NOW(),
@@ -13547,9 +13547,9 @@ INSERT INTO payload.quiz_questions_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '31304eba-c50d-435d-8519-0994f0e07b2c',
+  '624d10b0-107e-4fe0-bd85-34d3bf46611a',
   'quiz_id',
-  '456da77a-3853-4d43-9663-5e7386fb61b0',
+  '77bff2ea-052c-4d92-88d2-b18db431253f',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
@@ -13564,9 +13564,9 @@ INSERT INTO payload.course_quizzes_rels (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  '456da77a-3853-4d43-9663-5e7386fb61b0',
+  '77bff2ea-052c-4d92-88d2-b18db431253f',
   'questions',
-  '31304eba-c50d-435d-8519-0994f0e07b2c',
+  '624d10b0-107e-4fe0-bd85-34d3bf46611a',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists

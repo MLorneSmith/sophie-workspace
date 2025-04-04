@@ -23,14 +23,15 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
     // Define the SQL seed files in the order they should be executed
     const seedFiles = [
       '01-courses.sql',
+      '07-media.sql',
       '02-lessons.sql',
       '03-quizzes.sql',
       '04-questions.sql',
       '05-surveys.sql',
       '06-survey-questions.sql',
-      '07-documentation.sql',
+      '08-documentation.sql',
       '08-posts.sql',
-      '09-fix-quiz-questions.sql',
+      '10-fix-quiz-questions.sql',
     ]
 
     // Execute each SQL file
@@ -96,6 +97,14 @@ async function fixRelationships(db: any) {
     `)
     console.log(`Updated quiz_id_id for ${quizLessonsUpdated} course lessons`)
 
+    // Update featured_image_id_id to match featured_image_id
+    const { rowCount: featuredImageLessonsUpdated } = await db.execute(sql`
+      UPDATE payload.course_lessons 
+      SET featured_image_id_id = featured_image_id 
+      WHERE featured_image_id IS NOT NULL AND featured_image_id_id IS NULL
+    `)
+    console.log(`Updated featured_image_id_id for ${featuredImageLessonsUpdated} course lessons`)
+
     // 2. Fix Course Quizzes Relationships
     console.log('Fixing course_quizzes relationships...')
 
@@ -160,7 +169,38 @@ async function fixRelationships(db: any) {
     `)
     console.log(`Added ${docRelationshipsAdded} missing documentation parent-child relationships`)
 
-    // 4. Fix Survey Questions Relationships
+    // 4. Fix Media Relationships
+    console.log('Fixing media relationships...')
+
+    // Create missing bidirectional relationships from course lessons to media
+    const { rowCount: mediaRelationshipsAdded } = await db.execute(sql`
+      INSERT INTO payload.course_lessons_rels (
+        id,
+        _parent_id,
+        field,
+        value,
+        created_at,
+        updated_at
+      )
+      SELECT 
+        gen_random_uuid(),
+        l.id,
+        'featured_image',
+        l.featured_image_id,
+        NOW(),
+        NOW()
+      FROM payload.course_lessons l
+      WHERE l.featured_image_id IS NOT NULL
+      AND NOT EXISTS (
+        SELECT 1 FROM payload.course_lessons_rels r
+        WHERE r._parent_id = l.id
+        AND r.field = 'featured_image'
+        AND r.value = l.featured_image_id
+      )
+    `)
+    console.log(`Added ${mediaRelationshipsAdded} missing lesson-to-media relationships`)
+
+    // 5. Fix Survey Questions Relationships
     console.log('Fixing survey_questions relationships...')
 
     // Convert questionspin string values to integer values if needed
@@ -259,6 +299,12 @@ async function verifyContent(db: any) {
   `)
   console.log(`Course lessons count: ${courseLessonsCount[0].count}`)
 
+  // Check media
+  const { rows: mediaCount } = await db.execute(sql`
+    SELECT COUNT(*) as count FROM payload.media
+  `)
+  console.log(`Media count: ${mediaCount[0].count}`)
+
   // Check if any tables are empty
   if (parseInt(docCount[0].count) === 0) {
     console.warn('WARNING: No documentation found!')
@@ -283,6 +329,18 @@ async function verifyContent(db: any) {
   if (parseInt(courseLessonsCount[0].count) === 0) {
     console.warn('WARNING: No course lessons found!')
   }
+
+  if (parseInt(mediaCount[0].count) === 0) {
+    console.warn('WARNING: No media found!')
+  }
+
+  // Verify media relationships with course lessons
+  const { rows: mediaRelationshipsCount } = await db.execute(sql`
+    SELECT COUNT(*) as count
+    FROM payload.course_lessons_rels r
+    WHERE r.field = 'featured_image'
+  `)
+  console.log(`Media relationships count: ${mediaRelationshipsCount[0].count}`)
 
   // Verify course_lessons relationship columns
   const { rows: courseLessonsNullCount } = await db.execute(sql`
@@ -350,6 +408,27 @@ async function verifyContent(db: any) {
     console.log('✅ All documentation entries have proper parent-child relationships')
   }
 
+  // Verify media relationships with course lessons
+  const { rows: mediaMissingRels } = await db.execute(sql`
+    SELECT COUNT(*) as count
+    FROM payload.course_lessons l
+    WHERE l.featured_image_id IS NOT NULL
+    AND NOT EXISTS (
+      SELECT 1 FROM payload.course_lessons_rels r
+      WHERE r._parent_id = l.id
+      AND r.field = 'featured_image'
+      AND r.value = l.featured_image_id
+    )
+  `)
+
+  if (parseInt(mediaMissingRels[0].count) > 0) {
+    console.warn(
+      `WARNING: ${mediaMissingRels[0].count} course lessons are missing media relationships!`,
+    )
+  } else {
+    console.log('✅ All course lessons have proper media relationships')
+  }
+
   // Verify survey questions bidirectional relationships
   const { rows: surveyQuestionsMissingRels } = await db.execute(sql`
     SELECT COUNT(*) as count
@@ -369,6 +448,33 @@ async function verifyContent(db: any) {
     )
   } else {
     console.log('✅ All survey questions have proper bidirectional relationships')
+  }
+
+  // Verify media relationships with posts
+  const { rows: postMediaRelationshipsCount } = await db.execute(sql`
+    SELECT COUNT(*) as count
+    FROM payload.posts_rels r
+    WHERE r.field = 'image_id'
+  `)
+  console.log(`Post media relationships count: ${postMediaRelationshipsCount[0].count}`)
+
+  // Verify posts relationship columns
+  const { rows: postsMissingRels } = await db.execute(sql`
+    SELECT COUNT(*) as count
+    FROM payload.posts p
+    WHERE p.image_id IS NOT NULL
+    AND NOT EXISTS (
+      SELECT 1 FROM payload.posts_rels r
+      WHERE r._parent_id = p.id
+      AND r.field = 'image_id'
+      AND r.value = p.image_id
+    )
+  `)
+
+  if (parseInt(postsMissingRels[0].count) > 0) {
+    console.warn(`WARNING: ${postsMissingRels[0].count} posts are missing media relationships!`)
+  } else {
+    console.log('✅ All posts have proper media relationships')
   }
 }
 
