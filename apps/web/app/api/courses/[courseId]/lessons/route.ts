@@ -29,6 +29,18 @@ export const GET = enhanceRouteHandler(
           : null,
       });
 
+      // Log detailed structure of the first lesson to understand relationship structure
+      if (lessons.docs?.[0]) {
+        const sampleLesson = lessons.docs[0];
+        console.log('API - Detailed sample lesson structure:', {
+          featured_image_id: sampleLesson.featured_image_id,
+          // Check if it's an object with nested properties
+          hasNestedUrl: sampleLesson.featured_image_id?.url ? true : false,
+          // Check if it's a direct property
+          directUrl: sampleLesson.url,
+        });
+      }
+
       return NextResponse.json(lessons);
     } catch (error) {
       console.error('Error fetching course lessons:', error);

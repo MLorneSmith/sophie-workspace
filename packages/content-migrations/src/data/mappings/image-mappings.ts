@@ -33,7 +33,9 @@ export const lessonImageMappings: Record<string, string> = {
   '/cms/images/tools-and-resources/image.png': 'tools_resources.png',
   '/cms/images/using-stories/image.png': 'using_stories.png',
   '/cms/images/visual-perception/image.png': 'visual_perception.png',
-  '/cms/images/fact-based-persuasion/image.png': 'what_structure.png',
+  '/cms/images/fact-based-persuasion/image.png':
+    'fact_based_persuasion_overview.png',
+  '/cms/images/what-is-structure/image.png': 'what_structure.png',
   '/cms/images/before-we-begin/image.png': 'before_we_begin.png',
   '/cms/images/fundamental-design-detail/image.png':
     'detail_elements_of_design.png',

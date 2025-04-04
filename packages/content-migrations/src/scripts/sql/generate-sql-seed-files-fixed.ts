@@ -313,7 +313,7 @@ INSERT INTO payload.media (
   '${actualFilename}',
   '${getMimeType(actualFilename)}',
   0,
-  '${actualFilename}',
+  'https://images.slideheroes.com/${actualFilename}',
   NOW(),
   NOW()
 ) ON CONFLICT (id) DO NOTHING;
@@ -344,7 +344,7 @@ INSERT INTO payload.media (
   '${actualFilename}',
   '${getMimeType(actualFilename)}',
   0,
-  '${actualFilename}',
+  'https://images.slideheroes.com/${actualFilename}',
   NOW(),
   NOW()
 ) ON CONFLICT (id) DO NOTHING;
