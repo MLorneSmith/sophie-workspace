@@ -14,7 +14,7 @@ INSERT INTO payload.course_quizzes (
   created_at,
   updated_at
 ) VALUES (
-  'd8d47714-1318-491d-a0c8-b7e6ea3c6d5e', -- UUID for the quiz
+  '822c47bc-3372-4cac-98e8-1e4b5790e5af', -- UUID for the quiz
   'Standard Graphs Quiz',
   'basic-graphs-quiz',
   'Quiz for Standard Graphs Quiz',
@@ -33,7 +33,7 @@ INSERT INTO payload.course_quizzes (
   created_at,
   updated_at
 ) VALUES (
-  'e1212c23-b22d-4b46-8092-9303691772af', -- UUID for the quiz
+  '90d23e88-2868-4df9-b70b-13f0c8f8c527', -- UUID for the quiz
   'The Fundamental Elements of Design in Detail Quiz',
   'elements-of-design-detail-quiz',
   'Quiz for The Fundamental Elements of Design in Detail Quiz',
@@ -52,7 +52,7 @@ INSERT INTO payload.course_quizzes (
   created_at,
   updated_at
 ) VALUES (
-  '08936dc2-0295-4136-a51b-341c073488ea', -- UUID for the quiz
+  'ee39c130-7e07-4c18-b523-41ea19af074d', -- UUID for the quiz
   'Overview of Fact-based Persuasion Quiz',
   'fact-persuasion-quiz',
   'Quiz for Overview of Fact-based Persuasion Quiz',
@@ -71,7 +71,7 @@ INSERT INTO payload.course_quizzes (
   created_at,
   updated_at
 ) VALUES (
-  '65b439ed-4282-496d-8725-3b82115c642b', -- UUID for the quiz
+  '580c151f-cde7-4000-958f-712b5ec528b9', -- UUID for the quiz
   'Gestalt Principles of Visual Perception Quiz',
   'gestalt-principles-quiz',
   'Quiz for Gestalt Principles of Visual Perception Quiz',
@@ -90,7 +90,7 @@ INSERT INTO payload.course_quizzes (
   created_at,
   updated_at
 ) VALUES (
-  '93d78dfe-bcd4-4ee9-9810-8234dd2214e7', -- UUID for the quiz
+  '8a8ad262-3c10-4541-a3d1-ac2b34628672', -- UUID for the quiz
   'Idea Generation Quiz',
   'idea-generation-quiz',
   'Quiz for Idea Generation Quiz',
@@ -109,7 +109,7 @@ INSERT INTO payload.course_quizzes (
   created_at,
   updated_at
 ) VALUES (
-  'ba6c5f5e-2c08-41ef-bde1-f4adad2b1021', -- UUID for the quiz
+  '326417f4-e2a7-42ea-ad37-e3bec652bfe7', -- UUID for the quiz
   'The Why (Introductions) Quiz',
   'introductions-quiz',
   'Quiz for The Why (Introductions) Quiz',
@@ -128,7 +128,7 @@ INSERT INTO payload.course_quizzes (
   created_at,
   updated_at
 ) VALUES (
-  '029e4825-a9f5-4038-898c-74fbd47d5a1e', -- UUID for the quiz
+  '83db976e-924d-49d1-bb69-b3eaaa3f4475', -- UUID for the quiz
   'Our Process Quiz',
   'our-process-quiz',
   'Quiz for Our Process Quiz',
@@ -147,7 +147,7 @@ INSERT INTO payload.course_quizzes (
   created_at,
   updated_at
 ) VALUES (
-  '84eb0314-f7c2-4d6f-90b0-2db4491ccc0f', -- UUID for the quiz
+  '12f6dc40-531e-41cc-a56f-4f36ec40c20c', -- UUID for the quiz
   'Overview of the Fundamental Elements of Design Quiz',
   'overview-elements-of-design-quiz',
   'Quiz for Overview of the Fundamental Elements of Design Quiz',
@@ -166,7 +166,7 @@ INSERT INTO payload.course_quizzes (
   created_at,
   updated_at
 ) VALUES (
-  '9f5d43a9-51cc-4741-ac04-7b855a135c75', -- UUID for the quiz
+  '14ef5b66-60d1-4298-b8e1-14463ec1a91d', -- UUID for the quiz
   'Performance Quiz',
   'performance-quiz',
   'Quiz for Performance Quiz',
@@ -185,7 +185,7 @@ INSERT INTO payload.course_quizzes (
   created_at,
   updated_at
 ) VALUES (
-  'e139a34c-c089-493e-93ff-1f85162fec6d', -- UUID for the quiz
+  '691fa79b-0f5c-425a-a22b-da3feeb733b4', -- UUID for the quiz
   'Perparation & Practice Quiz',
   'preparation-practice-quiz',
   'Quiz for Perparation & Practice Quiz',
@@ -204,7 +204,7 @@ INSERT INTO payload.course_quizzes (
   created_at,
   updated_at
 ) VALUES (
-  'd031754e-7eae-40d4-9a3f-9fb29cf5f93f', -- UUID for the quiz
+  '81f7232d-707d-4fb4-8644-c14a9f3e913c', -- UUID for the quiz
   'Slide Composition Quiz',
   'slide-composition-quiz',
   'Quiz for Slide Composition Quiz',
@@ -223,7 +223,7 @@ INSERT INTO payload.course_quizzes (
   created_at,
   updated_at
 ) VALUES (
-  '37d9c0b2-f1e0-4f90-8ad3-c9ca4e5ccd62', -- UUID for the quiz
+  '2be77d71-cd87-49d9-b833-e6de687a46a4', -- UUID for the quiz
   'Specialist Graphs Quiz',
   'specialist-graphs-quiz',
   'Quiz for Specialist Graphs Quiz',
@@ -242,7 +242,7 @@ INSERT INTO payload.course_quizzes (
   created_at,
   updated_at
 ) VALUES (
-  '605b4cdd-d16b-485e-857d-85edf4c7a5f9', -- UUID for the quiz
+  'b70e3218-6b7a-4084-b79c-73649faf5e8a', -- UUID for the quiz
   'Storyboards in Film Quiz',
   'storyboards-in-film-quiz',
   'Quiz for Storyboards in Film Quiz',
@@ -261,7 +261,7 @@ INSERT INTO payload.course_quizzes (
   created_at,
   updated_at
 ) VALUES (
-  'b0289f01-377b-4371-954c-9a5a0eec8463', -- UUID for the quiz
+  '938b4ea3-5f70-4140-bc58-d324264b837f', -- UUID for the quiz
   'Storyboards in Presentations Quiz',
   'storyboards-in-presentations-quiz',
   'Quiz for Storyboards in Presentations Quiz',
@@ -280,7 +280,7 @@ INSERT INTO payload.course_quizzes (
   created_at,
   updated_at
 ) VALUES (
-  'bf966022-1b2e-439c-b559-ff1ddbde9ef3', -- UUID for the quiz
+  '03148592-6e9e-4fc7-b893-0756c2379ef1', -- UUID for the quiz
   'What is Structure? Quiz',
   'structure-quiz',
   'Quiz for What is Structure? Quiz',
@@ -299,7 +299,7 @@ INSERT INTO payload.course_quizzes (
   created_at,
   updated_at
 ) VALUES (
-  '7c91edf1-8fa5-497d-b710-0742aa891221', -- UUID for the quiz
+  'e62d9ed9-ea10-4488-83e2-2f18d2987412', -- UUID for the quiz
   'Tables vs Graphs Quiz',
   'tables-vs-graphs-quiz',
   'Quiz for Tables vs Graphs Quiz',
@@ -318,7 +318,7 @@ INSERT INTO payload.course_quizzes (
   created_at,
   updated_at
 ) VALUES (
-  '468eaa22-4d9d-412d-813f-e3fc5652180e', -- UUID for the quiz
+  'd173450e-60af-4e97-9256-b660ecfc359b', -- UUID for the quiz
   'The Who Quiz',
   'the-who-quiz',
   'Quiz for The Who Quiz',
@@ -337,7 +337,7 @@ INSERT INTO payload.course_quizzes (
   created_at,
   updated_at
 ) VALUES (
-  '1fb4b5f4-c72f-475f-b1ca-6ca422706679', -- UUID for the quiz
+  'baf11e22-c440-4e56-ade4-3853d77e84e7', -- UUID for the quiz
   'Using Stories Quiz',
   'using-stories-quiz',
   'Quiz for Using Stories Quiz',
@@ -356,7 +356,7 @@ INSERT INTO payload.course_quizzes (
   created_at,
   updated_at
 ) VALUES (
-  '16c6823d-36d6-4ee0-846a-0457569fb731', -- UUID for the quiz
+  '116fafbb-3dfd-4208-9e08-96f99736afcb', -- UUID for the quiz
   'Visual Perception and Communication Quiz',
   'visual-perception-quiz',
   'Quiz for Visual Perception and Communication Quiz',
@@ -375,7 +375,7 @@ INSERT INTO payload.course_quizzes (
   created_at,
   updated_at
 ) VALUES (
-  '07af01e0-53d2-469b-992a-5c3a8c2ad02a', -- UUID for the quiz
+  'ad279d2d-dfa8-45a3-8937-389d56817964', -- UUID for the quiz
   'The Why (Next Steps) Quiz',
   'why-next-steps-quiz',
   'Quiz for The Why (Next Steps) Quiz',

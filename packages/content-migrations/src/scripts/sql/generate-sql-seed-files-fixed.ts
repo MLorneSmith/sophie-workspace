@@ -11,6 +11,7 @@
  */
 import fs from 'fs';
 import matter from 'gray-matter';
+import yaml from 'js-yaml';
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -19,6 +20,7 @@ import {
   PROCESSED_SQL_DIR,
   RAW_LESSONS_DIR,
   RAW_QUIZZES_DIR,
+  RAW_SURVEYS_DIR,
 } from '../../config/paths.js';
 import {
   lessonImageMappings,
@@ -709,10 +711,63 @@ COMMIT;
 }
 
 /**
- * Generates SQL for surveys (placeholder)
+ * Generates SQL for surveys from the self-assessment.yaml file
  * @returns SQL for surveys
  */
 function generateSurveysSql(): string {
+  // Read the self-assessment.yaml file
+  const surveyFilePath = path.join(RAW_SURVEYS_DIR, 'self-assessment.yaml');
+  if (!fs.existsSync(surveyFilePath)) {
+    console.warn(`Survey file not found: ${surveyFilePath}`);
+    return generatePlaceholderSurveysSql();
+  }
+
+  // Parse the YAML data
+  const surveyContent = fs.readFileSync(surveyFilePath, 'utf8');
+  const surveyData = yaml.load(surveyContent) as any;
+
+  // Generate SQL for the survey
+  const surveyId = '5e352ade-c6a9-4e4a-9ffa-9680a5d5f9e9'; // Fixed UUID for consistency
+  const surveySlug = surveyData.title
+    .toLowerCase()
+    .replace(/[^\w\s]/g, '')
+    .replace(/\s+/g, '-');
+
+  return `-- Seed data for the surveys table
+-- This file should be run after the migrations to ensure the surveys table exists
+
+-- Start a transaction
+BEGIN;
+
+-- Insert the self-assessment survey
+INSERT INTO payload.surveys (
+  id,
+  title,
+  slug,
+  description,
+  status,
+  created_at,
+  updated_at
+) VALUES (
+  '${surveyId}',
+  '${surveyData.title.replace(/'/g, "''")}',
+  '${surveySlug}',
+  'Self-assessment survey for presentation skills',
+  '${surveyData.status || 'published'}',
+  NOW(),
+  NOW()
+) ON CONFLICT (id) DO NOTHING;
+
+-- Commit the transaction
+COMMIT;
+`;
+}
+
+/**
+ * Generates placeholder SQL for surveys (used as fallback if YAML file not found)
+ * @returns SQL for surveys
+ */
+function generatePlaceholderSurveysSql(): string {
   return `-- Seed data for the surveys table
 -- This file should be run after the migrations to ensure the surveys table exists
 
@@ -742,10 +797,159 @@ COMMIT;
 }
 
 /**
- * Generates SQL for survey questions (placeholder)
+ * Generates SQL for survey questions from the self-assessment.yaml file
  * @returns SQL for survey questions
  */
 function generateSurveyQuestionsSql(): string {
+  // Read the self-assessment.yaml file
+  const surveyFilePath = path.join(RAW_SURVEYS_DIR, 'self-assessment.yaml');
+  if (!fs.existsSync(surveyFilePath)) {
+    console.warn(`Survey file not found: ${surveyFilePath}`);
+    return generatePlaceholderSurveyQuestionsSql();
+  }
+
+  // Parse the YAML data
+  const surveyContent = fs.readFileSync(surveyFilePath, 'utf8');
+  const surveyData = yaml.load(surveyContent) as any;
+
+  // Survey ID (must match the ID used in generateSurveysSql)
+  const surveyId = '5e352ade-c6a9-4e4a-9ffa-9680a5d5f9e9';
+
+  // Start building the SQL
+  let sql = `-- Seed data for the survey questions table
+-- This file should be run after the surveys seed file to ensure the surveys exist
+
+-- Start a transaction
+BEGIN;
+
+`;
+
+  // Process each question
+  if (surveyData.questions && Array.isArray(surveyData.questions)) {
+    for (let i = 0; i < surveyData.questions.length; i++) {
+      const question = surveyData.questions[i];
+      const questionId = uuidv4();
+
+      // Convert questionspin string to integer (0 for Positive, 1 for Negative)
+      // Make the comparison case-insensitive
+      const questionspinValue =
+        question.questionspin &&
+        question.questionspin.toLowerCase() === 'negative'
+          ? 1
+          : 0;
+
+      // Add the question to the SQL
+      sql += `-- Insert question ${i + 1}: ${question.question.substring(0, 50)}...
+INSERT INTO payload.survey_questions (
+  id,
+  question,
+  type,
+  category,
+  questionspin,
+  position,
+  surveys_id,
+  required,
+  created_at,
+  updated_at
+) VALUES (
+  '${questionId}',
+  '${question.question.replace(/'/g, "''")}',
+  'multiple_choice',
+  '${question.questioncategory || ''}',
+  ${questionspinValue},
+  ${i},
+  '${surveyId}',
+  true,
+  NOW(),
+  NOW()
+) ON CONFLICT (id) DO NOTHING;
+
+`;
+
+      // Process answer options
+      if (question.answers && Array.isArray(question.answers)) {
+        for (let j = 0; j < question.answers.length; j++) {
+          const answer = question.answers[j];
+
+          // Add the option to the SQL
+          sql += `-- Insert option ${j + 1} for question ${i + 1}
+INSERT INTO payload.survey_questions_options (
+  id,
+  _order,
+  _parent_id,
+  option,
+  created_at,
+  updated_at
+) VALUES (
+  gen_random_uuid(),
+  ${j},
+  '${questionId}',
+  '${answer.answer.replace(/'/g, "''")}',
+  NOW(),
+  NOW()
+) ON CONFLICT DO NOTHING;
+
+`;
+        }
+      }
+
+      // Create relationship entry for the question to the survey
+      sql += `-- Create relationship entry for the question to the survey
+INSERT INTO payload.survey_questions_rels (
+  id,
+  _parent_id,
+  field,
+  value,
+  created_at,
+  updated_at
+) VALUES (
+  gen_random_uuid(),
+  '${questionId}',
+  'surveys',
+  '${surveyId}',
+  NOW(),
+  NOW()
+) ON CONFLICT DO NOTHING;
+
+`;
+
+      // Create bidirectional relationship entry for the survey to the question
+      sql += `-- Create bidirectional relationship entry for the survey to the question
+INSERT INTO payload.surveys_rels (
+  id,
+  _parent_id,
+  field,
+  value,
+  survey_questions_id,
+  created_at,
+  updated_at
+) VALUES (
+  gen_random_uuid(),
+  '${surveyId}',
+  'questions',
+  '${questionId}',
+  '${questionId}',
+  NOW(),
+  NOW()
+) ON CONFLICT DO NOTHING;
+
+`;
+    }
+  }
+
+  // End the transaction
+  sql += `-- Commit the transaction
+COMMIT;
+`;
+
+  return sql;
+}
+
+/**
+ * Generates placeholder SQL for survey questions (used as fallback if YAML file not found)
+ * @returns SQL for survey questions
+ */
+function generatePlaceholderSurveyQuestionsSql(): string {
   return `-- Seed data for the survey questions table
 -- This file should be run after the surveys seed file to ensure the surveys exist
 
