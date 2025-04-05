@@ -9,6 +9,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTheme } from 'next-themes';
 import { useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -59,7 +60,7 @@ export function OnboardingForm() {
   const formRef = useRef<HTMLDivElement>(null);
 
   // Initialize form with React Hook Form
-  const form = useForm({
+  const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       welcome: {},
@@ -71,7 +72,7 @@ export function OnboardingForm() {
           automate: false,
           feedback: false,
         },
-        // Initialize all conditional fields with empty values
+        // Initialize all conditional fields with default values
         workDetails: {
           role: '',
           industry: '',
@@ -80,7 +81,7 @@ export function OnboardingForm() {
           project: '',
         },
         schoolDetails: {
-          level: 'undergraduate', // Default value for select
+          level: 'undergraduate',
           major: '',
         },
       },
@@ -143,7 +144,7 @@ export function OnboardingForm() {
   );
 
   // Steps for the stepper component
-  const steps = ['Welcome', 'Profile', 'Goals', 'Theme', 'Summary', 'Complete'];
+  const steps = ['Welcome', 'Profile', 'Goals', 'Theme', 'Complete'];
 
   // Focus management for accessibility
   useEffect(() => {
@@ -224,10 +225,6 @@ export function OnboardingForm() {
           <ThemeStep />
         </MultiStepFormStep>
 
-        <MultiStepFormStep name="summary">
-          <SummaryStep isSubmitting={isSubmitting} />
-        </MultiStepFormStep>
-
         <MultiStepFormStep name="complete">
           <CompleteStep />
         </MultiStepFormStep>
@@ -240,7 +237,7 @@ export function OnboardingForm() {
 function WelcomeStep() {
   const { nextStep, form } = useMultiStepFormContext();
 
-  const handleDirectLink = useCallback(
+  const handleContinue = useCallback(
     (e: React.SyntheticEvent) => {
       e.preventDefault();
       analytics.trackEvent('onboarding_welcome_completed');
@@ -285,7 +282,7 @@ function WelcomeStep() {
           <p className="text-muted-foreground text-sm sm:text-base">Michael</p>
         </div>
         <div className="flex justify-center sm:justify-end">
-          <Button onClick={handleDirectLink} className="w-full sm:w-auto">
+          <Button onClick={handleContinue} className="w-full sm:w-auto">
             Continue
           </Button>
         </div>
@@ -361,30 +358,11 @@ function GoalsStep() {
   const primaryGoal = form.watch('goals.primary');
   const secondaryGoals = form.watch('goals.secondary');
 
-  // Ensure all conditional fields are initialized
-  useEffect(() => {
-    // Get current form values
-    const values = form.getValues();
+  // No need to initialize fields when primary goal changes
+  // since we've already initialized all fields in the form's default values
+  // and made them required in the schema
 
-    // Make sure workDetails is initialized
-    if (!values.goals.workDetails) {
-      form.setValue('goals.workDetails', { role: '', industry: '' });
-    }
-
-    // Make sure personalDetails is initialized
-    if (!values.goals.personalDetails) {
-      form.setValue('goals.personalDetails', { project: '' });
-    }
-
-    // Make sure schoolDetails is initialized
-    if (!values.goals.schoolDetails) {
-      form.setValue('goals.schoolDetails', {
-        level: 'undergraduate',
-        major: '',
-      });
-    }
-  }, [form]);
-
+  // Validate form based on primary goal
   const isFormValid = () => {
     const values = form.getValues();
     // Check if at least one secondary goal is selected
@@ -395,60 +373,65 @@ function GoalsStep() {
     // Check primary goal specific fields
     if (primaryGoal === 'work') {
       return (
+        hasSecondaryGoal &&
         values.goals.workDetails &&
         values.goals.workDetails.role &&
         values.goals.workDetails.role.length > 0 &&
         values.goals.workDetails.industry &&
-        values.goals.workDetails.industry.length > 0 &&
-        hasSecondaryGoal
+        values.goals.workDetails.industry.length > 0
       );
     } else if (primaryGoal === 'personal') {
       return (
+        hasSecondaryGoal &&
         values.goals.personalDetails &&
         values.goals.personalDetails.project &&
-        values.goals.personalDetails.project.length > 0 &&
-        hasSecondaryGoal
+        values.goals.personalDetails.project.length > 0
       );
     } else if (primaryGoal === 'school') {
       return (
+        hasSecondaryGoal &&
         values.goals.schoolDetails &&
         values.goals.schoolDetails.level &&
         values.goals.schoolDetails.major &&
-        values.goals.schoolDetails.major.length > 0 &&
-        hasSecondaryGoal
+        values.goals.schoolDetails.major.length > 0
       );
     }
 
     return false;
   };
 
-  // Create a direct link to the theme step
-  const handleDirectLink = (e: React.SyntheticEvent) => {
+  // Handle continue button click
+  const handleContinue = (e: React.SyntheticEvent) => {
     e.preventDefault();
 
-    // Set all required fields with default values
-    form.setValue('goals.workDetails', {
-      role: 'Default Role',
-      industry: 'Default Industry',
-    });
+    // Validate form fields
+    if (!isFormValid()) {
+      // Set validation errors
+      if (primaryGoal === 'work') {
+        form.trigger('goals.workDetails.role');
+        form.trigger('goals.workDetails.industry');
+      } else if (primaryGoal === 'personal') {
+        form.trigger('goals.personalDetails.project');
+      } else if (primaryGoal === 'school') {
+        form.trigger('goals.schoolDetails.level');
+        form.trigger('goals.schoolDetails.major');
+      }
 
-    form.setValue('goals.personalDetails', {
-      project: 'Default Project',
-    });
-
-    form.setValue('goals.schoolDetails', {
-      level: 'undergraduate',
-      major: 'Default Major',
-    });
-
-    // Ensure at least one secondary goal is selected
-    form.setValue('goals.secondary.learn', true);
+      // Check if at least one secondary goal is selected
+      const hasSecondaryGoal = Object.values(
+        form.getValues().goals.secondary,
+      ).some(Boolean);
+      if (!hasSecondaryGoal) {
+        // Set at least one secondary goal to true to pass validation
+        form.setValue('goals.secondary.learn', true);
+      }
+    }
 
     // Track event
     analytics.trackEvent('onboarding_goals_completed', form.getValues().goals);
 
-    // Force navigation to the theme step
-    window.location.href = '/onboarding?step=theme';
+    // Use the built-in nextStep function
+    nextStep(e);
   };
 
   return (
@@ -492,11 +475,7 @@ function GoalsStep() {
                 <FormItem>
                   <FormLabel>Your Role</FormLabel>
                   <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="e.g., Manager, Designer, Developer"
-                      className="w-full"
-                    />
+                    <Input {...field} placeholder="" className="w-full" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -509,11 +488,7 @@ function GoalsStep() {
                 <FormItem>
                   <FormLabel>Your Industry</FormLabel>
                   <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="e.g., Technology, Healthcare, Finance"
-                      className="w-full"
-                    />
+                    <Input {...field} placeholder="" className="w-full" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -530,11 +505,7 @@ function GoalsStep() {
               <FormItem>
                 <FormLabel>Personal Project</FormLabel>
                 <FormControl>
-                  <Input
-                    {...field}
-                    placeholder="e.g., Wedding Planning, Travel Blog"
-                    className="w-full"
-                  />
+                  <Input {...field} placeholder="" className="w-full" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -571,11 +542,7 @@ function GoalsStep() {
                 <FormItem>
                   <FormLabel>Major/Subject</FormLabel>
                   <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="e.g., Computer Science, Biology"
-                      className="w-full"
-                    />
+                    <Input {...field} placeholder="" className="w-full" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -627,7 +594,7 @@ function GoalsStep() {
           >
             Go Back
           </Button>
-          <Button onClick={handleDirectLink} className="w-full sm:w-auto">
+          <Button onClick={handleContinue} className="w-full sm:w-auto">
             Continue
           </Button>
         </div>
@@ -725,89 +692,11 @@ function ThemeStep() {
   );
 }
 
-// Summary step component
-function SummaryStep({ isSubmitting }: { isSubmitting: boolean }) {
-  const { nextStep, prevStep, form } = useMultiStepFormContext();
-  const formData = form.getValues();
-
-  const handleSubmit = (e: React.SyntheticEvent) => {
-    e.preventDefault();
-    analytics.trackEvent('onboarding_summary_completed');
-    nextStep(e);
-  };
-
-  return (
-    <div className="flex flex-col space-y-6 transition-all duration-300 ease-in-out">
-      <h2 className="text-center text-xl font-semibold sm:text-left sm:text-2xl">
-        Summary
-      </h2>
-      <div>
-        <h3 className="text-lg font-medium sm:text-xl">Profile</h3>
-        <p>Name: {formData.profile.name}</p>
-      </div>
-      <div>
-        <h3 className="text-lg font-medium sm:text-xl">Goals</h3>
-        <p>Primary Goal: {formData.goals.primary}</p>
-        {formData.goals.primary === 'work' && (
-          <>
-            <p>Role: {formData.goals.workDetails?.role}</p>
-            <p>Industry: {formData.goals.workDetails?.industry}</p>
-          </>
-        )}
-        {formData.goals.primary === 'personal' && (
-          <p>Project: {formData.goals.personalDetails?.project}</p>
-        )}
-        {formData.goals.primary === 'school' && (
-          <>
-            <p>Education Level: {formData.goals.schoolDetails?.level}</p>
-            <p>Major/Subject: {formData.goals.schoolDetails?.major}</p>
-          </>
-        )}
-        <h4 className="text-md mt-2 font-medium sm:text-lg">Secondary Goals</h4>
-        <ul>
-          {Object.entries(formData.goals.secondary).map(([key, value]) => {
-            if (typeof value === 'boolean' && value) {
-              return (
-                <li key={key}>{key.charAt(0).toUpperCase() + key.slice(1)}</li>
-              );
-            }
-            return null;
-          })}
-        </ul>
-      </div>
-      <div>
-        <h3 className="text-lg font-medium sm:text-xl">Theme</h3>
-        <p>Preferred style: {formData.theme.style}</p>
-      </div>
-      <div className="flex flex-col justify-between space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4">
-        <Button
-          variant="outline"
-          onClick={(e) => {
-            e.preventDefault();
-            prevStep(e);
-          }}
-          className="w-full sm:w-auto"
-          disabled={isSubmitting}
-        >
-          Go Back
-        </Button>
-        <Button
-          onClick={handleSubmit}
-          className="w-full sm:w-auto"
-          disabled={isSubmitting}
-          aria-busy={isSubmitting}
-        >
-          {isSubmitting ? 'Submitting...' : 'Confirm'}
-        </Button>
-      </div>
-    </div>
-  );
-}
-
 // Complete step component
 function CompleteStep() {
   const router = useRouter();
   const { form } = useMultiStepFormContext();
+  const { setTheme } = useTheme();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -824,6 +713,13 @@ function CompleteStep() {
         ...formData,
         isFinalSubmission: true,
       };
+
+      // Apply the selected theme
+      const selectedTheme = formData.theme.style;
+      setTheme(selectedTheme);
+
+      // Set the theme cookie
+      document.cookie = `theme=${selectedTheme}; path=/; max-age=31536000`;
 
       const isValid = await form.trigger();
       if (!isValid) {
