@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@stripe/react-stripe-js": "^3.6.0",
-    "@stripe/stripe-js": "^6.1.0",
+    "@stripe/stripe-js": "^7.0.0",
     "stripe": "^17.7.0"
   },
   "devDependencies": {
@@ -27,7 +27,7 @@
     "@kit/supabase": "workspace:*",
     "@kit/tsconfig": "workspace:*",
     "@kit/ui": "workspace:*",
-    "@types/react": "19.0.12",
+    "@types/react": "19.1.0",
     "date-fns": "^4.1.0",
     "next": "15.2.4",
     "react": "19.1.0",
