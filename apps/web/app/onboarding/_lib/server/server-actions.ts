@@ -57,16 +57,14 @@ export const submitOnboardingFormAction = enhanceAction(
         updated_at: new Date().toISOString(),
       };
 
-      // Add conditional fields based on primary goal
-      if (data.goals.primary === 'work' && data.goals.workDetails) {
+      // Add fields based on primary goal
+      // Since we've made these fields required in the schema, we can safely access them
+      if (data.goals.primary === 'work') {
         onboardingData.work_role = data.goals.workDetails.role;
         onboardingData.work_industry = data.goals.workDetails.industry;
-      } else if (
-        data.goals.primary === 'personal' &&
-        data.goals.personalDetails
-      ) {
+      } else if (data.goals.primary === 'personal') {
         onboardingData.personal_project = data.goals.personalDetails.project;
-      } else if (data.goals.primary === 'school' && data.goals.schoolDetails) {
+      } else if (data.goals.primary === 'school') {
         onboardingData.school_level = data.goals.schoolDetails.level;
         onboardingData.school_major = data.goals.schoolDetails.major;
       }
