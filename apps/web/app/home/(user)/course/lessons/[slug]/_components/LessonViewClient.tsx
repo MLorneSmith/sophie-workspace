@@ -54,21 +54,6 @@ export function LessonViewClient({
   const hasQuiz =
     !!quiz && !!quiz.id && !!(lesson.quiz_id || lesson.quiz_id_id);
 
-  // Debug quiz data
-  console.log('LessonViewClient - Quiz data:', {
-    lessonId: lesson.id,
-    lessonTitle: lesson.title,
-    quizExists: !!quiz,
-    quizHasId: !!quiz?.id,
-    quizId: quiz?.id,
-    lessonQuizId: lesson.quiz_id,
-    lessonQuizIdId: lesson.quiz_id_id,
-    hasQuiz,
-    quizCompleted,
-    quizAttemptsCount: quizAttempts.length,
-    isCompleted,
-  });
-
   // Extract course ID safely
   const getCourseId = () => {
     // Handle different possible formats of course relationship
@@ -95,22 +80,11 @@ export function LessonViewClient({
         : lesson.course_id;
     }
     // Fallback to empty string if no course ID found
-    console.error(
-      'LessonViewClient - No course ID found in lesson data:',
-      lesson,
-    );
     return '';
   };
 
   // Get course ID
   const courseId = getCourseId();
-
-  // Debug course data
-  console.log('LessonViewClient - Course data:', {
-    courseId,
-    courseObject: lesson.course,
-    courseIdField: lesson.course_id,
-  });
 
   // Mark lesson as viewed when component mounts
   const markLessonAsViewed = () => {
@@ -123,7 +97,6 @@ export function LessonViewClient({
             completionPercentage: 50, // Mark as partially completed when viewed
           });
         } catch (error) {
-          console.error('Error marking lesson as viewed:', error);
           toast.error('Failed to update lesson progress. Please try again.');
         }
       });
@@ -133,7 +106,6 @@ export function LessonViewClient({
   // Mark lesson as completed
   const markLessonAsCompleted = () => {
     setIsMarkingCompleted(true);
-    // Remove the initial toast to reduce notification overload
 
     startTransition(async () => {
       try {
@@ -148,7 +120,6 @@ export function LessonViewClient({
         // Update the state to reflect completion
         setIsMarkingCompleted(false);
       } catch (error) {
-        console.error('Error marking lesson as completed:', error);
         toast.error('Failed to mark lesson as completed. Please try again.');
         setIsMarkingCompleted(false);
       }
@@ -163,14 +134,6 @@ export function LessonViewClient({
   ) => {
     startTransition(async () => {
       try {
-        // Log the quiz ID for debugging
-        console.log('LessonViewClient - Submitting quiz attempt:', {
-          quizId: quiz.id,
-          quizIdType: typeof quiz.id,
-          lessonId: lesson.id,
-          courseId,
-        });
-
         await submitQuizAttemptAction({
           courseId,
           lessonId: lesson.id,
@@ -191,10 +154,7 @@ export function LessonViewClient({
             completed: true,
           });
         }
-
-        // Removed success toast to avoid duplicate notifications
       } catch (error) {
-        console.error('Error submitting quiz:', error);
         toast.error('Failed to submit quiz. Please try again.');
       }
     });
@@ -278,63 +238,10 @@ export function LessonViewClient({
                   </Button>
                 ))}
 
-              {showQuiz && (
-                <Button
-                  variant="outline"
-                  disabled={isPending}
-                  onClick={async () => {
-                    try {
-                      // Import the getCourseLessons function
-                      const { getCourseLessons } = await import(
-                        '@kit/cms/payload'
-                      );
-
-                      // Fetch all lessons for this course
-                      const lessonsData = await getCourseLessons(courseId);
-
-                      if (lessonsData?.docs && lessonsData.docs.length > 0) {
-                        // Sort lessons by lesson_number
-                        const sortedLessons = [...lessonsData.docs].sort(
-                          (a, b) => a.lesson_number - b.lesson_number,
-                        );
-
-                        // Find the index of the current lesson
-                        const currentIndex = sortedLessons.findIndex(
-                          (lessonItem) => lessonItem.id === lesson.id,
-                        );
-
-                        // If we found the current lesson and it's not the last one
-                        if (
-                          currentIndex !== -1 &&
-                          currentIndex < sortedLessons.length - 1
-                        ) {
-                          // Get the next lesson
-                          const nextLesson = sortedLessons[currentIndex + 1];
-
-                          // Navigate to the next lesson
-                          window.location.href = `/home/course/lessons/${nextLesson.slug}`;
-                          return;
-                        }
-                      }
-
-                      // If we couldn't find the next lesson or there was an error, go back to the course page
-                      window.location.href = '/home/course';
-                    } catch (error) {
-                      console.error('Error finding next lesson:', error);
-                      // Fallback to course page
-                      window.location.href = '/home/course';
-                    }
-                  }}
-                >
-                  Next Lesson
-                  <ChevronRight className="ml-2 h-4 w-4" />
-                </Button>
-              )}
+              {/* Removed "Next Lesson" button from here since the QuizSummary component already has its own */}
             </div>
           </CardFooter>
         </Card>
-
-        {/* Removed the green notification box to avoid duplicate notifications */}
       </div>
     </>
   );

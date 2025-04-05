@@ -13,6 +13,11 @@ export function CourseProgressBar({
   totalLessons,
   completedLessons,
 }: CourseProgressBarProps) {
+  // Calculate the percentage based on completed lessons vs total lessons
+  // This ensures the progress bar is consistent with the text display
+  const calculatedPercentage =
+    totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+
   return (
     <div className="space-y-2">
       <div className="flex justify-between text-sm">
@@ -21,7 +26,7 @@ export function CourseProgressBar({
           {completedLessons} of {totalLessons} lessons completed
         </span>
       </div>
-      <Progress value={percentage} className="h-2" />
+      <Progress value={calculatedPercentage} className="h-2" />
     </div>
   );
 }
