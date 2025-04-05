@@ -4,22 +4,24 @@
 -- Start a transaction
 BEGIN;
 
--- Insert a sample survey
+-- Insert the self-assessment survey
 INSERT INTO payload.surveys (
   id,
   title,
   slug,
   description,
+  status,
   created_at,
   updated_at
 ) VALUES (
-  '5e352ade-c6a9-4e4a-9ffa-9680a5d5f9e9', -- Fixed UUID for the survey
-  'Course Feedback Survey',
-  'course-feedback-survey',
-  'Please provide feedback on the course',
+  '5e352ade-c6a9-4e4a-9ffa-9680a5d5f9e9',
+  'High-Stakes Presentations Self-Assessment',
+  'highstakes-presentations-selfassessment',
+  'Self-assessment survey for presentation skills',
+  'published',
   NOW(),
   NOW()
-) ON CONFLICT (id) DO NOTHING; -- Skip if the survey already exists
+) ON CONFLICT (id) DO NOTHING;
 
 -- Commit the transaction
 COMMIT;
