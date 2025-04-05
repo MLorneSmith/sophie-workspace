@@ -140,6 +140,34 @@ function getPatterns() {
       handler: adminMiddleware,
     },
     {
+      pattern: new URLPattern({ pathname: '/onboarding' }),
+      handler: async (req: NextRequest, res: NextResponse) => {
+        const {
+          data: { user },
+        } = await getUser(req, res);
+
+        const origin = req.nextUrl.origin;
+
+        // If user is not logged in, redirect to sign in page.
+        if (!user) {
+          const signIn = pathsConfig.auth.signIn;
+          const redirectPath = `${signIn}?next=/onboarding`;
+
+          return NextResponse.redirect(new URL(redirectPath, origin).href);
+        }
+
+        // Check if user has already completed onboarding
+        const isOnboarded = user.user_metadata.onboarded === true;
+
+        // If user has already completed onboarding, redirect to home page
+        if (isOnboarded) {
+          return NextResponse.redirect(
+            new URL(pathsConfig.app.home, origin).href,
+          );
+        }
+      },
+    },
+    {
       pattern: new URLPattern({ pathname: '/auth/*?' }),
       handler: async (req: NextRequest, res: NextResponse) => {
         const {
@@ -194,6 +222,21 @@ function getPatterns() {
           return NextResponse.redirect(
             new URL(pathsConfig.auth.verifyMfa, origin).href,
           );
+        }
+
+        // Check if user needs to complete onboarding
+        const { data: userData } = await supabase.auth.getUser();
+        const needsOnboarding =
+          userData.user &&
+          (!userData.user.user_metadata.onboarded ||
+            userData.user.user_metadata.onboarded !== true);
+
+        // Skip onboarding check for the onboarding page itself
+        const isOnboardingPath = req.nextUrl.pathname === '/onboarding';
+
+        // If user needs onboarding and is not already on the onboarding page, redirect to onboarding
+        if (needsOnboarding && !isOnboardingPath) {
+          return NextResponse.redirect(new URL('/onboarding', origin).href);
         }
       },
     },

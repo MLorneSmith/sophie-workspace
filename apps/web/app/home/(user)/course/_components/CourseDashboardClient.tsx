@@ -112,17 +112,6 @@ export function CourseDashboardClient({
 
   useEffect(() => {
     if (lessonsData) {
-      // Debug lessons data
-      console.log('CourseDashboardClient - Lessons data:', {
-        lessonCount: lessonsData.docs?.length || 0,
-        lessons: lessonsData.docs?.map((l: any) => ({
-          id: l.id,
-          title: l.title,
-          lesson_number: l.lesson_number,
-          quiz_id: l.quiz_id,
-        })),
-      });
-
       // Sort lessons by lesson_number as strings to maintain hierarchical order
       const sortedLessons = [...(lessonsData.docs || [])].sort((a, b) => {
         // Ensure lesson_number is treated as a string for proper sorting
@@ -130,12 +119,6 @@ export function CourseDashboardClient({
         const bNum = String(b.lesson_number);
         return aNum.localeCompare(bNum, undefined, { numeric: true });
       });
-
-      // Debug sorted lessons
-      console.log(
-        'CourseDashboardClient - Sorted lessons:',
-        sortedLessons.map((l: any) => `${l.lesson_number}: ${l.title}`),
-      );
 
       setLessons(sortedLessons);
     }
@@ -146,7 +129,7 @@ export function CourseDashboardClient({
     if (lessons.length > 0) {
       // Get all lessons except completion lessons (801, 802)
       const completionLessons = lessons.filter(
-        (lesson) => !['801', '802'].includes(lesson.lesson_number),
+        (lesson) => !['801', '802'].includes(String(lesson.lesson_number)),
       );
 
       // Get completed lessons (excluding 801, 802)
@@ -157,7 +140,7 @@ export function CourseDashboardClient({
         return (
           p.completed_at &&
           lesson &&
-          !['801', '802'].includes(lesson.lesson_number)
+          !['801', '802'].includes(String(lesson.lesson_number))
         );
       });
 
@@ -167,21 +150,11 @@ export function CourseDashboardClient({
         (completionLessons.length > 0 &&
           completedLessons.length >= completionLessons.length);
 
-      // Debug completion status
-      console.log('CourseDashboardClient - Completion status:', {
-        totalLessons: lessons.length,
-        completionLessonsCount: completionLessons.length,
-        completedLessonsCount: completedLessons.length,
-        courseProgressCompleted: !!courseProgress?.completed_at,
-        isCompleted,
-        completedLessonIds: completedLessons.map((p) => p.lesson_id),
-      });
-
       // If course is completed, show all lessons, otherwise hide 801 and 802
       const filtered = isCompleted
         ? lessons
         : lessons.filter(
-            (lesson) => !['801', '802'].includes(lesson.lesson_number),
+            (lesson) => !['801', '802'].includes(String(lesson.lesson_number)),
           );
 
       setDisplayedLessons(filtered);
@@ -191,14 +164,6 @@ export function CourseDashboardClient({
   // Get completion status for a specific lesson
   const getLessonCompletionStatus = (lessonId: string) => {
     const progress = lessonProgress.find((p) => p.lesson_id === lessonId);
-
-    // Debug lesson completion status
-    console.log(`Checking completion for lesson ${lessonId}:`, {
-      hasProgress: !!progress,
-      completedAt: progress?.completed_at,
-      isCompleted: !!progress?.completed_at,
-    });
-
     return progress?.completed_at ? true : false;
   };
 
@@ -234,7 +199,7 @@ export function CourseDashboardClient({
         percentage={courseProgress?.completion_percentage || 0}
         totalLessons={
           lessons.filter(
-            (lesson) => !['801', '802'].includes(lesson.lesson_number),
+            (lesson) => !['801', '802'].includes(String(lesson.lesson_number)),
           ).length
         }
         completedLessons={
@@ -245,7 +210,7 @@ export function CourseDashboardClient({
             return (
               p.completed_at &&
               lesson &&
-              !['801', '802'].includes(lesson.lesson_number)
+              !['801', '802'].includes(String(lesson.lesson_number))
             );
           }).length
         }
@@ -277,7 +242,9 @@ export function CourseDashboardClient({
                     <div className="flex flex-1 flex-col gap-4 sm:flex-row">
                       <div className="relative h-[155px] w-[275px] flex-shrink-0">
                         {/* Don't display images for lessons 801 and 802 */}
-                        {!['801', '802'].includes(lesson.lesson_number) ? (
+                        {!['801', '802'].includes(
+                          String(lesson.lesson_number),
+                        ) ? (
                           <Image
                             src={(() => {
                               // Get the R2 URL from the relationship
@@ -318,13 +285,6 @@ export function CourseDashboardClient({
 
                               // Set placeholder based on lesson title
                               target.src = getPlaceholderImage(lesson);
-
-                              // Log only once per lesson to reduce console spam
-                              if (!failedImageUrls.has(originalSrc)) {
-                                console.log(
-                                  `Image load error for lesson: ${lesson.title}, using placeholder instead`,
-                                );
-                              }
                             }}
                           />
                         ) : (

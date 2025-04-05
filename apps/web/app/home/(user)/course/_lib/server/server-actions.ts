@@ -114,14 +114,6 @@ export const updateLessonProgressAction = enhanceAction(
         .from('lesson_progress')
         .update(updateData)
         .eq('id', existingProgress.id);
-
-      // Log the update for debugging
-      console.log('Updated lesson progress:', {
-        lessonId: data.lessonId,
-        courseId: data.courseId,
-        completed: data.completed,
-        existingId: existingProgress.id,
-      });
     } else {
       // Create new record
       const newRecord = {
@@ -134,13 +126,6 @@ export const updateLessonProgressAction = enhanceAction(
       };
 
       await supabase.from('lesson_progress').insert(newRecord);
-
-      // Log the insert for debugging
-      console.log('Created new lesson progress:', {
-        lessonId: data.lessonId,
-        courseId: data.courseId,
-        completed: data.completed,
-      });
     }
 
     // Update overall course progress
@@ -178,12 +163,23 @@ export const updateLessonProgressAction = enhanceAction(
             .map((lesson: { id: string }) => lesson.id);
 
           // Count completed lessons, excluding lessons 801 and 802
-          const completedLessons = lessonProgress.filter(
-            (p) => p.completed_at && !excludeLessonIds.includes(p.lesson_id),
-          ).length;
+          const completedLessons = lessonProgress.filter((p) => {
+            // Find the lesson for this progress
+            const lesson = lessonsData.docs.find(
+              (l: { id: string }) => l.id === p.lesson_id,
+            );
+            // Only count if it's not lesson 801 or 802 and is completed
+            return (
+              p.completed_at &&
+              lesson &&
+              !['801', '802'].includes(String(lesson.lesson_number))
+            );
+          }).length;
 
-          const courseCompletionPercentage =
-            (completedLessons / totalCompletableLessons) * 100;
+          // Calculate completion percentage
+          const courseCompletionPercentage = Math.round(
+            (completedLessons / totalCompletableLessons) * 100,
+          );
 
           // Course is completed when all completable lessons are done
           const isCompleted = completedLessons >= totalCompletableLessons;
@@ -232,11 +228,6 @@ export const submitQuizAttemptAction = enhanceAction(
   async function (data, user) {
     const supabase = getSupabaseServerClient();
     const now = new Date().toISOString();
-
-    // Log the quiz ID for debugging
-    console.log(
-      `submitQuizAttemptAction - Quiz ID: ${data.quizId} (${typeof data.quizId})`,
-    );
 
     // Insert the quiz attempt
     await supabase.from('quiz_attempts').insert({
