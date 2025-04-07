@@ -15,6 +15,7 @@ import * as migration_20250402_340000_add_users_table from './20250402_340000_ad
 import * as migration_20250402_350000_create_admin_user from './20250402_350000_create_admin_user'
 import * as migration_20250403_200000_process_content from './20250403_200000_process_content'
 import * as migration_20250404_100000_fix_lesson_quiz_relationships from './20250404_100000_fix_lesson_quiz_relationships'
+import * as migration_20250407_100000_fix_missing_lesson_quiz_relationships from './20250407_100000_fix_missing_lesson_quiz_relationships'
 
 export const migrations = [
   // Add schema creation migration first
@@ -70,5 +71,11 @@ export const migrations = [
     up: migration_20250404_100000_fix_lesson_quiz_relationships.up,
     down: migration_20250404_100000_fix_lesson_quiz_relationships.down,
     name: '20250404_100000_fix_lesson_quiz_relationships',
+  },
+  // Add fix missing lesson quiz relationships migration
+  {
+    up: migration_20250407_100000_fix_missing_lesson_quiz_relationships.up,
+    down: migration_20250407_100000_fix_missing_lesson_quiz_relationships.down,
+    name: '20250407_100000_fix_missing_lesson_quiz_relationships',
   },
 ]

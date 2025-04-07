@@ -15,7 +15,7 @@ INSERT INTO payload.media (
   updated_at,
   created_at
 ) VALUES (
-  '709e3ff3-9e12-42a9-b611-fcba9850f658',
+  '6fe8bc66-f9fd-4bb9-bad8-843d64a45f00',
   'standard graphs',
   'standard_graphs.png',
   'image/png',
@@ -36,7 +36,7 @@ INSERT INTO payload.media (
   updated_at,
   created_at
 ) VALUES (
-  '6465b371-2c5d-4c01-be9f-588232e4e0e6',
+  'a08a3666-dab5-4446-a36d-a54d4a6e3b0b',
   'gestalt principles of perception',
   'gestalt_principles_of_perception.png',
   'image/png',
@@ -57,7 +57,7 @@ INSERT INTO payload.media (
   updated_at,
   created_at
 ) VALUES (
-  '15e4ebdf-9020-4aca-b5ca-e407aaa5ab33',
+  '9a0632d4-3176-438d-80be-7f96d696cdd5',
   'idea generation',
   'idea_generation.png',
   'image/png',
@@ -78,7 +78,7 @@ INSERT INTO payload.media (
   updated_at,
   created_at
 ) VALUES (
-  '25d8df07-80b4-44db-a038-8afa76ae0f46',
+  'e2b4b748-53b5-4301-82c2-e7c1101e1895',
   'lesson zero',
   'lesson_zero.png',
   'image/png',
@@ -99,7 +99,7 @@ INSERT INTO payload.media (
   updated_at,
   created_at
 ) VALUES (
-  '037c3a17-7089-4a28-8f9d-8e2b10c3210e',
+  '58748ce0-e6e0-45fd-8baa-8401e4aaa58e',
   'our process',
   'our_process.png',
   'image/png',
@@ -120,7 +120,7 @@ INSERT INTO payload.media (
   updated_at,
   created_at
 ) VALUES (
-  '9d98dd79-2063-43d2-996f-861f85d32395',
+  'f76b0e8b-ba8f-40df-9a36-7619046c1d64',
   'overview elements design',
   'overview_elements_design.png',
   'image/png',
@@ -141,7 +141,7 @@ INSERT INTO payload.media (
   updated_at,
   created_at
 ) VALUES (
-  'f459c2d8-57ac-48b9-8682-2de47fc8ce68',
+  '26ca581c-c392-4f42-af68-4565d64c6b0f',
   'performance',
   'performance.png',
   'image/png',
@@ -162,7 +162,7 @@ INSERT INTO payload.media (
   updated_at,
   created_at
 ) VALUES (
-  '9521ad17-693b-45ff-bcee-0e5b663cc822',
+  'f6da18e9-c88f-4f36-8b26-0a6dc3dfb901',
   'preparation practice',
   'preparation_practice.png',
   'image/png',
@@ -183,7 +183,7 @@ INSERT INTO payload.media (
   updated_at,
   created_at
 ) VALUES (
-  'cb9de963-7b30-4052-a33d-6ff8f7b4584f',
+  '222217f9-26b6-4d67-a4fb-9fde0cfbbc4a',
   'self assessment',
   'self_assessment.png',
   'image/png',
@@ -204,7 +204,7 @@ INSERT INTO payload.media (
   updated_at,
   created_at
 ) VALUES (
-  'f3a64585-8bf8-47ff-bceb-be70d686cf8f',
+  '5567d2b5-84f7-4e09-b653-48359781175d',
   'slide composition',
   'slide_composition.png',
   'image/png',
@@ -225,7 +225,7 @@ INSERT INTO payload.media (
   updated_at,
   created_at
 ) VALUES (
-  'bd98e237-48af-4f59-b85f-d25738c27c2b',
+  '8a1c25e1-15b5-4c4c-984f-ce16c338ee14',
   'specialist graphs',
   'specialist_graphs.png',
   'image/png',
@@ -246,7 +246,7 @@ INSERT INTO payload.media (
   updated_at,
   created_at
 ) VALUES (
-  'db9b3685-fe8c-414f-8b85-9944fa311971',
+  'e5bbd72d-f854-4866-bab2-6c3647bce8aa',
   'storyboards in film',
   'storyboards_in_film.png',
   'image/png',
@@ -267,7 +267,7 @@ INSERT INTO payload.media (
   updated_at,
   created_at
 ) VALUES (
-  'cd8b9812-f80f-43d9-8dc7-f7d2de85dcbf',
+  '9c9d43c0-24c4-42b1-b9d2-815568b64e7c',
   'storyboards in presentations',
   'storyboards_in_presentations.png',
   'image/png',
@@ -288,7 +288,7 @@ INSERT INTO payload.media (
   updated_at,
   created_at
 ) VALUES (
-  '4a896992-3306-468d-ac5e-05758628d0c4',
+  'c3f70e62-6082-4342-b972-15731c68854a',
   'tables vs graphs',
   'tables_vs_graphs.png',
   'image/png',
@@ -309,7 +309,7 @@ INSERT INTO payload.media (
   updated_at,
   created_at
 ) VALUES (
-  'f1bc22bd-6457-4ddc-8ac9-a4a58d43e256',
+  'a09f13f2-8973-450a-a2d5-6f43532b2a4c',
   'the who',
   'the_who.png',
   'image/png',
@@ -330,7 +330,7 @@ INSERT INTO payload.media (
   updated_at,
   created_at
 ) VALUES (
-  'a4509c2e-a1da-4450-8b85-39a0d9cbae2e',
+  '82d2b970-4b11-42fc-9365-98f721e21ead',
   'the why introductions',
   'the_why_introductions.png',
   'image/png',
@@ -351,7 +351,7 @@ INSERT INTO payload.media (
   updated_at,
   created_at
 ) VALUES (
-  'ab5a9c0b-6fe1-4f62-a373-f23694f41c23',
+  'd7c5fd4c-3150-4f29-8ca0-3812d2d13127',
   'the why next steps',
   'the_why_next_steps.png',
   'image/png',
@@ -372,7 +372,7 @@ INSERT INTO payload.media (
   updated_at,
   created_at
 ) VALUES (
-  'bd30d4b2-c5be-4a7c-add7-388a9465810e',
+  'fe8d1bdf-7952-42d6-b844-cf695a6e00d1',
   'tools resources',
   'tools_resources.png',
   'image/png',
@@ -393,7 +393,7 @@ INSERT INTO payload.media (
   updated_at,
   created_at
 ) VALUES (
-  '5fe21b7f-0114-43bc-8069-530eeb650efa',
+  'a664f837-0d27-46c6-ad39-a9c9a1d8b376',
   'using stories',
   'using_stories.png',
   'image/png',
@@ -414,7 +414,7 @@ INSERT INTO payload.media (
   updated_at,
   created_at
 ) VALUES (
-  '93dc2e1d-c954-482d-868a-fce51cc1887b',
+  'e58de056-0f3e-4fff-b804-16c7bd52e26e',
   'visual perception',
   'visual_perception.png',
   'image/png',
@@ -435,7 +435,7 @@ INSERT INTO payload.media (
   updated_at,
   created_at
 ) VALUES (
-  'dd141c0a-0178-4f9e-89d7-edda617537d6',
+  'a6ab8185-d960-45b7-afc7-cf2b33a0b373',
   'fact based persuasion overview',
   'fact_based_persuasion_overview.png',
   'image/png',
@@ -456,7 +456,7 @@ INSERT INTO payload.media (
   updated_at,
   created_at
 ) VALUES (
-  'a70e8076-da80-408d-8ed9-84aab25ab2de',
+  '9fb8cf74-a18f-4c9d-992c-e2e61e834a3f',
   'what structure',
   'what_structure.png',
   'image/png',
@@ -477,7 +477,7 @@ INSERT INTO payload.media (
   updated_at,
   created_at
 ) VALUES (
-  'ba6d3672-de69-4c93-af58-aa1644aa5e8f',
+  '0ec09d26-8a34-475a-a93c-54996a9224bd',
   'before we begin',
   'before_we_begin.png',
   'image/png',
@@ -498,7 +498,7 @@ INSERT INTO payload.media (
   updated_at,
   created_at
 ) VALUES (
-  '5ef582f0-c5ab-49cb-be18-119e73337ba5',
+  '1623b0a0-76b5-4718-b976-2e3757a12d84',
   'detail elements of design',
   'detail_elements_of_design.png',
   'image/png',
@@ -519,7 +519,7 @@ INSERT INTO payload.media (
   updated_at,
   created_at
 ) VALUES (
-  '9cc11c39-1bc2-4c73-8228-f3fb9aad6487',
+  '7c81cfe7-e6f4-4e0b-b722-bdd1e970d442',
   'Art Craft of Presentation Creation',
   'Art Craft of Presentation Creation.png',
   'image/png',
@@ -540,7 +540,7 @@ INSERT INTO payload.media (
   updated_at,
   created_at
 ) VALUES (
-  '67f8af3e-ad0b-4a99-92ad-1e642b14874c',
+  'ca5a3bb4-62ca-41f8-b713-6c4224fb5f9e',
   'pitch-deck-image',
   'pitch-deck-image.png',
   'image/png',
@@ -561,7 +561,7 @@ INSERT INTO payload.media (
   updated_at,
   created_at
 ) VALUES (
-  'b701fa8d-b077-436a-aa29-54e3f02e1cc9',
+  '5540584a-b3b7-4ee5-bf90-5905de6058fc',
   'Defense of PowerPoint',
   'Defense of PowerPoint.png',
   'image/png',
@@ -582,7 +582,7 @@ INSERT INTO payload.media (
   updated_at,
   created_at
 ) VALUES (
-  'a3d958aa-d047-49d2-a10d-e3f0b87682ed',
+  'a6903bd7-03d2-4b51-8a18-fc6af91e07b3',
   'BCG-teardown-optimized',
   'BCG-teardown-optimized.jpg',
   'image/jpeg',
@@ -603,7 +603,7 @@ INSERT INTO payload.media (
   updated_at,
   created_at
 ) VALUES (
-  'afd59d14-bc0e-46f5-8752-a1a2fa978d78',
+  'e8d7ac69-83c1-4063-8a7c-6a546079a800',
   'Presentation Tips Optimized',
   'Presentation Tips Optimized.png',
   'image/png',
@@ -624,7 +624,7 @@ INSERT INTO payload.media (
   updated_at,
   created_at
 ) VALUES (
-  '4799ee48-32b6-4249-bea3-5122daeabf4c',
+  'fe87fd61-1eba-43a6-a4fb-16850ac99c81',
   'Presentation Tools-optimized',
   'Presentation Tools-optimized.png',
   'image/png',
@@ -645,7 +645,7 @@ INSERT INTO payload.media (
   updated_at,
   created_at
 ) VALUES (
-  '9e47e06a-f96b-4451-b480-a6c7b63a17ba',
+  'bd77f905-a27f-4984-9320-70782a389961',
   'Conquering Public Speaking Anxiety',
   'Conquering Public Speaking Anxiety.png',
   'image/png',
@@ -666,7 +666,7 @@ INSERT INTO payload.media (
   updated_at,
   created_at
 ) VALUES (
-  '946d527b-7fe3-49e3-94ef-f9d1722c276b',
+  '456ee222-d45e-423a-9906-b05f460488d4',
   'Seneca Partnership',
   'Seneca Partnership.webp',
   'image/webp',
@@ -687,7 +687,7 @@ INSERT INTO payload.media (
   updated_at,
   created_at
 ) VALUES (
-  'ffc2ef98-f488-48ab-a310-d4b5a8be975f',
+  'edc4cbf9-7dcb-4d41-a1ea-5daeb5b24b37',
   'business-charts',
   'business-charts.jpg',
   'image/jpeg',

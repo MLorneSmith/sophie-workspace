@@ -5,6 +5,12 @@ import { z } from 'zod';
 import { enhanceAction } from '@kit/next/actions';
 import { getSupabaseServerClient } from '@kit/supabase/server-client';
 
+import { generateCertificate } from '~/lib/certificates/certificate-service';
+import {
+  REQUIRED_LESSON_NUMBERS,
+  TOTAL_REQUIRED_LESSONS,
+} from '~/lib/course/course-config';
+
 // Start or update course progress
 const UpdateCourseProgressSchema = z.object({
   courseId: z.union([z.string(), z.number()]).transform((val) => String(val)),
@@ -45,8 +51,32 @@ export const updateCourseProgressAction = enhanceAction(
       if (data.completed) {
         updateData.completed_at = now;
 
-        // This would be a hook point for certificate generation
-        // updateData.certificate_generated = true;
+        // Generate a certificate if one hasn't been generated yet
+        if (!existingProgress.certificate_generated) {
+          try {
+            // Get the user's full name from the accounts table
+            const { data: accountData } = await supabase
+              .from('accounts')
+              .select('name')
+              .eq('id', user.id)
+              .single();
+
+            const fullName = accountData?.name || user.email || 'Student';
+
+            // Generate the certificate
+            await generateCertificate({
+              userId: user.id,
+              courseId: data.courseId,
+              fullName,
+            });
+
+            // Mark the certificate as generated
+            updateData.certificate_generated = true;
+          } catch (error) {
+            console.error('Failed to generate certificate:', error);
+            // Continue with the update even if certificate generation fails
+          }
+        }
       }
 
       await supabase
@@ -146,50 +176,52 @@ export const updateLessonProgressAction = enhanceAction(
       const lessonsData = await getCourseLessons(course.id);
 
       if (lessonsData?.docs && lessonProgress) {
-        // Filter out lessons 801 and 802 for completion calculation
-        const completableLessons = lessonsData.docs.filter(
-          (lesson: { lesson_number: string | number }) =>
-            !['801', '802'].includes(String(lesson.lesson_number)),
-        );
+        // Log the required lesson numbers for debugging
+        console.log('Required lesson numbers:', REQUIRED_LESSON_NUMBERS);
+        console.log('Total required lessons:', TOTAL_REQUIRED_LESSONS);
 
-        const totalCompletableLessons = completableLessons.length;
-
-        if (totalCompletableLessons > 0) {
-          // Get the IDs of lessons 801 and 802 to exclude them from completion count
-          const excludeLessonIds = lessonsData.docs
-            .filter((lesson: { lesson_number: string | number }) =>
-              ['801', '802'].includes(String(lesson.lesson_number)),
-            )
-            .map((lesson: { id: string }) => lesson.id);
-
-          // Count completed lessons, excluding lessons 801 and 802
-          const completedLessons = lessonProgress.filter((p) => {
-            // Find the lesson for this progress
-            const lesson = lessonsData.docs.find(
-              (l: { id: string }) => l.id === p.lesson_id,
-            );
-            // Only count if it's not lesson 801 or 802 and is completed
-            return (
-              p.completed_at &&
-              lesson &&
-              !['801', '802'].includes(String(lesson.lesson_number))
-            );
-          }).length;
-
-          // Calculate completion percentage
-          const courseCompletionPercentage = Math.round(
-            (completedLessons / totalCompletableLessons) * 100,
+        // Count completed lessons that are in the required list
+        const completedRequiredLessons = lessonProgress.filter((p) => {
+          // Find the lesson for this progress
+          const lesson = lessonsData.docs.find(
+            (l: { id: string }) => l.id === p.lesson_id,
           );
 
-          // Course is completed when all completable lessons are done
-          const isCompleted = completedLessons >= totalCompletableLessons;
+          // Only count if it's in our required list and is completed
+          const isCompleted =
+            p.completed_at &&
+            lesson &&
+            REQUIRED_LESSON_NUMBERS.includes(String(lesson.lesson_number));
 
-          await updateCourseProgressAction({
-            courseId: data.courseId,
-            completionPercentage: courseCompletionPercentage,
-            completed: isCompleted,
-          });
-        }
+          // Log each completed required lesson for debugging
+          if (isCompleted) {
+            console.log(
+              `Lesson ${lesson.lesson_number} (${lesson.title}) is completed`,
+            );
+          }
+
+          return isCompleted;
+        }).length;
+
+        // Calculate completion percentage
+        const courseCompletionPercentage = Math.round(
+          (completedRequiredLessons / TOTAL_REQUIRED_LESSONS) * 100,
+        );
+
+        // Course is completed when all required lessons are done
+        const isCompleted = completedRequiredLessons >= TOTAL_REQUIRED_LESSONS;
+
+        console.log(
+          `Course completion: ${completedRequiredLessons}/${TOTAL_REQUIRED_LESSONS} required lessons (${courseCompletionPercentage}%)`,
+        );
+        console.log(`Course completed: ${isCompleted ? 'Yes' : 'No'}`);
+
+        // Update course progress with completion status
+        await updateCourseProgressAction({
+          courseId: data.courseId,
+          completionPercentage: courseCompletionPercentage,
+          completed: isCompleted,
+        });
       }
     }
 
