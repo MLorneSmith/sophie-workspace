@@ -140,6 +140,9 @@ export function LessonViewClient({
         toast.success('Lesson marked as completed!');
         // Update the state to reflect completion
         setIsMarkingCompleted(false);
+
+        // Navigate to the next lesson automatically
+        navigateToNextLesson();
       } catch (error) {
         toast.error('Failed to mark lesson as completed. Please try again.');
         setIsMarkingCompleted(false);
@@ -166,7 +169,7 @@ export function LessonViewClient({
 
         setQuizCompleted(passed);
 
-        // If quiz is passed, mark lesson as completed
+        // If quiz is passed, mark lesson as completed and navigate to next lesson
         if (passed) {
           await updateLessonProgressAction({
             courseId,
@@ -174,12 +177,57 @@ export function LessonViewClient({
             completionPercentage: 100,
             completed: true,
           });
+
+          // Navigate to the next lesson automatically
+          navigateToNextLesson();
         }
       } catch (error) {
         toast.error('Failed to submit quiz. Please try again.');
       }
     });
   };
+
+  // Function to find and navigate to the next lesson
+  const navigateToNextLesson = async () => {
+    try {
+      // Import the getCourseLessons function
+      const { getCourseLessons } = await import('@kit/cms/payload');
+
+      // Fetch all lessons for this course
+      const lessonsData = await getCourseLessons(courseId);
+
+      if (lessonsData?.docs && lessonsData.docs.length > 0) {
+        // Sort lessons by lesson_number
+        const sortedLessons = [...lessonsData.docs].sort(
+          (a, b) => a.lesson_number - b.lesson_number,
+        );
+
+        // Find the index of the current lesson
+        const currentIndex = sortedLessons.findIndex(
+          (lessonItem) => lessonItem.id === lesson.id,
+        );
+
+        // If we found the current lesson and it's not the last one
+        if (currentIndex !== -1 && currentIndex < sortedLessons.length - 1) {
+          // Get the next lesson
+          const nextLesson = sortedLessons[currentIndex + 1];
+
+          // Navigate to the next lesson
+          window.location.href = `/home/course/lessons/${nextLesson.slug}`;
+          return;
+        }
+      }
+
+      // If we couldn't find the next lesson or there was an error, go back to the course page
+      window.location.href = '/home/course';
+    } catch (error) {
+      // Fallback to course page
+      window.location.href = '/home/course';
+    }
+  };
+
+  // Check if this is the congratulations lesson (801)
+  const isCongratulationsLesson = lesson.lesson_number === '801';
 
   return (
     <>
@@ -217,9 +265,31 @@ export function LessonViewClient({
                 />
               )
             ) : (
-              <div className="prose prose-sm dark:prose-invert max-w-none">
-                <PayloadContentRenderer content={lesson.content} />
-              </div>
+              <>
+                <div className="prose prose-sm dark:prose-invert max-w-none">
+                  <PayloadContentRenderer content={lesson.content} />
+                </div>
+
+                {/* Certificate link for congratulations lesson */}
+                {isCongratulationsLesson && (
+                  <div className="mt-6 rounded-lg border border-green-200 bg-green-50 p-4 shadow-sm dark:border-green-800 dark:bg-green-900/50">
+                    <h2 className="text-xl font-bold text-green-800 dark:text-green-300">
+                      Congratulations on completing the course! 🎉
+                    </h2>
+                    <p className="mt-2 text-green-700 dark:text-green-400">
+                      You've successfully completed all lessons in the course.
+                      Your certificate of completion is ready.
+                    </p>
+                    <div className="mt-4 flex justify-end">
+                      <Link href="/home/course/certificate">
+                        <Button className="bg-green-600 hover:bg-green-700">
+                          View Certificate
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </>
             )}
           </CardContent>
           <CardFooter className="flex justify-between">
@@ -266,13 +336,20 @@ export function LessonViewClient({
                 (!hasQuiz || quizCompleted) &&
                 (!hasSurvey || surveyCompleted) &&
                 (isCompleted ? (
-                  <Button
-                    disabled={true}
-                    className="bg-green-600 hover:bg-green-700"
-                  >
-                    Completed
-                    <CheckCircle className="ml-2 h-4 w-4 text-green-200" />
-                  </Button>
+                  <>
+                    <Button
+                      disabled={true}
+                      className="mr-2 bg-green-600 hover:bg-green-700"
+                    >
+                      Completed
+                      <CheckCircle className="ml-2 h-4 w-4 text-green-200" />
+                    </Button>
+                    {/* Next Lesson Button - only show if lesson is completed */}
+                    <Button onClick={navigateToNextLesson}>
+                      Next Lesson
+                      <ChevronRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </>
                 ) : (
                   <Button
                     onClick={markLessonAsCompleted}

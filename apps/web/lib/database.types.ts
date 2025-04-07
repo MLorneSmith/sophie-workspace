@@ -32,6 +32,1705 @@ export type Database = {
       [_ in never]: never
     }
   }
+  payload: {
+    Tables: {
+      course_lessons: {
+        Row: {
+          content: string | null
+          course_id: string | null
+          course_id_id: string | null
+          created_at: string | null
+          description: string | null
+          estimated_duration: number | null
+          featured_image_id: string | null
+          featured_image_id_id: string | null
+          id: string
+          lesson_number: number | null
+          media_id: string | null
+          published_at: string | null
+          quiz_id: string | null
+          quiz_id_id: string | null
+          slug: string | null
+          survey_id: string | null
+          survey_id_id: string | null
+          title: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          content?: string | null
+          course_id?: string | null
+          course_id_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          estimated_duration?: number | null
+          featured_image_id?: string | null
+          featured_image_id_id?: string | null
+          id?: string
+          lesson_number?: number | null
+          media_id?: string | null
+          published_at?: string | null
+          quiz_id?: string | null
+          quiz_id_id?: string | null
+          slug?: string | null
+          survey_id?: string | null
+          survey_id_id?: string | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          content?: string | null
+          course_id?: string | null
+          course_id_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          estimated_duration?: number | null
+          featured_image_id?: string | null
+          featured_image_id_id?: string | null
+          id?: string
+          lesson_number?: number | null
+          media_id?: string | null
+          published_at?: string | null
+          quiz_id?: string | null
+          quiz_id_id?: string | null
+          slug?: string | null
+          survey_id?: string | null
+          survey_id_id?: string | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_lessons_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "course_lessons_course_id_id_fkey"
+            columns: ["course_id_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "course_lessons_featured_image_id_fkey"
+            columns: ["featured_image_id"]
+            isOneToOne: false
+            referencedRelation: "media"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "course_lessons_featured_image_id_id_fkey"
+            columns: ["featured_image_id_id"]
+            isOneToOne: false
+            referencedRelation: "media"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "course_lessons_media_id_fkey"
+            columns: ["media_id"]
+            isOneToOne: false
+            referencedRelation: "media"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "course_lessons_quiz_id_fkey"
+            columns: ["quiz_id"]
+            isOneToOne: false
+            referencedRelation: "course_quizzes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "course_lessons_quiz_id_id_fkey"
+            columns: ["quiz_id_id"]
+            isOneToOne: false
+            referencedRelation: "course_quizzes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_course_lessons_survey"
+            columns: ["survey_id"]
+            isOneToOne: false
+            referencedRelation: "surveys"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_course_lessons_survey_id"
+            columns: ["survey_id_id"]
+            isOneToOne: false
+            referencedRelation: "surveys"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      course_lessons_rels: {
+        Row: {
+          _order: number | null
+          _parent_id: string
+          created_at: string | null
+          field: string | null
+          id: string
+          order: number | null
+          path: string | null
+          updated_at: string | null
+          value: string | null
+        }
+        Insert: {
+          _order?: number | null
+          _parent_id: string
+          created_at?: string | null
+          field?: string | null
+          id?: string
+          order?: number | null
+          path?: string | null
+          updated_at?: string | null
+          value?: string | null
+        }
+        Update: {
+          _order?: number | null
+          _parent_id?: string
+          created_at?: string | null
+          field?: string | null
+          id?: string
+          order?: number | null
+          path?: string | null
+          updated_at?: string | null
+          value?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_lessons_rels__parent_id_fkey"
+            columns: ["_parent_id"]
+            isOneToOne: false
+            referencedRelation: "course_lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      course_quizzes: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          media_id: string | null
+          passing_score: number | null
+          slug: string | null
+          title: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          media_id?: string | null
+          passing_score?: number | null
+          slug?: string | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          media_id?: string | null
+          passing_score?: number | null
+          slug?: string | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_quizzes_media_id_fkey"
+            columns: ["media_id"]
+            isOneToOne: false
+            referencedRelation: "media"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      course_quizzes_rels: {
+        Row: {
+          _order: number | null
+          _parent_id: string
+          course_lessons_id: string | null
+          created_at: string | null
+          field: string | null
+          id: string
+          order: number | null
+          parent_id: string | null
+          path: string | null
+          quiz_questions_id: string | null
+          updated_at: string | null
+          value: string | null
+        }
+        Insert: {
+          _order?: number | null
+          _parent_id: string
+          course_lessons_id?: string | null
+          created_at?: string | null
+          field?: string | null
+          id?: string
+          order?: number | null
+          parent_id?: string | null
+          path?: string | null
+          quiz_questions_id?: string | null
+          updated_at?: string | null
+          value?: string | null
+        }
+        Update: {
+          _order?: number | null
+          _parent_id?: string
+          course_lessons_id?: string | null
+          created_at?: string | null
+          field?: string | null
+          id?: string
+          order?: number | null
+          parent_id?: string | null
+          path?: string | null
+          quiz_questions_id?: string | null
+          updated_at?: string | null
+          value?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_quizzes_rels__parent_id_fkey"
+            columns: ["_parent_id"]
+            isOneToOne: false
+            referencedRelation: "course_quizzes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "course_quizzes_rels_quiz_questions_id_fkey"
+            columns: ["quiz_questions_id"]
+            isOneToOne: false
+            referencedRelation: "quiz_questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      courses: {
+        Row: {
+          completion_content: Json | null
+          created_at: string | null
+          description: string | null
+          estimated_duration: number | null
+          featured_image_id: string | null
+          featured_image_id_id: string | null
+          id: string
+          intro_content: Json | null
+          published_at: string | null
+          show_progress_bar: boolean | null
+          slug: string | null
+          status: string | null
+          title: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          completion_content?: Json | null
+          created_at?: string | null
+          description?: string | null
+          estimated_duration?: number | null
+          featured_image_id?: string | null
+          featured_image_id_id?: string | null
+          id?: string
+          intro_content?: Json | null
+          published_at?: string | null
+          show_progress_bar?: boolean | null
+          slug?: string | null
+          status?: string | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          completion_content?: Json | null
+          created_at?: string | null
+          description?: string | null
+          estimated_duration?: number | null
+          featured_image_id?: string | null
+          featured_image_id_id?: string | null
+          id?: string
+          intro_content?: Json | null
+          published_at?: string | null
+          show_progress_bar?: boolean | null
+          slug?: string | null
+          status?: string | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "courses_featured_image_id_fkey"
+            columns: ["featured_image_id"]
+            isOneToOne: false
+            referencedRelation: "media"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "courses_featured_image_id_id_fkey"
+            columns: ["featured_image_id_id"]
+            isOneToOne: false
+            referencedRelation: "media"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      courses_rels: {
+        Row: {
+          _order: number | null
+          _parent_id: string | null
+          course_lessons_id: string | null
+          created_at: string
+          field: string | null
+          id: string
+          order: number | null
+          parent_id: string | null
+          path: string | null
+          updated_at: string
+          value: string | null
+        }
+        Insert: {
+          _order?: number | null
+          _parent_id?: string | null
+          course_lessons_id?: string | null
+          created_at?: string
+          field?: string | null
+          id?: string
+          order?: number | null
+          parent_id?: string | null
+          path?: string | null
+          updated_at?: string
+          value?: string | null
+        }
+        Update: {
+          _order?: number | null
+          _parent_id?: string | null
+          course_lessons_id?: string | null
+          created_at?: string
+          field?: string | null
+          id?: string
+          order?: number | null
+          parent_id?: string | null
+          path?: string | null
+          updated_at?: string
+          value?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "courses_rels__parent_id_fkey"
+            columns: ["_parent_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "courses_rels_course_lessons_id_fkey"
+            columns: ["course_lessons_id"]
+            isOneToOne: false
+            referencedRelation: "course_lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      documentation: {
+        Row: {
+          _order: number | null
+          content: Json | null
+          created_at: string
+          description: string | null
+          id: string
+          order: number | null
+          parent: string | null
+          parent_id: string | null
+          published_at: string | null
+          slug: string
+          status: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          _order?: number | null
+          content?: Json | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          order?: number | null
+          parent?: string | null
+          parent_id?: string | null
+          published_at?: string | null
+          slug: string
+          status?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          _order?: number | null
+          content?: Json | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          order?: number | null
+          parent?: string | null
+          parent_id?: string | null
+          published_at?: string | null
+          slug?: string
+          status?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      documentation_breadcrumbs: {
+        Row: {
+          _order: number | null
+          _parent_id: string | null
+          created_at: string
+          doc: string | null
+          doc_id: string | null
+          id: string
+          label: string | null
+          order: number | null
+          updated_at: string
+          url: string | null
+        }
+        Insert: {
+          _order?: number | null
+          _parent_id?: string | null
+          created_at?: string
+          doc?: string | null
+          doc_id?: string | null
+          id?: string
+          label?: string | null
+          order?: number | null
+          updated_at?: string
+          url?: string | null
+        }
+        Update: {
+          _order?: number | null
+          _parent_id?: string | null
+          created_at?: string
+          doc?: string | null
+          doc_id?: string | null
+          id?: string
+          label?: string | null
+          order?: number | null
+          updated_at?: string
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "documentation_breadcrumbs__parent_id_fkey"
+            columns: ["_parent_id"]
+            isOneToOne: false
+            referencedRelation: "documentation"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documentation_breadcrumbs_doc_id_fkey"
+            columns: ["doc_id"]
+            isOneToOne: false
+            referencedRelation: "documentation"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      documentation_categories: {
+        Row: {
+          _order: number | null
+          _parent_id: string | null
+          category: string | null
+          created_at: string
+          id: string
+          order: number | null
+          parent_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          _order?: number | null
+          _parent_id?: string | null
+          category?: string | null
+          created_at?: string
+          id?: string
+          order?: number | null
+          parent_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          _order?: number | null
+          _parent_id?: string | null
+          category?: string | null
+          created_at?: string
+          id?: string
+          order?: number | null
+          parent_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "documentation_categories_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "documentation"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      documentation_rels: {
+        Row: {
+          _order: number | null
+          _parent_id: string | null
+          created_at: string
+          documentation_id: string | null
+          field: string | null
+          id: string
+          order: number | null
+          path: string | null
+          updated_at: string
+          value: string | null
+        }
+        Insert: {
+          _order?: number | null
+          _parent_id?: string | null
+          created_at?: string
+          documentation_id?: string | null
+          field?: string | null
+          id?: string
+          order?: number | null
+          path?: string | null
+          updated_at?: string
+          value?: string | null
+        }
+        Update: {
+          _order?: number | null
+          _parent_id?: string | null
+          created_at?: string
+          documentation_id?: string | null
+          field?: string | null
+          id?: string
+          order?: number | null
+          path?: string | null
+          updated_at?: string
+          value?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "documentation_rels__parent_id_fkey"
+            columns: ["_parent_id"]
+            isOneToOne: false
+            referencedRelation: "documentation"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documentation_rels_documentation_id_fkey"
+            columns: ["documentation_id"]
+            isOneToOne: false
+            referencedRelation: "documentation"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      documentation_tags: {
+        Row: {
+          _order: number | null
+          _parent_id: string | null
+          created_at: string
+          id: string
+          order: number | null
+          parent_id: string | null
+          tag: string | null
+          updated_at: string
+        }
+        Insert: {
+          _order?: number | null
+          _parent_id?: string | null
+          created_at?: string
+          id?: string
+          order?: number | null
+          parent_id?: string | null
+          tag?: string | null
+          updated_at?: string
+        }
+        Update: {
+          _order?: number | null
+          _parent_id?: string | null
+          created_at?: string
+          id?: string
+          order?: number | null
+          parent_id?: string | null
+          tag?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "documentation_tags_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "documentation"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      media: {
+        Row: {
+          alt: string
+          created_at: string
+          filename: string | null
+          filesize: number | null
+          focal_x: number | null
+          focal_y: number | null
+          height: number | null
+          id: string
+          mime_type: string | null
+          thumbnail_u_r_l: string | null
+          updated_at: string
+          url: string | null
+          width: number | null
+        }
+        Insert: {
+          alt: string
+          created_at?: string
+          filename?: string | null
+          filesize?: number | null
+          focal_x?: number | null
+          focal_y?: number | null
+          height?: number | null
+          id?: string
+          mime_type?: string | null
+          thumbnail_u_r_l?: string | null
+          updated_at?: string
+          url?: string | null
+          width?: number | null
+        }
+        Update: {
+          alt?: string
+          created_at?: string
+          filename?: string | null
+          filesize?: number | null
+          focal_x?: number | null
+          focal_y?: number | null
+          height?: number | null
+          id?: string
+          mime_type?: string | null
+          thumbnail_u_r_l?: string | null
+          updated_at?: string
+          url?: string | null
+          width?: number | null
+        }
+        Relationships: []
+      }
+      payload_locked_documents: {
+        Row: {
+          collection: string | null
+          course_lessons_id: string | null
+          course_quizzes_id: string | null
+          courses_id: string | null
+          created_at: string
+          document_id: string | null
+          documentation_id: string | null
+          global_slug: string | null
+          id: string
+          lock_expiration: string | null
+          media_id: string | null
+          posts_id: string | null
+          quiz_questions_id: string | null
+          survey_questions_id: string | null
+          surveys_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          collection?: string | null
+          course_lessons_id?: string | null
+          course_quizzes_id?: string | null
+          courses_id?: string | null
+          created_at?: string
+          document_id?: string | null
+          documentation_id?: string | null
+          global_slug?: string | null
+          id?: string
+          lock_expiration?: string | null
+          media_id?: string | null
+          posts_id?: string | null
+          quiz_questions_id?: string | null
+          survey_questions_id?: string | null
+          surveys_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          collection?: string | null
+          course_lessons_id?: string | null
+          course_quizzes_id?: string | null
+          courses_id?: string | null
+          created_at?: string
+          document_id?: string | null
+          documentation_id?: string | null
+          global_slug?: string | null
+          id?: string
+          lock_expiration?: string | null
+          media_id?: string | null
+          posts_id?: string | null
+          quiz_questions_id?: string | null
+          survey_questions_id?: string | null
+          surveys_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payload_locked_documents_course_lessons_id_fkey"
+            columns: ["course_lessons_id"]
+            isOneToOne: false
+            referencedRelation: "course_lessons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payload_locked_documents_course_quizzes_id_fkey"
+            columns: ["course_quizzes_id"]
+            isOneToOne: false
+            referencedRelation: "course_quizzes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payload_locked_documents_courses_id_fkey"
+            columns: ["courses_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payload_locked_documents_documentation_id_fkey"
+            columns: ["documentation_id"]
+            isOneToOne: false
+            referencedRelation: "documentation"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payload_locked_documents_media_id_fkey"
+            columns: ["media_id"]
+            isOneToOne: false
+            referencedRelation: "media"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payload_locked_documents_posts_id_fkey"
+            columns: ["posts_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payload_locked_documents_quiz_questions_id_fkey"
+            columns: ["quiz_questions_id"]
+            isOneToOne: false
+            referencedRelation: "quiz_questions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payload_locked_documents_survey_questions_id_fkey"
+            columns: ["survey_questions_id"]
+            isOneToOne: false
+            referencedRelation: "survey_questions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payload_locked_documents_surveys_id_fkey"
+            columns: ["surveys_id"]
+            isOneToOne: false
+            referencedRelation: "surveys"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payload_locked_documents_rels: {
+        Row: {
+          course_lessons_id: string | null
+          course_quizzes_id: string | null
+          courses_id: string | null
+          created_at: string
+          documentation_id: string | null
+          id: string
+          media_id: string | null
+          order: number | null
+          parent_id: string | null
+          path: string | null
+          posts_id: string | null
+          quiz_questions_id: string | null
+          survey_questions_id: string | null
+          surveys_id: string | null
+          updated_at: string
+          users_id: string | null
+        }
+        Insert: {
+          course_lessons_id?: string | null
+          course_quizzes_id?: string | null
+          courses_id?: string | null
+          created_at?: string
+          documentation_id?: string | null
+          id?: string
+          media_id?: string | null
+          order?: number | null
+          parent_id?: string | null
+          path?: string | null
+          posts_id?: string | null
+          quiz_questions_id?: string | null
+          survey_questions_id?: string | null
+          surveys_id?: string | null
+          updated_at?: string
+          users_id?: string | null
+        }
+        Update: {
+          course_lessons_id?: string | null
+          course_quizzes_id?: string | null
+          courses_id?: string | null
+          created_at?: string
+          documentation_id?: string | null
+          id?: string
+          media_id?: string | null
+          order?: number | null
+          parent_id?: string | null
+          path?: string | null
+          posts_id?: string | null
+          quiz_questions_id?: string | null
+          survey_questions_id?: string | null
+          surveys_id?: string | null
+          updated_at?: string
+          users_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payload_locked_documents_rels_course_lessons_id_fkey"
+            columns: ["course_lessons_id"]
+            isOneToOne: false
+            referencedRelation: "course_lessons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payload_locked_documents_rels_course_quizzes_id_fkey"
+            columns: ["course_quizzes_id"]
+            isOneToOne: false
+            referencedRelation: "course_quizzes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payload_locked_documents_rels_courses_id_fkey"
+            columns: ["courses_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payload_locked_documents_rels_documentation_id_fkey"
+            columns: ["documentation_id"]
+            isOneToOne: false
+            referencedRelation: "documentation"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payload_locked_documents_rels_media_id_fkey"
+            columns: ["media_id"]
+            isOneToOne: false
+            referencedRelation: "media"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payload_locked_documents_rels_posts_id_fkey"
+            columns: ["posts_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payload_locked_documents_rels_quiz_questions_id_fkey"
+            columns: ["quiz_questions_id"]
+            isOneToOne: false
+            referencedRelation: "quiz_questions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payload_locked_documents_rels_survey_questions_id_fkey"
+            columns: ["survey_questions_id"]
+            isOneToOne: false
+            referencedRelation: "survey_questions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payload_locked_documents_rels_surveys_id_fkey"
+            columns: ["surveys_id"]
+            isOneToOne: false
+            referencedRelation: "surveys"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payload_locked_documents_rels_users_id_fkey"
+            columns: ["users_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payload_migrations: {
+        Row: {
+          batch: number | null
+          created_at: string
+          id: number
+          name: string | null
+          updated_at: string
+        }
+        Insert: {
+          batch?: number | null
+          created_at?: string
+          id?: number
+          name?: string | null
+          updated_at?: string
+        }
+        Update: {
+          batch?: number | null
+          created_at?: string
+          id?: number
+          name?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      payload_preferences: {
+        Row: {
+          created_at: string
+          id: string
+          key: string | null
+          updated_at: string
+          user: string | null
+          value: Json | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          key?: string | null
+          updated_at?: string
+          user?: string | null
+          value?: Json | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          key?: string | null
+          updated_at?: string
+          user?: string | null
+          value?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payload_preferences_user_fkey"
+            columns: ["user"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payload_preferences_rels: {
+        Row: {
+          created_at: string
+          id: string
+          order: number | null
+          parent_id: string | null
+          path: string | null
+          updated_at: string
+          users_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          order?: number | null
+          parent_id?: string | null
+          path?: string | null
+          updated_at?: string
+          users_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          order?: number | null
+          parent_id?: string | null
+          path?: string | null
+          updated_at?: string
+          users_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payload_preferences_rels_users_id_fkey"
+            columns: ["users_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      posts: {
+        Row: {
+          content: Json | null
+          created_at: string
+          description: string | null
+          featured_image_id: string | null
+          featured_image_id_id: string | null
+          id: string
+          image_id: string | null
+          image_id_id: string | null
+          published_at: string | null
+          slug: string
+          status: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          content?: Json | null
+          created_at?: string
+          description?: string | null
+          featured_image_id?: string | null
+          featured_image_id_id?: string | null
+          id?: string
+          image_id?: string | null
+          image_id_id?: string | null
+          published_at?: string | null
+          slug: string
+          status?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          content?: Json | null
+          created_at?: string
+          description?: string | null
+          featured_image_id?: string | null
+          featured_image_id_id?: string | null
+          id?: string
+          image_id?: string | null
+          image_id_id?: string | null
+          published_at?: string | null
+          slug?: string
+          status?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "posts_featured_image_id_fkey"
+            columns: ["featured_image_id"]
+            isOneToOne: false
+            referencedRelation: "media"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_featured_image_id_id_fkey"
+            columns: ["featured_image_id_id"]
+            isOneToOne: false
+            referencedRelation: "media"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_image_id_fkey"
+            columns: ["image_id"]
+            isOneToOne: false
+            referencedRelation: "media"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_image_id_id_fkey"
+            columns: ["image_id_id"]
+            isOneToOne: false
+            referencedRelation: "media"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      posts_categories: {
+        Row: {
+          _order: number | null
+          _parent_id: string | null
+          category: string | null
+          created_at: string
+          id: string
+          order: number | null
+          updated_at: string
+        }
+        Insert: {
+          _order?: number | null
+          _parent_id?: string | null
+          category?: string | null
+          created_at?: string
+          id?: string
+          order?: number | null
+          updated_at?: string
+        }
+        Update: {
+          _order?: number | null
+          _parent_id?: string | null
+          category?: string | null
+          created_at?: string
+          id?: string
+          order?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "posts_categories__parent_id_fkey"
+            columns: ["_parent_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      posts_rels: {
+        Row: {
+          _order: number | null
+          _parent_id: string | null
+          created_at: string
+          field: string | null
+          id: string
+          order: number | null
+          path: string | null
+          updated_at: string
+          value: string | null
+        }
+        Insert: {
+          _order?: number | null
+          _parent_id?: string | null
+          created_at?: string
+          field?: string | null
+          id?: string
+          order?: number | null
+          path?: string | null
+          updated_at?: string
+          value?: string | null
+        }
+        Update: {
+          _order?: number | null
+          _parent_id?: string | null
+          created_at?: string
+          field?: string | null
+          id?: string
+          order?: number | null
+          path?: string | null
+          updated_at?: string
+          value?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "posts_rels__parent_id_fkey"
+            columns: ["_parent_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      posts_tags: {
+        Row: {
+          _order: number | null
+          _parent_id: string | null
+          created_at: string
+          id: string
+          order: number | null
+          tag: string | null
+          updated_at: string
+        }
+        Insert: {
+          _order?: number | null
+          _parent_id?: string | null
+          created_at?: string
+          id?: string
+          order?: number | null
+          tag?: string | null
+          updated_at?: string
+        }
+        Update: {
+          _order?: number | null
+          _parent_id?: string | null
+          created_at?: string
+          id?: string
+          order?: number | null
+          tag?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "posts_tags__parent_id_fkey"
+            columns: ["_parent_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quiz_questions: {
+        Row: {
+          _order: number | null
+          correct_answer: string | null
+          created_at: string | null
+          explanation: string | null
+          id: string
+          media_id: string | null
+          options: Json | null
+          order: number | null
+          question: string | null
+          quiz_id: string | null
+          quiz_id_id: string | null
+          type: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          _order?: number | null
+          correct_answer?: string | null
+          created_at?: string | null
+          explanation?: string | null
+          id?: string
+          media_id?: string | null
+          options?: Json | null
+          order?: number | null
+          question?: string | null
+          quiz_id?: string | null
+          quiz_id_id?: string | null
+          type?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          _order?: number | null
+          correct_answer?: string | null
+          created_at?: string | null
+          explanation?: string | null
+          id?: string
+          media_id?: string | null
+          options?: Json | null
+          order?: number | null
+          question?: string | null
+          quiz_id?: string | null
+          quiz_id_id?: string | null
+          type?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_questions_media_id_fkey"
+            columns: ["media_id"]
+            isOneToOne: false
+            referencedRelation: "media"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quiz_questions_quiz_id_fkey"
+            columns: ["quiz_id"]
+            isOneToOne: false
+            referencedRelation: "course_quizzes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quiz_questions_quiz_id_id_fkey"
+            columns: ["quiz_id_id"]
+            isOneToOne: false
+            referencedRelation: "course_quizzes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quiz_questions_options: {
+        Row: {
+          _order: number | null
+          _parent_id: string | null
+          created_at: string
+          id: string
+          is_correct: boolean | null
+          order: number | null
+          text: string | null
+          updated_at: string
+        }
+        Insert: {
+          _order?: number | null
+          _parent_id?: string | null
+          created_at?: string
+          id?: string
+          is_correct?: boolean | null
+          order?: number | null
+          text?: string | null
+          updated_at?: string
+        }
+        Update: {
+          _order?: number | null
+          _parent_id?: string | null
+          created_at?: string
+          id?: string
+          is_correct?: boolean | null
+          order?: number | null
+          text?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_questions_options__parent_id_fkey"
+            columns: ["_parent_id"]
+            isOneToOne: false
+            referencedRelation: "quiz_questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quiz_questions_rels: {
+        Row: {
+          _order: number | null
+          _parent_id: string
+          created_at: string | null
+          field: string | null
+          id: string
+          order: number | null
+          path: string | null
+          updated_at: string | null
+          value: string | null
+        }
+        Insert: {
+          _order?: number | null
+          _parent_id: string
+          created_at?: string | null
+          field?: string | null
+          id?: string
+          order?: number | null
+          path?: string | null
+          updated_at?: string | null
+          value?: string | null
+        }
+        Update: {
+          _order?: number | null
+          _parent_id?: string
+          created_at?: string | null
+          field?: string | null
+          id?: string
+          order?: number | null
+          path?: string | null
+          updated_at?: string | null
+          value?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_questions_rels__parent_id_fkey"
+            columns: ["_parent_id"]
+            isOneToOne: false
+            referencedRelation: "quiz_questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      survey_questions: {
+        Row: {
+          _order: number | null
+          category: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          options: Json | null
+          order: number | null
+          position: number | null
+          question: string | null
+          questionspin: number | null
+          required: boolean | null
+          surveys_id: string | null
+          text: string | null
+          type: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          _order?: number | null
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          options?: Json | null
+          order?: number | null
+          position?: number | null
+          question?: string | null
+          questionspin?: number | null
+          required?: boolean | null
+          surveys_id?: string | null
+          text?: string | null
+          type?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          _order?: number | null
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          options?: Json | null
+          order?: number | null
+          position?: number | null
+          question?: string | null
+          questionspin?: number | null
+          required?: boolean | null
+          surveys_id?: string | null
+          text?: string | null
+          type?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "survey_questions_surveys_id_fkey"
+            columns: ["surveys_id"]
+            isOneToOne: false
+            referencedRelation: "surveys"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      survey_questions_options: {
+        Row: {
+          _order: number | null
+          _parent_id: string | null
+          created_at: string
+          id: string
+          option: string | null
+          order: number | null
+          updated_at: string
+        }
+        Insert: {
+          _order?: number | null
+          _parent_id?: string | null
+          created_at?: string
+          id?: string
+          option?: string | null
+          order?: number | null
+          updated_at?: string
+        }
+        Update: {
+          _order?: number | null
+          _parent_id?: string | null
+          created_at?: string
+          id?: string
+          option?: string | null
+          order?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "survey_questions_options__parent_id_fkey"
+            columns: ["_parent_id"]
+            isOneToOne: false
+            referencedRelation: "survey_questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      survey_questions_rels: {
+        Row: {
+          _order: number | null
+          _parent_id: string
+          created_at: string | null
+          field: string | null
+          id: string
+          order: number | null
+          path: string | null
+          surveys_id: string | null
+          updated_at: string | null
+          value: string | null
+        }
+        Insert: {
+          _order?: number | null
+          _parent_id: string
+          created_at?: string | null
+          field?: string | null
+          id?: string
+          order?: number | null
+          path?: string | null
+          surveys_id?: string | null
+          updated_at?: string | null
+          value?: string | null
+        }
+        Update: {
+          _order?: number | null
+          _parent_id?: string
+          created_at?: string | null
+          field?: string | null
+          id?: string
+          order?: number | null
+          path?: string | null
+          surveys_id?: string | null
+          updated_at?: string | null
+          value?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "survey_questions_rels__parent_id_fkey"
+            columns: ["_parent_id"]
+            isOneToOne: false
+            referencedRelation: "survey_questions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "survey_questions_rels_surveys_id_fkey"
+            columns: ["surveys_id"]
+            isOneToOne: false
+            referencedRelation: "surveys"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      surveys: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          end_message: string | null
+          id: string
+          published_at: string | null
+          show_progress_bar: boolean | null
+          slug: string | null
+          start_message: string | null
+          status: string | null
+          summary_content: Json | null
+          title: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          end_message?: string | null
+          id?: string
+          published_at?: string | null
+          show_progress_bar?: boolean | null
+          slug?: string | null
+          start_message?: string | null
+          status?: string | null
+          summary_content?: Json | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          end_message?: string | null
+          id?: string
+          published_at?: string | null
+          show_progress_bar?: boolean | null
+          slug?: string | null
+          start_message?: string | null
+          status?: string | null
+          summary_content?: Json | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      surveys_rels: {
+        Row: {
+          _order: number | null
+          _parent_id: string
+          created_at: string | null
+          field: string | null
+          id: string
+          order: number | null
+          parent_id: string | null
+          path: string | null
+          survey_questions_id: string | null
+          updated_at: string | null
+          value: string | null
+        }
+        Insert: {
+          _order?: number | null
+          _parent_id: string
+          created_at?: string | null
+          field?: string | null
+          id?: string
+          order?: number | null
+          parent_id?: string | null
+          path?: string | null
+          survey_questions_id?: string | null
+          updated_at?: string | null
+          value?: string | null
+        }
+        Update: {
+          _order?: number | null
+          _parent_id?: string
+          created_at?: string | null
+          field?: string | null
+          id?: string
+          order?: number | null
+          parent_id?: string | null
+          path?: string | null
+          survey_questions_id?: string | null
+          updated_at?: string | null
+          value?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "surveys_rels__parent_id_fkey"
+            columns: ["_parent_id"]
+            isOneToOne: false
+            referencedRelation: "surveys"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "surveys_rels_survey_questions_id_fkey"
+            columns: ["survey_questions_id"]
+            isOneToOne: false
+            referencedRelation: "survey_questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      users: {
+        Row: {
+          created_at: string
+          email: string
+          first_name: string | null
+          hash: string | null
+          id: string
+          last_name: string | null
+          lock_until: string | null
+          login_attempts: number | null
+          reset_password_expiration: string | null
+          reset_password_token: string | null
+          salt: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          first_name?: string | null
+          hash?: string | null
+          id?: string
+          last_name?: string | null
+          lock_until?: string | null
+          login_attempts?: number | null
+          reset_password_expiration?: string | null
+          reset_password_token?: string | null
+          salt?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          first_name?: string | null
+          hash?: string | null
+          id?: string
+          last_name?: string | null
+          lock_until?: string | null
+          login_attempts?: number | null
+          reset_password_expiration?: string | null
+          reset_password_token?: string | null
+          salt?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      [_ in never]: never
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
       accounts: {
@@ -226,6 +1925,30 @@ export type Database = {
           title?: string
           updated_at?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      certificates: {
+        Row: {
+          course_id: string
+          created_at: string | null
+          file_path: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          course_id: string
+          created_at?: string | null
+          file_path: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          course_id?: string
+          created_at?: string | null
+          file_path?: string
+          id?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -495,6 +2218,66 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      onboarding: {
+        Row: {
+          completed: boolean | null
+          completed_at: string | null
+          created_at: string | null
+          first_name: string | null
+          full_name: string | null
+          id: string
+          last_name: string | null
+          personal_project: string | null
+          primary_goal: string | null
+          school_level: string | null
+          school_major: string | null
+          secondary_goals: Json | null
+          theme_preference: string | null
+          updated_at: string | null
+          user_id: string
+          work_industry: string | null
+          work_role: string | null
+        }
+        Insert: {
+          completed?: boolean | null
+          completed_at?: string | null
+          created_at?: string | null
+          first_name?: string | null
+          full_name?: string | null
+          id?: string
+          last_name?: string | null
+          personal_project?: string | null
+          primary_goal?: string | null
+          school_level?: string | null
+          school_major?: string | null
+          secondary_goals?: Json | null
+          theme_preference?: string | null
+          updated_at?: string | null
+          user_id: string
+          work_industry?: string | null
+          work_role?: string | null
+        }
+        Update: {
+          completed?: boolean | null
+          completed_at?: string | null
+          created_at?: string | null
+          first_name?: string | null
+          full_name?: string | null
+          id?: string
+          last_name?: string | null
+          personal_project?: string | null
+          primary_goal?: string | null
+          school_level?: string | null
+          school_major?: string | null
+          secondary_goals?: Json | null
+          theme_preference?: string | null
+          updated_at?: string | null
+          user_id?: string
+          work_industry?: string | null
+          work_role?: string | null
+        }
+        Relationships: []
       }
       order_items: {
         Row: {
@@ -1191,6 +2974,16 @@ export type Database = {
         }
         Returns: boolean
       }
+      insert_certificate: {
+        Args: {
+          p_user_id: string
+          p_course_id: string
+          p_file_path: string
+        }
+        Returns: {
+          id: string
+        }[]
+      }
       is_aal2: {
         Args: Record<PropertyKey, never>
         Returns: boolean
@@ -1676,27 +3469,29 @@ export type Database = {
   }
 }
 
-type PublicSchema = Database[Extract<keyof Database, "public">]
+type DefaultSchema = Database[Extract<keyof Database, "public">]
 
 export type Tables<
-  PublicTableNameOrOptions extends
-    | keyof (PublicSchema["Tables"] & PublicSchema["Views"])
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof Database },
-  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
-        Database[PublicTableNameOrOptions["schema"]]["Views"])
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof Database
+  }
+    ? keyof (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never = never,
-> = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
-      Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
+  ? (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R
     }
     ? R
     : never
-  : PublicTableNameOrOptions extends keyof (PublicSchema["Tables"] &
-        PublicSchema["Views"])
-    ? (PublicSchema["Tables"] &
-        PublicSchema["Views"])[PublicTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
         Row: infer R
       }
       ? R
@@ -1704,20 +3499,22 @@ export type Tables<
     : never
 
 export type TablesInsert<
-  PublicTableNameOrOptions extends
-    | keyof PublicSchema["Tables"]
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
     | { schema: keyof Database },
-  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof Database
+  }
+    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
-> = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
+  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I
     }
     ? I
     : never
-  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
-    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
         Insert: infer I
       }
       ? I
@@ -1725,20 +3522,22 @@ export type TablesInsert<
     : never
 
 export type TablesUpdate<
-  PublicTableNameOrOptions extends
-    | keyof PublicSchema["Tables"]
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
     | { schema: keyof Database },
-  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof Database
+  }
+    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
-> = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
+  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U
     }
     ? U
     : never
-  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
-    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
         Update: infer U
       }
       ? U
@@ -1746,21 +3545,23 @@ export type TablesUpdate<
     : never
 
 export type Enums<
-  PublicEnumNameOrOptions extends
-    | keyof PublicSchema["Enums"]
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
     | { schema: keyof Database },
-  EnumName extends PublicEnumNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicEnumNameOrOptions["schema"]]["Enums"]
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof Database
+  }
+    ? keyof Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never = never,
-> = PublicEnumNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
-  : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
-    ? PublicSchema["Enums"][PublicEnumNameOrOptions]
+> = DefaultSchemaEnumNameOrOptions extends { schema: keyof Database }
+  ? Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
     : never
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-    | keyof PublicSchema["CompositeTypes"]
+    | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof Database },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
     schema: keyof Database
@@ -1769,7 +3570,48 @@ export type CompositeTypes<
     : never = never,
 > = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
   ? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof PublicSchema["CompositeTypes"]
-    ? PublicSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never
+
+export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
+  payload: {
+    Enums: {},
+  },
+  public: {
+    Enums: {
+      app_permissions: [
+        "roles.manage",
+        "billing.manage",
+        "settings.manage",
+        "members.manage",
+        "invites.manage",
+      ],
+      billing_provider: ["stripe", "lemon-squeezy", "paddle"],
+      notification_channel: ["in_app", "email"],
+      notification_type: ["info", "warning", "error"],
+      payment_status: ["pending", "succeeded", "failed"],
+      subscription_item_type: ["flat", "per_seat", "metered"],
+      subscription_status: [
+        "active",
+        "trialing",
+        "past_due",
+        "canceled",
+        "unpaid",
+        "incomplete",
+        "incomplete_expired",
+        "paused",
+      ],
+      task_priority: ["low", "medium", "high"],
+      task_status: ["do", "doing", "done"],
+      testimonial_status: ["pending", "approved", "rejected"],
+    },
+  },
+  storage: {
+    Enums: {},
+  },
+} as const
 

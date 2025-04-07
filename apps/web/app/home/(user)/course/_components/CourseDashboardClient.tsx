@@ -12,6 +12,8 @@ import { useSupabase } from '@kit/supabase/hooks/use-supabase';
 import { Badge } from '@kit/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@kit/ui/card';
 
+import { REQUIRED_LESSON_NUMBERS } from '~/lib/course/course-config';
+
 import { CourseProgressBar } from './CourseProgressBar';
 import { RadialProgress } from './RadialProgress';
 
@@ -93,6 +95,7 @@ export function CourseDashboardClient({
   const supabase = useSupabase();
   const [lessons, setLessons] = useState<any[]>([]);
   const [displayedLessons, setDisplayedLessons] = useState<any[]>([]);
+  const [isCourseCompleted, setIsCourseCompleted] = useState<boolean>(false);
   // Cache to remember failed image URLs to prevent repeated errors
   const [failedImageUrls, setFailedImageUrls] = useState<Set<string>>(
     new Set(),
@@ -127,28 +130,21 @@ export function CourseDashboardClient({
   // Filter out lessons 801 and 802 unless course is completed
   useEffect(() => {
     if (lessons.length > 0) {
-      // Get all lessons except completion lessons (801, 802)
-      const completionLessons = lessons.filter(
-        (lesson) => !['801', '802'].includes(String(lesson.lesson_number)),
+      // Count completed required lessons using our enhanced matching function
+      const completedRequiredLessons = lessons.filter(
+        (lesson) =>
+          REQUIRED_LESSON_NUMBERS.includes(String(lesson.lesson_number)) &&
+          getLessonCompletionStatus(lesson.id, lesson.lesson_number),
       );
 
-      // Get completed lessons (excluding 801, 802)
-      const completedLessons = lessonProgress.filter((p) => {
-        // Find the lesson for this progress
-        const lesson = lessons.find((l) => l.id === p.lesson_id);
-        // Only count if it's not lesson 801 or 802 and is completed
-        return (
-          p.completed_at &&
-          lesson &&
-          !['801', '802'].includes(String(lesson.lesson_number))
-        );
-      });
-
-      // Course is completed when all regular lessons are completed
+      // Course is completed when all required lessons are completed
       const isCompleted =
-        courseProgress?.completed_at ||
-        (completionLessons.length > 0 &&
-          completedLessons.length >= completionLessons.length);
+        courseProgress?.completed_at || // Trust the database flag if it's set
+        (REQUIRED_LESSON_NUMBERS.length > 0 &&
+          completedRequiredLessons.length >= REQUIRED_LESSON_NUMBERS.length);
+
+      // Update the course completion state
+      setIsCourseCompleted(isCompleted);
 
       // If course is completed, show all lessons, otherwise hide 801 and 802
       const filtered = isCompleted
@@ -162,9 +158,65 @@ export function CourseDashboardClient({
   }, [lessons, lessonProgress, courseProgress]);
 
   // Get completion status for a specific lesson
-  const getLessonCompletionStatus = (lessonId: string) => {
-    const progress = lessonProgress.find((p) => p.lesson_id === lessonId);
-    return progress?.completed_at ? true : false;
+  const getLessonCompletionStatus = (
+    lessonId: string,
+    lessonNumber: string | number,
+  ) => {
+    // First try to match by lesson ID (exact match)
+    const progressByID = lessonProgress.find((p) => p.lesson_id === lessonId);
+    if (progressByID?.completed_at) {
+      return true;
+    }
+
+    // If no match by ID, try to find a match by lesson number
+    // This is a fallback mechanism for when lesson IDs change after database resets
+    if (lessonNumber) {
+      // Find all lessons with this lesson number in the database
+      const matchingLessons = lessons.filter(
+        (l) => String(l.lesson_number) === String(lessonNumber),
+      );
+
+      // Check if any of these lessons have a completion record
+      for (const lesson of matchingLessons) {
+        const progressByLesson = lessonProgress.find(
+          (p) => p.lesson_id === lesson.id && p.completed_at,
+        );
+        if (progressByLesson) {
+          return true;
+        }
+      }
+
+      // If we still don't have a match, check if any progress record exists
+      // that might be for this lesson but with a different ID
+      const allLessonIds = lessons.map((l) => l.id);
+      const orphanedProgress = lessonProgress.filter(
+        (p) => !allLessonIds.includes(p.lesson_id) && p.completed_at,
+      );
+
+      // If we have orphaned progress records and this is a required lesson,
+      // we'll assume it's completed if we have enough completed lessons
+      if (
+        orphanedProgress.length > 0 &&
+        REQUIRED_LESSON_NUMBERS.includes(String(lessonNumber))
+      ) {
+        // Count how many required lessons we have progress for
+        const requiredLessonsWithProgress = lessons.filter(
+          (l) =>
+            REQUIRED_LESSON_NUMBERS.includes(String(l.lesson_number)) &&
+            getLessonCompletionStatus(l.id, l.lesson_number),
+        );
+
+        // If we have more orphaned progress records than missing required lessons,
+        // assume this lesson is completed
+        const missingRequired =
+          REQUIRED_LESSON_NUMBERS.length - requiredLessonsWithProgress.length;
+        if (orphanedProgress.length >= missingRequired) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   };
 
   // Get quiz score for a specific lesson
@@ -197,27 +249,22 @@ export function CourseDashboardClient({
 
       <CourseProgressBar
         percentage={courseProgress?.completion_percentage || 0}
-        totalLessons={
-          lessons.filter(
-            (lesson) => !['801', '802'].includes(String(lesson.lesson_number)),
-          ).length
-        }
+        totalLessons={REQUIRED_LESSON_NUMBERS.length}
         completedLessons={
-          lessonProgress.filter((p) => {
-            // Find the lesson for this progress
-            const lesson = lessons.find((l) => l.id === p.lesson_id);
-            // Only count if it's not lesson 801 or 802 and is completed
-            return (
-              p.completed_at &&
-              lesson &&
-              !['801', '802'].includes(String(lesson.lesson_number))
-            );
-          }).length
+          // Count completed required lessons using our enhanced matching function
+          lessons.filter(
+            (lesson) =>
+              REQUIRED_LESSON_NUMBERS.includes(String(lesson.lesson_number)) &&
+              getLessonCompletionStatus(lesson.id, lesson.lesson_number),
+          ).length
         }
       />
 
       {displayedLessons.map((lesson) => {
-        const isCompleted = getLessonCompletionStatus(lesson.id);
+        const isCompleted = getLessonCompletionStatus(
+          lesson.id,
+          lesson.lesson_number,
+        );
         const quizScore = getLessonQuizScore(lesson.id);
 
         return (
@@ -318,7 +365,7 @@ export function CourseDashboardClient({
         );
       })}
 
-      {courseProgress?.completed_at && (
+      {isCourseCompleted && (
         <div className="rounded-lg border border-green-200 bg-green-50 p-4 shadow-sm dark:border-green-800 dark:bg-green-900/50">
           <h2 className="text-xl font-bold text-green-800 dark:text-green-300">
             Course Complete! 🎉
