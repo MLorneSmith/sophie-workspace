@@ -28,6 +28,7 @@
     "verify:media-columns": "tsx src/scripts/verification/verify-media-columns.ts",
     "sql:add-relationship-id-columns": "tsx src/scripts/sql/add-media-id-columns.ts",
     "repair:edge-cases": "tsx src/scripts/repair/repair-edge-cases.ts",
+    "fix:survey-questions-population": "tsx src/scripts/repair/fix-survey-questions-population.ts",
     "verify:database": "tsx src/scripts/verification/verify-database-schema.ts",
     "verify:schema": "tsx src/scripts/verification/verify-schema.ts",
     "verify:table": "tsx src/scripts/verification/verify-table.ts",

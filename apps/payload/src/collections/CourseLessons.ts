@@ -83,6 +83,38 @@ export const CourseLessons: CollectionConfig = {
       },
     },
     {
+      name: 'survey_id',
+      type: 'relationship',
+      relationTo: 'surveys' as any,
+      hasMany: false,
+      admin: {
+        description: 'The survey associated with this lesson (if any)',
+      },
+    },
+    // Add a field for the survey_id_id that Payload creates automatically
+    // This is needed for compatibility with the database schema
+    {
+      name: 'survey_id_id',
+      type: 'text',
+      admin: {
+        hidden: true, // Hide this field in the admin UI
+      },
+      hooks: {
+        beforeChange: [
+          ({ data }: { data?: any }) => {
+            // Copy the value from survey_id to survey_id_id if survey_id exists
+            if (data?.survey_id) {
+              if (typeof data.survey_id === 'object' && data.survey_id.id) {
+                return data.survey_id.id
+              }
+              return data.survey_id
+            }
+            return undefined
+          },
+        ],
+      },
+    },
+    {
       name: 'publishedAt',
       type: 'date',
       admin: {

@@ -95,12 +95,28 @@ async function generateSqlSeedFiles() {
       surveysSql,
     );
 
-    // Generate survey questions SQL (placeholder)
+    // Generate survey questions SQL (split into separate files)
     console.log('Generating survey questions SQL...');
-    const surveyQuestionsSql = generateSurveyQuestionsSql();
+    const { feedbackSql, assessmentSql, threeQuestionsSql } =
+      generateSurveyQuestionsSql();
+
+    // Write separate files for each survey's questions
     fs.writeFileSync(
-      path.join(PAYLOAD_SQL_SEED_DIR, '06-survey-questions.sql'),
-      surveyQuestionsSql,
+      path.join(PAYLOAD_SQL_SEED_DIR, '06a-feedback-survey-questions.sql'),
+      feedbackSql,
+    );
+
+    fs.writeFileSync(
+      path.join(PAYLOAD_SQL_SEED_DIR, '06b-assessment-survey-questions.sql'),
+      assessmentSql,
+    );
+
+    fs.writeFileSync(
+      path.join(
+        PAYLOAD_SQL_SEED_DIR,
+        '06c-three-questions-survey-questions.sql',
+      ),
+      threeQuestionsSql,
     );
 
     // Also copy the files to the processed SQL directory
@@ -130,8 +146,21 @@ async function generateSqlSeedFiles() {
       path.join(PROCESSED_SQL_DIR, '05-surveys.sql'),
     );
     fs.copyFileSync(
-      path.join(PAYLOAD_SQL_SEED_DIR, '06-survey-questions.sql'),
-      path.join(PROCESSED_SQL_DIR, '06-survey-questions.sql'),
+      path.join(PAYLOAD_SQL_SEED_DIR, '06a-feedback-survey-questions.sql'),
+      path.join(PROCESSED_SQL_DIR, '06a-feedback-survey-questions.sql'),
+    );
+
+    fs.copyFileSync(
+      path.join(PAYLOAD_SQL_SEED_DIR, '06b-assessment-survey-questions.sql'),
+      path.join(PROCESSED_SQL_DIR, '06b-assessment-survey-questions.sql'),
+    );
+
+    fs.copyFileSync(
+      path.join(
+        PAYLOAD_SQL_SEED_DIR,
+        '06c-three-questions-survey-questions.sql',
+      ),
+      path.join(PROCESSED_SQL_DIR, '06c-three-questions-survey-questions.sql'),
     );
 
     console.log('SQL seed files generated successfully!');
@@ -711,56 +740,86 @@ COMMIT;
 }
 
 /**
- * Generates SQL for surveys from the self-assessment.yaml file
+ * Generates SQL for surveys from all YAML files in the RAW_SURVEYS_DIR directory
  * @returns SQL for surveys
  */
 function generateSurveysSql(): string {
-  // Read the self-assessment.yaml file
-  const surveyFilePath = path.join(RAW_SURVEYS_DIR, 'self-assessment.yaml');
-  if (!fs.existsSync(surveyFilePath)) {
-    console.warn(`Survey file not found: ${surveyFilePath}`);
+  // Get all .yaml files in the surveys directory
+  const surveyFiles = fs
+    .readdirSync(RAW_SURVEYS_DIR)
+    .filter((file) => file.endsWith('.yaml') || file.endsWith('.yml'));
+
+  if (surveyFiles.length === 0) {
+    console.warn(`No survey files found in ${RAW_SURVEYS_DIR}`);
     return generatePlaceholderSurveysSql();
   }
 
-  // Parse the YAML data
-  const surveyContent = fs.readFileSync(surveyFilePath, 'utf8');
-  const surveyData = yaml.load(surveyContent) as any;
+  console.log(`Found ${surveyFiles.length} survey files to process.`);
 
-  // Generate SQL for the survey
-  const surveyId = '5e352ade-c6a9-4e4a-9ffa-9680a5d5f9e9'; // Fixed UUID for consistency
-  const surveySlug = surveyData.title
-    .toLowerCase()
-    .replace(/[^\w\s]/g, '')
-    .replace(/\s+/g, '-');
-
-  return `-- Seed data for the surveys table
+  // Start building the SQL
+  let sql = `-- Seed data for the surveys table
 -- This file should be run after the migrations to ensure the surveys table exists
 
 -- Start a transaction
 BEGIN;
 
--- Insert the self-assessment survey
+`;
+
+  // Define fixed UUIDs for known surveys for consistency
+  const knownSurveyIds: Record<string, string> = {
+    'self-assessment': '5e352ade-c6a9-4e4a-9ffa-9680a5d5f9e9',
+    'three-quick-questions': '6f463bef-d7a0-4e5a-b0fa-a789b5d6f0e0',
+    feedback: '7f574cfa-e8b1-4f6b-b1cb-b890c6e7f1f1',
+  };
+
+  // Process each survey file
+  for (const file of surveyFiles) {
+    const filePath = path.join(RAW_SURVEYS_DIR, file);
+    const surveyContent = fs.readFileSync(filePath, 'utf8');
+    const surveyData = yaml.load(surveyContent) as any;
+
+    // Get the survey slug and UUID
+    const surveySlug = path.basename(file, path.extname(file));
+    const surveyId = knownSurveyIds[surveySlug] || uuidv4();
+
+    // Generate a description if not provided
+    const description = surveyData.description || `Survey: ${surveyData.title}`;
+
+    console.log(
+      `Processing survey: ${surveyData.title} (${surveySlug}, ID: ${surveyId})`,
+    );
+
+    // Add the survey to the SQL
+    sql += `-- Insert survey: ${surveyData.title}
 INSERT INTO payload.surveys (
   id,
   title,
   slug,
   description,
   status,
+  show_progress_bar,
   created_at,
   updated_at
 ) VALUES (
   '${surveyId}',
   '${surveyData.title.replace(/'/g, "''")}',
   '${surveySlug}',
-  'Self-assessment survey for presentation skills',
+  '${description.replace(/'/g, "''")}',
   '${surveyData.status || 'published'}',
+  ${surveyData.showProgressBar !== undefined ? surveyData.showProgressBar : true},
   NOW(),
   NOW()
 ) ON CONFLICT (id) DO NOTHING;
 
--- Commit the transaction
+`;
+  }
+
+  // End the transaction
+  sql += `-- Commit the transaction
 COMMIT;
 `;
+
+  return sql;
 }
 
 /**
@@ -797,49 +856,106 @@ COMMIT;
 }
 
 /**
- * Generates SQL for survey questions from the self-assessment.yaml file
- * @returns SQL for survey questions
+ * Generates SQL for survey questions from all YAML files in the RAW_SURVEYS_DIR directory
+ * @returns Object containing SQL for each survey's questions
  */
-function generateSurveyQuestionsSql(): string {
-  // Read the self-assessment.yaml file
-  const surveyFilePath = path.join(RAW_SURVEYS_DIR, 'self-assessment.yaml');
-  if (!fs.existsSync(surveyFilePath)) {
-    console.warn(`Survey file not found: ${surveyFilePath}`);
+function generateSurveyQuestionsSql(): {
+  feedbackSql: string;
+  assessmentSql: string;
+  threeQuestionsSql: string;
+} {
+  // Get all .yaml files in the surveys directory
+  const surveyFiles = fs
+    .readdirSync(RAW_SURVEYS_DIR)
+    .filter((file) => file.endsWith('.yaml') || file.endsWith('.yml'));
+
+  if (surveyFiles.length === 0) {
+    console.warn(`No survey files found in ${RAW_SURVEYS_DIR}`);
     return generatePlaceholderSurveyQuestionsSql();
   }
 
-  // Parse the YAML data
-  const surveyContent = fs.readFileSync(surveyFilePath, 'utf8');
-  const surveyData = yaml.load(surveyContent) as any;
+  console.log(
+    `Found ${surveyFiles.length} survey files to process for questions.`,
+  );
 
-  // Survey ID (must match the ID used in generateSurveysSql)
-  const surveyId = '5e352ade-c6a9-4e4a-9ffa-9680a5d5f9e9';
+  // Define fixed UUIDs for known surveys for consistency
+  const knownSurveyIds: Record<string, string> = {
+    'self-assessment': '5e352ade-c6a9-4e4a-9ffa-9680a5d5f9e9',
+    'three-quick-questions': '6f463bef-d7a0-4e5a-b0fa-a789b5d6f0e0',
+    feedback: '7f574cfa-e8b1-4f6b-b1cb-b890c6e7f1f1',
+  };
 
-  // Start building the SQL
-  let sql = `-- Seed data for the survey questions table
--- This file should be run after the surveys seed file to ensure the surveys exist
+  // Initialize SQL strings for each survey
+  let feedbackSql = `-- Seed data for the feedback survey questions
+-- Survey ID: 7f574cfa-e8b1-4f6b-b1cb-b890c6e7f1f1
 
 -- Start a transaction
 BEGIN;
 
 `;
 
-  // Process each question
-  if (surveyData.questions && Array.isArray(surveyData.questions)) {
-    for (let i = 0; i < surveyData.questions.length; i++) {
-      const question = surveyData.questions[i];
-      const questionId = uuidv4();
+  let assessmentSql = `-- Seed data for the High-Stakes Presentations Self-Assessment survey questions
+-- Survey ID: 5e352ade-c6a9-4e4a-9ffa-9680a5d5f9e9
 
-      // Convert questionspin string to integer (0 for Positive, 1 for Negative)
-      // Make the comparison case-insensitive
-      const questionspinValue =
-        question.questionspin &&
-        question.questionspin.toLowerCase() === 'negative'
-          ? 1
-          : 0;
+-- Start a transaction
+BEGIN;
 
-      // Add the question to the SQL
-      sql += `-- Insert question ${i + 1}: ${question.question.substring(0, 50)}...
+`;
+
+  let threeQuestionsSql = `-- Seed data for the Three Quick Questions survey questions
+-- Survey ID: 6f463bef-d7a0-4e5a-b0fa-a789b5d6f0e0
+
+-- Start a transaction
+BEGIN;
+
+`;
+
+  // Process each survey file
+  for (const file of surveyFiles) {
+    const filePath = path.join(RAW_SURVEYS_DIR, file);
+    const surveyContent = fs.readFileSync(filePath, 'utf8');
+    const surveyData = yaml.load(surveyContent) as any;
+
+    // Get the survey slug and UUID
+    const surveySlug = path.basename(file, path.extname(file));
+    const surveyId = knownSurveyIds[surveySlug] || uuidv4();
+
+    console.log(
+      `Processing questions for survey: ${surveyData.title} (${surveySlug}, ID: ${surveyId})`,
+    );
+
+    // Select the appropriate SQL string based on the survey slug
+    let targetSql: string;
+    if (surveySlug === 'feedback') {
+      targetSql = feedbackSql;
+    } else if (surveySlug === 'self-assessment') {
+      targetSql = assessmentSql;
+    } else if (surveySlug === 'three-quick-questions') {
+      targetSql = threeQuestionsSql;
+    } else {
+      console.warn(`Skipping unknown survey: ${surveySlug}`);
+      continue;
+    }
+
+    // Process each question
+    if (surveyData.questions && Array.isArray(surveyData.questions)) {
+      for (let i = 0; i < surveyData.questions.length; i++) {
+        const question = surveyData.questions[i];
+        const questionId = uuidv4();
+
+        // Convert questionspin string to integer (0 for Positive, 1 for Negative)
+        // Make the comparison case-insensitive
+        const questionspinValue =
+          question.questionspin &&
+          question.questionspin.toLowerCase() === 'negative'
+            ? 1
+            : 0;
+
+        // Determine the question type (default to multiple_choice if not specified)
+        const questionType = question.type || 'multiple_choice';
+
+        // Add the question to the SQL
+        targetSql += `-- Insert question ${i + 1}: ${question.question.substring(0, 50)}...
 INSERT INTO payload.survey_questions (
   id,
   question,
@@ -854,7 +970,7 @@ INSERT INTO payload.survey_questions (
 ) VALUES (
   '${questionId}',
   '${question.question.replace(/'/g, "''")}',
-  'multiple_choice',
+  '${questionType}',
   '${question.questioncategory || ''}',
   ${questionspinValue},
   ${i},
@@ -866,13 +982,17 @@ INSERT INTO payload.survey_questions (
 
 `;
 
-      // Process answer options
-      if (question.answers && Array.isArray(question.answers)) {
-        for (let j = 0; j < question.answers.length; j++) {
-          const answer = question.answers[j];
+        // Process answer options if they exist and the question type is not text_field
+        if (
+          question.answers &&
+          Array.isArray(question.answers) &&
+          questionType !== 'text_field'
+        ) {
+          for (let j = 0; j < question.answers.length; j++) {
+            const answer = question.answers[j];
 
-          // Add the option to the SQL
-          sql += `-- Insert option ${j + 1} for question ${i + 1}
+            // Add the option to the SQL
+            targetSql += `-- Insert option ${j + 1} for question ${i + 1}
 INSERT INTO payload.survey_questions_options (
   id,
   _order,
@@ -890,11 +1010,11 @@ INSERT INTO payload.survey_questions_options (
 ) ON CONFLICT DO NOTHING;
 
 `;
+          }
         }
-      }
 
-      // Create relationship entry for the question to the survey
-      sql += `-- Create relationship entry for the question to the survey
+        // Create relationship entry for the question to the survey
+        targetSql += `-- Create relationship entry for the question to the survey
 INSERT INTO payload.survey_questions_rels (
   id,
   _parent_id,
@@ -913,8 +1033,8 @@ INSERT INTO payload.survey_questions_rels (
 
 `;
 
-      // Create bidirectional relationship entry for the survey to the question
-      sql += `-- Create bidirectional relationship entry for the survey to the question
+        // Create bidirectional relationship entry for the survey to the question
+        targetSql += `-- Create bidirectional relationship entry for the survey to the question
 INSERT INTO payload.surveys_rels (
   id,
   _parent_id,
@@ -934,24 +1054,64 @@ INSERT INTO payload.surveys_rels (
 ) ON CONFLICT DO NOTHING;
 
 `;
+      }
     }
   }
 
-  // End the transaction
-  sql += `-- Commit the transaction
+  // End the transactions
+  feedbackSql += `-- Commit the transaction
 COMMIT;
 `;
 
-  return sql;
+  assessmentSql += `-- Commit the transaction
+COMMIT;
+`;
+
+  threeQuestionsSql += `-- Commit the transaction
+COMMIT;
+`;
+
+  return { feedbackSql, assessmentSql, threeQuestionsSql };
 }
 
 /**
  * Generates placeholder SQL for survey questions (used as fallback if YAML file not found)
- * @returns SQL for survey questions
+ * @returns Object containing SQL for each survey's questions
  */
-function generatePlaceholderSurveyQuestionsSql(): string {
-  return `-- Seed data for the survey questions table
--- This file should be run after the surveys seed file to ensure the surveys exist
+function generatePlaceholderSurveyQuestionsSql(): {
+  feedbackSql: string;
+  assessmentSql: string;
+  threeQuestionsSql: string;
+} {
+  // Feedback survey placeholder
+  const feedbackSql = `-- Seed data for the feedback survey questions
+-- Survey ID: 7f574cfa-e8b1-4f6b-b1cb-b890c6e7f1f1
+
+-- Start a transaction
+BEGIN;
+
+-- Insert a sample survey question
+INSERT INTO payload.survey_questions (
+  id,
+  question,
+  surveys_id,
+  created_at,
+  updated_at
+) VALUES (
+  '6e352ade-c6a9-4e4a-9ffa-9680a5d5f9e1', -- Fixed UUID for the question
+  'How would you rate the course overall?',
+  '7f574cfa-e8b1-4f6b-b1cb-b890c6e7f1f1', -- Survey ID
+  NOW(),
+  NOW()
+) ON CONFLICT (id) DO NOTHING; -- Skip if the question already exists
+
+-- Commit the transaction
+COMMIT;
+`;
+
+  // Assessment survey placeholder
+  const assessmentSql = `-- Seed data for the High-Stakes Presentations Self-Assessment survey questions
+-- Survey ID: 5e352ade-c6a9-4e4a-9ffa-9680a5d5f9e9
 
 -- Start a transaction
 BEGIN;
@@ -965,49 +1125,43 @@ INSERT INTO payload.survey_questions (
   updated_at
 ) VALUES (
   '6e352ade-c6a9-4e4a-9ffa-9680a5d5f9ea', -- Fixed UUID for the question
-  'How would you rate the course overall?',
+  'How would you rate your presentation skills?',
   '5e352ade-c6a9-4e4a-9ffa-9680a5d5f9e9', -- Survey ID
   NOW(),
   NOW()
 ) ON CONFLICT (id) DO NOTHING; -- Skip if the question already exists
 
--- Create relationship entry for the question to the survey
-INSERT INTO payload.survey_questions_rels (
-  id,
-  _parent_id,
-  field,
-  value,
-  created_at,
-  updated_at
-) VALUES (
-  gen_random_uuid(),
-  '6e352ade-c6a9-4e4a-9ffa-9680a5d5f9ea',
-  'surveys',
-  '5e352ade-c6a9-4e4a-9ffa-9680a5d5f9e9',
-  NOW(),
-  NOW()
-) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
+-- Commit the transaction
+COMMIT;
+`;
 
--- Create bidirectional relationship entry for the survey to the question
-INSERT INTO payload.surveys_rels (
+  // Three Quick Questions survey placeholder
+  const threeQuestionsSql = `-- Seed data for the Three Quick Questions survey questions
+-- Survey ID: 6f463bef-d7a0-4e5a-b0fa-a789b5d6f0e0
+
+-- Start a transaction
+BEGIN;
+
+-- Insert a sample survey question
+INSERT INTO payload.survey_questions (
   id,
-  _parent_id,
-  field,
-  value,
+  question,
+  surveys_id,
   created_at,
   updated_at
 ) VALUES (
-  gen_random_uuid(),
-  '5e352ade-c6a9-4e4a-9ffa-9680a5d5f9e9',
-  'questions',
-  '6e352ade-c6a9-4e4a-9ffa-9680a5d5f9ea',
+  '6e352ade-c6a9-4e4a-9ffa-9680a5d5f9eb', -- Fixed UUID for the question
+  'What is your experience level with presentations?',
+  '6f463bef-d7a0-4e5a-b0fa-a789b5d6f0e0', -- Survey ID
   NOW(),
   NOW()
-) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
+) ON CONFLICT (id) DO NOTHING; -- Skip if the question already exists
 
 -- Commit the transaction
 COMMIT;
 `;
+
+  return { feedbackSql, assessmentSql, threeQuestionsSql };
 }
 
 /**

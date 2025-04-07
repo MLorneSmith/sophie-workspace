@@ -28,6 +28,8 @@ export const SurveyQuestions: CollectionConfig = {
       type: 'select',
       options: [
         { label: 'Multiple Choice', value: 'multiple_choice' },
+        { label: 'Text Field', value: 'text_field' },
+        { label: 'Scale', value: 'scale' },
         // Future extensibility for other question types
       ],
       defaultValue: 'multiple_choice',

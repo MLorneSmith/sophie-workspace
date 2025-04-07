@@ -1,0 +1,129 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20250407100020
+Username: SLIDEHEROES_DEN\msmit
+RunAs User: SLIDEHEROES_DEN\msmit
+Configuration Name: 
+Machine: SLIDEHEROES_DEN (Microsoft Windows NT 10.0.26100.0)
+Host Application: C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -noexit -command try { . "c:\Users\msmit\AppData\Local\Programs\Microsoft VS Code\resources\app\out\vs\workbench\contrib\terminal\common\scripts\shellIntegration.ps1" } catch {}
+Process ID: 15948
+PSVersion: 5.1.26100.3624
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.3624
+BuildVersion: 10.0.26100.3624
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcript started, output file is D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-log-20250407-100020-885.txt
+Starting migration process at 04/07/2025 10:00:20
+Detailed logs will be saved to: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250407-100020-885.txt
+STEP 1: Resetting Supabase database and running Web app migrations...
+Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\apps\web
+  Running supabase:reset...
+EXECUTING: pnpm run supabase:reset
+DESCRIPTION: Resetting Supabase database
+
+  Running supabase migrations...
+EXECUTING: supabase migration up
+DESCRIPTION: Running Supabase migrations
+
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes
+EXECUTING: pnpm --filter @kit/content-migrations run verify:schema public
+DESCRIPTION: Verifying schema 'public' exists
+âœ… Schema 'public' exists
+  Web app migrations completed successfully
+STEP 2: Running Payload migrations...
+Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\apps\payload
+  Checking migration status...
+EXECUTING: pnpm migrate:status
+DESCRIPTION: Checking migration status
+  Running all migrations...
+EXECUTING: pnpm payload migrate
+DESCRIPTION: Running Payload migrations
+
+  Adding relationship ID columns to locked documents tables...
+  Temporarily changed to directory: D:\SlideHeroes\App\repos\2025slideheroes
+EXECUTING: pnpm --filter @kit/content-migrations run sql:add-relationship-id-columns
+DESCRIPTION: Adding relationship ID columns to locked documents tables
+
+  Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\apps\payload
+  Verifying migration status...
+EXECUTING: pnpm migrate:status
+DESCRIPTION: Verifying migration status
+  All migrations have been applied successfully
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes
+EXECUTING: pnpm --filter @kit/content-migrations run verify:schema payload
+DESCRIPTION: Verifying schema 'payload' exists
+âœ… Schema 'payload' exists
+EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload courses
+DESCRIPTION: Verifying table 'payload.courses' exists
+âœ… Table 'payload.courses' exists
+EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload course_lessons
+DESCRIPTION: Verifying table 'payload.course_lessons' exists
+âœ… Table 'payload.course_lessons' exists
+EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload course_quizzes
+DESCRIPTION: Verifying table 'payload.course_quizzes' exists
+âœ… Table 'payload.course_quizzes' exists
+EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload quiz_questions
+DESCRIPTION: Verifying table 'payload.quiz_questions' exists
+âœ… Table 'payload.quiz_questions' exists
+EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload surveys
+DESCRIPTION: Verifying table 'payload.surveys' exists
+âœ… Table 'payload.surveys' exists
+EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload survey_questions
+DESCRIPTION: Verifying table 'payload.survey_questions' exists
+âœ… Table 'payload.survey_questions' exists
+STEP 3: Checking and processing raw data if needed...
+Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+  Processed data not found. Processing raw data...
+EXECUTING: pnpm run process:raw-data
+DESCRIPTION: Processing raw data
+
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes
+STEP 4: Running content migrations via Payload migrations...
+Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\apps\payload
+  Running all Payload migrations...
+EXECUTING: pnpm payload migrate
+DESCRIPTION: Running Payload migrations
+
+  Verifying migrations...
+EXECUTING: pnpm migrate:status
+DESCRIPTION: Verifying migration status
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes
+Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+  Verifying database state...
+EXECUTING: pnpm run verify:all
+DESCRIPTION: Verifying database relationships
+  No issues found, skipping repairs
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes
+STEP 4: Skipping SQL seed files (now handled by Payload migrations)...
+Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+  Verifying database schema...
+EXECUTING: pnpm run sql:verify-schema
+DESCRIPTION: Verifying database schema
+  Skipping SQL seed files generation and execution...
+  NOTE: Course data is now seeded by Payload migration 20250402_305000_seed_course_data.ts
+  NOTE: Lessons and quizzes are seeded by direct migrations in Step 3
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes
+STEP 5: Performing comprehensive database verification...
+Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+  Verifying database schema...
+EXECUTING: pnpm run sql:verify-schema
+DESCRIPTION: Final database verification
+  Verifying course_lessons quiz_id_id column...
+EXECUTING: pnpm run verify:course-lessons
+DESCRIPTION: Verifying course_lessons quiz_id_id column
+  Course lessons quiz_id_id column verification passed
+  Verifying media_id columns...
+EXECUTING: pnpm --filter @kit/content-migrations run verify:media-columns
+DESCRIPTION: Verifying media_id columns
+  Media columns verification passed
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes
+All migrations and verifications completed successfully!
+Admin user created with email: michael@slideheroes.com
+**********************
+Windows PowerShell transcript end
+End time: 20250407100117
+**********************

@@ -26,7 +26,9 @@ const seedFiles = [
   '03-quizzes.sql',
   '04-questions.sql',
   '05-surveys.sql',
-  '06-survey-questions.sql',
+  '06a-feedback-survey-questions.sql',
+  '06b-assessment-survey-questions.sql',
+  '06c-three-questions-survey-questions.sql',
 ];
 
 /**

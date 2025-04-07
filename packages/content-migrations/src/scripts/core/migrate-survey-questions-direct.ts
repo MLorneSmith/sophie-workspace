@@ -143,6 +143,9 @@ async function migrateSurveyQuestionsToDatabase() {
                 questionId = existingQuestion.rows[0].id;
                 console.log(`Question already exists with ID: ${questionId}`);
               } else {
+                // Get the question type from the YAML or default to multiple_choice
+                const questionType = q.type || 'multiple_choice';
+
                 // Insert the question into the database
                 const questionResult = await client.query(
                   `INSERT INTO payload.survey_questions (
@@ -158,7 +161,7 @@ async function migrateSurveyQuestionsToDatabase() {
                   RETURNING id`,
                   [
                     q.question,
-                    'multiple_choice', // Default type
+                    questionType, // Use the question type from the YAML
                     q.questionspin === 'positive'
                       ? 'Positive'
                       : q.questionspin === 'negative'

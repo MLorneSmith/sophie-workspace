@@ -7,6 +7,9 @@ import { Label } from '@kit/ui/label';
 import { RadioGroup, RadioGroupItem } from '@kit/ui/radio-group';
 import { Trans } from '@kit/ui/trans';
 
+import { ScaleQuestion } from './scale-question';
+import { TextFieldQuestion } from './text-field-question';
+
 type QuestionCardProps = {
   question: any;
   onAnswer: (questionId: string, answer: string, score: number) => void;
@@ -18,6 +21,28 @@ export function QuestionCard({
   onAnswer,
   isLoading,
 }: QuestionCardProps) {
+  // Render different question types based on the question type
+  if (question.type === 'text_field') {
+    return (
+      <TextFieldQuestion
+        question={question}
+        onAnswer={onAnswer}
+        isLoading={isLoading}
+      />
+    );
+  }
+
+  if (question.type === 'scale') {
+    return (
+      <ScaleQuestion
+        question={question}
+        onAnswer={onAnswer}
+        isLoading={isLoading}
+      />
+    );
+  }
+
+  // Default to multiple choice question
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
   const handleSubmit = () => {
