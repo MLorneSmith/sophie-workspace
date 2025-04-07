@@ -397,7 +397,7 @@ export interface SurveyQuestion {
   /**
    * The type of question
    */
-  type: 'multiple_choice';
+  type: 'multiple_choice' | 'text_field' | 'scale';
   /**
    * Additional context or instructions for the question
    */
@@ -523,6 +523,11 @@ export interface CourseLesson {
    * The quiz associated with this lesson (if any)
    */
   quiz_id?: (string | null) | CourseQuizz;
+  /**
+   * The survey associated with this lesson (if any)
+   */
+  survey_id?: (string | null) | Survey;
+  survey_id_id?: string | null;
   publishedAt?: string | null;
   updatedAt: string;
   createdAt: string;
@@ -832,6 +837,8 @@ export interface CourseLessonsSelect<T extends boolean = true> {
   estimatedDuration?: T;
   course_id?: T;
   quiz_id?: T;
+  survey_id?: T;
+  survey_id_id?: T;
   publishedAt?: T;
   updatedAt?: T;
   createdAt?: T;

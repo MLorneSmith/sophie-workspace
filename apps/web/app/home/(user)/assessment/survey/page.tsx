@@ -33,7 +33,7 @@ async function SurveyPage() {
   }
 
   // Get the assessment survey
-  const surveyData = await getSurvey('assessment');
+  const surveyData = await getSurvey('self-assessment');
   const survey = surveyData.docs?.[0];
 
   if (!survey) {
@@ -93,6 +93,26 @@ async function SurveyPage() {
 
   // Transform and sort questions
   const transformedQuestions = questions.map((question: SurveyQuestion) => {
+    // For multiple_choice questions, add default options if none exist
+    if (
+      question.type === 'multiple_choice' &&
+      (!question.options || question.options.length === 0)
+    ) {
+      console.log(`Adding default options for question: ${question.id}`);
+
+      // Default options for Likert scale
+      const defaultOptions = [
+        { option: 'Strongly disagree' },
+        { option: 'Disagree' },
+        { option: 'Neither agree nor disagree' },
+        { option: 'Agree' },
+        { option: 'Strongly agree' },
+      ];
+
+      // Add default options to the question
+      question.options = defaultOptions;
+    }
+
     // Transform options to the expected format
     const transformedOptions =
       question.options?.map((opt: { option: string }, index: number) => ({

@@ -26,11 +26,25 @@ export const saveResponseAction = enhanceAction(
   async function (data, user) {
     const supabase = getSupabaseServerClient();
 
-    // Calculate progress percentage
-    const progressPercentage =
-      ((data.questionIndex + 1) / data.totalQuestions) * 100;
-
     try {
+      // Validate total_questions by fetching the actual count from the database
+      const { getSurveyQuestions } = await import('@kit/cms/payload');
+      const questionsData = await getSurveyQuestions(data.surveyId);
+      const actualTotalQuestions = questionsData.docs?.length || 0;
+
+      console.log(
+        `Actual question count for survey ${data.surveyId}: ${actualTotalQuestions}`,
+      );
+      console.log(`Client-provided question count: ${data.totalQuestions}`);
+
+      // Use the actual count instead of the provided one
+      const totalQuestions =
+        actualTotalQuestions > 0 ? actualTotalQuestions : data.totalQuestions;
+
+      // Calculate progress percentage
+      const progressPercentage =
+        ((data.questionIndex + 1) / totalQuestions) * 100;
+
       // Format the new response
       const newResponse = {
         questionId: data.questionId,
@@ -123,7 +137,7 @@ export const saveResponseAction = enhanceAction(
             user_id: user.id,
             survey_id: data.surveyId,
             current_question_index: data.questionIndex + 1,
-            total_questions: data.totalQuestions,
+            total_questions: totalQuestions, // Use the validated count
             progress_percentage: progressPercentage,
             last_answered_at: new Date().toISOString(),
           },

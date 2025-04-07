@@ -33,7 +33,7 @@ async function AssessmentPage() {
   }
 
   // Get the assessment survey
-  const surveyData = await getSurvey('assessment');
+  const surveyData = await getSurvey('self-assessment');
   const survey = surveyData.docs?.[0];
 
   if (!survey) {

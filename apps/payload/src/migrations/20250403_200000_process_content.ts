@@ -28,10 +28,13 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
       '03-quizzes.sql',
       '04-questions.sql',
       '05-surveys.sql',
-      '06-survey-questions.sql',
-      '08-documentation.sql',
+      // Replace the problematic file with individual files
+      '06a-feedback-survey-questions.sql',
+      '06b-assessment-survey-questions.sql',
+      '06c-three-questions-survey-questions.sql',
+      '07-documentation.sql',
       '08-posts.sql',
-      '10-fix-quiz-questions.sql',
+      '09-fix-quiz-questions.sql',
     ]
 
     // Execute each SQL file

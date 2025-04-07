@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useEffect, useState, useTransition } from 'react';
 
 import Link from 'next/link';
 
@@ -21,8 +21,9 @@ import {
   submitQuizAttemptAction,
   updateLessonProgressAction,
 } from '../../../_lib/server/server-actions';
-// Import the QuizComponent
+// Import the QuizComponent and SurveyComponent
 import { QuizComponent } from './QuizComponent';
+import { SurveyComponent } from './SurveyComponent';
 
 interface LessonViewClientProps {
   lesson: any;
@@ -30,6 +31,8 @@ interface LessonViewClientProps {
   quizAttempts: any[];
   lessonProgress: any;
   userId: string;
+  survey?: any;
+  surveyResponses?: any[];
 }
 
 export function LessonViewClient({
@@ -38,11 +41,17 @@ export function LessonViewClient({
   quizAttempts,
   lessonProgress,
   userId,
+  survey,
+  surveyResponses = [],
 }: LessonViewClientProps) {
   const [isPending, startTransition] = useTransition();
   const [showQuiz, setShowQuiz] = useState(false);
+  const [showSurvey, setShowSurvey] = useState(false);
   const [quizCompleted, setQuizCompleted] = useState(
     quizAttempts.length > 0 && quizAttempts[0].passed,
+  );
+  const [surveyCompleted, setSurveyCompleted] = useState(
+    surveyResponses.length > 0 && surveyResponses[0].completed,
   );
   const [isMarkingCompleted, setIsMarkingCompleted] = useState(false);
 
@@ -53,6 +62,10 @@ export function LessonViewClient({
   // Check if lesson has a quiz that was successfully loaded
   const hasQuiz =
     !!quiz && !!quiz.id && !!(lesson.quiz_id || lesson.quiz_id_id);
+
+  // Check if lesson has a survey that was successfully loaded
+  const hasSurvey =
+    !!survey && !!survey.id && (!!lesson.survey_id || !!lesson.survey_id_id);
 
   // Extract course ID safely
   const getCourseId = () => {
@@ -102,6 +115,14 @@ export function LessonViewClient({
       });
     }
   };
+
+  // Automatically show survey when component mounts if lesson has a survey and it's not completed
+  useEffect(() => {
+    if (hasSurvey && !surveyCompleted) {
+      markLessonAsViewed();
+      setShowSurvey(true);
+    }
+  }, [hasSurvey, surveyCompleted, courseId, lesson.id, isCompleted]);
 
   // Mark lesson as completed
   const markLessonAsCompleted = () => {
@@ -172,11 +193,19 @@ export function LessonViewClient({
             </div>
           </CardHeader>
           <CardContent>
-            {!showQuiz ? (
-              <div className="prose prose-sm dark:prose-invert max-w-none">
-                <PayloadContentRenderer content={lesson.content} />
-              </div>
-            ) : (
+            {showSurvey && survey ? (
+              <SurveyComponent
+                survey={survey}
+                surveyResponses={surveyResponses}
+                userId={userId}
+                onComplete={() => {
+                  setSurveyCompleted(true);
+                  setShowSurvey(false);
+                  // Mark lesson as completed when survey is completed
+                  markLessonAsCompleted();
+                }}
+              />
+            ) : showQuiz ? (
               quiz && (
                 <QuizComponent
                   quiz={quiz}
@@ -187,6 +216,10 @@ export function LessonViewClient({
                   currentLessonNumber={lesson.lesson_number}
                 />
               )
+            ) : (
+              <div className="prose prose-sm dark:prose-invert max-w-none">
+                <PayloadContentRenderer content={lesson.content} />
+              </div>
             )}
           </CardContent>
           <CardFooter className="flex justify-between">
@@ -198,7 +231,23 @@ export function LessonViewClient({
             </Link>
 
             <div className="flex gap-2">
-              {!showQuiz && hasQuiz && !quizCompleted && (
+              {/* Survey Button */}
+              {!showSurvey && !showQuiz && hasSurvey && !surveyCompleted && (
+                <Button
+                  onClick={() => {
+                    markLessonAsViewed();
+                    setShowSurvey(true);
+                  }}
+                  disabled={isPending}
+                  className="bg-blue-600 hover:bg-blue-700"
+                >
+                  Take Survey
+                  <ChevronRight className="ml-2 h-4 w-4" />
+                </Button>
+              )}
+
+              {/* Quiz Button */}
+              {!showSurvey && !showQuiz && hasQuiz && !quizCompleted && (
                 <Button
                   onClick={() => {
                     markLessonAsViewed();
@@ -211,8 +260,11 @@ export function LessonViewClient({
                 </Button>
               )}
 
-              {!showQuiz &&
+              {/* Mark as Completed Button */}
+              {!showSurvey &&
+                !showQuiz &&
                 (!hasQuiz || quizCompleted) &&
+                (!hasSurvey || surveyCompleted) &&
                 (isCompleted ? (
                   <Button
                     disabled={true}
@@ -237,8 +289,6 @@ export function LessonViewClient({
                     />
                   </Button>
                 ))}
-
-              {/* Removed "Next Lesson" button from here since the QuizSummary component already has its own */}
             </div>
           </CardFooter>
         </Card>

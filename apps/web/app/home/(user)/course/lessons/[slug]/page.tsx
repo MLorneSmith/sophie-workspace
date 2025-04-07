@@ -74,6 +74,8 @@ async function LessonPage({ params }: { params: Promise<{ slug: string }> }) {
               quizAttempts={data.quizAttempts}
               lessonProgress={data.lessonProgress}
               userId={data.userId}
+              survey={data.survey}
+              surveyResponses={data.surveyResponses}
             />
           )}
         </LessonDataProvider>
