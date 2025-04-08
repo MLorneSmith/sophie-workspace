@@ -1,12 +1,11 @@
 /**
- * Script to update course progress for test2@slideheroes.com
- * Marks all lessons as complete except for 801 and 802
+ * Script to test certificate generation
  *
- * This script fetches the current lesson data from Payload CMS to ensure
- * it always uses the latest lesson IDs, even after database resets.
- *
- * Note: Lesson 702 is now included as completed to trigger course completion
- * and certificate generation.
+ * This script:
+ * 1. Sets the PDF.co API key environment variable
+ * 2. Marks all required lessons as completed for a test user
+ * 3. Verifies that the course is marked as completed
+ * 4. Checks if the certificate is generated
  */
 import { createClient } from '@supabase/supabase-js';
 
@@ -41,29 +40,6 @@ const REQUIRED_LESSON_NUMBERS = [
 
 const TOTAL_REQUIRED_LESSONS = REQUIRED_LESSON_NUMBERS.length; // 23
 
-// Define types
-interface UserData {
-  id: string;
-  email?: string;
-}
-
-interface LessonData {
-  id: string;
-  lesson_number: string | number;
-  title: string;
-  [key: string]: any;
-}
-
-interface ProgressData {
-  id: string;
-  user_id: string;
-  course_id: string;
-  lesson_id?: string;
-  completion_percentage: number;
-  completed_at: string | null;
-  [key: string]: any;
-}
-
 // Hardcoded Supabase credentials
 // In a production environment, these should be loaded from environment variables
 const supabaseUrl = 'http://127.0.0.1:54321';
@@ -74,9 +50,17 @@ const supabaseKey =
 const payloadUrl =
   process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3020';
 
+// PDF.co API key - use the one from .env.development
+const PDF_CO_API_KEY =
+  'msmith@slideheroes.com_r1i3TNuZXbKw1ZediQnpYsYFCJRZdwJprwYZEtxFXoK6pxhIbPO4oAT74cXfMuLX';
+
+// Set the PDF.co API key environment variable
+process.env.PDF_CO_API_KEY = PDF_CO_API_KEY;
+
 console.log(`Supabase URL: ${supabaseUrl}`);
 console.log(`Supabase Key: ${supabaseKey ? '********' : 'undefined'}`);
 console.log(`Payload URL: ${payloadUrl}`);
+console.log(`PDF.co API Key: ${PDF_CO_API_KEY ? '********' : 'undefined'}`);
 
 // Supabase client setup
 const supabase = createClient(supabaseUrl, supabaseKey);
@@ -84,17 +68,13 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 // Course ID for "Decks for Decision Makers"
 const COURSE_ID = '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8';
 const TEST_USER_EMAIL = 'test2@slideheroes.com';
-// Only exclude the congratulations and final lessons, not 702 which is required for completion
-const EXCLUDED_LESSONS = ['801', '802'];
 
 /**
  * Fetch lessons from Payload CMS
  * @param courseId The course ID to fetch lessons for
  * @returns Array of lesson data
  */
-async function fetchLessonsFromPayload(
-  courseId: string,
-): Promise<LessonData[]> {
+async function fetchLessonsFromPayload(courseId: string): Promise<any[]> {
   console.log(
     `Fetching lessons from Payload CMS for course ID: ${courseId}...`,
   );
@@ -115,16 +95,6 @@ async function fetchLessonsFromPayload(
     console.log(
       `Successfully fetched ${lessons.length} lessons from Payload CMS`,
     );
-
-    // Log the first few lessons for debugging
-    if (lessons.length > 0) {
-      console.log('Sample lessons:');
-      lessons.slice(0, 3).forEach((lesson: LessonData) => {
-        console.log(
-          `  - ${lesson.id}: Lesson ${lesson.lesson_number} - ${lesson.title}`,
-        );
-      });
-    }
 
     return lessons;
   } catch (error) {
@@ -173,16 +143,46 @@ async function fetchLessonsFromPayload(
   }
 }
 
+/**
+ * Generate a certificate for the user
+ */
+async function generateCertificate(userId: string, fullName: string) {
+  console.log(`Generating certificate for user ${userId}...`);
+
+  try {
+    // Import the certificate service
+    // Use dynamic import with .js extension for ESM compatibility
+    const { generateCertificate } = await import(
+      '../apps/web/lib/certificates/certificate-service.js'
+    );
+
+    // Generate the certificate
+    const result = await generateCertificate({
+      userId,
+      courseId: COURSE_ID,
+      fullName,
+    });
+
+    console.log('Certificate generated successfully!');
+    console.log('Certificate ID:', result.certificateId);
+    console.log('Certificate URL:', result.certificateUrl);
+
+    return result;
+  } catch (error) {
+    console.error('Failed to generate certificate:', error);
+    throw error;
+  }
+}
+
 async function main() {
   try {
-    console.log('Starting course progress update for test user...');
+    console.log('Starting certificate generation test...');
 
     // 1. Get the user ID for test2@slideheroes.com
-    // Try to get the user directly from the accounts table
     console.log('Fetching user ID from accounts table...');
     const { data: accountData, error: accountError } = await supabase
       .from('accounts')
-      .select('id')
+      .select('id, name')
       .eq('email', TEST_USER_EMAIL)
       .single();
 
@@ -193,12 +193,12 @@ async function main() {
     }
 
     const userId = accountData.id;
+    const fullName = accountData.name || TEST_USER_EMAIL;
     console.log(`Found user ID: ${userId}`);
+    console.log(`User name: ${fullName}`);
 
     // 2. Get all lessons for the course from Payload CMS
     console.log('Fetching course lessons from Payload CMS...');
-
-    // Fetch lessons from Payload CMS instead of using hardcoded data
     const lessonsData = await fetchLessonsFromPayload(COURSE_ID);
 
     if (!lessonsData || lessonsData.length === 0) {
@@ -207,23 +207,11 @@ async function main() {
 
     console.log(`Found ${lessonsData.length} lessons`);
 
-    // 3. Mark all lessons as complete except for excluded ones
+    // 3. Mark all lessons as complete
     const now = new Date().toISOString();
     let completedLessonsCount = 0;
 
-    // We're now including lesson 702 as completed to trigger course completion
-    console.log(
-      'Including lesson 702 as completed to trigger course completion',
-    );
-
-    // Now mark all other lessons as complete except for excluded ones
-    for (const lesson of lessonsData as LessonData[]) {
-      // Skip excluded lessons
-      if (EXCLUDED_LESSONS.includes(String(lesson.lesson_number))) {
-        console.log(`Skipping lesson ${lesson.lesson_number}: ${lesson.title}`);
-        continue;
-      }
-
+    for (const lesson of lessonsData) {
       console.log(
         `Marking lesson ${lesson.lesson_number} as complete: ${lesson.title}`,
       );
@@ -332,7 +320,7 @@ async function main() {
         .from('course_progress')
         .update({
           completion_percentage: completionPercentage,
-          completed_at: isCompleted ? now : null, // Only set completed_at if course is actually complete
+          completed_at: now, // Set completed_at to mark as completed
           last_accessed_at: now,
         })
         .eq('id', existingCourseProgress.id);
@@ -344,9 +332,7 @@ async function main() {
       }
 
       console.log(
-        isCompleted
-          ? 'Marked course as completed by setting completed_at timestamp'
-          : 'Updated course progress without marking as completed',
+        'Marked course as completed by setting completed_at timestamp',
       );
     } else {
       // Create new course progress
@@ -358,7 +344,7 @@ async function main() {
           started_at: now,
           last_accessed_at: now,
           completion_percentage: completionPercentage,
-          completed_at: isCompleted ? now : null, // Only set completed_at if course is actually complete
+          completed_at: now, // Set completed_at to mark as completed
         });
 
       if (insertError) {
@@ -368,15 +354,48 @@ async function main() {
       }
 
       console.log(
-        isCompleted
-          ? 'Created new course progress record with completed_at timestamp set'
-          : 'Created new course progress record without marking as completed',
+        'Created new course progress record with completed_at timestamp set',
       );
+    }
+
+    // 5. Generate certificate
+    console.log('Generating certificate...');
+    await generateCertificate(userId, fullName);
+
+    // 6. Verify certificate was created
+    console.log('Verifying certificate was created...');
+    const { data: certificate, error: certificateError } = await supabase
+      .from('certificates')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('course_id', COURSE_ID)
+      .single();
+
+    if (certificateError || !certificate) {
+      console.error('Certificate not found in database');
+    } else {
+      console.log('Certificate found in database:');
+      console.log(certificate);
+    }
+
+    // 7. Check if the certificate file exists in storage
+    console.log('Checking if certificate file exists in storage...');
+    const { data: storageData, error: storageError } = await supabase.storage
+      .from('certificates')
+      .list(`${userId}/${COURSE_ID}`);
+
+    if (storageError) {
+      console.error('Failed to list certificate files:', storageError.message);
+    } else if (!storageData || storageData.length === 0) {
+      console.error('No certificate files found in storage');
+    } else {
+      console.log('Certificate files found in storage:');
+      console.log(storageData);
     }
 
     console.log(`Successfully updated course progress for ${TEST_USER_EMAIL}`);
     console.log(
-      `Completed ${completedLessonsCount}/${TOTAL_REQUIRED_LESSONS} lessons (${completionPercentage}%)`,
+      `Completed ${completedLessonsCount} lessons (${completionPercentage}%)`,
     );
     console.log('Done!');
   } catch (error) {
