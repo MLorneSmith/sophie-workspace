@@ -23,7 +23,8 @@ import {
   RAW_SURVEYS_DIR,
 } from '../../config/paths.js';
 // Import the SQL seed file generator
-import { generateSqlSeedFiles } from '../sql/generate-sql-seed-files-fixed.js';
+import { generateSqlSeedFiles } from '../sql/new-generate-sql-seed-files.js';
+import { verifyQuizSystemIntegrity } from '../verification/verify-quiz-system-integrity.js';
 
 /**
  * Ensures all required directories exist
@@ -87,7 +88,16 @@ async function processRawData(): Promise<void> {
 
     // Generate SQL seed files
     console.log('Generating SQL seed files...');
-    await generateSqlSeedFiles();
+    await generateSqlSeedFiles(PAYLOAD_SQL_SEED_DIR);
+
+    // Verify quiz ID consistency
+    console.log('Verifying quiz ID consistency...');
+    const quizIdsConsistent = verifyQuizSystemIntegrity();
+    if (!quizIdsConsistent) {
+      console.warn(
+        'WARNING: Quiz ID inconsistencies detected. This may cause issues during migration.',
+      );
+    }
 
     // Copy SQL seed files to the processed directory
     await copySqlSeedFiles();
@@ -97,6 +107,7 @@ async function processRawData(): Promise<void> {
       processedAt: new Date().toISOString(),
       rawDataDir: RAW_DATA_DIR,
       processedDataDir: PROCESSED_DATA_DIR,
+      quizIdsConsistent,
     };
 
     fs.writeFileSync(

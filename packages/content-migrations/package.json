@@ -26,6 +26,7 @@
     "verify:all": "tsx src/scripts/verification/verify-all-relationships.ts",
     "verify:course-lessons": "tsx src/scripts/verification/verify-course-lessons-quiz-id-column.ts",
     "verify:media-columns": "tsx src/scripts/verification/verify-media-columns.ts",
+    "verify:quiz-system": "tsx src/scripts/verification/verify-quiz-system-integrity.ts",
     "sql:add-relationship-id-columns": "tsx src/scripts/sql/add-media-id-columns.ts",
     "repair:edge-cases": "tsx src/scripts/repair/repair-edge-cases.ts",
     "fix:survey-questions-population": "tsx src/scripts/repair/fix-survey-questions-population.ts",
@@ -35,7 +36,7 @@
     "utils:run-sql-file": "tsx src/utils/run-sql-file.ts",
     "sql:run-seeds": "tsx src/scripts/sql/run-all-sql-seeds.ts",
     "sql:verify-schema": "tsx src/scripts/sql/verify-database-schema.ts",
-    "sql:generate-seeds": "tsx src/scripts/sql/generate-sql-seed-files-fixed.ts",
+    "sql:generate-seeds": "tsx src/scripts/sql/new-generate-sql-seed-files.ts",
     "process:raw-data": "tsx src/scripts/process/process-raw-data.ts",
     "process:validate": "tsx src/scripts/process/process-raw-data.ts --validate-only"
   },

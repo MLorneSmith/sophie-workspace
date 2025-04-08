@@ -349,6 +349,57 @@ CREATE SCHEMA payload;
     }
 
     #
+    # STEP 4.5: Generate SQL seed files and fix quiz ID consistency
+    #
+    Log-Message "STEP 4.5: Generating SQL seed files and fixing quiz ID consistency..." "Cyan"
+    try {
+        # Use Push-Location/Pop-Location instead of cd to maintain path context
+        Push-Location -Path "packages/content-migrations"
+        Log-Message "Changed directory to: $(Get-Location)" "Gray"
+
+        # Verify quiz system integrity
+        Log-Message "  Verifying quiz system integrity..." "Yellow"
+        $quizSystemVerification = Exec-Command -command "pnpm exec tsx src/scripts/verification/verify-quiz-system-integrity.ts" -description "Verifying quiz system integrity" -captureOutput
+        
+        if ($LASTEXITCODE -ne 0) {
+            Log-Message "ERROR: Quiz system integrity verification failed" "Red"
+            Log-Message "Please check the quiz definitions and fix any issues" "Red"
+            $overallSuccess = $false
+            throw "Quiz system integrity verification failed"
+        }
+        
+        # Generate SQL seed files
+        Log-Message "  Generating SQL seed files..." "Yellow"
+        Exec-Command -command "pnpm exec tsx src/scripts/sql/new-generate-sql-seed-files.ts" -description "Generating SQL seed files"
+        
+        # Fix quiz ID consistency issue - this will overwrite the 03-quizzes.sql with correct IDs
+        Log-Message "  Fixing quiz ID consistency issues..." "Yellow"
+        Exec-Command -command "pnpm exec tsx src/scripts/fix-quiz-id-consistency.ts" -description "Fixing quiz ID consistency"
+        
+        # Fix lesson-quiz references to ensure they match the corrected quiz IDs
+        Log-Message "  Fixing lesson-quiz reference consistency..." "Yellow"
+        Exec-Command -command "pnpm exec tsx src/scripts/fix-lesson-quiz-references.ts" -description "Fixing lesson-quiz references"
+        
+        # Fix additional lesson-quiz references in 03a-lesson-quiz-references.sql
+        Log-Message "  Fixing additional lesson-quiz reference consistency..." "Yellow"
+        Exec-Command -command "pnpm exec tsx src/scripts/fix-lessons-quiz-references-sql.ts" -description "Fixing additional lesson-quiz references"
+        
+        # Fix quiz question references in 04-questions.sql
+        Log-Message "  Fixing quiz question references in 04-questions.sql..." "Yellow"
+        Exec-Command -command "pnpm exec tsx src/scripts/fix-questions-quiz-references.ts" -description "Fixing quiz question references"
+        
+        Log-Message "  SQL seed files generated and ID consistency fixed successfully" "Green"
+
+        Pop-Location
+        Log-Message "Returned to directory: $(Get-Location)" "Gray"
+    }
+    catch {
+        Log-Message "ERROR: Failed to generate SQL seed files or fix quiz ID consistency: $_" "Red"
+        $overallSuccess = $false
+        throw "SQL seed files generation or quiz ID consistency fix failed"
+    }
+
+    #
     # STEP 5: Run content migrations via Payload migrations
     #
     Log-Message "STEP 5: Running content migrations via Payload migrations..." "Cyan"
@@ -495,6 +546,52 @@ CREATE SCHEMA payload;
         Log-Message "ERROR: Database verification failed: $_" "Red"
         $overallSuccess = $false
         throw "Database verification failed"
+    }
+
+    #
+    # STEP 8: Create certificates storage bucket in Supabase
+    #
+    Log-Message "STEP 8: Creating certificates storage bucket in Supabase..." "Cyan"
+    try {
+        # Use Push-Location/Pop-Location instead of cd to maintain path context
+        Push-Location -Path "apps/web"
+        Log-Message "Changed directory to: $(Get-Location)" "Gray"
+        
+        # Check if the certificates bucket exists
+        Log-Message "  Checking if certificates bucket exists..." "Yellow"
+        try {
+            # Use -ErrorAction SilentlyContinue to ignore version update notices that might be treated as errors
+            $bucketsOutput = & supabase storage list-buckets 2>&1 | Out-String
+            
+            # Log the output for debugging
+            Log-Message "  Supabase buckets output: $bucketsOutput" "Gray"
+            
+            # Check if the certificates bucket exists in the output
+            if ($bucketsOutput -match "certificates") {
+                Log-Message "  Certificates bucket already exists" "Green"
+            } else {
+                Log-Message "  Creating certificates bucket..." "Yellow"
+                # Directly execute supabase command rather than using Exec-Command
+                & supabase storage create-bucket certificates --public 2>&1 | Out-String
+                if ($LASTEXITCODE -eq 0 -or $LASTEXITCODE -eq $null) {
+                    Log-Message "  Certificates bucket created successfully" "Green"
+                } else {
+                    Log-Message "  Warning: Certificates bucket creation might have issues, but continuing" "Yellow"
+                }
+            }
+        } catch {
+            # Log the error but continue execution
+            Log-Message "  Warning: Could not verify or create certificates bucket: $_" "Yellow"
+            Log-Message "  This is non-critical, continuing with migration" "Yellow"
+        }
+        
+        Pop-Location
+        Log-Message "Returned to directory: $(Get-Location)" "Gray"
+    }
+    catch {
+        Log-Message "ERROR: Failed to create certificates bucket: $_" "Red"
+        $overallSuccess = $false
+        throw "Failed to create certificates bucket"
     }
 
     # Final success/failure message

@@ -132,63 +132,123 @@ export async function generateCertificate({
   const certificateBuffer = await certificateResponse.arrayBuffer();
 
   // 5. Store the certificate in Supabase Storage
-  console.log('Storing certificate in Supabase Storage');
+  console.log('Starting certificate storage process');
+  console.log('User ID:', userId);
+  console.log('Course ID:', courseId);
 
   const supabase = getSupabaseServerClient();
 
   // Check if the certificates bucket exists, create it if it doesn't
   console.log('Checking if certificates bucket exists');
 
-  const { data: buckets, error: bucketsError } =
-    await supabase.storage.listBuckets();
+  try {
+    const { data: buckets, error: bucketsError } =
+      await supabase.storage.listBuckets();
 
-  if (bucketsError) {
-    console.error('Failed to list buckets:', bucketsError.message);
-    throw new Error(`Failed to list buckets: ${bucketsError.message}`);
-  }
-
-  const certificatesBucket = buckets?.find(
-    (bucket) => bucket.name === 'certificates',
-  );
-
-  if (!certificatesBucket) {
-    console.log('Certificates bucket does not exist, creating it');
-
-    const { error: createBucketError } = await supabase.storage.createBucket(
-      'certificates',
-      {
-        public: true, // Make it public so we can access the files
-        allowedMimeTypes: ['application/pdf'],
-        fileSizeLimit: 10485760, // 10MB
-      },
-    );
-
-    if (createBucketError) {
-      console.error(
-        'Failed to create certificates bucket:',
-        createBucketError.message,
-      );
-      throw new Error(
-        `Failed to create certificates bucket: ${createBucketError.message}`,
-      );
+    if (bucketsError) {
+      console.error('Failed to list buckets:', bucketsError.message);
+      throw new Error(`Failed to list buckets: ${bucketsError.message}`);
     }
 
-    console.log('Created certificates bucket successfully');
-  } else {
-    console.log('Certificates bucket already exists');
+    console.log(`Found ${buckets?.length || 0} buckets`);
+
+    // Log all bucket names for debugging
+    if (buckets && buckets.length > 0) {
+      console.log('Existing buckets:');
+      buckets.forEach((bucket) => {
+        console.log(`- ${bucket.name}`);
+      });
+    }
+
+    const certificatesBucket = buckets?.find(
+      (bucket) => bucket.name === 'certificates',
+    );
+
+    if (!certificatesBucket) {
+      console.log('Certificates bucket does not exist, creating it');
+
+      // Try to create the bucket with multiple attempts if needed
+      let createBucketError = null;
+      let retryCount = 0;
+      const maxRetries = 3;
+
+      while (retryCount < maxRetries) {
+        try {
+          const { error } = await supabase.storage.createBucket(
+            'certificates',
+            {
+              public: true, // Make it public so we can access the files
+              allowedMimeTypes: ['application/pdf'],
+              fileSizeLimit: 10485760, // 10MB
+            },
+          );
+
+          if (error) {
+            createBucketError = error;
+            console.error(
+              `Attempt ${retryCount + 1}: Failed to create certificates bucket:`,
+              error.message,
+            );
+            retryCount++;
+            // Wait a bit before retrying
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+          } else {
+            console.log('Created certificates bucket successfully');
+            createBucketError = null;
+            break;
+          }
+        } catch (error) {
+          createBucketError = error;
+          console.error(
+            `Attempt ${retryCount + 1}: Exception creating certificates bucket:`,
+            error,
+          );
+          retryCount++;
+          // Wait a bit before retrying
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+        }
+      }
+
+      if (createBucketError) {
+        console.error(
+          'Failed to create certificates bucket after multiple attempts:',
+          createBucketError,
+        );
+        throw new Error(
+          `Failed to create certificates bucket: ${(createBucketError as Error)?.message || String(createBucketError)}`,
+        );
+      }
+    } else {
+      console.log('Certificates bucket already exists');
+    }
+  } catch (error) {
+    console.error('Error in bucket creation process:', error);
+    throw error;
   }
 
-  const fileName = `${userId}/${courseId}/${Date.now()}.pdf`;
+  // Create a unique filename for the certificate
+  const timestamp = Date.now();
+  const fileName = `${userId}/${courseId}/${timestamp}.pdf`;
+  console.log('Certificate file path:', fileName);
 
-  const { data: uploadData, error: uploadError } = await supabase.storage
-    .from('certificates')
-    .upload(fileName, certificateBuffer, {
-      contentType: 'application/pdf',
-      upsert: true,
-    });
+  try {
+    console.log('Uploading certificate to Supabase Storage');
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from('certificates')
+      .upload(fileName, certificateBuffer, {
+        contentType: 'application/pdf',
+        upsert: true,
+      });
 
-  if (uploadError) {
-    throw new Error(`Failed to upload certificate: ${uploadError.message}`);
+    if (uploadError) {
+      console.error('Failed to upload certificate:', uploadError.message);
+      throw new Error(`Failed to upload certificate: ${uploadError.message}`);
+    }
+
+    console.log('Certificate uploaded successfully');
+  } catch (error) {
+    console.error('Error in certificate upload process:', error);
+    throw error;
   }
 
   // 6. Get the public URL for the certificate
