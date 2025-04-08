@@ -517,7 +517,7 @@ export interface CourseLesson {
    * Order in which this lesson appears in the course
    */
   lesson_number: number;
-  estimatedDuration?: number | null;
+  estimated_duration?: number | null;
   course_id: string | Course;
   /**
    * The quiz associated with this lesson (if any)
@@ -834,7 +834,7 @@ export interface CourseLessonsSelect<T extends boolean = true> {
   featured_image_id?: T;
   content?: T;
   lesson_number?: T;
-  estimatedDuration?: T;
+  estimated_duration?: T;
   course_id?: T;
   quiz_id?: T;
   survey_id?: T;

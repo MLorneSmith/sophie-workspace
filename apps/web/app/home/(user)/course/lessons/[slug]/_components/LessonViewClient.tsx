@@ -169,7 +169,7 @@ export function LessonViewClient({
 
         setQuizCompleted(passed);
 
-        // If quiz is passed, mark lesson as completed and navigate to next lesson
+        // If quiz is passed, mark lesson as completed but don't navigate automatically
         if (passed) {
           await updateLessonProgressAction({
             courseId,
@@ -178,8 +178,7 @@ export function LessonViewClient({
             completed: true,
           });
 
-          // Navigate to the next lesson automatically
-          navigateToNextLesson();
+          // Remove automatic navigation - let user click the Next Lesson button in summary
         }
       } catch (error) {
         toast.error('Failed to submit quiz. Please try again.');
@@ -237,7 +236,7 @@ export function LessonViewClient({
           <CardHeader>
             <CardTitle>{lesson.title}</CardTitle>
             <div className="text-muted-foreground text-sm">
-              {lesson.estimatedDuration || 0} minutes
+              {lesson.estimated_duration || 0} minutes
             </div>
           </CardHeader>
           <CardContent>

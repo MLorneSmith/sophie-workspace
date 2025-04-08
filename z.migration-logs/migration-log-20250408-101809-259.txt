@@ -1,0 +1,84 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20250408101809
+Username: SLIDEHEROES_DEN\msmit
+RunAs User: SLIDEHEROES_DEN\msmit
+Configuration Name: 
+Machine: SLIDEHEROES_DEN (Microsoft Windows NT 10.0.26100.0)
+Host Application: C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command Import-Module 'c:\Users\msmit\.vscode\extensions\ms-vscode.powershell-2025.0.0\modules\PowerShellEditorServices\PowerShellEditorServices.psd1'; Start-EditorServices -HostName 'Visual Studio Code Host' -HostProfileId 'Microsoft.VSCode' -HostVersion '2025.0.0' -BundledModulesPath 'c:\Users\msmit\.vscode\extensions\ms-vscode.powershell-2025.0.0\modules' -EnableConsoleRepl -StartupBanner "PowerShell Extension v2025.0.0
+Copyright (c) Microsoft Corporation.
+
+https://aka.ms/vscode-powershell
+Type 'help' to get help.
+" -LogLevel 'Warning' -LogPath 'c:\Users\msmit\AppData\Roaming\Code\logs\20250408T085627\window1\exthost\ms-vscode.powershell' -SessionDetailsPath 'c:\Users\msmit\AppData\Roaming\Code\User\globalStorage\ms-vscode.powershell\sessions\PSES-VSCode-12616-522343.json' -FeatureFlags @() 
+Process ID: 33332
+PSVersion: 5.1.26100.3624
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.3624
+BuildVersion: 10.0.26100.3624
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcript started, output file is D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-log-20250408-101809-259.txt
+Starting migration process at 04/08/2025 10:18:09
+Detailed logs will be saved to: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250408-101809-259.txt
+STEP 1: Resetting Supabase database and running Web app migrations...
+Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\apps\web
+  Skipping Supabase restart (already done)
+  Running supabase:reset...
+EXECUTING: pnpm run supabase:reset
+DESCRIPTION: Resetting Supabase database
+Applying migration 20250304104340_web_set-otp-search-path.sql...
+Applying migration 20250319104724_web_survey_system.sql...
+Applying migration 20250319104726_web_course_system.sql...
+Applying migration 20250404194028_onboarding.sql...
+Applying migration 20250407140454_create_certificates_table.sql...
+Applying migration 20250407140653_create_insert_certificate_function.sql...
+NOTICE (42P06): schema "supabase_migrations" already exists, skipping
+Seeding data from supabase/seed.sql...
+Restarting containers...
+Finished supabase db reset on branch main.
+A new version of Supabase CLI is available: v2.20.12 (currently installed v2.20.5
+)
+We recommend updating regularly for new features and bug fixes: https://supabase.
+com/docs/guides/cli/getting-started#updating-the-supabase-cli
+  Running supabase migrations...
+EXECUTING: supabase migration up
+DESCRIPTION: Running Supabase migrations
+
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes
+EXECUTING: pnpm --filter @kit/content-migrations run verify:schema public
+DESCRIPTION: Verifying schema 'public' exists
+âœ… Schema 'public' exists
+  Web app migrations completed successfully
+STEP 2: Resetting Payload schema...
+  Dropping and recreating payload schema...
+  Temporarily changed to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+EXECUTING: pnpm run utils:run-sql-file "C:\Users\msmit\AppData\Local\Temp\reset_payload_schema.sql"
+DESCRIPTION: Resetting Payload schema
+
+  Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes
+  Payload schema reset successfully
+STEP 3: Running Payload migrations...
+Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\apps\payload
+  Checking migration status...
+EXECUTING: pnpm migrate:status
+DESCRIPTION: Checking migration status
+  Running all migrations...
+EXECUTING: pnpm payload migrate
+DESCRIPTION: Running Payload migrations
+
+Command failed with exit code: 1
+ERROR in step 'Running Payload migrations': Command failed with exit code: 1
+PS>TerminatingError(): "Command failed with exit code: 1"
+ERROR: Failed to run Payload migrations: Command failed with exit code: 1
+CRITICAL ERROR: Migration process failed: Payload migration failed
+Please check the log files for details:
+  - Transcript log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-log-20250408-101809-259.txt
+  - Detailed log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250408-101809-259.txt
+**********************
+Windows PowerShell transcript end
+End time: 20250408101849
+**********************
