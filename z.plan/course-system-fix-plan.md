@@ -1,327 +1,308 @@
 # Course System Fix Plan
 
-## Overview
+## Introduction
 
-This document outlines the plan for fixing various issues with the course system in our Makerkit-based Next.js 15 application with Payload CMS integration.
+This document outlines the plan to fix several issues with the course system in our Makerkit-based Next.js 15 application with Payload CMS integration. The issues include missing lesson durations, automatic redirection from quiz summary pages, missing quizzes for certain lessons, lack of support for multiple correct answers in quizzes, and incorrect quiz progress bar calculation.
 
-## Current Issues
+## Content Migration System Overview
 
-1. **Missing Quiz Relationships**: Several lessons don't have their corresponding quizzes linked to them in the database, despite the quizzes existing.
-2. **Navigation After Lesson Completion**: When a lesson without a quiz is marked as completed, the user should be automatically navigated to the next lesson, but this isn't happening.
-3. **Multiple Correct Answers in Quizzes**: Some quizzes have multiple correct answers, but the UI only allows selecting one answer.
-4. **Line Spacing in Quiz Container**: The line spacing in the Quiz container is not optimal, with lines appearing squished together.
-5. **Certificate Generation**: The certificate generation process is not working correctly when completing the course.
+The project uses a comprehensive content migration system managed by the `reset-and-migrate.ps1` script. This script orchestrates the entire database reset and migration process through these key steps:
 
-## Root Cause Analysis
+1. **Reset Supabase database and run web app migrations**
+2. **Reset Payload schema**
+3. **Run Payload migrations**
+4. **Process raw data if needed** (using `pnpm run process:raw-data`)
+5. **Run content migrations via Payload migrations**
+6. **Check and execute SQL seed files if needed**
+7. **Perform comprehensive database verification**
 
-### 1. Missing Quiz Relationships
+The content migration system works as follows:
 
-The following lessons don't have their corresponding quizzes linked:
+1. **Raw Data Processing**:
 
-- **"The Why: Building the Introduction"** (lesson_number: 203) should be linked to **"The Why (Introductions) Quiz"** (slug: introductions-quiz)
-- **"The Why: Next Steps"** (lesson_number: 204) should be linked to **"The Why (Next Steps) Quiz"** (slug: why-next-steps-quiz)
-- **"Tables vs. Graphs"** should be linked to **"Tables vs Graphs Quiz"** (slug: tables-vs-graphs-quiz)
-- **"Preparation and Practice"** (lesson_number: 701) should be linked to **"Perparation & Practice Quiz"** (slug: preparation-practice-quiz) - note the typo in "Perparation"
+   - The `process-raw-data.ts` script processes raw data from `packages/content-migrations/src/data/raw`
+   - It generates SQL seed files using `generate-sql-seed-files-fixed.ts`
+   - These SQL files are stored in both the Payload seed directory and the processed directory
 
-The `fix_lesson_quiz_relationships` migration script was supposed to match these lessons to quizzes based on title similarity, but it failed to match these specific lessons, likely due to:
+2. **SQL Seed Generation**:
 
-1. Title differences (e.g., "The Why: Building the Introduction" vs "The Why (Introductions) Quiz")
-2. The typo in "Perparation & Practice Quiz"
+   - The `generate-sql-seed-files-fixed.ts` script reads raw .mdoc files
+   - It generates SQL files for courses, lessons, quizzes, questions, surveys, etc.
+   - It handles relationships between entities (e.g., lessons to quizzes)
 
-### 2. Navigation After Lesson Completion
+3. **Database Population**:
+   - The SQL seed files are executed during the migration process to populate the database
 
-The issue is in the `LessonViewClient.tsx` component:
+## Issues and Solutions
 
-- The `markLessonAsCompleted` function updates the lesson progress but doesn't navigate to the next lesson
-- The "Next Lesson" button only appears after the lesson is already marked as completed
+### 1. Missing Lesson Duration
 
-### 3. Multiple Correct Answers in Quizzes
+#### Issue:
 
-Some quizzes have multiple correct answers (as seen in the "The Why (Introductions) Quiz"), but the UI only allows selecting one answer. This is because:
+All lessons have a `lessonLength` field in their raw `.mdoc` files, but the `estimated_duration` field in the database is `null` for all lessons.
 
-- The quiz schema in `QuizQuestions.ts` supports multiple correct answers via the `isCorrect` checkbox in the options array
-- However, the `QuizComponent.tsx` is treating all quizzes as single-answer quizzes
+#### Root Cause:
 
-### 4. Line Spacing in Quiz Container
+- The migration script (`migrate-course-lessons-direct.ts`) correctly maps `data.lessonLength` to `estimated_duration`
+- However, there appears to be a field name mismatch between the database (`estimated_duration`) and the Payload CMS collection (`estimatedDuration`)
 
-The line spacing issue in the Quiz container is a CSS styling problem.
+#### Solution:
 
-### 5. Certificate Generation
+1. Update the database with the correct duration values from the raw lesson data
+2. Ensure the field name mapping is consistent between the database and the CMS
 
-The certificate generation process is not working correctly when completing the course. This could be due to:
-
-- The course completion logic not properly triggering certificate generation
-- Issues with the PDF.co API integration
-- Problems with the Supabase storage bucket for certificates
-
-## Implementation Plan
-
-### 1. Fix Quiz Relationships
-
-Create a SQL migration script to manually link the missing quizzes to their corresponding lessons:
-
-```sql
--- Update lesson-quiz relationships
-UPDATE payload.course_lessons
-SET quiz_id = 'a42f601d-f968-4d08-8b46-46bb62a43ad4', -- The Why (Introductions) Quiz
-    quiz_id_id = 'a42f601d-f968-4d08-8b46-46bb62a43ad4'
-WHERE title = 'The Why: Building the Introduction';
-
-UPDATE payload.course_lessons
-SET quiz_id = '98025e2d-2d8f-4a49-960b-e9985c5fa992', -- The Why (Next Steps) Quiz
-    quiz_id_id = '98025e2d-2d8f-4a49-960b-e9985c5fa992'
-WHERE title = 'The Why: Next Steps';
-
-UPDATE payload.course_lessons
-SET quiz_id = 'a9c824c9-9ce1-4c48-a742-91d31bbb77ea', -- Tables vs Graphs Quiz
-    quiz_id_id = 'a9c824c9-9ce1-4c48-a742-91d31bbb77ea'
-WHERE title = 'Tables vs. Graphs';
-
-UPDATE payload.course_lessons
-SET quiz_id = '22fa2e61-c1e4-4a25-9ea8-26ef03cf3b38', -- Perparation & Practice Quiz
-    quiz_id_id = '22fa2e61-c1e4-4a25-9ea8-26ef03cf3b38'
-WHERE title = 'Preparation and Practice';
-
--- Create bidirectional relationships
-INSERT INTO payload.course_lessons_rels (id, _parent_id, field, value, created_at, updated_at)
-SELECT
-  gen_random_uuid(),
-  cl.id,
-  'quiz_id',
-  cl.quiz_id,
-  NOW(),
-  NOW()
-FROM payload.course_lessons cl
-WHERE cl.quiz_id IS NOT NULL
-AND NOT EXISTS (
-  SELECT 1 FROM payload.course_lessons_rels
-  WHERE _parent_id = cl.id
-  AND field = 'quiz_id'
-  AND value = cl.quiz_id
-);
-
-INSERT INTO payload.course_quizzes_rels (id, _parent_id, field, value, created_at, updated_at)
-SELECT
-  gen_random_uuid(),
-  cl.quiz_id,
-  'lesson',
-  cl.id,
-  NOW(),
-  NOW()
-FROM payload.course_lessons cl
-WHERE cl.quiz_id IS NOT NULL
-AND NOT EXISTS (
-  SELECT 1 FROM payload.course_quizzes_rels
-  WHERE _parent_id = cl.quiz_id
-  AND field = 'lesson'
-  AND value = cl.id
-);
-```
-
-### 2. Fix Navigation After Lesson Completion
-
-Modify the `markLessonAsCompleted` function in `LessonViewClient.tsx` to navigate to the next lesson after marking a lesson as completed:
+#### Implementation:
 
 ```typescript
-const markLessonAsCompleted = () => {
-  setIsMarkingCompleted(true);
+// SQL script to update estimated_duration from raw lesson data
+async function updateLessonDurations() {
+  // For each lesson in the raw data, update the database
+  const lessons = [
+    { slug: 'what-is-structure', duration: 22 },
+    { slug: 'before-we-begin', duration: 3 },
+    // Add all lessons with their durations
+  ];
 
+  for (const lesson of lessons) {
+    await client.query(
+      `UPDATE payload.course_lessons 
+       SET estimated_duration = $1 
+       WHERE slug = $2`,
+      [lesson.duration, lesson.slug],
+    );
+  }
+}
+```
+
+### 2. Automatic Redirection from Quiz Summary
+
+#### Issue:
+
+When a user completes a quiz, they are automatically redirected to the next lesson without having a chance to review the quiz summary.
+
+#### Root Cause:
+
+In `LessonViewClient.tsx`, the `handleQuizSubmit` function automatically calls `navigateToNextLesson()` when a quiz is passed, bypassing the "Next Lesson" button in the quiz summary.
+
+#### Solution:
+
+Remove the automatic navigation after quiz completion and rely on the user clicking the "Next Lesson" button in the quiz summary.
+
+#### Implementation:
+
+```typescript
+// In LessonViewClient.tsx, modify handleQuizSubmit
+const handleQuizSubmit = (
+  answers: Record<string, any>,
+  score: number,
+  passed: boolean,
+) => {
   startTransition(async () => {
     try {
-      await updateLessonProgressAction({
+      await submitQuizAttemptAction({
         courseId,
         lessonId: lesson.id,
-        completionPercentage: 100,
-        completed: true,
+        quizId: quiz.id,
+        answers,
+        score,
+        passed,
       });
 
-      toast.success('Lesson marked as completed!');
-      setIsMarkingCompleted(false);
+      setQuizCompleted(passed);
 
-      // Navigate to the next lesson automatically
-      navigateToNextLesson();
-    } catch (error) {
-      toast.error('Failed to mark lesson as completed. Please try again.');
-      setIsMarkingCompleted(false);
-    }
-  });
-};
-```
+      // If quiz is passed, mark lesson as completed but DON'T navigate automatically
+      if (passed) {
+        await updateLessonProgressAction({
+          courseId,
+          lessonId: lesson.id,
+          completionPercentage: 100,
+          completed: true,
+        });
 
-### 3. Fix Multiple Correct Answers in Quizzes
-
-Update the `QuizComponent.tsx` to handle multiple correct answers:
-
-1. Add a state variable to track multiple selections
-2. Modify the answer selection logic to allow multiple selections when appropriate
-3. Update the quiz submission logic to handle multiple correct answers
-
-```typescript
-// Example implementation for multiple answer support
-const [selectedAnswers, setSelectedAnswers] = useState<
-  Record<string, Set<string>>
->({});
-
-// Determine if a question allows multiple answers
-const allowsMultipleAnswers = (question: any) => {
-  return question.questiontype === 'multi-answer';
-};
-
-// Handle answer selection
-const handleAnswerSelect = (questionId: string, answerId: string) => {
-  setSelectedAnswers((prev) => {
-    const currentSelections = prev[questionId] || new Set();
-    const newSelections = new Set(currentSelections);
-
-    if (allowsMultipleAnswers(questions.find((q) => q.id === questionId))) {
-      // For multiple-answer questions, toggle the selection
-      if (newSelections.has(answerId)) {
-        newSelections.delete(answerId);
-      } else {
-        newSelections.add(answerId);
+        // Remove this line to prevent automatic navigation
+        // navigateToNextLesson();
       }
-    } else {
-      // For single-answer questions, replace the selection
-      newSelections.clear();
-      newSelections.add(answerId);
+    } catch (error) {
+      toast.error('Failed to submit quiz. Please try again.');
     }
-
-    return {
-      ...prev,
-      [questionId]: newSelections,
-    };
   });
 };
 ```
 
-### 4. Fix Line Spacing in Quiz Container
+### 3. Missing Quizzes for Certain Lessons
 
-Add CSS fixes to improve line spacing in the Quiz component:
+#### Issue:
 
-```css
-.quiz-question-text {
-  line-height: 1.5;
-  margin-bottom: 1rem;
-}
+Several lessons don't have associated quizzes:
 
-.quiz-answer-option {
-  margin-bottom: 0.75rem;
-  line-height: 1.4;
-}
-```
+- "The Why: Building Introductions" (lesson_number: 203)
+- "The Why: Next Steps" (lesson_number: 204)
+- "Tables vs. Graphs" (lesson_number: 602)
+- "Preparation and Practice" (lesson_number: 701)
 
-### 5. Fix Certificate Generation
+#### Root Cause:
 
-1. Verify the certificate template path and ensure it exists
-2. Add comprehensive logging to the certificate generation process
-3. Ensure the Supabase storage bucket exists and has the correct permissions
-4. Fix the course completion logic to properly trigger certificate generation
+The current quiz-lesson association is done during the migration process in `migrate-course-lessons-direct.ts`. The script tries to find quizzes by slug derived from the `data.quiz` field in the lesson file, which may be missing or inconsistent.
+
+#### Solution:
+
+1. Create a hard-coded mapping file for lesson-quiz associations
+2. Update the migration script to use this mapping
+3. Update the database with the correct quiz associations
+
+#### Implementation:
 
 ```typescript
-// Example improvements to certificate generation
-export async function generateCertificate({
-  userId,
-  courseId,
-  fullName,
-}: GenerateCertificateParams) {
-  console.log(
-    `Starting certificate generation for user ${userId}, course ${courseId}`,
-  );
+// Create a new file: apps/web/lib/course/lesson-quiz-mapping.ts
+export const lessonQuizMapping = {
+  // Format: lessonSlug: quizSlug
+  'our-process': 'our-process-quiz',
+  'the-who': 'the-who-quiz',
+  'the-why-introductions': 'introductions-quiz', // Add missing mapping
+  'the-why-next-steps': 'why-next-steps-quiz', // Add missing mapping
+  'idea-generation': 'idea-generation-quiz',
+  'what-is-structure': 'structure-quiz',
+  'using-stories': 'using-stories-quiz',
+  'storyboards-film': 'storyboards-in-film-quiz',
+  'storyboards-presentations': 'storyboards-in-presentations-quiz',
+  'visual-perception': 'visual-perception-quiz',
+  'fundamental-design-overview': 'overview-elements-of-design-quiz',
+  'fundamental-design-detail': 'elements-of-design-detail-quiz',
+  'gestalt-principles': 'gestalt-principles-quiz',
+  'slide-composition': 'slide-composition-quiz',
+  'tables-vs-graphs': 'tables-vs-graphs-quiz', // Add missing mapping
+  'basic-graphs': 'basic-graphs-quiz',
+  'fact-based-persuasion': 'fact-persuasion-quiz',
+  'specialist-graphs': 'specialist-graphs-quiz',
+  'preparation-practice': 'preparation-practice-quiz', // Add missing mapping
+  performance: 'performance-quiz',
+};
+```
 
-  // 1. Get PDF.co API key from environment variables
-  const pdfCoApiKey = process.env.PDF_CO_API_KEY;
+### 4. Multiple Correct Answers in Quizzes
 
-  if (!pdfCoApiKey) {
-    console.error('PDF_CO_API_KEY is not defined in environment variables');
-    throw new Error('PDF_CO_API_KEY is not defined in environment variables');
+#### Issue:
+
+Some quizzes have questions with multiple correct answers, but the UI only allows selecting one answer.
+
+#### Root Cause:
+
+The `QuizComponent.tsx` has code to handle both single-answer and multi-answer questions, but it's not correctly identifying or handling multi-answer questions.
+
+#### Solution:
+
+Fix the `QuizComponent.tsx` to properly handle multi-answer questions and ensure the question type is correctly passed from the database to the component.
+
+#### Implementation:
+
+```typescript
+// In QuizComponent.tsx, update the isMultiAnswerQuestion function
+const isMultiAnswerQuestion = (question: any): boolean => {
+  // Check if the question type is multi-answer or if it has multiple correct answers
+  if (question?.questiontype === 'multi-answer') {
+    return true;
   }
 
-  // 2. Verify the certificate template path
-  const fs = require('fs');
-  const path = require('path');
-  const appDir = path.join(process.cwd(), 'apps', 'web');
-  const templatePath = path.join(
-    appDir,
-    'public',
-    'certificates',
-    'ddm_certificate_form.pdf',
+  // Count correct options
+  const correctOptions = (question?.options || []).filter(
+    (option: any) => option.isCorrect,
   );
 
-  console.log(`Checking certificate template at: ${templatePath}`);
-  if (!fs.existsSync(templatePath)) {
-    console.error(`Certificate template not found at: ${templatePath}`);
-    throw new Error(`Certificate template not found at: ${templatePath}`);
-  }
+  // If more than one correct option, treat as multi-answer
+  return correctOptions.length > 1;
+};
+```
 
-  // Rest of the certificate generation process with added logging
-  // ...
-}
+### 5. Quiz Progress Bar Calculation
+
+#### Issue:
+
+The progress bar in quizzes shows progress for the current question even before it's answered.
+
+#### Root Cause:
+
+In `QuizComponent.tsx`, the progress bar calculation is based on `((currentQuestionIndex + 1) / totalQuestions) * 100`, which includes the current question in the progress.
+
+#### Solution:
+
+Update the progress calculation to use only completed questions by changing the formula to `(currentQuestionIndex / totalQuestions) * 100`.
+
+#### Implementation:
+
+```typescript
+// In QuizComponent.tsx, update the progress bar calculation
+<div className="mb-6">
+  <div className="flex justify-between text-sm">
+    <span>
+      Question {currentQuestionIndex + 1} of {totalQuestions}
+    </span>
+    <span>
+      {/* Change from currentQuestionIndex + 1 to currentQuestionIndex */}
+      {Math.round((currentQuestionIndex / totalQuestions) * 100)}%
+    </span>
+  </div>
+  <Progress
+    {/* Change from currentQuestionIndex + 1 to currentQuestionIndex */}
+    value={(currentQuestionIndex / totalQuestions) * 100}
+    className="h-2"
+  />
+</div>
 ```
 
 ## Implementation Steps
 
-1. **Create a Database Migration Script**
+1. **Update Lesson Durations**:
 
-   - Create a new migration file in `apps/payload/src/migrations/` to fix the quiz relationships
-   - Run the migration to update the database
+   - Create a script to update the estimated_duration field for all lessons
+   - Run the script to populate the missing durations
 
-2. **Update the LessonViewClient Component**
+2. **Fix Quiz Summary Navigation**:
 
-   - Modify the `markLessonAsCompleted` function to navigate to the next lesson
-   - Test with lessons that don't have quizzes
+   - Modify the LessonViewClient.tsx file to remove automatic navigation
+   - Ensure the "Next Lesson" button works correctly
 
-3. **Update the QuizComponent**
+3. **Implement Lesson-Quiz Mapping**:
 
-   - Modify the component to handle multiple correct answers
+   - Create the lesson-quiz-mapping.ts file
+   - Update the LessonDataProvider.tsx to use this mapping
+   - Run a database update script to fix the missing quiz associations
+
+4. **Fix Multiple Correct Answers**:
+
+   - Update the QuizComponent.tsx to properly handle multi-answer questions
    - Test with quizzes that have multiple correct answers
 
-4. **Fix CSS Styling**
-
-   - Add CSS fixes to improve line spacing in the Quiz component
-   - Test with different quiz questions
-
-5. **Fix Certificate Generation**
-   - Verify the certificate template path
-   - Add comprehensive logging
-   - Ensure the Supabase storage bucket exists
-   - Fix the course completion logic
-   - Test the complete certificate generation process
+5. **Fix Progress Bar Calculation**:
+   - Update the progress calculation in QuizComponent.tsx
+   - Test the progress bar behavior
 
 ## Testing Plan
 
-1. **Test Quiz Relationships**
+1. **Lesson Duration**:
 
-   - Verify that all lessons have their corresponding quizzes linked
-   - Test each of the previously problematic lessons
+   - Verify that all lessons show the correct duration on the lesson page
+   - Check that the duration is displayed in the course dashboard
 
-2. **Test Navigation**
+2. **Quiz Summary Navigation**:
 
-   - Complete a lesson without a quiz and verify it navigates to the next lesson
-   - Complete a lesson with a quiz and verify it navigates to the next lesson after passing the quiz
+   - Complete a quiz and verify that you stay on the summary page
+   - Click the "Next Lesson" button and verify navigation works
 
-3. **Test Multiple Answers**
+3. **Lesson-Quiz Mapping**:
+
+   - Verify that all lessons have the correct associated quizzes
+   - Test the lessons that previously had missing quizzes
+
+4. **Multiple Correct Answers**:
 
    - Test quizzes with multiple correct answers
-   - Verify that multiple answers can be selected
-   - Verify that the quiz is scored correctly
+   - Verify that you can select multiple options
+   - Verify that the quiz is only passed when all correct options are selected
 
-4. **Test Line Spacing**
-
-   - Verify that line spacing in the quiz container is improved
-
-5. **Test Certificate Generation**
-   - Complete all required lessons
-   - Verify that the certificate is generated
-   - Verify that the certificate can be viewed and downloaded
+5. **Progress Bar Calculation**:
+   - Start a quiz and verify the progress bar starts at 0%
+   - Answer questions and verify the progress increases correctly
 
 ## Conclusion
 
-By implementing these fixes, we will resolve the issues with the course system, ensuring that:
-
-1. All lessons are properly linked to their corresponding quizzes
-2. Users are automatically navigated to the next lesson after completing a lesson
-3. Quizzes with multiple correct answers work correctly
-4. The Quiz container has proper line spacing
-5. Certificates are generated correctly when the course is completed
-
-This will provide a smoother and more consistent user experience for course participants.
+This plan addresses all the identified issues with the course system. By implementing these changes, we will improve the user experience and ensure that the course system functions as expected. The changes are focused on specific areas of the codebase and should not affect other parts of the application.

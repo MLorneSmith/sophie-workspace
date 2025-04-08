@@ -62,7 +62,7 @@ export const CourseLessons: CollectionConfig = {
       },
     },
     {
-      name: 'estimatedDuration',
+      name: 'estimated_duration',
       type: 'number',
       min: 0,
       label: 'Estimated duration (minutes)',

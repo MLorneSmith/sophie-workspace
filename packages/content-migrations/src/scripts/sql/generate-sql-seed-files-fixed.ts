@@ -26,6 +26,7 @@ import {
   lessonImageMappings,
   postImageMappings,
 } from '../../data/mappings/image-mappings.js';
+import { lessonQuizMapping } from '../../data/mappings/lesson-quiz-mappings.js';
 
 // Declare global mediaIds property for TypeScript
 declare global {
@@ -443,6 +444,25 @@ BEGIN;
     const mediaId =
       data.image && global.mediaIds ? global.mediaIds[data.image] : null;
 
+    // Get the lesson slug
+    const lessonSlug = path.basename(file, '.mdoc');
+
+    // Check if this lesson has an associated quiz using the mapping
+    let quizId = null;
+    if (lessonQuizMapping[lessonSlug]) {
+      // Get the quiz slug from the mapping
+      const quizSlug = lessonQuizMapping[lessonSlug];
+
+      // Find the quiz ID from the quiz map
+      const quizMap = generateQuizMap(RAW_QUIZZES_DIR);
+      if (quizMap.has(quizSlug)) {
+        quizId = quizMap.get(quizSlug);
+        console.log(`Found quiz with ID ${quizId} for lesson ${lessonSlug}`);
+      } else {
+        console.log(`Quiz not found for lesson ${lessonSlug}: ${quizSlug}`);
+      }
+    }
+
     // Add the lesson to the SQL
     sql += `-- Insert lesson: ${data.title}
 INSERT INTO payload.course_lessons (
@@ -452,19 +472,25 @@ INSERT INTO payload.course_lessons (
   description,
   content,
   lesson_number,
+  estimated_duration,
   course_id,
   ${mediaId ? 'featured_image_id,' : ''}
+  ${quizId ? 'quiz_id,' : ''}
+  ${quizId ? 'quiz_id_id,' : ''}
   created_at,
   updated_at
 ) VALUES (
   '${lessonId}', -- Generated UUID for the lesson
   '${data.title.replace(/'/g, "''")}',
-  '${path.basename(file, '.mdoc')}',
+  '${lessonSlug}',
   '${(data.description || '').replace(/'/g, "''")}',
   '${lexicalContent.replace(/'/g, "''")}',
   ${data.lessonNumber || data.order || 0},
+  ${data.lessonLength || 0}, -- Set estimated_duration from lessonLength
   '${COURSE_ID}', -- Course ID
   ${mediaId ? `'${mediaId}',` : ''}
+  ${quizId ? `'${quizId}',` : ''}
+  ${quizId ? `'${quizId}',` : ''}
   NOW(),
   NOW()
 ) ON CONFLICT (id) DO NOTHING; -- Skip if the lesson already exists
@@ -506,6 +532,28 @@ INSERT INTO payload.course_lessons_rels (
   '${lessonId}',
   'featured_image',
   '${mediaId}',
+  NOW(),
+  NOW()
+) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
+
+`;
+    }
+
+    // Add the relationship entry for the quiz if available
+    if (quizId) {
+      sql += `-- Create relationship entry for the lesson to the quiz
+INSERT INTO payload.course_lessons_rels (
+  id,
+  _parent_id,
+  field,
+  value,
+  created_at,
+  updated_at
+) VALUES (
+  gen_random_uuid(),
+  '${lessonId}',
+  'quiz_id',
+  '${quizId}',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists

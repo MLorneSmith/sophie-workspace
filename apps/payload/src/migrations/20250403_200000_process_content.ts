@@ -24,8 +24,9 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
     const seedFiles = [
       '01-courses.sql',
       '07-media.sql',
+      '03-quizzes.sql', // Execute quizzes before lessons to avoid foreign key constraint violations
       '02-lessons.sql',
-      '03-quizzes.sql',
+      '03a-lesson-quiz-references.sql', // Add quiz references after both lessons and quizzes have been created
       '04-questions.sql',
       '05-surveys.sql',
       // Replace the problematic file with individual files
