@@ -1,36 +1,7 @@
 import { CollectionConfig } from 'payload'
+import { findDownloadsForCollection } from '../db/downloads'
 
 export const CourseQuizzes: CollectionConfig = {
-  hooks: {
-    afterRead: [
-      async ({ doc, req }) => {
-        // If the doc has an ID, populate the questions
-        if (doc.id) {
-          try {
-            // Get the questions for this quiz from the relationship table
-            const questions = await req.payload.find({
-              collection: 'quiz_questions',
-              where: {
-                quiz_id: {
-                  equals: doc.id,
-                },
-              },
-              depth: 0,
-            })
-
-            // Add the questions to the doc
-            if (questions?.docs?.length > 0) {
-              doc.questions = questions.docs.map((question) => question.id)
-            }
-          } catch (error) {
-            console.error('Error populating quiz questions:', error)
-          }
-        }
-
-        return doc
-      },
-    ],
-  },
   slug: 'course_quizzes',
   labels: {
     singular: 'Course Quiz',
@@ -38,11 +9,44 @@ export const CourseQuizzes: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'passingScore'],
-    description: 'Quizzes for course lessons in the learning management system',
+    defaultColumns: ['title', 'course_id'],
+    description: 'Quizzes for courses in the learning management system',
   },
   access: {
     read: () => true, // Public read access
+  },
+  hooks: {
+    // Add a collection-level afterRead hook to handle downloads
+    afterRead: [
+      async ({ req, doc }) => {
+        // Only handle downloads if we have a specific document with an ID
+        if (doc?.id) {
+          try {
+            // Replace downloads with ones from our custom view
+            const downloads = await findDownloadsForCollection(
+              req.payload,
+              doc.id,
+              'course_quizzes',
+            )
+
+            // Update the document with the retrieved downloads
+            return {
+              ...doc,
+              downloads,
+            }
+          } catch (error) {
+            console.error('Error fetching downloads for course quiz:', error)
+            // Return the document with an empty downloads array instead of failing
+            return {
+              ...doc,
+              downloads: [], // Fallback to empty array on error
+            }
+          }
+        }
+
+        return doc
+      },
+    ],
   },
   fields: [
     {
@@ -51,30 +55,52 @@ export const CourseQuizzes: CollectionConfig = {
       required: true,
     },
     {
+      name: 'slug',
+      type: 'text',
+      required: true,
+      unique: true,
+      admin: {
+        description: 'The URL-friendly identifier for this quiz',
+      },
+    },
+    {
       name: 'description',
       type: 'textarea',
     },
     {
-      name: 'passingScore',
-      type: 'number',
+      name: 'course_id',
+      type: 'relationship',
+      relationTo: 'courses' as any,
       required: true,
+    },
+    {
+      name: 'pass_threshold',
+      type: 'number',
       min: 0,
       max: 100,
       defaultValue: 70,
+      admin: {
+        description: 'Percentage required to pass the quiz',
+      },
     },
     {
       name: 'questions',
       type: 'relationship',
-      relationTo: 'quiz_questions',
+      relationTo: 'quiz_questions' as any,
       hasMany: true,
-      maxDepth: 1, // Set maximum depth for relationship population
-      // Simplified filtering approach to avoid UUID errors
-      filterOptions: () => {
-        // Show all questions
-        return true
-      },
+      required: true,
       admin: {
-        description: 'Questions for this quiz',
+        description: 'Questions included in this quiz',
+      },
+    },
+    // Add downloads field
+    {
+      name: 'downloads',
+      type: 'relationship',
+      relationTo: 'downloads',
+      hasMany: true,
+      admin: {
+        description: 'Files for download in this quiz',
       },
     },
   ],

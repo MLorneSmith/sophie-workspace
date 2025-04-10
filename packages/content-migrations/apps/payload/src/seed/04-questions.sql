@@ -109,6 +109,7 @@ INSERT INTO payload.quiz_questions_rels (
   _parent_id,
   field,
   value,
+  quiz_id_id,
   created_at,
   updated_at
 ) VALUES (
@@ -116,16 +117,17 @@ INSERT INTO payload.quiz_questions_rels (
   '8f5e1a2b-3c4d-5e6f-7a8b-9c0d1e2f3a4b',
   'quiz_id',
   'c11dbb26-7561-4d12-88c8-141c653a43fd',
+  'c11dbb26-7561-4d12-88c8-141c653a43fd',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
-
 -- Create bidirectional relationship entry for the quiz to the question
 INSERT INTO payload.course_quizzes_rels (
   id,
   _parent_id,
   field,
   value,
+  quiz_questions_id,
   created_at,
   updated_at
 ) VALUES (
@@ -133,10 +135,10 @@ INSERT INTO payload.course_quizzes_rels (
   'c11dbb26-7561-4d12-88c8-141c653a43fd',
   'questions',
   '8f5e1a2b-3c4d-5e6f-7a8b-9c0d1e2f3a4b',
+  '8f5e1a2b-3c4d-5e6f-7a8b-9c0d1e2f3a4b',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
-
 -- Insert question for quiz: Elements of Design in Detail
 INSERT INTO payload.quiz_questions (
   id,
@@ -242,6 +244,7 @@ INSERT INTO payload.quiz_questions_rels (
   _parent_id,
   field,
   value,
+  quiz_id_id,
   created_at,
   updated_at
 ) VALUES (
@@ -249,16 +252,17 @@ INSERT INTO payload.quiz_questions_rels (
   'a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d',
   'quiz_id',
   '42564568-76bb-4405-88a9-8e9fd0a9154a',
+  '42564568-76bb-4405-88a9-8e9fd0a9154a',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
-
 -- Create bidirectional relationship entry for the quiz to the question
 INSERT INTO payload.course_quizzes_rels (
   id,
   _parent_id,
   field,
   value,
+  quiz_questions_id,
   created_at,
   updated_at
 ) VALUES (
@@ -266,10 +270,10 @@ INSERT INTO payload.course_quizzes_rels (
   '42564568-76bb-4405-88a9-8e9fd0a9154a',
   'questions',
   'a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d',
+  'a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
-
 -- Insert question for quiz: Fact and Persuasion
 INSERT INTO payload.quiz_questions (
   id,
@@ -375,6 +379,7 @@ INSERT INTO payload.quiz_questions_rels (
   _parent_id,
   field,
   value,
+  quiz_id_id,
   created_at,
   updated_at
 ) VALUES (
@@ -382,16 +387,17 @@ INSERT INTO payload.quiz_questions_rels (
   'b2c3d4e5-f6a7-8b9c-0d1e-2f3a4b5c6d7e',
   'quiz_id',
   '791e27de-2c98-49ef-b684-6c88667d1571',
+  '791e27de-2c98-49ef-b684-6c88667d1571',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
-
 -- Create bidirectional relationship entry for the quiz to the question
 INSERT INTO payload.course_quizzes_rels (
   id,
   _parent_id,
   field,
   value,
+  quiz_questions_id,
   created_at,
   updated_at
 ) VALUES (
@@ -399,10 +405,10 @@ INSERT INTO payload.course_quizzes_rels (
   '791e27de-2c98-49ef-b684-6c88667d1571',
   'questions',
   'b2c3d4e5-f6a7-8b9c-0d1e-2f3a4b5c6d7e',
+  'b2c3d4e5-f6a7-8b9c-0d1e-2f3a4b5c6d7e',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
-
 -- Insert question for quiz: Gestalt Principles
 INSERT INTO payload.quiz_questions (
   id,
@@ -508,6 +514,7 @@ INSERT INTO payload.quiz_questions_rels (
   _parent_id,
   field,
   value,
+  quiz_id_id,
   created_at,
   updated_at
 ) VALUES (
@@ -515,16 +522,17 @@ INSERT INTO payload.quiz_questions_rels (
   'c3d4e5f6-a7b8-9c0d-1e2f-3a4b5c6d7e8f',
   'quiz_id',
   '3c72b383-e17e-4b07-8a47-451cfbff29c0',
+  '3c72b383-e17e-4b07-8a47-451cfbff29c0',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
-
 -- Create bidirectional relationship entry for the quiz to the question
 INSERT INTO payload.course_quizzes_rels (
   id,
   _parent_id,
   field,
   value,
+  quiz_questions_id,
   created_at,
   updated_at
 ) VALUES (
@@ -532,9 +540,9 @@ INSERT INTO payload.course_quizzes_rels (
   '3c72b383-e17e-4b07-8a47-451cfbff29c0',
   'questions',
   'c3d4e5f6-a7b8-9c0d-1e2f-3a4b5c6d7e8f',
+  'c3d4e5f6-a7b8-9c0d-1e2f-3a4b5c6d7e8f',
   NOW(),
   NOW()
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
-
 -- Commit the transaction
 COMMIT;

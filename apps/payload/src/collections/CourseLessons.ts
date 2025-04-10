@@ -1,6 +1,7 @@
 import { BlocksFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
 import { CollectionConfig } from 'payload'
 import BunnyVideo from '../blocks/BunnyVideo'
+import { findDownloadsForCollection } from '../db/downloads'
 
 export const CourseLessons: CollectionConfig = {
   slug: 'course_lessons',
@@ -16,11 +17,82 @@ export const CourseLessons: CollectionConfig = {
   access: {
     read: () => true, // Public read access
   },
+  hooks: {
+    // Add a collection-level afterRead hook to handle downloads
+    afterRead: [
+      async ({ req, doc }) => {
+        // Only handle downloads if we have a specific document with an ID
+        if (doc?.id) {
+          try {
+            // Replace downloads with ones from our custom view
+            const downloads = await findDownloadsForCollection(
+              req.payload,
+              doc.id,
+              'course_lessons',
+            )
+
+            // Update the document with the retrieved downloads
+            return {
+              ...doc,
+              downloads,
+            }
+          } catch (error) {
+            console.error('Error fetching downloads for course lesson:', error)
+            // Return the document with an empty downloads array instead of failing
+            return {
+              ...doc,
+              downloads: [], // Fallback to empty array on error
+            }
+          }
+        }
+
+        return doc
+      },
+    ],
+  },
   fields: [
     {
       name: 'title',
       type: 'text',
       required: true,
+    },
+    {
+      name: 'bunny_video_id',
+      type: 'text',
+      label: 'Bunny.net Video ID',
+      admin: {
+        description: 'Video ID from Bunny.net (if this lesson includes a video)',
+      },
+    },
+    {
+      name: 'bunny_library_id',
+      type: 'text',
+      label: 'Bunny.net Library ID',
+      defaultValue: '264486',
+      admin: {
+        description: 'Library ID from Bunny.net (defaults to main library)',
+      },
+    },
+    {
+      name: 'todo_complete_quiz',
+      type: 'checkbox',
+      label: 'Todo: Complete Quiz',
+      defaultValue: false,
+    },
+    {
+      name: 'todo_watch_content',
+      type: 'text',
+      label: 'Todo: Watch Content',
+    },
+    {
+      name: 'todo_read_content',
+      type: 'text',
+      label: 'Todo: Read Content',
+    },
+    {
+      name: 'todo_course_project',
+      type: 'text',
+      label: 'Todo: Course Project',
     },
     {
       name: 'slug',
@@ -91,27 +163,13 @@ export const CourseLessons: CollectionConfig = {
         description: 'The survey associated with this lesson (if any)',
       },
     },
-    // Add a field for the survey_id_id that Payload creates automatically
-    // This is needed for compatibility with the database schema
     {
-      name: 'survey_id_id',
-      type: 'text',
+      name: 'downloads',
+      type: 'relationship',
+      relationTo: 'downloads',
+      hasMany: true,
       admin: {
-        hidden: true, // Hide this field in the admin UI
-      },
-      hooks: {
-        beforeChange: [
-          ({ data }: { data?: any }) => {
-            // Copy the value from survey_id to survey_id_id if survey_id exists
-            if (data?.survey_id) {
-              if (typeof data.survey_id === 'object' && data.survey_id.id) {
-                return data.survey_id.id
-              }
-              return data.survey_id
-            }
-            return undefined
-          },
-        ],
+        description: 'Files for download in this lesson',
       },
     },
     {

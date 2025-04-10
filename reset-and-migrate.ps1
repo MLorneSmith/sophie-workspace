@@ -248,6 +248,26 @@ CREATE SCHEMA payload;
         
         Exec-Command -command "pnpm --filter @kit/content-migrations run sql:add-relationship-id-columns" -description "Adding relationship ID columns to locked documents tables"
         
+        # Fix UUID tables to ensure path columns exist
+        Log-Message "  Fixing UUID tables to ensure all required columns exist..." "Yellow"
+        try {
+            Exec-Command -command "pnpm --filter @kit/content-migrations run fix:uuid-tables" -description "Running UUID tables fix script"
+            Log-Message "  UUID tables fixed successfully" "Green"
+        } catch {
+            # This is not critical, so we'll continue even if it fails
+            Log-Message "  Warning: UUID tables fix encountered issues, but continuing: $_" "Yellow"
+        }
+        
+        # Verify UUID tables to ensure all required columns exist
+        Log-Message "  Verifying UUID tables and their required columns..." "Yellow"
+        try {
+            Exec-Command -command "pnpm --filter @kit/content-migrations run verify:uuid-tables" -description "Running UUID tables verification"
+            Log-Message "  UUID tables verified successfully" "Green"
+        } catch {
+            # This is not critical, so we'll continue even if it fails
+            Log-Message "  Warning: UUID tables verification encountered issues, but continuing: $_" "Yellow"
+        }
+        
         # Return to the payload directory
         Pop-Location
         Log-Message "  Returned to directory: $(Get-Location)" "Gray"
@@ -424,7 +444,7 @@ CREATE SCHEMA payload;
         Log-Message "Changed directory to: $(Get-Location)" "Gray"
         
         Log-Message "  Verifying database state..." "Yellow"
-        $verificationResult = Exec-Command -command "pnpm run verify:all" -description "Verifying database relationships" -captureOutput
+        $verificationResult = Exec-Command -command "pnpm run verify:all" -description "Verifying database structure" -captureOutput
         
         # Check if verification found any issues
         if ($verificationResult -match "Warning" -or $verificationResult -match "Error") {
@@ -432,6 +452,10 @@ CREATE SCHEMA payload;
             
             Log-Message "  Running edge case repairs..." "Yellow"
             Exec-Command -command "pnpm run repair:edge-cases" -description "Running edge case repairs"
+
+            # Run lesson-quiz relationship fixes
+            Log-Message "  Running lesson-quiz relationship fixes..." "Yellow"
+            Exec-Command -command "pnpm exec tsx src/scripts/repair/fix-lesson-quiz-field-name.ts" -description "Fixing lesson-quiz relationships"
 
             # Fix survey questions population issue
             Log-Message "  Fixing survey questions population..." "Yellow"
@@ -497,6 +521,29 @@ CREATE SCHEMA payload;
     }
 
     #
+    # STEP 6.5: Import downloads from R2 bucket
+    #
+    Log-Message "STEP 6.5: Importing downloads from R2 bucket..." "Cyan"
+    try {
+        # Run the import-downloads script
+        Push-Location -Path "packages/content-migrations"
+        Log-Message "Changed directory to: $(Get-Location)" "Gray"
+        
+        Log-Message "  Importing downloads..." "Yellow"
+        Exec-Command -command "pnpm run import:downloads" -description "Importing downloads from R2 bucket"
+        
+        Log-Message "  Downloads imported successfully" "Green"
+        
+        Pop-Location
+        Log-Message "Returned to directory: $(Get-Location)" "Gray"
+    }
+    catch {
+        Log-Message "ERROR: Failed to import downloads: $_" "Red"
+        $overallSuccess = $false
+        throw "Download import failed"
+    }
+
+    #
     # STEP 7: Comprehensive database verification using Node.js utilities
     #
     Log-Message "STEP 7: Performing comprehensive database verification..." "Cyan"
@@ -504,6 +551,35 @@ CREATE SCHEMA payload;
         # Use Push-Location/Pop-Location instead of cd to maintain path context
         Push-Location -Path "packages/content-migrations"
         Log-Message "Changed directory to: $(Get-Location)" "Gray"
+
+        # Check for required environment variables before running verification
+        Log-Message "  Checking for required environment variables..." "Yellow"
+        if (-not $env:DATABASE_URL -and $env:DATABASE_URI) {
+            Log-Message "  Setting DATABASE_URL from DATABASE_URI for compatibility" "Yellow"
+            $env:DATABASE_URL = $env:DATABASE_URI
+        }
+
+        # If still not set, check the .env.development file
+        if (-not $env:DATABASE_URL) {
+            $envFile = Join-Path -Path (Get-Location) -ChildPath ".env.development"
+            if (Test-Path -Path $envFile) {
+                Log-Message "  Loading environment variables from .env.development" "Yellow"
+                Get-Content -Path $envFile | ForEach-Object {
+                    if ($_ -match '^\s*DATABASE_URL=(.*)$') {
+                        $env:DATABASE_URL = $matches[1]
+                        Log-Message "  Set DATABASE_URL from .env.development file" "Yellow"
+                    } elseif (-not $env:DATABASE_URL -and $_ -match '^\s*DATABASE_URI=(.*)$') {
+                        $env:DATABASE_URL = $matches[1]
+                        Log-Message "  Set DATABASE_URL from DATABASE_URI in .env.development file" "Yellow"
+                    }
+                }
+            }
+        }
+
+        if (-not $env:DATABASE_URL) {
+            Log-Message "WARNING: DATABASE_URL environment variable is not set" "Yellow"
+            Log-Message "Please ensure either DATABASE_URL or DATABASE_URI is set in your environment or .env.development file" "Yellow"
+        }
 
         # Verify database schema using the new Node.js utility
         Log-Message "  Verifying database schema..." "Yellow"
@@ -537,6 +613,22 @@ CREATE SCHEMA payload;
             throw "Media columns verification failed"
         } else {
             Log-Message "  Media columns verification passed" "Green"
+        }
+        
+        # Pre-emptively run the relationship columns repair script
+        Log-Message "  Pre-emptively fixing relationship columns..." "Yellow"
+        $fixResult = Exec-Command -command "pnpm --filter @kit/content-migrations run repair:relationship-columns" -description "Fixing relationship columns" -captureOutput
+            
+        # Now verify the relationship columns
+        Log-Message "  Verifying relationship columns..." "Yellow"
+        $relationshipColumnsVerification = Exec-Command -command "pnpm --filter @kit/content-migrations run verify:relationship-columns" -description "Verifying relationship columns" -captureOutput
+        
+        if ($relationshipColumnsVerification -match "Error" -or $LASTEXITCODE -ne 0) {
+            Log-Message "ERROR: Relationship columns verification still failed after fix" "Red"
+            $overallSuccess = $false
+            throw "Relationship columns verification failed"
+        } else {
+            Log-Message "  Relationship columns verification passed" "Green"
         }
 
         Pop-Location

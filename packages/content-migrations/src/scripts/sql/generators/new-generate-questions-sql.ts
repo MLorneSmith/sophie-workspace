@@ -2,6 +2,7 @@
  * Generator for quiz questions SQL using the static quiz definitions
  */
 import { QUIZZES } from '../../../data/definitions/quizzes.js';
+import { generateRelationshipEntrySql } from './generate-relationship-sql.js';
 
 /**
  * Generates SQL for quiz questions from static definitions
@@ -81,45 +82,13 @@ INSERT INTO payload.quiz_questions_options (
 `;
       }
 
-      // Add the relationship entry
+      // Add the relationship entry using the helper function
       sql += `-- Create relationship entry for the question to the quiz
-INSERT INTO payload.quiz_questions_rels (
-  id,
-  _parent_id,
-  field,
-  value,
-  created_at,
-  updated_at
-) VALUES (
-  gen_random_uuid(),
-  '${question.id}',
-  'quiz_id',
-  '${quiz.id}',
-  NOW(),
-  NOW()
-) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
+${generateRelationshipEntrySql(question.id, 'quiz_id', quiz.id, 'quiz_questions_rels', 'quiz_id_id')}`;
 
-`;
-
-      // Add the bidirectional relationship entry
+      // Add the bidirectional relationship entry using the helper function
       sql += `-- Create bidirectional relationship entry for the quiz to the question
-INSERT INTO payload.course_quizzes_rels (
-  id,
-  _parent_id,
-  field,
-  value,
-  created_at,
-  updated_at
-) VALUES (
-  gen_random_uuid(),
-  '${quiz.id}',
-  'questions',
-  '${question.id}',
-  NOW(),
-  NOW()
-) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
-
-`;
+${generateRelationshipEntrySql(quiz.id, 'questions', question.id, 'course_quizzes_rels', 'quiz_questions_id')}`;
     }
   }
 

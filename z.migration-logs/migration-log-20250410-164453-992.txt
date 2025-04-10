@@ -1,0 +1,75 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20250410164453
+Username: SLIDEHEROES_DEN\msmit
+RunAs User: SLIDEHEROES_DEN\msmit
+Configuration Name: 
+Machine: SLIDEHEROES_DEN (Microsoft Windows NT 10.0.26100.0)
+Host Application: C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -noexit -command try { . "c:\Users\msmit\AppData\Local\Programs\Microsoft VS Code\resources\app\out\vs\workbench\contrib\terminal\common\scripts\shellIntegration.ps1" } catch {}
+Process ID: 62024
+PSVersion: 5.1.26100.3624
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.3624
+BuildVersion: 10.0.26100.3624
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcript started, output file is D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-log-20250410-164453-992.txt
+Starting migration process at 04/10/2025 16:44:53
+Detailed logs will be saved to: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250410-164453-992.txt
+STEP 1: Resetting Supabase database and running Web app migrations...
+Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\apps\web
+  Skipping Supabase restart (already done)
+  Running supabase:reset...
+EXECUTING: pnpm run supabase:reset
+DESCRIPTION: Resetting Supabase database
+Applying migration 20250404194028_onboarding.sql...
+Applying migration 20250407140454_create_certificates_table.sql...
+Applying migration 20250407140653_create_insert_certificate_function.sql...
+NOTICE (42P06): schema "supabase_migrations" already exists, skipping
+Seeding data from supabase/seed.sql...
+Restarting containers...
+Finished supabase db reset on branch main.
+A new version of Supabase CLI is available: v2.20.12 (currently installed v2.20.5)
+We recommend updating regularly for new features and bug fixes: https://supabase.com
+/docs/guides/cli/getting-started#updating-the-supabase-cli
+  Running supabase migrations...
+EXECUTING: supabase migration up
+DESCRIPTION: Running Supabase migrations
+
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes
+EXECUTING: pnpm --filter @kit/content-migrations run verify:schema public
+DESCRIPTION: Verifying schema 'public' exists
+âœ… Schema 'public' exists
+  Web app migrations completed successfully
+STEP 2: Resetting Payload schema...
+  Dropping and recreating payload schema...
+  Temporarily changed to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+EXECUTING: pnpm run utils:run-sql-file "C:\Users\msmit\AppData\Local\Temp\reset_payload_schema.sql"
+DESCRIPTION: Resetting Payload schema
+
+  Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes
+  Payload schema reset successfully
+STEP 3: Running Payload migrations...
+Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\apps\payload
+  Checking migration status...
+EXECUTING: pnpm migrate:status
+DESCRIPTION: Checking migration status
+  Running all migrations...
+EXECUTING: pnpm payload migrate
+DESCRIPTION: Running Payload migrations
+
+Command failed with exit code: 1
+ERROR in step 'Running Payload migrations': Command failed with exit code: 1
+PS>TerminatingError(): "Command failed with exit code: 1"
+ERROR: Failed to run Payload migrations: Command failed with exit code: 1
+CRITICAL ERROR: Migration process failed: Payload migration failed
+Please check the log files for details:
+  - Transcript log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-log-20250410-164453-992.txt
+  - Detailed log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250410-164453-992.txt
+**********************
+Windows PowerShell transcript end
+End time: 20250410164543
+**********************

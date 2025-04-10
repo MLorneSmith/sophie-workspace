@@ -10,6 +10,7 @@ import {
 } from '../../data/definitions/lesson-quiz-relations.js';
 import { validateQuizDefinition } from '../../data/definitions/quiz-types.js';
 import { QUIZZES } from '../../data/definitions/quizzes.js';
+import { generateRelationshipTablesSql } from './generators/generate-relationship-sql.js';
 import { generateLessonQuizReferencesSql } from './generators/new-generate-lesson-quiz-references-sql.js';
 import { generateQuestionsSql } from './generators/new-generate-questions-sql.js';
 import { generateQuizzesSql } from './generators/new-generate-quizzes-sql.js';
@@ -42,6 +43,14 @@ export async function generateSqlSeedFiles(outputDir: string): Promise<void> {
   // Step 3: Generate and write SQL files
   console.log('Generating SQL files...');
 
+  // 3.0: Generate relationship tables SQL with required columns
+  const relationshipTablesSql = generateRelationshipTablesSql();
+  fs.writeFileSync(
+    path.join(outputDir, '01-relationship-tables.sql'),
+    relationshipTablesSql,
+  );
+  console.log('Generated relationship tables SQL file');
+
   // 3.1: Generate quizzes SQL
   const quizzesSql = generateQuizzesSql();
   fs.writeFileSync(path.join(outputDir, '03-quizzes.sql'), quizzesSql);
@@ -63,10 +72,12 @@ export async function generateSqlSeedFiles(outputDir: string): Promise<void> {
   console.log('All SQL seed files generated successfully!');
 }
 
-// Add a CLI entrypoint if needed
-// Use ESM approach to check if this file is being executed directly
+// Add a CLI entrypoint
+// For Node.js ESM, we can check if this file is being run directly
+// by checking if require.main === module, but in ESM we check process.argv[1]
 if (
-  import.meta.url === import.meta.resolve('./new-generate-sql-seed-files.ts')
+  process.argv[1]?.endsWith('new-generate-sql-seed-files.ts') ||
+  process.argv[1]?.endsWith('new-generate-sql-seed-files.js')
 ) {
   // Default output directory
   const outputDir =

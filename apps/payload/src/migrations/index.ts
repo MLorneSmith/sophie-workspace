@@ -14,8 +14,18 @@ import * as migration_20250402_330000_bidirectional_relationships from './202504
 import * as migration_20250402_340000_add_users_table from './20250402_340000_add_users_table'
 import * as migration_20250402_350000_create_admin_user from './20250402_350000_create_admin_user'
 import * as migration_20250403_200000_process_content from './20250403_200000_process_content'
+import * as migration_20250403_300000_add_lesson_enhancements from './20250403_300000_add_lesson_enhancements'
 import * as migration_20250404_100000_fix_lesson_quiz_relationships from './20250404_100000_fix_lesson_quiz_relationships'
+import * as migration_20250407_100000_add_survey_id_to_lessons from './20250407_100000_add_survey_id_to_lessons'
 import * as migration_20250407_100000_fix_missing_lesson_quiz_relationships from './20250407_100000_fix_missing_lesson_quiz_relationships'
+import * as migration_20250410_120500_relationship_columns_fix from './20250410_120500_relationship_columns_fix'
+import * as migration_20250420_100000_master_relationship_migration from './20250420_100000_master_relationship_migration'
+import * as migration_20250420_100000_master_relationship_view from './20250420_100000_master_relationship_view'
+import * as migration_20250425_100000_proactive_uuid_table_monitoring from './20250425_100000_proactive_uuid_table_monitoring'
+import * as migration_20250430_100000_fix_downloads_relationships_view from './20250430_100000_fix_downloads_relationships_view'
+import * as migration_20250430_110000_fix_missing_columns from './20250430_110000_fix_missing_columns'
+import * as migration_20250430_120000_fix_remaining_columns from './20250430_120000_fix_remaining_columns'
+import * as migration_20250430_130000_fix_downloads_thumbnail_url from './20250430_130000_fix_downloads_thumbnail_url'
 
 export const migrations = [
   // Add schema creation migration first
@@ -66,16 +76,76 @@ export const migrations = [
     down: migration_20250403_200000_process_content.down,
     name: '20250403_200000_process_content',
   },
+  // Add lesson enhancements migration
+  {
+    up: migration_20250403_300000_add_lesson_enhancements.up,
+    down: migration_20250403_300000_add_lesson_enhancements.down,
+    name: '20250403_300000_add_lesson_enhancements',
+  },
   // Add fix lesson quiz relationships migration
   {
     up: migration_20250404_100000_fix_lesson_quiz_relationships.up,
     down: migration_20250404_100000_fix_lesson_quiz_relationships.down,
     name: '20250404_100000_fix_lesson_quiz_relationships',
   },
+  // Add survey ID to lessons migration
+  {
+    up: migration_20250407_100000_add_survey_id_to_lessons.up,
+    down: migration_20250407_100000_add_survey_id_to_lessons.down,
+    name: '20250407_100000_add_survey_id_to_lessons',
+  },
   // Add fix missing lesson quiz relationships migration
   {
     up: migration_20250407_100000_fix_missing_lesson_quiz_relationships.up,
     down: migration_20250407_100000_fix_missing_lesson_quiz_relationships.down,
     name: '20250407_100000_fix_missing_lesson_quiz_relationships',
+  },
+  // Add relationship columns fix migration
+  {
+    up: migration_20250410_120500_relationship_columns_fix.up,
+    down: migration_20250410_120500_relationship_columns_fix.down,
+    name: '20250410_120500_relationship_columns_fix',
+  },
+  // Add master relationship migration
+  {
+    up: migration_20250420_100000_master_relationship_migration.up,
+    down: migration_20250420_100000_master_relationship_migration.down,
+    name: '20250420_100000_master_relationship_migration',
+  },
+  // Add master relationship view migration
+  {
+    up: migration_20250420_100000_master_relationship_view.up,
+    down: migration_20250420_100000_master_relationship_view.down,
+    name: '20250420_100000_master_relationship_view',
+  },
+  // Add proactive UUID table monitoring migration
+  {
+    up: migration_20250425_100000_proactive_uuid_table_monitoring.up,
+    down: migration_20250425_100000_proactive_uuid_table_monitoring.down,
+    name: '20250425_100000_proactive_uuid_table_monitoring',
+  },
+  // Add fix downloads relationships view migration
+  {
+    up: migration_20250430_100000_fix_downloads_relationships_view.up,
+    down: migration_20250430_100000_fix_downloads_relationships_view.down,
+    name: '20250430_100000_fix_downloads_relationships_view',
+  },
+  // Fix missing columns migration
+  {
+    up: migration_20250430_110000_fix_missing_columns.up,
+    down: migration_20250430_110000_fix_missing_columns.down,
+    name: '20250430_110000_fix_missing_columns',
+  },
+  // Fix remaining columns migration
+  {
+    up: migration_20250430_120000_fix_remaining_columns.up,
+    down: migration_20250430_120000_fix_remaining_columns.down,
+    name: '20250430_120000_fix_remaining_columns',
+  },
+  // Fix downloads thumbnail URL column migration
+  {
+    up: migration_20250430_130000_fix_downloads_thumbnail_url.up,
+    down: migration_20250430_130000_fix_downloads_thumbnail_url.down,
+    name: '20250430_130000_fix_downloads_thumbnail_url',
   },
 ]

@@ -1,0 +1,110 @@
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * Script to run all content migration scripts in the correct order
+ * using direct database access for problematic migrations
+ * Fixed version with improved error handling and UUID validation
+ */
+const dotenv_1 = __importDefault(require("dotenv"));
+const path_1 = __importDefault(require("path"));
+const url_1 = require("url");
+// Get the current file's directory
+const __filename = (0, url_1.fileURLToPath)(import.meta.url);
+const __dirname = path_1.default.dirname(__filename);
+// Load environment variables from the package's .env file
+dotenv_1.default.config({ path: path_1.default.resolve(__dirname, '../../.env.development') });
+/**
+ * Runs all content migration scripts
+ */
+async function runAllMigrations() {
+    console.log('Starting all content migrations...');
+    try {
+        // First, test the database connection and schema directly
+        console.log('\n=== Testing database connection and schema directly ===');
+        await Promise.resolve().then(() => __importStar(require('../verification/test-database-connection-direct.js')));
+        // Skip seeding course data as it's now handled by Payload migrations
+        console.log('\n=== Skipping course data seeding (now handled by Payload migrations) ===');
+        // Migrate course lessons directly to the database
+        console.log('\n=== Migrating course lessons directly to the database ===');
+        await Promise.resolve().then(() => __importStar(require('./migrate-course-lessons-direct.js')));
+        // Migrate course quizzes directly to the database
+        console.log('\n=== Migrating course quizzes directly to the database ===');
+        await Promise.resolve().then(() => __importStar(require('./migrate-course-quizzes-direct.js')));
+        // Add a delay to ensure all quizzes are committed to the database
+        console.log('\n=== Waiting for quizzes to be committed to the database ===');
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        // Migrate quiz questions directly to the database using the fixed version
+        console.log('\n=== Migrating quiz questions directly to the database (fixed version) ===');
+        await Promise.resolve().then(() => __importStar(require('./migrate-quiz-questions-direct-fixed.js')));
+        // Fix relationships directly in the database
+        console.log('\n=== Fixing relationships directly in the database ===');
+        await Promise.resolve().then(() => __importStar(require('../repair/fix-relationships-direct.js')));
+        // Migrate documentation directly to the database
+        console.log('\n=== Migrating documentation directly to the database ===');
+        await Promise.resolve().then(() => __importStar(require('./migrate-docs-direct.js')));
+        // Skip additional documentation migration for now
+        console.log('\n=== Skipping additional documentation migration for debugging ===');
+        // await import('./migrate-payload-docs.js');
+        // Migrate surveys directly to the database
+        console.log('\n=== Migrating surveys directly to the database ===');
+        await Promise.resolve().then(() => __importStar(require('./migrate-surveys-direct.js')));
+        // Migrate survey questions directly to the database
+        console.log('\n=== Migrating survey questions directly to the database ===');
+        await Promise.resolve().then(() => __importStar(require('./migrate-survey-questions-direct.js')));
+        // Migrate blog posts directly to the database
+        console.log('\n=== Migrating blog posts directly to the database ===');
+        await Promise.resolve().then(() => __importStar(require('./migrate-posts-direct.js')));
+        // Skip additional quizzes migration since they're already migrated by migrate-course-quizzes-direct.js
+        console.log('\n=== Skipping additional quizzes migration (already migrated) ===');
+        // await import('./migrate-payload-quizzes-direct.js');
+        // Final database connection test to verify all migrations
+        console.log('\n=== Final database connection test directly ===');
+        await Promise.resolve().then(() => __importStar(require('../verification/test-database-connection-direct.js')));
+        console.log('\nAll migrations completed successfully!');
+    }
+    catch (error) {
+        console.error('Error running migrations:', error);
+        process.exit(1);
+    }
+}
+// Run all migrations
+runAllMigrations().catch((error) => {
+    console.error('Migration process failed:', error);
+    process.exit(1);
+});

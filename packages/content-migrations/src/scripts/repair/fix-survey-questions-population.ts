@@ -11,16 +11,15 @@ import fs from 'fs';
 import yaml from 'js-yaml';
 import path from 'path';
 import pg from 'pg';
-import { fileURLToPath } from 'url';
 import { v4 as uuidv4 } from 'uuid';
 
 import { RAW_SURVEYS_DIR } from '../../config/paths.js';
+import { checkColumnExists } from '../../utils/check-column-exists.js';
 
 const { Pool } = pg;
 
-// Get the current file's directory
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// Get the current directory - simplifying to just use cwd
+const currentDir = process.cwd();
 
 // Load environment variables based on the NODE_ENV
 const envFile =
@@ -29,17 +28,19 @@ const envFile =
     : '.env.development';
 
 console.log(`Loading environment variables from ${envFile}`);
-dotenv.config({ path: path.resolve(__dirname, `../../../${envFile}`) });
+dotenv.config({
+  path: path.resolve(currentDir, `packages/content-migrations/${envFile}`),
+});
 
 /**
  * Fixes the survey questions population issue
  */
 async function fixSurveyQuestionsPopulation() {
   // Get the database connection string from the environment variables
-  const databaseUri = process.env.DATABASE_URI;
-  if (!databaseUri) {
-    throw new Error('DATABASE_URI environment variable is not set');
-  }
+  // Use default connection string as fallback
+  const databaseUri =
+    process.env.DATABASE_URI ||
+    'postgresql://postgres:postgres@localhost:54322/postgres?schema=payload';
 
   console.log(`Connecting to database: ${databaseUri}`);
 
@@ -196,16 +197,31 @@ async function fixSurveyQuestionsPopulation() {
                 Array.isArray(question.answers) &&
                 questionType !== 'text_field'
               ) {
+                // Check which parent column exists in the table
+                const parentColumn = await checkColumnExists(
+                  client,
+                  'payload',
+                  'survey_questions_options',
+                  ['parent_id', '_parent_id'],
+                );
+
+                if (!parentColumn) {
+                  console.warn(
+                    'Neither parent_id nor _parent_id column exists in survey_questions_options table',
+                  );
+                  continue;
+                }
+
                 for (let j = 0; j < question.answers.length; j++) {
                   const answer = question.answers[j];
 
-                  // Add the option to the database
+                  // Add the option to the database using the correct parent column
                   await client.query(
                     `
                     INSERT INTO payload.survey_questions_options (
                       id,
                       _order,
-                      _parent_id,
+                      ${parentColumn},
                       option,
                       created_at,
                       updated_at
@@ -223,51 +239,189 @@ async function fixSurveyQuestionsPopulation() {
                 }
               }
 
-              // Create relationship entry for the question to the survey
-              await client.query(
-                `
-                INSERT INTO payload.survey_questions_rels (
-                  id,
-                  _parent_id,
-                  field,
-                  value,
-                  created_at,
-                  updated_at
-                ) VALUES (
-                  gen_random_uuid(),
-                  $1,
-                  $2,
-                  $3,
-                  NOW(),
-                  NOW()
-                ) ON CONFLICT DO NOTHING
-                `,
-                [questionId, 'surveys', surveyId],
+              // Check which parent columns exist in the survey_questions_rels table
+              const hasParentId = await client.query(
+                `SELECT EXISTS (
+                  SELECT FROM information_schema.columns 
+                  WHERE table_schema = 'payload' 
+                  AND table_name = 'survey_questions_rels' 
+                  AND column_name = 'parent_id'
+                );`,
               );
 
-              // Create bidirectional relationship entry for the survey to the question
-              await client.query(
-                `
-                INSERT INTO payload.surveys_rels (
-                  id,
-                  _parent_id,
-                  field,
-                  value,
-                  survey_questions_id,
-                  created_at,
-                  updated_at
-                ) VALUES (
-                  gen_random_uuid(),
-                  $1,
-                  $2,
-                  $3,
-                  $4,
-                  NOW(),
-                  NOW()
-                ) ON CONFLICT DO NOTHING
-                `,
-                [surveyId, 'questions', questionId, questionId],
+              const hasUnderscoreParentId = await client.query(
+                `SELECT EXISTS (
+                  SELECT FROM information_schema.columns 
+                  WHERE table_schema = 'payload' 
+                  AND table_name = 'survey_questions_rels' 
+                  AND column_name = '_parent_id'
+                );`,
               );
+
+              // Build a SQL query that populates all existing parent columns
+              let insertColumns = [
+                'id',
+                'field',
+                'value',
+                'created_at',
+                'updated_at',
+              ];
+              let insertValues = [
+                'gen_random_uuid()',
+                '$2',
+                '$3',
+                'NOW()',
+                'NOW()',
+              ];
+              let insertParams = [questionId, 'surveys', surveyId];
+              let paramIndex = 4; // Start at 4 since we're using $1, $2, $3 already
+
+              if (hasParentId.rows[0].exists) {
+                insertColumns.push('parent_id');
+                insertValues.push(`$${paramIndex}`);
+                insertParams.push(questionId); // Always use questionId for parent_id
+                paramIndex++;
+              }
+
+              if (hasUnderscoreParentId.rows[0].exists) {
+                insertColumns.push('_parent_id');
+                insertValues.push(`$${paramIndex}`);
+                insertParams.push(questionId); // Always use questionId for _parent_id
+                paramIndex++;
+              }
+
+              if (
+                !hasParentId.rows[0].exists &&
+                !hasUnderscoreParentId.rows[0].exists
+              ) {
+                console.warn(
+                  'Neither parent_id nor _parent_id column exists in survey_questions_rels table',
+                );
+                continue;
+              }
+
+              // Create relationship entry for the question to the survey
+              // Using direct SQL with explicit parameter values to avoid type issues
+              const valuesWithTypes = [];
+              valuesWithTypes.push('gen_random_uuid()'); // id
+              valuesWithTypes.push(`'surveys'`); // field
+              valuesWithTypes.push(`'${surveyId}'::uuid`); // value
+              valuesWithTypes.push('NOW()'); // created_at
+              valuesWithTypes.push('NOW()'); // updated_at
+
+              if (hasParentId.rows[0].exists) {
+                valuesWithTypes.push(`'${questionId}'::uuid`); // parent_id
+              }
+
+              if (hasUnderscoreParentId.rows[0].exists) {
+                valuesWithTypes.push(`'${questionId}'::uuid`); // _parent_id
+              }
+
+              const insertSql = `
+                INSERT INTO payload.survey_questions_rels (
+                  ${insertColumns.join(', ')}
+                ) VALUES (
+                  ${valuesWithTypes.join(', ')}
+                ) ON CONFLICT DO NOTHING
+              `;
+
+              await client.query(insertSql);
+
+              // Check which parent columns exist in the surveys_rels table
+              const srHasParentId = await client.query(
+                `SELECT EXISTS (
+                  SELECT FROM information_schema.columns 
+                  WHERE table_schema = 'payload' 
+                  AND table_name = 'surveys_rels' 
+                  AND column_name = 'parent_id'
+                );`,
+              );
+
+              const srHasUnderscoreParentId = await client.query(
+                `SELECT EXISTS (
+                  SELECT FROM information_schema.columns 
+                  WHERE table_schema = 'payload' 
+                  AND table_name = 'surveys_rels' 
+                  AND column_name = '_parent_id'
+                );`,
+              );
+
+              // Build a SQL query that populates all existing parent columns
+              let srInsertColumns = [
+                'id',
+                'field',
+                'value',
+                'survey_questions_id',
+                'created_at',
+                'updated_at',
+              ];
+              let srInsertValues = [
+                'gen_random_uuid()',
+                '$2',
+                '$3',
+                '$4',
+                'NOW()',
+                'NOW()',
+              ];
+              let srInsertParams = [
+                surveyId,
+                'questions',
+                questionId,
+                questionId,
+              ];
+              let srParamIndex = 5; // Start at 5 since we're using $1, $2, $3, $4 already
+
+              if (srHasParentId.rows[0].exists) {
+                srInsertColumns.push('parent_id');
+                srInsertValues.push(`$${srParamIndex}`);
+                srInsertParams.push(surveyId); // Always use surveyId for parent_id
+                srParamIndex++;
+              }
+
+              if (srHasUnderscoreParentId.rows[0].exists) {
+                srInsertColumns.push('_parent_id');
+                srInsertValues.push(`$${srParamIndex}`);
+                srInsertParams.push(surveyId); // Always use surveyId for _parent_id
+                srParamIndex++;
+              }
+
+              if (
+                !srHasParentId.rows[0].exists &&
+                !srHasUnderscoreParentId.rows[0].exists
+              ) {
+                console.warn(
+                  'Neither parent_id nor _parent_id column exists in surveys_rels table',
+                );
+                continue;
+              }
+
+              // Create bidirectional relationship entry for the survey to the question
+              // Using direct SQL with explicit parameter values to avoid type issues
+              const srValuesWithTypes = [];
+              srValuesWithTypes.push('gen_random_uuid()'); // id
+              srValuesWithTypes.push(`'questions'`); // field
+              srValuesWithTypes.push(`'${questionId}'::uuid`); // value
+              srValuesWithTypes.push(`'${questionId}'::uuid`); // survey_questions_id
+              srValuesWithTypes.push('NOW()'); // created_at
+              srValuesWithTypes.push('NOW()'); // updated_at
+
+              if (srHasParentId.rows[0].exists) {
+                srValuesWithTypes.push(`'${surveyId}'::uuid`); // parent_id
+              }
+
+              if (srHasUnderscoreParentId.rows[0].exists) {
+                srValuesWithTypes.push(`'${surveyId}'::uuid`); // _parent_id
+              }
+
+              const srInsertSql = `
+                INSERT INTO payload.surveys_rels (
+                  ${srInsertColumns.join(', ')}
+                ) VALUES (
+                  ${srValuesWithTypes.join(', ')}
+                ) ON CONFLICT DO NOTHING
+              `;
+
+              await client.query(srInsertSql);
             }
           }
         }
@@ -319,10 +473,9 @@ async function fixSurveyQuestionsPopulation() {
 }
 
 // Run the fix if this script is executed directly
-if (
-  import.meta.url ===
-  import.meta.resolve('./fix-survey-questions-population.ts')
-) {
+// Simplified check that works without requiring module-specific features
+const isMainModule = process.argv.length > 1;
+if (isMainModule) {
   fixSurveyQuestionsPopulation()
     .then(() => {
       console.log('\nSurvey questions population fixed successfully');

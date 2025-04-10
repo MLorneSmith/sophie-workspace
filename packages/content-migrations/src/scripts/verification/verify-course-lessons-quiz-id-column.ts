@@ -29,15 +29,29 @@ dotenv.config({ path: path.resolve(__dirname, '../../../', envFile) });
 async function verifyCourseLessonsQuizIdColumn() {
   console.log('Verifying course_lessons quiz_id_id column...');
 
-  // Get database connection string
-  const databaseUri = process.env.DATABASE_URI;
-  if (!databaseUri) {
-    throw new Error('DATABASE_URI environment variable is not set');
+  // Get database connection from environment variables
+  let connectionString = process.env.DATABASE_URL;
+
+  // If DATABASE_URL is not set, check for DATABASE_URI (for backward compatibility)
+  if (!connectionString) {
+    connectionString = process.env.DATABASE_URI;
+    if (connectionString) {
+      console.log('Using DATABASE_URI environment variable for connection');
+    }
+  }
+
+  // Still no connection string? Try a default for local development
+  if (!connectionString) {
+    console.log(
+      'No database connection string found in environment variables, using default local connection',
+    );
+    connectionString =
+      'postgresql://postgres:postgres@localhost:54322/postgres?schema=payload';
   }
 
   // Connect to database
   const pool = new Pool({
-    connectionString: databaseUri,
+    connectionString,
   });
 
   try {
@@ -145,7 +159,7 @@ async function verifyCourseLessonsQuizIdColumn() {
         AND NOT EXISTS (
           SELECT 1 FROM payload.course_lessons_rels
           WHERE _parent_id = course_lessons.id
-          AND field = 'quiz_id_id'
+          AND (field = 'quiz_id_id' OR field = 'quiz_id')
           AND value = course_lessons.quiz_id
         );
       `);

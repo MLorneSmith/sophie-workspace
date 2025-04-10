@@ -1,5 +1,6 @@
 import { CollectionConfig } from 'payload'
 import { BlocksFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
+import { findDownloadsForCollection } from '../db/downloads'
 
 export const Courses: CollectionConfig = {
   slug: 'courses',
@@ -10,10 +11,39 @@ export const Courses: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'status', 'publishedAt'],
-    description: 'Courses for the learning management system',
+    description: 'Courses in the learning management system',
   },
   access: {
     read: () => true, // Public read access
+  },
+  hooks: {
+    // Add a collection-level afterRead hook to handle downloads
+    afterRead: [
+      async ({ req, doc }) => {
+        // Only handle downloads if we have a specific document with an ID
+        if (doc?.id) {
+          try {
+            // Replace downloads with ones from our custom view
+            const downloads = await findDownloadsForCollection(req.payload, doc.id, 'courses')
+
+            // Update the document with the retrieved downloads
+            return {
+              ...doc,
+              downloads,
+            }
+          } catch (error) {
+            console.error('Error fetching downloads for course:', error)
+            // Return the document with an empty downloads array instead of failing
+            return {
+              ...doc,
+              downloads: [], // Fallback to empty array on error
+            }
+          }
+        }
+
+        return doc
+      },
+    ],
   },
   fields: [
     {
@@ -35,40 +65,31 @@ export const Courses: CollectionConfig = {
       type: 'textarea',
     },
     {
-      name: 'status',
-      type: 'select',
-      options: [
-        { label: 'Draft', value: 'draft' },
-        { label: 'Published', value: 'published' },
-      ],
-      defaultValue: 'draft',
-      required: true,
+      name: 'content',
+      type: 'richText',
+      editor: lexicalEditor({
+        features: ({ defaultFeatures }) => [
+          ...defaultFeatures,
+          BlocksFeature({
+            blocks: [],
+          }),
+        ],
+      }),
+    },
+    // Add downloads field
+    {
+      name: 'downloads',
+      type: 'relationship',
+      relationTo: 'downloads',
+      hasMany: true,
+      admin: {
+        description: 'Files for download in this course',
+      },
     },
     {
       name: 'featured_image_id',
       type: 'upload',
       relationTo: 'media',
-    },
-    {
-      name: 'introContent',
-      type: 'richText',
-      editor: lexicalEditor({}),
-    },
-    {
-      name: 'completionContent',
-      type: 'richText',
-      editor: lexicalEditor({}),
-    },
-    {
-      name: 'estimatedDuration',
-      type: 'number',
-      min: 0,
-      label: 'Estimated duration (minutes)',
-    },
-    {
-      name: 'showProgressBar',
-      type: 'checkbox',
-      defaultValue: true,
     },
     {
       name: 'publishedAt',
@@ -80,10 +101,14 @@ export const Courses: CollectionConfig = {
       },
     },
     {
-      name: 'lessons',
-      type: 'relationship',
-      relationTo: 'course_lessons' as any,
-      hasMany: true,
+      name: 'status',
+      type: 'select',
+      options: [
+        { label: 'Draft', value: 'draft' },
+        { label: 'Published', value: 'published' },
+      ],
+      defaultValue: 'draft',
+      required: true,
     },
   ],
 }
