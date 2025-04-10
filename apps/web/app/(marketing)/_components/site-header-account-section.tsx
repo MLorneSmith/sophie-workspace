@@ -53,7 +53,17 @@ export function SiteHeaderAccountSection() {
 }
 
 function AuthButtons() {
+<<<<<<< HEAD
   const [isBookDemoOpen, setIsBookDemoOpen] = useState(false);
+=======
+  return (
+    <div className={'animate-in fade-in flex gap-x-2.5 duration-500'}>
+      <div className={'hidden md:flex'}>
+        <If condition={features.enableThemeToggle}>
+          <ModeToggle />
+        </If>
+      </div>
+>>>>>>> 765cef873642971776eb528d1dd9ffa581e72a87
 
   return (
     <>

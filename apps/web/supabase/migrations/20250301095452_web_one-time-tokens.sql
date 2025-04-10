@@ -7,20 +7,20 @@ CREATE TABLE IF NOT EXISTS public.nonces (
     nonce TEXT NOT NULL, -- token stored in DB (hashed)
     user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NULL, -- Optional to support anonymous tokens
     purpose TEXT NOT NULL, -- e.g., 'password-reset', 'email-verification', etc.
-    
+
     -- Status fields
     expires_at TIMESTAMPTZ NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     used_at TIMESTAMPTZ,
     revoked BOOLEAN NOT NULL DEFAULT FALSE, -- For administrative revocation
     revoked_reason TEXT, -- Reason for revocation if applicable
-    
+
     -- Audit fields
     verification_attempts INTEGER NOT NULL DEFAULT 0, -- Track attempted uses
     last_verification_at TIMESTAMPTZ, -- Timestamp of last verification attempt
     last_verification_ip INET, -- For tracking verification source
     last_verification_user_agent TEXT, -- For tracking client information
-    
+
     -- Extensibility fields
     metadata JSONB DEFAULT '{}'::JSONB, -- optional metadata
     scopes TEXT[] DEFAULT '{}' -- OAuth-style authorized scopes
@@ -68,10 +68,10 @@ BEGIN
   IF p_revoke_previous = TRUE AND p_user_id IS NOT NULL THEN
     WITH revoked AS (
       UPDATE public.nonces
-      SET 
+      SET
         revoked = TRUE,
         revoked_reason = 'Superseded by new token with same purpose'
-      WHERE 
+      WHERE
         user_id = p_user_id
         AND purpose = p_purpose
         AND used_at IS NULL
@@ -85,14 +85,14 @@ BEGIN
   -- Generate a 6-digit token
   v_plaintext_token := (100000 + floor(random() * 900000))::text;
   v_client_token := crypt(v_plaintext_token, gen_salt('bf'));
-  
+
   -- Still generate a secure nonce for internal use
   v_nonce := encode(gen_random_bytes(24), 'base64');
   v_nonce := crypt(v_nonce, gen_salt('bf'));
-  
+
   -- Calculate expiration time
   v_expires_at := NOW() + (p_expires_in_seconds * interval '1 second');
-  
+
   -- Insert the new nonce
   INSERT INTO public.nonces (
     client_token,
@@ -113,7 +113,7 @@ BEGIN
     COALESCE(p_scopes, '{}'::TEXT[])
   )
   RETURNING id INTO v_id;
-  
+
   -- Return the token information
   -- Note: returning the plaintext token, not the hash
   RETURN jsonb_build_object(
@@ -144,23 +144,23 @@ AS $$
 DECLARE
   v_nonce RECORD;
   v_matching_count INTEGER;
-BEGIN 
+BEGIN
   -- Add debugging info
   RAISE NOTICE 'Verifying token: %, purpose: %, user_id: %', p_token, p_purpose, p_user_id;
-  
+
   -- Count how many matching tokens exist before verification attempt
-  SELECT COUNT(*) INTO v_matching_count 
+  SELECT COUNT(*) INTO v_matching_count
   FROM public.nonces
   WHERE purpose = p_purpose;
-  
+
   -- Update verification attempt counter and tracking info for all matching tokens
   UPDATE public.nonces
-  SET 
+  SET
     verification_attempts = verification_attempts + 1,
     last_verification_at = NOW(),
     last_verification_ip = COALESCE(p_ip, last_verification_ip),
     last_verification_user_agent = COALESCE(p_user_agent, last_verification_user_agent)
-  WHERE 
+  WHERE
     client_token = crypt(p_token, client_token)
     AND purpose = p_purpose;
 
@@ -169,21 +169,21 @@ BEGIN
   SELECT *
   INTO v_nonce
   FROM public.nonces
-  WHERE 
+  WHERE
     client_token = crypt(p_token, client_token)
     AND purpose = p_purpose
     -- Only apply user_id filter if the token was created for a specific user
     AND (
       -- Case 1: Anonymous token (user_id is NULL in DB)
-      (user_id IS NULL) 
-      OR 
+      (user_id IS NULL)
+      OR
       -- Case 2: User-specific token (check if user_id matches)
       (user_id = p_user_id)
     )
     AND used_at IS NULL
     AND NOT revoked
     AND expires_at > NOW();
-  
+
   -- Check if nonce exists
   IF v_nonce.id IS NULL THEN
     RETURN jsonb_build_object(
@@ -191,23 +191,23 @@ BEGIN
       'message', 'Invalid or expired token'
     );
   END IF;
-  
+
   -- Check if max verification attempts exceeded
   IF p_max_verification_attempts > 0 AND v_nonce.verification_attempts > p_max_verification_attempts THEN
     -- Automatically revoke the token
     UPDATE public.nonces
-    SET 
+    SET
       revoked = TRUE,
       revoked_reason = 'Maximum verification attempts exceeded'
     WHERE id = v_nonce.id;
-    
+
     RETURN jsonb_build_object(
       'valid', false,
       'message', 'Token revoked due to too many verification attempts',
       'max_attempts_exceeded', true
     );
   END IF;
-  
+
   -- Check scopes if required
   IF p_required_scopes IS NOT NULL AND array_length(p_required_scopes, 1) > 0 THEN
     -- Fix scope validation to properly check if token scopes contain all required scopes
@@ -221,12 +221,12 @@ BEGIN
       );
     END IF;
   END IF;
-  
+
   -- Mark nonce as used
   UPDATE public.nonces
   SET used_at = NOW()
   WHERE id = v_nonce.id;
-  
+
   -- Return success with metadata
   RETURN jsonb_build_object(
     'valid', true,
@@ -253,15 +253,15 @@ DECLARE
   v_affected_rows INTEGER;
 BEGIN
   UPDATE public.nonces
-  SET 
+  SET
     revoked = TRUE,
     revoked_reason = p_reason
-  WHERE 
+  WHERE
     id = p_id
     AND used_at IS NULL
     AND NOT revoked
   RETURNING 1 INTO v_affected_rows;
-  
+
   RETURN v_affected_rows > 0;
 END;
 $$;
@@ -284,21 +284,21 @@ BEGIN
   -- Count and delete expired or used nonces based on parameters
   WITH deleted AS (
     DELETE FROM public.nonces
-    WHERE 
+    WHERE
       (
         -- Expired and unused tokens
         (expires_at < NOW() AND used_at IS NULL)
-        
+
         -- Used tokens older than specified days (if enabled)
         OR (p_include_used = TRUE AND used_at < NOW() - (p_older_than_days * interval '1 day'))
-        
+
         -- Revoked tokens older than specified days (if enabled)
         OR (p_include_revoked = TRUE AND revoked = TRUE AND created_at < NOW() - (p_older_than_days * interval '1 day'))
       )
     RETURNING 1
   )
   SELECT COUNT(*) INTO v_count FROM deleted;
-  
+
   RETURN v_count;
 END;
 $$;
@@ -315,11 +315,11 @@ DECLARE
   v_nonce public.nonces;
 BEGIN
   SELECT * INTO v_nonce FROM public.nonces WHERE id = p_id;
-  
+
   IF v_nonce.id IS NULL THEN
     RETURN jsonb_build_object('exists', false);
   END IF;
-  
+
   RETURN jsonb_build_object(
     'exists', true,
     'purpose', v_nonce.purpose,
