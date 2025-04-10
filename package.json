@@ -48,7 +48,7 @@
     "@turbo/gen": "^2.5.0",
     "cross-env": "^7.0.3",
     "prettier": "^3.5.3",
-    "tailwind-merge": "^3.1.0",
+    "tailwind-merge": "^3.2.0",
     "turbo": "2.5.0",
     "typescript": "^5.8.3"
   }
