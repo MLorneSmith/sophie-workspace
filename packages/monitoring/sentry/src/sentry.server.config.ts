@@ -1,4 +1,4 @@
-import * as Sentry from '@sentry/nextjs';
+import { init } from '@sentry/nextjs';
 
 type Parameters<T extends (args: never) => unknown> = T extends (
   ...args: infer P
@@ -12,9 +12,9 @@ type Parameters<T extends (args: never) => unknown> = T extends (
  * @param props
  */
 export function initializeSentryServerClient(
-  props: Parameters<typeof Sentry.init>[0] = {},
+  props: Parameters<typeof init>[0] = {},
 ) {
-  return Sentry.init({
+  return init({
     dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
 
     // ...

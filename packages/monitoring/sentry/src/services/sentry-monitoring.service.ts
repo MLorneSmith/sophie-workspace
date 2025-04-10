@@ -1,4 +1,10 @@
-import * as Sentry from '@sentry/nextjs';
+import {
+  Event as SentryEvent,
+  User as SentryUser,
+  captureEvent,
+  captureException,
+  setUser,
+} from '@sentry/nextjs';
 
 import { MonitoringService } from '@kit/monitoring-core';
 
@@ -24,18 +30,18 @@ export class SentryMonitoringService implements MonitoringService {
   }
 
   captureException(error: Error | null) {
-    return Sentry.captureException(error);
+    return captureException(error);
   }
 
-  captureEvent<Extra extends Sentry.Event>(event: string, extra?: Extra) {
-    return Sentry.captureEvent({
+  captureEvent<Extra extends SentryEvent>(event: string, extra?: Extra) {
+    return captureEvent({
       message: event,
       ...(extra ?? {}),
     });
   }
 
-  identifyUser(user: Sentry.User) {
-    Sentry.setUser(user);
+  identifyUser(user: SentryUser) {
+    setUser(user);
   }
 
   private async initialize() {
