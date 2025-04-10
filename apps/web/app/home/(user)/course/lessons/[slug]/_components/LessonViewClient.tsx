@@ -269,6 +269,106 @@ export function LessonViewClient({
                   <PayloadContentRenderer content={lesson.content} />
                 </div>
 
+                {/* Render Bunny.net Video if available */}
+                {lesson.bunny_video_id && (
+                  <div className="my-8">
+                    <h3 className="mb-2 text-lg font-bold">Lesson Video</h3>
+                    <div
+                      className="relative"
+                      style={{ paddingBottom: '56.25%' }}
+                    >
+                      <iframe
+                        src={`https://iframe.mediadelivery.net/embed/${lesson.bunny_library_id || '264486'}/${lesson.bunny_video_id}`}
+                        loading="lazy"
+                        style={{
+                          border: 'none',
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          height: '100%',
+                          width: '100%',
+                        }}
+                        allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
+                        allowFullScreen={true}
+                        title={lesson.title}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Render To-Do Items if any exist */}
+                {(lesson.todo_complete_quiz ||
+                  lesson.todo_watch_content ||
+                  lesson.todo_read_content ||
+                  lesson.todo_course_project) && (
+                  <div className="my-6 rounded-lg border border-gray-200 p-4 dark:border-gray-700 dark:bg-gray-800/50">
+                    <h3 className="mb-2 text-lg font-semibold">
+                      Lesson To-Do's
+                    </h3>
+
+                    {lesson.todo_complete_quiz && (
+                      <div className="mb-2">
+                        <h4 className="font-medium">To-Do</h4>
+                        <ul className="list-disc pl-5">
+                          <li>Complete the lesson quiz</li>
+                        </ul>
+                      </div>
+                    )}
+
+                    <div className="mb-2">
+                      <h4 className="font-medium">Watch</h4>
+                      <p>{lesson.todo_watch_content || 'None'}</p>
+                    </div>
+
+                    <div className="mb-2">
+                      <h4 className="font-medium">Read</h4>
+                      <p>{lesson.todo_read_content || 'None'}</p>
+                    </div>
+
+                    <div>
+                      <h4 className="font-medium">Course Project</h4>
+                      <p>{lesson.todo_course_project || 'None'}</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Render Downloads if available */}
+                {lesson.downloads && lesson.downloads.length > 0 && (
+                  <div className="my-6">
+                    <h3 className="mb-2 text-lg font-semibold">
+                      Lesson Downloads
+                    </h3>
+                    <div className="space-y-2">
+                      {lesson.downloads.map((download: any, index: number) => {
+                        // Ensure we have a download with URL
+                        if (!download || !download.url) return null;
+
+                        return (
+                          <div
+                            key={index}
+                            className="flex items-center rounded-lg border border-gray-200 p-3 dark:border-gray-700"
+                          >
+                            <div className="flex-grow">
+                              <p className="font-medium">
+                                {download.description || download.filename}
+                              </p>
+                            </div>
+                            <a
+                              href={download.url}
+                              download
+                              className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              Download
+                            </a>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
                 {/* Certificate link for congratulations lesson */}
                 {isCongratulationsLesson && (
                   <div className="mt-6 rounded-lg border border-green-200 bg-green-50 p-4 shadow-sm dark:border-green-800 dark:bg-green-900/50">

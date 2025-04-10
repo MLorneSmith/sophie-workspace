@@ -77,6 +77,7 @@ export interface Config {
     course_lessons: CourseLesson;
     course_quizzes: CourseQuizz;
     quiz_questions: QuizQuestion;
+    downloads: Download;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -93,6 +94,7 @@ export interface Config {
     course_lessons: CourseLessonsSelect<false> | CourseLessonsSelect<true>;
     course_quizzes: CourseQuizzesSelect<false> | CourseQuizzesSelect<true>;
     quiz_questions: QuizQuestionsSelect<false> | QuizQuestionsSelect<true>;
+    downloads: DownloadsSelect<false> | DownloadsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -197,6 +199,10 @@ export interface Documentation {
     };
     [k: string]: unknown;
   } | null;
+  /**
+   * Files for download in this documentation
+   */
+  downloads?: (string | Download)[] | null;
   publishedAt?: string | null;
   status: 'draft' | 'published';
   order?: number | null;
@@ -225,26 +231,82 @@ export interface Documentation {
   createdAt: string;
 }
 /**
- * Blog posts for the website
+ * Downloadable files for lessons
  *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "posts".
+ * via the `definition` "downloads".
  */
-export interface Post {
+export interface Download {
+  id: string;
+  title: string;
+  description?: string | null;
+  type: 'pptx_template' | 'worksheet' | 'reference' | 'example' | 'other';
+  /**
+   * Lessons that reference this download
+   */
+  course_lessons?: (string | CourseLesson)[] | null;
+  /**
+   * Documentation pages that reference this download
+   */
+  documentation?: (string | Documentation)[] | null;
+  /**
+   * Blog posts that reference this download
+   */
+  posts?: (string | Post)[] | null;
+  /**
+   * Quizzes that reference this download
+   */
+  course_quizzes?: (string | CourseQuizz)[] | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+  sizes?: {
+    thumbnail?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+  };
+}
+/**
+ * Lessons for courses in the learning management system
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "course_lessons".
+ */
+export interface CourseLesson {
   id: string;
   title: string;
   /**
-   * The URL-friendly identifier for this post
+   * Video ID from Bunny.net (if this lesson includes a video)
+   */
+  bunny_video_id?: string | null;
+  /**
+   * Library ID from Bunny.net (defaults to main library)
+   */
+  bunny_library_id?: string | null;
+  todo_complete_quiz?: boolean | null;
+  todo_watch_content?: string | null;
+  todo_read_content?: string | null;
+  todo_course_project?: string | null;
+  /**
+   * The URL-friendly identifier for this lesson
    */
   slug: string;
-  /**
-   * A brief summary of the post
-   */
   description?: string | null;
-  /**
-   * The main content of the blog post
-   */
-  content: {
+  featured_image_id?: (string | null) | Media;
+  content?: {
     root: {
       type: string;
       children: {
@@ -258,37 +320,125 @@ export interface Post {
       version: number;
     };
     [k: string]: unknown;
-  };
+  } | null;
   /**
-   * The date and time this post was published
+   * Order in which this lesson appears in the course
    */
+  lesson_number: number;
+  estimated_duration?: number | null;
+  course_id: string | Course;
+  /**
+   * The quiz associated with this lesson (if any)
+   */
+  quiz_id?: (string | null) | CourseQuizz;
+  /**
+   * The survey associated with this lesson (if any)
+   */
+  survey_id?: (string | null) | Survey;
+  /**
+   * Files for download in this lesson
+   */
+  downloads?: (string | Download)[] | null;
   publishedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Courses in the learning management system
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "courses".
+ */
+export interface Course {
+  id: string;
+  title: string;
   /**
-   * Featured image for the blog post
+   * The URL-friendly identifier for this course
    */
-  image_id?: (string | null) | Media;
+  slug: string;
+  description?: string | null;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
-   * Only published posts will be visible on the website
+   * Files for download in this course
    */
+  downloads?: (string | Download)[] | null;
+  featured_image_id?: (string | null) | Media;
+  publishedAt?: string | null;
   status: 'draft' | 'published';
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Quizzes for courses in the learning management system
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "course_quizzes".
+ */
+export interface CourseQuizz {
+  id: string;
+  title: string;
   /**
-   * Categories for this post
+   * The URL-friendly identifier for this quiz
    */
-  categories?:
-    | {
-        category?: string | null;
-        id?: string | null;
-      }[]
-    | null;
+  slug: string;
+  description?: string | null;
+  course_id: string | Course;
   /**
-   * Tags for this post
+   * Percentage required to pass the quiz
    */
-  tags?:
-    | {
-        tag?: string | null;
-        id?: string | null;
-      }[]
-    | null;
+  pass_threshold?: number | null;
+  /**
+   * Questions included in this quiz
+   */
+  questions: (string | QuizQuestion)[];
+  /**
+   * Files for download in this quiz
+   */
+  downloads?: (string | Download)[] | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Questions for course quizzes
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "quiz_questions".
+ */
+export interface QuizQuestion {
+  id: string;
+  question: string;
+  /**
+   * The quiz this question belongs to
+   */
+  quiz_id: string | CourseQuizz;
+  type: 'multiple_choice';
+  options: {
+    text: string;
+    isCorrect?: boolean | null;
+    id?: string | null;
+  }[];
+  /**
+   * Optional explanation for this question (plain text only)
+   */
+  explanation?: string | null;
+  /**
+   * Order within the quiz (lower numbers appear first)
+   */
+  order?: number | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -379,6 +529,10 @@ export interface Survey {
    * The date and time this survey was published
    */
   publishedAt?: string | null;
+  /**
+   * Files for download in this survey
+   */
+  downloads?: (string | Download)[] | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -431,152 +585,74 @@ export interface SurveyQuestion {
   createdAt: string;
 }
 /**
- * Courses for the learning management system
+ * Blog posts for the website
  *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "courses".
+ * via the `definition` "posts".
  */
-export interface Course {
+export interface Post {
   id: string;
   title: string;
   /**
-   * The URL-friendly identifier for this course
+   * The URL-friendly identifier for this post
    */
   slug: string;
+  /**
+   * A brief summary of the post
+   */
   description?: string | null;
+  /**
+   * The main content of the blog post
+   */
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * The date and time this post was published
+   */
+  publishedAt?: string | null;
+  /**
+   * Featured image for the blog post
+   */
+  image_id?: (string | null) | Media;
+  /**
+   * Only published posts will be visible on the website
+   */
   status: 'draft' | 'published';
-  featured_image_id?: (string | null) | Media;
-  introContent?: {
-    root: {
-      type: string;
-      children: {
-        type: string;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  completionContent?: {
-    root: {
-      type: string;
-      children: {
-        type: string;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  estimatedDuration?: number | null;
-  showProgressBar?: boolean | null;
-  publishedAt?: string | null;
-  lessons?: (string | CourseLesson)[] | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * Lessons for courses in the learning management system
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "course_lessons".
- */
-export interface CourseLesson {
-  id: string;
-  title: string;
   /**
-   * The URL-friendly identifier for this lesson
+   * Categories for this post
    */
-  slug: string;
-  description?: string | null;
-  featured_image_id?: (string | null) | Media;
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: string;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
+  categories?:
+    | {
+        category?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   /**
-   * Order in which this lesson appears in the course
+   * Tags for this post
    */
-  lesson_number: number;
-  estimated_duration?: number | null;
-  course_id: string | Course;
+  tags?:
+    | {
+        tag?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   /**
-   * The quiz associated with this lesson (if any)
+   * Files for download in this post
    */
-  quiz_id?: (string | null) | CourseQuizz;
-  /**
-   * The survey associated with this lesson (if any)
-   */
-  survey_id?: (string | null) | Survey;
-  survey_id_id?: string | null;
-  publishedAt?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * Quizzes for course lessons in the learning management system
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "course_quizzes".
- */
-export interface CourseQuizz {
-  id: string;
-  title: string;
-  description?: string | null;
-  passingScore: number;
-  /**
-   * Questions for this quiz
-   */
-  questions?: (string | QuizQuestion)[] | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * Questions for course quizzes
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "quiz_questions".
- */
-export interface QuizQuestion {
-  id: string;
-  question: string;
-  /**
-   * The quiz this question belongs to
-   */
-  quiz_id: string | CourseQuizz;
-  type: 'multiple_choice';
-  options: {
-    text: string;
-    isCorrect?: boolean | null;
-    id?: string | null;
-  }[];
-  /**
-   * Optional explanation for this question (plain text only)
-   */
-  explanation?: string | null;
-  /**
-   * Order within the quiz (lower numbers appear first)
-   */
-  order?: number | null;
+  downloads?: (string | Download)[] | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -626,6 +702,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'quiz_questions';
         value: string | QuizQuestion;
+      } | null)
+    | ({
+        relationTo: 'downloads';
+        value: string | Download;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -711,6 +791,7 @@ export interface DocumentationSelect<T extends boolean = true> {
   slug?: T;
   description?: T;
   content?: T;
+  downloads?: T;
   publishedAt?: T;
   status?: T;
   order?: T;
@@ -762,6 +843,7 @@ export interface PostsSelect<T extends boolean = true> {
         tag?: T;
         id?: T;
       };
+  downloads?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -780,6 +862,7 @@ export interface SurveysSelect<T extends boolean = true> {
   summaryContent?: T;
   status?: T;
   publishedAt?: T;
+  downloads?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -812,14 +895,11 @@ export interface CoursesSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
   description?: T;
-  status?: T;
+  content?: T;
+  downloads?: T;
   featured_image_id?: T;
-  introContent?: T;
-  completionContent?: T;
-  estimatedDuration?: T;
-  showProgressBar?: T;
   publishedAt?: T;
-  lessons?: T;
+  status?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -829,6 +909,12 @@ export interface CoursesSelect<T extends boolean = true> {
  */
 export interface CourseLessonsSelect<T extends boolean = true> {
   title?: T;
+  bunny_video_id?: T;
+  bunny_library_id?: T;
+  todo_complete_quiz?: T;
+  todo_watch_content?: T;
+  todo_read_content?: T;
+  todo_course_project?: T;
   slug?: T;
   description?: T;
   featured_image_id?: T;
@@ -838,7 +924,7 @@ export interface CourseLessonsSelect<T extends boolean = true> {
   course_id?: T;
   quiz_id?: T;
   survey_id?: T;
-  survey_id_id?: T;
+  downloads?: T;
   publishedAt?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -849,9 +935,12 @@ export interface CourseLessonsSelect<T extends boolean = true> {
  */
 export interface CourseQuizzesSelect<T extends boolean = true> {
   title?: T;
+  slug?: T;
   description?: T;
-  passingScore?: T;
+  course_id?: T;
+  pass_threshold?: T;
   questions?: T;
+  downloads?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -874,6 +963,44 @@ export interface QuizQuestionsSelect<T extends boolean = true> {
   order?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "downloads_select".
+ */
+export interface DownloadsSelect<T extends boolean = true> {
+  title?: T;
+  description?: T;
+  type?: T;
+  course_lessons?: T;
+  documentation?: T;
+  posts?: T;
+  course_quizzes?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+  sizes?:
+    | T
+    | {
+        thumbnail?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+      };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

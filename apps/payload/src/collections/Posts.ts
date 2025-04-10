@@ -4,6 +4,7 @@ import { BlocksFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
 import CallToAction from '../blocks/CallToAction'
 import TestBlock from '../blocks/TestBlock'
 import BunnyVideo from '../blocks/BunnyVideo'
+import { findDownloadsForCollection } from '../db/downloads'
 
 export const Posts: CollectionConfig = {
   slug: 'posts',
@@ -18,6 +19,30 @@ export const Posts: CollectionConfig = {
   },
   access: {
     read: () => true,
+  },
+  hooks: {
+    // Add a collection-level afterRead hook to handle downloads
+    afterRead: [
+      async ({ req, doc }) => {
+        // Only handle downloads if we have a specific document with an ID
+        if (doc?.id) {
+          try {
+            // Replace downloads with ones from our custom view
+            const downloads = await findDownloadsForCollection(req.payload, doc.id, 'posts')
+
+            // Update the document with the retrieved downloads
+            return {
+              ...doc,
+              downloads,
+            }
+          } catch (error) {
+            console.error('Error fetching downloads for post:', error)
+          }
+        }
+
+        return doc
+      },
+    ],
   },
   fields: [
     {
@@ -128,6 +153,16 @@ export const Posts: CollectionConfig = {
           type: 'text',
         },
       ],
+    },
+    // Add downloads field
+    {
+      name: 'downloads',
+      type: 'relationship',
+      relationTo: 'downloads',
+      hasMany: true,
+      admin: {
+        description: 'Files for download in this post',
+      },
     },
   ],
 }

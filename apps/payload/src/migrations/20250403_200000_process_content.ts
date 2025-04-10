@@ -36,6 +36,7 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
       '07-documentation.sql',
       '08-posts.sql',
       '09-fix-quiz-questions.sql',
+      '08-lesson-enhancements.sql', // Add lesson enhancements (structured content for videos, todos, downloads)
     ]
 
     // Execute each SQL file

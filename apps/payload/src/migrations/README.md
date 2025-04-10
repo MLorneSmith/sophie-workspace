@@ -1,121 +1,83 @@
-# Payload CMS Migrations
+# Payload CMS UUID Tables Relationship Fix
 
-This directory contains database migrations for Payload CMS. These migrations are used to manage schema changes in a controlled and versioned manner.
+## Problem Description
 
-## Important Notes on PostgreSQL Integration
+Our CMS system creates dynamic UUID tables for relationships, but these tables sometimes lack required columns like `path`, `parent_id`, and `downloads_id`. This causes errors like:
 
-When working with Payload CMS and PostgreSQL, be aware of the following:
-
-1. **Column Naming Conventions**: Payload CMS expects relationship tables to use `_parent_id` (with underscore prefix) for parent references. Using `parent_id` without the underscore will cause errors like `cannot insert a non-DEFAULT value into column "parent_id"`.
-
-2. **Array Fields**: Each array field in a collection requires a corresponding table in the database. For example, if a `QuizQuestions` collection has an `options` array field, there must be a `quiz_questions_options` table.
-
-3. **Foreign Key Constraints**: All relationship tables should have proper foreign key constraints to maintain data integrity.
-
-4. **Consistent Naming**: Use consistent naming conventions across all tables and columns. For array fields, use `_order` instead of `order` for consistency.
-
-## Migration Workflow
-
-### Development
-
-In development environments, schema push is enabled by default. This means that changes to your collection definitions will automatically update the database schema. This allows for rapid development and iteration.
-
-```typescript
-// In payload.config.ts
-db: postgresAdapter({
-  pool: {
-    connectionString: process.env.DATABASE_URI || '',
-  },
-  // Enable schema push in development, disable in production
-  push: process.env.NODE_ENV !== 'production',
-}),
+```
+error: column 1ca2722d_2fab_40b4_9823_36772c3ff79e.path does not exist
 ```
 
-### Creating Migrations
+These errors occur because:
 
-After finalizing collection changes, create a migration to capture the schema changes:
+1. Payload dynamically creates new relationship tables with UUIDs as names
+2. Our code expects certain columns to exist in these tables
+3. There's no built-in mechanism to ensure these columns exist when new tables are created
+
+## Solution Architecture
+
+We've implemented a multi-tiered approach to fix these issues:
+
+### 1. Proactive Monitoring (Migration 20250425_100000)
+
+- **Tracking Table**: Created `payload.dynamic_uuid_tables` to keep track of all known UUID tables and their columns.
+- **Automatic Scanner Function**: Implemented `payload.scan_and_fix_uuid_tables()` to find and fix any tables missing required columns.
+- **Event Trigger** (when possible): Added `uuid_table_monitor` trigger to automatically fix newly created tables.
+- **Safe Access Function**: Created `payload.get_relationship_data()` to safely access data with fallbacks.
+- **Unified View**: Added `payload.downloads_relationships` view to provide a clear overview of all UUID tables.
+
+### 2. Runtime Fix and Recovery
+
+- **Shell Script**: Created `apps/payload/src/scripts/fix-uuid-tables.sh` for manual fixing.
+- **Migration Integration**: The reset-and-migrate.ps1 script now includes the UUID table fix step.
+- **Error Tolerance**: Code uses multiple fallback approaches to handle missing columns gracefully.
+
+## Usage Instructions
+
+### During Development/Migration
+
+The UUID table scanner function runs automatically during migrations. You can also run it manually:
 
 ```bash
-pnpm migrate:create <migration-name>
+# Windows PowerShell
+& apps/payload/src/scripts/fix-uuid-tables.sh
+
+# Or run the migration directly
+cd apps/payload && pnpm payload migrate
 ```
 
-This will generate a TypeScript migration file in this directory with both `up` and `down` functions.
+### After Deployment
 
-### Production Deployment
+If columns are still missing in production:
 
-In production environments, schema push is disabled. Instead, migrations are run during deployment:
+1. Run the scanner function via a database query:
 
-```bash
-pnpm migrate
-```
+   ```sql
+   SELECT * FROM payload.scan_and_fix_uuid_tables();
+   ```
 
-This will run all pending migrations in order.
-
-### Checking Migration Status
-
-To check the status of migrations:
-
-```bash
-pnpm migrate:status
-```
-
-This will show which migrations have been applied and which are pending.
-
-### Rolling Back Migrations
-
-To roll back the most recent migration:
-
-```bash
-pnpm migrate:down
-```
-
-For multiple rollbacks, run this command multiple times.
-
-## Migration Files
-
-Each migration file exports two functions:
-
-- `up`: Applied when running migrations forward
-- `down`: Applied when rolling back migrations
-
-Example:
-
-```typescript
-import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-postgres'
-
-export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
-  await db.execute(sql`
-    -- SQL statements to apply the migration
-  `)
-}
-
-export async function down({ db, payload, req }: MigrateDownArgs): Promise<void> {
-  await db.execute(sql`
-    -- SQL statements to roll back the migration
-  `)
-}
-```
-
-## Best Practices
-
-1. Always create migrations for schema changes rather than modifying the database directly
-2. Test migrations thoroughly in development before applying to production
-3. Keep migrations small and focused on specific changes
-4. Use transactions for complex migrations to ensure atomicity
-5. Include both "up" and "down" functions in your migrations
-6. Use descriptive names for migration files
-7. Use consistent column naming conventions (`_parent_id` for relationship tables)
-8. Create tables for all array fields in collections
-9. Add proper foreign key constraints for all relationships
-10. Run migrations using the reset-and-migrate script for a clean state
+2. Verify the fix worked with:
+   ```sql
+   SELECT * FROM payload.downloads_relationships;
+   ```
 
 ## Troubleshooting
 
-If you encounter issues with Payload CMS and PostgreSQL:
+If you still encounter errors:
 
-1. **Column Naming Issues**: Check that all relationship tables use `_parent_id` instead of `parent_id`.
-2. **Missing Tables**: Ensure each array field has a corresponding table in the database.
-3. **Foreign Key Constraints**: Verify that all relationship tables have proper foreign key constraints.
-4. **Reset and Migrate**: Use the `reset-and-migrate.ps1` script to reset the database and run all migrations in the correct order.
+1. Check that the scanner function exists and is working correctly.
+2. Verify table permissions - the fix functions need ALTER TABLE permissions.
+3. Run a full database migration again to recreate any missing functions.
+4. Check application code to ensure it's using a multi-tiered approach to access relationship data.
 
-For more details on the fixes implemented, see `z.plan/payload-postgres-fix-implementation-2.md`.
+## Technical Details
+
+The fix works by:
+
+1. Identifying tables with UUID pattern names
+2. Checking for required columns (`path`, `parent_id`, `downloads_id`)
+3. Adding any missing columns
+4. Tracking these tables for future reference
+5. Creating helper functions and views for easier data access
+
+This approach allows for both proactive fixes and gradual recovery without requiring superuser privileges.

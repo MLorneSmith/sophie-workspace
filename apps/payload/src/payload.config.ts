@@ -20,6 +20,7 @@ import { CourseLessons } from './collections/CourseLessons'
 import { CourseQuizzes } from './collections/CourseQuizzes'
 import { Courses } from './collections/Courses'
 import { Documentation } from './collections/Documentation'
+import { Downloads } from './collections/Downloads'
 import { Media } from './collections/Media'
 import { Posts } from './collections/Posts'
 import { QuizQuestions } from './collections/QuizQuestions'
@@ -55,6 +56,7 @@ export default buildConfig({
     CourseLessons,
     CourseQuizzes,
     QuizQuestions,
+    Downloads,
   ],
   editor: lexicalEditor({
     // Global editor configuration with custom blocks
@@ -103,6 +105,12 @@ export default buildConfig({
                 tableSchema.documentation_id = { name: 'documentation_id', dataType: 'uuid' }
                 updatedTables[tableName] = tableSchema
               }
+
+              // Add downloads_id if it doesn't already exist
+              if (!tableSchema.downloads_id) {
+                tableSchema.downloads_id = { name: 'downloads_id', dataType: 'uuid' }
+                updatedTables[tableName] = tableSchema
+              }
             }
           })
 
@@ -123,7 +131,13 @@ export default buildConfig({
       collections: {
         media: {
           disableLocalStorage: true,
-          generateFileURL: ({ filename }) => `https://images.slideheroes.com/${filename}`,
+          generateFileURL: ({ filename }: { filename: string }) =>
+            `https://images.slideheroes.com/${filename}`,
+        },
+        downloads: {
+          disableLocalStorage: true,
+          generateFileURL: ({ filename }: { filename: string }) =>
+            `https://downloads.slideheroes.com/${filename}`,
         },
       },
       bucket: process.env.R2_BUCKET || '',

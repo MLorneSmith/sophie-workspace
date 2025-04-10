@@ -3,6 +3,7 @@ import { BlocksFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
 
 import CallToAction from '../blocks/CallToAction'
 import TestBlock from '../blocks/TestBlock'
+import { findDownloadsForCollection } from '../db/downloads'
 
 export const Surveys: CollectionConfig = {
   slug: 'surveys',
@@ -17,6 +18,30 @@ export const Surveys: CollectionConfig = {
   },
   access: {
     read: () => true, // Public read access
+  },
+  hooks: {
+    // Add a collection-level afterRead hook to handle downloads
+    afterRead: [
+      async ({ req, doc }) => {
+        // Only handle downloads if we have a specific document with an ID
+        if (doc?.id) {
+          try {
+            // Replace downloads with ones from our custom view
+            const downloads = await findDownloadsForCollection(req.payload, doc.id, 'surveys')
+
+            // Update the document with the retrieved downloads
+            return {
+              ...doc,
+              downloads,
+            }
+          } catch (error) {
+            console.error('Error fetching downloads for survey:', error)
+          }
+        }
+
+        return doc
+      },
+    ],
   },
   fields: [
     {
@@ -139,6 +164,16 @@ export const Surveys: CollectionConfig = {
           pickerAppearance: 'dayAndTime',
         },
         description: 'The date and time this survey was published',
+      },
+    },
+    // Add downloads field
+    {
+      name: 'downloads',
+      type: 'relationship',
+      relationTo: 'downloads',
+      hasMany: true,
+      admin: {
+        description: 'Files for download in this survey',
       },
     },
   ],
