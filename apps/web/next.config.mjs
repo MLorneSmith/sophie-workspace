@@ -42,13 +42,13 @@ const config = {
     '/*': ['./content/**/*'],
   },
   redirects: getRedirects,
+  turbopack: {
+    resolveExtensions: ['.ts', '.tsx', '.js', '.jsx'],
+    resolveAlias: getModulesAliases(),
+  },
   experimental: {
     mdxRs: true,
     reactCompiler: ENABLE_REACT_COMPILER,
-    turbo: {
-      resolveExtensions: ['.ts', '.tsx', '.js', '.jsx'],
-      resolveAlias: getModulesAliases(),
-    },
     optimizePackageImports: [
       'recharts',
       'lucide-react',
@@ -116,7 +116,7 @@ async function getRedirects() {
  * @returns {Record<string, string>}
  */
 function getModulesAliases() {
-  if (process.env.NODE_ENV === 'production') {
+  if (process.env.NODE_ENV !== 'development') {
     return {};
   }
 
