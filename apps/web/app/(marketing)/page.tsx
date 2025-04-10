@@ -96,15 +96,13 @@ function Home() {
               ></FeatureCard>
 
               <FeatureCard
-                className={
-                  'relative col-span-1 w-full overflow-hidden'
-                }
+                className={'relative col-span-1 w-full overflow-hidden'}
                 label={'Authentication'}
                 description={`Makerkit provides a variety of providers to allow your users to sign in.`}
               ></FeatureCard>
 
               <FeatureCard
-                className={'relative overflow-hidden col-span-1'}
+                className={'relative col-span-1 overflow-hidden'}
                 label={'Multi Tenancy'}
                 description={`Multi tenant memberships for your SaaS business.`}
               />

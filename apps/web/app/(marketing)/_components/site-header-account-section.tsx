@@ -50,7 +50,7 @@ export function SiteHeaderAccountSection() {
 
 function AuthButtons() {
   return (
-    <div className={'flex gap-x-2.5 animate-in fade-in duration-500'}>
+    <div className={'animate-in fade-in flex gap-x-2.5 duration-500'}>
       <div className={'hidden md:flex'}>
         <If condition={features.enableThemeToggle}>
           <ModeToggle />
