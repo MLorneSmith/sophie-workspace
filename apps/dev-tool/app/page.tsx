@@ -14,15 +14,13 @@ export default async function DashboardPage(props: DashboardPageProps) {
   const mode = (await props.searchParams).mode ?? 'development';
   const connectivityService = createConnectivityService(mode);
 
-  const [
-    supabaseStatus,
-    supabaseAdminStatus,
-    stripeStatus,
-  ] = await Promise.all([
-    connectivityService.checkSupabaseConnectivity(),
-    connectivityService.checkSupabaseAdminConnectivity(),
-    connectivityService.checkStripeConnected(),
-  ]);
+  const [supabaseStatus, supabaseAdminStatus, stripeStatus] = await Promise.all(
+    [
+      connectivityService.checkSupabaseConnectivity(),
+      connectivityService.checkSupabaseAdminConnectivity(),
+      connectivityService.checkStripeConnected(),
+    ],
+  );
 
   return (
     <Page style={'custom'}>
