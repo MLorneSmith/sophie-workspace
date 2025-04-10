@@ -1,0 +1,5 @@
+database.types.ts
+playwright-report
+web/supabase/migrations
+pnpm-lock.yaml
+.env.local

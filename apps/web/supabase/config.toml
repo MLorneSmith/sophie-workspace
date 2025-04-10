@@ -101,3 +101,8 @@ content_path = "./supabase/templates/magic-link.html"
 
 [analytics]
 enabled = false
+
+[db.migrations]
+schema_paths = [
+  "./schemas/*.sql",
+]
