@@ -25,15 +25,16 @@ DECLARE
   has_downloads_id BOOLEAN;
 BEGIN
   -- Loop through all tables in the payload schema that match UUID pattern
+  -- Fixed: Added proper table aliases to avoid the "missing FROM-clause entry for table 't'" error
   FOR uuid_table IN 
-    SELECT t.table_name
-    FROM information_schema.tables t
-    WHERE t.table_schema = 'payload'
+    SELECT tables.table_name
+    FROM information_schema.tables AS tables
+    WHERE tables.table_schema = 'payload'
     AND (
-      t.table_name ~ '^[0-9a-f]{8}[-_][0-9a-f]{4}[-_][0-9a-f]{4}[-_][0-9a-f]{4}[-_][0-9a-f]{12}$'
-      OR t.table_name ~ '^[0-9a-f]{8}[0-9a-f]{4}[0-9a-f]{4}[0-9a-f]{4}[0-9a-f]{12}$'
+      tables.table_name ~ '^[0-9a-f]{8}[-_][0-9a-f]{4}[-_][0-9a-f]{4}[-_][0-9a-f]{4}[-_][0-9a-f]{12}$'
+      OR tables.table_name ~ '^[0-9a-f]{8}[0-9a-f]{4}[0-9a-f]{4}[0-9a-f]{4}[0-9a-f]{12}$'
     )
-    ORDER BY table_name
+    ORDER BY tables.table_name
   LOOP
     -- Reset added columns for this table
     added_columns := '{}';
@@ -190,9 +191,10 @@ $$;
 -- Create a view to simplify access to relationship data
 CREATE VIEW payload.downloads_relationships AS
 SELECT 
-  t.table_name, 
+  doc.id::text as collection_id, 
   dl.id::text as download_id,
-  'documentation' as collection_type
+  'documentation' as collection_type,
+  'documentation_rels' as table_name
 FROM payload.documentation doc
 LEFT JOIN payload.documentation_rels dr 
   ON (doc.id = dr._parent_id OR doc.id = dr.parent_id)
@@ -204,9 +206,10 @@ UNION ALL
 
 -- Course lessons downloads
 SELECT 
-  cl.id::text as table_name, 
+  cl.id::text as collection_id, 
   dl.id::text as download_id,
-  'course_lessons' as collection_type
+  'course_lessons' as collection_type,
+  'course_lessons_rels' as table_name
 FROM payload.course_lessons cl
 LEFT JOIN payload.course_lessons_rels clr 
   ON (cl.id = clr._parent_id OR cl.id = clr.parent_id)
@@ -218,9 +221,10 @@ UNION ALL
 
 -- Courses downloads
 SELECT 
-  c.id::text as table_name, 
+  c.id::text as collection_id, 
   dl.id::text as download_id,
-  'courses' as collection_type
+  'courses' as collection_type,
+  'courses_rels' as table_name
 FROM payload.courses c
 LEFT JOIN payload.courses_rels cr 
   ON (c.id = cr._parent_id OR c.id = cr.parent_id)
@@ -232,9 +236,10 @@ UNION ALL
 
 -- Course quizzes downloads
 SELECT 
-  cq.id::text as table_name, 
+  cq.id::text as collection_id, 
   dl.id::text as download_id,
-  'course_quizzes' as collection_type
+  'course_quizzes' as collection_type,
+  'course_quizzes_rels' as table_name
 FROM payload.course_quizzes cq
 LEFT JOIN payload.course_quizzes_rels cqr 
   ON (cq.id = cqr._parent_id OR cq.id = cqr.parent_id)

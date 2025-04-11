@@ -2,6 +2,7 @@
  * Updated SQL Seed Files Generator
  * Uses YAML metadata and optimized approaches for generating SQL seed files
  */
+import { error } from 'console';
 import fs from 'fs';
 import * as jsYaml from 'js-yaml';
 import path from 'path';
@@ -155,7 +156,7 @@ async function generateLessonsSql(metadata, quizMap) {
 
     // Start SQL
     let lessonSql = `-- Lesson data
-INSERT INTO payload.course_lessons (id, title, slug, lesson_number, description, course_id, quiz_id, featured_image_id, summary, lesson_length, bunny_video_id, bunny_video_library_id) VALUES
+INSERT INTO payload.course_lessons (id, title, slug, lesson_number, description, course_id, quiz_id, featured_image_id, summary, estimated_duration, bunny_video_id, bunny_library_id, todo, todo_complete_quiz, todo_watch_content, todo_read_content, todo_course_project) VALUES
 `;
 
     // Create SQL for each lesson
@@ -165,14 +166,46 @@ INSERT INTO payload.course_lessons (id, title, slug, lesson_number, description,
         const quizId = lesson.quiz ? quizMap[lesson.quiz] || 'NULL' : 'NULL';
 
         // Format values
-        const bunnyVideoId = lesson.bunnyVideo?.id
-          ? `'${lesson.bunnyVideo.id}'`
-          : 'NULL';
+        // Ensure empty strings are treated as NULL for bunnyVideoId
+        const bunnyVideoId =
+          lesson.bunnyVideo?.id && lesson.bunnyVideo.id.trim() !== ''
+            ? `'${lesson.bunnyVideo.id}'`
+            : 'NULL';
         const bunnyVideoLibraryId = lesson.bunnyVideo?.library
           ? `'${lesson.bunnyVideo.library}'`
           : 'NULL';
 
-        return `('${lesson.slug}', '${escapeSql(lesson.title)}', '${lesson.slug}', ${lesson.lessonNumber || 0}, '${escapeSql(lesson.description || '')}', 'decks-for-decision-makers', ${quizId !== 'NULL' ? `'${quizId}'` : 'NULL'}, NULL, '${escapeSql(lesson.description || '')}', ${lesson.lessonLength || 0}, ${bunnyVideoId}, ${bunnyVideoLibraryId})`;
+        // Log todo fields for debugging
+        if (lesson.slug === 'lesson-0') {
+          console.log('Todo fields for lesson-0:');
+          console.log(
+            'todoFields object:',
+            JSON.stringify(lesson.todoFields, null, 2),
+          );
+          console.log('todo:', lesson.todoFields?.todo);
+          console.log('completeQuiz:', lesson.todoFields?.completeQuiz);
+          console.log('watchContent:', lesson.todoFields?.watchContent);
+          console.log('readContent:', lesson.todoFields?.readContent);
+          console.log('courseProject:', lesson.todoFields?.courseProject);
+        }
+
+        // Get todo fields and ensure they are properly escaped
+        const todoContent = lesson.todoFields?.todo
+          ? `'${escapeSql(String(lesson.todoFields.todo))}'`
+          : 'NULL';
+        const todoCompleteQuiz =
+          lesson.todoFields?.completeQuiz === true ? 'true' : 'false';
+        const todoWatchContent = lesson.todoFields?.watchContent
+          ? `'${escapeSql(String(lesson.todoFields.watchContent))}'`
+          : 'NULL';
+        const todoReadContent = lesson.todoFields?.readContent
+          ? `'${escapeSql(String(lesson.todoFields.readContent))}'`
+          : 'NULL';
+        const todoCourseProject = lesson.todoFields?.courseProject
+          ? `'${escapeSql(String(lesson.todoFields.courseProject))}'`
+          : 'NULL';
+
+        return `('${lesson.slug}', '${escapeSql(lesson.title)}', '${lesson.slug}', ${lesson.lessonNumber || 0}, '${escapeSql(lesson.description || '')}', 'decks-for-decision-makers', ${quizId !== 'NULL' ? `'${quizId}'` : 'NULL'}, NULL, '${escapeSql(lesson.description || '')}', ${lesson.lessonLength || 0}, ${bunnyVideoId}, ${bunnyVideoLibraryId}, ${todoContent}, ${todoCompleteQuiz}, ${todoWatchContent}, ${todoReadContent}, ${todoCourseProject})`;
       })
       .join(',\n');
 
@@ -516,13 +549,17 @@ function copyFilesToPayloadSeedDir() {
 }
 
 /**
- * Escape SQL string values
+ * Escape SQL string values including JSON content
  * @param {string} value String to escape
  * @returns {string} Escaped string
  */
 function escapeSql(value) {
   if (typeof value !== 'string') return '';
-  return value.replace(/'/g, "''");
+  return value
+    .replace(/'/g, "''") // Escape single quotes with double single quotes for SQL
+    .replace(/\\/g, '\\\\') // Escape backslashes
+    .replace(/\n/g, '\\n') // Escape newlines
+    .replace(/\r/g, '\\r'); // Escape carriage returns
 }
 
 // Run the main function

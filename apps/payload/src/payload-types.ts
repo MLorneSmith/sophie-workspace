@@ -297,9 +297,78 @@ export interface CourseLesson {
    */
   bunny_library_id?: string | null;
   todo_complete_quiz?: boolean | null;
-  todo_watch_content?: string | null;
-  todo_read_content?: string | null;
-  todo_course_project?: string | null;
+  /**
+   * Content to watch - supports rich text formatting like bullet points and links
+   */
+  todo_watch_content?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Content to read - supports rich text formatting like bullet points and links
+   */
+  todo_read_content?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Course project instructions - supports rich text formatting like bullet points and links
+   */
+  todo_course_project?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * General todo instructions for this lesson - supports rich text formatting like bullet points and links
+   */
+  todo?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
    * The URL-friendly identifier for this lesson
    */
@@ -915,6 +984,7 @@ export interface CourseLessonsSelect<T extends boolean = true> {
   todo_watch_content?: T;
   todo_read_content?: T;
   todo_course_project?: T;
+  todo?: T;
   slug?: T;
   description?: T;
   featured_image_id?: T;

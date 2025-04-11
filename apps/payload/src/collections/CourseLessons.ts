@@ -81,18 +81,42 @@ export const CourseLessons: CollectionConfig = {
     },
     {
       name: 'todo_watch_content',
-      type: 'text',
+      type: 'richText',
       label: 'Todo: Watch Content',
+      editor: lexicalEditor({}),
+      admin: {
+        description:
+          'Content to watch - supports rich text formatting like bullet points and links',
+      },
     },
     {
       name: 'todo_read_content',
-      type: 'text',
+      type: 'richText',
       label: 'Todo: Read Content',
+      editor: lexicalEditor({}),
+      admin: {
+        description: 'Content to read - supports rich text formatting like bullet points and links',
+      },
     },
     {
       name: 'todo_course_project',
-      type: 'text',
+      type: 'richText',
       label: 'Todo: Course Project',
+      editor: lexicalEditor({}),
+      admin: {
+        description:
+          'Course project instructions - supports rich text formatting like bullet points and links',
+      },
+    },
+    {
+      name: 'todo',
+      type: 'richText',
+      label: 'Todo',
+      editor: lexicalEditor({}),
+      admin: {
+        description:
+          'General todo instructions for this lesson - supports rich text formatting like bullet points and links',
+      },
     },
     {
       name: 'slug',

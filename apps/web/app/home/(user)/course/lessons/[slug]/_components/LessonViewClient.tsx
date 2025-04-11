@@ -297,7 +297,8 @@ export function LessonViewClient({
                 )}
 
                 {/* Render To-Do Items if any exist */}
-                {(lesson.todo_complete_quiz ||
+                {(lesson.todo ||
+                  lesson.todo_complete_quiz ||
                   lesson.todo_watch_content ||
                   lesson.todo_read_content ||
                   lesson.todo_course_project) && (
@@ -305,6 +306,16 @@ export function LessonViewClient({
                     <h3 className="mb-2 text-lg font-semibold">
                       Lesson To-Do's
                     </h3>
+
+                    {/* General Todo Section */}
+                    {lesson.todo && (
+                      <div className="mb-2">
+                        <h4 className="font-medium">General To-Do</h4>
+                        <div className="prose prose-sm dark:prose-invert">
+                          <PayloadContentRenderer content={lesson.todo} />
+                        </div>
+                      </div>
+                    )}
 
                     {lesson.todo_complete_quiz && (
                       <div className="mb-2">
@@ -317,17 +328,41 @@ export function LessonViewClient({
 
                     <div className="mb-2">
                       <h4 className="font-medium">Watch</h4>
-                      <p>{lesson.todo_watch_content || 'None'}</p>
+                      {lesson.todo_watch_content ? (
+                        <div className="prose prose-sm dark:prose-invert">
+                          <PayloadContentRenderer
+                            content={lesson.todo_watch_content}
+                          />
+                        </div>
+                      ) : (
+                        <p>None</p>
+                      )}
                     </div>
 
                     <div className="mb-2">
                       <h4 className="font-medium">Read</h4>
-                      <p>{lesson.todo_read_content || 'None'}</p>
+                      {lesson.todo_read_content ? (
+                        <div className="prose prose-sm dark:prose-invert">
+                          <PayloadContentRenderer
+                            content={lesson.todo_read_content}
+                          />
+                        </div>
+                      ) : (
+                        <p>None</p>
+                      )}
                     </div>
 
                     <div>
                       <h4 className="font-medium">Course Project</h4>
-                      <p>{lesson.todo_course_project || 'None'}</p>
+                      {lesson.todo_course_project ? (
+                        <div className="prose prose-sm dark:prose-invert">
+                          <PayloadContentRenderer
+                            content={lesson.todo_course_project}
+                          />
+                        </div>
+                      ) : (
+                        <p>None</p>
+                      )}
                     </div>
                   </div>
                 )}
