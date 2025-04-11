@@ -66,7 +66,6 @@ function Home() {
           <div
             className={`flex flex-col items-center ${componentSpacing.stack}`}
           >
-<<<<<<< HEAD
             <div className={`${containerBase} ${widths.focused} text-center`}>
               <Hero
                 title={
@@ -85,25 +84,6 @@ function Home() {
                     {homepageContentConfig.hero.subtitle}
                   </span>
                 }
-=======
-            <FeatureGrid>
-              <FeatureCard
-                className={'relative col-span-1 overflow-hidden'}
-                label={'Beautiful Dashboard'}
-                description={`Makerkit provides a beautiful dashboard to manage your SaaS business.`}
-              ></FeatureCard>
-
-              <FeatureCard
-                className={'relative col-span-1 w-full overflow-hidden'}
-                label={'Authentication'}
-                description={`Makerkit provides a variety of providers to allow your users to sign in.`}
-              ></FeatureCard>
-
-              <FeatureCard
-                className={'relative col-span-1 overflow-hidden'}
-                label={'Multi Tenancy'}
-                description={`Multi tenant memberships for your SaaS business.`}
->>>>>>> 765cef873642971776eb528d1dd9ffa581e72a87
               />
             </div>
             <div className={`${containerBase} ${widths.focused}`}>
