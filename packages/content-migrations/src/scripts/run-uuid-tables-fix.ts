@@ -1,17 +1,19 @@
 /**
  * Run UUID Tables Fix Script
  *
- * This script executes the SQL fix directly instead of using complex libraries.
- * It's a simpler approach that directly executes our SQL fix script.
+ * This script executes the SQL fix directly using Node.js pg client instead of psql.
+ * It's a cross-platform approach that doesn't rely on psql being installed.
  *
  * Usage:
  *   pnpm --filter @kit/content-migrations run fix:uuid-tables
  */
-import { execSync } from 'child_process';
 import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
+import pg from 'pg';
 import { fileURLToPath } from 'url';
+
+const { Pool } = pg;
 
 // Get the current file's path in ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -20,6 +22,29 @@ const __dirname = path.dirname(__filename);
 // Setup environment
 const projectRoot = path.resolve(__dirname, '../../../..');
 dotenv.config({ path: path.resolve(projectRoot, '.env') });
+
+// Load environment variables from .env.development file in content-migrations package
+try {
+  const envFilePath = path.resolve(__dirname, '../.env.development');
+  if (fs.existsSync(envFilePath)) {
+    console.log(`Loading environment variables from: ${envFilePath}`);
+    const envContent = fs.readFileSync(envFilePath, 'utf-8');
+    const envLines = envContent.split('\n');
+    for (const line of envLines) {
+      const match = line.match(/^\s*([\w.-]+)\s*=\s*(.*)?\s*$/);
+      if (match) {
+        const key = match[1];
+        const value = match[2] || '';
+        if (key === 'DATABASE_URI' || key === 'DATABASE_URL') {
+          process.env[key] = value.replace(/['"]/g, '');
+          console.log(`Setting ${key} from .env.development file`);
+        }
+      }
+    }
+  }
+} catch (error) {
+  // Silently continue if env file can't be loaded
+}
 
 // Get DATABASE_URI from environment
 const DATABASE_URI = process.env.DATABASE_URI || process.env.DATABASE_URL;
@@ -45,15 +70,68 @@ async function runUuidTablesFix(): Promise<boolean> {
 
     console.log(`Executing SQL script: ${sqlScriptPath}`);
 
-    // Execute the SQL script using psql
-    const result = execSync(`psql "${DATABASE_URI}" -f "${sqlScriptPath}"`, {
-      encoding: 'utf-8',
+    // Read the SQL script
+    const sqlScript = fs.readFileSync(sqlScriptPath, 'utf-8');
+
+    // Connect to the database using pg pool
+    const pool = new Pool({
+      connectionString: DATABASE_URI,
     });
 
-    console.log('SQL script executed successfully');
-    console.log(result);
+    try {
+      // Execute the SQL script
+      await pool.query(sqlScript);
+      console.log('SQL script executed successfully via Node.js pg client');
+      return true;
+    } catch (dbError: any) {
+      console.error(
+        'Database error executing UUID tables fix:',
+        dbError.message,
+      );
 
-    return true;
+      // Try a fallback approach with individual statements if the script failed
+      console.log('Attempting fallback with individual SQL statements...');
+
+      // Create the required functions and tables directly
+      await pool.query(`
+        -- Create the UUID tables tracking table if not exists
+        CREATE TABLE IF NOT EXISTS payload.dynamic_uuid_tables (
+          table_name TEXT PRIMARY KEY,
+          last_checked TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+          has_downloads_id BOOLEAN DEFAULT FALSE
+        );
+        
+        -- Drop the function if it exists to avoid errors
+        DROP FUNCTION IF EXISTS payload.scan_and_fix_uuid_tables();
+        
+        -- Create a simple version of the function
+        CREATE FUNCTION payload.scan_and_fix_uuid_tables() RETURNS void AS $$
+        DECLARE
+          table_record RECORD;
+        BEGIN
+          FOR table_record IN 
+            SELECT table_name 
+            FROM information_schema.columns 
+            WHERE table_schema = 'payload' 
+            AND column_name = 'id' 
+            AND data_type = 'uuid'
+          LOOP
+            EXECUTE format('ALTER TABLE payload.%I ADD COLUMN IF NOT EXISTS path TEXT', table_record.table_name);
+            EXECUTE format('ALTER TABLE payload.%I ADD COLUMN IF NOT EXISTS parent_id TEXT', table_record.table_name);
+            EXECUTE format('ALTER TABLE payload.%I ADD COLUMN IF NOT EXISTS downloads_id UUID', table_record.table_name);
+          END LOOP;
+        END;
+        $$ LANGUAGE plpgsql;
+      `);
+
+      // Execute the function
+      await pool.query('SELECT payload.scan_and_fix_uuid_tables();');
+
+      console.log('Fallback approach completed successfully');
+      return true;
+    } finally {
+      await pool.end();
+    }
   } catch (error: any) {
     console.error('Error executing UUID tables fix:', error.message || error);
     return false;

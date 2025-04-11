@@ -7,6 +7,7 @@ import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 
 import { RAW_QUIZZES_DIR } from '../../../config/paths.js';
+import { getDownloadIdsForLesson } from '../../../data/mappings/lesson-downloads-mappings.js';
 import { lessonQuizMapping } from '../../../data/mappings/lesson-quiz-mappings.js';
 import { convertToLexical } from '../../utils/lexical-converter.js';
 import { generateQuizMap } from '../../utils/quiz-map-generator.js';
@@ -70,6 +71,21 @@ BEGIN;
       }
     }
 
+    // Extract additional fields from the frontmatter and content
+    // Look for bunnyvideoid in content since it's in a shortcode
+    let bunnyVideoId = null;
+    const bunnyMatch = content.match(/bunnyvideoid="([^"]+)"/);
+    if (bunnyMatch && bunnyMatch[1]) {
+      bunnyVideoId = bunnyMatch[1];
+      console.log(
+        `Found Bunny Video ID for lesson ${lessonSlug}: ${bunnyVideoId}`,
+      );
+    }
+    const todoCompleteQuiz = data.todoCompleteQuiz === true;
+    const todoWatchContent = data.todoWatchContent || null;
+    const todoReadContent = data.todoReadContent || null;
+    const todoCourseProject = data.todoCourseProject || null;
+
     // Add the lesson to the SQL
     sql += `-- Insert lesson: ${data.title}
 INSERT INTO payload.course_lessons (
@@ -84,6 +100,11 @@ INSERT INTO payload.course_lessons (
   ${mediaId ? 'featured_image_id,' : ''}
   ${quizId ? 'quiz_id,' : ''}
   ${quizId ? 'quiz_id_id,' : ''}
+  ${bunnyVideoId ? 'bunny_video_id,' : ''}
+  todo_complete_quiz,
+  ${todoWatchContent ? 'todo_watch_content,' : ''}
+  ${todoReadContent ? 'todo_read_content,' : ''}
+  ${todoCourseProject ? 'todo_course_project,' : ''}
   created_at,
   updated_at
 ) VALUES (
@@ -98,6 +119,11 @@ INSERT INTO payload.course_lessons (
   ${mediaId ? `'${mediaId}',` : ''}
   ${quizId ? `'${quizId}',` : ''}
   ${quizId ? `'${quizId}',` : ''}
+  ${bunnyVideoId ? `'${bunnyVideoId}',` : ''}
+  ${todoCompleteQuiz ? 'TRUE' : 'FALSE'}, -- Default to FALSE for todo_complete_quiz
+  ${todoWatchContent ? `'${todoWatchContent.replace(/'/g, "''")}'` : 'NULL'},
+  ${todoReadContent ? `'${todoReadContent.replace(/'/g, "''")}'` : 'NULL'},
+  ${todoCourseProject ? `'${todoCourseProject.replace(/'/g, "''")}'` : 'NULL'},
   NOW(),
   NOW()
 ) ON CONFLICT (id) DO NOTHING; -- Skip if the lesson already exists
@@ -166,6 +192,32 @@ INSERT INTO payload.course_lessons_rels (
 ) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
 
 `;
+    }
+
+    // Add relationship entries for downloads
+    const downloadIds = getDownloadIdsForLesson(lessonSlug);
+    if (downloadIds.length > 0) {
+      sql += `-- Create relationship entries for the lesson to downloads\n`;
+
+      for (const downloadId of downloadIds) {
+        sql += `INSERT INTO payload.course_lessons_rels (
+  id,
+  _parent_id,
+  field,
+  value,
+  created_at,
+  updated_at
+) VALUES (
+  gen_random_uuid(),
+  '${lessonId}',
+  'downloads',
+  '${downloadId}',
+  NOW(),
+  NOW()
+) ON CONFLICT DO NOTHING; -- Skip if the relationship already exists
+
+`;
+      }
     }
   }
 
