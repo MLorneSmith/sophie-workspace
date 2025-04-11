@@ -9,6 +9,7 @@
 import { sql } from '@payloadcms/db-postgres'
 import type { Payload } from 'payload'
 import { DOWNLOAD_ID_MAP } from '../../../../packages/content-migrations/src/data/download-id-map'
+import { getDownloadIdsForLesson } from '../../../../packages/content-migrations/src/data/mappings/lesson-downloads-mappings'
 
 // Mapping of collection types to potential download relationships
 const COLLECTION_DOWNLOAD_MAPPINGS: Record<string, string[]> = {
@@ -117,7 +118,7 @@ export async function getDownloadsForCollection(
 
     // TIER 4: Try known mappings (predefined relationships)
     try {
-      const results = await getDownloadsViaPredefinedMappings(collectionType, collectionId)
+      const results = await getDownloadsViaPredefinedMappings(collectionType, collectionId, payload)
       if (results.length > 0) {
         console.log(`Found ${results.length} downloads via predefined mappings`)
         return results
@@ -209,30 +210,57 @@ async function getDownloadsViaDirectSQL(
 
 /**
  * TIER 4: Get downloads from predefined mappings
- * This uses hardcoded mappings as a last resort
+ * This uses lesson-specific mappings where possible
  */
 async function getDownloadsViaPredefinedMappings(
   collectionType: string,
   collectionId: string,
+  payload: Payload,
 ): Promise<string[]> {
   try {
-    // In a real implementation, this would check a mapping file for known relationships
-    // For now, returning a subset of all predefined download IDs as a demonstration
+    // If this is a course lesson, try to get the lesson slug
+    if (collectionType === 'course_lessons') {
+      try {
+        // Get the lesson's slug from the database
+        const result = await payload.db.drizzle.execute(
+          sql.raw(`
+            SELECT slug FROM payload.course_lessons
+            WHERE id = '${collectionId.replace(/'/g, "''")}'
+          `),
+        )
 
-    // This is just a fallback mechanism and won't return actual contextual relationships
-    // In a production system, you'd want to have more specific mappings
+        if (result?.rows?.[0]?.slug) {
+          const lessonSlug = result.rows[0].slug
+          console.log(`Found lesson slug: ${lessonSlug}`)
 
-    const allDownloadIds = Object.values(DOWNLOAD_ID_MAP)
+          // Get download IDs for this specific lesson
+          const downloadIds = getDownloadIdsForLesson(lessonSlug)
+          if (downloadIds.length > 0) {
+            console.log(`Found ${downloadIds.length} downloads for lesson ${lessonSlug}`)
+            return downloadIds
+          }
+        }
+      } catch (slugError) {
+        console.log('Error getting lesson slug:', slugError)
+        // Continue to fallback
+      }
+    }
 
-    // Just return the first 2 downloads as a demonstration
-    // In a real implementation, you'd use an actual mapping of collection IDs to download IDs
-    return allDownloadIds.slice(0, 2)
+    // If all else fails, return a sensible fallback
+    // Either return empty array or a default set of general downloads
+    const defaultDownloadIds = [
+      DOWNLOAD_ID_MAP['slide-templates'],
+      DOWNLOAD_ID_MAP['swipe-file'],
+    ].filter((id) => !!id)
+
+    console.log(`Using default downloads as fallback: ${defaultDownloadIds.length} downloads`)
+    return defaultDownloadIds
   } catch (error) {
     console.error(
       `Error in getDownloadsViaPredefinedMappings for ${collectionType} with ID ${collectionId}:`,
       error,
     )
-    throw error // Let the calling function handle fallback
+    return [] // Return empty array instead of throwing
   }
 }
 
@@ -378,14 +406,25 @@ export async function diagnoseRelationshipTables(
       LIMIT 10
     `
 
-    const uuidTablesResult = await payload.db.drizzle.execute(sql.raw(uuidTablesQuery))
+    try {
+      const uuidTablesResult = await payload.db.drizzle.execute(sql.raw(uuidTablesQuery))
 
-    return {
-      relationshipTable: {
-        name: relationshipTable,
-        columns: result?.rows || [],
-      },
-      dynamicUuidTables: uuidTablesResult?.rows || [],
+      return {
+        relationshipTable: {
+          name: relationshipTable,
+          columns: result?.rows || [],
+        },
+        dynamicUuidTables: uuidTablesResult?.rows || [],
+      }
+    } catch (tableError) {
+      // If the dynamic_uuid_tables table doesn't exist, just return the relationship table info
+      return {
+        relationshipTable: {
+          name: relationshipTable,
+          columns: result?.rows || [],
+        },
+        dynamicUuidTables: [],
+      }
     }
   } catch (error: any) {
     console.error(`Error in diagnoseRelationshipTables:`, error)
