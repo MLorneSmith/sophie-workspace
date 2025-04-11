@@ -161,6 +161,22 @@ function Fix-Relationships {
         Log-Message "Fixing survey questions population..." "Yellow"
         Exec-Command -command "pnpm run fix:survey-questions-population" -description "Fixing survey questions population" -continueOnError
 
+        # Ensure todo column exists in course_lessons table
+        Log-Message "Ensuring todo column exists in course_lessons table..." "Yellow"
+        Exec-Command -command "pnpm run sql:ensure-todo-column" -description "Ensuring todo column exists" -continueOnError
+
+        # Fix todo fields in course_lessons table
+        Log-Message "Fixing todo fields in course_lessons table..." "Yellow"
+        Exec-Command -command "pnpm run fix:todo-fields" -description "Fixing todo fields" -continueOnError
+
+        # Fix Lexical format issues in todo fields
+        Log-Message "Fixing Lexical format in todo fields..." "Yellow"
+        Exec-Command -command "pnpm run fix:lexical-format" -description "Fixing Lexical format" -continueOnError
+        
+        # Fix bunny_video_id fields in course_lessons table
+        Log-Message "Fixing bunny_video_id fields in course_lessons table..." "Yellow"
+        Exec-Command -command "pnpm run fix:bunny-video-ids" -description "Fixing bunny video IDs" -continueOnError
+
         # Run final verification
         Log-Message "Running final verification..." "Yellow"
         $finalVerification = Exec-Command -command "pnpm run verify:all" -description "Final verification" -captureOutput -continueOnError
@@ -229,36 +245,20 @@ function Verify-DatabaseState {
 }
 
 # Function to create certificates bucket in Supabase
+# This step is now handled by the migration file: apps/web/supabase/migrations/20250407140654_create_certificates_bucket.sql
 function Create-CertificatesBucket {
     Log-Step "Creating certificates storage bucket in Supabase" 11
     
     try {
-        # First ensure we're at the project root
-        Set-ProjectRootLocation
-        Log-Message "Changed to project root: $(Get-Location)" "Gray"
+        # The bucket is created by the Supabase migration process
+        # No additional actions are needed here as the migration file handles it
         
-        # Navigate to web app directory using absolute path
-        if (Set-ProjectLocation -RelativePath "apps/web") {
-            Log-Message "Changed directory to: $(Get-Location)" "Gray"
-        } else {
-            throw "Could not find apps/web directory from project root"
-        }
-        
-        # Use the Supabase utility to ensure the certificates bucket exists
-        $bucketCreated = Ensure-SupabaseBucket -BucketName "certificates" -Public
-        
-        if (-not $bucketCreated) {
-            Log-Warning "Could not verify or create certificates bucket"
-            Log-Message "This is non-critical, continuing with migration" "Yellow"
-        }
-        
-        Pop-Location
-        Log-Message "Returned to directory: $(Get-Location)" "Gray"
-        
+        Log-Message "Certificates bucket is created during migration with direct SQL INSERT" "Gray"
+        Log-Success "Database migrations successfully handle certificates bucket creation"
         return $true
     }
     catch {
-        Log-Error "Failed to create certificates bucket: $_"
+        Log-Error "Failed to verify certificates bucket: $_"
         Log-Warning "This is non-critical, continuing"
         return $false
     }

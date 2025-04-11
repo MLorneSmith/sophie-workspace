@@ -59,6 +59,13 @@ async function fixSurveyQuestionsPopulation() {
       await client.query('BEGIN');
 
       try {
+        // Check if RAW_SURVEYS_DIR exists
+        if (!fs.existsSync(RAW_SURVEYS_DIR)) {
+          console.error(`Survey directory not found: ${RAW_SURVEYS_DIR}`);
+          console.log(`Creating missing directory: ${RAW_SURVEYS_DIR}`);
+          fs.mkdirSync(RAW_SURVEYS_DIR, { recursive: true });
+        }
+
         // Define fixed UUIDs for known surveys for consistency
         const knownSurveyIds: Record<string, string> = {
           'self-assessment': '5e352ade-c6a9-4e4a-9ffa-9680a5d5f9e9',
@@ -66,17 +73,54 @@ async function fixSurveyQuestionsPopulation() {
           feedback: '7f574cfa-e8b1-4f6b-b1cb-b890c6e7f1f1',
         };
 
-        // Get all .yaml files in the surveys directory
-        const surveyFiles = fs
-          .readdirSync(RAW_SURVEYS_DIR)
-          .filter((file) => file.endsWith('.yaml') || file.endsWith('.yml'));
+        // Check if surveys exist in database, regardless of survey files
+        const surveysResult = await client.query(
+          `SELECT id, title FROM payload.surveys`,
+        );
 
-        if (surveyFiles.length === 0) {
-          console.warn(`No survey files found in ${RAW_SURVEYS_DIR}`);
+        if (surveysResult.rowCount === 0) {
+          console.warn(
+            `No surveys found in database. Skipping question population.`,
+          );
+          console.warn(
+            `Please run the migration script first to create the surveys.`,
+          );
           return;
         }
 
-        console.log(`Found ${surveyFiles.length} survey files to process.`);
+        console.log(`Found ${surveysResult.rowCount} surveys in database.`);
+
+        // Get all .yaml files in the surveys directory
+        const surveyFiles = fs.existsSync(RAW_SURVEYS_DIR)
+          ? fs
+              .readdirSync(RAW_SURVEYS_DIR)
+              .filter((file) => file.endsWith('.yaml') || file.endsWith('.yml'))
+          : [];
+
+        if (surveyFiles.length === 0) {
+          console.warn(`No survey YAML files found in ${RAW_SURVEYS_DIR}`);
+          console.warn(
+            `This is expected if you're not using YAML files or they are in a different location.`,
+          );
+
+          // Continue with database surveys instead of YAML files
+          for (const survey of surveysResult.rows) {
+            console.log(
+              `Processing database survey: ${survey.title} (ID: ${survey.id})`,
+            );
+            // Create placeholder questions for database surveys when no YAML files exist
+            await createPlaceholderQuestionsForSurvey(
+              client,
+              survey.id,
+              survey.title,
+            );
+          }
+          return;
+        }
+
+        console.log(
+          `Found ${surveyFiles.length} survey YAML files to process.`,
+        );
 
         // Process each survey file
         for (const file of surveyFiles) {
@@ -470,6 +514,99 @@ async function fixSurveyQuestionsPopulation() {
   } finally {
     await pool.end();
   }
+}
+
+/**
+ * Creates placeholder questions for a survey when no YAML files are found
+ */
+async function createPlaceholderQuestionsForSurvey(
+  client: pg.PoolClient,
+  surveyId: string,
+  surveyTitle: string,
+): Promise<void> {
+  // Check if survey already has questions
+  const existingQuestionsResult = await client.query(
+    `SELECT id FROM payload.survey_questions WHERE surveys_id = $1`,
+    [surveyId],
+  );
+
+  if (existingQuestionsResult.rowCount > 0) {
+    console.log(
+      `Survey ${surveyTitle} already has ${existingQuestionsResult.rowCount} questions. Skipping placeholder creation.`,
+    );
+    return;
+  }
+
+  console.log(`Creating placeholder questions for survey: ${surveyTitle}`);
+
+  // Create different placeholder questions based on survey type
+  let questions: Array<{ question: string; type: string }> = [];
+
+  if (surveyTitle.toLowerCase().includes('assessment')) {
+    // Self-assessment type placeholder questions
+    questions = [
+      {
+        question: 'How would you rate your current skill level?',
+        type: 'rating',
+      },
+      {
+        question: 'What areas do you feel most confident in?',
+        type: 'text_field',
+      },
+      { question: 'What areas would you like to improve?', type: 'text_field' },
+    ];
+  } else if (surveyTitle.toLowerCase().includes('feedback')) {
+    // Feedback type placeholder questions
+    questions = [
+      { question: 'How would you rate your experience?', type: 'rating' },
+      { question: 'What did you like most?', type: 'text_field' },
+      { question: 'What could be improved?', type: 'text_field' },
+    ];
+  } else {
+    // Generic placeholder questions
+    questions = [
+      { question: 'Please rate your satisfaction', type: 'rating' },
+      { question: 'Do you have any comments?', type: 'text_field' },
+    ];
+  }
+
+  // Add the placeholder questions
+  for (let i = 0; i < questions.length; i++) {
+    const questionId = uuidv4();
+
+    console.log(
+      `Adding placeholder question ${i + 1}: ${questions[i].question}`,
+    );
+
+    // Insert the question
+    await client.query(
+      `INSERT INTO payload.survey_questions (
+        id, question, type, position, surveys_id, required, created_at, updated_at
+      ) VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())`,
+      [questionId, questions[i].question, questions[i].type, i, surveyId, true],
+    );
+
+    // Create relationship entries
+    // survey_questions_rels: question -> survey
+    await client.query(
+      `INSERT INTO payload.survey_questions_rels (
+        id, field, value, parent_id, created_at, updated_at, surveys_id
+      ) VALUES (gen_random_uuid(), 'surveys', $1, $2, NOW(), NOW(), $1)`,
+      [surveyId, questionId],
+    );
+
+    // surveys_rels: survey -> question
+    await client.query(
+      `INSERT INTO payload.surveys_rels (
+        id, field, value, parent_id, created_at, updated_at, survey_questions_id
+      ) VALUES (gen_random_uuid(), 'questions', $1, $2, NOW(), NOW(), $1)`,
+      [questionId, surveyId],
+    );
+  }
+
+  console.log(
+    `Created ${questions.length} placeholder questions for survey: ${surveyTitle}`,
+  );
 }
 
 // Run the fix if this script is executed directly

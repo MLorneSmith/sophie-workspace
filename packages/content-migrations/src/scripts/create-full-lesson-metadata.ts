@@ -8,7 +8,7 @@ import yaml from 'js-yaml';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-import { DOWNLOAD_ID_MAP } from '../data/download-id-map.js';
+import { parseLessonTodoHtml } from './parse-lesson-todo-html.js';
 
 // Get current directory (replacement for __dirname in ESM)
 const __filename = fileURLToPath(import.meta.url);
@@ -46,33 +46,41 @@ function extractBunnyVideoId(content: string): string | null {
   return null;
 }
 
-// Helper function to extract todo content from the lesson content
+// Helper function to extract todo content from the lesson content and convert to Lexical format
 function extractTodoFields(content: string): {
+  todo: string;
   completeQuiz: boolean;
   watchContent: string;
   readContent: string;
   courseProject: string;
 } {
-  // Default values
-  const result = {
-    completeQuiz: false,
-    watchContent: '',
-    readContent: '',
-    courseProject: '',
-  };
+  // Extract raw content first
+  let rawTodo = '';
+  let completeQuiz = false;
+  let rawWatchContent = '';
+  let rawReadContent = '';
+  let rawCourseProject = '';
+
+  // Extract generic Todo content
+  const todoMatch = content.match(
+    /Todo\s*\n\s*-(.*?)(?:\n\s*\n|\n\s*(?:Watch|Read|Course|%|###))/s,
+  );
+  if (todoMatch && todoMatch[1]) {
+    rawTodo = todoMatch[1].trim().replace(/^\s*-\s*/, '');
+  }
 
   // Check for "Complete the lesson quiz" in the todo section
   if (
     content.includes('Complete the lesson quiz') ||
     content.includes('Complete the quiz')
   ) {
-    result.completeQuiz = true;
+    completeQuiz = true;
   }
 
   // Extract Watch content
   const watchMatch = content.match(/Watch\s*\n\s*-(.*?)(?:\n\s*\n|\n\s*Read)/s);
   if (watchMatch && watchMatch[1]) {
-    result.watchContent = watchMatch[1].trim().replace(/^\s*-\s*/, '');
+    rawWatchContent = watchMatch[1].trim().replace(/^\s*-\s*/, '');
   }
 
   // Extract Read content
@@ -80,7 +88,7 @@ function extractTodoFields(content: string): {
     /Read\s*\n\s*-(.*?)(?:\n\s*\n|\n\s*(?:%|Course))/s,
   );
   if (readMatch && readMatch[1]) {
-    result.readContent = readMatch[1].trim().replace(/^\s*-\s*/, '');
+    rawReadContent = readMatch[1].trim().replace(/^\s*-\s*/, '');
   }
 
   // Extract Course Project content
@@ -88,10 +96,94 @@ function extractTodoFields(content: string): {
     /Course Project\s*\n\s*-(.*?)(?:\n\s*\n|\n\s*(?:%|###))/s,
   );
   if (projectMatch && projectMatch[1]) {
-    result.courseProject = projectMatch[1].trim().replace(/^\s*-\s*/, '');
+    rawCourseProject = projectMatch[1].trim().replace(/^\s*-\s*/, '');
   }
 
-  return result;
+  // Default placeholder content if raw content is empty
+  if (!rawTodo) {
+    rawTodo =
+      'Complete the tasks for this lesson:\nReview the content\nPractice the concepts';
+  }
+
+  if (!rawWatchContent && completeQuiz) {
+    rawWatchContent =
+      'Watch the video content:\nStudy the lesson video thoroughly\nTake notes on key concepts';
+  }
+
+  if (!rawReadContent) {
+    rawReadContent =
+      'Reading materials:\nReview the slides\nExplore additional resources';
+  }
+
+  if (!rawCourseProject) {
+    rawCourseProject =
+      'Project steps:\nApply the concepts from this lesson\nPrepare a draft of your work';
+  }
+
+  // Convert raw content to Lexical format
+  const todoLexical = createLexicalContent(rawTodo, true);
+  const watchContentLexical = createLexicalContent(rawWatchContent, false);
+  const readContentLexical = createLexicalContent(rawReadContent, false);
+  const courseProjectLexical = createLexicalContent(rawCourseProject, false);
+
+  console.log(`  Added rich text format to todoFields`);
+
+  return {
+    todo: todoLexical,
+    completeQuiz,
+    watchContent: watchContentLexical,
+    readContent: readContentLexical,
+    courseProject: courseProjectLexical,
+  };
+}
+
+// Helper function to create a Lexical-compatible rich text content
+function createLexicalContent(
+  content: string,
+  includeLink: boolean = false,
+): string {
+  // If content is empty, return empty string
+  if (!content || content.trim() === '') {
+    return '';
+  }
+
+  // Split content into paragraphs
+  const lines =
+    content?.split(/\r?\n/)?.filter((line) => line.trim().length > 0) || [];
+
+  if (lines.length === 0) {
+    return '';
+  }
+
+  // Simpler approach - use a template for Lexical structure
+  let childrenJson = '';
+
+  // First line as paragraph
+  childrenJson += `{"type":"paragraph","children":[{"type":"text","text":"${lines[0]}"}]},`;
+
+  // Rest as bullet points
+  for (let i = 1; i < lines.length; i++) {
+    if (includeLink && i === 1) {
+      // Add a bullet with a link for the second line
+      childrenJson += `
+        {"type":"listitem","listType":"bullet","children":[
+          {"type":"text","text":"Visit the "},
+          {"type":"link","url":"https://slideheroes.com/docs","children":[{"type":"text","text":"SlideHeroes documentation"}]},
+          {"type":"text","text":" for more information"}
+        ]},`;
+    } else {
+      // Regular bullet point
+      childrenJson += `{"type":"listitem","listType":"bullet","children":[{"type":"text","text":"${lines[i]}"}]},`;
+    }
+  }
+
+  // Remove trailing comma
+  childrenJson = childrenJson.replace(/,$/, '');
+
+  // Complete Lexical structure as a JSON string
+  const lexicalJson = `{"root":{"children":[${childrenJson}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}`;
+
+  return lexicalJson;
 }
 
 // Load existing download mappings from TS file
@@ -217,10 +309,11 @@ async function createLessonMetadataYaml() {
     const lesson = {
       slug,
       title: data.title || '',
-      lessonNumber: data.lessonNumber || data.order || 0,
-      lessonLength: data.lessonLength || 0,
+      lessonNumber: Number(data.lessonNumber || data.order || 0),
+      lessonLength: Number(data.lessonLength || 0),
       description: data.description || '',
       todoFields: {
+        todo: todoFields.todo,
         completeQuiz: todoFields.completeQuiz,
         watchContent: todoFields.watchContent,
         readContent: todoFields.readContent,
@@ -228,7 +321,7 @@ async function createLessonMetadataYaml() {
       },
       bunnyVideo: {
         id: bunnyVideoId || '',
-        library: '264486', // Default library ID
+        library: 264486, // Default library ID as a number
       },
       downloads,
       quiz: quizSlug,
@@ -237,14 +330,49 @@ async function createLessonMetadataYaml() {
     lessons.push(lesson);
   }
 
-  // Sort lessons by lesson number
-  lessons.sort((a, b) => a.lessonNumber - b.lessonNumber);
+  // Sort lessons by lesson number (ensuring numbers for comparison)
+  lessons.sort((a, b) => {
+    const numA =
+      typeof a.lessonNumber === 'string'
+        ? parseInt(a.lessonNumber as string, 10)
+        : a.lessonNumber;
+    const numB =
+      typeof b.lessonNumber === 'string'
+        ? parseInt(b.lessonNumber as string, 10)
+        : b.lessonNumber;
+    return numA - numB;
+  });
 
   // Create metadata structure
   const metadata = { lessons };
 
   // Write YAML file
   fs.writeFileSync(OUTPUT_PATH, yaml.dump(metadata, { lineWidth: 120 }));
+
+  // Always check for HTML todo content file after writing the initial YAML
+  const htmlTodoPath = path.resolve(
+    __dirname,
+    '../data/raw/lesson-todo-content.html',
+  );
+
+  if (fs.existsSync(htmlTodoPath)) {
+    console.log('HTML todo content file found. Parsing and updating YAML...');
+    try {
+      const result = await parseLessonTodoHtml();
+      if (result) {
+        console.log('Successfully updated YAML with HTML todo content');
+      } else {
+        console.warn(
+          'HTML parsing completed but may not have updated all content',
+        );
+      }
+    } catch (error) {
+      console.error('Error parsing HTML todo content:', error);
+      console.warn('Continuing with the original YAML file');
+    }
+  } else {
+    console.log('No HTML todo content file found. Using default todo content.');
+  }
 
   console.log(
     `Created comprehensive lesson metadata with ${lessons.length} lessons at ${OUTPUT_PATH}`,

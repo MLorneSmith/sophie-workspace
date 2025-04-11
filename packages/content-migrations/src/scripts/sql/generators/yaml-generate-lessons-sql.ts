@@ -53,7 +53,8 @@ BEGIN;
 `;
 
   // Generate quiz map for ID lookup
-  const quizMap = generateQuizMap(RAW_QUIZZES_DIR);
+  // Generate quiz map for ID lookup - cast to Map to fix TypeScript errors
+  const quizMap = generateQuizMap() as Map<string, string>;
 
   // Process each lesson from the metadata
   for (const lesson of lessonMetadata.lessons) {
@@ -75,11 +76,16 @@ BEGIN;
     }
 
     // Extract fields from metadata
+    const todo = lesson.todoFields?.todo || null;
     const todoCompleteQuiz = lesson.todoFields?.completeQuiz === true;
     const todoWatchContent = lesson.todoFields?.watchContent || null;
     const todoReadContent = lesson.todoFields?.readContent || null;
     const todoCourseProject = lesson.todoFields?.courseProject || null;
-    const bunnyVideoId = lesson.bunnyVideo?.id || null;
+    // Ensure empty strings are treated as NULL for bunnyVideoId
+    const bunnyVideoId =
+      lesson.bunnyVideo?.id && lesson.bunnyVideo.id.trim() !== ''
+        ? lesson.bunnyVideo.id
+        : null;
     const bunnyLibraryId = lesson.bunnyVideo?.library || '264486';
 
     // Get the Lexical content from the .mdoc file
@@ -114,8 +120,9 @@ INSERT INTO payload.course_lessons (
   course_id,
   ${quizId ? 'quiz_id,' : ''}
   ${quizId ? 'quiz_id_id,' : ''}
-  ${bunnyVideoId ? 'bunny_video_id,' : ''}
-  ${bunnyLibraryId ? 'bunny_library_id,' : ''}
+  bunny_video_id,
+  bunny_library_id,
+  ${todo ? 'todo,' : ''}
   todo_complete_quiz,
   ${todoWatchContent ? 'todo_watch_content,' : ''}
   ${todoReadContent ? 'todo_read_content,' : ''}
@@ -133,8 +140,9 @@ INSERT INTO payload.course_lessons (
   '${COURSE_ID}',
   ${quizId ? `'${quizId}',` : ''}
   ${quizId ? `'${quizId}',` : ''}
-  ${bunnyVideoId ? `'${bunnyVideoId}',` : ''}
-  ${bunnyLibraryId ? `'${bunnyLibraryId}',` : ''}
+  ${bunnyVideoId ? `'${bunnyVideoId}'` : 'NULL'},
+  ${bunnyLibraryId ? `'${bunnyLibraryId}'` : "'264486'"},
+  ${todo ? `'${todo.replace(/'/g, "''")}'` : ''},
   ${todoCompleteQuiz ? 'TRUE' : 'FALSE'},
   ${todoWatchContent ? `'${todoWatchContent.replace(/'/g, "''")}'` : 'NULL'},
   ${todoReadContent ? `'${todoReadContent.replace(/'/g, "''")}'` : 'NULL'},

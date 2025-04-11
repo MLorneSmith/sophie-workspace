@@ -5,6 +5,7 @@
  * It checks tables, relationships, and schema structure to ensure everything is correct.
  */
 import { executeSQL } from '../../utils/db/execute-sql.js';
+import verifyTodoFields from './verify-todo-fields.js';
 
 async function verifyAll(): Promise<boolean> {
   console.log('=== DATABASE VERIFICATION ===');
@@ -160,6 +161,22 @@ async function verifyAll(): Promise<boolean> {
       }
     } else {
       console.log('❌ downloads_relationships view does not exist');
+      success = false;
+    }
+
+    // Verify todo fields in course_lessons table
+    console.log('\n=== VERIFYING TODO FIELDS ===');
+    try {
+      const todoFieldsSuccess = await verifyTodoFields();
+      if (todoFieldsSuccess) {
+        console.log('✅ Todo fields verification passed');
+      } else {
+        console.log('❌ Todo fields verification failed');
+        success = false;
+      }
+    } catch (error) {
+      console.error('Error during todo fields verification:', error);
+      console.log('❌ Todo fields verification failed due to error');
       success = false;
     }
 
