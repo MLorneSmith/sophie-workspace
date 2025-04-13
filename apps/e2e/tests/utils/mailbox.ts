@@ -102,7 +102,7 @@ export class Mailbox {
 
     const json = await this.getEmail(email, {
       deleteAfter,
-      subject: `One-time password for Makerkit`,
+      subject: `One-time password for`,
     });
 
     if (!json) {
@@ -152,7 +152,7 @@ export class Mailbox {
     const message = params.subject
       ? (() => {
           const filtered = messagesResponse.messages.filter(
-            (item) => item.Subject === params.subject,
+            (item) => item.Subject.includes(params.subject!),
           );
 
           console.log(

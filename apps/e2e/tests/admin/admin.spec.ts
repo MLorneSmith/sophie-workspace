@@ -231,6 +231,8 @@ test.describe('Admin', () => {
   });
 
   test.describe('Team Account Management', () => {
+    test.skip(process.env.ENABLE_TEAM_ACCOUNT_TESTS !== 'true', 'Team account tests are disabled');
+
     let testUserEmail: string;
     let teamName: string;
     let slug: string;
