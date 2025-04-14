@@ -1,158 +1,146 @@
-# Content Migration System
+# Content Migrations System
 
-This package provides tools for migrating content from various sources to the Payload CMS collections in our Makerkit-based Next.js 15 application.
+This package manages the migration of content into Payload CMS for the SlideHeroes application.
 
 ## Overview
 
-The content migration system is designed to:
+The content migration system handles the extraction, transformation, and loading of content from various sources into Payload CMS tables. It provides a structured approach to manage:
 
-1. Process raw data files (`.mdoc`, `.yaml`, etc.) into a standardized format
-2. Generate SQL seed files for database population
-3. Provide utilities for verifying and repairing database state
+- Course content (lessons, quizzes, downloads)
+- Blog posts and documentation
+- Surveys and feedback mechanisms
+- Media files and relationships
 
-## Directory Structure
+## System Architecture
+
+The system is organized into several logical components:
 
 ```
 packages/content-migrations/
-├── src/
-│   ├── config/           # Configuration files
-│   ├── data/             # Data files
-│   │   ├── raw/          # Raw data files (.mdoc, .yaml)
-│   │   └── processed/    # Processed data ready for migration
-│   │       ├── sql/      # SQL seed files
-│   │       └── json/     # JSON data for direct insertion
-│   ├── scripts/          # Migration scripts
-│   │   ├── core/         # Core migration scripts
-│   │   ├── process/      # Data processing scripts
-│   │   ├── repair/       # Repair scripts
-│   │   ├── sql/          # SQL-related scripts
-│   │   ├── utils/        # Utility scripts
-│   │   └── verification/ # Verification scripts
-│   └── utils/            # Utility functions
-└── README.md             # This file
+├─ src/
+│  ├─ data/             # Content data (raw and processed)
+│  │  ├─ raw/           # Raw source content
+│  │  ├─ definitions/   # Schema definitions
+│  │  ├─ mappings/      # ID and field mappings
+│  │  └─ processed/     # Processed output (JSON and SQL)
+│  │
+│  ├─ scripts/          # Migration scripts
+│  │  ├─ processing/    # Scripts for processing raw data
+│  │  │  ├─ raw-data/   # Process raw content data
+│  │  │  └─ sql/        # Generate SQL files
+│  │  ├─ loading/       # Scripts for loading content
+│  │  │  ├─ migration/  # Core migration scripts
+│  │  │  ├─ import/     # Import scripts for external data
+│  │  │  └─ repair/     # Relationship and data fixes
+│  │  ├─ verification/  # Scripts to verify data integrity
+│  │  └─ repair/        # Scripts to fix data issues
+│  │
+│  ├─ utils/            # Utility functions
+│  │  ├─ db/            # Database utilities
+│  │  ├─ file/          # File system utilities
+│  │  └─ payload/       # Payload-specific utilities
+│  │
+│  └─ types/            # TypeScript type definitions
 ```
 
-## Workflow
+## Migration Process
 
-The content migration workflow consists of two main phases:
+The migration process follows these phases, orchestrated by the root-level `reset-and-migrate.ps1` script:
 
-### 1. Data Processing (One-time)
+1. **Setup**: Reset database and initialize schema
 
-This phase processes the raw data files and generates processed data files that can be used by the migration scripts. This is a one-time operation that only needs to be run when the raw data changes.
+   - Reset Supabase database
+   - Apply Payload migrations
 
-```
-Raw Data Files (.mdoc, .yaml) → Processing Scripts → Processed Data (SQL, JSON)
-```
+2. **Processing**: Transform raw content into a format suitable for import
 
-### 2. Database Migration (Repeatable)
+   - Process raw data (YAML, Markdown, etc.)
+   - Generate SQL seed files
 
-This phase uses the processed data to populate the database tables. This can be run multiple times without reprocessing the raw data.
+3. **Loading**: Populate database with processed content
 
-```
-Processed Data → Migration Scripts → Database Tables
-```
+   - Execute SQL seed files
+   - Run direct migrations for complex content
+   - Import external content (e.g., downloads from R2 bucket)
 
-## Usage
+4. **Verification**: Ensure content integrity
+   - Verify relationships between content items
+   - Check media references
+   - Validate content formatting
 
-### Processing Raw Data
+## Key Scripts
 
-To process the raw data files, run:
+### Processing Scripts
 
-```bash
-pnpm run process:raw-data
-```
-
-This will:
-
-1. Validate that all required raw data directories exist
-2. Process the raw data files into SQL seed files
-3. Copy the SQL seed files to the processed data directory
-4. Create a metadata file with the processing timestamp
-
-### Validating Raw Data
-
-To validate that all required raw data directories exist without processing the data, run:
-
-```bash
-pnpm run process:validate
-```
-
-### Running Migrations
-
-The migrations are integrated with the `reset-and-migrate.ps1` script at the root of the project. This script will:
-
-1. Reset the Supabase database
-2. Run Web app migrations
-3. Run Payload migrations
-4. Check if processed data exists and use it, or generate it if it doesn't exist
-5. Run content migrations via Payload migrations
-6. Verify database state
-
-To run the migrations, execute:
-
-```bash
-./reset-and-migrate.ps1
-```
-
-## Scripts
-
-### Core Scripts
-
-- `migrate:all`: Run all direct migrations
-- `migrate:course-lessons`: Migrate course lessons
-- `migrate:course-quizzes`: Migrate course quizzes
-- `migrate:quiz-questions`: Migrate quiz questions
-- `migrate:posts`: Migrate blog posts
-- `migrate:docs`: Migrate documentation
-
-### Process Scripts
-
-- `process:raw-data`: Process all raw data files
-- `process:validate`: Validate raw data directories
-
-### SQL Scripts
-
-- `sql:generate-seeds`: Generate SQL seed files
-- `sql:run-seeds`: Run SQL seed files
-- `sql:verify-schema`: Verify database schema
-- `sql:add-relationship-id-columns`: Add relationship ID columns to tables
-
-### Verification Scripts
-
-- `verify:all`: Verify all relationships
-- `verify:course-lessons`: Verify course lessons quiz_id_id column
-- `verify:media-columns`: Verify media ID columns
-- `verify:database`: Verify database schema
-- `verify:schema`: Verify schema exists
-- `verify:table`: Verify table exists
+- `process-raw-data.ts`: Process raw content data into processed formats
+- `generate-sql-seed-files.ts`: Generate SQL seed files for database population
+- `generate-full-lesson-metadata.ts`: Generate metadata for course lessons
 
 ### Repair Scripts
 
-- `repair:edge-cases`: Repair edge cases
-- `repair:relationships`: Fix relationships
-- `repair:all-relationships`: Repair all relationships
+- `fix-uuid-tables.ts`: Fix UUID table structure
+- `fix-lesson-todo-fields.ts`: Fix lesson todo fields
+- `fix-quiz-id-consistency.ts`: Ensure quiz IDs are consistent
+- `fix-post-image-relationships.ts`: Fix relationships between posts and images
 
-## Adding New Content
+### Verification Scripts
 
-When adding new content:
+- `verify-post-content.ts`: Verify post content integrity
+- `verify-uuid-tables.ts`: Verify UUID table structure
+- `verify-all.ts`: Run all verification scripts
 
-1. Add the raw data files to the appropriate directory in `src/data/raw/`
-2. Run `pnpm run process:raw-data` to process the new data
-3. Run `./reset-and-migrate.ps1` to apply the migrations
+## Usage
 
-## Updating Existing Content
+### Running the Full Migration
 
-When updating existing content:
+The recommended way to run the content migration is via the root-level script:
 
-1. Update the raw data files in `src/data/raw/`
-2. Run `pnpm run process:raw-data` to reprocess the data
-3. Run `./reset-and-migrate.ps1` to apply the migrations
+```bash
+# From the project root
+./reset-and-migrate.ps1
+```
 
-## Benefits of This Approach
+### Running Individual Phases
 
-- **Efficiency**: Raw data is only processed once, reducing migration time
-- **Reliability**: Reduces potential for errors during migration
-- **Maintainability**: Clear separation of concerns
-- **Flexibility**: Easier to update content without running full migrations
-- **Consistency**: Standardized approach for all content types
-- **Verifiability**: Easier to verify and validate the migration process
+You can also run individual phases or scripts:
+
+```bash
+# Process raw data
+pnpm --filter @kit/content-migrations run process:raw-data
+
+# Generate SQL seed files
+pnpm --filter @kit/content-migrations run generate:updated-sql
+
+# Import downloads from R2 bucket
+pnpm --filter @kit/content-migrations run import:downloads
+
+# Verify all relationships
+pnpm --filter @kit/content-migrations run verify:all
+```
+
+## Development
+
+### Adding New Content
+
+1. Add raw content to the appropriate directory in `src/data/raw/`
+2. Update processing scripts if needed
+3. Run the migration process to test
+
+### Creating New Scripts
+
+Follow these naming conventions:
+
+- `fix-*`: Scripts that repair data issues
+- `verify-*`: Scripts that verify data integrity
+- `migrate-*`: Scripts that perform migrations
+- `generate-*`: Scripts that generate output files
+- `process-*`: Scripts that transform data
+
+Place scripts in the appropriate directory based on their function.
+
+## Troubleshooting
+
+1. Check migration logs in `z.migration-logs/`
+2. Run verification scripts to identify specific issues
+3. Check database state with direct queries
+4. Run specific repair scripts as needed

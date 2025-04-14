@@ -1,17 +1,13 @@
-"use strict";
 /**
  * Generator for courses SQL
  */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.COURSE_ID = void 0;
-exports.generateCoursesSql = generateCoursesSql;
 // Define the course ID (fixed UUID)
-exports.COURSE_ID = '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8';
+export const COURSE_ID = '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8';
 /**
  * Generates SQL for the courses table
  * @returns SQL for courses
  */
-function generateCoursesSql() {
+export function generateCoursesSql() {
     return `-- Seed data for the courses table
 -- This file should be run after the migrations to ensure the courses table exists
 
@@ -31,7 +27,7 @@ INSERT INTO payload.courses (
   updated_at,
   created_at
 ) VALUES (
-  '${exports.COURSE_ID}', -- Fixed UUID for the course
+  '${COURSE_ID}', -- Fixed UUID for the course
   'Decks for Decision Makers',
   'decks-for-decision-makers',
   'Learn how to create effective presentations for decision makers',
@@ -74,7 +70,7 @@ SET intro_content = '{
     "version": 1
   }
 }'::jsonb
-WHERE id = '${exports.COURSE_ID}';
+WHERE id = '${COURSE_ID}';
 
 -- Create a simple content structure for completion_content
 UPDATE payload.courses
@@ -107,7 +103,7 @@ SET completion_content = '{
     "version": 1
   }
 }'::jsonb
-WHERE id = '${exports.COURSE_ID}';
+WHERE id = '${COURSE_ID}';
 
 -- Commit the transaction
 COMMIT;

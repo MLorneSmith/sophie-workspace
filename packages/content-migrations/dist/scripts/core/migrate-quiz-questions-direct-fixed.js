@@ -1,24 +1,19 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Script to migrate quiz questions directly to the database
  * Fixed version with proper UUID handling and unique constraint support
  */
-const dotenv_1 = __importDefault(require("dotenv"));
-const fs_1 = __importDefault(require("fs"));
-const gray_matter_1 = __importDefault(require("gray-matter"));
-const path_1 = __importDefault(require("path"));
-const pg_1 = __importDefault(require("pg"));
-const url_1 = require("url");
-const { Pool } = pg_1.default;
+import dotenv from 'dotenv';
+import fs from 'fs';
+import matter from 'gray-matter';
+import path from 'path';
+import pg from 'pg';
+import { fileURLToPath } from 'url';
+const { Pool } = pg;
 // Get the current file's directory
-const __filename = (0, url_1.fileURLToPath)(import.meta.url);
-const __dirname = path_1.default.dirname(__filename);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 // Load environment variables
-dotenv_1.default.config({ path: path_1.default.resolve(__dirname, '../../../.env.development') });
+dotenv.config({ path: path.resolve(__dirname, '../../../.env.development') });
 /**
  * Validates if a string is a valid UUID
  * @param str - The string to validate
@@ -67,7 +62,7 @@ async function migrateQuizQuestionsToDatabase() {
                 console.log('Unique constraint already exists');
             }
             // Path to the course quizzes files
-            const quizzesDir = path_1.default.resolve(__dirname, '../../../../../apps/payload/data/courses/quizzes');
+            const quizzesDir = path.resolve(__dirname, '../../../../../apps/payload/data/courses/quizzes');
             console.log(`Course quizzes directory: ${quizzesDir}`);
             // Get all quizzes from the database
             const quizIdsResult = await client.query('SELECT id, slug FROM payload.course_quizzes ORDER BY slug');
@@ -87,18 +82,18 @@ async function migrateQuizQuestionsToDatabase() {
                 console.log(`  ${slug}: ${id}`);
             }
             // Read all .mdoc files
-            const mdocFiles = fs_1.default
+            const mdocFiles = fs
                 .readdirSync(quizzesDir)
                 .filter((file) => file.endsWith('.mdoc'))
-                .map((file) => path_1.default.join(quizzesDir, file));
+                .map((file) => path.join(quizzesDir, file));
             console.log(`Found ${mdocFiles.length} quiz files to process for questions.`);
             // Migrate questions from each quiz file
             for (const file of mdocFiles) {
                 try {
-                    const content = fs_1.default.readFileSync(file, 'utf8');
-                    const { data } = (0, gray_matter_1.default)(content);
+                    const content = fs.readFileSync(file, 'utf8');
+                    const { data } = matter(content);
                     // Generate a slug from the file name
-                    const slug = path_1.default.basename(file, '.mdoc');
+                    const slug = path.basename(file, '.mdoc');
                     // Get the quiz ID from the quiz ID map or from the database
                     let quizId = quizIdMap.get(slug);
                     if (!quizId) {

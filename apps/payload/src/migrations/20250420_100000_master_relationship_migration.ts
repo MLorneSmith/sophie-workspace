@@ -35,6 +35,7 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
       'courses',
       'course_lessons',
       'course_quizzes',
+      'private',
     ]
 
     // 1.2: Ensure downloads table exists with proper schema
@@ -194,53 +195,110 @@ async function createCollectionRelationshipTable(db: any, collection: string) {
       created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
       updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
     );
-    
-    -- Create indexes for better performance
+  `)
+
+  // Create parent_id index
+  await db.execute(sql`
     CREATE INDEX IF NOT EXISTS ${sql.raw(`idx_${relationshipTable}_parent`)} 
       ON payload.${sql.raw(relationshipTable)}(parent_id);
-    CREATE INDEX IF NOT EXISTS ${sql.raw(`idx_${relationshipTable}_downloads`)} 
-      ON payload.${sql.raw(relationshipTable)}(downloads_id);
   `)
 
-  // Check if downloads_id column exists and has the right type
-  const columnInfo = await db.execute(sql`
-    SELECT data_type 
-    FROM information_schema.columns
-    WHERE table_schema = 'payload'
-    AND table_name = ${relationshipTable}
-    AND column_name = 'downloads_id'
+  // Check if downloads_id column exists before creating index
+  const downloadsIdExists = await db.execute(sql`
+    SELECT EXISTS (
+      SELECT FROM information_schema.columns
+      WHERE table_schema = 'payload'
+      AND table_name = ${relationshipTable}
+      AND column_name = 'downloads_id'
+    ) as exists
   `)
 
-  // If downloads_id exists but is not UUID type, convert it
-  if (columnInfo.rows.length > 0 && columnInfo.rows[0].data_type !== 'uuid') {
-    console.log(`Converting ${relationshipTable}.downloads_id to UUID type...`)
-
-    // Create new UUID column
+  // Create downloads_id index if the column exists
+  if (downloadsIdExists.rows[0]?.exists) {
     await db.execute(sql`
-      ALTER TABLE payload.${sql.raw(relationshipTable)}
-      ADD COLUMN downloads_id_uuid UUID
+      CREATE INDEX IF NOT EXISTS ${sql.raw(`idx_${relationshipTable}_downloads`)} 
+        ON payload.${sql.raw(relationshipTable)}(downloads_id);
+    `)
+  }
+
+  // Check if downloads_id column exists for column handling
+  const downloadsIdColumnExists = await db.execute(sql`
+    SELECT EXISTS (
+      SELECT FROM information_schema.columns
+      WHERE table_schema = 'payload'
+      AND table_name = ${relationshipTable}
+      AND column_name = 'downloads_id'
+    ) as exists
+  `)
+
+  // If downloads_id doesn't exist, check if there's a 'value' column instead
+  if (!downloadsIdColumnExists.rows[0]?.exists) {
+    const valueExists = await db.execute(sql`
+      SELECT EXISTS (
+        SELECT FROM information_schema.columns
+        WHERE table_schema = 'payload'
+        AND table_name = ${relationshipTable}
+        AND column_name = 'value'
+      ) as exists
     `)
 
-    // Copy data with safe casting
-    await db.execute(sql`
-      UPDATE payload.${sql.raw(relationshipTable)}
-      SET downloads_id_uuid = CASE
-        WHEN downloads_id IS NOT NULL THEN downloads_id::uuid
-        ELSE NULL
-      END
+    if (valueExists.rows[0]?.exists) {
+      // If the table has a 'value' column, we'll add a downloads_id column and sync later
+      console.log(
+        `Table ${relationshipTable} uses 'value' column instead of 'downloads_id', adding downloads_id column...`,
+      )
+      await db.execute(sql`
+        ALTER TABLE payload.${sql.raw(relationshipTable)}
+        ADD COLUMN IF NOT EXISTS downloads_id UUID
+      `)
+    } else {
+      // Create downloads_id column if neither exists
+      console.log(`Adding missing downloads_id column to ${relationshipTable}...`)
+      await db.execute(sql`
+        ALTER TABLE payload.${sql.raw(relationshipTable)}
+        ADD COLUMN downloads_id UUID
+      `)
+    }
+  } else {
+    // If downloads_id exists but is not UUID type, convert it
+    const columnInfo = await db.execute(sql`
+      SELECT data_type 
+      FROM information_schema.columns
+      WHERE table_schema = 'payload'
+      AND table_name = ${relationshipTable}
+      AND column_name = 'downloads_id'
     `)
 
-    // Drop old column
-    await db.execute(sql`
-      ALTER TABLE payload.${sql.raw(relationshipTable)}
-      DROP COLUMN downloads_id
-    `)
+    if (columnInfo.rows.length > 0 && columnInfo.rows[0].data_type !== 'uuid') {
+      console.log(`Converting ${relationshipTable}.downloads_id to UUID type...`)
 
-    // Rename UUID column
-    await db.execute(sql`
-      ALTER TABLE payload.${sql.raw(relationshipTable)}
-      RENAME COLUMN downloads_id_uuid TO downloads_id
-    `)
+      // Create new UUID column
+      await db.execute(sql`
+        ALTER TABLE payload.${sql.raw(relationshipTable)}
+        ADD COLUMN downloads_id_uuid UUID
+      `)
+
+      // Copy data with safe casting
+      await db.execute(sql`
+        UPDATE payload.${sql.raw(relationshipTable)}
+        SET downloads_id_uuid = CASE
+          WHEN downloads_id IS NOT NULL THEN downloads_id::uuid
+          ELSE NULL
+        END
+      `)
+
+      // Drop old column
+      await db.execute(sql`
+        ALTER TABLE payload.${sql.raw(relationshipTable)}
+        DROP COLUMN downloads_id
+      `)
+
+      // Rename UUID column
+      await db.execute(sql`
+        ALTER TABLE payload.${sql.raw(relationshipTable)}
+        RENAME COLUMN downloads_id_uuid TO downloads_id
+      `)
+    }
   }
 }
 
@@ -510,37 +568,102 @@ async function createRelationshipFunctions(db: any) {
 async function createDownloadsRelationshipsView(db: any, collections: string[]) {
   console.log('Creating downloads_relationships view...')
 
+  // We need to first check if the view exists, and drop it entirely before recreating
+  await db.execute(sql`
+    DROP VIEW IF EXISTS payload.downloads_relationships;
+  `)
+
   // Build the view SQL dynamically
   let viewSql = `
-    CREATE OR REPLACE VIEW payload.downloads_relationships AS
+    CREATE VIEW payload.downloads_relationships AS
   `
 
   // Add each collection's query
+  let collectionsAdded = 0
   for (let i = 0; i < collections.length; i++) {
     const collection = collections[i]
     const relationshipTable = `${collection}__downloads`
 
-    viewSql += `
-      -- ${collection} downloads
-      SELECT 
-        ${collection}.id::text as collection_id, 
-        downloads.id::text as download_id,
-        '${collection}' as collection_type
-      FROM payload.${collection}
-      JOIN payload.${relationshipTable} ON ${collection}.id::text = ${relationshipTable}.parent_id
-      JOIN payload.downloads ON downloads.id::uuid = ${relationshipTable}.downloads_id::uuid
-    `
+    // Check if table exists
+    const tableExists = await db.execute(sql`
+      SELECT EXISTS (
+        SELECT FROM information_schema.tables 
+        WHERE table_schema = 'payload'
+        AND table_name = ${relationshipTable}
+      ) as exists
+    `)
 
-    // Add UNION ALL for all but the last query
-    if (i < collections.length - 1) {
+    if (!tableExists.rows[0]?.exists) {
+      console.log(`Skipping ${relationshipTable} in view - table does not exist`)
+      continue
+    }
+
+    // Check if downloads_id column exists
+    const downloadsIdExists = await db.execute(sql`
+      SELECT EXISTS (
+        SELECT FROM information_schema.columns
+        WHERE table_schema = 'payload'
+        AND table_name = ${relationshipTable}
+        AND column_name = 'downloads_id'
+      ) as exists
+    `)
+
+    // Check if value column exists
+    const valueExists = await db.execute(sql`
+      SELECT EXISTS (
+        SELECT FROM information_schema.columns
+        WHERE table_schema = 'payload'
+        AND table_name = ${relationshipTable}
+        AND column_name = 'value'
+      ) as exists
+    `)
+
+    // If we already added a collection, add UNION ALL
+    if (collectionsAdded > 0) {
       viewSql += `
       UNION ALL
       `
     }
+
+    if (downloadsIdExists.rows[0]?.exists) {
+      // Use downloads_id column
+      viewSql += `
+        -- ${collection} downloads (using downloads_id)
+        SELECT 
+          ${collection}.id::text as collection_id, 
+          downloads.id::text as download_id,
+          '${collection}' as collection_type
+        FROM payload.${collection}
+        JOIN payload.${relationshipTable} ON ${collection}.id::text = ${relationshipTable}.parent_id::text
+        JOIN payload.downloads ON downloads.id = ${relationshipTable}.downloads_id
+      `
+    } else if (valueExists.rows[0]?.exists) {
+      // Use value column
+      viewSql += `
+        -- ${collection} downloads (using value column)
+        SELECT 
+          ${collection}.id::text as collection_id, 
+          downloads.id::text as download_id,
+          '${collection}' as collection_type
+        FROM payload.${collection}
+        JOIN payload.${relationshipTable} ON ${collection}.id::text = ${relationshipTable}.parent_id::text
+        JOIN payload.downloads ON downloads.id = ${relationshipTable}.value
+      `
+    } else {
+      console.log(`Skipping ${relationshipTable} in view - no downloads_id or value column`)
+      continue
+    }
+
+    collectionsAdded++
   }
 
-  // Execute the view creation SQL
-  await db.execute(sql`${sql.raw(viewSql)}`)
+  // Only create the view if we have at least one collection
+  if (collectionsAdded > 0) {
+    // Execute the view creation SQL
+    await db.execute(sql`${sql.raw(viewSql)}`)
+  } else {
+    console.log('No collections to add to downloads_relationships view')
+  }
 }
 
 /**
@@ -697,7 +820,7 @@ async function verifyRelationshipConsistency(db: any, collections: string[]) {
       FROM payload.${sql.raw(relationshipTable)} rt
       JOIN payload.downloads_rels dr ON rt.downloads_id::text = dr._parent_id::text
       WHERE dr.field = ${collection}
-      AND dr.value = rt.parent_id
+      AND dr.value = rt.parent_id::text
     `)
 
     const bidirectional = parseInt(biRows[0]?.total as string) || 0

@@ -1,27 +1,22 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Script to create an admin user in Payload CMS directly in the PostgreSQL database
  * Uses bcrypt for password hashing to match Payload CMS's implementation
  */
-const bcrypt_1 = __importDefault(require("bcrypt"));
-const dotenv_1 = __importDefault(require("dotenv"));
-const path_1 = __importDefault(require("path"));
-const pg_1 = __importDefault(require("pg"));
-const url_1 = require("url");
-const { Pool } = pg_1.default;
+import bcrypt from 'bcrypt';
+import dotenv from 'dotenv';
+import path from 'path';
+import pg from 'pg';
+import { fileURLToPath } from 'url';
+const { Pool } = pg;
 // Get the current file's directory
-const __filename = (0, url_1.fileURLToPath)(import.meta.url);
-const __dirname = path_1.default.dirname(__filename);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 // Load environment variables based on the NODE_ENV
 const envFile = process.env.NODE_ENV === 'production'
     ? '.env.production'
     : '.env.development';
 console.log(`Loading environment variables from ${envFile}`);
-dotenv_1.default.config({ path: path_1.default.resolve(__dirname, `../../${envFile}`) });
+dotenv.config({ path: path.resolve(__dirname, `../../${envFile}`) });
 /**
  * Creates a password hash using bcrypt to match Payload CMS's implementation
  * @param password - The password to hash
@@ -29,10 +24,10 @@ dotenv_1.default.config({ path: path_1.default.resolve(__dirname, `../../${envFi
  */
 function hashPassword(password) {
     // Generate a salt with 10 rounds (Payload CMS default)
-    const salt = bcrypt_1.default.genSaltSync(10);
+    const salt = bcrypt.genSaltSync(10);
     // Hash the password with the salt
     // Payload CMS stores the full bcrypt hash including the salt prefix
-    const hash = bcrypt_1.default.hashSync(password, salt);
+    const hash = bcrypt.hashSync(password, salt);
     return {
         salt,
         hash,

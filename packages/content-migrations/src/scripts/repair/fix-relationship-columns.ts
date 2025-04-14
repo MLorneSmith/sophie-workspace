@@ -4,8 +4,8 @@
  * This script adds missing relationship columns to all relationship tables
  * It's designed to be run as part of the migration process
  */
-import { executeSQL } from '../../utils/db/execute-sql';
-import { generateAddRelationshipColumnsSql } from '../sql/utils/relationship-columns';
+import { executeSQL } from '../../utils/db/execute-sql.js';
+import { generateAddRelationshipColumnsSql } from '../sql/utils/relationship-columns.js';
 
 async function fixRelationshipColumns() {
   console.log('\nFixing relationship columns in all relationship tables...');
@@ -167,6 +167,10 @@ async function fixRelationshipColumns() {
         -- Add downloads_id if it doesn't exist
         EXECUTE 'ALTER TABLE ' || table_name || 
                 ' ADD COLUMN IF NOT EXISTS downloads_id UUID';
+                
+        -- Add private_id if it doesn't exist
+        EXECUTE 'ALTER TABLE ' || table_name || 
+                ' ADD COLUMN IF NOT EXISTS private_id UUID';
                 
         -- Add other important relationship columns
         EXECUTE 'ALTER TABLE ' || table_name || 

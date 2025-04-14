@@ -1,8 +1,7 @@
 import { CollectionConfig } from 'payload'
 import { BlocksFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
 import { sql } from '@payloadcms/db-postgres'
-import CallToAction from '../blocks/CallToAction'
-import TestBlock from '../blocks/TestBlock'
+import { CallToAction, TestBlock } from '../blocks'
 import { findDownloadsForCollection } from '../db/downloads'
 
 export const Documentation: CollectionConfig = {

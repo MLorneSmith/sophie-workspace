@@ -1,4 +1,3 @@
-"use strict";
 /**
  * Image Mappings
  *
@@ -6,13 +5,10 @@
  * These mappings are used during the content migration process to correctly link
  * content to media files in Cloudflare R2.
  */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.postImageMappings = exports.lessonImageMappings = void 0;
-exports.getActualImageFilename = getActualImageFilename;
 /**
  * Mapping of lesson image paths to actual R2 filenames
  */
-exports.lessonImageMappings = {
+export const lessonImageMappings = {
     '/cms/images/basic-graphs/image.png': 'standard_graphs.png',
     '/cms/images/gestalt-principles/image.png': 'gestalt_principles_of_perception.png',
     '/cms/images/idea-generation/image.png': 'idea_generation.png',
@@ -41,7 +37,7 @@ exports.lessonImageMappings = {
 /**
  * Mapping of blog post image paths to actual R2 filenames
  */
-exports.postImageMappings = {
+export const postImageMappings = {
     '/cms/images/art-craft-business-presentation-creation/image.png': 'Art Craft of Presentation Creation.png',
     '/cms/images/pitch-deck/image.png': 'pitch-deck-image.png',
     '/cms/images/powerpoint-presentations-defense/image.png': 'Defense of PowerPoint.png',
@@ -57,8 +53,8 @@ exports.postImageMappings = {
  * @param frontmatterPath The path from the frontmatter
  * @returns The actual filename in R2, or null if not found
  */
-function getActualImageFilename(frontmatterPath) {
-    return (exports.lessonImageMappings[frontmatterPath] ||
-        exports.postImageMappings[frontmatterPath] ||
+export function getActualImageFilename(frontmatterPath) {
+    return (lessonImageMappings[frontmatterPath] ||
+        postImageMappings[frontmatterPath] ||
         null);
 }

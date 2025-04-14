@@ -304,7 +304,7 @@ async function main() {
       UPDATE payload.course_quizzes_rels
       SET course_lessons_id = value::uuid
       WHERE field = 'lessons'
-      AND (course_lessons_id IS NULL OR course_lessons_id::text != value);
+      AND (course_lessons_id IS NULL OR course_lessons_id IS DISTINCT FROM value::uuid);
     `);
 
     console.log(
@@ -341,7 +341,7 @@ async function main() {
       UPDATE payload.course_lessons_rels
       SET course_quizzes_id = value::uuid
       WHERE field = 'quiz_id'
-      AND (course_quizzes_id IS NULL OR course_quizzes_id::text != value);
+      AND (course_quizzes_id IS NULL OR course_quizzes_id IS DISTINCT FROM value::uuid);
     `);
 
     console.log(

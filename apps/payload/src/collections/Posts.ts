@@ -1,9 +1,7 @@
 import { CollectionConfig } from 'payload'
 import { BlocksFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
 
-import CallToAction from '../blocks/CallToAction'
-import TestBlock from '../blocks/TestBlock'
-import BunnyVideo from '../blocks/BunnyVideo'
+import { BunnyVideo, CallToAction, TestBlock } from '../blocks'
 import { findDownloadsForCollection } from '../db/downloads'
 
 export const Posts: CollectionConfig = {

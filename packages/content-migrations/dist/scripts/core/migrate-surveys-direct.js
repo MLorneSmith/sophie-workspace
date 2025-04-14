@@ -1,25 +1,20 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const dotenv_1 = __importDefault(require("dotenv"));
-const fs_1 = __importDefault(require("fs"));
-const js_yaml_1 = __importDefault(require("js-yaml"));
-const path_1 = __importDefault(require("path"));
-const pg_1 = __importDefault(require("pg"));
-const url_1 = require("url");
-const uuid_1 = require("uuid");
-const { Pool } = pg_1.default;
+import dotenv from 'dotenv';
+import fs from 'fs';
+import yaml from 'js-yaml';
+import path from 'path';
+import pg from 'pg';
+import { fileURLToPath } from 'url';
+import { v4 as uuidv4 } from 'uuid';
+const { Pool } = pg;
 // Get the current file's directory
-const __filename = (0, url_1.fileURLToPath)(import.meta.url);
-const __dirname = path_1.default.dirname(__filename);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 // Load environment variables based on the NODE_ENV
 const envFile = process.env.NODE_ENV === 'production'
     ? '.env.production'
     : '.env.development';
 console.log(`Loading environment variables from ${envFile}`);
-dotenv_1.default.config({ path: path_1.default.resolve(__dirname, `../../../${envFile}`) });
+dotenv.config({ path: path.resolve(__dirname, `../../../${envFile}`) });
 /**
  * Migrates surveys from YAML files directly to the PostgreSQL database
  */
@@ -40,29 +35,29 @@ async function migrateSurveysToDatabase() {
         try {
             console.log('Connected to database');
             // Path to the surveys files
-            const surveysDir = path_1.default.resolve(__dirname, '../../../../../apps/payload/data/surveys');
+            const surveysDir = path.resolve(__dirname, '../../../../../apps/payload/data/surveys');
             console.log(`Surveys directory: ${surveysDir}`);
             // Check if the directory exists
-            if (!fs_1.default.existsSync(surveysDir)) {
+            if (!fs.existsSync(surveysDir)) {
                 console.log(`Surveys directory does not exist: ${surveysDir}`);
                 console.log('Skipping surveys migration.');
                 return;
             }
             // Read all .yaml files
-            const yamlFiles = fs_1.default
+            const yamlFiles = fs
                 .readdirSync(surveysDir)
                 .filter((file) => file.endsWith('.yaml') || file.endsWith('.yml'))
-                .map((file) => path_1.default.join(surveysDir, file));
+                .map((file) => path.join(surveysDir, file));
             console.log(`Found ${yamlFiles.length} survey files to migrate.`);
             // Store survey IDs for later use in survey questions migration
             const surveyIdMap = new Map();
             // Migrate each file to the database
             for (const file of yamlFiles) {
                 try {
-                    const content = fs_1.default.readFileSync(file, 'utf8');
-                    const data = js_yaml_1.default.load(content);
+                    const content = fs.readFileSync(file, 'utf8');
+                    const data = yaml.load(content);
                     // Generate a slug from the file name
-                    const slug = path_1.default.basename(file, path_1.default.extname(file));
+                    const slug = path.basename(file, path.extname(file));
                     // Check if the survey already exists
                     const existingResult = await client.query(`SELECT id FROM payload.surveys WHERE slug = $1`, [slug]);
                     if (existingResult.rows.length > 0) {
@@ -71,7 +66,7 @@ async function migrateSurveysToDatabase() {
                         continue;
                     }
                     // Create a new survey
-                    const surveyId = (0, uuid_1.v4)();
+                    const surveyId = uuidv4();
                     await client.query(`INSERT INTO payload.surveys (
               id, 
               title, 
@@ -98,12 +93,12 @@ async function migrateSurveysToDatabase() {
                 }
             }
             // Save the survey ID map to a file for use in the survey questions migration
-            const dataDir = path_1.default.resolve(__dirname, '../data');
+            const dataDir = path.resolve(__dirname, '../data');
             // Ensure the data directory exists
-            if (!fs_1.default.existsSync(dataDir)) {
-                fs_1.default.mkdirSync(dataDir, { recursive: true });
+            if (!fs.existsSync(dataDir)) {
+                fs.mkdirSync(dataDir, { recursive: true });
             }
-            fs_1.default.writeFileSync(path_1.default.resolve(dataDir, 'survey-id-map.json'), JSON.stringify(Object.fromEntries(surveyIdMap), null, 2));
+            fs.writeFileSync(path.resolve(dataDir, 'survey-id-map.json'), JSON.stringify(Object.fromEntries(surveyIdMap), null, 2));
             console.log('Surveys migration complete!');
         }
         finally {

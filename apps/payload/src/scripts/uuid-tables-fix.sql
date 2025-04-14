@@ -23,6 +23,7 @@ DECLARE
   has_path BOOLEAN;
   has_parent_id BOOLEAN;
   has_downloads_id BOOLEAN;
+  has_private_id BOOLEAN;
 BEGIN
   -- Loop through all tables in the payload schema that match UUID pattern
   -- Fixed: Added proper table aliases to avoid the "missing FROM-clause entry for table 't'" error
@@ -79,6 +80,20 @@ BEGIN
     IF NOT has_downloads_id THEN
       EXECUTE format('ALTER TABLE payload.%I ADD COLUMN downloads_id UUID', uuid_table);
       added_columns := array_append(added_columns, 'downloads_id');
+    END IF;
+    
+    -- Check if private_id column exists
+    SELECT EXISTS (
+      SELECT FROM information_schema.columns
+      WHERE table_schema = 'payload'
+      AND table_name = uuid_table
+      AND column_name = 'private_id'
+    ) INTO has_private_id;
+    
+    -- Add private_id column if it doesn't exist
+    IF NOT has_private_id THEN
+      EXECUTE format('ALTER TABLE payload.%I ADD COLUMN private_id UUID', uuid_table);
+      added_columns := array_append(added_columns, 'private_id');
     END IF;
     
     -- Update the tracking table
@@ -146,6 +161,9 @@ BEGIN
         column_exists := TRUE;
       ELSIF fallback_column = 'downloads_id' THEN
         EXECUTE format('ALTER TABLE payload.%I ADD COLUMN downloads_id UUID', table_name);
+        column_exists := TRUE;
+      ELSIF fallback_column = 'private_id' THEN
+        EXECUTE format('ALTER TABLE payload.%I ADD COLUMN private_id UUID', table_name);
         column_exists := TRUE;
       END IF;
     EXCEPTION WHEN OTHERS THEN

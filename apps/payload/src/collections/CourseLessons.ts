@@ -1,6 +1,6 @@
 import { BlocksFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
 import { CollectionConfig } from 'payload'
-import BunnyVideo from '../blocks/BunnyVideo'
+import { BunnyVideo } from '../blocks'
 import { findDownloadsForCollection } from '../db/downloads'
 
 export const CourseLessons: CollectionConfig = {

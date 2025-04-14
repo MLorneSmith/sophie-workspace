@@ -1,28 +1,23 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Script to migrate course lessons directly to the database
  */
-const list_1 = require("@lexical/list");
-const rich_text_1 = require("@lexical/rich-text");
-const richtext_lexical_1 = require("@payloadcms/richtext-lexical");
-const headless_1 = require("@payloadcms/richtext-lexical/lexical/headless");
-const dotenv_1 = __importDefault(require("dotenv"));
-const fs_1 = __importDefault(require("fs"));
-const gray_matter_1 = __importDefault(require("gray-matter"));
-const path_1 = __importDefault(require("path"));
-const pg_1 = __importDefault(require("pg"));
-const url_1 = require("url");
-const uuid_1 = require("uuid");
-const { Pool } = pg_1.default;
+import { ListItemNode, ListNode } from '@lexical/list';
+import { HeadingNode } from '@lexical/rich-text';
+import { $convertFromMarkdownString } from '@payloadcms/richtext-lexical';
+import { createHeadlessEditor } from '@payloadcms/richtext-lexical/lexical/headless';
+import dotenv from 'dotenv';
+import fs from 'fs';
+import matter from 'gray-matter';
+import path from 'path';
+import pg from 'pg';
+import { fileURLToPath } from 'url';
+import { v4 as uuidv4 } from 'uuid';
+const { Pool } = pg;
 // Get the current file's directory
-const __filename = (0, url_1.fileURLToPath)(import.meta.url);
-const __dirname = path_1.default.dirname(__filename);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 // Load environment variables
-dotenv_1.default.config({ path: path_1.default.resolve(__dirname, '../../../.env.development') });
+dotenv.config({ path: path.resolve(__dirname, '../../../.env.development') });
 /**
  * Migrates course lessons directly to the database
  */
@@ -46,30 +41,30 @@ async function migrateCourseLessonsToDatabase() {
             const courseId = '3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8';
             console.log(`Using course with ID: ${courseId}`);
             // Path to the course lessons files
-            const lessonsDir = path_1.default.resolve(__dirname, '../../../../../apps/payload/data/courses/lessons');
+            const lessonsDir = path.resolve(__dirname, '../../../../../apps/payload/data/courses/lessons');
             console.log(`Course lessons directory: ${lessonsDir}`);
             // Read all .mdoc files
-            const mdocFiles = fs_1.default
+            const mdocFiles = fs
                 .readdirSync(lessonsDir)
                 .filter((file) => file.endsWith('.mdoc'))
-                .map((file) => path_1.default.join(lessonsDir, file));
+                .map((file) => path.join(lessonsDir, file));
             console.log(`Found ${mdocFiles.length} lesson files to migrate.`);
             // Migrate each file to the database
             for (const file of mdocFiles) {
                 try {
-                    const content = fs_1.default.readFileSync(file, 'utf8');
-                    const { data, content: mdContent } = (0, gray_matter_1.default)(content);
+                    const content = fs.readFileSync(file, 'utf8');
+                    const { data, content: mdContent } = matter(content);
                     // Generate a slug from the file name
-                    const slug = path_1.default.basename(file, '.mdoc');
+                    const slug = path.basename(file, '.mdoc');
                     // Convert Markdown content to Lexical format
                     const lexicalContent = (() => {
                         // Create a headless editor instance with list nodes registered
-                        const headlessEditor = (0, headless_1.createHeadlessEditor)({
-                            nodes: [list_1.ListNode, list_1.ListItemNode, rich_text_1.HeadingNode],
+                        const headlessEditor = createHeadlessEditor({
+                            nodes: [ListNode, ListItemNode, HeadingNode],
                         });
                         // Convert Markdown to Lexical format
                         headlessEditor.update(() => {
-                            (0, richtext_lexical_1.$convertFromMarkdownString)(mdContent);
+                            $convertFromMarkdownString(mdContent);
                         }, { discrete: true });
                         // Get the Lexical JSON
                         return headlessEditor.getEditorState().toJSON();
@@ -89,7 +84,7 @@ async function migrateCourseLessonsToDatabase() {
                         }
                     }
                     // Generate a UUID for the lesson
-                    const lessonId = (0, uuid_1.v4)();
+                    const lessonId = uuidv4();
                     // Insert the lesson into the database
                     await client.query(`INSERT INTO payload.course_lessons (
               id, 

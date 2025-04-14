@@ -1,0 +1,925 @@
+2025-04-14 13:08:42: Starting migration process at 04/14/2025 13:08:42
+2025-04-14 13:08:42: Detailed logs will be saved to: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250414-130842-526.txt
+2025-04-14 13:08:42: ================================================================================
+2025-04-14 13:08:42: SETUP PHASE
+2025-04-14 13:08:42: ================================================================================
+2025-04-14 13:08:42: 
+2025-04-14 13:08:42: ------------------------------------------------------------
+2025-04-14 13:08:42: STEP 1: Resetting Supabase database and running Web app migrations
+2025-04-14 13:08:42: ------------------------------------------------------------
+2025-04-14 13:08:42: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\apps\web
+2025-04-14 13:08:42: Skipping Supabase restart (already done)
+2025-04-14 13:08:42: Running supabase:reset...
+2025-04-14 13:08:42: EXECUTING: pnpm run supabase:reset
+2025-04-14 13:08:42: DESCRIPTION: Resetting Supabase database
+2025-04-14 13:09:13: Running supabase migrations...
+2025-04-14 13:09:13: EXECUTING: supabase migration up
+2025-04-14 13:09:13: DESCRIPTION: Running Supabase migrations
+--- Command Output Start ---
+apps/payload                             | GÇëWARNGÇë The field "pnpm.onlyBuiltDependencies" was found in D:\SlideHeroes\App\repos\2025slideheroes\apps\payload/package.json. This will not take effect. You should configure "pnpm.onlyBuiltDependencies" at the root of the workspace instead.
+
+> @kit/content-migrations@0.1.0 verify:schema D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/scripts/verification/verify-schema.ts "public"
+
+Loading environment variables from .env.development
+Connecting to database: postgresql://postgres:postgres@localhost:54322/postgres?schema=payload
+Checking if schema 'public' exists...
+Schema 'public' exists
+
+--- Command Output End ---
+2025-04-14 13:09:13: Schema 'public' exists
+2025-04-14 13:09:13: âœ… Web app migrations completed successfully
+2025-04-14 13:09:13: 
+2025-04-14 13:09:13: ------------------------------------------------------------
+2025-04-14 13:09:13: STEP 2: Resetting Payload schema
+2025-04-14 13:09:13: ------------------------------------------------------------
+2025-04-14 13:09:13: Dropping and recreating payload schema...
+2025-04-14 13:09:13: Temporarily changed to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-04-14 13:09:13: EXECUTING: pnpm run utils:run-sql-file "C:\Users\msmit\AppData\Local\Temp\reset_payload_schema.sql"
+2025-04-14 13:09:13: DESCRIPTION: Resetting Payload schema
+2025-04-14 13:09:14: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes
+2025-04-14 13:09:14: âœ… Payload schema reset successfully
+2025-04-14 13:09:14: 
+2025-04-14 13:09:14: ------------------------------------------------------------
+2025-04-14 13:09:14: STEP 3: Running Payload migrations
+2025-04-14 13:09:14: ------------------------------------------------------------
+2025-04-14 13:09:14: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\apps\payload
+2025-04-14 13:09:14: Checking migration status...
+2025-04-14 13:09:14: EXECUTING: pnpm migrate:status
+2025-04-14 13:09:14: DESCRIPTION: Checking migration status
+--- Command Output Start ---
+
+> payload-app@1.0.0 migrate:status D:\SlideHeroes\App\repos\2025slideheroes\apps\payload
+> cross-env NODE_OPTIONS=--no-deprecation payload migrate:status
+
+[13:09:17] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[13:09:17] [32mINFO[39m: [36mReading migration files from D:\SlideHeroes\App\repos\2025slideheroes\apps\payload\src\migrations[39m
+GöîGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGö¼GöÇGöÇGöÇGöÇGöÇGöÇGöÇGö¼GöÇGöÇGöÇGöÇGöÇGöÉ
+Göé[37m [0m[01m                                                 Name[0m Göé[37m [0m[01mBatch[0m Göé[37m [0m[01mRan[0m Göé
+Gö£GöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGö+GöÇGöÇGöÇGöÇGöÇGöÇGöÇGö+GöÇGöÇGöÇGöÇGöÇGöñ
+Göé[37m [0m[31m                      20250402_100000_schema_creation[0m Göé[37m [0m[31m     [0m Göé[37m [0m[31m No[0m Göé
+Göé[37m [0m[31m                          20250402_300000_base_schema[0m Göé[37m [0m[31m     [0m Göé[37m [0m[31m No[0m Göé
+Göé[37m [0m[31m                     20250402_305000_seed_course_data[0m Göé[37m [0m[31m     [0m Göé[37m [0m[31m No[0m Göé
+Göé[37m [0m[31m               20250402_310000_relationship_structure[0m Göé[37m [0m[31m     [0m Göé[37m [0m[31m No[0m Göé
+Göé[37m [0m[31m          20250402_330000_bidirectional_relationships[0m Göé[37m [0m[31m     [0m Göé[37m [0m[31m No[0m Göé
+Göé[37m [0m[31m                      20250402_340000_add_users_table[0m Göé[37m [0m[31m     [0m Göé[37m [0m[31m No[0m Göé
+Göé[37m [0m[31m                    20250402_350000_create_admin_user[0m Göé[37m [0m[31m     [0m Göé[37m [0m[31m No[0m Göé
+Göé[37m [0m[31m                      20250403_200000_process_content[0m Göé[37m [0m[31m     [0m Göé[37m [0m[31m No[0m Göé
+Göé[37m [0m[31m              20250403_300000_add_lesson_enhancements[0m Göé[37m [0m[31m     [0m Göé[37m [0m[31m No[0m Göé
+Göé[37m [0m[31m        20250404_100000_fix_lesson_quiz_relationships[0m Göé[37m [0m[31m     [0m Göé[37m [0m[31m No[0m Göé
+Göé[37m [0m[31m             20250407_100000_add_survey_id_to_lessons[0m Göé[37m [0m[31m     [0m Göé[37m [0m[31m No[0m Göé
+Göé[37m [0m[31m20250407_100000_fix_missing_lesson_quiz_relationships[0m Göé[37m [0m[31m     [0m Göé[37m [0m[31m No[0m Göé
+Göé[37m [0m[31m             20250410_120500_relationship_columns_fix[0m Göé[37m [0m[31m     [0m Göé[37m [0m[31m No[0m Göé
+Göé[37m [0m[31m               20250414_100000_add_private_collection[0m Göé[37m [0m[31m     [0m Göé[37m [0m[31m No[0m Göé
+Göé[37m [0m[31m        20250420_100000_master_relationship_migration[0m Göé[37m [0m[31m     [0m Göé[37m [0m[31m No[0m Göé
+Göé[37m [0m[31m             20250420_100000_master_relationship_view[0m Göé[37m [0m[31m     [0m Göé[37m [0m[31m No[0m Göé
+Göé[37m [0m[31m      20250425_100000_proactive_uuid_table_monitoring[0m Göé[37m [0m[31m     [0m Göé[37m [0m[31m No[0m Göé
+Göé[37m [0m[31m     20250430_100000_fix_downloads_relationships_view[0m Göé[37m [0m[31m     [0m Göé[37m [0m[31m No[0m Göé
+Göé[37m [0m[31m                  20250430_110000_fix_missing_columns[0m Göé[37m [0m[31m     [0m Göé[37m [0m[31m No[0m Göé
+Göé[37m [0m[31m                20250430_120000_fix_remaining_columns[0m Göé[37m [0m[31m     [0m Göé[37m [0m[31m No[0m Göé
+Göé[37m [0m[31m                      20250430_120001_add_todo_column[0m Göé[37m [0m[31m     [0m Göé[37m [0m[31m No[0m Göé
+Göé[37m [0m[31m      20250430_130000_convert_todo_fields_to_richtext[0m Göé[37m [0m[31m     [0m Göé[37m [0m[31m No[0m Göé
+Göé[37m [0m[31m          20250430_130000_fix_downloads_thumbnail_url[0m Göé[37m [0m[31m     [0m Göé[37m [0m[31m No[0m Göé
+GööGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGö¦GöÇGöÇGöÇGöÇGöÇGöÇGöÇGö¦GöÇGöÇGöÇGöÇGöÇGöÿ
+[13:09:17] [32mINFO[39m: [36mDone.[39m
+
+--- Command Output End ---
+2025-04-14 13:09:17: Running all migrations...
+2025-04-14 13:09:17: EXECUTING: pnpm payload migrate
+2025-04-14 13:09:17: DESCRIPTION: Running Payload migrations
+2025-04-14 13:09:33: Adding relationship ID columns to locked documents tables...
+2025-04-14 13:09:33: Temporarily changed to directory: D:\SlideHeroes\App\repos\2025slideheroes
+2025-04-14 13:09:33: EXECUTING: pnpm --filter @kit/content-migrations run sql:add-relationship-id-columns
+2025-04-14 13:09:33: DESCRIPTION: Adding relationship ID columns to locked documents tables
+2025-04-14 13:09:34: Fixing UUID tables to ensure all required columns exist...
+2025-04-14 13:09:34: Loading environment variables from .env.development
+2025-04-14 13:09:34: Setting DATABASE_URI from .env.development file
+2025-04-14 13:09:34: EXECUTING: pnpm exec tsx src/scripts/run-uuid-tables-fix.ts
+2025-04-14 13:09:34: DESCRIPTION: Running UUID tables fix script
+2025-04-14 13:09:45: Applying direct fix for UUID tables...
+2025-04-14 13:09:45: EXECUTING: pnpm --filter @kit/content-migrations run sql:ensure-columns
+2025-04-14 13:09:45: DESCRIPTION: Ensuring UUID tables have required columns
+2025-04-14 13:09:46: âœ… UUID tables verified and fixed successfully
+2025-04-14 13:09:46: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\apps\payload
+2025-04-14 13:09:46: Verifying migration status...
+2025-04-14 13:09:46: EXECUTING: pnpm migrate:status
+2025-04-14 13:09:46: DESCRIPTION: Verifying migration status
+--- Command Output Start ---
+
+> payload-app@1.0.0 migrate:status D:\SlideHeroes\App\repos\2025slideheroes\apps\payload
+> cross-env NODE_OPTIONS=--no-deprecation payload migrate:status
+
+[13:09:49] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[13:09:49] [32mINFO[39m: [36mReading migration files from D:\SlideHeroes\App\repos\2025slideheroes\apps\payload\src\migrations[39m
+GöîGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGö¼GöÇGöÇGöÇGöÇGöÇGöÇGöÇGö¼GöÇGöÇGöÇGöÇGöÇGöÉ
+Göé[37m [0m[01m                                                 Name[0m Göé[37m [0m[01mBatch[0m Göé[37m [0m[01mRan[0m Göé
+Gö£GöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGö+GöÇGöÇGöÇGöÇGöÇGöÇGöÇGö+GöÇGöÇGöÇGöÇGöÇGöñ
+Göé[37m [0m[32m                      20250402_100000_schema_creation[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
+Göé[37m [0m[32m                          20250402_300000_base_schema[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
+Göé[37m [0m[32m                     20250402_305000_seed_course_data[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
+Göé[37m [0m[32m               20250402_310000_relationship_structure[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
+Göé[37m [0m[32m          20250402_330000_bidirectional_relationships[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
+Göé[37m [0m[32m                      20250402_340000_add_users_table[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
+Göé[37m [0m[32m                    20250402_350000_create_admin_user[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
+Göé[37m [0m[32m                      20250403_200000_process_content[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
+Göé[37m [0m[32m              20250403_300000_add_lesson_enhancements[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
+Göé[37m [0m[32m        20250404_100000_fix_lesson_quiz_relationships[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
+Göé[37m [0m[32m             20250407_100000_add_survey_id_to_lessons[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
+Göé[37m [0m[32m20250407_100000_fix_missing_lesson_quiz_relationships[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
+Göé[37m [0m[32m             20250410_120500_relationship_columns_fix[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
+Göé[37m [0m[32m               20250414_100000_add_private_collection[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
+Göé[37m [0m[32m        20250420_100000_master_relationship_migration[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
+Göé[37m [0m[32m             20250420_100000_master_relationship_view[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
+Göé[37m [0m[32m      20250425_100000_proactive_uuid_table_monitoring[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
+Göé[37m [0m[32m     20250430_100000_fix_downloads_relationships_view[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
+Göé[37m [0m[32m                  20250430_110000_fix_missing_columns[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
+Göé[37m [0m[32m                20250430_120000_fix_remaining_columns[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
+Göé[37m [0m[32m                      20250430_120001_add_todo_column[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
+Göé[37m [0m[32m      20250430_130000_convert_todo_fields_to_richtext[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
+Göé[37m [0m[32m          20250430_130000_fix_downloads_thumbnail_url[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
+GööGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGö¦GöÇGöÇGöÇGöÇGöÇGöÇGöÇGö¦GöÇGöÇGöÇGöÇGöÇGöÿ
+[13:09:50] [32mINFO[39m: [36mDone.[39m
+
+--- Command Output End ---
+2025-04-14 13:09:50: âœ… All migrations have been applied successfully
+2025-04-14 13:09:50: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes
+2025-04-14 13:09:50: EXECUTING: pnpm --filter @kit/content-migrations run verify:schema payload
+2025-04-14 13:09:50: DESCRIPTION: Verifying schema 'payload' exists
+--- Command Output Start ---
+apps/payload                             | GÇëWARNGÇë The field "pnpm.onlyBuiltDependencies" was found in D:\SlideHeroes\App\repos\2025slideheroes\apps\payload/package.json. This will not take effect. You should configure "pnpm.onlyBuiltDependencies" at the root of the workspace instead.
+
+> @kit/content-migrations@0.1.0 verify:schema D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/scripts/verification/verify-schema.ts "payload"
+
+Loading environment variables from .env.development
+Connecting to database: postgresql://postgres:postgres@localhost:54322/postgres?schema=payload
+Checking if schema 'payload' exists...
+Schema 'payload' exists
+
+--- Command Output End ---
+2025-04-14 13:09:50: Schema 'payload' exists
+2025-04-14 13:09:50: EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload courses
+2025-04-14 13:09:50: DESCRIPTION: Verifying table 'payload.courses' exists
+--- Command Output Start ---
+apps/payload                             | GÇëWARNGÇë The field "pnpm.onlyBuiltDependencies" was found in D:\SlideHeroes\App\repos\2025slideheroes\apps\payload/package.json. This will not take effect. You should configure "pnpm.onlyBuiltDependencies" at the root of the workspace instead.
+
+> @kit/content-migrations@0.1.0 verify:table D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/scripts/verification/verify-table.ts "payload" "courses"
+
+Loading environment variables from .env.development
+Connecting to database: postgresql://postgres:postgres@localhost:54322/postgres?schema=payload
+Checking if table 'payload.courses' exists...
+Table 'payload.courses' exists
+
+--- Command Output End ---
+2025-04-14 13:09:51: Table 'payload.courses' exists
+2025-04-14 13:09:51: EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload course_lessons
+2025-04-14 13:09:51: DESCRIPTION: Verifying table 'payload.course_lessons' exists
+--- Command Output Start ---
+apps/payload                             | GÇëWARNGÇë The field "pnpm.onlyBuiltDependencies" was found in D:\SlideHeroes\App\repos\2025slideheroes\apps\payload/package.json. This will not take effect. You should configure "pnpm.onlyBuiltDependencies" at the root of the workspace instead.
+
+> @kit/content-migrations@0.1.0 verify:table D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/scripts/verification/verify-table.ts "payload" "course_lessons"
+
+Loading environment variables from .env.development
+Connecting to database: postgresql://postgres:postgres@localhost:54322/postgres?schema=payload
+Checking if table 'payload.course_lessons' exists...
+Table 'payload.course_lessons' exists
+
+--- Command Output End ---
+2025-04-14 13:09:52: Table 'payload.course_lessons' exists
+2025-04-14 13:09:52: EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload course_quizzes
+2025-04-14 13:09:52: DESCRIPTION: Verifying table 'payload.course_quizzes' exists
+--- Command Output Start ---
+apps/payload                             | GÇëWARNGÇë The field "pnpm.onlyBuiltDependencies" was found in D:\SlideHeroes\App\repos\2025slideheroes\apps\payload/package.json. This will not take effect. You should configure "pnpm.onlyBuiltDependencies" at the root of the workspace instead.
+
+> @kit/content-migrations@0.1.0 verify:table D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/scripts/verification/verify-table.ts "payload" "course_quizzes"
+
+Loading environment variables from .env.development
+Connecting to database: postgresql://postgres:postgres@localhost:54322/postgres?schema=payload
+Checking if table 'payload.course_quizzes' exists...
+Table 'payload.course_quizzes' exists
+
+--- Command Output End ---
+2025-04-14 13:09:52: Table 'payload.course_quizzes' exists
+2025-04-14 13:09:52: EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload quiz_questions
+2025-04-14 13:09:52: DESCRIPTION: Verifying table 'payload.quiz_questions' exists
+--- Command Output Start ---
+apps/payload                             | GÇëWARNGÇë The field "pnpm.onlyBuiltDependencies" was found in D:\SlideHeroes\App\repos\2025slideheroes\apps\payload/package.json. This will not take effect. You should configure "pnpm.onlyBuiltDependencies" at the root of the workspace instead.
+
+> @kit/content-migrations@0.1.0 verify:table D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/scripts/verification/verify-table.ts "payload" "quiz_questions"
+
+Loading environment variables from .env.development
+Connecting to database: postgresql://postgres:postgres@localhost:54322/postgres?schema=payload
+Checking if table 'payload.quiz_questions' exists...
+Table 'payload.quiz_questions' exists
+
+--- Command Output End ---
+2025-04-14 13:09:53: Table 'payload.quiz_questions' exists
+2025-04-14 13:09:53: EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload surveys
+2025-04-14 13:09:53: DESCRIPTION: Verifying table 'payload.surveys' exists
+--- Command Output Start ---
+apps/payload                             | GÇëWARNGÇë The field "pnpm.onlyBuiltDependencies" was found in D:\SlideHeroes\App\repos\2025slideheroes\apps\payload/package.json. This will not take effect. You should configure "pnpm.onlyBuiltDependencies" at the root of the workspace instead.
+
+> @kit/content-migrations@0.1.0 verify:table D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/scripts/verification/verify-table.ts "payload" "surveys"
+
+Loading environment variables from .env.development
+Connecting to database: postgresql://postgres:postgres@localhost:54322/postgres?schema=payload
+Checking if table 'payload.surveys' exists...
+Table 'payload.surveys' exists
+
+--- Command Output End ---
+2025-04-14 13:09:54: Table 'payload.surveys' exists
+2025-04-14 13:09:54: EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload survey_questions
+2025-04-14 13:09:54: DESCRIPTION: Verifying table 'payload.survey_questions' exists
+--- Command Output Start ---
+apps/payload                             | GÇëWARNGÇë The field "pnpm.onlyBuiltDependencies" was found in D:\SlideHeroes\App\repos\2025slideheroes\apps\payload/package.json. This will not take effect. You should configure "pnpm.onlyBuiltDependencies" at the root of the workspace instead.
+
+> @kit/content-migrations@0.1.0 verify:table D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/scripts/verification/verify-table.ts "payload" "survey_questions"
+
+Loading environment variables from .env.development
+Connecting to database: postgresql://postgres:postgres@localhost:54322/postgres?schema=payload
+Checking if table 'payload.survey_questions' exists...
+Table 'payload.survey_questions' exists
+
+--- Command Output End ---
+2025-04-14 13:09:55: Table 'payload.survey_questions' exists
+2025-04-14 13:09:55: âœ… Payload migrations completed successfully
+2025-04-14 13:09:55: âœ… Setup phase completed successfully
+2025-04-14 13:09:55: ================================================================================
+2025-04-14 13:09:55: PROCESSING PHASE
+2025-04-14 13:09:55: ================================================================================
+2025-04-14 13:09:55: 
+2025-04-14 13:09:55: ------------------------------------------------------------
+2025-04-14 13:09:55: STEP 4: Checking and processing raw data
+2025-04-14 13:09:55: ------------------------------------------------------------
+2025-04-14 13:09:55: Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+2025-04-14 13:09:55: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-04-14 13:09:55: Processed data not found. Processing raw data...
+2025-04-14 13:09:55: EXECUTING: pnpm run process:raw-data
+2025-04-14 13:09:55: DESCRIPTION: Processing raw data
+2025-04-14 13:09:55: Ensuring lesson metadata YAML is up to date...
+2025-04-14 13:09:55: âœ… Lesson metadata YAML exists and is up to date
+2025-04-14 13:09:55: Found HTML todo content file. Updating YAML with HTML content...
+2025-04-14 13:09:55: EXECUTING: pnpm exec tsx src/scripts/parse-lesson-todo-html.ts
+2025-04-14 13:09:55: DESCRIPTION: Parsing HTML todo content
+2025-04-14 13:10:01: Validating HTML parsing results...
+2025-04-14 13:10:01: âœ… Updated YAML with HTML todo content
+2025-04-14 13:10:01: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes
+2025-04-14 13:10:01: âœ… Raw data processing completed
+2025-04-14 13:10:01: 
+2025-04-14 13:10:01: ------------------------------------------------------------
+2025-04-14 13:10:01: STEP 5: Generating SQL seed files and fixing quiz ID consistency
+2025-04-14 13:10:01: ------------------------------------------------------------
+2025-04-14 13:10:01: Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+2025-04-14 13:10:01: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-04-14 13:10:01: Verifying quiz system integrity...
+2025-04-14 13:10:01: EXECUTING: pnpm exec tsx src/scripts/verification/verify-quiz-system-integrity.ts
+2025-04-14 13:10:01: DESCRIPTION: Verifying quiz system integrity
+--- Command Output Start ---
+Verifying quiz system integrity...
+Verifying quiz definitions...
+Verifying quiz IDs are unique...
+Verifying lesson-quiz relations...
+Verifying lookup functions...
+Quiz system integrity verified successfully!
+
+--- Command Output End ---
+2025-04-14 13:10:02: Generating SQL seed files using YAML-based approach...
+2025-04-14 13:10:02: EXECUTING: pnpm --filter @kit/content-migrations run generate:updated-sql
+2025-04-14 13:10:02: DESCRIPTION: Generating SQL seed files using YAML metadata
+2025-04-14 13:10:03: âœ… Successfully generated SQL seed files using YAML approach
+2025-04-14 13:10:03: Fixing quiz ID consistency issues...
+2025-04-14 13:10:03: EXECUTING: pnpm exec tsx src/scripts/fix-quiz-id-consistency.ts
+2025-04-14 13:10:03: DESCRIPTION: Fixing quiz ID consistency
+2025-04-14 13:10:03: âœ… SQL seed files generated and ID consistency fixed successfully
+2025-04-14 13:10:03: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-04-14 13:10:03: 
+2025-04-14 13:10:03: ------------------------------------------------------------
+2025-04-14 13:10:03: STEP 6: Fixing references to ensure consistency
+2025-04-14 13:10:03: ------------------------------------------------------------
+2025-04-14 13:10:03: Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+2025-04-14 13:10:03: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-04-14 13:10:03: Fixing lesson-quiz reference consistency...
+2025-04-14 13:10:04: EXECUTING: pnpm exec tsx src/scripts/fix-lesson-quiz-references.ts
+2025-04-14 13:10:04: DESCRIPTION: Fixing lesson-quiz references
+2025-04-14 13:10:04: Fixing additional lesson-quiz reference consistency...
+2025-04-14 13:10:04: EXECUTING: pnpm exec tsx src/scripts/fix-lessons-quiz-references-sql.ts
+2025-04-14 13:10:04: DESCRIPTION: Fixing additional lesson-quiz references
+2025-04-14 13:10:05: Fixing quiz question references...
+2025-04-14 13:10:05: EXECUTING: pnpm exec tsx src/scripts/fix-questions-quiz-references.ts
+2025-04-14 13:10:05: DESCRIPTION: Fixing quiz question references
+2025-04-14 13:10:06: âœ… All references fixed successfully
+2025-04-14 13:10:06: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-04-14 13:10:06: âœ… Processing phase completed successfully
+2025-04-14 13:10:06: ================================================================================
+2025-04-14 13:10:06: LOADING PHASE
+2025-04-14 13:10:06: ================================================================================
+2025-04-14 13:10:06: 
+2025-04-14 13:10:06: ------------------------------------------------------------
+2025-04-14 13:10:06: STEP 7: Running content migrations via Payload migrations
+2025-04-14 13:10:06: ------------------------------------------------------------
+2025-04-14 13:10:06: Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+2025-04-14 13:10:06: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\apps\payload
+2025-04-14 13:10:06: Running all Payload migrations...
+2025-04-14 13:10:06: EXECUTING: pnpm payload migrate
+2025-04-14 13:10:06: DESCRIPTION: Running Payload migrations
+2025-04-14 13:10:09: Verifying migrations...
+2025-04-14 13:10:09: EXECUTING: pnpm migrate:status
+2025-04-14 13:10:09: DESCRIPTION: Verifying migration status
+--- Command Output Start ---
+
+> payload-app@1.0.0 migrate:status D:\SlideHeroes\App\repos\2025slideheroes\apps\payload
+> cross-env NODE_OPTIONS=--no-deprecation payload migrate:status
+
+[13:10:11] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[13:10:11] [32mINFO[39m: [36mReading migration files from D:\SlideHeroes\App\repos\2025slideheroes\apps\payload\src\migrations[39m
+GöîGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGö¼GöÇGöÇGöÇGöÇGöÇGöÇGöÇGö¼GöÇGöÇGöÇGöÇGöÇGöÉ
+Göé[37m [0m[01m                                                 Name[0m Göé[37m [0m[01mBatch[0m Göé[37m [0m[01mRan[0m Göé
+Gö£GöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGö+GöÇGöÇGöÇGöÇGöÇGöÇGöÇGö+GöÇGöÇGöÇGöÇGöÇGöñ
+Göé[37m [0m[32m                      20250402_100000_schema_creation[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
+Göé[37m [0m[32m                          20250402_300000_base_schema[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
+Göé[37m [0m[32m                     20250402_305000_seed_course_data[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
+Göé[37m [0m[32m               20250402_310000_relationship_structure[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
+Göé[37m [0m[32m          20250402_330000_bidirectional_relationships[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
+Göé[37m [0m[32m                      20250402_340000_add_users_table[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
+Göé[37m [0m[32m                    20250402_350000_create_admin_user[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
+Göé[37m [0m[32m                      20250403_200000_process_content[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
+Göé[37m [0m[32m              20250403_300000_add_lesson_enhancements[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
+Göé[37m [0m[32m        20250404_100000_fix_lesson_quiz_relationships[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
+Göé[37m [0m[32m             20250407_100000_add_survey_id_to_lessons[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
+Göé[37m [0m[32m20250407_100000_fix_missing_lesson_quiz_relationships[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
+Göé[37m [0m[32m             20250410_120500_relationship_columns_fix[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
+Göé[37m [0m[32m               20250414_100000_add_private_collection[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
+Göé[37m [0m[32m        20250420_100000_master_relationship_migration[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
+Göé[37m [0m[32m             20250420_100000_master_relationship_view[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
+Göé[37m [0m[32m      20250425_100000_proactive_uuid_table_monitoring[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
+Göé[37m [0m[32m     20250430_100000_fix_downloads_relationships_view[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
+Göé[37m [0m[32m                  20250430_110000_fix_missing_columns[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
+Göé[37m [0m[32m                20250430_120000_fix_remaining_columns[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
+Göé[37m [0m[32m                      20250430_120001_add_todo_column[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
+Göé[37m [0m[32m      20250430_130000_convert_todo_fields_to_richtext[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
+Göé[37m [0m[32m          20250430_130000_fix_downloads_thumbnail_url[0m Göé[37m [0m[32m    1[0m Göé[37m [0m[32mYes[0m Göé
+GööGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGö¦GöÇGöÇGöÇGöÇGöÇGöÇGöÇGö¦GöÇGöÇGöÇGöÇGöÇGöÿ
+[13:10:11] [32mINFO[39m: [36mDone.[39m
+
+--- Command Output End ---
+2025-04-14 13:10:11: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\apps\payload
+2025-04-14 13:10:11: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-04-14 13:10:11: Verifying database state...
+2025-04-14 13:10:11: EXECUTING: pnpm run verify:all
+2025-04-14 13:10:11: DESCRIPTION: Verifying database structure
+--- Command Output Start ---
+
+> @kit/content-migrations@0.1.0 verify:all D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/scripts/verification/verify-all.ts
+
+=== DATABASE VERIFICATION ===
+Timestamp: 2025-04-14T17:10:12.552Z
+
+G£à Payload schema exists
+G£à Table 'payload.courses' exists
+G£à Table 'payload.course_lessons' exists
+G£à Table 'payload.course_quizzes' exists
+G£à Table 'payload.quiz_questions' exists
+G£à Table 'payload.surveys' exists
+G£à Table 'payload.survey_questions' exists
+G£à Relationship table 'payload.course_lessons_rels' exists
+G£à Relationship table 'payload.course_quizzes_rels' exists
+G£à Relationship table 'payload.quiz_questions_rels' exists
+G£à Relationship table 'payload.surveys_rels' exists
+G£à Relationship table 'payload.survey_questions_rels' exists
+G£à dynamic_uuid_tables tracking table exists
+G£à scan_and_fix_uuid_tables function exists
+G£à downloads_relationships view exists
+View columns: collection_id, download_id, collection_type, table_name
+
+=== VERIFYING TODO FIELDS ===
+Starting verification of todo fields in course_lessons table...
+Connected to database
+
+Verifying lesson: Welcome to DDM (lesson-0)
+  G£ù Field todo is NOT populated in database
+  G£ô Field todo_complete_quiz is populated in database
+  G£ù Field todo_read_content is NOT populated in database
+  G£ù Field todo_course_project is NOT populated in database
+
+Verifying lesson: Before we begin... (before-we-begin)
+  G£ù Field todo is NOT populated in database
+  G£ô Field todo_complete_quiz is populated in database
+  G£ù Field todo_read_content is NOT populated in database
+  G£ù Field todo_course_project is NOT populated in database
+
+Verifying lesson: Presentation Tools & Course Resources (tools-and-resources)
+  G£ù Field todo is NOT populated in database
+  G£ô Field todo_complete_quiz is populated in database
+  G£ù Field todo_read_content is NOT populated in database
+  G£ù Field todo_course_project is NOT populated in database
+
+Verifying lesson: Our Process (our-process)
+  G£ù Field todo is NOT populated in database
+  G£ô Field todo_complete_quiz is populated in database
+  G£ù Field todo_watch_content is NOT populated in database
+  G£ù Field todo_read_content is NOT populated in database
+  G£ù Field todo_course_project is NOT populated in database
+
+Verifying lesson: The Who (the-who)
+  G£ù Field todo is NOT populated in database
+  G£ô Field todo_complete_quiz is populated in database
+  G£ù Field todo_watch_content is NOT populated in database
+  G£ù Field todo_read_content is NOT populated in database
+  G£ù Field todo_course_project is NOT populated in database
+
+Verifying lesson: The Why: Building the Introduction (the-why-introductions)
+  G£ù Field todo is NOT populated in database
+  G£ô Field todo_complete_quiz is populated in database
+  G£ù Field todo_watch_content is NOT populated in database
+  G£ù Field todo_read_content is NOT populated in database
+  G£ù Field todo_course_project is NOT populated in database
+
+Verifying lesson: The Why: Next Steps (the-why-next-steps)
+  G£ù Field todo is NOT populated in database
+  G£ô Field todo_complete_quiz is populated in database
+  G£ù Field todo_watch_content is NOT populated in database
+  G£ù Field todo_read_content is NOT populated in database
+  G£ù Field todo_course_project is NOT populated in database
+
+Verifying lesson: Idea Generation (idea-generation)
+  G£ù Field todo is NOT populated in database
+  G£ô Field todo_complete_quiz is populated in database
+  G£ù Field todo_watch_content is NOT populated in database
+  G£ù Field todo_read_content is NOT populated in database
+  G£ù Field todo_course_project is NOT populated in database
+
+Verifying lesson: What is Structure? (what-is-structure)
+  G£ù Field todo is NOT populated in database
+  G£ô Field todo_complete_quiz is populated in database
+  G£ù Field todo_watch_content is NOT populated in database
+  G£ù Field todo_read_content is NOT populated in database
+  G£ù Field todo_course_project is NOT populated in database
+
+Verifying lesson: Using Stories (using-stories)
+  G£ù Field todo is NOT populated in database
+  G£ô Field todo_complete_quiz is populated in database
+  G£ù Field todo_watch_content is NOT populated in database
+  G£ù Field todo_read_content is NOT populated in database
+  G£ù Field todo_course_project is NOT populated in database
+
+Verifying lesson: Storyboards in Film (storyboards-film)
+  G£ù Field todo is NOT populated in database
+  G£ô Field todo_complete_quiz is populated in database
+  G£ù Field todo_watch_content is NOT populated in database
+  G£ù Field todo_read_content is NOT populated in database
+  G£ù Field todo_course_project is NOT populated in database
+
+Verifying lesson: Storyboards in Presentations (storyboards-presentations)
+  G£ù Field todo is NOT populated in database
+  G£ô Field todo_complete_quiz is populated in database
+  G£ù Field todo_watch_content is NOT populated in database
+  G£ù Field todo_read_content is NOT populated in database
+  G£ù Field todo_course_project is NOT populated in database
+
+Verifying lesson: Visual Perception and Communication (visual-perception)
+  G£ù Field todo is NOT populated in database
+  G£ô Field todo_complete_quiz is populated in database
+  G£ù Field todo_watch_content is NOT populated in database
+  G£ù Field todo_read_content is NOT populated in database
+  G£ù Field todo_course_project is NOT populated in database
+
+Verifying lesson: Overview of the Fundamental Elements of Design (fundamental-design-overview)
+  G£ù Field todo is NOT populated in database
+  G£ô Field todo_complete_quiz is populated in database
+  G£ù Field todo_watch_content is NOT populated in database
+  G£ù Field todo_read_content is NOT populated in database
+  G£ù Field todo_course_project is NOT populated in database
+
+Verifying lesson: The Fundamental Elements of Design in Detail (fundamental-design-detail)
+  G£ù Field todo is NOT populated in database
+  G£ô Field todo_complete_quiz is populated in database
+  G£ù Field todo_watch_content is NOT populated in database
+  G£ù Field todo_read_content is NOT populated in database
+  G£ù Field todo_course_project is NOT populated in database
+
+Verifying lesson: Gestalt Principles of Visual Perception (gestalt-principles)
+  G£ù Field todo is NOT populated in database
+  G£ô Field todo_complete_quiz is populated in database
+  G£ù Field todo_watch_content is NOT populated in database
+  G£ù Field todo_read_content is NOT populated in database
+  G£ù Field todo_course_project is NOT populated in database
+
+Verifying lesson: Slide Composition (slide-composition)
+  G£ù Field todo is NOT populated in database
+  G£ô Field todo_complete_quiz is populated in database
+  G£ù Field todo_watch_content is NOT populated in database
+  G£ù Field todo_read_content is NOT populated in database
+  G£ù Field todo_course_project is NOT populated in database
+
+Verifying lesson: Tables vs. Graphs (tables-vs-graphs)
+  G£ù Field todo is NOT populated in database
+  G£ô Field todo_complete_quiz is populated in database
+  G£ù Field todo_watch_content is NOT populated in database
+  G£ù Field todo_read_content is NOT populated in database
+  G£ù Field todo_course_project is NOT populated in database
+
+Verifying lesson: Standard Graphs (basic-graphs)
+  G£ù Field todo is NOT populated in database
+  G£ô Field todo_complete_quiz is populated in database
+  G£ù Field todo_watch_content is NOT populated in database
+  G£ù Field todo_read_content is NOT populated in database
+  G£ù Field todo_course_project is NOT populated in database
+
+Verifying lesson: Overview of Fact-based Persuasion (fact-based-persuasion)
+  G£ù Field todo is NOT populated in database
+  G£ô Field todo_complete_quiz is populated in database
+  G£ù Field todo_watch_content is NOT populated in database
+  G£ù Field todo_read_content is NOT populated in database
+  G£ù Field todo_course_project is NOT populated in database
+
+Verifying lesson: Specialist Graphs (specialist-graphs)
+  G£ù Field todo is NOT populated in database
+  G£ô Field todo_complete_quiz is populated in database
+  G£ù Field todo_watch_content is NOT populated in database
+  G£ù Field todo_read_content is NOT populated in database
+  G£ù Field todo_course_project is NOT populated in database
+
+Verifying lesson: Preparation and Practice (preparation-practice)
+  G£ù Field todo is NOT populated in database
+  G£ô Field todo_complete_quiz is populated in database
+  G£ù Field todo_watch_content is NOT populated in database
+  G£ù Field todo_read_content is NOT populated in database
+  G£ù Field todo_course_project is NOT populated in database
+
+Verifying lesson: Performance (performance)
+  G£ù Field todo is NOT populated in database
+  G£ô Field todo_complete_quiz is populated in database
+  G£ù Field todo_watch_content is NOT populated in database
+  G£ù Field todo_read_content is NOT populated in database
+  G£ù Field todo_course_project is NOT populated in database
+
+Verifying lesson: Congratulations (congratulations)
+  G£ù Field todo is NOT populated in database
+  G£ô Field todo_complete_quiz is populated in database
+  G£ù Field todo_read_content is NOT populated in database
+  G£ù Field todo_course_project is NOT populated in database
+
+Verifying lesson: Before you go... (before-you-go)
+  G£ù Field todo is NOT populated in database
+  G£ô Field todo_complete_quiz is populated in database
+  G£ù Field todo_read_content is NOT populated in database
+  G£ù Field todo_course_project is NOT populated in database
+
+Verification Summary:
+Total lessons checked: 25
+Fields expected to be populated: 120
+Fields actually populated: 25
+
+Verification FAILED: 95 fields are missing
+Database connection closed
+G¥î Todo fields verification failed
+
+=== VERIFICATION SUMMARY ===
+G¥î Some verifications failed, see details above
+Database verification failed, see errors above
+GÇëELIFECYCLEGÇë Command failed with exit code 1.
+
+--- Command Output End ---
+2025-04-14 13:10:12: WARNING: Verification found issues, will run repairs in the Fix-Relationships step
+2025-04-14 13:10:12: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-04-14 13:10:12: âœ… Content migrations completed successfully
+2025-04-14 13:10:12: 
+2025-04-14 13:10:12: ------------------------------------------------------------
+2025-04-14 13:10:12: STEP 8: Migrating blog posts with complete content
+2025-04-14 13:10:12: ------------------------------------------------------------
+2025-04-14 13:10:12: Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+2025-04-14 13:10:12: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-04-14 13:10:12: Running specialized post migration script...
+2025-04-14 13:10:12: EXECUTING: pnpm exec tsx src/scripts/core/migrate-posts-direct.ts
+2025-04-14 13:10:12: DESCRIPTION: Migrating blog posts with full content
+2025-04-14 13:10:14: EXECUTING: pnpm run utils:run-sql --sql "SELECT COUNT(*) as count FROM payload.posts"
+2025-04-14 13:10:14: DESCRIPTION: Verifying posts table
+2025-04-14 13:10:15: EXECUTING: pnpm run utils:run-sql --sql "SELECT COUNT(*) as count FROM payload.private"
+2025-04-14 13:10:15: DESCRIPTION: Verifying private posts table
+--- Command Output Start ---
+
+> @kit/content-migrations@0.1.0 utils:run-sql D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/utils/run-sql.ts "--sql" "SELECT COUNT(*) as count FROM payload.private"
+
+Loading environment variables from: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations\.env.development
+
+--- Command Output End ---
+2025-04-14 13:10:16: ERROR: Failed to migrate private posts: Cannot index into a null array.
+2025-04-14 13:10:16: WARNING: This is non-critical, continuing
+2025-04-14 13:10:16: 
+2025-04-14 13:10:16: ------------------------------------------------------------
+2025-04-14 13:10:16: STEP 8: Importing downloads from R2 bucket
+2025-04-14 13:10:16: ------------------------------------------------------------
+2025-04-14 13:10:16: Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+2025-04-14 13:10:16: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-04-14 13:10:16: Importing downloads...
+2025-04-14 13:10:16: EXECUTING: pnpm run import:downloads
+2025-04-14 13:10:16: DESCRIPTION: Importing downloads from R2 bucket
+2025-04-14 13:10:17: âœ… Downloads imported successfully
+2025-04-14 13:10:17: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-04-14 13:10:17: 
+2025-04-14 13:10:17: ------------------------------------------------------------
+2025-04-14 13:10:17: STEP 9: Fixing relationships
+2025-04-14 13:10:17: ------------------------------------------------------------
+2025-04-14 13:10:17: Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+2025-04-14 13:10:17: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-04-14 13:10:17: Running edge case repairs...
+2025-04-14 13:10:17: EXECUTING: pnpm run repair:edge-cases
+2025-04-14 13:10:17: DESCRIPTION: Running edge case repairs
+2025-04-14 13:10:18: Running lesson-quiz relationship fixes...
+2025-04-14 13:10:18: EXECUTING: pnpm exec tsx src/scripts/repair/fix-lesson-quiz-field-name.ts
+2025-04-14 13:10:18: DESCRIPTION: Fixing lesson-quiz relationships
+2025-04-14 13:10:20: Ensuring todo column exists in course_lessons table...
+2025-04-14 13:10:20: EXECUTING: pnpm run sql:ensure-todo-column
+2025-04-14 13:10:20: DESCRIPTION: Ensuring todo column exists
+2025-04-14 13:10:21: Fixing Lexical format in todo fields...
+2025-04-14 13:10:21: EXECUTING: pnpm run fix:lexical-format
+2025-04-14 13:10:21: DESCRIPTION: Fixing Lexical format
+--- Command Output Start ---
+
+> @kit/content-migrations@0.1.0 verify:all D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/scripts/verification/verify-all.ts
+
+=== DATABASE VERIFICATION ===
+Timestamp: 2025-04-14T17:10:26.154Z
+
+G£à Payload schema exists
+G£à Table 'payload.courses' exists
+G£à Table 'payload.course_lessons' exists
+G£à Table 'payload.course_quizzes' exists
+G£à Table 'payload.quiz_questions' exists
+G£à Table 'payload.surveys' exists
+G£à Table 'payload.survey_questions' exists
+G£à Relationship table 'payload.course_lessons_rels' exists
+G£à Relationship table 'payload.course_quizzes_rels' exists
+G£à Relationship table 'payload.quiz_questions_rels' exists
+G£à Relationship table 'payload.surveys_rels' exists
+G£à Relationship table 'payload.survey_questions_rels' exists
+G£à dynamic_uuid_tables tracking table exists
+G£à scan_and_fix_uuid_tables function exists
+G£à downloads_relationships view exists
+View columns: collection_id, download_id, collection_type, table_name
+
+=== VERIFYING TODO FIELDS ===
+Starting verification of todo fields in course_lessons table...
+Connected to database
+
+Verifying lesson: Welcome to DDM (lesson-0)
+  G£ô Field todo is populated in database
+  G£ô Field todo_complete_quiz is populated in database
+  G£ô Field todo_read_content is populated in database
+  G£ô Field todo_course_project is populated in database
+
+Verifying lesson: Before we begin... (before-we-begin)
+  G£ô Field todo is populated in database
+  G£ô Field todo_complete_quiz is populated in database
+  G£ô Field todo_read_content is populated in database
+  G£ô Field todo_course_project is populated in database
+
+Verifying lesson: Presentation Tools & Course Resources (tools-and-resources)
+  G£ô Field todo is populated in database
+  G£ô Field todo_complete_quiz is populated in database
+  G£ô Field todo_read_content is populated in database
+  G£ô Field todo_course_project is populated in database
+
+Verifying lesson: Our Process (our-process)
+  G£ô Field todo is populated in database
+  G£ô Field todo_complete_quiz is populated in database
+  G£ô Field todo_watch_content is populated in database
+  G£ô Field todo_read_content is populated in database
+  G£ô Field todo_course_project is populated in database
+
+Verifying lesson: The Who (the-who)
+  G£ô Field todo is populated in database
+  G£ô Field todo_complete_quiz is populated in database
+  G£ô Field todo_watch_content is populated in database
+  G£ô Field todo_read_content is populated in database
+  G£ô Field todo_course_project is populated in database
+
+Verifying lesson: The Why: Building the Introduction (the-why-introductions)
+  G£ô Field todo is populated in database
+  G£ô Field todo_complete_quiz is populated in database
+  G£ô Field todo_watch_content is populated in database
+  G£ô Field todo_read_content is populated in database
+  G£ô Field todo_course_project is populated in database
+
+Verifying lesson: The Why: Next Steps (the-why-next-steps)
+  G£ô Field todo is populated in database
+  G£ô Field todo_complete_quiz is populated in database
+  G£ô Field todo_watch_content is populated in database
+  G£ô Field todo_read_content is populated in database
+  G£ô Field todo_course_project is populated in database
+
+Verifying lesson: Idea Generation (idea-generation)
+  G£ô Field todo is populated in database
+  G£ô Field todo_complete_quiz is populated in database
+  G£ô Field todo_watch_content is populated in database
+  G£ô Field todo_read_content is populated in database
+  G£ô Field todo_course_project is populated in database
+
+Verifying lesson: What is Structure? (what-is-structure)
+  G£ô Field todo is populated in database
+  G£ô Field todo_complete_quiz is populated in database
+  G£ô Field todo_watch_content is populated in database
+  G£ô Field todo_read_content is populated in database
+  G£ô Field todo_course_project is populated in database
+
+Verifying lesson: Using Stories (using-stories)
+  G£ô Field todo is populated in database
+  G£ô Field todo_complete_quiz is populated in database
+  G£ô Field todo_watch_content is populated in database
+  G£ô Field todo_read_content is populated in database
+  G£ô Field todo_course_project is populated in database
+
+Verifying lesson: Storyboards in Film (storyboards-film)
+  G£ô Field todo is populated in database
+  G£ô Field todo_complete_quiz is populated in database
+  G£ô Field todo_watch_content is populated in database
+  G£ô Field todo_read_content is populated in database
+  G£ô Field todo_course_project is populated in database
+
+Verifying lesson: Storyboards in Presentations (storyboards-presentations)
+  G£ô Field todo is populated in database
+  G£ô Field todo_complete_quiz is populated in database
+  G£ô Field todo_watch_content is populated in database
+  G£ô Field todo_read_content is populated in database
+  G£ô Field todo_course_project is populated in database
+
+Verifying lesson: Visual Perception and Communication (visual-perception)
+  G£ô Field todo is populated in database
+  G£ô Field todo_complete_quiz is populated in database
+  G£ô Field todo_watch_content is populated in database
+  G£ô Field todo_read_content is populated in database
+  G£ô Field todo_course_project is populated in database
+
+Verifying lesson: Overview of the Fundamental Elements of Design (fundamental-design-overview)
+  G£ô Field todo is populated in database
+  G£ô Field todo_complete_quiz is populated in database
+  G£ô Field todo_watch_content is populated in database
+  G£ô Field todo_read_content is populated in database
+  G£ô Field todo_course_project is populated in database
+
+Verifying lesson: The Fundamental Elements of Design in Detail (fundamental-design-detail)
+  G£ô Field todo is populated in database
+  G£ô Field todo_complete_quiz is populated in database
+  G£ô Field todo_watch_content is populated in database
+  G£ô Field todo_read_content is populated in database
+  G£ô Field todo_course_project is populated in database
+
+Verifying lesson: Gestalt Principles of Visual Perception (gestalt-principles)
+  G£ô Field todo is populated in database
+  G£ô Field todo_complete_quiz is populated in database
+  G£ô Field todo_watch_content is populated in database
+  G£ô Field todo_read_content is populated in database
+  G£ô Field todo_course_project is populated in database
+
+Verifying lesson: Slide Composition (slide-composition)
+  G£ô Field todo is populated in database
+  G£ô Field todo_complete_quiz is populated in database
+  G£ô Field todo_watch_content is populated in database
+  G£ô Field todo_read_content is populated in database
+  G£ô Field todo_course_project is populated in database
+
+Verifying lesson: Tables vs. Graphs (tables-vs-graphs)
+  G£ô Field todo is populated in database
+  G£ô Field todo_complete_quiz is populated in database
+  G£ô Field todo_watch_content is populated in database
+  G£ô Field todo_read_content is populated in database
+  G£ô Field todo_course_project is populated in database
+
+Verifying lesson: Standard Graphs (basic-graphs)
+  G£ô Field todo is populated in database
+  G£ô Field todo_complete_quiz is populated in database
+  G£ô Field todo_watch_content is populated in database
+  G£ô Field todo_read_content is populated in database
+  G£ô Field todo_course_project is populated in database
+
+Verifying lesson: Overview of Fact-based Persuasion (fact-based-persuasion)
+  G£ô Field todo is populated in database
+  G£ô Field todo_complete_quiz is populated in database
+  G£ô Field todo_watch_content is populated in database
+  G£ô Field todo_read_content is populated in database
+  G£ô Field todo_course_project is populated in database
+
+Verifying lesson: Specialist Graphs (specialist-graphs)
+  G£ô Field todo is populated in database
+  G£ô Field todo_complete_quiz is populated in database
+  G£ô Field todo_watch_content is populated in database
+  G£ô Field todo_read_content is populated in database
+  G£ô Field todo_course_project is populated in database
+
+Verifying lesson: Preparation and Practice (preparation-practice)
+  G£ô Field todo is populated in database
+  G£ô Field todo_complete_quiz is populated in database
+  G£ô Field todo_watch_content is populated in database
+  G£ô Field todo_read_content is populated in database
+  G£ô Field todo_course_project is populated in database
+
+Verifying lesson: Performance (performance)
+  G£ô Field todo is populated in database
+  G£ô Field todo_complete_quiz is populated in database
+  G£ô Field todo_watch_content is populated in database
+  G£ô Field todo_read_content is populated in database
+  G£ô Field todo_course_project is populated in database
+
+Verifying lesson: Congratulations (congratulations)
+  G£ô Field todo is populated in database
+  G£ô Field todo_complete_quiz is populated in database
+  G£ô Field todo_read_content is populated in database
+  G£ô Field todo_course_project is populated in database
+
+Verifying lesson: Before you go... (before-you-go)
+  G£ô Field todo is populated in database
+  G£ô Field todo_complete_quiz is populated in database
+  G£ô Field todo_read_content is populated in database
+  G£ô Field todo_course_project is populated in database
+
+Verification Summary:
+Total lessons checked: 25
+Fields expected to be populated: 120
+Fields actually populated: 120
+
+Verification PASSED: All expected todo fields are properly populated
+Database connection closed
+G£à Todo fields verification passed
+
+=== VERIFICATION SUMMARY ===
+G£à All database verifications passed successfully
+Database verification completed successfully
+
+--- Command Output End ---
+2025-04-14 13:10:26: âœ… All relationship issues have been fixed
+2025-04-14 13:10:26: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-04-14 13:10:26: 
+2025-04-14 13:10:26: ------------------------------------------------------------
+2025-04-14 13:10:26: STEP 10: Performing comprehensive database verification
+2025-04-14 13:10:26: ------------------------------------------------------------
+2025-04-14 13:10:26: Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+2025-04-14 13:10:26: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-04-14 13:10:26: Checking database environment settings...
+2025-04-14 13:10:26: Setting DATABASE_URL from DATABASE_URI for compatibility
+2025-04-14 13:10:26: âœ… Database environment settings are properly configured
+2025-04-14 13:10:26: Verifying database schema...
+2025-04-14 13:10:26: EXECUTING: pnpm run sql:verify-schema
+2025-04-14 13:10:26: DESCRIPTION: Final database verification
+--- Command Output Start ---
+
+> @kit/content-migrations@0.1.0 sql:verify-schema D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/scripts/sql/verify-database-schema.ts
+
+Loaded environment variables from D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations\.env.development
+Connecting to database: postgresql://postgres:postgres@localhost:54322/postgres?schema=payload
+Connected to database
+G£à Payload schema exists
+G£à Found 46 tables in payload schema
+G£à Required table 'courses' exists
+G£à Required table 'course_lessons' exists
+G£à Required table 'course_quizzes' exists
+G£à Required table 'quiz_questions' exists
+G£à Required table 'surveys' exists
+G£à Required table 'survey_questions' exists
+G£à Relationship table 'course_lessons_rels' exists
+G£à Relationship table 'course_quizzes_rels' exists
+G£à Relationship table 'quiz_questions_rels' exists
+G£à Relationship table 'survey_questions_rels' exists
+G£à Relationship table 'surveys_rels' exists
+
+Database verification completed successfully
+Database verification completed successfully
+
+--- Command Output End ---
+2025-04-14 13:10:27: âœ… Database schema verification passed
+2025-04-14 13:10:27: Verifying database columns...
+2025-04-14 13:10:27: EXECUTING: pnpm run verify:course-lessons
+2025-04-14 13:10:27: DESCRIPTION: Verifying course_lessons quiz_id_id column
+--- Command Output Start ---
+
+> @kit/content-migrations@0.1.0 verify:course-lessons D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/scripts/verification/verify-course-lessons.ts
+
+Verifying course_lessons table...
+Connected to database
+G£à Table course_lessons exists
+G£à Column quiz_id_id exists in course_lessons table
+G£à Column quiz_id exists in course_lessons table
+Found 20 lessons with quiz_id assigned
+G£à All lessons have quiz_id_id matching quiz_id
+Checking course_lessons_rels table...
+G£à Table course_lessons_rels exists
+Found 60 quiz relationships in course_lessons_rels table
+G£à All lessons with quizzes have relationships in course_lessons_rels
+G£à All relationships have correct value
+G£à Course lessons verification completed successfully
+Course lessons verification passed
+
+--- Command Output End ---
+2025-04-14 13:10:27: âœ… Course lessons quiz_id_id column verification passed
+2025-04-14 13:10:27: EXECUTING: pnpm --filter @kit/content-migrations run verify:media-columns
+2025-04-14 13:10:28: DESCRIPTION: Verifying media_id columns

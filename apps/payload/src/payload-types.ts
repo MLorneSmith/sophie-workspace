@@ -71,6 +71,7 @@ export interface Config {
     media: Media;
     documentation: Documentation;
     posts: Post;
+    private: Private;
     surveys: Survey;
     survey_questions: SurveyQuestion;
     courses: Course;
@@ -88,6 +89,7 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     documentation: DocumentationSelect<false> | DocumentationSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
+    private: PrivateSelect<false> | PrivateSelect<true>;
     surveys: SurveysSelect<false> | SurveysSelect<true>;
     survey_questions: SurveyQuestionsSelect<false> | SurveyQuestionsSelect<true>;
     courses: CoursesSelect<false> | CoursesSelect<true>;
@@ -726,6 +728,82 @@ export interface Post {
   createdAt: string;
 }
 /**
+ * Private posts that are not indexed by search engines
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "private".
+ */
+export interface Private {
+  id: string;
+  title: string;
+  /**
+   * The URL-friendly identifier for this private post
+   */
+  slug: string;
+  /**
+   * A brief summary of the private post
+   */
+  description?: string | null;
+  /**
+   * The main content of the private post
+   */
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * The date and time this post was published
+   */
+  publishedAt?: string | null;
+  /**
+   * Featured image for the private post
+   */
+  image_id?: (string | null) | Media;
+  /**
+   * Featured image (larger version) for the private post
+   */
+  featured_image_id?: (string | null) | Media;
+  /**
+   * Only published posts will be visible on the website
+   */
+  status: 'draft' | 'published';
+  /**
+   * Categories for this private post
+   */
+  categories?:
+    | {
+        category?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Tags for this private post
+   */
+  tags?:
+    | {
+        tag?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Files for download in this private post
+   */
+  downloads?: (string | Download)[] | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
@@ -747,6 +825,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'posts';
         value: string | Post;
+      } | null)
+    | ({
+        relationTo: 'private';
+        value: string | Private;
       } | null)
     | ({
         relationTo: 'surveys';
@@ -899,6 +981,35 @@ export interface PostsSelect<T extends boolean = true> {
   content?: T;
   publishedAt?: T;
   image_id?: T;
+  status?: T;
+  categories?:
+    | T
+    | {
+        category?: T;
+        id?: T;
+      };
+  tags?:
+    | T
+    | {
+        tag?: T;
+        id?: T;
+      };
+  downloads?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "private_select".
+ */
+export interface PrivateSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  description?: T;
+  content?: T;
+  publishedAt?: T;
+  image_id?: T;
+  featured_image_id?: T;
   status?: T;
   categories?:
     | T

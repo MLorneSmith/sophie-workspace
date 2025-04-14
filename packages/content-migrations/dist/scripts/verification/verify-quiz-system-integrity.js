@@ -1,19 +1,16 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.verifyQuizSystemIntegrity = verifyQuizSystemIntegrity;
-const lesson_quiz_relations_js_1 = require("../../data/definitions/lesson-quiz-relations.js");
-const quiz_types_js_1 = require("../../data/definitions/quiz-types.js");
-const quizzes_js_1 = require("../../data/definitions/quizzes.js");
+import { validateLessonQuizRelations, } from '../../data/definitions/lesson-quiz-relations.js';
+import { validateQuizDefinition } from '../../data/definitions/quiz-types.js';
+import { QUIZZES, getQuizById, getQuizBySlug, } from '../../data/definitions/quizzes.js';
 /**
  * Performs comprehensive verification of the quiz system
  */
-function verifyQuizSystemIntegrity() {
+export function verifyQuizSystemIntegrity() {
     console.log('Verifying quiz system integrity...');
     let allValid = true;
     // Step 1: Verify all quiz definitions are valid
     console.log('Verifying quiz definitions...');
-    for (const [slug, quiz] of Object.entries(quizzes_js_1.QUIZZES)) {
-        if (!(0, quiz_types_js_1.validateQuizDefinition)(quiz)) {
+    for (const [slug, quiz] of Object.entries(QUIZZES)) {
+        if (!validateQuizDefinition(quiz)) {
             console.error(`Invalid quiz definition for ${slug}`);
             allValid = false;
         }
@@ -26,7 +23,7 @@ function verifyQuizSystemIntegrity() {
     // Step 2: Verify quiz IDs are unique
     console.log('Verifying quiz IDs are unique...');
     const quizIds = new Set();
-    for (const quiz of Object.values(quizzes_js_1.QUIZZES)) {
+    for (const quiz of Object.values(QUIZZES)) {
         if (quizIds.has(quiz.id)) {
             console.error(`Duplicate quiz ID: ${quiz.id} (${quiz.slug})`);
             allValid = false;
@@ -44,19 +41,19 @@ function verifyQuizSystemIntegrity() {
     }
     // Step 3: Verify lesson-quiz relations
     console.log('Verifying lesson-quiz relations...');
-    if (!(0, lesson_quiz_relations_js_1.validateLessonQuizRelations)()) {
+    if (!validateLessonQuizRelations()) {
         console.error('Invalid lesson-quiz relations');
         allValid = false;
     }
     // Step 4: Verify lookup functions work correctly
     console.log('Verifying lookup functions...');
-    for (const quiz of Object.values(quizzes_js_1.QUIZZES)) {
-        const bySlug = (0, quizzes_js_1.getQuizBySlug)(quiz.slug);
+    for (const quiz of Object.values(QUIZZES)) {
+        const bySlug = getQuizBySlug(quiz.slug);
         if (!bySlug || bySlug.id !== quiz.id) {
             console.error(`getQuizBySlug failed for ${quiz.slug}`);
             allValid = false;
         }
-        const byId = (0, quizzes_js_1.getQuizById)(quiz.id);
+        const byId = getQuizById(quiz.id);
         if (!byId || byId.slug !== quiz.slug) {
             console.error(`getQuizById failed for ${quiz.id}`);
             allValid = false;
