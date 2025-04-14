@@ -1,16 +1,10 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.fixLessonsQuizReferencesSql = fixLessonsQuizReferencesSql;
 /**
  * Fix lesson-quiz reference consistency in the 03a-lesson-quiz-references.sql file
  * This script directly modifies the file to ensure it uses the correct quiz IDs
  */
-const fs_1 = __importDefault(require("fs"));
-const path_1 = __importDefault(require("path"));
-const url_1 = require("url");
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 // The correct quiz IDs mapping - must match those in fix-quiz-id-consistency.ts
 const CORRECT_QUIZ_IDS = {
     'basic-graphs-quiz': 'c11dbb26-7561-4d12-88c8-141c653a43fd',
@@ -61,18 +55,18 @@ const OLD_TO_NEW_ID_MAP = {
 /**
  * Fix the lesson-quiz references in 03a-lesson-quiz-references.sql
  */
-function fixLessonsQuizReferencesSql() {
+export function fixLessonsQuizReferencesSql() {
     console.log('Fixing lesson-quiz references in references SQL file...');
     // Find the project root
-    const projectRoot = path_1.default.resolve((0, url_1.fileURLToPath)(import.meta.url), '../../../../..');
-    const referencesFilePath = path_1.default.join(projectRoot, 'apps/payload/src/seed/sql/03a-lesson-quiz-references.sql');
+    const projectRoot = path.resolve(fileURLToPath(import.meta.url), '../../../../..');
+    const referencesFilePath = path.join(projectRoot, 'apps/payload/src/seed/sql/03a-lesson-quiz-references.sql');
     // Ensure the file exists
-    if (!fs_1.default.existsSync(referencesFilePath)) {
+    if (!fs.existsSync(referencesFilePath)) {
         console.error(`Error: Lesson quiz references SQL file not found at ${referencesFilePath}`);
         return;
     }
     // Read the file
-    let referencesContent = fs_1.default.readFileSync(referencesFilePath, 'utf8');
+    let referencesContent = fs.readFileSync(referencesFilePath, 'utf8');
     let replacementCount = 0;
     // Replace each old ID with the correct ID
     for (const [oldId, newId] of Object.entries(OLD_TO_NEW_ID_MAP)) {
@@ -86,12 +80,12 @@ function fixLessonsQuizReferencesSql() {
         }
     }
     // Write the updated content back to the file
-    fs_1.default.writeFileSync(referencesFilePath, referencesContent);
+    fs.writeFileSync(referencesFilePath, referencesContent);
     console.log(`Fixed ${replacementCount} lesson-quiz references in ${referencesFilePath}`);
 }
 // CLI entrypoint
 // Check if this file is being run directly
-const isMainModule = process.argv[1] === (0, url_1.fileURLToPath)(import.meta.url);
+const isMainModule = process.argv[1] === fileURLToPath(import.meta.url);
 if (isMainModule) {
     fixLessonsQuizReferencesSql();
 }

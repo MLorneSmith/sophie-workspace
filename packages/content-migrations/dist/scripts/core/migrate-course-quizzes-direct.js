@@ -1,23 +1,18 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Script to migrate course quizzes directly to the database
  */
-const dotenv_1 = __importDefault(require("dotenv"));
-const fs_1 = __importDefault(require("fs"));
-const gray_matter_1 = __importDefault(require("gray-matter"));
-const path_1 = __importDefault(require("path"));
-const pg_1 = __importDefault(require("pg"));
-const url_1 = require("url");
-const { Pool } = pg_1.default;
+import dotenv from 'dotenv';
+import fs from 'fs';
+import matter from 'gray-matter';
+import path from 'path';
+import pg from 'pg';
+import { fileURLToPath } from 'url';
+const { Pool } = pg;
 // Get the current file's directory
-const __filename = (0, url_1.fileURLToPath)(import.meta.url);
-const __dirname = path_1.default.dirname(__filename);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 // Load environment variables
-dotenv_1.default.config({ path: path_1.default.resolve(__dirname, '../../../.env.development') });
+dotenv.config({ path: path.resolve(__dirname, '../../../.env.development') });
 /**
  * Migrates course quizzes directly to the database
  */
@@ -38,23 +33,23 @@ async function migrateQuizzesToDatabase() {
         try {
             console.log('Connected to database');
             // Path to the course quizzes files
-            const quizzesDir = path_1.default.resolve(__dirname, '../../../../../apps/payload/data/courses/quizzes');
+            const quizzesDir = path.resolve(__dirname, '../../../../../apps/payload/data/courses/quizzes');
             console.log(`Course quizzes directory: ${quizzesDir}`);
             // Read all .mdoc files
-            const mdocFiles = fs_1.default
+            const mdocFiles = fs
                 .readdirSync(quizzesDir)
                 .filter((file) => file.endsWith('.mdoc'))
-                .map((file) => path_1.default.join(quizzesDir, file));
+                .map((file) => path.join(quizzesDir, file));
             console.log(`Found ${mdocFiles.length} quiz files to migrate.`);
             // Store quiz IDs for later use in quiz questions migration
             const quizIdMap = new Map();
             // Migrate each file to the database
             for (const file of mdocFiles) {
                 try {
-                    const content = fs_1.default.readFileSync(file, 'utf8');
-                    const { data } = (0, gray_matter_1.default)(content);
+                    const content = fs.readFileSync(file, 'utf8');
+                    const { data } = matter(content);
                     // Generate a slug from the file name
-                    const slug = path_1.default.basename(file, '.mdoc');
+                    const slug = path.basename(file, '.mdoc');
                     // Log the data we're trying to create
                     console.log(`Creating quiz with data:`, {
                         title: data.title || slug,
@@ -104,12 +99,12 @@ async function migrateQuizzesToDatabase() {
                 updatedQuizIdMap.set(quiz.slug, quiz.id);
             }
             // Save the quiz ID map to a file for use in the quiz questions migration
-            const dataDir = path_1.default.resolve(__dirname, '../data');
+            const dataDir = path.resolve(__dirname, '../data');
             // Ensure the data directory exists
-            if (!fs_1.default.existsSync(dataDir)) {
-                fs_1.default.mkdirSync(dataDir, { recursive: true });
+            if (!fs.existsSync(dataDir)) {
+                fs.mkdirSync(dataDir, { recursive: true });
             }
-            fs_1.default.writeFileSync(path_1.default.resolve(dataDir, 'quiz-id-map.json'), JSON.stringify(Object.fromEntries(updatedQuizIdMap), null, 2));
+            fs.writeFileSync(path.resolve(dataDir, 'quiz-id-map.json'), JSON.stringify(Object.fromEntries(updatedQuizIdMap), null, 2));
             console.log('Course quizzes migration complete!');
         }
         finally {

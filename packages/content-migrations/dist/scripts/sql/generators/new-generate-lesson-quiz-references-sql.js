@@ -1,16 +1,13 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateLessonQuizReferencesSql = generateLessonQuizReferencesSql;
 /**
  * Generator for lesson-quiz references SQL using the static definitions
  */
-const lesson_quiz_relations_js_1 = require("../../../data/definitions/lesson-quiz-relations.js");
-const quizzes_js_1 = require("../../../data/definitions/quizzes.js");
+import { LESSON_QUIZ_RELATIONS } from '../../../data/definitions/lesson-quiz-relations.js';
+import { QUIZZES } from '../../../data/definitions/quizzes.js';
 /**
  * Generates SQL for lesson-quiz references from static definitions
  * @returns SQL for lesson-quiz references
  */
-function generateLessonQuizReferencesSql() {
+export function generateLessonQuizReferencesSql() {
     // Start building the SQL
     let sql = `-- Seed data for lesson-quiz references
 -- This file is generated from static lesson-quiz relation definitions
@@ -20,8 +17,8 @@ BEGIN;
 
 `;
     // Process each lesson-quiz relation
-    for (const relation of lesson_quiz_relations_js_1.LESSON_QUIZ_RELATIONS) {
-        const quiz = quizzes_js_1.QUIZZES[relation.quizSlug];
+    for (const relation of LESSON_QUIZ_RELATIONS) {
+        const quiz = QUIZZES[relation.quizSlug];
         if (!quiz) {
             console.error(`Error: Quiz ${relation.quizSlug} not found for lesson ${relation.lessonSlug}`);
             continue;

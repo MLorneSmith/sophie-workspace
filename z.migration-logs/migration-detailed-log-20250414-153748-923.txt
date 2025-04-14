@@ -1,0 +1,18 @@
+2025-04-14 15:37:48: Starting migration process at 04/14/2025 15:37:48
+2025-04-14 15:37:48: Detailed logs will be saved to: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250414-153748-923.txt
+2025-04-14 15:37:48: ================================================================================
+2025-04-14 15:37:48: SETUP PHASE
+2025-04-14 15:37:48: ================================================================================
+2025-04-14 15:37:48: 
+2025-04-14 15:37:48: ------------------------------------------------------------
+2025-04-14 15:37:48: STEP 1: Resetting Supabase database and running Web app migrations
+2025-04-14 15:37:48: ------------------------------------------------------------
+2025-04-14 15:37:48: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\apps\web
+2025-04-14 15:37:48: Skipping Supabase restart (already done)
+2025-04-14 15:37:48: Running supabase:reset...
+2025-04-14 15:37:48: EXECUTING: pnpm run supabase:reset
+2025-04-14 15:37:48: DESCRIPTION: Resetting Supabase database
+2025-04-14 15:38:04: All migrations and verifications completed successfully!
+2025-04-14 15:38:04: Migration logs saved to:
+2025-04-14 15:38:04:   - Transcript log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-log-20250414-153748-923.txt
+2025-04-14 15:38:04:   - Detailed log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250414-153748-923.txt

@@ -1,27 +1,21 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.verifyDatabaseSchema = verifyDatabaseSchema;
 /**
  * Verify Database Schema
  *
  * This script verifies that the database schema and tables exist.
  * It's designed to be called from the command line.
  */
-const dotenv_1 = __importDefault(require("dotenv"));
-const path_1 = __importDefault(require("path"));
-const pg_1 = __importDefault(require("pg"));
-const url_1 = require("url");
+import dotenv from 'dotenv';
+import path from 'path';
+import pg from 'pg';
+import { fileURLToPath } from 'url';
 // Get the current file's directory
-const __filename = (0, url_1.fileURLToPath)(import.meta.url);
-const __dirname = path_1.default.dirname(__filename);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 // Load environment variables based on the NODE_ENV
 const envFile = process.env.NODE_ENV === 'production'
     ? '.env.production'
     : '.env.development';
-dotenv_1.default.config({ path: path_1.default.resolve(__dirname, `../../../${envFile}`) });
+dotenv.config({ path: path.resolve(__dirname, `../../../${envFile}`) });
 /**
  * Verifies the database schema and tables
  */
@@ -33,7 +27,7 @@ async function verifyDatabaseSchema() {
     }
     console.log(`Connecting to database: ${databaseUri}`);
     // Connect to database
-    const pool = new pg_1.default.Pool({
+    const pool = new pg.Pool({
         connectionString: databaseUri,
     });
     try {
@@ -94,3 +88,4 @@ if (import.meta.url === import.meta.resolve('./verify-database-schema.ts')) {
         process.exit(1);
     });
 }
+export { verifyDatabaseSchema };

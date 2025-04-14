@@ -8,7 +8,7 @@ import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 
 import { RAW_QUIZZES_DIR } from '../../../config/paths.js';
-import { DOWNLOAD_ID_MAP } from '../../../data/download-id-map.js';
+import { DOWNLOAD_ID_MAP } from '../../../data/mappings/download-mappings.js';
 import { convertToLexical } from '../../utils/lexical-converter.js';
 import { generateQuizMap } from '../../utils/quiz-map-generator.js';
 import { COURSE_ID } from './generate-courses-sql.js';

@@ -1,6 +1,3 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.migrateCollectionLocalToRemote = migrateCollectionLocalToRemote;
 /**
  * Migrates collection data from local Supabase database to remote Supabase database
  *
@@ -9,7 +6,7 @@ exports.migrateCollectionLocalToRemote = migrateCollectionLocalToRemote;
  * @param options - Migration options
  * @returns Migration result with success status and count
  */
-async function migrateCollectionLocalToRemote(localClient, remoteClient, options) {
+export async function migrateCollectionLocalToRemote(localClient, remoteClient, options) {
     const { collection, batchSize = 50, skipExisting = false, updateExisting = true, matchField = 'slug', transformData, logLevel = 'normal', } = options;
     const verbose = logLevel === 'verbose';
     const minimal = logLevel === 'minimal';

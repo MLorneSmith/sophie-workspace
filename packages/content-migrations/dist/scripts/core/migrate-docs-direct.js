@@ -1,24 +1,19 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Script to migrate documentation directly to the database
  */
-const dotenv_1 = __importDefault(require("dotenv"));
-const fs_1 = __importDefault(require("fs"));
-const gray_matter_1 = __importDefault(require("gray-matter"));
-const path_1 = __importDefault(require("path"));
-const pg_1 = __importDefault(require("pg"));
-const url_1 = require("url");
-const uuid_1 = require("uuid");
-const { Pool } = pg_1.default;
+import dotenv from 'dotenv';
+import fs from 'fs';
+import matter from 'gray-matter';
+import path from 'path';
+import pg from 'pg';
+import { fileURLToPath } from 'url';
+import { v4 as uuidv4 } from 'uuid';
+const { Pool } = pg;
 // Get the current file's directory
-const __filename = (0, url_1.fileURLToPath)(import.meta.url);
-const __dirname = path_1.default.dirname(__filename);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 // Load environment variables
-dotenv_1.default.config({ path: path_1.default.resolve(__dirname, '../../../.env.development') });
+dotenv.config({ path: path.resolve(__dirname, '../../../.env.development') });
 /**
  * Migrates documentation directly to the database
  */
@@ -39,25 +34,25 @@ async function migrateDocsToDatabase() {
         try {
             console.log('Connected to database');
             // Path to the documentation files
-            const docsDir = path_1.default.resolve(__dirname, '../../../../../apps/payload/data/documentation');
+            const docsDir = path.resolve(__dirname, '../../../../../apps/payload/data/documentation');
             console.log(`Documentation directory: ${docsDir}`);
             // Function to recursively read all .mdoc files
             const readMdocFiles = (dir, parentPath = '') => {
                 console.log(`Reading directory: ${dir}`);
                 const files = [];
                 try {
-                    const items = fs_1.default.readdirSync(dir);
+                    const items = fs.readdirSync(dir);
                     console.log(`Found ${items.length} items in directory`);
                     for (const item of items) {
-                        const itemPath = path_1.default.join(dir, item);
-                        const stat = fs_1.default.statSync(itemPath);
+                        const itemPath = path.join(dir, item);
+                        const stat = fs.statSync(itemPath);
                         if (stat.isDirectory()) {
                             console.log(`Found directory: ${item}`);
-                            files.push(...readMdocFiles(itemPath, path_1.default.join(parentPath, item)));
+                            files.push(...readMdocFiles(itemPath, path.join(parentPath, item)));
                         }
                         else if (item.endsWith('.mdoc')) {
                             console.log(`Found .mdoc file: ${item}`);
-                            files.push(path_1.default.join(parentPath, item));
+                            files.push(path.join(parentPath, item));
                         }
                         else {
                             console.log(`Skipping file: ${item} (not a .mdoc file)`);
@@ -75,10 +70,10 @@ async function migrateDocsToDatabase() {
             // First pass: Create all documents without parent relationships
             const docIdMap = new Map();
             for (const file of mdocFiles) {
-                const filePath = path_1.default.join(docsDir, file);
+                const filePath = path.join(docsDir, file);
                 try {
-                    const content = fs_1.default.readFileSync(filePath, 'utf8');
-                    const { data, content: mdContent } = (0, gray_matter_1.default)(content);
+                    const content = fs.readFileSync(filePath, 'utf8');
+                    const { data, content: mdContent } = matter(content);
                     // Generate a slug from the file path
                     const slug = file
                         .replace(/\.mdoc$/, '')
@@ -115,13 +110,13 @@ async function migrateDocsToDatabase() {
                         },
                     };
                     // Generate a UUID for the document
-                    const docId = (0, uuid_1.v4)();
+                    const docId = uuidv4();
                     // Insert the document into the database, skip if it already exists
                     await client.query(`INSERT INTO payload.documentation (id, title, slug, description, content, status, updated_at, created_at)
              VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
              ON CONFLICT (slug) DO NOTHING`, [
                         docId,
-                        data.title || path_1.default.basename(file, '.mdoc'),
+                        data.title || path.basename(file, '.mdoc'),
                         slug,
                         data.description || '',
                         JSON.stringify(simpleContent),

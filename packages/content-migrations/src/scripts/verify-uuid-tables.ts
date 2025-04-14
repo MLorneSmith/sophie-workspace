@@ -96,20 +96,50 @@ async function verifyUuidTables() {
     if (trackingTableExists) {
       console.log('✅ dynamic_uuid_tables tracking table exists');
 
-      // Check tracking table contents
-      const trackingEntries = await executeSQL(`
-        SELECT table_name, has_downloads_id, last_checked
-        FROM payload.dynamic_uuid_tables
-        ORDER BY last_checked DESC
+      // Check tracking table columns
+      const columnsResult = await executeSQL(`
+        SELECT column_name
+        FROM information_schema.columns
+        WHERE table_schema = 'payload'
+        AND table_name = 'dynamic_uuid_tables'
       `);
+
+      const columns = columnsResult.rows.map((row) => row.column_name);
+      console.log(`Tracking table has columns: ${columns.join(', ')}`);
+
+      // Build a safe query based on existing columns
+      let query = 'SELECT table_name';
+      if (columns.includes('has_downloads_id')) {
+        query += ', has_downloads_id';
+      }
+      if (columns.includes('last_checked')) {
+        query += ', last_checked';
+      }
+      query += ' FROM payload.dynamic_uuid_tables';
+      if (columns.includes('last_checked')) {
+        query += ' ORDER BY last_checked DESC';
+      }
+
+      // Execute the dynamic query
+      const trackingEntries = await executeSQL(query);
 
       console.log(
         `Found ${trackingEntries.rows.length} entries in tracking table`,
       );
+
+      // Display entries based on available columns
       for (const entry of trackingEntries.rows) {
-        console.log(
-          ` - ${entry.table_name}: ${entry.has_downloads_id ? '✅' : '❌'} downloads_id column`,
-        );
+        let entryText = ` - ${entry.table_name}`;
+
+        if (entry.has_downloads_id !== undefined) {
+          entryText += `: ${entry.has_downloads_id ? '✅' : '❌'} downloads_id column`;
+        }
+
+        if (entry.last_checked !== undefined) {
+          entryText += `, last checked at ${entry.last_checked}`;
+        }
+
+        console.log(entryText);
       }
     } else {
       console.log('❌ dynamic_uuid_tables tracking table does not exist');

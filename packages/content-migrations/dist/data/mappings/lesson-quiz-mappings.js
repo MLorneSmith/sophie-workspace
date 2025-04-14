@@ -1,12 +1,9 @@
-"use strict";
 /**
  * Hard-coded mapping between lesson slugs and quiz slugs
  * This ensures consistent relationships between lessons and quizzes
  * even if the raw data doesn't have explicit quiz references
  */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.lessonQuizMapping = void 0;
-exports.lessonQuizMapping = {
+export const lessonQuizMapping = {
     // Format: lessonSlug: quizSlug
     'our-process': 'our-process-quiz',
     'the-who': 'the-who-quiz',

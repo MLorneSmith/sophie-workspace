@@ -1,15 +1,12 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateQuizzesSql = generateQuizzesSql;
 /**
  * Generator for quizzes SQL using the static quiz definitions
  */
-const quizzes_js_1 = require("../../../data/definitions/quizzes.js");
+import { QUIZZES } from '../../../data/definitions/quizzes.js';
 /**
  * Generates SQL for quizzes from static definitions
  * @returns SQL for quizzes
  */
-function generateQuizzesSql() {
+export function generateQuizzesSql() {
     // Start building the SQL
     let sql = `-- Seed data for the course quizzes table
 -- This file is generated from static quiz definitions
@@ -19,7 +16,7 @@ BEGIN;
 
 `;
     // Process each quiz from the static definitions
-    for (const quiz of Object.values(quizzes_js_1.QUIZZES)) {
+    for (const quiz of Object.values(QUIZZES)) {
         console.log(`Generating SQL for quiz ${quiz.slug} with ID ${quiz.id}`);
         // Add the quiz to the SQL
         sql += `-- Insert quiz: ${quiz.title}

@@ -1,11 +1,8 @@
-"use strict";
 /**
  * Type definitions for the quiz system
  */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.validateQuizDefinition = validateQuizDefinition;
 // Schema validation functions
-function validateQuizDefinition(quiz) {
+export function validateQuizDefinition(quiz) {
     // Basic validation
     if (!quiz.id || !quiz.slug || !quiz.title)
         return false;

@@ -1,8 +1,6 @@
 /**
  * Script to migrate blog posts from Markdown files to Payload CMS directly in the PostgreSQL database
- */
-/**
- * Script to migrate blog posts from Markdown files to Payload CMS directly in the PostgreSQL database
+ * Enhanced with proactive UUID table fixing to prevent relationship errors
  */
 import dotenv from 'dotenv';
 import fs from 'fs';
@@ -10,6 +8,7 @@ import matter from 'gray-matter';
 import path from 'path';
 import pg from 'pg';
 import { fileURLToPath } from 'url';
+import util from 'util';
 import { v4 as uuidv4 } from 'uuid';
 
 const { Pool } = pg;
@@ -50,8 +49,64 @@ async function migratePostsToDatabase() {
     try {
       console.log('Connected to database');
 
+      // Proactively fix UUID tables with private_id column before migration
+      console.log(
+        'Running proactive UUID table fix to ensure all columns exist...',
+      );
+      try {
+        // First check if the scan_and_fix_uuid_tables function exists
+        const funcExistsResult = await client.query(`
+          SELECT EXISTS (
+            SELECT FROM pg_proc
+            JOIN pg_namespace ON pg_namespace.oid = pg_proc.pronamespace
+            WHERE proname = 'scan_and_fix_uuid_tables'
+            AND nspname = 'payload'
+          ) as func_exists;
+        `);
+
+        if (funcExistsResult.rows[0]?.func_exists) {
+          console.log('Running uuid table scanner function...');
+          await client.query(`SELECT payload.scan_and_fix_uuid_tables();`);
+          console.log('UUID table scan completed successfully');
+        } else {
+          console.log(
+            'UUID table scanner function not found, creating basic version...',
+          );
+          await client.query(`
+            -- Create a simple version of the function
+            CREATE OR REPLACE FUNCTION payload.scan_and_fix_uuid_tables() RETURNS void AS $$
+            DECLARE
+              table_record RECORD;
+            BEGIN
+              FOR table_record IN 
+                SELECT table_name 
+                FROM information_schema.columns 
+                WHERE table_schema = 'payload' 
+                AND column_name = 'id' 
+                AND data_type = 'uuid'
+              LOOP
+                EXECUTE format('ALTER TABLE payload.%I ADD COLUMN IF NOT EXISTS path TEXT', table_record.table_name);
+                EXECUTE format('ALTER TABLE payload.%I ADD COLUMN IF NOT EXISTS parent_id TEXT', table_record.table_name);
+                EXECUTE format('ALTER TABLE payload.%I ADD COLUMN IF NOT EXISTS downloads_id UUID', table_record.table_name);
+                EXECUTE format('ALTER TABLE payload.%I ADD COLUMN IF NOT EXISTS private_id UUID', table_record.table_name);
+              END LOOP;
+            END;
+            $$ LANGUAGE plpgsql;
+          `);
+
+          // Run the scanner
+          await client.query(`SELECT payload.scan_and_fix_uuid_tables();`);
+          console.log('Created and ran basic UUID table scanner');
+        }
+      } catch (scanError) {
+        console.error(
+          'Error fixing UUID tables, but continuing migration:',
+          scanError,
+        );
+      }
+
       // Path to the blog posts files
-      const postsDir = path.resolve(process.cwd(), 'src/data/raw/posts');
+      const postsDir = path.resolve(__dirname, '../../data/raw/posts');
       console.log(`Blog posts directory: ${postsDir}`);
 
       // Check if the directory exists
@@ -61,22 +116,23 @@ async function migratePostsToDatabase() {
         return;
       }
 
-      // Read all .mdoc files
-      const mdocFiles = fs
+      // Read all html or mdoc files
+      const postFiles = fs
         .readdirSync(postsDir)
-        .filter((file) => file.endsWith('.mdoc'))
+        .filter((file) => file.endsWith('.html') || file.endsWith('.mdoc'))
         .map((file) => path.join(postsDir, file));
 
-      console.log(`Found ${mdocFiles.length} blog post files to migrate.`);
+      console.log(`Found ${postFiles.length} blog post files to migrate.`);
 
       // Migrate each file to the database
-      for (const file of mdocFiles) {
+      for (const file of postFiles) {
         try {
           const content = fs.readFileSync(file, 'utf8');
           const { data, content: mdContent } = matter(content);
 
           // Generate a slug from the file name
-          const slug = path.basename(file, '.mdoc');
+          const fileExt = path.extname(file);
+          const slug = path.basename(file, fileExt);
 
           // Log the markdown content size
           console.log(
@@ -184,16 +240,30 @@ async function migratePostsToDatabase() {
               ],
             );
 
-            // Delete existing categories and tags
-            await client.query(
-              `DELETE FROM payload.posts_categories WHERE _parent_id = $1`,
-              [postId],
-            );
+            // Delete existing categories and tags with error handling
+            try {
+              await client.query(
+                `DELETE FROM payload.posts_categories WHERE _parent_id = $1`,
+                [postId],
+              );
+            } catch (delError) {
+              console.error(
+                `Error deleting categories for post ${postId}, but continuing:`,
+                delError.message,
+              );
+            }
 
-            await client.query(
-              `DELETE FROM payload.posts_tags WHERE _parent_id = $1`,
-              [postId],
-            );
+            try {
+              await client.query(
+                `DELETE FROM payload.posts_tags WHERE _parent_id = $1`,
+                [postId],
+              );
+            } catch (delError) {
+              console.error(
+                `Error deleting tags for post ${postId}, but continuing:`,
+                delError.message,
+              );
+            }
           } else {
             // Create a new post
             postId = uuidv4();
@@ -225,39 +295,53 @@ async function migratePostsToDatabase() {
             );
           }
 
-          // Add categories if they exist
+          // Add categories if they exist with error handling
           if (data.categories && Array.isArray(data.categories)) {
             for (let i = 0; i < data.categories.length; i++) {
-              const categoryId = uuidv4();
-              await client.query(
-                `INSERT INTO payload.posts_categories (
-                  id, 
-                  _parent_id, 
-                  category, 
-                  updated_at, 
-                  created_at,
-                  "order"
-                ) VALUES ($1, $2, $3, NOW(), NOW(), $4)`,
-                [categoryId, postId, data.categories[i], i],
-              );
+              try {
+                const categoryId = uuidv4();
+                await client.query(
+                  `INSERT INTO payload.posts_categories (
+                    id, 
+                    _parent_id, 
+                    category, 
+                    updated_at, 
+                    created_at,
+                    "order"
+                  ) VALUES ($1, $2, $3, NOW(), NOW(), $4)`,
+                  [categoryId, postId, data.categories[i], i],
+                );
+              } catch (catError) {
+                console.error(
+                  `Error adding category ${data.categories[i]} to post ${postId}, but continuing:`,
+                  catError.message,
+                );
+              }
             }
           }
 
-          // Add tags if they exist
+          // Add tags if they exist with error handling
           if (data.tags && Array.isArray(data.tags)) {
             for (let i = 0; i < data.tags.length; i++) {
-              const tagId = uuidv4();
-              await client.query(
-                `INSERT INTO payload.posts_tags (
-                  id, 
-                  _parent_id, 
-                  tag, 
-                  updated_at, 
-                  created_at,
-                  "order"
-                ) VALUES ($1, $2, $3, NOW(), NOW(), $4)`,
-                [tagId, postId, data.tags[i], i],
-              );
+              try {
+                const tagId = uuidv4();
+                await client.query(
+                  `INSERT INTO payload.posts_tags (
+                    id, 
+                    _parent_id, 
+                    tag, 
+                    updated_at, 
+                    created_at,
+                    "order"
+                  ) VALUES ($1, $2, $3, NOW(), NOW(), $4)`,
+                  [tagId, postId, data.tags[i], i],
+                );
+              } catch (tagError) {
+                console.error(
+                  `Error adding tag ${data.tags[i]} to post ${postId}, but continuing:`,
+                  tagError.message,
+                );
+              }
             }
           }
 
@@ -269,6 +353,47 @@ async function migratePostsToDatabase() {
         } catch (error) {
           console.error(`Error migrating ${file}:`, error);
         }
+      }
+
+      // Verify posts were migrated successfully
+      try {
+        const countResult = await client.query(
+          `SELECT COUNT(*) FROM payload.posts`,
+        );
+        console.log(
+          `Total posts in database after migration: ${countResult.rows[0].count}`,
+        );
+
+        if (parseInt(countResult.rows[0].count) === 0) {
+          console.warn(
+            `WARNING: No posts were found in the database after migration!`,
+          );
+
+          // Investigate possible issues
+          console.log('Checking for database structure issues...');
+
+          // Check if the posts table exists and has expected columns
+          const tableResult = await client.query(`
+            SELECT column_name 
+            FROM information_schema.columns 
+            WHERE table_schema = 'payload' 
+            AND table_name = 'posts'
+          `);
+
+          console.log(
+            `Posts table columns: ${tableResult.rows.map((r) => r.column_name).join(', ')}`,
+          );
+
+          // Check for any UUID tables with missing columns
+          try {
+            await client.query(`SELECT payload.scan_and_fix_uuid_tables();`);
+            console.log('Fixed any remaining UUID tables');
+          } catch (e) {
+            console.error('Error checking UUID tables:', e.message);
+          }
+        }
+      } catch (verifyError) {
+        console.error('Error verifying migration:', verifyError);
       }
 
       console.log('Blog posts migration complete!');

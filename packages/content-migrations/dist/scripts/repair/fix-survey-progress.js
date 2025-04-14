@@ -1,12 +1,10 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Script to fix survey progress records
  *
  * This script updates the total_questions field in survey_progress records
  * to match the actual number of questions for each survey.
  */
-const supabase_js_1 = require("@supabase/supabase-js");
+import { createClient } from '@supabase/supabase-js';
 // Get environment variables
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
@@ -15,7 +13,7 @@ if (!supabaseUrl || !supabaseServiceKey) {
     process.exit(1);
 }
 // Create Supabase client with service role key for admin access
-const supabase = (0, supabase_js_1.createClient)(supabaseUrl, supabaseServiceKey);
+const supabase = createClient(supabaseUrl, supabaseServiceKey);
 /**
  * Get the actual question count for a survey
  */

@@ -21,7 +21,13 @@ function Invoke-LoadingPhase {
     
     # Step 1.5: Run specialized blog post migration
     Migrate-BlogPosts
+    
+    # Step 1.6: Run specialized private posts migration
+    Migrate-PrivatePosts
 
+    # Step 1.7: Fix UUID tables to ensure columns exist
+    Fix-UuidTables
+    
     # Step 2: Import downloads from R2 bucket
     Import-Downloads
     
@@ -136,6 +142,52 @@ function Import-Downloads {
     }
 }
 
+# Function to fix UUID tables
+function Fix-UuidTables {
+    Log-Step "Fixing UUID tables to ensure all required columns exist" 7.7
+    
+    try {
+        # First ensure we're at the project root
+        Set-ProjectRootLocation
+        Log-Message "Changed to project root: $(Get-Location)" "Gray"
+        
+        # Navigate to content-migrations directory
+        if (Set-ProjectLocation -RelativePath "packages/content-migrations") {
+            Log-Message "Changed directory to: $(Get-Location)" "Gray"
+            
+            # Run the UUID tables fix script
+            Log-Message "Running UUID tables fix script to add private_id column..." "Yellow"
+            Exec-Command -command "pnpm run fix:uuid-tables" -description "Fixing UUID tables"
+
+            # Verify the UUID tables
+            Log-Message "Verifying UUID tables..." "Yellow"
+            Exec-Command -command "pnpm run verify:uuid-tables" -description "Verifying UUID tables"
+            
+            # Additionally run the direct column fixing script
+            Log-Message "Ensuring all relationship columns exist..." "Yellow"
+            Exec-Command -command "pnpm --filter @kit/content-migrations run repair:relationship-columns" -description "Fixing relationship columns"
+            
+            # Verify columns were added
+            Log-Message "Verifying columns were added..." "Yellow"
+            Exec-Command -command "pnpm --filter @kit/content-migrations run verify:relationship-columns" -description "Verifying relationship columns"
+            
+            Log-Success "UUID tables fixed and verified successfully"
+            
+            Pop-Location
+            Log-Message "Returned to directory: $(Get-Location)" "Gray"
+        } else {
+            Log-Warning "Could not find packages/content-migrations directory, skipping UUID table fix"
+        }
+        
+        return $true
+    }
+    catch {
+        Log-Error "Failed to fix UUID tables: $_"
+        Log-Warning "This error might affect relationship queries, but continuing"
+        return $false
+    }
+}
+
 # Function to fix relationships
 function Fix-Relationships {
     Log-Step "Fixing relationships" 9
@@ -175,6 +227,14 @@ function Fix-Relationships {
         # Fix Lexical format issues in todo fields
         Log-Message "Fixing Lexical format in todo fields..." "Yellow"
         Exec-Command -command "pnpm run fix:lexical-format" -description "Fixing Lexical format" -continueOnError
+
+        # Fix Lexical format issues in posts and private posts
+        Log-Message "Fixing Lexical format in posts and private posts..." "Yellow"
+        Exec-Command -command "pnpm run fix:post-lexical-format" -description "Fixing Post Lexical format" -continueOnError
+
+        # Fix Lexical format across all collections (comprehensive fix)
+        Log-Message "Fixing all Lexical fields across all collections..." "Yellow"
+        Exec-Command -command "pnpm run fix:all-lexical-fields" -description "Fixing all Lexical fields" -continueOnError
         
         # Fix bunny_video_id fields in course_lessons table
         Log-Message "Fixing bunny_video_id fields in course_lessons table..." "Yellow"
@@ -271,6 +331,54 @@ function Create-CertificatesBucket {
     }
 }
 
+
+# Function to run private posts migration with full content
+function Migrate-PrivatePosts {
+    Log-Step "Migrating private posts with complete content" 7.6
+    
+    try {
+        # First ensure we're at the project root
+        Set-ProjectRootLocation
+        Log-Message "Changed to project root: $(Get-Location)" "Gray"
+        
+        # Check if private posts exist in the database
+        if (Set-ProjectLocation -RelativePath "packages/content-migrations") {
+            Log-Message "Changed directory to: $(Get-Location)" "Gray"
+            
+            # Run the direct migration script for private posts
+            Log-Message "Running specialized private posts migration script..." "Yellow"
+            Exec-Command -command "pnpm exec tsx src/scripts/core/migrate-private-direct.ts" -description "Migrating private posts with full content"
+            
+            # Verify the private posts were created
+            $verifyQuery = "SELECT COUNT(*) as count FROM payload.private"
+            $result = Exec-Command -command "pnpm run utils:run-sql --sql `"$verifyQuery`"" -description "Verifying private posts table" -captureOutput -continueOnError
+            # Safely extract count with proper error handling
+            $postCount = 0
+            if ($result -match "count: (\d+)" -or $result -match "count:(\d+)" -or $result -match "rows: (\d+)") {
+                $postCount = [int]($Matches[1])
+            }
+            
+            if ($postCount -gt 0) {
+                Log-Success "Successfully migrated $postCount private posts"
+            } else {
+                Log-Warning "No private posts were migrated. Check the private posts migration script."
+            }
+            
+            Pop-Location
+            Log-Message "Returned to directory: $(Get-Location)" "Gray"
+        } else {
+            Log-Warning "Could not find packages/content-migrations directory, skipping private posts migration"
+        }
+        
+        return $true
+    }
+    catch {
+        Log-Error "Failed to migrate private posts: $_"
+        Log-Warning "This is non-critical, continuing"
+        return $false
+    }
+}
+
 # Function to run blog posts migration with full content
 function Migrate-BlogPosts {
     Log-Step "Migrating blog posts with complete content" 7.5
@@ -291,7 +399,11 @@ function Migrate-BlogPosts {
                 # Verify the posts were created
                 $verifyQuery = "SELECT COUNT(*) as count FROM payload.posts"
                 $result = Exec-Command -command "pnpm run utils:run-sql --sql `"$verifyQuery`"" -description "Verifying posts table" -captureOutput -continueOnError
-                $postCount = [int]($result -match "count: (\d+)" | ForEach-Object { $Matches[1] })
+                # Safely extract count with proper error handling
+                $postCount = 0
+                if ($result -match "count: (\d+)" -or $result -match "count:(\d+)" -or $result -match "rows: (\d+)") {
+                    $postCount = [int]($Matches[1])
+                }
                 
                 if ($postCount -gt 0) {
                     Log-Success "Successfully migrated $postCount blog posts"

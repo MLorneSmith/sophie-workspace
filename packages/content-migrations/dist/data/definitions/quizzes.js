@@ -1,13 +1,8 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.QUIZZES = void 0;
-exports.getQuizBySlug = getQuizBySlug;
-exports.getQuizById = getQuizById;
 /**
  * Static definitions for all quizzes in the system.
  * This is the SINGLE SOURCE OF TRUTH for quiz data.
  */
-exports.QUIZZES = {
+export const QUIZZES = {
     'basic-graphs-quiz': {
         id: 'c11dbb26-7561-4d12-88c8-141c653a43fd',
         slug: 'basic-graphs-quiz',
@@ -84,10 +79,10 @@ exports.QUIZZES = {
     // Additional quizzes would be defined here following the same pattern
 };
 // Export a function to get a quiz by slug for convenience
-function getQuizBySlug(slug) {
-    return exports.QUIZZES[slug];
+export function getQuizBySlug(slug) {
+    return QUIZZES[slug];
 }
 // Export a function to get a quiz by ID
-function getQuizById(id) {
-    return Object.values(exports.QUIZZES).find((quiz) => quiz.id === id);
+export function getQuizById(id) {
+    return Object.values(QUIZZES).find((quiz) => quiz.id === id);
 }

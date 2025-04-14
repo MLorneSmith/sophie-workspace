@@ -8,6 +8,9 @@ import { buildConfig } from 'payload'
 import sharp from 'sharp'
 import { fileURLToPath } from 'url'
 
+// Import React
+import React from 'react'
+
 // Import custom SCSS for Tailwind CSS
 // This import is causing issues with ESM, so we'll comment it out
 // import './app/(payload)/custom.scss'
@@ -23,6 +26,7 @@ import { Documentation } from './collections/Documentation'
 import { Downloads } from './collections/Downloads'
 import { Media } from './collections/Media'
 import { Posts } from './collections/Posts'
+import { Private } from './collections/Private'
 import { QuizQuestions } from './collections/QuizQuestions'
 import { SurveyQuestions } from './collections/SurveyQuestions'
 import { Surveys } from './collections/Surveys'
@@ -37,6 +41,10 @@ export default buildConfig({
     importMap: {
       baseDir: path.resolve(dirname),
     },
+    // Admin configuration
+    components: {
+      beforeDashboard: [],
+    },
   },
   // Add CORS configuration to allow requests from all web app domains
   cors: [
@@ -50,6 +58,7 @@ export default buildConfig({
     Media,
     Documentation,
     Posts,
+    Private,
     Surveys,
     SurveyQuestions,
     Courses,

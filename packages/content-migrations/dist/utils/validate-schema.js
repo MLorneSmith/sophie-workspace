@@ -1,18 +1,14 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.validateCollectionSchema = validateCollectionSchema;
-exports.validateMultipleCollectionSchemas = validateMultipleCollectionSchemas;
 /**
  * Utility functions for validating Payload CMS schema before migrations
  */
-const payload_client_js_1 = require("./payload-client.js");
+import { getPayloadClient } from './payload-client.js';
 /**
  * Validates that a collection exists in the Payload CMS schema
  * @param collectionSlug - The slug of the collection to validate
  * @returns A boolean indicating whether the collection exists
  */
-async function validateCollectionSchema(collectionSlug) {
-    const payload = await (0, payload_client_js_1.getPayloadClient)();
+export async function validateCollectionSchema(collectionSlug) {
+    const payload = await getPayloadClient();
     try {
         // Fetch one record to test if the collection exists and is accessible
         await payload.find({
@@ -34,7 +30,7 @@ async function validateCollectionSchema(collectionSlug) {
  * @param collectionSlugs - An array of collection slugs to validate
  * @returns A boolean indicating whether all collections exist
  */
-async function validateMultipleCollectionSchemas(collectionSlugs) {
+export async function validateMultipleCollectionSchemas(collectionSlugs) {
     const results = await Promise.all(collectionSlugs.map(async (slug) => {
         return {
             slug,

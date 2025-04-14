@@ -1,69 +1,61 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.PAYLOAD_SQL_SEED_DIR = exports.PAYLOAD_SEED_DIR = exports.PAYLOAD_DIR = exports.RAW_SURVEYS_DIR = exports.RAW_POSTS_DIR = exports.RAW_DOCUMENTATION_DIR = exports.RAW_QUIZZES_DIR = exports.RAW_LESSONS_DIR = exports.RAW_COURSES_DIR = exports.PROCESSED_JSON_DIR = exports.PROCESSED_SQL_DIR = exports.PROCESSED_DATA_DIR = exports.RAW_DATA_DIR = exports.UTILS_DIR = exports.SCRIPTS_DIR = exports.DATA_DIR = exports.SRC_DIR = exports.CONFIG_DIR = void 0;
-exports.getRelativePath = getRelativePath;
-exports.logPathConfiguration = logPathConfiguration;
 /**
  * Central configuration for data paths
  *
  * This file provides a central location for all path configurations used in the content migration system.
  * Using these constants instead of hardcoded paths makes it easier to update path references in the future.
  */
-const path_1 = __importDefault(require("path"));
-const url_1 = require("url");
+import path from 'path';
+import { fileURLToPath } from 'url';
 // Get the current file's directory
-const __filename = (0, url_1.fileURLToPath)(import.meta.url);
-const __dirname = path_1.default.dirname(__filename);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 // Base directories
-exports.CONFIG_DIR = __dirname;
-exports.SRC_DIR = path_1.default.resolve(__dirname, '..');
-exports.DATA_DIR = path_1.default.resolve(exports.SRC_DIR, 'data');
-exports.SCRIPTS_DIR = path_1.default.resolve(exports.SRC_DIR, 'scripts');
-exports.UTILS_DIR = path_1.default.resolve(exports.SRC_DIR, 'utils');
+export const CONFIG_DIR = __dirname;
+export const SRC_DIR = path.resolve(__dirname, '..');
+export const DATA_DIR = path.resolve(SRC_DIR, 'data');
+export const SCRIPTS_DIR = path.resolve(SRC_DIR, 'scripts');
+export const UTILS_DIR = path.resolve(SRC_DIR, 'utils');
 // Data directories
-exports.RAW_DATA_DIR = path_1.default.resolve(exports.DATA_DIR, 'raw');
-exports.PROCESSED_DATA_DIR = path_1.default.resolve(exports.DATA_DIR, 'processed');
-exports.PROCESSED_SQL_DIR = path_1.default.resolve(exports.PROCESSED_DATA_DIR, 'sql');
-exports.PROCESSED_JSON_DIR = path_1.default.resolve(exports.PROCESSED_DATA_DIR, 'json');
+export const RAW_DATA_DIR = path.resolve(DATA_DIR, 'raw');
+export const PROCESSED_DATA_DIR = path.resolve(DATA_DIR, 'processed');
+export const PROCESSED_SQL_DIR = path.resolve(PROCESSED_DATA_DIR, 'sql');
+export const PROCESSED_JSON_DIR = path.resolve(PROCESSED_DATA_DIR, 'json');
 // Raw data subdirectories
-exports.RAW_COURSES_DIR = path_1.default.resolve(exports.RAW_DATA_DIR, 'courses');
-exports.RAW_LESSONS_DIR = path_1.default.resolve(exports.RAW_COURSES_DIR, 'lessons');
-exports.RAW_QUIZZES_DIR = path_1.default.resolve(exports.RAW_COURSES_DIR, 'quizzes');
-exports.RAW_DOCUMENTATION_DIR = path_1.default.resolve(exports.RAW_DATA_DIR, 'documentation');
-exports.RAW_POSTS_DIR = path_1.default.resolve(exports.RAW_DATA_DIR, 'posts');
-exports.RAW_SURVEYS_DIR = path_1.default.resolve(exports.RAW_DATA_DIR, 'surveys');
+export const RAW_COURSES_DIR = path.resolve(RAW_DATA_DIR, 'courses');
+export const RAW_LESSONS_DIR = path.resolve(RAW_COURSES_DIR, 'lessons');
+export const RAW_QUIZZES_DIR = path.resolve(RAW_COURSES_DIR, 'quizzes');
+export const RAW_DOCUMENTATION_DIR = path.resolve(RAW_DATA_DIR, 'documentation');
+export const RAW_POSTS_DIR = path.resolve(RAW_DATA_DIR, 'posts');
+export const RAW_SURVEYS_DIR = path.resolve(RAW_DATA_DIR, 'surveys');
 // Payload directories
-exports.PAYLOAD_DIR = path_1.default.resolve(exports.SRC_DIR, '../../../apps/payload');
-exports.PAYLOAD_SEED_DIR = path_1.default.resolve(exports.PAYLOAD_DIR, 'src/seed');
-exports.PAYLOAD_SQL_SEED_DIR = path_1.default.resolve(exports.PAYLOAD_SEED_DIR, 'sql');
+export const PAYLOAD_DIR = path.resolve(SRC_DIR, '../../../apps/payload');
+export const PAYLOAD_SEED_DIR = path.resolve(PAYLOAD_DIR, 'src/seed');
+export const PAYLOAD_SQL_SEED_DIR = path.resolve(PAYLOAD_SEED_DIR, 'sql');
 /**
  * Gets a file path relative to the project root
  * @param absolutePath - The absolute path to convert
  * @returns The relative path from the project root
  */
-function getRelativePath(absolutePath) {
-    const projectRoot = path_1.default.resolve(exports.SRC_DIR, '../../..');
-    return path_1.default.relative(projectRoot, absolutePath);
+export function getRelativePath(absolutePath) {
+    const projectRoot = path.resolve(SRC_DIR, '../../..');
+    return path.relative(projectRoot, absolutePath);
 }
 /**
  * Logs the path configuration for debugging
  */
-function logPathConfiguration() {
+export function logPathConfiguration() {
     console.log('Path Configuration:');
     console.log('------------------');
-    console.log(`CONFIG_DIR: ${getRelativePath(exports.CONFIG_DIR)}`);
-    console.log(`SRC_DIR: ${getRelativePath(exports.SRC_DIR)}`);
-    console.log(`DATA_DIR: ${getRelativePath(exports.DATA_DIR)}`);
-    console.log(`RAW_DATA_DIR: ${getRelativePath(exports.RAW_DATA_DIR)}`);
-    console.log(`PROCESSED_DATA_DIR: ${getRelativePath(exports.PROCESSED_DATA_DIR)}`);
-    console.log(`PROCESSED_SQL_DIR: ${getRelativePath(exports.PROCESSED_SQL_DIR)}`);
-    console.log(`PROCESSED_JSON_DIR: ${getRelativePath(exports.PROCESSED_JSON_DIR)}`);
-    console.log(`PAYLOAD_DIR: ${getRelativePath(exports.PAYLOAD_DIR)}`);
-    console.log(`PAYLOAD_SEED_DIR: ${getRelativePath(exports.PAYLOAD_SEED_DIR)}`);
-    console.log(`PAYLOAD_SQL_SEED_DIR: ${getRelativePath(exports.PAYLOAD_SQL_SEED_DIR)}`);
+    console.log(`CONFIG_DIR: ${getRelativePath(CONFIG_DIR)}`);
+    console.log(`SRC_DIR: ${getRelativePath(SRC_DIR)}`);
+    console.log(`DATA_DIR: ${getRelativePath(DATA_DIR)}`);
+    console.log(`RAW_DATA_DIR: ${getRelativePath(RAW_DATA_DIR)}`);
+    console.log(`PROCESSED_DATA_DIR: ${getRelativePath(PROCESSED_DATA_DIR)}`);
+    console.log(`PROCESSED_SQL_DIR: ${getRelativePath(PROCESSED_SQL_DIR)}`);
+    console.log(`PROCESSED_JSON_DIR: ${getRelativePath(PROCESSED_JSON_DIR)}`);
+    console.log(`PAYLOAD_DIR: ${getRelativePath(PAYLOAD_DIR)}`);
+    console.log(`PAYLOAD_SEED_DIR: ${getRelativePath(PAYLOAD_SEED_DIR)}`);
+    console.log(`PAYLOAD_SQL_SEED_DIR: ${getRelativePath(PAYLOAD_SQL_SEED_DIR)}`);
 }
 // Run the log function if this file is executed directly
 if (import.meta.url === import.meta.resolve('./paths.ts')) {

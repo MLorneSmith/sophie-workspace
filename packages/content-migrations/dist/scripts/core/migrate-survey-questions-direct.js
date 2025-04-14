@@ -1,27 +1,22 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Script to migrate survey questions from YAML files to Payload CMS directly in the PostgreSQL database
  */
-const dotenv_1 = __importDefault(require("dotenv"));
-const fs_1 = __importDefault(require("fs"));
-const js_yaml_1 = __importDefault(require("js-yaml"));
-const path_1 = __importDefault(require("path"));
-const pg_1 = __importDefault(require("pg"));
-const url_1 = require("url");
-const { Pool } = pg_1.default;
+import dotenv from 'dotenv';
+import fs from 'fs';
+import yaml from 'js-yaml';
+import path from 'path';
+import pg from 'pg';
+import { fileURLToPath } from 'url';
+const { Pool } = pg;
 // Get the current file's directory
-const __filename = (0, url_1.fileURLToPath)(import.meta.url);
-const __dirname = path_1.default.dirname(__filename);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 // Load environment variables based on the NODE_ENV
 const envFile = process.env.NODE_ENV === 'production'
     ? '.env.production'
     : '.env.development';
 console.log(`Loading environment variables from ${envFile}`);
-dotenv_1.default.config({ path: path_1.default.resolve(__dirname, `../../../${envFile}`) });
+dotenv.config({ path: path.resolve(__dirname, `../../../${envFile}`) });
 /**
  * Validates if a string is a valid UUID
  * @param str - The string to validate
@@ -53,7 +48,7 @@ async function migrateSurveyQuestionsToDatabase() {
             // We don't need a unique constraint since we'll check for duplicates manually
             console.log('Checking for existing questions...');
             // Path to the surveys files
-            const surveysDir = path_1.default.resolve(__dirname, '../../../../../apps/payload/data/surveys');
+            const surveysDir = path.resolve(__dirname, '../../../../../apps/payload/data/surveys');
             console.log(`Surveys directory: ${surveysDir}`);
             // Get all surveys from the database
             const surveyIdsResult = await client.query('SELECT id, slug FROM payload.surveys ORDER BY slug');
@@ -68,18 +63,18 @@ async function migrateSurveyQuestionsToDatabase() {
                 console.log(`  ${survey.slug}: ${survey.id}`);
             }
             // Read all .yaml files
-            const yamlFiles = fs_1.default
+            const yamlFiles = fs
                 .readdirSync(surveysDir)
                 .filter((file) => file.endsWith('.yaml') || file.endsWith('.yml'))
-                .map((file) => path_1.default.join(surveysDir, file));
+                .map((file) => path.join(surveysDir, file));
             console.log(`Found ${yamlFiles.length} survey files to process for questions.`);
             // Migrate questions from each survey file
             for (const file of yamlFiles) {
                 try {
-                    const content = fs_1.default.readFileSync(file, 'utf8');
-                    const data = js_yaml_1.default.load(content);
+                    const content = fs.readFileSync(file, 'utf8');
+                    const data = yaml.load(content);
                     // Generate a slug from the file name
-                    const slug = path_1.default.basename(file, path_1.default.extname(file));
+                    const slug = path.basename(file, path.extname(file));
                     // Get the survey ID from the database
                     const surveyFromDb = surveyIdsResult.rows.find((s) => s.slug === slug);
                     if (!surveyFromDb) {

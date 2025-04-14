@@ -1,32 +1,26 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.createCourse = createCourse;
 /**
  * Script to create a course in Payload CMS
  */
-const dotenv_1 = __importDefault(require("dotenv"));
-const path_1 = __importDefault(require("path"));
-const url_1 = require("url");
-const payload_client_js_1 = require("../utils/payload-client.js");
+import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { getPayloadClient } from '../utils/payload-client.js';
 // Get the current file's directory
-const __filename = (0, url_1.fileURLToPath)(import.meta.url);
-const __dirname = path_1.default.dirname(__filename);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 // Load environment variables based on the NODE_ENV
 const envFile = process.env.NODE_ENV === 'production'
     ? '.env.production'
     : '.env.development';
 console.log(`Loading environment variables from ${envFile}`);
-dotenv_1.default.config({ path: path_1.default.resolve(__dirname, `../../${envFile}`) });
+dotenv.config({ path: path.resolve(__dirname, `../../${envFile}`) });
 /**
  * Creates a course in Payload CMS
  */
 async function createCourse() {
     try {
         // Get the Payload client
-        const payload = await (0, payload_client_js_1.getPayloadClient)();
+        const payload = await getPayloadClient();
         // Check if the course already exists
         const existingCourses = await payload.find({
             collection: 'courses',
@@ -60,9 +54,11 @@ async function createCourse() {
     }
 }
 // Run the script if called directly
-if (process.argv[1] === (0, url_1.fileURLToPath)(import.meta.url)) {
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
     createCourse().catch((error) => {
         console.error('Script failed:', error);
         process.exit(1);
     });
 }
+// Export the function for use in other scripts
+export { createCourse };

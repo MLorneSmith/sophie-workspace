@@ -1,28 +1,22 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateSurveyQuestionsSql = generateSurveyQuestionsSql;
 /**
  * Generator for survey questions SQL
  */
-const fs_1 = __importDefault(require("fs"));
-const js_yaml_1 = __importDefault(require("js-yaml"));
-const path_1 = __importDefault(require("path"));
-const uuid_1 = require("uuid");
-const paths_js_1 = require("../../../config/paths.js");
+import fs from 'fs';
+import yaml from 'js-yaml';
+import path from 'path';
+import { v4 as uuidv4 } from 'uuid';
+import { RAW_SURVEYS_DIR } from '../../../config/paths.js';
 /**
  * Generates SQL for survey questions from all YAML files in the RAW_SURVEYS_DIR directory
  * @returns Object containing SQL for each survey's questions
  */
-function generateSurveyQuestionsSql() {
+export function generateSurveyQuestionsSql() {
     // Get all .yaml files in the surveys directory
-    const surveyFiles = fs_1.default
-        .readdirSync(paths_js_1.RAW_SURVEYS_DIR)
+    const surveyFiles = fs
+        .readdirSync(RAW_SURVEYS_DIR)
         .filter((file) => file.endsWith('.yaml') || file.endsWith('.yml'));
     if (surveyFiles.length === 0) {
-        console.warn(`No survey files found in ${paths_js_1.RAW_SURVEYS_DIR}`);
+        console.warn(`No survey files found in ${RAW_SURVEYS_DIR}`);
         return generatePlaceholderSurveyQuestionsSql();
     }
     console.log(`Found ${surveyFiles.length} survey files to process for questions.`);
@@ -56,12 +50,12 @@ BEGIN;
 `;
     // Process each survey file
     for (const file of surveyFiles) {
-        const filePath = path_1.default.join(paths_js_1.RAW_SURVEYS_DIR, file);
-        const surveyContent = fs_1.default.readFileSync(filePath, 'utf8');
-        const surveyData = js_yaml_1.default.load(surveyContent);
+        const filePath = path.join(RAW_SURVEYS_DIR, file);
+        const surveyContent = fs.readFileSync(filePath, 'utf8');
+        const surveyData = yaml.load(surveyContent);
         // Get the survey slug and UUID
-        const surveySlug = path_1.default.basename(file, path_1.default.extname(file));
-        const surveyId = knownSurveyIds[surveySlug] || (0, uuid_1.v4)();
+        const surveySlug = path.basename(file, path.extname(file));
+        const surveyId = knownSurveyIds[surveySlug] || uuidv4();
         console.log(`Processing questions for survey: ${surveyData.title} (${surveySlug}, ID: ${surveyId})`);
         // Select the appropriate SQL string based on the survey slug
         let targetSql;
@@ -82,7 +76,7 @@ BEGIN;
         if (surveyData.questions && Array.isArray(surveyData.questions)) {
             for (let i = 0; i < surveyData.questions.length; i++) {
                 const question = surveyData.questions[i];
-                const questionId = (0, uuid_1.v4)();
+                const questionId = uuidv4();
                 // Convert questionspin string to integer (0 for Positive, 1 for Negative)
                 // Make the comparison case-insensitive
                 const questionspinValue = question.questionspin &&

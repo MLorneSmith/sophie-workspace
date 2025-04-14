@@ -1,27 +1,21 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateSurveysSql = generateSurveysSql;
 /**
  * Generator for surveys SQL
  */
-const fs_1 = __importDefault(require("fs"));
-const js_yaml_1 = __importDefault(require("js-yaml"));
-const path_1 = __importDefault(require("path"));
-const paths_js_1 = require("../../../config/paths.js");
+import fs from 'fs';
+import yaml from 'js-yaml';
+import path from 'path';
+import { RAW_SURVEYS_DIR } from '../../../config/paths.js';
 /**
  * Generates SQL for surveys from all YAML files in the RAW_SURVEYS_DIR directory
  * @returns SQL for surveys
  */
-function generateSurveysSql() {
+export function generateSurveysSql() {
     // Get all .yaml files in the surveys directory
-    const surveyFiles = fs_1.default
-        .readdirSync(paths_js_1.RAW_SURVEYS_DIR)
+    const surveyFiles = fs
+        .readdirSync(RAW_SURVEYS_DIR)
         .filter((file) => file.endsWith('.yaml') || file.endsWith('.yml'));
     if (surveyFiles.length === 0) {
-        console.warn(`No survey files found in ${paths_js_1.RAW_SURVEYS_DIR}`);
+        console.warn(`No survey files found in ${RAW_SURVEYS_DIR}`);
         return generatePlaceholderSurveysSql();
     }
     console.log(`Found ${surveyFiles.length} survey files to process.`);
@@ -41,11 +35,11 @@ BEGIN;
     };
     // Process each survey file
     for (const file of surveyFiles) {
-        const filePath = path_1.default.join(paths_js_1.RAW_SURVEYS_DIR, file);
-        const surveyContent = fs_1.default.readFileSync(filePath, 'utf8');
-        const surveyData = js_yaml_1.default.load(surveyContent);
+        const filePath = path.join(RAW_SURVEYS_DIR, file);
+        const surveyContent = fs.readFileSync(filePath, 'utf8');
+        const surveyData = yaml.load(surveyContent);
         // Get the survey slug and UUID
-        const surveySlug = path_1.default.basename(file, path_1.default.extname(file));
+        const surveySlug = path.basename(file, path.extname(file));
         const surveyId = knownSurveyIds[surveySlug] || '00000000-0000-0000-0000-000000000000';
         // Generate a description if not provided
         const description = surveyData.description || `Survey: ${surveyData.title}`;

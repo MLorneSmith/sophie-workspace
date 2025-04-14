@@ -1,61 +1,23 @@
-"use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Script to create an admin user in Payload CMS using the Payload API
  * This ensures proper password hashing and user initialization
  */
-const child_process_1 = require("child_process");
-const dotenv_1 = __importDefault(require("dotenv"));
-const fs = __importStar(require("fs"));
-const path_1 = __importDefault(require("path"));
-const pg_1 = __importDefault(require("pg"));
-const url_1 = require("url");
-const { Pool } = pg_1.default;
+import { spawn } from 'child_process';
+import dotenv from 'dotenv';
+import * as fs from 'fs';
+import path from 'path';
+import pg from 'pg';
+import { fileURLToPath } from 'url';
+const { Pool } = pg;
 // Get the current file's directory
-const __filename = (0, url_1.fileURLToPath)(import.meta.url);
-const __dirname = path_1.default.dirname(__filename);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 // Load environment variables based on the NODE_ENV
 const envFile = process.env.NODE_ENV === 'production'
     ? '.env.production'
     : '.env.development';
 console.log(`Loading environment variables from ${envFile}`);
-dotenv_1.default.config({ path: path_1.default.resolve(__dirname, `../../${envFile}`) });
+dotenv.config({ path: path.resolve(__dirname, `../../${envFile}`) });
 /**
  * Creates an admin user using Payload's API with proper config
  */
@@ -97,7 +59,7 @@ async function createAdminUserPayloadAPI() {
             await pool.end();
         }
         // Create a temporary script to create the user
-        const tempScriptPath = path_1.default.resolve(__dirname, 'temp-create-user.js');
+        const tempScriptPath = path.resolve(__dirname, 'temp-create-user.js');
         // Write the temporary script
         fs.writeFileSync(tempScriptPath, `
 import { getPayload } from 'payload';
@@ -137,11 +99,11 @@ createUser();
       `);
         console.log('Running Payload script to create user...');
         // Run the script using the Payload CLI with --use-swc flag
-        const payloadDir = path_1.default.resolve(__dirname, '../../../../apps/payload');
-        const scriptPath = path_1.default.resolve(__dirname, 'temp-create-user.js');
+        const payloadDir = path.resolve(__dirname, '../../../../apps/payload');
+        const scriptPath = path.resolve(__dirname, 'temp-create-user.js');
         console.log(`Payload directory: ${payloadDir}`);
         console.log(`Script path: ${scriptPath}`);
-        const payloadProcess = (0, child_process_1.spawn)('pnpm', ['--prefix', payloadDir, 'payload', 'run', scriptPath, '--use-swc'], {
+        const payloadProcess = spawn('pnpm', ['--prefix', payloadDir, 'payload', 'run', scriptPath, '--use-swc'], {
             shell: true,
             stdio: 'inherit',
             env: {

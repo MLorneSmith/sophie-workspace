@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS payload.${tableName} (
   field TEXT,
   value UUID,
   parent_id UUID,
+  private_id UUID,
   downloads_id UUID,
   posts_id UUID,
   documentation_id UUID,
@@ -138,6 +139,16 @@ BEGIN
     AND column_name = 'posts_id'
   ) THEN
     ALTER TABLE payload.${tableName} ADD COLUMN posts_id UUID;
+  END IF;
+  
+  -- Add private_id if it doesn't exist
+  IF NOT EXISTS (
+    SELECT FROM information_schema.columns
+    WHERE table_schema = 'payload'
+    AND table_name = '${tableName}'
+    AND column_name = 'private_id'
+  ) THEN
+    ALTER TABLE payload.${tableName} ADD COLUMN private_id UUID;
   END IF;
 END
 $$;
