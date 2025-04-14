@@ -5,7 +5,8 @@ dotenvConfig();
 dotenvConfig({ path: '.env.local' });
 
 const enableBillingTests = process.env.ENABLE_BILLING_TESTS === 'true';
-const enableTeamAccountTests = (process.env.ENABLE_TEAM_ACCOUNT_TESTS ?? 'true') === 'true';
+const enableTeamAccountTests =
+  (process.env.ENABLE_TEAM_ACCOUNT_TESTS ?? 'true') === 'true';
 
 const testIgnore: string[] = [];
 
