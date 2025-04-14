@@ -1,6 +1,11 @@
 import { defineConfig, devices } from '@playwright/test';
+import { config as dotenvConfig } from 'dotenv';
+
+dotenvConfig();
+dotenvConfig({ path: '.env.local' });
 
 const enableBillingTests = process.env.ENABLE_BILLING_TESTS === 'true';
+const enableTeamAccountTests = (process.env.ENABLE_TEAM_ACCOUNT_TESTS ?? 'true') === 'true';
 
 const testIgnore: string[] = [];
 
@@ -11,6 +16,17 @@ if (!enableBillingTests) {
   );
 
   testIgnore.push('*-billing.spec.ts');
+}
+
+if (!enableTeamAccountTests) {
+  console.log(
+    `Team account tests are disabled. To enable them, set the environment variable ENABLE_TEAM_ACCOUNT_TESTS=true.`,
+    `Current value: "${process.env.ENABLE_TEAM_ACCOUNT_TESTS}"`,
+  );
+
+  testIgnore.push('*team-accounts.spec.ts');
+  testIgnore.push('*invitations.spec.ts');
+  testIgnore.push('*team-billing.spec.ts');
 }
 
 /**

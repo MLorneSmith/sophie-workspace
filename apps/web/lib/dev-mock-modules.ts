@@ -14,7 +14,7 @@ export const useBaselimeRum = undefined;
 export const BaselimeRum = undefined;
 
 // Sentry
-export const captureException =() => ({});
+export const captureException = () => ({});
 export const captureEvent = () => ({});
 export const setUser = () => ({});
 export const init = () => ({});
