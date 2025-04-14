@@ -68,35 +68,50 @@ export class PayloadClient implements CmsClient {
       // Get the main item
       const item = this.mapContentItem(data.docs[0]);
 
-      // Fetch child documents
-      try {
-        const childrenResponse = await fetch(
-          `${process.env.PAYLOAD_PUBLIC_SERVER_URL}/api/${collection}?where[parent][equals]=${item.id}&where[status][equals]=${status}`,
-        );
+      // Collections that don't support parent-child relationships
+      const nonHierarchicalCollections = ['posts'];
 
-        // Check if the response is ok (status in the range 200-299)
-        if (childrenResponse.ok) {
-          const childrenData = await childrenResponse.json();
+      // Only fetch child documents for collections that support hierarchical relationships
+      if (!nonHierarchicalCollections.includes(collection)) {
+        try {
+          console.log(
+            `Fetching child documents for ${collection} with ID ${item.id}`,
+          );
+          const childrenResponse = await fetch(
+            `${process.env.PAYLOAD_PUBLIC_SERVER_URL}/api/${collection}?where[parent][equals]=${item.id}&where[status][equals]=${status}`,
+          );
 
-          // Check if childrenData.docs exists and is an array before mapping
-          if (childrenData && Array.isArray(childrenData.docs)) {
-            // Add children to the main item
-            item.children = childrenData.docs.map((doc: any) =>
-              this.mapContentItem(doc),
-            );
+          // Check if the response is ok (status in the range 200-299)
+          if (childrenResponse.ok) {
+            const childrenData = await childrenResponse.json();
+
+            // Check if childrenData.docs exists and is an array before mapping
+            if (childrenData && Array.isArray(childrenData.docs)) {
+              // Add children to the main item
+              item.children = childrenData.docs.map((doc: any) =>
+                this.mapContentItem(doc),
+              );
+            } else {
+              console.warn(
+                'No child documents found or invalid response format',
+              );
+              item.children = []; // Ensure children is an empty array
+            }
           } else {
-            console.warn('No child documents found or invalid response format');
+            console.warn(
+              `Error fetching child documents: ${childrenResponse.status} ${childrenResponse.statusText}`,
+            );
             item.children = []; // Ensure children is an empty array
           }
-        } else {
-          console.warn(
-            `Error fetching child documents: ${childrenResponse.status} ${childrenResponse.statusText}`,
-          );
+        } catch (childError) {
+          console.error('Error fetching child documents:', childError);
           item.children = []; // Ensure children is an empty array
         }
-      } catch (childError) {
-        console.error('Error fetching child documents:', childError);
-        item.children = []; // Ensure children is an empty array
+      } else {
+        console.log(
+          `Skipping child documents fetch for non-hierarchical collection: ${collection}`,
+        );
+        item.children = []; // Ensure children is an empty array for non-hierarchical collections
       }
 
       return item;
@@ -216,16 +231,25 @@ export class PayloadClient implements CmsClient {
       // Also include the original image_id for components that might need to access it directly
       image_id: item.image_id,
       status: item.status,
-      categories: (item.categories || []).map((category: any) => ({
-        id: category.category,
-        name: category.category,
-        slug: category.category.toLowerCase().replace(/\s+/g, '-'),
-      })),
-      tags: (item.tags || []).map((tag: any) => ({
-        id: tag.tag,
-        name: tag.tag,
-        slug: tag.tag.toLowerCase().replace(/\s+/g, '-'),
-      })),
+      categories: (item.categories || []).map((category: any) => {
+        const categoryValue =
+          category && category.category ? category.category : '';
+        return {
+          id: categoryValue,
+          name: categoryValue,
+          slug: categoryValue
+            ? categoryValue.toLowerCase().replace(/\s+/g, '-')
+            : '',
+        };
+      }),
+      tags: (item.tags || []).map((tag: any) => {
+        const tagValue = tag && tag.tag ? tag.tag : '';
+        return {
+          id: tagValue,
+          name: tagValue,
+          slug: tagValue ? tagValue.toLowerCase().replace(/\s+/g, '-') : '',
+        };
+      }),
       parentId: item.parent ? item.parent.id : null,
       order: item.order || 0,
       children: [],

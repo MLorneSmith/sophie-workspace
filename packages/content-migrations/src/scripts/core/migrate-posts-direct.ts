@@ -1,10 +1,9 @@
 /**
  * Script to migrate blog posts from Markdown files to Payload CMS directly in the PostgreSQL database
  */
-import { ListItemNode, ListNode } from '@lexical/list';
-import { HeadingNode } from '@lexical/rich-text';
-import { $convertFromMarkdownString } from '@payloadcms/richtext-lexical';
-import { createHeadlessEditor } from '@payloadcms/richtext-lexical/lexical/headless';
+/**
+ * Script to migrate blog posts from Markdown files to Payload CMS directly in the PostgreSQL database
+ */
 import dotenv from 'dotenv';
 import fs from 'fs';
 import matter from 'gray-matter';
@@ -52,10 +51,7 @@ async function migratePostsToDatabase() {
       console.log('Connected to database');
 
       // Path to the blog posts files
-      const postsDir = path.resolve(
-        __dirname,
-        '../../../../../apps/web/content/posts',
-      );
+      const postsDir = path.resolve(process.cwd(), 'src/data/raw/posts');
       console.log(`Blog posts directory: ${postsDir}`);
 
       // Check if the directory exists
@@ -82,23 +78,74 @@ async function migratePostsToDatabase() {
           // Generate a slug from the file name
           const slug = path.basename(file, '.mdoc');
 
-          // Convert Markdown content to Lexical format
+          // Log the markdown content size
+          console.log(
+            `Processing ${slug} with content length: ${mdContent.length} characters`,
+          );
+
+          // Create a simple paragraph-based Lexical content structure directly
+          // This approach avoids the conversion issues with the markdown library
           const lexicalContent = (() => {
-            // Create a headless editor instance with list nodes and heading nodes registered
-            const headlessEditor = createHeadlessEditor({
-              nodes: [ListNode, ListItemNode, HeadingNode],
-            });
+            try {
+              // Create a basic Lexical document structure with the content
+              // This is a simplified version that creates paragraphs for each line
+              const lines = mdContent.split('\n');
+              const children = [];
 
-            // Convert Markdown to Lexical format
-            headlessEditor.update(
-              () => {
-                $convertFromMarkdownString(mdContent);
-              },
-              { discrete: true },
-            );
+              // Add a paragraph for each line
+              for (const line of lines) {
+                if (line.trim()) {
+                  children.push({
+                    type: 'paragraph',
+                    format: '',
+                    indent: 0,
+                    version: 1,
+                    children: [
+                      {
+                        detail: 0,
+                        format: 0,
+                        mode: 'normal',
+                        style: '',
+                        text: line,
+                        type: 'text',
+                        version: 1,
+                      },
+                    ],
+                  });
+                }
+              }
 
-            // Get the Lexical JSON
-            return headlessEditor.getEditorState().toJSON();
+              // Create the root node with all paragraph children
+              const result = {
+                root: {
+                  type: 'root',
+                  format: '',
+                  indent: 0,
+                  version: 1,
+                  children,
+                },
+              };
+
+              // Verify the conversion was successful by checking content length
+              const resultStr = JSON.stringify(result);
+              console.log(
+                `Created Lexical format for ${slug}: ${resultStr.length} characters`,
+              );
+
+              if (resultStr.length < mdContent.length / 2) {
+                console.error(
+                  `WARNING: Possible data loss in ${slug} - markdown: ${mdContent.length} chars, lexical: ${resultStr.length} chars`,
+                );
+              }
+
+              return result;
+            } catch (error) {
+              console.error(
+                `Error converting ${slug} to Lexical format:`,
+                error,
+              );
+              throw error;
+            }
           })();
 
           // Check if the post already exists
@@ -107,37 +154,76 @@ async function migratePostsToDatabase() {
             [slug],
           );
 
-          if (existingPostResult.rows.length > 0) {
-            console.log(`Post with slug ${slug} already exists. Skipping.`);
-            continue;
-          }
+          let postId;
 
-          // Create a new post
-          const postId = uuidv4();
-          await client.query(
-            `INSERT INTO payload.posts (
-              id, 
-              title, 
-              slug, 
-              description, 
-              content, 
-              published_at, 
-              status, 
-              updated_at, 
-              created_at
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW())`,
-            [
-              postId,
-              data.title || slug,
-              slug,
-              data.description || '',
-              JSON.stringify(lexicalContent),
-              data.publishedAt
-                ? new Date(data.publishedAt).toISOString()
-                : new Date().toISOString(),
-              data.status || 'draft',
-            ],
-          );
+          if (existingPostResult.rows.length > 0) {
+            // Update existing post
+            postId = existingPostResult.rows[0].id;
+            console.log(
+              `Updating existing post with slug ${slug} and ID ${postId}`,
+            );
+
+            await client.query(
+              `UPDATE payload.posts SET
+                title = $1,
+                description = $2,
+                content = $3,
+                published_at = $4,
+                status = $5,
+                updated_at = NOW()
+              WHERE id = $6`,
+              [
+                data.title || slug,
+                data.description || '',
+                JSON.stringify(lexicalContent),
+                data.publishedAt
+                  ? new Date(data.publishedAt).toISOString()
+                  : new Date().toISOString(),
+                data.status || 'published',
+                postId,
+              ],
+            );
+
+            // Delete existing categories and tags
+            await client.query(
+              `DELETE FROM payload.posts_categories WHERE _parent_id = $1`,
+              [postId],
+            );
+
+            await client.query(
+              `DELETE FROM payload.posts_tags WHERE _parent_id = $1`,
+              [postId],
+            );
+          } else {
+            // Create a new post
+            postId = uuidv4();
+            console.log(`Creating new post with slug ${slug} and ID ${postId}`);
+
+            await client.query(
+              `INSERT INTO payload.posts (
+                id, 
+                title, 
+                slug, 
+                description, 
+                content, 
+                published_at, 
+                status, 
+                updated_at, 
+                created_at
+              ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW())`,
+              [
+                postId,
+                data.title || slug,
+                slug,
+                data.description || '',
+                JSON.stringify(lexicalContent),
+                data.publishedAt
+                  ? new Date(data.publishedAt).toISOString()
+                  : new Date().toISOString(),
+                data.status || 'published',
+              ],
+            );
+          }
 
           // Add categories if they exist
           if (data.categories && Array.isArray(data.categories)) {
@@ -174,6 +260,10 @@ async function migratePostsToDatabase() {
               );
             }
           }
+
+          // Note: We're not creating new media entries as the images
+          // are already stored in Cloudflare R2 and accessible from the media collection
+          // The image paths in the .mdoc files will be handled by Payload CMS directly
 
           console.log(`Migrated blog post: ${slug} with ID: ${postId}`);
         } catch (error) {

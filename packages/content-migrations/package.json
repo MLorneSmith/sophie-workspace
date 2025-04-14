@@ -26,6 +26,7 @@
     "fix:todo-fields": "tsx src/scripts/repair/fix-todo-fields.ts",
     "fix:lexical-format": "tsx src/scripts/repair/fix-lexical-format.ts",
     "fix:bunny-video-ids": "powershell -ExecutionPolicy Bypass -File src/scripts/repair/hook-integration-script.ps1",
+    "fix:post-image-relationships": "tsx src/scripts/repair/fix-post-image-relationships.ts",
     "sql:add-relationship-id-columns": "tsx src/scripts/sql/add-media-id-columns.ts",
     "generate:yaml-metadata": "tsx src/scripts/create-full-lesson-metadata.ts",
     "test:yaml-generator": "tsx src/scripts/test-yaml-lesson-generation.ts",
@@ -33,9 +34,15 @@
     "integrate:yaml-generator": "tsx src/scripts/integrate-yaml-generator.ts",
     "sql:ensure-columns": "tsx src/scripts/sql/ensure-columns.ts",
     "sql:ensure-todo-column": "tsx src/scripts/sql/ensure-todo-column.ts",
-    "utils:run-sql": "tsx src/utils/run-sql.ts"
+    "utils:run-sql": "tsx src/utils/run-sql.ts",
+    "test:post-migration": "tsx src/scripts/test-post-migration.ts",
+    "verify:post-content": "tsx src/scripts/verify-post-content.ts"
   },
   "dependencies": {
+    "@lexical/list": "^0.14.0",
+    "@lexical/rich-text": "^0.14.0",
+    "@lexical/table": "^0.14.0",
+    "@payloadcms/richtext-lexical": "^3.34.0",
     "@types/js-yaml": "^4.0.9",
     "@types/jsdom": "^21.1.7",
     "@types/lodash.groupby": "^4.6.9",

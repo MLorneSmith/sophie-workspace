@@ -1,350 +1,277 @@
 -- Seed data for the posts table
 -- This file should be run after the migrations to ensure the posts table exists
+-- Note: Actual post content is handled by the specialized migration script in packages/content-migrations/src/scripts/core/migrate-posts-direct.ts
 
 -- Start a transaction
 BEGIN;
 
--- Function to convert Markdown content to Lexical JSON
-CREATE OR REPLACE FUNCTION markdown_to_lexical(text_content TEXT) RETURNS JSONB AS $$
-BEGIN
-  RETURN jsonb_build_object(
-    'root', jsonb_build_object(
-      'children', jsonb_build_array(
-        jsonb_build_object(
-          'children', jsonb_build_array(
-            jsonb_build_object(
-              'detail', 0,
-              'format', 0,
-              'mode', 'normal',
-              'style', '',
-              'text', text_content,
-              'type', 'text',
-              'version', 1
-            )
-          ),
-          'direction', 'ltr',
-          'format', '',
-          'indent', 0,
-          'type', 'paragraph',
-          'version', 1
-        )
-      ),
-      'direction', 'ltr',
-      'format', '',
-      'indent', 0,
-      'type', 'root',
-      'version', 1
-    )
-  );
-END;
-$$ LANGUAGE plpgsql;
-
--- Insert blog posts from existing .mdoc files with image references
+-- Add debugging
 DO $$
-DECLARE
-  presentation_tips_id uuid := gen_random_uuid();
-  art_craft_id uuid := gen_random_uuid();
-  pitch_deck_id uuid := gen_random_uuid();
-  powerpoint_defense_id uuid := gen_random_uuid();
-  bcg_review_id uuid := gen_random_uuid();
-  presentation_tools_id uuid := gen_random_uuid();
-  public_speaking_id uuid := gen_random_uuid();
-  seneca_partnership_id uuid := gen_random_uuid();
-  business_charts_id uuid := gen_random_uuid();
-  
-  presentation_tips_image_id uuid;
-  art_craft_image_id uuid;
-  pitch_deck_image_id uuid;
-  powerpoint_defense_image_id uuid;
-  bcg_review_image_id uuid;
-  presentation_tools_image_id uuid;
-  public_speaking_image_id uuid;
-  seneca_partnership_image_id uuid;
-  business_charts_image_id uuid;
 BEGIN
-  -- Get media IDs based on filenames
-  SELECT id INTO presentation_tips_image_id FROM payload.media WHERE filename = 'Presentation Tips Optimized.png' LIMIT 1;
-  SELECT id INTO art_craft_image_id FROM payload.media WHERE filename = 'Art Craft of Presentation Creation.png' LIMIT 1;
-  SELECT id INTO pitch_deck_image_id FROM payload.media WHERE filename = 'pitch-deck-image.png' LIMIT 1;
-  SELECT id INTO powerpoint_defense_image_id FROM payload.media WHERE filename = 'Defense of PowerPoint.png' LIMIT 1;
-  SELECT id INTO bcg_review_image_id FROM payload.media WHERE filename = 'BCG-teardown-optimized.jpg' LIMIT 1;
-  SELECT id INTO presentation_tools_image_id FROM payload.media WHERE filename = 'Presentation Tools-optimized.png' LIMIT 1;
-  SELECT id INTO public_speaking_image_id FROM payload.media WHERE filename = 'Conquering Public Speaking Anxiety.png' LIMIT 1;
-  SELECT id INTO seneca_partnership_image_id FROM payload.media WHERE filename = 'Seneca Partnership.webp' LIMIT 1;
-  SELECT id INTO business_charts_image_id FROM payload.media WHERE filename = 'business-charts.jpg' LIMIT 1;
-  
-  -- Insert posts with image IDs
-  INSERT INTO payload.posts (
-    id,
-    title,
-    slug,
-    description,
-    content,
-    status,
-    image_id,
-    image_id_id,
-    published_at,
-    updated_at,
-    created_at
-  ) VALUES
-  (presentation_tips_id, 'Presentation Tips: Mistakes that will get you Fired', 'presentation-tips', 
-   '10 Business Presentation Mistakes That Will Get You Fired, Demoted or Ignored', 
-   markdown_to_lexical('The vast majority of business presentations suck. We know this. Usually we blame bad PowerPoint. This article provides presentation tips on 10 mistakes we should avoid accidentally making...'), 
-   'published', presentation_tips_image_id, presentation_tips_image_id, NOW(), NOW(), NOW()),
-  (art_craft_id, 'Art and Craft of Business Presentation Creation', 'art-craft-business-presentation-creation', 
-   'The art and craft of creating effective business presentations', 
-   markdown_to_lexical('Creating effective business presentations requires both art and craft...'), 
-   'published', art_craft_image_id, art_craft_image_id, NOW(), NOW(), NOW()),
-  (pitch_deck_id, 'Pitch Deck', 'pitch-deck', 
-   'How to create an effective pitch deck', 
-   markdown_to_lexical('A pitch deck is a brief presentation that provides investors with an overview of your business...'), 
-   'published', pitch_deck_image_id, pitch_deck_image_id, NOW(), NOW(), NOW()),
-  (powerpoint_defense_id, 'PowerPoint Presentations Defense', 'powerpoint-presentations-defense', 
-   'In defense of PowerPoint presentations', 
-   markdown_to_lexical('PowerPoint presentations often get a bad rap, but when used correctly...'), 
-   'published', powerpoint_defense_image_id, powerpoint_defense_image_id, NOW(), NOW(), NOW()),
-  (bcg_review_id, 'Presentation Review BCG', 'presentation-review-bcg', 
-   'Review of BCG presentation style', 
-   markdown_to_lexical('BCG has a distinctive presentation style that...'), 
-   'published', bcg_review_image_id, bcg_review_image_id, NOW(), NOW(), NOW()),
-  (presentation_tools_id, 'Presentation Tools', 'presentation-tools', 
-   'Tools for creating effective presentations', 
-   markdown_to_lexical('There are many tools available for creating presentations...'), 
-   'published', presentation_tools_image_id, presentation_tools_image_id, NOW(), NOW(), NOW()),
-  (public_speaking_id, 'Public Speaking Anxiety', 'public-speaking-anxiety', 
-   'How to overcome public speaking anxiety', 
-   markdown_to_lexical('Public speaking anxiety is a common fear...'), 
-   'published', public_speaking_image_id, public_speaking_image_id, NOW(), NOW(), NOW()),
-  (seneca_partnership_id, 'Seneca Partnership', 'seneca-partnership', 
-   'Our partnership with Seneca', 
-   markdown_to_lexical('We are excited to announce our partnership with Seneca...'), 
-   'published', seneca_partnership_image_id, seneca_partnership_image_id, NOW(), NOW(), NOW()),
-  (business_charts_id, 'Typology of Business Charts', 'typology-business-charts', 
-   'Understanding different types of business charts', 
-   markdown_to_lexical('There are many types of business charts, each with its own purpose...'), 
-   'published', business_charts_image_id, business_charts_image_id, NOW(), NOW(), NOW())
-  ON CONFLICT (slug) DO NOTHING; -- Skip if the post already exists
-  
-  -- Create relationship entries for posts to media
-  IF presentation_tips_image_id IS NOT NULL THEN
-    INSERT INTO payload.posts_rels (
-      id,
-      _parent_id,
-      field,
-      value,
-      created_at,
-      updated_at
-    ) VALUES (
-      gen_random_uuid(),
-      presentation_tips_id,
-      'image_id',
-      presentation_tips_image_id,
-      NOW(),
-      NOW()
-    ) ON CONFLICT DO NOTHING;
-  END IF;
-  
-  IF art_craft_image_id IS NOT NULL THEN
-    INSERT INTO payload.posts_rels (
-      id,
-      _parent_id,
-      field,
-      value,
-      created_at,
-      updated_at
-    ) VALUES (
-      gen_random_uuid(),
-      art_craft_id,
-      'image_id',
-      art_craft_image_id,
-      NOW(),
-      NOW()
-    ) ON CONFLICT DO NOTHING;
-  END IF;
-  
-  IF pitch_deck_image_id IS NOT NULL THEN
-    INSERT INTO payload.posts_rels (
-      id,
-      _parent_id,
-      field,
-      value,
-      created_at,
-      updated_at
-    ) VALUES (
-      gen_random_uuid(),
-      pitch_deck_id,
-      'image_id',
-      pitch_deck_image_id,
-      NOW(),
-      NOW()
-    ) ON CONFLICT DO NOTHING;
-  END IF;
-  
-  IF powerpoint_defense_image_id IS NOT NULL THEN
-    INSERT INTO payload.posts_rels (
-      id,
-      _parent_id,
-      field,
-      value,
-      created_at,
-      updated_at
-    ) VALUES (
-      gen_random_uuid(),
-      powerpoint_defense_id,
-      'image_id',
-      powerpoint_defense_image_id,
-      NOW(),
-      NOW()
-    ) ON CONFLICT DO NOTHING;
-  END IF;
-  
-  IF bcg_review_image_id IS NOT NULL THEN
-    INSERT INTO payload.posts_rels (
-      id,
-      _parent_id,
-      field,
-      value,
-      created_at,
-      updated_at
-    ) VALUES (
-      gen_random_uuid(),
-      bcg_review_id,
-      'image_id',
-      bcg_review_image_id,
-      NOW(),
-      NOW()
-    ) ON CONFLICT DO NOTHING;
-  END IF;
-  
-  IF presentation_tools_image_id IS NOT NULL THEN
-    INSERT INTO payload.posts_rels (
-      id,
-      _parent_id,
-      field,
-      value,
-      created_at,
-      updated_at
-    ) VALUES (
-      gen_random_uuid(),
-      presentation_tools_id,
-      'image_id',
-      presentation_tools_image_id,
-      NOW(),
-      NOW()
-    ) ON CONFLICT DO NOTHING;
-  END IF;
-  
-  IF public_speaking_image_id IS NOT NULL THEN
-    INSERT INTO payload.posts_rels (
-      id,
-      _parent_id,
-      field,
-      value,
-      created_at,
-      updated_at
-    ) VALUES (
-      gen_random_uuid(),
-      public_speaking_id,
-      'image_id',
-      public_speaking_image_id,
-      NOW(),
-      NOW()
-    ) ON CONFLICT DO NOTHING;
-  END IF;
-  
-  IF seneca_partnership_image_id IS NOT NULL THEN
-    INSERT INTO payload.posts_rels (
-      id,
-      _parent_id,
-      field,
-      value,
-      created_at,
-      updated_at
-    ) VALUES (
-      gen_random_uuid(),
-      seneca_partnership_id,
-      'image_id',
-      seneca_partnership_image_id,
-      NOW(),
-      NOW()
-    ) ON CONFLICT DO NOTHING;
-  END IF;
-  
-  IF business_charts_image_id IS NOT NULL THEN
-    INSERT INTO payload.posts_rels (
-      id,
-      _parent_id,
-      field,
-      value,
-      created_at,
-      updated_at
-    ) VALUES (
-      gen_random_uuid(),
-      business_charts_id,
-      'image_id',
-      business_charts_image_id,
-      NOW(),
-      NOW()
-    ) ON CONFLICT DO NOTHING;
+  RAISE NOTICE 'Starting post image relationship creation...';
+END $$;
+
+-- Prepare the table structure
+-- Ensure the posts_categories table exists
+CREATE TABLE IF NOT EXISTS payload.posts_categories (
+  id UUID PRIMARY KEY,
+  _parent_id UUID REFERENCES payload.posts(id) ON DELETE CASCADE,
+  category TEXT NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+  "order" INTEGER DEFAULT 0
+);
+
+-- Ensure the posts_tags table exists
+CREATE TABLE IF NOT EXISTS payload.posts_tags (
+  id UUID PRIMARY KEY,
+  _parent_id UUID REFERENCES payload.posts(id) ON DELETE CASCADE,
+  tag TEXT NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+  "order" INTEGER DEFAULT 0
+);
+
+-- Explicitly ensure the posts_rels table exists (this was not explicitly created before)
+CREATE TABLE IF NOT EXISTS payload.posts_rels (
+  id UUID PRIMARY KEY,
+  _parent_id UUID REFERENCES payload.posts(id) ON DELETE CASCADE,
+  field TEXT NOT NULL,
+  value TEXT,
+  media_id UUID REFERENCES payload.media(id),
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE NOT NULL
+);
+
+-- Ensure media_id column exists in posts_rels table
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 
+    FROM information_schema.columns 
+    WHERE table_schema = 'payload' 
+    AND table_name = 'posts_rels' 
+    AND column_name = 'media_id'
+  ) THEN
+    RAISE NOTICE 'Adding media_id column to posts_rels table...';
+    ALTER TABLE payload.posts_rels 
+    ADD COLUMN media_id UUID REFERENCES payload.media(id);
+  ELSE
+    RAISE NOTICE 'media_id column already exists in posts_rels table';
   END IF;
 END $$;
 
--- Add categories to posts
+-- Add debugging
+DO $$
+BEGIN
+  RAISE NOTICE 'Tables created/verified successfully';
+END $$;
+
+-- Setup media-to-post relationship after posts are created by migrate-posts-direct.ts
+-- This ensures posts get connected to their images after content migration
 DO $$
 DECLARE
   post_id uuid;
+  image_id uuid;
+  rel_id uuid;
+  post_count int := 0;
+  success_count int := 0;
 BEGIN
-  -- Get the ID of the presentation tips post
+  -- For each post, find the corresponding image and create the relationship
+  -- Presentation Tips
   SELECT id INTO post_id FROM payload.posts WHERE slug = 'presentation-tips' LIMIT 1;
+  SELECT id INTO image_id FROM payload.media WHERE filename = 'Presentation Tips Optimized.png' LIMIT 1;
   
-  IF post_id IS NOT NULL THEN
-    -- Add categories
-    INSERT INTO payload.posts_categories (
-      id, _parent_id, category, updated_at, created_at, "order"
-    ) VALUES
-    (gen_random_uuid(), post_id, 'Tips', NOW(), NOW(), 0)
-    ON CONFLICT DO NOTHING;
+  IF post_id IS NULL THEN
+    RAISE NOTICE 'Post with slug "presentation-tips" not found';
   END IF;
   
-  -- Get the ID of the pitch deck post
-  SELECT id INTO post_id FROM payload.posts WHERE slug = 'pitch-deck' LIMIT 1;
-  
-  IF post_id IS NOT NULL THEN
-    -- Add categories
-    INSERT INTO payload.posts_categories (
-      id, _parent_id, category, updated_at, created_at, "order"
-    ) VALUES
-    (gen_random_uuid(), post_id, 'Tutorials', NOW(), NOW(), 0)
-    ON CONFLICT DO NOTHING;
+  IF image_id IS NULL THEN
+    RAISE NOTICE 'Media with filename "Presentation Tips Optimized.png" not found';
   END IF;
   
-  -- Get the ID of the public speaking anxiety post
-  SELECT id INTO post_id FROM payload.posts WHERE slug = 'public-speaking-anxiety' LIMIT 1;
-  
-  IF post_id IS NOT NULL THEN
-    -- Add categories
-    INSERT INTO payload.posts_categories (
-      id, _parent_id, category, updated_at, created_at, "order"
-    ) VALUES
-    (gen_random_uuid(), post_id, 'Tips', NOW(), NOW(), 0)
-    ON CONFLICT DO NOTHING;
+  IF post_id IS NOT NULL AND image_id IS NOT NULL THEN
+    post_count := post_count + 1;
+    
+    -- Update the posts table with image references
+    UPDATE payload.posts SET image_id = image_id, image_id_id = image_id WHERE id = post_id;
+    
+    -- Check if the relation already exists
+    SELECT id INTO rel_id FROM payload.posts_rels WHERE _parent_id = post_id AND field = 'image_id' LIMIT 1;
+    
+    IF rel_id IS NULL THEN
+      -- Create relationship in posts_rels table
+      INSERT INTO payload.posts_rels (
+        id, 
+        _parent_id, 
+        field, 
+        value, 
+        media_id, 
+        created_at, 
+        updated_at
+      )
+      VALUES (
+        gen_random_uuid(), 
+        post_id, 
+        'image_id', 
+        image_id, 
+        image_id, 
+        NOW(), 
+        NOW()
+      );
+      
+      success_count := success_count + 1;
+      RAISE NOTICE 'Created relationship for "presentation-tips"';
+    ELSE
+      RAISE NOTICE 'Relationship already exists for "presentation-tips"';
+    END IF;
   END IF;
-  
-  -- Get the ID of the typology of business charts post
-  SELECT id INTO post_id FROM payload.posts WHERE slug = 'typology-business-charts' LIMIT 1;
-  
-  IF post_id IS NOT NULL THEN
-    -- Add categories
-    INSERT INTO payload.posts_categories (
-      id, _parent_id, category, updated_at, created_at, "order"
-    ) VALUES
-    (gen_random_uuid(), post_id, 'Tutorials', NOW(), NOW(), 0)
-    ON CONFLICT DO NOTHING;
-  END IF;
-END $$;
 
--- Drop the temporary function
-DROP FUNCTION markdown_to_lexical;
+  -- Art and Craft
+  SELECT id INTO post_id FROM payload.posts WHERE slug = 'art-craft-business-presentation-creation' LIMIT 1;
+  SELECT id INTO image_id FROM payload.media WHERE filename = 'Art Craft of Presentation Creation.png' LIMIT 1;
+  
+  IF post_id IS NULL THEN
+    RAISE NOTICE 'Post with slug "art-craft-business-presentation-creation" not found';
+  END IF;
+  
+  IF image_id IS NULL THEN
+    RAISE NOTICE 'Media with filename "Art Craft of Presentation Creation.png" not found';
+  END IF;
+  
+  IF post_id IS NOT NULL AND image_id IS NOT NULL THEN
+    post_count := post_count + 1;
+    
+    -- Update the posts table with image references
+    UPDATE payload.posts SET image_id = image_id, image_id_id = image_id WHERE id = post_id;
+    
+    -- Check if the relation already exists
+    SELECT id INTO rel_id FROM payload.posts_rels WHERE _parent_id = post_id AND field = 'image_id' LIMIT 1;
+    
+    IF rel_id IS NULL THEN
+      -- Create relationship in posts_rels table
+      INSERT INTO payload.posts_rels (
+        id, 
+        _parent_id, 
+        field, 
+        value, 
+        media_id, 
+        created_at, 
+        updated_at
+      )
+      VALUES (
+        gen_random_uuid(), 
+        post_id, 
+        'image_id', 
+        image_id, 
+        image_id, 
+        NOW(), 
+        NOW()
+      );
+      
+      success_count := success_count + 1;
+      RAISE NOTICE 'Created relationship for "art-craft-business-presentation-creation"';
+    ELSE
+      RAISE NOTICE 'Relationship already exists for "art-craft-business-presentation-creation"';
+    END IF;
+  END IF;
+
+  -- Pitch Deck
+  SELECT id INTO post_id FROM payload.posts WHERE slug = 'pitch-deck' LIMIT 1;
+  SELECT id INTO image_id FROM payload.media WHERE filename = 'pitch-deck-image.png' LIMIT 1;
+  IF post_id IS NOT NULL AND image_id IS NOT NULL THEN
+    UPDATE payload.posts SET image_id = image_id, image_id_id = image_id WHERE id = post_id;
+    
+    -- Create relationship in posts_rels table if needed
+    IF NOT EXISTS (SELECT 1 FROM payload.posts_rels WHERE _parent_id = post_id AND field = 'image_id') THEN
+      INSERT INTO payload.posts_rels (id, _parent_id, field, value, media_id, created_at, updated_at)
+      VALUES (gen_random_uuid(), post_id, 'image_id', image_id, image_id, NOW(), NOW());
+    END IF;
+  END IF;
+
+  -- PowerPoint Defense
+  SELECT id INTO post_id FROM payload.posts WHERE slug = 'powerpoint-presentations-defense' LIMIT 1;
+  SELECT id INTO image_id FROM payload.media WHERE filename = 'Defense of PowerPoint.png' LIMIT 1;
+  IF post_id IS NOT NULL AND image_id IS NOT NULL THEN
+    UPDATE payload.posts SET image_id = image_id, image_id_id = image_id WHERE id = post_id;
+    
+    -- Create relationship in posts_rels table if needed
+    IF NOT EXISTS (SELECT 1 FROM payload.posts_rels WHERE _parent_id = post_id AND field = 'image_id') THEN
+      INSERT INTO payload.posts_rels (id, _parent_id, field, value, media_id, created_at, updated_at)
+      VALUES (gen_random_uuid(), post_id, 'image_id', image_id, image_id, NOW(), NOW());
+    END IF;
+  END IF;
+
+  -- BCG Review
+  SELECT id INTO post_id FROM payload.posts WHERE slug = 'presentation-review-bcg' LIMIT 1;
+  SELECT id INTO image_id FROM payload.media WHERE filename = 'BCG-teardown-optimized.jpg' LIMIT 1;
+  IF post_id IS NOT NULL AND image_id IS NOT NULL THEN
+    UPDATE payload.posts SET image_id = image_id, image_id_id = image_id WHERE id = post_id;
+    
+    -- Create relationship in posts_rels table if needed
+    IF NOT EXISTS (SELECT 1 FROM payload.posts_rels WHERE _parent_id = post_id AND field = 'image_id') THEN
+      INSERT INTO payload.posts_rels (id, _parent_id, field, value, media_id, created_at, updated_at)
+      VALUES (gen_random_uuid(), post_id, 'image_id', image_id, image_id, NOW(), NOW());
+    END IF;
+  END IF;
+
+  -- Presentation Tools
+  SELECT id INTO post_id FROM payload.posts WHERE slug = 'presentation-tools' LIMIT 1;
+  SELECT id INTO image_id FROM payload.media WHERE filename = 'Presentation Tools-optimized.png' LIMIT 1;
+  IF post_id IS NOT NULL AND image_id IS NOT NULL THEN
+    UPDATE payload.posts SET image_id = image_id, image_id_id = image_id WHERE id = post_id;
+    
+    -- Create relationship in posts_rels table if needed
+    IF NOT EXISTS (SELECT 1 FROM payload.posts_rels WHERE _parent_id = post_id AND field = 'image_id') THEN
+      INSERT INTO payload.posts_rels (id, _parent_id, field, value, media_id, created_at, updated_at)
+      VALUES (gen_random_uuid(), post_id, 'image_id', image_id, image_id, NOW(), NOW());
+    END IF;
+  END IF;
+
+  -- Public Speaking Anxiety
+  SELECT id INTO post_id FROM payload.posts WHERE slug = 'public-speaking-anxiety' LIMIT 1;
+  SELECT id INTO image_id FROM payload.media WHERE filename = 'Conquering Public Speaking Anxiety.png' LIMIT 1;
+  IF post_id IS NOT NULL AND image_id IS NOT NULL THEN
+    UPDATE payload.posts SET image_id = image_id, image_id_id = image_id WHERE id = post_id;
+    
+    -- Create relationship in posts_rels table if needed
+    IF NOT EXISTS (SELECT 1 FROM payload.posts_rels WHERE _parent_id = post_id AND field = 'image_id') THEN
+      INSERT INTO payload.posts_rels (id, _parent_id, field, value, media_id, created_at, updated_at)
+      VALUES (gen_random_uuid(), post_id, 'image_id', image_id, image_id, NOW(), NOW());
+    END IF;
+  END IF;
+
+  -- Seneca Partnership
+  SELECT id INTO post_id FROM payload.posts WHERE slug = 'seneca-partnership' LIMIT 1;
+  SELECT id INTO image_id FROM payload.media WHERE filename = 'Seneca Partnership.webp' LIMIT 1;
+  IF post_id IS NOT NULL AND image_id IS NOT NULL THEN
+    UPDATE payload.posts SET image_id = image_id, image_id_id = image_id WHERE id = post_id;
+    
+    -- Create relationship in posts_rels table if needed
+    IF NOT EXISTS (SELECT 1 FROM payload.posts_rels WHERE _parent_id = post_id AND field = 'image_id') THEN
+      INSERT INTO payload.posts_rels (id, _parent_id, field, value, media_id, created_at, updated_at)
+      VALUES (gen_random_uuid(), post_id, 'image_id', image_id, image_id, NOW(), NOW());
+    END IF;
+  END IF;
+
+  -- Business Charts
+  SELECT id INTO post_id FROM payload.posts WHERE slug = 'typology-business-charts' LIMIT 1;
+  SELECT id INTO image_id FROM payload.media WHERE filename = 'business-charts.jpg' LIMIT 1;
+  IF post_id IS NOT NULL AND image_id IS NOT NULL THEN
+    UPDATE payload.posts SET image_id = image_id, image_id_id = image_id WHERE id = post_id;
+    
+    -- Create relationship in posts_rels table if needed
+    IF NOT EXISTS (SELECT 1 FROM payload.posts_rels WHERE _parent_id = post_id AND field = 'image_id') THEN
+      INSERT INTO payload.posts_rels (id, _parent_id, field, value, media_id, created_at, updated_at)
+      VALUES (gen_random_uuid(), post_id, 'image_id', image_id, image_id, NOW(), NOW());
+    END IF;
+  END IF;
+  -- Repeat for all other posts...
+  -- (keeping the existing code for the other posts)
+
+  -- Final summary
+  RAISE NOTICE 'Processed % posts with % successful relationship creations', post_count, success_count;
+END $$;
 
 -- Commit the transaction
 COMMIT;

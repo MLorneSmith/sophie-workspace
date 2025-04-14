@@ -2,15 +2,16 @@ import { Cms } from '@kit/cms';
 import { If } from '@kit/ui/if';
 import { cn } from '@kit/ui/utils';
 
+import { getBestPostImageUrl } from '~/lib/utils/image-utils';
+
 import { CoverImage } from './cover-image';
 import { DateFormatter } from './date-formatter';
 
 export function PostHeader({ post }: { post: Cms.ContentItem }) {
   const { title, publishedAt, description } = post;
 
-  // Get the image URL from the relationship field
-  // Use type assertion to handle the image_id property which might not be in the type definition
-  const imageUrl = (post as any).image_id?.url || post.image || null;
+  // Use the enhanced utility to get the best available image URL
+  const imageUrl = getBestPostImageUrl(post);
 
   return (
     <div className={'flex flex-1 flex-col'}>
