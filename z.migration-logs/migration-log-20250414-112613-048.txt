@@ -1,0 +1,396 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20250414112613
+Username: SLIDEHEROES_DEN\msmit
+RunAs User: SLIDEHEROES_DEN\msmit
+Configuration Name: 
+Machine: SLIDEHEROES_DEN (Microsoft Windows NT 10.0.26100.0)
+Host Application: C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -noexit -command try { . "c:\Users\msmit\AppData\Local\Programs\Microsoft VS Code\resources\app\out\vs\workbench\contrib\terminal\common\scripts\shellIntegration.ps1" } catch {}
+Process ID: 10872
+PSVersion: 5.1.26100.3624
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.3624
+BuildVersion: 10.0.26100.3624
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcript started, output file is D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-log-20250414-112613-048.txt
+Starting migration process at 04/14/2025 11:26:13
+Detailed logs will be saved to: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250414-112613-048.txt
+
+Name                           Value
+----                           -----
+Timestamp                      20250414-112613-048
+LogsDirectory                  D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs
+DetailedLogFile                D:\SlideHeroes\App\repos\2025slideheroes\z.migration-l...
+LogFile                        D:\SlideHeroes\App\repos\2025slideheroes\z.migration-l...
+================================================================================
+SETUP PHASE
+================================================================================
+
+------------------------------------------------------------
+STEP 1: Resetting Supabase database and running Web app migrations
+------------------------------------------------------------
+Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\apps\web
+Skipping Supabase restart (already done)
+Running supabase:reset...
+EXECUTING: pnpm run supabase:reset
+DESCRIPTION: Resetting Supabase database
+
+Running supabase migrations...
+EXECUTING: supabase migration up
+DESCRIPTION: Running Supabase migrations
+
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes
+EXECUTING: pnpm --filter @kit/content-migrations run verify:schema public
+DESCRIPTION: Verifying schema 'public' exists
+Schema 'public' exists
+âœ… Web app migrations completed successfully
+True
+
+------------------------------------------------------------
+STEP 2: Resetting Payload schema
+------------------------------------------------------------
+Dropping and recreating payload schema...
+Temporarily changed to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+EXECUTING: pnpm run utils:run-sql-file "C:\Users\msmit\AppData\Local\Temp\reset_payload_schema.sql"
+DESCRIPTION: Resetting Payload schema
+
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes
+âœ… Payload schema reset successfully
+True
+
+------------------------------------------------------------
+STEP 3: Running Payload migrations
+------------------------------------------------------------
+Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\apps\payload
+Checking migration status...
+EXECUTING: pnpm migrate:status
+DESCRIPTION: Checking migration status
+Running all migrations...
+EXECUTING: pnpm payload migrate
+DESCRIPTION: Running Payload migrations
+
+Adding relationship ID columns to locked documents tables...
+Temporarily changed to directory: D:\SlideHeroes\App\repos\2025slideheroes
+EXECUTING: pnpm --filter @kit/content-migrations run sql:add-relationship-id-columns
+DESCRIPTION: Adding relationship ID columns to locked documents tables
+
+Fixing UUID tables to ensure all required columns exist...
+Loading environment variables from .env.development
+Setting DATABASE_URI from .env.development file
+EXECUTING: pnpm exec tsx src/scripts/run-uuid-tables-fix.ts
+DESCRIPTION: Running UUID tables fix script
+
+âœ… UUID tables fixed successfully
+Verifying UUID tables and their required columns...
+EXECUTING: pnpm exec tsx src/scripts/verify-uuid-tables.ts
+DESCRIPTION: Running UUID tables verification
+
+Applying direct fix for UUID tables...
+EXECUTING: pnpm --filter @kit/content-migrations run sql:ensure-columns
+DESCRIPTION: Ensuring UUID tables have required columns
+
+âœ… UUID tables verified and fixed successfully
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\apps\payload
+Verifying migration status...
+EXECUTING: pnpm migrate:status
+DESCRIPTION: Verifying migration status
+âœ… All migrations have been applied successfully
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes
+EXECUTING: pnpm --filter @kit/content-migrations run verify:schema payload
+DESCRIPTION: Verifying schema 'payload' exists
+Schema 'payload' exists
+EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload courses
+DESCRIPTION: Verifying table 'payload.courses' exists
+Table 'payload.courses' exists
+EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload course_lessons
+DESCRIPTION: Verifying table 'payload.course_lessons' exists
+Table 'payload.course_lessons' exists
+EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload course_quizzes
+DESCRIPTION: Verifying table 'payload.course_quizzes' exists
+Table 'payload.course_quizzes' exists
+EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload quiz_questions
+DESCRIPTION: Verifying table 'payload.quiz_questions' exists
+Table 'payload.quiz_questions' exists
+EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload surveys
+DESCRIPTION: Verifying table 'payload.surveys' exists
+Table 'payload.surveys' exists
+EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload survey_questions
+DESCRIPTION: Verifying table 'payload.survey_questions' exists
+Table 'payload.survey_questions' exists
+âœ… Payload migrations completed successfully
+True
+âœ… Setup phase completed successfully
+================================================================================
+PROCESSING PHASE
+================================================================================
+
+------------------------------------------------------------
+STEP 4: Checking and processing raw data
+------------------------------------------------------------
+True
+Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+Processed data not found. Processing raw data...
+EXECUTING: pnpm run process:raw-data
+DESCRIPTION: Processing raw data
+
+Ensuring lesson metadata YAML is up to date...
+âœ… Lesson metadata YAML exists and is up to date
+Found HTML todo content file. Updating YAML with HTML content...
+EXECUTING: pnpm exec tsx src/scripts/parse-lesson-todo-html.ts
+DESCRIPTION: Parsing HTML todo content
+
+Validating HTML parsing results...
+âœ… Updated YAML with HTML todo content
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+âœ… Raw data processing completed
+True
+
+------------------------------------------------------------
+STEP 5: Generating SQL seed files and fixing quiz ID consistency
+------------------------------------------------------------
+True
+Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+Verifying quiz system integrity...
+EXECUTING: pnpm exec tsx src/scripts/verification/verify-quiz-system-integrity.ts
+DESCRIPTION: Verifying quiz system integrity
+Generating SQL seed files using YAML-based approach...
+EXECUTING: pnpm --filter @kit/content-migrations run generate:updated-sql
+DESCRIPTION: Generating SQL seed files using YAML metadata
+
+âœ… Successfully generated SQL seed files using YAML approach
+Fixing quiz ID consistency issues...
+EXECUTING: pnpm exec tsx src/scripts/fix-quiz-id-consistency.ts
+DESCRIPTION: Fixing quiz ID consistency
+
+âœ… SQL seed files generated and ID consistency fixed successfully
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+True
+
+------------------------------------------------------------
+STEP 6: Fixing references to ensure consistency
+------------------------------------------------------------
+True
+Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+Fixing lesson-quiz reference consistency...
+EXECUTING: pnpm exec tsx src/scripts/fix-lesson-quiz-references.ts
+DESCRIPTION: Fixing lesson-quiz references
+
+Fixing additional lesson-quiz reference consistency...
+EXECUTING: pnpm exec tsx src/scripts/fix-lessons-quiz-references-sql.ts
+DESCRIPTION: Fixing additional lesson-quiz references
+
+Fixing quiz question references...
+EXECUTING: pnpm exec tsx src/scripts/fix-questions-quiz-references.ts
+DESCRIPTION: Fixing quiz question references
+
+âœ… All references fixed successfully
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+True
+âœ… Processing phase completed successfully
+================================================================================
+LOADING PHASE
+================================================================================
+
+------------------------------------------------------------
+STEP 7: Running content migrations via Payload migrations
+------------------------------------------------------------
+True
+Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\apps\payload
+Running all Payload migrations...
+EXECUTING: pnpm payload migrate
+DESCRIPTION: Running Payload migrations
+
+Verifying migrations...
+EXECUTING: pnpm migrate:status
+DESCRIPTION: Verifying migration status
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\apps\payload
+True
+Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+Verifying database state...
+EXECUTING: pnpm run verify:all
+DESCRIPTION: Verifying database structure
+WARNING: Verification found issues, will run repairs in the Fix-Relationships step
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+âœ… Content migrations completed successfully
+True
+
+------------------------------------------------------------
+STEP 8: Migrating blog posts with complete content
+------------------------------------------------------------
+True
+Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+Running specialized post migration script...
+EXECUTING: pnpm exec tsx src/scripts/core/migrate-posts-direct.ts
+DESCRIPTION: Migrating blog posts with full content
+
+EXECUTING: pnpm run utils:run-sql --sql "SELECT COUNT(*) as count FROM payload.posts"
+DESCRIPTION: Verifying posts table
+PS>TerminatingError(ForEach-Object): "Cannot index into a null array."
+ERROR: Failed to migrate blog posts: Cannot index into a null array.
+WARNING: This is non-critical, continuing
+False
+
+------------------------------------------------------------
+STEP 8: Importing downloads from R2 bucket
+------------------------------------------------------------
+True
+Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+Importing downloads...
+EXECUTING: pnpm run import:downloads
+DESCRIPTION: Importing downloads from R2 bucket
+
+âœ… Downloads imported successfully
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+True
+
+------------------------------------------------------------
+STEP 9: Fixing relationships
+------------------------------------------------------------
+True
+Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+Running edge case repairs...
+EXECUTING: pnpm run repair:edge-cases
+DESCRIPTION: Running edge case repairs
+
+Running lesson-quiz relationship fixes...
+EXECUTING: pnpm exec tsx src/scripts/repair/fix-lesson-quiz-field-name.ts
+DESCRIPTION: Fixing lesson-quiz relationships
+
+Fixing survey questions population...
+EXECUTING: pnpm run fix:survey-questions-population
+DESCRIPTION: Fixing survey questions population
+
+Ensuring todo column exists in course_lessons table...
+EXECUTING: pnpm run sql:ensure-todo-column
+DESCRIPTION: Ensuring todo column exists
+
+Fixing todo fields in course_lessons table...
+EXECUTING: pnpm run fix:todo-fields
+DESCRIPTION: Fixing todo fields
+
+Fixing Lexical format in todo fields...
+EXECUTING: pnpm run fix:lexical-format
+DESCRIPTION: Fixing Lexical format
+
+Fixing bunny_video_id fields in course_lessons table...
+EXECUTING: pnpm run fix:bunny-video-ids
+DESCRIPTION: Fixing bunny video IDs
+
+Fixing post image relationships...
+EXECUTING: pnpm run fix:post-image-relationships
+DESCRIPTION: Fixing post image relationships
+
+Running final verification...
+EXECUTING: pnpm run verify:all
+DESCRIPTION: Final verification
+âœ… All relationship issues have been fixed
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+True
+
+------------------------------------------------------------
+STEP 10: Performing comprehensive database verification
+------------------------------------------------------------
+True
+Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+Checking database environment settings...
+âœ… Database environment settings are properly configured
+True
+Verifying database schema...
+EXECUTING: pnpm run sql:verify-schema
+DESCRIPTION: Final database verification
+âœ… Database schema verification passed
+Verifying database columns...
+EXECUTING: pnpm run verify:course-lessons
+DESCRIPTION: Verifying course_lessons quiz_id_id column
+âœ… Course lessons quiz_id_id column verification passed
+EXECUTING: pnpm --filter @kit/content-migrations run verify:media-columns
+DESCRIPTION: Verifying media_id columns
+âœ… Media columns verification passed
+EXECUTING: pnpm --filter @kit/content-migrations run repair:relationship-columns
+DESCRIPTION: Fixing relationship columns
+../../apps/payload                       | ΓÇëWARNΓÇë The field "pnpm.onlyBuiltDependencies" was found in D:\SlideHeroes\App\repos\2025slideheroes\apps\payload/package.json. This will not take effect. You should configure "pnpm.onlyBuiltDependencies" at the root of the workspace instead.
+
+> @kit/content-migrations@0.1.0 repair:relationship-columns D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/scripts/repair/fix-relationship-columns.ts
+
+
+Fixing relationship columns in all relationship tables...
+
+Adding missing columns to documentation_rels...
+
+Adding missing columns to posts_rels...
+
+Adding missing columns to surveys_rels...
+
+Adding missing columns to survey_questions_rels...
+
+Adding missing columns to courses_rels...
+
+Adding missing columns to course_lessons_rels...
+
+Adding missing columns to course_quizzes_rels...
+
+Adding missing columns to quiz_questions_rels...
+
+Adding missing columns to downloads_rels...
+
+Adding missing columns to payload_locked_documents_rels...
+
+Adding missing columns to payload_preferences_rels...
+
+Dropping existing downloads_relationships view...
+
+Creating/updating downloads_relationships view...
+
+Creating ensure_relationship_columns function...
+
+Γ£à Successfully added missing relationship columns to all tables
+Γ£à Created downloads_relationships view
+Γ£à Created ensure_relationship_columns function
+EXECUTING: pnpm --filter @kit/content-migrations run verify:relationship-columns
+DESCRIPTION: Verifying relationship columns
+âœ… Relationship columns verification passed
+True
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+âœ… Database verification completed successfully
+True
+
+------------------------------------------------------------
+STEP 11: Creating certificates storage bucket in Supabase
+------------------------------------------------------------
+Certificates bucket is created during migration with direct SQL INSERT
+âœ… Database migrations successfully handle certificates bucket creation
+True
+âœ… Loading phase completed successfully
+================================================================================
+POST-VERIFICATION PHASE
+================================================================================
+
+------------------------------------------------------------
+STEP 12: Verifying posts content integrity
+------------------------------------------------------------
+True
+Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+EXECUTING: pnpm run verify:post-content
+DESCRIPTION: Verifying posts content integrity
+
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+âœ… All migrations and verifications completed successfully!
+Admin user created with email: michael@slideheroes.com
+All migrations and verifications completed successfully!
+**********************
+Windows PowerShell transcript end
+End time: 20250414112743
+**********************

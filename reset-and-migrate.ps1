@@ -38,6 +38,24 @@ try {
     # Run content migrations, import downloads, fix relationships, verify database
     Invoke-LoadingPhase -SkipVerification:$SkipVerification
     
+    # Phase 4: Post-Verification
+    # Verify specific collections and content integrity
+    if (-not $SkipVerification) {
+        Log-Phase "POST-VERIFICATION PHASE"
+        
+        # Verify posts content integrity
+        Log-Step "Verifying posts content integrity" 12
+        Set-ProjectRootLocation
+        if (Set-ProjectLocation -RelativePath "packages/content-migrations") {
+            Log-Message "Changed directory to: $(Get-Location)" "Gray"
+            Exec-Command -command "pnpm run verify:post-content" -description "Verifying posts content integrity" -continueOnError
+            Pop-Location
+            Log-Message "Returned to directory: $(Get-Location)" "Gray"
+        } else {
+            Log-Warning "Could not find packages/content-migrations directory, skipping posts verification"
+        }
+    }
+    
     # Final success/failure message
     if ($script:overallSuccess) {
         Log-Success "All migrations and verifications completed successfully!"

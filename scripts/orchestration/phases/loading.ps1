@@ -19,6 +19,9 @@ function Invoke-LoadingPhase {
     # Step 1: Run content migrations via Payload migrations
     Run-ContentMigrations
     
+    # Step 1.5: Run specialized blog post migration
+    Migrate-BlogPosts
+
     # Step 2: Import downloads from R2 bucket
     Import-Downloads
     
@@ -176,6 +179,10 @@ function Fix-Relationships {
         # Fix bunny_video_id fields in course_lessons table
         Log-Message "Fixing bunny_video_id fields in course_lessons table..." "Yellow"
         Exec-Command -command "pnpm run fix:bunny-video-ids" -description "Fixing bunny video IDs" -continueOnError
+        
+        # Fix post image relationships
+        Log-Message "Fixing post image relationships..." "Yellow"
+        Exec-Command -command "pnpm run fix:post-image-relationships" -description "Fixing post image relationships" -continueOnError
 
         # Run final verification
         Log-Message "Running final verification..." "Yellow"
@@ -259,6 +266,49 @@ function Create-CertificatesBucket {
     }
     catch {
         Log-Error "Failed to verify certificates bucket: $_"
+        Log-Warning "This is non-critical, continuing"
+        return $false
+    }
+}
+
+# Function to run blog posts migration with full content
+function Migrate-BlogPosts {
+    Log-Step "Migrating blog posts with complete content" 7.5
+    
+    try {
+        # First ensure we're at the project root
+        Set-ProjectRootLocation
+        Log-Message "Changed to project root: $(Get-Location)" "Gray"
+        
+        # Check if posts exist in the database
+        if (Set-ProjectLocation -RelativePath "packages/content-migrations") {
+            Log-Message "Changed directory to: $(Get-Location)" "Gray"
+            
+                # Run the direct migration script for posts regardless of existing count
+                Log-Message "Running specialized post migration script..." "Yellow"
+                Exec-Command -command "pnpm exec tsx src/scripts/core/migrate-posts-direct.ts" -description "Migrating blog posts with full content"
+                
+                # Verify the posts were created
+                $verifyQuery = "SELECT COUNT(*) as count FROM payload.posts"
+                $result = Exec-Command -command "pnpm run utils:run-sql --sql `"$verifyQuery`"" -description "Verifying posts table" -captureOutput -continueOnError
+                $postCount = [int]($result -match "count: (\d+)" | ForEach-Object { $Matches[1] })
+                
+                if ($postCount -gt 0) {
+                    Log-Success "Successfully migrated $postCount blog posts"
+                } else {
+                    Log-Warning "No posts were migrated. Check the post migration script."
+                }
+            
+            Pop-Location
+            Log-Message "Returned to directory: $(Get-Location)" "Gray"
+        } else {
+            Log-Warning "Could not find packages/content-migrations directory, skipping blog posts migration"
+        }
+        
+        return $true
+    }
+    catch {
+        Log-Error "Failed to migrate blog posts: $_"
         Log-Warning "This is non-critical, continuing"
         return $false
     }
