@@ -1,7 +1,7 @@
 import { CollectionConfig } from 'payload'
 import { BlocksFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
 
-import { BunnyVideo, CallToAction, TestBlock } from '../blocks'
+import { BunnyVideo, CallToAction, TestBlock, YouTubeVideo } from '../blocks'
 import { findDownloadsForCollection } from '../db/downloads'
 
 export const Posts: CollectionConfig = {
@@ -85,7 +85,7 @@ export const Posts: CollectionConfig = {
         features: ({ defaultFeatures }) => [
           ...defaultFeatures,
           BlocksFeature({
-            blocks: [CallToAction, TestBlock, BunnyVideo],
+            blocks: [CallToAction, TestBlock, BunnyVideo, YouTubeVideo],
           }),
         ],
       }),

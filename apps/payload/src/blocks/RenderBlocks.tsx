@@ -4,9 +4,17 @@ import React, { Fragment } from 'react'
 import CallToActionComponent from './CallToAction/Component'
 import TestBlockComponent from './TestBlock/Component'
 import DebugBlockComponent from './DebugBlock/Component'
+import BunnyVideoComponent from './BunnyVideo/Component'
+import YouTubeVideoComponent from './YouTubeVideo/Component'
 
 // Define valid block types
-type BlockType = 'call-to-action' | 'custom-call-to-action' | 'test-block' | 'debug-block'
+type BlockType =
+  | 'call-to-action'
+  | 'custom-call-to-action'
+  | 'test-block'
+  | 'debug-block'
+  | 'bunny-video'
+  | 'youtube-video'
 
 // Map block types to their respective components
 const blockComponents: Record<BlockType, React.FC<any>> = {
@@ -14,6 +22,8 @@ const blockComponents: Record<BlockType, React.FC<any>> = {
   'custom-call-to-action': CallToActionComponent, // Support both slugs during transition
   'test-block': TestBlockComponent,
   'debug-block': DebugBlockComponent,
+  'bunny-video': BunnyVideoComponent,
+  'youtube-video': YouTubeVideoComponent,
 }
 
 type RenderBlocksProps = {
@@ -37,7 +47,9 @@ export const RenderBlocks: React.FC<RenderBlocksProps> = ({ blocks }) => {
             type === 'call-to-action' ||
             type === 'custom-call-to-action' ||
             type === 'test-block' ||
-            type === 'debug-block'
+            type === 'debug-block' ||
+            type === 'bunny-video' ||
+            type === 'youtube-video'
 
           if (blockType && isValidBlockType(blockType)) {
             const Block = blockComponents[blockType]
