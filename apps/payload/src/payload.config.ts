@@ -19,6 +19,7 @@ import BunnyVideo from './blocks/BunnyVideo'
 import CallToAction from './blocks/CallToAction'
 import DebugBlock from './blocks/DebugBlock'
 import TestBlock from './blocks/TestBlock'
+import YouTubeVideo from './blocks/YouTubeVideo'
 import { CourseLessons } from './collections/CourseLessons'
 import { CourseQuizzes } from './collections/CourseQuizzes'
 import { Courses } from './collections/Courses'
@@ -72,7 +73,7 @@ export default buildConfig({
     features: ({ defaultFeatures }) => [
       ...defaultFeatures,
       BlocksFeature({
-        blocks: [CallToAction, TestBlock, DebugBlock, BunnyVideo],
+        blocks: [CallToAction, TestBlock, DebugBlock, BunnyVideo, YouTubeVideo],
       }),
     ],
   }),

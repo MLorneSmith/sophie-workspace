@@ -1275,6 +1275,35 @@ export interface BunnyVideoBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "YouTubeVideoBlock".
+ */
+export interface YouTubeVideoBlock {
+  /**
+   * Enter a YouTube video ID (e.g., dQw4w9WgXcQ) or full URL (e.g., https://www.youtube.com/watch?v=dQw4w9WgXcQ)
+   */
+  videoId?: string | null;
+  /**
+   * Custom preview image URL (optional)
+   */
+  previewUrl?: string | null;
+  /**
+   * Show preview image before playing the video
+   */
+  showPreview?: boolean | null;
+  /**
+   * Enter a title for the video (optional)
+   */
+  title?: string | null;
+  /**
+   * Select the aspect ratio for the video player
+   */
+  aspectRatio?: ('16:9' | '4:3' | '1:1') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'youtube-video';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "auth".
  */
 export interface Auth {

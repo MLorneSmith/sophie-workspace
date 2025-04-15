@@ -1,6 +1,6 @@
 import { BlocksFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
 import { CollectionConfig } from 'payload'
-import { BunnyVideo } from '../blocks'
+import { BunnyVideo, YouTubeVideo } from '../blocks'
 import { findDownloadsForCollection } from '../db/downloads'
 
 export const CourseLessons: CollectionConfig = {
@@ -143,7 +143,7 @@ export const CourseLessons: CollectionConfig = {
         features: ({ defaultFeatures }) => [
           ...defaultFeatures,
           BlocksFeature({
-            blocks: [BunnyVideo],
+            blocks: [BunnyVideo, YouTubeVideo],
           }),
         ],
       }),

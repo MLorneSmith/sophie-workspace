@@ -10,11 +10,12 @@ import { BunnyVideo } from './BunnyVideo/config'
 import { CallToAction } from './CallToAction/config'
 import { DebugBlock } from './DebugBlock/config'
 import { TestBlock } from './TestBlock/config'
+import { YouTubeVideo } from './YouTubeVideo/config'
 
 // Export all block components for easy import in collection files
-export { BunnyVideo, CallToAction, DebugBlock, TestBlock }
+export { BunnyVideo, CallToAction, DebugBlock, TestBlock, YouTubeVideo }
 
 // Export a default array of all blocks for global configuration
-export const allBlocks = [BunnyVideo, CallToAction, DebugBlock, TestBlock]
+export const allBlocks = [BunnyVideo, CallToAction, DebugBlock, TestBlock, YouTubeVideo]
 
 export default allBlocks

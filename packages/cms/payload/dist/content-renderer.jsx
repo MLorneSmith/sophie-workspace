@@ -1,4 +1,3 @@
-import React from 'react';
 // Helper function to find HTML content in various locations
 function findHtmlContent(node) {
     var _a, _b, _c, _d;
@@ -33,7 +32,7 @@ export function PayloadContentRenderer({ content }) {
             if (Array.isArray(lexicalContent.root.children)) {
                 return (<div className="payload-content">
             {lexicalContent.root.children.map((node, i) => {
-                        var _a, _b, _c, _d;
+                        var _a, _b, _c, _d, _e, _f, _g;
                         // Handle custom blocks
                         // Check for Call To Action block
                         if (node.type === 'custom-call-to-action' ||
@@ -135,6 +134,75 @@ export function PayloadContentRenderer({ content }) {
                                     height: '100%',
                                     width: '100%',
                                 }} allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;" allowFullScreen={true} title={title}/>
+                    </div>
+                  </div>);
+                        }
+                        // Check for YouTube Video block
+                        if (node.type === 'youtube-video' ||
+                            (node.fields && node.fields.blockType === 'youtube-video') ||
+                            node.blockType === 'youtube-video') {
+                            console.log('Found YouTube Video block:', node);
+                            // Try to extract the HTML content from various locations
+                            let htmlContent = findHtmlContent(node);
+                            if (htmlContent) {
+                                console.log('Using HTML content for YouTube Video:', htmlContent.substring(0, 100) + '...');
+                                return (<div key={i} dangerouslySetInnerHTML={{ __html: htmlContent }}/>);
+                            }
+                            // Helper function to extract YouTube ID from URL or ID
+                            const extractYouTubeId = (input) => {
+                                // Return if input is empty
+                                if (!input)
+                                    return '';
+                                // Regular expression to match YouTube video ID from various URL formats
+                                const regExp = /^.*(?:(?:youtu\.be\/|v\/|vi\/|u\/\w\/|embed\/|shorts\/)|(?:(?:watch)?\?v(?:i)?=|\&v(?:i)?=))([^#\&\?]*).*/;
+                                const match = input.match(regExp);
+                                if (match && match[1]) {
+                                    // If it's a URL, return the extracted ID
+                                    return match[1];
+                                }
+                                // If it's not a URL, assume it's already an ID
+                                return input;
+                            };
+                            // Extract video data with defaults
+                            const rawVideoId = node.videoId || ((_e = node.fields) === null || _e === void 0 ? void 0 : _e.videoId) || '';
+                            const youtubeId = extractYouTubeId(rawVideoId);
+                            const title = node.title || ((_f = node.fields) === null || _f === void 0 ? void 0 : _f.title) || 'YouTube Video';
+                            const aspectRatio = node.aspectRatio || ((_g = node.fields) === null || _g === void 0 ? void 0 : _g.aspectRatio) || '16:9';
+                            // Calculate padding based on aspect ratio
+                            const getPaddingBottom = () => {
+                                if (aspectRatio === '16:9')
+                                    return '56.25%'; // 9/16 = 0.5625 = 56.25%
+                                if (aspectRatio === '4:3')
+                                    return '75%'; // 3/4 = 0.75 = 75%
+                                if (aspectRatio === '1:1')
+                                    return '100%'; // Square
+                                return '56.25%'; // Default to 16:9
+                            };
+                            // If no videoId is provided, show a placeholder
+                            if (!youtubeId) {
+                                return (<div key={i} className="my-6 rounded-md border border-gray-200 bg-gray-50 p-4">
+                      <h3 className="text-lg font-bold text-gray-700">
+                        {title}
+                      </h3>
+                      <div className="flex items-center justify-center rounded bg-gray-100 p-8">
+                        <p className="text-gray-500">
+                          YouTube Video (ID not provided)
+                        </p>
+                      </div>
+                    </div>);
+                            }
+                            // Render the YouTube video player
+                            return (<div key={i} className="my-6">
+                    <h3 className="mb-2 text-lg font-bold">{title}</h3>
+                    <div className="relative" style={{ paddingBottom: getPaddingBottom() }}>
+                      <iframe src={`https://www.youtube.com/embed/${youtubeId}`} loading="lazy" style={{
+                                    border: 'none',
+                                    position: 'absolute',
+                                    top: 0,
+                                    left: 0,
+                                    height: '100%',
+                                    width: '100%',
+                                }} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen={true} title={title}/>
                     </div>
                   </div>);
                         }
@@ -277,6 +345,67 @@ export function PayloadContentRenderer({ content }) {
                                         height: '100%',
                                         width: '100%',
                                     }} allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;" allowFullScreen={true} title={title}/>
+                      </div>
+                    </div>);
+                            }
+                            // Check for YouTube Video block in fields
+                            if (node.fields && node.fields.blockType === 'youtube-video') {
+                                console.log('Found YouTube Video block in fields:', node.fields);
+                                // Helper function to extract YouTube ID from URL or ID
+                                const extractYouTubeId = (input) => {
+                                    // Return if input is empty
+                                    if (!input)
+                                        return '';
+                                    // Regular expression to match YouTube video ID from various URL formats
+                                    const regExp = /^.*(?:(?:youtu\.be\/|v\/|vi\/|u\/\w\/|embed\/|shorts\/)|(?:(?:watch)?\?v(?:i)?=|\&v(?:i)?=))([^#\&\?]*).*/;
+                                    const match = input.match(regExp);
+                                    if (match && match[1]) {
+                                        // If it's a URL, return the extracted ID
+                                        return match[1];
+                                    }
+                                    // If it's not a URL, assume it's already an ID
+                                    return input;
+                                };
+                                // Extract video data with defaults
+                                const rawVideoId = node.fields.videoId || '';
+                                const youtubeId = extractYouTubeId(rawVideoId);
+                                const title = node.fields.title || 'YouTube Video';
+                                const aspectRatio = node.fields.aspectRatio || '16:9';
+                                // Calculate padding based on aspect ratio
+                                const getPaddingBottom = () => {
+                                    if (aspectRatio === '16:9')
+                                        return '56.25%'; // 9/16 = 0.5625 = 56.25%
+                                    if (aspectRatio === '4:3')
+                                        return '75%'; // 3/4 = 0.75 = 75%
+                                    if (aspectRatio === '1:1')
+                                        return '100%'; // Square
+                                    return '56.25%'; // Default to 16:9
+                                };
+                                // If no videoId is provided, show a placeholder
+                                if (!youtubeId) {
+                                    return (<div key={i} className="my-6 rounded-md border border-gray-200 bg-gray-50 p-4">
+                        <h3 className="text-lg font-bold text-gray-700">
+                          {title}
+                        </h3>
+                        <div className="flex items-center justify-center rounded bg-gray-100 p-8">
+                          <p className="text-gray-500">
+                            YouTube Video (ID not provided)
+                          </p>
+                        </div>
+                      </div>);
+                                }
+                                // Render the YouTube video player
+                                return (<div key={i} className="my-6">
+                      <h3 className="mb-2 text-lg font-bold">{title}</h3>
+                      <div className="relative" style={{ paddingBottom: getPaddingBottom() }}>
+                        <iframe src={`https://www.youtube.com/embed/${youtubeId}`} loading="lazy" style={{
+                                        border: 'none',
+                                        position: 'absolute',
+                                        top: 0,
+                                        left: 0,
+                                        height: '100%',
+                                        width: '100%',
+                                    }} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen={true} title={title}/>
                       </div>
                     </div>);
                             }
