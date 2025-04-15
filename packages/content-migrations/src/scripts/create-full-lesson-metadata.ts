@@ -46,6 +46,61 @@ function extractBunnyVideoId(content: string): string | null {
   return null;
 }
 
+// Helper function to extract external video info from content
+function extractExternalVideo(
+  content: string,
+  slug: string,
+): { source: string; id: string } | null {
+  // Define known external videos for specific lessons
+  const knownVideos: Record<string, { source: string; id: string }> = {
+    'storyboards-film': { source: 'youtube', id: 'BSOJiSUI0z8' },
+    'fundamental-design-overview': { source: 'vimeo', id: '32944253' },
+  };
+
+  // First check if this is a known lesson with external video
+  if (knownVideos[slug]) {
+    console.log(
+      `  Found known external video for ${slug}: ${knownVideos[slug].source} ID ${knownVideos[slug].id}`,
+    );
+    return knownVideos[slug];
+  }
+
+  // Look for YouTube video pattern in content
+  const youtubePatterns = [
+    /youtubeId="([^"]+)"/,
+    /youtube-id="([^"]+)"/,
+    /youtube_id="([^"]+)"/,
+    /youtube\.com\/watch\?v=([^&"]+)/,
+    /youtu\.be\/([^&"]+)/,
+  ];
+
+  for (const pattern of youtubePatterns) {
+    const match = content.match(pattern);
+    if (match && match[1]) {
+      console.log(`  Found YouTube video ID: ${match[1]}`);
+      return { source: 'youtube', id: match[1] };
+    }
+  }
+
+  // Look for Vimeo video pattern in content
+  const vimeoPatterns = [
+    /vimeoId="([^"]+)"/,
+    /vimeo-id="([^"]+)"/,
+    /vimeo_id="([^"]+)"/,
+    /vimeo\.com\/([0-9]+)/,
+  ];
+
+  for (const pattern of vimeoPatterns) {
+    const match = content.match(pattern);
+    if (match && match[1]) {
+      console.log(`  Found Vimeo video ID: ${match[1]}`);
+      return { source: 'vimeo', id: match[1] };
+    }
+  }
+
+  return null;
+}
+
 // Helper function to extract todo content from the lesson content and convert to Lexical format
 function extractTodoFields(content: string): {
   todo: string;
@@ -305,6 +360,14 @@ async function createLessonMetadataYaml() {
       console.log(`  Found quiz: ${quizSlug}`);
     }
 
+    // Extract external video information
+    const externalVideo = extractExternalVideo(content, slug);
+    if (externalVideo) {
+      console.log(
+        `  Found external video: ${externalVideo.source} ID: ${externalVideo.id}`,
+      );
+    }
+
     // Create lesson metadata object
     const lesson = {
       slug,
@@ -323,6 +386,8 @@ async function createLessonMetadataYaml() {
         id: bunnyVideoId || '',
         library: 264486, // Default library ID as a number
       },
+      // Add external video information if available
+      ...(externalVideo && { externalVideo }),
       downloads,
       quiz: quizSlug,
     };

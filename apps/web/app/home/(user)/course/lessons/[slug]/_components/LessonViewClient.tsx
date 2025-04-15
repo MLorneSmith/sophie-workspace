@@ -4,7 +4,15 @@ import { useEffect, useState, useTransition } from 'react';
 
 import Link from 'next/link';
 
-import { CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import {
+  BookOpen,
+  Briefcase,
+  CheckCircle,
+  CheckSquare,
+  ChevronLeft,
+  ChevronRight,
+  Play,
+} from 'lucide-react';
 import { toast } from 'sonner';
 
 import { PayloadContentRenderer } from '@kit/cms/payload';
@@ -33,6 +41,68 @@ interface LessonViewClientProps {
   userId: string;
   survey?: any;
   surveyResponses?: any[];
+}
+
+/**
+ * Process r2file tags for file downloads in template content
+ * Used as a fallback when template tags appear in content field
+ */
+function processR2FileTags(text: string): string {
+  if (!text) return '';
+
+  // Standard pattern
+  const r2filePattern =
+    /{%\s*r2file\s+awsurl="([^"]+)"\s+filedescription="([^"]+)"\s*\/%}/g;
+
+  // Process standard format
+  let processedText = text.replace(r2filePattern, (match, url, description) => {
+    return `
+      <div class="flex items-center justify-between rounded-lg border border-gray-200 p-3 dark:border-gray-700 my-2">
+        <div class="flex-grow">
+          <p class="font-medium">${description}</p>
+        </div>
+        <a
+          href="${url}"
+          download
+          class="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+          target="_blank"
+          rel="noopener noreferrer"
+          data-source="r2file-tag"
+        >
+          Download
+        </a>
+      </div>
+    `;
+  });
+
+  // Alternative format (in case order is different)
+  const alternativePattern =
+    /{%\s*r2file\s+filedescription="([^"]+)"\s+awsurl="([^"]+)"\s*\/%}/g;
+
+  processedText = processedText.replace(
+    alternativePattern,
+    (match, description, url) => {
+      return `
+      <div class="flex items-center justify-between rounded-lg border border-gray-200 p-3 dark:border-gray-700 my-2">
+        <div class="flex-grow">
+          <p class="font-medium">${description}</p>
+        </div>
+        <a
+          href="${url}"
+          download
+          class="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+          target="_blank"
+          rel="noopener noreferrer"
+          data-source="r2file-alt-tag"
+        >
+          Download
+        </a>
+      </div>
+    `;
+    },
+  );
+
+  return processedText;
 }
 
 export function LessonViewClient({
@@ -265,14 +335,9 @@ export function LessonViewClient({
               )
             ) : (
               <>
-                <div className="prose prose-sm dark:prose-invert max-w-none">
-                  <PayloadContentRenderer content={lesson.content} />
-                </div>
-
                 {/* Render Bunny.net Video if available */}
                 {lesson.bunny_video_id && (
                   <div className="my-8">
-                    <h3 className="mb-2 text-lg font-bold">Lesson Video</h3>
                     <div
                       className="relative"
                       style={{ paddingBottom: '56.25%' }}
@@ -288,9 +353,39 @@ export function LessonViewClient({
                           height: '100%',
                           width: '100%',
                         }}
-                        allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
+                        allow="accelerometer; gyroscope; encrypted-media; picture-in-picture;"
                         allowFullScreen={true}
                         title={lesson.title}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Render External Video if available */}
+                {lesson.youtube_video_id && lesson.video_source_type && (
+                  <div className="my-8">
+                    <div
+                      className="relative"
+                      style={{ paddingBottom: '56.25%' }}
+                    >
+                      <iframe
+                        src={
+                          lesson.video_source_type === 'youtube'
+                            ? `https://www.youtube.com/embed/${lesson.youtube_video_id}`
+                            : `https://player.vimeo.com/video/${lesson.youtube_video_id}`
+                        }
+                        loading="lazy"
+                        style={{
+                          border: 'none',
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          height: '100%',
+                          width: '100%',
+                        }}
+                        allow="accelerometer; gyroscope; encrypted-media; picture-in-picture;"
+                        allowFullScreen={true}
+                        title="External Video"
                       />
                     </div>
                   </div>
@@ -302,107 +397,261 @@ export function LessonViewClient({
                   lesson.todo_watch_content ||
                   lesson.todo_read_content ||
                   lesson.todo_course_project) && (
-                  <div className="my-6 rounded-lg border border-gray-200 p-4 dark:border-gray-700 dark:bg-gray-800/50">
-                    <h3 className="mb-2 text-lg font-semibold">
-                      Lesson To-Do's
-                    </h3>
-
-                    {/* General Todo Section */}
-                    {lesson.todo && (
-                      <div className="mb-2">
-                        <h4 className="font-medium">General To-Do</h4>
-                        <div className="prose prose-sm dark:prose-invert">
-                          <PayloadContentRenderer content={lesson.todo} />
-                        </div>
-                      </div>
-                    )}
-
-                    {lesson.todo_complete_quiz && (
-                      <div className="mb-2">
-                        <h4 className="font-medium">To-Do</h4>
-                        <ul className="list-disc pl-5">
-                          <li>Complete the lesson quiz</li>
-                        </ul>
-                      </div>
-                    )}
-
-                    <div className="mb-2">
-                      <h4 className="font-medium">Watch</h4>
-                      {lesson.todo_watch_content ? (
-                        <div className="prose prose-sm dark:prose-invert">
-                          <PayloadContentRenderer
-                            content={lesson.todo_watch_content}
-                          />
-                        </div>
-                      ) : (
-                        <p>None</p>
-                      )}
-                    </div>
-
-                    <div className="mb-2">
-                      <h4 className="font-medium">Read</h4>
-                      {lesson.todo_read_content ? (
-                        <div className="prose prose-sm dark:prose-invert">
-                          <PayloadContentRenderer
-                            content={lesson.todo_read_content}
-                          />
-                        </div>
-                      ) : (
-                        <p>None</p>
-                      )}
-                    </div>
-
-                    <div>
-                      <h4 className="font-medium">Course Project</h4>
-                      {lesson.todo_course_project ? (
-                        <div className="prose prose-sm dark:prose-invert">
-                          <PayloadContentRenderer
-                            content={lesson.todo_course_project}
-                          />
-                        </div>
-                      ) : (
-                        <p>None</p>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {/* Render Downloads if available */}
-                {lesson.downloads && lesson.downloads.length > 0 && (
                   <div className="my-6">
-                    <h3 className="mb-2 text-lg font-semibold">
-                      Lesson Downloads
-                    </h3>
-                    <div className="space-y-2">
-                      {lesson.downloads.map((download: any, index: number) => {
-                        // Ensure we have a download with URL
-                        if (!download || !download.url) return null;
+                    {/* General To-Do (first position) */}
+                    {lesson.todo && (
+                      <div className="mb-4 flex items-start">
+                        <CheckSquare className="text-primary mt-0.5 mr-2 h-5 w-5" />
+                        <div>
+                          <span className="font-medium">To-Do: </span>
+                          <span className="prose prose-sm dark:prose-invert inline">
+                            <PayloadContentRenderer content={lesson.todo} />
+                          </span>
+                        </div>
+                      </div>
+                    )}
 
-                        return (
-                          <div
-                            key={index}
-                            className="flex items-center rounded-lg border border-gray-200 p-3 dark:border-gray-700"
-                          >
-                            <div className="flex-grow">
-                              <p className="font-medium">
-                                {download.description || download.filename}
-                              </p>
-                            </div>
-                            <a
-                              href={download.url}
-                              download
-                              className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              Download
-                            </a>
-                          </div>
-                        );
-                      })}
-                    </div>
+                    {/* Watch Content (second position) */}
+                    {lesson.todo_watch_content && (
+                      <div className="mb-4 flex items-start">
+                        <Play className="text-primary mt-0.5 mr-2 h-5 w-5" />
+                        <div>
+                          <span className="font-medium">Watch: </span>
+                          <span className="prose prose-sm dark:prose-invert inline">
+                            <PayloadContentRenderer
+                              content={lesson.todo_watch_content}
+                            />
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Read Content (third position) */}
+                    {lesson.todo_read_content && (
+                      <div className="mb-4 flex items-start">
+                        <BookOpen className="text-primary mt-0.5 mr-2 h-5 w-5" />
+                        <div>
+                          <span className="font-medium">Read: </span>
+                          <span className="prose prose-sm dark:prose-invert inline">
+                            <PayloadContentRenderer
+                              content={lesson.todo_read_content}
+                            />
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Course Project (fourth position) */}
+                    {lesson.todo_course_project && (
+                      <div className="mb-4 flex items-start">
+                        <Briefcase className="text-primary mt-0.5 mr-2 h-5 w-5" />
+                        <div>
+                          <span className="font-medium">Course Project: </span>
+                          <span className="prose prose-sm dark:prose-invert inline">
+                            <PayloadContentRenderer
+                              content={lesson.todo_course_project}
+                            />
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Test Yourself: Complete Quiz (fifth position, renamed from To-Do: Complete Quiz) */}
+                    {lesson.todo_complete_quiz && (
+                      <div className="mb-4 flex items-start">
+                        <CheckSquare className="text-primary mt-0.5 mr-2 h-5 w-5" />
+                        <div>
+                          <span className="font-medium">Test Yourself: </span>
+                          <span>Complete the lesson quiz</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
+
+                {/* Main content */}
+                <div className="prose prose-sm dark:prose-invert max-w-none">
+                  <PayloadContentRenderer content={lesson.content} />
+                </div>
+
+                {/* Render Downloads with better error handling and diagnostics */}
+                {(() => {
+                  // Debug logging in development
+                  if (process.env.NODE_ENV === 'development') {
+                    console.log(
+                      'Lesson downloads:',
+                      lesson.downloads
+                        ? `${lesson.downloads.length} items`
+                        : 'undefined',
+                    );
+
+                    if (lesson.downloads && lesson.downloads.length > 0) {
+                      console.log('First download:', lesson.downloads[0]);
+                    }
+                  }
+
+                  // If downloads exist and are in the expected format
+                  if (
+                    lesson.downloads &&
+                    Array.isArray(lesson.downloads) &&
+                    lesson.downloads.length > 0
+                  ) {
+                    return (
+                      <div className="my-6">
+                        <div className="space-y-2">
+                          {lesson.downloads.map(
+                            (download: any, index: number) => {
+                              // Additional validation
+                              if (!download) {
+                                console.warn(
+                                  `Download at index ${index} is null or undefined`,
+                                );
+                                return null;
+                              }
+
+                              if (!download.url) {
+                                console.warn(
+                                  `Download at index ${index} has no URL:`,
+                                  download,
+                                );
+
+                                // Fallback rendering for downloads without URL
+                                if (download.filename || download.description) {
+                                  return (
+                                    <div
+                                      key={index}
+                                      className="flex items-center justify-between rounded-lg border border-gray-200 p-3 dark:border-gray-700"
+                                    >
+                                      <div className="flex-grow">
+                                        <p className="font-medium">
+                                          {download.description ||
+                                            download.filename}
+                                        </p>
+                                      </div>
+                                      <span className="text-sm text-gray-500 italic">
+                                        (Download URL not available)
+                                      </span>
+                                    </div>
+                                  );
+                                }
+
+                                return null;
+                              }
+
+                              // Special handling for ZIP files
+                              const isZipFile =
+                                download.mimeType === 'application/zip' ||
+                                download.filename
+                                  ?.toLowerCase()
+                                  .endsWith('.zip');
+
+                              const isPdfFile =
+                                download.mimeType === 'application/pdf' ||
+                                download.filename
+                                  ?.toLowerCase()
+                                  .endsWith('.pdf');
+
+                              // Get file size in human-readable format
+                              const getFileSize = (bytes?: number) => {
+                                if (!bytes) return '';
+                                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                                if (bytes === 0) return '0 Byte';
+                                const i = Math.floor(
+                                  Math.log(bytes) / Math.log(1024),
+                                );
+                                return `${Math.round(bytes / Math.pow(1024, i))} ${sizes[i]}`;
+                              };
+
+                              const fileSize = getFileSize(download.filesize);
+
+                              return (
+                                <div
+                                  key={index}
+                                  className="flex flex-col rounded-lg border border-gray-200 p-3 dark:border-gray-700"
+                                >
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex-grow">
+                                      <p className="font-medium">
+                                        {/* Enhanced display logic for download title/filename */}
+                                        {download.description &&
+                                        download.description !== 'null'
+                                          ? download.description
+                                          : download.title &&
+                                              download.title !== 'null'
+                                            ? download.title
+                                            : download.filename
+                                              ? download.filename.replace(
+                                                  /\.(pdf|zip)$/i,
+                                                  '',
+                                                )
+                                              : 'Download'}
+                                      </p>
+                                      {/* Show file type and size info */}
+                                      <p className="text-muted-foreground mt-0.5 text-xs">
+                                        {isZipFile && 'ZIP Archive'}
+                                        {isPdfFile && 'PDF Document'}
+                                        {fileSize && ` • ${fileSize}`}
+                                      </p>
+                                    </div>
+                                    <Button
+                                      asChild
+                                      variant="default"
+                                      size="default"
+                                      className="bg-primary text-primary-foreground"
+                                    >
+                                      <a
+                                        href={download.url}
+                                        download
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        data-source="lesson-downloads"
+                                      >
+                                        Download
+                                      </a>
+                                    </Button>
+                                  </div>
+                                </div>
+                              );
+                            },
+                          )}
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  // Fallback for template tags if no downloads relationship but content has r2file tags
+                  if (
+                    lesson.content &&
+                    typeof lesson.content === 'string' &&
+                    lesson.content.includes('{%') &&
+                    lesson.content.includes('r2file')
+                  ) {
+                    console.log(
+                      'Legacy r2file tags detected in content, using template processor',
+                    );
+
+                    // Extract download section from content
+                    const downloadSection = lesson.content.match(
+                      /### Lesson Downloads[\s\S]*?(?=###|$)/,
+                    );
+
+                    if (downloadSection && downloadSection[0]) {
+                      // If we found a download section, use our custom processor to render it
+                      return (
+                        <div className="my-6">
+                          <div
+                            className="template-downloads"
+                            dangerouslySetInnerHTML={{
+                              __html: processR2FileTags(downloadSection[0]),
+                            }}
+                          />
+                        </div>
+                      );
+                    }
+                  }
+
+                  return null;
+                })()}
 
                 {/* Certificate link for congratulations lesson */}
                 {isCongratulationsLesson && (

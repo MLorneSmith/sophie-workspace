@@ -148,6 +148,8 @@ export default buildConfig({
           disableLocalStorage: true,
           generateFileURL: ({ filename }: { filename: string }) =>
             `https://downloads.slideheroes.com/${filename}`,
+          // Standard S3 configuration without imageSizes property
+          // The thumbnail fix will be handled by the migration script
         },
       },
       bucket: process.env.R2_BUCKET || '',
