@@ -368,6 +368,8 @@ export async function findDownloadsForCollection(
       filename: 'placeholder.pdf',
       filesize: 0,
       mimeType: 'application/pdf',
+      // Add URL to ensure downloads can be rendered properly using the custom domain
+      url: `https://downloads.slideheroes.com/${id.substring(0, 8)}.pdf`,
       // Add any other required properties
       updatedAt: new Date().toISOString(),
       createdAt: new Date().toISOString(),

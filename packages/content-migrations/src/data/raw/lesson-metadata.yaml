@@ -366,6 +366,9 @@ lessons:
     bunnyVideo:
       id: ''
       library: 264486
+    externalVideo:
+      source: 'youtube'
+      id: 'BSOJiSUI0z8'
     downloads: []
     quiz: storyboards-in-film-quiz
   - slug: storyboards-presentations
@@ -450,6 +453,9 @@ lessons:
     bunnyVideo:
       id: ''
       library: 264486
+    externalVideo:
+      source: 'vimeo'
+      id: '32944253'
     downloads:
       - fundamental-elements-slides
     quiz: overview-elements-of-design-quiz

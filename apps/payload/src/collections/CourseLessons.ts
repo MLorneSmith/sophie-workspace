@@ -2,6 +2,7 @@ import { BlocksFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
 import { CollectionConfig } from 'payload'
 import { BunnyVideo, YouTubeVideo } from '../blocks'
 import { findDownloadsForCollection } from '../db/downloads'
+import { getDownloadsForLesson } from '../db/download-helpers'
 
 export const CourseLessons: CollectionConfig = {
   slug: 'course_lessons',
@@ -24,7 +25,27 @@ export const CourseLessons: CollectionConfig = {
         // Only handle downloads if we have a specific document with an ID
         if (doc?.id) {
           try {
-            // Replace downloads with ones from our custom view
+            // First try using our new helper function which includes special handling for zip files
+            try {
+              const enhancedDownloads = await getDownloadsForLesson(req.payload, doc.id)
+
+              if (enhancedDownloads && enhancedDownloads.length > 0) {
+                console.log(
+                  `Found ${enhancedDownloads.length} downloads for lesson ${doc.slug || doc.id} using enhanced helper`,
+                )
+
+                // Update the document with the enhanced downloads
+                return {
+                  ...doc,
+                  downloads: enhancedDownloads,
+                }
+              }
+            } catch (enhancedError) {
+              console.error('Error using enhanced download helper:', enhancedError)
+              // Fall back to the legacy helper if the new one fails
+            }
+
+            // Fall back to the original helper if the enhanced one fails or returns empty
             const downloads = await findDownloadsForCollection(
               req.payload,
               doc.id,
@@ -71,6 +92,34 @@ export const CourseLessons: CollectionConfig = {
       defaultValue: '264486',
       admin: {
         description: 'Library ID from Bunny.net (defaults to main library)',
+      },
+    },
+    {
+      name: 'video_source_type',
+      type: 'select',
+      label: 'External Video Source',
+      defaultValue: 'youtube', // For backward compatibility
+      admin: {
+        description: 'Source platform for the external video',
+        isClearable: true,
+      },
+      options: [
+        {
+          label: 'YouTube',
+          value: 'youtube',
+        },
+        {
+          label: 'Vimeo',
+          value: 'vimeo',
+        },
+      ],
+    },
+    {
+      name: 'youtube_video_id',
+      type: 'text',
+      label: 'External Video ID',
+      admin: {
+        description: 'Video ID from YouTube or Vimeo (if this lesson includes an external video)',
       },
     },
     {

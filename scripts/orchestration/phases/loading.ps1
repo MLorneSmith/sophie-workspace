@@ -243,6 +243,22 @@ function Fix-Relationships {
         # Fix post image relationships
         Log-Message "Fixing post image relationships..." "Yellow"
         Exec-Command -command "pnpm run fix:post-image-relationships" -description "Fixing post image relationships" -continueOnError
+        
+        # Fix downloads relationships and update URLs to use custom domain
+        Log-Message "Fixing downloads relationships and URLs..." "Yellow"
+        Exec-Command -command "pnpm run fix:downloads-relationships" -description "Fixing downloads relationships and URLs" -continueOnError
+        
+        # Fix downloads R2 integration with custom domain
+        Log-Message "Fixing downloads R2 integration..." "Yellow"
+        Exec-Command -command "pnpm run fix:downloads-r2-integration" -description "Fixing downloads R2 integration" -continueOnError
+        
+        # Fix downloads metadata with correct column names and thumbnails
+        Log-Message "Fixing downloads metadata..." "Yellow"
+        Exec-Command -command "pnpm run fix:downloads-metadata" -description "Fixing downloads metadata" -continueOnError
+        
+        # Clear lesson content to fix template tag rendering issues
+        Log-Message "Clearing lesson content fields to fix template tag rendering..." "Yellow"
+        Exec-Command -command "pnpm run clear:lesson-content" -description "Clearing lesson content fields" -continueOnError
 
         # Run final verification
         Log-Message "Running final verification..." "Yellow"

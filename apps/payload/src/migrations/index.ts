@@ -19,13 +19,13 @@ import * as migration_20250404_100000_fix_lesson_quiz_relationships from './2025
 import * as migration_20250407_100000_add_survey_id_to_lessons from './20250407_100000_add_survey_id_to_lessons'
 import * as migration_20250407_100000_fix_missing_lesson_quiz_relationships from './20250407_100000_fix_missing_lesson_quiz_relationships'
 import * as migration_20250410_120500_relationship_columns_fix from './20250410_120500_relationship_columns_fix'
-import * as migration_20250420_100000_master_relationship_migration from './20250420_100000_master_relationship_migration'
-import * as migration_20250420_100000_master_relationship_view from './20250420_100000_master_relationship_view'
-import * as migration_20250425_100000_proactive_uuid_table_monitoring from './20250425_100000_proactive_uuid_table_monitoring'
-import * as migration_20250430_100000_fix_downloads_relationships_view from './20250430_100000_fix_downloads_relationships_view'
-import * as migration_20250430_110000_fix_missing_columns from './20250430_110000_fix_missing_columns'
-import * as migration_20250430_120000_fix_remaining_columns from './20250430_120000_fix_remaining_columns'
-import * as migration_20250430_130000_fix_downloads_thumbnail_url from './20250430_130000_fix_downloads_thumbnail_url'
+import * as migration_20250420_100000_master_relationship_migration from './20250415_100000_master_relationship_migration'
+import * as migration_20250420_100000_master_relationship_view from './20250415_110000_master_relationship_view'
+import * as migration_20250425_100000_proactive_uuid_table_monitoring from './20250415_120000_proactive_uuid_table_monitoring'
+import * as migration_20250430_100000_fix_downloads_relationships_view from './20250415_130000_fix_downloads_relationships_view'
+import * as migration_20250430_110000_fix_missing_columns from './20250415_140000_fix_missing_columns'
+import * as migration_20250430_120000_fix_remaining_columns from './20250415_150000_fix_remaining_columns'
+import * as migration_20250430_130000_fix_downloads_thumbnail_url from './20250415_180000_fix_downloads_thumbnail_url'
 
 export const migrations = [
   // Add schema creation migration first

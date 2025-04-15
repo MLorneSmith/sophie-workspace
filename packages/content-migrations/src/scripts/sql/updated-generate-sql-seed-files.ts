@@ -156,7 +156,7 @@ async function generateLessonsSql(metadata, quizMap) {
 
     // Start SQL
     let lessonSql = `-- Lesson data
-INSERT INTO payload.course_lessons (id, title, slug, lesson_number, description, course_id, quiz_id, featured_image_id, summary, estimated_duration, bunny_video_id, bunny_library_id, todo, todo_complete_quiz, todo_watch_content, todo_read_content, todo_course_project) VALUES
+INSERT INTO payload.course_lessons (id, title, slug, lesson_number, description, course_id, quiz_id, featured_image_id, summary, estimated_duration, bunny_video_id, bunny_library_id, todo, todo_complete_quiz, todo_watch_content, todo_read_content, todo_course_project, content) VALUES
 `;
 
     // Create SQL for each lesson
@@ -205,7 +205,7 @@ INSERT INTO payload.course_lessons (id, title, slug, lesson_number, description,
           ? `'${escapeSql(String(lesson.todoFields.courseProject))}'`
           : 'NULL';
 
-        return `('${lesson.slug}', '${escapeSql(lesson.title)}', '${lesson.slug}', ${lesson.lessonNumber || 0}, '${escapeSql(lesson.description || '')}', 'decks-for-decision-makers', ${quizId !== 'NULL' ? `'${quizId}'` : 'NULL'}, NULL, '${escapeSql(lesson.description || '')}', ${lesson.lessonLength || 0}, ${bunnyVideoId}, ${bunnyVideoLibraryId}, ${todoContent}, ${todoCompleteQuiz}, ${todoWatchContent}, ${todoReadContent}, ${todoCourseProject})`;
+        return `('${lesson.slug}', '${escapeSql(lesson.title)}', '${lesson.slug}', ${lesson.lessonNumber || 0}, '${escapeSql(lesson.description || '')}', 'decks-for-decision-makers', ${quizId !== 'NULL' ? `'${quizId}'` : 'NULL'}, NULL, '${escapeSql(lesson.description || '')}', ${lesson.lessonLength || 0}, ${bunnyVideoId}, ${bunnyVideoLibraryId}, ${todoContent}, ${todoCompleteQuiz}, ${todoWatchContent}, ${todoReadContent}, ${todoCourseProject}, NULL)`;
       })
       .join(',\n');
 

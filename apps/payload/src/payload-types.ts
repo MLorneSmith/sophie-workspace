@@ -298,6 +298,14 @@ export interface CourseLesson {
    * Library ID from Bunny.net (defaults to main library)
    */
   bunny_library_id?: string | null;
+  /**
+   * Source platform for the external video
+   */
+  video_source_type?: ('youtube' | 'vimeo') | null;
+  /**
+   * Video ID from YouTube or Vimeo (if this lesson includes an external video)
+   */
+  youtube_video_id?: string | null;
   todo_complete_quiz?: boolean | null;
   /**
    * Content to watch - supports rich text formatting like bullet points and links
@@ -1091,6 +1099,8 @@ export interface CourseLessonsSelect<T extends boolean = true> {
   title?: T;
   bunny_video_id?: T;
   bunny_library_id?: T;
+  video_source_type?: T;
+  youtube_video_id?: T;
   todo_complete_quiz?: T;
   todo_watch_content?: T;
   todo_read_content?: T;

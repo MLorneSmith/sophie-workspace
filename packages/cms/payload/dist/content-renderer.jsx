@@ -1,3 +1,12 @@
+import { TemplateTagProcessor, containsTemplateTags, } from './template-tag-processor';
+// Enable detailed logging in development environment
+const DEBUG = process.env.NODE_ENV === 'development';
+// Helper logging function
+function debugLog(...args) {
+    if (DEBUG) {
+        console.log('[PayloadContentRenderer]', ...args);
+    }
+}
 // Helper function to find HTML content in various locations
 function findHtmlContent(node) {
     var _a, _b, _c, _d;
@@ -20,8 +29,33 @@ function findHtmlContent(node) {
 }
 // Function to render Lexical content
 export function PayloadContentRenderer({ content }) {
-    if (!content || typeof content !== 'object') {
+    // If content is null or undefined, return null
+    if (!content) {
+        if (DEBUG)
+            debugLog('Received null or undefined content');
         return null;
+    }
+    // For string content, check if it contains template tags
+    if (typeof content === 'string') {
+        if (containsTemplateTags(content)) {
+            if (DEBUG)
+                debugLog('Content contains template tags, using TemplateTagProcessor');
+            return <TemplateTagProcessor content={content}/>;
+        }
+        if (DEBUG)
+            debugLog('Content is string but has no template tags, rendering as HTML');
+        return <div dangerouslySetInnerHTML={{ __html: content }}/>;
+    }
+    // Log content type for debugging
+    if (DEBUG) {
+        if (content && typeof content === 'object') {
+            if (content.root) {
+                debugLog('Content appears to be Lexical format');
+            }
+            else {
+                debugLog('Content is an object but not Lexical format:', Object.keys(content));
+            }
+        }
     }
     // For Lexical content, extract the text and render it
     try {
