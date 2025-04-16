@@ -31,7 +31,7 @@ function Initialize-PayloadSchema {
         
         # Load the schema creation SQL
         Log-Step "Loading schema creation SQL"
-        $schemaFile = Join-Path -Path $PSScriptRoot -ChildPath "create-payload-schema-fixed.sql"
+        $schemaFile = Join-Path -Path $PSScriptRoot -ChildPath "create-payload-schema-direct.sql"
         
         if (-not (Test-Path -Path $schemaFile)) {
             throw "Schema creation file not found: $schemaFile"

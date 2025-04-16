@@ -2,10 +2,7 @@
 # This script ensures that migration records between local and remote Supabase 
 # instances are synchronized, which is critical for Payload CMS functionality
 
-# Import utility modules
-. "$PSScriptRoot\utils\database.ps1"
-
-# Parameters
+# Parameters must come before any other code at script level
 param (
     [switch]$Force,
     [switch]$DryRun,
@@ -15,32 +12,82 @@ param (
 # Configure error handling
 $ErrorActionPreference = "Stop"
 
+# Import utility modules
+. "$PSScriptRoot\..\utils\database.ps1"
+. "$PSScriptRoot\..\utils\logging.ps1"
+
 function Sync-Migrations {
     try {
         # Show banner
         Log-Phase "STARTING MIGRATION SYNCHRONIZATION"
 
-        # Test database connections
+        # Setup phase: Check the status of the payload schema in both databases
         Log-Step "Testing database connections"
+        
+        # Test database connections - local
         $localConnectionOk = Test-DatabaseConnection -connectionString $env:DATABASE_URL -name "local database"
+        
+        # Skip local database checks in migration-only mode
+        if (-not $localConnectionOk) {
+            Log-Warning "The local Supabase instance is not running or cannot be accessed."
+            Log-Warning "We will attempt to continue with the remote database only, but some features may be limited."
+            Log-Warning "To properly synchronize migrations, please ensure that local Supabase is running."
+            
+            if (-not $env:FORCE_REMOTE_ONLY) {
+                $confirmPrompt = Read-Host "Do you want to continue with remote-only mode? (y/n)"
+                if ($confirmPrompt -ne "y") {
+                    throw "Operation canceled by user. Please start the local Supabase instance with 'supabase start' and try again."
+                }
+                
+                $env:FORCE_REMOTE_ONLY = "true"
+                Log-Message "Proceeding in remote-only mode. Some functionality will be limited." -Foreground "Yellow"
+            } else {
+                Log-Message "Continuing in remote-only mode as requested." -Foreground "Yellow"
+            }
+        }
+        
+        # Test remote database connection - always required
         $remoteConnectionOk = Test-DatabaseConnection -connectionString $env:REMOTE_DATABASE_URL -name "remote database"
-
-        if (-not $localConnectionOk -or -not $remoteConnectionOk) {
-            throw "Database connection issues detected. Cannot proceed with migration synchronization."
+        if (-not $remoteConnectionOk) {
+            throw "Remote database connection failed. Cannot proceed with migration synchronization."
         }
 
+        # Check for payload schema in remote database
+        Log-Step "Checking for payload schema and tables"
+        
+        $remoteSchemaQuery = "SELECT EXISTS(SELECT 1 FROM information_schema.schemata WHERE schema_name = 'payload');"
+        $remoteHasSchema = Invoke-RemoteSql -query $remoteSchemaQuery -captureOutput -continueOnError
+        
+        # If the schema doesn't exist in the remote database, we need to create it
+        if ($remoteHasSchema -notmatch "t") {
+            Log-Warning "payload schema does not exist in remote database. Creating it now."
+            
+            $createSchemaQuery = "CREATE SCHEMA IF NOT EXISTS payload;"
+            Invoke-RemoteSql -query $createSchemaQuery
+            
+            Log-Success "Created payload schema in remote database"
+        }
+        
         # Check for payload_migrations table in both databases
         Log-Step "Checking for payload_migrations tables"
         
-        $localMigrationsTableQuery = "SELECT EXISTS(SELECT 1 FROM information_schema.tables WHERE table_schema = 'payload' AND table_name = 'payload_migrations');"
-        $localHasMigrationsTable = Invoke-LocalSql -query $localMigrationsTableQuery -captureOutput
+        $localHasMigrationsTable = $false
+        if ($localConnectionOk) {
+            $localMigrationsTableQuery = "SELECT EXISTS(SELECT 1 FROM information_schema.tables WHERE table_schema = 'payload' AND table_name = 'payload_migrations');"
+            $localHasMigrationsTable = Invoke-LocalSql -query $localMigrationsTableQuery -captureOutput -continueOnError
+            $localHasMigrationsTable = $localHasMigrationsTable -match "t"
+            
+            if (-not $localHasMigrationsTable) {
+                Log-Warning "payload_migrations table not found in local database."
+                if (-not $env:FORCE_REMOTE_ONLY) {
+                    throw "Local payload_migrations table not found. Please ensure Payload CMS is properly initialized."
+                }
+            }
+        }
         
         $remoteMigrationsTableQuery = "SELECT EXISTS(SELECT 1 FROM information_schema.tables WHERE table_schema = 'payload' AND table_name = 'payload_migrations');"
-        $remoteHasMigrationsTable = Invoke-RemoteSql -query $remoteMigrationsTableQuery -captureOutput
-        
-        if ($localHasMigrationsTable -notmatch "t") {
-            throw "payload_migrations table not found in local database. Please ensure Payload CMS is properly initialized."
-        }
+        $remoteHasMigrationsTable = Invoke-RemoteSql -query $remoteMigrationsTableQuery -captureOutput -continueOnError
+        $remoteHasMigrationsTable = $remoteHasMigrationsTable -match "t"
         
         if ($remoteHasMigrationsTable -notmatch "t") {
             Log-Warning "payload_migrations table not found in remote database. Will create it."
@@ -66,28 +113,61 @@ function Sync-Migrations {
         # Get migration records from local database
         Log-Step "Fetching migration records from local database"
         
-        $localMigrationsQuery = "SELECT id, name, batch, created_at FROM payload.payload_migrations ORDER BY id;"
-        $localMigrations = Invoke-LocalSql -query $localMigrationsQuery -captureOutput
-        
         $localMigrationsList = @()
-        $localMigrations -split "`n" | Where-Object { $_ -match '\S' } | ForEach-Object {
-            $parts = $_ -split "\|" | ForEach-Object { $_.Trim() }
-            if ($parts.Count -ge 3) {
-                $localMigrationsList += @{
-                    Id = $parts[0]
-                    Name = $parts[1]
-                    Batch = $parts[2]
-                    CreatedAt = if ($parts.Count -ge 4) { $parts[3] } else { $null }
+        
+        if ($localConnectionOk -and (-not $env:FORCE_REMOTE_ONLY)) {
+            # Normal mode - fetch from local database
+            $localMigrationsQuery = "SELECT id, name, batch, created_at FROM payload.payload_migrations ORDER BY id;"
+            $localMigrations = Invoke-LocalSql -query $localMigrationsQuery -captureOutput
+            
+            $localMigrations -split "`n" | Where-Object { $_ -match '\S' } | ForEach-Object {
+                $parts = $_ -split "\|" | ForEach-Object { $_.Trim() }
+                if ($parts.Count -ge 3) {
+                    $localMigrationsList += @{
+                        Id = $parts[0]
+                        Name = $parts[1]
+                        Batch = $parts[2]
+                        CreatedAt = if ($parts.Count -ge 4) { $parts[3] } else { $null }
+                    }
                 }
             }
-        }
-        
-        Log-Message "Found $($localMigrationsList.Count) migration records in local database" "Cyan"
-        
-        if ($Verbose) {
-            foreach ($migration in $localMigrationsList) {
-                Log-Message "  - $($migration.Name) (Batch $($migration.Batch))" "Yellow"
+            
+            Log-Message "Found $($localMigrationsList.Count) migration records in local database" "Cyan"
+            
+            if ($Verbose) {
+                foreach ($migration in $localMigrationsList) {
+                    Log-Message "  - $($migration.Name) (Batch $($migration.Batch))" "Yellow"
+                }
             }
+        } 
+        else {
+            # Remote-only mode - we need to handle this specially
+            Log-Warning "Local database is not available. Using remote-only mode."
+            Log-Warning "This will initialize the remote database migrations table from scratch."
+            
+            # In FORCE_REMOTE_ONLY mode, we skip local database checks completely
+            if (-not $Force) {
+                $confirmPrompt = Read-Host "Do you want to continue with initializing migrations in remote-only mode? (y/n)"
+                if ($confirmPrompt -ne "y") {
+                    throw "Operation canceled by user."
+                }
+            } else {
+                Log-Message "Proceeding with remote-only mode as Force flag is set..." -ForegroundColor "Yellow"
+            }
+            
+            # We'll create a default set of migrations - this is for testing only
+            # In a real scenario, you'd need to provide predefined migration records
+            Log-Message "Creating sample migration records for testing" -ForegroundColor "Yellow"
+            
+            # Just add a single initial migration record
+            $localMigrationsList += @{
+                Id = 1
+                Name = "initial-schema"
+                Batch = 1
+                CreatedAt = [DateTime]::UtcNow.ToString("yyyy-MM-dd HH:mm:ss")
+            }
+            
+            Log-Message "Created 1 sample migration record for remote database" -ForegroundColor "Cyan"
         }
 
         # Get migration records from remote database
@@ -121,8 +201,16 @@ function Sync-Migrations {
         Log-Step "Comparing migration records between local and remote databases"
         
         # Get maximum batch numbers
-        $maxLocalBatch = if ($localMigrationsList.Count -gt 0) { ($localMigrationsList | Measure-Object -Property Batch -Maximum).Maximum } else { 0 }
-        $maxRemoteBatch = if ($remoteMigrationsList.Count -gt 0) { ($remoteMigrationsList | Measure-Object -Property Batch -Maximum).Maximum } else { 0 }
+        $maxLocalBatch = 0
+        $maxRemoteBatch = 0
+        
+        if ($localMigrationsList.Count -gt 0) { 
+            $maxLocalBatch = ($localMigrationsList | ForEach-Object { [int]$_.Batch } | Measure-Object -Maximum).Maximum 
+        }
+        
+        if ($remoteMigrationsList.Count -gt 0) { 
+            $maxRemoteBatch = ($remoteMigrationsList | ForEach-Object { [int]$_.Batch } | Measure-Object -Maximum).Maximum 
+        }
         
         Log-Message "Local max batch: $maxLocalBatch, Remote max batch: $maxRemoteBatch" "Cyan"
         
@@ -317,32 +405,43 @@ function Sync-Migrations {
         $finalRemoteCount = Invoke-RemoteSql -query $finalRemoteMigrationsQuery -captureOutput
         $finalRemoteCount = $finalRemoteCount.Trim()
         
-        if ($finalRemoteCount -eq $localMigrationsList.Count) {
-            Log-Success "Migration synchronization complete. Remote database now has $finalRemoteCount migrations."
-            
-            # Check if the order matches
-            $orderCheckQuery = @"
-            SELECT
-                l.name AS local_name,
-                r.name AS remote_name
-            FROM 
-                (SELECT ROW_NUMBER() OVER (ORDER BY id) AS row_num, name FROM payload.payload_migrations) AS l
-            FULL OUTER JOIN 
-                (SELECT ROW_NUMBER() OVER (ORDER BY id) AS row_num, name FROM payload.payload_migrations) AS r
-            ON l.row_num = r.row_num
-            WHERE l.name <> r.name OR l.name IS NULL OR r.name IS NULL;
+        # Convert to integers for safe comparison
+        $localCount = [int]$localMigrationsList.Count
+        $remoteCount = 0
+        if ([int]::TryParse($finalRemoteCount, [ref]$remoteCount)) {
+            if ($remoteCount -eq $localCount) {
+                Log-Success "Migration synchronization complete. Remote database now has $remoteCount migrations."
+                
+                # Check if the order matches - we'll skip this for remote-only mode
+                if (-not $env:FORCE_REMOTE_ONLY) {
+                    $orderCheckQuery = @"
+                    SELECT
+                        l.name AS local_name,
+                        r.name AS remote_name
+                    FROM 
+                        (SELECT ROW_NUMBER() OVER (ORDER BY id) AS row_num, name FROM payload.payload_migrations) AS l
+                    FULL OUTER JOIN 
+                        (SELECT ROW_NUMBER() OVER (ORDER BY id) AS row_num, name FROM payload.payload_migrations) AS r
+                    ON l.row_num = r.row_num
+                    WHERE l.name <> r.name OR l.name IS NULL OR r.name IS NULL;
 "@
-            
-            $orderCheck = Invoke-RemoteSql -query $orderCheckQuery -captureOutput
-            $orderCheck = $orderCheck.Trim()
-            
-            if ([string]::IsNullOrWhiteSpace($orderCheck)) {
-                Log-Success "Migration order verified. Local and remote databases are fully synchronized."
+                    
+                    $orderCheck = Invoke-RemoteSql -query $orderCheckQuery -captureOutput
+                    $orderCheck = $orderCheck.Trim()
+                    
+                    if ([string]::IsNullOrWhiteSpace($orderCheck)) {
+                        Log-Success "Migration order verified. Local and remote databases are fully synchronized."
+                    } else {
+                        Log-Warning "Migration counts match but order may still differ. Consider using -Force for complete resynchronization."
+                    }
+                } else {
+                    Log-Warning "Order checking skipped in remote-only mode."
+                }
             } else {
-                Log-Warning "Migration counts match but order may still differ. Consider using -Force for complete resynchronization."
+                Log-Warning "Migration count mismatch after synchronization. Local: $localCount, Remote: $remoteCount"
             }
         } else {
-            Log-Warning "Migration count mismatch after synchronization. Local: $($localMigrationsList.Count), Remote: $finalRemoteCount"
+            Log-Warning "Could not parse remote migration count: '$finalRemoteCount'"
         }
 
         # Final output
@@ -351,10 +450,10 @@ function Sync-Migrations {
         return @{
             Success = $true
             Action = $syncAction
-            LocalCount = $localMigrationsList.Count
-            RemoteCount = [int]$finalRemoteCount
-            MissingInRemote = $missingInRemote
-            ExtraInRemote = $extraInRemote
+            LocalCount = $localCount
+            RemoteCount = $remoteCount
+            MissingInRemote = $missingInRemote.Count
+            ExtraInRemote = $extraInRemote.Count
         }
     }
     catch {

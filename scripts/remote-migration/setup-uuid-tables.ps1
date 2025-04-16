@@ -1,11 +1,3 @@
-# UUID Tables Setup Script
-# This script detects, manages, and sets up UUID tables which are dynamically created
-# by Payload CMS for managing relationships between content types
-
-# Import utility modules
-. "$PSScriptRoot\utils\database.ps1"
-. "$PSScriptRoot\utils\uuid-tables.ps1"
-
 # Parameters
 param (
     [switch]$LocalOnly,
@@ -14,6 +6,14 @@ param (
     [switch]$Force,
     [switch]$Verbose
 )
+
+# UUID Tables Setup Script
+# This script detects, manages, and sets up UUID tables which are dynamically created
+# by Payload CMS for managing relationships between content types
+
+# Import utility modules
+. "$PSScriptRoot\utils\database.ps1"
+. "$PSScriptRoot\utils\uuid-tables.ps1"
 
 # Configure error handling
 $ErrorActionPreference = "Stop"

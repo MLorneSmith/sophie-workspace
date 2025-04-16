@@ -2,7 +2,7 @@
 # This script uses a direct and streamlined approach to create the payload schema
 
 # Import utility modules for logging
-. "$PSScriptRoot\utils\logging.ps1"
+. "$PSScriptRoot\..\utils\logging.ps1"
 
 function Create-PayloadSchema-Simple {
     param (
@@ -11,7 +11,7 @@ function Create-PayloadSchema-Simple {
         [string]$dbUser = "postgres.ldebzombxtszzcgnylgq",
         [string]$dbName = "postgres",
         [string]$password = $env:SUPABASE_DB_PASSWORD,
-        [string]$sqlFilePath = "$PSScriptRoot\create-payload-schema-direct.sql"
+        [string]$sqlFilePath = "$PSScriptRoot\sql\payload-schema.sql"
     )
 
     # Ensure password is set

@@ -13,3 +13,11 @@ CREATE TABLE IF NOT EXISTS payload.dynamic_uuid_tables (
     has_media_id BOOLEAN DEFAULT FALSE,
     has_private_id BOOLEAN DEFAULT FALSE
 );
+
+-- Create the migrations table to track Payload CMS migrations
+CREATE TABLE IF NOT EXISTS payload.payload_migrations (
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+    batch INTEGER NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
