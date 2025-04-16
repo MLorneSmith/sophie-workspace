@@ -10,11 +10,13 @@ function Verify-TableRowCount {
     $remoteDbUrl = $env:REMOTE_DATABASE_URL
 
     # Get local count
-    $localCount = Exec-Command -command "psql `"$localDbUrl`" -t -c `"SELECT COUNT(*) FROM $schema.$table;`"" -description "Counting local $schema.$table" -captureOutput
+    $localQuery = "SELECT COUNT(*) FROM $schema.$table;"
+    $localCount = Invoke-LocalSql -query $localQuery -captureOutput -continueOnError
     $localCount = $localCount.Trim()
 
     # Get remote count
-    $remoteCount = Exec-Command -command "psql `"$remoteDbUrl`" -t -c `"SELECT COUNT(*) FROM $schema.$table;`"" -description "Counting remote $schema.$table" -captureOutput
+    $remoteQuery = "SELECT COUNT(*) FROM $schema.$table;"
+    $remoteCount = Invoke-RemoteSql -query $remoteQuery -captureOutput -continueOnError
     $remoteCount = $remoteCount.Trim()
 
     # Compare counts
@@ -38,7 +40,8 @@ function Verify-SampleData {
     $remoteDbUrl = $env:REMOTE_DATABASE_URL
 
     # Get a sample ID from local
-    $sampleId = Exec-Command -command "psql `"$localDbUrl`" -t -c `"SELECT $idColumn FROM $schema.$table LIMIT 1;`"" -description "Getting sample from local $schema.$table" -captureOutput
+    $localQuery = "SELECT $idColumn FROM $schema.$table LIMIT 1;"
+    $sampleId = Invoke-LocalSql -query $localQuery -captureOutput -continueOnError
     $sampleId = $sampleId.Trim()
 
     if (-not $sampleId) {
@@ -47,7 +50,8 @@ function Verify-SampleData {
     }
 
     # Check if sample exists in remote
-    $remoteCheck = Exec-Command -command "psql `"$remoteDbUrl`" -t -c `"SELECT EXISTS(SELECT 1 FROM $schema.$table WHERE $idColumn = '$sampleId');`"" -description "Checking sample in remote $schema.$table" -captureOutput
+    $remoteQuery = "SELECT EXISTS(SELECT 1 FROM $schema.$table WHERE $idColumn = '$sampleId');"
+    $remoteCheck = Invoke-RemoteSql -query $remoteQuery -captureOutput -continueOnError
     $remoteCheck = $remoteCheck.Trim()
 
     if ($remoteCheck -eq "t") {

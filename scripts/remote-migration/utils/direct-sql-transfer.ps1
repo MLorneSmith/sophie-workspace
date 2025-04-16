@@ -9,7 +9,13 @@ function Get-TableRowCount {
         [string]$tableFullName
     )
 
-    $result = Exec-Command -command "supabase db execute --db-url=`"$connectionString`" -c `"SELECT COUNT(*) FROM $tableFullName;`"" -description "Counting rows" -captureOutput
+    $query = "SELECT COUNT(*) FROM $tableFullName;"
+    
+    if ($connectionString -match "localhost") {
+        $result = Invoke-LocalSql -query $query -captureOutput -continueOnError
+    } else {
+        $result = Invoke-RemoteSql -query $query -captureOutput -continueOnError
+    }
     
     # Extract just the number from the output
     if ($result -match '\d+') {
@@ -31,7 +37,7 @@ function Compare-TableCounts {
     $remoteCount = Get-TableRowCount -connectionString $env:REMOTE_DATABASE_URL -tableFullName "$schema.$table"
 
     if ($verbose) {
-        Log-Message "Table $schema.$table: Local=$localCount, Remote=$remoteCount" "Cyan"
+        Log-Message "Table ${schema}.${table}: Local=${localCount}, Remote=${remoteCount}" "Cyan"
     }
 
     return @{
@@ -61,9 +67,20 @@ function Get-LocalTableData {
     # Use local database URL from environment
     $localDbUrl = $env:DATABASE_URL
 
+    # Check if table exists and has data
+    $query = "SELECT COUNT(*) FROM $schema.$table;"
+    $count = Invoke-LocalSql -query $query -captureOutput -continueOnError
+    
+    if ($count -match '\d+' -and [int]$Matches[0] -eq 0) {
+        Log-Warning "Table $schema.$table has no rows to export"
+        return $null
+    }
+
     # Export data directly using psql COPY command
     try {
-        $exportResult = Exec-Command -command "psql `"$localDbUrl`" -c `"COPY $schema.$table TO STDOUT WITH CSV HEADER`" > `"$tempFile`"" -description "Exporting data from $schema.$table" -continueOnError
+        # Create a PowerShell command to execute psql and redirect output
+        $psqlCommand = "psql `"$localDbUrl`" -c `"COPY $schema.$table TO STDOUT WITH CSV HEADER`" > `"$tempFile`""
+        Invoke-Expression $psqlCommand
         
         if ($LASTEXITCODE -eq 0 -and (Test-Path $tempFile)) {
             Log-Success "Exported data for $schema.$table to $tempFile"
@@ -96,7 +113,9 @@ function Export-TableDataWithSupabase {
 
     # Use Supabase CLI to dump data-only for this table
     try {
-        Exec-Command -command "supabase db dump --data-only --schema $schema --table `"$schema.$table`" -f `"$outputFile`"" -description "Exporting data from $schema.$table using Supabase CLI"
+        Log-Message "Exporting data from $schema.$table using Supabase CLI" "Yellow"
+        $command = "supabase db dump --data-only --schema $schema --table `"$schema.$table`" -f `"$outputFile`""
+        Invoke-Expression $command
 
         if (Test-Path $outputFile) {
             Log-Success "Exported data for $schema.$table to $outputFile using Supabase CLI"
@@ -135,15 +154,19 @@ function Import-RemoteTableData {
     try {
         # First truncate the table to avoid conflicts (unless explicitly skipped)
         if (-not $skipTruncate) {
-            $truncateCmd = Exec-Command -command "psql `"$remoteDbUrl`" -c `"TRUNCATE $schema.$table CASCADE;`"" -description "Truncating remote $schema.$table" -captureOutput -continueOnError
+            Log-Message "Truncating remote $schema.$table" "Yellow"
+            $truncateQuery = "TRUNCATE $schema.$table CASCADE;"
+            $result = Invoke-RemoteSql -query $truncateQuery -continueOnError
             
             if ($LASTEXITCODE -ne 0) {
                 Log-Warning "Failed to truncate with CASCADE, trying without CASCADE..."
-                $truncateCmd2 = Exec-Command -command "psql `"$remoteDbUrl`" -c `"TRUNCATE $schema.$table;`"" -description "Truncating remote $schema.$table (no CASCADE)" -captureOutput -continueOnError
+                $truncateQuery2 = "TRUNCATE $schema.$table;"
+                $result2 = Invoke-RemoteSql -query $truncateQuery2 -continueOnError
                 
                 if ($LASTEXITCODE -ne 0) {
                     Log-Warning "Truncate failed, will attempt to DELETE instead..."
-                    $deleteCmd = Exec-Command -command "psql `"$remoteDbUrl`" -c `"DELETE FROM $schema.$table;`"" -description "Deleting data from remote $schema.$table" -captureOutput -continueOnError
+                    $deleteQuery = "DELETE FROM $schema.$table;"
+                    $result3 = Invoke-RemoteSql -query $deleteQuery -continueOnError
                 }
             }
         }
@@ -151,7 +174,11 @@ function Import-RemoteTableData {
         # Import data based on file type
         if ($fileExtension -eq ".csv") {
             # Import CSV data
-            $importCmd = Exec-Command -command "psql `"$remoteDbUrl`" -c `"COPY $schema.$table FROM STDIN WITH CSV HEADER`" < `"$dataFile`"" -description "Importing CSV data to $schema.$table" -continueOnError
+            Log-Message "Importing CSV data to $schema.$table" "Yellow"
+            
+            # PowerShell's Get-Content and pipeline instead of < redirect
+            $importCommand = "Get-Content `"$dataFile`" | psql `"$remoteDbUrl`" -c `"COPY $schema.$table FROM STDIN WITH CSV HEADER`""
+            Invoke-Expression $importCommand
             
             if ($LASTEXITCODE -eq 0) {
                 Log-Success "Successfully imported CSV data to $schema.$table"
@@ -183,17 +210,12 @@ function Import-TableDataWithSupabase {
         return $false
     }
 
-    $paramStr = ""
-    if ($linked) { 
-        $paramStr = "--linked" 
-    } 
-    else { 
-        $paramStr = "--db-url=`"$env:REMOTE_DATABASE_URL`"" 
-    }
-
-    # Execute the SQL file
+    # Execute the SQL file directly using psql instead of supabase CLI
     try {
-        $cliCmd = Exec-Command -command "supabase db execute $paramStr -f `"$dataFile`"" -description "Importing data with Supabase CLI" -continueOnError
+        Log-Message "Importing data with direct PSQL connection" "Yellow"
+        $remoteDbUrl = $env:REMOTE_DATABASE_URL
+        $command = "psql `"$remoteDbUrl`" -f `"$dataFile`""
+        Invoke-Expression $command
         
         if ($LASTEXITCODE -eq 0) {
             Log-Success "Successfully imported data using Supabase CLI"
@@ -260,9 +282,9 @@ function Transfer-TableData {
         if ($verifyAfterTransfer) {
             $verification = Compare-TableCounts -schema $schema -table $table -verbose
             if ($verification.Match) {
-                Log-Success "Verification passed for $schema.$table: Local=$($verification.LocalCount), Remote=$($verification.RemoteCount)"
+                Log-Success "Verification passed for ${schema}.${table}: Local=$($verification.LocalCount), Remote=$($verification.RemoteCount)"
             } else {
-                Log-Warning "Verification failed for $schema.$table: Local=$($verification.LocalCount), Remote=$($verification.RemoteCount)"
+                Log-Warning "Verification failed for ${schema}.${table}: Local=$($verification.LocalCount), Remote=$($verification.RemoteCount)"
             }
         }
 
@@ -286,7 +308,7 @@ function Migrate-ContentType {
         [switch]$useSupabaseCLI
     )
 
-    Log-Phase "MIGRATING $contentType: $description"
+    Log-Phase "MIGRATING ${contentType}: ${description}"
     $successful = 0
     $failed = 0
 
@@ -316,7 +338,7 @@ function Migrate-ContentType {
         }
     }
 
-    Log-Message "Migration summary for $contentType: $successful succeeded, $failed failed" "Cyan"
+    Log-Message "Migration summary for ${contentType}: ${successful} succeeded, ${failed} failed" "Cyan"
     return @{
         ContentType = $contentType
         SuccessCount = $successful

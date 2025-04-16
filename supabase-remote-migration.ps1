@@ -29,6 +29,7 @@ param (
     [switch]$SkipInitSchema,
     [switch]$TestCoreOnly,
     [switch]$TestPostsOnly,
+    [switch]$FixMigrationErrors,
     [string]$RepairMigration
 )
 
@@ -36,7 +37,7 @@ param (
 $ErrorActionPreference = "Stop"
 
 # Import base utility functions
-$utilsDir = Join-Path -Path $PSScriptRoot -ChildPath "scripts\orchestration\remote-migration\utils"
+$utilsDir = Join-Path -Path $PSScriptRoot -ChildPath "scripts\remote-migration\utils"
 . "$utilsDir\logging.ps1"
 . "$utilsDir\env-loader.ps1"
 
@@ -69,7 +70,7 @@ function Show-Banner {
     Write-Host "         SLIDEHEROES REMOTE MIGRATION UTILITY          " -ForegroundColor Cyan
     Write-Host "=======================================================" -ForegroundColor Cyan
     Write-Host "This wrapper script calls the organized migration scripts in the"
-    Write-Host "scripts/orchestration/remote-migration directory."
+    Write-Host "scripts/remote-migration directory."
     Write-Host ""
     Write-Host "Command options:"
     Write-Host "  -Test           : Run connection test only"
@@ -103,25 +104,26 @@ Show-Banner
 
 try {
     # Path to the scripts
-    $migrationDir = Join-Path -Path $PSScriptRoot -ChildPath "scripts\orchestration\remote-migration"
+    $migrationDir = Join-Path -Path $PSScriptRoot -ChildPath "scripts\remote-migration"
     $migrationScript = Join-Path -Path $migrationDir -ChildPath "master-migration.ps1"
     $testScript = Join-Path -Path $migrationDir -ChildPath "tests\basic-connection-test.ps1"
     $testCoreScript = Join-Path -Path $migrationDir -ChildPath "tests\test-core-tables.ps1"
     $testPostsScript = Join-Path -Path $migrationDir -ChildPath "tests\test-posts-only.ps1"
-    $schemaScript = Join-Path -Path $migrationDir -ChildPath "migrate-schema.ps1"
-    $dataScript = Join-Path -Path $migrationDir -ChildPath "migrate-data.ps1"
-    $verifyScript = Join-Path -Path $migrationDir -ChildPath "verify-remote-content.ps1"
-    $postsScript = Join-Path -Path $migrationDir -ChildPath "migrate-posts-direct.ps1"
+    $schemaScript = Join-Path -Path $migrationDir -ChildPath "migrate-schema-auto.ps1"
+    $dataScript = Join-Path -Path $migrationDir -ChildPath "content\migrate-data.ps1"
+    $verifyScript = Join-Path -Path $migrationDir -ChildPath "content\verify-remote-content.ps1"
+    $postsScript = Join-Path -Path $migrationDir -ChildPath "content\migrate-posts-direct.ps1"
     $uuidTablesScript = Join-Path -Path $migrationDir -ChildPath "setup-uuid-tables.ps1"
-    $progressiveScript = Join-Path -Path $migrationDir -ChildPath "migrate-content-progressive.ps1"
-    $fixRelationshipsScript = Join-Path -Path $migrationDir -ChildPath "fix-remote-relationships.ps1"
-    $syncMigrationsScript = Join-Path -Path $migrationDir -ChildPath "sync-migrations.ps1"
-    $fixConnStringScript = Join-Path -Path $migrationDir -ChildPath "fix-connection-string.ps1"
-    $diagnoseCourseScript = Join-Path -Path $migrationDir -ChildPath "diagnose-course-route.ps1"
+    $progressiveScript = Join-Path -Path $migrationDir -ChildPath "content\migrate-content-progressive.ps1"
+    $fixRelationshipsScript = Join-Path -Path $migrationDir -ChildPath "fixes\fix-remote-relationships.ps1"
+    $syncMigrationsScript = Join-Path -Path $migrationDir -ChildPath "migrations\sync-migrations.ps1"
+    $fixConnStringScript = Join-Path -Path $migrationDir -ChildPath "fixes\fix-connection-string.ps1"
+    $diagnoseCourseScript = Join-Path -Path $migrationDir -ChildPath "fixes\diagnose-course-route.ps1"
     $initSchemaScript = Join-Path -Path $migrationDir -ChildPath "init-payload-schema.ps1"
-    $directSchemaScript = Join-Path -Path $migrationDir -ChildPath "create-schema-direct.ps1"
-    $psqlSchemaScript = Join-Path -Path $migrationDir -ChildPath "create-schema-psql.ps1"
-    $simpleSchemaScript = Join-Path -Path $migrationDir -ChildPath "create-schema-simple.ps1"
+    $directSchemaScript = Join-Path -Path $migrationDir -ChildPath "schema\create-payload-schema.ps1"
+    $psqlSchemaScript = Join-Path -Path $migrationDir -ChildPath "schema\create-payload-schema.ps1"
+    $simpleSchemaScript = Join-Path -Path $migrationDir -ChildPath "schema\create-payload-schema.ps1"
+    $fixMigrationErrorsScript = Join-Path -Path $migrationDir -ChildPath "fixes\fix-migration-errors.ps1"
     
     # Check if essential scripts exist
     if (-not (Test-Path -Path $testScript)) {
@@ -245,6 +247,22 @@ try {
             throw "Course route diagnostic script not found at: $diagnoseCourseScript"
         }
         & $diagnoseCourseScript
+        exit $LASTEXITCODE
+    }
+    
+    if ($FixMigrationErrors) {
+        Write-Host "Running migration error fixes..." -ForegroundColor Yellow
+        if (-not (Test-Path -Path $fixMigrationErrorsScript)) {
+            throw "Migration error fixes script not found at: $fixMigrationErrorsScript"
+        }
+        & $fixMigrationErrorsScript -FixAll
+        
+        # If we fixed errors, we should also run the UUID tables setup to ensure everything is properly configured
+        if (Test-Path -Path $uuidTablesScript) {
+            Write-Host "Setting up UUID tables after fixing migration errors..." -ForegroundColor Yellow
+            & $uuidTablesScript
+        }
+        
         exit $LASTEXITCODE
     }
     

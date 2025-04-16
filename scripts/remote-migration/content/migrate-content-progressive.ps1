@@ -1,13 +1,3 @@
-# Progressive Content Migration Script
-# This script implements the progressive migration approach for Payload CMS data
-# by migrating one content type at a time with comprehensive verification
-
-# Import utility modules
-. "$PSScriptRoot\utils\database.ps1"
-. "$PSScriptRoot\utils\direct-sql-transfer.ps1"
-. "$PSScriptRoot\utils\uuid-tables.ps1"
-. "$PSScriptRoot\utils\verification.ps1"
-
 # Parameters
 param (
     [switch]$SkipCore,
@@ -22,6 +12,17 @@ param (
     [switch]$UseSupabaseCLI,
     [switch]$ForceRecreate
 )
+
+# Progressive Content Migration Script
+# This script implements the progressive migration approach for Payload CMS data
+# by migrating one content type at a time with comprehensive verification
+
+# Import utility modules
+. "$PSScriptRoot\..\utils\database.ps1"
+. "$PSScriptRoot\..\utils\logging.ps1"
+. "$PSScriptRoot\..\utils\direct-sql-transfer.ps1"
+. "$PSScriptRoot\..\utils\uuid-tables.ps1"
+. "$PSScriptRoot\..\utils\verification.ps1"
 
 # Configure error handling
 $ErrorActionPreference = "Stop"

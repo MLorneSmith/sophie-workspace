@@ -14,7 +14,11 @@ function Get-UUIDTables {
     AND table_name ~ '^[0-9a-f]{8}_[0-9a-f]{4}_[0-9a-f]{4}_[0-9a-f]{4}_[0-9a-f]{12}$';
 "@
 
-    $result = Exec-Command -command "supabase db execute --db-url=`"$connectionString`" -c `"$query`"" -description "Getting UUID tables" -captureOutput
+    if ($connectionString -match "localhost") {
+        $result = Invoke-LocalSql -query $query -captureOutput -continueOnError
+    } else {
+        $result = Invoke-RemoteSql -query $query -captureOutput -continueOnError
+    }
     
     # Filter out empty lines and trim whitespace
     return $result -split "`n" | Where-Object { $_ -match '\S' } | ForEach-Object { $_.Trim() }
@@ -53,7 +57,11 @@ function Ensure-UUIDTableColumns {
     \$\$;
 "@
 
-    Exec-Command -command "supabase db execute --db-url=`"$connectionString`" -c `"$query`"" -description "Ensuring columns for $schema.$table"
+    if ($connectionString -match "localhost") {
+        Invoke-LocalSql -query $query -continueOnError
+    } else {
+        Invoke-RemoteSql -query $query -continueOnError
+    }
 }
 
 function Track-UUIDTable {
@@ -82,7 +90,11 @@ function Track-UUIDTable {
     \$\$;
 "@
 
-    Exec-Command -command "supabase db execute --db-url=`"$connectionString`" -c `"$createTrackerTable`"" -description "Creating UUID table tracker if needed"
+    if ($connectionString -match "localhost") {
+        Invoke-LocalSql -query $createTrackerTable -continueOnError
+    } else {
+        Invoke-RemoteSql -query $createTrackerTable -continueOnError
+    }
 
     # Track this UUID table
     $trackTable = @"
@@ -92,7 +104,11 @@ function Track-UUIDTable {
     DO UPDATE SET last_checked = NOW();
 "@
 
-    Exec-Command -command "supabase db execute --db-url=`"$connectionString`" -c `"$trackTable`"" -description "Tracking UUID table $table"
+    if ($connectionString -match "localhost") {
+        Invoke-LocalSql -query $trackTable -continueOnError
+    } else {
+        Invoke-RemoteSql -query $trackTable -continueOnError
+    }
 }
 
 function Process-UUIDTables {
