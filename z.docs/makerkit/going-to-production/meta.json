@@ -1,4 +1,5 @@
 {
   "title": "Going to Production",
-  "position": 15
+  "position": 12,
+  "description": "Learn how to prepare your application for shipping to production"
 }

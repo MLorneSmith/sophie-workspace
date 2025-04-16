@@ -134,12 +134,15 @@ ${improvementFormat}`,
         },
       ];
 
-      const response = await getChatCompletion(messages, {
+      const result = await getChatCompletion(messages, {
         config,
-      } as ChatCompletionOptions);
+        userId: user.id,
+        feature: 'outline-suggestions',
+        sessionId: data.submissionId,
+      });
 
       // Parse the JSON response
-      const suggestions = JSON.parse(response);
+      const suggestions = JSON.parse(result.content);
 
       return {
         success: true,

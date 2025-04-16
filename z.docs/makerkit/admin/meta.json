@@ -1,4 +1,5 @@
 {
-  "title": "Super Admin",
-  "position": 13
+  "title": "Admin",
+  "position": 7,
+  "description": "Everything you need to know about the Super Admin in the Next.js Supabase kit"
 }
