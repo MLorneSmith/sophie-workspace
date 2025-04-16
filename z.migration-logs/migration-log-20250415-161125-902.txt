@@ -1,0 +1,70 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20250415161125
+Username: SLIDEHEROES_DEN\msmit
+RunAs User: SLIDEHEROES_DEN\msmit
+Configuration Name: 
+Machine: SLIDEHEROES_DEN (Microsoft Windows NT 10.0.26100.0)
+Host Application: C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -noexit -command try { . "c:\Users\msmit\AppData\Local\Programs\Microsoft VS Code\resources\app\out\vs\workbench\contrib\terminal\common\scripts\shellIntegration.ps1" } catch {}
+Process ID: 17120
+PSVersion: 5.1.26100.3624
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.3624
+BuildVersion: 10.0.26100.3624
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcript started, output file is D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-log-20250415-161125-902.txt
+Starting migration process at 04/15/2025 16:11:25
+Detailed logs will be saved to: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250415-161125-902.txt
+
+Name                           Value
+----                           -----
+Timestamp                      20250415-161125-902
+LogsDirectory                  D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs
+DetailedLogFile                D:\SlideHeroes\App\repos\2025slideheroes\z.migration-log...
+LogFile                        D:\SlideHeroes\App\repos\2025slideheroes\z.migration-log...
+=======================================================
+         SLIDEHEROES REMOTE MIGRATION UTILITY
+=======================================================
+This utility will migrate your local Supabase database
+to the remote Supabase instance at 2025slideheroes
+
+Steps that will be performed:
+1. Test remote connection
+2. Migrate schema to remote
+3. Migrate data (dump & restore)
+4. Fix relationships and verify
+
+Using default remote URL from remote-config.ps1
+=======================================================
+
+EXECUTING: supabase --version
+DESCRIPTION: Testing Supabase CLI availability
+âœ… Supabase CLI detected: 2.20.12
+================================================================================
+TESTING REMOTE CONNECTION
+================================================================================
+âœ… Remote database URL format validated
+================================================================================
+MIGRATING SCHEMA TO REMOTE
+================================================================================
+Running schema migration...
+EXECUTING: pwsh -File "D:\SlideHeroes\App\repos\2025slideheroes\migrate-schema.ps1" -SkipDiff
+DESCRIPTION: Migrating schema to remote
+PS>TerminatingError(Invoke-Expression): "The term 'pwsh' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again."
+ERROR: Error in step 'Migrating schema to remote': The term 'pwsh' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+PS>TerminatingError(Invoke-Expression): "The term 'pwsh' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again."
+ERROR: Schema migration failed: The term 'pwsh' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+ERROR: Schema migration failed, aborting migration
+ERROR: CRITICAL ERROR: Migration failed: Schema migration failed
+Please check the log files for details:
+  - Transcript log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-log-20250415-161125-902.txt
+  - Detailed log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250415-161125-902.txt
+Migration process completed with warnings or errors. Please check the logs for details.
+**********************
+Windows PowerShell transcript end
+End time: 20250415161126
+**********************

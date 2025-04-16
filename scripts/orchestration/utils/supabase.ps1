@@ -519,6 +519,78 @@ END
     }
 }
 
+# Establish connection to remote Supabase
+function Connect-RemoteSupabase {
+    param (
+        [string]$connectionString = $env:REMOTE_DATABASE_URL
+    )
+
+    Log-Message "Establishing connection to remote Supabase instance..." "Yellow"
+
+    # Try to connect with retry logic
+    $maxRetries = $RemoteConnectionRetries -or 3
+    $retryCount = 0
+    $success = $false
+
+    while (-not $success -and $retryCount -lt $maxRetries) {
+        try {
+            if ($retryCount -gt 0) {
+                Log-Message "Retry attempt $retryCount of $maxRetries..." "Yellow"
+                Start-Sleep -Seconds (5 * $retryCount)
+            }
+
+            # Create a temporary SQL file with a simple test query
+            $tempSql = "$env:TEMP\test_connection_$([Guid]::NewGuid().ToString()).sql"
+            Set-Content -Path $tempSql -Value "SELECT 1 as connection_test;"
+            
+            # Use supabase CLI to test the connection
+            $testConnection = Exec-Command -command "supabase db execute `"$tempSql`" --db-url `"$connectionString`"" -description "Testing remote database connection" -captureOutput
+            
+            # Clean up temporary file
+            Remove-Item -Path $tempSql -Force -ErrorAction SilentlyContinue
+            
+            $success = $true
+            Log-Success "Successfully connected to remote Supabase"
+        }
+        catch {
+            $retryCount++
+            Log-Warning "Connection attempt failed: $_"
+        }
+    }
+
+    if (-not $success) {
+        throw "Failed to connect to remote Supabase after $maxRetries attempts"
+    }
+
+    return $true
+}
+
+# Execute SQL against remote database
+function Invoke-RemoteSql {
+    param (
+        [string]$sql,
+        [string]$connectionString = $env:REMOTE_DATABASE_URL
+    )
+
+    try {
+        # Create a temporary SQL file
+        $tempSql = "$env:TEMP\remote_sql_$([Guid]::NewGuid().ToString()).sql"
+        Set-Content -Path $tempSql -Value $sql
+        
+        # Use supabase CLI to execute SQL against database URL
+        $result = Exec-Command -command "supabase db execute `"$tempSql`" --db-url `"$connectionString`"" -description "Executing SQL on remote database" -captureOutput
+        
+        # Clean up temporary file
+        Remove-Item -Path $tempSql -Force -ErrorAction SilentlyContinue
+        
+        return $result
+    }
+    catch {
+        Log-Error "Failed to execute SQL on remote database: $_"
+        throw $_
+    }
+}
+
 # Function to ensure a Supabase storage bucket exists - simplified version
 function Ensure-SupabaseBucket {
     param (

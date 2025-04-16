@@ -1,0 +1,79 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20250415175239
+Username: SLIDEHEROES_DEN\msmit
+RunAs User: SLIDEHEROES_DEN\msmit
+Configuration Name: 
+Machine: SLIDEHEROES_DEN (Microsoft Windows NT 10.0.26100.0)
+Host Application: C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -noexit -command try { . "c:\Users\msmit\AppData\Local\Programs\Microsoft VS Code\resources\app\out\vs\workbench\contrib\terminal\common\scripts\shellIntegration.ps1" } catch {}
+Process ID: 26852
+PSVersion: 5.1.26100.3624
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.3624
+BuildVersion: 10.0.26100.3624
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcript started, output file is D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-log-20250415-175239-763.txt
+Starting migration process at 04/15/2025 17:52:39
+Detailed logs will be saved to: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250415-175239-763.txt
+
+Name                           Value
+----                           -----
+Timestamp                      20250415-175239-763
+LogsDirectory                  D:\SlideHeroes\App\repos\2025slideher...
+DetailedLogFile                D:\SlideHeroes\App\repos\2025slideher...
+LogFile                        D:\SlideHeroes\App\repos\2025slideher...
+================================================================================
+PROGRESSIVE MIGRATION PHASE
+================================================================================
+
+------------------------------------------------------------
+STEP 1: Running Core Migration Phase
+------------------------------------------------------------
+Dumping payload.users table to C:\Users\msmit\AppData\Local\Temp\migration_Core\users.sql
+EXECUTING: supabase db dump --data-only --schema payload --local > "C:\Users\msmit\AppData\Local\Temp\migration_Core\users.sql.temp"
+DESCRIPTION: Dumping all payload tables
+Extracted users data from full dump
+Dumping payload.media table to C:\Users\msmit\AppData\Local\Temp\migration_Core\media.sql
+EXECUTING: supabase db dump --data-only --schema payload --local > "C:\Users\msmit\AppData\Local\Temp\migration_Core\media.sql.temp"
+DESCRIPTION: Dumping all payload tables
+Extracted media data from full dump
+Dumping payload.payload_preferences table to C:\Users\msmit\AppData\Local\Temp\migration_Core\payload_preferences.sql
+EXECUTING: supabase db dump --data-only --schema payload --local > "C:\Users\msmit\AppData\Local\Temp\migration_Core\payload_preferences.sql.temp"
+DESCRIPTION: Dumping all payload tables
+Extracted payload_preferences data from full dump
+Dumping payload.payload_migrations table to C:\Users\msmit\AppData\Local\Temp\migration_Core\payload_migrations.sql
+EXECUTING: supabase db dump --data-only --schema payload --local > "C:\Users\msmit\AppData\Local\Temp\migration_Core\payload_migrations.sql.temp"
+DESCRIPTION: Dumping all payload tables
+Extracted payload_migrations data from full dump
+Combining dumps into C:\Users\msmit\AppData\Local\Temp\migration_Core\Core_combined.sql
+Applying Core data to remote database...
+Pushing seed data to remote database...
+EXECUTING: supabase db push --db-url="postgres://postgres.ldebzombxtszzcgnylgq:UcQ5TYC3Hdh0v5G0@aws-0-us-east-2.pooler.supabase.com:5432/postgres" --include-seed
+DESCRIPTION: Applying Core data to remote
+
+Running relationship fixes for Core...
+True
+EXECUTING: pnpm run fix:relationships-direct
+DESCRIPTION: Fixing relationships
+
+EXECUTING: pnpm run fix:lexical-format
+DESCRIPTION: Fixing Lexical format
+
+âœ… Core migration completed
+
+------------------------------------------------------------
+STEP 1: Running Documentation Migration Phase
+------------------------------------------------------------
+Dumping payload.documentation table to C:\Users\msmit\AppData\Local\Temp\migration_Documentation\documentation.sql
+PS>TerminatingError(Push-Location): "The running command stopped because the preference variable "ErrorActionPreference" or common parameter is set to Stop: Cannot find path 'D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations\apps\web' because it does not exist."
+>> TerminatingError(Push-Location): "The running command stopped because the preference variable "ErrorActionPreference" or common parameter is set to Stop: Cannot find path 'D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations\apps\web' because it does not exist."
+ERROR: CRITICAL ERROR: Progressive migration failed: Cannot find path 'D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations\apps\web' because it does not exist.
+All migrations and verifications completed successfully!
+**********************
+Windows PowerShell transcript end
+End time: 20250415175244
+**********************

@@ -1,0 +1,2 @@
+2025-04-15 17:33:40: Starting migration process at 04/15/2025 17:33:40
+2025-04-15 17:33:40: Detailed logs will be saved to: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250415-173340-753.txt

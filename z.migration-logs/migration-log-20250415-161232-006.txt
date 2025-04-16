@@ -1,0 +1,48 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20250415161232
+Username: SLIDEHEROES_DEN\msmit
+RunAs User: SLIDEHEROES_DEN\msmit
+Configuration Name: 
+Machine: SLIDEHEROES_DEN (Microsoft Windows NT 10.0.26100.0)
+Host Application: C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -noexit -command try { . "c:\Users\msmit\AppData\Local\Programs\Microsoft VS Code\resources\app\out\vs\workbench\contrib\terminal\common\scripts\shellIntegration.ps1" } catch {}
+Process ID: 17120
+PSVersion: 5.1.26100.3624
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.3624
+BuildVersion: 10.0.26100.3624
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcript started, output file is D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-log-20250415-161232-006.txt
+Starting migration process at 04/15/2025 16:12:32
+Detailed logs will be saved to: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250415-161232-006.txt
+
+Name                           Value
+----                           -----
+Timestamp                      20250415-161232-006
+LogsDirectory                  D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs
+DetailedLogFile                D:\SlideHeroes\App\repos\2025slideheroes\z.migration-log...
+LogFile                        D:\SlideHeroes\App\repos\2025slideheroes\z.migration-log...
+================================================================================
+REMOTE CONNECTION PHASE
+================================================================================
+Establishing connection to remote Supabase instance...
+EXECUTING: supabase db execute "C:\Users\msmit\AppData\Local\Temp\test_connection_291c6358-2610-4a30-8944-41f290438192.sql" --db-url "postgres://postgres.ldebzombxtszzcgnylgq:UcQ5TYC3Hdh0v5G0@aws-0-us-east-2.pooler.supabase.com:5432/postgres"
+DESCRIPTION: Testing remote database connection
+PS>TerminatingError(supabase.exe): "The running command stopped because the preference variable "ErrorActionPreference" or common parameter is set to Stop: Usage:"
+>> TerminatingError(supabase.exe): "The running command stopped because the preference variable "ErrorActionPreference" or common parameter is set to Stop: Usage:"
+ERROR: Error in step 'Testing remote database connection': Usage:
+PS>TerminatingError(supabase.exe): "Usage:"
+WARNING: Connection attempt failed: Usage:
+PS>TerminatingError(): "Failed to connect to remote Supabase after True attempts"
+ERROR: CRITICAL ERROR: Data migration failed: Failed to connect to remote Supabase after True attempts
+Please check the log files for details:
+  - Transcript log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-log-20250415-161232-006.txt
+  - Detailed log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250415-161232-006.txt
+**********************
+Windows PowerShell transcript end
+End time: 20250415161232
+**********************

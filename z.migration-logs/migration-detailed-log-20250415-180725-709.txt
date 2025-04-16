@@ -1,0 +1,63 @@
+2025-04-15 18:07:25: Starting migration process at 04/15/2025 18:07:25
+2025-04-15 18:07:25: Detailed logs will be saved to: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250415-180725-709.txt
+2025-04-15 18:07:25: ================================================================================
+2025-04-15 18:07:25: PROGRESSIVE MIGRATION PHASE
+2025-04-15 18:07:25: ================================================================================
+2025-04-15 18:07:25: 
+2025-04-15 18:07:25: ------------------------------------------------------------
+2025-04-15 18:07:25: STEP 1: Running Core Migration Phase
+2025-04-15 18:07:25: ------------------------------------------------------------
+2025-04-15 18:07:25: Dumping payload.users table to C:\Users\msmit\AppData\Local\Temp\migration_Core\users.sql
+2025-04-15 18:07:25: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\apps\web
+2025-04-15 18:07:25: EXECUTING: supabase db dump --data-only --schema payload --local > "C:\Users\msmit\AppData\Local\Temp\migration_Core\users.sql.temp"
+2025-04-15 18:07:25: DESCRIPTION: Dumping all payload tables
+2025-04-15 18:07:26: Extracted users data from full dump
+2025-04-15 18:07:26: Dumping payload.media table to C:\Users\msmit\AppData\Local\Temp\migration_Core\media.sql
+2025-04-15 18:07:26: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\apps\web
+2025-04-15 18:07:26: EXECUTING: supabase db dump --data-only --schema payload --local > "C:\Users\msmit\AppData\Local\Temp\migration_Core\media.sql.temp"
+2025-04-15 18:07:26: DESCRIPTION: Dumping all payload tables
+2025-04-15 18:07:27: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\apps\web
+2025-04-15 18:07:27: EXECUTING: supabase db dump --data-only --schema payload --local > "C:\Users\msmit\AppData\Local\Temp\migration_Core\payload_preferences.sql.temp"
+2025-04-15 18:07:27: DESCRIPTION: Dumping all payload tables
+2025-04-15 18:07:28: Extracted payload_migrations data from full dump
+2025-04-15 18:07:28: Combining dumps into C:\Users\msmit\AppData\Local\Temp\migration_Core\Core_combined.sql
+2025-04-15 18:07:28: Running relationship fixes for Core...
+2025-04-15 18:07:28: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-04-15 18:07:28: WARNING: Script 'fix:relationships-direct' not found in package.json, skipping
+2025-04-15 18:07:28: Verifying Core migration...
+2025-04-15 18:07:28: Verifying migration for payload.users...
+2025-04-15 18:07:28: EXECUTING: psql "" -t -c "SELECT COUNT(*) FROM payload.users;"
+2025-04-15 18:07:28: DESCRIPTION: Counting local payload.users
+2025-04-15 18:07:28: ERROR: Error in step 'Counting local payload.users': The term 'psql' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+2025-04-15 18:07:28: WARNING: Verification failed for payload.users - The term 'psql' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.. Continuing anyway.
+2025-04-15 18:07:28: Verifying migration for payload.media...
+2025-04-15 18:07:28: EXECUTING: psql "" -t -c "SELECT COUNT(*) FROM payload.media;"
+2025-04-15 18:07:28: DESCRIPTION: Counting local payload.media
+2025-04-15 18:07:28: ERROR: Error in step 'Counting local payload.media': The term 'psql' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+2025-04-15 18:07:28: WARNING: Verification failed for payload.media - The term 'psql' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.. Continuing anyway.
+2025-04-15 18:07:28: Verifying migration for payload.payload_preferences...
+2025-04-15 18:07:28: EXECUTING: psql "" -t -c "SELECT COUNT(*) FROM payload.payload_preferences;"
+2025-04-15 18:07:28: DESCRIPTION: Counting local payload.payload_preferences
+2025-04-15 18:07:28: ERROR: Error in step 'Counting local payload.payload_preferences': The term 'psql' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+2025-04-15 18:07:28: WARNING: Verification failed for payload.payload_preferences - The term 'psql' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.. Continuing anyway.
+2025-04-15 18:07:28: Verifying migration for payload.payload_migrations...
+2025-04-15 18:07:28: EXECUTING: psql "" -t -c "SELECT COUNT(*) FROM payload.payload_migrations;"
+2025-04-15 18:07:28: DESCRIPTION: Counting local payload.payload_migrations
+2025-04-15 18:07:29: ERROR: Error in step 'Counting local payload.payload_migrations': The term 'psql' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+2025-04-15 18:07:29: WARNING: Verification failed for payload.payload_migrations - The term 'psql' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.. Continuing anyway.
+2025-04-15 18:07:29: ✅ Core migration completed
+2025-04-15 18:07:29: Skipping Documentation phase (requested)
+2025-04-15 18:07:29: Skipping Courses phase (requested)
+2025-04-15 18:07:29: Skipping Quizzes phase (requested)
+2025-04-15 18:07:29: Skipping Surveys phase (requested)
+2025-04-15 18:07:29: ================================================================================
+2025-04-15 18:07:29: FINAL VERIFICATION PHASE
+2025-04-15 18:07:29: ================================================================================
+2025-04-15 18:07:29: Running full verification on remote database...
+2025-04-15 18:07:29: EXECUTING: pnpm run verify:all
+2025-04-15 18:07:29: DESCRIPTION: Running full verification
+2025-04-15 18:07:30: ✅ Progressive content migration completed successfully
+2025-04-15 18:07:30: All migrations and verifications completed successfully!
+2025-04-15 18:07:30: Migration logs saved to:
+2025-04-15 18:07:30:   - Transcript log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-log-20250415-180725-709.txt
+2025-04-15 18:07:30:   - Detailed log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250415-180725-709.txt

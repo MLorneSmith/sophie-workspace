@@ -1,0 +1,36 @@
+2025-04-15 17:03:50: Starting migration process at 04/15/2025 17:03:50
+2025-04-15 17:03:50: Detailed logs will be saved to: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250415-170350-294.txt
+2025-04-15 17:03:50: ================================================================================
+2025-04-15 17:03:50: COURSE ROUTE DIAGNOSIS
+2025-04-15 17:03:50: ================================================================================
+2025-04-15 17:03:50: Using remote database: postgres://postgres.ldebzombxtszzcgnylgq:UcQ5TYC3Hdh0v5G0@aws-0-us-east-2.pooler.supabase.com:5432/postgres
+2025-04-15 17:03:50: 
+2025-04-15 17:03:50: ------------------------------------------------------------
+2025-04-15 17:03:50: STEP 1: Testing Database Connection
+2025-04-15 17:03:50: ------------------------------------------------------------
+2025-04-15 17:03:50: Testing database connection...
+2025-04-15 17:03:50: EXECUTING: supabase db diff --db-url "postgres://postgres.ldebzombxtszzcgnylgq:UcQ5TYC3Hdh0v5G0@aws-0-us-east-2.pooler.supabase.com:5432/postgres" --schema payload --table courses -s 1
+2025-04-15 17:03:50: DESCRIPTION: Testing database connection
+2025-04-15 17:03:50: 
+2025-04-15 17:03:50: ------------------------------------------------------------
+2025-04-15 17:03:50: STEP 2: Checking Courses Table
+2025-04-15 17:03:50: ------------------------------------------------------------
+2025-04-15 17:03:50: Testing if courses table exists and has data...
+2025-04-15 17:03:50: Executing SQL queries...
+2025-04-15 17:03:50: EXECUTING: supabase db execute --db-url "postgres://postgres.ldebzombxtszzcgnylgq:UcQ5TYC3Hdh0v5G0@aws-0-us-east-2.pooler.supabase.com:5432/postgres" -f "C:\Users\msmit\AppData\Local\Temp\check_courses.sql"
+2025-04-15 17:03:50: DESCRIPTION: Checking courses tables
+2025-04-15 17:03:50: 
+2025-04-15 17:03:50: ------------------------------------------------------------
+2025-04-15 17:03:50: STEP 3: Checking Next.js Route Implementation
+2025-04-15 17:03:50: ------------------------------------------------------------
+2025-04-15 17:03:50: Finding course route implementation...
+2025-04-15 17:03:50: Route file not found: apps/web/app/home/course/page.tsx
+2025-04-15 17:03:50: 
+2025-04-15 17:03:50: ------------------------------------------------------------
+2025-04-15 17:03:50: STEP 4: Checking API Route Implementation
+2025-04-15 17:03:50: ------------------------------------------------------------
+2025-04-15 17:03:50: ERROR: CRITICAL ERROR: Course route diagnosis failed: A parameter cannot be found that matches parameter name 'Raw'.
+2025-04-15 17:03:50: Migration process completed with warnings or errors. Please check the logs for details.
+2025-04-15 17:03:50: Migration logs saved to:
+2025-04-15 17:03:50:   - Transcript log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-log-20250415-170350-294.txt
+2025-04-15 17:03:50:   - Detailed log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250415-170350-294.txt

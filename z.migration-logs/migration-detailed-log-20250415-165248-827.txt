@@ -1,0 +1,39 @@
+2025-04-15 16:52:48: Starting migration process at 04/15/2025 16:52:48
+2025-04-15 16:52:48: Detailed logs will be saved to: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250415-165248-827.txt
+2025-04-15 16:52:48: ================================================================================
+2025-04-15 16:52:48: PROGRESSIVE MIGRATION PHASE
+2025-04-15 16:52:48: ================================================================================
+2025-04-15 16:52:48: 
+2025-04-15 16:52:48: ------------------------------------------------------------
+2025-04-15 16:52:48: STEP 1: Running Core Migration Phase
+2025-04-15 16:52:48: ------------------------------------------------------------
+2025-04-15 16:52:48: Dumping payload.users table to C:\Users\msmit\AppData\Local\Temp\migration_Core\users.sql
+2025-04-15 16:52:48: EXECUTING: pg_dump --data-only --schema=payload --table=payload.users postgres://postgres:postgres@localhost:54322/postgres > "C:\Users\msmit\AppData\Local\Temp\migration_Core\users.sql"
+2025-04-15 16:52:48: DESCRIPTION: Dumping payload.users
+2025-04-15 16:52:48: ERROR: Error in step 'Dumping payload.users': The term 'pg_dump' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+2025-04-15 16:52:48: WARNING: Continuing despite error due to continueOnError flag
+2025-04-15 16:52:48: Dumping payload.media table to C:\Users\msmit\AppData\Local\Temp\migration_Core\media.sql
+2025-04-15 16:52:48: EXECUTING: pg_dump --data-only --schema=payload --table=payload.media postgres://postgres:postgres@localhost:54322/postgres > "C:\Users\msmit\AppData\Local\Temp\migration_Core\media.sql"
+2025-04-15 16:52:48: DESCRIPTION: Dumping payload.media
+2025-04-15 16:52:49: ERROR: Error in step 'Dumping payload.media': The term 'pg_dump' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+2025-04-15 16:52:49: WARNING: Continuing despite error due to continueOnError flag
+2025-04-15 16:52:49: Dumping payload.payload_preferences table to C:\Users\msmit\AppData\Local\Temp\migration_Core\payload_preferences.sql
+2025-04-15 16:52:49: EXECUTING: pg_dump --data-only --schema=payload --table=payload.payload_preferences postgres://postgres:postgres@localhost:54322/postgres > "C:\Users\msmit\AppData\Local\Temp\migration_Core\payload_preferences.sql"
+2025-04-15 16:52:49: DESCRIPTION: Dumping payload.payload_preferences
+2025-04-15 16:52:49: ERROR: Error in step 'Dumping payload.payload_preferences': The term 'pg_dump' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+2025-04-15 16:52:49: WARNING: Continuing despite error due to continueOnError flag
+2025-04-15 16:52:49: Dumping payload.payload_migrations table to C:\Users\msmit\AppData\Local\Temp\migration_Core\payload_migrations.sql
+2025-04-15 16:52:49: EXECUTING: pg_dump --data-only --schema=payload --table=payload.payload_migrations postgres://postgres:postgres@localhost:54322/postgres > "C:\Users\msmit\AppData\Local\Temp\migration_Core\payload_migrations.sql"
+2025-04-15 16:52:49: DESCRIPTION: Dumping payload.payload_migrations
+2025-04-15 16:52:49: ERROR: Error in step 'Dumping payload.payload_migrations': The term 'pg_dump' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+2025-04-15 16:52:49: WARNING: Continuing despite error due to continueOnError flag
+2025-04-15 16:52:49: Combining dumps into C:\Users\msmit\AppData\Local\Temp\migration_Core\Core_combined.sql
+2025-04-15 16:52:49: Applying Core data to remote database...
+2025-04-15 16:52:49: EXECUTING: psql "postgres://postgres.ldebzombxtszzcgnylgq:UcQ5TYC3Hdh0v5G0@aws-0-us-east-2.pooler.supabase.com:5432/postgres" -f "C:\Users\msmit\AppData\Local\Temp\migration_Core\Core_combined.sql"
+2025-04-15 16:52:49: DESCRIPTION: Applying Core data to remote
+2025-04-15 16:52:49: ERROR: Error in step 'Applying Core data to remote': The term 'psql' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+2025-04-15 16:52:49: ERROR: CRITICAL ERROR: Progressive migration failed: The term 'psql' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+2025-04-15 16:52:49: All migrations and verifications completed successfully!
+2025-04-15 16:52:49: Migration logs saved to:
+2025-04-15 16:52:49:   - Transcript log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-log-20250415-165248-827.txt
+2025-04-15 16:52:49:   - Detailed log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250415-165248-827.txt

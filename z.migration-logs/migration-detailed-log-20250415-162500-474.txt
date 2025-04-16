@@ -1,0 +1,15 @@
+2025-04-15 16:25:00: Starting migration process at 04/15/2025 16:25:00
+2025-04-15 16:25:00: Detailed logs will be saved to: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250415-162500-474.txt
+2025-04-15 16:25:00: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\apps\web
+2025-04-15 16:25:00: Creating posts-specific seed file...
+2025-04-15 16:25:00: Dumping posts tables from local database...
+2025-04-15 16:25:00: Dumping all payload schema data...
+2025-04-15 16:25:00: EXECUTING: supabase db dump --data-only --schema payload > "C:\Users\msmit\AppData\Local\Temp\posts_dumps\full_payload_dump.sql"
+2025-04-15 16:25:00: DESCRIPTION: Dumping payload schema
+2025-04-15 16:25:32: ERROR: Command failed with exit code: 1
+2025-04-15 16:25:32: ERROR: Error in step 'Dumping payload schema': Command failed with exit code: 1
+2025-04-15 16:25:32: ERROR: CRITICAL ERROR: Posts migration failed: Command failed with exit code: 1
+2025-04-15 16:25:32: Migration process completed with warnings or errors. Please check the logs for details.
+2025-04-15 16:25:32: Migration logs saved to:
+2025-04-15 16:25:32:   - Transcript log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-log-20250415-162500-474.txt
+2025-04-15 16:25:32:   - Detailed log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250415-162500-474.txt
