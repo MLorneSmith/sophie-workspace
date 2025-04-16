@@ -1,5 +1,5 @@
 {
-  "title": "Communicating with the Server",
+  "title": "Data Fetching",
   "position": 5,
-  "description": "How to fetch and write data to the server"
+  "description": "Learn the MakerKit best practices for building and shipping your app"
 }
