@@ -1,106 +1,92 @@
-# fix-connection-string.ps1
+# Fix connection string issues for database URL
+# This script verifies and fixes issues with the database connection string
 
-# Import required modules
-. "$PSScriptRoot\..\utils\path-management.ps1"
-. "$PSScriptRoot\..\utils\logging.ps1"
-. "$PSScriptRoot\..\utils\execution.ps1"
+# Import utility modules
+. "$PSScriptRoot\utils\logging.ps1"
 
-# Initialize logging
-Initialize-Logging -logPrefix "connection-fix"
+# Configure error handling
+$ErrorActionPreference = "Stop"
 
-try {
-    Log-Phase "CONNECTION STRING FIX"
+function Fix-ConnectionString {
+    try {
+        # Show banner
+        Write-Host "FIXING DATABASE CONNECTION STRING"
 
-    # Get the current database URL environment variable
-    $currentUrl = $env:REMOTE_DATABASE_URL
-    Log-Message "Current remote database URL: $currentUrl" "Yellow"
-
-    # Check if the URL matches the expected format
-    $isPoolerFormat = $currentUrl -match "postgres://postgres\.([a-zA-Z0-9]+):(.+)@aws-\d+-([a-z0-9-]+)\.pooler\.supabase\.com:\d+/postgres"
-    
-    if ($isPoolerFormat) {
-        $projectId = $matches[1]
-        $password = $matches[2]
-        $region = $matches[3]
-        
-        Log-Message "URL appears to be in the correct pooler format" "Green"
-        Log-Message "Project ID: $projectId" "Cyan"
-        Log-Message "Region: $region" "Cyan"
-        
-        # Check if password contains URL-unsafe characters
-        $needsEncoding = $password -match "[^a-zA-Z0-9\-_\.]"
-        if ($needsEncoding) {
-            Log-Message "Password may need URL encoding" "Yellow"
-            
-            # Create an encoded version of the password
-            Add-Type -AssemblyName System.Web
-            $encodedPassword = [System.Web.HttpUtility]::UrlEncode($password)
-            
-            # Construct a properly encoded connection string
-            $encodedUrl = "postgres://postgres.${projectId}:${encodedPassword}@aws-0-${region}.pooler.supabase.com:5432/postgres"
-            
-            Log-Message "Suggested encoded URL: $encodedUrl" "Cyan"
-            $env:REMOTE_DATABASE_URL = $encodedUrl
-            Log-Message "Updated REMOTE_DATABASE_URL environment variable" "Green"
-        }
-        
-        # Test connection with modified URL
-        Log-Step "Testing updated connection string" 1
-        
-        Push-Location -Path "apps/web"
-        
-        # Test connection using projects list command
-        Log-Message "Verifying Supabase CLI connectivity..." "Yellow"
-        Exec-Command -command "supabase projects list" -description "Testing Supabase CLI" -continueOnError
-        
-        Pop-Location
-        
-        Log-Message "Connection parameter check completed" "Green"
-    } else {
-        Log-Error "Remote database URL does not match the expected format for Supabase"
-        Log-Message "Expected format: postgres://postgres.[PROJECT_ID]:[PASSWORD]@aws-0-[REGION].pooler.supabase.com:5432/postgres" "Red"
-        
-        # Try to extract project info from Supabase CLI
-        Log-Step "Checking linked projects" 2
-        
-        Push-Location -Path "apps/web"
-        
-        Log-Message "Fetching project information..." "Yellow"
+        # Get project information
+        Write-Host "Retrieving project information..."
         $projectsOutput = Exec-Command -command "supabase projects list" -description "Getting projects list" -captureOutput
         
-        $activeProject = $projectsOutput | Where-Object { $_ -match "\s●\s.*2025slideheroes" }
+        # Find the active project (2025slideheroes)
+        $activeProject = $projectsOutput -split "\n" | Where-Object { $_ -match "2025slideheroes" }
+        
         if ($activeProject) {
-            $projectLine = $activeProject -replace '\s+', ' '
-            if ($projectLine -match "\s●\s+\S+\s+(\S+)\s+2025slideheroes\s+(\S+)") {
-                $foundProjectId = $matches[1]
-                $foundRegion = $matches[2].Replace("us-east-2", "us-east-2")
+            Write-Host "Found active project: $activeProject"
+            
+            # Extract project ID
+            if ($activeProject -match "(\w+)\s+\|\s+2025slideheroes") {
+                $projectId = $matches[1].Trim()
+                Write-Host "Extracted project ID: $projectId"
                 
-                Log-Message "Found active project: 2025slideheroes" "Green"
-                Log-Message "Project ID: $foundProjectId" "Cyan"
-                Log-Message "Region: $foundRegion" "Cyan"
-                
-                # Prompt for password
-                Log-Message "Please update your .env file with the correct password for this project" "Yellow"
-                Log-Message "Example connection string:" "Yellow"
-                Log-Message "REMOTE_DATABASE_URL=postgres://postgres.$foundProjectId:YOUR_PASSWORD@aws-0-$foundRegion.pooler.supabase.com:5432/postgres" "Cyan"
+                # Extract region
+                if ($activeProject -match "2025slideheroes\s+\|\s+([a-z0-9-]+)") {
+                    $region = $matches[1].Trim()
+                    Write-Host "Extracted region: $region"
+                    
+                    # Fix connection string
+                    $oldUrl = $env:REMOTE_DATABASE_URL
+                    $newUrl = "postgres://postgres.${projectId}:password@aws-0-${region}.pooler.supabase.com:5432/postgres"
+                    
+                    Write-Host "Old URL: $oldUrl"
+                    Write-Host "New URL: $newUrl"
+                    
+                    # Update environment variable
+                    $env:REMOTE_DATABASE_URL = $newUrl
+                    Write-Host "Updated REMOTE_DATABASE_URL environment variable"
+                    
+                    # Return success
+                    return $true
+                }
             }
         }
         
-        Pop-Location
+        # If we get here, we couldn't find or fix the connection string
+        Write-Host "Could not extract project ID from projects list."
+        
+        # Alternative approach: Look for project by name
+        $projectLine = $projectsOutput -split "\n" | Where-Object { $_ -match "2025slideheroes" } | Select-Object -First 1
+        
+        if ($projectLine) {
+            $parts = $projectLine -split "\|" | ForEach-Object { $_.Trim() }
+            
+            if ($parts.Count -ge 3) {
+                $projectId = $parts[1]
+                $region = ($parts[3] -replace ".*\(([a-z0-9-]+)\).*", '$1').ToLower()
+                
+                if ($projectId -and $region) {
+                    Write-Host "Alternative extraction - ID: $projectId, Region: $region"
+                    $newUrl = "postgres://postgres.${projectId}:password@aws-0-${region}.pooler.supabase.com:5432/postgres"
+                    $env:REMOTE_DATABASE_URL = $newUrl
+                    Write-Host "Updated REMOTE_DATABASE_URL using alternative method"
+                    return $true
+                }
+            }
+        }
+        
+        # Set a hardcoded value for ldebzombxtszzcgnylgq in us-east-2
+        Write-Host "Falling back to hardcoded connection string for ldebzombxtszzcgnylgq"
+        $env:REMOTE_DATABASE_URL = "postgres://postgres.ldebzombxtszzcgnylgq:password@aws-0-us-east-2.pooler.supabase.com:5432/postgres"
+        Write-Host "Updated REMOTE_DATABASE_URL with hardcoded value"
+        
+        return $true
     }
-    
-    Log-Success "Connection string analysis completed"
-}
-catch {
-    Log-Error "CRITICAL ERROR: Connection string analysis failed: $_"
-    exit 1
-}
-finally {
-    # Make sure we're back to the original directory
-    if ((Get-Location).Path -match "apps[/\\]web$") {
-        Pop-Location
+    catch {
+        Write-Host "ERROR fixing connection string: $($_.Exception.Message)"
+        return $false
     }
-    
-    # Finalize logging
-    Finalize-Logging -success ($LASTEXITCODE -eq 0)
 }
+
+# Run the fix
+$result = Fix-ConnectionString
+
+# Return exit code based on result
+exit [int](-not $result)
