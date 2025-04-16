@@ -3,7 +3,6 @@ description: Permissions
 globs: apps/**,packages/**
 alwaysApply: false
 ---
-
 # Access Control & Permissions Guidelines
 
 This rule provides guidance for implementing access control, permissions, and subscription-related functionality in the application.
