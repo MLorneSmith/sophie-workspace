@@ -3,7 +3,6 @@ description: Creating new Pages in the app
 globs: apps/**
 alwaysApply: false
 ---
-
 # Creating Pages
 
 # Makerkit Page & Layout Guidelines
@@ -310,7 +309,7 @@ async function getLayoutState() {
    - Define translation keys in the appropriate namespace in `apps/web/public/locales/<locale>/<namespace>.json`
 
 5. **Metadata**:
-   - Always include `generateMetadata` for SEO
+   - Always include `generateMetadata` for SEO and UX
    - Use translations for page titles and descriptions
 
 6. **Loading States**:
