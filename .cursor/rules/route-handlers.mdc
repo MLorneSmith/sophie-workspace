@@ -3,7 +3,6 @@ description: Next.js API Endpoints/Route Handlers
 globs: apps/**/route.{ts,tsx}
 alwaysApply: false
 ---
-
 # Route Handler / API Routes
 
 - Use Route Handlers when data fetching from Client Components

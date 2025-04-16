@@ -3,7 +3,6 @@ description: Detailed Project Structure of the app
 globs: apps/**
 alwaysApply: false
 ---
-
 # Project Structure
 
 ```
@@ -219,7 +218,6 @@ apps/web/app/                          # Root directory (apps/web/app)
    - `/lib/` - Global utilities (not shown)
 
 4. **Data Fetching**
-   - `*.loader.ts` files - Server-side data fetching functions
    - Use of React's `cache()` function for request deduplication
 
 5. **Server Actions**
@@ -234,5 +232,5 @@ apps/web/app/                          # Root directory (apps/web/app)
    - `route.ts` - API route handlers
 
 7. **Dynamic Routes**
-   - `[account]` - Dynamic route for team accounts
+   - `[account]` -  Dynamic route for team accounts. The [account] property is the account slug in the table `public.accounts`.
    - `[slug]` - Dynamic route for blog posts and documentation

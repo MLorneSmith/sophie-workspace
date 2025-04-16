@@ -3,6 +3,7 @@ description: Super Admin functionalities
 globs: apps/*/app/admin/**,packages/features/admin/**
 alwaysApply: false
 ---
+## Super Admin
 
 1. Page Authentication:
    - All pages in the admin section must be wrapped with the `AdminGuard` HOC
@@ -90,6 +91,7 @@ The Super Admin section requires strict access control as it provides elevated p
 
      export const loadYourAdminData = cache(async () => {
        const client = getSupabaseServerClient();
+       
        const { data, error } = await client.from('your_table').select('*');
        
        if (error) throw error;
