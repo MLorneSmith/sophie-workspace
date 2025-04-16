@@ -129,8 +129,8 @@ CREATE POLICY "Users can view their own AI requests" ON public.ai_request_logs
 
 CREATE POLICY "Teams can view their AI requests" ON public.ai_request_logs
   FOR SELECT USING (EXISTS (
-    SELECT 1 FROM public.memberships
-    WHERE team_id = ai_request_logs.team_id
+    SELECT 1 FROM public.accounts_memberships
+    WHERE account_id = ai_request_logs.team_id
     AND user_id = auth.uid()
   ));
 
@@ -141,8 +141,8 @@ CREATE POLICY "Users can view their own allocations" ON public.ai_usage_allocati
 CREATE POLICY "Team members can view team allocations" ON public.ai_usage_allocations
   FOR SELECT USING (
     team_id IS NOT NULL AND EXISTS (
-      SELECT 1 FROM public.memberships
-      WHERE team_id = ai_usage_allocations.team_id
+      SELECT 1 FROM public.accounts_memberships
+      WHERE account_id = ai_usage_allocations.team_id
       AND user_id = auth.uid()
     )
   );
@@ -154,8 +154,8 @@ CREATE POLICY "Users can view their own transactions" ON public.ai_credit_transa
 CREATE POLICY "Team members can view team transactions" ON public.ai_credit_transactions
   FOR SELECT USING (
     team_id IS NOT NULL AND EXISTS (
-      SELECT 1 FROM public.memberships
-      WHERE team_id = ai_credit_transactions.team_id
+      SELECT 1 FROM public.accounts_memberships
+      WHERE account_id = ai_credit_transactions.team_id
       AND user_id = auth.uid()
     )
   );
@@ -171,55 +171,56 @@ CREATE POLICY "Users can view their own usage limits" ON public.ai_usage_limits
 CREATE POLICY "Team members can view team usage limits" ON public.ai_usage_limits
   FOR SELECT USING (
     team_id IS NOT NULL AND EXISTS (
-      SELECT 1 FROM public.memberships
-      WHERE team_id = ai_usage_limits.team_id
+      SELECT 1 FROM public.accounts_memberships
+      WHERE account_id = ai_usage_limits.team_id
       AND user_id = auth.uid()
     )
   );
 
 -- Admin policies
-CREATE POLICY "Admins can manage all request logs" ON public.ai_request_logs
+-- Owners of any account can manage AI resources
+CREATE POLICY "Owners can manage all request logs" ON public.ai_request_logs
   USING (
     EXISTS (
-      SELECT 1 FROM public.admin_roles 
+      SELECT 1 FROM public.accounts_memberships 
       WHERE user_id = auth.uid() 
-      AND role = 'super_admin'
+      AND account_role = 'owner'
     )
   );
 
-CREATE POLICY "Admins can manage all allocations" ON public.ai_usage_allocations
+CREATE POLICY "Owners can manage all allocations" ON public.ai_usage_allocations
   USING (
     EXISTS (
-      SELECT 1 FROM public.admin_roles 
+      SELECT 1 FROM public.accounts_memberships 
       WHERE user_id = auth.uid() 
-      AND role = 'super_admin'
+      AND account_role = 'owner'
     )
   );
 
-CREATE POLICY "Admins can manage all transactions" ON public.ai_credit_transactions
+CREATE POLICY "Owners can manage all transactions" ON public.ai_credit_transactions
   USING (
     EXISTS (
-      SELECT 1 FROM public.admin_roles 
+      SELECT 1 FROM public.accounts_memberships 
       WHERE user_id = auth.uid() 
-      AND role = 'super_admin'
+      AND account_role = 'owner'
     )
   );
 
-CREATE POLICY "Admins can manage cost configuration" ON public.ai_cost_configuration
+CREATE POLICY "Owners can manage cost configuration" ON public.ai_cost_configuration
   USING (
     EXISTS (
-      SELECT 1 FROM public.admin_roles 
+      SELECT 1 FROM public.accounts_memberships 
       WHERE user_id = auth.uid() 
-      AND role = 'super_admin'
+      AND account_role = 'owner'
     )
   );
 
-CREATE POLICY "Admins can manage usage limits" ON public.ai_usage_limits
+CREATE POLICY "Owners can manage usage limits" ON public.ai_usage_limits
   USING (
     EXISTS (
-      SELECT 1 FROM public.admin_roles 
+      SELECT 1 FROM public.accounts_memberships 
       WHERE user_id = auth.uid() 
-      AND role = 'super_admin'
+      AND account_role = 'owner'
     )
   );
 

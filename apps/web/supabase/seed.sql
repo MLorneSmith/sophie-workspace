@@ -6,45 +6,84 @@
 -- We don't do it because you'll need to manually add your webhook URL and secret key.
 
 -- this webhook will be triggered after deleting an account
-create trigger "accounts_teardown"
-    after delete
-    on "public"."accounts"
-    for each row
-execute function "supabase_functions"."http_request"(
-        'http://host.docker.internal:3000/api/db/webhook',
-        'POST',
-        '{"Content-Type":"application/json", "X-Supabase-Event-Signature":"WEBHOOKSECRET"}',
-        '{}',
-        '5000'
-                 );
+DO $$
+BEGIN
+    -- Check if the trigger already exists
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_trigger
+        JOIN pg_class ON pg_trigger.tgrelid = pg_class.oid
+        WHERE pg_class.relname = 'accounts'
+        AND pg_trigger.tgname = 'accounts_teardown'
+    ) THEN
+        -- Create the trigger only if it doesn't exist
+        EXECUTE 'CREATE TRIGGER "accounts_teardown" 
+            AFTER DELETE
+            ON "public"."accounts"
+            FOR EACH ROW
+            EXECUTE FUNCTION "supabase_functions"."http_request"(
+                ''http://host.docker.internal:3000/api/db/webhook'',
+                ''POST'',
+                ''{"Content-Type":"application/json", "X-Supabase-Event-Signature":"WEBHOOKSECRET"}'',
+                ''{}''::jsonb,
+                ''5000''
+            )';
+    END IF;
+END
+$$;
 
 -- this webhook will be triggered after a delete on the subscriptions table
 -- which should happen when a user deletes their account (and all their subscriptions)
-create trigger "subscriptions_delete"
-    after delete
-    on "public"."subscriptions"
-    for each row
-execute function "supabase_functions"."http_request"(
-        'http://host.docker.internal:3000/api/db/webhook',
-        'POST',
-        '{"Content-Type":"application/json", "X-Supabase-Event-Signature":"WEBHOOKSECRET"}',
-        '{}',
-        '5000'
-                 );
+DO $$
+BEGIN
+    -- Check if the trigger already exists
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_trigger
+        JOIN pg_class ON pg_trigger.tgrelid = pg_class.oid
+        WHERE pg_class.relname = 'subscriptions'
+        AND pg_trigger.tgname = 'subscriptions_delete'
+    ) THEN
+        -- Create the trigger only if it doesn't exist
+        EXECUTE 'CREATE TRIGGER "subscriptions_delete" 
+            AFTER DELETE
+            ON "public"."subscriptions"
+            FOR EACH ROW
+            EXECUTE FUNCTION "supabase_functions"."http_request"(
+                ''http://host.docker.internal:3000/api/db/webhook'',
+                ''POST'',
+                ''{"Content-Type":"application/json", "X-Supabase-Event-Signature":"WEBHOOKSECRET"}'',
+                ''{}''::jsonb,
+                ''5000''
+            )';
+    END IF;
+END
+$$;
 
 -- this webhook will be triggered after every insert on the invitations table
 -- which should happen when a user invites someone to their account
-create trigger "invitations_insert"
-    after insert
-    on "public"."invitations"
-    for each row
-execute function "supabase_functions"."http_request"(
-        'http://host.docker.internal:3000/api/db/webhook',
-        'POST',
-        '{"Content-Type":"application/json", "X-Supabase-Event-Signature":"WEBHOOKSECRET"}',
-        '{}',
-        '5000'
-                 );
+DO $$
+BEGIN
+    -- Check if the trigger already exists
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_trigger
+        JOIN pg_class ON pg_trigger.tgrelid = pg_class.oid
+        WHERE pg_class.relname = 'invitations'
+        AND pg_trigger.tgname = 'invitations_insert'
+    ) THEN
+        -- Create the trigger only if it doesn't exist
+        EXECUTE 'CREATE TRIGGER "invitations_insert" 
+            AFTER INSERT
+            ON "public"."invitations"
+            FOR EACH ROW
+            EXECUTE FUNCTION "supabase_functions"."http_request"(
+                ''http://host.docker.internal:3000/api/db/webhook'',
+                ''POST'',
+                ''{"Content-Type":"application/json", "X-Supabase-Event-Signature":"WEBHOOKSECRET"}'',
+                ''{}''::jsonb,
+                ''5000''
+            )';
+    END IF;
+END
+$$;
 
 
 -- DATA SEED

@@ -40,7 +40,7 @@
     "test:yaml-generator": "tsx src/scripts/test-yaml-lesson-generation.ts",
     "generate:updated-sql": "tsx src/scripts/processing/sql/generate-sql-seed-files.ts",
     "integrate:yaml-generator": "tsx src/scripts/integrate-yaml-generator.ts",
-    "sql:ensure-columns": "tsx src/scripts/sql/ensure-columns.ts",
+    "sql:ensure-columns": "tsx src/scripts/sql/ensure-columns-fixed.ts",
     "sql:ensure-todo-column": "tsx src/scripts/sql/ensure-todo-column.ts",
     "utils:run-sql": "tsx src/utils/run-sql.ts",
     "verify:post-migration": "tsx src/scripts/verification/verify-post-migration.ts",

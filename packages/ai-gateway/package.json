@@ -6,9 +6,11 @@
   "types": "./src/index.ts",
   "scripts": {
     "lint": "eslint .",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "build": "tsc --noEmit"
   },
   "dependencies": {
+    "@kit/supabase": "workspace:*",
     "openai": "^4.28.0",
     "portkey-ai": "^0.1.0",
     "zod": "^3.24.2"
