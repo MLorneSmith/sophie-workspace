@@ -1,0 +1,51 @@
+2025-04-15 17:08:30: Starting migration process at 04/15/2025 17:08:30
+2025-04-15 17:08:30: Detailed logs will be saved to: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250415-170830-519.txt
+2025-04-15 17:08:30: ================================================================================
+2025-04-15 17:08:30: PROGRESSIVE MIGRATION PHASE
+2025-04-15 17:08:30: ================================================================================
+2025-04-15 17:08:30: 
+2025-04-15 17:08:30: ------------------------------------------------------------
+2025-04-15 17:08:30: STEP 1: Running Core Migration Phase
+2025-04-15 17:08:30: ------------------------------------------------------------
+2025-04-15 17:08:30: Dumping payload.users table to C:\Users\msmit\AppData\Local\Temp\migration_Core\users.sql
+2025-04-15 17:08:30: EXECUTING: supabase db dump --data-only --schema payload --local > "C:\Users\msmit\AppData\Local\Temp\migration_Core\users.sql.temp"
+2025-04-15 17:08:30: DESCRIPTION: Dumping all payload tables
+2025-04-15 17:08:31: Extracted users data from full dump
+2025-04-15 17:08:31: Dumping payload.media table to C:\Users\msmit\AppData\Local\Temp\migration_Core\media.sql
+2025-04-15 17:08:31: EXECUTING: supabase db dump --data-only --schema payload --local > "C:\Users\msmit\AppData\Local\Temp\migration_Core\media.sql.temp"
+2025-04-15 17:08:31: DESCRIPTION: Dumping all payload tables
+2025-04-15 17:08:31: Extracted media data from full dump
+2025-04-15 17:08:31: Dumping payload.payload_preferences table to C:\Users\msmit\AppData\Local\Temp\migration_Core\payload_preferences.sql
+2025-04-15 17:08:31: EXECUTING: supabase db dump --data-only --schema payload --local > "C:\Users\msmit\AppData\Local\Temp\migration_Core\payload_preferences.sql.temp"
+2025-04-15 17:08:31: DESCRIPTION: Dumping all payload tables
+2025-04-15 17:08:32: Extracted payload_preferences data from full dump
+2025-04-15 17:08:32: Dumping payload.payload_migrations table to C:\Users\msmit\AppData\Local\Temp\migration_Core\payload_migrations.sql
+2025-04-15 17:08:32: EXECUTING: supabase db dump --data-only --schema payload --local > "C:\Users\msmit\AppData\Local\Temp\migration_Core\payload_migrations.sql.temp"
+2025-04-15 17:08:32: DESCRIPTION: Dumping all payload tables
+2025-04-15 17:08:32: Extracted payload_migrations data from full dump
+2025-04-15 17:08:32: Combining dumps into C:\Users\msmit\AppData\Local\Temp\migration_Core\Core_combined.sql
+2025-04-15 17:08:33: Applying Core data to remote database...
+2025-04-15 17:08:33: EXECUTING: type "C:\Users\msmit\AppData\Local\Temp\migration_Core\Core_combined.sql" | "C:\Users\msmit\AppData\Local\Temp\execute_Core.bat" "postgres://postgres.ldebzombxtszzcgnylgq:UcQ5TYC3Hdh0v5G0@aws-0-us-east-2.pooler.supabase.com:5432/postgres"
+2025-04-15 17:08:33: DESCRIPTION: Applying Core data to remote
+2025-04-15 17:08:33: ERROR: Error in step 'Applying Core data to remote': At line:1 char:77
++ ... ined.sql" | "C:\Users\msmit\AppData\Local\Temp\execute_Core.bat" "pos ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Expressions are only allowed as the first element of a pipeline.
+
+At line:1 char:130
++ ... e_Core.bat" "postgres://postgres.ldebzombxtszzcgnylgq:UcQ5TYC3Hdh0v5G ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Unexpected token '"postgres://postgres.ldebzombxtszzcgnylgq:UcQ5TYC3Hdh0v5G0@aws-0-us-east-2.pooler.supabase.com:5432/postgres"' in expression or statement.
+2025-04-15 17:08:33: ERROR: CRITICAL ERROR: Progressive migration failed: At line:1 char:77
++ ... ined.sql" | "C:\Users\msmit\AppData\Local\Temp\execute_Core.bat" "pos ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Expressions are only allowed as the first element of a pipeline.
+
+At line:1 char:130
++ ... e_Core.bat" "postgres://postgres.ldebzombxtszzcgnylgq:UcQ5TYC3Hdh0v5G ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Unexpected token '"postgres://postgres.ldebzombxtszzcgnylgq:UcQ5TYC3Hdh0v5G0@aws-0-us-east-2.pooler.supabase.com:5432/postgres"' in expression or statement.
+2025-04-15 17:08:33: All migrations and verifications completed successfully!
+2025-04-15 17:08:33: Migration logs saved to:
+2025-04-15 17:08:33:   - Transcript log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-log-20250415-170830-519.txt
+2025-04-15 17:08:33:   - Detailed log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250415-170830-519.txt

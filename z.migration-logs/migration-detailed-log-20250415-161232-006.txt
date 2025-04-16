@@ -1,0 +1,18 @@
+2025-04-15 16:12:32: Starting migration process at 04/15/2025 16:12:32
+2025-04-15 16:12:32: Detailed logs will be saved to: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250415-161232-006.txt
+2025-04-15 16:12:32: ================================================================================
+2025-04-15 16:12:32: REMOTE CONNECTION PHASE
+2025-04-15 16:12:32: ================================================================================
+2025-04-15 16:12:32: Establishing connection to remote Supabase instance...
+2025-04-15 16:12:32: EXECUTING: supabase db execute "C:\Users\msmit\AppData\Local\Temp\test_connection_291c6358-2610-4a30-8944-41f290438192.sql" --db-url "postgres://postgres.ldebzombxtszzcgnylgq:UcQ5TYC3Hdh0v5G0@aws-0-us-east-2.pooler.supabase.com:5432/postgres"
+2025-04-15 16:12:32: DESCRIPTION: Testing remote database connection
+2025-04-15 16:12:32: ERROR: Error in step 'Testing remote database connection': Usage:
+2025-04-15 16:12:32: WARNING: Connection attempt failed: Usage:
+2025-04-15 16:12:32: ERROR: CRITICAL ERROR: Data migration failed: Failed to connect to remote Supabase after True attempts
+2025-04-15 16:12:32: Please check the log files for details:
+2025-04-15 16:12:32:   - Transcript log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-log-20250415-161232-006.txt
+2025-04-15 16:12:32:   - Detailed log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250415-161232-006.txt
+2025-04-15 16:12:32: Migration process completed with warnings or errors. Please check the logs for details.
+2025-04-15 16:12:32: Migration logs saved to:
+2025-04-15 16:12:32:   - Transcript log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-log-20250415-161232-006.txt
+2025-04-15 16:12:32:   - Detailed log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250415-161232-006.txt

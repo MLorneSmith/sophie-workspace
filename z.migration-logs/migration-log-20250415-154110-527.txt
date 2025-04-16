@@ -1,0 +1,42 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20250415154110
+Username: SLIDEHEROES_DEN\msmit
+RunAs User: SLIDEHEROES_DEN\msmit
+Configuration Name: 
+Machine: SLIDEHEROES_DEN (Microsoft Windows NT 10.0.26100.0)
+Host Application: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -File scripts/orchestration/remote-test/test-remote-connection.ps1
+Process ID: 27572
+PSVersion: 5.1.26100.3624
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.3624
+BuildVersion: 10.0.26100.3624
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcript started, output file is D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-log-20250415-154110-527.txt
+Starting migration process at 04/15/2025 15:41:10
+Detailed logs will be saved to: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250415-154110-527.txt
+
+Name                           Value
+----                           -----
+Timestamp                      20250415-154110-527
+LogsDirectory                  D:\SlideHeroes\App\repos\2025slideheroes\...
+DetailedLogFile                D:\SlideHeroes\App\repos\2025slideheroes\...
+LogFile                        D:\SlideHeroes\App\repos\2025slideheroes\...
+Establishing connection to remote Supabase instance...
+EXECUTING: supabase db execute "C:\Users\msmit\AppData\Local\Temp\test_connection_689a5acc-7fa5-447f-b144-a94a2338ca53.sql" --db-url "postgresql://postgres:UcQ5TYC3Hdh0v5G0@db.2025slideheroes.supabase.co:5432/postgres"
+DESCRIPTION: Testing remote database connection
+ERROR: Command failed with exit code: 1
+ERROR: Error in step 'Testing remote database connection': Command failed with exit code: 1
+PS>TerminatingError(): "Command failed with exit code: 1"
+WARNING: Connection attempt failed: Command failed with exit code: 1
+PS>TerminatingError(): "Failed to connect to remote Supabase after True attempts"
+ERROR: Test failed: Failed to connect to remote Supabase after True attempts
+Migration process completed with warnings or errors. Please check the logs for details.
+**********************
+Windows PowerShell transcript end
+End time: 20250415154110
+**********************

@@ -1,0 +1,21 @@
+2025-04-15 17:07:26: Starting migration process at 04/15/2025 17:07:26
+2025-04-15 17:07:26: Detailed logs will be saved to: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250415-170726-699.txt
+2025-04-15 17:07:26: ================================================================================
+2025-04-15 17:07:26: PROGRESSIVE MIGRATION PHASE
+2025-04-15 17:07:26: ================================================================================
+2025-04-15 17:07:26: 
+2025-04-15 17:07:26: ------------------------------------------------------------
+2025-04-15 17:07:26: STEP 1: Running Core Migration Phase
+2025-04-15 17:07:26: ------------------------------------------------------------
+2025-04-15 17:07:26: Dumping payload.users table to C:\Users\msmit\AppData\Local\Temp\migration_Core\users.sql
+2025-04-15 17:07:26: EXECUTING: supabase db dump --data-only --schema payload --table users --local > "C:\Users\msmit\AppData\Local\Temp\migration_Core\users.sql"
+2025-04-15 17:07:26: DESCRIPTION: Dumping payload.users
+2025-04-15 17:07:26: Dumping payload.media table to C:\Users\msmit\AppData\Local\Temp\migration_Core\media.sql
+2025-04-15 17:07:26: EXECUTING: supabase db dump --data-only --schema payload --table media --local > "C:\Users\msmit\AppData\Local\Temp\migration_Core\media.sql"
+2025-04-15 17:07:26: DESCRIPTION: Dumping payload.media
+2025-04-15 17:07:26: Dumping payload.payload_preferences table to C:\Users\msmit\AppData\Local\Temp\migration_Core\payload_preferences.sql
+2025-04-15 17:07:26: EXECUTING: supabase db dump --data-only --schema payload --table payload_preferences --local > "C:\Users\msmit\AppData\Local\Temp\migration_Core\payload_preferences.sql"
+2025-04-15 17:07:26: DESCRIPTION: Dumping payload.payload_preferences
+2025-04-15 17:07:27: Dumping payload.payload_migrations table to C:\Users\msmit\AppData\Local\Temp\migration_Core\payload_migrations.sql
+2025-04-15 17:07:27: EXECUTING: supabase db dump --data-only --schema payload --table payload_migrations --local > "C:\Users\msmit\AppData\Local\Temp\migration_Core\payload_migrations.sql"
+2025-04-15 17:07:27: DESCRIPTION: Dumping payload.payload_migrations

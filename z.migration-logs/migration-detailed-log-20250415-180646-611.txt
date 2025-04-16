@@ -1,0 +1,16 @@
+2025-04-15 18:06:46: Starting migration process at 04/15/2025 18:06:46
+2025-04-15 18:06:46: Detailed logs will be saved to: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250415-180646-611.txt
+2025-04-15 18:06:46: ================================================================================
+2025-04-15 18:06:46: PROGRESSIVE MIGRATION PHASE
+2025-04-15 18:06:46: ================================================================================
+2025-04-15 18:06:46: 
+2025-04-15 18:06:46: ------------------------------------------------------------
+2025-04-15 18:06:46: STEP 1: Running Core Migration Phase
+2025-04-15 18:06:46: ------------------------------------------------------------
+2025-04-15 18:06:46: Dumping payload.users table to C:\Users\msmit\AppData\Local\Temp\migration_Core\users.sql
+2025-04-15 18:06:46: WARNING: Web app path not found: D:\SlideHeroes\App\repos\2025slideheroes\scripts\orchestration\remote-migration\..\..\..\..\..\apps\web
+2025-04-15 18:06:46: ERROR: CRITICAL ERROR: Progressive migration failed: Cannot proceed: Web app path not found
+2025-04-15 18:06:46: Migration process completed with warnings or errors. Please check the logs for details.
+2025-04-15 18:06:46: Migration logs saved to:
+2025-04-15 18:06:46:   - Transcript log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-log-20250415-180646-611.txt
+2025-04-15 18:06:46:   - Detailed log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250415-180646-611.txt

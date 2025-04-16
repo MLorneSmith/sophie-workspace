@@ -1,0 +1,43 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20250415162424
+Username: SLIDEHEROES_DEN\msmit
+RunAs User: SLIDEHEROES_DEN\msmit
+Configuration Name: 
+Machine: SLIDEHEROES_DEN (Microsoft Windows NT 10.0.26100.0)
+Host Application: C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -noexit -command try { . "c:\Users\msmit\AppData\Local\Programs\Microsoft VS Code\resources\app\out\vs\workbench\contrib\terminal\common\scripts\shellIntegration.ps1" } catch {}
+Process ID: 17120
+PSVersion: 5.1.26100.3624
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.3624
+BuildVersion: 10.0.26100.3624
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcript started, output file is D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-log-20250415-162424-853.txt
+Starting migration process at 04/15/2025 16:24:24
+Detailed logs will be saved to: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250415-162424-853.txt
+
+Name                           Value
+----                           -----
+Timestamp                      20250415-162424-853
+LogsDirectory                  D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs
+DetailedLogFile                D:\SlideHeroes\App\repos\2025slideheroes\z.migration-log...
+LogFile                        D:\SlideHeroes\App\repos\2025slideheroes\z.migration-log...
+True
+Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\apps\web
+Creating posts-specific seed file...
+Dumping posts tables from local database...
+EXECUTING: supabase db dump --data-only --schema payload --table posts --table posts_rels --table posts_categories --table posts_tags --table "posts__downloads" > "C:\Users\msmit\AppData\Local\Temp\posts_seed\posts_seed.sql"
+DESCRIPTION: Dumping posts tables
+ERROR: Command failed with exit code: 1
+ERROR: Error in step 'Dumping posts tables': Command failed with exit code: 1
+PS>TerminatingError(): "Command failed with exit code: 1"
+ERROR: CRITICAL ERROR: Posts migration failed: Command failed with exit code: 1
+Migration process completed with warnings or errors. Please check the logs for details.
+**********************
+Windows PowerShell transcript end
+End time: 20250415162424
+**********************

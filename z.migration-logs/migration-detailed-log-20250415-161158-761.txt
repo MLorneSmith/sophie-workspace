@@ -1,0 +1,15 @@
+2025-04-15 16:11:58: Starting migration process at 04/15/2025 16:11:58
+2025-04-15 16:11:58: Detailed logs will be saved to: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250415-161158-761.txt
+2025-04-15 16:11:58: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\apps\web
+2025-04-15 16:11:58: ================================================================================
+2025-04-15 16:11:58: SCHEMA PUSH PHASE
+2025-04-15 16:11:58: ================================================================================
+2025-04-15 16:11:58: Pushing schema to remote database...
+2025-04-15 16:11:58: EXECUTING: supabase db push --db-url "postgres://postgres.ldebzombxtszzcgnylgq:UcQ5TYC3Hdh0v5G0@aws-0-us-east-2.pooler.supabase.com:5432/postgres" --include-roles
+2025-04-15 16:11:58: DESCRIPTION: Pushing schema to remote database
+2025-04-15 16:12:04: ✅ Schema successfully pushed to remote database
+2025-04-15 16:12:04: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes
+2025-04-15 16:12:04: All migrations and verifications completed successfully!
+2025-04-15 16:12:04: Migration logs saved to:
+2025-04-15 16:12:04:   - Transcript log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-log-20250415-161158-761.txt
+2025-04-15 16:12:04:   - Detailed log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250415-161158-761.txt

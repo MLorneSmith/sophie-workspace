@@ -1,0 +1,16 @@
+2025-04-15 18:19:01: Starting migration process at 04/15/2025 18:19:01
+2025-04-15 18:19:01: Detailed logs will be saved to: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250415-181901-954.txt
+2025-04-15 18:19:01: ================================================================================
+2025-04-15 18:19:01: REMOTE CONTENT VERIFICATION
+2025-04-15 18:19:01: ================================================================================
+2025-04-15 18:19:01: Using remote database URL: postgres://postgres.ldebzombxtszzcgnylgq:UcQ5TYC3Hdh0v5G0@aws-0-us-east-2.pooler.supabase.com:5432/postgres
+2025-04-15 18:19:01: Testing remote database connection...
+2025-04-15 18:19:02: EXECUTING: supabase db diff --db-url "postgres://postgres.ldebzombxtszzcgnylgq:UcQ5TYC3Hdh0v5G0@aws-0-us-east-2.pooler.supabase.com:5432/postgres" --schema payload -s 1
+2025-04-15 18:19:02: DESCRIPTION: Testing remote connection
+2025-04-15 18:19:24: 
+2025-04-15 18:19:24: ------------------------------------------------------------
+2025-04-15 18:19:24: STEP 1: Verifying Posts Content
+2025-04-15 18:19:24: ------------------------------------------------------------
+2025-04-15 18:19:24: Verifying that all posts are properly migrated to remote database...
+2025-04-15 18:19:24: EXECUTING: pnpm run verify:post-content
+2025-04-15 18:19:24: DESCRIPTION: Verifying posts content
