@@ -8,7 +8,7 @@ import {
   getChatCompletion,
 } from '@kit/ai-gateway';
 import { ConfigManager } from '@kit/ai-gateway/src/configs/config-manager';
-import { createBalancedOptimizedConfig } from '@kit/ai-gateway/src/configs/templates/balanced-optimized';
+import { createOpenAIOnlyConfig } from '@kit/ai-gateway/src/configs/templates/openai-only';
 import { ideasCreatorSystem } from '@kit/ai-gateway/src/prompts/messages/system/ideas-creator';
 import { baseInstructions } from '@kit/ai-gateway/src/prompts/partials/base-instructions';
 import { improvementFormat } from '@kit/ai-gateway/src/prompts/partials/improvement-format';
@@ -62,8 +62,8 @@ export const generateIdeasAction = enhanceAction(
         type: data.type,
       });
 
-      // Create and normalize config
-      const config = createBalancedOptimizedConfig({
+      // Create and normalize config using OpenAI-only config to avoid authentication issues
+      const config = createOpenAIOnlyConfig({
         userId: user.id,
         context: `${data.type}-ideas`,
       });
@@ -101,6 +101,8 @@ ${improvementFormat}`,
       // Get completion from AI Gateway
       const response = await getChatCompletion(messages, {
         config: normalizedConfig,
+        userId: user.id,
+        feature: `canvas-${data.type}-ideas`,
       } as ChatCompletionOptions);
 
       // Calculate duration for monitoring
@@ -113,8 +115,8 @@ ${improvementFormat}`,
         status: 'success',
       });
 
-      // Parse the response using our utility
-      const improvements = parseImprovements(response, data.type);
+      // Parse the response using our utility - extract content from CompletionResult
+      const improvements = parseImprovements(response.content, data.type);
 
       // Debug log the parsed improvements
       console.log('Parsed Ideas:', improvements);

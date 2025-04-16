@@ -66,17 +66,31 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
       if (!editorRef.current) return;
 
       try {
-        editorRef.current.update(() => {
-          if (editorRef.current) {
-            // The editor is passed to the function in the update callback
-            const editor = (editorRef.current as any).editor;
-            if (editor) {
-              insertImprovement(editor, improvement);
-            }
-          }
-        });
+        // Instead of trying to access the editor inside the update callback,
+        // we should be directly inserting the improvement content
+        const { implementedSummaryPoint, implementedSupportingPoints } =
+          improvement;
+
+        // First insert the summary as heading
+        editorRef.current.insertContent(`<h2>${implementedSummaryPoint}</h2>`);
+
+        // Then insert each supporting point as bullet items
+        if (
+          implementedSupportingPoints &&
+          implementedSupportingPoints.length > 0
+        ) {
+          const bulletList =
+            '<ul>' +
+            implementedSupportingPoints
+              .map((point) => `<li>${point}</li>`)
+              .join('') +
+            '</ul>';
+          editorRef.current.insertContent(bulletList);
+        }
+
+        console.log('Successfully inserted improvement:', improvement.id);
       } catch (error) {
-        console.warn('Error accepting improvement:', error);
+        console.error('Error accepting improvement:', error);
       }
     },
     [editorRef],

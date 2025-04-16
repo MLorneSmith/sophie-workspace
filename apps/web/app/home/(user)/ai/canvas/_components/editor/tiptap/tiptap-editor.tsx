@@ -111,11 +111,21 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
     // Expose methods via ref
     useImperativeHandle(ref, () => ({
       insertContent: (content: string) => {
-        editor?.commands.insertContent(content);
+        console.log('TiptapEditor insertContent called with:', content);
+        if (editor) {
+          // Make sure the editor is focused before inserting content
+          editor.commands.focus();
+          // Insert the content and return status
+          const result = editor.commands.insertContent(content);
+          console.log('Content insertion result:', result);
+          return result;
+        }
+        return false;
       },
       update: (fn: () => void) => {
         if (editor) {
           // Execute function in Tiptap context
+          console.log('TiptapEditor update called');
           editor
             .chain()
             .focus()

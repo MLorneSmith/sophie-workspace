@@ -1,0 +1,55 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20250416111251
+Username: SLIDEHEROES_DEN\msmit
+RunAs User: SLIDEHEROES_DEN\msmit
+Configuration Name: 
+Machine: SLIDEHEROES_DEN (Microsoft Windows NT 10.0.26100.0)
+Host Application: C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -noexit -command try { . "c:\Users\msmit\AppData\Local\Programs\Microsoft VS Code\resources\app\out\vs\workbench\contrib\terminal\common\scripts\shellIntegration.ps1" } catch {}
+Process ID: 23560
+PSVersion: 5.1.26100.3624
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.3624
+BuildVersion: 10.0.26100.3624
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcript started, output file is D:\slideheroes\app\repos\2025slideheroes\z.migration-logs\migration-log-20250416-111251-388.txt
+Starting migration process at 04/16/2025 11:12:51
+Detailed logs will be saved to: D:\slideheroes\app\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250416-111251-388.txt
+
+Name                           Value
+----                           -----
+Timestamp                      20250416-111251-388
+LogsDirectory                  D:\slideheroes\app\repos\2025slideheroes\z.migration-logs
+DetailedLogFile                D:\slideheroes\app\repos\2025slideheroes\z.migration-logs\m...
+LogFile                        D:\slideheroes\app\repos\2025slideheroes\z.migration-logs\m...
+================================================================================
+SETUP PHASE
+================================================================================
+
+------------------------------------------------------------
+STEP 1: Resetting Supabase database and running Web app migrations
+------------------------------------------------------------
+Changed directory to: D:\slideheroes\app\repos\2025slideheroes\apps\web
+Skipping Supabase restart (already done)
+Running supabase:reset...
+EXECUTING: pnpm run supabase:reset
+DESCRIPTION: Resetting Supabase database
+
+ERROR: Command failed with exit code: 1
+ERROR: Error in step 'Resetting Supabase database': Command failed with exit code: 1
+PS>TerminatingError(): "Command failed with exit code: 1"
+ERROR: Failed to run Web app migrations: Command failed with exit code: 1
+PS>TerminatingError(): "Web app migration failed: Command failed with exit code: 1"
+>> TerminatingError(): "Web app migration failed: Command failed with exit code: 1"
+ERROR: CRITICAL ERROR: Migration process failed: Web app migration failed: Command failed with exit code: 1
+Please check the log files for details:
+  - Transcript log: D:\slideheroes\app\repos\2025slideheroes\z.migration-logs\migration-log-20250416-111251-388.txt
+  - Detailed log: D:\slideheroes\app\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250416-111251-388.txt
+**********************
+Windows PowerShell transcript end
+End time: 20250416111310
+**********************
