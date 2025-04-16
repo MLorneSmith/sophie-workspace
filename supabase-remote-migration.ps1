@@ -15,6 +15,9 @@ param (
     [switch]$SyncOnly,
     [switch]$FixConnectionString,
     [switch]$DiagnoseCourse,
+    [switch]$InitSchema,
+    [switch]$DirectSchema,
+    [switch]$PsqlSchema,
     [switch]$SkipDiff,
     [switch]$SkipFixes,
     [switch]$SkipVerify,
@@ -23,18 +26,42 @@ param (
     [switch]$SkipCourses,
     [switch]$SkipQuizzes,
     [switch]$SkipSurveys,
+    [switch]$SkipInitSchema,
     [switch]$TestCoreOnly,
     [switch]$TestPostsOnly,
     [string]$RepairMigration
 )
+
+# Set error action preference to stop on errors
+$ErrorActionPreference = "Stop"
+
+# Import base utility functions
+$utilsDir = Join-Path -Path $PSScriptRoot -ChildPath "scripts\orchestration\remote-migration\utils"
+. "$utilsDir\logging.ps1"
+. "$utilsDir\env-loader.ps1"
 
 # Set environment variable for migration repair if provided
 if ($RepairMigration) {
     $env:MIGRATION_REPAIR_VERSION = $RepairMigration
 }
 
-# Set error action preference to stop on errors
-$ErrorActionPreference = "Stop"
+# Create environment variables for database connections if not already set
+if (-not $env:DATABASE_URL) {
+    $env:DATABASE_URL = "postgresql://postgres:postgres@localhost:54322/postgres"
+}
+
+if (-not $env:REMOTE_DATABASE_URL) {
+    Write-Host "Warning: REMOTE_DATABASE_URL environment variable not set. Using default value." -ForegroundColor Yellow
+    $env:REMOTE_DATABASE_URL = "postgres://postgres.ldebzombxtszzcgnylgq:UcQ5TYC3Hdh0v5G0@aws-0-us-east-2.pooler.supabase.com:5432/postgres"
+}
+
+if (-not $env:SUPABASE_DB_PASSWORD) {
+    Write-Host "Warning: SUPABASE_DB_PASSWORD environment variable not set. Using default value." -ForegroundColor Yellow
+    $env:SUPABASE_DB_PASSWORD = "UcQ5TYC3Hdh0v5G0"
+}
+
+# Export SUPABASE_DB_PASSWORD for child processes
+$env:PGPASSWORD = $env:SUPABASE_DB_PASSWORD
 
 # Display banner
 function Show-Banner {
@@ -91,6 +118,10 @@ try {
     $syncMigrationsScript = Join-Path -Path $migrationDir -ChildPath "sync-migrations.ps1"
     $fixConnStringScript = Join-Path -Path $migrationDir -ChildPath "fix-connection-string.ps1"
     $diagnoseCourseScript = Join-Path -Path $migrationDir -ChildPath "diagnose-course-route.ps1"
+    $initSchemaScript = Join-Path -Path $migrationDir -ChildPath "init-payload-schema.ps1"
+    $directSchemaScript = Join-Path -Path $migrationDir -ChildPath "create-schema-direct.ps1"
+    $psqlSchemaScript = Join-Path -Path $migrationDir -ChildPath "create-schema-psql.ps1"
+    $simpleSchemaScript = Join-Path -Path $migrationDir -ChildPath "create-schema-simple.ps1"
     
     # Check if essential scripts exist
     if (-not (Test-Path -Path $testScript)) {
@@ -226,6 +257,67 @@ try {
         exit $LASTEXITCODE
     }
     
+    if ($InitSchema) {
+        Write-Host "Initializing payload schema in remote database..." -ForegroundColor Yellow
+        if (-not (Test-Path -Path $initSchemaScript)) {
+            throw "Schema initialization script not found at: $initSchemaScript"
+        }
+        & $initSchemaScript
+        exit $LASTEXITCODE
+    }
+    
+    if ($DirectSchema) {
+        Write-Host "Creating payload schema using direct psql connection..." -ForegroundColor Yellow
+        if (-not (Test-Path -Path $directSchemaScript)) {
+            throw "Direct schema creation script not found at: $directSchemaScript"
+        }
+        & $directSchemaScript
+        exit $LASTEXITCODE
+    }
+    
+if ($PsqlSchema) {
+    Write-Host "Creating payload schema using PSQL direct connection..." -ForegroundColor Yellow
+    
+    # First try the simple approach which we know works reliably
+    if (Test-Path -Path $simpleSchemaScript) {
+        Write-Host "Using simplified PSQL approach (recommended)" -ForegroundColor Cyan
+        Write-Host "Running script: $simpleSchemaScript" -ForegroundColor Cyan
+        & $simpleSchemaScript
+        $simpleResult = $LASTEXITCODE
+        
+        # For our simple script, we need to check for NOTICE messages which are not actual errors
+        if ($simpleResult -eq 0) {
+            Write-Host "Schema creation completed successfully with simplified approach!" -ForegroundColor Green
+            exit 0
+        } elseif ($simpleResult -eq 1 -and (Get-Content -Path $env:TEMP\psql_output.txt -ErrorAction SilentlyContinue | Select-String -Pattern "NOTICE:.*schema.*already exists" -Quiet)) {
+            # If schema already exists, we consider this a success
+            Write-Host "Schema already exists! Simplified approach succeeded!" -ForegroundColor Green
+            exit 0
+        } else {
+            Write-Host "Simplified approach failed (exit code: $simpleResult), trying alternative method..." -ForegroundColor Yellow
+        }
+    }
+    
+    # Fall back to the original approach if simple method failed or script doesn't exist
+    if (-not (Test-Path -Path $psqlSchemaScript)) {
+        throw "PSQL schema creation script not found at: $psqlSchemaScript"
+    }
+    
+    Write-Host "Running PSQL schema creation script: $psqlSchemaScript" -ForegroundColor Cyan
+    & $psqlSchemaScript
+    
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host "PSQL schema creation completed successfully!" -ForegroundColor Green
+    } else {
+        Write-Host "PSQL schema creation failed with exit code: $LASTEXITCODE" -ForegroundColor Red
+        Write-Host "Hint: Make sure PostgreSQL client (psql) is installed and available in your PATH." -ForegroundColor Yellow
+        Write-Host "      You can download it from https://www.postgresql.org/download/" -ForegroundColor Yellow
+        Write-Host "      Select 'Command Line Tools' during installation." -ForegroundColor Yellow
+    }
+    
+    exit $LASTEXITCODE
+}
+    
     # If no specific script was specified, run the full migration
     Write-Host "Running full migration process..." -ForegroundColor Yellow
     
@@ -239,9 +331,98 @@ try {
     } else {
         Write-Host "Warning: Connection string check script not found. Continuing without check..." -ForegroundColor Yellow
     }
+
+# Initialize the payload schema if needed and not explicitly skipped
+if (-not $SkipInitSchema) {
+    Write-Host "2. Initializing payload schema in remote database..." -ForegroundColor Yellow
+    
+    # First try the simple PSQL method as it's most reliable
+    if (Test-Path -Path $simpleSchemaScript) {
+        Write-Host "Attempting schema creation with simple PSQL approach (recommended)..." -ForegroundColor Cyan
+        & $simpleSchemaScript
+        $simpleResult = $LASTEXITCODE
+        
+        if ($simpleResult -eq 0) {
+            Write-Host "Schema successfully initialized with simple PSQL approach!" -ForegroundColor Green
+        } else {
+            Write-Host "Simple PSQL approach failed. Trying standard PSQL method..." -ForegroundColor Yellow
+            
+            # Try standard PSQL method next
+            if (Test-Path -Path $psqlSchemaScript) {
+                & $psqlSchemaScript
+                $psqlResult = $LASTEXITCODE
+                
+                if ($psqlResult -eq 0) {
+                    Write-Host "Schema successfully initialized with standard PSQL!" -ForegroundColor Green
+                } else {
+                    Write-Host "Standard PSQL schema creation failed. Falling back to alternative method..." -ForegroundColor Yellow
+                    
+                    # Fall back to the regular method
+                    if (Test-Path -Path $initSchemaScript) {
+                        & $initSchemaScript
+                        if ($LASTEXITCODE -ne 0) {
+                            throw "Schema initialization failed with all methods. Cannot proceed with migration."
+                        }
+                    } else {
+                        Write-Host "Warning: Schema initialization script not found at: $initSchemaScript" -ForegroundColor Yellow
+                        throw "Cannot proceed without schema initialization. Please create the script or use -SkipInitSchema to bypass."
+                    }
+                }
+            } else {
+                # If PSQL script not found, use original method
+                if (Test-Path -Path $initSchemaScript) {
+                    & $initSchemaScript
+                    if ($LASTEXITCODE -ne 0) {
+                        throw "Schema initialization failed. Cannot proceed with migration."
+                    }
+                } else {
+                    Write-Host "Warning: Schema initialization script not found at: $initSchemaScript" -ForegroundColor Yellow
+                    throw "Cannot proceed without schema initialization. Please create the script or use -SkipInitSchema to bypass."
+                }
+            }
+        }
+    } else {
+        # If simple script not found, try standard PSQL method
+        if (Test-Path -Path $psqlSchemaScript) {
+            Write-Host "Attempting schema creation with PSQL (recommended method)..." -ForegroundColor Cyan
+            & $psqlSchemaScript
+            $psqlResult = $LASTEXITCODE
+            
+            if ($psqlResult -eq 0) {
+                Write-Host "Schema successfully initialized with PSQL!" -ForegroundColor Green
+            } else {
+                Write-Host "PSQL schema creation failed. Falling back to alternative method..." -ForegroundColor Yellow
+                
+                # Fall back to the regular method
+                if (Test-Path -Path $initSchemaScript) {
+                    & $initSchemaScript
+                    if ($LASTEXITCODE -ne 0) {
+                        throw "Schema initialization failed with both methods. Cannot proceed with migration."
+                    }
+                } else {
+                    Write-Host "Warning: Schema initialization script not found at: $initSchemaScript" -ForegroundColor Yellow
+                    throw "Cannot proceed without schema initialization. Please create the script or use -SkipInitSchema to bypass."
+                }
+            }
+        } else {
+            # If PSQL script not found, use original method
+            if (Test-Path -Path $initSchemaScript) {
+                & $initSchemaScript
+                if ($LASTEXITCODE -ne 0) {
+                    throw "Schema initialization failed. Cannot proceed with migration."
+                }
+            } else {
+                Write-Host "Warning: Schema initialization script not found at: $initSchemaScript" -ForegroundColor Yellow
+                throw "Cannot proceed without schema initialization. Please create the script or use -SkipInitSchema to bypass."
+            }
+        }
+    }
+} else {
+    Write-Host "Schema initialization skipped as requested with -SkipInitSchema flag." -ForegroundColor Yellow
+}
     
     # Next, synchronize migrations
-    Write-Host "2. Synchronizing migrations between local and remote..." -ForegroundColor Yellow
+    Write-Host "3. Synchronizing migrations between local and remote..." -ForegroundColor Yellow
     if (Test-Path -Path $syncMigrationsScript) {
         & $syncMigrationsScript
         if ($LASTEXITCODE -ne 0) {
