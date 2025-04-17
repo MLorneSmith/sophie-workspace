@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-import { LayoutDashboard, Users } from 'lucide-react';
+import { BarChart, LayoutDashboard, Users } from 'lucide-react';
 
 import {
   Sidebar,
@@ -65,6 +65,19 @@ export function AdminSidebar() {
                 >
                   <Users className={'h-4'} />
                   <span>Testimonials</span>
+                </Link>
+              </SidebarMenuButton>
+
+              <SidebarMenuButton
+                isActive={path.includes('/admin/api-usage')}
+                asChild
+              >
+                <Link
+                  className={'flex size-full gap-2.5'}
+                  href={'/admin/api-usage'}
+                >
+                  <BarChart className={'h-4'} />
+                  <span>API Usage</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenu>

@@ -3,7 +3,7 @@
  *
  * This module provides a centralized approach to getting a Supabase client
  * for AI Gateway operations, with proper error handling and fallbacks.
- * Enhanced with more comprehensive mock client implementation.
+ * Enhanced with more comprehensive mock client implementation and admin support.
  */
 
 // Type definition for the Supabase client
@@ -73,13 +73,83 @@ function createMockClient(): SupabaseClient {
 /**
  * Get a Supabase client for server operations
  * Uses dynamic import to avoid circular dependencies and module resolution issues
+ * Enhanced with admin client support
+ *
+ * @param options Configuration options
+ * @returns Promise<SupabaseClient> A Supabase client instance
  */
-export async function getSupabaseClient(): Promise<SupabaseClient> {
+export async function getSupabaseClient(
+  options: { admin?: boolean } = {},
+): Promise<SupabaseClient> {
   try {
-    // Dynamically import to avoid circular dependencies and TypeScript errors
+    // Determine whether to use the admin client based on options
+    if (options.admin) {
+      // Use the admin client for privileged operations
+      try {
+        const { getSupabaseServerAdminClient } = await import(
+          '@kit/supabase/server-admin-client'
+        );
+
+        console.log(
+          'Getting Supabase admin client for privileged AI gateway operations',
+        );
+
+        const adminClient = getSupabaseServerAdminClient();
+
+        // Verify the admin client has minimal required functions
+        if (
+          !adminClient ||
+          typeof adminClient.from !== 'function' ||
+          typeof adminClient.rpc !== 'function'
+        ) {
+          console.warn(
+            'Invalid Supabase admin client received, using mock client instead',
+          );
+          return createMockClient();
+        }
+
+        // Test admin client connection
+        try {
+          const { error } = await adminClient
+            .from('ai_cost_configuration')
+            .select('id')
+            .limit(1);
+
+          if (error) {
+            console.error('Supabase admin client connection test failed:', {
+              error,
+              errorMessage: error.message,
+              errorCode: error.code,
+              details: error.details,
+            });
+            return createMockClient();
+          }
+
+          console.log('Supabase admin client successfully connected');
+          return adminClient;
+        } catch (adminConnectionError) {
+          console.error(
+            'Error testing Supabase admin connection:',
+            adminConnectionError,
+          );
+          return createMockClient();
+        }
+      } catch (adminImportError) {
+        console.error(
+          'Error importing Supabase admin client:',
+          adminImportError,
+        );
+        return createMockClient();
+      }
+    }
+
+    // Use the regular server client for normal operations
     const { getSupabaseServerClient } = await import(
       '@kit/supabase/server-client'
     );
+
+    // Log authentication context for debugging
+    console.log('Getting Supabase client for AI gateway usage tracking');
 
     const client = getSupabaseServerClient();
 
@@ -95,7 +165,29 @@ export async function getSupabaseClient(): Promise<SupabaseClient> {
       return createMockClient();
     }
 
-    return client;
+    // Test connection with a simple query
+    try {
+      const { data, error } = await client
+        .from('ai_cost_configuration')
+        .select('id')
+        .limit(1);
+
+      if (error) {
+        console.error('Supabase client connection test failed:', {
+          error,
+          errorMessage: error.message,
+          errorCode: error.code,
+          details: error.details,
+        });
+        return createMockClient();
+      }
+
+      console.log('Supabase client successfully connected');
+      return client;
+    } catch (connectionError) {
+      console.error('Error testing Supabase connection:', connectionError);
+      return createMockClient();
+    }
   } catch (error) {
     console.error('Error getting Supabase client:', error);
     // Return a more comprehensive mock client for environments where Supabase isn't available

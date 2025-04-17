@@ -21,11 +21,22 @@ import { parseImprovements } from '@kit/ai-gateway/src/utils/parse-improvements'
 import { enhanceAction } from '@kit/next/actions';
 import { getSupabaseServerClient } from '@kit/supabase/server-client';
 
+// Return type with metadata for cost tracking
+interface ActionResponse {
+  success: boolean;
+  data?: any;
+  error?: string;
+  metadata?: {
+    cost?: number;
+  };
+}
+
 // Define Zod schema for request validation
 const IdeasSchema = z.object({
   content: z.string().min(1, 'Content is required'),
   submissionId: z.string().min(1, 'Submission ID is required'),
   type: z.enum(['situation', 'complication', 'answer', 'outline']),
+  sessionId: z.string().optional(),
 });
 
 // Create a wrapper function that handles empty content
@@ -103,6 +114,7 @@ ${improvementFormat}`,
         config: normalizedConfig,
         userId: user.id,
         feature: `canvas-${data.type}-ideas`,
+        sessionId: data.sessionId, // Include session ID for cost tracking
       } as ChatCompletionOptions);
 
       // Calculate duration for monitoring
@@ -124,6 +136,9 @@ ${improvementFormat}`,
       return {
         success: true,
         data: { improvements },
+        metadata: {
+          cost: response.metadata.cost, // Include cost in response metadata
+        },
       };
     } catch (error) {
       console.error('Error in ideas action:', error);

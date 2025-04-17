@@ -17,6 +17,8 @@ import { Database } from '~/lib/database.types';
 
 import { generateIdeasAction } from '../_actions/generate-ideas';
 import { EDITOR_CONFIG } from '../_lib/config';
+import { useCostTracking } from '../_lib/contexts/cost-tracking-context';
+import { useActionWithCost } from '../_lib/hooks/use-action-with-cost';
 import { useOutlineContent } from '../_lib/hooks/use-outline-content';
 import { ActionToolbar } from './action-toolbar';
 import { insertImprovement } from './editor/tiptap/plugins/improvement-plugin';
@@ -54,6 +56,10 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
     useOutlineContent(submissionId);
   const contentString =
     typeof content === 'string' ? content : JSON.stringify(content);
+
+  // Use cost tracking hooks
+  const { sessionId } = useCostTracking();
+  const generateIdeasWithCost = useActionWithCost(generateIdeasAction);
 
   const editorRef = useRef<TiptapEditorRef>(null);
   const [suggestions, setSuggestions] = useState<BaseImprovement[]>([]);
@@ -159,7 +165,8 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
       const contentToSend =
         content.trim() || 'Please suggest some initial ideas.';
 
-      const result = await generateIdeasAction({
+      // Use the cost-tracking version of the action with session ID
+      const result = await generateIdeasWithCost({
         content: contentToSend,
         submissionId,
         type: sectionType,
@@ -174,7 +181,7 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
     } finally {
       setIsGenerating(false);
     }
-  }, [editorRef, submissionId, sectionType]);
+  }, [editorRef, submissionId, sectionType, generateIdeasWithCost]);
 
   return (
     <div className="flex h-[calc(100vh-180px)] flex-col">
