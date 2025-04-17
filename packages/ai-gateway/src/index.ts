@@ -2,64 +2,45 @@ import { OpenAI } from 'openai';
 import { z } from 'zod';
 
 import { createGatewayClient } from './enhanced-gateway-client';
+import { initializeAiGatewayDatabase } from './utils/db-init';
 import { getSupabaseClient } from './utils/supabase-client';
 import {
   calculateCost,
   checkUsageLimits,
+  estimateCost,
   extractCostFromHeaders,
   recordApiUsage,
 } from './utils/usage-tracking';
 
-/**
- * Local function to estimate cost when the database function is unavailable
- * This mirrors the implementation in usage-tracking.ts but is available locally
- */
-function estimateCostLocally(
-  model: string,
-  promptTokens: number,
-  completionTokens: number,
-): number {
-  // Validate inputs
-  if (promptTokens < 0) promptTokens = 0;
-  if (completionTokens < 0) completionTokens = 0;
+// Define available environment variables for feature flags
+const ENV = {
+  BYPASS_AI_CREDITS: process.env.BYPASS_AI_CREDITS !== 'false', // Default to true unless explicitly set to false
+  CHECK_AI_USAGE_LIMITS: process.env.CHECK_AI_USAGE_LIMITS === 'true', // Default to false unless explicitly set to true
+  AI_USAGE_DEBUG: process.env.AI_USAGE_DEBUG === 'true', // Enable more verbose debug logging
+  INITIALIZE_DATABASE: process.env.INITIALIZE_DATABASE !== 'false', // Default to true
+};
 
-  // Default pricing (per 1K tokens)
-  const pricing: Record<string, { input: number; output: number }> = {
-    // OpenAI models
-    'gpt-3.5-turbo': { input: 0.0015, output: 0.002 },
-    'gpt-4': { input: 0.03, output: 0.06 },
-    'gpt-4-turbo': { input: 0.01, output: 0.03 },
-    'gpt-4o': { input: 0.01, output: 0.03 },
+// Attempt to initialize the database on module load if enabled
+if (ENV.INITIALIZE_DATABASE) {
+  (async () => {
+    try {
+      // Get admin client for database initialization
+      const adminClient = await getSupabaseClient({ admin: true });
 
-    // Anthropic models
-    'claude-3-opus': { input: 0.015, output: 0.075 },
-    'claude-3-sonnet': { input: 0.003, output: 0.015 },
-    'claude-3-haiku': { input: 0.00025, output: 0.00125 },
-
-    // Default fallback
-    default: { input: 0.0015, output: 0.002 },
-  };
-
-  let modelKey = model.toLowerCase();
-
-  // Normalize model names for pricing lookup
-  if (modelKey.includes('gpt-3.5')) modelKey = 'gpt-3.5-turbo';
-  if (modelKey.includes('gpt-4-turbo')) modelKey = 'gpt-4-turbo';
-  if (modelKey.includes('gpt-4o')) modelKey = 'gpt-4o';
-  if (modelKey.includes('claude-3-opus')) modelKey = 'claude-3-opus';
-  if (modelKey.includes('claude-3-sonnet')) modelKey = 'claude-3-sonnet';
-  if (modelKey.includes('claude-3-haiku')) modelKey = 'claude-3-haiku';
-
-  // Get pricing for the model, or use default as fallback
-  const modelPricing = pricing[modelKey] ||
-    pricing.default || { input: 0.0015, output: 0.002 };
-
-  // Calculate cost
-  const inputCost = (promptTokens / 1000) * modelPricing.input;
-  const outputCost = (completionTokens / 1000) * modelPricing.output;
-
-  // Add 10% markup (matching our database configuration)
-  return (inputCost + outputCost) * 1.1;
+      // Initialize the database
+      const success = await initializeAiGatewayDatabase(adminClient);
+      if (success) {
+        console.log('AI Gateway database successfully initialized');
+      } else {
+        console.warn(
+          'AI Gateway database initialization had some issues, check logs for details',
+        );
+      }
+    } catch (error) {
+      console.error('Error initializing AI Gateway database:', error);
+      // Continue module loading despite initialization error
+    }
+  })();
 }
 
 /**
@@ -75,6 +56,12 @@ async function checkUserLimits(
 ): Promise<boolean> {
   if (!userId && !teamId) return false;
 
+  // Skip check if disabled by environment variable
+  if (!ENV.CHECK_AI_USAGE_LIMITS) {
+    console.log('AI usage limits check disabled by environment variable');
+    return false;
+  }
+
   try {
     const supabase = await getSupabaseClient();
 
@@ -84,9 +71,45 @@ async function checkUserLimits(
       return false;
     }
 
-    return await checkUsageLimits(supabase, userId, teamId);
+    // Try with regular client first
+    try {
+      const limitExceeded = await checkUsageLimits(supabase, userId, teamId);
+      if (limitExceeded) {
+        console.log('AI usage limit exceeded for user/team:', {
+          userId,
+          teamId,
+        });
+        return true;
+      }
+      return false;
+    } catch (regularClientError) {
+      console.error(
+        'Error checking usage limits with regular client:',
+        regularClientError,
+      );
+
+      // If it's a permission error, try with admin client
+      if (
+        regularClientError instanceof Error &&
+        regularClientError.message?.includes('permission denied')
+      ) {
+        console.log('Attempting usage limits check with admin client...');
+        try {
+          // Get admin client for privileged operations
+          const adminClient = await getSupabaseClient({ admin: true });
+          return await checkUsageLimits(adminClient, userId, teamId);
+        } catch (adminClientError) {
+          console.error(
+            'Error checking usage limits with admin client:',
+            adminClientError,
+          );
+          return false;
+        }
+      }
+      return false;
+    }
   } catch (error) {
-    console.error('Error checking usage limits:', error);
+    console.error('Fatal error checking usage limits:', error);
     return false;
   }
 }
@@ -171,18 +194,33 @@ export async function getChatCompletion(
       config,
     } = options;
 
-    // Temporarily disable usage limits checking due to permission issues
-    // if (shouldCheckLimits && (userId || teamId)) {
-    //   const limitExceeded = await checkUserLimits(userId, teamId);
-    //   if (limitExceeded) {
-    //     throw new AiUsageLimitError(
-    //       'Usage limit exceeded. Please contact support to increase your limit.',
-    //     );
-    //   }
-    // }
-    // Log that we're skipping the check
-    if (shouldCheckLimits && (userId || teamId)) {
-      console.log('Usage limits checking temporarily disabled');
+    // Read environment variable to determine if we should check usage limits
+    const checkUsageLimitsFlag = process.env.CHECK_AI_USAGE_LIMITS === 'true';
+
+    // Only check usage limits if explicitly enabled via environment variable
+    if (checkUsageLimitsFlag && shouldCheckLimits && (userId || teamId)) {
+      console.log('Checking AI usage limits for:', { userId, teamId, feature });
+      const limitExceeded = await checkUserLimits(userId, teamId);
+      if (limitExceeded) {
+        console.warn('AI usage limit exceeded for:', {
+          userId,
+          teamId,
+          feature,
+        });
+        throw new AiUsageLimitError(
+          'Usage limit exceeded. Please contact support to increase your limit.',
+        );
+      }
+    } else {
+      // Log that we're skipping the check
+      console.log('Skipping AI usage limits check:', {
+        reason: !checkUsageLimitsFlag
+          ? 'feature disabled by environment'
+          : 'no user/team ID or disabled by options',
+        hasUserId: !!userId,
+        hasTeamId: !!teamId,
+        feature,
+      });
     }
 
     // Create client with tracking metadata, config, and model info
@@ -217,10 +255,52 @@ export async function getChatCompletion(
       total_tokens: 0,
     };
 
-    // Get cost from response headers (using x-portkey-cost header)
+    // Log and analyze all response headers to debug cost extraction
     // @ts-ignore - Access the headers property
     const headers = response.headers || {};
+
+    // Log all headers to see what Portkey is actually sending
+    console.log('All Portkey response headers:', {
+      headers:
+        typeof headers === 'object' ? JSON.stringify(headers) : String(headers),
+      hasHeaders: Object.keys(headers).length > 0,
+      headerKeys: Object.keys(headers),
+    });
+
+    // Try to find any header related to cost (might have different naming)
+    const costRelatedHeaders = Object.entries(headers)
+      .filter(
+        ([key]) =>
+          key.toLowerCase().includes('cost') ||
+          key.toLowerCase().includes('token'),
+      )
+      .reduce(
+        (obj, [key, value]) => {
+          // Convert value to string to handle unknown type
+          obj[key] = typeof value === 'string' ? value : String(value ?? '');
+          return obj;
+        },
+        {} as Record<string, string>,
+      );
+
+    if (Object.keys(costRelatedHeaders).length > 0) {
+      console.log('Found potential cost-related headers:', costRelatedHeaders);
+    } else {
+      console.log('No cost-related headers found in response');
+    }
+
+    // Proceed with normal extraction
     let cost = extractCostFromHeaders(headers);
+
+    // Log the result of extraction
+    console.log('Cost extraction result:', {
+      extractedCost: cost,
+      extractionMethod: cost > 0 ? 'from header' : 'will use fallback',
+      specificHeader:
+        typeof headers['x-portkey-cost'] === 'string'
+          ? headers['x-portkey-cost']
+          : String(headers['x-portkey-cost'] || 'not found'),
+    });
 
     // Track usage if database access is available (fail gracefully on permission issues)
     try {
@@ -241,7 +321,8 @@ export async function getChatCompletion(
         } catch (costError) {
           console.error('Error calculating AI cost:', costError);
           // Use our local fallback pricing for cost calculation
-          cost = estimateCostLocally(
+          cost = estimateCost(
+            'openai', // Assume OpenAI as provider if we don't have info
             model,
             usage.prompt_tokens,
             usage.completion_tokens,
@@ -252,6 +333,16 @@ export async function getChatCompletion(
       // Record usage
       if (userId || teamId) {
         try {
+          // Read environment variable to determine if credits should be bypassed
+          const bypassCreditsFlag = process.env.BYPASS_AI_CREDITS !== 'false'; // Default to true unless explicitly set to false
+
+          console.log('AI credits system status:', {
+            bypassCredits: bypassCreditsFlag,
+            reason: bypassCreditsFlag
+              ? 'Bypassing credits due to configuration'
+              : 'Credits system enabled',
+          });
+
           await recordApiUsage(supabase, {
             userId,
             teamId,
@@ -264,7 +355,7 @@ export async function getChatCompletion(
             cost,
             feature,
             sessionId,
-            bypassCredits: true, // Bypass credits since we're having permission issues
+            bypassCredits: bypassCreditsFlag, // Use environment variable instead of hardcoding
           });
         } catch (usageError) {
           console.error('Error recording API usage:', usageError);
@@ -338,18 +429,37 @@ export async function* getStreamingChatCompletion(
       config,
     } = options;
 
-    // Temporarily disable usage limits checking due to permission issues
-    // if (shouldCheckLimits && (userId || teamId)) {
-    //   const limitExceeded = await checkUserLimits(userId, teamId);
-    //   if (limitExceeded) {
-    //     throw new AiUsageLimitError(
-    //       'Usage limit exceeded. Please contact support to increase your limit.',
-    //     );
-    //   }
-    // }
-    // Log that we're skipping the check
-    if (shouldCheckLimits && (userId || teamId)) {
-      console.log('Usage limits checking temporarily disabled for streaming');
+    // Read environment variable to determine if we should check usage limits
+    const checkUsageLimitsFlag = process.env.CHECK_AI_USAGE_LIMITS === 'true';
+
+    // Only check usage limits if explicitly enabled via environment variable
+    if (checkUsageLimitsFlag && shouldCheckLimits && (userId || teamId)) {
+      console.log('Checking AI usage limits for streaming:', {
+        userId,
+        teamId,
+        feature,
+      });
+      const limitExceeded = await checkUserLimits(userId, teamId);
+      if (limitExceeded) {
+        console.warn('AI usage limit exceeded for streaming:', {
+          userId,
+          teamId,
+          feature,
+        });
+        throw new AiUsageLimitError(
+          'Usage limit exceeded. Please contact support to increase your limit.',
+        );
+      }
+    } else {
+      // Log that we're skipping the check
+      console.log('Skipping AI usage limits check for streaming:', {
+        reason: !checkUsageLimitsFlag
+          ? 'feature disabled by environment'
+          : 'no user/team ID or disabled by options',
+        hasUserId: !!userId,
+        hasTeamId: !!teamId,
+        feature,
+      });
     }
 
     // Create client with tracking metadata, config, and model info
@@ -382,6 +492,27 @@ export async function* getStreamingChatCompletion(
     let promptTokens = 0;
     let completionTokens = 0;
     let responseId = '';
+
+    // Try to extract and log any headers from the streaming response
+    try {
+      // @ts-ignore - Access the headers property if available
+      if (stream.headers) {
+        console.log('Streaming response headers:', {
+          headers:
+            typeof stream.headers === 'object'
+              ? JSON.stringify(stream.headers)
+              : 'Headers not available as an object',
+          hasHeaders: stream.headers && Object.keys(stream.headers).length > 0,
+        });
+      } else {
+        console.log('No headers available in streaming response');
+      }
+    } catch (headerError) {
+      console.error(
+        'Error accessing headers in streaming response:',
+        headerError,
+      );
+    }
 
     // Process the stream - use a try catch to handle any streaming errors
     try {
@@ -467,8 +598,25 @@ export async function* getStreamingChatCompletion(
         } catch (costError) {
           console.error('Error calculating streaming cost:', costError);
           // Use our local fallback pricing for cost calculation
-          cost = estimateCostLocally(model, promptTokens, completionTokens);
+          cost = estimateCost(
+            'openai', // Assume OpenAI for streaming as well
+            model,
+            promptTokens,
+            completionTokens,
+          );
         }
+
+        // Read environment variable to determine if credits should be bypassed
+        const bypassCreditsFlag = process.env.BYPASS_AI_CREDITS !== 'false'; // Default to true unless explicitly set to false
+
+        console.log('AI credits system status (streaming):', {
+          bypassCredits: bypassCreditsFlag,
+          reason: bypassCreditsFlag
+            ? 'Bypassing credits due to configuration'
+            : 'Credits system enabled',
+          feature,
+          model,
+        });
 
         // Record usage with proper Supabase client parameter
         await recordApiUsage(supabase, {
@@ -483,7 +631,7 @@ export async function* getStreamingChatCompletion(
           cost,
           feature,
           sessionId,
-          bypassCredits: true, // Bypass credits since we're having permission issues
+          bypassCredits: bypassCreditsFlag, // Use environment variable instead of hardcoding
         });
       } catch (error) {
         console.error('Error recording usage data:', error);

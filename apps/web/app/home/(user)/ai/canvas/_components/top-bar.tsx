@@ -14,6 +14,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@kit/ui/tooltip';
 import { updateBuildingBlockTitleAction } from '../_actions/update-building-block-title.action';
 import { useSaveContext } from '../_lib/contexts/save-context';
 import { useCanvasTitle } from '../_lib/hooks/use-canvas-title';
+import { CostBadge } from './cost-badge';
 
 export function TopBar() {
   const { manualSave, saveStatus } = useSaveContext();
@@ -59,7 +60,9 @@ export function TopBar() {
           disabled={isLoading}
         />
       </div>
-      <div className="flex gap-2">
+      <div className="flex items-center gap-2">
+        {/* Cost badge */}
+        <CostBadge className="mr-1" />
         <Tooltip>
           <TooltipTrigger asChild>
             <Button

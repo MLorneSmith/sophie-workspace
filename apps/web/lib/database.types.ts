@@ -36,17 +36,23 @@ export type Database = {
     Tables: {
       course_lessons: {
         Row: {
+          bunny_library_id: string | null
+          bunny_video_id: string | null
           content: string | null
           course_id: string | null
           course_id_id: string | null
           created_at: string | null
           description: string | null
+          downloads_id: string[] | null
           estimated_duration: number | null
           featured_image_id: string | null
           featured_image_id_id: string | null
           id: string
           lesson_number: number | null
           media_id: string | null
+          parent_id: string | null
+          path: string | null
+          private_id: string | null
           published_at: string | null
           quiz_id: string | null
           quiz_id_id: string | null
@@ -54,20 +60,33 @@ export type Database = {
           survey_id: string | null
           survey_id_id: string | null
           title: string | null
+          todo: string | null
+          todo_complete_quiz: boolean | null
+          todo_course_project: string | null
+          todo_read_content: string | null
+          todo_watch_content: string | null
           updated_at: string | null
+          video_source_type: string | null
+          youtube_video_id: string | null
         }
         Insert: {
+          bunny_library_id?: string | null
+          bunny_video_id?: string | null
           content?: string | null
           course_id?: string | null
           course_id_id?: string | null
           created_at?: string | null
           description?: string | null
+          downloads_id?: string[] | null
           estimated_duration?: number | null
           featured_image_id?: string | null
           featured_image_id_id?: string | null
           id?: string
           lesson_number?: number | null
           media_id?: string | null
+          parent_id?: string | null
+          path?: string | null
+          private_id?: string | null
           published_at?: string | null
           quiz_id?: string | null
           quiz_id_id?: string | null
@@ -75,20 +94,33 @@ export type Database = {
           survey_id?: string | null
           survey_id_id?: string | null
           title?: string | null
+          todo?: string | null
+          todo_complete_quiz?: boolean | null
+          todo_course_project?: string | null
+          todo_read_content?: string | null
+          todo_watch_content?: string | null
           updated_at?: string | null
+          video_source_type?: string | null
+          youtube_video_id?: string | null
         }
         Update: {
+          bunny_library_id?: string | null
+          bunny_video_id?: string | null
           content?: string | null
           course_id?: string | null
           course_id_id?: string | null
           created_at?: string | null
           description?: string | null
+          downloads_id?: string[] | null
           estimated_duration?: number | null
           featured_image_id?: string | null
           featured_image_id_id?: string | null
           id?: string
           lesson_number?: number | null
           media_id?: string | null
+          parent_id?: string | null
+          path?: string | null
+          private_id?: string | null
           published_at?: string | null
           quiz_id?: string | null
           quiz_id_id?: string | null
@@ -96,7 +128,14 @@ export type Database = {
           survey_id?: string | null
           survey_id_id?: string | null
           title?: string | null
+          todo?: string | null
+          todo_complete_quiz?: boolean | null
+          todo_course_project?: string | null
+          todo_read_content?: string | null
+          todo_watch_content?: string | null
           updated_at?: string | null
+          video_source_type?: string | null
+          youtube_video_id?: string | null
         }
         Relationships: [
           {
@@ -164,37 +203,176 @@ export type Database = {
           },
         ]
       }
+      course_lessons__downloads: {
+        Row: {
+          created_at: string | null
+          downloads_id: string | null
+          id: string
+          media_id: string | null
+          order: number | null
+          order_column: number | null
+          parent_id: string
+          path: string | null
+          private_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          downloads_id?: string | null
+          id?: string
+          media_id?: string | null
+          order?: number | null
+          order_column?: number | null
+          parent_id: string
+          path?: string | null
+          private_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          downloads_id?: string | null
+          id?: string
+          media_id?: string | null
+          order?: number | null
+          order_column?: number | null
+          parent_id?: string
+          path?: string | null
+          private_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      course_lessons_downloads: {
+        Row: {
+          created_at: string | null
+          download_id: string
+          downloads_id: string | null
+          id: string
+          lesson_id: string
+          media_id: string | null
+          parent_id: string | null
+          path: string | null
+          private_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          download_id: string
+          downloads_id?: string | null
+          id?: string
+          lesson_id: string
+          media_id?: string | null
+          parent_id?: string | null
+          path?: string | null
+          private_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          download_id?: string
+          downloads_id?: string | null
+          id?: string
+          lesson_id?: string
+          media_id?: string | null
+          parent_id?: string | null
+          path?: string | null
+          private_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_lessons_downloads_download_id_fkey"
+            columns: ["download_id"]
+            isOneToOne: false
+            referencedRelation: "downloads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "course_lessons_downloads_download_id_fkey"
+            columns: ["download_id"]
+            isOneToOne: false
+            referencedRelation: "downloads_diagnostic"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "course_lessons_downloads_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "course_lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       course_lessons_rels: {
         Row: {
           _order: number | null
           _parent_id: string
+          course_lessons_id: string | null
+          course_quizzes_id: string | null
+          courses_id: string | null
           created_at: string | null
+          documentation_id: string | null
+          downloads_id: string | null
           field: string | null
           id: string
+          media_id: string | null
           order: number | null
+          parent_id: string | null
           path: string | null
+          posts_id: string | null
+          private_id: string | null
+          quiz_id_id: string | null
+          quiz_questions_id: string | null
+          survey_questions_id: string | null
+          surveys_id: string | null
           updated_at: string | null
           value: string | null
         }
         Insert: {
           _order?: number | null
           _parent_id: string
+          course_lessons_id?: string | null
+          course_quizzes_id?: string | null
+          courses_id?: string | null
           created_at?: string | null
+          documentation_id?: string | null
+          downloads_id?: string | null
           field?: string | null
           id?: string
+          media_id?: string | null
           order?: number | null
+          parent_id?: string | null
           path?: string | null
+          posts_id?: string | null
+          private_id?: string | null
+          quiz_id_id?: string | null
+          quiz_questions_id?: string | null
+          survey_questions_id?: string | null
+          surveys_id?: string | null
           updated_at?: string | null
           value?: string | null
         }
         Update: {
           _order?: number | null
           _parent_id?: string
+          course_lessons_id?: string | null
+          course_quizzes_id?: string | null
+          courses_id?: string | null
           created_at?: string | null
+          documentation_id?: string | null
+          downloads_id?: string | null
           field?: string | null
           id?: string
+          media_id?: string | null
           order?: number | null
+          parent_id?: string | null
           path?: string | null
+          posts_id?: string | null
+          private_id?: string | null
+          quiz_id_id?: string | null
+          quiz_questions_id?: string | null
+          survey_questions_id?: string | null
+          surveys_id?: string | null
           updated_at?: string | null
           value?: string | null
         }
@@ -210,31 +388,49 @@ export type Database = {
       }
       course_quizzes: {
         Row: {
+          course_id_id: string | null
           created_at: string | null
           description: string | null
+          downloads_id: string[] | null
           id: string
           media_id: string | null
+          parent_id: string | null
+          pass_threshold: number | null
           passing_score: number | null
+          path: string | null
+          private_id: string | null
           slug: string | null
           title: string | null
           updated_at: string | null
         }
         Insert: {
+          course_id_id?: string | null
           created_at?: string | null
           description?: string | null
+          downloads_id?: string[] | null
           id?: string
           media_id?: string | null
+          parent_id?: string | null
+          pass_threshold?: number | null
           passing_score?: number | null
+          path?: string | null
+          private_id?: string | null
           slug?: string | null
           title?: string | null
           updated_at?: string | null
         }
         Update: {
+          course_id_id?: string | null
           created_at?: string | null
           description?: string | null
+          downloads_id?: string[] | null
           id?: string
           media_id?: string | null
+          parent_id?: string | null
+          pass_threshold?: number | null
           passing_score?: number | null
+          path?: string | null
+          private_id?: string | null
           slug?: string | null
           title?: string | null
           updated_at?: string | null
@@ -249,18 +445,67 @@ export type Database = {
           },
         ]
       }
+      course_quizzes__downloads: {
+        Row: {
+          created_at: string | null
+          downloads_id: string | null
+          id: string
+          media_id: string | null
+          order: number | null
+          order_column: number | null
+          parent_id: string
+          path: string | null
+          private_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          downloads_id?: string | null
+          id?: string
+          media_id?: string | null
+          order?: number | null
+          order_column?: number | null
+          parent_id: string
+          path?: string | null
+          private_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          downloads_id?: string | null
+          id?: string
+          media_id?: string | null
+          order?: number | null
+          order_column?: number | null
+          parent_id?: string
+          path?: string | null
+          private_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       course_quizzes_rels: {
         Row: {
           _order: number | null
           _parent_id: string
           course_lessons_id: string | null
+          course_quizzes_id: string | null
+          courses_id: string | null
           created_at: string | null
+          documentation_id: string | null
+          downloads_id: string | null
           field: string | null
           id: string
+          media_id: string | null
           order: number | null
           parent_id: string | null
           path: string | null
+          posts_id: string | null
+          private_id: string | null
+          quiz_id_id: string | null
           quiz_questions_id: string | null
+          survey_questions_id: string | null
+          surveys_id: string | null
           updated_at: string | null
           value: string | null
         }
@@ -268,13 +513,23 @@ export type Database = {
           _order?: number | null
           _parent_id: string
           course_lessons_id?: string | null
+          course_quizzes_id?: string | null
+          courses_id?: string | null
           created_at?: string | null
+          documentation_id?: string | null
+          downloads_id?: string | null
           field?: string | null
           id?: string
+          media_id?: string | null
           order?: number | null
           parent_id?: string | null
           path?: string | null
+          posts_id?: string | null
+          private_id?: string | null
+          quiz_id_id?: string | null
           quiz_questions_id?: string | null
+          survey_questions_id?: string | null
+          surveys_id?: string | null
           updated_at?: string | null
           value?: string | null
         }
@@ -282,13 +537,23 @@ export type Database = {
           _order?: number | null
           _parent_id?: string
           course_lessons_id?: string | null
+          course_quizzes_id?: string | null
+          courses_id?: string | null
           created_at?: string | null
+          documentation_id?: string | null
+          downloads_id?: string | null
           field?: string | null
           id?: string
+          media_id?: string | null
           order?: number | null
           parent_id?: string | null
           path?: string | null
+          posts_id?: string | null
+          private_id?: string | null
+          quiz_id_id?: string | null
           quiz_questions_id?: string | null
+          survey_questions_id?: string | null
+          surveys_id?: string | null
           updated_at?: string | null
           value?: string | null
         }
@@ -312,13 +577,19 @@ export type Database = {
       courses: {
         Row: {
           completion_content: Json | null
+          content: Json | null
           created_at: string | null
           description: string | null
+          downloads_id: string[] | null
           estimated_duration: number | null
           featured_image_id: string | null
           featured_image_id_id: string | null
           id: string
           intro_content: Json | null
+          media_id: string | null
+          parent_id: string | null
+          path: string | null
+          private_id: string | null
           published_at: string | null
           show_progress_bar: boolean | null
           slug: string | null
@@ -328,13 +599,19 @@ export type Database = {
         }
         Insert: {
           completion_content?: Json | null
+          content?: Json | null
           created_at?: string | null
           description?: string | null
+          downloads_id?: string[] | null
           estimated_duration?: number | null
           featured_image_id?: string | null
           featured_image_id_id?: string | null
           id?: string
           intro_content?: Json | null
+          media_id?: string | null
+          parent_id?: string | null
+          path?: string | null
+          private_id?: string | null
           published_at?: string | null
           show_progress_bar?: boolean | null
           slug?: string | null
@@ -344,13 +621,19 @@ export type Database = {
         }
         Update: {
           completion_content?: Json | null
+          content?: Json | null
           created_at?: string | null
           description?: string | null
+          downloads_id?: string[] | null
           estimated_duration?: number | null
           featured_image_id?: string | null
           featured_image_id_id?: string | null
           id?: string
           intro_content?: Json | null
+          media_id?: string | null
+          parent_id?: string | null
+          path?: string | null
+          private_id?: string | null
           published_at?: string | null
           show_progress_bar?: boolean | null
           slug?: string | null
@@ -375,17 +658,67 @@ export type Database = {
           },
         ]
       }
+      courses__downloads: {
+        Row: {
+          created_at: string | null
+          downloads_id: string | null
+          id: string
+          media_id: string | null
+          order: number | null
+          order_column: number | null
+          parent_id: string
+          path: string | null
+          private_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          downloads_id?: string | null
+          id?: string
+          media_id?: string | null
+          order?: number | null
+          order_column?: number | null
+          parent_id: string
+          path?: string | null
+          private_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          downloads_id?: string | null
+          id?: string
+          media_id?: string | null
+          order?: number | null
+          order_column?: number | null
+          parent_id?: string
+          path?: string | null
+          private_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       courses_rels: {
         Row: {
           _order: number | null
           _parent_id: string | null
           course_lessons_id: string | null
+          course_quizzes_id: string | null
+          courses_id: string | null
           created_at: string
+          documentation_id: string | null
+          downloads_id: string | null
           field: string | null
           id: string
+          media_id: string | null
           order: number | null
           parent_id: string | null
           path: string | null
+          posts_id: string | null
+          private_id: string | null
+          quiz_id_id: string | null
+          quiz_questions_id: string | null
+          survey_questions_id: string | null
+          surveys_id: string | null
           updated_at: string
           value: string | null
         }
@@ -393,12 +726,23 @@ export type Database = {
           _order?: number | null
           _parent_id?: string | null
           course_lessons_id?: string | null
+          course_quizzes_id?: string | null
+          courses_id?: string | null
           created_at?: string
+          documentation_id?: string | null
+          downloads_id?: string | null
           field?: string | null
           id?: string
+          media_id?: string | null
           order?: number | null
           parent_id?: string | null
           path?: string | null
+          posts_id?: string | null
+          private_id?: string | null
+          quiz_id_id?: string | null
+          quiz_questions_id?: string | null
+          survey_questions_id?: string | null
+          surveys_id?: string | null
           updated_at?: string
           value?: string | null
         }
@@ -406,12 +750,23 @@ export type Database = {
           _order?: number | null
           _parent_id?: string | null
           course_lessons_id?: string | null
+          course_quizzes_id?: string | null
+          courses_id?: string | null
           created_at?: string
+          documentation_id?: string | null
+          downloads_id?: string | null
           field?: string | null
           id?: string
+          media_id?: string | null
           order?: number | null
           parent_id?: string | null
           path?: string | null
+          posts_id?: string | null
+          private_id?: string | null
+          quiz_id_id?: string | null
+          quiz_questions_id?: string | null
+          survey_questions_id?: string | null
+          surveys_id?: string | null
           updated_at?: string
           value?: string | null
         }
@@ -438,10 +793,14 @@ export type Database = {
           content: Json | null
           created_at: string
           description: string | null
+          downloads_id: string[] | null
           id: string
+          media_id: string | null
           order: number | null
           parent: string | null
           parent_id: string | null
+          path: string | null
+          private_id: string | null
           published_at: string | null
           slug: string
           status: string | null
@@ -453,10 +812,14 @@ export type Database = {
           content?: Json | null
           created_at?: string
           description?: string | null
+          downloads_id?: string[] | null
           id?: string
+          media_id?: string | null
           order?: number | null
           parent?: string | null
           parent_id?: string | null
+          path?: string | null
+          private_id?: string | null
           published_at?: string | null
           slug: string
           status?: string | null
@@ -468,15 +831,58 @@ export type Database = {
           content?: Json | null
           created_at?: string
           description?: string | null
+          downloads_id?: string[] | null
           id?: string
+          media_id?: string | null
           order?: number | null
           parent?: string | null
           parent_id?: string | null
+          path?: string | null
+          private_id?: string | null
           published_at?: string | null
           slug?: string
           status?: string | null
           title?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      documentation__downloads: {
+        Row: {
+          created_at: string | null
+          downloads_id: string | null
+          id: string
+          media_id: string | null
+          order: number | null
+          order_column: number | null
+          parent_id: string
+          path: string | null
+          private_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          downloads_id?: string | null
+          id?: string
+          media_id?: string | null
+          order?: number | null
+          order_column?: number | null
+          parent_id: string
+          path?: string | null
+          private_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          downloads_id?: string | null
+          id?: string
+          media_id?: string | null
+          order?: number | null
+          order_column?: number | null
+          parent_id?: string
+          path?: string | null
+          private_id?: string | null
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -487,9 +893,14 @@ export type Database = {
           created_at: string
           doc: string | null
           doc_id: string | null
+          downloads_id: string | null
           id: string
           label: string | null
+          media_id: string | null
           order: number | null
+          parent_id: string | null
+          path: string | null
+          private_id: string | null
           updated_at: string
           url: string | null
         }
@@ -499,9 +910,14 @@ export type Database = {
           created_at?: string
           doc?: string | null
           doc_id?: string | null
+          downloads_id?: string | null
           id?: string
           label?: string | null
+          media_id?: string | null
           order?: number | null
+          parent_id?: string | null
+          path?: string | null
+          private_id?: string | null
           updated_at?: string
           url?: string | null
         }
@@ -511,9 +927,14 @@ export type Database = {
           created_at?: string
           doc?: string | null
           doc_id?: string | null
+          downloads_id?: string | null
           id?: string
           label?: string | null
+          media_id?: string | null
           order?: number | null
+          parent_id?: string | null
+          path?: string | null
+          private_id?: string | null
           updated_at?: string
           url?: string | null
         }
@@ -540,9 +961,13 @@ export type Database = {
           _parent_id: string | null
           category: string | null
           created_at: string
+          downloads_id: string | null
           id: string
+          media_id: string | null
           order: number | null
           parent_id: string | null
+          path: string | null
+          private_id: string | null
           updated_at: string
         }
         Insert: {
@@ -550,9 +975,13 @@ export type Database = {
           _parent_id?: string | null
           category?: string | null
           created_at?: string
+          downloads_id?: string | null
           id?: string
+          media_id?: string | null
           order?: number | null
           parent_id?: string | null
+          path?: string | null
+          private_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -560,9 +989,13 @@ export type Database = {
           _parent_id?: string | null
           category?: string | null
           created_at?: string
+          downloads_id?: string | null
           id?: string
+          media_id?: string | null
           order?: number | null
           parent_id?: string | null
+          path?: string | null
+          private_id?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -579,36 +1012,72 @@ export type Database = {
         Row: {
           _order: number | null
           _parent_id: string | null
+          course_lessons_id: string | null
+          course_quizzes_id: string | null
+          courses_id: string | null
           created_at: string
           documentation_id: string | null
+          downloads_id: string | null
           field: string | null
           id: string
+          media_id: string | null
           order: number | null
+          parent_id: string | null
           path: string | null
+          posts_id: string | null
+          private_id: string | null
+          quiz_id_id: string | null
+          quiz_questions_id: string | null
+          survey_questions_id: string | null
+          surveys_id: string | null
           updated_at: string
           value: string | null
         }
         Insert: {
           _order?: number | null
           _parent_id?: string | null
+          course_lessons_id?: string | null
+          course_quizzes_id?: string | null
+          courses_id?: string | null
           created_at?: string
           documentation_id?: string | null
+          downloads_id?: string | null
           field?: string | null
           id?: string
+          media_id?: string | null
           order?: number | null
+          parent_id?: string | null
           path?: string | null
+          posts_id?: string | null
+          private_id?: string | null
+          quiz_id_id?: string | null
+          quiz_questions_id?: string | null
+          survey_questions_id?: string | null
+          surveys_id?: string | null
           updated_at?: string
           value?: string | null
         }
         Update: {
           _order?: number | null
           _parent_id?: string | null
+          course_lessons_id?: string | null
+          course_quizzes_id?: string | null
+          courses_id?: string | null
           created_at?: string
           documentation_id?: string | null
+          downloads_id?: string | null
           field?: string | null
           id?: string
+          media_id?: string | null
           order?: number | null
+          parent_id?: string | null
           path?: string | null
+          posts_id?: string | null
+          private_id?: string | null
+          quiz_id_id?: string | null
+          quiz_questions_id?: string | null
+          survey_questions_id?: string | null
+          surveys_id?: string | null
           updated_at?: string
           value?: string | null
         }
@@ -634,9 +1103,13 @@ export type Database = {
           _order: number | null
           _parent_id: string | null
           created_at: string
+          downloads_id: string | null
           id: string
+          media_id: string | null
           order: number | null
           parent_id: string | null
+          path: string | null
+          private_id: string | null
           tag: string | null
           updated_at: string
         }
@@ -644,9 +1117,13 @@ export type Database = {
           _order?: number | null
           _parent_id?: string | null
           created_at?: string
+          downloads_id?: string | null
           id?: string
+          media_id?: string | null
           order?: number | null
           parent_id?: string | null
+          path?: string | null
+          private_id?: string | null
           tag?: string | null
           updated_at?: string
         }
@@ -654,9 +1131,13 @@ export type Database = {
           _order?: number | null
           _parent_id?: string | null
           created_at?: string
+          downloads_id?: string | null
           id?: string
+          media_id?: string | null
           order?: number | null
           parent_id?: string | null
+          path?: string | null
+          private_id?: string | null
           tag?: string | null
           updated_at?: string
         }
@@ -670,17 +1151,294 @@ export type Database = {
           },
         ]
       }
+      downloads: {
+        Row: {
+          alt_text: string | null
+          caption: string | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          downloads_id: string | null
+          filename: string
+          filename_original: string | null
+          filesize: number | null
+          focal_x: number | null
+          focal_y: number | null
+          height: number | null
+          id: string
+          key: string | null
+          lesson_id: string | null
+          media_id: string | null
+          mime: string | null
+          mime_type: string | null
+          mimetype: string | null
+          parent_id: string | null
+          path: string | null
+          private_id: string | null
+          sizes: Json | null
+          sizes_card_filename: string | null
+          sizes_card_filesize: number | null
+          sizes_card_height: number | null
+          sizes_card_mime_type: string | null
+          sizes_card_url: string | null
+          sizes_card_width: number | null
+          sizes_srcsets: Json | null
+          sizes_tablet_filename: string | null
+          sizes_tablet_filesize: number | null
+          sizes_tablet_height: number | null
+          sizes_tablet_mime_type: string | null
+          sizes_tablet_url: string | null
+          sizes_tablet_width: number | null
+          sizes_thumbnail_filename: string | null
+          sizes_thumbnail_filesize: number | null
+          sizes_thumbnail_height: number | null
+          sizes_thumbnail_mime_type: string | null
+          sizes_thumbnail_url: string | null
+          sizes_thumbnail_width: number | null
+          thumbnail_u_r_l: string | null
+          title: string | null
+          type: string | null
+          updated_at: string | null
+          updated_by: string | null
+          url: string
+          width: number | null
+        }
+        Insert: {
+          alt_text?: string | null
+          caption?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          downloads_id?: string | null
+          filename: string
+          filename_original?: string | null
+          filesize?: number | null
+          focal_x?: number | null
+          focal_y?: number | null
+          height?: number | null
+          id?: string
+          key?: string | null
+          lesson_id?: string | null
+          media_id?: string | null
+          mime?: string | null
+          mime_type?: string | null
+          mimetype?: string | null
+          parent_id?: string | null
+          path?: string | null
+          private_id?: string | null
+          sizes?: Json | null
+          sizes_card_filename?: string | null
+          sizes_card_filesize?: number | null
+          sizes_card_height?: number | null
+          sizes_card_mime_type?: string | null
+          sizes_card_url?: string | null
+          sizes_card_width?: number | null
+          sizes_srcsets?: Json | null
+          sizes_tablet_filename?: string | null
+          sizes_tablet_filesize?: number | null
+          sizes_tablet_height?: number | null
+          sizes_tablet_mime_type?: string | null
+          sizes_tablet_url?: string | null
+          sizes_tablet_width?: number | null
+          sizes_thumbnail_filename?: string | null
+          sizes_thumbnail_filesize?: number | null
+          sizes_thumbnail_height?: number | null
+          sizes_thumbnail_mime_type?: string | null
+          sizes_thumbnail_url?: string | null
+          sizes_thumbnail_width?: number | null
+          thumbnail_u_r_l?: string | null
+          title?: string | null
+          type?: string | null
+          updated_at?: string | null
+          updated_by?: string | null
+          url: string
+          width?: number | null
+        }
+        Update: {
+          alt_text?: string | null
+          caption?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          downloads_id?: string | null
+          filename?: string
+          filename_original?: string | null
+          filesize?: number | null
+          focal_x?: number | null
+          focal_y?: number | null
+          height?: number | null
+          id?: string
+          key?: string | null
+          lesson_id?: string | null
+          media_id?: string | null
+          mime?: string | null
+          mime_type?: string | null
+          mimetype?: string | null
+          parent_id?: string | null
+          path?: string | null
+          private_id?: string | null
+          sizes?: Json | null
+          sizes_card_filename?: string | null
+          sizes_card_filesize?: number | null
+          sizes_card_height?: number | null
+          sizes_card_mime_type?: string | null
+          sizes_card_url?: string | null
+          sizes_card_width?: number | null
+          sizes_srcsets?: Json | null
+          sizes_tablet_filename?: string | null
+          sizes_tablet_filesize?: number | null
+          sizes_tablet_height?: number | null
+          sizes_tablet_mime_type?: string | null
+          sizes_tablet_url?: string | null
+          sizes_tablet_width?: number | null
+          sizes_thumbnail_filename?: string | null
+          sizes_thumbnail_filesize?: number | null
+          sizes_thumbnail_height?: number | null
+          sizes_thumbnail_mime_type?: string | null
+          sizes_thumbnail_url?: string | null
+          sizes_thumbnail_width?: number | null
+          thumbnail_u_r_l?: string | null
+          title?: string | null
+          type?: string | null
+          updated_at?: string | null
+          updated_by?: string | null
+          url?: string
+          width?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "downloads_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "course_lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      downloads_rels: {
+        Row: {
+          _parent_id: string
+          course_lessons_id: string | null
+          course_quizzes_id: string | null
+          courses_id: string | null
+          created_at: string | null
+          documentation_id: string | null
+          downloads_id: string | null
+          field: string | null
+          id: string
+          media_id: string | null
+          order: number | null
+          order_column: number | null
+          parent_id: string | null
+          path: string | null
+          posts_id: string | null
+          private_id: string | null
+          quiz_questions_id: string | null
+          survey_questions_id: string | null
+          surveys_id: string | null
+          updated_at: string | null
+          value: string | null
+        }
+        Insert: {
+          _parent_id: string
+          course_lessons_id?: string | null
+          course_quizzes_id?: string | null
+          courses_id?: string | null
+          created_at?: string | null
+          documentation_id?: string | null
+          downloads_id?: string | null
+          field?: string | null
+          id?: string
+          media_id?: string | null
+          order?: number | null
+          order_column?: number | null
+          parent_id?: string | null
+          path?: string | null
+          posts_id?: string | null
+          private_id?: string | null
+          quiz_questions_id?: string | null
+          survey_questions_id?: string | null
+          surveys_id?: string | null
+          updated_at?: string | null
+          value?: string | null
+        }
+        Update: {
+          _parent_id?: string
+          course_lessons_id?: string | null
+          course_quizzes_id?: string | null
+          courses_id?: string | null
+          created_at?: string | null
+          documentation_id?: string | null
+          downloads_id?: string | null
+          field?: string | null
+          id?: string
+          media_id?: string | null
+          order?: number | null
+          order_column?: number | null
+          parent_id?: string | null
+          path?: string | null
+          posts_id?: string | null
+          private_id?: string | null
+          quiz_questions_id?: string | null
+          survey_questions_id?: string | null
+          surveys_id?: string | null
+          updated_at?: string | null
+          value?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "downloads_rels_parent_fk"
+            columns: ["_parent_id"]
+            isOneToOne: false
+            referencedRelation: "downloads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "downloads_rels_parent_fk"
+            columns: ["_parent_id"]
+            isOneToOne: false
+            referencedRelation: "downloads_diagnostic"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dynamic_uuid_tables: {
+        Row: {
+          created_at: string | null
+          needs_path_column: boolean | null
+          primary_key: string | null
+          table_name: string
+        }
+        Insert: {
+          created_at?: string | null
+          needs_path_column?: boolean | null
+          primary_key?: string | null
+          table_name: string
+        }
+        Update: {
+          created_at?: string | null
+          needs_path_column?: boolean | null
+          primary_key?: string | null
+          table_name?: string
+        }
+        Relationships: []
+      }
       media: {
         Row: {
           alt: string
           created_at: string
+          downloads_id: string | null
           filename: string | null
           filesize: number | null
           focal_x: number | null
           focal_y: number | null
           height: number | null
           id: string
+          media_id: string | null
           mime_type: string | null
+          parent_id: string | null
+          path: string | null
+          private_id: string | null
           thumbnail_u_r_l: string | null
           updated_at: string
           url: string | null
@@ -689,13 +1447,18 @@ export type Database = {
         Insert: {
           alt: string
           created_at?: string
+          downloads_id?: string | null
           filename?: string | null
           filesize?: number | null
           focal_x?: number | null
           focal_y?: number | null
           height?: number | null
           id?: string
+          media_id?: string | null
           mime_type?: string | null
+          parent_id?: string | null
+          path?: string | null
+          private_id?: string | null
           thumbnail_u_r_l?: string | null
           updated_at?: string
           url?: string | null
@@ -704,13 +1467,18 @@ export type Database = {
         Update: {
           alt?: string
           created_at?: string
+          downloads_id?: string | null
           filename?: string | null
           filesize?: number | null
           focal_x?: number | null
           focal_y?: number | null
           height?: number | null
           id?: string
+          media_id?: string | null
           mime_type?: string | null
+          parent_id?: string | null
+          path?: string | null
+          private_id?: string | null
           thumbnail_u_r_l?: string | null
           updated_at?: string
           url?: string | null
@@ -727,11 +1495,15 @@ export type Database = {
           created_at: string
           document_id: string | null
           documentation_id: string | null
+          downloads_id: string | null
           global_slug: string | null
           id: string
           lock_expiration: string | null
           media_id: string | null
+          parent_id: string | null
+          path: string | null
           posts_id: string | null
+          private_id: string | null
           quiz_questions_id: string | null
           survey_questions_id: string | null
           surveys_id: string | null
@@ -745,11 +1517,15 @@ export type Database = {
           created_at?: string
           document_id?: string | null
           documentation_id?: string | null
+          downloads_id?: string | null
           global_slug?: string | null
           id?: string
           lock_expiration?: string | null
           media_id?: string | null
+          parent_id?: string | null
+          path?: string | null
           posts_id?: string | null
+          private_id?: string | null
           quiz_questions_id?: string | null
           survey_questions_id?: string | null
           surveys_id?: string | null
@@ -763,11 +1539,15 @@ export type Database = {
           created_at?: string
           document_id?: string | null
           documentation_id?: string | null
+          downloads_id?: string | null
           global_slug?: string | null
           id?: string
           lock_expiration?: string | null
           media_id?: string | null
+          parent_id?: string | null
+          path?: string | null
           posts_id?: string | null
+          private_id?: string | null
           quiz_questions_id?: string | null
           survey_questions_id?: string | null
           surveys_id?: string | null
@@ -846,12 +1626,15 @@ export type Database = {
           courses_id: string | null
           created_at: string
           documentation_id: string | null
+          downloads_id: string | null
           id: string
           media_id: string | null
           order: number | null
           parent_id: string | null
           path: string | null
           posts_id: string | null
+          private_id: string | null
+          quiz_id_id: string | null
           quiz_questions_id: string | null
           survey_questions_id: string | null
           surveys_id: string | null
@@ -864,12 +1647,15 @@ export type Database = {
           courses_id?: string | null
           created_at?: string
           documentation_id?: string | null
+          downloads_id?: string | null
           id?: string
           media_id?: string | null
           order?: number | null
           parent_id?: string | null
           path?: string | null
           posts_id?: string | null
+          private_id?: string | null
+          quiz_id_id?: string | null
           quiz_questions_id?: string | null
           survey_questions_id?: string | null
           surveys_id?: string | null
@@ -882,12 +1668,15 @@ export type Database = {
           courses_id?: string | null
           created_at?: string
           documentation_id?: string | null
+          downloads_id?: string | null
           id?: string
           media_id?: string | null
           order?: number | null
           parent_id?: string | null
           path?: string | null
           posts_id?: string | null
+          private_id?: string | null
+          quiz_id_id?: string | null
           quiz_questions_id?: string | null
           survey_questions_id?: string | null
           surveys_id?: string | null
@@ -896,66 +1685,10 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "payload_locked_documents_rels_course_lessons_id_fkey"
-            columns: ["course_lessons_id"]
-            isOneToOne: false
-            referencedRelation: "course_lessons"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "payload_locked_documents_rels_course_quizzes_id_fkey"
-            columns: ["course_quizzes_id"]
-            isOneToOne: false
-            referencedRelation: "course_quizzes"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "payload_locked_documents_rels_courses_id_fkey"
-            columns: ["courses_id"]
-            isOneToOne: false
-            referencedRelation: "courses"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "payload_locked_documents_rels_documentation_id_fkey"
-            columns: ["documentation_id"]
-            isOneToOne: false
-            referencedRelation: "documentation"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "payload_locked_documents_rels_media_id_fkey"
             columns: ["media_id"]
             isOneToOne: false
             referencedRelation: "media"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "payload_locked_documents_rels_posts_id_fkey"
-            columns: ["posts_id"]
-            isOneToOne: false
-            referencedRelation: "posts"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "payload_locked_documents_rels_quiz_questions_id_fkey"
-            columns: ["quiz_questions_id"]
-            isOneToOne: false
-            referencedRelation: "quiz_questions"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "payload_locked_documents_rels_survey_questions_id_fkey"
-            columns: ["survey_questions_id"]
-            isOneToOne: false
-            referencedRelation: "survey_questions"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "payload_locked_documents_rels_surveys_id_fkey"
-            columns: ["surveys_id"]
-            isOneToOne: false
-            referencedRelation: "surveys"
             referencedColumns: ["id"]
           },
           {
@@ -994,24 +1727,39 @@ export type Database = {
       payload_preferences: {
         Row: {
           created_at: string
+          downloads_id: string | null
           id: string
           key: string | null
+          media_id: string | null
+          parent_id: string | null
+          path: string | null
+          private_id: string | null
           updated_at: string
           user: string | null
           value: Json | null
         }
         Insert: {
           created_at?: string
+          downloads_id?: string | null
           id?: string
           key?: string | null
+          media_id?: string | null
+          parent_id?: string | null
+          path?: string | null
+          private_id?: string | null
           updated_at?: string
           user?: string | null
           value?: Json | null
         }
         Update: {
           created_at?: string
+          downloads_id?: string | null
           id?: string
           key?: string | null
+          media_id?: string | null
+          parent_id?: string | null
+          path?: string | null
+          private_id?: string | null
           updated_at?: string
           user?: string | null
           value?: Json | null
@@ -1028,29 +1776,65 @@ export type Database = {
       }
       payload_preferences_rels: {
         Row: {
+          course_lessons_id: string | null
+          course_quizzes_id: string | null
+          courses_id: string | null
           created_at: string
+          documentation_id: string | null
+          downloads_id: string | null
           id: string
+          media_id: string | null
           order: number | null
           parent_id: string | null
           path: string | null
+          posts_id: string | null
+          private_id: string | null
+          quiz_id_id: string | null
+          quiz_questions_id: string | null
+          survey_questions_id: string | null
+          surveys_id: string | null
           updated_at: string
           users_id: string | null
         }
         Insert: {
+          course_lessons_id?: string | null
+          course_quizzes_id?: string | null
+          courses_id?: string | null
           created_at?: string
+          documentation_id?: string | null
+          downloads_id?: string | null
           id?: string
+          media_id?: string | null
           order?: number | null
           parent_id?: string | null
           path?: string | null
+          posts_id?: string | null
+          private_id?: string | null
+          quiz_id_id?: string | null
+          quiz_questions_id?: string | null
+          survey_questions_id?: string | null
+          surveys_id?: string | null
           updated_at?: string
           users_id?: string | null
         }
         Update: {
+          course_lessons_id?: string | null
+          course_quizzes_id?: string | null
+          courses_id?: string | null
           created_at?: string
+          documentation_id?: string | null
+          downloads_id?: string | null
           id?: string
+          media_id?: string | null
           order?: number | null
           parent_id?: string | null
           path?: string | null
+          posts_id?: string | null
+          private_id?: string | null
+          quiz_id_id?: string | null
+          quiz_questions_id?: string | null
+          survey_questions_id?: string | null
+          surveys_id?: string | null
           updated_at?: string
           users_id?: string | null
         }
@@ -1069,11 +1853,16 @@ export type Database = {
           content: Json | null
           created_at: string
           description: string | null
+          downloads_id: string[] | null
           featured_image_id: string | null
           featured_image_id_id: string | null
           id: string
           image_id: string | null
           image_id_id: string | null
+          media_id: string | null
+          parent_id: string | null
+          path: string | null
+          private_id: string | null
           published_at: string | null
           slug: string
           status: string | null
@@ -1084,11 +1873,16 @@ export type Database = {
           content?: Json | null
           created_at?: string
           description?: string | null
+          downloads_id?: string[] | null
           featured_image_id?: string | null
           featured_image_id_id?: string | null
           id?: string
           image_id?: string | null
           image_id_id?: string | null
+          media_id?: string | null
+          parent_id?: string | null
+          path?: string | null
+          private_id?: string | null
           published_at?: string | null
           slug: string
           status?: string | null
@@ -1099,11 +1893,16 @@ export type Database = {
           content?: Json | null
           created_at?: string
           description?: string | null
+          downloads_id?: string[] | null
           featured_image_id?: string | null
           featured_image_id_id?: string | null
           id?: string
           image_id?: string | null
           image_id_id?: string | null
+          media_id?: string | null
+          parent_id?: string | null
+          path?: string | null
+          private_id?: string | null
           published_at?: string | null
           slug?: string
           status?: string | null
@@ -1141,14 +1940,58 @@ export type Database = {
           },
         ]
       }
+      posts__downloads: {
+        Row: {
+          created_at: string | null
+          downloads_id: string | null
+          id: string
+          media_id: string | null
+          order: number | null
+          order_column: number | null
+          parent_id: string
+          path: string | null
+          private_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          downloads_id?: string | null
+          id?: string
+          media_id?: string | null
+          order?: number | null
+          order_column?: number | null
+          parent_id: string
+          path?: string | null
+          private_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          downloads_id?: string | null
+          id?: string
+          media_id?: string | null
+          order?: number | null
+          order_column?: number | null
+          parent_id?: string
+          path?: string | null
+          private_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       posts_categories: {
         Row: {
           _order: number | null
           _parent_id: string | null
           category: string | null
           created_at: string
+          downloads_id: string | null
           id: string
+          media_id: string | null
           order: number | null
+          parent_id: string | null
+          path: string | null
+          private_id: string | null
           updated_at: string
         }
         Insert: {
@@ -1156,8 +1999,13 @@ export type Database = {
           _parent_id?: string | null
           category?: string | null
           created_at?: string
+          downloads_id?: string | null
           id?: string
+          media_id?: string | null
           order?: number | null
+          parent_id?: string | null
+          path?: string | null
+          private_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -1165,8 +2013,13 @@ export type Database = {
           _parent_id?: string | null
           category?: string | null
           created_at?: string
+          downloads_id?: string | null
           id?: string
+          media_id?: string | null
           order?: number | null
+          parent_id?: string | null
+          path?: string | null
+          private_id?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -1183,33 +2036,72 @@ export type Database = {
         Row: {
           _order: number | null
           _parent_id: string | null
+          course_lessons_id: string | null
+          course_quizzes_id: string | null
+          courses_id: string | null
           created_at: string
+          documentation_id: string | null
+          downloads_id: string | null
           field: string | null
           id: string
+          media_id: string | null
           order: number | null
+          parent_id: string | null
           path: string | null
+          posts_id: string | null
+          private_id: string | null
+          quiz_id_id: string | null
+          quiz_questions_id: string | null
+          survey_questions_id: string | null
+          surveys_id: string | null
           updated_at: string
           value: string | null
         }
         Insert: {
           _order?: number | null
           _parent_id?: string | null
+          course_lessons_id?: string | null
+          course_quizzes_id?: string | null
+          courses_id?: string | null
           created_at?: string
+          documentation_id?: string | null
+          downloads_id?: string | null
           field?: string | null
           id?: string
+          media_id?: string | null
           order?: number | null
+          parent_id?: string | null
           path?: string | null
+          posts_id?: string | null
+          private_id?: string | null
+          quiz_id_id?: string | null
+          quiz_questions_id?: string | null
+          survey_questions_id?: string | null
+          surveys_id?: string | null
           updated_at?: string
           value?: string | null
         }
         Update: {
           _order?: number | null
           _parent_id?: string | null
+          course_lessons_id?: string | null
+          course_quizzes_id?: string | null
+          courses_id?: string | null
           created_at?: string
+          documentation_id?: string | null
+          downloads_id?: string | null
           field?: string | null
           id?: string
+          media_id?: string | null
           order?: number | null
+          parent_id?: string | null
           path?: string | null
+          posts_id?: string | null
+          private_id?: string | null
+          quiz_id_id?: string | null
+          quiz_questions_id?: string | null
+          survey_questions_id?: string | null
+          surveys_id?: string | null
           updated_at?: string
           value?: string | null
         }
@@ -1221,6 +2113,13 @@ export type Database = {
             referencedRelation: "posts"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "posts_rels_media_id_fkey"
+            columns: ["media_id"]
+            isOneToOne: false
+            referencedRelation: "media"
+            referencedColumns: ["id"]
+          },
         ]
       }
       posts_tags: {
@@ -1228,8 +2127,13 @@ export type Database = {
           _order: number | null
           _parent_id: string | null
           created_at: string
+          downloads_id: string | null
           id: string
+          media_id: string | null
           order: number | null
+          parent_id: string | null
+          path: string | null
+          private_id: string | null
           tag: string | null
           updated_at: string
         }
@@ -1237,8 +2141,13 @@ export type Database = {
           _order?: number | null
           _parent_id?: string | null
           created_at?: string
+          downloads_id?: string | null
           id?: string
+          media_id?: string | null
           order?: number | null
+          parent_id?: string | null
+          path?: string | null
+          private_id?: string | null
           tag?: string | null
           updated_at?: string
         }
@@ -1246,8 +2155,13 @@ export type Database = {
           _order?: number | null
           _parent_id?: string | null
           created_at?: string
+          downloads_id?: string | null
           id?: string
+          media_id?: string | null
           order?: number | null
+          parent_id?: string | null
+          path?: string | null
+          private_id?: string | null
           tag?: string | null
           updated_at?: string
         }
@@ -1261,16 +2175,484 @@ export type Database = {
           },
         ]
       }
+      private: {
+        Row: {
+          content: Json | null
+          created_at: string
+          description: string | null
+          downloads_id: string[] | null
+          featured_image_id: string | null
+          featured_image_id_id: string | null
+          id: string
+          image_id: string | null
+          image_id_id: string | null
+          media_id: string | null
+          parent_id: string | null
+          path: string | null
+          private_id: string | null
+          published_at: string | null
+          slug: string
+          status: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          content?: Json | null
+          created_at?: string
+          description?: string | null
+          downloads_id?: string[] | null
+          featured_image_id?: string | null
+          featured_image_id_id?: string | null
+          id?: string
+          image_id?: string | null
+          image_id_id?: string | null
+          media_id?: string | null
+          parent_id?: string | null
+          path?: string | null
+          private_id?: string | null
+          published_at?: string | null
+          slug: string
+          status?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          content?: Json | null
+          created_at?: string
+          description?: string | null
+          downloads_id?: string[] | null
+          featured_image_id?: string | null
+          featured_image_id_id?: string | null
+          id?: string
+          image_id?: string | null
+          image_id_id?: string | null
+          media_id?: string | null
+          parent_id?: string | null
+          path?: string | null
+          private_id?: string | null
+          published_at?: string | null
+          slug?: string
+          status?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "private_featured_image_id_fkey"
+            columns: ["featured_image_id"]
+            isOneToOne: false
+            referencedRelation: "media"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "private_featured_image_id_id_fkey"
+            columns: ["featured_image_id_id"]
+            isOneToOne: false
+            referencedRelation: "media"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "private_image_id_fkey"
+            columns: ["image_id"]
+            isOneToOne: false
+            referencedRelation: "media"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "private_image_id_id_fkey"
+            columns: ["image_id_id"]
+            isOneToOne: false
+            referencedRelation: "media"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      private__downloads: {
+        Row: {
+          _order: number | null
+          _parent_id: string | null
+          created_at: string
+          downloads_id: string | null
+          id: string
+          media_id: string | null
+          order: number | null
+          parent_id: string | null
+          path: string | null
+          private_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          _order?: number | null
+          _parent_id?: string | null
+          created_at?: string
+          downloads_id?: string | null
+          id?: string
+          media_id?: string | null
+          order?: number | null
+          parent_id?: string | null
+          path?: string | null
+          private_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          _order?: number | null
+          _parent_id?: string | null
+          created_at?: string
+          downloads_id?: string | null
+          id?: string
+          media_id?: string | null
+          order?: number | null
+          parent_id?: string | null
+          path?: string | null
+          private_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "private__downloads__parent_id_fkey"
+            columns: ["_parent_id"]
+            isOneToOne: false
+            referencedRelation: "private"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "private__downloads_downloads_id_fkey"
+            columns: ["downloads_id"]
+            isOneToOne: false
+            referencedRelation: "downloads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "private__downloads_downloads_id_fkey"
+            columns: ["downloads_id"]
+            isOneToOne: false
+            referencedRelation: "downloads_diagnostic"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "private__downloads_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "private"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      private_categories: {
+        Row: {
+          _order: number | null
+          _parent_id: string | null
+          category: string | null
+          created_at: string
+          downloads_id: string | null
+          id: string
+          media_id: string | null
+          order: number | null
+          parent_id: string | null
+          path: string | null
+          private_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          _order?: number | null
+          _parent_id?: string | null
+          category?: string | null
+          created_at?: string
+          downloads_id?: string | null
+          id?: string
+          media_id?: string | null
+          order?: number | null
+          parent_id?: string | null
+          path?: string | null
+          private_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          _order?: number | null
+          _parent_id?: string | null
+          category?: string | null
+          created_at?: string
+          downloads_id?: string | null
+          id?: string
+          media_id?: string | null
+          order?: number | null
+          parent_id?: string | null
+          path?: string | null
+          private_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "private_categories__parent_id_fkey"
+            columns: ["_parent_id"]
+            isOneToOne: false
+            referencedRelation: "private"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "private_categories_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "private"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      private_rels: {
+        Row: {
+          _order: number | null
+          _parent_id: string | null
+          course_lessons_id: string | null
+          course_quizzes_id: string | null
+          courses_id: string | null
+          created_at: string
+          documentation_id: string | null
+          downloads_id: string | null
+          field: string | null
+          id: string
+          media_id: string | null
+          order: number | null
+          parent_id: string | null
+          path: string | null
+          posts_id: string | null
+          private_id: string | null
+          quiz_id_id: string | null
+          quiz_questions_id: string | null
+          survey_questions_id: string | null
+          surveys_id: string | null
+          updated_at: string
+          value: string | null
+        }
+        Insert: {
+          _order?: number | null
+          _parent_id?: string | null
+          course_lessons_id?: string | null
+          course_quizzes_id?: string | null
+          courses_id?: string | null
+          created_at?: string
+          documentation_id?: string | null
+          downloads_id?: string | null
+          field?: string | null
+          id?: string
+          media_id?: string | null
+          order?: number | null
+          parent_id?: string | null
+          path?: string | null
+          posts_id?: string | null
+          private_id?: string | null
+          quiz_id_id?: string | null
+          quiz_questions_id?: string | null
+          survey_questions_id?: string | null
+          surveys_id?: string | null
+          updated_at?: string
+          value?: string | null
+        }
+        Update: {
+          _order?: number | null
+          _parent_id?: string | null
+          course_lessons_id?: string | null
+          course_quizzes_id?: string | null
+          courses_id?: string | null
+          created_at?: string
+          documentation_id?: string | null
+          downloads_id?: string | null
+          field?: string | null
+          id?: string
+          media_id?: string | null
+          order?: number | null
+          parent_id?: string | null
+          path?: string | null
+          posts_id?: string | null
+          private_id?: string | null
+          quiz_id_id?: string | null
+          quiz_questions_id?: string | null
+          survey_questions_id?: string | null
+          surveys_id?: string | null
+          updated_at?: string
+          value?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "private_rels__parent_id_fkey"
+            columns: ["_parent_id"]
+            isOneToOne: false
+            referencedRelation: "private"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "private_rels_course_lessons_id_fkey"
+            columns: ["course_lessons_id"]
+            isOneToOne: false
+            referencedRelation: "course_lessons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "private_rels_course_quizzes_id_fkey"
+            columns: ["course_quizzes_id"]
+            isOneToOne: false
+            referencedRelation: "course_quizzes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "private_rels_courses_id_fkey"
+            columns: ["courses_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "private_rels_documentation_id_fkey"
+            columns: ["documentation_id"]
+            isOneToOne: false
+            referencedRelation: "documentation"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "private_rels_downloads_id_fkey"
+            columns: ["downloads_id"]
+            isOneToOne: false
+            referencedRelation: "downloads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "private_rels_downloads_id_fkey"
+            columns: ["downloads_id"]
+            isOneToOne: false
+            referencedRelation: "downloads_diagnostic"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "private_rels_media_id_fkey"
+            columns: ["media_id"]
+            isOneToOne: false
+            referencedRelation: "media"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "private_rels_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "private"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "private_rels_posts_id_fkey"
+            columns: ["posts_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "private_rels_private_id_fkey"
+            columns: ["private_id"]
+            isOneToOne: false
+            referencedRelation: "private"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "private_rels_quiz_id_id_fkey"
+            columns: ["quiz_id_id"]
+            isOneToOne: false
+            referencedRelation: "course_quizzes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "private_rels_quiz_questions_id_fkey"
+            columns: ["quiz_questions_id"]
+            isOneToOne: false
+            referencedRelation: "quiz_questions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "private_rels_survey_questions_id_fkey"
+            columns: ["survey_questions_id"]
+            isOneToOne: false
+            referencedRelation: "survey_questions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "private_rels_surveys_id_fkey"
+            columns: ["surveys_id"]
+            isOneToOne: false
+            referencedRelation: "surveys"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      private_tags: {
+        Row: {
+          _order: number | null
+          _parent_id: string | null
+          created_at: string
+          downloads_id: string | null
+          id: string
+          media_id: string | null
+          order: number | null
+          parent_id: string | null
+          path: string | null
+          private_id: string | null
+          tag: string | null
+          updated_at: string
+        }
+        Insert: {
+          _order?: number | null
+          _parent_id?: string | null
+          created_at?: string
+          downloads_id?: string | null
+          id?: string
+          media_id?: string | null
+          order?: number | null
+          parent_id?: string | null
+          path?: string | null
+          private_id?: string | null
+          tag?: string | null
+          updated_at?: string
+        }
+        Update: {
+          _order?: number | null
+          _parent_id?: string | null
+          created_at?: string
+          downloads_id?: string | null
+          id?: string
+          media_id?: string | null
+          order?: number | null
+          parent_id?: string | null
+          path?: string | null
+          private_id?: string | null
+          tag?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "private_tags__parent_id_fkey"
+            columns: ["_parent_id"]
+            isOneToOne: false
+            referencedRelation: "private"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "private_tags_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "private"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       quiz_questions: {
         Row: {
           _order: number | null
           correct_answer: string | null
           created_at: string | null
+          downloads_id: string | null
           explanation: string | null
           id: string
           media_id: string | null
           options: Json | null
           order: number | null
+          parent_id: string | null
+          path: string | null
+          private_id: string | null
           question: string | null
           quiz_id: string | null
           quiz_id_id: string | null
@@ -1281,11 +2663,15 @@ export type Database = {
           _order?: number | null
           correct_answer?: string | null
           created_at?: string | null
+          downloads_id?: string | null
           explanation?: string | null
           id?: string
           media_id?: string | null
           options?: Json | null
           order?: number | null
+          parent_id?: string | null
+          path?: string | null
+          private_id?: string | null
           question?: string | null
           quiz_id?: string | null
           quiz_id_id?: string | null
@@ -1296,11 +2682,15 @@ export type Database = {
           _order?: number | null
           correct_answer?: string | null
           created_at?: string | null
+          downloads_id?: string | null
           explanation?: string | null
           id?: string
           media_id?: string | null
           options?: Json | null
           order?: number | null
+          parent_id?: string | null
+          path?: string | null
+          private_id?: string | null
           question?: string | null
           quiz_id?: string | null
           quiz_id_id?: string | null
@@ -1336,9 +2726,14 @@ export type Database = {
           _order: number | null
           _parent_id: string | null
           created_at: string
+          downloads_id: string | null
           id: string
           is_correct: boolean | null
+          media_id: string | null
           order: number | null
+          parent_id: string | null
+          path: string | null
+          private_id: string | null
           text: string | null
           updated_at: string
         }
@@ -1346,9 +2741,14 @@ export type Database = {
           _order?: number | null
           _parent_id?: string | null
           created_at?: string
+          downloads_id?: string | null
           id?: string
           is_correct?: boolean | null
+          media_id?: string | null
           order?: number | null
+          parent_id?: string | null
+          path?: string | null
+          private_id?: string | null
           text?: string | null
           updated_at?: string
         }
@@ -1356,9 +2756,14 @@ export type Database = {
           _order?: number | null
           _parent_id?: string | null
           created_at?: string
+          downloads_id?: string | null
           id?: string
           is_correct?: boolean | null
+          media_id?: string | null
           order?: number | null
+          parent_id?: string | null
+          path?: string | null
+          private_id?: string | null
           text?: string | null
           updated_at?: string
         }
@@ -1376,33 +2781,72 @@ export type Database = {
         Row: {
           _order: number | null
           _parent_id: string
+          course_lessons_id: string | null
+          course_quizzes_id: string | null
+          courses_id: string | null
           created_at: string | null
+          documentation_id: string | null
+          downloads_id: string | null
           field: string | null
           id: string
+          media_id: string | null
           order: number | null
+          parent_id: string | null
           path: string | null
+          posts_id: string | null
+          private_id: string | null
+          quiz_id_id: string | null
+          quiz_questions_id: string | null
+          survey_questions_id: string | null
+          surveys_id: string | null
           updated_at: string | null
           value: string | null
         }
         Insert: {
           _order?: number | null
           _parent_id: string
+          course_lessons_id?: string | null
+          course_quizzes_id?: string | null
+          courses_id?: string | null
           created_at?: string | null
+          documentation_id?: string | null
+          downloads_id?: string | null
           field?: string | null
           id?: string
+          media_id?: string | null
           order?: number | null
+          parent_id?: string | null
           path?: string | null
+          posts_id?: string | null
+          private_id?: string | null
+          quiz_id_id?: string | null
+          quiz_questions_id?: string | null
+          survey_questions_id?: string | null
+          surveys_id?: string | null
           updated_at?: string | null
           value?: string | null
         }
         Update: {
           _order?: number | null
           _parent_id?: string
+          course_lessons_id?: string | null
+          course_quizzes_id?: string | null
+          courses_id?: string | null
           created_at?: string | null
+          documentation_id?: string | null
+          downloads_id?: string | null
           field?: string | null
           id?: string
+          media_id?: string | null
           order?: number | null
+          parent_id?: string | null
           path?: string | null
+          posts_id?: string | null
+          private_id?: string | null
+          quiz_id_id?: string | null
+          quiz_questions_id?: string | null
+          survey_questions_id?: string | null
+          surveys_id?: string | null
           updated_at?: string | null
           value?: string | null
         }
@@ -1422,10 +2866,15 @@ export type Database = {
           category: string | null
           created_at: string | null
           description: string | null
+          downloads_id: string | null
           id: string
+          media_id: string | null
           options: Json | null
           order: number | null
+          parent_id: string | null
+          path: string | null
           position: number | null
+          private_id: string | null
           question: string | null
           questionspin: number | null
           required: boolean | null
@@ -1439,10 +2888,15 @@ export type Database = {
           category?: string | null
           created_at?: string | null
           description?: string | null
+          downloads_id?: string | null
           id?: string
+          media_id?: string | null
           options?: Json | null
           order?: number | null
+          parent_id?: string | null
+          path?: string | null
           position?: number | null
+          private_id?: string | null
           question?: string | null
           questionspin?: number | null
           required?: boolean | null
@@ -1456,10 +2910,15 @@ export type Database = {
           category?: string | null
           created_at?: string | null
           description?: string | null
+          downloads_id?: string | null
           id?: string
+          media_id?: string | null
           options?: Json | null
           order?: number | null
+          parent_id?: string | null
+          path?: string | null
           position?: number | null
+          private_id?: string | null
           question?: string | null
           questionspin?: number | null
           required?: boolean | null
@@ -1483,27 +2942,42 @@ export type Database = {
           _order: number | null
           _parent_id: string | null
           created_at: string
+          downloads_id: string | null
           id: string
+          media_id: string | null
           option: string | null
           order: number | null
+          parent_id: string | null
+          path: string | null
+          private_id: string | null
           updated_at: string
         }
         Insert: {
           _order?: number | null
           _parent_id?: string | null
           created_at?: string
+          downloads_id?: string | null
           id?: string
+          media_id?: string | null
           option?: string | null
           order?: number | null
+          parent_id?: string | null
+          path?: string | null
+          private_id?: string | null
           updated_at?: string
         }
         Update: {
           _order?: number | null
           _parent_id?: string | null
           created_at?: string
+          downloads_id?: string | null
           id?: string
+          media_id?: string | null
           option?: string | null
           order?: number | null
+          parent_id?: string | null
+          path?: string | null
+          private_id?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -1520,11 +2994,23 @@ export type Database = {
         Row: {
           _order: number | null
           _parent_id: string
+          course_lessons_id: string | null
+          course_quizzes_id: string | null
+          courses_id: string | null
           created_at: string | null
+          documentation_id: string | null
+          downloads_id: string | null
           field: string | null
           id: string
+          media_id: string | null
           order: number | null
+          parent_id: string | null
           path: string | null
+          posts_id: string | null
+          private_id: string | null
+          quiz_id_id: string | null
+          quiz_questions_id: string | null
+          survey_questions_id: string | null
           surveys_id: string | null
           updated_at: string | null
           value: string | null
@@ -1532,11 +3018,23 @@ export type Database = {
         Insert: {
           _order?: number | null
           _parent_id: string
+          course_lessons_id?: string | null
+          course_quizzes_id?: string | null
+          courses_id?: string | null
           created_at?: string | null
+          documentation_id?: string | null
+          downloads_id?: string | null
           field?: string | null
           id?: string
+          media_id?: string | null
           order?: number | null
+          parent_id?: string | null
           path?: string | null
+          posts_id?: string | null
+          private_id?: string | null
+          quiz_id_id?: string | null
+          quiz_questions_id?: string | null
+          survey_questions_id?: string | null
           surveys_id?: string | null
           updated_at?: string | null
           value?: string | null
@@ -1544,11 +3042,23 @@ export type Database = {
         Update: {
           _order?: number | null
           _parent_id?: string
+          course_lessons_id?: string | null
+          course_quizzes_id?: string | null
+          courses_id?: string | null
           created_at?: string | null
+          documentation_id?: string | null
+          downloads_id?: string | null
           field?: string | null
           id?: string
+          media_id?: string | null
           order?: number | null
+          parent_id?: string | null
           path?: string | null
+          posts_id?: string | null
+          private_id?: string | null
+          quiz_id_id?: string | null
+          quiz_questions_id?: string | null
+          survey_questions_id?: string | null
           surveys_id?: string | null
           updated_at?: string | null
           value?: string | null
@@ -1574,8 +3084,13 @@ export type Database = {
         Row: {
           created_at: string | null
           description: string | null
+          downloads_id: string[] | null
           end_message: string | null
           id: string
+          media_id: string | null
+          parent_id: string | null
+          path: string | null
+          private_id: string | null
           published_at: string | null
           show_progress_bar: boolean | null
           slug: string | null
@@ -1588,8 +3103,13 @@ export type Database = {
         Insert: {
           created_at?: string | null
           description?: string | null
+          downloads_id?: string[] | null
           end_message?: string | null
           id?: string
+          media_id?: string | null
+          parent_id?: string | null
+          path?: string | null
+          private_id?: string | null
           published_at?: string | null
           show_progress_bar?: boolean | null
           slug?: string | null
@@ -1602,8 +3122,13 @@ export type Database = {
         Update: {
           created_at?: string | null
           description?: string | null
+          downloads_id?: string[] | null
           end_message?: string | null
           id?: string
+          media_id?: string | null
+          parent_id?: string | null
+          path?: string | null
+          private_id?: string | null
           published_at?: string | null
           show_progress_bar?: boolean | null
           slug?: string | null
@@ -1615,43 +3140,115 @@ export type Database = {
         }
         Relationships: []
       }
+      surveys__downloads: {
+        Row: {
+          created_at: string | null
+          downloads_id: string | null
+          id: string
+          media_id: string | null
+          order: number | null
+          order_column: number | null
+          parent_id: string
+          path: string | null
+          private_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          downloads_id?: string | null
+          id?: string
+          media_id?: string | null
+          order?: number | null
+          order_column?: number | null
+          parent_id: string
+          path?: string | null
+          private_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          downloads_id?: string | null
+          id?: string
+          media_id?: string | null
+          order?: number | null
+          order_column?: number | null
+          parent_id?: string
+          path?: string | null
+          private_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       surveys_rels: {
         Row: {
           _order: number | null
           _parent_id: string
+          course_lessons_id: string | null
+          course_quizzes_id: string | null
+          courses_id: string | null
           created_at: string | null
+          documentation_id: string | null
+          downloads_id: string | null
           field: string | null
           id: string
+          media_id: string | null
           order: number | null
           parent_id: string | null
           path: string | null
+          posts_id: string | null
+          private_id: string | null
+          quiz_id_id: string | null
+          quiz_questions_id: string | null
           survey_questions_id: string | null
+          surveys_id: string | null
           updated_at: string | null
           value: string | null
         }
         Insert: {
           _order?: number | null
           _parent_id: string
+          course_lessons_id?: string | null
+          course_quizzes_id?: string | null
+          courses_id?: string | null
           created_at?: string | null
+          documentation_id?: string | null
+          downloads_id?: string | null
           field?: string | null
           id?: string
+          media_id?: string | null
           order?: number | null
           parent_id?: string | null
           path?: string | null
+          posts_id?: string | null
+          private_id?: string | null
+          quiz_id_id?: string | null
+          quiz_questions_id?: string | null
           survey_questions_id?: string | null
+          surveys_id?: string | null
           updated_at?: string | null
           value?: string | null
         }
         Update: {
           _order?: number | null
           _parent_id?: string
+          course_lessons_id?: string | null
+          course_quizzes_id?: string | null
+          courses_id?: string | null
           created_at?: string | null
+          documentation_id?: string | null
+          downloads_id?: string | null
           field?: string | null
           id?: string
+          media_id?: string | null
           order?: number | null
           parent_id?: string | null
           path?: string | null
+          posts_id?: string | null
+          private_id?: string | null
+          quiz_id_id?: string | null
+          quiz_questions_id?: string | null
           survey_questions_id?: string | null
+          surveys_id?: string | null
           updated_at?: string | null
           value?: string | null
         }
@@ -1675,6 +3272,7 @@ export type Database = {
       users: {
         Row: {
           created_at: string
+          downloads_id: string | null
           email: string
           first_name: string | null
           hash: string | null
@@ -1682,6 +3280,10 @@ export type Database = {
           last_name: string | null
           lock_until: string | null
           login_attempts: number | null
+          media_id: string | null
+          parent_id: string | null
+          path: string | null
+          private_id: string | null
           reset_password_expiration: string | null
           reset_password_token: string | null
           salt: string | null
@@ -1689,6 +3291,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          downloads_id?: string | null
           email: string
           first_name?: string | null
           hash?: string | null
@@ -1696,6 +3299,10 @@ export type Database = {
           last_name?: string | null
           lock_until?: string | null
           login_attempts?: number | null
+          media_id?: string | null
+          parent_id?: string | null
+          path?: string | null
+          private_id?: string | null
           reset_password_expiration?: string | null
           reset_password_token?: string | null
           salt?: string | null
@@ -1703,6 +3310,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          downloads_id?: string | null
           email?: string
           first_name?: string | null
           hash?: string | null
@@ -1710,6 +3318,10 @@ export type Database = {
           last_name?: string | null
           lock_until?: string | null
           login_attempts?: number | null
+          media_id?: string | null
+          parent_id?: string | null
+          path?: string | null
+          private_id?: string | null
           reset_password_expiration?: string | null
           reset_password_token?: string | null
           salt?: string | null
@@ -1719,10 +3331,67 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      downloads_diagnostic: {
+        Row: {
+          filename: string | null
+          id: string | null
+          lesson_refs: number | null
+          url: string | null
+        }
+        Relationships: []
+      }
+      downloads_relationships: {
+        Row: {
+          collection_type: string | null
+          download_id: string | null
+          table_name: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
-      [_ in never]: never
+      collection_has_download: {
+        Args: {
+          collection_id: string
+          collection_type: string
+          download_id: string
+        }
+        Returns: boolean
+      }
+      ensure_downloads_id_column: {
+        Args: { table_name: string }
+        Returns: undefined
+      }
+      ensure_downloads_id_column_exists: {
+        Args: { table_name: string }
+        Returns: boolean
+      }
+      ensure_relationship_columns: {
+        Args: { table_name: string }
+        Returns: undefined
+      }
+      fix_dynamic_table: {
+        Args: { table_name: string }
+        Returns: boolean
+      }
+      get_downloads_for_collection: {
+        Args: { collection_id: string; collection_type: string }
+        Returns: {
+          download_id: string
+        }[]
+      }
+      get_relationship_data: {
+        Args: { table_name: string; id: string; fallback_column?: string }
+        Returns: string
+      }
+      safe_uuid_conversion: {
+        Args: { text_value: string }
+        Returns: string
+      }
+      scan_and_fix_uuid_tables: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
@@ -1834,6 +3503,317 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "roles"
             referencedColumns: ["name"]
+          },
+        ]
+      }
+      ai_cost_configuration: {
+        Row: {
+          created_at: string | null
+          effective_from: string | null
+          effective_to: string | null
+          id: string
+          input_cost_per_1k_tokens: number
+          is_active: boolean | null
+          markup_percentage: number | null
+          model: string
+          output_cost_per_1k_tokens: number
+          provider: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          effective_from?: string | null
+          effective_to?: string | null
+          id?: string
+          input_cost_per_1k_tokens: number
+          is_active?: boolean | null
+          markup_percentage?: number | null
+          model: string
+          output_cost_per_1k_tokens: number
+          provider: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          effective_from?: string | null
+          effective_to?: string | null
+          id?: string
+          input_cost_per_1k_tokens?: number
+          is_active?: boolean | null
+          markup_percentage?: number | null
+          model?: string
+          output_cost_per_1k_tokens?: number
+          provider?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      ai_credit_transactions: {
+        Row: {
+          allocation_id: string | null
+          amount: number
+          created_at: string | null
+          description: string | null
+          id: string
+          reference_id: string | null
+          team_id: string | null
+          transaction_type: string
+          user_id: string | null
+        }
+        Insert: {
+          allocation_id?: string | null
+          amount: number
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          reference_id?: string | null
+          team_id?: string | null
+          transaction_type: string
+          user_id?: string | null
+        }
+        Update: {
+          allocation_id?: string | null
+          amount?: number
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          reference_id?: string | null
+          team_id?: string | null
+          transaction_type?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_credit_transactions_allocation_id_fkey"
+            columns: ["allocation_id"]
+            isOneToOne: false
+            referencedRelation: "ai_usage_allocations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_credit_transactions_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_credit_transactions_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "user_account_workspace"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_credit_transactions_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "user_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_request_logs: {
+        Row: {
+          completion_tokens: number
+          cost: number
+          created_at: string | null
+          error: string | null
+          feature: string | null
+          id: string
+          model: string
+          portkey_verified: boolean | null
+          prompt_tokens: number
+          provider: string
+          request_id: string | null
+          request_timestamp: string | null
+          session_id: string | null
+          status: string | null
+          team_id: string | null
+          total_tokens: number
+          user_id: string | null
+        }
+        Insert: {
+          completion_tokens?: number
+          cost?: number
+          created_at?: string | null
+          error?: string | null
+          feature?: string | null
+          id?: string
+          model: string
+          portkey_verified?: boolean | null
+          prompt_tokens?: number
+          provider: string
+          request_id?: string | null
+          request_timestamp?: string | null
+          session_id?: string | null
+          status?: string | null
+          team_id?: string | null
+          total_tokens?: number
+          user_id?: string | null
+        }
+        Update: {
+          completion_tokens?: number
+          cost?: number
+          created_at?: string | null
+          error?: string | null
+          feature?: string | null
+          id?: string
+          model?: string
+          portkey_verified?: boolean | null
+          prompt_tokens?: number
+          provider?: string
+          request_id?: string | null
+          request_timestamp?: string | null
+          session_id?: string | null
+          status?: string | null
+          team_id?: string | null
+          total_tokens?: number
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_request_logs_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_request_logs_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "user_account_workspace"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_request_logs_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "user_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_usage_allocations: {
+        Row: {
+          allocation_type: string
+          created_at: string | null
+          credits_allocated: number
+          credits_used: number
+          id: string
+          is_active: boolean | null
+          next_reset_at: string | null
+          reset_frequency: string | null
+          team_id: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          allocation_type: string
+          created_at?: string | null
+          credits_allocated?: number
+          credits_used?: number
+          id?: string
+          is_active?: boolean | null
+          next_reset_at?: string | null
+          reset_frequency?: string | null
+          team_id?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          allocation_type?: string
+          created_at?: string | null
+          credits_allocated?: number
+          credits_used?: number
+          id?: string
+          is_active?: boolean | null
+          next_reset_at?: string | null
+          reset_frequency?: string | null
+          team_id?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_usage_allocations_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_usage_allocations_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "user_account_workspace"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_usage_allocations_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "user_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_usage_limits: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          limit_type: string
+          max_value: number
+          team_id: string | null
+          time_period: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          limit_type: string
+          max_value: number
+          team_id?: string | null
+          time_period: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          limit_type?: string
+          max_value?: number
+          team_id?: string | null
+          time_period?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_usage_limits_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_usage_limits_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "user_account_workspace"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_usage_limits_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "user_accounts"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -2820,11 +4800,12 @@ export type Database = {
     }
     Functions: {
       accept_invitation: {
-        Args: {
-          token: string
-          user_id: string
-        }
+        Args: { token: string; user_id: string }
         Returns: string
+      }
+      add_default_ai_allocations_for_existing_users: {
+        Args: Record<PropertyKey, never>
+        Returns: number
       }
       add_invitations_to_account: {
         Args: {
@@ -2833,19 +4814,36 @@ export type Database = {
         }
         Returns: Database["public"]["Tables"]["invitations"]["Row"][]
       }
-      can_action_account_member: {
+      calculate_ai_cost: {
         Args: {
-          target_team_account_id: string
-          target_user_id: string
+          p_provider: string
+          p_model: string
+          p_prompt_tokens: number
+          p_completion_tokens: number
         }
+        Returns: number
+      }
+      can_action_account_member: {
+        Args: { target_team_account_id: string; target_user_id: string }
         Returns: boolean
       }
-      create_invitation: {
+      check_ai_usage_limits: {
         Args: {
-          account_id: string
-          email: string
-          role: string
+          p_entity_type: string
+          p_entity_id: string
+          p_cost: number
+          p_tokens: number
         }
+        Returns: {
+          limit_exceeded: boolean
+          limit_type: string
+          time_period: string
+          current_usage: number
+          max_value: number
+        }[]
+      }
+      create_invitation: {
+        Args: { account_id: string; email: string; role: string }
         Returns: {
           account_id: string
           created_at: string
@@ -2870,9 +4868,7 @@ export type Database = {
         Returns: Json
       }
       create_team_account: {
-        Args: {
-          account_name: string
-        }
+        Args: { account_name: string }
         Returns: {
           created_at: string | null
           created_by: string | null
@@ -2888,10 +4884,18 @@ export type Database = {
           updated_by: string | null
         }
       }
-      get_account_invitations: {
+      deduct_ai_credits: {
         Args: {
-          account_slug: string
+          p_entity_type: string
+          p_entity_id: string
+          p_amount: number
+          p_feature: string
+          p_request_id: string
         }
+        Returns: boolean
+      }
+      get_account_invitations: {
+        Args: { account_slug: string }
         Returns: {
           id: number
           email: string
@@ -2906,9 +4910,7 @@ export type Database = {
         }[]
       }
       get_account_members: {
-        Args: {
-          account_slug: string
-        }
+        Args: { account_slug: string }
         Returns: {
           id: string
           user_id: string
@@ -2928,9 +4930,7 @@ export type Database = {
         Returns: Json
       }
       get_nonce_status: {
-        Args: {
-          p_id: string
-        }
+        Args: { p_id: string }
         Returns: Json
       }
       get_upper_system_role: {
@@ -2938,9 +4938,7 @@ export type Database = {
         Returns: string
       }
       has_active_subscription: {
-        Args: {
-          target_account_id: string
-        }
+        Args: { target_account_id: string }
         Returns: boolean
       }
       has_more_elevated_role: {
@@ -2960,10 +4958,7 @@ export type Database = {
         Returns: boolean
       }
       has_role_on_account: {
-        Args: {
-          account_id: string
-          account_role?: string
-        }
+        Args: { account_id: string; account_role?: string }
         Returns: boolean
       }
       has_same_role_hierarchy_level: {
@@ -2975,11 +4970,7 @@ export type Database = {
         Returns: boolean
       }
       insert_certificate: {
-        Args: {
-          p_user_id: string
-          p_course_id: string
-          p_file_path: string
-        }
+        Args: { p_user_id: string; p_course_id: string; p_file_path: string }
         Returns: {
           id: string
         }[]
@@ -2989,15 +4980,11 @@ export type Database = {
         Returns: boolean
       }
       is_account_owner: {
-        Args: {
-          account_id: string
-        }
+        Args: { account_id: string }
         Returns: boolean
       }
       is_account_team_member: {
-        Args: {
-          target_account_id: string
-        }
+        Args: { target_account_id: string }
         Returns: boolean
       }
       is_mfa_compliant: {
@@ -3005,9 +4992,7 @@ export type Database = {
         Returns: boolean
       }
       is_set: {
-        Args: {
-          field_name: string
-        }
+        Args: { field_name: string }
         Returns: boolean
       }
       is_super_admin: {
@@ -3015,23 +5000,19 @@ export type Database = {
         Returns: boolean
       }
       is_team_member: {
-        Args: {
-          account_id: string
-          user_id: string
-        }
+        Args: { account_id: string; user_id: string }
         Returns: boolean
       }
+      reset_ai_allocations: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
       revoke_nonce: {
-        Args: {
-          p_id: string
-          p_reason?: string
-        }
+        Args: { p_id: string; p_reason?: string }
         Returns: boolean
       }
       team_account_workspace: {
-        Args: {
-          account_slug: string
-        }
+        Args: { account_slug: string }
         Returns: {
           id: string
           name: string
@@ -3045,10 +5026,7 @@ export type Database = {
         }[]
       }
       transfer_team_account_ownership: {
-        Args: {
-          target_account_id: string
-          new_owner_id: string
-        }
+        Args: { target_account_id: string; new_owner_id: string }
         Returns: undefined
       }
       upsert_order: {
@@ -3371,30 +5349,19 @@ export type Database = {
     }
     Functions: {
       can_insert_object: {
-        Args: {
-          bucketid: string
-          name: string
-          owner: string
-          metadata: Json
-        }
+        Args: { bucketid: string; name: string; owner: string; metadata: Json }
         Returns: undefined
       }
       extension: {
-        Args: {
-          name: string
-        }
+        Args: { name: string }
         Returns: string
       }
       filename: {
-        Args: {
-          name: string
-        }
+        Args: { name: string }
         Returns: string
       }
       foldername: {
-        Args: {
-          name: string
-        }
+        Args: { name: string }
         Returns: string[]
       }
       get_size_by_bucket: {

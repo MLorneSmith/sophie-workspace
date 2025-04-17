@@ -134,6 +134,43 @@ CREATE POLICY "Teams can view their AI requests" ON public.ai_request_logs
     AND user_id = auth.uid()
   ));
 
+-- Add explicit insert permissions for ai_request_logs
+CREATE POLICY "Allow insert for authenticated users" ON public.ai_request_logs
+  FOR INSERT
+  TO authenticated
+  WITH CHECK (true);
+
+-- Add service role policies to all AI tracking tables
+CREATE POLICY "Service role can do all operations on ai_request_logs" ON public.ai_request_logs
+  FOR ALL
+  TO service_role
+  USING (true)
+  WITH CHECK (true);
+
+CREATE POLICY "Service role can do all operations on ai_usage_allocations" ON public.ai_usage_allocations
+  FOR ALL
+  TO service_role
+  USING (true)
+  WITH CHECK (true);
+
+CREATE POLICY "Service role can do all operations on ai_credit_transactions" ON public.ai_credit_transactions
+  FOR ALL
+  TO service_role
+  USING (true)
+  WITH CHECK (true);
+
+CREATE POLICY "Service role can do all operations on ai_cost_configuration" ON public.ai_cost_configuration
+  FOR ALL
+  TO service_role
+  USING (true)
+  WITH CHECK (true);
+
+CREATE POLICY "Service role can do all operations on ai_usage_limits" ON public.ai_usage_limits
+  FOR ALL
+  TO service_role
+  USING (true)
+  WITH CHECK (true);
+
 -- User access policies for ai_usage_allocations
 CREATE POLICY "Users can view their own allocations" ON public.ai_usage_allocations
   FOR SELECT USING (auth.uid() = user_id);
