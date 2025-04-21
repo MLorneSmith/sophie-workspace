@@ -36,6 +36,7 @@ import {
 import { AdminDeleteAccountDialog } from './admin-delete-account-dialog';
 import { AdminDeleteUserDialog } from './admin-delete-user-dialog';
 import { AdminImpersonateUserDialog } from './admin-impersonate-user-dialog';
+import { AdminResetPasswordDialog } from './admin-reset-password-dialog';
 
 type Account = Database['public']['Tables']['accounts']['Row'];
 
@@ -203,50 +204,58 @@ function getColumns(): ColumnDef<Account>[] {
         const userId = row.original.id;
 
         return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant={'ghost'}>
-                <EllipsisVertical className={'h-4'} />
-              </Button>
-            </DropdownMenuTrigger>
+          <div className={'flex justify-end'}>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant={'outline'} size={'icon'}>
+                  <EllipsisVertical className={'h-4'} />
+                </Button>
+              </DropdownMenuTrigger>
 
-            <DropdownMenuContent align={'end'}>
-              <DropdownMenuGroup>
-                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuContent align={'end'}>
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel>Actions</DropdownMenuLabel>
 
-                <DropdownMenuItem>
-                  <Link
-                    className={'h-full w-full'}
-                    href={`/admin/accounts/${userId}`}
-                  >
-                    View
-                  </Link>
-                </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Link
+                      className={'h-full w-full'}
+                      href={`/admin/accounts/${userId}`}
+                    >
+                      View
+                    </Link>
+                  </DropdownMenuItem>
 
-                <If condition={isPersonalAccount}>
-                  <AdminImpersonateUserDialog userId={userId}>
-                    <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                      Impersonate User
-                    </DropdownMenuItem>
-                  </AdminImpersonateUserDialog>
+                  <If condition={isPersonalAccount}>
+                    <AdminResetPasswordDialog userId={userId}>
+                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        Send Reset Password link
+                      </DropdownMenuItem>
+                    </AdminResetPasswordDialog>
 
-                  <AdminDeleteUserDialog userId={userId}>
-                    <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                      Delete Personal Account
-                    </DropdownMenuItem>
-                  </AdminDeleteUserDialog>
-                </If>
+                    <AdminImpersonateUserDialog userId={userId}>
+                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        Impersonate User
+                      </DropdownMenuItem>
+                    </AdminImpersonateUserDialog>
 
-                <If condition={!isPersonalAccount}>
-                  <AdminDeleteAccountDialog accountId={row.original.id}>
-                    <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                      Delete Team Account
-                    </DropdownMenuItem>
-                  </AdminDeleteAccountDialog>
-                </If>
-              </DropdownMenuGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                    <AdminDeleteUserDialog userId={userId}>
+                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        Delete Personal Account
+                      </DropdownMenuItem>
+                    </AdminDeleteUserDialog>
+                  </If>
+
+                  <If condition={!isPersonalAccount}>
+                    <AdminDeleteAccountDialog accountId={row.original.id}>
+                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        Delete Team Account
+                      </DropdownMenuItem>
+                    </AdminDeleteAccountDialog>
+                  </If>
+                </DropdownMenuGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         );
       },
     },

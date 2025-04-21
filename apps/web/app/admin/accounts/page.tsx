@@ -1,9 +1,11 @@
 import { ServerDataLoader } from '@makerkit/data-loader-supabase-nextjs';
 
 import { AdminAccountsTable } from '@kit/admin/components/admin-accounts-table';
+import { AdminCreateUserDialog } from '@kit/admin/components/admin-create-user-dialog';
 import { AdminGuard } from '@kit/admin/components/admin-guard';
 import { getSupabaseServerClient } from '@kit/supabase/server-client';
 import { AppBreadcrumbs } from '@kit/ui/app-breadcrumbs';
+import { Button } from '@kit/ui/button';
 import { PageBody, PageHeader } from '@kit/ui/page';
 
 interface SearchParams {
@@ -27,7 +29,13 @@ async function AccountsPage(props: AdminAccountsPageProps) {
 
   return (
     <>
-      <PageHeader description={<AppBreadcrumbs />} />
+      <PageHeader description={<AppBreadcrumbs />}>
+        <div className="flex justify-end">
+          <AdminCreateUserDialog>
+            <Button data-test="admin-create-user-button">Create User</Button>
+          </AdminCreateUserDialog>
+        </div>
+      </PageHeader>
 
       <PageBody>
         <ServerDataLoader
