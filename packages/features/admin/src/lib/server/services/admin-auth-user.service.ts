@@ -2,6 +2,8 @@ import 'server-only';
 
 import { SupabaseClient } from '@supabase/supabase-js';
 
+import { z } from 'zod';
+
 import { Database } from '@kit/supabase/database';
 
 export function createAdminAuthUserService(
@@ -154,5 +156,48 @@ class AdminAuthUserService {
     await this.adminClient.auth.admin.updateUserById(userId, {
       ban_duration: banDuration,
     });
+  }
+
+  /**
+   * Reset a user's password by sending a password reset email.
+   * @param userId
+   */
+  async resetPassword(userId: string) {
+    await this.assertUserIsNotCurrentSuperAdmin(userId);
+
+    const {
+      data: { user },
+      error,
+    } = await this.adminClient.auth.admin.getUserById(userId);
+
+    if (error ?? !user) {
+      throw new Error(`Error fetching user`);
+    }
+
+    const email = user.email;
+
+    if (!email) {
+      throw new Error(`User has no email. Cannot reset password`);
+    }
+
+    // Get the site URL from environment variable
+    const siteUrl = z.string().url().parse(process.env.NEXT_PUBLIC_SITE_URL);
+
+    const redirectTo = `${siteUrl}/update-password`;
+
+    const { error: resetError } =
+      await this.adminClient.auth.resetPasswordForEmail(email, {
+        redirectTo,
+      });
+
+    if (resetError) {
+      throw new Error(
+        `Error sending password reset email: ${resetError.message}`,
+      );
+    }
+
+    return {
+      success: true,
+    };
   }
 }

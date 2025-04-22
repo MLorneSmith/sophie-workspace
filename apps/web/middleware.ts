@@ -26,7 +26,8 @@ const getUser = (request: NextRequest, response: NextResponse) => {
 };
 
 export async function middleware(request: NextRequest) {
-  const response = NextResponse.next();
+  const secureHeaders = await createResponseWithSecureHeaders();
+  const response = NextResponse.next(secureHeaders);
 
   // set a unique request ID for each request
   // this helps us log and trace requests
@@ -61,7 +62,7 @@ export async function middleware(request: NextRequest) {
 
 async function withCsrfMiddleware(
   request: NextRequest,
-  response = new NextResponse(),
+  response: NextResponse,
 ) {
   // set up CSRF protection
   const csrfProtect = createCsrfProtect({
@@ -102,7 +103,7 @@ async function adminMiddleware(request: NextRequest, response: NextResponse) {
   const isAdminPath = request.nextUrl.pathname.startsWith('/admin');
 
   if (!isAdminPath) {
-    return response;
+    return;
   }
 
   const {
@@ -266,4 +267,22 @@ function matchUrlPattern(url: string) {
  */
 function setRequestId(request: Request) {
   request.headers.set('x-correlation-id', crypto.randomUUID());
+}
+
+/**
+ * @name createResponseWithSecureHeaders
+ * @description Create a middleware with enhanced headers applied (if applied).
+ * This is disabled by default. To enable set ENABLE_STRICT_CSP=true
+ */
+async function createResponseWithSecureHeaders() {
+  const enableStrictCsp = process.env.ENABLE_STRICT_CSP ?? 'false';
+
+  // we disable ENABLE_STRICT_CSP by default
+  if (enableStrictCsp === 'false') {
+    return {};
+  }
+
+  const { createCspResponse } = await import('./lib/create-csp-response');
+
+  return createCspResponse();
 }

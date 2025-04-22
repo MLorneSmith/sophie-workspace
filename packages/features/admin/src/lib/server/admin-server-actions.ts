@@ -15,6 +15,8 @@ import {
   ImpersonateUserSchema,
   ReactivateUserSchema,
 } from './schema/admin-actions.schema';
+import { CreateUserSchema } from './schema/create-user.schema';
+import { ResetPasswordSchema } from './schema/reset-password.schema';
 import { createAdminAccountsService } from './services/admin-accounts.service';
 import { createAdminAuthUserService } from './services/admin-auth-user.service';
 import { adminAction } from './utils/admin-action';
@@ -150,6 +152,80 @@ export const deleteAccountAction = adminAction(
   ),
 );
 
+/**
+ * @name createUserAction
+ * @description Create a new user in the system.
+ */
+export const createUserAction = adminAction(
+  enhanceAction(
+    async ({ email, password, emailConfirm }) => {
+      const adminClient = getSupabaseServerAdminClient();
+      const logger = await getLogger();
+
+      logger.info({ email }, `Super Admin is creating a new user...`);
+
+      const { data, error } = await adminClient.auth.admin.createUser({
+        email,
+        password,
+        email_confirm: emailConfirm,
+      });
+
+      if (error) {
+        logger.error({ error }, `Error creating user`);
+        throw new Error(`Error creating user: ${error.message}`);
+      }
+
+      logger.info(
+        { userId: data.user.id },
+        `Super Admin has successfully created a new user`,
+      );
+
+      revalidateAdmin();
+
+      return {
+        success: true,
+        user: data.user,
+      };
+    },
+    {
+      schema: CreateUserSchema,
+    },
+  ),
+);
+
+/**
+ * @name resetPasswordAction
+ * @description Reset a user's password by sending a password reset email.
+ */
+export const resetPasswordAction = adminAction(
+  enhanceAction(
+    async ({ userId }) => {
+      const service = getAdminAuthService();
+      const logger = await getLogger();
+
+      logger.info({ userId }, `Super Admin is resetting user password...`);
+
+      const result = await service.resetPassword(userId);
+
+      logger.info(
+        { userId },
+        `Super Admin has successfully sent password reset email`,
+      );
+
+      revalidateAdmin();
+
+      return result;
+    },
+    {
+      schema: ResetPasswordSchema,
+    },
+  ),
+);
+
+function revalidateAdmin() {
+  revalidatePath('/admin', 'layout');
+}
+
 function getAdminAuthService() {
   const client = getSupabaseServerClient();
   const adminClient = getSupabaseServerAdminClient();
@@ -161,8 +237,4 @@ function getAdminAccountsService() {
   const adminClient = getSupabaseServerAdminClient();
 
   return createAdminAccountsService(adminClient);
-}
-
-function revalidateAdmin() {
-  revalidatePath('/admin', 'layout');
 }

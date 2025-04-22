@@ -2,13 +2,10 @@ import { use } from 'react';
 
 import { cookies } from 'next/headers';
 
+import { z } from 'zod';
+
 import { TeamAccountWorkspaceContextProvider } from '@kit/team-accounts/components';
-import {
-  Page,
-  PageLayoutStyle,
-  PageMobileNavigation,
-  PageNavigation,
-} from '@kit/ui/page';
+import { Page, PageMobileNavigation, PageNavigation } from '@kit/ui/page';
 import { SidebarProvider } from '@kit/ui/shadcn-sidebar';
 
 import { AppLogo } from '~/components/app-logo';
@@ -124,19 +121,26 @@ function HeaderLayout({
 
 async function getLayoutState(account: string) {
   const cookieStore = await cookies();
+  const config = getTeamAccountSidebarConfig(account);
+
+  const LayoutStyleSchema = z
+    .enum(['sidebar', 'header', 'custom'])
+    .default(config.style);
+
   const sidebarOpenCookie = cookieStore.get('sidebar:state');
   const layoutCookie = cookieStore.get('layout-style');
 
-  const layoutStyle = layoutCookie?.value as PageLayoutStyle;
-  const config = getTeamAccountSidebarConfig(account);
+  const layoutStyle = LayoutStyleSchema.safeParse(layoutCookie?.value);
 
   const sidebarOpenCookieValue = sidebarOpenCookie
     ? sidebarOpenCookie.value === 'false'
     : !config.sidebarCollapsed;
 
+  const style = layoutStyle.success ? layoutStyle.data : config.style;
+
   return {
     open: sidebarOpenCookieValue,
-    style: layoutStyle ?? config.style,
+    style,
   };
 }
 

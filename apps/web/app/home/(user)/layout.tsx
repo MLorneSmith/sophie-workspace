@@ -2,6 +2,8 @@ import { use } from 'react';
 
 import { cookies } from 'next/headers';
 
+import { z } from 'zod';
+
 import { UserWorkspaceContextProvider } from '@kit/accounts/components';
 import { Page, PageMobileNavigation, PageNavigation } from '@kit/ui/page';
 import { SidebarProvider } from '@kit/ui/shadcn-sidebar';
@@ -88,18 +90,23 @@ function MobileNavigation({
 async function getLayoutState() {
   const cookieStore = await cookies();
 
+  const LayoutStyleSchema = z.enum(['sidebar', 'header', 'custom']);
+
   const layoutStyleCookie = cookieStore.get('layout-style');
   const sidebarOpenCookie = cookieStore.get('sidebar:state');
 
-  const sidebarOpenCookieValue = sidebarOpenCookie
+  const sidebarOpen = sidebarOpenCookie
     ? sidebarOpenCookie.value === 'false'
     : !personalAccountNavigationConfig.sidebarCollapsed;
 
-  const style =
-    layoutStyleCookie?.value ?? personalAccountNavigationConfig.style;
+  const parsedStyle = LayoutStyleSchema.safeParse(layoutStyleCookie?.value);
+
+  const style = parsedStyle.success
+    ? parsedStyle.data
+    : personalAccountNavigationConfig.style;
 
   return {
-    open: sidebarOpenCookieValue,
+    open: sidebarOpen,
     style,
   };
 }

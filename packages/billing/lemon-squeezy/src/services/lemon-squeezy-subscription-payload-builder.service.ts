@@ -1,4 +1,4 @@
-import { BillingConfig, getLineItemTypeById } from '@kit/billing';
+import { BillingConfig } from '@kit/billing';
 import { UpsertSubscriptionParams } from '@kit/billing/types';
 
 type SubscriptionStatus =
@@ -26,17 +26,6 @@ class LemonSqueezySubscriptionPayloadBuilderService {
   private config?: BillingConfig;
 
   /**
-   * @name withBillingConfig
-   * @description Set the billing config for the subscription payload
-   * @param config
-   */
-  withBillingConfig(config: BillingConfig) {
-    this.config = config;
-
-    return this;
-  }
-
-  /**
    * @name build
    * @description Build the subscription payload for Lemon Squeezy
    * @param params
@@ -48,6 +37,7 @@ class LemonSqueezySubscriptionPayloadBuilderService {
       product: string;
       variant: string;
       priceAmount: number;
+      type: 'flat' | 'per_seat' | 'metered';
     },
   >(params: {
     id: string;
@@ -85,9 +75,7 @@ class LemonSqueezySubscriptionPayloadBuilderService {
         product_id: item.product,
         variant_id: item.variant,
         price_amount: item.priceAmount,
-        type: this.config
-          ? getLineItemTypeById(this.config, item.variant)
-          : undefined,
+        type: item.type,
       };
     });
 

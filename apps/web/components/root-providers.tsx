@@ -37,14 +37,21 @@ const CaptchaTokenSetter = dynamic(async () => {
   };
 });
 
+type RootProvidersProps = React.PropsWithChildren<{
+  // The language to use for the app (optional)
+  lang?: string;
+  // The theme (light or dark or system) (optional)
+  theme?: string;
+  // The CSP nonce to pass to scripts (optional)
+  nonce?: string;
+}>;
+
 export function RootProviders({
   lang,
   theme = appConfig.theme,
+  nonce,
   children,
-}: React.PropsWithChildren<{
-  lang?: string;
-  theme?: string;
-}>) {
+}: RootProvidersProps) {
   const i18nSettings = useMemo(() => getI18nSettings(lang), [lang]);
 
   return (
@@ -63,6 +70,7 @@ export function RootProviders({
                     disableTransitionOnChange
                     defaultTheme={theme}
                     enableColorScheme={false}
+                    nonce={nonce}
                   >
                     {children}
                   </ThemeProvider>

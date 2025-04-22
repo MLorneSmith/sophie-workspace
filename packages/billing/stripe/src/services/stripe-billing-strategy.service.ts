@@ -380,16 +380,30 @@ export class StripeBillingStrategyService
       const customer = subscription.customer as string;
       const accountId = subscription.metadata?.accountId as string;
 
+      const periodStartsAt =
+        subscriptionPayloadBuilder.getPeriodStartsAt(subscription);
+
+      const periodEndsAt =
+        subscriptionPayloadBuilder.getPeriodEndsAt(subscription);
+
+      const lineItems = subscription.items.data.map((item) => {
+        return {
+          ...item,
+          // we cannot retrieve this from the API, user should retrieve from the billing configuration if needed
+          type: '' as never,
+        };
+      });
+
       return subscriptionPayloadBuilder.build({
         customerId: customer,
         accountId,
         id: subscription.id,
-        lineItems: subscription.items.data,
+        lineItems,
         status: subscription.status,
         currency: subscription.currency,
         cancelAtPeriodEnd: subscription.cancel_at_period_end,
-        periodStartsAt: subscription.current_period_start,
-        periodEndsAt: subscription.current_period_end,
+        periodStartsAt,
+        periodEndsAt,
         trialStartsAt: subscription.trial_start,
         trialEndsAt: subscription.trial_end,
       });

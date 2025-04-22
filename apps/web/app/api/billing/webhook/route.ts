@@ -1,3 +1,4 @@
+import { getPlanTypesMap } from '@kit/billing';
 import { getBillingEventHandlerService } from '@kit/billing-gateway';
 import { enhanceRouteHandler } from '@kit/next/routes';
 import { getLogger } from '@kit/shared/logger';
@@ -25,7 +26,7 @@ export const POST = enhanceRouteHandler(
     const service = await getBillingEventHandlerService(
       supabaseClientProvider,
       provider,
-      billingConfig,
+      getPlanTypesMap(billingConfig),
     );
 
     try {
