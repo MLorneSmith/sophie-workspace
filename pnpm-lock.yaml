@@ -196,6 +196,9 @@ importers:
       '@marsidev/react-turnstile':
         specifier: ^1.1.0
         version: 1.1.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@nosecone/next':
+        specifier: 1.0.0-beta.6
+        version: 1.0.0-beta.6(next@15.3.1(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(babel-plugin-react-compiler@19.0.0-beta-ebf51a3-20250411)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))
       '@radix-ui/react-icons':
         specifier: ^1.3.2
         version: 1.3.2(react@19.1.0)
@@ -2171,6 +2174,12 @@ packages:
   '@nolyfill/is-core-module@1.0.39':
     resolution: {integrity: sha512-nn5ozdjYQpUCZlWGuxcJY/KpxkWQs4DcbMCmKojjyrYDEAGy4Ce19NN4v5MduafTwJlbKc99UA8YhSVqq9yPZA==}
     engines: {node: '>=12.4.0'}
+
+  '@nosecone/next@1.0.0-beta.6':
+    resolution: {integrity: sha512-WIda5bNyUdm5M653IiPhdFuYz7to4/b/sdgZtldTrTihbiJQEq9KbpMvtAKvPSTeqn6W4y3Io/dMF5bBQie9Fw==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      next: '>=14'
 
   '@opentelemetry/api-logs@0.50.0':
     resolution: {integrity: sha512-JdZuKrhOYggqOpUljAq4WWNi5nB10PmgoF0y2CvedLGXd0kSawb/UBnWT8gg1ND3bHCNHStAIVT0ELlxJJRqrA==}
@@ -6710,6 +6719,10 @@ packages:
     resolution: {integrity: sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==}
     engines: {node: '>=0.10.0'}
 
+  nosecone@1.0.0-beta.6:
+    resolution: {integrity: sha512-h+cxBMOuv8VaRwBAt9/W9+PJfgi4N7EcjHwxwl1Rf0d9cFen1zphg4qooydUnZ+9ezeBzg64xMcWFROLy4QKDg==}
+    engines: {node: '>=18'}
+
   npm-normalize-package-bin@4.0.0:
     resolution: {integrity: sha512-TZKxPvItzai9kN9H/TkmCtx/ZN/hvr3vUycjlfmH0ootY9yFBzNOpiXAdIn1Iteqsvk4lQn6B5PTrt+n6h8k/w==}
     engines: {node: ^18.17.0 || >=20.5.0}
@@ -9098,6 +9111,11 @@ snapshots:
       fastq: 1.19.1
 
   '@nolyfill/is-core-module@1.0.39': {}
+
+  '@nosecone/next@1.0.0-beta.6(next@15.3.1(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(babel-plugin-react-compiler@19.0.0-beta-ebf51a3-20250411)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))':
+    dependencies:
+      next: 15.3.1(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(babel-plugin-react-compiler@19.0.0-beta-ebf51a3-20250411)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      nosecone: 1.0.0-beta.6
 
   '@opentelemetry/api-logs@0.50.0':
     dependencies:
@@ -14619,6 +14637,8 @@ snapshots:
   nodemailer@6.10.1: {}
 
   normalize-path@3.0.0: {}
+
+  nosecone@1.0.0-beta.6: {}
 
   npm-normalize-package-bin@4.0.0: {}
 

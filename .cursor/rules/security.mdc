@@ -126,7 +126,7 @@ Consider using OTP tokens when implementing highly destructive operations like d
 
 ### Personal Information
 
-- Never log or expose sensitive user data
+- Never log or expose sensitive user data (api keys, passwords, secrets, etc.)
 - Use proper session management
 
 ## Error Handling

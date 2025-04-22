@@ -1,3 +1,5 @@
+import { headers } from 'next/headers';
+
 import { Toaster } from '@kit/ui/sonner';
 
 import { RootProviders } from '~/components/root-providers';
@@ -20,11 +22,12 @@ export default async function RootLayout({
   const { language } = await createI18nServerInstance();
   const theme = await getRootTheme();
   const className = getFontsClassName(theme);
+  const nonce = await getCspNonce();
 
   return (
     <html lang={language} className={className}>
       <body>
-        <RootProviders theme={theme} lang={language}>
+        <RootProviders theme={theme} lang={language} nonce={nonce}>
           {children}
         </RootProviders>
 
@@ -32,4 +35,10 @@ export default async function RootLayout({
       </body>
     </html>
   );
+}
+
+async function getCspNonce() {
+  const headersStore = await headers();
+
+  return headersStore.get('x-nonce') ?? undefined;
 }
