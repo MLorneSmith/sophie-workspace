@@ -208,9 +208,33 @@ function Fix-Relationships {
         Log-Message "Running edge case repairs..." "Yellow"
         Exec-Command -command "pnpm run repair:edge-cases" -description "Running edge case repairs" -continueOnError
 
+        # Run Payload CMS relationship fix with strict typing (highest priority)
+        Log-Message "Running Payload CMS relationship fix with strict typing..." "Yellow"
+        Exec-Command -command "pnpm run fix:payload-relationships-strict" -description "Fixing Payload relationships with strict typing" -continueOnError
+        
+        # Keep the previous fix for backward compatibility
+        Log-Message "Running comprehensive quiz relationship fix..." "Yellow"
+        Exec-Command -command "pnpm run fix:quiz-relationships-complete" -description "Fixing all quiz relationships" -continueOnError
+
         # Run lesson-quiz relationship fixes
         Log-Message "Running lesson-quiz relationship fixes..." "Yellow"
         Exec-Command -command "pnpm exec tsx src/scripts/repair/fix-lesson-quiz-field-name.ts" -description "Fixing lesson-quiz relationships" -continueOnError
+
+        # Fix invalid quiz references in lessons
+        Log-Message "Fixing invalid quiz references..." "Yellow"
+        Exec-Command -command "pnpm exec tsx src/scripts/repair/fix-invalid-quiz-references.ts" -description "Fixing invalid quiz references" -continueOnError
+
+        # Apply direct SQL fix for all quiz relationship issues
+        Log-Message "Applying direct SQL fix for quiz relationships..." "Yellow"
+        Exec-Command -command "pnpm run fix:direct-quiz-fix" -description "Applying direct quiz relationships fix" -continueOnError
+        
+        # For backward compatibility, still run existing quiz fix scripts
+        Log-Message "Running additional quiz relationship fixes..." "Gray"
+        Exec-Command -command "pnpm exec tsx src/scripts/repair/fix-quiz-question-relationships.ts" -description "Fixing quiz-question relationships" -continueOnError
+
+        # Fix references to quizzes without questions
+        Log-Message "Fixing references to quizzes without questions..." "Yellow"
+        Exec-Command -command "pnpm exec tsx src/scripts/repair/fix-quizzes-without-questions.ts" -description "Fixing references to quizzes without questions" -continueOnError
 
         # Fix survey questions population issue
         Log-Message "Fixing survey questions population..." "Yellow"
@@ -256,9 +280,25 @@ function Fix-Relationships {
         Log-Message "Fixing downloads metadata..." "Yellow"
         Exec-Command -command "pnpm run fix:downloads-metadata" -description "Fixing downloads metadata" -continueOnError
         
+        # Fix download R2 URLs with proper CDN links
+        Log-Message "Fixing download R2 URLs..." "Yellow"
+        Exec-Command -command "pnpm exec tsx src/scripts/repair/fix-download-r2-urls.ts" -description "Fixing download R2 URLs" -continueOnError
+        
+        # Fix download R2 mappings for placeholder files
+        Log-Message "Fixing download R2 mappings..." "Yellow"
+        Exec-Command -command "pnpm exec tsx src/scripts/repair/fix-download-r2-mappings.ts" -description "Fixing download R2 mappings" -continueOnError
+        
         # Clear lesson content to fix template tag rendering issues
         Log-Message "Clearing lesson content fields to fix template tag rendering..." "Yellow"
         Exec-Command -command "pnpm run clear:lesson-content" -description "Clearing lesson content fields" -continueOnError
+
+        # Run final course ID fix as the very last repair step
+        Log-Message "Running final course ID fix..." "Yellow"
+        Exec-Command -command "pnpm run fix:course-ids-final" -description "Final course ID fix" -continueOnError
+        
+        # Run quiz course ID fix with hooks approach
+        Log-Message "Fixing quiz course IDs with hooks approach..." "Yellow"
+        Exec-Command -command "pnpm --filter @kit/content-migrations run fix:quiz-course-ids" -description "Fixing quiz course IDs" -continueOnError
 
         # Run final verification
         Log-Message "Running final verification..." "Yellow"

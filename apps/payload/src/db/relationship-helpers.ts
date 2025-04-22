@@ -1,110 +1,37 @@
 /**
- * Enhanced relationship helpers with multi-tiered fallback strategy
+ * Simplified relationship helpers for downloads
  *
- * This module provides robust functions for working with Payload CMS relationships,
- * especially for handling downloads. It implements a multi-tiered fallback approach
- * that gracefully handles failures in any single approach.
+ * This module provides streamlined functions for working with download relationships
+ * following the one-way relationship model from content to downloads.
  */
 
 import { sql } from '@payloadcms/db-postgres'
 import type { Payload } from 'payload'
-import { DOWNLOAD_ID_MAP } from '../../../../packages/content-migrations/src/data/mappings/download-mappings.js'
+// Import with proper type definitions
+import {
+  DOWNLOAD_ID_MAP,
+  getDownloadIdByKey,
+} from '../../../../packages/content-migrations/src/data/mappings/download-mappings.js'
 import { getDownloadIdsForLesson } from '../../../../packages/content-migrations/src/data/mappings/lesson-downloads-mappings.js'
-
-// Mapping of collection types to potential download relationships
-const COLLECTION_DOWNLOAD_MAPPINGS: Record<string, string[]> = {
-  documentation: ['documentation'],
-  posts: ['posts'],
-  courses: ['courses'],
-  course_lessons: ['course_lessons'],
-  course_quizzes: ['course_quizzes'],
-  surveys: ['surveys'],
-  survey_questions: ['survey_questions'],
-}
 
 /**
  * Get all downloads associated with a specific collection item
- * Uses a multi-tiered fallback approach to maximize resilience
+ * Uses direct SQL and predefined mappings
  */
 export async function getDownloadsForCollection(
   payload: Payload,
   collectionId: string,
   collectionType: string,
 ): Promise<string[]> {
-  console.log(
-    `Fetching downloads for ${collectionType} with ID ${collectionId} (multi-tiered approach)`,
-  )
+  // Skip processing entirely for quizzes - they don't need downloads
+  if (collectionType === 'course_quizzes') {
+    return []
+  }
+
+  console.log(`Fetching downloads for ${collectionType} with ID ${collectionId}`)
 
   try {
-    // Proactively try to fix any UUID tables before querying
-    await fixDynamicUuidTables(payload)
-
-    // TIER 1: Try database view-based approach first (most reliable)
-    try {
-      const results = await getDownloadsViaView(payload, collectionId, collectionType)
-      if (results.length > 0) {
-        console.log(`Found ${results.length} downloads via database view`)
-        return results
-      }
-    } catch (viewError: any) {
-      // More specific error handling based on error type
-      if (viewError.message && viewError.message.includes('syntax error at or near "$1"')) {
-        console.log('SQL syntax error in view query - trying alternative approach')
-      } else if (viewError.message && viewError.message.includes('does not exist')) {
-        console.log(`Table/column does not exist: ${viewError.message}`)
-
-        // Try to extract and fix the table name if it matches UUID pattern
-        const uuidMatch = viewError.message.match(
-          /([0-9a-f]{8}[-_][0-9a-f]{4}[-_][0-9a-f]{4}[-_][0-9a-f]{4}[-_][0-9a-f]{12})/i,
-        )
-        if (uuidMatch && uuidMatch[1]) {
-          const tableName = uuidMatch[1]
-          console.log(`Attempting to fix UUID table: ${tableName}`)
-          try {
-            // Immediate fix attempt for the specific table
-            await payload.db.drizzle.execute(
-              sql.raw(`
-                DO $$
-                BEGIN
-                  IF EXISTS (
-                    SELECT FROM information_schema.tables 
-                    WHERE table_schema = 'payload'
-                    AND table_name = '${tableName}'
-                  ) THEN
-                    ALTER TABLE payload.${tableName} ADD COLUMN IF NOT EXISTS path TEXT;
-                    ALTER TABLE payload.${tableName} ADD COLUMN IF NOT EXISTS downloads_id UUID;
-                    RAISE NOTICE 'Fixed table %', '${tableName}';
-                  END IF;
-                EXCEPTION WHEN OTHERS THEN
-                  -- Ignore errors
-                  RAISE NOTICE 'Error fixing table %: %', '${tableName}', SQLERRM;
-                END
-                $$;
-              `),
-            )
-          } catch (fixError) {
-            console.log(`Could not fix table: ${fixError}`)
-          }
-        }
-      } else {
-        console.log(`View approach failed: ${viewError.message || String(viewError)}`)
-      }
-      // Continue to next tier
-    }
-
-    // TIER 2: Try standard Payload API with minimal depth
-    try {
-      const results = await getDownloadsViaAPI(payload, collectionId, collectionType)
-      if (results.length > 0) {
-        console.log(`Found ${results.length} downloads via Payload API`)
-        return results
-      }
-    } catch (apiError) {
-      console.error(`Error using Payload API approach:`, apiError)
-      // Continue to next tier
-    }
-
-    // TIER 3: Try direct SQL query against specific tables
+    // APPROACH 1: Try direct SQL query against specific relationship tables
     try {
       const results = await getDownloadsViaDirectSQL(payload, collectionId, collectionType)
       if (results.length > 0) {
@@ -113,10 +40,10 @@ export async function getDownloadsForCollection(
       }
     } catch (sqlError) {
       console.error(`Error using direct SQL approach:`, sqlError)
-      // Continue to next tier
+      // Continue to next approach
     }
 
-    // TIER 4: Try known mappings (predefined relationships)
+    // APPROACH 2: Try known mappings (predefined relationships)
     try {
       const results = await getDownloadsViaPredefinedMappings(collectionType, collectionId, payload)
       if (results.length > 0) {
@@ -125,13 +52,10 @@ export async function getDownloadsForCollection(
       }
     } catch (mappingError) {
       console.error(`Error using predefined mappings approach:`, mappingError)
-      // End of all tiers
     }
 
-    // If no approach worked, return empty array rather than throwing an error
-    console.log(
-      `No downloads found for ${collectionType} with ID ${collectionId} using any approach`,
-    )
+    // If no approach worked, return empty array
+    console.log(`No downloads found for ${collectionType} with ID ${collectionId}`)
     return []
   } catch (error) {
     // Final catch-all to ensure we never throw errors
@@ -141,39 +65,8 @@ export async function getDownloadsForCollection(
 }
 
 /**
- * TIER 1: Get downloads using the database view
- *
- * NOTE: This approach now skips immediately to fallback tiers since the view
- * is just a placeholder structure without real data
- */
-async function getDownloadsViaView(
-  payload: Payload,
-  collectionId: string,
-  collectionType: string,
-): Promise<string[]> {
-  // The view doesn't contain real data anymore, so we always return empty
-  // This forces the fallback to next tier
-  return []
-}
-
-/**
- * TIER 2: Get downloads using Payload's API
- * NOTE: This approach is now disabled because it consistently encounters
- * UUID table issues. We immediately return an empty array to force fallback
- * to the next tier.
- */
-async function getDownloadsViaAPI(
-  payload: Payload,
-  collectionId: string,
-  collectionType: string,
-): Promise<string[]> {
-  // Skip the API approach entirely to avoid UUID table errors
-  return []
-}
-
-/**
- * TIER 3: Get downloads using direct SQL
- * This bypasses Payload's query builder and UUID tables completely
+ * Get downloads using direct SQL
+ * This targets the specific relationship tables directly
  */
 async function getDownloadsViaDirectSQL(
   payload: Payload,
@@ -182,17 +75,71 @@ async function getDownloadsViaDirectSQL(
 ): Promise<string[]> {
   try {
     // Determine the relationship table name
-    const relationshipTable = `${collectionType}__downloads`
+    const relationshipTable = `${collectionType}_downloads`
 
-    // Use a simpler direct approach without using $1 parameters
-    const result = await payload.db.drizzle.execute(
+    // First check if the relationship table exists
+    const tableExistsResult = await payload.db.drizzle.execute(
       sql.raw(`
-      SELECT d.id 
-      FROM payload.downloads d
-      JOIN payload."${relationshipTable}" r ON d.id::uuid = r.downloads_id::uuid
-      WHERE r.parent_id = '${collectionId.replace(/'/g, "''")}'
+      SELECT EXISTS (
+        SELECT FROM information_schema.tables 
+        WHERE table_schema = 'payload' 
+        AND table_name = '${relationshipTable.replace(/'/g, "''")}'
+      ) as exists
       `),
     )
+
+    // If table doesn't exist, return empty array immediately
+    if (!tableExistsResult?.rows?.[0]?.exists) {
+      console.log(`Table ${relationshipTable} does not exist, skipping direct SQL approach`)
+      return []
+    }
+
+    // Map collection types to their actual column names in the relationship table
+    const collectionColumnMap: Record<string, string> = {
+      course_lessons: 'lesson_id',
+      // course_quizzes mapping removed - quizzes don't need downloads
+      // Add other collection types as needed
+    }
+
+    // Get the correct column name for this collection type
+    const collectionIdColumn = collectionColumnMap[collectionType] || `${collectionType}_id`
+
+    // Check if the columns exist in the table
+    const columnsExistResult = await payload.db.drizzle.execute(
+      sql.raw(`
+      SELECT 
+        column_name
+      FROM information_schema.columns
+      WHERE table_schema = 'payload'
+      AND table_name = '${relationshipTable.replace(/'/g, "''")}'
+      `),
+    )
+
+    // Extract column names
+    const columnNames = columnsExistResult?.rows?.map((row) => row.column_name as string) || []
+
+    // If the columns we need don't exist, return empty array
+    if (!columnNames.includes('download_id') && !columnNames.includes('downloads_id')) {
+      console.log(
+        `Table ${relationshipTable} is missing required columns, skipping direct SQL approach`,
+      )
+      return []
+    }
+
+    // Determine which column to use for joining
+    const downloadIdColumn = columnNames.includes('download_id') ? 'download_id' : 'downloads_id'
+
+    // Use a simpler direct approach without using $1 parameters - ensuring proper SQL syntax
+    const query = `
+      SELECT d.id 
+      FROM payload.downloads d
+      JOIN payload."${relationshipTable}" r ON d.id::uuid = r.${downloadIdColumn}::uuid
+      WHERE r.${collectionIdColumn} = '${collectionId.replace(/'/g, "''")}'
+    `
+
+    console.log(`Executing SQL query: ${query}`)
+
+    const result = await payload.db.drizzle.execute(sql.raw(query))
 
     if (!result || !result.rows || !Array.isArray(result.rows)) {
       return []
@@ -209,7 +156,7 @@ async function getDownloadsViaDirectSQL(
 }
 
 /**
- * TIER 4: Get downloads from predefined mappings
+ * Get downloads from predefined mappings
  * This uses lesson-specific mappings where possible
  */
 async function getDownloadsViaPredefinedMappings(
@@ -230,10 +177,12 @@ async function getDownloadsViaPredefinedMappings(
         )
 
         if (result?.rows?.[0]?.slug) {
-          const lessonSlug = result.rows[0].slug
+          // Ensure we have a valid string slug
+          const slugValue = result.rows[0].slug
+          const lessonSlug = typeof slugValue === 'string' ? slugValue : String(slugValue || '')
           console.log(`Found lesson slug: ${lessonSlug}`)
 
-          // Get download IDs for this specific lesson
+          // Get download IDs for this specific lesson using the validated string
           const downloadIds = getDownloadIdsForLesson(lessonSlug)
           if (downloadIds.length > 0) {
             console.log(`Found ${downloadIds.length} downloads for lesson ${lessonSlug}`)
@@ -246,17 +195,10 @@ async function getDownloadsViaPredefinedMappings(
       }
     }
 
-    // If all else fails, return a sensible fallback
-    // Either return empty array or a default set of general downloads
-    const defaultDownloadIds = [
-      typeof DOWNLOAD_ID_MAP['slide-templates'] === 'string'
-        ? DOWNLOAD_ID_MAP['slide-templates']
-        : '',
-      typeof DOWNLOAD_ID_MAP['swipe-file'] === 'string' ? DOWNLOAD_ID_MAP['swipe-file'] : '',
-    ].filter((id) => id !== '')
-
-    console.log(`Using default downloads as fallback: ${defaultDownloadIds.length} downloads`)
-    return defaultDownloadIds
+    // Don't return default downloads as fallback anymore
+    // Only return downloads that are explicitly mapped to this lesson
+    console.log(`No explicit download mappings found, returning empty array`)
+    return []
   } catch (error) {
     console.error(
       `Error in getDownloadsViaPredefinedMappings for ${collectionType} with ID ${collectionId}:`,
@@ -267,57 +209,8 @@ async function getDownloadsViaPredefinedMappings(
 }
 
 /**
- * Runs the scanner function to fix any dynamic UUID tables
- * Should be called before critical operations that might use UUID tables
- */
-async function fixDynamicUuidTables(payload: Payload): Promise<void> {
-  try {
-    // Try first with the scan_and_fix_uuid_tables function
-    try {
-      await payload.db.drizzle.execute(sql.raw(`SELECT * FROM payload.scan_and_fix_uuid_tables()`))
-      return // If successful, exit the function
-    } catch (scannerError) {
-      console.log('Primary scanner failed, trying fallback approach:', scannerError)
-    }
-
-    // Fallback: Run a direct SQL query to fix UUID tables if the function fails
-    await payload.db.drizzle.execute(
-      sql.raw(`
-      DO $$
-      DECLARE
-        uuid_table text;
-      BEGIN
-        FOR uuid_table IN 
-          SELECT t.table_name
-          FROM information_schema.tables t
-          WHERE t.table_schema = 'payload'
-          AND (
-            t.table_name ~ '^[0-9a-f]{8}[-_][0-9a-f]{4}[-_][0-9a-f]{4}[-_][0-9a-f]{4}[-_][0-9a-f]{12}$'
-            OR t.table_name ~ '^[0-9a-f]{8}[0-9a-f]{4}[0-9a-f]{4}[0-9a-f]{4}[0-9a-f]{12}$'
-          )
-        LOOP
-          -- Add required columns
-          BEGIN
-            EXECUTE format('ALTER TABLE payload.%I ADD COLUMN IF NOT EXISTS path TEXT;', uuid_table);
-            EXECUTE format('ALTER TABLE payload.%I ADD COLUMN IF NOT EXISTS downloads_id TEXT;', uuid_table);
-            EXECUTE format('ALTER TABLE payload.%I ADD COLUMN IF NOT EXISTS parent_id TEXT;', uuid_table);
-          EXCEPTION WHEN OTHERS THEN
-            RAISE NOTICE 'Error adding columns to %: %', uuid_table, SQLERRM;
-          END;
-        END LOOP;
-      END
-      $$;
-    `),
-    )
-  } catch (error) {
-    console.log('Warning: All attempts to fix UUID tables failed, but continuing:', error)
-    // Don't throw - this is a best-effort approach
-  }
-}
-
-/**
  * Check if a collection has a specific download
- * Uses multi-tiered approach for maximum reliability
+ * Uses simplified direct approach
  */
 export async function collectionHasDownload(
   payload: Payload,
@@ -326,10 +219,7 @@ export async function collectionHasDownload(
   downloadId: string,
 ): Promise<boolean> {
   try {
-    // Skip the view approach since we know it won't work with our placeholder view
-    // The view doesn't have the required columns (collection_id, etc.)
-
-    // TIER 2: Get all downloads and check if the specific one is included
+    // Get all downloads and check if the specific one is included
     const downloadIds = await getDownloadsForCollection(payload, collectionId, collectionType)
     return downloadIds.includes(downloadId)
   } catch (error) {
@@ -339,8 +229,36 @@ export async function collectionHasDownload(
 }
 
 /**
+ * Generate a safe download URL for any ID type
+ */
+function getDownloadUrl(id: any): string {
+  // Default value if we can't extract anything useful
+  let idStr = 'unknown'
+
+  try {
+    if (typeof id === 'string') {
+      idStr = id.substring(0, 8)
+    } else if (typeof id === 'object' && id !== null) {
+      if (id.id && typeof id.id === 'string') {
+        idStr = id.id.substring(0, 8)
+      } else if (id.value && typeof id.value === 'string') {
+        idStr = id.value.substring(0, 8)
+      } else {
+        idStr = String(id).substring(0, 8)
+      }
+    } else {
+      idStr = String(id || '').substring(0, 8)
+    }
+  } catch (e) {
+    console.error('Error generating download URL:', e)
+  }
+
+  return `https://downloads.slideheroes.com/${idStr}.pdf`
+}
+
+/**
  * Find all downloads for a collection and return the actual download documents
- * Uses multi-tiered approach and returns full download objects
+ * Uses simplified direct approach with database fetching
  */
 export async function findDownloadsForCollection(
   payload: Payload,
@@ -348,32 +266,37 @@ export async function findDownloadsForCollection(
   collectionType: string,
 ): Promise<any[]> {
   try {
-    // First try to fix any dynamic UUID tables before any operations
-    // This provides an extra layer of protection before the multi-tier approach runs
-    await fixDynamicUuidTables(payload)
-
-    // Get download IDs using our robust multi-tiered approach
-    // (which itself already includes the fixDynamicUuidTables call)
+    // Get download IDs using our simplified approach
     const downloadIds = await getDownloadsForCollection(payload, collectionId, collectionType)
 
     if (!downloadIds.length) {
       return []
     }
 
-    // Skip fetching full documents due to order column issue
-    // Just return simple objects with IDs for robustness
-    return downloadIds.map((id) => ({
-      id,
-      // Add basic properties to avoid null errors
-      filename: 'placeholder.pdf',
-      filesize: 0,
-      mimeType: 'application/pdf',
-      // Add URL to ensure downloads can be rendered properly using the custom domain
-      url: `https://downloads.slideheroes.com/${id.substring(0, 8)}.pdf`,
-      // Add any other required properties
-      updatedAt: new Date().toISOString(),
-      createdAt: new Date().toISOString(),
-    }))
+    // Try to get the actual download documents from the database
+    try {
+      const idList = downloadIds.map((id) => `'${id.replace(/'/g, "''")}'`).join(',')
+      const query = `
+        SELECT id, filename, filesize, "mimetype", url, title, description
+        FROM payload.downloads
+        WHERE id IN (${idList})
+      `
+
+      console.log(`Fetching actual download documents with query: ${query}`)
+      const result = await payload.db.drizzle.execute(sql.raw(query))
+
+      if (result?.rows?.length > 0) {
+        console.log(`Found ${result.rows.length} actual download documents`)
+        return result.rows
+      }
+
+      console.log(`No actual download documents found, returning empty array`)
+      return []
+    } catch (dbError) {
+      console.error('Error fetching actual download documents:', dbError)
+      // Return empty array if query fails
+      return []
+    }
   } catch (error) {
     console.error(`Error in findDownloadsForCollection:`, error)
     return [] // Return empty array instead of throwing
@@ -381,7 +304,7 @@ export async function findDownloadsForCollection(
 }
 
 /**
- * Diagnostic function to check relationship tables for a collection
+ * Enhanced diagnostic function to help identify column name issues
  */
 export async function diagnoseRelationshipTables(
   payload: Payload,
@@ -389,7 +312,7 @@ export async function diagnoseRelationshipTables(
 ): Promise<any> {
   try {
     // Get information about relationship tables
-    const relationshipTable = `${collectionType}__downloads`
+    const relationshipTable = `${collectionType}_downloads`
     const result = await payload.db.drizzle.execute(
       sql.raw(`
         SELECT 
@@ -403,17 +326,51 @@ export async function diagnoseRelationshipTables(
       `),
     )
 
-    // Simplifying this function to avoid TypeScript errors
-    // Return just the relationship table info and skip UUID table query
+    // Check if expected column names exist
+    const columns = result?.rows || []
+    const columnNames = columns.map((col: any) => col.column_name)
+
+    // Determine expected column names
+    const expectedCollectionIdColumn = `${collectionType}_id`
+    const expectedColumns = ['id', 'download_id', 'downloads_id', 'lesson_id']
+
+    // Check which expected columns are missing
+    const missingColumns = expectedColumns.filter((col) => !columnNames.includes(col))
+
+    // Log useful diagnostic information
+    console.log(`Table ${relationshipTable} columns:`, columnNames.join(', '))
+    if (missingColumns.length > 0) {
+      console.log(`Missing expected columns: ${missingColumns.join(', ')}`)
+    }
+
+    // If the standard collection ID column is missing, suggest alternatives
+    if (!columnNames.includes(expectedCollectionIdColumn)) {
+      const possibleAlternatives = columnNames.filter((col) => col.endsWith('_id'))
+      console.log(
+        `Column ${expectedCollectionIdColumn} not found. Possible alternatives: ${possibleAlternatives.join(', ')}`,
+      )
+    }
+
+    // Return enhanced diagnostic info
     return {
       relationshipTable: {
         name: relationshipTable,
-        columns: result?.rows || [],
+        columns: columns,
+        columnNames: columnNames,
+        missingExpectedColumns: missingColumns,
+        expectedCollectionIdColumn: expectedCollectionIdColumn,
+        hasExpectedCollectionIdColumn: columnNames.includes(expectedCollectionIdColumn),
+        possibleAlternativeIdColumns: columnNames.filter((col) => col.endsWith('_id')),
       },
-      dynamicUuidTables: [], // Empty array instead of querying
     }
   } catch (error: any) {
     console.error(`Error in diagnoseRelationshipTables:`, error)
-    return { error: error.message || 'Unknown error' }
+    return {
+      relationshipTable: {
+        name: '',
+        columns: [],
+        error: error.message || 'Unknown error',
+      },
+    }
   }
 }

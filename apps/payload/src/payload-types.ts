@@ -233,7 +233,7 @@ export interface Documentation {
   createdAt: string;
 }
 /**
- * Downloadable files for lessons
+ * Downloadable files for lessons and documentation
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "downloads".
@@ -243,22 +243,6 @@ export interface Download {
   title: string;
   description?: string | null;
   type: 'pptx_template' | 'worksheet' | 'reference' | 'example' | 'other';
-  /**
-   * Lessons that reference this download
-   */
-  course_lessons?: (string | CourseLesson)[] | null;
-  /**
-   * Documentation pages that reference this download
-   */
-  documentation?: (string | Documentation)[] | null;
-  /**
-   * Blog posts that reference this download
-   */
-  posts?: (string | Post)[] | null;
-  /**
-   * Quizzes that reference this download
-   */
-  course_quizzes?: (string | CourseQuizz)[] | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -280,388 +264,6 @@ export interface Download {
       filename?: string | null;
     };
   };
-}
-/**
- * Lessons for courses in the learning management system
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "course_lessons".
- */
-export interface CourseLesson {
-  id: string;
-  title: string;
-  /**
-   * Video ID from Bunny.net (if this lesson includes a video)
-   */
-  bunny_video_id?: string | null;
-  /**
-   * Library ID from Bunny.net (defaults to main library)
-   */
-  bunny_library_id?: string | null;
-  /**
-   * Source platform for the external video
-   */
-  video_source_type?: ('youtube' | 'vimeo') | null;
-  /**
-   * Video ID from YouTube or Vimeo (if this lesson includes an external video)
-   */
-  youtube_video_id?: string | null;
-  todo_complete_quiz?: boolean | null;
-  /**
-   * Content to watch - supports rich text formatting like bullet points and links
-   */
-  todo_watch_content?: {
-    root: {
-      type: string;
-      children: {
-        type: string;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  /**
-   * Content to read - supports rich text formatting like bullet points and links
-   */
-  todo_read_content?: {
-    root: {
-      type: string;
-      children: {
-        type: string;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  /**
-   * Course project instructions - supports rich text formatting like bullet points and links
-   */
-  todo_course_project?: {
-    root: {
-      type: string;
-      children: {
-        type: string;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  /**
-   * General todo instructions for this lesson - supports rich text formatting like bullet points and links
-   */
-  todo?: {
-    root: {
-      type: string;
-      children: {
-        type: string;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  /**
-   * The URL-friendly identifier for this lesson
-   */
-  slug: string;
-  description?: string | null;
-  featured_image_id?: (string | null) | Media;
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: string;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  /**
-   * Order in which this lesson appears in the course
-   */
-  lesson_number: number;
-  estimated_duration?: number | null;
-  course_id: string | Course;
-  /**
-   * The quiz associated with this lesson (if any)
-   */
-  quiz_id?: (string | null) | CourseQuizz;
-  /**
-   * The survey associated with this lesson (if any)
-   */
-  survey_id?: (string | null) | Survey;
-  /**
-   * Files for download in this lesson
-   */
-  downloads?: (string | Download)[] | null;
-  publishedAt?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * Courses in the learning management system
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "courses".
- */
-export interface Course {
-  id: string;
-  title: string;
-  /**
-   * The URL-friendly identifier for this course
-   */
-  slug: string;
-  description?: string | null;
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: string;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  /**
-   * Files for download in this course
-   */
-  downloads?: (string | Download)[] | null;
-  featured_image_id?: (string | null) | Media;
-  publishedAt?: string | null;
-  status: 'draft' | 'published';
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * Quizzes for courses in the learning management system
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "course_quizzes".
- */
-export interface CourseQuizz {
-  id: string;
-  title: string;
-  /**
-   * The URL-friendly identifier for this quiz
-   */
-  slug: string;
-  description?: string | null;
-  course_id: string | Course;
-  /**
-   * Percentage required to pass the quiz
-   */
-  pass_threshold?: number | null;
-  /**
-   * Questions included in this quiz
-   */
-  questions: (string | QuizQuestion)[];
-  /**
-   * Files for download in this quiz
-   */
-  downloads?: (string | Download)[] | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * Questions for course quizzes
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "quiz_questions".
- */
-export interface QuizQuestion {
-  id: string;
-  question: string;
-  /**
-   * The quiz this question belongs to
-   */
-  quiz_id: string | CourseQuizz;
-  type: 'multiple_choice';
-  options: {
-    text: string;
-    isCorrect?: boolean | null;
-    id?: string | null;
-  }[];
-  /**
-   * Optional explanation for this question (plain text only)
-   */
-  explanation?: string | null;
-  /**
-   * Order within the quiz (lower numbers appear first)
-   */
-  order?: number | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * Surveys for user assessment and feedback
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "surveys".
- */
-export interface Survey {
-  id: string;
-  title: string;
-  /**
-   * The URL-friendly identifier for this survey
-   */
-  slug: string;
-  /**
-   * A brief summary of the survey
-   */
-  description?: string | null;
-  /**
-   * Introduction message shown before starting the survey
-   */
-  startMessage?: {
-    root: {
-      type: string;
-      children: {
-        type: string;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  /**
-   * Message shown after completing the survey
-   */
-  endMessage?: {
-    root: {
-      type: string;
-      children: {
-        type: string;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  /**
-   * Show a progress bar during the survey
-   */
-  showProgressBar?: boolean | null;
-  /**
-   * Questions included in this survey
-   */
-  questions?: (string | SurveyQuestion)[] | null;
-  /**
-   * Content shown on the summary page
-   */
-  summaryContent?: {
-    root: {
-      type: string;
-      children: {
-        type: string;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  /**
-   * Only published surveys will be visible to users
-   */
-  status: 'draft' | 'published';
-  /**
-   * The date and time this survey was published
-   */
-  publishedAt?: string | null;
-  /**
-   * Files for download in this survey
-   */
-  downloads?: (string | Download)[] | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * Questions for surveys
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "survey_questions".
- */
-export interface SurveyQuestion {
-  id: string;
-  /**
-   * The question text
-   */
-  text: string;
-  /**
-   * The type of question
-   */
-  type: 'multiple_choice' | 'text_field' | 'scale';
-  /**
-   * Additional context or instructions for the question
-   */
-  description?: string | null;
-  /**
-   * Whether this question requires an answer
-   */
-  required?: boolean | null;
-  /**
-   * Answer options for this question
-   */
-  options?:
-    | {
-        option: string;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * The category this question belongs to (e.g., Structure, Story, Style)
-   */
-  category: string;
-  /**
-   * Whether a high score is positive or negative for this question
-   */
-  questionspin: 'Positive' | 'Negative';
-  /**
-   * Position in the survey (lower numbers appear first)
-   */
-  position?: number | null;
-  updatedAt: string;
-  createdAt: string;
 }
 /**
  * Blog posts for the website
@@ -808,6 +410,384 @@ export interface Private {
    * Files for download in this private post
    */
   downloads?: (string | Download)[] | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Surveys for user assessment and feedback
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "surveys".
+ */
+export interface Survey {
+  id: string;
+  title: string;
+  /**
+   * The URL-friendly identifier for this survey
+   */
+  slug: string;
+  /**
+   * A brief summary of the survey
+   */
+  description?: string | null;
+  /**
+   * Introduction message shown before starting the survey
+   */
+  startMessage?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Message shown after completing the survey
+   */
+  endMessage?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Show a progress bar during the survey
+   */
+  showProgressBar?: boolean | null;
+  /**
+   * Questions included in this survey
+   */
+  questions?: (string | SurveyQuestion)[] | null;
+  /**
+   * Content shown on the summary page
+   */
+  summaryContent?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Only published surveys will be visible to users
+   */
+  status: 'draft' | 'published';
+  /**
+   * The date and time this survey was published
+   */
+  publishedAt?: string | null;
+  /**
+   * Files for download in this survey
+   */
+  downloads?: (string | Download)[] | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Questions for surveys
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "survey_questions".
+ */
+export interface SurveyQuestion {
+  id: string;
+  /**
+   * The question text
+   */
+  text: string;
+  /**
+   * The type of question
+   */
+  type: 'multiple_choice' | 'text_field' | 'scale';
+  /**
+   * Additional context or instructions for the question
+   */
+  description?: string | null;
+  /**
+   * Whether this question requires an answer
+   */
+  required?: boolean | null;
+  /**
+   * Answer options for this question
+   */
+  options?:
+    | {
+        option: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * The category this question belongs to (e.g., Structure, Story, Style)
+   */
+  category: string;
+  /**
+   * Whether a high score is positive or negative for this question
+   */
+  questionspin: 'Positive' | 'Negative';
+  /**
+   * Position in the survey (lower numbers appear first)
+   */
+  position?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Courses in the learning management system
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "courses".
+ */
+export interface Course {
+  id: string;
+  title: string;
+  /**
+   * The URL-friendly identifier for this course
+   */
+  slug: string;
+  description?: string | null;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Files for download in this course
+   */
+  downloads?: (string | Download)[] | null;
+  featured_image_id?: (string | null) | Media;
+  publishedAt?: string | null;
+  status: 'draft' | 'published';
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Lessons for courses in the learning management system
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "course_lessons".
+ */
+export interface CourseLesson {
+  id: string;
+  title: string;
+  /**
+   * Video ID from Bunny.net (if this lesson includes a video)
+   */
+  bunny_video_id?: string | null;
+  /**
+   * Library ID from Bunny.net (defaults to main library)
+   */
+  bunny_library_id?: string | null;
+  /**
+   * Source platform for the external video
+   */
+  video_source_type?: ('youtube' | 'vimeo') | null;
+  /**
+   * Video ID from YouTube or Vimeo (if this lesson includes an external video)
+   */
+  youtube_video_id?: string | null;
+  todo_complete_quiz?: boolean | null;
+  /**
+   * Content to watch - supports rich text formatting like bullet points and links
+   */
+  todo_watch_content?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Content to read - supports rich text formatting like bullet points and links
+   */
+  todo_read_content?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Course project instructions - supports rich text formatting like bullet points and links
+   */
+  todo_course_project?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * General todo instructions for this lesson - supports rich text formatting like bullet points and links
+   */
+  todo?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * The URL-friendly identifier for this lesson
+   */
+  slug: string;
+  description?: string | null;
+  featured_image_id?: (string | null) | Media;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Order in which this lesson appears in the course
+   */
+  lesson_number: number;
+  estimated_duration?: number | null;
+  course_id: string | Course;
+  /**
+   * The quiz associated with this lesson (if any)
+   */
+  quiz_id?: (string | null) | CourseQuizz;
+  /**
+   * The survey associated with this lesson (if any)
+   */
+  survey_id?: (string | null) | Survey;
+  /**
+   * Files for download in this lesson
+   */
+  downloads?: (string | Download)[] | null;
+  publishedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Quizzes for courses in the learning management system
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "course_quizzes".
+ */
+export interface CourseQuizz {
+  id: string;
+  title: string;
+  /**
+   * The URL-friendly identifier for this quiz
+   */
+  slug: string;
+  description?: string | null;
+  course_id: string | Course;
+  /**
+   * Percentage required to pass the quiz
+   */
+  pass_threshold?: number | null;
+  /**
+   * Questions included in this quiz
+   */
+  questions: (string | QuizQuestion)[];
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Questions for course quizzes
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "quiz_questions".
+ */
+export interface QuizQuestion {
+  id: string;
+  question: string;
+  /**
+   * The quiz this question belongs to
+   */
+  quiz_id: string | CourseQuizz;
+  type: 'multiple_choice';
+  options: {
+    text: string;
+    isCorrect?: boolean | null;
+    id?: string | null;
+  }[];
+  /**
+   * Optional explanation for this question (plain text only)
+   */
+  explanation?: string | null;
+  /**
+   * Order within the quiz (lower numbers appear first)
+   */
+  order?: number | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1131,7 +1111,6 @@ export interface CourseQuizzesSelect<T extends boolean = true> {
   course_id?: T;
   pass_threshold?: T;
   questions?: T;
-  downloads?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1163,10 +1142,6 @@ export interface DownloadsSelect<T extends boolean = true> {
   title?: T;
   description?: T;
   type?: T;
-  course_lessons?: T;
-  documentation?: T;
-  posts?: T;
-  course_quizzes?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;

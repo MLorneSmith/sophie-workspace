@@ -12,4 +12,14 @@ export {
   validateMultipleCollectionSchemas,
 } from './utils/validate-schema.js';
 
-// Note: Migration scripts are not exported as they are meant to be run directly
+// Export data mappings
+export { DOWNLOAD_ID_MAP } from './data/mappings/download-mappings.js';
+export { getDownloadIdsForLesson } from './data/mappings/lesson-downloads-mappings.js';
+
+// Export simplified imports
+export {
+  generateInsertSQL as generateDownloadsSQL,
+  runImport as importDownloads,
+} from './scripts/import/simplified-import-r2-downloads.js';
+
+// Note: Most migration scripts are not exported as they are meant to be run directly
