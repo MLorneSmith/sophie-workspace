@@ -1,6 +1,5 @@
-import Stripe from 'stripe';
+import type Stripe from 'stripe';
 
-import { BillingConfig, getLineItemTypeById } from '@kit/billing';
 import { UpsertSubscriptionParams } from '@kit/billing/types';
 
 /**
@@ -16,19 +15,6 @@ export function createStripeSubscriptionPayloadBuilderService() {
  * @description This class is used to build the subscription payload for Stripe
  */
 class StripeSubscriptionPayloadBuilderService {
-  private config?: BillingConfig;
-
-  /**
-   * @name withBillingConfig
-   * @description Set the billing config for the subscription payload
-   * @param config
-   */
-  withBillingConfig(config: BillingConfig) {
-    this.config = config;
-
-    return this;
-  }
-
   /**
    * @name build
    * @description Build the subscription payload for Stripe
@@ -39,6 +25,7 @@ class StripeSubscriptionPayloadBuilderService {
       id: string;
       quantity?: number;
       price?: Stripe.Price;
+      type: 'flat' | 'per_seat' | 'metered';
     },
   >(params: {
     id: string;
@@ -69,9 +56,7 @@ class StripeSubscriptionPayloadBuilderService {
         price_amount: item.price?.unit_amount,
         interval: item.price?.recurring?.interval as string,
         interval_count: item.price?.recurring?.interval_count as number,
-        type: this.config
-          ? getLineItemTypeById(this.config, variantId)
-          : undefined,
+        type: item.type,
       };
     });
 
@@ -92,6 +77,42 @@ class StripeSubscriptionPayloadBuilderService {
       trial_starts_at: getISOString(params.trialStartsAt),
       trial_ends_at: getISOString(params.trialEndsAt),
     };
+  }
+
+  /**
+   * @name getPeriodStartsAt
+   * @description Get the period starts at for the subscription
+   * @param subscription
+   */
+  getPeriodStartsAt(subscription: Stripe.Subscription) {
+    // for retro-compatibility, we need to check if the subscription has a period
+
+    // if it does, we use the period start, otherwise we use the subscription start
+    // (Stripe 17 and below)
+    if ('current_period_start' in subscription) {
+      return subscription.current_period_start as number;
+    }
+
+    // if it doesn't, we use the subscription item start (Stripe 18+)
+    return subscription.items.data[0]!.current_period_start;
+  }
+
+  /**
+   * @name getPeriodEndsAt
+   * @description Get the period ends at for the subscription
+   * @param subscription
+   */
+  getPeriodEndsAt(subscription: Stripe.Subscription) {
+    // for retro-compatibility, we need to check if the subscription has a period
+
+    // if it does, we use the period end, otherwise we use the subscription end
+    // (Stripe 17 and below)
+    if ('current_period_end' in subscription) {
+      return subscription.current_period_end as number;
+    }
+
+    // if it doesn't, we use the subscription item end (Stripe 18+)
+    return subscription.items.data[0]!.current_period_end;
   }
 }
 

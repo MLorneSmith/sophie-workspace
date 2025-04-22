@@ -422,19 +422,25 @@ export function getProductPlanPairByVariantId(
   throw new Error('Plan not found');
 }
 
-export function getLineItemTypeById(
+export type PlanTypeMap = Map<string, z.infer<typeof LineItemTypeSchema>>;
+
+/**
+ * @name getPlanTypesMap
+ * @description Get all line item types for all plans in the config
+ * @param config
+ */
+export function getPlanTypesMap(
   config: z.infer<typeof BillingSchema>,
-  id: string,
-) {
+): PlanTypeMap {
+  const planTypes: PlanTypeMap = new Map();
+
   for (const product of config.products) {
     for (const plan of product.plans) {
       for (const lineItem of plan.lineItems) {
-        if (lineItem.id === id) {
-          return lineItem.type;
-        }
+        planTypes.set(lineItem.id, lineItem.type);
       }
     }
   }
 
-  throw new Error(`Line Item with ID ${id} not found`);
+  return planTypes;
 }
