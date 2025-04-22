@@ -4,7 +4,7 @@ import {
   getVariant,
 } from '@lemonsqueezy/lemonsqueezy.js';
 
-import { BillingConfig, BillingWebhookHandlerService } from '@kit/billing';
+import { BillingWebhookHandlerService, type PlanTypeMap } from '@kit/billing';
 import { getLogger } from '@kit/shared/logger';
 import { Database, Enums } from '@kit/supabase/database';
 
@@ -48,7 +48,7 @@ export class LemonSqueezyWebhookHandlerService
 
   private readonly namespace = 'billing.lemon-squeezy';
 
-  constructor(private readonly config: BillingConfig) {}
+  constructor(private readonly planTypesMap: PlanTypeMap) {}
 
   /**
    * @description Verifies the webhook signature - should throw an error if the signature is invalid
@@ -116,48 +116,84 @@ export class LemonSqueezyWebhookHandlerService
 
     switch (eventName) {
       case 'order_created': {
-        return this.handleOrderCompleted(
+        const result = await this.handleOrderCompleted(
           event as OrderWebhook,
           params.onCheckoutSessionCompleted,
         );
+
+        // handle user-supplied handler
+        if (params.onEvent) {
+          await params.onEvent(event);
+        }
+
+        return result;
       }
 
       case 'subscription_created': {
-        return this.handleSubscriptionCreatedEvent(
+        const result = await this.handleSubscriptionCreatedEvent(
           event as SubscriptionWebhook,
           params.onSubscriptionUpdated,
         );
+
+        // handle user-supplied handler
+        if (params.onEvent) {
+          await params.onEvent(event);
+        }
+
+        return result;
       }
 
       case 'subscription_updated': {
-        return this.handleSubscriptionUpdatedEvent(
+        const result = await this.handleSubscriptionUpdatedEvent(
           event as SubscriptionWebhook,
           params.onSubscriptionUpdated,
         );
+
+        // handle user-supplied handler
+        if (params.onEvent) {
+          await params.onEvent(event);
+        }
+
+        return result;
       }
 
       case 'subscription_expired': {
-        return this.handleSubscriptionDeletedEvent(
+        const result = await this.handleSubscriptionDeletedEvent(
           event as SubscriptionWebhook,
           params.onSubscriptionDeleted,
         );
+
+        // handle user-supplied handler
+        if (params.onEvent) {
+          await params.onEvent(event);
+        }
+
+        return result;
       }
 
       case 'subscription_payment_success': {
-        return this.handleInvoicePaid(
+        const result = await this.handleInvoicePaid(
           event as SubscriptionInvoiceWebhook,
           params.onInvoicePaid,
         );
+
+        // handle user-supplied handler
+        if (params.onEvent) {
+          await params.onEvent(event);
+        }
+
+        return result;
       }
 
       default: {
+        // handle user-supplied handler
         if (params.onEvent) {
           return params.onEvent(event);
         }
 
         const logger = await getLogger();
 
-        logger.info(
+        logger.debug(
           {
             eventType: eventName,
             name: this.namespace,
@@ -212,6 +248,7 @@ export class LemonSqueezyWebhookHandlerService
           variant_id: attrs.first_order_item.variant_id.toString(),
           price_amount: attrs.first_order_item.price,
           quantity: 1,
+          type: this.getLineItemType(attrs.first_order_item.variant_id),
         },
       ],
     };
@@ -268,6 +305,7 @@ export class LemonSqueezyWebhookHandlerService
         variant: variantId.toString(),
         quantity: firstSubscriptionItem.quantity,
         priceAmount,
+        type: this.getLineItemType(variantId),
       },
     ];
 
@@ -276,7 +314,7 @@ export class LemonSqueezyWebhookHandlerService
     const payloadBuilderService =
       createLemonSqueezySubscriptionPayloadBuilderService();
 
-    const payload = payloadBuilderService.withBillingConfig(this.config).build({
+    const payload = payloadBuilderService.build({
       customerId,
       id: subscriptionId,
       accountId,
@@ -361,6 +399,8 @@ export class LemonSqueezyWebhookHandlerService
     const payloadBuilderService =
       createLemonSqueezySubscriptionPayloadBuilderService();
 
+    const lineItemType = this.getLineItemType(variantId);
+
     const lineItems = [
       {
         id: subscription.order_item_id.toString(),
@@ -368,10 +408,11 @@ export class LemonSqueezyWebhookHandlerService
         variant: variantId.toString(),
         quantity: subscription.first_subscription_item?.quantity ?? 1,
         priceAmount: attrs.total,
+        type: lineItemType,
       },
     ];
 
-    const payload = payloadBuilderService.withBillingConfig(this.config).build({
+    const payload = payloadBuilderService.build({
       customerId,
       id: subscriptionId,
       accountId,
@@ -390,6 +431,22 @@ export class LemonSqueezyWebhookHandlerService
     return onInvoicePaidCallback(payload);
   }
 
+  private getLineItemType(variantId: number) {
+    const type = this.planTypesMap.get(variantId.toString());
+
+    if (!type) {
+      console.warn(
+        {
+          variantId,
+        },
+        'Line item type not found. Will be defaulted to "flat"',
+      );
+
+      return 'flat' as const;
+    }
+
+    return type;
+  }
   private getOrderStatus(status: OrderStatus) {
     switch (status) {
       case 'paid':

@@ -27,6 +27,10 @@ import { createLemonSqueezyBillingPortalSession } from './create-lemon-squeezy-b
 import { createLemonSqueezyCheckout } from './create-lemon-squeezy-checkout';
 import { createLemonSqueezySubscriptionPayloadBuilderService } from './lemon-squeezy-subscription-payload-builder.service';
 
+/**
+ * @name LemonSqueezyBillingStrategyService
+ * @description This class is used to create a billing strategy for Lemon Squeezy
+ */
 export class LemonSqueezyBillingStrategyService
   implements BillingStrategyProviderService
 {
@@ -405,6 +409,8 @@ export class LemonSqueezyBillingStrategyService
         quantity: subscription.first_subscription_item?.quantity ?? 1,
         // not anywhere in the API
         priceAmount: 0,
+        // we cannot retrieve this from the API, user should retrieve from the billing configuration if needed
+        type: '' as never,
       },
     ];
 

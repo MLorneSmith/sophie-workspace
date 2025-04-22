@@ -74,9 +74,16 @@ export function AdminImpersonateUserDialog(
         <AlertDialogHeader>
           <AlertDialogTitle>Impersonate User</AlertDialogTitle>
 
-          <AlertDialogDescription>
-            Are you sure you want to impersonate this user? You will be logged
-            in as this user. To stop impersonating, log out.
+          <AlertDialogDescription className={'flex flex-col space-y-1'}>
+            <span>
+              Are you sure you want to impersonate this user? You will be logged
+              in as this user. To stop impersonating, log out.
+            </span>
+
+            <span>
+              <b>NB:</b> If the user has 2FA enabled, you will not be able to
+              impersonate them.
+            </span>
           </AlertDialogDescription>
         </AlertDialogHeader>
 

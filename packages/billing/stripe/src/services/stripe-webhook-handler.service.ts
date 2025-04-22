@@ -1,6 +1,6 @@
-import Stripe from 'stripe';
+import type Stripe from 'stripe';
 
-import { BillingConfig, BillingWebhookHandlerService } from '@kit/billing';
+import { BillingWebhookHandlerService, PlanTypeMap } from '@kit/billing';
 import { getLogger } from '@kit/shared/logger';
 import { Database, Enums } from '@kit/supabase/database';
 
@@ -36,7 +36,7 @@ export class StripeWebhookHandlerService
 {
   private stripe: Stripe | undefined;
 
-  constructor(private readonly config: BillingConfig) {}
+  constructor(private readonly planTypesMap: PlanTypeMap) {}
 
   private readonly provider: BillingProvider = 'stripe';
 
@@ -95,49 +95,99 @@ export class StripeWebhookHandlerService
   ) {
     switch (event.type) {
       case 'checkout.session.completed': {
-        return this.handleCheckoutSessionCompleted(
+        const result = await this.handleCheckoutSessionCompleted(
           event,
           params.onCheckoutSessionCompleted,
         );
+
+        // handle user-supplied handler
+        if (params.onEvent) {
+          await params.onEvent(event);
+        }
+
+        return result;
       }
 
       case 'customer.subscription.updated': {
-        return this.handleSubscriptionUpdatedEvent(
+        const result = await this.handleSubscriptionUpdatedEvent(
           event,
           params.onSubscriptionUpdated,
         );
+
+        // handle user-supplied handler
+        if (params.onEvent) {
+          await params.onEvent(event);
+        }
+
+        return result;
       }
 
       case 'customer.subscription.deleted': {
-        return this.handleSubscriptionDeletedEvent(
+        const result = await this.handleSubscriptionDeletedEvent(
           event,
           params.onSubscriptionDeleted,
         );
+
+        // handle user-supplied handler
+        if (params.onEvent) {
+          await params.onEvent(event);
+        }
+
+        return result;
       }
 
       case 'checkout.session.async_payment_failed': {
-        return this.handleAsyncPaymentFailed(event, params.onPaymentFailed);
+        const result = await this.handleAsyncPaymentFailed(
+          event,
+          params.onPaymentFailed,
+        );
+
+        // handle user-supplied handler
+        if (params.onEvent) {
+          await params.onEvent(event);
+        }
+
+        return result;
       }
 
       case 'checkout.session.async_payment_succeeded': {
-        return this.handleAsyncPaymentSucceeded(
+        const result = await this.handleAsyncPaymentSucceeded(
           event,
           params.onPaymentSucceeded,
         );
+
+        // handle user-supplied handler
+        if (params.onEvent) {
+          await params.onEvent(event);
+        }
+
+        return result;
       }
 
       case 'invoice.paid': {
-        return this.handleInvoicePaid(event, params.onInvoicePaid);
+        const result = await this.handleInvoicePaid(
+          event,
+          params.onInvoicePaid,
+        );
+
+        // handle user-supplied handler (ex. user wanting to handle one-off payments)
+        if (params.onEvent) {
+          await params.onEvent(event);
+        }
+
+        return result;
       }
 
       default: {
+        // when none of the events were matched, attempt to call
+        // the user-supplied handler
         if (params.onEvent) {
           return params.onEvent(event);
         }
 
-        const Logger = await getLogger();
+        const logger = await getLogger();
 
-        Logger.info(
+        logger.debug(
           {
             eventType: event.type,
             name: this.namespace,
@@ -173,21 +223,27 @@ export class StripeWebhookHandlerService
       const subscriptionId = session.subscription as string;
       const subscription = await stripe.subscriptions.retrieve(subscriptionId);
 
-      const payload = subscriptionPayloadBuilderService
-        .withBillingConfig(this.config)
-        .build({
-          accountId,
-          customerId,
-          id: subscription.id,
-          lineItems: subscription.items.data,
-          status: subscription.status,
-          currency: subscription.currency,
-          periodStartsAt: subscription.current_period_start,
-          periodEndsAt: subscription.current_period_end,
-          cancelAtPeriodEnd: subscription.cancel_at_period_end,
-          trialStartsAt: subscription.trial_start,
-          trialEndsAt: subscription.trial_end,
-        });
+      const periodStartsAt =
+        subscriptionPayloadBuilderService.getPeriodStartsAt(subscription);
+
+      const periodEndsAt =
+        subscriptionPayloadBuilderService.getPeriodEndsAt(subscription);
+
+      const lineItems = this.getLineItems(subscription);
+
+      const payload = subscriptionPayloadBuilderService.build({
+        accountId,
+        customerId,
+        id: subscription.id,
+        lineItems,
+        status: subscription.status,
+        currency: subscription.currency,
+        periodStartsAt,
+        periodEndsAt,
+        cancelAtPeriodEnd: subscription.cancel_at_period_end,
+        trialStartsAt: subscription.trial_start,
+        trialEndsAt: subscription.trial_end,
+      });
 
       return onCheckoutCompletedCallback(payload);
     } else {
@@ -250,7 +306,7 @@ export class StripeWebhookHandlerService
     return onPaymentSucceeded(sessionId);
   }
 
-  private handleSubscriptionUpdatedEvent(
+  private async handleSubscriptionUpdatedEvent(
     event: Stripe.CustomerSubscriptionUpdatedEvent,
     onSubscriptionUpdatedCallback: (
       subscription: UpsertSubscriptionParams,
@@ -263,21 +319,27 @@ export class StripeWebhookHandlerService
     const subscriptionPayloadBuilderService =
       createStripeSubscriptionPayloadBuilderService();
 
-    const payload = subscriptionPayloadBuilderService
-      .withBillingConfig(this.config)
-      .build({
-        customerId: subscription.customer as string,
-        id: subscriptionId,
-        accountId,
-        lineItems: subscription.items.data,
-        status: subscription.status,
-        currency: subscription.currency,
-        periodStartsAt: subscription.current_period_start,
-        periodEndsAt: subscription.current_period_end,
-        cancelAtPeriodEnd: subscription.cancel_at_period_end,
-        trialStartsAt: subscription.trial_start,
-        trialEndsAt: subscription.trial_end,
-      });
+    const periodStartsAt =
+      subscriptionPayloadBuilderService.getPeriodStartsAt(subscription);
+
+    const periodEndsAt =
+      subscriptionPayloadBuilderService.getPeriodEndsAt(subscription);
+
+    const lineItems = this.getLineItems(subscription);
+
+    const payload = subscriptionPayloadBuilderService.build({
+      customerId: subscription.customer as string,
+      id: subscriptionId,
+      accountId,
+      lineItems,
+      status: subscription.status,
+      currency: subscription.currency,
+      periodStartsAt,
+      periodEndsAt,
+      cancelAtPeriodEnd: subscription.cancel_at_period_end,
+      trialStartsAt: subscription.trial_start,
+      trialEndsAt: subscription.trial_end,
+    });
 
     return onSubscriptionUpdatedCallback(payload);
   }
@@ -296,36 +358,112 @@ export class StripeWebhookHandlerService
     onInvoicePaid: (data: UpsertSubscriptionParams) => Promise<unknown>,
   ) {
     const stripe = await this.loadStripe();
-
-    const invoice = event.data.object;
-    const subscriptionId = invoice.subscription as string;
-
-    // Retrieve the subscription
-    const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-
-    // Here we need to retrieve the subscription and build the payload
-    const accountId = subscription.metadata.accountId as string;
+    const logger = await getLogger();
 
     const subscriptionPayloadBuilderService =
       createStripeSubscriptionPayloadBuilderService();
 
-    const payload = subscriptionPayloadBuilderService
-      .withBillingConfig(this.config)
-      .build({
-        customerId: subscription.customer as string,
-        id: subscriptionId,
-        accountId,
-        lineItems: subscription.items.data,
-        status: subscription.status,
-        currency: subscription.currency,
-        periodStartsAt: subscription.current_period_start,
-        periodEndsAt: subscription.current_period_end,
-        cancelAtPeriodEnd: subscription.cancel_at_period_end,
-        trialStartsAt: subscription.trial_start,
-        trialEndsAt: subscription.trial_end,
-      });
+    const invoice = event.data.object;
+    const invoiceId = invoice.id;
+
+    if (!invoiceId) {
+      logger.warn(
+        {
+          invoiceId,
+        },
+        `Invoice not found. Will not handle invoice.paid event.`,
+      );
+
+      return;
+    }
+
+    const customerId = invoice.customer as string;
+
+    let subscriptionId: string | undefined;
+
+    // for retro-compatibility with Stripe < 18
+    // we check if the invoice object has a "subscription" property
+    if ('subscription' in invoice && invoice.subscription) {
+      subscriptionId = invoice.subscription as string;
+    } else {
+      // for Stripe 18+ we retrieve the subscription ID from the parent object
+      subscriptionId = invoice.parent?.subscription_details
+        ?.subscription as string;
+    }
+
+    // handle when a subscription ID is not found
+    if (!subscriptionId) {
+      logger.warn(
+        {
+          subscriptionId,
+          customerId,
+        },
+        `Subscription ID not found for invoice. Will not handle invoice.paid event.`,
+      );
+
+      return;
+    }
+
+    const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+
+    // // handle when a subscription is not found
+    if (!subscription) {
+      logger.warn(
+        {
+          subscriptionId,
+          customerId,
+        },
+        `Subscription not found for invoice. Will not handle invoice.paid event.`,
+      );
+
+      return;
+    }
+
+    // retrieve account ID from the metadata
+    const accountId = subscription.metadata?.accountId as string;
+
+    const periodStartsAt =
+      subscriptionPayloadBuilderService.getPeriodStartsAt(subscription);
+
+    const periodEndsAt =
+      subscriptionPayloadBuilderService.getPeriodEndsAt(subscription);
+
+    const lineItems = this.getLineItems(subscription);
+
+    const payload = subscriptionPayloadBuilderService.build({
+      customerId,
+      id: subscriptionId,
+      accountId,
+      lineItems,
+      status: subscription.status,
+      currency: subscription.currency,
+      periodStartsAt,
+      periodEndsAt,
+      cancelAtPeriodEnd: subscription.cancel_at_period_end,
+      trialStartsAt: subscription.trial_start,
+      trialEndsAt: subscription.trial_end,
+    });
 
     return onInvoicePaid(payload);
+  }
+
+  private getLineItems(subscription: Stripe.Subscription) {
+    return subscription.items.data.map((item) => {
+      let type = this.planTypesMap.get(item.price.id);
+
+      if (!type) {
+        console.warn(
+          {
+            lineItemId: item.id,
+          },
+          `Line item is not in the billing configuration, please add it. Defaulting to "flat" type.`,
+        );
+
+        type = 'flat' as const;
+      }
+
+      return { ...item, type };
+    });
   }
 
   private async loadStripe() {
