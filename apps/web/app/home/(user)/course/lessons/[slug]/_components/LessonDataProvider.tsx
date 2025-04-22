@@ -62,11 +62,64 @@ export async function LessonDataProvider({
       // Get quiz data
       const { getQuiz } = await import('@kit/cms/payload');
 
-      try {
-        // Pass the quiz ID as is - the getQuiz function now handles both string and object IDs
-        quiz = await getQuiz(quizId);
-      } catch (error) {
+      // Extract the actual quiz ID to avoid [object Object] issues in error messages
+      const quizIdStr =
+        typeof quizId === 'object'
+          ? quizId?.id || quizId?.value || JSON.stringify(quizId)
+          : String(quizId || '');
+
+      // Skip empty or clearly invalid quiz IDs
+      if (
+        !quizIdStr ||
+        quizIdStr === '{}' ||
+        quizIdStr === 'null' ||
+        quizIdStr === 'undefined'
+      ) {
+        console.log(`Skipping invalid quiz ID format: ${quizIdStr}`);
         // Continue without the quiz data
+      } else {
+        try {
+          // Add debug logging
+          console.log(`Attempting to fetch quiz: ${quizIdStr}`);
+          quiz = await getQuiz(quizId);
+
+          // Verify quiz questions are loaded
+          if (quiz && (!quiz.questions || quiz.questions.length === 0)) {
+            console.log(
+              `Quiz ${quizIdStr} found but has no questions - fetching questions separately`,
+            );
+
+            // If quiz exists but questions aren't loaded, try to fetch questions directly
+            try {
+              const { callPayloadAPI } = await import('@kit/cms/payload');
+              const questionsResponse = await callPayloadAPI(
+                `quiz_questions?where[quiz_id][equals]=${quiz.id}&sort=order&depth=0`,
+              );
+
+              if (
+                questionsResponse?.docs &&
+                questionsResponse.docs.length > 0
+              ) {
+                quiz.questions = questionsResponse.docs;
+                console.log(
+                  `Successfully loaded ${questionsResponse.docs.length} questions for quiz ${quiz.id}`,
+                );
+              } else {
+                console.warn(`No questions found for quiz ${quiz.id}`);
+              }
+            } catch (questionsError) {
+              console.error(
+                `Error fetching questions separately: ${questionsError instanceof Error ? questionsError.message : 'Unknown error'}`,
+              );
+            }
+          }
+        } catch (error) {
+          // Log the error with context but continue without the quiz data
+          console.error(
+            `Error fetching quiz with ID ${quizIdStr}: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          );
+          // Continue without the quiz data - no placeholder quizzes
+        }
       }
 
       // Get user's quiz attempts for this quiz (even if quiz fetch failed)

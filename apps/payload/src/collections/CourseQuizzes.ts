@@ -1,5 +1,5 @@
 import { CollectionConfig } from 'payload'
-import { findDownloadsForCollection } from '../db/downloads'
+import { findCourseForQuiz } from '../db/relationships'
 
 export const CourseQuizzes: CollectionConfig = {
   slug: 'course_quizzes',
@@ -16,31 +16,57 @@ export const CourseQuizzes: CollectionConfig = {
     read: () => true, // Public read access
   },
   hooks: {
-    // Add a collection-level afterRead hook to handle downloads
-    afterRead: [
-      async ({ req, doc }) => {
-        // Only handle downloads if we have a specific document with an ID
-        if (doc?.id) {
+    // Add hooks to manage course relationship
+    beforeChange: [
+      async ({ data, req }) => {
+        // If no course_id provided but we're not creating a new quiz
+        // (i.e., updating an existing one), attempt to get existing course_id
+        if (!data.course_id && req.method !== 'POST') {
           try {
-            // Replace downloads with ones from our custom view
-            const downloads = await findDownloadsForCollection(
-              req.payload,
-              doc.id,
-              'course_quizzes',
-            )
-
-            // Update the document with the retrieved downloads
-            return {
-              ...doc,
-              downloads,
+            const courseId = await findCourseForQuiz(req.payload, data.id)
+            if (courseId) {
+              data.course_id = courseId
             }
           } catch (error) {
-            console.error('Error fetching downloads for course quiz:', error)
-            // Return the document with an empty downloads array instead of failing
-            return {
-              ...doc,
-              downloads: [], // Fallback to empty array on error
+            console.error('Error finding course for quiz:', error)
+          }
+        }
+
+        // Default to main course if still no course_id
+        if (!data.course_id) {
+          try {
+            const mainCourse = await req.payload.find({
+              collection: 'courses',
+              where: {
+                slug: { equals: 'decks-for-decision-makers' },
+              },
+            })
+
+            if (mainCourse.docs && mainCourse.docs.length > 0) {
+              data.course_id = mainCourse.docs[0].id
             }
+          } catch (error) {
+            console.error('Error finding default course:', error)
+          }
+        }
+
+        return data
+      },
+    ],
+    afterRead: [
+      async ({ req, doc }) => {
+        // Only process if we have a doc with ID
+        if (doc?.id) {
+          try {
+            // If course_id is missing, attempt to find it
+            if (!doc.course_id) {
+              const courseId = await findCourseForQuiz(req.payload, doc.id)
+              if (courseId) {
+                doc.course_id = courseId
+              }
+            }
+          } catch (error) {
+            console.error('Error fetching course for quiz:', error)
           }
         }
 
@@ -72,6 +98,24 @@ export const CourseQuizzes: CollectionConfig = {
       type: 'relationship',
       relationTo: 'courses' as any,
       required: true,
+      hooks: {
+        // Add field-level hook for additional validation
+        beforeValidate: [
+          async ({ value, operation, originalDoc, req }) => {
+            // If value is missing but we're not creating a new document
+            if (!value && operation !== 'create') {
+              try {
+                // Try to fetch from existing document
+                const courseId = await findCourseForQuiz(req.payload, originalDoc.id)
+                return courseId || value
+              } catch (error) {
+                console.error('Error in course_id beforeValidate hook:', error)
+              }
+            }
+            return value
+          },
+        ],
+      },
     },
     {
       name: 'pass_threshold',
@@ -93,15 +137,6 @@ export const CourseQuizzes: CollectionConfig = {
         description: 'Questions included in this quiz',
       },
     },
-    // Add downloads field
-    {
-      name: 'downloads',
-      type: 'relationship',
-      relationTo: 'downloads',
-      hasMany: true,
-      admin: {
-        description: 'Files for download in this quiz',
-      },
-    },
+    // Downloads field removed - quizzes do not need downloads
   ],
 }

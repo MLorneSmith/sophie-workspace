@@ -26,6 +26,7 @@ import * as migration_20250430_100000_fix_downloads_relationships_view from './2
 import * as migration_20250430_110000_fix_missing_columns from './20250415_140000_fix_missing_columns'
 import * as migration_20250430_120000_fix_remaining_columns from './20250415_150000_fix_remaining_columns'
 import * as migration_20250430_130000_fix_downloads_thumbnail_url from './20250415_180000_fix_downloads_thumbnail_url'
+import * as migration_20250430_140000_uuid_consistency from './20250415_190000_uuid_consistency'
 
 export const migrations = [
   // Add schema creation migration first
@@ -147,5 +148,11 @@ export const migrations = [
     up: migration_20250430_130000_fix_downloads_thumbnail_url.up,
     down: migration_20250430_130000_fix_downloads_thumbnail_url.down,
     name: '20250430_130000_fix_downloads_thumbnail_url',
+  },
+  // Add UUID consistency migration for safe comparisons
+  {
+    up: migration_20250430_140000_uuid_consistency.up,
+    down: migration_20250430_140000_uuid_consistency.down,
+    name: '20250430_140000_uuid_consistency',
   },
 ]

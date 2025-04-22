@@ -147,7 +147,7 @@ export default buildConfig({
         downloads: {
           disableLocalStorage: true,
           generateFileURL: ({ filename }: { filename: string }) =>
-            `https://downloads.slideheroes.com/${filename}`,
+            `https://downloads.slideheroes.com/${encodeURIComponent(filename)}`,
           // Standard S3 configuration without imageSizes property
           // The thumbnail fix will be handled by the migration script
         },

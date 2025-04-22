@@ -131,7 +131,11 @@ export function LessonViewClient({
 
   // Check if lesson has a quiz that was successfully loaded
   const hasQuiz =
-    !!quiz && !!quiz.id && !!(lesson.quiz_id || lesson.quiz_id_id);
+    !!quiz &&
+    !!quiz.id &&
+    !!quiz.questions &&
+    quiz.questions.length > 0 &&
+    !!(lesson.quiz_id || lesson.quiz_id_id);
 
   // Check if lesson has a survey that was successfully loaded
   const hasSurvey =

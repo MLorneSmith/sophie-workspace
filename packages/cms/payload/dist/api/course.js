@@ -53,25 +53,50 @@ export async function getQuiz(quizId, options = {}, supabaseClient) {
     }
     // Extract the actual ID value
     let actualQuizId;
-    if (typeof quizId === 'string') {
-        actualQuizId = quizId;
-    }
-    else if (quizId && typeof quizId === 'object') {
-        // Handle relationship object format
-        if (quizId.value && typeof quizId.value === 'string') {
-            actualQuizId = quizId.value;
+    let originalQuizId = quizId;
+    try {
+        if (typeof quizId === 'string') {
+            actualQuizId = quizId;
         }
-        else if (quizId.id && typeof quizId.id === 'string') {
-            actualQuizId = quizId.id;
+        else if (quizId && typeof quizId === 'object') {
+            // Handle relationship object format
+            if (quizId.value && typeof quizId.value === 'string') {
+                actualQuizId = quizId.value;
+            }
+            else if (quizId.id && typeof quizId.id === 'string') {
+                actualQuizId = quizId.id;
+            }
+            else if (quizId.relationTo === 'course_quizzes' && quizId.value) {
+                // Handle special case for specific relationship format
+                actualQuizId = String(quizId.value);
+            }
+            else {
+                // Try to extract any UUID-like string from the object
+                const objStr = JSON.stringify(quizId);
+                const uuidMatch = objStr.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i);
+                if (uuidMatch) {
+                    actualQuizId = uuidMatch[0];
+                    console.log(`Extracted UUID ${actualQuizId} from complex object`);
+                }
+                else {
+                    console.error('getQuiz: Invalid quiz ID format:', quizId);
+                    throw new Error(`Invalid quiz ID format: ${JSON.stringify(quizId)}`);
+                }
+            }
         }
         else {
-            console.error('getQuiz: Invalid quiz ID format:', quizId);
-            throw new Error(`Invalid quiz ID format: ${JSON.stringify(quizId)}`);
+            console.error('getQuiz: Invalid quiz ID type:', typeof quizId);
+            throw new Error(`Invalid quiz ID type: ${typeof quizId}`);
+        }
+        // Validate the extracted ID looks like a UUID
+        if (!actualQuizId.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
+            console.warn(`getQuiz: Quiz ID does not appear to be a valid UUID: ${actualQuizId}`);
+            // Continue anyway, as it might be a valid ID in a different format
         }
     }
-    else {
-        console.error('getQuiz: Invalid quiz ID type:', typeof quizId);
-        throw new Error(`Invalid quiz ID type: ${typeof quizId}`);
+    catch (error) {
+        console.error(`getQuiz: Error extracting quiz ID from ${JSON.stringify(originalQuizId)}:`, error);
+        throw new Error(`Failed to extract valid quiz ID: ${error instanceof Error ? error.message : String(error)}`);
     }
     // Log the quiz ID for debugging
     console.log(`getQuiz: Fetching quiz with ID: ${actualQuizId} (original: ${JSON.stringify(quizId)})`);
