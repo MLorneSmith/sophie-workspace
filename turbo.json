@@ -42,7 +42,8 @@
     "SUPABASE_SERVICE_ROLE_KEY",
     "ENABLE_BILLING_TESTS",
     "RESEND_API_KEY",
-    "MAILER_PROVIDER"
+    "MAILER_PROVIDER",
+    "CONTACT_EMAIL"
   ],
   "tasks": {
     "topo": {
