@@ -120,7 +120,7 @@ function Process-RawData {
                     }
                 
                 # Now run the YAML generation script
-                Exec-Command -command "pnpm exec tsx src/scripts/create-full-lesson-metadata.ts" -description "Creating lesson metadata YAML"
+                Exec-Command -command "pnpm run create:lesson-metadata-yaml" -description "Creating lesson metadata YAML"
                 Log-Success "Lesson metadata YAML created successfully"
             }
             catch {
@@ -152,7 +152,7 @@ function Process-RawData {
                     }
                     
                     # Run the HTML parser directly
-                    Exec-Command -command "pnpm exec tsx src/scripts/parse-lesson-todo-html.ts" -description "Parsing HTML todo content"
+                    Exec-Command -command "pnpm run process:parse-lesson-todo-html" -description "Parsing HTML todo content"
                     
                     # Validate the parsing results
                     Log-Message "Validating HTML parsing results..." "Yellow"
@@ -201,7 +201,7 @@ function Generate-SqlSeedFiles {
 
         # Verify quiz system integrity
         Log-Message "Verifying quiz system integrity..." "Yellow"
-        $quizSystemVerification = Exec-Command -command "pnpm exec tsx src/scripts/verification/verify-quiz-system-integrity.ts" -description "Verifying quiz system integrity" -captureOutput -continueOnError
+        $quizSystemVerification = Exec-Command -command "pnpm run verify:quiz-system-integrity" -description "Verifying quiz system integrity" -captureOutput -continueOnError
         
         if ($LASTEXITCODE -ne 0) {
             Log-Warning "Quiz system integrity verification failed. Will attempt to fix during generation."
@@ -238,7 +238,7 @@ function Generate-SqlSeedFiles {
         
         # Fix quiz ID consistency issue - this will overwrite the 03-quizzes.sql with correct IDs
         Log-Message "Fixing quiz ID consistency issues..." "Yellow"
-        Exec-Command -command "pnpm exec tsx src/scripts/fix-quiz-id-consistency.ts" -description "Fixing quiz ID consistency"
+        Exec-Command -command "pnpm run fix:quiz-id-consistency" -description "Fixing quiz ID consistency"
         
         Log-Success "SQL seed files generated and ID consistency fixed successfully"
 
@@ -271,15 +271,15 @@ function Fix-References {
         
         # Fix lesson-quiz references to ensure they match the corrected quiz IDs
         Log-Message "Fixing lesson-quiz reference consistency..." "Yellow"
-        Exec-Command -command "pnpm exec tsx src/scripts/fix-lesson-quiz-references.ts" -description "Fixing lesson-quiz references"
+        Exec-Command -command "pnpm run fix:lesson-quiz-references" -description "Fixing lesson-quiz references"
         
         # Fix additional lesson-quiz references in 03a-lesson-quiz-references.sql
         Log-Message "Fixing additional lesson-quiz reference consistency..." "Yellow"
-        Exec-Command -command "pnpm exec tsx src/scripts/fix-lessons-quiz-references-sql.ts" -description "Fixing additional lesson-quiz references"
+        Exec-Command -command "pnpm run fix:lessons-quiz-references-sql" -description "Fixing additional lesson-quiz references"
         
         # Fix quiz question references in 04-questions.sql
         Log-Message "Fixing quiz question references..." "Yellow"
-        Exec-Command -command "pnpm exec tsx src/scripts/fix-questions-quiz-references.ts" -description "Fixing quiz question references"
+        Exec-Command -command "pnpm run fix:questions-quiz-references" -description "Fixing quiz question references"
         
         Log-Success "All references fixed successfully"
 

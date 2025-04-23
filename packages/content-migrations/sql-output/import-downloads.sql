@@ -27,7 +27,7 @@ INSERT INTO payload.downloads (
       
       created_at, updated_at
     ) VALUES (
-      '041312c4-7357-4c64-a500-131035109583', 
+      '3610c341-1ca8-4e61-bb13-cb93100e1a03', 
       '201 Our Process.pdf',
       'https://pub-40e84da466344af19a7192a514a7400e.r2.dev/201%20Our%20Process.pdf',
       'Our Process Slides',
@@ -89,7 +89,7 @@ INSERT INTO payload.downloads (
       
       created_at, updated_at
     ) VALUES (
-      '7ec43eb3-45fb-4a0f-962c-57fd1449741c', 
+      'eedad6f3-9522-4ec9-8e2a-0a376729f60c', 
       '202 The Who.pdf',
       'https://pub-40e84da466344af19a7192a514a7400e.r2.dev/202%20The%20Who.pdf',
       'The Who Slides',
@@ -151,7 +151,7 @@ INSERT INTO payload.downloads (
       
       created_at, updated_at
     ) VALUES (
-      '3c1548a1-55ad-45b0-94ed-927e4319feb5', 
+      'a805b700-14a3-4f7e-aab3-b46e2be6b2ba', 
       '203 The Why Introductions.pdf',
       'https://pub-40e84da466344af19a7192a514a7400e.r2.dev/203%20The%20Why%20-%20Introductions.pdf',
       'The Why - Introductions Slides',
@@ -213,7 +213,7 @@ INSERT INTO payload.downloads (
       
       created_at, updated_at
     ) VALUES (
-      'f73dfd83-359d-4764-80ce-77e8f90f76b6', 
+      'c511ce61-fea0-43cb-be36-f9d6ab8007bc', 
       '204 The Why Next Steps.pdf',
       'https://pub-40e84da466344af19a7192a514a7400e.r2.dev/204%20The%20Why%20-%20Next%20Steps.pdf',
       'The Why - Next Steps Slides',
@@ -275,7 +275,7 @@ INSERT INTO payload.downloads (
       
       created_at, updated_at
     ) VALUES (
-      'e2a4d5d1-3787-430b-803b-f02aae51fc60', 
+      'c3999be0-42d7-4255-afdd-14e1d62d7b86', 
       '205 Idea Generation.pdf',
       'https://pub-40e84da466344af19a7192a514a7400e.r2.dev/205%20Idea%20Generation.pdf',
       'Idea Generation Slides',
@@ -337,7 +337,7 @@ INSERT INTO payload.downloads (
       
       created_at, updated_at
     ) VALUES (
-      '82976be0-c74f-45e1-a88b-df32e1af06f2', 
+      '6ebfeb0d-4d4a-4654-b397-d1eea4979a81', 
       '206 What is Structure.pdf',
       'https://pub-40e84da466344af19a7192a514a7400e.r2.dev/206%20What%20is%20Structure.pdf',
       'What is Structure Slides',
@@ -399,7 +399,7 @@ INSERT INTO payload.downloads (
       
       created_at, updated_at
     ) VALUES (
-      '9be96c50-0c9a-4001-9d50-047b0087fd68', 
+      '59d59ede-08c2-4cdb-b638-2d64a1937a3d', 
       '207 Using Stories.pdf',
       'https://pub-40e84da466344af19a7192a514a7400e.r2.dev/207%20Using%20Stories.pdf',
       'Using Stories Slides',
@@ -461,7 +461,7 @@ INSERT INTO payload.downloads (
       
       created_at, updated_at
     ) VALUES (
-      '911ae069-c9b9-41e9-b53b-a6f93d05e6f6', 
+      'c11f84d5-05d0-41f8-88e7-8a2ab0ec2e38', 
       '208 Storyboards in Presentations.pdf',
       'https://pub-40e84da466344af19a7192a514a7400e.r2.dev/208%20Storyboards%20in%20Presentations.pdf',
       'Storyboards in Presentations Slides',
@@ -523,7 +523,7 @@ INSERT INTO payload.downloads (
       
       created_at, updated_at
     ) VALUES (
-      'e3005012-d568-4a2f-ac2f-6de699198527', 
+      '8347ca70-d16b-4340-b2e4-e5a62e56c13e', 
       '209 Visual Perception and Communication.pdf',
       'https://pub-40e84da466344af19a7192a514a7400e.r2.dev/209%20Visual%20Perception.pdf',
       'Visual Perception and Communication Slides',
@@ -585,7 +585,7 @@ INSERT INTO payload.downloads (
       
       created_at, updated_at
     ) VALUES (
-      '7972513a-7ee8-4f37-bbd3-24037703a4a0', 
+      'b8510563-1b4d-4cfc-afa1-9e5d04918df8', 
       '210 Fundamental Elements of Design.pdf',
       'https://pub-40e84da466344af19a7192a514a7400e.r2.dev/210%20Fundamental%20Elements.pdf',
       'Fundamental Elements of Design Slides',
@@ -647,7 +647,7 @@ INSERT INTO payload.downloads (
       
       created_at, updated_at
     ) VALUES (
-      'cdffa967-a79b-4d31-adf8-3d00986b3493', 
+      'a99f10c3-33e3-4cd5-91c6-0dd0025fa559', 
       '211 Gestalt Principles.pdf',
       'https://pub-40e84da466344af19a7192a514a7400e.r2.dev/504%20Gestalt%20Principles%20of%20Visual%20Perception.pdf',
       'Gestalt Principles Slides',
@@ -709,7 +709,7 @@ INSERT INTO payload.downloads (
       
       created_at, updated_at
     ) VALUES (
-      '2ba620d3-3936-4f6a-9eb9-a7003d8e7af6', 
+      '08d277a0-09a3-4e6e-9c62-1faa6c8d20c1', 
       '212 Slide Composition.pdf',
       'https://pub-40e84da466344af19a7192a514a7400e.r2.dev/212%20Slide%20Composition.pdf',
       'Slide Composition Slides',
@@ -771,7 +771,7 @@ INSERT INTO payload.downloads (
       
       created_at, updated_at
     ) VALUES (
-      'b90332c4-11a3-4446-b687-4f1e323634d2', 
+      'ef941efb-7306-4b33-9e48-d65f129994f0', 
       '213 Tables vs Graphs.pdf',
       'https://pub-40e84da466344af19a7192a514a7400e.r2.dev/213%20Tables%20vs%20Graphs.pdf',
       'Tables vs Graphs Slides',
@@ -833,7 +833,7 @@ INSERT INTO payload.downloads (
       
       created_at, updated_at
     ) VALUES (
-      'c5d81a99-d9c5-43fc-b635-00230f34a95c', 
+      'b8470111-4322-4432-8649-ade827281d63', 
       '214 Standard Graphs.pdf',
       'https://pub-40e84da466344af19a7192a514a7400e.r2.dev/214%20Standard%20Graphs.pdf',
       'Standard Graphs Slides',
@@ -895,7 +895,7 @@ INSERT INTO payload.downloads (
       
       created_at, updated_at
     ) VALUES (
-      'e5680e4d-afc9-4e1d-9f07-747fd9ff4a2a', 
+      '4e801a14-d0ed-4af0-8e08-cb5181cec623', 
       '215 Fact-based Persuasion.pdf',
       'https://pub-40e84da466344af19a7192a514a7400e.r2.dev/601%20Fact-based%20Persuasion%20Overview.pdf',
       'Fact-based Persuasion Slides',
@@ -956,7 +956,7 @@ INSERT INTO payload.downloads (
       
       created_at, updated_at
     ) VALUES (
-      '3f622592-650c-4f9d-84b0-84adeb9902c9', 
+      '851b4e00-d8f0-47f9-836a-8319e601ca38', 
       'SlideHeroes Presentation Template.zip',
       'https://downloads.slideheroes.com/SlideHeroes%20Presentation%20Template.zip',
       'SlideHeroes Presentation Template',
@@ -1009,7 +1009,7 @@ INSERT INTO payload.downloads (
       
       created_at, updated_at
     ) VALUES (
-      '8a1aad43-0c2b-41c8-b777-4577274f8757', 
+      'b0b4fe29-e7bf-4f25-a897-14aea9995d87', 
       'SlideHeroes Swipe File.zip',
       'https://downloads.slideheroes.com/SlideHeroes%20Swipe%20File.zip',
       'SlideHeroes Swipe File',
