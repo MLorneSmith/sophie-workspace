@@ -218,11 +218,11 @@ function Fix-Relationships {
 
         # Run lesson-quiz relationship fixes
         Log-Message "Running lesson-quiz relationship fixes..." "Yellow"
-        Exec-Command -command "pnpm exec tsx src/scripts/repair/fix-lesson-quiz-field-name.ts" -description "Fixing lesson-quiz relationships" -continueOnError
+        Exec-Command -command "pnpm run fix:lesson-quiz-field-name" -description "Fixing lesson-quiz relationships" -continueOnError
 
         # Fix invalid quiz references in lessons
         Log-Message "Fixing invalid quiz references..." "Yellow"
-        Exec-Command -command "pnpm exec tsx src/scripts/repair/fix-invalid-quiz-references.ts" -description "Fixing invalid quiz references" -continueOnError
+        Exec-Command -command "pnpm run fix:invalid-quiz-references" -description "Fixing invalid quiz references" -continueOnError
 
         # Apply direct SQL fix for all quiz relationship issues
         Log-Message "Applying direct SQL fix for quiz relationships..." "Yellow"
@@ -230,11 +230,11 @@ function Fix-Relationships {
         
         # For backward compatibility, still run existing quiz fix scripts
         Log-Message "Running additional quiz relationship fixes..." "Gray"
-        Exec-Command -command "pnpm exec tsx src/scripts/repair/fix-quiz-question-relationships.ts" -description "Fixing quiz-question relationships" -continueOnError
+        Exec-Command -command "pnpm run fix:quiz-question-relationships" -description "Fixing quiz-question relationships" -continueOnError
 
         # Fix references to quizzes without questions
         Log-Message "Fixing references to quizzes without questions..." "Yellow"
-        Exec-Command -command "pnpm exec tsx src/scripts/repair/fix-quizzes-without-questions.ts" -description "Fixing references to quizzes without questions" -continueOnError
+        Exec-Command -command "pnpm run fix:quizzes-without-questions" -description "Fixing references to quizzes without questions" -continueOnError
 
         # Fix unidirectional quiz relationships
         Log-Message "Fixing unidirectional quiz relationships..." "Yellow"
@@ -286,11 +286,11 @@ function Fix-Relationships {
         
         # Fix download R2 URLs with proper CDN links
         Log-Message "Fixing download R2 URLs..." "Yellow"
-        Exec-Command -command "pnpm exec tsx src/scripts/repair/fix-download-r2-urls.ts" -description "Fixing download R2 URLs" -continueOnError
+        Exec-Command -command "pnpm run fix:download-r2-urls" -description "Fixing download R2 URLs" -continueOnError
         
         # Fix download R2 mappings for placeholder files
         Log-Message "Fixing download R2 mappings..." "Yellow"
-        Exec-Command -command "pnpm exec tsx src/scripts/repair/fix-download-r2-mappings.ts" -description "Fixing download R2 mappings" -continueOnError
+        Exec-Command -command "pnpm run fix:download-r2-mappings" -description "Fixing download R2 mappings" -continueOnError
         
         # Clear lesson content to fix template tag rendering issues
         Log-Message "Clearing lesson content fields to fix template tag rendering..." "Yellow"
@@ -411,7 +411,7 @@ function Migrate-PrivatePosts {
             
             # Run the direct migration script for private posts
             Log-Message "Running specialized private posts migration script..." "Yellow"
-            Exec-Command -command "pnpm exec tsx src/scripts/core/migrate-private-direct.ts" -description "Migrating private posts with full content"
+            Exec-Command -command "pnpm run migrate:private-direct" -description "Migrating private posts with full content"
             
             # Verify the private posts were created
             $verifyQuery = "SELECT COUNT(*) as count FROM payload.private"
@@ -458,7 +458,7 @@ function Migrate-BlogPosts {
             
                 # Run the direct migration script for posts regardless of existing count
                 Log-Message "Running specialized post migration script..." "Yellow"
-                Exec-Command -command "pnpm exec tsx src/scripts/core/migrate-posts-direct.ts" -description "Migrating blog posts with full content"
+                Exec-Command -command "pnpm run migrate:posts-direct" -description "Migrating blog posts with full content"
                 
                 # Verify the posts were created
                 $verifyQuery = "SELECT COUNT(*) as count FROM payload.posts"

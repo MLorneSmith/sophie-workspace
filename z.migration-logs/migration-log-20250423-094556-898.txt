@@ -1,17 +1,12 @@
 ﻿**********************
 Windows PowerShell transcript start
-Start time: 20250422181442
+Start time: 20250423094556
 Username: SLIDEHEROES_DEN\msmit
 RunAs User: SLIDEHEROES_DEN\msmit
 Configuration Name: 
 Machine: SLIDEHEROES_DEN (Microsoft Windows NT 10.0.26100.0)
-Host Application: C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command Import-Module 'c:\Users\msmit\.vscode\extensions\ms-vscode.powershell-2025.0.0\modules\PowerShellEditorServices\PowerShellEditorServices.psd1'; Start-EditorServices -HostName 'Visual Studio Code Host' -HostProfileId 'Microsoft.VSCode' -HostVersion '2025.0.0' -BundledModulesPath 'c:\Users\msmit\.vscode\extensions\ms-vscode.powershell-2025.0.0\modules' -EnableConsoleRepl -StartupBanner "PowerShell Extension v2025.0.0
-Copyright (c) Microsoft Corporation.
-
-https://aka.ms/vscode-powershell
-Type 'help' to get help.
-" -LogLevel 'Warning' -LogPath 'c:\Users\msmit\AppData\Roaming\Code\logs\20250422T175115\window1\exthost\ms-vscode.powershell' -SessionDetailsPath 'c:\Users\msmit\AppData\Roaming\Code\User\globalStorage\ms-vscode.powershell\sessions\PSES-VSCode-3680-636917.json' -FeatureFlags @() 
-Process ID: 28772
+Host Application: C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -noexit -command try { . "c:\Users\msmit\AppData\Local\Programs\Microsoft VS Code\resources\app\out\vs\workbench\contrib\terminal\common\scripts\shellIntegration.ps1" } catch {}
+Process ID: 5672
 PSVersion: 5.1.26100.3624
 PSEdition: Desktop
 PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.3624
@@ -21,16 +16,16 @@ WSManStackVersion: 3.0
 PSRemotingProtocolVersion: 2.3
 SerializationVersion: 1.1.0.1
 **********************
-Transcript started, output file is D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-log-20250422-181442-591.txt
-Starting migration process at 04/22/2025 18:14:42
-Detailed logs will be saved to: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250422-181442-591.txt
+Transcript started, output file is D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-log-20250423-094556-898.txt
+Starting migration process at 04/23/2025 09:45:56
+Detailed logs will be saved to: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250423-094556-898.txt
 
 Name                           Value
 ----                           -----
-Timestamp                      20250422-181442-591
-LogsDirectory                  D:\SlideHeroes\App\repos\2025slideher...
-DetailedLogFile                D:\SlideHeroes\App\repos\2025slideher...
-LogFile                        D:\SlideHeroes\App\repos\2025slideher...
+Timestamp                      20250423-094556-898
+LogsDirectory                  D:\SlideHeroes\App\repos\2025slideheroes\z.migratio...
+DetailedLogFile                D:\SlideHeroes\App\repos\2025slideheroes\z.migratio...
+LogFile                        D:\SlideHeroes\App\repos\2025slideheroes\z.migratio...
 ================================================================================
 SETUP PHASE
 ================================================================================
@@ -146,7 +141,7 @@ DESCRIPTION: Processing raw data
 Ensuring lesson metadata YAML is up to date...
 âœ… Lesson metadata YAML exists and is up to date
 Found HTML todo content file. Updating YAML with HTML content...
-EXECUTING: pnpm exec tsx src/scripts/parse-lesson-todo-html.ts
+EXECUTING: pnpm run process:parse-lesson-todo-html
 DESCRIPTION: Parsing HTML todo content
 
 Validating HTML parsing results...
@@ -162,7 +157,7 @@ True
 Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
 Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
 Verifying quiz system integrity...
-EXECUTING: pnpm exec tsx src/scripts/verification/verify-quiz-system-integrity.ts
+EXECUTING: pnpm run verify:quiz-system-integrity
 DESCRIPTION: Verifying quiz system integrity
 Generating SQL seed files using YAML-based approach...
 EXECUTING: pnpm --filter @kit/content-migrations run generate:updated-sql
@@ -170,7 +165,7 @@ DESCRIPTION: Generating SQL seed files using YAML metadata
 
 âœ… Successfully generated SQL seed files using YAML approach
 Fixing quiz ID consistency issues...
-EXECUTING: pnpm exec tsx src/scripts/fix-quiz-id-consistency.ts
+EXECUTING: pnpm run fix:quiz-id-consistency
 DESCRIPTION: Fixing quiz ID consistency
 
 âœ… SQL seed files generated and ID consistency fixed successfully
@@ -184,15 +179,15 @@ True
 Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
 Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
 Fixing lesson-quiz reference consistency...
-EXECUTING: pnpm exec tsx src/scripts/fix-lesson-quiz-references.ts
+EXECUTING: pnpm run fix:lesson-quiz-references
 DESCRIPTION: Fixing lesson-quiz references
 
 Fixing additional lesson-quiz reference consistency...
-EXECUTING: pnpm exec tsx src/scripts/fix-lessons-quiz-references-sql.ts
+EXECUTING: pnpm run fix:lessons-quiz-references-sql
 DESCRIPTION: Fixing additional lesson-quiz references
 
 Fixing quiz question references...
-EXECUTING: pnpm exec tsx src/scripts/fix-questions-quiz-references.ts
+EXECUTING: pnpm run fix:questions-quiz-references
 DESCRIPTION: Fixing quiz question references
 
 âœ… All references fixed successfully
@@ -234,7 +229,7 @@ True
 Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
 Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
 Running specialized post migration script...
-EXECUTING: pnpm exec tsx src/scripts/core/migrate-posts-direct.ts
+EXECUTING: pnpm run migrate:posts-direct
 DESCRIPTION: Migrating blog posts with full content
 
 EXECUTING: pnpm run utils:run-sql --sql "SELECT COUNT(*) as count FROM payload.posts"
@@ -250,7 +245,7 @@ True
 Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
 Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
 Running specialized private posts migration script...
-EXECUTING: pnpm exec tsx src/scripts/core/migrate-private-direct.ts
+EXECUTING: pnpm run migrate:private-direct
 DESCRIPTION: Migrating private posts with full content
 
 EXECUTING: pnpm run utils:run-sql --sql "SELECT COUNT(*) as count FROM payload.private"
@@ -281,9 +276,12 @@ Verifying columns were added...
 EXECUTING: pnpm --filter @kit/content-migrations run verify:relationship-columns
 DESCRIPTION: Verifying relationship columns
 
-âœ… UUID tables fixed and verified successfully
-Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
-True
+ERROR: Command failed with exit code: 1
+ERROR: Error in step 'Verifying relationship columns': Command failed with exit code: 1
+PS>TerminatingError(): "Command failed with exit code: 1"
+ERROR: Failed to fix UUID tables: Command failed with exit code: 1
+WARNING: This error might affect relationship queries, but continuing
+False
 
 ------------------------------------------------------------
 STEP 8: Importing downloads from R2 bucket
@@ -318,11 +316,11 @@ EXECUTING: pnpm run fix:quiz-relationships-complete
 DESCRIPTION: Fixing all quiz relationships
 
 Running lesson-quiz relationship fixes...
-EXECUTING: pnpm exec tsx src/scripts/repair/fix-lesson-quiz-field-name.ts
+EXECUTING: pnpm run fix:lesson-quiz-field-name
 DESCRIPTION: Fixing lesson-quiz relationships
 
 Fixing invalid quiz references...
-EXECUTING: pnpm exec tsx src/scripts/repair/fix-invalid-quiz-references.ts
+EXECUTING: pnpm run fix:invalid-quiz-references
 DESCRIPTION: Fixing invalid quiz references
 
 Applying direct SQL fix for quiz relationships...
@@ -330,11 +328,11 @@ EXECUTING: pnpm run fix:direct-quiz-fix
 DESCRIPTION: Applying direct quiz relationships fix
 
 Running additional quiz relationship fixes...
-EXECUTING: pnpm exec tsx src/scripts/repair/fix-quiz-question-relationships.ts
+EXECUTING: pnpm run fix:quiz-question-relationships
 DESCRIPTION: Fixing quiz-question relationships
 
 Fixing references to quizzes without questions...
-EXECUTING: pnpm exec tsx src/scripts/repair/fix-quizzes-without-questions.ts
+EXECUTING: pnpm run fix:quizzes-without-questions
 DESCRIPTION: Fixing references to quizzes without questions
 
 Fixing unidirectional quiz relationships...
@@ -386,11 +384,11 @@ EXECUTING: pnpm run fix:downloads-metadata
 DESCRIPTION: Fixing downloads metadata
 
 Fixing download R2 URLs...
-EXECUTING: pnpm exec tsx src/scripts/repair/fix-download-r2-urls.ts
+EXECUTING: pnpm run fix:download-r2-urls
 DESCRIPTION: Fixing download R2 URLs
 
 Fixing download R2 mappings...
-EXECUTING: pnpm exec tsx src/scripts/repair/fix-download-r2-mappings.ts
+EXECUTING: pnpm run fix:download-r2-mappings
 DESCRIPTION: Fixing download R2 mappings
 
 Clearing lesson content fields to fix template tag rendering...
@@ -423,7 +421,6 @@ True
 Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
 Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
 Checking database environment settings...
-Setting DATABASE_URL from DATABASE_URI for compatibility
 âœ… Database environment settings are properly configured
 True
 Verifying database schema...
@@ -440,48 +437,14 @@ DESCRIPTION: Verifying media_id columns
 EXECUTING: pnpm --filter @kit/content-migrations run repair:relationship-columns
 DESCRIPTION: Fixing relationship columns
 ../../apps/payload                       | ΓÇëWARNΓÇë The field "pnpm.onlyBuiltDependencies" was found in D:\SlideHeroes\App\repos\2025slideheroes\apps\payload/package.json. This will not take effect. You should configure "pnpm.onlyBuiltDependencies" at the root of the workspace instead.
-
-> @kit/content-migrations@0.1.0 repair:relationship-columns D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
-> tsx src/scripts/repair/fix-relationship-columns.ts
-
-
-Fixing relationship columns in all relationship tables...
-
-Adding missing columns to documentation_rels...
-
-Adding missing columns to posts_rels...
-
-Adding missing columns to surveys_rels...
-
-Adding missing columns to survey_questions_rels...
-
-Adding missing columns to courses_rels...
-
-Adding missing columns to course_lessons_rels...
-
-Adding missing columns to course_quizzes_rels...
-
-Adding missing columns to quiz_questions_rels...
-
-Adding missing columns to downloads_rels...
-
-Adding missing columns to payload_locked_documents_rels...
-
-Adding missing columns to payload_preferences_rels...
-
-Dropping existing downloads_relationships view...
-
-Creating/updating downloads_relationships view...
-
-Creating ensure_relationship_columns function...
-
-Γ£à Successfully added missing relationship columns to all tables
-Γ£à Created downloads_relationships view
-Γ£à Created ensure_relationship_columns function
 EXECUTING: pnpm --filter @kit/content-migrations run verify:relationship-columns
 DESCRIPTION: Verifying relationship columns
-âœ… Relationship columns verification passed
-True
+PS>TerminatingError(pnpm.CMD): "The running command stopped because the preference variable "ErrorActionPreference" or common parameter is set to Stop: Γ¥î Missing column documentation_id in table payload.downloads_rels"
+>> TerminatingError(pnpm.CMD): "The running command stopped because the preference variable "ErrorActionPreference" or common parameter is set to Stop: Γ¥î Missing column documentation_id in table payload.downloads_rels"
+ERROR: Error in step 'Verifying relationship columns': Γ¥î Missing column documentation_id in table payload.downloads_rels
+WARNING: Continuing despite error due to continueOnError flag
+ERROR: Relationship columns verification failed
+False
 Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
 âœ… Database verification completed successfully
 True
@@ -506,10 +469,9 @@ EXECUTING: pnpm run verify:post-content
 DESCRIPTION: Verifying posts content integrity
 
 Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
-âœ… All migrations and verifications completed successfully!
-Admin user created with email: michael@slideheroes.com
-All migrations and verifications completed successfully!
+WARNING: Migration process completed with warnings or errors. Please check the logs for details.
+Migration process completed with warnings or errors. Please check the logs for details.
 **********************
 Windows PowerShell transcript end
-End time: 20250422181633
+End time: 20250423094748
 **********************

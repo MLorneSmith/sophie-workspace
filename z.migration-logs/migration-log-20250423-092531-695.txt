@@ -1,12 +1,12 @@
 ﻿**********************
 Windows PowerShell transcript start
-Start time: 20250422175123
+Start time: 20250423092531
 Username: SLIDEHEROES_DEN\msmit
 RunAs User: SLIDEHEROES_DEN\msmit
 Configuration Name: 
 Machine: SLIDEHEROES_DEN (Microsoft Windows NT 10.0.26100.0)
 Host Application: C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -noexit -command try { . "c:\Users\msmit\AppData\Local\Programs\Microsoft VS Code\resources\app\out\vs\workbench\contrib\terminal\common\scripts\shellIntegration.ps1" } catch {}
-Process ID: 4740
+Process ID: 5672
 PSVersion: 5.1.26100.3624
 PSEdition: Desktop
 PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.3624
@@ -16,16 +16,16 @@ WSManStackVersion: 3.0
 PSRemotingProtocolVersion: 2.3
 SerializationVersion: 1.1.0.1
 **********************
-Transcript started, output file is D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-log-20250422-175123-679.txt
-Starting migration process at 04/22/2025 17:51:23
-Detailed logs will be saved to: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250422-175123-679.txt
+Transcript started, output file is D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-log-20250423-092531-695.txt
+Starting migration process at 04/23/2025 09:25:31
+Detailed logs will be saved to: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250423-092531-695.txt
 
 Name                           Value
 ----                           -----
-Timestamp                      20250422-175123-679
-LogsDirectory                  D:\SlideHeroes\App\repos\2025slideheroes\z.mi...
-DetailedLogFile                D:\SlideHeroes\App\repos\2025slideheroes\z.mi...
-LogFile                        D:\SlideHeroes\App\repos\2025slideheroes\z.mi...
+Timestamp                      20250423-092531-695
+LogsDirectory                  D:\SlideHeroes\App\repos\2025slideheroes\z.migratio...
+DetailedLogFile                D:\SlideHeroes\App\repos\2025slideheroes\z.migratio...
+LogFile                        D:\SlideHeroes\App\repos\2025slideheroes\z.migratio...
 ================================================================================
 SETUP PHASE
 ================================================================================
@@ -38,9 +38,16 @@ Skipping Supabase restart (already done)
 Running supabase:reset...
 EXECUTING: pnpm run supabase:reset
 DESCRIPTION: Resetting Supabase database
-2)
-We recommend updating regularly for new features and bug fixes: https://supabase
-.com/docs/guides/cli/getting-started#updating-the-supabase-cli
+NOTICE (00000): Function permissions granted to authenticated and service_role users
+WARNING (01000): Error ensuring RLS policies: column "rolname" does not exist
+NOTICE (00000): Created index idx_request_logs_provider_model_tokens
+NOTICE (00000): Created index idx_request_logs_cost_timestamp
+WARNING (01000): Error setting environment configuration: column "key" does not exist
+NOTICE (00000): Successfully executed calculate_ai_cost function, permissions are working
+NOTICE (42P06): schema "supabase_migrations" already exists, skipping
+Seeding data from supabase/seed.sql...
+Restarting containers...
+Finished supabase db reset on branch main.
 Running supabase migrations...
 EXECUTING: supabase migration up
 DESCRIPTION: Running Supabase migrations
@@ -278,9 +285,12 @@ Verifying columns were added...
 EXECUTING: pnpm --filter @kit/content-migrations run verify:relationship-columns
 DESCRIPTION: Verifying relationship columns
 
-âœ… UUID tables fixed and verified successfully
-Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
-True
+ERROR: Command failed with exit code: 1
+ERROR: Error in step 'Verifying relationship columns': Command failed with exit code: 1
+PS>TerminatingError(): "Command failed with exit code: 1"
+ERROR: Failed to fix UUID tables: Command failed with exit code: 1
+WARNING: This error might affect relationship queries, but continuing
+False
 
 ------------------------------------------------------------
 STEP 8: Importing downloads from R2 bucket
@@ -394,6 +404,10 @@ Clearing lesson content fields to fix template tag rendering...
 EXECUTING: pnpm run clear:lesson-content
 DESCRIPTION: Clearing lesson content fields
 
+Applying specialized course-quiz relationship fix...
+EXECUTING: pnpm run fix:course-quiz-relationships
+DESCRIPTION: Fixing course-quiz relationships
+
 Running final course ID fix...
 EXECUTING: pnpm run fix:course-ids-final
 DESCRIPTION: Final course ID fix
@@ -433,48 +447,14 @@ DESCRIPTION: Verifying media_id columns
 EXECUTING: pnpm --filter @kit/content-migrations run repair:relationship-columns
 DESCRIPTION: Fixing relationship columns
 ../../apps/payload                       | ΓÇëWARNΓÇë The field "pnpm.onlyBuiltDependencies" was found in D:\SlideHeroes\App\repos\2025slideheroes\apps\payload/package.json. This will not take effect. You should configure "pnpm.onlyBuiltDependencies" at the root of the workspace instead.
-
-> @kit/content-migrations@0.1.0 repair:relationship-columns D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
-> tsx src/scripts/repair/fix-relationship-columns.ts
-
-
-Fixing relationship columns in all relationship tables...
-
-Adding missing columns to documentation_rels...
-
-Adding missing columns to posts_rels...
-
-Adding missing columns to surveys_rels...
-
-Adding missing columns to survey_questions_rels...
-
-Adding missing columns to courses_rels...
-
-Adding missing columns to course_lessons_rels...
-
-Adding missing columns to course_quizzes_rels...
-
-Adding missing columns to quiz_questions_rels...
-
-Adding missing columns to downloads_rels...
-
-Adding missing columns to payload_locked_documents_rels...
-
-Adding missing columns to payload_preferences_rels...
-
-Dropping existing downloads_relationships view...
-
-Creating/updating downloads_relationships view...
-
-Creating ensure_relationship_columns function...
-
-Γ£à Successfully added missing relationship columns to all tables
-Γ£à Created downloads_relationships view
-Γ£à Created ensure_relationship_columns function
 EXECUTING: pnpm --filter @kit/content-migrations run verify:relationship-columns
 DESCRIPTION: Verifying relationship columns
-âœ… Relationship columns verification passed
-True
+PS>TerminatingError(pnpm.CMD): "The running command stopped because the preference variable "ErrorActionPreference" or common parameter is set to Stop: Γ¥î Missing column documentation_id in table payload.downloads_rels"
+>> TerminatingError(pnpm.CMD): "The running command stopped because the preference variable "ErrorActionPreference" or common parameter is set to Stop: Γ¥î Missing column documentation_id in table payload.downloads_rels"
+ERROR: Error in step 'Verifying relationship columns': Γ¥î Missing column documentation_id in table payload.downloads_rels
+WARNING: Continuing despite error due to continueOnError flag
+ERROR: Relationship columns verification failed
+False
 Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
 âœ… Database verification completed successfully
 True
@@ -499,10 +479,9 @@ EXECUTING: pnpm run verify:post-content
 DESCRIPTION: Verifying posts content integrity
 
 Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
-âœ… All migrations and verifications completed successfully!
-Admin user created with email: michael@slideheroes.com
-All migrations and verifications completed successfully!
+WARNING: Migration process completed with warnings or errors. Please check the logs for details.
+Migration process completed with warnings or errors. Please check the logs for details.
 **********************
 Windows PowerShell transcript end
-End time: 20250422175406
+End time: 20250423092748
 **********************

@@ -1,88 +1,68 @@
 # Repair Scripts
 
-This directory contains scripts designed to fix and repair data issues in the Payload CMS database.
+This directory contains scripts that fix various issues in the database and data. These scripts are organized into subdirectories based on their functionality.
 
-## Purpose
+## Directory Structure
 
-Repair scripts address various data integrity and consistency issues that might arise during or after content migration:
-
-1. Fixed relationships between content items
-2. Corrected data formats
-3. Data field updates
-4. Schema corrections
-
-## When to Use
-
-Run these scripts when:
-
-- Verification scripts report issues with data integrity
-- Content appears incorrectly in the Payload CMS admin interface
-- Relationships between content items are broken
-- Migration logs indicate issues with specific content types
-
-## Available Scripts
-
-### UUID Table Structure
-
-- `fix-uuid-tables.ts`: Fixes issues with UUID table structure, ensuring all required columns are present and properly typed.
-
-### Content Relationships
-
-- `fix-post-image-relationships.ts`: Repairs relationships between blog posts and their featured images.
-- `fix-relationship-columns.ts`: Ensures relationship columns exist across all relationship tables.
-- `fix-relationships-direct.ts`: Directly fixes relationships between content items.
-
-### Quiz & Lesson Integration
-
-- `fix-quiz-id-consistency.ts`: Ensures quiz IDs are consistent across all references.
-- `fix-lesson-quiz-field-name.ts`: Fixes field name issues in lesson-quiz relationships.
-- `fix-lesson-todo-fields.ts`: Updates todo fields in lessons with proper format.
-
-### Data Format Issues
-
-- `fix-lexical-format.ts`: Repairs Lexical format issues in rich text content.
-- `fix-edge-cases.ts`: Handles various edge cases not covered by other scripts.
-
-### Media & Downloads
-
-- `fix-bunny-video-ids.ts`: Updates Bunny video IDs in course lessons.
-
-### Survey Integration
-
-- `fix-survey-questions-population.ts`: Populates survey questions and fixes their relationships.
-- `fix-survey-progress.ts`: Repairs issues with user survey progress tracking.
-
-## Usage Examples
-
-```bash
-# Fix lesson todo fields
-pnpm --filter @kit/content-migrations run fix:todo-fields
-
-# Fix post image relationships
-pnpm --filter @kit/content-migrations run fix:post-image-relationships
-
-# Fix UUID tables structure
-pnpm --filter @kit/content-migrations run fix:uuid-tables
-
-# Fix Lexical format in rich text fields
-pnpm --filter @kit/content-migrations run fix:lexical-format
+```
+repair/
+├── database/                   # Database structure and relationship fixes
+├── content-format/             # Content formatting fixes (Lexical, todo fields)
+├── quiz-management/            # Quiz-related relationship and ID fixes
+├── media-downloads/            # Media and download integration scripts
+├── survey-management/          # Survey questions and progress scripts
+└── utilities/                  # General purpose utility scripts
 ```
 
-## Adding New Repair Scripts
+## Usage Pattern
 
-When creating new repair scripts:
+All scripts are exposed as npm scripts in the `package.json` file, so they can be run with:
 
-1. Follow the `fix-*` naming convention
-2. Focus on a single repair concern
-3. Add robust error handling
-4. Include logging of what was fixed
-5. Add a script reference in package.json
-6. Consider adding a corresponding verification script
+```bash
+pnpm run fix:<script-name>
+```
 
-## Dependencies
+## Organizational Principles
 
-Most repair scripts depend on:
+The repair scripts are organized based on:
 
-- Database access utilities in `src/utils/db`
-- Payload client in `src/utils/payload`
-- Type definitions in `src/types`
+1. **Functionality**: Scripts are grouped by the type of data or system they repair
+2. **Dependency**: Scripts that depend on each other are placed in the same directory
+3. **Logical Flow**: The directory structure follows the natural flow of the migration process
+
+## Database Directory
+
+Contains scripts for fixing database-level issues such as UUID tables, relationship columns, and ensuring proper database structure.
+
+## Content Format Directory
+
+Contains scripts for fixing formatting issues in content fields, especially Lexical editor format issues and todo fields.
+
+## Quiz Management Directory
+
+Contains specialized scripts for fixing quiz-related relationships, including:
+
+- Quiz ID consistency
+- Quiz-question relationships
+- Course-quiz relationships
+- Quiz references from lessons
+
+## Media Downloads Directory
+
+Contains scripts for fixing media-related issues, including:
+
+- Download relationships
+- R2 bucket integration
+- Bunny video IDs
+- Post image relationships
+
+## Survey Management Directory
+
+Contains scripts for handling survey data, including:
+
+- Survey questions population
+- Survey progress tracking
+
+## Utilities Directory
+
+Contains general-purpose utility scripts that don't fit into the other categories.
