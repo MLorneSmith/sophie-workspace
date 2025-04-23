@@ -213,13 +213,9 @@ function Fix-Relationships {
         Log-Message "Running Payload CMS relationship fix with strict typing..." "Yellow"
         Exec-Command -command "pnpm run fix:payload-relationships-strict" -description "Fixing Payload relationships with strict typing" -continueOnError
         
-        # Keep the previous fix for backward compatibility
-        Log-Message "Running comprehensive quiz relationship fix..." "Yellow"
-        Exec-Command -command "pnpm run fix:quiz-relationships-complete" -description "Fixing all quiz relationships" -continueOnError
-
-        # Run lesson-quiz relationship fixes
-        Log-Message "Running lesson-quiz relationship fixes..." "Yellow"
-        Exec-Command -command "pnpm run fix:lesson-quiz-field-name" -description "Fixing lesson-quiz relationships" -continueOnError
+        # Run the consolidated quizzes relationship fix
+        Log-Message "Running consolidated quiz relationship fix..." "Yellow"
+        Exec-Command -command "pnpm run fix:direct-quiz-fix" -description "Fixing all quiz relationships" -continueOnError
 
         # Fix invalid quiz references in lessons
         Log-Message "Fixing invalid quiz references..." "Yellow"
@@ -229,17 +225,15 @@ function Fix-Relationships {
         Log-Message "Applying direct SQL fix for quiz relationships..." "Yellow"
         Exec-Command -command "pnpm run fix:direct-quiz-fix" -description "Applying direct quiz relationships fix" -continueOnError
         
-        # For backward compatibility, still run existing quiz fix scripts
-        Log-Message "Running additional quiz relationship fixes..." "Gray"
-        Exec-Command -command "pnpm run fix:quiz-question-relationships" -description "Fixing quiz-question relationships" -continueOnError
+        # Run comprehensive lesson-quiz relationship fixes
+        Log-Message "Running comprehensive lesson-quiz relationship fixes..." "Yellow"
+        Exec-Command -command "pnpm run fix:lesson-quiz-relationships-comprehensive" -description "Fixing all lesson-quiz relationships" -continueOnError
 
-        # Fix references to quizzes without questions
-        Log-Message "Fixing references to quizzes without questions..." "Yellow"
-        Exec-Command -command "pnpm run fix:quizzes-without-questions" -description "Fixing references to quizzes without questions" -continueOnError
+        # Run comprehensive question-quiz relationship fixes
+        Log-Message "Running comprehensive question-quiz relationship fixes..." "Yellow"
+        Exec-Command -command "pnpm run fix:question-quiz-relationships-comprehensive" -description "Fixing all question-quiz relationships" -continueOnError
 
-        # Fix unidirectional quiz relationships
-        Log-Message "Fixing unidirectional quiz relationships..." "Yellow"
-        Exec-Command -command "pnpm run fix:unidirectional-quiz-relationships" -description "Fixing unidirectional quiz relationships" -continueOnError
+        # Skip the deprecated unidirectional fix, as it's now part of the consolidated course-quiz-relationships script
 
         # Fix survey questions population issue
         Log-Message "Fixing survey questions population..." "Yellow"
@@ -297,17 +291,13 @@ function Fix-Relationships {
         Log-Message "Clearing lesson content fields to fix template tag rendering..." "Yellow"
         Exec-Command -command "pnpm run clear:lesson-content" -description "Clearing lesson content fields" -continueOnError
 
-        # Apply focused fix for course-quiz relationships specifically
-        Log-Message "Applying specialized course-quiz relationship fix..." "Yellow"
+        # Apply the consolidated course-quiz relationships fix
+        Log-Message "Applying consolidated course-quiz relationship fix..." "Yellow"
         Exec-Command -command "pnpm run fix:course-quiz-relationships" -description "Fixing course-quiz relationships" -continueOnError
-
-        # Run final course ID fix as the very last repair step
-        Log-Message "Running final course ID fix..." "Yellow"
-        Exec-Command -command "pnpm run fix:course-ids-final" -description "Final course ID fix" -continueOnError
         
-        # Run quiz course ID fix with hooks approach
-        Log-Message "Fixing quiz course IDs with hooks approach..." "Yellow"
-        Exec-Command -command "pnpm --filter @kit/content-migrations run fix:quiz-course-ids" -description "Fixing quiz course IDs" -continueOnError
+        # Run the consolidated quiz course ID fix
+        Log-Message "Running consolidated quiz course ID fix..." "Yellow"
+        Exec-Command -command "pnpm run fix:quiz-course-ids" -description "Fixing quiz course IDs" -continueOnError
 
         # Run final verification
         Log-Message "Running final verification..." "Yellow"

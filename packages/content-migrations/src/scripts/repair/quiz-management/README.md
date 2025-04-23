@@ -1,50 +1,97 @@
 # Quiz Management Scripts
 
-This directory contains scripts that repair quiz-related data and relationships. These scripts address various issues related to quiz consistency, relationships between quizzes and questions, and the integration of quizzes with courses and lessons.
+## Overview
 
-## Script Purposes
+This directory contains scripts for managing and repairing quiz-related data integrity issues in the database. These scripts have been organized into logical subdirectories to improve maintainability and clarity.
 
-| Script                                     | Purpose                                                               |
-| ------------------------------------------ | --------------------------------------------------------------------- |
-| `fix-quiz-id-consistency.ts`               | Ensures that quiz IDs are consistent across all collections           |
-| `fix-quiz-question-relationships.ts`       | Repairs the relationships between quizzes and their questions         |
-| `fix-quiz-relationships-complete.ts`       | Comprehensive fix for all quiz relationships                          |
-| `fix-quizzes-without-questions.ts`         | Handles cases where quizzes exist without any associated questions    |
-| `fix-quiz-course-ids.ts`                   | Ensures quizzes have correct course IDs                               |
-| `fix-course-ids-final.ts`                  | Final cleanup of course IDs after other fixes                         |
-| `fix-course-quiz-relationships.ts`         | Repairs relationships between courses and quizzes                     |
-| `fix-unidirectional-quiz-relationships.ts` | Addresses cases where relationships are only defined in one direction |
-| `fix-invalid-quiz-references.ts`           | Fixes references to quizzes that no longer exist or have invalid IDs  |
-| `fix-lesson-quiz-field-name.ts`            | Ensures consistent field names for quiz references in lessons         |
-| `run-direct-quiz-fix.ts`                   | Direct SQL-based fix for critical quiz relationship issues            |
+## Directory Structure
 
-## Running Order
+```
+quiz-management/
+├── core/                         # Core functionality
+│   ├── direct-quiz-fix.sql       # Direct SQL fix for quiz relationships
+│   ├── run-direct-quiz-fix.ts    # Runner for direct SQL fix
+│   ├── fix-quiz-course-ids.sql   # SQL for quiz course ID fixes
+│   ├── fix-quiz-course-ids.ts    # TypeScript for quiz course ID fixes
+│   └── fix-course-quiz-relationships.* # Course-quiz relationship fixes
+├── lesson-quiz-relationships/    # Lesson-quiz relationship scripts
+│   ├── fix-lesson-quiz-field-name.ts   # Field name fixes
+│   ├── fix-lesson-quiz-references.ts   # Reference fixes
+│   └── fix-lessons-quiz-references-sql.ts # SQL-based fixes
+├── question-relationships/       # Question relationship scripts
+│   ├── fix-quiz-question-relationships.ts # Main quiz-question fixes
+│   ├── fix-questions-quiz-references.ts   # Question reference fixes
+│   └── fix-quizzes-without-questions.ts   # Handle empty quizzes
+├── utilities/                    # Support scripts
+│   ├── fix-invalid-quiz-references.ts      # Invalid reference fixes
+│   └── fix-quiz-id-consistency.ts          # ID consistency utilities
+└── backup/                       # Deprecated scripts (kept for reference)
+    └── ... deprecated scripts ...
+```
 
-The scripts in this directory should generally be run in the following order:
+## Core Scripts
 
-1. `fix-quiz-id-consistency.ts` - First establish consistent IDs
-2. `fix-quiz-question-relationships.ts` - Fix basic quiz-question connections
-3. `fix-quizzes-without-questions.ts` - Handle edge cases with missing questions
-4. `fix-quiz-course-ids.ts` - Ensure quizzes are associated with the right courses
-5. `fix-course-quiz-relationships.ts` - Fix course-to-quiz connections
-6. `fix-unidirectional-quiz-relationships.ts` - Address one-sided relationships
-7. `fix-invalid-quiz-references.ts` - Clean up any remaining invalid references
-8. `fix-lesson-quiz-field-name.ts` - Ensure consistent field naming
-9. `run-direct-quiz-fix.ts` - Apply direct fixes for any remaining issues
-10. `fix-course-ids-final.ts` - Final cleanup
+These scripts handle the fundamental quiz relationship fixes:
 
-## Background
+- **`fix-quiz-course-ids.ts/sql`**: Ensures all quizzes have proper course IDs in both direct storage and relationship tables.
+- **`fix-course-quiz-relationships.ts/sql`**: Comprehensive fix for course-quiz relationships, handling bidirectional relationships.
+- **`run-direct-quiz-fix.ts/direct-quiz-fix.sql`**: Direct SQL approach for fixing quiz relationships (used by the reset-and-migrate script).
 
-These fixes address issues documented in the quiz-related implementation plans:
+## Lesson-Quiz Relationship Scripts
 
-- `z.plan/quizzes/8-course-id-hooks-implementation-plan.md`
-- `z.plan/quizzes/9-unidirectional-relationship-implementation-plan.md`
-- `z.plan/quizzes/10-unidirectional-quiz-relationship-fix-plan.md`
-- `z.plan/quizzes/11-dual-storage-relationship-fix-plan.md`
+Scripts that handle relationships between lessons and quizzes:
 
-Some of the key challenges addressed by these scripts include:
+- **`fix-lesson-quiz-field-name.ts`**: Fixes field name issues in lesson-quiz relationships.
+- **`fix-lesson-quiz-references.ts`**: Repairs lesson references to quizzes.
+- **`fix-lessons-quiz-references-sql.ts`**: SQL implementation for fixing lesson-quiz references.
 
-- Ensuring bidirectional relationships work correctly
-- Handling the dual storage of relationship data (both in object fields and relationship tables)
-- Managing course context for quizzes
-- Addressing race conditions in relationship updates
+## Question-Relationships Scripts
+
+Scripts that handle relationships between quizzes and questions:
+
+- **`fix-quiz-question-relationships.ts`**: Fixes specific quiz-question relationship issues.
+- **`fix-questions-quiz-references.ts`**: Repairs question references to quizzes.
+- **`fix-quizzes-without-questions.ts`**: Addresses cases where quizzes don't have questions.
+
+## Utility Scripts
+
+Supporting scripts that provide specific functionality:
+
+- **`fix-invalid-quiz-references.ts`**: Fixes invalid references to quizzes.
+- **`fix-quiz-id-consistency.ts`**: Ensures quiz IDs match across different tables.
+
+## Usage
+
+These scripts are primarily used by the content migration system through the `reset-and-migrate.ps1` PowerShell script. The script execution order has been carefully designed to address dependencies between different types of relationships.
+
+### Manual Execution
+
+To manually run these scripts for troubleshooting:
+
+```bash
+# Core fixes
+pnpm run fix:quiz-course-ids          # Fix course IDs for quizzes
+pnpm run fix:course-quiz-relationships # Fix course-quiz relationships
+pnpm run fix:direct-quiz-fix          # Apply direct quiz fix
+
+# Lesson-quiz relationship fixes
+pnpm run fix:lesson-quiz-field-name   # Fix lesson-quiz field names
+pnpm run fix:lesson-quiz-references   # Fix lesson-quiz references
+
+# Question-relationship fixes
+pnpm run fix:quiz-question-relationships # Fix quiz-question relationships
+pnpm run fix:quizzes-without-questions  # Fix quizzes without questions
+
+# Utility functions
+pnpm run fix:quiz-id-consistency      # Ensure quiz ID consistency
+pnpm run fix:invalid-quiz-references  # Fix invalid quiz references
+```
+
+## Architecture Notes
+
+The quiz data structure uses a dual-storage approach in Payload CMS:
+
+1. **Direct field storage**: Values stored directly in the main table columns (e.g., `course_id_id` in `course_quizzes` table)
+2. **Relationship tables**: Relationships stored in separate tables with references (e.g., entries in `course_quizzes_rels`)
+
+Many of the repair scripts ensure both storage mechanisms contain consistent data.
