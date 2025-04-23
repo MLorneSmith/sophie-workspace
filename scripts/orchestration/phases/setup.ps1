@@ -160,7 +160,10 @@ CREATE SCHEMA payload;
 
 # Function to run Payload migrations
 function Run-PayloadMigrations {
-    Log-Step "Running Payload migrations" 3
+    Log-EnhancedStep "Running Payload migrations" 3 12
+    
+    # Add note about expected email adapter warning
+    Log-ExpectedWarning "The 'No email adapter provided' warning is expected in development environment and can be safely ignored"
     
     try {
         # Use Push-Location/Pop-Location instead of cd to maintain path context
