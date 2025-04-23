@@ -8,7 +8,7 @@ export const QuizQuestions: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'question',
-    defaultColumns: ['question', 'quiz_id', 'type'],
+    defaultColumns: ['question', 'type'],
     description: 'Questions for course quizzes',
   },
   access: {
@@ -20,17 +20,8 @@ export const QuizQuestions: CollectionConfig = {
       type: 'text',
       required: true,
     },
-    {
-      name: 'quiz_id',
-      type: 'relationship',
-      relationTo: 'course_quizzes',
-      required: true,
-      maxDepth: 1, // Set maximum depth for relationship population
-      admin: {
-        description: 'The quiz this question belongs to',
-        position: 'sidebar', // Add position to ensure it appears at the top of the form
-      },
-    },
+    // 'quiz_id' field removed - using unidirectional relationship model
+    // Quiz questions are now referenced from quizzes instead (CourseQuizzes → QuizQuestions)
     {
       name: 'type',
       type: 'select',

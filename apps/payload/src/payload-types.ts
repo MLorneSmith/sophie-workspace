@@ -770,10 +770,6 @@ export interface CourseQuizz {
 export interface QuizQuestion {
   id: string;
   question: string;
-  /**
-   * The quiz this question belongs to
-   */
-  quiz_id: string | CourseQuizz;
   type: 'multiple_choice';
   options: {
     text: string;
@@ -1120,7 +1116,6 @@ export interface CourseQuizzesSelect<T extends boolean = true> {
  */
 export interface QuizQuestionsSelect<T extends boolean = true> {
   question?: T;
-  quiz_id?: T;
   type?: T;
   options?:
     | T

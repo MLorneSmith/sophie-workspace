@@ -236,6 +236,10 @@ function Fix-Relationships {
         Log-Message "Fixing references to quizzes without questions..." "Yellow"
         Exec-Command -command "pnpm exec tsx src/scripts/repair/fix-quizzes-without-questions.ts" -description "Fixing references to quizzes without questions" -continueOnError
 
+        # Fix unidirectional quiz relationships
+        Log-Message "Fixing unidirectional quiz relationships..." "Yellow"
+        Exec-Command -command "pnpm run fix:unidirectional-quiz-relationships" -description "Fixing unidirectional quiz relationships" -continueOnError
+
         # Fix survey questions population issue
         Log-Message "Fixing survey questions population..." "Yellow"
         Exec-Command -command "pnpm run fix:survey-questions-population" -description "Fixing survey questions population" -continueOnError
@@ -291,6 +295,10 @@ function Fix-Relationships {
         # Clear lesson content to fix template tag rendering issues
         Log-Message "Clearing lesson content fields to fix template tag rendering..." "Yellow"
         Exec-Command -command "pnpm run clear:lesson-content" -description "Clearing lesson content fields" -continueOnError
+
+        # Apply focused fix for course-quiz relationships specifically
+        Log-Message "Applying specialized course-quiz relationship fix..." "Yellow"
+        Exec-Command -command "pnpm run fix:course-quiz-relationships" -description "Fixing course-quiz relationships" -continueOnError
 
         # Run final course ID fix as the very last repair step
         Log-Message "Running final course ID fix..." "Yellow"

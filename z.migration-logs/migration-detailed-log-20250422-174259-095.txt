@@ -1,0 +1,60 @@
+2025-04-22 17:42:59: Starting migration process at 04/22/2025 17:42:59
+2025-04-22 17:42:59: Detailed logs will be saved to: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250422-174259-095.txt
+2025-04-22 17:42:59: ================================================================================
+2025-04-22 17:42:59: SETUP PHASE
+2025-04-22 17:42:59: ================================================================================
+2025-04-22 17:42:59: 
+2025-04-22 17:42:59: ------------------------------------------------------------
+2025-04-22 17:42:59: STEP 1: Resetting Supabase database and running Web app migrations
+2025-04-22 17:42:59: ------------------------------------------------------------
+2025-04-22 17:42:59: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\apps\web
+2025-04-22 17:42:59: Skipping Supabase restart (already done)
+2025-04-22 17:42:59: Running supabase:reset...
+2025-04-22 17:42:59: EXECUTING: pnpm run supabase:reset
+2025-04-22 17:42:59: DESCRIPTION: Resetting Supabase database
+2025-04-22 17:43:30: Running supabase migrations...
+2025-04-22 17:43:30: EXECUTING: supabase migration up
+2025-04-22 17:43:30: DESCRIPTION: Running Supabase migrations
+2025-04-22 17:43:30: DESCRIPTION: Verifying schema 'public' exists
+--- Command Output Start ---
+apps/payload                             | GÇëWARNGÇë The field "pnpm.onlyBuiltDependencies" was found in D:\SlideHeroes\App\repos\2025slideheroes\apps\payload/package.json. This will not take effect. You should configure "pnpm.onlyBuiltDependencies" at the root of the workspace instead.
+
+> @kit/content-migrations@0.1.0 verify:schema D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/scripts/verification/verify-schema.ts "public"
+
+Loading environment variables from .env.development
+Connecting to database: postgresql://postgres:postgres@localhost:54322/postgres?schema=payload
+Checking if schema 'public' exists...
+Schema 'public' exists
+
+--- Command Output End ---
+2025-04-22 17:43:31: Schema 'public' exists
+2025-04-22 17:43:31: âœ… Web app migrations completed successfully
+2025-04-22 17:43:31: 
+2025-04-22 17:43:31: ------------------------------------------------------------
+2025-04-22 17:43:31: STEP 2: Resetting Payload schema
+2025-04-22 17:43:31: ------------------------------------------------------------
+2025-04-22 17:43:31: Dropping and recreating payload schema...
+2025-04-22 17:43:31: Temporarily changed to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-04-22 17:43:31: EXECUTING: pnpm run utils:run-sql-file "C:\Users\msmit\AppData\Local\Temp\reset_payload_schema.sql"
+2025-04-22 17:43:31: DESCRIPTION: Resetting Payload schema
+2025-04-22 17:43:32: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes
+2025-04-22 17:43:32: âœ… Payload schema reset successfully
+2025-04-22 17:43:32: 
+2025-04-22 17:43:32: ------------------------------------------------------------
+2025-04-22 17:43:32: STEP 3: Running Payload migrations
+2025-04-22 17:43:32: ------------------------------------------------------------
+2025-04-22 17:43:32: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\apps\payload
+2025-04-22 17:43:32: Checking migration status...
+2025-04-22 17:43:32: EXECUTING: pnpm migrate:status
+2025-04-22 17:43:32: DESCRIPTION: Checking migration status
+2025-04-22 17:43:34: ERROR: Error in step 'Checking migration status': D:\SlideHeroes\App\repos\2025slideheroes\apps\payload\src\migrations\remove-quiz-id-from-questions.ts:2
+2025-04-22 17:43:34: ERROR: Failed to run Payload migrations: D:\SlideHeroes\App\repos\2025slideheroes\apps\payload\src\migrations\remove-quiz-id-from-questions.ts:2
+2025-04-22 17:43:34: ERROR: CRITICAL ERROR: Migration process failed: Payload migration failed: D:\SlideHeroes\App\repos\2025slideheroes\apps\payload\src\migrations\remove-quiz-id-from-questions.ts:2
+2025-04-22 17:43:34: Please check the log files for details:
+2025-04-22 17:43:34:   - Transcript log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-log-20250422-174259-095.txt
+2025-04-22 17:43:34:   - Detailed log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250422-174259-095.txt
+2025-04-22 17:43:34: Migration process completed with warnings or errors. Please check the logs for details.
+2025-04-22 17:43:34: Migration logs saved to:
+2025-04-22 17:43:34:   - Transcript log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-log-20250422-174259-095.txt
+2025-04-22 17:43:34:   - Detailed log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250422-174259-095.txt
