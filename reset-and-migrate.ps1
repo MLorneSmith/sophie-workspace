@@ -13,8 +13,10 @@ $ErrorActionPreference = "Stop"
 # Import modules
 . "$PSScriptRoot\scripts\orchestration\utils\path-management.ps1"
 . "$PSScriptRoot\scripts\orchestration\utils\logging.ps1"
+. "$PSScriptRoot\scripts\orchestration\utils\enhanced-logging.ps1"
 . "$PSScriptRoot\scripts\orchestration\utils\execution.ps1"
 . "$PSScriptRoot\scripts\orchestration\utils\verification.ps1"
+. "$PSScriptRoot\scripts\orchestration\utils\diagnostic.ps1"
 . "$PSScriptRoot\scripts\orchestration\phases\setup.ps1"
 . "$PSScriptRoot\scripts\orchestration\phases\processing.ps1"
 . "$PSScriptRoot\scripts\orchestration\phases\loading.ps1"
@@ -56,12 +58,35 @@ try {
         }
     }
     
-    # Final success/failure message
+    # Final success/failure message with diagnostic summary
     if ($script:overallSuccess) {
         Log-Success "All migrations and verifications completed successfully!"
         Log-Message "Admin user created with email: michael@slideheroes.com" "Green"
+        
+        # Show diagnostic summary with improved reliability
+        Log-Message "Migration Summary:" "Cyan"
+        
+        # Run diagnostic with timeout handling
+        try {
+            Show-MigrationDiagnostic -TimeoutSeconds 20
+        } catch {
+            Log-Warning "Could not generate migration statistics: $_"
+            Log-Message "For detailed migration status, run: pnpm --filter @kit/content-migrations run diagnostic:migration-status" "Yellow"
+        }
+        
+        # Note about warnings
+        Log-Message "Note: Warning messages about 'No posts were migrated' are expected if all posts are already in the database." "Yellow"
     } else {
         Log-Warning "Migration process completed with warnings or errors. Please check the logs for details."
+        
+        # Still show diagnostic summary even on warning/error, with improved reliability
+        Log-Message "Migration Status:" "Cyan"
+        try {
+            Show-MigrationDiagnostic -TimeoutSeconds 15
+        } catch {
+            Log-Warning "Could not generate migration statistics: $_"
+            Log-Message "For detailed migration status, run: pnpm --filter @kit/content-migrations run diagnostic:migration-status" "Yellow"
+        }
     }
 }
 catch {

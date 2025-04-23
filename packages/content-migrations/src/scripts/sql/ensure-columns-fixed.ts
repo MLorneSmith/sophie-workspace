@@ -239,8 +239,9 @@ async function main() {
       await pool.query(`
         CREATE TABLE IF NOT EXISTS payload.dynamic_uuid_tables (
           table_name TEXT PRIMARY KEY,
-          last_checked TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-          has_path BOOLEAN DEFAULT FALSE,
+          created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+          primary_key TEXT,
+          needs_path_column BOOLEAN DEFAULT FALSE,
           has_parent_id BOOLEAN DEFAULT FALSE,
           has_downloads_id BOOLEAN DEFAULT FALSE,
           has_media_id BOOLEAN DEFAULT FALSE,
@@ -314,7 +315,7 @@ async function main() {
             
             -- Update tracking table
             INSERT INTO payload.dynamic_uuid_tables (
-              table_name, last_checked, has_path, has_parent_id, 
+              table_name, created_at, needs_path_column, has_parent_id,
               has_downloads_id, has_media_id, has_private_id
             )
             VALUES (
@@ -323,8 +324,8 @@ async function main() {
             )
             ON CONFLICT (table_name) 
             DO UPDATE SET
-              last_checked = NOW(),
-              has_path = EXCLUDED.has_path,
+              created_at = NOW(),
+              needs_path_column = EXCLUDED.needs_path_column,
               has_parent_id = EXCLUDED.has_parent_id,
               has_downloads_id = EXCLUDED.has_downloads_id,
               has_media_id = EXCLUDED.has_media_id,

@@ -411,21 +411,28 @@ function Migrate-PrivatePosts {
             
             # Run the direct migration script for private posts
             Log-Message "Running specialized private posts migration script..." "Yellow"
-            Exec-Command -command "pnpm run migrate:private-direct" -description "Migrating private posts with full content"
+            $privateOutput = Exec-Command -command "pnpm run migrate:private-direct" -description "Migrating private posts with full content" -captureOutput -continueOnError
             
-            # Verify the private posts were created
-            $verifyQuery = "SELECT COUNT(*) as count FROM payload.private"
-            $result = Exec-Command -command "pnpm run utils:run-sql --sql `"$verifyQuery`"" -description "Verifying private posts table" -captureOutput -continueOnError
-            # Safely extract count with proper error handling
-            $postCount = 0
-            if ($result -match "count: (\d+)" -or $result -match "count:(\d+)" -or $result -match "rows: (\d+)") {
-                $postCount = [int]($Matches[1])
-            }
-            
-            if ($postCount -gt 0) {
-                Log-Success "Successfully migrated $postCount private posts"
+            # Check for enhanced status messages
+            if ($privateOutput -match "No new private posts were migrated. All (\d+) private posts already exist") {
+                Log-Message "Private posts are up to date. All $($matches[1]) private posts already exist in the database." "Yellow"
+            } elseif ($privateOutput -match "Successfully migrated/updated (\d+) of (\d+) private posts") {
+                Log-Success "Successfully migrated/updated $($matches[1]) of $($matches[2]) private posts"
             } else {
-                Log-Warning "No private posts were migrated. Check the private posts migration script."
+                # Fallback to traditional verification method
+                $verifyQuery = "SELECT COUNT(*) as count FROM payload.private"
+                $result = Exec-Command -command "pnpm run utils:run-sql --sql `"$verifyQuery`"" -description "Verifying private posts table" -captureOutput -continueOnError
+                # Safely extract count with proper error handling
+                $postCount = 0
+                if ($result -match "count: (\d+)" -or $result -match "count:(\d+)" -or $result -match "rows: (\d+)") {
+                    $postCount = [int]($Matches[1])
+                }
+                
+                if ($postCount -gt 0) {
+                    Log-Success "Found $postCount private posts in the database"
+                } else {
+                    Log-Warning "No private posts found in the database. Check the private posts migration script."
+                }
             }
             
             Pop-Location
@@ -458,21 +465,28 @@ function Migrate-BlogPosts {
             
                 # Run the direct migration script for posts regardless of existing count
                 Log-Message "Running specialized post migration script..." "Yellow"
-                Exec-Command -command "pnpm run migrate:posts-direct" -description "Migrating blog posts with full content"
+                $postsOutput = Exec-Command -command "pnpm run migrate:posts-direct" -description "Migrating blog posts with full content" -captureOutput -continueOnError
                 
-                # Verify the posts were created
-                $verifyQuery = "SELECT COUNT(*) as count FROM payload.posts"
-                $result = Exec-Command -command "pnpm run utils:run-sql --sql `"$verifyQuery`"" -description "Verifying posts table" -captureOutput -continueOnError
-                # Safely extract count with proper error handling
-                $postCount = 0
-                if ($result -match "count: (\d+)" -or $result -match "count:(\d+)" -or $result -match "rows: (\d+)") {
-                    $postCount = [int]($Matches[1])
-                }
-                
-                if ($postCount -gt 0) {
-                    Log-Success "Successfully migrated $postCount blog posts"
+                # Check for enhanced status messages
+                if ($postsOutput -match "No new posts were migrated. All (\d+) posts already exist") {
+                    Log-Message "Blog posts are up to date. All $($matches[1]) posts already exist in the database." "Yellow"
+                } elseif ($postsOutput -match "Successfully migrated/updated (\d+) of (\d+) posts") {
+                    Log-Success "Successfully migrated/updated $($matches[1]) of $($matches[2]) blog posts"
                 } else {
-                    Log-Warning "No posts were migrated. Check the post migration script."
+                    # Fallback to traditional verification method
+                    $verifyQuery = "SELECT COUNT(*) as count FROM payload.posts"
+                    $result = Exec-Command -command "pnpm run utils:run-sql --sql `"$verifyQuery`"" -description "Verifying posts table" -captureOutput -continueOnError
+                    # Safely extract count with proper error handling
+                    $postCount = 0
+                    if ($result -match "count: (\d+)" -or $result -match "count:(\d+)" -or $result -match "rows: (\d+)") {
+                        $postCount = [int]($Matches[1])
+                    }
+                    
+                    if ($postCount -gt 0) {
+                        Log-Success "Found $postCount blog posts in the database"
+                    } else {
+                        Log-Warning "No posts found in the database. Check the post migration script."
+                    }
                 }
             
             Pop-Location
