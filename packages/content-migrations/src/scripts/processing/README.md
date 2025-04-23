@@ -1,78 +1,37 @@
 # Processing Scripts
 
-This directory contains scripts responsible for processing raw content data into formats suitable for database import.
-
-## Purpose
-
-Processing scripts transform content from its raw format (YAML, Markdown, HTML, etc.) into structured data that can be loaded into the Payload CMS database. These scripts handle:
-
-1. Raw data transformation
-2. SQL seed file generation
-3. ID consistency management
-4. Metadata extraction
+This directory contains scripts that handle more complex data processing and transformation operations during the content migration process. These scripts focus on preparing data structures that will be used by the migration system.
 
 ## Directory Structure
 
-- **raw-data/**: Scripts that process raw content data files
+The processing scripts are organized into the following subdirectories:
 
-  - `generate-full-lesson-metadata.ts`: Generates complete metadata for course lessons
-  - `process-lesson-todo-html.ts`: Processes lesson todo fields from HTML into structured data
+### Raw Data
 
-- **sql/**: Scripts that generate SQL seed files
-  - `generate-sql-seed-files.ts`: Main script for generating all SQL seed files
+Scripts in the `raw-data/` directory handle the initial processing of raw content:
 
-## Key Processing Flows
+- `create-full-lesson-metadata.ts` - Creates comprehensive metadata for lessons from various source files
+- `generate-full-lesson-metadata.ts` - Generates complete lesson metadata in YAML format
 
-### Lesson Processing Flow
+### SQL
 
-1. Raw lesson content (Markdown/YAML) is read
-2. Metadata is extracted and enhanced
-3. Todo fields are processed from HTML to structured JSON
-4. SQL statements are generated for database import
+Scripts in the `sql/` directory generate SQL statements used in migrations:
 
-### SQL Generation Flow
+- `generate-sql-seed-files.ts` - Generates SQL seed files from YAML-based content definitions
 
-1. Processed content is read from processed data directory
-2. SQL statements are generated for each content type
-3. SQL files are written to the Payload seed directory
-4. Foreign key references are established between related content
+## Usage
 
-## Usage Examples
+These scripts are typically run as part of the content migration process through `reset-and-migrate.ps1`. They can also be executed directly via their corresponding npm scripts defined in `package.json`.
+
+For example:
 
 ```bash
-# Generate full lesson metadata
-pnpm --filter @kit/content-migrations run generate:yaml-metadata
-
-# Process HTML todo content
-pnpm --filter @kit/content-migrations run process:lesson-todo-html
-
-# Generate SQL seed files
-pnpm --filter @kit/content-migrations run generate:updated-sql
+pnpm run create:lesson-metadata-yaml
+pnpm run generate:updated-sql
 ```
 
-## Adding New Processing Scripts
+Or directly via the content-migrations package:
 
-When creating new processing scripts:
-
-1. Follow naming conventions:
-
-   - `generate-*`: For scripts that generate output files
-   - `process-*`: For scripts that transform data
-
-2. Use the appropriate subdirectory:
-
-   - `raw-data/` for scripts processing raw content
-   - `sql/` for scripts generating SQL
-
-3. Add appropriate script references to package.json
-
-4. Consider dependencies on other processing steps
-
-## Dependencies
-
-Processing scripts may depend on:
-
-- Raw data in `src/data/raw/`
-- Mapping definitions in `src/data/mappings/`
-- UUID definitions for content items
-- File system utilities for reading/writing files
+```bash
+pnpm --filter @kit/content-migrations run create:lesson-metadata-yaml
+```

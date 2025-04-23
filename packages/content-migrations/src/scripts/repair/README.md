@@ -1,68 +1,79 @@
 # Repair Scripts
 
-This directory contains scripts that fix various issues in the database and data. These scripts are organized into subdirectories based on their functionality.
+This directory contains scripts that fix or repair database issues and other inconsistencies in the content migration system.
 
 ## Directory Structure
 
-```
-repair/
-├── database/                   # Database structure and relationship fixes
-├── content-format/             # Content formatting fixes (Lexical, todo fields)
-├── quiz-management/            # Quiz-related relationship and ID fixes
-├── media-downloads/            # Media and download integration scripts
-├── survey-management/          # Survey questions and progress scripts
-└── utilities/                  # General purpose utility scripts
-```
+The repair scripts are organized into the following subdirectories based on their primary function:
 
-## Usage Pattern
+### Database
 
-All scripts are exposed as npm scripts in the `package.json` file, so they can be run with:
+Scripts in the `database/` directory handle database-level fixes and schema changes:
+
+- `fix-uuid-tables.ts` - Fixes UUID tables, ensuring all required columns exist
+- `fix-relationship-columns.ts` - Fixes relationship columns in various tables
+- `fix-relationships-direct.ts` - Applies direct relationship fixes using SQL
+- `fix-payload-relationships-strict.ts` - Ensures strict typing for Payload relationships
+
+### Quiz Management
+
+Scripts in the `quiz-management/` directory handle quiz-related fixes:
+
+- `fix-lesson-quiz-references.ts` - Fixes references between lessons and quizzes
+- `fix-lessons-quiz-references-sql.ts` - SQL-based fixes for lesson-quiz references
+- `fix-questions-quiz-references.ts` - Fixes references between quizzes and questions
+- `fix-quiz-id-consistency.ts` - Ensures quiz IDs are consistent across tables
+- `fix-quiz-question-relationships.ts` - Fixes quiz-question relationships
+- `fix-quiz-relationships-complete.ts` - Comprehensive fix for all quiz relationships
+- Other quiz-specific fix scripts
+
+### Media Downloads
+
+Scripts in the `media-downloads/` directory handle media and download-related fixes:
+
+- `fix-post-image-relationships.ts` - Fixes relationships between posts and images
+- `fix-downloads-relationships.ts` - Fixes download relationships
+- `fix-downloads-r2-integration.ts` - Ensures proper R2 bucket integration
+- `fix-downloads-metadata.ts` - Fixes metadata for downloads
+- And other download/media-related fixes
+
+### Content Format
+
+Scripts in the `content-format/` directory handle content formatting and conversion:
+
+- `fix-lexical-format.ts` - Fixes Lexical format issues
+- `fix-post-lexical-format.ts` - Fixes Lexical format in posts
+- `fix-all-lexical-fields.ts` - Comprehensive fix for all Lexical fields
+- `fix-todo-fields.ts` - Fixes todo fields in course lessons
+- `fix-lesson-todo-fields.ts` - Fixes todo fields specific to lessons
+
+### Survey Management
+
+Scripts in the `survey-management/` directory handle survey-related fixes:
+
+- `fix-survey-questions-population.ts` - Ensures survey questions are properly populated
+- `fix-survey-progress.ts` - Fixes survey progress tracking
+
+### Utilities
+
+Scripts in the `utilities/` directory handle miscellaneous utility functions:
+
+- `fix-edge-cases.ts` - Fixes various edge cases that don't fit elsewhere
+- `clear-lesson-content.ts` - Utility to clear lesson content fields
+
+## Usage
+
+Scripts are typically run via their corresponding npm scripts defined in `package.json`.
+
+For example:
 
 ```bash
-pnpm run fix:<script-name>
+pnpm run fix:uuid-tables
+pnpm run fix:lesson-quiz-references
 ```
 
-## Organizational Principles
+Or directly via the content-migrations package:
 
-The repair scripts are organized based on:
-
-1. **Functionality**: Scripts are grouped by the type of data or system they repair
-2. **Dependency**: Scripts that depend on each other are placed in the same directory
-3. **Logical Flow**: The directory structure follows the natural flow of the migration process
-
-## Database Directory
-
-Contains scripts for fixing database-level issues such as UUID tables, relationship columns, and ensuring proper database structure.
-
-## Content Format Directory
-
-Contains scripts for fixing formatting issues in content fields, especially Lexical editor format issues and todo fields.
-
-## Quiz Management Directory
-
-Contains specialized scripts for fixing quiz-related relationships, including:
-
-- Quiz ID consistency
-- Quiz-question relationships
-- Course-quiz relationships
-- Quiz references from lessons
-
-## Media Downloads Directory
-
-Contains scripts for fixing media-related issues, including:
-
-- Download relationships
-- R2 bucket integration
-- Bunny video IDs
-- Post image relationships
-
-## Survey Management Directory
-
-Contains scripts for handling survey data, including:
-
-- Survey questions population
-- Survey progress tracking
-
-## Utilities Directory
-
-Contains general-purpose utility scripts that don't fit into the other categories.
+```bash
+pnpm --filter @kit/content-migrations run fix:uuid-tables
+```

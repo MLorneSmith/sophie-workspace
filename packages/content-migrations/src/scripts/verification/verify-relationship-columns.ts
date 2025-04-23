@@ -103,11 +103,105 @@ async function verifyRelationshipColumns() {
       console.error(
         '\n❌ Some required columns are missing in relationship tables!',
       );
+
+      // Add auto-repair functionality
+      console.log('\nAttempting to repair missing columns...');
+
+      try {
+        // Add missing columns direct repair logic
+        for (const table of requiredRelTables) {
+          const tableColumns = await pool.query(
+            `
+            SELECT column_name
+            FROM information_schema.columns
+            WHERE table_schema = 'payload'
+              AND table_name = $1
+          `,
+            [table],
+          );
+
+          const existingColumns = tableColumns.rows.map(
+            (row: any) => row.column_name,
+          );
+
+          console.log(`\nAttempting repair for table: payload.${table}`);
+          for (const column of criticalColumns) {
+            if (!existingColumns.includes(column)) {
+              try {
+                // Add column if missing
+                const dataType = column.endsWith('_id') ? 'UUID' : 'TEXT';
+                await pool.query(`
+                  ALTER TABLE payload.${table} 
+                  ADD COLUMN IF NOT EXISTS ${column} ${dataType}
+                `);
+                console.log(
+                  `✅ Added missing column ${column} to table payload.${table}`,
+                );
+              } catch (colError: any) {
+                console.error(
+                  `❌ Failed to repair column ${column} in table payload.${table}:`,
+                  colError.message,
+                  {
+                    code: colError.code,
+                    detail: colError.detail,
+                    hint: colError.hint,
+                  },
+                );
+              }
+            }
+          }
+        }
+
+        // Re-verify after repairs
+        console.log('\nRe-verifying after repairs...');
+        missingColumns = false;
+
+        for (const table of requiredRelTables) {
+          const tableColumns = await pool.query(
+            `
+            SELECT column_name
+            FROM information_schema.columns
+            WHERE table_schema = 'payload'
+              AND table_name = $1
+          `,
+            [table],
+          );
+
+          const existingColumns = tableColumns.rows.map(
+            (row: any) => row.column_name,
+          );
+
+          for (const column of criticalColumns) {
+            if (!existingColumns.includes(column)) {
+              console.error(
+                `❌ Column ${column} still missing in table payload.${table} after repair attempt`,
+              );
+              missingColumns = true;
+            }
+          }
+        }
+
+        if (!missingColumns) {
+          console.log(
+            '\n✅ All relationship columns have been repaired successfully!',
+          );
+        } else {
+          console.error(
+            '\n❌ Some columns could not be repaired. Manual intervention required.',
+          );
+        }
+      } catch (repairError: any) {
+        console.error('❌ Error during repair attempt:', repairError.message, {
+          code: repairError.code,
+          detail: repairError.detail,
+          hint: repairError.hint,
+        });
+      }
     } else {
       console.log('\n✅ All relationship tables have required columns.');
     }
 
-    // 2. Verify the downloads_relationships view exists
+    // 2. Verify the downloads_relationships view exists and create if missing
     console.log('\n2. Verifying downloads_relationships view exists...');
 
     const viewCheck = await pool.query(`
@@ -123,6 +217,91 @@ async function verifyRelationshipColumns() {
     } else {
       console.error('❌ downloads_relationships view does not exist!');
       missingColumns = true;
+
+      // Attempt to create the view
+      try {
+        console.log('Attempting to create downloads_relationships view...');
+        await pool.query(`
+          CREATE VIEW payload.downloads_relationships AS
+          SELECT 
+            doc.id::text as collection_id, 
+            dl.id::text as download_id,
+            'documentation' as collection_type,
+            'documentation_rels' as table_name
+          FROM payload.documentation doc
+          LEFT JOIN payload.documentation_rels dr 
+            ON (doc.id = dr._parent_id OR doc.id = dr.parent_id)
+          LEFT JOIN payload.downloads dl 
+            ON (dl.id = dr.value OR dl.id = dr.downloads_id)
+          WHERE dl.id IS NOT NULL
+
+          UNION ALL
+
+          -- Course lessons downloads
+          SELECT 
+            cl.id::text as collection_id, 
+            dl.id::text as download_id,
+            'course_lessons' as collection_type,
+            'course_lessons_rels' as table_name
+          FROM payload.course_lessons cl
+          LEFT JOIN payload.course_lessons_rels clr 
+            ON (cl.id = clr._parent_id OR cl.id = clr.parent_id)
+          LEFT JOIN payload.downloads dl 
+            ON (dl.id = clr.value OR dl.id = clr.downloads_id)
+          WHERE dl.id IS NOT NULL
+
+          UNION ALL
+
+          -- Courses downloads
+          SELECT 
+            c.id::text as collection_id, 
+            dl.id::text as download_id,
+            'courses' as collection_type,
+            'courses_rels' as table_name
+          FROM payload.courses c
+          LEFT JOIN payload.courses_rels cr 
+            ON (c.id = cr._parent_id OR c.id = cr.parent_id)
+          LEFT JOIN payload.downloads dl 
+            ON (dl.id = cr.value OR dl.id = cr.downloads_id)
+          WHERE dl.id IS NOT NULL
+
+          UNION ALL
+
+          -- Course quizzes downloads
+          SELECT 
+            cq.id::text as collection_id, 
+            dl.id::text as download_id,
+            'course_quizzes' as collection_type,
+            'course_quizzes_rels' as table_name
+          FROM payload.course_quizzes cq
+          LEFT JOIN payload.course_quizzes_rels cqr 
+            ON (cq.id = cqr._parent_id OR cq.id = cqr.parent_id)
+          LEFT JOIN payload.downloads dl 
+            ON (dl.id = cqr.value OR dl.id = cqr.downloads_id)
+          WHERE dl.id IS NOT NULL;
+        `);
+        console.log('✅ Successfully created downloads_relationships view.');
+
+        // Re-check the view
+        const viewRecheck = await pool.query(`
+          SELECT EXISTS (
+            SELECT FROM information_schema.views 
+            WHERE table_schema = 'payload' 
+            AND table_name = 'downloads_relationships'
+          ) as view_exists
+        `);
+
+        if (viewRecheck.rows[0].view_exists) {
+          missingColumns = false;
+          console.log('✅ View creation confirmed.');
+        }
+      } catch (viewError: any) {
+        console.error('❌ Failed to create view:', viewError.message, {
+          code: viewError.code,
+          detail: viewError.detail,
+          hint: viewError.hint,
+        });
+      }
     }
 
     // 3. Check for the ensure_relationship_columns function

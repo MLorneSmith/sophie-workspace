@@ -1,104 +1,35 @@
 # Verification Scripts
 
-This directory contains scripts for verifying data integrity in the Payload CMS database.
-
-## Purpose
-
-Verification scripts validate that:
-
-1. Content data is complete and properly formatted
-2. Relationships between content items are established correctly
-3. Database schema is properly configured
-4. Media references are valid and accessible
-
-These scripts help identify issues that might need to be addressed by repair scripts.
-
-## When to Use
-
-Run verification scripts:
-
-- After running the full content migration process
-- Before deploying content to production
-- When troubleshooting content display issues
-- After making changes to repair scripts
-- When adding new content types
+This directory contains scripts that verify the integrity and correctness of database structures, data, and relationships as part of the content migration system.
 
 ## Available Scripts
 
-### Core Verification
+- `verify-all.ts` - Comprehensive verification of all database structures and relationships
+- `verify-course-lessons.ts` - Verifies the course_lessons table structure and relationships
+- `verify-media-columns.ts` - Verifies media_id columns across relevant tables
+- `verify-post-content.ts` - Verifies the integrity of post content after migration
+- `verify-post-migration.ts` - General verification after migration has completed
+- `verify-quiz-system-integrity.ts` - Verifies the integrity of the quiz system
+- `verify-relationship-columns.ts` - Verifies relationship columns across tables
+- `verify-schema.ts` - Verifies that required database schemas exist
+- `verify-table.ts` - Verifies that specific tables exist in the database
+- `verify-todo-fields.ts` - Verifies todo fields in course lessons
+- `verify-uuid-tables.ts` - Verifies UUID tables structure and columns
 
-- `verify-all.ts`: Runs all verification scripts in sequence
-- `verify-schema.ts`: Verifies the database schema structure
-- `verify-table.ts`: Verifies that specific tables exist
+## Usage
 
-### Content Verification
+These scripts are typically run as part of the content migration process through `reset-and-migrate.ps1`. They can also be executed directly via their corresponding npm scripts defined in `package.json`.
 
-- `verify-post-content.ts`: Verifies that blog post content is complete
-- `verify-post-migration.ts`: Verifies post-migration integrity
-- `verify-todo-fields.ts`: Verifies lesson todo fields
-
-### Structural Verification
-
-- `verify-uuid-tables.ts`: Verifies UUID table structure
-- `verify-relationship-columns.ts`: Verifies relationship column existence
-- `verify-course-lessons.ts`: Verifies course lesson integrity
-- `verify-media-columns.ts`: Verifies media reference columns
-
-## Usage Examples
+For example:
 
 ```bash
-# Run all verification scripts
+pnpm run verify:all
+pnpm run verify:schema payload
+pnpm run verify:table payload courses
+```
+
+Or directly via the content-migrations package:
+
+```bash
 pnpm --filter @kit/content-migrations run verify:all
-
-# Verify course lessons
-pnpm --filter @kit/content-migrations run verify:course-lessons
-
-# Verify blog post content integrity
-pnpm --filter @kit/content-migrations run verify:post-content
-
-# Verify database schema
-pnpm --filter @kit/content-migrations run verify:schema
 ```
-
-## Understanding Verification Results
-
-Verification scripts use the following indicators in their output:
-
-- ✅ **Success**: Indicates that the verification passed without issues
-- ⚠️ **Warning**: Indicates minor issues that may need attention but won't break functionality
-- ❌ **Error**: Indicates critical issues that should be fixed
-
-Example output:
-
-```
-Verifying post content...
-Found 9 posts in the database.
-
-Verifying post: 4 Powerful Tools to Improve Your Presentation
-Content JSON length: 2983 bytes
-Number of top-level nodes: 15
-✅ Content appears complete
-
-Verifying post: In Defense of PowerPoint
-Content JSON length: 499 bytes
-Number of top-level nodes: 2
-⚠️ Content looks potentially truncated
-```
-
-## Adding New Verification Scripts
-
-When creating new verification scripts:
-
-1. Follow the `verify-*` naming convention
-2. Include clear success/warning/error indicators
-3. Output detailed information to help troubleshoot issues
-4. Add script reference to package.json under verify-related scripts
-5. Consider adding a corresponding repair script for detected issues
-
-## Dependencies
-
-Verification scripts typically depend on:
-
-- Database access utilities in `src/utils/db`
-- Payload client utilities in `src/utils/payload`
-- Type definitions in `src/types`

@@ -25,7 +25,7 @@ dotenv.config({ path: path.resolve(projectRoot, '.env') });
 
 // Load environment variables from .env.development file in content-migrations package
 try {
-  const envFilePath = path.resolve(__dirname, '../.env.development');
+  const envFilePath = path.resolve(__dirname, '../../../.env.development');
   if (fs.existsSync(envFilePath)) {
     console.log(`Loading environment variables from: ${envFilePath}`);
     const envContent = fs.readFileSync(envFilePath, 'utf-8');
@@ -57,10 +57,10 @@ async function runUuidTablesFix(): Promise<boolean> {
   console.log(`Timestamp: ${new Date().toISOString()}`);
 
   try {
-    // Locate the SQL fix script
+    // Locate the enhanced SQL fix script from content-migrations package
     const sqlScriptPath = path.resolve(
-      projectRoot,
-      'apps/payload/src/scripts/uuid-tables-fix.sql',
+      __dirname,
+      'enhanced-uuid-tables-fix.sql',
     );
 
     if (!fs.existsSync(sqlScriptPath)) {
@@ -105,11 +105,20 @@ async function runUuidTablesFix(): Promise<boolean> {
         -- Drop the function if it exists to avoid errors
         DROP FUNCTION IF EXISTS payload.scan_and_fix_uuid_tables();
         
-        -- Create a simple version of the function
+        -- Create an improved version of the function
         CREATE FUNCTION payload.scan_and_fix_uuid_tables() RETURNS void AS $$
         DECLARE
           table_record RECORD;
+          dynamic_table_exists BOOLEAN;
         BEGIN
+          -- Check if dynamic_uuid_tables exists first
+          SELECT EXISTS (
+            SELECT FROM information_schema.tables
+            WHERE table_schema = 'payload'
+            AND table_name = 'dynamic_uuid_tables'
+          ) INTO dynamic_table_exists;
+          
+          -- Process all UUID tables
           FOR table_record IN 
             SELECT table_name 
             FROM information_schema.columns 
@@ -117,24 +126,45 @@ async function runUuidTablesFix(): Promise<boolean> {
             AND column_name = 'id' 
             AND data_type = 'uuid'
           LOOP
+            -- Add standard columns
             EXECUTE format('ALTER TABLE payload.%I ADD COLUMN IF NOT EXISTS path TEXT', table_record.table_name);
             EXECUTE format('ALTER TABLE payload.%I ADD COLUMN IF NOT EXISTS parent_id TEXT', table_record.table_name);
             EXECUTE format('ALTER TABLE payload.%I ADD COLUMN IF NOT EXISTS downloads_id UUID', table_record.table_name);
             EXECUTE format('ALTER TABLE payload.%I ADD COLUMN IF NOT EXISTS private_id UUID', table_record.table_name);
             
             -- Log this table in dynamic_uuid_tables
-            BEGIN
-              EXECUTE format('INSERT INTO payload.dynamic_uuid_tables (table_name, created_at)
-              VALUES (%L, NOW())
-              ON CONFLICT (table_name)
-              DO UPDATE SET created_at = NOW()', table_record.table_name);
-            EXCEPTION WHEN OTHERS THEN
-              -- Skip in case of error with the tracking table
-            END;
+            IF dynamic_table_exists THEN
+              BEGIN
+                EXECUTE format('INSERT INTO payload.dynamic_uuid_tables (table_name, created_at)
+                VALUES (%L, NOW())
+                ON CONFLICT (table_name)
+                DO UPDATE SET created_at = NOW()', table_record.table_name);
+              EXCEPTION WHEN OTHERS THEN
+                -- Skip in case of error with the tracking table
+              END;
+            END IF;
           END LOOP;
         END;
         $$ LANGUAGE plpgsql;
       `);
+
+      // Direct fix for critical relationship tables
+      try {
+        await pool.query(`
+          -- Ensure downloads_rels has documentation_id
+          ALTER TABLE IF EXISTS payload.downloads_rels 
+          ADD COLUMN IF NOT EXISTS documentation_id UUID;
+          
+          -- Ensure documentation_rels has all required fields
+          ALTER TABLE IF EXISTS payload.documentation_rels 
+          ADD COLUMN IF NOT EXISTS downloads_id UUID;
+          ALTER TABLE IF EXISTS payload.documentation_rels 
+          ADD COLUMN IF NOT EXISTS documentation_id UUID;
+        `);
+        console.log('Applied direct fixes to critical relationship tables');
+      } catch (tableError) {
+        console.error('Error fixing critical tables:', tableError.message);
+      }
 
       // Execute the function
       await pool.query('SELECT payload.scan_and_fix_uuid_tables();');
