@@ -1,381 +1,180 @@
-# Enhanced logging utilities for PowerShell scripts
-# Provides better visual feedback and more structured logs
+# Enhanced logging utilities for content migration system
 
-function Log-SectionStart {
+function Show-ProgressBar {
     param (
-        [string]$SectionName,
-        [int]$SectionNumber,
-        [int]$TotalSections
+        [int]$Current,
+        [int]$Total,
+        [string]$Activity,
+        [int]$BarLength = 50
     )
-    
-    $progress = "[$SectionNumber/$TotalSections]"
-    $sectionTitle = "$progress $SectionName"
-    $lineLength = 80
-    $padding = [Math]::Max(0, $lineLength - $sectionTitle.Length - 4)
-    
-    Write-Host ""
-    Write-Host "+=" -ForegroundColor Cyan -NoNewline
-    Write-Host $sectionTitle -ForegroundColor Cyan -NoNewline
-    Write-Host "=".PadRight($padding, "=") -ForegroundColor Cyan -NoNewline
-    Write-Host "+" -ForegroundColor Cyan
-    
-    # Create log entry
-    $timestamp = (Get-Date).ToString("yyyy-MM-dd_HH-mm-ss")
-    Add-Content -Path $script:detailedLogFile -Value "`n$timestamp - SECTION $SectionNumber`: $SectionName"
-}
 
-function Log-SectionEnd {
-    param (
-        [string]$SectionName,
-        [bool]$Success = $true
-    )
-    
-    $status = if ($Success) { "COMPLETED" } else { "FAILED" }
-    $color = if ($Success) { "Green" } else { "Red" }
-    $message = "SECTION $SectionName $status"
-    $lineLength = 80
-    $padding = [Math]::Max(0, $lineLength - $message.Length - 4)
-    
-    Write-Host "+=" -ForegroundColor Cyan -NoNewline
-    Write-Host $message -ForegroundColor $color -NoNewline
-    Write-Host "=".PadRight($padding, "=") -ForegroundColor Cyan -NoNewline
-    Write-Host "+" -ForegroundColor Cyan
-    Write-Host ""
-    
-    # Create log entry
-    $timestamp = (Get-Date).ToString("yyyy-MM-dd_HH-mm-ss")
-    Add-Content -Path $script:detailedLogFile -Value "$timestamp - SECTION $SectionName $status"
-}
+    $percentComplete = [math]::Min(100, [math]::Round(($Current / $Total) * 100, 0))
+    $completedLength = [math]::Round(($percentComplete / 100) * $BarLength)
+    $remainingLength = $BarLength - $completedLength
 
-function Log-StepStart {
-    param (
-        [string]$StepName,
-        [int]$StepNumber,
-        [int]$TotalSteps
-    )
-    
-    $progress = "[$StepNumber/$TotalSteps]"
-    Write-Host "+-" -ForegroundColor DarkCyan -NoNewline
-    Write-Host " $progress $StepName " -ForegroundColor Cyan -NoNewline
-    Write-Host "-" -ForegroundColor DarkCyan
-    
-    # Create log entry
-    $timestamp = (Get-Date).ToString("yyyy-MM-dd_HH-mm-ss")
-    Add-Content -Path $script:detailedLogFile -Value "$timestamp - STEP $StepNumber`: $StepName"
-}
+    $progressBar = "[" + "=".PadRight($completedLength, "=") + " ".PadRight($remainingLength, " ") + "]"
 
-function Log-StepEnd {
-    param (
-        [string]$StepName,
-        [bool]$Success = $true
-    )
-    
-    $status = if ($Success) { "[DONE]" } else { "[FAIL]" }
-    $color = if ($Success) { "Green" } else { "Red" }
-    
-    Write-Host "+-" -ForegroundColor DarkCyan -NoNewline
-    Write-Host " $status " -ForegroundColor $color -NoNewline
-    Write-Host "$StepName completed" -ForegroundColor DarkCyan
-    
-    # Create log entry
-    $statusText = if ($Success) { "SUCCESS" } else { "FAILED" }
-    $timestamp = (Get-Date).ToString("yyyy-MM-dd_HH-mm-ss")
-    Add-Content -Path $script:detailedLogFile -Value "$timestamp - STEP $StepName $statusText"
-}
+    # Use single quotes to avoid variable interpolation issues
+    Write-Host ("`r" + $Activity + ': ' + $progressBar + ' ' + $percentComplete + '% (' + $Current + '/' + $Total + ')') -NoNewline
 
-# Enhanced versions of existing logging functions
-function Log-Phase {
-    param (
-        [string]$PhaseName,
-        [int]$PhaseNumber,
-        [int]$TotalPhases = 4
-    )
-    
-    if (-not $PhaseNumber) {
-        # If phase number not provided, infer from name
-        switch -Regex ($PhaseName) {
-            "SETUP" { $PhaseNumber = 1 }
-            "PROCESSING" { $PhaseNumber = 2 }
-            "LOADING" { $PhaseNumber = 3 }
-            "VERIFICATION|POST-VERIFICATION" { $PhaseNumber = 4 }
-            default { $PhaseNumber = 0 }
-        }
+    if ($Current -eq $Total) {
+        Write-Host ""
     }
-    
-    # Format with box drawing characters
-    $lineLength = 80
-    $padding = [Math]::Max(0, $lineLength - $PhaseName.Length - 6)
-    
-    Write-Host ""
-    Write-Host "+" -ForegroundColor Blue -NoNewline
-    Write-Host "=".PadRight($lineLength - 2, "=") -ForegroundColor Blue -NoNewline
-    Write-Host "+" -ForegroundColor Blue
-    
-    Write-Host "|" -ForegroundColor Blue -NoNewline
-    $progressText = if ($PhaseNumber -gt 0) { "[$PhaseNumber/$TotalPhases] " } else { "" }
-    $centerText = "$progressText$PhaseName"
-    $leftPadding = [math]::Max(0, [math]::Floor(($lineLength - 2 - $centerText.Length) / 2))
-    $rightPadding = [math]::Max(0, $lineLength - 2 - $centerText.Length - $leftPadding)
-    Write-Host " ".PadRight($leftPadding) -NoNewline
-    Write-Host $centerText -ForegroundColor Yellow -NoNewline
-    Write-Host " ".PadRight($rightPadding) -NoNewline
-    Write-Host "|" -ForegroundColor Blue
-    
-    Write-Host "+" -ForegroundColor Blue -NoNewline
-    Write-Host "=".PadRight($lineLength - 2, "=") -ForegroundColor Blue -NoNewline
-    Write-Host "+" -ForegroundColor Blue
-    Write-Host ""
-    
-    # Create log entry
-    $timestamp = (Get-Date).ToString("yyyy-MM-dd_HH-mm-ss")
-    Add-Content -Path $script:detailedLogFile -Value "`n$timestamp - ================================================================================"
-    Add-Content -Path $script:detailedLogFile -Value "$timestamp - $PhaseName"
-    Add-Content -Path $script:detailedLogFile -Value "$timestamp - ================================================================================"
-    Add-Content -Path $script:detailedLogFile -Value "$timestamp - "
 }
 
-function Log-Step {
+# Enhanced step logging function with progress indicators
+function Log-EnhancedStep {
     param (
         [string]$StepName,
         [int]$StepNumber = 0,
         [int]$TotalSteps = 12
     )
-    
+
     $progressText = if ($StepNumber -gt 0) { "[$StepNumber/$TotalSteps] " } else { "" }
-    $lineLength = 60
-    
+    $lineLength = 80
+
+    # Start timing this step
+    Start-StepTimer -StepName "$StepNumber-$StepName"
+
+    # Visual display
     Write-Host ""
     Write-Host "+" -ForegroundColor Cyan -NoNewline
     Write-Host "-".PadRight($lineLength - 2, "-") -ForegroundColor Cyan -NoNewline
     Write-Host "+" -ForegroundColor Cyan
-    
+
     Write-Host "|" -ForegroundColor Cyan -NoNewline
     Write-Host " $progressText$StepName" -ForegroundColor Yellow -NoNewline
     $paddingRight = $lineLength - 3 - "$progressText$StepName".Length
     Write-Host " ".PadRight($paddingRight) -NoNewline
     Write-Host "|" -ForegroundColor Cyan
-    
+
     Write-Host "+" -ForegroundColor Cyan -NoNewline
     Write-Host "-".PadRight($lineLength - 2, "-") -ForegroundColor Cyan -NoNewline
     Write-Host "+" -ForegroundColor Cyan
-    
-    # Create log entry
-    $timestamp = (Get-Date).ToString("yyyy-MM-dd_HH-mm-ss")
-    Add-Content -Path $script:detailedLogFile -Value "`n$timestamp - ------------------------------------------------------------"
-    Add-Content -Path $script:detailedLogFile -Value "$timestamp - STEP $StepNumber`: $StepName"
-    Add-Content -Path $script:detailedLogFile -Value "$timestamp - ------------------------------------------------------------"
+
+    # Create detailed log entry with status tracking
+    $timestamp = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss")
+    Add-Content -Path $script:detailedLogFile -Value ("`n" + $timestamp + " - ------------------------------------------------------------")
+    # Use string concatenation instead of interpolation for colons
+    Add-Content -Path $script:detailedLogFile -Value ($timestamp + " - STEP " + $StepNumber + ": " + $StepName + " [STARTED]")
+    Add-Content -Path $script:detailedLogFile -Value ($timestamp + " - ------------------------------------------------------------")
+
+    # Update global step tracking
+    $global:currentStep = $StepNumber
+    $global:currentStepName = $StepName
+    $global:stepStartTime = Get-Date
+
+    if ($StepNumber -gt 0 -and $TotalSteps -gt 0) {
+        Show-ProgressBar -Current $StepNumber -Total $TotalSteps -Activity "Migration Progress"
+    }
 }
 
-function Log-Success {
+# Enhanced step completion logging
+function Log-EnhancedStepCompletion {
     param (
-        [string]$Message
+        [bool]$Success = $true
     )
-    
-    Write-Host "[SUCCESS] " -ForegroundColor Green -NoNewline
-    Write-Host $Message -ForegroundColor Green
-    
-    # Create log entry
-    $timestamp = (Get-Date).ToString("yyyy-MM-dd_HH-mm-ss")
-    Add-Content -Path $script:detailedLogFile -Value "$timestamp - SUCCESS: $Message"
+
+    # Stop timing this step
+    Stop-StepTimer -StepName "$global:currentStep-$global:currentStepName"
+
+    # Calculate step duration
+    $stepDuration = (Get-Date) - $global:stepStartTime
+    $durationText = [math]::Round($stepDuration.TotalSeconds, 2).ToString() + "s"
+
+    # Create detailed log entry with status tracking
+    $timestamp = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss")
+    $status = if ($Success) { "COMPLETED" } else { "FAILED" }
+    # Use string concatenation instead of interpolation
+    Add-Content -Path $script:detailedLogFile -Value ($timestamp + " - STEP " + $global:currentStep + ": " + $global:currentStepName + " [" + $status + "] (" + $durationText + ")")
+
+    # Add timing information
+    $stepTime = $global:executionTiming.StepTimings["$global:currentStep-$global:currentStepName"].Duration.TotalSeconds
+    $roundedTime = [math]::Round($stepTime, 2)
+    Add-Content -Path $script:detailedLogFile -Value ($timestamp + " - Step duration: " + $roundedTime + " seconds")
+
+    # Log success/failure
+    if ($Success) {
+        Log-Success ("Step " + $global:currentStep + " completed successfully (" + $durationText + ")")
+    }
+    else {
+        Log-Warning ("Step " + $global:currentStep + " completed with warnings or errors (" + $durationText + ")")
+    }
 }
 
-function Log-Warning {
+# Enhanced phase logging with progress tracking
+function Log-EnhancedPhase {
     param (
-        [string]$Message
+        [string]$PhaseName,
+        [int]$PhaseNumber = 0, 
+        [int]$TotalPhases = 4
     )
-    
-    Write-Host "[WARNING] " -ForegroundColor Yellow -NoNewline
-    Write-Host $Message -ForegroundColor Yellow
-    
-    # Create log entry
-    $timestamp = (Get-Date).ToString("yyyy-MM-dd_HH-mm-ss")
-    Add-Content -Path $script:detailedLogFile -Value "$timestamp - WARNING`: $Message"
-    
-    # Set the script:overallSuccess to false
-    $script:overallSuccess = $false
-}
 
-function Log-Error {
-    param (
-        [string]$Message
-    )
-    
-    Write-Host "[ERROR] " -ForegroundColor Red -NoNewline
-    Write-Host $Message -ForegroundColor Red
-    
-    # Create log entry
-    $timestamp = (Get-Date).ToString("yyyy-MM-dd_HH-mm-ss")
-    Add-Content -Path $script:detailedLogFile -Value "$timestamp - ERROR`: $Message"
-    
-    # Set the script:overallSuccess to false
-    $script:overallSuccess = $false
-}
-
-function Log-Message {
-    param (
-        [string]$Message,
-        [string]$Color = "White"
-    )
-    
-    $timestamp = (Get-Date).ToString("yyyy-MM-dd_HH-mm-ss")
-    Write-Host $Message -ForegroundColor $Color
-    
-    # Create log entry
-    Add-Content -Path $script:detailedLogFile -Value "$timestamp - $Message"
-}
-
-function Log-Command {
-    param (
-        [string]$Command,
-        [string]$Description
-    )
-    
-    Write-Host "EXECUTING: " -ForegroundColor Gray -NoNewline
-    Write-Host $Command -ForegroundColor Yellow
-    Write-Host "DESCRIPTION: " -ForegroundColor Gray -NoNewline
-    Write-Host $Description -ForegroundColor Cyan
-    
-    # Create log entry
-    $timestamp = (Get-Date).ToString("yyyy-MM-dd_HH-mm-ss")
-    Add-Content -Path $script:detailedLogFile -Value "$timestamp - EXECUTING`: $Command"
-    Add-Content -Path $script:detailedLogFile -Value "$timestamp - DESCRIPTION`: $Description"
-}
-
-function Log-DiagnosticSummary {
-    param (
-        [bool]$Success
-    )
-    
-    Write-Host ""
     $lineLength = 80
-    
-    if ($Success) {
-        # Success header
-        Write-Host "+" -ForegroundColor Green -NoNewline
-        Write-Host "=".PadRight($lineLength - 2, "=") -ForegroundColor Green -NoNewline
-        Write-Host "+" -ForegroundColor Green
-        
-        Write-Host "|" -ForegroundColor Green -NoNewline
-        $message = " MIGRATION COMPLETED SUCCESSFULLY "
-        $leftPadding = [math]::Max(0, [math]::Floor(($lineLength - 2 - $message.Length) / 2))
-        $rightPadding = [math]::Max(0, $lineLength - 2 - $message.Length - $leftPadding)
-        Write-Host " ".PadRight($leftPadding) -NoNewline
-        Write-Host $message -ForegroundColor White -BackgroundColor DarkGreen -NoNewline
-        Write-Host " ".PadRight($rightPadding) -NoNewline
-        Write-Host "|" -ForegroundColor Green
-        
-        Write-Host "+" -ForegroundColor Green -NoNewline
-        Write-Host "=".PadRight($lineLength - 2, "=") -ForegroundColor Green -NoNewline
-        Write-Host "+" -ForegroundColor Green
-    }
-    else {
-        # Warning header
-        Write-Host "+" -ForegroundColor Yellow -NoNewline
-        Write-Host "=".PadRight($lineLength - 2, "=") -ForegroundColor Yellow -NoNewline
-        Write-Host "+" -ForegroundColor Yellow
-        
-        Write-Host "|" -ForegroundColor Yellow -NoNewline
-        $message = " MIGRATION COMPLETED WITH WARNINGS "
-        $leftPadding = [math]::Max(0, [math]::Floor(($lineLength - 2 - $message.Length) / 2))
-        $rightPadding = [math]::Max(0, $lineLength - 2 - $message.Length - $leftPadding)
-        Write-Host " ".PadRight($leftPadding) -NoNewline
-        Write-Host $message -ForegroundColor Black -BackgroundColor Yellow -NoNewline
-        Write-Host " ".PadRight($rightPadding) -NoNewline
-        Write-Host "|" -ForegroundColor Yellow
-        
-        Write-Host "+" -ForegroundColor Yellow -NoNewline
-        Write-Host "=".PadRight($lineLength - 2, "=") -ForegroundColor Yellow -NoNewline
-        Write-Host "+" -ForegroundColor Yellow
-        
-        # Note about post-migration warnings
-        Write-Host ""
-        Write-Host "NOTE: Warnings about 'No posts were migrated' are expected if all posts" -ForegroundColor Cyan
-        Write-Host "already exist in the database." -ForegroundColor Cyan
-    }
-    
+    $headerLine = "=".PadRight($lineLength, "=")
+
     Write-Host ""
-    Write-Host "For more detailed information, run:" -ForegroundColor White
-    Write-Host "  pnpm --filter @kit/content-migrations run diagnostic:migration-status" -ForegroundColor Cyan
+    Write-Host $headerLine -ForegroundColor Cyan
+    if ($PhaseNumber -gt 0) {
+        Write-Host ("PHASE " + $PhaseNumber + "/" + $TotalPhases + ": " + $PhaseName) -ForegroundColor Cyan
+    } else {
+        Write-Host $PhaseName -ForegroundColor Cyan
+    }
+    Write-Host $headerLine -ForegroundColor Cyan
     Write-Host ""
-    
-    # Create log entry
-    $timestamp = (Get-Date).ToString("yyyy-MM-dd_HH-mm-ss")
-    if ($Success) {
-        Add-Content -Path $script:detailedLogFile -Value "$timestamp - MIGRATION COMPLETED SUCCESSFULLY"
+
+    # Log to detailed log file
+    $timestamp = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss")
+    # Use string concatenation to avoid interpolation issues
+    Add-Content -Path $script:detailedLogFile -Value ("`n" + $timestamp + " - " + $headerLine)
+    if ($PhaseNumber -gt 0) {
+        Add-Content -Path $script:detailedLogFile -Value ($timestamp + " - PHASE " + $PhaseNumber + "/" + $TotalPhases + ": " + $PhaseName)
+    } else {
+        Add-Content -Path $script:detailedLogFile -Value ($timestamp + " - " + $PhaseName)
     }
-    else {
-        Add-Content -Path $script:detailedLogFile -Value "$timestamp - MIGRATION COMPLETED WITH WARNINGS"
-    }
+    Add-Content -Path $script:detailedLogFile -Value ($timestamp + " - " + $headerLine)
+
+    # Start phase timer
+    Start-PhaseTimer -PhaseName $PhaseName
 }
 
-# Function to run diagnostic report and show summary
-function Show-MigrationDiagnostic {
+# Enhanced phase completion logging
+function Log-EnhancedPhaseCompletion {
     param (
-        [switch]$Detailed = $false
+        [string]$PhaseName,
+        [bool]$Success = $true
     )
-    
-    Write-Host "Running migration diagnostic report..." -ForegroundColor Cyan
-    
-    try {
-        if ($Detailed) {
-            # Run full diagnostic
-            $result = Invoke-Expression "pnpm --filter @kit/content-migrations run diagnostic:migration-status"
-            Write-Host $result
-        }
-        else {
-            # Run compact diagnostic
-            Set-ProjectRootLocation
-            Set-ProjectLocation -RelativePath "packages/content-migrations"
-            $tables = & pnpm exec tsx -e "
-                const { Pool } = require('pg');
-                require('dotenv').config();
-                
-                async function getTableCounts() {
-                    const pool = new Pool({ connectionString: process.env.DATABASE_URI });
-                    const client = await pool.connect();
-                    
-                    try {
-                        const tables = ['courses', 'course_lessons', 'course_quizzes', 'posts', 'private', 'downloads', 'surveys'];
-                        const results = {};
-                        
-                        for (const table of tables) {
-                            try {
-                                const result = await client.query(`SELECT COUNT(*) FROM payload.\${table}`);
-                                results[table] = parseInt(result.rows[0].count);
-                            } catch (err) {
-                                results[table] = 'N/A';
-                            }
-                        }
-                        
-                        console.log(JSON.stringify(results));
-                    } finally {
-                        client.release();
-                        await pool.end();
-                    }
-                }
-                
-                getTableCounts();
-            "
-            
-            $counts = $tables | ConvertFrom-Json
-            
-            Write-Host ""
-            Write-Host "Content Summary:" -ForegroundColor Cyan
-            Write-Host "  Courses:      $($counts.courses)" -ForegroundColor White
-            Write-Host "  Lessons:      $($counts.course_lessons)" -ForegroundColor White
-            Write-Host "  Quizzes:      $($counts.course_quizzes)" -ForegroundColor White
-            Write-Host "  Blog Posts:   $($counts.posts)" -ForegroundColor White
-            Write-Host "  Private:      $($counts.private)" -ForegroundColor White
-            Write-Host "  Downloads:    $($counts.downloads)" -ForegroundColor White
-            Write-Host "  Surveys:      $($counts.surveys)" -ForegroundColor White
-            
-            Pop-Location
-        }
-    }
-    catch {
-        Write-Host "Error running diagnostic: $_" -ForegroundColor Red
+
+    # Stop phase timer
+    Stop-PhaseTimer -PhaseName $PhaseName
+
+    # Calculate phase duration
+    $phaseTime = $global:executionTiming.PhaseTimings[$PhaseName].Duration.TotalSeconds
+    $durationText = [math]::Round($phaseTime, 2).ToString() + "s"
+
+    # Log to detailed log file
+    $timestamp = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss")
+    $status = if ($Success) { "COMPLETED" } else { "COMPLETED WITH WARNINGS" }
+    Add-Content -Path $script:detailedLogFile -Value ($timestamp + " - PHASE " + $PhaseName + " " + $status + " (" + $durationText + ")")
+
+    # Log completion
+    if ($Success) {
+        Log-Success ($PhaseName + " phase completed successfully (" + $durationText + ")")
+    } else {
+        Log-Warning ($PhaseName + " phase completed with warnings (" + $durationText + ")")
     }
 }
 
-# No need to export functions when using dot-sourcing in PowerShell scripts
-# Functions are automatically available to the script that dot-sources this file
+# Function to show expected warning notes
+function Log-ExpectedWarning {
+    param (
+        [string]$WarningText
+    )
+
+    Write-Host "NOTE: " -ForegroundColor Yellow -NoNewline
+    Write-Host $WarningText -ForegroundColor Gray
+    
+    # Log to detailed log file
+    $timestamp = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss")
+    Add-Content -Path $script:detailedLogFile -Value ($timestamp + " - EXPECTED WARNING: " + $WarningText)
+}

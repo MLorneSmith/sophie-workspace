@@ -14,32 +14,33 @@ function Invoke-LoadingPhase {
         [switch]$SkipVerification
     )
     
-    Log-Phase "LOADING PHASE"
-    
-    # Step 1: Run content migrations via Payload migrations
+    # Step 7: Run content migrations via Payload migrations
     Run-ContentMigrations
     
-    # Step 1.5: Run specialized blog post migration
+    # Identify potentially parallelizable steps
+    Log-Message "Identifying steps that could potentially be run in parallel..." "Cyan"
+    
+    # Step 8.1: Run specialized blog post migration
     Migrate-BlogPosts
     
-    # Step 1.6: Run specialized private posts migration
+    # Step 8.2: Run specialized private posts migration
     Migrate-PrivatePosts
 
-    # Step 1.7: Fix UUID tables to ensure columns exist
+    # Step 8.3: Fix UUID tables to ensure columns exist
     Fix-UuidTables
     
-    # Step 2: Import downloads from R2 bucket
+    # Step 9: Import downloads from R2 bucket
     Import-Downloads
     
-    # Step 3: Fix relationships
+    # Step 10: Fix relationships
     Fix-Relationships
     
-    # Step 4: Comprehensive database verification
+    # Step 11: Comprehensive database verification
     if (-not $SkipVerification) {
         Verify-DatabaseState
     }
     
-    # Step 5: Create certificates storage bucket in Supabase
+    # Step 12: Create certificates storage bucket in Supabase
     Create-CertificatesBucket
     
     Log-Success "Loading phase completed successfully"
@@ -47,7 +48,7 @@ function Invoke-LoadingPhase {
 
 # Function to run content migrations
 function Run-ContentMigrations {
-    Log-Step "Running content migrations via Payload migrations" 7
+    Log-EnhancedStep "Running content migrations via Payload migrations" 7 12
     
     try {
         # First ensure we're at the project root
@@ -112,7 +113,7 @@ function Run-ContentMigrations {
 
 # Function to import downloads from R2 bucket
 function Import-Downloads {
-    Log-Step "Importing downloads from R2 bucket" 8
+    Log-EnhancedStep "Importing downloads from R2 bucket" 9 12
     
     try {
         # First ensure we're at the project root
@@ -144,7 +145,7 @@ function Import-Downloads {
 
 # Function to fix UUID tables
 function Fix-UuidTables {
-    Log-Step "Fixing UUID tables to ensure all required columns exist" 7.7
+    Log-EnhancedStep "Fixing UUID tables to ensure all required columns exist" 8.3 12
     
     try {
         # First ensure we're at the project root
@@ -190,7 +191,7 @@ function Fix-UuidTables {
 
 # Function to fix relationships
 function Fix-Relationships {
-    Log-Step "Fixing relationships" 9
+    Log-EnhancedStep "Fixing relationships" 10 12
     
     try {
         # First ensure we're at the project root
@@ -331,7 +332,7 @@ function Fix-Relationships {
 
 # Function to verify database state
 function Verify-DatabaseState {
-    Log-Step "Performing comprehensive database verification" 10
+    Log-EnhancedStep "Performing comprehensive database verification" 11 12
     
     try {
         # First ensure we're at the project root
@@ -378,7 +379,7 @@ function Verify-DatabaseState {
 # Function to create certificates bucket in Supabase
 # This step is now handled by the migration file: apps/web/supabase/migrations/20250407140654_create_certificates_bucket.sql
 function Create-CertificatesBucket {
-    Log-Step "Creating certificates storage bucket in Supabase" 11
+    Log-EnhancedStep "Creating certificates storage bucket in Supabase" 12 12
     
     try {
         # The bucket is created by the Supabase migration process
@@ -398,7 +399,7 @@ function Create-CertificatesBucket {
 
 # Function to run private posts migration with full content
 function Migrate-PrivatePosts {
-    Log-Step "Migrating private posts with complete content" 7.6
+    Log-EnhancedStep "Migrating private posts with complete content" 8.2 12
     
     try {
         # First ensure we're at the project root
@@ -452,7 +453,7 @@ function Migrate-PrivatePosts {
 
 # Function to run blog posts migration with full content
 function Migrate-BlogPosts {
-    Log-Step "Migrating blog posts with complete content" 7.5
+    Log-EnhancedStep "Migrating blog posts with complete content" 8.1 12
     
     try {
         # First ensure we're at the project root

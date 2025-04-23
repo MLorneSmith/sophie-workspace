@@ -13,15 +13,13 @@ function Invoke-ProcessingPhase {
         [switch]$ForceRegenerate
     )
     
-    Log-Phase "PROCESSING PHASE"
-    
-    # Step 1: Check and process raw data if needed
+    # Step 4: Check and process raw data if needed
     Process-RawData -ForceRegenerate:$ForceRegenerate
     
-    # Step 2: Generate SQL seed files and fix quiz ID consistency
+    # Step 5: Generate SQL seed files and fix quiz ID consistency
     Generate-SqlSeedFiles
     
-    # Step 3: Fix references to ensure consistency
+    # Step 6: Fix references to ensure consistency
     Fix-References
     
     Log-Success "Processing phase completed successfully"
@@ -33,7 +31,7 @@ function Process-RawData {
         [switch]$ForceRegenerate
     )
     
-    Log-Step "Checking and processing raw data" 4
+    Log-EnhancedStep "Checking and processing raw data" 4 12
     
     try {
         # First ensure we're at the project root
@@ -175,6 +173,7 @@ function Process-RawData {
         Log-Message "Returned to directory: $(Get-Location)" "Gray"
         
         Log-Success "Raw data processing completed"
+        Log-EnhancedStepCompletion -Success $true
         return $true
     }
     catch {
@@ -185,7 +184,7 @@ function Process-RawData {
 
 # Function to generate SQL seed files and fix quiz ID consistency
 function Generate-SqlSeedFiles {
-    Log-Step "Generating SQL seed files and fixing quiz ID consistency" 5
+    Log-EnhancedStep "Generating SQL seed files and fixing quiz ID consistency" 5 12
     
     try {
         # First ensure we're at the project root
@@ -245,6 +244,7 @@ function Generate-SqlSeedFiles {
         Pop-Location
         Log-Message "Returned to directory: $(Get-Location)" "Gray"
         
+        Log-EnhancedStepCompletion -Success $true
         return $true
     }
     catch {
@@ -255,7 +255,7 @@ function Generate-SqlSeedFiles {
 
 # Function to fix references to ensure consistency
 function Fix-References {
-    Log-Step "Fixing references to ensure consistency" 6
+    Log-EnhancedStep "Fixing references to ensure consistency" 6 12
     
     try {
         # First ensure we're at the project root
@@ -286,6 +286,7 @@ function Fix-References {
         Pop-Location
         Log-Message "Returned to directory: $(Get-Location)" "Gray"
         
+        Log-EnhancedStepCompletion -Success $true
         return $true
     }
     catch {
