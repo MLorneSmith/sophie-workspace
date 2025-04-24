@@ -84,34 +84,69 @@ async function main() {
       FROM questions_to_link;
     `);
 
-    // 2. Fix missing bidirectional relationships between quizzes and questions
+    // 2. Validate unidirectional relationships between quizzes and questions
     console.log(
-      'Fixing bidirectional relationships for quizzes and questions...',
+      'Validating unidirectional relationships from quizzes to questions...',
     );
-    await pool.query(`
-      -- Add missing relationships from questions to quizzes
-      WITH questions_to_link AS (
-        SELECT qq.id as question_id, qq.quiz_id_id as quiz_id
-        FROM payload.quiz_questions qq
-        JOIN payload.quiz_questions_rels qqr ON qq.id = qqr._parent_id
-        WHERE qq.quiz_id_id IS NOT NULL
-        AND NOT EXISTS (
-          SELECT 1 
-          FROM payload.course_quizzes_rels cqr 
-          WHERE cqr._parent_id = qq.quiz_id_id
-          AND cqr.value = qq.id
+
+    // First check table structure to understand what we're working with
+    try {
+      const tableCheckResult = await pool.query(`
+        SELECT table_name 
+        FROM information_schema.tables 
+        WHERE table_schema = 'payload' 
+        AND table_name IN ('quiz_questions', 'quiz_questions_rels', 'course_quizzes_rels')
+      `);
+      console.log(
+        'Available tables:',
+        tableCheckResult.rows.map((r) => r.table_name).join(', '),
+      );
+
+      // Get columns in course_quizzes_rels to ensure we understand the schema
+      const columnCheckResult = await pool.query(`
+        SELECT column_name 
+        FROM information_schema.columns 
+        WHERE table_schema = 'payload' 
+        AND table_name = 'course_quizzes_rels'
+      `);
+      console.log(
+        'course_quizzes_rels columns:',
+        columnCheckResult.rows.map((r) => r.column_name).join(', '),
+      );
+
+      // Ensure all questions referenced by quizzes actually exist
+      await pool
+        .query(
+          `
+        -- Find references to non-existent questions
+        WITH invalid_refs AS (
+          SELECT cqr._parent_id as quiz_id, cqr.value as question_id
+          FROM payload.course_quizzes_rels cqr
+          WHERE cqr.field = 'questions'
+          AND NOT EXISTS (
+            SELECT 1 
+            FROM payload.quiz_questions qq 
+            WHERE qq.id = cqr.value
+          )
         )
-      )
-      INSERT INTO payload.course_quizzes_rels (id, _parent_id, field, value, updated_at, created_at)
-      SELECT
-        gen_random_uuid(),
-        quiz_id,
-        'questions',
-        question_id,
-        NOW(),
-        NOW()
-      FROM questions_to_link;
-    `);
+        -- Log how many invalid references were found
+        SELECT COUNT(*) as invalid_count FROM invalid_refs
+      `,
+        )
+        .then((result) => {
+          const invalidCount = parseInt(result.rows[0].invalid_count, 10);
+          if (invalidCount > 0) {
+            console.log(
+              `Found ${invalidCount} references to non-existent questions. These will be left as-is.`,
+            );
+          } else {
+            console.log('All quiz-to-question references are valid');
+          }
+        });
+    } catch (error) {
+      console.error('Error validating quiz relationships:', error.message);
+      console.log('Continuing with other fixes...');
+    }
 
     // 3. Fix lesson-quiz relationships
     console.log('Fixing lesson-quiz relationships...');

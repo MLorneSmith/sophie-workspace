@@ -15,8 +15,10 @@
  */
 import { promises as fs } from 'fs';
 import path from 'path';
-import { Client } from 'pg';
+import pg from 'pg';
 import { fileURLToPath } from 'url';
+
+const { Client } = pg;
 
 // Get directory and file paths
 const __filename = fileURLToPath(import.meta.url);
@@ -236,7 +238,9 @@ export async function fixCourseQuizRelationships(): Promise<void> {
 /**
  * Get current relationship statistics
  */
-async function getRelationshipStats(client: Client): Promise<{
+async function getRelationshipStats(
+  client: InstanceType<typeof Client>,
+): Promise<{
   totalQuizzes: number;
   courseQuizCount: number;
   quizQuestionCount: number;
@@ -286,7 +290,8 @@ async function getRelationshipStats(client: Client): Promise<{
 }
 
 // Run the function if this file is executed directly
-if (require.main === module) {
+// ESM equivalent of require.main === module
+if (import.meta.url.endsWith(process.argv[1])) {
   fixCourseQuizRelationships()
     .then(() => console.log('Course-quiz relationship fix completed'))
     .catch((error) => {

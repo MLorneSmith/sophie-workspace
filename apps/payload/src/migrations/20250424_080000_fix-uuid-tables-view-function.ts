@@ -59,24 +59,85 @@ export async function up({ payload }: MigrateUpArgs): Promise<void> {
     END;
     $$ LANGUAGE plpgsql;
     
-    -- Create a simple safeguard view for downloads
-    -- This prevents errors when the dynamic UUID tables query runs
-    CREATE OR REPLACE VIEW payload.downloads_diagnostic AS 
-    SELECT 
-      d.id,
-      d.filename,
-      d.url,
-      COUNT(cld.id) AS lesson_refs
-    FROM 
-      payload.downloads d
-    LEFT JOIN 
-      payload.course_lessons_downloads cld ON d.id = cld.download_id
-    GROUP BY
-      d.id, d.filename, d.url;
+    -- Check if the downloads_diagnostic view already exists with proper columns
+    -- If it doesn't exist, create it with the full complement of columns
+    DO $$
+    DECLARE 
+      view_exists boolean;
+      path_exists boolean;
+    BEGIN
+      -- Check if view exists
+      SELECT EXISTS (
+        SELECT FROM information_schema.views 
+        WHERE table_schema = 'payload' 
+        AND table_name = 'downloads_diagnostic'
+      ) INTO view_exists;
       
-    -- Note: Since this is a VIEW, it will not have the 'path' column
-    -- that the scan_and_fix_uuid_tables function tries to add.
-    -- But with our new check, the function will skip this safely.
+      -- Check if path column exists in downloads table
+      SELECT EXISTS (
+        SELECT FROM information_schema.columns 
+        WHERE table_schema = 'payload' 
+        AND table_name = 'downloads'
+        AND column_name = 'path'
+      ) INTO path_exists;
+      
+      -- Only create/replace view if it doesn't already exist with proper structure
+      IF NOT view_exists THEN
+        -- Drop any existing view just to be safe
+        EXECUTE 'DROP VIEW IF EXISTS payload.downloads_diagnostic';
+        
+        -- Create the view with or without path based on its existence in downloads table
+        IF path_exists THEN
+          EXECUTE '
+          CREATE VIEW payload.downloads_diagnostic AS
+          SELECT 
+            d.id,
+            d.title,
+            d.filename,
+            d.url,
+            d.mimetype,
+            d.filesize,
+            d.width,
+            d.height,
+            d.sizes_thumbnail_url,
+            d.path,
+            (SELECT count(*) AS count
+              FROM payload.course_lessons_downloads
+              WHERE (course_lessons_downloads.download_id = d.id)) AS lesson_count,
+            (SELECT array_agg(cl.title) AS array_agg
+              FROM (payload.course_lessons_downloads cld
+                JOIN payload.course_lessons cl ON ((cld.lesson_id = cl.id)))
+              WHERE (cld.download_id = d.id)) AS related_lessons
+          FROM payload.downloads d';
+        ELSE
+          EXECUTE '
+          CREATE VIEW payload.downloads_diagnostic AS
+          SELECT 
+            d.id,
+            d.title,
+            d.filename,
+            d.url,
+            d.mimetype,
+            d.filesize,
+            d.width,
+            d.height,
+            d.sizes_thumbnail_url,
+            (SELECT count(*) AS count
+              FROM payload.course_lessons_downloads
+              WHERE (course_lessons_downloads.download_id = d.id)) AS lesson_count,
+            (SELECT array_agg(cl.title) AS array_agg
+              FROM (payload.course_lessons_downloads cld
+                JOIN payload.course_lessons cl ON ((cld.lesson_id = cl.id)))
+              WHERE (cld.download_id = d.id)) AS related_lessons
+          FROM payload.downloads d';
+        END IF;
+        
+        RAISE NOTICE 'Created downloads_diagnostic view';
+      ELSE
+        RAISE NOTICE 'Existing downloads_diagnostic view preserved';
+      END IF;
+    END
+    $$;
   `)
 
   console.log('✅ Successfully updated scan_and_fix_uuid_tables function to handle views')
@@ -90,10 +151,10 @@ export async function down({ payload }: MigrateDownArgs): Promise<void> {
     -- Drop the improved function
     DROP FUNCTION IF EXISTS payload.scan_and_fix_uuid_tables();
     
-    -- Drop the downloads_diagnostic view 
-    DROP VIEW IF EXISTS payload.downloads_diagnostic;
+    -- We don't drop the downloads_diagnostic view here since it might be
+    -- maintained by other migrations now. Instead, we preserve it.
     
-    -- Create a simpler original version
+    -- Create a simpler original version of the function
     CREATE OR REPLACE FUNCTION payload.scan_and_fix_uuid_tables()
     RETURNS VOID AS $$
     DECLARE

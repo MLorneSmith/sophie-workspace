@@ -8,8 +8,9 @@ DROP FUNCTION IF EXISTS payload.scan_and_fix_uuid_tables();
 -- Create the UUID tables tracking table if not exists
 CREATE TABLE IF NOT EXISTS payload.dynamic_uuid_tables (
   table_name TEXT PRIMARY KEY,
-  last_checked TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  has_downloads_id BOOLEAN DEFAULT FALSE
+  primary_key TEXT DEFAULT 'parent_id',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  needs_path_column BOOLEAN DEFAULT TRUE
 );
 
 -- Create or replace the scanner function
@@ -24,6 +25,7 @@ DECLARE
   has_parent_id BOOLEAN;
   has_downloads_id BOOLEAN;
   has_private_id BOOLEAN;
+  has_documentation_id BOOLEAN;
 BEGIN
   -- Loop through all tables in the payload schema that match UUID pattern
   -- Fixed: Added proper table aliases to avoid the "missing FROM-clause entry for table 't'" error
@@ -96,13 +98,27 @@ BEGIN
       added_columns := array_append(added_columns, 'private_id');
     END IF;
     
-    -- Update the tracking table
-    INSERT INTO payload.dynamic_uuid_tables (table_name, last_checked, has_downloads_id)
-    VALUES (uuid_table, NOW(), TRUE)
+    -- Check if documentation_id column exists
+    SELECT EXISTS (
+      SELECT FROM information_schema.columns
+      WHERE table_schema = 'payload'
+      AND table_name = uuid_table
+      AND column_name = 'documentation_id'
+    ) INTO has_documentation_id;
+    
+    -- Add documentation_id column if it doesn't exist
+    IF NOT has_documentation_id THEN
+      EXECUTE format('ALTER TABLE payload.%I ADD COLUMN documentation_id UUID', uuid_table);
+      added_columns := array_append(added_columns, 'documentation_id');
+    END IF;
+    
+    -- Update the tracking table with correct schema columns
+    INSERT INTO payload.dynamic_uuid_tables (table_name, primary_key, created_at, needs_path_column)
+    VALUES (uuid_table, 'parent_id', NOW(), TRUE)
     ON CONFLICT (table_name) 
     DO UPDATE SET 
-      last_checked = NOW(),
-      has_downloads_id = TRUE;
+      created_at = NOW(),
+      needs_path_column = TRUE;
     
     -- Only return tables that had columns added
     IF array_length(added_columns, 1) > 0 THEN
@@ -164,6 +180,9 @@ BEGIN
         column_exists := TRUE;
       ELSIF fallback_column = 'private_id' THEN
         EXECUTE format('ALTER TABLE payload.%I ADD COLUMN private_id UUID', table_name);
+        column_exists := TRUE;
+      ELSIF fallback_column = 'documentation_id' THEN
+        EXECUTE format('ALTER TABLE payload.%I ADD COLUMN documentation_id UUID', table_name);
         column_exists := TRUE;
       END IF;
     EXCEPTION WHEN OTHERS THEN

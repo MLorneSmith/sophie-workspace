@@ -13,6 +13,16 @@ function Initialize-Logging {
         [string]$LogDirectory = "z.migration-logs"
     )
     
+    # Set UTF-8 encoding for all outputs
+    if (Get-Command -Name "Set-UTF8Encoding" -ErrorAction SilentlyContinue) {
+        Set-UTF8Encoding
+    } else {
+        # Fallback if Set-UTF8Encoding is not available
+        $OutputEncoding = [System.Text.UTF8Encoding]::new()
+        [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new()
+        Log-Message "Set UTF-8 encoding using fallback method" "Gray"
+    }
+    
     # Get the script's directory for absolute paths
     $scriptDir = Split-Path -Parent (Split-Path -Parent (Split-Path -Parent $PSScriptRoot))
     

@@ -187,72 +187,47 @@ function Run-PayloadMigrations {
         
         Exec-Command -command "pnpm --filter @kit/content-migrations run sql:add-relationship-id-columns" -description "Adding relationship ID columns to locked documents tables"
         
-        # Fix UUID tables to ensure path columns exist
-        Log-Message "Fixing UUID tables to ensure all required columns exist..." "Yellow"
+        # Fix UUID tables using the new consolidated manager
+        Log-Message "Managing UUID tables with consolidated approach..." "Yellow"
         try {
-            # The script needs the DATABASE_URI environment variable, so let's set it if not already set
             Push-Location -Path "packages/content-migrations"
-            $envFile = Join-Path -Path (Get-Location) -ChildPath ".env.development"
             
-            if (Test-Path -Path $envFile) {
-                Log-Message "Loading environment variables from .env.development" "Gray"
-                $envContent = Get-Content -Path $envFile -Raw
-                
-                # Extract DATABASE_URI or DATABASE_URL from the env file
-                if ($envContent -match 'DATABASE_URI=(.+)(\r?\n|$)') {
-                    $databaseUri = $matches[1]
-                    Log-Message "Setting DATABASE_URI from .env.development file" "Gray"
-                    $env:DATABASE_URI = $databaseUri
-                } elseif ($envContent -match 'DATABASE_URL=(.+)(\r?\n|$)') {
-                    $databaseUrl = $matches[1]
-                    Log-Message "Setting DATABASE_URI from DATABASE_URL in .env.development file" "Gray"
-                    $env:DATABASE_URI = $databaseUrl
-                }
-            }
+            # The consolidated manager handles environment variables internally
+            # and performs all operations in a single transaction for better reliability
+            Log-Message "Running consolidated UUID table manager..." "Yellow"
+            Exec-Command -command "pnpm run consolidated:uuid-management" -description "Running consolidated UUID table manager"
             
-            # If DATABASE_URI is still not set, try to use DATABASE_URL
-            if (-not $env:DATABASE_URI -and $env:DATABASE_URL) {
-                Log-Message "Setting DATABASE_URI from DATABASE_URL environment variable" "Gray"
-                $env:DATABASE_URI = $env:DATABASE_URL
-            }
-            
-            # Now run the script with the environment variable set
-            if ($env:DATABASE_URI) {
-                Exec-Command -command "pnpm exec tsx src/scripts/run-uuid-tables-fix.ts" -description "Running UUID tables fix script"
-                Log-Success "UUID tables fixed successfully"
-            } else {
-                Log-Warning "DATABASE_URI environment variable not set. Skipping UUID tables fix."
-            }
-            
+            Log-Success "UUID tables managed successfully with consolidated approach"
             Pop-Location
         } catch {
+            Log-Warning "UUID table management encountered issues, but continuing: $_"
             # This is not critical, so we'll continue even if it fails
-            Log-Warning "UUID tables fix encountered issues, but continuing: $_"
+            # However, we should make sure we pop back to the original directory
+            if ((Get-Location).Path.EndsWith('content-migrations')) {
+                Pop-Location
+                Log-Message "Returned to directory: $(Get-Location)" "Gray"
+            }
         }
         
         # Verify UUID tables to ensure all required columns exist
         Log-Message "Verifying UUID tables and their required columns..." "Yellow"
         try {
-            # For UUID tables, let's use our own direct database connection rather than psql
-            # which may not be installed on all systems
-            if ($env:DATABASE_URI) {
-                Push-Location -Path "packages/content-migrations"
-                
-                # Use the Node.js script for verification which doesn't require psql
-                Exec-Command -command "pnpm exec tsx src/scripts/verify-uuid-tables.ts" -description "Running UUID tables verification" 
-                
-                # For the fix, let's use our new Node.js-based approach instead of psql
-                Log-Message "Applying direct fix for UUID tables..." "Yellow"
-                Exec-Command -command "pnpm --filter @kit/content-migrations run sql:ensure-columns" -description "Ensuring UUID tables have required columns"
-                
-                Pop-Location
-                Log-Success "UUID tables verified and fixed successfully"
-            } else {
-                Log-Warning "DATABASE_URI environment variable not set. Skipping UUID tables verification."
-            }
+            Push-Location -Path "packages/content-migrations"
+            
+            # Use the Node.js script for verification which doesn't require psql
+            Exec-Command -command "pnpm exec tsx src/scripts/verification/verify-uuid-tables.ts" -description "Running UUID tables verification" 
+            
+            Pop-Location
+            Log-Success "UUID tables verified successfully"
         } catch {
             # This is not critical, so we'll continue even if it fails
             Log-Warning "UUID tables verification encountered issues, but continuing: $_"
+            
+            # Ensure we pop back to the original directory
+            if ((Get-Location).Path.EndsWith('content-migrations')) {
+                Pop-Location
+                Log-Message "Returned to directory: $(Get-Location)" "Gray"
+            }
         }
         
         # Return to the payload directory

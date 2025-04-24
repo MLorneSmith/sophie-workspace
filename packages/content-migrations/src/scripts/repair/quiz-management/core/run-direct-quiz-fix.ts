@@ -9,8 +9,10 @@
 import dotenv from 'dotenv';
 import * as fs from 'fs';
 import * as path from 'path';
-import { Client } from 'pg';
+import pg from 'pg';
 import { fileURLToPath } from 'url';
+
+const { Client } = pg;
 
 // Get directory name for ES modules
 const __filename = fileURLToPath(import.meta.url);

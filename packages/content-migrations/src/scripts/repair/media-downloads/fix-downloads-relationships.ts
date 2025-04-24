@@ -9,7 +9,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import pg from 'pg';
 
-import { DOWNLOAD_ID_MAP } from '../../data/download-id-map.js';
+import { DOWNLOAD_ID_MAP } from '../../../data/mappings/download-mappings.js';
 
 const { Client } = pg;
 
@@ -68,10 +68,10 @@ async function fixDownloadsRelationships(): Promise<void> {
         'Our Process lesson already has a relationship with the Our Process PDF',
       );
     } else {
-      // Create the relationship with the proper order
+      // Create the relationship (without order column)
       await client.query(`
-        INSERT INTO payload.course_lessons_downloads (id, lesson_id, download_id, "order")
-        VALUES (uuid_generate_v4(), 'b1e873c4-6ee3-423c-8ac0-23d5bd5ad4c1', 'd7e389a2-5f10-4b8c-9a21-3e78f9c61d28', 0)
+        INSERT INTO payload.course_lessons_downloads (id, lesson_id, download_id)
+        VALUES (uuid_generate_v4(), 'b1e873c4-6ee3-423c-8ac0-23d5bd5ad4c1', 'd7e389a2-5f10-4b8c-9a21-3e78f9c61d28')
       `);
       console.log(
         'Created relationship between Our Process lesson and Our Process PDF',
@@ -129,12 +129,11 @@ async function fixDownloadsRelationships(): Promise<void> {
       // Fix course quiz downloads relationships since logs show issues there too
       const fixQuizDownloadsResult = await client.query(`
         -- First, create relationships for the quiz if they don't exist
-        INSERT INTO payload.course_quizzes_downloads (id, course_quizzes_id, download_id, "order")
+        INSERT INTO payload.course_quizzes_downloads (id, course_quizzes_id, download_id)
         SELECT 
           uuid_generate_v4(), 
           '5a8d6b7c-9e2f-4d3a-8b1c-0f9a2e4d5c6b', 
-          'd7e389a2-5f10-4b8c-9a21-3e78f9c61d28', 
-          0
+          'd7e389a2-5f10-4b8c-9a21-3e78f9c61d28'
         WHERE NOT EXISTS (
           SELECT 1 FROM payload.course_quizzes_downloads 
           WHERE course_quizzes_id = '5a8d6b7c-9e2f-4d3a-8b1c-0f9a2e4d5c6b'

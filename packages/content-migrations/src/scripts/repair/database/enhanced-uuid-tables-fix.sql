@@ -4,11 +4,67 @@
 -- First, drop the scanner function if it exists (to allow updates)
 DROP FUNCTION IF EXISTS payload.scan_and_fix_uuid_tables();
 
--- Create the UUID tables tracking table if not exists
+-- Add schema validation to check for the current structure
+DO $$
+DECLARE
+  table_exists BOOLEAN;
+  column_exists BOOLEAN;
+BEGIN
+  -- Check if dynamic_uuid_tables exists
+  SELECT EXISTS (
+    SELECT FROM information_schema.tables
+    WHERE table_schema = 'payload'
+    AND table_name = 'dynamic_uuid_tables'
+  ) INTO table_exists;
+  
+  IF table_exists THEN
+    -- Check if we have the new schema structure (needs_path_column)
+    SELECT EXISTS (
+      SELECT FROM information_schema.columns
+      WHERE table_schema = 'payload'
+      AND table_name = 'dynamic_uuid_tables'
+      AND column_name = 'needs_path_column'
+    ) INTO column_exists;
+    
+    IF NOT column_exists THEN
+      -- The table exists but has old schema - try to alter it
+      BEGIN
+        RAISE NOTICE 'Converting dynamic_uuid_tables schema to new format';
+        -- Add the missing columns that should be in the new schema
+        ALTER TABLE payload.dynamic_uuid_tables 
+          ADD COLUMN IF NOT EXISTS primary_key TEXT,
+          ADD COLUMN IF NOT EXISTS needs_path_column BOOLEAN DEFAULT FALSE;
+        
+        -- Remove old columns if they exist
+        ALTER TABLE payload.dynamic_uuid_tables 
+          DROP COLUMN IF EXISTS last_checked,
+          DROP COLUMN IF EXISTS has_downloads_id;
+        
+        -- Rename timestamps if needed
+        BEGIN
+          ALTER TABLE payload.dynamic_uuid_tables RENAME COLUMN last_checked TO created_at;
+        EXCEPTION WHEN OTHERS THEN
+          -- Column might not exist, which is fine
+          RAISE NOTICE 'No timestamp column rename needed';
+        END;
+      EXCEPTION WHEN OTHERS THEN
+        RAISE NOTICE 'Error converting schema: %', SQLERRM;
+      END;
+    ELSE
+      RAISE NOTICE 'Dynamic UUID tables already has the correct schema structure';
+    END IF;
+  ELSE
+    RAISE NOTICE 'Dynamic UUID tables does not exist yet, will be created with correct schema';
+  END IF;
+END
+$$;
+
+-- Create the UUID tables tracking table if not exists with the correct schema
 CREATE TABLE IF NOT EXISTS payload.dynamic_uuid_tables (
   table_name TEXT PRIMARY KEY,
-  last_checked TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  has_downloads_id BOOLEAN DEFAULT FALSE
+  primary_key TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  needs_path_column BOOLEAN DEFAULT FALSE
 );
 
 -- Create or replace the scanner function with documentation_id support
@@ -25,6 +81,9 @@ DECLARE
   has_private_id BOOLEAN;
   has_documentation_id BOOLEAN;
 BEGIN
+  -- Log start of function
+  RAISE NOTICE 'Starting UUID table scan with corrected schema...';
+  
   -- Loop through all tables in the payload schema that match UUID pattern
   -- Fixed: Added proper table aliases to avoid the "missing FROM-clause entry for table 't'" error
   FOR uuid_table IN 
@@ -110,13 +169,13 @@ BEGIN
       added_columns := array_append(added_columns, 'documentation_id');
     END IF;
     
-    -- Update the tracking table
-    INSERT INTO payload.dynamic_uuid_tables (table_name, last_checked, has_downloads_id)
-    VALUES (uuid_table, NOW(), TRUE)
+    -- Update the tracking table with correct schema columns
+    INSERT INTO payload.dynamic_uuid_tables (table_name, primary_key, created_at, needs_path_column)
+    VALUES (uuid_table, 'parent_id', NOW(), TRUE)
     ON CONFLICT (table_name) 
     DO UPDATE SET 
-      last_checked = NOW(),
-      has_downloads_id = TRUE;
+      created_at = NOW(),
+      needs_path_column = TRUE;
     
     -- Only return tables that had columns added
     IF array_length(added_columns, 1) > 0 THEN
@@ -126,6 +185,7 @@ BEGIN
     END IF;
   END LOOP;
   
+  RAISE NOTICE 'UUID table scan complete with corrected schema';
   RETURN;
 END;
 $$;
@@ -319,6 +379,6 @@ SELECT * FROM payload.scan_and_fix_uuid_tables();
 -- Log completion message
 DO $$
 BEGIN
-  RAISE NOTICE 'UUID tables fix completed successfully!';
+  RAISE NOTICE 'UUID tables fix completed successfully with corrected schema!';
 END
 $$;

@@ -1,5 +1,42 @@
 # Enhanced logging utilities for content migration system
 
+# Function to set UTF-8 encoding for PowerShell outputs
+function Set-UTF8Encoding {
+    # Only set PowerShell's output encoding to UTF-8
+    # Removed problematic reflection-based encoding modification that was causing errors
+    $OutputEncoding = [System.Text.UTF8Encoding]::new()
+    [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new()
+    
+    # For newer PowerShell versions, set default encoding via built-in parameter
+    try {
+        if ($PSVersionTable.PSVersion.Major -ge 7) {
+            # Set default encoding for Out-File, which is used by many cmdlets
+            $PSDefaultParameterValues['Out-File:Encoding'] = 'utf8'
+            $PSDefaultParameterValues['*:Encoding'] = 'utf8'
+        }
+    } catch {
+        # Ignore errors if PSVersionTable isn't available
+    }
+    
+    Log-Message "Set UTF-8 encoding for PowerShell outputs" "Gray"
+}
+
+# Function to sanitize log text for display
+function Sanitize-LogText {
+    param (
+        [string]$Text
+    )
+    
+    # Replace known problematic character sequences
+    $Text = $Text -replace 'GÇë', '['
+    $Text = $Text -replace 'GÇë', ']'
+    $Text = $Text -replace 'GöÇ', '-'
+    $Text = $Text -replace 'G£à', '✓'
+    $Text = $Text -replace 'G£ô', '•'
+    
+    return $Text
+}
+
 function Show-ProgressBar {
     param (
         [int]$Current,
