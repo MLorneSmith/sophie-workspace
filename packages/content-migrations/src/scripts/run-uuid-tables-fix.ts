@@ -97,9 +97,9 @@ async function runUuidTablesFix(): Promise<boolean> {
         -- Create the UUID tables tracking table if not exists
         CREATE TABLE IF NOT EXISTS payload.dynamic_uuid_tables (
           table_name TEXT PRIMARY KEY,
+          primary_key TEXT DEFAULT 'parent_id',
           created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-          primary_key TEXT,
-          needs_path_column BOOLEAN DEFAULT FALSE
+          needs_path_column BOOLEAN DEFAULT TRUE
         );
         
         -- Drop the function if it exists to avoid errors
@@ -121,13 +121,14 @@ async function runUuidTablesFix(): Promise<boolean> {
             EXECUTE format('ALTER TABLE payload.%I ADD COLUMN IF NOT EXISTS parent_id TEXT', table_record.table_name);
             EXECUTE format('ALTER TABLE payload.%I ADD COLUMN IF NOT EXISTS downloads_id UUID', table_record.table_name);
             EXECUTE format('ALTER TABLE payload.%I ADD COLUMN IF NOT EXISTS private_id UUID', table_record.table_name);
+            EXECUTE format('ALTER TABLE payload.%I ADD COLUMN IF NOT EXISTS documentation_id UUID', table_record.table_name);
             
             -- Log this table in dynamic_uuid_tables
             BEGIN
-              EXECUTE format('INSERT INTO payload.dynamic_uuid_tables (table_name, created_at)
-              VALUES (%L, NOW())
+              EXECUTE format('INSERT INTO payload.dynamic_uuid_tables (table_name, primary_key, created_at, needs_path_column)
+              VALUES (%L, ''parent_id'', NOW(), TRUE)
               ON CONFLICT (table_name)
-              DO UPDATE SET created_at = NOW()', table_record.table_name);
+              DO UPDATE SET created_at = NOW(), needs_path_column = TRUE', table_record.table_name);
             EXCEPTION WHEN OTHERS THEN
               -- Skip in case of error with the tracking table
             END;

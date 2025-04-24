@@ -11,8 +11,10 @@
  */
 import console from 'console';
 import path from 'path';
-import { Client } from 'pg';
+import pg from 'pg';
 import { fileURLToPath } from 'url';
+
+const { Client } = pg;
 
 // Get current directory
 const __filename = fileURLToPath(import.meta.url);
@@ -72,7 +74,9 @@ export async function fixLessonQuizRelationshipsComprehensive(): Promise<void> {
  * Fix lesson-quiz field names
  * Consolidated from fix-lesson-quiz-field-name.ts
  */
-async function fixLessonQuizFieldNames(client: Client): Promise<void> {
+async function fixLessonQuizFieldNames(
+  client: InstanceType<typeof Client>,
+): Promise<void> {
   console.log('Fixing lesson-quiz field names...');
 
   try {
@@ -143,7 +147,9 @@ async function fixLessonQuizFieldNames(client: Client): Promise<void> {
  * Fix direct lesson-quiz references
  * Consolidated from fix-lesson-quiz-references.ts
  */
-async function fixLessonQuizReferences(client: Client): Promise<void> {
+async function fixLessonQuizReferences(
+  client: InstanceType<typeof Client>,
+): Promise<void> {
   console.log('Fixing direct lesson-quiz references...');
 
   try {
@@ -202,7 +208,9 @@ async function fixLessonQuizReferences(client: Client): Promise<void> {
  * Fix lesson-quiz references with SQL approach
  * Consolidated from fix-lessons-quiz-references-sql.ts
  */
-async function fixLessonQuizReferencesWithSql(client: Client): Promise<void> {
+async function fixLessonQuizReferencesWithSql(
+  client: InstanceType<typeof Client>,
+): Promise<void> {
   console.log('Fixing lesson-quiz references with SQL approach...');
 
   try {
@@ -272,7 +280,9 @@ async function fixLessonQuizReferencesWithSql(client: Client): Promise<void> {
 /**
  * Verify lesson-quiz relationships
  */
-async function verifyLessonQuizRelationships(client: Client): Promise<void> {
+async function verifyLessonQuizRelationships(
+  client: InstanceType<typeof Client>,
+): Promise<void> {
   console.log('Verifying lesson-quiz relationships...');
 
   try {
@@ -345,7 +355,8 @@ async function verifyLessonQuizRelationships(client: Client): Promise<void> {
 }
 
 // Run if executed directly
-if (require.main === module) {
+// ESM equivalent of require.main === module
+if (import.meta.url.endsWith(process.argv[1])) {
   fixLessonQuizRelationshipsComprehensive()
     .then(() => console.log('Done'))
     .catch((error) => {

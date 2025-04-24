@@ -72,9 +72,29 @@ async function verifyRelationshipColumns() {
     let missingColumns = false;
 
     for (const table of requiredRelTables) {
+      // Check if the table is actually a view
+      const isView = await pool.query(
+        `
+        SELECT EXISTS (
+          SELECT FROM information_schema.views 
+          WHERE table_schema = 'payload' 
+          AND table_name = $1
+        ) as is_view
+      `,
+        [table],
+      );
+
+      if (isView.rows[0].is_view) {
+        console.log(
+          `⚠️ ${table} is a VIEW, not a table. Skipping column verification.`,
+        );
+        continue; // Skip this table/view
+      }
+
+      // Get columns and their data types
       const tableColumns = await pool.query(
         `
-        SELECT column_name
+        SELECT column_name, data_type
         FROM information_schema.columns
         WHERE table_schema = 'payload'
           AND table_name = $1
@@ -82,19 +102,32 @@ async function verifyRelationshipColumns() {
         [table],
       );
 
-      const existingColumns = tableColumns.rows.map(
-        (row: any) => row.column_name,
-      );
+      const existingColumns = {};
+      tableColumns.rows.forEach((row: any) => {
+        existingColumns[row.column_name] = row.data_type;
+      });
 
       console.log(`\nChecking table: payload.${table}`);
       for (const column of criticalColumns) {
-        if (!existingColumns.includes(column)) {
+        if (!existingColumns[column]) {
           console.error(
             `❌ Missing column ${column} in table payload.${table}`,
           );
           missingColumns = true;
         } else {
-          console.log(`✅ Column ${column} exists in table payload.${table}`);
+          const dataType = existingColumns[column];
+          const expectedType = column.endsWith('_id') ? 'uuid' : 'text';
+
+          if (dataType.toLowerCase() !== expectedType) {
+            console.error(
+              `❌ Column ${column} in table payload.${table} has wrong type: ${dataType} (expected ${expectedType})`,
+            );
+            missingColumns = true;
+          } else {
+            console.log(
+              `✅ Column ${column} exists in table payload.${table} with correct type (${dataType})`,
+            );
+          }
         }
       }
     }
@@ -110,9 +143,27 @@ async function verifyRelationshipColumns() {
       try {
         // Add missing columns direct repair logic
         for (const table of requiredRelTables) {
+          // Check if the table is a view before attempting repair
+          const isView = await pool.query(
+            `
+            SELECT EXISTS (
+              SELECT FROM information_schema.views 
+              WHERE table_schema = 'payload' 
+              AND table_name = $1
+            ) as is_view
+          `,
+            [table],
+          );
+
+          if (isView.rows[0].is_view) {
+            console.log(`⚠️ ${table} is a VIEW, not a table. Skipping repair.`);
+            continue; // Skip this table/view
+          }
+
+          // Get both column names and data types
           const tableColumns = await pool.query(
             `
-            SELECT column_name
+            SELECT column_name, data_type
             FROM information_schema.columns
             WHERE table_schema = 'payload'
               AND table_name = $1
@@ -120,31 +171,58 @@ async function verifyRelationshipColumns() {
             [table],
           );
 
-          const existingColumns = tableColumns.rows.map(
-            (row: any) => row.column_name,
-          );
+          const existingColumns = {};
+          tableColumns.rows.forEach((row: any) => {
+            existingColumns[row.column_name] = row.data_type;
+          });
 
           console.log(`\nAttempting repair for table: payload.${table}`);
           for (const column of criticalColumns) {
-            if (!existingColumns.includes(column)) {
+            const expectedType = column.endsWith('_id') ? 'UUID' : 'TEXT';
+
+            if (!existingColumns[column]) {
+              // Column is missing completely
               try {
-                // Add column if missing
-                const dataType = column.endsWith('_id') ? 'UUID' : 'TEXT';
                 await pool.query(`
                   ALTER TABLE payload.${table} 
-                  ADD COLUMN IF NOT EXISTS ${column} ${dataType}
+                  ADD COLUMN IF NOT EXISTS ${column} ${expectedType}
                 `);
                 console.log(
                   `✅ Added missing column ${column} to table payload.${table}`,
                 );
               } catch (colError: any) {
                 console.error(
-                  `❌ Failed to repair column ${column} in table payload.${table}:`,
+                  `❌ Failed to add column ${column} to table payload.${table}:`,
                   colError.message,
                   {
                     code: colError.code,
                     detail: colError.detail,
                     hint: colError.hint,
+                  },
+                );
+              }
+            } else if (
+              existingColumns[column].toLowerCase() !==
+              expectedType.toLowerCase()
+            ) {
+              // Column exists but has wrong type
+              try {
+                await pool.query(`
+                  ALTER TABLE payload.${table} 
+                  ALTER COLUMN ${column} TYPE ${expectedType} 
+                  USING ${column}::${expectedType}
+                `);
+                console.log(
+                  `✅ Fixed column type for ${column} in table payload.${table} to ${expectedType}`,
+                );
+              } catch (typeError: any) {
+                console.error(
+                  `❌ Failed to fix column type for ${column} in table payload.${table}:`,
+                  typeError.message,
+                  {
+                    code: typeError.code,
+                    detail: typeError.detail,
+                    hint: typeError.hint,
                   },
                 );
               }
@@ -157,9 +235,25 @@ async function verifyRelationshipColumns() {
         missingColumns = false;
 
         for (const table of requiredRelTables) {
+          // Skip views
+          const isView = await pool.query(
+            `
+            SELECT EXISTS (
+              SELECT FROM information_schema.views 
+              WHERE table_schema = 'payload' 
+              AND table_name = $1
+            ) as is_view
+          `,
+            [table],
+          );
+
+          if (isView.rows[0].is_view) {
+            continue;
+          }
+
           const tableColumns = await pool.query(
             `
-            SELECT column_name
+            SELECT column_name, data_type
             FROM information_schema.columns
             WHERE table_schema = 'payload'
               AND table_name = $1
@@ -167,16 +261,27 @@ async function verifyRelationshipColumns() {
             [table],
           );
 
-          const existingColumns = tableColumns.rows.map(
-            (row: any) => row.column_name,
-          );
+          const existingColumns = {};
+          tableColumns.rows.forEach((row: any) => {
+            existingColumns[row.column_name] = row.data_type;
+          });
 
           for (const column of criticalColumns) {
-            if (!existingColumns.includes(column)) {
+            if (!existingColumns[column]) {
               console.error(
                 `❌ Column ${column} still missing in table payload.${table} after repair attempt`,
               );
               missingColumns = true;
+            } else {
+              const dataType = existingColumns[column];
+              const expectedType = column.endsWith('_id') ? 'uuid' : 'text';
+
+              if (dataType.toLowerCase() !== expectedType) {
+                console.error(
+                  `❌ Column ${column} in table payload.${table} still has wrong type: ${dataType} (expected ${expectedType})`,
+                );
+                missingColumns = true;
+              }
             }
           }
         }

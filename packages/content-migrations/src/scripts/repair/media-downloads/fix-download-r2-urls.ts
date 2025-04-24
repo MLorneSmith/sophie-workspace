@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import pg from 'pg';
 
-import { DOWNLOAD_ID_MAP } from '../../data/mappings/download-mappings.js';
+import { DOWNLOAD_ID_MAP } from '../../../data/mappings/download-mappings.js';
 
 const { Client } = pg;
 

@@ -1,4 +1,6 @@
-import { Client } from 'pg';
+import pg from 'pg';
+
+const { Client } = pg;
 
 /**
  * Fix invalid quiz references in course lessons
@@ -133,7 +135,8 @@ export async function fixInvalidQuizReferences(): Promise<void> {
 }
 
 // Run the function if called directly
-if (require.main === module) {
+// ESM equivalent of require.main === module
+if (import.meta.url.endsWith(process.argv[1])) {
   fixInvalidQuizReferences()
     .then(() => console.log('Complete'))
     .catch((error) => {

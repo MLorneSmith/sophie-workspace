@@ -7,6 +7,7 @@
 . "$PSScriptRoot\..\utils\execution.ps1"
 . "$PSScriptRoot\..\utils\verification.ps1"
 . "$PSScriptRoot\..\utils\supabase.ps1"
+. "$PSScriptRoot\..\utils\verification-dependencies.ps1"
 
 # Function to run the loading phase
 function Invoke-LoadingPhase {
@@ -86,15 +87,20 @@ function Run-ContentMigrations {
         if (Set-ProjectLocation -RelativePath "packages/content-migrations") {
             Log-Message "Changed directory to: $(Get-Location)" "Gray"
             
-            Log-Message "Verifying database state..." "Yellow"
-            $verificationResult = Exec-Command -command "pnpm run verify:all" -description "Verifying database structure" -captureOutput -continueOnError
+            Log-Message "Running verification with automatic dependency handling..." "Yellow"
             
-            # Check if verification found any issues
-            if ($verificationResult -match "Warning" -or $verificationResult -match "Error") {
-                Log-Warning "Verification found issues, will run repairs in the Fix-Relationships step"
+            # Use dependency-aware verification instead of direct verification
+            $verificationResult = Run-VerificationWithDependencies -VerificationStep "verify:todo-fields" -Description "Verifying todo fields with dependencies" -ContinueOnError
+            
+            if ($verificationResult) {
+                Log-Success "Todo fields verification passed with automatic dependency handling"
             } else {
-                Log-Success "No issues found in initial verification"
+                Log-Warning "Todo fields verification found issues, these will be addressed in later steps"
             }
+            
+            # Run basic schema verification (doesn't need special dependency handling)
+            Log-Message "Verifying basic database structure..." "Yellow"
+            $basicVerificationResult = Exec-Command -command "pnpm run sql:verify-schema" -description "Verifying database structure" -captureOutput -continueOnError
 
             Pop-Location
             Log-Message "Returned to directory: $(Get-Location)" "Gray"
@@ -229,7 +235,15 @@ function Fix-Relationships {
         Log-Message "Running comprehensive lesson-quiz relationship fixes..." "Yellow"
         Exec-Command -command "pnpm run fix:lesson-quiz-relationships-comprehensive" -description "Fixing all lesson-quiz relationships" -continueOnError
 
-        # Run comprehensive question-quiz relationship fixes
+        # Run unidirectional quiz-question relationship fix (new approach)
+        Log-Message "Running unidirectional quiz-question relationship fix..." "Yellow"
+        Exec-Command -command "pnpm run fix:unidirectional-quiz-questions" -description "Fixing all quiz-question relationships with unidirectional model" -continueOnError
+        
+        # Verify unidirectional quiz-question relationships
+        Log-Message "Verifying unidirectional quiz-question relationships..." "Yellow"
+        Exec-Command -command "pnpm run verify:unidirectional-quiz-questions" -description "Verifying unidirectional quiz-question relationships" -continueOnError
+
+        # Run comprehensive question-quiz relationship fixes (kept for backward compatibility)
         Log-Message "Running comprehensive question-quiz relationship fixes..." "Yellow"
         Exec-Command -command "pnpm run fix:question-quiz-relationships-comprehensive" -description "Fixing all question-quiz relationships" -continueOnError
 
@@ -339,6 +353,17 @@ function Verify-DatabaseState {
         # Check for required environment variables
         Check-DatabaseEnvironment
         
+        # Use dependency-aware verification for the comprehensive verification
+        Log-Message "Running comprehensive verification with dependency handling..." "Yellow"
+        $todoVerification = Run-VerificationWithDependencies -VerificationStep "verify:todo-fields" -Description "Verifying todo fields" -ContinueOnError
+        
+        if ($todoVerification) {
+            Log-Success "Todo fields verification passed with dependency handling"
+        } else {
+            Log-Warning "Todo fields verification found issues even after dependencies"
+            $global:overallSuccess = $false
+        }
+        
         # Verify database schema using the Node.js utility
         Log-Message "Verifying database schema..." "Yellow"
         $finalVerification = Exec-Command -command "pnpm run sql:verify-schema" -description "Final database verification" -captureOutput -continueOnError
@@ -349,9 +374,17 @@ function Verify-DatabaseState {
         } else {
             Log-Success "Database schema verification passed"
         }
-
-        # Verify database columns
-        Verify-DatabaseColumns
+        
+        # Verify all aspects of the database with dependencies
+        Log-Message "Running final comprehensive verification..." "Yellow"
+        $comprehensiveVerification = Run-VerificationWithDependencies -VerificationStep "verify:all" -Description "Final comprehensive verification" -ContinueOnError
+        
+        if ($comprehensiveVerification) {
+            Log-Success "Comprehensive verification passed with dependency handling"
+        } else {
+            Log-Warning "Comprehensive verification found issues that need manual inspection"
+            $global:overallSuccess = $false
+        }
         
         Pop-Location
         Log-Message "Returned to directory: $(Get-Location)" "Gray"

@@ -13,8 +13,10 @@
  */
 import { promises as fs } from 'fs';
 import path from 'path';
-import { Client } from 'pg';
+import pg from 'pg';
 import { fileURLToPath } from 'url';
+
+const { Client } = pg;
 
 // Get current directory
 const __filename = fileURLToPath(import.meta.url);
@@ -93,7 +95,7 @@ export async function verifyQuizSystemIntegrity(): Promise<void> {
  * Verify course-quiz relationships
  */
 async function verifyCourseQuizRelationships(
-  client: Client,
+  client: InstanceType<typeof Client>,
 ): Promise<VerificationResult> {
   console.log('Verifying course-quiz relationships...');
   const result: VerificationResult = {
@@ -234,7 +236,7 @@ async function verifyCourseQuizRelationships(
  * Verify lesson-quiz relationships
  */
 async function verifyLessonQuizRelationships(
-  client: Client,
+  client: InstanceType<typeof Client>,
 ): Promise<VerificationResult> {
   console.log('Verifying lesson-quiz relationships...');
   const result: VerificationResult = {
@@ -356,7 +358,7 @@ async function verifyLessonQuizRelationships(
  * Verify question-quiz relationships
  */
 async function verifyQuestionQuizRelationships(
-  client: Client,
+  client: InstanceType<typeof Client>,
 ): Promise<VerificationResult> {
   console.log('Verifying question-quiz relationships...');
   const result: VerificationResult = {
@@ -499,7 +501,7 @@ async function verifyQuestionQuizRelationships(
  * Verify quiz content and metadata
  */
 async function verifyQuizContentAndMetadata(
-  client: Client,
+  client: InstanceType<typeof Client>,
 ): Promise<VerificationResult> {
   console.log('Verifying quiz content and metadata...');
   const result: VerificationResult = {
@@ -637,7 +639,7 @@ async function verifyQuizContentAndMetadata(
  * Verify cross-references and overall system integrity
  */
 async function verifyCrossReferences(
-  client: Client,
+  client: InstanceType<typeof Client>,
 ): Promise<VerificationResult> {
   console.log('Verifying cross-references and system integrity...');
   const result: VerificationResult = {

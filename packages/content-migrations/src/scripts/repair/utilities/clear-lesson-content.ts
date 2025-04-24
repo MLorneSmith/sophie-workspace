@@ -3,7 +3,52 @@
  * This addresses the issue where raw template tags are being displayed
  * Includes transaction support and verification
  */
-import { executeSQL } from '../../utils/db/execute-sql.js';
+import pg from 'pg';
+
+// Inline the module utility to avoid ESM import issues
+function isDirectExecution(): boolean {
+  const currentUrl = import.meta.url;
+  const executedUrl = process.argv[1];
+
+  if (!executedUrl) {
+    return false;
+  }
+
+  // Handle both Windows and Unix paths
+  const normalizedCurrentUrl = currentUrl.replace(/\\/g, '/');
+  const normalizedExecutedUrl = executedUrl.replace(/\\/g, '/');
+
+  // Check if this file is the entry point
+  return normalizedCurrentUrl.endsWith(normalizedExecutedUrl);
+}
+
+// Inline the database utility to avoid ESM import issues
+async function executeSQL(
+  query: string,
+  params: any[] = [],
+): Promise<pg.QueryResult> {
+  const { Pool } = pg;
+
+  // Create a pool for this execution
+  const pool = new Pool({
+    connectionString:
+      process.env.DATABASE_URI ||
+      'postgresql://postgres:postgres@localhost:54322/postgres?schema=payload',
+  });
+
+  const client = await pool.connect();
+  try {
+    return await client.query(query, params);
+  } catch (error) {
+    console.error(`SQL Error executing query: ${query.substring(0, 100)}...`);
+    console.error(`Error details: ${error}`);
+    throw error;
+  } finally {
+    client.release();
+    // Close pool when done
+    await pool.end();
+  }
+}
 
 export async function clearLessonContent() {
   try {
@@ -84,11 +129,8 @@ export async function clearLessonContent() {
   }
 }
 
-// Execute the function if this script is run directly
-if (
-  process.argv[1]?.endsWith('clear-lesson-content.ts') ||
-  process.argv[1]?.endsWith('clear-lesson-content.js')
-) {
+// Execute the function if this script is run directly using the ESM-compatible method
+if (isDirectExecution()) {
   clearLessonContent()
     .then((result) => {
       console.log('Result:', result);

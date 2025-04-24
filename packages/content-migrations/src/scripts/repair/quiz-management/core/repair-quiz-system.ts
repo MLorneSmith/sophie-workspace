@@ -7,12 +7,15 @@
  */
 import { promises as fs } from 'fs';
 import path from 'path';
-import { Client } from 'pg';
+import pg from 'pg';
 import { fileURLToPath } from 'url';
 
 import { fixLessonQuizRelationshipsComprehensive } from '../lesson-quiz-relationships/fix-lesson-quiz-relationships-comprehensive.js';
-import { fixQuestionQuizRelationshipsComprehensive } from '../question-relationships/fix-question-quiz-relationships-comprehensive.js';
+// Import commented out due to missing file - to be implemented later
+// import { fixQuestionQuizRelationshipsComprehensive } from '../question-relationships/fix-question-quiz-relationships-comprehensive.js';
 import { verifyQuizSystemIntegrity } from '../utilities/verify-quiz-system-integrity-comprehensive.js';
+
+const { Client } = pg;
 
 // Get current directory
 const __filename = fileURLToPath(import.meta.url);
@@ -120,7 +123,11 @@ export async function repairQuizSystem(): Promise<void> {
       await fixLessonQuizRelationshipsComprehensive();
 
       // 3. Fix question-quiz relationships
-      await fixQuestionQuizRelationshipsComprehensive();
+      // Commented out due to missing implementation
+      // await fixQuestionQuizRelationshipsComprehensive();
+      console.log(
+        'Skipping question-quiz relationships fix (not implemented yet)',
+      );
 
       if (runTests) {
         // Run additional tests if requested
@@ -160,7 +167,9 @@ export async function repairQuizSystem(): Promise<void> {
 /**
  * Run the direct SQL fixes for core quiz-course relationships
  */
-async function runDirectFix(client: Client): Promise<void> {
+async function runDirectFix(
+  client: InstanceType<typeof Client>,
+): Promise<void> {
   console.log('Running direct quiz fixes...');
 
   // Load SQL content
@@ -176,7 +185,9 @@ async function runDirectFix(client: Client): Promise<void> {
 /**
  * Run extended tests for additional verification
  */
-async function runExtendedTests(client: Client): Promise<void> {
+async function runExtendedTests(
+  client: InstanceType<typeof Client>,
+): Promise<void> {
   console.log('Running extended tests...');
 
   // Test 1: Check for quiz IDs consistency across all tables
@@ -229,7 +240,8 @@ async function runExtendedTests(client: Client): Promise<void> {
 }
 
 // Run if executed directly
-if (require.main === module) {
+// ESM equivalent of require.main === module
+if (import.meta.url.endsWith(process.argv[1])) {
   repairQuizSystem()
     .then(() => console.log('Quiz system repair completed successfully'))
     .catch((error) => {

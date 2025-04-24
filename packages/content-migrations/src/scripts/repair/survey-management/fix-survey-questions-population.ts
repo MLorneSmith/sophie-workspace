@@ -13,8 +13,8 @@ import path from 'path';
 import pg from 'pg';
 import { v4 as uuidv4 } from 'uuid';
 
-import { RAW_SURVEYS_DIR } from '../../config/paths.js';
-import { checkColumnExists } from '../../utils/check-column-exists.js';
+import { RAW_SURVEYS_DIR } from '../../../config/paths.js';
+import { checkColumnExists } from '../../../utils/check-column-exists.js';
 
 const { Pool } = pg;
 

@@ -6,6 +6,11 @@ if (-not (Get-Command -Name "Log-Message" -ErrorAction SilentlyContinue)) {
     . "$PSScriptRoot\logging.ps1"
 }
 
+# Import enhanced logging for encoding functions
+if (-not (Get-Command -Name "Set-UTF8Encoding" -ErrorAction SilentlyContinue)) {
+    . "$PSScriptRoot\enhanced-logging.ps1"
+}
+
 # Track overall success
 $script:overallSuccess = $true
 $script:currentStep = "Initialization"
@@ -19,18 +24,25 @@ function Exec-Command {
         [switch]$continueOnError
     )
     
+    # Ensure UTF-8 encoding for command execution
+    $OutputEncoding = [System.Text.UTF8Encoding]::new()
+    [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new()
+    
     $script:currentStep = $description
     Log-Message "EXECUTING: $command" "Gray"
     Log-Message "DESCRIPTION: $description" "Gray"
     
     try {
         if ($captureOutput) {
-            # Capture both stdout and stderr
+            # Capture both stdout and stderr with UTF-8 encoding
             $output = Invoke-Expression "$command 2>&1" | Out-String
+            
+            # Sanitize the output for better readability
+            $sanitizedOutput = Sanitize-LogText -Text $output
             
             # Try to write to the log file, but don't fail if the file is in use
             try {
-                Add-Content -Path $script:detailedLogFile -Value "--- Command Output Start ---`n$output`n--- Command Output End ---" -ErrorAction SilentlyContinue
+                Add-Content -Path $script:detailedLogFile -Value "--- Command Output Start ---`n$sanitizedOutput`n--- Command Output End ---" -ErrorAction SilentlyContinue
             }
             catch {
                 Write-Host "Warning: Could not write command output to log file: $_" -ForegroundColor Yellow

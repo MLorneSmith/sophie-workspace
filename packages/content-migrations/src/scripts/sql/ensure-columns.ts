@@ -64,11 +64,31 @@ async function main() {
       // If path column doesn't exist, add it
       if (columnResult.rows.length === 0) {
         console.log(`Adding path column to ${table}...`);
-        await pool.query(`
-          ALTER TABLE payload.${table} 
-          ADD COLUMN IF NOT EXISTS path TEXT
-        `);
-        fixedTables++;
+        try {
+          await pool.query(`
+            ALTER TABLE payload.${table} 
+            ADD COLUMN IF NOT EXISTS path TEXT
+          `);
+          fixedTables++;
+        } catch (error) {
+          console.log(`❌ Error fixing table ${table}: ${error.message}`);
+          console.log('Continuing with other tables...');
+
+          // Try to identify if this is a special table that needs different handling
+          const specialTableCheck = await pool.query(
+            `SELECT column_name FROM information_schema.columns 
+             WHERE table_schema = 'payload' AND table_name = $1 
+             LIMIT 5`,
+            [table],
+          );
+
+          if (specialTableCheck.rows.length > 0) {
+            console.log(`Table ${table} exists but has columns:`);
+            console.log(
+              specialTableCheck.rows.map((r) => r.column_name).join(', '),
+            );
+          }
+        }
       }
     }
 

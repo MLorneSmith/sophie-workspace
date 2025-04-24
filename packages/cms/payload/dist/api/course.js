@@ -101,25 +101,44 @@ export async function getQuiz(quizId, options = {}, supabaseClient) {
     // Log the quiz ID for debugging
     console.log(`getQuiz: Fetching quiz with ID: ${actualQuizId} (original: ${JSON.stringify(quizId)})`);
     try {
-        // Get the quiz metadata
-        const quiz = await callPayloadAPI(`course_quizzes/${actualQuizId}`, {}, supabaseClient);
+        // Get the quiz WITH its questions using depth parameter
+        // This utilizes the unidirectional relationship
+        const quiz = await callPayloadAPI(`course_quizzes/${actualQuizId}?depth=1`, {}, supabaseClient);
         if (!quiz || !quiz.id) {
             console.error(`getQuiz: Quiz not found for ID: ${actualQuizId}`);
             throw new Error(`Quiz not found for ID: ${actualQuizId}`);
         }
         console.log(`getQuiz: Successfully fetched quiz: ${quiz.title}`);
-        try {
-            // Get the questions for this quiz
-            const questionsResponse = await callPayloadAPI(`quiz_questions?where[quiz_id][equals]=${actualQuizId}&sort=order&depth=0`, {}, supabaseClient);
-            console.log(`getQuiz: Fetched ${((_a = questionsResponse.docs) === null || _a === void 0 ? void 0 : _a.length) || 0} questions for quiz`);
-            // Combine the data
-            return Object.assign(Object.assign({}, quiz), { questions: questionsResponse.docs || [] });
-        }
-        catch (error) {
-            console.error(`getQuiz: Error fetching questions for quiz ${actualQuizId}:`, error);
-            // Return the quiz without questions if there's an error fetching questions
+        // Check if we have the questions from the depth=1 query
+        if (!quiz.questions ||
+            !Array.isArray(quiz.questions) ||
+            quiz.questions.length === 0) {
+            console.log(`Quiz has no questions: ${quiz.title}`);
             return Object.assign(Object.assign({}, quiz), { questions: [] });
         }
+        // If we have question IDs but need the full details, fetch them
+        // This handles the case where questions are just IDs and not full objects
+        if (typeof quiz.questions[0] === 'string' || !quiz.questions[0].options) {
+            try {
+                // Get the question IDs
+                const questionIds = quiz.questions.map((q) => typeof q === 'string' ? q : q.id || q.value || q);
+                // Get full question details using their IDs
+                const idQueryParams = questionIds
+                    .map((id) => `id[]=${id}`)
+                    .join('&');
+                const questionsResponse = await callPayloadAPI(`quiz_questions?${idQueryParams}&sort=order`, {}, supabaseClient);
+                console.log(`getQuiz: Fetched ${((_a = questionsResponse.docs) === null || _a === void 0 ? void 0 : _a.length) || 0} detailed questions for quiz`);
+                // Replace the questions array with the full details
+                return Object.assign(Object.assign({}, quiz), { questions: questionsResponse.docs || [] });
+            }
+            catch (error) {
+                console.error(`getQuiz: Error fetching detailed questions for quiz ${actualQuizId}:`, error);
+                // Return what we have even if we couldn't get full details
+                return quiz;
+            }
+        }
+        // If we already have the full question objects, return as is
+        return quiz;
     }
     catch (error) {
         console.error(`getQuiz: Error fetching quiz ${actualQuizId}:`, error);

@@ -6,6 +6,7 @@
  */
 import { executeSQL } from '../../utils/db/execute-sql.js';
 import verifyTodoFields from './verify-todo-fields.js';
+import verifyUnidirectionalQuizQuestions from './verify-unidirectional-quiz-questions.js';
 
 async function verifyAll(): Promise<boolean> {
   console.log('=== DATABASE VERIFICATION ===');
@@ -177,6 +178,34 @@ async function verifyAll(): Promise<boolean> {
     } catch (error) {
       console.error('Error during todo fields verification:', error);
       console.log('❌ Todo fields verification failed due to error');
+      success = false;
+    }
+
+    // Verify unidirectional quiz-question relationships
+    console.log(
+      '\n=== VERIFYING UNIDIRECTIONAL QUIZ-QUESTION RELATIONSHIPS ===',
+    );
+    try {
+      const quizRelationshipsSuccess =
+        await verifyUnidirectionalQuizQuestions();
+      if (quizRelationshipsSuccess) {
+        console.log(
+          '✅ Unidirectional quiz-question relationships verification passed',
+        );
+      } else {
+        console.log(
+          '❌ Unidirectional quiz-question relationships verification failed',
+        );
+        success = false;
+      }
+    } catch (error) {
+      console.error(
+        'Error during unidirectional quiz-question relationships verification:',
+        error,
+      );
+      console.log(
+        '❌ Unidirectional quiz-question relationships verification failed due to error',
+      );
       success = false;
     }
 

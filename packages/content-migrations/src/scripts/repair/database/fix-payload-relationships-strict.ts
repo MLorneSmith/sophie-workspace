@@ -10,8 +10,10 @@
  */
 import * as fs from 'fs';
 import * as path from 'path';
-import { Client } from 'pg';
+import pg from 'pg';
 import { fileURLToPath } from 'url';
+
+const { Client } = pg;
 
 // Load SQL script
 const __filename = fileURLToPath(import.meta.url);
@@ -26,7 +28,7 @@ const MAX_RETRIES = 3;
  * Execute SQL with retry logic and error handling
  */
 async function executeWithRetry(
-  client: Client,
+  client: InstanceType<typeof Client>,
   sql: string,
   retryCount = 0,
 ): Promise<any> {
@@ -144,7 +146,8 @@ export async function fixPayloadRelationshipsStrict(): Promise<void> {
 }
 
 // Run if called directly
-if (require.main === module) {
+// ESM equivalent of require.main === module
+if (import.meta.url.endsWith(process.argv[1])) {
   fixPayloadRelationshipsStrict()
     .then(() => console.log('✅ Payload relationships fixed successfully'))
     .catch((error) => {

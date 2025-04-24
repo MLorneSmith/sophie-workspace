@@ -102,9 +102,12 @@ async function fixDownloadsMetadata(): Promise<void> {
       `Found ${relationshipCount} relationships in the junction table`,
     );
 
-    // 4. Create a diagnostic view that makes it easier to check downloads by title
+    // 4. First drop the view if it exists to avoid column renaming issues
+    await client.query(`DROP VIEW IF EXISTS payload.downloads_diagnostic`);
+
+    // Then create a new diagnostic view that makes it easier to check downloads
     await client.query(`
-      CREATE OR REPLACE VIEW payload.downloads_diagnostic AS
+      CREATE VIEW payload.downloads_diagnostic AS
       SELECT 
         d.id,
         d.title,
