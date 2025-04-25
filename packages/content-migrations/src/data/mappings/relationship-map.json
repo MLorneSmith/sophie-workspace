@@ -1,0 +1,235 @@
+{
+  "collections": {
+    "uuid_table_monitor": {
+      "name": "uuid_table_monitor",
+      "relationships": []
+    },
+    "downloads": {
+      "name": "downloads",
+      "relationships": []
+    },
+    "posts_downloads": {
+      "name": "posts_downloads",
+      "relationships": []
+    },
+    "documentation_downloads": {
+      "name": "documentation_downloads",
+      "relationships": []
+    },
+    "surveys_downloads": {
+      "name": "surveys_downloads",
+      "relationships": []
+    },
+    "private_downloads": {
+      "name": "private_downloads",
+      "relationships": []
+    },
+    "courses": {
+      "name": "courses",
+      "relationships": []
+    },
+    "course_lessons": {
+      "name": "course_lessons",
+      "relationships": [
+        {
+          "sourceCollection": "course_lessons",
+          "sourceField": null,
+          "targetCollection": "unknown",
+          "relationType": "hasOne",
+          "relationshipPath": null,
+          "isRequired": false,
+          "relationshipTable": "course_lessons_rels"
+        }
+      ]
+    },
+    "course_quizzes": {
+      "name": "course_quizzes",
+      "relationships": [
+        {
+          "sourceCollection": "course_quizzes",
+          "sourceField": null,
+          "targetCollection": "unknown",
+          "relationType": "hasOne",
+          "relationshipPath": null,
+          "isRequired": false,
+          "relationshipTable": "course_quizzes_rels"
+        }
+      ]
+    },
+    "payload_migrations": {
+      "name": "payload_migrations",
+      "relationships": []
+    },
+    "media": {
+      "name": "media",
+      "relationships": []
+    },
+    "surveys": {
+      "name": "surveys",
+      "relationships": [
+        {
+          "sourceCollection": "surveys",
+          "sourceField": null,
+          "targetCollection": "unknown",
+          "relationType": "hasOne",
+          "relationshipPath": null,
+          "isRequired": false,
+          "relationshipTable": "surveys_rels"
+        }
+      ]
+    },
+    "quiz_questions_options": {
+      "name": "quiz_questions_options",
+      "relationships": []
+    },
+    "survey_questions": {
+      "name": "survey_questions",
+      "relationships": [
+        {
+          "sourceCollection": "survey_questions",
+          "sourceField": null,
+          "targetCollection": "unknown",
+          "relationType": "hasOne",
+          "relationshipPath": null,
+          "isRequired": false,
+          "relationshipTable": "survey_questions_rels"
+        }
+      ]
+    },
+    "survey_questions_options": {
+      "name": "survey_questions_options",
+      "relationships": []
+    },
+    "documentation_breadcrumbs": {
+      "name": "documentation_breadcrumbs",
+      "relationships": []
+    },
+    "documentation": {
+      "name": "documentation",
+      "relationships": [
+        {
+          "sourceCollection": "documentation",
+          "sourceField": null,
+          "targetCollection": "unknown",
+          "relationType": "hasOne",
+          "relationshipPath": null,
+          "isRequired": false,
+          "relationshipTable": "documentation_rels"
+        }
+      ]
+    },
+    "documentation_categories": {
+      "name": "documentation_categories",
+      "relationships": []
+    },
+    "posts": {
+      "name": "posts",
+      "relationships": [
+        {
+          "sourceCollection": "posts",
+          "sourceField": null,
+          "targetCollection": "unknown",
+          "relationType": "hasOne",
+          "relationshipPath": null,
+          "isRequired": false,
+          "relationshipTable": "posts_rels"
+        }
+      ]
+    },
+    "documentation_tags": {
+      "name": "documentation_tags",
+      "relationships": []
+    },
+    "posts_categories": {
+      "name": "posts_categories",
+      "relationships": []
+    },
+    "posts_tags": {
+      "name": "posts_tags",
+      "relationships": []
+    },
+    "users": {
+      "name": "users",
+      "relationships": []
+    },
+    "payload_preferences": {
+      "name": "payload_preferences",
+      "relationships": []
+    },
+    "private_categories": {
+      "name": "private_categories",
+      "relationships": []
+    },
+    "private_tags": {
+      "name": "private_tags",
+      "relationships": []
+    },
+    "private__downloads": {
+      "name": "private__downloads",
+      "relationships": []
+    },
+    "dynamic_uuid_tables": {
+      "name": "dynamic_uuid_tables",
+      "relationships": []
+    },
+    "documentation__downloads": {
+      "name": "documentation__downloads",
+      "relationships": []
+    },
+    "posts__downloads": {
+      "name": "posts__downloads",
+      "relationships": []
+    },
+    "surveys__downloads": {
+      "name": "surveys__downloads",
+      "relationships": []
+    },
+    "courses__downloads": {
+      "name": "courses__downloads",
+      "relationships": []
+    },
+    "course_lessons__downloads": {
+      "name": "course_lessons__downloads",
+      "relationships": []
+    },
+    "course_quizzes__downloads": {
+      "name": "course_quizzes__downloads",
+      "relationships": []
+    },
+    "quiz_questions": {
+      "name": "quiz_questions",
+      "relationships": []
+    },
+    "payload_locked_documents": {
+      "name": "payload_locked_documents",
+      "relationships": []
+    },
+    "course_lessons_downloads": {
+      "name": "course_lessons_downloads",
+      "relationships": []
+    },
+    "private": {
+      "name": "private",
+      "relationships": []
+    }
+  },
+  "relationshipTables": [
+    "posts_downloads_rels",
+    "documentation_downloads_rels",
+    "surveys_downloads_rels",
+    "private_downloads_rels",
+    "private_rels",
+    "surveys_rels",
+    "documentation_rels",
+    "posts_rels",
+    "survey_questions_rels",
+    "courses_rels",
+    "course_lessons_rels",
+    "course_quizzes_rels",
+    "quiz_questions_rels",
+    "payload_locked_documents_rels",
+    "payload_preferences_rels",
+    "downloads_rels"
+  ],
+  "uuidTables": []
+}
