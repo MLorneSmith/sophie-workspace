@@ -187,9 +187,9 @@ function Fix-UuidTables {
             Log-Message "Running additional UUID tables fix script to add non-critical columns..." "Yellow"
             Exec-Command -command "pnpm run fix:uuid-tables" -description "Fixing UUID tables"
 
-            # Verify the UUID tables
-            Log-Message "Verifying UUID tables..." "Yellow"
-            Exec-Command -command "pnpm run verify:uuid-tables" -description "Verifying UUID tables"
+            # Verify the UUID tables using improved implementation
+            Log-Message "Verifying UUID tables with enhanced detection..." "Yellow"
+            Exec-Command -command "pnpm run uuid:verify:fixed" -description "Verifying UUID tables with enhanced detection"
 
             # Additionally run the direct column fixing script for relationship columns
             Log-Message "Ensuring all relationship columns exist..." "Yellow"
@@ -419,15 +419,15 @@ function Verify-DatabaseState {
             Log-Success "Database schema verification passed"
         }
 
-        # Verify relationships using the unified relationship verification script
-        Log-Message "Verifying relationship consistency..." "Yellow"
-        $relationshipVerification = Exec-Command -command "pnpm run verify:relationships:unified" -description "Unified relationship verification" -captureOutput -continueOnError
+        # Verify relationships using the new hybrid relationship verification script
+        Log-Message "Verifying relationship consistency using hybrid verification..." "Yellow"
+        $relationshipVerification = Exec-Command -command "pnpm run verify:relationships:hybrid" -description "Hybrid relationship verification" -captureOutput -continueOnError
 
         if ($relationshipVerification -match "Error" -or $LASTEXITCODE -ne 0) {
-            Log-Warning "Relationship verification found issues that need manual inspection"
-            Log-Message "Falling back to basic relationship verification..." "Yellow"
+            Log-Warning "Hybrid relationship verification found issues that need manual inspection"
+            Log-Message "This is unusual as the hybrid verification should be robust. Falling back to standard verification..." "Yellow"
             
-            # Try the original verification as a fallback
+            # Try the standard verification as a fallback (should rarely be needed)
             $fallbackVerification = Exec-Command -command "pnpm run verify:relationships" -description "Standard relationship verification" -captureOutput -continueOnError
             
             if ($fallbackVerification -match "Error" -or $LASTEXITCODE -ne 0) {
@@ -439,7 +439,7 @@ function Verify-DatabaseState {
             
             $global:overallSuccess = $false
         } else {
-            Log-Success "Unified relationship verification passed"
+            Log-Success "Hybrid relationship verification passed"
         }
 
         # Verify all aspects of the database with dependencies

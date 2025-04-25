@@ -25,6 +25,7 @@ $ErrorActionPreference = "Stop"
 . "$PSScriptRoot\scripts\orchestration\phases\setup.ps1"
 . "$PSScriptRoot\scripts\orchestration\phases\processing.ps1"
 . "$PSScriptRoot\scripts\orchestration\phases\loading.ps1"
+. "$PSScriptRoot\scripts\orchestration\phases\fallbacks.ps1"
 
 # Global variables
 $script:overallSuccess = $true
@@ -39,26 +40,26 @@ try {
 
     # Phase 1: Setup
     # Reset Supabase database, run Web app migrations, reset Payload schema, run Payload migrations
-    Log-EnhancedPhase -PhaseName "SETUP PHASE" -PhaseNumber 1 -TotalPhases 4
+    Log-EnhancedPhase -PhaseName "SETUP PHASE" -PhaseNumber 1 -TotalPhases 5
     Invoke-SetupPhase
     Log-EnhancedPhaseCompletion -PhaseName "SETUP PHASE" -Success $true
 
     # Phase 2: Processing
     # Process raw data, generate SQL seed files, fix quiz ID consistency, fix references
-    Log-EnhancedPhase -PhaseName "PROCESSING PHASE" -PhaseNumber 2 -TotalPhases 4
+    Log-EnhancedPhase -PhaseName "PROCESSING PHASE" -PhaseNumber 2 -TotalPhases 5
     Invoke-ProcessingPhase -ForceRegenerate:$ForceRegenerate
     Log-EnhancedPhaseCompletion -PhaseName "PROCESSING PHASE" -Success $true
 
     # Phase 3: Loading
     # Run content migrations, import downloads, fix relationships, verify database
-    Log-EnhancedPhase -PhaseName "LOADING PHASE" -PhaseNumber 3 -TotalPhases 4
+    Log-EnhancedPhase -PhaseName "LOADING PHASE" -PhaseNumber 3 -TotalPhases 5
     Invoke-LoadingPhase -SkipVerification:$SkipVerification
     Log-EnhancedPhaseCompletion -PhaseName "LOADING PHASE" -Success $true
 
     # Phase 4: Post-Verification
     # Verify specific collections and content integrity
     if (-not $SkipVerification) {
-        Log-EnhancedPhase -PhaseName "POST-VERIFICATION PHASE" -PhaseNumber 4 -TotalPhases 4
+        Log-EnhancedPhase -PhaseName "POST-VERIFICATION PHASE" -PhaseNumber 4 -TotalPhases 5
 
         # Verify posts content integrity with dependency management
         Log-EnhancedStep -StepName "Verifying posts content integrity" -StepNumber 12 -TotalSteps 12
@@ -86,6 +87,39 @@ try {
 
         Log-EnhancedPhaseCompletion -PhaseName "POST-VERIFICATION PHASE" -Success $true
     }
+
+    # Phase 5: Fallbacks
+    # Implement enhanced fallback mechanisms for robust content access
+    Log-EnhancedPhase -PhaseName "FALLBACKS PHASE" -PhaseNumber 5 -TotalPhases 5
+    $fallbacksResult = Invoke-FallbacksPhase
+    
+    # Convert result to boolean to avoid type conversion errors
+    # Handle possible array or object returns and ensure proper boolean conversion
+    $fallbacksSuccess = $false
+    if ($fallbacksResult -is [System.Array]) {
+        # If result is an array, check if at least one element is true
+        $fallbacksSuccess = ($fallbacksResult | Where-Object {$_} | Measure-Object).Count -gt 0
+    } 
+    elseif ($fallbacksResult -is [System.Collections.Hashtable] -or $fallbacksResult -is [System.Collections.IDictionary]) {
+        # If result is a hashtable or dictionary, check if it has a success property
+        if ($fallbacksResult.ContainsKey('success')) {
+            $fallbacksSuccess = [bool]$fallbacksResult.success
+        } else {
+            # Otherwise, assume success if not empty
+            $fallbacksSuccess = $fallbacksResult.Count -gt 0
+        }
+    }
+    else {
+        # Direct boolean conversion for simple types
+        $fallbacksSuccess = [bool]$fallbacksResult
+    }
+    
+    if (-not $fallbacksSuccess) {
+        $script:overallSuccess = $false
+        Log-Warning "Fallbacks phase encountered issues, but migration will continue"
+    }
+    
+    Log-EnhancedPhaseCompletion -PhaseName "FALLBACKS PHASE" -Success $fallbacksSuccess
 
     # Final success/failure message with diagnostic summary
     Finalize-Timer
