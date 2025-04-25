@@ -79,12 +79,15 @@ async function JoinTeamAccountPage(props: JoinTeamAccountPageProps) {
   // we need to verify the user isn't already in the account
   // we do so by checking if the user can read the account
   // if the user can read the account, then they are already in the account
-  const account = await api
-    .getTeamAccountById(invitation.account.id)
-    .catch(() => undefined);
+  const { data: isAlreadyTeamMember } = await client.rpc(
+    'is_account_team_member',
+    {
+      target_account_id: invitation.account.id,
+    },
+  );
 
   // if the user is already in the account redirect to the home page
-  if (account) {
+  if (isAlreadyTeamMember) {
     const { getLogger } = await import('@kit/shared/logger');
     const logger = await getLogger();
 
