@@ -281,6 +281,18 @@ function Fix-References {
         Log-Message "Fixing quiz question references..." "Yellow"
         Exec-Command -command "pnpm run fix:questions-quiz-references" -description "Fixing quiz question references"
         
+        # Repair quiz-question relationships in the database
+        Log-Message "Repairing quiz-question relationships..." "Yellow"
+        Exec-Command -command "pnpm run quiz:repair" -description "Repairing quiz-question relationships"
+        
+        # Fix quiz array relationships to ensure consistency between arrays and relationship tables
+        Log-Message "Fixing quiz array relationships..." "Yellow"
+        Exec-Command -command "pnpm run fix:quiz-array-relationships" -description "Fixing quiz array relationships"
+        
+        # Verify quiz relationships
+        Log-Message "Verifying quiz relationships..." "Yellow"
+        Exec-Command -command "pnpm run verify:quiz-relationship-migration" -continueOnError -description "Verifying quiz relationships"
+        
         Log-Success "All references fixed successfully"
 
         Pop-Location

@@ -31,6 +31,7 @@ import * as migration_20250430_120000_fix_remaining_columns from './20250415_150
 import * as migration_20250430_130000_fix_downloads_thumbnail_url from './20250415_180000_fix_downloads_thumbnail_url'
 import * as migration_20250430_140000_uuid_consistency from './20250415_190000_uuid_consistency'
 import * as migration_20250424_120001_enhanced_uuid_monitoring from './20250424_120001_enhanced_uuid_monitoring'
+import * as migration_20250425_153000_minimal_quiz_fix from './20250425_153000_minimal_quiz_fix'
 // Don't import 20250424_130000_fix_uuid_dynamically_generated_tables directly to avoid circular dependencies
 
 export const migrations = [
@@ -178,5 +179,11 @@ export const migrations = [
       const migration = await import('./20250424_130000_fix_uuid_dynamically_generated_tables')
       return migration.down(args)
     },
+  },
+  // Add minimal quiz relationship fix migration
+  {
+    up: migration_20250425_153000_minimal_quiz_fix.up,
+    down: migration_20250425_153000_minimal_quiz_fix.down,
+    name: '20250425_153000_minimal_quiz_fix',
   },
 ]
