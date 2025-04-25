@@ -1,79 +1,83 @@
-# Repair Scripts
+# Payload CMS Repair Scripts
 
-This directory contains scripts that fix or repair database issues and other inconsistencies in the content migration system.
+This directory contains scripts to repair and fix various issues in the Payload CMS database and content structure.
 
-## Directory Structure
+## Database Repair Scripts
 
-The repair scripts are organized into the following subdirectories based on their primary function:
+### Enhanced UUID Table Management
 
-### Database
+Located in `database/` directory:
 
-Scripts in the `database/` directory handle database-level fixes and schema changes:
+- **enhanced-uuid-detection.ts**: Detects all UUID-pattern tables at runtime using regex
+- **enhanced-column-management.ts**: Adds missing columns to UUID tables
+- **fix-uuid-tables-enhanced.ts**: Main entry point that runs the complete UUID table fix
 
-- `fix-uuid-tables.ts` - Fixes UUID tables, ensuring all required columns exist
-- `fix-relationship-columns.ts` - Fixes relationship columns in various tables
-- `fix-relationships-direct.ts` - Applies direct relationship fixes using SQL
-- `fix-payload-relationships-strict.ts` - Ensures strict typing for Payload relationships
-
-### Quiz Management
-
-Scripts in the `quiz-management/` directory handle quiz-related fixes:
-
-- `fix-lesson-quiz-references.ts` - Fixes references between lessons and quizzes
-- `fix-lessons-quiz-references-sql.ts` - SQL-based fixes for lesson-quiz references
-- `fix-questions-quiz-references.ts` - Fixes references between quizzes and questions
-- `fix-quiz-id-consistency.ts` - Ensures quiz IDs are consistent across tables
-- `fix-quiz-question-relationships.ts` - Fixes quiz-question relationships
-- `fix-quiz-relationships-complete.ts` - Comprehensive fix for all quiz relationships
-- Other quiz-specific fix scripts
-
-### Media Downloads
-
-Scripts in the `media-downloads/` directory handle media and download-related fixes:
-
-- `fix-post-image-relationships.ts` - Fixes relationships between posts and images
-- `fix-downloads-relationships.ts` - Fixes download relationships
-- `fix-downloads-r2-integration.ts` - Ensures proper R2 bucket integration
-- `fix-downloads-metadata.ts` - Fixes metadata for downloads
-- And other download/media-related fixes
-
-### Content Format
-
-Scripts in the `content-format/` directory handle content formatting and conversion:
-
-- `fix-lexical-format.ts` - Fixes Lexical format issues
-- `fix-post-lexical-format.ts` - Fixes Lexical format in posts
-- `fix-all-lexical-fields.ts` - Comprehensive fix for all Lexical fields
-- `fix-todo-fields.ts` - Fixes todo fields in course lessons
-- `fix-lesson-todo-fields.ts` - Fixes todo fields specific to lessons
-
-### Survey Management
-
-Scripts in the `survey-management/` directory handle survey-related fixes:
-
-- `fix-survey-questions-population.ts` - Ensures survey questions are properly populated
-- `fix-survey-progress.ts` - Fixes survey progress tracking
-
-### Utilities
-
-Scripts in the `utilities/` directory handle miscellaneous utility functions:
-
-- `fix-edge-cases.ts` - Fixes various edge cases that don't fit elsewhere
-- `clear-lesson-content.ts` - Utility to clear lesson content fields
-
-## Usage
-
-Scripts are typically run via their corresponding npm scripts defined in `package.json`.
-
-For example:
+Run with:
 
 ```bash
-pnpm run fix:uuid-tables
-pnpm run fix:lesson-quiz-references
+pnpm --filter @kit/content-migrations fix:uuid-tables-enhanced
 ```
 
-Or directly via the content-migrations package:
+### Relationship Fallbacks
+
+Located in `relationships/` directory:
+
+- **create-relationship-fallbacks.ts**: Creates database views, functions, and JSON mapping files to provide multiple fallback mechanisms for relationship data
+
+Run with:
 
 ```bash
-pnpm --filter @kit/content-migrations run fix:uuid-tables
+pnpm --filter @kit/content-migrations create:relationship-fallbacks
 ```
+
+## Quiz Management Scripts
+
+### Comprehensive Quiz Fix
+
+Located in `quiz-management/core/` directory:
+
+- **comprehensive-quiz-fix.ts**: Fixes quiz-question relationships by ensuring consistent data in both quiz's questions array and relationship tables
+
+Run with:
+
+```bash
+pnpm --filter @kit/content-migrations fix:comprehensive-quiz-fix
+```
+
+## Integration with Content Migration
+
+To integrate these repairs into the content migration process, add the following to the appropriate phase in the `reset-and-migrate.ps1` script:
+
+```powershell
+# After schema creation
+Write-Output "Fixing UUID tables..."
+pnpm --filter @kit/content-migrations fix:uuid-tables-enhanced
+
+# After content loading
+Write-Output "Verifying and repairing relationship integrity..."
+pnpm --filter @kit/content-migrations fix:comprehensive-quiz-fix
+pnpm --filter @kit/content-migrations create:relationship-fallbacks
+```
+
+## Usage Notes
+
+- These scripts should be run in the order listed above
+- Scripts use transactions where possible to ensure database integrity
+- Each script provides detailed logging to help diagnose issues
+- All scripts are designed to be idempotent (can be run multiple times without side effects)
+
+## Troubleshooting
+
+If you encounter issues:
+
+1. Check the database connection in `.env.development`
+2. Verify that the Payload schema exists
+3. Check the migration logs for specific errors
+4. Run the `diagnostic:table-counts` script to get a quick overview of table status
+
+## Further Documentation
+
+For more details on the specific issues these scripts address and the implementation plan, see:
+
+- `z.plan/payload-issues/payload-content-display-fix-plan.md`
+- `z.plan/payload-issues/payload-content-fix-implementation-plan.md`

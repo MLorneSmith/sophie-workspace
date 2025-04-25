@@ -8,54 +8,59 @@
 . "$PSScriptRoot\..\utils\verification.ps1"
 . "$PSScriptRoot\..\utils\supabase.ps1"
 . "$PSScriptRoot\..\utils\verification-dependencies.ps1"
+. "$PSScriptRoot\relationship-repair.ps1"
+. "$PSScriptRoot\relationship-repair-simplified.ps1"
 
 # Function to run the loading phase
 function Invoke-LoadingPhase {
     param (
         [switch]$SkipVerification
     )
-    
+
     # Step 7: Run content migrations via Payload migrations
     Run-ContentMigrations
-    
+
     # Identify potentially parallelizable steps
     Log-Message "Identifying steps that could potentially be run in parallel..." "Cyan"
-    
+
     # Step 8.1: Run specialized blog post migration
     Migrate-BlogPosts
-    
+
     # Step 8.2: Run specialized private posts migration
     Migrate-PrivatePosts
 
     # Step 8.3: Fix UUID tables to ensure columns exist
     Fix-UuidTables
-    
+
     # Step 9: Import downloads from R2 bucket
     Import-Downloads
-    
+
     # Step 10: Fix relationships
     Fix-Relationships
-    
+
+    # Step 10.5: Fix S3 storage issues
+    Fix-S3StorageIssues
+
     # Step 11: Comprehensive database verification
     if (-not $SkipVerification) {
         Verify-DatabaseState
     }
-    
+
     # Step 12: Create certificates storage bucket in Supabase
     Create-CertificatesBucket
-    
+
     Log-Success "Loading phase completed successfully"
 }
 
 # Function to run content migrations
 function Run-ContentMigrations {
     Log-EnhancedStep "Running content migrations via Payload migrations" 7 12
-    
+
     try {
         # First ensure we're at the project root
         Set-ProjectRootLocation
         Log-Message "Changed to project root: $(Get-Location)" "Gray"
-        
+
         # Navigate to apps/payload directory using absolute path
         if (Set-ProjectLocation -RelativePath "apps/payload") {
             Log-Message "Changed directory to: $(Get-Location)" "Gray"
@@ -69,7 +74,7 @@ function Run-ContentMigrations {
 
         # Verify migrations were applied
         Log-Message "Verifying migrations..." "Yellow"
-        
+
         try {
             $migrationStatus = Exec-Command -command "pnpm migrate:status" -description "Verifying migration status" -captureOutput -continueOnError
         } catch {
@@ -80,24 +85,24 @@ function Run-ContentMigrations {
         # Return to project root before changing to content-migrations
         Pop-Location
         Log-Message "Returned to directory: $(Get-Location)" "Gray"
-        
+
         # Now go to content-migrations from the project root
         Set-ProjectRootLocation
         # Run verification scripts
         if (Set-ProjectLocation -RelativePath "packages/content-migrations") {
             Log-Message "Changed directory to: $(Get-Location)" "Gray"
-            
+
             Log-Message "Running verification with automatic dependency handling..." "Yellow"
-            
+
             # Use dependency-aware verification instead of direct verification
             $verificationResult = Run-VerificationWithDependencies -VerificationStep "verify:todo-fields" -Description "Verifying todo fields with dependencies" -ContinueOnError
-            
+
             if ($verificationResult) {
                 Log-Success "Todo fields verification passed with automatic dependency handling"
             } else {
                 Log-Warning "Todo fields verification found issues, these will be addressed in later steps"
             }
-            
+
             # Run basic schema verification (doesn't need special dependency handling)
             Log-Message "Verifying basic database structure..." "Yellow"
             $basicVerificationResult = Exec-Command -command "pnpm run sql:verify-schema" -description "Verifying database structure" -captureOutput -continueOnError
@@ -107,7 +112,7 @@ function Run-ContentMigrations {
         } else {
             Log-Warning "Could not find packages/content-migrations directory, skipping initial verification"
         }
-        
+
         Log-Success "Content migrations completed successfully"
         return $true
     }
@@ -120,27 +125,27 @@ function Run-ContentMigrations {
 # Function to import downloads from R2 bucket
 function Import-Downloads {
     Log-EnhancedStep "Importing downloads from R2 bucket" 9 12
-    
+
     try {
         # First ensure we're at the project root
         Set-ProjectRootLocation
         Log-Message "Changed to project root: $(Get-Location)" "Gray"
-        
+
         # Navigate to content-migrations directory using absolute path
         if (Set-ProjectLocation -RelativePath "packages/content-migrations") {
             Log-Message "Changed directory to: $(Get-Location)" "Gray"
         } else {
             throw "Could not find packages/content-migrations directory from project root"
         }
-        
+
         Log-Message "Importing downloads..." "Yellow"
         Exec-Command -command "pnpm run import:downloads" -description "Importing downloads from R2 bucket" -continueOnError
-        
+
         Log-Success "Downloads imported successfully"
-        
+
         Pop-Location
         Log-Message "Returned to directory: $(Get-Location)" "Gray"
-        
+
         return $true
     }
     catch {
@@ -152,40 +157,56 @@ function Import-Downloads {
 # Function to fix UUID tables
 function Fix-UuidTables {
     Log-EnhancedStep "Fixing UUID tables to ensure all required columns exist" 8.3 12
-    
+
     try {
         # First ensure we're at the project root
         Set-ProjectRootLocation
         Log-Message "Changed to project root: $(Get-Location)" "Gray"
-        
+
         # Navigate to content-migrations directory
         if (Set-ProjectLocation -RelativePath "packages/content-migrations") {
             Log-Message "Changed directory to: $(Get-Location)" "Gray"
-            
-            # Run the UUID tables fix script
-            Log-Message "Running UUID tables fix script to add private_id column..." "Yellow"
+
+            # Run the critical columns fix script first
+            Log-Message "Running critical columns fix script to ensure all UUID tables have required columns..." "Yellow"
+            Exec-Command -command "pnpm run uuid:fix-critical-columns" -description "Fixing critical columns in UUID tables"
+
+            # First ensure environment variables are correctly set up
+            Log-Message "Ensuring environment variables are correctly set up..." "Yellow"
+            Exec-Command -command "pnpm --filter @kit/content-migrations run uuid:ensure-env" -description "Ensuring environment variables"
+
+            # Run the new safe version of the critical columns fix script
+            Log-Message "Running critical columns fix script to ensure all required columns exist..." "Yellow"
+            Exec-Command -command "pnpm --filter @kit/content-migrations run uuid:fix-critical-columns-safe" -description "Fixing critical columns in UUID tables"
+
+            # Verify critical columns were added properly
+            Log-Message "Verifying critical columns..." "Yellow"
+            Exec-Command -command "pnpm --filter @kit/content-migrations run uuid:verify-critical-columns" -description "Verifying critical columns"
+
+            # Run the original UUID tables fix script for backward compatibility
+            Log-Message "Running additional UUID tables fix script to add non-critical columns..." "Yellow"
             Exec-Command -command "pnpm run fix:uuid-tables" -description "Fixing UUID tables"
 
             # Verify the UUID tables
             Log-Message "Verifying UUID tables..." "Yellow"
             Exec-Command -command "pnpm run verify:uuid-tables" -description "Verifying UUID tables"
-            
-            # Additionally run the direct column fixing script
+
+            # Additionally run the direct column fixing script for relationship columns
             Log-Message "Ensuring all relationship columns exist..." "Yellow"
             Exec-Command -command "pnpm --filter @kit/content-migrations run repair:relationship-columns" -description "Fixing relationship columns"
-            
+
             # Verify columns were added
             Log-Message "Verifying columns were added..." "Yellow"
             Exec-Command -command "pnpm --filter @kit/content-migrations run verify:relationship-columns" -description "Verifying relationship columns"
-            
+
             Log-Success "UUID tables fixed and verified successfully"
-            
+
             Pop-Location
             Log-Message "Returned to directory: $(Get-Location)" "Gray"
         } else {
             Log-Warning "Could not find packages/content-migrations directory, skipping UUID table fix"
         }
-        
+
         return $true
     }
     catch {
@@ -198,12 +219,12 @@ function Fix-UuidTables {
 # Function to fix relationships
 function Fix-Relationships {
     Log-EnhancedStep "Fixing relationships" 10 12
-    
+
     try {
         # First ensure we're at the project root
         Set-ProjectRootLocation
         Log-Message "Changed to project root: $(Get-Location)" "Gray"
-        
+
         # Navigate to content-migrations directory using absolute path
         if (Set-ProjectLocation -RelativePath "packages/content-migrations") {
             Log-Message "Changed directory to: $(Get-Location)" "Gray"
@@ -218,7 +239,7 @@ function Fix-Relationships {
         # Run Payload CMS relationship fix with strict typing (highest priority)
         Log-Message "Running Payload CMS relationship fix with strict typing..." "Yellow"
         Exec-Command -command "pnpm run fix:payload-relationships-strict" -description "Fixing Payload relationships with strict typing" -continueOnError
-        
+
         # Run the consolidated quizzes relationship fix
         Log-Message "Running consolidated quiz relationship fix..." "Yellow"
         Exec-Command -command "pnpm run fix:direct-quiz-fix" -description "Fixing all quiz relationships" -continueOnError
@@ -230,7 +251,7 @@ function Fix-Relationships {
         # Apply direct SQL fix for all quiz relationship issues
         Log-Message "Applying direct SQL fix for quiz relationships..." "Yellow"
         Exec-Command -command "pnpm run fix:direct-quiz-fix" -description "Applying direct quiz relationships fix" -continueOnError
-        
+
         # Run comprehensive lesson-quiz relationship fixes
         Log-Message "Running comprehensive lesson-quiz relationship fixes..." "Yellow"
         Exec-Command -command "pnpm run fix:lesson-quiz-relationships-comprehensive" -description "Fixing all lesson-quiz relationships" -continueOnError
@@ -238,7 +259,7 @@ function Fix-Relationships {
         # Run unidirectional quiz-question relationship fix (new approach)
         Log-Message "Running unidirectional quiz-question relationship fix..." "Yellow"
         Exec-Command -command "pnpm run fix:unidirectional-quiz-questions" -description "Fixing all quiz-question relationships with unidirectional model" -continueOnError
-        
+
         # Verify unidirectional quiz-question relationships
         Log-Message "Verifying unidirectional quiz-question relationships..." "Yellow"
         Exec-Command -command "pnpm run verify:unidirectional-quiz-questions" -description "Verifying unidirectional quiz-question relationships" -continueOnError
@@ -272,35 +293,35 @@ function Fix-Relationships {
         # Fix Lexical format across all collections (comprehensive fix)
         Log-Message "Fixing all Lexical fields across all collections..." "Yellow"
         Exec-Command -command "pnpm run fix:all-lexical-fields" -description "Fixing all Lexical fields" -continueOnError
-        
+
         # Fix bunny_video_id fields in course_lessons table
         Log-Message "Fixing bunny_video_id fields in course_lessons table..." "Yellow"
         Exec-Command -command "pnpm run fix:bunny-video-ids" -description "Fixing bunny video IDs" -continueOnError
-        
+
         # Fix post image relationships
         Log-Message "Fixing post image relationships..." "Yellow"
         Exec-Command -command "pnpm run fix:post-image-relationships" -description "Fixing post image relationships" -continueOnError
-        
+
         # Fix downloads relationships and update URLs to use custom domain
         Log-Message "Fixing downloads relationships and URLs..." "Yellow"
         Exec-Command -command "pnpm run fix:downloads-relationships" -description "Fixing downloads relationships and URLs" -continueOnError
-        
+
         # Fix downloads R2 integration with custom domain
         Log-Message "Fixing downloads R2 integration..." "Yellow"
         Exec-Command -command "pnpm run fix:downloads-r2-integration" -description "Fixing downloads R2 integration" -continueOnError
-        
+
         # Fix downloads metadata with correct column names and thumbnails
         Log-Message "Fixing downloads metadata..." "Yellow"
         Exec-Command -command "pnpm run fix:downloads-metadata" -description "Fixing downloads metadata" -continueOnError
-        
+
         # Fix download R2 URLs with proper CDN links
         Log-Message "Fixing download R2 URLs..." "Yellow"
         Exec-Command -command "pnpm run fix:download-r2-urls" -description "Fixing download R2 URLs" -continueOnError
-        
+
         # Fix download R2 mappings for placeholder files
         Log-Message "Fixing download R2 mappings..." "Yellow"
         Exec-Command -command "pnpm run fix:download-r2-mappings" -description "Fixing download R2 mappings" -continueOnError
-        
+
         # Clear lesson content to fix template tag rendering issues
         Log-Message "Clearing lesson content fields to fix template tag rendering..." "Yellow"
         Exec-Command -command "pnpm run clear:lesson-content" -description "Clearing lesson content fields" -continueOnError
@@ -308,15 +329,38 @@ function Fix-Relationships {
         # Apply the consolidated course-quiz relationships fix
         Log-Message "Applying consolidated course-quiz relationship fix..." "Yellow"
         Exec-Command -command "pnpm run fix:course-quiz-relationships" -description "Fixing course-quiz relationships" -continueOnError
-        
+
         # Run the consolidated quiz course ID fix
         Log-Message "Running consolidated quiz course ID fix..." "Yellow"
         Exec-Command -command "pnpm run fix:quiz-course-ids" -description "Fixing quiz course IDs" -continueOnError
 
+        # Run comprehensive relationship repair system (Phase 2)
+        Log-Message "Running comprehensive relationship repair system..." "Yellow"
+        Log-Message "This includes detecting, repairing, and verifying all relationships in the database" "Yellow"
+        
+        # First try the standard relationship repair
+        $standardRepairResult = Invoke-RelationshipRepair -Verbose -ContinueOnError
+        
+        # If the standard repair fails, try the simplified version
+        if (-not $standardRepairResult) {
+            Log-Warning "Standard relationship repair encountered issues. Trying simplified version..."
+            
+            # Call the simplified relationship repair function
+            $simplifiedRepairResult = Invoke-SimplifiedRelationshipRepair -Verbose
+            
+            if ($simplifiedRepairResult) {
+                Log-Success "Simplified relationship repair completed successfully!"
+            } else {
+                Log-Warning "Simplified relationship repair also encountered issues. Please check the logs."
+            }
+        } else {
+            Log-Success "Standard relationship repair completed successfully!"
+        }
+
         # Run final verification
         Log-Message "Running final verification..." "Yellow"
         $finalVerification = Exec-Command -command "pnpm run verify:all" -description "Final verification" -captureOutput -continueOnError
-        
+
         if ($finalVerification -match "Warning" -or $finalVerification -match "Error") {
             Log-Warning "Some issues could not be fixed automatically"
         } else {
@@ -325,7 +369,7 @@ function Fix-Relationships {
 
         Pop-Location
         Log-Message "Returned to directory: $(Get-Location)" "Gray"
-        
+
         return $true
     }
     catch {
@@ -337,12 +381,12 @@ function Fix-Relationships {
 # Function to verify database state
 function Verify-DatabaseState {
     Log-EnhancedStep "Performing comprehensive database verification" 11 12
-    
+
     try {
         # First ensure we're at the project root
         Set-ProjectRootLocation
         Log-Message "Changed to project root: $(Get-Location)" "Gray"
-        
+
         # Navigate to content-migrations directory using absolute path
         if (Set-ProjectLocation -RelativePath "packages/content-migrations") {
             Log-Message "Changed directory to: $(Get-Location)" "Gray"
@@ -352,43 +396,66 @@ function Verify-DatabaseState {
 
         # Check for required environment variables
         Check-DatabaseEnvironment
-        
+
         # Use dependency-aware verification for the comprehensive verification
         Log-Message "Running comprehensive verification with dependency handling..." "Yellow"
         $todoVerification = Run-VerificationWithDependencies -VerificationStep "verify:todo-fields" -Description "Verifying todo fields" -ContinueOnError
-        
+
         if ($todoVerification) {
             Log-Success "Todo fields verification passed with dependency handling"
         } else {
             Log-Warning "Todo fields verification found issues even after dependencies"
             $global:overallSuccess = $false
         }
-        
+
         # Verify database schema using the Node.js utility
         Log-Message "Verifying database schema..." "Yellow"
         $finalVerification = Exec-Command -command "pnpm run sql:verify-schema" -description "Final database verification" -captureOutput -continueOnError
-        
+
         if ($finalVerification -match "Error" -or $LASTEXITCODE -ne 0) {
             Log-Error "Final database verification failed"
             $global:overallSuccess = $false
         } else {
             Log-Success "Database schema verification passed"
         }
-        
+
+        # Verify relationships using the unified relationship verification script
+        Log-Message "Verifying relationship consistency..." "Yellow"
+        $relationshipVerification = Exec-Command -command "pnpm run verify:relationships:unified" -description "Unified relationship verification" -captureOutput -continueOnError
+
+        if ($relationshipVerification -match "Error" -or $LASTEXITCODE -ne 0) {
+            Log-Warning "Relationship verification found issues that need manual inspection"
+            Log-Message "Falling back to basic relationship verification..." "Yellow"
+            
+            # Try the original verification as a fallback
+            $fallbackVerification = Exec-Command -command "pnpm run verify:relationships" -description "Standard relationship verification" -captureOutput -continueOnError
+            
+            if ($fallbackVerification -match "Error" -or $LASTEXITCODE -ne 0) {
+                Log-Warning "All relationship verification attempts failed"
+                Log-Message "This is non-critical, continuing with warnings" "Yellow"
+            } else {
+                Log-Success "Standard relationship verification passed"
+            }
+            
+            $global:overallSuccess = $false
+        } else {
+            Log-Success "Unified relationship verification passed"
+        }
+
         # Verify all aspects of the database with dependencies
         Log-Message "Running final comprehensive verification..." "Yellow"
         $comprehensiveVerification = Run-VerificationWithDependencies -VerificationStep "verify:all" -Description "Final comprehensive verification" -ContinueOnError
-        
+
         if ($comprehensiveVerification) {
             Log-Success "Comprehensive verification passed with dependency handling"
         } else {
             Log-Warning "Comprehensive verification found issues that need manual inspection"
             $global:overallSuccess = $false
         }
-        
+
         Pop-Location
         Log-Message "Returned to directory: $(Get-Location)" "Gray"
-        
+
         Log-Success "Database verification completed successfully"
         return $true
     }
@@ -403,11 +470,11 @@ function Verify-DatabaseState {
 # This step is now handled by the migration file: apps/web/supabase/migrations/20250407140654_create_certificates_bucket.sql
 function Create-CertificatesBucket {
     Log-EnhancedStep "Creating certificates storage bucket in Supabase" 12 12
-    
+
     try {
         # The bucket is created by the Supabase migration process
         # No additional actions are needed here as the migration file handles it
-        
+
         Log-Message "Certificates bucket is created during migration with direct SQL INSERT" "Gray"
         Log-Success "Database migrations successfully handle certificates bucket creation"
         return $true
@@ -423,20 +490,20 @@ function Create-CertificatesBucket {
 # Function to run private posts migration with full content
 function Migrate-PrivatePosts {
     Log-EnhancedStep "Migrating private posts with complete content" 8.2 12
-    
+
     try {
         # First ensure we're at the project root
         Set-ProjectRootLocation
         Log-Message "Changed to project root: $(Get-Location)" "Gray"
-        
+
         # Check if private posts exist in the database
         if (Set-ProjectLocation -RelativePath "packages/content-migrations") {
             Log-Message "Changed directory to: $(Get-Location)" "Gray"
-            
+
             # Run the direct migration script for private posts
             Log-Message "Running specialized private posts migration script..." "Yellow"
             $privateOutput = Exec-Command -command "pnpm run migrate:private-direct" -description "Migrating private posts with full content" -captureOutput -continueOnError
-            
+
             # Check for enhanced status messages
             if ($privateOutput -match "No new private posts were migrated. All (\d+) private posts already exist") {
                 Log-Message "Private posts are up to date. All $($matches[1]) private posts already exist in the database." "Yellow"
@@ -451,20 +518,20 @@ function Migrate-PrivatePosts {
                 if ($result -match "count: (\d+)" -or $result -match "count:(\d+)" -or $result -match "rows: (\d+)") {
                     $postCount = [int]($Matches[1])
                 }
-                
+
                 if ($postCount -gt 0) {
                     Log-Success "Found $postCount private posts in the database"
                 } else {
                     Log-Warning "No private posts found in the database. Check the private posts migration script."
                 }
             }
-            
+
             Pop-Location
             Log-Message "Returned to directory: $(Get-Location)" "Gray"
         } else {
             Log-Warning "Could not find packages/content-migrations directory, skipping private posts migration"
         }
-        
+
         return $true
     }
     catch {
@@ -477,20 +544,20 @@ function Migrate-PrivatePosts {
 # Function to run blog posts migration with full content
 function Migrate-BlogPosts {
     Log-EnhancedStep "Migrating blog posts with complete content" 8.1 12
-    
+
     try {
         # First ensure we're at the project root
         Set-ProjectRootLocation
         Log-Message "Changed to project root: $(Get-Location)" "Gray"
-        
+
         # Check if posts exist in the database
         if (Set-ProjectLocation -RelativePath "packages/content-migrations") {
             Log-Message "Changed directory to: $(Get-Location)" "Gray"
-            
+
                 # Run the direct migration script for posts regardless of existing count
                 Log-Message "Running specialized post migration script..." "Yellow"
                 $postsOutput = Exec-Command -command "pnpm run migrate:posts-direct" -description "Migrating blog posts with full content" -captureOutput -continueOnError
-                
+
                 # Check for enhanced status messages
                 if ($postsOutput -match "No new posts were migrated. All (\d+) posts already exist") {
                     Log-Message "Blog posts are up to date. All $($matches[1]) posts already exist in the database." "Yellow"
@@ -505,25 +572,71 @@ function Migrate-BlogPosts {
                     if ($result -match "count: (\d+)" -or $result -match "count:(\d+)" -or $result -match "rows: (\d+)") {
                         $postCount = [int]($Matches[1])
                     }
-                    
+
                     if ($postCount -gt 0) {
                         Log-Success "Found $postCount blog posts in the database"
                     } else {
                         Log-Warning "No posts found in the database. Check the post migration script."
                     }
                 }
-            
+
             Pop-Location
             Log-Message "Returned to directory: $(Get-Location)" "Gray"
         } else {
             Log-Warning "Could not find packages/content-migrations directory, skipping blog posts migration"
         }
-        
+
         return $true
     }
     catch {
         Log-Error "Failed to migrate blog posts: $_"
         Log-Warning "This is non-critical, continuing"
+        return $false
+    }
+}
+
+# Function to fix S3 storage issues
+function Fix-S3StorageIssues {
+    Log-EnhancedStep "Fixing S3 storage issues" 10.5 12
+
+    try {
+        # First ensure we're at the project root
+        Set-ProjectRootLocation
+        Log-Message "Changed to project root: $(Get-Location)" "Gray"
+
+        # Navigate to content-migrations directory using absolute path
+        if (Set-ProjectLocation -RelativePath "packages/content-migrations") {
+            Log-Message "Changed directory to: $(Get-Location)" "Gray"
+        } else {
+            throw "Could not find packages/content-migrations directory from project root"
+        }
+
+        # Step 1: Create fallback files
+        Log-Message "Creating fallback files for S3 storage..." "Yellow"
+        Exec-Command -command "pnpm --filter @kit/content-migrations run create:fallback-files" -description "Creating fallback files" -continueOnError
+
+        # Step 2: Set up S3 fallback middleware
+        Log-Message "Setting up S3 fallback middleware..." "Yellow"
+        Exec-Command -command "pnpm --filter @kit/content-migrations run setup:s3-fallback-middleware" -description "Setting up S3 fallback middleware" -continueOnError
+
+        # Step 3: Fix S3 references in database
+        Log-Message "Fixing S3 references in database..." "Yellow"
+        Exec-Command -command "pnpm --filter @kit/content-migrations run fix:s3-references" -description "Fixing S3 references" -continueOnError
+
+        # Step 4: Create thumbnail placeholders
+        Log-Message "Creating thumbnail placeholders..." "Yellow"
+        Exec-Command -command "pnpm --filter @kit/content-migrations run create:thumbnail-placeholders" -description "Creating thumbnail placeholders" -continueOnError
+
+        Log-Success "S3 storage issues fixed successfully"
+
+        Pop-Location
+        Log-Message "Returned to directory: $(Get-Location)" "Gray"
+
+        return $true
+    }
+    catch {
+        Log-Error "Failed to fix S3 storage issues: $_"
+        Log-Warning "This error might affect media display in the UI, but continuing"
         return $false
     }
 }

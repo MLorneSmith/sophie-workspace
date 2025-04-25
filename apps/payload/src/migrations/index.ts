@@ -1,3 +1,6 @@
+// Import types from @payloadcms/db-postgres
+import { MigrateUpArgs, MigrateDownArgs } from '@payloadcms/db-postgres'
+
 // Import archived migrations (commented out but preserved for reference)
 // import * as migration_20250327_152618_initial_schema from './archived/20250327_152618_initial_schema'
 // ... other archived migrations
@@ -27,6 +30,8 @@ import * as migration_20250430_110000_fix_missing_columns from './20250415_14000
 import * as migration_20250430_120000_fix_remaining_columns from './20250415_150000_fix_remaining_columns'
 import * as migration_20250430_130000_fix_downloads_thumbnail_url from './20250415_180000_fix_downloads_thumbnail_url'
 import * as migration_20250430_140000_uuid_consistency from './20250415_190000_uuid_consistency'
+import * as migration_20250424_120001_enhanced_uuid_monitoring from './20250424_120001_enhanced_uuid_monitoring'
+// Don't import 20250424_130000_fix_uuid_dynamically_generated_tables directly to avoid circular dependencies
 
 export const migrations = [
   // Add schema creation migration first
@@ -154,5 +159,24 @@ export const migrations = [
     up: migration_20250430_140000_uuid_consistency.up,
     down: migration_20250430_140000_uuid_consistency.down,
     name: '20250430_140000_uuid_consistency',
+  },
+  // Add enhanced UUID monitoring migration
+  {
+    up: migration_20250424_120001_enhanced_uuid_monitoring.up,
+    down: migration_20250424_120001_enhanced_uuid_monitoring.down,
+    name: '20250424_120001_enhanced_uuid_monitoring',
+  },
+  // Add dynamic UUID tables fix migration
+  {
+    name: '20250424_130000_fix_uuid_dynamically_generated_tables',
+    // Use a dynamic import to avoid circular dependencies
+    up: async function (args: MigrateUpArgs) {
+      const migration = await import('./20250424_130000_fix_uuid_dynamically_generated_tables')
+      return migration.up(args)
+    },
+    down: async function (args: MigrateDownArgs) {
+      const migration = await import('./20250424_130000_fix_uuid_dynamically_generated_tables')
+      return migration.down(args)
+    },
   },
 ]

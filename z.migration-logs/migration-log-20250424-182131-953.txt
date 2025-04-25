@@ -1,12 +1,12 @@
 ﻿**********************
 Windows PowerShell transcript start
-Start time: 20250424104307
+Start time: 20250424182131
 Username: SLIDEHEROES_DEN\msmit
 RunAs User: SLIDEHEROES_DEN\msmit
 Configuration Name: 
 Machine: SLIDEHEROES_DEN (Microsoft Windows NT 10.0.26100.0)
 Host Application: C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -noexit -command try { . "c:\Users\msmit\AppData\Local\Programs\Microsoft VS Code\resources\app\out\vs\workbench\contrib\terminal\common\scripts\shellIntegration.ps1" } catch {}
-Process ID: 10328
+Process ID: 14520
 PSVersion: 5.1.26100.3624
 PSEdition: Desktop
 PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.3624
@@ -16,16 +16,16 @@ WSManStackVersion: 3.0
 PSRemotingProtocolVersion: 2.3
 SerializationVersion: 1.1.0.1
 **********************
-Transcript started, output file is D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-log-20250424-104307-857.txt
-Starting migration process at 04/24/2025 10:43:07
-Detailed logs will be saved to: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250424-104307-857.txt
+Transcript started, output file is D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-log-20250424-182131-953.txt
+Starting migration process at 04/24/2025 18:21:31
+Detailed logs will be saved to: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250424-182131-953.txt
 
 Name                           Value
 ----                           -----
-Timestamp                      20250424-104307-857
-LogsDirectory                  D:\SlideHeroes\App\repos\2025slideheroes\z.migration...
-DetailedLogFile                D:\SlideHeroes\App\repos\2025slideheroes\z.migration...
-LogFile                        D:\SlideHeroes\App\repos\2025slideheroes\z.migration...
+Timestamp                      20250424-182131-953
+LogsDirectory                  D:\SlideHeroes\App\repos\2025slideheroes\z.migrati...
+DetailedLogFile                D:\SlideHeroes\App\repos\2025slideheroes\z.migrati...
+LogFile                        D:\SlideHeroes\App\repos\2025slideheroes\z.migrati...
 Performance timing initialized
 Checking PNPM configuration...
 True
@@ -35,7 +35,7 @@ Yarn configuration in root directory is already up to date
 True
 
 ================================================================================
-PHASE 1/4: SETUP PHASE
+PHASE 1/5: SETUP PHASE
 ================================================================================
 
 ================================================================================
@@ -100,17 +100,21 @@ Temporarily changed to directory: D:\SlideHeroes\App\repos\2025slideheroes
 EXECUTING: pnpm --filter @kit/content-migrations run sql:add-relationship-id-columns
 DESCRIPTION: Adding relationship ID columns to locked documents tables
 
-Managing UUID tables with consolidated approach...
-Running consolidated UUID table manager...
-EXECUTING: pnpm run consolidated:uuid-management
-DESCRIPTION: Running consolidated UUID table manager
+Managing UUID tables with enhanced approach...
+Running enhanced UUID table management...
+EXECUTING: pnpm run uuid:comprehensive
+DESCRIPTION: Running enhanced UUID table management
 
-âœ… UUID tables managed successfully with consolidated approach
+âœ… UUID tables managed successfully with enhanced approach
 Verifying UUID tables and their required columns...
-EXECUTING: pnpm exec tsx src/scripts/verification/verify-uuid-tables.ts
+EXECUTING: pnpm run uuid:verify
 DESCRIPTION: Running UUID tables verification
 
-âœ… UUID tables verified successfully
+ERROR: Command failed with exit code: 1
+ERROR: Error in step 'Running UUID tables verification': Command failed with exit code: 1
+PS>TerminatingError(): "Command failed with exit code: 1"
+WARNING: UUID tables verification encountered issues, but continuing: Command failed with exit code: 1
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes
 Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\apps\payload
 Verifying migration status...
 EXECUTING: pnpm migrate:status
@@ -141,10 +145,10 @@ Table 'payload.survey_questions' exists
 âœ… Payload migrations completed successfully
 True
 âœ… Setup phase completed successfully
-âœ… SETUP PHASE phase completed successfully (59.9s)
+âœ… SETUP PHASE phase completed successfully (60.09s)
 
 ================================================================================
-PHASE 2/4: PROCESSING PHASE
+PHASE 2/5: PROCESSING PHASE
 ================================================================================
 
 
@@ -176,7 +180,7 @@ Validating HTML parsing results...
 âœ… Updated YAML with HTML todo content
 Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
 âœ… Raw data processing completed
-âœ… Step 4 completed successfully (1.48s)
+âœ… Step 4 completed successfully (1.49s)
 True
 
 +
@@ -207,7 +211,7 @@ DESCRIPTION: Fixing quiz ID consistency
 
 âœ… SQL seed files generated and ID consistency fixed successfully
 Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
-âœ… Step 5 completed successfully (1.69s)
+âœ… Step 5 completed successfully (1.7s)
 True
 
 +
@@ -241,10 +245,10 @@ Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content
 âœ… Step 6 completed successfully (1s)
 True
 âœ… Processing phase completed successfully
-âœ… PROCESSING PHASE phase completed successfully (4.28s)
+âœ… PROCESSING PHASE phase completed successfully (4.3s)
 
 ================================================================================
-PHASE 3/4: LOADING PHASE
+PHASE 3/5: LOADING PHASE
 ================================================================================
 
 
@@ -358,7 +362,23 @@ True
 True
 Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
 Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
-Running UUID tables fix script to add private_id column...
+Running critical columns fix script to ensure all UUID tables have required columns...
+EXECUTING: pnpm run uuid:fix-critical-columns
+DESCRIPTION: Fixing critical columns in UUID tables
+
+Ensuring environment variables are correctly set up...
+EXECUTING: pnpm --filter @kit/content-migrations run uuid:ensure-env
+DESCRIPTION: Ensuring environment variables
+
+Running critical columns fix script to ensure all required columns exist...
+EXECUTING: pnpm --filter @kit/content-migrations run uuid:fix-critical-columns-safe
+DESCRIPTION: Fixing critical columns in UUID tables
+
+Verifying critical columns...
+EXECUTING: pnpm --filter @kit/content-migrations run uuid:verify-critical-columns
+DESCRIPTION: Verifying critical columns
+
+Running additional UUID tables fix script to add non-critical columns...
 EXECUTING: pnpm run fix:uuid-tables
 DESCRIPTION: Fixing UUID tables
 
@@ -514,10 +534,55 @@ Running consolidated quiz course ID fix...
 EXECUTING: pnpm run fix:quiz-course-ids
 DESCRIPTION: Fixing quiz course IDs
 
+Running comprehensive relationship repair system...
+This includes detecting, repairing, and verifying all relationships in the database
+Starting comprehensive relationship repair phase...
+Running relationship repair with arguments:
+EXECUTING: pnpm --filter @kit/content-migrations run repair:relationships
+DESCRIPTION: Running relationship repair
+Verifying relationship consistency...
+EXECUTING: pnpm --filter @kit/content-migrations run verify:relationships
+DESCRIPTION: Verifying relationships
+âœ… Relationship repair completed successfully!
+âœ… Standard relationship repair completed successfully!
 Running final verification...
 EXECUTING: pnpm run verify:all
 DESCRIPTION: Final verification
 âœ… All relationship issues have been fixed
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+True
+
++
+------------------------------------------------------------------------------
++
+|
+ [10/12] Fixing S3 storage issues
+
+|
++
+------------------------------------------------------------------------------
++
+Migration Progress: [==========================================        ] 83% (10/12)
+True
+Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+Creating fallback files for S3 storage...
+EXECUTING: pnpm --filter @kit/content-migrations run create:fallback-files
+DESCRIPTION: Creating fallback files
+
+Setting up S3 fallback middleware...
+EXECUTING: pnpm --filter @kit/content-migrations run setup:s3-fallback-middleware
+DESCRIPTION: Setting up S3 fallback middleware
+
+Fixing S3 references in database...
+EXECUTING: pnpm --filter @kit/content-migrations run fix:s3-references
+DESCRIPTION: Fixing S3 references
+
+Creating thumbnail placeholders...
+EXECUTING: pnpm --filter @kit/content-migrations run create:thumbnail-placeholders
+DESCRIPTION: Creating thumbnail placeholders
+
+âœ… S3 storage issues fixed successfully
 Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
 True
 
@@ -536,6 +601,9 @@ True
 Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
 Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
 Checking database environment settings...
+Loading environment variables from .env.development
+Set DATABASE_URL from DATABASE_URI in .env.development file
+Set DATABASE_URL from .env.development file
 âœ… Database environment settings are properly configured
 True
 Running comprehensive verification with dependency handling...
@@ -552,6 +620,18 @@ Verifying database schema...
 EXECUTING: pnpm run sql:verify-schema
 DESCRIPTION: Final database verification
 âœ… Database schema verification passed
+Verifying relationship consistency...
+EXECUTING: pnpm run verify:relationships:unified
+DESCRIPTION: Unified relationship verification
+PS>TerminatingError(pnpm.CMD): "The running command stopped because the preference variable "ErrorActionPreference" or common parameter is set to Stop: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations\src\scripts\verification\relationships\unified-verification.ts:10"
+>> TerminatingError(pnpm.CMD): "The running command stopped because the preference variable "ErrorActionPreference" or common parameter is set to Stop: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations\src\scripts\verification\relationships\unified-verification.ts:10"
+ERROR: Error in step 'Unified relationship verification': D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations\src\scripts\verification\relationships\unified-verification.ts:10
+WARNING: Continuing despite error due to continueOnError flag
+WARNING: Relationship verification found issues that need manual inspection
+Falling back to basic relationship verification...
+EXECUTING: pnpm run verify:relationships
+DESCRIPTION: Standard relationship verification
+âœ… Standard relationship verification passed
 Running final comprehensive verification...
 Running verification step 'verify:all' with automatic dependency handling...
 Ensuring dependencies for verification step 'verify:all' are run...
@@ -587,10 +667,10 @@ Certificates bucket is created during migration with direct SQL INSERT
 âœ… Database migrations successfully handle certificates bucket creation
 True
 âœ… Loading phase completed successfully
-âœ… LOADING PHASE phase completed successfully (32.63s)
+âœ… LOADING PHASE phase completed successfully (41.38s)
 
 ================================================================================
-PHASE 4/4: POST-VERIFICATION PHASE
+PHASE 4/5: POST-VERIFICATION PHASE
 ================================================================================
 
 
@@ -604,127 +684,13 @@ PHASE 4/4: POST-VERIFICATION PHASE
 +
 ------------------------------------------------------------------------------
 +
-Migration Progress: [================================================== ] 100% (12/12)
-
-True
-Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
-Running post content verification with dependency handling...
-Running verification step 'verify:post-content' with automatic dependency handling...
-Ensuring dependencies for verification step 'verify:post-content' are run...
-Running dependency: fix:post-lexical-format
-EXECUTING: pnpm run fix:post-lexical-format
-DESCRIPTION: Running dependency: fix:post-lexical-format
-Registered dependency: fix:post-lexical-format (called by: Unknown, success: True)
-âœ… Dependency 'fix:post-lexical-format' completed successfully (called by: Unknown)
-Running dependency: fix:all-lexical-fields
-EXECUTING: pnpm run fix:all-lexical-fields
-DESCRIPTION: Running dependency: fix:all-lexical-fields
-Registered dependency: fix:all-lexical-fields (called by: Unknown, success: True)
-âœ… Dependency 'fix:all-lexical-fields' completed successfully (called by: Unknown)
-Running dependency: fix:post-image-relationships
-EXECUTING: pnpm run fix:post-image-relationships
-DESCRIPTION: Running dependency: fix:post-image-relationships
-Registered dependency: fix:post-image-relationships (called by: Unknown, success: True)
-âœ… Dependency 'fix:post-image-relationships' completed successfully (called by: Unknown)
-EXECUTING: pnpm run verify:post-content
-DESCRIPTION: Verifying posts content with dependencies
-âœ… verify:post-content verification passed with automatic dependency handling
-âœ… Post content verification passed with automatic dependency handling
-Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
-âœ… Step 12 completed successfully (3.22s)
-âœ… POST-VERIFICATION PHASE phase completed successfully (3.25s)
-Performance timing finalized. Total duration: 1.67 minutes
-âœ… All migrations and verifications completed successfully!
-Admin user created with email: michael@slideheroes.com
-
-================================================================================
-PERFORMANCE REPORT
-================================================================================
-
-Total Execution Time:
-1.67 minutes (100.2 seconds)
-
-Phase Timings:
-  SETUP PHASE
-59.9 seconds
- (59.8% of total)
-  PROCESSING PHASE
-4.28 seconds
- (4.3% of total)
-  LOADING PHASE
-32.63 seconds
- (32.6% of total)
-  POST-VERIFICATION PHASE
-3.25 seconds
- (3.2% of total)
-
-Step Timings (Top 10 longest steps):
-  12-Verifying posts content integrity
-3.24 seconds
- (3.2% of total)
-  5-Generating SQL seed files and fixing quiz ID consistency
-1.71 seconds
- (1.7% of total)
-  4-Checking and processing raw data
-1.5 seconds
- (1.5% of total)
-  6-Fixing references to ensure consistency
-1.01 seconds
- (1% of total)
-
-Migration Summary:
-Running migration diagnostic... (timeout: 20 seconds)
-True
-Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
-
-=== DATABASE CONTENT SUMMARY ===
-Table                     | Count
---------------------------|------
-courses                   | 1
-course_lessons            | 25
-course_quizzes            | 20
-quiz_questions            | 94
-surveys                   | 3
-survey_questions          | 32
-posts                     | 9
-private                   | 5
-downloads                 | 20
-
-=== UUID TABLES SUMMARY ===
-Total UUID tables tracked: 19
-First 5 UUID tables:
-- private
-- private_rels
-- private_categories
-- private_tags
-- private__downloads
-
-=== RELATIONSHIP TABLES ===
-Total relationship tables: 12
-course_lessons_rels       | 108
-course_quizzes_rels       | 174
-courses_rels              | 0
-documentation_rels        | 5
-downloads_rels            | 0
-payload_locked_documents_rels | 0
-payload_preferences_rels  | 0
-posts_rels                | 9
-private_rels              | 0
-quiz_questions_rels       | 0
-survey_questions_rels     | 32
-surveys_rels              | 32
-
-Note: Warning messages about 'No posts were migrated' are expected if posts already exist in the database.
-True
-Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
-NOTE:
-Warning messages about 'No posts were migrated' are expected if all posts are already in the database.
-NOTE:
-Warning messages about 'verification found issues' during early phases are expected and will be fixed in later phases.
-NOTE:
-SQL errors related to 'ADD COLUMN cannot be performed on relation' for some tables are handled gracefully.
-All migrations and verifications completed successfully!
+PS>TerminatingError(Add-Content): "The running command stopped because the preference variable "ErrorActionPreference" or common parameter is set to Stop: Stream was not readable."
+>> TerminatingError(Add-Content): "The running command stopped because the preference variable "ErrorActionPreference" or common parameter is set to Stop: Stream was not readable."
+ERROR: CRITICAL ERROR: Migration process failed: Stream was not readable.
+Please check the log files for details:
+  - Transcript log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-log-20250424-182131-953.txt
+  - Detailed log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250424-182131-953.txt
 **********************
 Windows PowerShell transcript end
-End time: 20250424104448
+End time: 20250424182317
 **********************

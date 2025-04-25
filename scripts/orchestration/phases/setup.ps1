@@ -187,17 +187,16 @@ function Run-PayloadMigrations {
         
         Exec-Command -command "pnpm --filter @kit/content-migrations run sql:add-relationship-id-columns" -description "Adding relationship ID columns to locked documents tables"
         
-        # Fix UUID tables using the new consolidated manager
-        Log-Message "Managing UUID tables with consolidated approach..." "Yellow"
+        # Fix UUID tables using the enhanced approach
+        Log-Message "Managing UUID tables with enhanced approach..." "Yellow"
         try {
             Push-Location -Path "packages/content-migrations"
             
-            # The consolidated manager handles environment variables internally
-            # and performs all operations in a single transaction for better reliability
-            Log-Message "Running consolidated UUID table manager..." "Yellow"
-            Exec-Command -command "pnpm run consolidated:uuid-management" -description "Running consolidated UUID table manager"
+            # Use the new comprehensive UUID table management
+            Log-Message "Running enhanced UUID table management..." "Yellow"
+            Exec-Command -command "pnpm run uuid:comprehensive" -description "Running enhanced UUID table management"
             
-            Log-Success "UUID tables managed successfully with consolidated approach"
+            Log-Success "UUID tables managed successfully with enhanced approach"
             Pop-Location
         } catch {
             Log-Warning "UUID table management encountered issues, but continuing: $_"
@@ -214,8 +213,8 @@ function Run-PayloadMigrations {
         try {
             Push-Location -Path "packages/content-migrations"
             
-            # Use the Node.js script for verification which doesn't require psql
-            Exec-Command -command "pnpm exec tsx src/scripts/verification/verify-uuid-tables.ts" -description "Running UUID tables verification" 
+            # Use the new verification script
+            Exec-Command -command "pnpm run uuid:verify" -description "Running UUID tables verification" 
             
             Pop-Location
             Log-Success "UUID tables verified successfully"
