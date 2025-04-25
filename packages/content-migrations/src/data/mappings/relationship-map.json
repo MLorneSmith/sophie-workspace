@@ -42,9 +42,22 @@
         }
       ]
     },
+    "media": {
+      "name": "media",
+      "relationships": []
+    },
     "course_quizzes": {
       "name": "course_quizzes",
       "relationships": [
+        {
+          "sourceCollection": "course_quizzes",
+          "sourceField": "questions",
+          "targetCollection": "unknown",
+          "relationType": "hasOne",
+          "relationshipPath": "questions",
+          "isRequired": false,
+          "relationshipTable": "course_quizzes_rels"
+        },
         {
           "sourceCollection": "course_quizzes",
           "sourceField": null,
@@ -58,10 +71,6 @@
     },
     "payload_migrations": {
       "name": "payload_migrations",
-      "relationships": []
-    },
-    "media": {
-      "name": "media",
       "relationships": []
     },
     "surveys": {
@@ -194,6 +203,10 @@
     },
     "course_quizzes__downloads": {
       "name": "course_quizzes__downloads",
+      "relationships": []
+    },
+    "quiz_question_relationships": {
+      "name": "quiz_question_relationships",
       "relationships": []
     },
     "quiz_questions": {

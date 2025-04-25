@@ -1,0 +1,615 @@
+import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-postgres'
+
+/**
+ * Consolidated Quiz-Question Relationship Migration
+ *
+ * This migration implements the correct unidirectional relationship model between quizzes and questions:
+ * - Quizzes reference questions (not vice versa)
+ * - Relationships are stored in both the questions array and relationship tables
+ * - Ensures all UUID tables have the correct structure
+ * - Provides database level triggers to maintain relationship consistency
+ */
+export async function up({ db, payload }: MigrateUpArgs): Promise<void> {
+  console.log('Running consolidated quiz-question relationship migration')
+
+  try {
+    // Start transaction for atomicity
+    await db.execute(sql`BEGIN;`)
+
+    // PART 1: ENSURE SCHEMA STRUCTURE
+    // ------------------------------
+    
+    // 1.1 Ensure questions array column exists in course_quizzes
+    console.log('Ensuring questions array column exists in course_quizzes')
+    await db.execute(sql`
+      ALTER TABLE payload.course_quizzes 
+      ADD COLUMN IF NOT EXISTS questions JSONB DEFAULT '[]'::jsonb;
+    `)
+    
+    // 1.2 Ensure UUID tables can be detected and repaired dynamically
+    console.log('Creating UUID table detection function')
+    await db.execute(sql`
+      -- Create a function to detect UUID pattern tables
+      CREATE OR REPLACE FUNCTION payload.detect_uuid_tables()
+      RETURNS TABLE(table_name text) AS $$
+      BEGIN
+        RETURN QUERY
+        SELECT tablename::text 
+        FROM pg_tables 
+        WHERE schemaname = 'payload' 
+        AND (
+          -- Matches UUID pattern tables
+          tablename ~ '^course_quizzes_[0-9a-f]{8}_[0-9a-f]{4}_[0-9a-f]{4}_[0-9a-f]{4}_[0-9a-f]{12}$'
+          OR 
+          -- Matches relationship tables for quizzes
+          tablename = 'course_quizzes_rels'
+        );
+      END;
+      $$ LANGUAGE plpgsql;
+    `)
+    
+    // 1.3 Add standard columns to course_quizzes_rels
+    console.log('Ensuring course_quizzes_rels has all required columns')
+    await db.execute(sql`
+      -- Ensure all required columns exist in course_quizzes_rels
+      ALTER TABLE payload.course_quizzes_rels
+      ADD COLUMN IF NOT EXISTS quiz_questions_id TEXT,
+      ADD COLUMN IF NOT EXISTS value TEXT,
+      ADD COLUMN IF NOT EXISTS id TEXT,
+      ADD COLUMN IF NOT EXISTS path TEXT,
+      ADD COLUMN IF NOT EXISTS parent_id TEXT;
+    `)
+    
+    // PART 2: SYNCHRONIZE RELATIONSHIPS
+    // -------------------------------
+    
+    // 2.1 Update course_quizzes questions array from relationship tables
+    console.log('Updating questions array in course_quizzes from relationship tables')
+    await db.execute(sql`
+      -- For each quiz, gather all questions from relationship table and update the questions array
+      UPDATE payload.course_quizzes q
+      SET questions = (
+        SELECT COALESCE(jsonb_agg(DISTINCT rel.quiz_questions_id), '[]'::jsonb)
+        FROM payload.course_quizzes_rels rel
+        WHERE rel._parent_id = q.id
+          AND rel.field = 'questions'
+          AND rel.quiz_questions_id IS NOT NULL
+      )
+      WHERE EXISTS (
+        SELECT 1 FROM payload.course_quizzes_rels rel
+        WHERE rel._parent_id = q.id AND rel.field = 'questions'
+      );
+    `)
+    
+    // 2.2 Create missing relationship entries from questions array
+    console.log('Creating relationship entries for any question IDs in the questions array')
+    await db.execute(sql`
+      -- Identify quizzes with questions array but missing relationship entries
+      WITH question_arrays AS (
+        SELECT 
+          id AS quiz_id,
+          jsonb_array_elements_text(
+            CASE WHEN jsonb_typeof(questions) = 'array' 
+              THEN questions 
+              ELSE '[]'::jsonb 
+            END
+          ) AS question_id
+        FROM payload.course_quizzes
+        WHERE jsonb_array_length(
+          CASE WHEN jsonb_typeof(questions) = 'array' 
+            THEN questions 
+            ELSE '[]'::jsonb 
+          END
+        ) > 0
+      ),
+      missing_entries AS (
+        SELECT 
+          qa.quiz_id,
+          qa.question_id
+        FROM question_arrays qa
+        LEFT JOIN payload.course_quizzes_rels rel ON 
+          rel._parent_id = qa.quiz_id AND 
+          (rel.quiz_questions_id = qa.question_id OR rel.value = qa.question_id)
+        WHERE rel.id IS NULL
+      )
+      -- Insert the missing relationship entries
+      INSERT INTO payload.course_quizzes_rels 
+        (_parent_id, field, path, quiz_questions_id, value, id)
+      SELECT 
+        quiz_id, 
+        'questions', 
+        'questions', 
+        question_id, 
+        question_id,
+        question_id
+      FROM missing_entries;
+    `)
+    
+    // 2.3 Add quiz questions that are in rels but missing from questions array
+    console.log('Updating questions array with any questions only in relationship tables')
+    await db.execute(sql`
+      -- For each quiz, find questions that exist in relationship table but not in questions array
+      WITH missing_in_array AS (
+        SELECT 
+          q.id AS quiz_id,
+          rel.quiz_questions_id AS question_id
+        FROM payload.course_quizzes q
+        JOIN payload.course_quizzes_rels rel ON rel._parent_id = q.id
+        WHERE 
+          rel.field = 'questions'
+          AND rel.quiz_questions_id IS NOT NULL
+          AND NOT (
+            CASE WHEN jsonb_typeof(q.questions) = 'array' 
+              THEN q.questions 
+              ELSE '[]'::jsonb 
+            END @> to_jsonb(rel.quiz_questions_id)::jsonb
+          )
+      ),
+      combined_questions AS (
+        SELECT 
+          quiz_id,
+          jsonb_agg(DISTINCT question_id) AS combined_questions
+        FROM missing_in_array
+        GROUP BY quiz_id
+      )
+      -- Update the questions array with the combined values
+      UPDATE payload.course_quizzes q
+      SET questions = COALESCE(q.questions, '[]'::jsonb) || cq.combined_questions
+      FROM combined_questions cq
+      WHERE q.id = cq.quiz_id;
+    `)
+    
+    // PART 3: ENSURE UUID TABLES HAVE CORRECT COLUMNS
+    // ---------------------------------------------
+    
+    // 3.1 Process all UUID tables to ensure required columns
+    console.log('Ensuring all UUID tables have required columns')
+    await db.execute(sql`
+      -- Create a temporary table to store results
+      CREATE TEMPORARY TABLE temp_uuid_table_results (
+        table_name text,
+        column_added text,
+        success boolean
+      );
+      
+      -- Process each UUID table
+      DO $$
+      DECLARE
+        table_record record;
+        col_exists boolean;
+      BEGIN
+        FOR table_record IN SELECT * FROM payload.detect_uuid_tables() LOOP
+          -- Add id column if needed
+          EXECUTE format('SELECT EXISTS (
+            SELECT FROM information_schema.columns 
+            WHERE table_schema = ''payload'' 
+            AND table_name = %L 
+            AND column_name = ''id''
+          )', table_record.table_name) INTO col_exists;
+          
+          IF NOT col_exists THEN
+            BEGIN
+              EXECUTE format('ALTER TABLE payload.%I ADD COLUMN id text', table_record.table_name);
+              INSERT INTO temp_uuid_table_results VALUES (table_record.table_name, 'id', true);
+            EXCEPTION WHEN OTHERS THEN
+              INSERT INTO temp_uuid_table_results VALUES (table_record.table_name, 'id', false);
+            END;
+          END IF;
+          
+          -- Add quiz_questions_id column if needed
+          EXECUTE format('SELECT EXISTS (
+            SELECT FROM information_schema.columns 
+            WHERE table_schema = ''payload'' 
+            AND table_name = %L 
+            AND column_name = ''quiz_questions_id''
+          )', table_record.table_name) INTO col_exists;
+          
+          IF NOT col_exists THEN
+            BEGIN
+              EXECUTE format('ALTER TABLE payload.%I ADD COLUMN quiz_questions_id text', table_record.table_name);
+              INSERT INTO temp_uuid_table_results VALUES (table_record.table_name, 'quiz_questions_id', true);
+            EXCEPTION WHEN OTHERS THEN
+              INSERT INTO temp_uuid_table_results VALUES (table_record.table_name, 'quiz_questions_id', false);
+            END;
+          END IF;
+          
+          -- Add parent_id column if needed
+          EXECUTE format('SELECT EXISTS (
+            SELECT FROM information_schema.columns 
+            WHERE table_schema = ''payload'' 
+            AND table_name = %L 
+            AND column_name = ''parent_id''
+          )', table_record.table_name) INTO col_exists;
+          
+          IF NOT col_exists THEN
+            BEGIN
+              EXECUTE format('ALTER TABLE payload.%I ADD COLUMN parent_id text', table_record.table_name);
+              INSERT INTO temp_uuid_table_results VALUES (table_record.table_name, 'parent_id', true);
+            EXCEPTION WHEN OTHERS THEN
+              INSERT INTO temp_uuid_table_results VALUES (table_record.table_name, 'parent_id', false);
+            END;
+          END IF;
+          
+          -- Add path column if needed
+          EXECUTE format('SELECT EXISTS (
+            SELECT FROM information_schema.columns 
+            WHERE table_schema = ''payload'' 
+            AND table_name = %L 
+            AND column_name = ''path''
+          )', table_record.table_name) INTO col_exists;
+          
+          IF NOT col_exists THEN
+            BEGIN
+              EXECUTE format('ALTER TABLE payload.%I ADD COLUMN path text', table_record.table_name);
+              INSERT INTO temp_uuid_table_results VALUES (table_record.table_name, 'path', true);
+            EXCEPTION WHEN OTHERS THEN
+              INSERT INTO temp_uuid_table_results VALUES (table_record.table_name, 'path', false);
+            END;
+          END IF;
+          
+          -- Add order column if needed
+          EXECUTE format('SELECT EXISTS (
+            SELECT FROM information_schema.columns 
+            WHERE table_schema = ''payload'' 
+            AND table_name = %L 
+            AND column_name = ''order''
+          )', table_record.table_name) INTO col_exists;
+          
+          IF NOT col_exists THEN
+            BEGIN
+              EXECUTE format('ALTER TABLE payload.%I ADD COLUMN "order" integer', table_record.table_name);
+              INSERT INTO temp_uuid_table_results VALUES (table_record.table_name, 'order', true);
+            EXCEPTION WHEN OTHERS THEN
+              INSERT INTO temp_uuid_table_results VALUES (table_record.table_name, 'order', false);
+            END;
+          END IF;
+        END LOOP;
+      END $$;
+      
+      -- Report on the results
+      SELECT * FROM temp_uuid_table_results;
+      DROP TABLE temp_uuid_table_results;
+    `)
+    
+    // PART 4: CREATE CONSISTENCY TRIGGERS
+    // ---------------------------------
+    
+    // 4.1 Create trigger functions for relationship consistency
+    console.log('Creating triggers to maintain relationship consistency')
+    await db.execute(sql`
+      -- Function to sync questions array when relationship entries change
+      CREATE OR REPLACE FUNCTION payload.sync_quiz_questions_array()
+      RETURNS TRIGGER AS $$
+      BEGIN
+        -- Update the questions array in course_quizzes
+        UPDATE payload.course_quizzes
+        SET questions = (
+          SELECT COALESCE(jsonb_agg(DISTINCT rel.quiz_questions_id), '[]'::jsonb)
+          FROM payload.course_quizzes_rels rel
+          WHERE rel._parent_id = NEW._parent_id
+            AND rel.field = 'questions'
+            AND rel.quiz_questions_id IS NOT NULL
+        )
+        WHERE id = NEW._parent_id;
+        
+        RETURN NEW;
+      END;
+      $$ LANGUAGE plpgsql;
+      
+      -- Function to sync relationship entries when questions array changes
+      CREATE OR REPLACE FUNCTION payload.sync_quiz_question_rels()
+      RETURNS TRIGGER AS $$
+      DECLARE
+        question_id text;
+        old_questions jsonb;
+        new_questions jsonb;
+      BEGIN
+        -- Determine old and new questions arrays
+        IF TG_OP = 'UPDATE' THEN
+          old_questions := OLD.questions;
+          new_questions := NEW.questions;
+        ELSE
+          old_questions := '[]'::jsonb;
+          new_questions := NEW.questions;
+        END IF;
+        
+        -- Remove relationship entries for questions no longer in the array
+        IF TG_OP = 'UPDATE' THEN
+          DELETE FROM payload.course_quizzes_rels
+          WHERE _parent_id = NEW.id
+            AND field = 'questions'
+            AND quiz_questions_id IS NOT NULL
+            AND NOT (new_questions @> to_jsonb(quiz_questions_id));
+        END IF;
+        
+        -- Add relationship entries for new questions in the array
+        FOR question_id IN 
+          SELECT jsonb_array_elements_text(new_questions)
+          EXCEPT
+          SELECT jsonb_array_elements_text(old_questions)
+        LOOP
+          -- Check if relationship entry already exists
+          IF NOT EXISTS (
+            SELECT 1 FROM payload.course_quizzes_rels
+            WHERE _parent_id = NEW.id
+              AND field = 'questions'
+              AND (quiz_questions_id = question_id OR value = question_id)
+          ) THEN
+            -- Insert new relationship entry
+            INSERT INTO payload.course_quizzes_rels 
+              (_parent_id, field, path, quiz_questions_id, value, id)
+            VALUES 
+              (NEW.id, 'questions', 'questions', question_id, question_id, question_id);
+          END IF;
+        END LOOP;
+        
+        RETURN NEW;
+      END;
+      $$ LANGUAGE plpgsql;
+    `)
+    
+    // 4.2 Create triggers on the tables
+    console.log('Creating triggers on the tables')
+    await db.execute(sql`
+      -- Drop existing triggers if they exist
+      DROP TRIGGER IF EXISTS trigger_quiz_questions_rels_sync ON payload.course_quizzes_rels;
+      DROP TRIGGER IF EXISTS trigger_quiz_questions_array_sync ON payload.course_quizzes;
+      
+      -- Create trigger for syncing questions array when relationship entries change
+      CREATE TRIGGER trigger_quiz_questions_rels_sync
+      AFTER INSERT OR UPDATE OR DELETE ON payload.course_quizzes_rels
+      FOR EACH ROW
+      WHEN (NEW.field = 'questions' OR OLD.field = 'questions')
+      EXECUTE FUNCTION payload.sync_quiz_questions_array();
+      
+      -- Create trigger for syncing relationship entries when questions array changes
+      CREATE TRIGGER trigger_quiz_questions_array_sync
+      AFTER INSERT OR UPDATE ON payload.course_quizzes
+      FOR EACH ROW
+      WHEN (NEW.questions IS DISTINCT FROM OLD.questions OR TG_OP = 'INSERT')
+      EXECUTE FUNCTION payload.sync_quiz_question_rels();
+    `)
+    
+    // PART 5: CREATE UUID TABLE MONITORING
+    // ----------------------------------
+    
+    // 5.1 Create event trigger to add columns to new UUID tables
+    console.log('Creating event trigger for new UUID tables')
+    await db.execute(sql`
+      -- Create a function to detect and fix new UUID tables
+      CREATE OR REPLACE FUNCTION payload.monitor_uuid_tables()
+      RETURNS event_trigger AS $$
+      DECLARE
+        obj record;
+        tablename text;
+      BEGIN
+        FOR obj IN SELECT * FROM pg_event_trigger_ddl_commands() LOOP
+          IF obj.command_tag = 'CREATE TABLE' AND obj.schema_name = 'payload' THEN
+            tablename := obj.object_identity;
+            
+            -- Check if the table matches UUID pattern for course_quizzes
+            IF tablename ~ '^payload.course_quizzes_[0-9a-f]{8}_[0-9a-f]{4}_[0-9a-f]{4}_[0-9a-f]{4}_[0-9a-f]{12}$' THEN
+              -- Add required columns
+              EXECUTE format('
+                ALTER TABLE %s 
+                ADD COLUMN IF NOT EXISTS id text,
+                ADD COLUMN IF NOT EXISTS parent_id text,
+                ADD COLUMN IF NOT EXISTS path text,
+                ADD COLUMN IF NOT EXISTS quiz_questions_id text,
+                ADD COLUMN IF NOT EXISTS "order" integer
+              ', tablename);
+              
+              -- Log the event (if you have a logging table)
+              BEGIN
+                EXECUTE format('
+                  INSERT INTO payload.uuid_table_monitor(table_name, monitored_at, action)
+                  VALUES (%L, now(), %L)
+                ', tablename, 'auto_fixed');
+              EXCEPTION WHEN undefined_table THEN
+                -- Table doesn't exist yet, create it first
+                CREATE TABLE IF NOT EXISTS payload.uuid_table_monitor (
+                  id SERIAL PRIMARY KEY,
+                  table_name TEXT NOT NULL,
+                  monitored_at TIMESTAMP NOT NULL DEFAULT NOW(),
+                  action TEXT NOT NULL
+                );
+                
+                EXECUTE format('
+                  INSERT INTO payload.uuid_table_monitor(table_name, monitored_at, action)
+                  VALUES (%L, now(), %L)
+                ', tablename, 'auto_fixed');
+              END;
+            END IF;
+          END IF;
+        END LOOP;
+      END;
+      $$ LANGUAGE plpgsql;
+      
+      -- Create monitoring table if it doesn't exist
+      CREATE TABLE IF NOT EXISTS payload.uuid_table_monitor (
+        id SERIAL PRIMARY KEY,
+        table_name TEXT NOT NULL,
+        monitored_at TIMESTAMP NOT NULL DEFAULT NOW(),
+        action TEXT NOT NULL
+      );
+      
+      -- Create event trigger
+      DROP EVENT TRIGGER IF EXISTS uuid_table_monitor_trigger;
+      CREATE EVENT TRIGGER uuid_table_monitor_trigger
+      ON ddl_command_end
+      WHEN tag IN ('CREATE TABLE')
+      EXECUTE FUNCTION payload.monitor_uuid_tables();
+    `)
+    
+    // PART 6: VALIDATION FUNCTION
+    // -------------------------
+    
+    // 6.1 Create a function to verify relationship integrity
+    console.log('Creating validation function')
+    await db.execute(sql`
+      -- Function to verify quiz-question relationship integrity
+      CREATE OR REPLACE FUNCTION payload.verify_quiz_question_relationships()
+      RETURNS TABLE(
+        quiz_id text,
+        quiz_title text,
+        array_count integer,
+        rel_count integer,
+        is_consistent boolean,
+        missing_questions text[]
+      ) AS $$
+      BEGIN
+        RETURN QUERY
+        WITH array_questions AS (
+          SELECT 
+            id as quiz_id, 
+            title as quiz_title,
+            questions,
+            CASE 
+              WHEN jsonb_typeof(questions) = 'array' THEN jsonb_array_length(questions)
+              ELSE 0
+            END as array_count,
+            CASE 
+              WHEN jsonb_typeof(questions) = 'array' THEN 
+                ARRAY(SELECT jsonb_array_elements_text(questions))
+              ELSE ARRAY[]::text[]
+            END as question_ids
+          FROM payload.course_quizzes
+        ),
+        rel_questions AS (
+          SELECT 
+            _parent_id as quiz_id,
+            COUNT(DISTINCT quiz_questions_id) as rel_count,
+            ARRAY_AGG(DISTINCT quiz_questions_id) as rel_question_ids
+          FROM payload.course_quizzes_rels
+          WHERE field = 'questions'
+          AND quiz_questions_id IS NOT NULL
+          GROUP BY _parent_id
+        )
+        SELECT 
+          aq.quiz_id,
+          aq.quiz_title,
+          aq.array_count,
+          COALESCE(rq.rel_count, 0) as rel_count,
+          aq.array_count = COALESCE(rq.rel_count, 0) as is_consistent,
+          ARRAY(
+            SELECT unnest(aq.question_ids) 
+            EXCEPT 
+            SELECT unnest(COALESCE(rq.rel_question_ids, ARRAY[]::text[]))
+          ) as missing_questions
+        FROM array_questions aq
+        LEFT JOIN rel_questions rq ON aq.quiz_id = rq.quiz_id
+        WHERE aq.array_count > 0 OR COALESCE(rq.rel_count, 0) > 0;
+      END;
+      $$ LANGUAGE plpgsql;
+    `)
+    
+    // PART 7: POPULATE QUESTIONS FIELD IN ALL QUIZZES
+    // ---------------------------------------------
+    
+    // 7.1 Ensure every quiz has the questions field populated
+    console.log('Ensuring every quiz has the questions field populated')
+    await db.execute(sql`
+      -- Initialize empty questions array for quizzes without one
+      UPDATE payload.course_quizzes
+      SET questions = '[]'::jsonb
+      WHERE questions IS NULL OR jsonb_typeof(questions) != 'array';
+    `)
+    
+    // 7.2 Run verification to detect any remaining inconsistencies
+    console.log('Running verification')
+    const verificationResults = await db.execute(sql`
+      -- Check for any inconsistencies
+      SELECT * FROM payload.verify_quiz_question_relationships()
+      WHERE NOT is_consistent;
+    `)
+    
+    if (verificationResults.rowCount > 0) {
+      console.log(`Found ${verificationResults.rowCount} quizzes with inconsistent relationships. Fixing...`)
+      
+      // Fix any remaining inconsistencies
+      await db.execute(sql`
+        -- Fix inconsistencies by syncing again
+        WITH inconsistent_quizzes AS (
+          SELECT * FROM payload.verify_quiz_question_relationships()
+          WHERE NOT is_consistent
+        ),
+        fix_rel_updates AS (
+          -- Fix relationship tables based on questions array
+          INSERT INTO payload.course_quizzes_rels 
+            (_parent_id, field, path, quiz_questions_id, value, id)
+          SELECT 
+            q.quiz_id, 
+            'questions', 
+            'questions', 
+            unnest(q.missing_questions), 
+            unnest(q.missing_questions),
+            unnest(q.missing_questions)
+          FROM inconsistent_quizzes q
+          WHERE array_length(q.missing_questions, 1) > 0
+          ON CONFLICT DO NOTHING
+          RETURNING 1
+        )
+        SELECT COUNT(*) FROM fix_rel_updates;
+      `)
+    } else {
+      console.log('All quizzes have consistent relationships')
+    }
+    
+    // Run final verification to confirm all is well
+    const finalVerification = await db.execute(sql`
+      SELECT COUNT(*) as total_quizzes, 
+             COUNT(*) FILTER (WHERE is_consistent) as consistent_quizzes,
+             COUNT(*) FILTER (WHERE NOT is_consistent) as inconsistent_quizzes
+      FROM payload.verify_quiz_question_relationships();
+    `)
+    
+    console.log(`Final verification: ${finalVerification.rows[0].consistent_quizzes} of ${finalVerification.rows[0].total_quizzes} quizzes are consistent`)
+    
+    // Commit transaction if all went well
+    await db.execute(sql`COMMIT;`)
+    console.log('Consolidated quiz-question relationship migration completed successfully')
+  }
+  catch (error) {
+    // Rollback transaction on error
+    await db.execute(sql`ROLLBACK;`)
+    console.error('Error in consolidated quiz-question relationship migration:', error)
+    throw error
+  }
+}
+
+export async function down({ db, payload }: MigrateDownArgs): Promise<void> {
+  try {
+    // Start transaction for atomicity
+    await db.execute(sql`BEGIN;`)
+
+    // Drop triggers for cleanup
+    await db.execute(sql`
+      -- Drop event trigger
+      DROP EVENT TRIGGER IF EXISTS uuid_table_monitor_trigger;
+
+      -- Drop table triggers
+      DROP TRIGGER IF EXISTS trigger_quiz_questions_rels_sync ON payload.course_quizzes_rels;
+      DROP TRIGGER IF EXISTS trigger_quiz_questions_array_sync ON payload.course_quizzes;
+
+      -- Drop functions
+      DROP FUNCTION IF EXISTS payload.sync_quiz_questions_array();
+      DROP FUNCTION IF EXISTS payload.sync_quiz_question_rels();
+      DROP FUNCTION IF EXISTS payload.monitor_uuid_tables();
+      DROP FUNCTION IF EXISTS payload.verify_quiz_question_relationships();
+      DROP FUNCTION IF EXISTS payload.detect_uuid_tables();
+
+      -- Drop monitoring table
+      DROP TABLE IF EXISTS payload.uuid_table_monitor;
+    `)
+
+    // Commit transaction
+    await db.execute(sql`COMMIT;`)
+    console.log('Successfully reverted consolidated quiz-question relationship migration')
+  }
+  catch (error) {
+    // Rollback on error
+    await db.execute(sql`ROLLBACK;`)
+    console.error('Error reverting consolidated quiz-question relationship migration:', error)
+    throw error
+  }
+}

@@ -7,7 +7,7 @@ import { createI18nServerInstance } from '~/lib/i18n/i18n.server';
 import { withI18n } from '~/lib/i18n/with-i18n';
 
 import { HomeLayoutPageHeader } from '../../../_components/home-page-header';
-import { LessonDataProvider } from './_components/LessonDataProvider';
+import { LessonDataProviderEnhanced } from './_components/LessonDataProvider-enhanced';
 import { LessonViewClient } from './_components/LessonViewClient';
 
 // Explicitly opt out of caching since Next.js 15 changes default behavior
@@ -33,12 +33,15 @@ export const generateMetadata = async ({
 };
 
 /**
- * Lesson page component
- * This page is simplified to avoid direct server component dependencies
- * Authentication is handled by the layout component
- * Data fetching is handled by the LessonDataProvider component
+ * Enhanced Lesson page component
+ * This page uses the improved LessonDataProviderEnhanced component that handles
+ * the unidirectional relationship model for quizzes and questions
  */
-async function LessonPage({ params }: { params: Promise<{ slug: string }> }) {
+async function LessonPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
   // Await the params to get the slug
   const resolvedParams = await params;
 
@@ -61,7 +64,7 @@ async function LessonPage({ params }: { params: Promise<{ slug: string }> }) {
       />
 
       <PageBody>
-        <LessonDataProvider
+        <LessonDataProviderEnhanced
           slug={resolvedParams.slug}
           lessonId={String(lesson.id)}
           courseId={String(courseId)}
@@ -78,7 +81,7 @@ async function LessonPage({ params }: { params: Promise<{ slug: string }> }) {
               surveyResponses={data.surveyResponses}
             />
           )}
-        </LessonDataProvider>
+        </LessonDataProviderEnhanced>
       </PageBody>
     </>
   );

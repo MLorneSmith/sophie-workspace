@@ -240,33 +240,45 @@ function Fix-Relationships {
         Log-Message "Running Payload CMS relationship fix with strict typing..." "Yellow"
         Exec-Command -command "pnpm run fix:payload-relationships-strict" -description "Fixing Payload relationships with strict typing" -continueOnError
 
-        # Run the consolidated quizzes relationship fix
-        Log-Message "Running consolidated quiz relationship fix..." "Yellow"
-        Exec-Command -command "pnpm run fix:direct-quiz-fix" -description "Fixing all quiz relationships" -continueOnError
+        # Run only the optimized quiz relationship repair
+        Log-Message "Running optimized quiz relationship repair..." "Yellow"
+        Exec-Command -command "pnpm run quiz:fix:corrected" -description "Fixing quiz relationships with corrected script" -continueOnError
 
-        # Fix invalid quiz references in lessons
-        Log-Message "Fixing invalid quiz references..." "Yellow"
-        Exec-Command -command "pnpm run fix:invalid-quiz-references" -description "Fixing invalid quiz references" -continueOnError
+        # Run enhanced comprehensive quiz-question relationship fix
+        Log-Message "Running enhanced comprehensive quiz-question relationship fix..." "Yellow"
+        Exec-Command -command "pnpm run fix:quiz-question-relationships-enhanced" -description "Running enhanced quiz-question relationship fix" -continueOnError
 
-        # Apply direct SQL fix for all quiz relationship issues
-        Log-Message "Applying direct SQL fix for quiz relationships..." "Yellow"
-        Exec-Command -command "pnpm run fix:direct-quiz-fix" -description "Applying direct quiz relationships fix" -continueOnError
+        # Verify with enhanced verification script for the fix
+        Log-Message "Verifying enhanced quiz-question relationship fix..." "Yellow"
+        Exec-Command -command "pnpm run verify:quiz-relationships-enhanced" -description "Verifying enhanced quiz-question fix" -continueOnError
+        
+        # Verify consolidated quiz-question relationship migration
+        Log-Message "Verifying consolidated quiz-question relationship migration..." "Yellow"
+        $verificationResult = Exec-Command -command "pnpm run verify:quiz-relationship-migration" -description "Verifying quiz relationship migration" -captureOutput -continueOnError
+        
+        if ($verificationResult -match "All quizzes have consistent relationships") {
+            Log-Success "Consolidated quiz relationship migration verified successfully"
+        } else {
+            Log-Warning "Consolidated quiz relationship migration may need attention"
+        }
 
-        # Run comprehensive lesson-quiz relationship fixes
-        Log-Message "Running comprehensive lesson-quiz relationship fixes..." "Yellow"
-        Exec-Command -command "pnpm run fix:lesson-quiz-relationships-comprehensive" -description "Fixing all lesson-quiz relationships" -continueOnError
+        # Format quiz questions JSONB arrays for Payload compatibility
+        Log-Message "Formatting quiz questions JSONB arrays for Payload compatibility..." "Yellow"
+        Exec-Command -command "pnpm run fix:format-questions-jsonb" -description "Formatting quiz questions JSONB arrays" -continueOnError
 
-        # Run unidirectional quiz-question relationship fix (new approach)
-        Log-Message "Running unidirectional quiz-question relationship fix..." "Yellow"
-        Exec-Command -command "pnpm run fix:unidirectional-quiz-questions" -description "Fixing all quiz-question relationships with unidirectional model" -continueOnError
+        # Verify questions JSONB format
+        Log-Message "Verifying questions JSONB format..." "Yellow"
+        $jsonbFormatResult = Exec-Command -command "pnpm run verify:questions-jsonb-format" -description "Verifying questions JSONB format" -captureOutput -continueOnError
+        
+        if ($jsonbFormatResult -match "All .+ quizzes have properly formatted questions arrays") {
+            Log-Success "All quiz questions are properly formatted for Payload UI"
+        } else {
+            Log-Warning "Some quiz questions may still have formatting issues"
+        }
 
-        # Verify unidirectional quiz-question relationships
+        # Verify unidirectional quiz-question relationships (legacy verification)
         Log-Message "Verifying unidirectional quiz-question relationships..." "Yellow"
         Exec-Command -command "pnpm run verify:unidirectional-quiz-questions" -description "Verifying unidirectional quiz-question relationships" -continueOnError
-
-        # Run comprehensive question-quiz relationship fixes (kept for backward compatibility)
-        Log-Message "Running comprehensive question-quiz relationship fixes..." "Yellow"
-        Exec-Command -command "pnpm run fix:question-quiz-relationships-comprehensive" -description "Fixing all question-quiz relationships" -continueOnError
 
         # Skip the deprecated unidirectional fix, as it's now part of the consolidated course-quiz-relationships script
 
@@ -325,14 +337,6 @@ function Fix-Relationships {
         # Clear lesson content to fix template tag rendering issues
         Log-Message "Clearing lesson content fields to fix template tag rendering..." "Yellow"
         Exec-Command -command "pnpm run clear:lesson-content" -description "Clearing lesson content fields" -continueOnError
-
-        # Apply the consolidated course-quiz relationships fix
-        Log-Message "Applying consolidated course-quiz relationship fix..." "Yellow"
-        Exec-Command -command "pnpm run fix:course-quiz-relationships" -description "Fixing course-quiz relationships" -continueOnError
-
-        # Run the consolidated quiz course ID fix
-        Log-Message "Running consolidated quiz course ID fix..." "Yellow"
-        Exec-Command -command "pnpm run fix:quiz-course-ids" -description "Fixing quiz course IDs" -continueOnError
 
         # Run comprehensive relationship repair system (Phase 2)
         Log-Message "Running comprehensive relationship repair system..." "Yellow"
