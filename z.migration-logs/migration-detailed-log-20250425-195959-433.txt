@@ -1,0 +1,1245 @@
+2025-04-25 19:59:59: Starting migration process at 04/25/2025 19:59:59
+2025-04-25 19:59:59: Detailed logs will be saved to: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250425-195959-433.txt
+2025-04-25 19:59:59: Performance timing initialized
+2025-04-25 19:59:59: Checking PNPM configuration...
+2025-04-25 19:59:59: Project root: D:\SlideHeroes\App\repos\2025slideheroes
+2025-04-25 19:59:59: PNPM configuration in root directory is already up to date
+2025-04-25 19:59:59: Yarn configuration in root directory is already up to date
+
+2025-04-25 19:59:59 - ================================================================================
+2025-04-25 19:59:59 - PHASE 1/4: SETUP PHASE
+2025-04-25 19:59:59 - ================================================================================
+2025-04-25 19:59:59: ================================================================================
+2025-04-25 19:59:59: SETUP PHASE
+2025-04-25 19:59:59: ================================================================================
+2025-04-25 19:59:59: 
+2025-04-25 19:59:59: ------------------------------------------------------------
+2025-04-25 19:59:59: STEP 1: Resetting Supabase database and running Web app migrations
+2025-04-25 19:59:59: ------------------------------------------------------------
+2025-04-25 19:59:59: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\apps\web
+2025-04-25 19:59:59: Skipping Supabase restart (already done)
+2025-04-25 19:59:59: Running supabase:reset...
+2025-04-25 19:59:59: EXECUTING: pnpm run supabase:reset
+2025-04-25 19:59:59: DESCRIPTION: Resetting Supabase database
+2025-04-25 20:00:30: Running supabase migrations...
+2025-04-25 20:00:30: EXECUTING: supabase migration up
+2025-04-25 20:00:30: DESCRIPTION: Running Supabase migrations
+--- Command Output Start ---
+apps/payload                             | ?WARN? The field "pnpm.onlyBuiltDependencies" was found in D:\SlideHeroes\App\repos\2025slideheroes\apps\payload/package.json. This will not take effect. You should configure "pnpm.onlyBuiltDependencies" at the root of the workspace instead.
+
+> @kit/content-migrations@0.1.0 verify:schema D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/scripts/verification/verify-schema.ts "public"
+
+Loading environment variables from .env.development
+Connecting to database: postgresql://postgres:postgres@localhost:54322/postgres?schema=payload
+Checking if schema 'public' exists...
+Schema 'public' exists
+
+--- Command Output End ---
+2025-04-25 20:00:30: Schema 'public' exists
+2025-04-25 20:00:30: âœ… Web app migrations completed successfully
+2025-04-25 20:00:30: 
+2025-04-25 20:00:30: ------------------------------------------------------------
+2025-04-25 20:00:30: STEP 2: Resetting Payload schema
+2025-04-25 20:00:30: ------------------------------------------------------------
+2025-04-25 20:00:30: Dropping and recreating payload schema...
+2025-04-25 20:00:30: Temporarily changed to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-04-25 20:00:30: EXECUTING: pnpm run utils:run-sql-file "C:\Users\msmit\AppData\Local\Temp\reset_payload_schema.sql"
+2025-04-25 20:00:30: DESCRIPTION: Resetting Payload schema
+2025-04-25 20:00:31: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes
+2025-04-25 20:00:31: âœ… Payload schema reset successfully
+
+2025-04-25 20:00:31 - ------------------------------------------------------------
+2025-04-25 20:00:31 - STEP 3: Running Payload migrations [STARTED]
+2025-04-25 20:00:31 - ------------------------------------------------------------
+2025-04-25 20:00:31 - EXPECTED WARNING: The 'No email adapter provided' warning is expected in development environment and can be safely ignored
+2025-04-25 20:00:31: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\apps\payload
+2025-04-25 20:00:31: Checking migration status...
+2025-04-25 20:00:31: EXECUTING: pnpm migrate:status
+2025-04-25 20:00:31: DESCRIPTION: Checking migration status
+--- Command Output Start ---
+
+> payload-app@1.0.0 migrate:status D:\SlideHeroes\App\repos\2025slideheroes\apps\payload
+> cross-env NODE_OPTIONS=--no-deprecation payload migrate:status
+
+[20:00:34] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[20:00:34] [32mINFO[39m: [36mReading migration files from D:\SlideHeroes\App\repos\2025slideheroes\apps\payload\src\migrations[39m
++---------------------------------------------------------------------+
+¦[37m [0m[01m                                                 Name[0m ¦[37m [0m[01mBatch[0m ¦[37m [0m[01mRan[0m ¦
++-------------------------------------------------------+-------+-----¦
+¦[37m [0m[31m                      20250402_100000_schema_creation[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m                          20250402_300000_base_schema[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m                     20250402_305000_seed_course_data[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m               20250402_310000_relationship_structure[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m          20250402_330000_bidirectional_relationships[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m                      20250402_340000_add_users_table[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m                    20250402_350000_create_admin_user[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m                      20250403_200000_process_content[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m              20250403_300000_add_lesson_enhancements[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m        20250404_100000_fix_lesson_quiz_relationships[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m             20250407_100000_add_survey_id_to_lessons[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m20250407_100000_fix_missing_lesson_quiz_relationships[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m             20250410_120500_relationship_columns_fix[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m               20250414_100000_add_private_collection[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m 20250414_150000_fix_private_id_column_in_uuid_tables[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m        20250415_100000_master_relationship_migration[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m             20250415_110000_master_relationship_view[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m      20250415_120000_proactive_uuid_table_monitoring[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m     20250415_130000_fix_downloads_relationships_view[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m                  20250415_140000_fix_missing_columns[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m                20250415_150000_fix_remaining_columns[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m                      20250415_160000_add_todo_column[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m      20250415_170000_convert_todo_fields_to_richtext[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m          20250415_180000_fix_downloads_thumbnail_url[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m                     20250415_190000_uuid_consistency[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m                    20250415_200000_add_video_support[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m             20250423_113700_fix_uuid_tables_function[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m        20250424_080000_fix-uuid-tables-view-function[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m                20250424_090000_add_path_to_downloads[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m        20250424_100000_fix_downloads_diagnostic_view[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m        20250424_100000_simplify_uuid_tables_tracking[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m         20250424_110000_enhance_relationship_columns[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m             20250424_120000_improved_uuid_monitoring[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m             20250424_120001_enhanced_uuid_monitoring[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m20250424_130000_fix_uuid_dynamically_generated_tables[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m        20250425_150000_remove_quiz_id_from_questions[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m                     20250425_153000_minimal_quiz_fix[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m                20250425_175000_quiz_jsonb_format_fix[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m  20250425_190002_comprehensive_quiz_jsonb_format_fix[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m      20250425_195000_fix_quiz_questions_jsonb_format[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
++---------------------------------------------------------------------+
+[20:00:34] [32mINFO[39m: [36mDone.[39m
+
+--- Command Output End ---
+2025-04-25 20:00:51: Adding relationship ID columns to locked documents tables...
+2025-04-25 20:00:51: Temporarily changed to directory: D:\SlideHeroes\App\repos\2025slideheroes
+2025-04-25 20:00:51: EXECUTING: pnpm --filter @kit/content-migrations run sql:add-relationship-id-columns
+2025-04-25 20:00:51: DESCRIPTION: Adding relationship ID columns to locked documents tables
+2025-04-25 20:00:52: Managing UUID tables with enhanced approach...
+2025-04-25 20:00:52: Running enhanced UUID table management...
+2025-04-25 20:00:52: EXECUTING: pnpm run uuid:comprehensive
+2025-04-25 20:00:52: DESCRIPTION: Running enhanced UUID table management
+2025-04-25 20:00:53: âœ… UUID tables managed successfully with enhanced approach
+2025-04-25 20:00:53: Verifying UUID tables and their required columns...
+2025-04-25 20:00:53: EXECUTING: pnpm run uuid:verify
+2025-04-25 20:00:53: DESCRIPTION: Running UUID tables verification
+2025-04-25 20:00:53: âœ… UUID tables verified successfully
+2025-04-25 20:00:53: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\apps\payload
+2025-04-25 20:00:53: Verifying migration status...
+2025-04-25 20:00:53: EXECUTING: pnpm migrate:status
+2025-04-25 20:00:53: DESCRIPTION: Verifying migration status
+--- Command Output Start ---
+
+> payload-app@1.0.0 migrate:status D:\SlideHeroes\App\repos\2025slideheroes\apps\payload
+> cross-env NODE_OPTIONS=--no-deprecation payload migrate:status
+
+[20:00:55] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[20:00:55] [32mINFO[39m: [36mReading migration files from D:\SlideHeroes\App\repos\2025slideheroes\apps\payload\src\migrations[39m
++---------------------------------------------------------------------+
+¦[37m [0m[01m                                                 Name[0m ¦[37m [0m[01mBatch[0m ¦[37m [0m[01mRan[0m ¦
++-------------------------------------------------------+-------+-----¦
+¦[37m [0m[32m                      20250402_100000_schema_creation[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                          20250402_300000_base_schema[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                     20250402_305000_seed_course_data[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m               20250402_310000_relationship_structure[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m          20250402_330000_bidirectional_relationships[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                      20250402_340000_add_users_table[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                    20250402_350000_create_admin_user[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                      20250403_200000_process_content[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m              20250403_300000_add_lesson_enhancements[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m        20250404_100000_fix_lesson_quiz_relationships[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m             20250407_100000_add_survey_id_to_lessons[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m20250407_100000_fix_missing_lesson_quiz_relationships[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m             20250410_120500_relationship_columns_fix[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m               20250414_100000_add_private_collection[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m 20250414_150000_fix_private_id_column_in_uuid_tables[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m        20250415_100000_master_relationship_migration[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m             20250415_110000_master_relationship_view[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m      20250415_120000_proactive_uuid_table_monitoring[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m     20250415_130000_fix_downloads_relationships_view[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                  20250415_140000_fix_missing_columns[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                20250415_150000_fix_remaining_columns[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                      20250415_160000_add_todo_column[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m      20250415_170000_convert_todo_fields_to_richtext[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m          20250415_180000_fix_downloads_thumbnail_url[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                     20250415_190000_uuid_consistency[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                    20250415_200000_add_video_support[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m             20250423_113700_fix_uuid_tables_function[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m        20250424_080000_fix-uuid-tables-view-function[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                20250424_090000_add_path_to_downloads[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m        20250424_100000_fix_downloads_diagnostic_view[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m        20250424_100000_simplify_uuid_tables_tracking[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m         20250424_110000_enhance_relationship_columns[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m             20250424_120000_improved_uuid_monitoring[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m             20250424_120001_enhanced_uuid_monitoring[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m20250424_130000_fix_uuid_dynamically_generated_tables[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m        20250425_150000_remove_quiz_id_from_questions[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                     20250425_153000_minimal_quiz_fix[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                20250425_175000_quiz_jsonb_format_fix[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m  20250425_190002_comprehensive_quiz_jsonb_format_fix[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m      20250425_195000_fix_quiz_questions_jsonb_format[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
++---------------------------------------------------------------------+
+[20:00:56] [32mINFO[39m: [36mDone.[39m
+
+--- Command Output End ---
+2025-04-25 20:00:56: âœ… All migrations have been applied successfully
+2025-04-25 20:00:56: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes
+2025-04-25 20:00:56: EXECUTING: pnpm --filter @kit/content-migrations run verify:schema payload
+2025-04-25 20:00:56: DESCRIPTION: Verifying schema 'payload' exists
+--- Command Output Start ---
+apps/payload                             | ?WARN? The field "pnpm.onlyBuiltDependencies" was found in D:\SlideHeroes\App\repos\2025slideheroes\apps\payload/package.json. This will not take effect. You should configure "pnpm.onlyBuiltDependencies" at the root of the workspace instead.
+
+> @kit/content-migrations@0.1.0 verify:schema D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/scripts/verification/verify-schema.ts "payload"
+
+Loading environment variables from .env.development
+Connecting to database: postgresql://postgres:postgres@localhost:54322/postgres?schema=payload
+Checking if schema 'payload' exists...
+Schema 'payload' exists
+
+--- Command Output End ---
+2025-04-25 20:00:56: Schema 'payload' exists
+2025-04-25 20:00:56: EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload courses
+2025-04-25 20:00:56: DESCRIPTION: Verifying table 'payload.courses' exists
+--- Command Output Start ---
+apps/payload                             | ?WARN? The field "pnpm.onlyBuiltDependencies" was found in D:\SlideHeroes\App\repos\2025slideheroes\apps\payload/package.json. This will not take effect. You should configure "pnpm.onlyBuiltDependencies" at the root of the workspace instead.
+
+> @kit/content-migrations@0.1.0 verify:table D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/scripts/verification/verify-table.ts "payload" "courses"
+
+Loading environment variables from .env.development
+Connecting to database: postgresql://postgres:postgres@localhost:54322/postgres?schema=payload
+Checking if table 'payload.courses' exists...
+Table 'payload.courses' exists
+
+--- Command Output End ---
+2025-04-25 20:00:57: Table 'payload.courses' exists
+2025-04-25 20:00:57: EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload course_lessons
+2025-04-25 20:00:57: DESCRIPTION: Verifying table 'payload.course_lessons' exists
+--- Command Output Start ---
+apps/payload                             | ?WARN? The field "pnpm.onlyBuiltDependencies" was found in D:\SlideHeroes\App\repos\2025slideheroes\apps\payload/package.json. This will not take effect. You should configure "pnpm.onlyBuiltDependencies" at the root of the workspace instead.
+
+> @kit/content-migrations@0.1.0 verify:table D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/scripts/verification/verify-table.ts "payload" "course_lessons"
+
+Loading environment variables from .env.development
+Connecting to database: postgresql://postgres:postgres@localhost:54322/postgres?schema=payload
+Checking if table 'payload.course_lessons' exists...
+Table 'payload.course_lessons' exists
+
+--- Command Output End ---
+2025-04-25 20:00:58: Table 'payload.course_lessons' exists
+2025-04-25 20:00:58: EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload course_quizzes
+2025-04-25 20:00:58: DESCRIPTION: Verifying table 'payload.course_quizzes' exists
+--- Command Output Start ---
+apps/payload                             | ?WARN? The field "pnpm.onlyBuiltDependencies" was found in D:\SlideHeroes\App\repos\2025slideheroes\apps\payload/package.json. This will not take effect. You should configure "pnpm.onlyBuiltDependencies" at the root of the workspace instead.
+
+> @kit/content-migrations@0.1.0 verify:table D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/scripts/verification/verify-table.ts "payload" "course_quizzes"
+
+Loading environment variables from .env.development
+Connecting to database: postgresql://postgres:postgres@localhost:54322/postgres?schema=payload
+Checking if table 'payload.course_quizzes' exists...
+Table 'payload.course_quizzes' exists
+
+--- Command Output End ---
+2025-04-25 20:00:58: Table 'payload.course_quizzes' exists
+2025-04-25 20:00:58: EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload quiz_questions
+2025-04-25 20:00:58: DESCRIPTION: Verifying table 'payload.quiz_questions' exists
+--- Command Output Start ---
+apps/payload                             | ?WARN? The field "pnpm.onlyBuiltDependencies" was found in D:\SlideHeroes\App\repos\2025slideheroes\apps\payload/package.json. This will not take effect. You should configure "pnpm.onlyBuiltDependencies" at the root of the workspace instead.
+
+> @kit/content-migrations@0.1.0 verify:table D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/scripts/verification/verify-table.ts "payload" "quiz_questions"
+
+Loading environment variables from .env.development
+Connecting to database: postgresql://postgres:postgres@localhost:54322/postgres?schema=payload
+Checking if table 'payload.quiz_questions' exists...
+Table 'payload.quiz_questions' exists
+
+--- Command Output End ---
+2025-04-25 20:00:59: Table 'payload.quiz_questions' exists
+2025-04-25 20:00:59: EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload surveys
+2025-04-25 20:00:59: DESCRIPTION: Verifying table 'payload.surveys' exists
+--- Command Output Start ---
+apps/payload                             | ?WARN? The field "pnpm.onlyBuiltDependencies" was found in D:\SlideHeroes\App\repos\2025slideheroes\apps\payload/package.json. This will not take effect. You should configure "pnpm.onlyBuiltDependencies" at the root of the workspace instead.
+
+> @kit/content-migrations@0.1.0 verify:table D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/scripts/verification/verify-table.ts "payload" "surveys"
+
+Loading environment variables from .env.development
+Connecting to database: postgresql://postgres:postgres@localhost:54322/postgres?schema=payload
+Checking if table 'payload.surveys' exists...
+Table 'payload.surveys' exists
+
+--- Command Output End ---
+2025-04-25 20:01:00: Table 'payload.surveys' exists
+2025-04-25 20:01:00: EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload survey_questions
+2025-04-25 20:01:00: DESCRIPTION: Verifying table 'payload.survey_questions' exists
+--- Command Output Start ---
+apps/payload                             | ?WARN? The field "pnpm.onlyBuiltDependencies" was found in D:\SlideHeroes\App\repos\2025slideheroes\apps\payload/package.json. This will not take effect. You should configure "pnpm.onlyBuiltDependencies" at the root of the workspace instead.
+
+> @kit/content-migrations@0.1.0 verify:table D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/scripts/verification/verify-table.ts "payload" "survey_questions"
+
+Loading environment variables from .env.development
+Connecting to database: postgresql://postgres:postgres@localhost:54322/postgres?schema=payload
+Checking if table 'payload.survey_questions' exists...
+Table 'payload.survey_questions' exists
+
+--- Command Output End ---
+2025-04-25 20:01:00: Table 'payload.survey_questions' exists
+2025-04-25 20:01:00: âœ… Payload migrations completed successfully
+2025-04-25 20:01:00: âœ… Setup phase completed successfully
+2025-04-25 20:01:00 - PHASE SETUP PHASE COMPLETED (61.43s)
+2025-04-25 20:01:00: âœ… SETUP PHASE phase completed successfully (61.43s)
+
+2025-04-25 20:01:00 - ================================================================================
+2025-04-25 20:01:00 - PHASE 2/4: PROCESSING PHASE
+2025-04-25 20:01:00 - ================================================================================
+
+2025-04-25 20:01:00 - ------------------------------------------------------------
+2025-04-25 20:01:00 - STEP 4: Checking and processing raw data [STARTED]
+2025-04-25 20:01:00 - ------------------------------------------------------------
+2025-04-25 20:01:00: Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+2025-04-25 20:01:00: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-04-25 20:01:00: Processed data not found. Processing raw data...
+2025-04-25 20:01:01: Ensuring lesson metadata YAML is up to date...
+2025-04-25 20:01:01: âœ… Lesson metadata YAML exists and is up to date
+2025-04-25 20:01:01: Found HTML todo content file. Updating YAML with HTML content...
+2025-04-25 20:01:01: EXECUTING: pnpm run process:parse-lesson-todo-html
+2025-04-25 20:01:01: DESCRIPTION: Parsing HTML todo content
+2025-04-25 20:01:07: Validating HTML parsing results...
+2025-04-25 20:01:07: âœ… Updated YAML with HTML todo content
+2025-04-25 20:01:07: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes
+2025-04-25 20:01:07: âœ… Raw data processing completed
+2025-04-25 20:01:07 - STEP 4: Checking and processing raw data [COMPLETED] (6.6s)
+2025-04-25 20:01:07 - Step duration: 6.63 seconds
+2025-04-25 20:01:07: âœ… Step 4 completed successfully (6.6s)
+
+2025-04-25 20:01:07 - ------------------------------------------------------------
+2025-04-25 20:01:07 - STEP 5: Generating SQL seed files and fixing quiz ID consistency [STARTED]
+2025-04-25 20:01:07 - ------------------------------------------------------------
+2025-04-25 20:01:07: Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+2025-04-25 20:01:07: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-04-25 20:01:07: Verifying quiz system integrity...
+2025-04-25 20:01:07: EXECUTING: pnpm run verify:quiz-system-integrity
+2025-04-25 20:01:07: DESCRIPTION: Verifying quiz system integrity
+--- Command Output Start ---
+
+> @kit/content-migrations@0.1.0 verify:quiz-system-integrity D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/scripts/verification/verify-quiz-system-integrity.ts
+
+Verifying quiz system integrity...
+Verifying quiz definitions...
+Verifying quiz IDs are unique...
+Verifying lesson-quiz relations...
+Verifying lookup functions...
+Quiz system integrity verified successfully!
+
+--- Command Output End ---
+2025-04-25 20:01:08: Generating SQL seed files using YAML-based approach...
+2025-04-25 20:01:08: EXECUTING: pnpm --filter @kit/content-migrations run generate:updated-sql
+2025-04-25 20:01:08: DESCRIPTION: Generating SQL seed files using YAML metadata
+2025-04-25 20:01:08: âœ… Successfully generated SQL seed files using YAML approach
+2025-04-25 20:01:08: Fixing quiz ID consistency issues...
+2025-04-25 20:01:08: EXECUTING: pnpm run fix:quiz-id-consistency
+2025-04-25 20:01:08: DESCRIPTION: Fixing quiz ID consistency
+2025-04-25 20:01:09: âœ… SQL seed files generated and ID consistency fixed successfully
+2025-04-25 20:01:09: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-04-25 20:01:09 - STEP 5: Generating SQL seed files and fixing quiz ID consistency [COMPLETED] (1.82s)
+2025-04-25 20:01:09 - Step duration: 1.83 seconds
+2025-04-25 20:01:09: âœ… Step 5 completed successfully (1.82s)
+
+2025-04-25 20:01:09 - ------------------------------------------------------------
+2025-04-25 20:01:09 - STEP 6: Fixing references to ensure consistency [STARTED]
+2025-04-25 20:01:09 - ------------------------------------------------------------
+2025-04-25 20:01:09: Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+2025-04-25 20:01:09: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-04-25 20:01:09: Fixing lesson-quiz reference consistency...
+2025-04-25 20:01:09: EXECUTING: pnpm run fix:lesson-quiz-references
+2025-04-25 20:01:09: DESCRIPTION: Fixing lesson-quiz references
+2025-04-25 20:01:09: Fixing additional lesson-quiz reference consistency...
+2025-04-25 20:01:09: EXECUTING: pnpm run fix:lessons-quiz-references-sql
+2025-04-25 20:01:09: DESCRIPTION: Fixing additional lesson-quiz references
+2025-04-25 20:01:10: Fixing quiz question references...
+2025-04-25 20:01:10: EXECUTING: pnpm run fix:questions-quiz-references
+2025-04-25 20:01:10: DESCRIPTION: Fixing quiz question references
+2025-04-25 20:01:10: Repairing quiz-question relationships...
+2025-04-25 20:01:10: EXECUTING: pnpm run quiz:repair
+2025-04-25 20:01:10: DESCRIPTION: Repairing quiz-question relationships
+2025-04-25 20:01:21: Fixing quiz array relationships...
+2025-04-25 20:01:21: EXECUTING: pnpm run fix:quiz-array-relationships
+2025-04-25 20:01:21: DESCRIPTION: Fixing quiz array relationships
+2025-04-25 20:01:21: Verifying quiz relationships...
+2025-04-25 20:01:21: EXECUTING: pnpm run verify:quiz-relationship-migration
+2025-04-25 20:01:21: DESCRIPTION: Verifying quiz relationships
+2025-04-25 20:01:22: âœ… All references fixed successfully
+2025-04-25 20:01:22: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-04-25 20:01:22 - STEP 6: Fixing references to ensure consistency [COMPLETED] (13.12s)
+2025-04-25 20:01:22 - Step duration: 13.14 seconds
+2025-04-25 20:01:22: âœ… Step 6 completed successfully (13.12s)
+2025-04-25 20:01:22: âœ… Processing phase completed successfully
+2025-04-25 20:01:22 - PHASE PROCESSING PHASE COMPLETED (21.66s)
+2025-04-25 20:01:22: âœ… PROCESSING PHASE phase completed successfully (21.66s)
+
+2025-04-25 20:01:22 - ================================================================================
+2025-04-25 20:01:22 - PHASE 3/4: LOADING PHASE
+2025-04-25 20:01:22 - ================================================================================
+
+2025-04-25 20:01:22 - ------------------------------------------------------------
+2025-04-25 20:01:22 - STEP 7: Running content migrations via Payload migrations [STARTED]
+2025-04-25 20:01:22 - ------------------------------------------------------------
+2025-04-25 20:01:22: Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+2025-04-25 20:01:22: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\apps\payload
+2025-04-25 20:01:22: Running all Payload migrations...
+2025-04-25 20:01:22: EXECUTING: pnpm payload migrate
+2025-04-25 20:01:22: DESCRIPTION: Running Payload migrations
+2025-04-25 20:01:25: Verifying migrations...
+2025-04-25 20:01:25: EXECUTING: pnpm migrate:status
+2025-04-25 20:01:25: DESCRIPTION: Verifying migration status
+--- Command Output Start ---
+
+> payload-app@1.0.0 migrate:status D:\SlideHeroes\App\repos\2025slideheroes\apps\payload
+> cross-env NODE_OPTIONS=--no-deprecation payload migrate:status
+
+[20:01:27] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[20:01:27] [32mINFO[39m: [36mReading migration files from D:\SlideHeroes\App\repos\2025slideheroes\apps\payload\src\migrations[39m
++---------------------------------------------------------------------+
+¦[37m [0m[01m                                                 Name[0m ¦[37m [0m[01mBatch[0m ¦[37m [0m[01mRan[0m ¦
++-------------------------------------------------------+-------+-----¦
+¦[37m [0m[32m                      20250402_100000_schema_creation[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                          20250402_300000_base_schema[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                     20250402_305000_seed_course_data[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m               20250402_310000_relationship_structure[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m          20250402_330000_bidirectional_relationships[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                      20250402_340000_add_users_table[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                    20250402_350000_create_admin_user[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                      20250403_200000_process_content[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m              20250403_300000_add_lesson_enhancements[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m        20250404_100000_fix_lesson_quiz_relationships[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m             20250407_100000_add_survey_id_to_lessons[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m20250407_100000_fix_missing_lesson_quiz_relationships[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m             20250410_120500_relationship_columns_fix[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m               20250414_100000_add_private_collection[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m 20250414_150000_fix_private_id_column_in_uuid_tables[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m        20250415_100000_master_relationship_migration[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m             20250415_110000_master_relationship_view[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m      20250415_120000_proactive_uuid_table_monitoring[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m     20250415_130000_fix_downloads_relationships_view[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                  20250415_140000_fix_missing_columns[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                20250415_150000_fix_remaining_columns[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                      20250415_160000_add_todo_column[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m      20250415_170000_convert_todo_fields_to_richtext[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m          20250415_180000_fix_downloads_thumbnail_url[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                     20250415_190000_uuid_consistency[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                    20250415_200000_add_video_support[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m             20250423_113700_fix_uuid_tables_function[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m        20250424_080000_fix-uuid-tables-view-function[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                20250424_090000_add_path_to_downloads[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m        20250424_100000_fix_downloads_diagnostic_view[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m        20250424_100000_simplify_uuid_tables_tracking[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m         20250424_110000_enhance_relationship_columns[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m             20250424_120000_improved_uuid_monitoring[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m             20250424_120001_enhanced_uuid_monitoring[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m20250424_130000_fix_uuid_dynamically_generated_tables[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m        20250425_150000_remove_quiz_id_from_questions[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                     20250425_153000_minimal_quiz_fix[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                20250425_175000_quiz_jsonb_format_fix[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m  20250425_190002_comprehensive_quiz_jsonb_format_fix[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m      20250425_195000_fix_quiz_questions_jsonb_format[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
++---------------------------------------------------------------------+
+[20:01:27] [32mINFO[39m: [36mDone.[39m
+
+--- Command Output End ---
+2025-04-25 20:01:27: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\apps\payload
+2025-04-25 20:01:27: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-04-25 20:01:27: Running verification with automatic dependency handling...
+2025-04-25 20:01:27: Running verification step 'verify:todo-fields' with automatic dependency handling...
+2025-04-25 20:01:27: Ensuring dependencies for verification step 'verify:todo-fields' are run...
+2025-04-25 20:01:27: Running dependency: sql:ensure-todo-column
+2025-04-25 20:01:27: EXECUTING: pnpm run sql:ensure-todo-column
+2025-04-25 20:01:27: DESCRIPTION: Running dependency: sql:ensure-todo-column
+2025-04-25 20:01:28: Registered dependency: sql:ensure-todo-column (called by: Unknown, success: True)
+2025-04-25 20:01:28: âœ… Dependency 'sql:ensure-todo-column' completed successfully (called by: Unknown)
+2025-04-25 20:01:28: Running dependency: fix:todo-fields
+2025-04-25 20:01:28: EXECUTING: pnpm run fix:todo-fields
+2025-04-25 20:01:28: DESCRIPTION: Running dependency: fix:todo-fields
+2025-04-25 20:01:28: Registered dependency: fix:todo-fields (called by: Unknown, success: True)
+2025-04-25 20:01:28: âœ… Dependency 'fix:todo-fields' completed successfully (called by: Unknown)
+2025-04-25 20:01:28: Running dependency: fix:lexical-format
+2025-04-25 20:01:28: EXECUTING: pnpm run fix:lexical-format
+2025-04-25 20:01:28: DESCRIPTION: Running dependency: fix:lexical-format
+2025-04-25 20:01:29: Registered dependency: fix:lexical-format (called by: Unknown, success: True)
+2025-04-25 20:01:29: âœ… Dependency 'fix:lexical-format' completed successfully (called by: Unknown)
+2025-04-25 20:01:29: EXECUTING: pnpm run verify:todo-fields
+2025-04-25 20:01:29: DESCRIPTION: Verifying todo fields with dependencies
+2025-04-25 20:01:30: âœ… verify:todo-fields verification passed with automatic dependency handling
+2025-04-25 20:01:30: âœ… Todo fields verification passed with automatic dependency handling
+2025-04-25 20:01:30: Verifying basic database structure...
+2025-04-25 20:01:30: EXECUTING: pnpm run sql:verify-schema
+2025-04-25 20:01:30: DESCRIPTION: Verifying database structure
+--- Command Output Start ---
+
+> @kit/content-migrations@0.1.0 sql:verify-schema D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/scripts/sql/verify-database-schema.ts
+
+Loaded environment variables from D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations\.env.development
+Connecting to database: postgresql://postgres:postgres@localhost:54322/postgres?schema=payload
+Connected to database
+? Payload schema exists
+? Found 58 tables in payload schema
+? Required table 'courses' exists
+? Required table 'course_lessons' exists
+? Required table 'course_quizzes' exists
+? Required table 'quiz_questions' exists
+? Required table 'surveys' exists
+? Required table 'survey_questions' exists
+? Relationship table 'course_lessons_rels' exists
+? Relationship table 'course_quizzes_rels' exists
+? Relationship table 'quiz_questions_rels' exists
+? Relationship table 'survey_questions_rels' exists
+? Relationship table 'surveys_rels' exists
+
+Database verification completed successfully
+Database verification completed successfully
+
+--- Command Output End ---
+2025-04-25 20:01:30: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-04-25 20:01:30: âœ… Content migrations completed successfully
+2025-04-25 20:01:30: Identifying steps that could potentially be run in parallel...
+
+2025-04-25 20:01:30 - ------------------------------------------------------------
+2025-04-25 20:01:30 - STEP 8: Migrating blog posts with complete content [STARTED]
+2025-04-25 20:01:30 - ------------------------------------------------------------
+2025-04-25 20:01:30: Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+2025-04-25 20:01:30: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-04-25 20:01:30: Running specialized post migration script...
+2025-04-25 20:01:30: EXECUTING: pnpm run migrate:posts-direct
+2025-04-25 20:01:30: DESCRIPTION: Migrating blog posts with full content
+--- Command Output Start ---
+
+> @kit/content-migrations@0.1.0 migrate:posts-direct D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/scripts/core/migrate-posts-direct.ts
+
+Loading environment variables from .env.development
+Connecting to database: postgresql://postgres:postgres@localhost:54322/postgres?schema=payload
+Connected to database
+Validating dynamic_uuid_tables schema...
+Available columns in dynamic_uuid_tables: table_name, primary_key, created_at, needs_path_column, id, parent_id, path, private_id, order, course_id, course_lessons_id, course_quizzes_id, surveys_id, survey_questions_id, posts_id, documentation_id, downloads_id
+Schema validation successful. Available columns: table_name, primary_key, created_at, needs_path_column, id, parent_id, path, private_id, order, course_id, course_lessons_id, course_quizzes_id, surveys_id, survey_questions_id, posts_id, documentation_id, downloads_id
+Running proactive UUID table fix to ensure all columns exist...
+Running uuid table scanner function...
+UUID table scan completed successfully
+Blog posts directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations\src\data\raw\posts
+Found 9 blog post files to migrate.
+Starting migration of 9 blog post files...
+Processing art-craft-business-presentation-creation with content length: 1729 characters
+Created Lexical format for art-craft-business-presentation-creation: 5359 characters
+Creating new post with slug art-craft-business-presentation-creation and ID d318e8cf-44bb-4db1-b7a8-34c0c3276300
+Available columns in dynamic_uuid_tables: table_name, primary_key, created_at, needs_path_column, id, parent_id, path, private_id, order, course_id, course_lessons_id, course_quizzes_id, surveys_id, survey_questions_id, posts_id, documentation_id, downloads_id
+Successfully tracked UUID table: posts_d318e8cf_44bb_4db1_b7a8_34c0c3276300
+Migrated blog post: art-craft-business-presentation-creation with ID: d318e8cf-44bb-4db1-b7a8-34c0c3276300
+Processing pitch-deck with content length: 11597 characters
+Created Lexical format for pitch-deck: 34770 characters
+Creating new post with slug pitch-deck and ID a0ce6ce3-c2d7-4a0b-9485-11f02831ad64
+Available columns in dynamic_uuid_tables: table_name, primary_key, created_at, needs_path_column, id, parent_id, path, private_id, order, course_id, course_lessons_id, course_quizzes_id, surveys_id, survey_questions_id, posts_id, documentation_id, downloads_id
+Successfully tracked UUID table: posts_a0ce6ce3_c2d7_4a0b_9485_11f02831ad64
+Migrated blog post: pitch-deck with ID: a0ce6ce3-c2d7-4a0b-9485-11f02831ad64
+Processing powerpoint-presentations-defense with content length: 118 characters
+Created Lexical format for powerpoint-presentations-defense: 499 characters
+Creating new post with slug powerpoint-presentations-defense and ID bf367fa9-5a1b-43c1-94e3-3bcb0daf1e66
+Available columns in dynamic_uuid_tables: table_name, primary_key, created_at, needs_path_column, id, parent_id, path, private_id, order, course_id, course_lessons_id, course_quizzes_id, surveys_id, survey_questions_id, posts_id, documentation_id, downloads_id
+Successfully tracked UUID table: posts_bf367fa9_5a1b_43c1_94e3_3bcb0daf1e66
+Migrated blog post: powerpoint-presentations-defense with ID: bf367fa9-5a1b-43c1-94e3-3bcb0daf1e66
+Processing presentation-review-bcg with content length: 8909 characters
+Created Lexical format for presentation-review-bcg: 18536 characters
+Creating new post with slug presentation-review-bcg and ID 38e7ea9e-b271-4b3f-bc08-a85ebda03859
+Available columns in dynamic_uuid_tables: table_name, primary_key, created_at, needs_path_column, id, parent_id, path, private_id, order, course_id, course_lessons_id, course_quizzes_id, surveys_id, survey_questions_id, posts_id, documentation_id, downloads_id
+Successfully tracked UUID table: posts_38e7ea9e_b271_4b3f_bc08_a85ebda03859
+Migrated blog post: presentation-review-bcg with ID: 38e7ea9e-b271-4b3f-bc08-a85ebda03859
+Processing presentation-tips with content length: 10953 characters
+Created Lexical format for presentation-tips: 33034 characters
+Creating new post with slug presentation-tips and ID 1a192611-ee9e-413b-8ac2-3c79c569489e
+Available columns in dynamic_uuid_tables: table_name, primary_key, created_at, needs_path_column, id, parent_id, path, private_id, order, course_id, course_lessons_id, course_quizzes_id, surveys_id, survey_questions_id, posts_id, documentation_id, downloads_id
+Successfully tracked UUID table: posts_1a192611_ee9e_413b_8ac2_3c79c569489e
+Migrated blog post: presentation-tips with ID: 1a192611-ee9e-413b-8ac2-3c79c569489e
+Processing presentation-tools with content length: 576 characters
+Created Lexical format for presentation-tools: 2983 characters
+Creating new post with slug presentation-tools and ID 785dab58-14c7-4ef7-893f-33f8c7120087
+Available columns in dynamic_uuid_tables: table_name, primary_key, created_at, needs_path_column, id, parent_id, path, private_id, order, course_id, course_lessons_id, course_quizzes_id, surveys_id, survey_questions_id, posts_id, documentation_id, downloads_id
+Successfully tracked UUID table: posts_785dab58_14c7_4ef7_893f_33f8c7120087
+Migrated blog post: presentation-tools with ID: 785dab58-14c7-4ef7-893f-33f8c7120087
+Processing public-speaking-anxiety with content length: 20951 characters
+Created Lexical format for public-speaking-anxiety: 62718 characters
+Creating new post with slug public-speaking-anxiety and ID 2975b85f-4eb7-430f-8539-28b905411f4c
+Available columns in dynamic_uuid_tables: table_name, primary_key, created_at, needs_path_column, id, parent_id, path, private_id, order, course_id, course_lessons_id, course_quizzes_id, surveys_id, survey_questions_id, posts_id, documentation_id, downloads_id
+Successfully tracked UUID table: posts_2975b85f_4eb7_430f_8539_28b905411f4c
+Migrated blog post: public-speaking-anxiety with ID: 2975b85f-4eb7-430f-8539-28b905411f4c
+Processing seneca-partnership with content length: 612 characters
+Created Lexical format for seneca-partnership: 2077 characters
+Creating new post with slug seneca-partnership and ID 9efeedb0-1067-4b0f-a1dd-c5fd0e42135a
+Available columns in dynamic_uuid_tables: table_name, primary_key, created_at, needs_path_column, id, parent_id, path, private_id, order, course_id, course_lessons_id, course_quizzes_id, surveys_id, survey_questions_id, posts_id, documentation_id, downloads_id
+Successfully tracked UUID table: posts_9efeedb0_1067_4b0f_a1dd_c5fd0e42135a
+Migrated blog post: seneca-partnership with ID: 9efeedb0-1067-4b0f-a1dd-c5fd0e42135a
+Processing typology-business-charts with content length: 10010 characters
+Created Lexical format for typology-business-charts: 30541 characters
+Creating new post with slug typology-business-charts and ID f4917d92-a9f1-4b64-a548-5d0ac1ef2908
+Available columns in dynamic_uuid_tables: table_name, primary_key, created_at, needs_path_column, id, parent_id, path, private_id, order, course_id, course_lessons_id, course_quizzes_id, surveys_id, survey_questions_id, posts_id, documentation_id, downloads_id
+Successfully tracked UUID table: posts_f4917d92_a9f1_4b64_a548_5d0ac1ef2908
+Migrated blog post: typology-business-charts with ID: f4917d92-a9f1-4b64-a548-5d0ac1ef2908
+Total posts in database after migration: 9
+Successfully migrated/updated 9 of 9 posts. ?
+=========================================
+Blog posts migration complete! ?
+Total posts in database: 9
+=========================================
+
+--- Command Output End ---
+2025-04-25 20:01:32: âœ… Successfully migrated/updated 9 of 9 blog posts
+2025-04-25 20:01:32: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+
+2025-04-25 20:01:32 - ------------------------------------------------------------
+2025-04-25 20:01:32 - STEP 8: Migrating private posts with complete content [STARTED]
+2025-04-25 20:01:32 - ------------------------------------------------------------
+2025-04-25 20:01:32: Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+2025-04-25 20:01:32: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-04-25 20:01:32: Running specialized private posts migration script...
+2025-04-25 20:01:32: EXECUTING: pnpm run migrate:private-direct
+2025-04-25 20:01:32: DESCRIPTION: Migrating private posts with full content
+--- Command Output Start ---
+
+> @kit/content-migrations@0.1.0 migrate:private-direct D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/scripts/core/migrate-private-direct.ts
+
+Loading environment variables from .env.development
+Connecting to database: postgresql://postgres:postgres@localhost:54322/postgres?schema=payload
+Connected to database
+Validating dynamic_uuid_tables schema...
+Available columns in dynamic_uuid_tables: table_name, primary_key, created_at, needs_path_column, id, parent_id, path, private_id, order, course_id, course_lessons_id, course_quizzes_id, surveys_id, survey_questions_id, posts_id, documentation_id, downloads_id
+Schema validation successful. Available columns: table_name, primary_key, created_at, needs_path_column, id, parent_id, path, private_id, order, course_id, course_lessons_id, course_quizzes_id, surveys_id, survey_questions_id, posts_id, documentation_id, downloads_id
+Running proactive UUID table fix to ensure all columns exist...
+Running uuid table scanner function...
+UUID table scan completed successfully
+Private posts directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations\src\data\raw\bpm
+Found 5 private post files to migrate.
+Starting migration of 5 private post files...
+Processing bpm-blueprint with content length: 22318 characters
+Created Lexical format for bpm-blueprint: 65857 characters
+Creating new private post with slug bpm-blueprint and ID 46018af4-e26b-435a-89a0-5a7e360d6c7c
+Available columns in dynamic_uuid_tables: table_name, primary_key, created_at, needs_path_column, id, parent_id, path, private_id, order, course_id, course_lessons_id, course_quizzes_id, surveys_id, survey_questions_id, posts_id, documentation_id, downloads_id
+Successfully tracked UUID table: private_46018af4_e26b_435a_89a0_5a7e360d6c7c
+Migrated private post: bpm-blueprint with ID: 46018af4-e26b-435a-89a0-5a7e360d6c7c
+Processing bpm-prologue with content length: 23184 characters
+Created Lexical format for bpm-prologue: 66743 characters
+Creating new private post with slug bpm-prologue and ID 4b346070-3e1f-4a0d-8ed9-d66e712ce473
+Available columns in dynamic_uuid_tables: table_name, primary_key, created_at, needs_path_column, id, parent_id, path, private_id, order, course_id, course_lessons_id, course_quizzes_id, surveys_id, survey_questions_id, posts_id, documentation_id, downloads_id
+Successfully tracked UUID table: private_4b346070_3e1f_4a0d_8ed9_d66e712ce473
+Migrated private post: bpm-prologue with ID: 4b346070-3e1f-4a0d-8ed9-d66e712ce473
+Processing bpm-reinvented-1 with content length: 24769 characters
+Created Lexical format for bpm-reinvented-1: 68348 characters
+Creating new private post with slug bpm-reinvented-1 and ID 008a053b-2910-4b98-9764-02a8ada3db7e
+Available columns in dynamic_uuid_tables: table_name, primary_key, created_at, needs_path_column, id, parent_id, path, private_id, order, course_id, course_lessons_id, course_quizzes_id, surveys_id, survey_questions_id, posts_id, documentation_id, downloads_id
+Successfully tracked UUID table: private_008a053b_2910_4b98_9764_02a8ada3db7e
+Migrated private post: bpm-reinvented-1 with ID: 008a053b-2910-4b98-9764-02a8ada3db7e
+Processing bpm-reinvented-2 with content length: 25153 characters
+Created Lexical format for bpm-reinvented-2: 68814 characters
+Creating new private post with slug bpm-reinvented-2 and ID 691297df-ac0e-44d8-9d35-7156367d38c7
+Available columns in dynamic_uuid_tables: table_name, primary_key, created_at, needs_path_column, id, parent_id, path, private_id, order, course_id, course_lessons_id, course_quizzes_id, surveys_id, survey_questions_id, posts_id, documentation_id, downloads_id
+Successfully tracked UUID table: private_691297df_ac0e_44d8_9d35_7156367d38c7
+Migrated private post: bpm-reinvented-2 with ID: 691297df-ac0e-44d8-9d35-7156367d38c7
+Processing bpm-reinvented-3 with content length: 26635 characters
+Created Lexical format for bpm-reinvented-3: 70337 characters
+Creating new private post with slug bpm-reinvented-3 and ID 873cdc56-ca5e-444e-b608-c87c13cb7e44
+Available columns in dynamic_uuid_tables: table_name, primary_key, created_at, needs_path_column, id, parent_id, path, private_id, order, course_id, course_lessons_id, course_quizzes_id, surveys_id, survey_questions_id, posts_id, documentation_id, downloads_id
+Successfully tracked UUID table: private_873cdc56_ca5e_444e_b608_c87c13cb7e44
+Migrated private post: bpm-reinvented-3 with ID: 873cdc56-ca5e-444e-b608-c87c13cb7e44
+Total private posts in database after migration: 5
+Successfully migrated/updated 5 of 5 private posts. ?
+=========================================
+Private posts migration complete! ?
+Total private posts in database: 5
+=========================================
+
+--- Command Output End ---
+2025-04-25 20:01:33: âœ… Successfully migrated/updated 5 of 5 private posts
+2025-04-25 20:01:33: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+
+2025-04-25 20:01:33 - ------------------------------------------------------------
+2025-04-25 20:01:33 - STEP 8: Fixing UUID tables to ensure all required columns exist [STARTED]
+2025-04-25 20:01:33 - ------------------------------------------------------------
+2025-04-25 20:01:33: Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+2025-04-25 20:01:33: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-04-25 20:01:33: Running critical columns fix script to ensure all UUID tables have required columns...
+2025-04-25 20:01:33: EXECUTING: pnpm run uuid:fix-critical-columns
+2025-04-25 20:01:33: DESCRIPTION: Fixing critical columns in UUID tables
+2025-04-25 20:01:33: Ensuring environment variables are correctly set up...
+2025-04-25 20:01:33: EXECUTING: pnpm --filter @kit/content-migrations run uuid:ensure-env
+2025-04-25 20:01:33: DESCRIPTION: Ensuring environment variables
+2025-04-25 20:01:34: Running critical columns fix script to ensure all required columns exist...
+2025-04-25 20:01:34: EXECUTING: pnpm --filter @kit/content-migrations run uuid:fix-critical-columns-safe
+2025-04-25 20:01:34: DESCRIPTION: Fixing critical columns in UUID tables
+2025-04-25 20:01:35: Verifying critical columns...
+2025-04-25 20:01:35: EXECUTING: pnpm --filter @kit/content-migrations run uuid:verify-critical-columns
+2025-04-25 20:01:35: DESCRIPTION: Verifying critical columns
+2025-04-25 20:01:36: Running additional UUID tables fix script to add non-critical columns...
+2025-04-25 20:01:36: EXECUTING: pnpm run fix:uuid-tables
+2025-04-25 20:01:36: DESCRIPTION: Fixing UUID tables
+2025-04-25 20:01:37: Verifying UUID tables with enhanced detection...
+2025-04-25 20:01:37: EXECUTING: pnpm run uuid:verify:fixed
+2025-04-25 20:01:37: DESCRIPTION: Verifying UUID tables with enhanced detection
+2025-04-25 20:01:37: Ensuring all relationship columns exist...
+2025-04-25 20:01:37: EXECUTING: pnpm --filter @kit/content-migrations run repair:relationship-columns
+2025-04-25 20:01:37: DESCRIPTION: Fixing relationship columns
+2025-04-25 20:01:38: Verifying columns were added...
+2025-04-25 20:01:38: EXECUTING: pnpm --filter @kit/content-migrations run verify:relationship-columns
+2025-04-25 20:01:38: DESCRIPTION: Verifying relationship columns
+2025-04-25 20:01:39: âœ… UUID tables fixed and verified successfully
+2025-04-25 20:01:39: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+
+2025-04-25 20:01:39 - ------------------------------------------------------------
+2025-04-25 20:01:39 - STEP 9: Importing downloads from R2 bucket [STARTED]
+2025-04-25 20:01:39 - ------------------------------------------------------------
+2025-04-25 20:01:39: Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+2025-04-25 20:01:39: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-04-25 20:01:39: Importing downloads...
+2025-04-25 20:01:39: EXECUTING: pnpm run import:downloads
+2025-04-25 20:01:39: DESCRIPTION: Importing downloads from R2 bucket
+2025-04-25 20:01:39: âœ… Downloads imported successfully
+2025-04-25 20:01:39: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+
+2025-04-25 20:01:39 - ------------------------------------------------------------
+2025-04-25 20:01:39 - STEP 10: Fixing relationships [STARTED]
+2025-04-25 20:01:39 - ------------------------------------------------------------
+2025-04-25 20:01:39: Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+2025-04-25 20:01:39: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-04-25 20:01:39: Running edge case repairs...
+2025-04-25 20:01:39: EXECUTING: pnpm run repair:edge-cases
+2025-04-25 20:01:39: DESCRIPTION: Running edge case repairs
+2025-04-25 20:01:40: Running Payload CMS relationship fix with strict typing...
+2025-04-25 20:01:40: EXECUTING: pnpm run fix:payload-relationships-strict
+2025-04-25 20:01:40: DESCRIPTION: Fixing Payload relationships with strict typing
+2025-04-25 20:01:41: Running optimized quiz relationship repair...
+2025-04-25 20:01:41: EXECUTING: pnpm run quiz:fix:corrected
+2025-04-25 20:01:41: DESCRIPTION: Fixing quiz relationships with corrected script
+2025-04-25 20:01:52: Running enhanced comprehensive quiz-question relationship fix...
+2025-04-25 20:01:52: EXECUTING: pnpm run fix:quiz-question-relationships-enhanced
+2025-04-25 20:01:52: DESCRIPTION: Running enhanced quiz-question relationship fix
+2025-04-25 20:01:52: Verifying enhanced quiz-question relationship fix...
+2025-04-25 20:01:52: EXECUTING: pnpm run verify:quiz-relationships-enhanced
+2025-04-25 20:01:52: DESCRIPTION: Verifying enhanced quiz-question fix
+2025-04-25 20:01:53: Verifying consolidated quiz-question relationship migration...
+2025-04-25 20:01:53: EXECUTING: pnpm run verify:quiz-relationship-migration
+2025-04-25 20:01:53: DESCRIPTION: Verifying quiz relationship migration
+--- Command Output Start ---
+
+> @kit/content-migrations@0.1.0 verify:quiz-relationship-migration D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/scripts/verification/verify-quiz-relationship-migration.ts
+
+Loaded environment variables from .env.development
+Verifying quiz-question relationship consistency...
+Connecting to database: postgresql://postgres:postgres@localhost:54322/postgres?schema=payload
+Debug: quiz_id=42564568-76bb-4405-88a9-8e9fd0a9154a, array_count=8(number), rel_count=8(number), is_consistent=true
+Debug: quiz_id=791e27de-2c98-49ef-b684-6c88667d1571, array_count=5(number), rel_count=5(number), is_consistent=true
+Debug: quiz_id=c11dbb26-7561-4d12-88c8-141c653a43fd, array_count=11(number), rel_count=11(number), is_consistent=true
+Debug: quiz_id=b75e29c7-1d9f-4f41-8c91-a72847d13747, array_count=10(number), rel_count=10(number), is_consistent=true
+Debug: quiz_id=3c72b383-e17e-4b07-8a47-451cfbff29c0, array_count=6(number), rel_count=6(number), is_consistent=true
+Debug: quiz_id=c1d2e3f4-a5b6-7c8d-9e0f-1a2b3c4d5e6f, array_count=8(number), rel_count=8(number), is_consistent=true
+Debug: quiz_id=1e2f3a4b-5c6d-7e8f-9a0b-1c2d3e4f5a6b, array_count=4(number), rel_count=4(number), is_consistent=true
+Debug: quiz_id=1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d, array_count=6(number), rel_count=6(number), is_consistent=true
+Debug: quiz_id=5a8d6b7c-9e2f-4d3a-8b1c-0f9a2e4d5c6b, array_count=12(number), rel_count=12(number), is_consistent=true
+Debug: quiz_id=a0b1c2d3-e4f5-a6b7-c8d9-e0f1a2b3c4d5, array_count=4(number), rel_count=4(number), is_consistent=true
+Debug: quiz_id=a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d, array_count=5(number), rel_count=5(number), is_consistent=true
+Debug: quiz_id=a6b5c4d3-e2f1-0a9b-8c7d-6e5f4a3b2c1d, array_count=5(number), rel_count=5(number), is_consistent=true
+Debug: quiz_id=a84d3844-8c19-4c82-8a98-902c530a1a99, array_count=4(number), rel_count=4(number), is_consistent=true
+Debug: quiz_id=c7d8e9f0-a1b2-3c4d-5e6f-7a8b9c0d1e2f, array_count=2(number), rel_count=2(number), is_consistent=true
+Debug: quiz_id=d4c3b2a1-f6e5-8a7b-9c0d-1e2f3a4b5c6d, array_count=10(number), rel_count=10(number), is_consistent=true
+Debug: quiz_id=d5e6f7a8-b9c0-d1e2-f3a4-b5c6d7e8f9a0, array_count=10(number), rel_count=10(number), is_consistent=true
+Debug: quiz_id=f9e8d7c6-b5a4-3210-f9e8-d7c6b5a43210, array_count=5(number), rel_count=5(number), is_consistent=true
+Debug: quiz_id=e8f9a0b1-c2d3-e4f5-a6b7-c8d9e0f1a2b3, array_count=9(number), rel_count=9(number), is_consistent=true
+Debug: quiz_id=f1e2d3c4-b5a6-9876-5432-1098f7e6d5c4, array_count=11(number), rel_count=11(number), is_consistent=true
+Debug: quiz_id=f4e3d2c1-b6a5-8d7c-0e9f-5a4b3c2d1e0f, array_count=5(number), rel_count=5(number), is_consistent=true
+All quizzes have consistent relationships:
+- Total quizzes verified: 20
+- Total questions across all quizzes: 140
+
+Sample quiz verification:
+- Quiz "The Fundamental Elements of Design in Detail Quiz" has 8 questions properly linked
+- Quiz "Overview of Fact-based Persuasion Quiz" has 5 questions properly linked
+- Quiz "Standard Graphs Quiz" has 11 questions properly linked
+
+--- Command Output End ---
+2025-04-25 20:01:54: âœ… Consolidated quiz relationship migration verified successfully
+2025-04-25 20:01:54: Formatting quiz questions JSONB arrays for Payload compatibility...
+2025-04-25 20:01:54: EXECUTING: pnpm run fix:format-questions-jsonb
+2025-04-25 20:01:54: DESCRIPTION: Formatting quiz questions JSONB arrays
+2025-04-25 20:01:54: Verifying questions JSONB format...
+2025-04-25 20:01:54: EXECUTING: pnpm run verify:questions-jsonb-format
+2025-04-25 20:01:54: DESCRIPTION: Verifying questions JSONB format
+2025-04-25 20:01:55: ERROR: Error in step 'Verifying questions JSONB format': ?? Quiz "The Fundamental Elements of Design in Detail Quiz" (42564568-76bb-4405-88a9-8e9fd0a9154a) has 8 improperly formatted questions
+2025-04-25 20:01:55: WARNING: Continuing despite error due to continueOnError flag
+2025-04-25 20:01:55: WARNING: Some quiz questions may still have formatting issues
+2025-04-25 20:01:55: Verifying unidirectional quiz-question relationships...
+2025-04-25 20:01:55: EXECUTING: pnpm run verify:unidirectional-quiz-questions
+2025-04-25 20:01:55: DESCRIPTION: Verifying unidirectional quiz-question relationships
+2025-04-25 20:01:56: Fixing survey questions population...
+2025-04-25 20:01:56: EXECUTING: pnpm run fix:survey-questions-population
+2025-04-25 20:01:56: DESCRIPTION: Fixing survey questions population
+2025-04-25 20:01:57: Ensuring todo column exists in course_lessons table...
+2025-04-25 20:01:57: EXECUTING: pnpm run sql:ensure-todo-column
+2025-04-25 20:01:57: DESCRIPTION: Ensuring todo column exists
+2025-04-25 20:01:58: Fixing todo fields in course_lessons table...
+2025-04-25 20:01:58: EXECUTING: pnpm run fix:todo-fields
+2025-04-25 20:01:58: DESCRIPTION: Fixing todo fields
+2025-04-25 20:01:58: Fixing Lexical format in todo fields...
+2025-04-25 20:01:58: EXECUTING: pnpm run fix:lexical-format
+2025-04-25 20:01:58: DESCRIPTION: Fixing Lexical format
+2025-04-25 20:01:59: Fixing Lexical format in posts and private posts...
+2025-04-25 20:01:59: EXECUTING: pnpm run fix:post-lexical-format
+2025-04-25 20:01:59: DESCRIPTION: Fixing Post Lexical format
+2025-04-25 20:02:00: Fixing all Lexical fields across all collections...
+2025-04-25 20:02:00: EXECUTING: pnpm run fix:all-lexical-fields
+2025-04-25 20:02:00: DESCRIPTION: Fixing all Lexical fields
+2025-04-25 20:02:01: Fixing bunny_video_id fields in course_lessons table...
+2025-04-25 20:02:01: EXECUTING: pnpm run fix:bunny-video-ids
+2025-04-25 20:02:01: DESCRIPTION: Fixing bunny video IDs
+2025-04-25 20:02:03: Fixing post image relationships...
+2025-04-25 20:02:03: EXECUTING: pnpm run fix:post-image-relationships
+2025-04-25 20:02:03: DESCRIPTION: Fixing post image relationships
+2025-04-25 20:02:03: Fixing downloads relationships and URLs...
+2025-04-25 20:02:03: EXECUTING: pnpm run fix:downloads-relationships
+2025-04-25 20:02:03: DESCRIPTION: Fixing downloads relationships and URLs
+2025-04-25 20:02:04: Fixing downloads R2 integration...
+2025-04-25 20:02:04: EXECUTING: pnpm run fix:downloads-r2-integration
+2025-04-25 20:02:04: DESCRIPTION: Fixing downloads R2 integration
+2025-04-25 20:02:05: Fixing downloads metadata...
+2025-04-25 20:02:05: EXECUTING: pnpm run fix:downloads-metadata
+2025-04-25 20:02:05: DESCRIPTION: Fixing downloads metadata
+2025-04-25 20:02:05: Fixing download R2 URLs...
+2025-04-25 20:02:05: EXECUTING: pnpm run fix:download-r2-urls
+2025-04-25 20:02:05: DESCRIPTION: Fixing download R2 URLs
+2025-04-25 20:02:06: Fixing download R2 mappings...
+2025-04-25 20:02:06: EXECUTING: pnpm run fix:download-r2-mappings
+2025-04-25 20:02:06: DESCRIPTION: Fixing download R2 mappings
+2025-04-25 20:02:07: Clearing lesson content fields to fix template tag rendering...
+2025-04-25 20:02:07: EXECUTING: pnpm run clear:lesson-content
+2025-04-25 20:02:07: DESCRIPTION: Clearing lesson content fields
+2025-04-25 20:02:07: Running comprehensive relationship repair system...
+2025-04-25 20:02:07: This includes detecting, repairing, and verifying all relationships in the database
+2025-04-25 20:02:07: Starting comprehensive relationship repair phase...
+2025-04-25 20:02:07: Running relationship repair with arguments: 
+2025-04-25 20:02:07: EXECUTING: pnpm --filter @kit/content-migrations run repair:relationships 
+2025-04-25 20:02:07: DESCRIPTION: Running relationship repair
+2025-04-25 20:02:08: Verifying relationship consistency...
+2025-04-25 20:02:08: EXECUTING: pnpm --filter @kit/content-migrations run verify:relationships
+2025-04-25 20:02:08: DESCRIPTION: Verifying relationships
+2025-04-25 20:02:09: âœ… Relationship repair completed successfully!
+2025-04-25 20:02:09: âœ… Standard relationship repair completed successfully!
+2025-04-25 20:02:09: Running final verification...
+2025-04-25 20:02:09: EXECUTING: pnpm run verify:all
+2025-04-25 20:02:09: DESCRIPTION: Final verification
+--- Command Output Start ---
+
+> @kit/content-migrations@0.1.0 verify:all D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/scripts/verification/verify-all.ts
+
+Loaded environment variables from .env.development
+=== DATABASE VERIFICATION ===
+Timestamp: 2025-04-26T00:02:09.782Z
+
+Connecting to database: postgresql://postgres:postgres@localhost:54322/postgres?schema=payload
+? Payload schema exists
+? Table 'payload.courses' exists
+? Table 'payload.course_lessons' exists
+? Table 'payload.course_quizzes' exists
+? Table 'payload.quiz_questions' exists
+? Table 'payload.surveys' exists
+? Table 'payload.survey_questions' exists
+? Relationship table 'payload.course_lessons_rels' exists
+? Relationship table 'payload.course_quizzes_rels' exists
+? Relationship table 'payload.quiz_questions_rels' exists
+? Relationship table 'payload.surveys_rels' exists
+? Relationship table 'payload.survey_questions_rels' exists
+? dynamic_uuid_tables tracking table exists
+? scan_and_fix_uuid_tables function exists
+? downloads_relationships view exists
+View columns: collection_id, download_id, collection_type, table_name
+
+=== VERIFYING TODO FIELDS ===
+Starting verification of todo fields in course_lessons table...
+Connected to database
+
+Verifying lesson: Welcome to DDM (lesson-0)
+  ? Field todo is populated in database
+  ? Field todo_complete_quiz is populated in database
+  ? Field todo_read_content is populated in database
+  ? Field todo_course_project is populated in database
+
+Verifying lesson: Before we begin... (before-we-begin)
+  ? Field todo is populated in database
+  ? Field todo_complete_quiz is populated in database
+  ? Field todo_read_content is populated in database
+  ? Field todo_course_project is populated in database
+
+Verifying lesson: Presentation Tools & Course Resources (tools-and-resources)
+  ? Field todo is populated in database
+  ? Field todo_complete_quiz is populated in database
+  ? Field todo_read_content is populated in database
+  ? Field todo_course_project is populated in database
+
+Verifying lesson: Our Process (our-process)
+  ? Field todo is populated in database
+  ? Field todo_complete_quiz is populated in database
+  ? Field todo_watch_content is populated in database
+  ? Field todo_read_content is populated in database
+  ? Field todo_course_project is populated in database
+
+Verifying lesson: The Who (the-who)
+  ? Field todo is populated in database
+  ? Field todo_complete_quiz is populated in database
+  ? Field todo_watch_content is populated in database
+  ? Field todo_read_content is populated in database
+  ? Field todo_course_project is populated in database
+
+Verifying lesson: The Why: Building the Introduction (the-why-introductions)
+  ? Field todo is populated in database
+  ? Field todo_complete_quiz is populated in database
+  ? Field todo_watch_content is populated in database
+  ? Field todo_read_content is populated in database
+  ? Field todo_course_project is populated in database
+
+Verifying lesson: The Why: Next Steps (the-why-next-steps)
+  ? Field todo is populated in database
+  ? Field todo_complete_quiz is populated in database
+  ? Field todo_watch_content is populated in database
+  ? Field todo_read_content is populated in database
+  ? Field todo_course_project is populated in database
+
+Verifying lesson: Idea Generation (idea-generation)
+  ? Field todo is populated in database
+  ? Field todo_complete_quiz is populated in database
+  ? Field todo_watch_content is populated in database
+  ? Field todo_read_content is populated in database
+  ? Field todo_course_project is populated in database
+
+Verifying lesson: What is Structure? (what-is-structure)
+  ? Field todo is populated in database
+  ? Field todo_complete_quiz is populated in database
+  ? Field todo_watch_content is populated in database
+  ? Field todo_read_content is populated in database
+  ? Field todo_course_project is populated in database
+
+Verifying lesson: Using Stories (using-stories)
+  ? Field todo is populated in database
+  ? Field todo_complete_quiz is populated in database
+  ? Field todo_watch_content is populated in database
+  ? Field todo_read_content is populated in database
+  ? Field todo_course_project is populated in database
+
+Verifying lesson: Storyboards in Film (storyboards-film)
+  ? Field todo is populated in database
+  ? Field todo_complete_quiz is populated in database
+  ? Field todo_watch_content is populated in database
+  ? Field todo_read_content is populated in database
+  ? Field todo_course_project is populated in database
+
+Verifying lesson: Storyboards in Presentations (storyboards-presentations)
+  ? Field todo is populated in database
+  ? Field todo_complete_quiz is populated in database
+  ? Field todo_watch_content is populated in database
+  ? Field todo_read_content is populated in database
+  ? Field todo_course_project is populated in database
+
+Verifying lesson: Visual Perception and Communication (visual-perception)
+  ? Field todo is populated in database
+  ? Field todo_complete_quiz is populated in database
+  ? Field todo_watch_content is populated in database
+  ? Field todo_read_content is populated in database
+  ? Field todo_course_project is populated in database
+
+Verifying lesson: Overview of the Fundamental Elements of Design (fundamental-design-overview)
+  ? Field todo is populated in database
+  ? Field todo_complete_quiz is populated in database
+  ? Field todo_watch_content is populated in database
+  ? Field todo_read_content is populated in database
+  ? Field todo_course_project is populated in database
+
+Verifying lesson: The Fundamental Elements of Design in Detail (fundamental-design-detail)
+  ? Field todo is populated in database
+  ? Field todo_complete_quiz is populated in database
+  ? Field todo_watch_content is populated in database
+  ? Field todo_read_content is populated in database
+  ? Field todo_course_project is populated in database
+
+Verifying lesson: Gestalt Principles of Visual Perception (gestalt-principles)
+  ? Field todo is populated in database
+  ? Field todo_complete_quiz is populated in database
+  ? Field todo_watch_content is populated in database
+  ? Field todo_read_content is populated in database
+  ? Field todo_course_project is populated in database
+
+Verifying lesson: Slide Composition (slide-composition)
+  ? Field todo is populated in database
+  ? Field todo_complete_quiz is populated in database
+  ? Field todo_watch_content is populated in database
+  ? Field todo_read_content is populated in database
+  ? Field todo_course_project is populated in database
+
+Verifying lesson: Tables vs. Graphs (tables-vs-graphs)
+  ? Field todo is populated in database
+  ? Field todo_complete_quiz is populated in database
+  ? Field todo_watch_content is populated in database
+  ? Field todo_read_content is populated in database
+  ? Field todo_course_project is populated in database
+
+Verifying lesson: Standard Graphs (basic-graphs)
+  ? Field todo is populated in database
+  ? Field todo_complete_quiz is populated in database
+  ? Field todo_watch_content is populated in database
+  ? Field todo_read_content is populated in database
+  ? Field todo_course_project is populated in database
+
+Verifying lesson: Overview of Fact-based Persuasion (fact-based-persuasion)
+  ? Field todo is populated in database
+  ? Field todo_complete_quiz is populated in database
+  ? Field todo_watch_content is populated in database
+  ? Field todo_read_content is populated in database
+  ? Field todo_course_project is populated in database
+
+Verifying lesson: Specialist Graphs (specialist-graphs)
+  ? Field todo is populated in database
+  ? Field todo_complete_quiz is populated in database
+  ? Field todo_watch_content is populated in database
+  ? Field todo_read_content is populated in database
+  ? Field todo_course_project is populated in database
+
+Verifying lesson: Preparation and Practice (preparation-practice)
+  ? Field todo is populated in database
+  ? Field todo_complete_quiz is populated in database
+  ? Field todo_watch_content is populated in database
+  ? Field todo_read_content is populated in database
+  ? Field todo_course_project is populated in database
+
+Verifying lesson: Performance (performance)
+  ? Field todo is populated in database
+  ? Field todo_complete_quiz is populated in database
+  ? Field todo_watch_content is populated in database
+  ? Field todo_read_content is populated in database
+  ? Field todo_course_project is populated in database
+
+Verifying lesson: Congratulations (congratulations)
+  ? Field todo is populated in database
+  ? Field todo_complete_quiz is populated in database
+  ? Field todo_read_content is populated in database
+  ? Field todo_course_project is populated in database
+
+Verifying lesson: Before you go... (before-you-go)
+  ? Field todo is populated in database
+  ? Field todo_complete_quiz is populated in database
+  ? Field todo_read_content is populated in database
+  ? Field todo_course_project is populated in database
+
+Verification Summary:
+Total lessons checked: 25
+Fields expected to be populated: 120
+Fields actually populated: 120
+
+Verification PASSED: All expected todo fields are properly populated
+Database connection closed
+? Todo fields verification passed
+
+=== VERIFYING UNIDIRECTIONAL QUIZ-QUESTION RELATIONSHIPS ===
+Verifying unidirectional quiz-question relationships...
+Found 20 quizzes to verify
+? Quiz "Gestalt Principles of Visual Perception Quiz" has 4 questions in the relationship table
+? Quiz "Idea Generation Quiz" has 3 questions in the relationship table
+? Quiz "Our Process Quiz" has 9 questions in the relationship table
+? Quiz "Overview of Fact-based Persuasion Quiz" has 2 questions in the relationship table
+? Quiz "Overview of the Fundamental Elements of Design Quiz" has 1 questions in the relationship table
+? Quiz "Performance Quiz" has 3 questions in the relationship table
+? Quiz "Perparation & Practice Quiz" has 8 questions in the relationship table
+? Quiz "Slide Composition Quiz" has 5 questions in the relationship table
+? Quiz "Specialist Graphs Quiz" has 6 questions in the relationship table
+? Quiz "Standard Graphs Quiz" has 8 questions in the relationship table
+? Quiz "Storyboards in Film Quiz" has 3 questions in the relationship table
+? Quiz "Storyboards in Presentations Quiz" has 2 questions in the relationship table
+? Quiz "Tables vs Graphs Quiz" has 4 questions in the relationship table
+? Quiz "The Fundamental Elements of Design in Detail Quiz" has 6 questions in the relationship table
+? Quiz "The Who Quiz" has 7 questions in the relationship table
+? Quiz "The Why (Introductions) Quiz" has 6 questions in the relationship table
+? Quiz "The Why (Next Steps) Quiz" has 4 questions in the relationship table
+? Quiz "Using Stories Quiz" has 3 questions in the relationship table
+? Quiz "Visual Perception and Communication Quiz" has 4 questions in the relationship table
+? Quiz "What is Structure? Quiz" has 6 questions in the relationship table
+? All quiz-question relationships are consistent with the unidirectional model
+? Unidirectional quiz-question relationships verification passed
+
+=== VERIFICATION SUMMARY ===
+? All database verifications passed successfully
+Database verification completed successfully
+
+--- Command Output End ---
+2025-04-25 20:02:09: âœ… All relationship issues have been fixed
+2025-04-25 20:02:09: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+
+2025-04-25 20:02:09 - ------------------------------------------------------------
+2025-04-25 20:02:09 - STEP 10: Fixing S3 storage issues [STARTED]
+2025-04-25 20:02:09 - ------------------------------------------------------------
+2025-04-25 20:02:09: Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+2025-04-25 20:02:09: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-04-25 20:02:09: Creating fallback files for S3 storage...
+2025-04-25 20:02:09: EXECUTING: pnpm --filter @kit/content-migrations run create:fallback-files
+2025-04-25 20:02:09: DESCRIPTION: Creating fallback files
+2025-04-25 20:02:10: Setting up S3 fallback middleware...
+2025-04-25 20:02:10: EXECUTING: pnpm --filter @kit/content-migrations run setup:s3-fallback-middleware
+2025-04-25 20:02:10: DESCRIPTION: Setting up S3 fallback middleware
+2025-04-25 20:02:11: Fixing S3 references in database...
+2025-04-25 20:02:11: EXECUTING: pnpm --filter @kit/content-migrations run fix:s3-references
+2025-04-25 20:02:11: DESCRIPTION: Fixing S3 references
+2025-04-25 20:02:12: Creating thumbnail placeholders...
+2025-04-25 20:02:12: EXECUTING: pnpm --filter @kit/content-migrations run create:thumbnail-placeholders
+2025-04-25 20:02:12: DESCRIPTION: Creating thumbnail placeholders
+2025-04-25 20:02:12: âœ… S3 storage issues fixed successfully
+2025-04-25 20:02:12: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+
+2025-04-25 20:02:12 - ------------------------------------------------------------
+2025-04-25 20:02:12 - STEP 11: Performing comprehensive database verification [STARTED]
+2025-04-25 20:02:12 - ------------------------------------------------------------
+2025-04-25 20:02:12: Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+2025-04-25 20:02:12: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-04-25 20:02:12: Checking database environment settings...
+2025-04-25 20:02:12: âœ… Database environment settings are properly configured
+2025-04-25 20:02:12: Running comprehensive verification with dependency handling...
+2025-04-25 20:02:12: Running verification step 'verify:todo-fields' with automatic dependency handling...
+2025-04-25 20:02:12: Ensuring dependencies for verification step 'verify:todo-fields' are run...
+2025-04-25 20:02:12: Dependency 'sql:ensure-todo-column' already completed (called by: Unknown), skipping
+2025-04-25 20:02:13: âœ… verify:todo-fields verification passed with automatic dependency handling
+2025-04-25 20:02:13: âœ… Todo fields verification passed with dependency handling
+2025-04-25 20:02:13: Verifying database schema...
+2025-04-25 20:02:13: EXECUTING: pnpm run sql:verify-schema
+2025-04-25 20:02:13: DESCRIPTION: Final database verification
+--- Command Output Start ---
+
+> @kit/content-migrations@0.1.0 sql:verify-schema D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/scripts/sql/verify-database-schema.ts
+
+Loaded environment variables from D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations\.env.development
+Connecting to database: postgresql://postgres:postgres@localhost:54322/postgres?schema=payload
+Connected to database
+? Payload schema exists
+? Found 64 tables in payload schema
+? Required table 'courses' exists
+? Required table 'course_lessons' exists
+? Required table 'course_quizzes' exists
+? Required table 'quiz_questions' exists
+? Required table 'surveys' exists
+? Required table 'survey_questions' exists
+? Relationship table 'course_lessons_rels' exists
+? Relationship table 'course_quizzes_rels' exists
+? Relationship table 'quiz_questions_rels' exists
+? Relationship table 'survey_questions_rels' exists
+? Relationship table 'surveys_rels' exists
+
+Database verification completed successfully
+Database verification completed successfully
+
+--- Command Output End ---
+2025-04-25 20:02:14: âœ… Database schema verification passed
+2025-04-25 20:02:14: Verifying relationship consistency using hybrid verification...
+2025-04-25 20:02:14: EXECUTING: pnpm run verify:relationships:hybrid
+2025-04-25 20:02:14: DESCRIPTION: Hybrid relationship verification
+--- Command Output Start ---
+
+> @kit/content-migrations@0.1.0 verify:relationships:hybrid D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/scripts/verification/relationships/hybrid-verification.ts
+
+Loaded environment variables from .env.development
+
+--- Command Output End ---
+2025-04-25 20:02:14: âœ… Hybrid relationship verification passed
+2025-04-25 20:02:14: Running final comprehensive verification...
+2025-04-25 20:02:14: Running verification step 'verify:all' with automatic dependency handling...
+2025-04-25 20:02:14: Ensuring dependencies for verification step 'verify:all' are run...
+2025-04-25 20:02:14: Dependency 'sql:ensure-todo-column' already completed (called by: Unknown), skipping
+2025-04-25 20:02:14: Dependency 'fix:todo-fields' already completed (called by: Unknown), skipping
+2025-04-25 20:02:14: Dependency 'fix:lexical-format' already completed (called by: Unknown), skipping
+2025-04-25 20:02:14: Running dependency: fix:payload-relationships-strict-improved
+2025-04-25 20:02:14: EXECUTING: pnpm run fix:payload-relationships-strict-improved
+2025-04-25 20:02:14: DESCRIPTION: Running dependency: fix:payload-relationships-strict-improved
+2025-04-25 20:02:15: Registered dependency: fix:payload-relationships-strict-improved (called by: Unknown, success: True)
+2025-04-25 20:02:15: âœ… Dependency 'fix:payload-relationships-strict-improved' completed successfully (called by: Unknown)
+2025-04-25 20:02:15: EXECUTING: pnpm run verify:all
+2025-04-25 20:02:15: DESCRIPTION: Final comprehensive verification
+2025-04-25 20:02:16: âœ… verify:all verification passed with automatic dependency handling
+2025-04-25 20:02:16: âœ… Comprehensive verification passed with dependency handling
+2025-04-25 20:02:16: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-04-25 20:02:16: âœ… Database verification completed successfully
+
+2025-04-25 20:02:16 - ------------------------------------------------------------
+2025-04-25 20:02:16 - STEP 12: Creating certificates storage bucket in Supabase [STARTED]
+2025-04-25 20:02:16 - ------------------------------------------------------------
+2025-04-25 20:02:16: Certificates bucket is created during migration with direct SQL INSERT
+2025-04-25 20:02:16: âœ… Database migrations successfully handle certificates bucket creation
+2025-04-25 20:02:16: âœ… Loading phase completed successfully
+2025-04-25 20:02:16 - PHASE LOADING PHASE COMPLETED (53.64s)
+2025-04-25 20:02:16: âœ… LOADING PHASE phase completed successfully (53.64s)
+
+2025-04-25 20:02:16 - ================================================================================
+2025-04-25 20:02:16 - PHASE 4/4: POST-VERIFICATION PHASE
+2025-04-25 20:02:16 - ================================================================================
+
+2025-04-25 20:02:16 - ------------------------------------------------------------
+2025-04-25 20:02:16 - STEP 12: Verifying posts content integrity [STARTED]
+2025-04-25 20:02:16 - ------------------------------------------------------------
+2025-04-25 20:02:16: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-04-25 20:02:16: Running post content verification with dependency handling...
+2025-04-25 20:02:16: Running verification step 'verify:post-content' with automatic dependency handling...
+2025-04-25 20:02:16: Ensuring dependencies for verification step 'verify:post-content' are run...
+2025-04-25 20:02:16: Running dependency: fix:post-lexical-format
+2025-04-25 20:02:16: EXECUTING: pnpm run fix:post-lexical-format
+2025-04-25 20:02:16: DESCRIPTION: Running dependency: fix:post-lexical-format
+2025-04-25 20:02:17: Registered dependency: fix:post-lexical-format (called by: Unknown, success: True)
+2025-04-25 20:02:17: âœ… Dependency 'fix:post-lexical-format' completed successfully (called by: Unknown)
+2025-04-25 20:02:17: Running dependency: fix:all-lexical-fields
+2025-04-25 20:02:17: EXECUTING: pnpm run fix:all-lexical-fields
+2025-04-25 20:02:17: DESCRIPTION: Running dependency: fix:all-lexical-fields
+2025-04-25 20:02:18: Registered dependency: fix:all-lexical-fields (called by: Unknown, success: True)
+2025-04-25 20:02:18: âœ… Dependency 'fix:all-lexical-fields' completed successfully (called by: Unknown)
+2025-04-25 20:02:18: Running dependency: fix:post-image-relationships
+2025-04-25 20:02:18: EXECUTING: pnpm run fix:post-image-relationships
+2025-04-25 20:02:18: DESCRIPTION: Running dependency: fix:post-image-relationships
+2025-04-25 20:02:19: Registered dependency: fix:post-image-relationships (called by: Unknown, success: True)
+2025-04-25 20:02:19: âœ… Dependency 'fix:post-image-relationships' completed successfully (called by: Unknown)
+2025-04-25 20:02:19: EXECUTING: pnpm run verify:post-content
+2025-04-25 20:02:19: DESCRIPTION: Verifying posts content with dependencies
+2025-04-25 20:02:19: âœ… verify:post-content verification passed with automatic dependency handling
+2025-04-25 20:02:19: âœ… Post content verification passed with automatic dependency handling
+2025-04-25 20:02:19: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-04-25 20:02:19 - STEP 12: Verifying posts content integrity [COMPLETED] (3.37s)
+2025-04-25 20:02:19 - Step duration: 3.39 seconds
+2025-04-25 20:02:19: âœ… Step 12 completed successfully (3.37s)
+2025-04-25 20:02:19 - PHASE POST-VERIFICATION PHASE COMPLETED (3.41s)
+2025-04-25 20:02:19: âœ… POST-VERIFICATION PHASE phase completed successfully (3.41s)
+2025-04-25 20:02:19: Performance timing finalized. Total duration: 2.34 minutes
+2025-04-25 20:02:19: WARNING: Migration process completed with warnings or errors. Please check the logs for details.
+
+2025-04-25 20:02:19 - PERFORMANCE REPORT
+2025-04-25 20:02:19 - Total Execution Time: 2.34 minutes (140.27 seconds)
+2025-04-25 20:02:19 - Phase Timings:
+2025-04-25 20:02:19 -   SETUP PHASE - 61.43 seconds (43.8% of total)
+2025-04-25 20:02:19 -   PROCESSING PHASE - 21.66 seconds (15.4% of total)
+2025-04-25 20:02:19 -   LOADING PHASE - 53.64 seconds (38.2% of total)
+2025-04-25 20:02:19 -   POST-VERIFICATION PHASE - 3.41 seconds (2.4% of total)
+2025-04-25 20:02:19 - Step Timings (Top 10 longest steps):
+2025-04-25 20:02:19 -   6-Fixing references to ensure consistency - 13.14 seconds (9.4% of total)
+2025-04-25 20:02:19 -   4-Checking and processing raw data - 6.63 seconds (4.7% of total)
+2025-04-25 20:02:19 -   12-Verifying posts content integrity - 3.39 seconds (2.4% of total)
+2025-04-25 20:02:19 -   5-Generating SQL seed files and fixing quiz ID consistency - 1.83 seconds (1.3% of total)
+2025-04-25 20:02:19: Migration Status:
+2025-04-25 20:02:19: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-04-25 20:02:20: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-04-25 20:02:20: Error Summary:
+2025-04-25 20:02:20: Migration process completed with warnings or errors. Please check the logs for details.
+2025-04-25 20:02:20: Migration logs saved to:
+2025-04-25 20:02:20:   - Transcript log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-log-20250425-195959-433.txt
+2025-04-25 20:02:20:   - Detailed log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250425-195959-433.txt

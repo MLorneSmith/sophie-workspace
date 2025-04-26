@@ -264,7 +264,17 @@ function Fix-Relationships {
 
         # Format quiz questions JSONB arrays for Payload compatibility
         Log-Message "Formatting quiz questions JSONB arrays for Payload compatibility..." "Yellow"
-        Exec-Command -command "pnpm run fix:format-questions-jsonb" -description "Formatting quiz questions JSONB arrays" -continueOnError
+        Log-Message "Using comprehensive JSONB formatter for perfect Payload CMS compatibility..." "Yellow"
+        Exec-Command -command "pnpm run fix:questions-jsonb-comprehensive" -description "Comprehensive quiz questions JSONB fix" -continueOnError
+
+        # Fall back to individual approaches if needed
+        if ($LASTEXITCODE -ne 0) {
+            Log-Message "Comprehensive fix failed, falling back to individual approaches..." "Yellow"
+            Exec-Command -command "pnpm run fix:format-questions-jsonb-drizzle" -description "Formatting quiz questions JSONB arrays with Drizzle" -continueOnError
+
+            Log-Message "Using direct approach as a secondary fallback..." "Yellow"
+            Exec-Command -command "pnpm run fix:format-questions-jsonb-direct" -description "Direct JSONB formatting for quizzes" -continueOnError
+        }
 
         # Verify questions JSONB format
         Log-Message "Verifying questions JSONB format..." "Yellow"

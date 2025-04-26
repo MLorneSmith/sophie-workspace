@@ -1,0 +1,127 @@
+{
+  "mcpServers": {
+    "postgres": {
+      "command": "cmd.exe",
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "@modelcontextprotocol/server-postgres",
+        "postgresql://postgres:postgres@localhost:54322/postgres"
+      ],
+      "disabled": false,
+      "autoApprove": []
+    },
+    "mcp-installer": {
+      "command": "cmd.exe",
+      "args": ["/c", "npx", "-y", "@anaisbetts/mcp-installer"],
+      "disabled": false,
+      "autoApprove": []
+    },
+    "@modelcontextprotocol/server-sequential-thinking": {
+      "command": "cmd.exe",
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "@modelcontextprotocol/server-sequential-thinking"
+      ],
+      "disabled": false,
+      "autoApprove": []
+    },
+    "lancedb": {
+      "command": "node",
+      "args": [
+        "C:/Users/msmit/Documents/Cline/MCP/lance-mcp/dist/index.js",
+        "D:/slideheroes/app/documentation-system/db"
+      ],
+      "disabled": false,
+      "autoApprove": ["chunks_search", "all_chunks_search", "catalog_search"]
+    },
+    "perplexity-server": {
+      "command": "node",
+      "args": [
+        "C:/Users/msmit/Documents/Cline/MCP/perplexity-server/build/index.js"
+      ],
+      "env": {
+        "PERPLEXITY_API_KEY": "pplx-it5fd507a4xXLO6jzg4dpKtA9aJKWjMzPLEVdfUbTTdqW6yJG"
+      },
+      "disabled": false,
+      "autoApprove": [
+        "search",
+        "get_documentation",
+        "find_apis",
+        "check_deprecated_code"
+      ],
+      "timeout": 300
+    },
+    "brave-search": {
+      "command": "cmd.exe",
+      "args": ["/c", "npx", "-y", "@modelcontextprotocol/server-brave-search"],
+      "env": {
+        "BRAVE_API_KEY": "BSA_2Ly1XyddDLtmAxZ2fev_ht68yPB"
+      },
+      "disabled": false,
+      "autoApprove": []
+    },
+    "github.com/modelcontextprotocol/servers/tree/main/src/github": {
+      "command": "cmd.exe",
+      "args": ["/c", "npx", "-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "ghp_a3pUZNgTujHjWeQvgLnVC7o7DdeXp8444CRZOk"
+      },
+      "disabled": false,
+      "autoApprove": ["list_commits", "get_file_contents"]
+    },
+    "cloudflare": {
+      "command": "C:\\Program Files\\nodejs\\node.EXE",
+      "args": [
+        "C:\\Program Files\\nodejs\\node_modules\\@cloudflare\\mcp-server-cloudflare\\dist\\index.js",
+        "run",
+        "d33fc17df32ce7d9d48eb8045f1d340a"
+      ],
+      "disabled": false,
+      "autoApprove": []
+    },
+    "github.com/supabase-community/supabase-mcp": {
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "@supabase/mcp-server-supabase@latest",
+        "--access-token",
+        "sbp_f668506bf2bb5540cb4990cea032d1d5b0faeccc"
+      ],
+      "command": "cmd",
+      "autoApprove": [],
+      "disabled": false
+    },
+    "github.com/upstash/context7-mcp": {
+      "command": "cmd.exe",
+      "args": ["/c", "npx", "-y", "@upstash/context7-mcp@latest"],
+      "disabled": false,
+      "autoApprove": []
+    },
+    "deebo": {
+      "command": "node",
+      "args": [
+        "--experimental-specifier-resolution=node",
+        "--experimental-modules",
+        "--max-old-space-size=4096",
+        "C:\\Users\\msmit\\Documents\\Cline\\MCP\\deebo\\build\\index.js"
+      ],
+      "env": {
+        "NODE_ENV": "development",
+        "USE_MEMORY_BANK": "true",
+        "MOTHER_HOST": "claude",
+        "MOTHER_MODEL": "claude-3-opus-20240229",
+        "SCENARIO_HOST": "claude",
+        "SCENARIO_MODEL": "claude-3-sonnet-20240229"
+      },
+      "disabled": false,
+      "autoApprove": [],
+      "timeout": 30,
+      "transportType": "stdio"
+    }
+  }
+}
