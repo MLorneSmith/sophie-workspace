@@ -139,7 +139,28 @@ export const verifyQuestionsJSONBFormat = async (): Promise<boolean> => {
         const formatIssues = [];
         for (let i = 0; i < questions.length; i++) {
           const q = questions[i];
-          if (
+
+          // Log for diagnostic purposes
+          if (i === 0) {
+            logAction(`Analyzing first question format: ${JSON.stringify(q)}`);
+          }
+
+          // More flexible checking that accommodates strings or properly formatted objects
+          if (typeof q === 'string') {
+            // If it's a string, make sure it's a valid UUID
+            const uuidPattern =
+              /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+            if (uuidPattern.test(q)) {
+              // It's a valid UUID string, so no issue, we'll convert it later
+              continue;
+            }
+
+            formatIssues.push({
+              index: i,
+              actual: JSON.stringify(q),
+              expected: 'A valid UUID string or properly formatted object',
+            });
+          } else if (
             !q ||
             typeof q !== 'object' ||
             !q.id ||

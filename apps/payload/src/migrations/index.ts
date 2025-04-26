@@ -31,7 +31,12 @@ import * as migration_20250430_120000_fix_remaining_columns from './20250415_150
 import * as migration_20250430_130000_fix_downloads_thumbnail_url from './20250415_180000_fix_downloads_thumbnail_url'
 import * as migration_20250430_140000_uuid_consistency from './20250415_190000_uuid_consistency'
 import * as migration_20250424_120001_enhanced_uuid_monitoring from './20250424_120001_enhanced_uuid_monitoring'
+import * as migration_20250425_150000_remove_quiz_id_from_questions from './20250425_150000_remove_quiz_id_from_questions'
 import * as migration_20250425_153000_minimal_quiz_fix from './20250425_153000_minimal_quiz_fix'
+// import * as migration_20250425_190000_comprehensive_quiz_jsonb_format_fix from './20250425_190000_comprehensive_quiz_jsonb_format_fix'
+// import * as migration_20250425_190001_comprehensive_quiz_jsonb_format_fix from './20250425_190001_comprehensive_quiz_jsonb_format_fix'
+import * as migration_20250425_190002_comprehensive_quiz_jsonb_format_fix from './20250425_190002_comprehensive_quiz_jsonb_format_fix'
+import * as migration_20250425_195000_fix_quiz_questions_jsonb_format from './20250425_195000_fix_quiz_questions_jsonb_format'
 // Don't import 20250424_130000_fix_uuid_dynamically_generated_tables directly to avoid circular dependencies
 
 export const migrations = [
@@ -180,10 +185,28 @@ export const migrations = [
       return migration.down(args)
     },
   },
+  // Add remove quiz ID from questions migration (unidirectional relationship model)
+  {
+    up: migration_20250425_150000_remove_quiz_id_from_questions.up,
+    down: migration_20250425_150000_remove_quiz_id_from_questions.down,
+    name: '20250425_150000_remove_quiz_id_from_questions',
+  },
   // Add minimal quiz relationship fix migration
   {
     up: migration_20250425_153000_minimal_quiz_fix.up,
     down: migration_20250425_153000_minimal_quiz_fix.down,
     name: '20250425_153000_minimal_quiz_fix',
+  },
+  // Add comprehensive quiz JSONB format fix migration (fixed version without ORDER BY clauses)
+  {
+    up: migration_20250425_190002_comprehensive_quiz_jsonb_format_fix.up,
+    down: migration_20250425_190002_comprehensive_quiz_jsonb_format_fix.down,
+    name: '20250425_190002_comprehensive_quiz_jsonb_format_fix',
+  },
+  // Add improved quiz questions JSONB format fix migration
+  {
+    up: migration_20250425_195000_fix_quiz_questions_jsonb_format.up,
+    down: migration_20250425_195000_fix_quiz_questions_jsonb_format.down,
+    name: '20250425_195000_fix_quiz_questions_jsonb_format',
   },
 ]

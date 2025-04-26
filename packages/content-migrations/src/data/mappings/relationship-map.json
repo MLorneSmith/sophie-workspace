@@ -1,11 +1,11 @@
 {
   "collections": {
-    "uuid_table_monitor": {
-      "name": "uuid_table_monitor",
-      "relationships": []
-    },
     "downloads": {
       "name": "downloads",
+      "relationships": []
+    },
+    "uuid_table_monitor": {
+      "name": "uuid_table_monitor",
       "relationships": []
     },
     "posts_downloads": {
@@ -24,10 +24,6 @@
       "name": "private_downloads",
       "relationships": []
     },
-    "courses": {
-      "name": "courses",
-      "relationships": []
-    },
     "course_lessons": {
       "name": "course_lessons",
       "relationships": [
@@ -42,8 +38,12 @@
         }
       ]
     },
-    "media": {
-      "name": "media",
+    "courses": {
+      "name": "courses",
+      "relationships": []
+    },
+    "payload_migrations": {
+      "name": "payload_migrations",
       "relationships": []
     },
     "course_quizzes": {
@@ -69,8 +69,8 @@
         }
       ]
     },
-    "payload_migrations": {
-      "name": "payload_migrations",
+    "media": {
+      "name": "media",
       "relationships": []
     },
     "surveys": {
@@ -227,6 +227,7 @@
     }
   },
   "relationshipTables": [
+    "downloads_rels",
     "posts_downloads_rels",
     "documentation_downloads_rels",
     "surveys_downloads_rels",
@@ -241,8 +242,7 @@
     "course_quizzes_rels",
     "quiz_questions_rels",
     "payload_locked_documents_rels",
-    "payload_preferences_rels",
-    "downloads_rels"
+    "payload_preferences_rels"
   ],
   "uuidTables": []
 }

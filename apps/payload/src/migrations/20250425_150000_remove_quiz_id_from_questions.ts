@@ -1,8 +1,11 @@
 import { MigrateDownArgs, MigrateUpArgs, sql } from '@payloadcms/db-postgres'
 
 /**
+ * Migration 20250425_150000_remove_quiz_id_from_questions.ts
+ *
  * Migration to implement unidirectional relationship from CourseQuizzes → QuizQuestions
  * - Removes quiz_id field from quiz_questions collection for unidirectional relationship model
+ * - This migration should run BEFORE quiz format fixes
  *
  * Note: Relationship preservation is handled by the content migration script:
  * packages/content-migrations/src/scripts/repair/fix-unidirectional-quiz-relationships.ts
