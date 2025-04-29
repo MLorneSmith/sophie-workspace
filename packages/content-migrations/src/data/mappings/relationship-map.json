@@ -1,11 +1,11 @@
 {
   "collections": {
-    "downloads": {
-      "name": "downloads",
-      "relationships": []
-    },
     "uuid_table_monitor": {
       "name": "uuid_table_monitor",
+      "relationships": []
+    },
+    "downloads": {
+      "name": "downloads",
       "relationships": []
     },
     "posts_downloads": {
@@ -22,28 +22,6 @@
     },
     "private_downloads": {
       "name": "private_downloads",
-      "relationships": []
-    },
-    "course_lessons": {
-      "name": "course_lessons",
-      "relationships": [
-        {
-          "sourceCollection": "course_lessons",
-          "sourceField": null,
-          "targetCollection": "unknown",
-          "relationType": "hasOne",
-          "relationshipPath": null,
-          "isRequired": false,
-          "relationshipTable": "course_lessons_rels"
-        }
-      ]
-    },
-    "courses": {
-      "name": "courses",
-      "relationships": []
-    },
-    "payload_migrations": {
-      "name": "payload_migrations",
       "relationships": []
     },
     "course_quizzes": {
@@ -68,6 +46,28 @@
           "relationshipTable": "course_quizzes_rels"
         }
       ]
+    },
+    "courses": {
+      "name": "courses",
+      "relationships": []
+    },
+    "course_lessons": {
+      "name": "course_lessons",
+      "relationships": [
+        {
+          "sourceCollection": "course_lessons",
+          "sourceField": null,
+          "targetCollection": "unknown",
+          "relationType": "hasOne",
+          "relationshipPath": null,
+          "isRequired": false,
+          "relationshipTable": "course_lessons_rels"
+        }
+      ]
+    },
+    "payload_migrations": {
+      "name": "payload_migrations",
+      "relationships": []
     },
     "media": {
       "name": "media",
@@ -227,7 +227,6 @@
     }
   },
   "relationshipTables": [
-    "downloads_rels",
     "posts_downloads_rels",
     "documentation_downloads_rels",
     "surveys_downloads_rels",
@@ -242,7 +241,8 @@
     "course_quizzes_rels",
     "quiz_questions_rels",
     "payload_locked_documents_rels",
-    "payload_preferences_rels"
+    "payload_preferences_rels",
+    "downloads_rels"
   ],
   "uuidTables": []
 }
