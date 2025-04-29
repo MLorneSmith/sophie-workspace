@@ -79,7 +79,9 @@
     "@types/lodash": "^4.17.15",
     "@types/uuid": "^9.0.7",
     "@vercel/blob": "^0.27.1",
+    "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "lodash": "^4.17.21",
     "lucide-react": "^0.503.0",
     "next": "15.3.1",
     "next-sitemap": "^4.2.3",
@@ -93,6 +95,7 @@
     "recharts": "2.15.3",
     "sonner": "^2.0.3",
     "tailwind-merge": "^3.2.0",
+    "uuid": "^9.0.1",
     "zod": "^3.24.3"
   },
   "devDependencies": {

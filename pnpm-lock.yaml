@@ -235,7 +235,7 @@ importers:
         version: 9.1.2
       css-loader:
         specifier: ^7.1.2
-        version: 7.1.2(webpack@5.99.5(@swc/core@1.3.78(@swc/helpers@0.5.15))(esbuild@0.19.12))
+        version: 7.1.2(webpack@5.99.5(@swc/core@1.3.78(@swc/helpers@0.5.15)))
       eslint:
         specifier: ^9.25.1
         version: 9.25.1(jiti@2.4.2)
@@ -247,7 +247,7 @@ importers:
         version: 8.5.3
       postcss-loader:
         specifier: ^8.1.1
-        version: 8.1.1(postcss@8.5.3)(typescript@5.8.3)(webpack@5.99.5(@swc/core@1.3.78(@swc/helpers@0.5.15))(esbuild@0.19.12))
+        version: 8.1.1(postcss@8.5.3)(typescript@5.8.3)(webpack@5.99.5(@swc/core@1.3.78(@swc/helpers@0.5.15)))
       prettier:
         specifier: ^3.5.3
         version: 3.5.3
@@ -346,7 +346,7 @@ importers:
         version: 0.0.10(@supabase/postgrest-js@1.19.4)(@supabase/supabase-js@2.49.4)
       '@makerkit/data-loader-supabase-nextjs':
         specifier: ^1.2.5
-        version: 1.2.5(@supabase/postgrest-js@1.19.4)(@supabase/supabase-js@2.49.4)(@tanstack/react-query@5.74.4(react@19.1.0))(next@15.3.1(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(babel-plugin-react-compiler@19.1.0-rc.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(sass@1.77.4))(react@19.1.0)
+        version: 1.2.5(@supabase/postgrest-js@1.19.4)(@supabase/supabase-js@2.49.4)(@tanstack/react-query@5.74.4(react@19.1.0))(next@15.3.1(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(sass@1.77.4))(react@19.1.0)
       '@marsidev/react-turnstile':
         specifier: ^1.1.0
         version: 1.1.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -410,9 +410,15 @@ importers:
       '@vercel/blob':
         specifier: ^0.27.1
         version: 0.27.3
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
       lucide-react:
         specifier: ^0.503.0
         version: 0.503.0(react@19.1.0)
@@ -452,6 +458,9 @@ importers:
       tailwind-merge:
         specifier: ^3.2.0
         version: 3.2.0
+      uuid:
+        specifier: ^9.0.1
+        version: 9.0.1
       zod:
         specifier: ^3.24.3
         version: 3.24.3
@@ -1122,7 +1131,7 @@ importers:
         version: 0.0.10(@supabase/postgrest-js@1.19.4)(@supabase/supabase-js@2.49.4)
       '@makerkit/data-loader-supabase-nextjs':
         specifier: ^1.2.5
-        version: 1.2.5(@supabase/postgrest-js@1.19.4)(@supabase/supabase-js@2.49.4)(@tanstack/react-query@5.74.4(react@19.1.0))(next@15.3.1(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(babel-plugin-react-compiler@19.1.0-rc.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(sass@1.77.4))(react@19.1.0)
+        version: 1.2.5(@supabase/postgrest-js@1.19.4)(@supabase/supabase-js@2.49.4)(@tanstack/react-query@5.74.4(react@19.1.0))(next@15.3.1(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(sass@1.77.4))(react@19.1.0)
       '@supabase/supabase-js':
         specifier: 2.49.4
         version: 2.49.4
@@ -1722,7 +1731,7 @@ importers:
         version: link:../../ui
       '@makerkit/data-loader-supabase-nextjs':
         specifier: ^1.2.5
-        version: 1.2.5(@supabase/postgrest-js@1.19.4)(@supabase/supabase-js@2.49.4)(@tanstack/react-query@5.74.4(react@19.1.0))(next@15.3.1(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(babel-plugin-react-compiler@19.1.0-rc.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(sass@1.77.4))(react@19.1.0)
+        version: 1.2.5(@supabase/postgrest-js@1.19.4)(@supabase/supabase-js@2.49.4)(@tanstack/react-query@5.74.4(react@19.1.0))(next@15.3.1(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(sass@1.77.4))(react@19.1.0)
       '@supabase/supabase-js':
         specifier: 2.49.4
         version: 2.49.4
@@ -13803,7 +13812,7 @@ snapshots:
       '@supabase/supabase-js': 2.49.4
       ts-case-convert: 2.1.0
 
-  '@makerkit/data-loader-supabase-nextjs@1.2.5(@supabase/postgrest-js@1.19.4)(@supabase/supabase-js@2.49.4)(@tanstack/react-query@5.74.4(react@19.1.0))(next@15.3.1(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(babel-plugin-react-compiler@19.1.0-rc.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(sass@1.77.4))(react@19.1.0)':
+  '@makerkit/data-loader-supabase-nextjs@1.2.5(@supabase/postgrest-js@1.19.4)(@supabase/supabase-js@2.49.4)(@tanstack/react-query@5.74.4(react@19.1.0))(next@15.3.1(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(sass@1.77.4))(react@19.1.0)':
     dependencies:
       '@makerkit/data-loader-supabase-core': 0.0.10(@supabase/postgrest-js@1.19.4)(@supabase/supabase-js@2.49.4)
       '@supabase/supabase-js': 2.49.4
@@ -18536,7 +18545,7 @@ snapshots:
     dependencies:
       postcss: 8.5.3
 
-  css-loader@7.1.2(webpack@5.99.5(@swc/core@1.3.78(@swc/helpers@0.5.15))(esbuild@0.19.12)):
+  css-loader@7.1.2(webpack@5.99.5(@swc/core@1.3.78(@swc/helpers@0.5.15))):
     dependencies:
       icss-utils: 5.1.0(postcss@8.5.3)
       postcss: 8.5.3
@@ -18547,7 +18556,7 @@ snapshots:
       postcss-value-parser: 4.2.0
       semver: 7.7.1
     optionalDependencies:
-      webpack: 5.99.5(@swc/core@1.3.78(@swc/helpers@0.5.15))(esbuild@0.19.12)
+      webpack: 5.99.5(@swc/core@1.3.78(@swc/helpers@0.5.15))
 
   css-select@5.1.0:
     dependencies:
@@ -21474,14 +21483,14 @@ snapshots:
     dependencies:
       postcss: 8.5.3
 
-  postcss-loader@8.1.1(postcss@8.5.3)(typescript@5.8.3)(webpack@5.99.5(@swc/core@1.3.78(@swc/helpers@0.5.15))(esbuild@0.19.12)):
+  postcss-loader@8.1.1(postcss@8.5.3)(typescript@5.8.3)(webpack@5.99.5(@swc/core@1.3.78(@swc/helpers@0.5.15))):
     dependencies:
       cosmiconfig: 9.0.0(typescript@5.8.3)
       jiti: 1.21.7
       postcss: 8.5.3
       semver: 7.7.1
     optionalDependencies:
-      webpack: 5.99.5(@swc/core@1.3.78(@swc/helpers@0.5.15))(esbuild@0.19.12)
+      webpack: 5.99.5(@swc/core@1.3.78(@swc/helpers@0.5.15))
     transitivePeerDependencies:
       - typescript
 
@@ -22773,19 +22782,6 @@ snapshots:
       mkdirp: 3.0.1
       yallist: 5.0.0
 
-  terser-webpack-plugin@5.3.14(@swc/core@1.3.78(@swc/helpers@0.5.15))(esbuild@0.19.12)(webpack@5.99.5(@swc/core@1.3.78(@swc/helpers@0.5.15))(esbuild@0.19.12)):
-    dependencies:
-      '@jridgewell/trace-mapping': 0.3.25
-      jest-worker: 27.5.1
-      schema-utils: 4.3.2
-      serialize-javascript: 6.0.2
-      terser: 5.39.0
-      webpack: 5.99.5(@swc/core@1.3.78(@swc/helpers@0.5.15))(esbuild@0.19.12)
-    optionalDependencies:
-      '@swc/core': 1.3.78(@swc/helpers@0.5.15)
-      esbuild: 0.19.12
-    optional: true
-
   terser-webpack-plugin@5.3.14(@swc/core@1.3.78(@swc/helpers@0.5.15))(webpack@5.99.5(@swc/core@1.3.78(@swc/helpers@0.5.15))):
     dependencies:
       '@jridgewell/trace-mapping': 0.3.25
@@ -23287,37 +23283,6 @@ snapshots:
       - '@swc/core'
       - esbuild
       - uglify-js
-
-  webpack@5.99.5(@swc/core@1.3.78(@swc/helpers@0.5.15))(esbuild@0.19.12):
-    dependencies:
-      '@types/eslint-scope': 3.7.7
-      '@types/estree': 1.0.7
-      '@webassemblyjs/ast': 1.14.1
-      '@webassemblyjs/wasm-edit': 1.14.1
-      '@webassemblyjs/wasm-parser': 1.14.1
-      acorn: 8.14.1
-      browserslist: 4.24.4
-      chrome-trace-event: 1.0.4
-      enhanced-resolve: 5.18.1
-      es-module-lexer: 1.7.0
-      eslint-scope: 5.1.1
-      events: 3.3.0
-      glob-to-regexp: 0.4.1
-      graceful-fs: 4.2.11
-      json-parse-even-better-errors: 2.3.1
-      loader-runner: 4.3.0
-      mime-types: 2.1.35
-      neo-async: 2.6.2
-      schema-utils: 4.3.2
-      tapable: 2.2.1
-      terser-webpack-plugin: 5.3.14(@swc/core@1.3.78(@swc/helpers@0.5.15))(esbuild@0.19.12)(webpack@5.99.5(@swc/core@1.3.78(@swc/helpers@0.5.15))(esbuild@0.19.12))
-      watchpack: 2.4.2
-      webpack-sources: 3.2.3
-    transitivePeerDependencies:
-      - '@swc/core'
-      - esbuild
-      - uglify-js
-    optional: true
 
   whatwg-encoding@3.1.1:
     dependencies:
