@@ -1,34 +1,51 @@
 import { EnvMode } from '@/app/variables/lib/types';
 import { z } from 'zod';
 
-type DependencyRule = {
-  variable: string;
-  condition: (value: string, variables: Record<string, string>) => boolean;
-  message: string;
-};
+type ModelType =
+  | 'string'
+  | 'longString'
+  | 'number'
+  | 'boolean'
+  | 'enum'
+  | 'url'
+  | 'email';
 
-type ContextualValidation = {
-  dependencies: DependencyRule[];
-  validate: (props: {
-    value: string;
-    variables: Record<string, string>;
-    mode: EnvMode;
-  }) => z.SafeParseReturnType<unknown, unknown>;
-};
+type Values = Array<string | null>;
 
 export type EnvVariableModel = {
   name: string;
   description: string;
+  hint?: string;
   secret?: boolean;
-  required?: boolean;
+  type?: ModelType;
+  values?: Values;
   category: string;
-  test?: (value: string) => Promise<boolean>;
-  validate?: (props: {
+  required?: boolean;
+  validate?: ({
+    value,
+    variables,
+    mode,
+  }: {
     value: string;
     variables: Record<string, string>;
     mode: EnvMode;
   }) => z.SafeParseReturnType<unknown, unknown>;
-  contextualValidation?: ContextualValidation;
+  contextualValidation?: {
+    dependencies: Array<{
+      variable: string;
+      condition: (value: string, variables: Record<string, string>) => boolean;
+      message: string;
+    }>;
+    validate: ({
+      value,
+      variables,
+      mode,
+    }: {
+      value: string;
+      variables: Record<string, string>;
+      mode: EnvMode;
+    }) => z.SafeParseReturnType<unknown, unknown>;
+  };
 };
 
 export const envVariables: EnvVariableModel[] = [
@@ -38,6 +55,8 @@ export const envVariables: EnvVariableModel[] = [
       'The URL of your site, used for generating absolute URLs. Must include the protocol.',
     category: 'Site Configuration',
     required: true,
+    type: 'url',
+    hint: `Ex. https://example.com`,
     validate: ({ value, mode }) => {
       if (mode === 'development') {
         return z
@@ -65,7 +84,9 @@ export const envVariables: EnvVariableModel[] = [
     description:
       "Your product's name, used consistently across the application interface.",
     category: 'Site Configuration',
+    hint: `Ex. "My Product"`,
     required: true,
+    type: 'string',
     validate: ({ value }) => {
       return z
         .string()
@@ -82,6 +103,8 @@ export const envVariables: EnvVariableModel[] = [
       "The site's title tag content, crucial for SEO and browser display.",
     category: 'Site Configuration',
     required: true,
+    hint: `Ex. "My Product, the best product ever"`,
+    type: 'string',
     validate: ({ value }) => {
       return z
         .string()
@@ -94,6 +117,7 @@ export const envVariables: EnvVariableModel[] = [
   },
   {
     name: 'NEXT_PUBLIC_SITE_DESCRIPTION',
+    type: 'longString',
     description:
       "Your site's meta description, important for SEO optimization.",
     category: 'Site Configuration',
@@ -111,8 +135,10 @@ export const envVariables: EnvVariableModel[] = [
   },
   {
     name: 'NEXT_PUBLIC_DEFAULT_LOCALE',
+    type: 'string',
     description: 'Sets the default language for your application.',
     category: 'Localization',
+    hint: `Ex. "en"`,
     validate: ({ value }) => {
       return z
         .string()
@@ -128,6 +154,7 @@ export const envVariables: EnvVariableModel[] = [
     name: 'NEXT_PUBLIC_AUTH_PASSWORD',
     description: 'Enables or disables password-based authentication.',
     category: 'Authentication',
+    type: 'boolean',
     validate: ({ value }) => {
       return z.coerce.boolean().optional().safeParse(value);
     },
@@ -136,6 +163,7 @@ export const envVariables: EnvVariableModel[] = [
     name: 'NEXT_PUBLIC_AUTH_MAGIC_LINK',
     description: 'Enables or disables magic link authentication.',
     category: 'Authentication',
+    type: 'boolean',
     validate: ({ value }) => {
       return z.coerce.boolean().optional().safeParse(value);
     },
@@ -144,6 +172,7 @@ export const envVariables: EnvVariableModel[] = [
     name: 'NEXT_PUBLIC_CAPTCHA_SITE_KEY',
     description: 'Your Cloudflare Captcha site key for form protection.',
     category: 'Security',
+    type: 'string',
     validate: ({ value }) => {
       return z.string().optional().safeParse(value);
     },
@@ -154,6 +183,7 @@ export const envVariables: EnvVariableModel[] = [
       'Your Cloudflare Captcha secret token for backend verification.',
     category: 'Security',
     secret: true,
+    type: 'string',
     contextualValidation: {
       dependencies: [
         {
@@ -191,6 +221,8 @@ export const envVariables: EnvVariableModel[] = [
     description:
       'Controls user navigation layout. Options: sidebar, header, or custom.',
     category: 'Navigation',
+    type: 'enum',
+    values: ['sidebar', 'header', 'custom'],
     validate: ({ value }) => {
       return z
         .enum(['sidebar', 'header', 'custom'])
@@ -202,6 +234,7 @@ export const envVariables: EnvVariableModel[] = [
     name: 'NEXT_PUBLIC_HOME_SIDEBAR_COLLAPSED',
     description: 'Sets the default state of the home sidebar.',
     category: 'Navigation',
+    type: 'boolean',
     validate: ({ value }) => {
       return z.coerce.boolean().optional().safeParse(value);
     },
@@ -211,6 +244,8 @@ export const envVariables: EnvVariableModel[] = [
     description:
       'Controls team navigation layout. Options: sidebar, header, or custom.',
     category: 'Navigation',
+    type: 'enum',
+    values: ['sidebar', 'header', 'custom'],
     validate: ({ value }) => {
       return z
         .enum(['sidebar', 'header', 'custom'])
@@ -222,6 +257,7 @@ export const envVariables: EnvVariableModel[] = [
     name: 'NEXT_PUBLIC_TEAM_SIDEBAR_COLLAPSED',
     description: 'Sets the default state of the team sidebar.',
     category: 'Navigation',
+    type: 'boolean',
     validate: ({ value }) => {
       return z.coerce.boolean().optional().safeParse(value);
     },
@@ -231,6 +267,8 @@ export const envVariables: EnvVariableModel[] = [
     description:
       'Defines sidebar collapse behavior. Options: offscreen, icon, or none.',
     category: 'Navigation',
+    type: 'enum',
+    values: ['offscreen', 'icon', 'none'],
     validate: ({ value }) => {
       return z.enum(['offscreen', 'icon', 'none']).optional().safeParse(value);
     },
@@ -240,6 +278,8 @@ export const envVariables: EnvVariableModel[] = [
     description:
       'Controls the default theme appearance. Options: light, dark, or system.',
     category: 'Theme',
+    type: 'enum',
+    values: ['light', 'dark', 'system'],
     validate: ({ value }) => {
       return z.enum(['light', 'dark', 'system']).optional().safeParse(value);
     },
@@ -248,6 +288,7 @@ export const envVariables: EnvVariableModel[] = [
     name: 'NEXT_PUBLIC_ENABLE_THEME_TOGGLE',
     description: 'Controls visibility of the theme toggle feature.',
     category: 'Theme',
+    type: 'boolean',
     validate: ({ value }) => {
       return z.coerce.boolean().optional().safeParse(value);
     },
@@ -256,6 +297,7 @@ export const envVariables: EnvVariableModel[] = [
     name: 'NEXT_PUBLIC_ENABLE_SIDEBAR_TRIGGER',
     description: 'Controls visibility of the sidebar trigger feature.',
     category: 'Navigation',
+    type: 'boolean',
     validate: ({ value }) => {
       return z.coerce.boolean().optional().safeParse(value);
     },
@@ -264,6 +306,7 @@ export const envVariables: EnvVariableModel[] = [
     name: 'NEXT_PUBLIC_ENABLE_PERSONAL_ACCOUNT_DELETION',
     description: 'Allows users to delete their personal accounts.',
     category: 'Features',
+    type: 'boolean',
     validate: ({ value }) => {
       return z.coerce.boolean().optional().safeParse(value);
     },
@@ -272,6 +315,7 @@ export const envVariables: EnvVariableModel[] = [
     name: 'NEXT_PUBLIC_ENABLE_PERSONAL_ACCOUNT_BILLING',
     description: 'Enables billing features for personal accounts.',
     category: 'Features',
+    type: 'boolean',
     validate: ({ value }) => {
       return z.coerce.boolean().optional().safeParse(value);
     },
@@ -280,6 +324,7 @@ export const envVariables: EnvVariableModel[] = [
     name: 'NEXT_PUBLIC_ENABLE_TEAM_ACCOUNTS',
     description: 'Master switch for team account functionality.',
     category: 'Features',
+    type: 'boolean',
     validate: ({ value }) => {
       return z.coerce.boolean().optional().safeParse(value);
     },
@@ -288,6 +333,7 @@ export const envVariables: EnvVariableModel[] = [
     name: 'NEXT_PUBLIC_ENABLE_TEAM_ACCOUNTS_CREATION',
     description: 'Controls ability to create new team accounts.',
     category: 'Features',
+    type: 'boolean',
     validate: ({ value }) => {
       return z.coerce.boolean().optional().safeParse(value);
     },
@@ -296,6 +342,7 @@ export const envVariables: EnvVariableModel[] = [
     name: 'NEXT_PUBLIC_ENABLE_TEAM_ACCOUNTS_DELETION',
     description: 'Allows team account deletion.',
     category: 'Features',
+    type: 'boolean',
     validate: ({ value }) => {
       return z.coerce.boolean().optional().safeParse(value);
     },
@@ -304,6 +351,7 @@ export const envVariables: EnvVariableModel[] = [
     name: 'NEXT_PUBLIC_ENABLE_TEAM_ACCOUNTS_BILLING',
     description: 'Enables billing features for team accounts.',
     category: 'Features',
+    type: 'boolean',
     validate: ({ value }) => {
       return z.coerce.boolean().optional().safeParse(value);
     },
@@ -312,6 +360,7 @@ export const envVariables: EnvVariableModel[] = [
     name: 'NEXT_PUBLIC_ENABLE_NOTIFICATIONS',
     description: 'Controls the notification system.',
     category: 'Notifications',
+    type: 'boolean',
     validate: ({ value }) => {
       return z.coerce.boolean().optional().safeParse(value);
     },
@@ -320,6 +369,7 @@ export const envVariables: EnvVariableModel[] = [
     name: 'NEXT_PUBLIC_REALTIME_NOTIFICATIONS',
     description: 'Enables real-time notifications using Supabase Realtime.',
     category: 'Notifications',
+    type: 'boolean',
     validate: ({ value }) => {
       return z.coerce.boolean().optional().safeParse(value);
     },
@@ -328,7 +378,9 @@ export const envVariables: EnvVariableModel[] = [
     name: 'NEXT_PUBLIC_SUPABASE_URL',
     description: 'Your Supabase project URL.',
     category: 'Supabase',
+    hint: `Ex. https://your-project.supabase.co`,
     required: true,
+    type: 'url',
     validate: ({ value, mode }) => {
       if (mode === 'development') {
         return z
@@ -356,6 +408,7 @@ export const envVariables: EnvVariableModel[] = [
     description: 'Your Supabase anonymous API key.',
     category: 'Supabase',
     required: true,
+    type: 'string',
     validate: ({ value }) => {
       return z
         .string()
@@ -372,6 +425,7 @@ export const envVariables: EnvVariableModel[] = [
     category: 'Supabase',
     secret: true,
     required: true,
+    type: 'string',
     validate: ({ value, variables }) => {
       return z
         .string()
@@ -396,6 +450,7 @@ export const envVariables: EnvVariableModel[] = [
     category: 'Supabase',
     secret: true,
     required: true,
+    type: 'string',
     validate: ({ value }) => {
       return z
         .string()
@@ -413,6 +468,8 @@ export const envVariables: EnvVariableModel[] = [
       'Your chosen billing provider. Options: stripe or lemon-squeezy.',
     category: 'Billing',
     required: true,
+    type: 'enum',
+    values: ['stripe', 'lemon-squeezy'],
     validate: ({ value }) => {
       return z.enum(['stripe', 'lemon-squeezy']).optional().safeParse(value);
     },
@@ -420,7 +477,9 @@ export const envVariables: EnvVariableModel[] = [
   {
     name: 'NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY',
     description: 'Your Stripe publishable key.',
+    hint: `Ex. pk_test_123456789012345678901234`,
     category: 'Billing',
+    type: 'string',
     contextualValidation: {
       dependencies: [
         {
@@ -463,7 +522,9 @@ export const envVariables: EnvVariableModel[] = [
     name: 'STRIPE_SECRET_KEY',
     description: 'Your Stripe secret key.',
     category: 'Billing',
+    hint: `Ex. sk_test_123456789012345678901234`,
     secret: true,
+    type: 'string',
     contextualValidation: {
       dependencies: [
         {
@@ -500,7 +561,9 @@ export const envVariables: EnvVariableModel[] = [
     name: 'STRIPE_WEBHOOK_SECRET',
     description: 'Your Stripe webhook secret.',
     category: 'Billing',
+    hint: `Ex. whsec_123456789012345678901234`,
     secret: true,
+    type: 'string',
     contextualValidation: {
       dependencies: [
         {
@@ -544,6 +607,7 @@ export const envVariables: EnvVariableModel[] = [
     description: 'Your Lemon Squeezy secret key.',
     category: 'Billing',
     secret: true,
+    type: 'string',
     contextualValidation: {
       dependencies: [
         {
@@ -578,6 +642,7 @@ export const envVariables: EnvVariableModel[] = [
     name: 'LEMON_SQUEEZY_STORE_ID',
     description: 'Your Lemon Squeezy store ID.',
     category: 'Billing',
+    type: 'string',
     contextualValidation: {
       dependencies: [
         {
@@ -613,6 +678,7 @@ export const envVariables: EnvVariableModel[] = [
     description: 'Your Lemon Squeezy signing secret.',
     category: 'Billing',
     secret: true,
+    type: 'string',
     contextualValidation: {
       dependencies: [
         {
@@ -648,6 +714,8 @@ export const envVariables: EnvVariableModel[] = [
     description: 'Your email service provider. Options: nodemailer or resend.',
     category: 'Email',
     required: true,
+    type: 'enum',
+    values: ['nodemailer', 'resend'],
     validate: ({ value }) => {
       return z.enum(['nodemailer', 'resend']).safeParse(value);
     },
@@ -656,7 +724,9 @@ export const envVariables: EnvVariableModel[] = [
     name: 'EMAIL_SENDER',
     description: 'Default sender email address.',
     category: 'Email',
+    hint: `Ex. "Makerkit <admin@makerkit.dev>"`,
     required: true,
+    type: 'string',
     validate: ({ value }) => {
       return z
         .string()
@@ -668,7 +738,9 @@ export const envVariables: EnvVariableModel[] = [
     name: 'CONTACT_EMAIL',
     description: 'Email address for contact form submissions.',
     category: 'Email',
+    hint: `Ex. "Makerkit <admin@makerkit.dev>"`,
     required: true,
+    type: 'email',
     validate: ({ value }) => {
       return z
         .string()
@@ -682,6 +754,7 @@ export const envVariables: EnvVariableModel[] = [
     description: 'Your Resend API key.',
     category: 'Email',
     secret: true,
+    type: 'string',
     contextualValidation: {
       dependencies: [
         {
@@ -707,6 +780,8 @@ export const envVariables: EnvVariableModel[] = [
     name: 'EMAIL_HOST',
     description: 'SMTP host for Nodemailer configuration.',
     category: 'Email',
+    type: 'string',
+    hint: `Ex. "smtp.example.com"`,
     contextualValidation: {
       dependencies: [
         {
@@ -731,6 +806,8 @@ export const envVariables: EnvVariableModel[] = [
     name: 'EMAIL_PORT',
     description: 'SMTP port for Nodemailer configuration.',
     category: 'Email',
+    type: 'number',
+    hint: `Ex. 587 or 465`,
     contextualValidation: {
       dependencies: [
         {
@@ -756,6 +833,7 @@ export const envVariables: EnvVariableModel[] = [
     name: 'EMAIL_USER',
     description: 'SMTP user for Nodemailer configuration.',
     category: 'Email',
+    type: 'string',
     contextualValidation: {
       dependencies: [
         {
@@ -782,6 +860,7 @@ export const envVariables: EnvVariableModel[] = [
     description: 'SMTP password for Nodemailer configuration.',
     category: 'Email',
     secret: true,
+    type: 'string',
     contextualValidation: {
       dependencies: [
         {
@@ -804,8 +883,9 @@ export const envVariables: EnvVariableModel[] = [
   },
   {
     name: 'EMAIL_TLS',
-    description: 'Whether to use TLS for SMTP connection.',
+    description: 'Whether to use TLS for SMTP connection. Please check this in your SMTP provider settings.',
     category: 'Email',
+    type: 'boolean',
     contextualValidation: {
       dependencies: [
         {
@@ -830,6 +910,8 @@ export const envVariables: EnvVariableModel[] = [
     name: 'CMS_CLIENT',
     description: 'Your chosen CMS system. Options: wordpress or keystatic.',
     category: 'CMS',
+    type: 'enum',
+    values: ['wordpress', 'keystatic'],
     validate: ({ value }) => {
       return z.enum(['wordpress', 'keystatic']).optional().safeParse(value);
     },
@@ -838,6 +920,8 @@ export const envVariables: EnvVariableModel[] = [
     name: 'NEXT_PUBLIC_KEYSTATIC_STORAGE_KIND',
     description: 'Your Keystatic storage kind. Options: local, cloud, github.',
     category: 'CMS',
+    type: 'enum',
+    values: ['local', 'cloud', 'github'],
     contextualValidation: {
       dependencies: [
         {
@@ -862,6 +946,7 @@ export const envVariables: EnvVariableModel[] = [
     name: 'NEXT_PUBLIC_KEYSTATIC_STORAGE_REPO',
     description: 'Your Keystatic storage repo.',
     category: 'CMS',
+    type: 'string',
     contextualValidation: {
       dependencies: [
         {
@@ -889,6 +974,7 @@ export const envVariables: EnvVariableModel[] = [
     description: 'Your Keystatic GitHub token.',
     category: 'CMS',
     secret: true,
+    type: 'string',
     contextualValidation: {
       dependencies: [
         {
@@ -915,6 +1001,7 @@ export const envVariables: EnvVariableModel[] = [
     name: 'KEYSTATIC_PATH_PREFIX',
     description: 'Your Keystatic path prefix.',
     category: 'CMS',
+    type: 'string',
     contextualValidation: {
       dependencies: [
         {
@@ -933,6 +1020,7 @@ export const envVariables: EnvVariableModel[] = [
     name: 'NEXT_PUBLIC_KEYSTATIC_CONTENT_PATH',
     description: 'Your Keystatic content path.',
     category: 'CMS',
+    type: 'string',
     contextualValidation: {
       dependencies: [
         {
@@ -958,6 +1046,7 @@ export const envVariables: EnvVariableModel[] = [
     name: 'WORDPRESS_API_URL',
     description: 'WordPress API URL when using WordPress as CMS.',
     category: 'CMS',
+    type: 'string',
     contextualValidation: {
       dependencies: [
         {
@@ -981,6 +1070,7 @@ export const envVariables: EnvVariableModel[] = [
     name: 'NEXT_PUBLIC_LOCALES_PATH',
     description: 'The path to your locales folder.',
     category: 'Localization',
+    type: 'string',
     validate: ({ value }) => {
       return z
         .string()
@@ -996,6 +1086,8 @@ export const envVariables: EnvVariableModel[] = [
     name: 'NEXT_PUBLIC_LANGUAGE_PRIORITY',
     description: 'The priority setting as to how infer the language.',
     category: 'Localization',
+    type: 'enum',
+    values: ['user', 'application'],
     validate: ({ value }) => {
       return z.enum(['user', 'application']).optional().safeParse(value);
     },
@@ -1005,6 +1097,7 @@ export const envVariables: EnvVariableModel[] = [
     description:
       'Enables the version updater to poll the latest version and notify the user.',
     category: 'Features',
+    type: 'boolean',
     validate: ({ value }) => {
       return z.coerce.boolean().optional().safeParse(value);
     },
@@ -1013,6 +1106,7 @@ export const envVariables: EnvVariableModel[] = [
     name: 'NEXT_PUBLIC_VERSION_UPDATER_REFETCH_INTERVAL_SECONDS',
     description: 'The interval in seconds to check for updates.',
     category: 'Features',
+    type: 'number',
     validate: ({ value }) => {
       return z.coerce
         .number()
@@ -1032,6 +1126,7 @@ export const envVariables: EnvVariableModel[] = [
     name: `ENABLE_REACT_COMPILER`,
     description: 'Enables the React compiler [experimental]',
     category: 'Build',
+    type: 'boolean',
     validate: ({ value }) => {
       return z.coerce.boolean().optional().safeParse(value);
     },
@@ -1040,7 +1135,8 @@ export const envVariables: EnvVariableModel[] = [
     name: 'NEXT_PUBLIC_MONITORING_PROVIDER',
     description: 'The monitoring provider to use.',
     category: 'Monitoring',
-    required: true,
+    type: 'enum',
+    values: ['baselime', 'sentry', 'none'],
     validate: ({ value }) => {
       return z.enum(['baselime', 'sentry', '']).optional().safeParse(value);
     },
@@ -1049,6 +1145,7 @@ export const envVariables: EnvVariableModel[] = [
     name: 'NEXT_PUBLIC_SENTRY_DSN',
     description: 'The Sentry DSN to use.',
     category: 'Monitoring',
+    type: `string`,
     contextualValidation: {
       dependencies: [
         {
@@ -1073,7 +1170,7 @@ export const envVariables: EnvVariableModel[] = [
     name: 'NEXT_PUBLIC_SENTRY_ENVIRONMENT',
     description: 'The Sentry environment to use.',
     category: 'Monitoring',
-    required: true,
+    type: 'string',
     validate: ({ value }) => {
       return z.string().optional().safeParse(value);
     },
@@ -1082,6 +1179,7 @@ export const envVariables: EnvVariableModel[] = [
     name: 'NEXT_PUBLIC_BASELIME_KEY',
     description: 'The Baselime key to use.',
     category: 'Monitoring',
+    type: 'string',
     contextualValidation: {
       dependencies: [
         {
@@ -1107,6 +1205,7 @@ export const envVariables: EnvVariableModel[] = [
     name: 'STRIPE_ENABLE_TRIAL_WITHOUT_CC',
     description: 'Enables trial plans without credit card.',
     category: 'Billing',
+    type: 'boolean',
     validate: ({ value }) => {
       return z.coerce.boolean().optional().safeParse(value);
     },
@@ -1115,6 +1214,7 @@ export const envVariables: EnvVariableModel[] = [
     name: 'NEXT_PUBLIC_THEME_COLOR',
     description: 'The default theme color.',
     category: 'Theme',
+    type: 'string',
     required: true,
     validate: ({ value }) => {
       return z
@@ -1132,6 +1232,7 @@ export const envVariables: EnvVariableModel[] = [
     description: 'The default theme color for dark mode.',
     category: 'Theme',
     required: true,
+    type: 'string',
     validate: ({ value }) => {
       return z
         .string()
@@ -1147,6 +1248,17 @@ export const envVariables: EnvVariableModel[] = [
     name: 'NEXT_PUBLIC_DISPLAY_TERMS_AND_CONDITIONS_CHECKBOX',
     description: 'Whether to display the terms checkbox during sign-up.',
     category: 'Features',
+    type: 'boolean',
+    validate: ({ value }) => {
+      return z.coerce.boolean().optional().safeParse(value);
+    },
+  },
+  {
+    name: 'ENABLE_STRICT_CSP',
+    description: 'Enables strict Content Security Policy (CSP) headers.',
+    category: 'Security',
+    required: false,
+    type: 'boolean',
     validate: ({ value }) => {
       return z.coerce.boolean().optional().safeParse(value);
     },

@@ -70,18 +70,18 @@ export function createPackageGenerator(plop: PlopTypes.NodePlopAPI) {
           return JSON.stringify(pkg, null, 2);
         },
       },
-      async (answers) => {
+      async () => {
         /**
          * Install deps and format everything
          */
-        execSync('pnpm manypkg fix', {
+        execSync('pnpm i', {
           stdio: 'inherit',
         });
+
         execSync(
-          `pnpm prettier --write packages/${
-            (answers as { name: string }).name
-          }/** --list-different`,
+          `pnpm run format:fix`,
         );
+
         return 'Package scaffolded';
       },
     ],
