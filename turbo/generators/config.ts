@@ -1,5 +1,7 @@
 import type { PlopTypes } from '@turbo/gen';
 
+import { createCloudflareGenerator } from './templates/cloudflare/generator';
+import { createDockerGenerator } from './templates/docker/generator';
 import { createEnvironmentVariablesGenerator } from './templates/env/generator';
 import { createKeystaticAdminGenerator } from './templates/keystatic/generator';
 import { createPackageGenerator } from './templates/package/generator';
@@ -13,6 +15,8 @@ const generators = [
   createEnvironmentVariablesGenerator,
   createEnvironmentVariablesValidatorGenerator,
   createSetupGenerator,
+  createCloudflareGenerator,
+  createDockerGenerator,
 ];
 
 export default function generator(plop: PlopTypes.NodePlopAPI): void {

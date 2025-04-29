@@ -1,6 +1,6 @@
 {
   "name": "next-supabase-saas-kit-turbo",
-  "version": "2.8.0",
+  "version": "2.9.0",
   "private": true,
   "sideEffects": false,
   "engines": {
@@ -11,6 +11,7 @@
     "name": "MakerKit"
   },
   "scripts": {
+    "turbo": "turbo",
     "preinstall": "pnpm run --filter scripts requirements",
     "postinstall": "manypkg fix",
     "build": "turbo build --cache-dir=.turbo",
