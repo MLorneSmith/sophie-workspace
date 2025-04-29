@@ -244,43 +244,25 @@ function Fix-Relationships {
         Log-Message "Running optimized quiz relationship repair..." "Yellow"
         Exec-Command -command "pnpm run quiz:fix:corrected" -description "Fixing quiz relationships with corrected script" -continueOnError
 
-        # Run the diagnostic script to check the current state of quiz relationships
-        Log-Message "Running quiz relationship diagnostic..." "Yellow"
-        Exec-Command -command "pnpm run diagnostic:quiz-relationships" -description "Running quiz relationship diagnostic" -continueOnError
-        
-        # Run bidirectional quiz relationship fix with schema alignment
+        # Run bidirectional quiz relationship fix
         Log-Message "Running bidirectional quiz relationship fix..." "Yellow"
         Exec-Command -command "pnpm run fix:bidirectional-quiz-relationships" -description "Fixing bidirectional quiz relationships" -continueOnError
         
         # Run the combined path and relationship fix
-        Log-Message "Running combined quiz paths and relationships fix..." "Yellow"
+        Log-Message "Running comprehensive quiz paths and relationships fix..." "Yellow"
         Exec-Command -command "pnpm run fix:quiz-paths-and-relationships" -description "Fixing quiz paths and relationships" -continueOnError
 
-        # Run our enhanced quiz paths and relationships fix
-        Log-Message "Running enhanced quiz paths and relationships fix..." "Yellow"
-        Exec-Command -command "pnpm run fix:enhanced-quiz-paths-and-relationships" -description "Running enhanced quiz paths and relationships fix" -continueOnError
-        
-        # Run the diagnostic again to verify the fixes
-        Log-Message "Running quiz relationship diagnostic after fixes..." "Yellow"
-        Exec-Command -command "pnpm run diagnostic:quiz-relationships" -description "Running quiz relationship diagnostic after fixes" -continueOnError
-
-        # Fix any wrong field names that might still exist
-        Log-Message "Fixing any wrong field names in quiz_questions_rels..." "Yellow"
-        Exec-Command -command "pnpm run utils:run-sql --sql 'UPDATE payload.quiz_questions_rels SET field = ''quiz_id'' WHERE field != ''quiz_id'';'" -description "Fixing wrong field names" -continueOnError
-        
-        # Verify that bidirectional relationships were created with standard verifier
+        # Verify that bidirectional relationships were created
         Log-Message "Verifying bidirectional quiz relationships..." "Yellow"
         Exec-Command -command "pnpm run verify:quiz-relationship-migration" -description "Verifying bidirectional quiz relationships" -continueOnError
         
-        # Run our comprehensive verification
-        Log-Message "Running comprehensive quiz relationship verification..." "Yellow"
-        $comprehensiveVerificationResult = Exec-Command -command "pnpm run verify:comprehensive-quiz-relationships" -description "Comprehensive quiz relationship verification" -captureOutput -continueOnError
+        # Check verification results
+        $verificationResult = Exec-Command -command "pnpm run verify:quiz-relationship-migration" -description "Verifying quiz relationship migration" -captureOutput -continueOnError
         
-        # Check comprehensive verification results
-        if ($comprehensiveVerificationResult -match "All .+ quizzes have fully consistent relationships!") {
-            Log-Success "Comprehensive quiz relationship verification passed successfully"
+        if ($verificationResult -match "All quizzes have consistent relationships") {
+            Log-Success "Bidirectional quiz relationships verified successfully"
         } else {
-            Log-Warning "Comprehensive verification found some quiz relationship issues that need attention"
+            Log-Warning "Some quiz relationship issues may still need attention"
         }
 
         # Format quiz questions JSONB arrays for Payload compatibility
@@ -440,17 +422,6 @@ function Verify-DatabaseState {
             Log-Success "Todo fields verification passed with dependency handling"
         } else {
             Log-Warning "Todo fields verification found issues even after dependencies"
-            $global:overallSuccess = $false
-        }
-
-        # Run the comprehensive quiz relationship verification
-        Log-Message "Running comprehensive quiz relationship verification..." "Yellow"
-        $quizVerification = Exec-Command -command "pnpm run verify:comprehensive-quiz-relationships" -description "Comprehensive quiz relationship verification" -captureOutput -continueOnError
-        
-        if ($quizVerification -match "All .+ quizzes have fully consistent relationships!") {
-            Log-Success "Comprehensive quiz relationship verification passed"
-        } else {
-            Log-Warning "Quiz relationship verification found issues that need manual inspection"
             $global:overallSuccess = $false
         }
 
@@ -688,4 +659,4 @@ function Fix-S3StorageIssues {
 }
 
 # All functions are automatically available when dot-sourced
-# No need for Export-ModuleMember
+# No need for Export-ModuleMember in this context
