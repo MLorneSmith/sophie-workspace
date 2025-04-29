@@ -211,7 +211,17 @@
     },
     "quiz_questions": {
       "name": "quiz_questions",
-      "relationships": []
+      "relationships": [
+        {
+          "sourceCollection": "quiz_questions",
+          "sourceField": null,
+          "targetCollection": "unknown",
+          "relationType": "hasOne",
+          "relationshipPath": null,
+          "isRequired": false,
+          "relationshipTable": "quiz_questions_rels"
+        }
+      ]
     },
     "payload_locked_documents": {
       "name": "payload_locked_documents",

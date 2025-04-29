@@ -1,0 +1,34 @@
+2025-04-29 15:00:23: Starting migration process at 04/29/2025 15:00:23
+2025-04-29 15:00:23: Detailed logs will be saved to: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250429-150023-840.txt
+2025-04-29 15:00:23: Performance timing initialized
+2025-04-29 15:00:23: Checking PNPM configuration...
+2025-04-29 15:00:23: Project root: D:\SlideHeroes\App\repos\2025slideheroes
+2025-04-29 15:00:23: PNPM configuration in root directory is already up to date
+2025-04-29 15:00:23: Yarn configuration in root directory is already up to date
+
+2025-04-29 15:00:23 - ================================================================================
+2025-04-29 15:00:23 - PHASE 1/4: SETUP PHASE
+2025-04-29 15:00:23 - ================================================================================
+2025-04-29 15:00:23: ================================================================================
+2025-04-29 15:00:23: SETUP PHASE
+2025-04-29 15:00:23: ================================================================================
+2025-04-29 15:00:23: 
+2025-04-29 15:00:23: ------------------------------------------------------------
+2025-04-29 15:00:23: STEP 1: Resetting Supabase database and running Web app migrations
+2025-04-29 15:00:23: ------------------------------------------------------------
+2025-04-29 15:00:23: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\apps\web
+2025-04-29 15:00:23: Skipping Supabase restart (already done)
+2025-04-29 15:00:23: Running supabase:reset...
+2025-04-29 15:00:23: EXECUTING: pnpm run supabase:reset
+2025-04-29 15:00:23: DESCRIPTION: Resetting Supabase database
+2025-04-29 15:00:54: ERROR: Command failed with exit code: 1
+2025-04-29 15:00:54: ERROR: Error in step 'Resetting Supabase database': Command failed with exit code: 1
+2025-04-29 15:00:54: ERROR: Failed to run Web app migrations: Command failed with exit code: 1
+2025-04-29 15:00:54: ERROR: CRITICAL ERROR: Migration process failed: Web app migration failed: Command failed with exit code: 1
+2025-04-29 15:00:54: Please check the log files for details:
+2025-04-29 15:00:54:   - Transcript log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-log-20250429-150023-840.txt
+2025-04-29 15:00:54:   - Detailed log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250429-150023-840.txt
+2025-04-29 15:00:54: Migration process completed with warnings or errors. Please check the logs for details.
+2025-04-29 15:00:54: Migration logs saved to:
+2025-04-29 15:00:54:   - Transcript log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-log-20250429-150023-840.txt
+2025-04-29 15:00:54:   - Detailed log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250429-150023-840.txt
