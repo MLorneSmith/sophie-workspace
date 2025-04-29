@@ -25,31 +25,30 @@ export default function VariablesPage({ searchParams }: VariablesPageProps) {
 
   return (
     <Page style={'custom'}>
-      <PageHeader
-        displaySidebarTrigger={false}
-        description={
-          <AppBreadcrumbs
-            values={{
-              variables: 'Environment Variables',
-            }}
-          />
-        }
-      />
+      <div className={'flex h-screen flex-col overflow-hidden'}>
+        <PageHeader
+          displaySidebarTrigger={false}
+          title={'Environment Variables'}
+          description={
+            'Manage environment variables for your applications. Validate and set them up easily.'
+          }
+        />
 
-      <PageBody>
-        <div className={'flex flex-col space-y-4 pb-16'}>
-          {apps.map((app) => {
-            const appEnvState = processEnvDefinitions(app, mode);
+        <PageBody className={'overflow-hidden'}>
+          <div className={'flex h-full flex-1 flex-col space-y-4'}>
+            {apps.map((app) => {
+              const appEnvState = processEnvDefinitions(app, mode);
 
-            return (
-              <AppEnvironmentVariablesManager
-                key={app.appName}
-                state={appEnvState}
-              />
-            );
-          })}
-        </div>
-      </PageBody>
+              return (
+                <AppEnvironmentVariablesManager
+                  key={app.appName}
+                  state={appEnvState}
+                />
+              );
+            })}
+          </div>
+        </PageBody>
+      </div>
     </Page>
   );
 }

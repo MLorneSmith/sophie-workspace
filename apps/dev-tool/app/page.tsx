@@ -26,6 +26,7 @@ export default async function DashboardPage(props: DashboardPageProps) {
     <Page style={'custom'}>
       <PageHeader
         displaySidebarTrigger={false}
+        title={'Dev Tool'}
         description={'Check the status of your Supabase and Stripe services'}
       >
         <EnvModeSelector mode={mode} />

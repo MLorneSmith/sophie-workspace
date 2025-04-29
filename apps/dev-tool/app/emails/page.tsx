@@ -15,7 +15,11 @@ export const metadata = {
 export default async function EmailsPage() {
   return (
     <Page style={'custom'}>
-      <PageHeader displaySidebarTrigger={false} description="Emails" />
+      <PageHeader
+        displaySidebarTrigger={false}
+        title="Emails"
+        description={'Manage your application Email templates'}
+      />
 
       <PageBody className={'gap-y-8'}>
         <div className={'flex flex-col space-y-4'}>

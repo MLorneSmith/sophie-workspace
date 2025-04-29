@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { ChevronDownIcon } from 'lucide-react';
+import { ChevronDownIcon, Loader2Icon } from 'lucide-react';
+import { Subject, debounceTime } from 'rxjs';
 
 import { Button } from '@kit/ui/button';
 import {
@@ -11,6 +12,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from '@kit/ui/dropdown-menu';
+import { If } from '@kit/ui/if';
 import { Input } from '@kit/ui/input';
 import {
   Select,
@@ -19,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@kit/ui/select';
+import { toast } from '@kit/ui/sonner';
 import {
   Table,
   TableBody,
@@ -30,6 +33,10 @@ import {
 import { cn } from '@kit/ui/utils';
 
 import { defaultI18nNamespaces } from '../../../../web/lib/i18n/i18n.settings';
+import {
+  translateWithAIAction,
+  updateTranslationAction,
+} from '../lib/server-actions';
 import type { TranslationData, Translations } from '../lib/translations-loader';
 
 function flattenTranslations(
@@ -58,31 +65,37 @@ export function TranslationsComparison({
   translations: Translations;
 }) {
   const [search, setSearch] = useState('');
-  const [selectedLocales, setSelectedLocales] = useState<Set<string>>();
+  const [isTranslating, setIsTranslating] = useState(false);
 
   const [selectedNamespace, setSelectedNamespace] = useState(
     defaultI18nNamespaces[0] as string,
   );
 
+  // Create RxJS Subject for handling translation updates
+  const subject$ = useMemo(
+    () =>
+      new Subject<{
+        locale: string;
+        namespace: string;
+        key: string;
+        value: string;
+      }>(),
+    [],
+  );
+
   const locales = Object.keys(translations);
-
-  if (locales.length === 0) {
-    return <div>No translations found</div>;
-  }
-
   const baseLocale = locales[0]!;
 
-  // Initialize selected locales if not set
-  if (!selectedLocales) {
-    setSelectedLocales(new Set(locales));
-    return null;
-  }
+  const [selectedLocales, setSelectedLocales] = useState<Set<string>>(
+    new Set(locales),
+  );
 
   // Flatten translations for the selected namespace
   const flattenedTranslations: FlattenedTranslations = {};
 
   for (const locale of locales) {
     const namespaceData = translations[locale]?.[selectedNamespace];
+
     if (namespaceData) {
       flattenedTranslations[locale] = flattenTranslations(namespaceData);
     } else {
@@ -105,14 +118,6 @@ export function TranslationsComparison({
     selectedLocales.has(locale),
   );
 
-  const copyTranslation = async (text: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-    } catch (error) {
-      console.error('Failed to copy text:', error);
-    }
-  };
-
   const toggleLocale = (locale: string) => {
     const newSelectedLocales = new Set(selectedLocales);
 
@@ -127,58 +132,152 @@ export function TranslationsComparison({
     setSelectedLocales(newSelectedLocales);
   };
 
+  const handleTranslateWithAI = useCallback(async () => {
+    try {
+      setIsTranslating(true);
+
+      // Get missing translations for the selected namespace
+      const missingTranslations: Record<string, string> = {};
+      const baseTranslations = flattenedTranslations[baseLocale] ?? {};
+
+      for (const locale of visibleLocales) {
+        if (locale === baseLocale) continue;
+
+        const localeTranslations = flattenedTranslations[locale] ?? {};
+
+        for (const [key, value] of Object.entries(baseTranslations)) {
+          if (!localeTranslations[key]) {
+            missingTranslations[key] = value;
+          }
+        }
+
+        if (Object.keys(missingTranslations).length > 0) {
+          await translateWithAIAction({
+            sourceLocale: baseLocale,
+            targetLocale: locale,
+            namespace: selectedNamespace,
+            translations: missingTranslations,
+          });
+
+          toast.success(`Translated missing strings to ${locale}`);
+        }
+      }
+    } catch (error) {
+      toast.error('Failed to translate: ' + (error as Error).message);
+    } finally {
+      setIsTranslating(false);
+    }
+  }, [flattenedTranslations, baseLocale, visibleLocales, selectedNamespace]);
+
+  // Calculate if there are any missing translations
+  const hasMissingTranslations = useMemo(() => {
+    if (!flattenedTranslations || !baseLocale || !visibleLocales) return false;
+
+    const baseTranslations = flattenedTranslations[baseLocale] ?? {};
+
+    return visibleLocales.some((locale) => {
+      if (locale === baseLocale) return false;
+
+      const localeTranslations = flattenedTranslations[locale] ?? {};
+
+      return Object.keys(baseTranslations).some(
+        (key) => !localeTranslations[key],
+      );
+    });
+  }, [flattenedTranslations, baseLocale, visibleLocales]);
+
+  // Set up subscription to handle debounced updates
+  useEffect(() => {
+    const subscription = subject$.pipe(debounceTime(500)).subscribe((props) => {
+      updateTranslationAction(props)
+        .then(() => {
+          toast.success(`Updated translation for ${props.key}`);
+        })
+        .catch((err) => {
+          toast.error(`Failed to update translation: ${err.message}`);
+        });
+    });
+
+    return () => subscription.unsubscribe();
+  }, [subject$]);
+
+  if (locales.length === 0) {
+    return <div>No translations found</div>;
+  }
+
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <Input
-            type="search"
-            placeholder="Search translations..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="max-w-sm"
-          />
+    <div className="space-y-4 pb-24">
+      <div className="flex w-full items-center">
+        <div className="flex w-full items-center justify-between gap-2.5">
+          <div className="flex items-center gap-2.5">
+            <Input
+              type="search"
+              placeholder="Search translations..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="max-w-sm"
+            />
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="ml-auto">
-                Select Languages
-                <ChevronDownIcon className="ml-2 h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
+            <If condition={locales.length > 1}>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="ml-auto">
+                    Select Languages
+                    <ChevronDownIcon className="ml-2 h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
 
-            <DropdownMenuContent align="end" className="w-[200px]">
-              {locales.map((locale) => (
-                <DropdownMenuCheckboxItem
-                  key={locale}
-                  checked={selectedLocales.has(locale)}
-                  onCheckedChange={() => toggleLocale(locale)}
-                  disabled={
-                    selectedLocales.size === 1 && selectedLocales.has(locale)
-                  }
-                >
-                  {locale}
-                </DropdownMenuCheckboxItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+                <DropdownMenuContent align="end" className="w-[200px]">
+                  {locales.map((locale) => (
+                    <DropdownMenuCheckboxItem
+                      key={locale}
+                      checked={selectedLocales.has(locale)}
+                      onCheckedChange={() => toggleLocale(locale)}
+                      disabled={
+                        selectedLocales.size === 1 &&
+                        selectedLocales.has(locale)
+                      }
+                    >
+                      {locale}
+                    </DropdownMenuCheckboxItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </If>
 
-          <Select
-            value={selectedNamespace}
-            onValueChange={setSelectedNamespace}
-          >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Select namespace" />
-            </SelectTrigger>
+            <Select
+              value={selectedNamespace}
+              onValueChange={setSelectedNamespace}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Select namespace" />
+              </SelectTrigger>
 
-            <SelectContent>
-              {defaultI18nNamespaces.map((namespace: string) => (
-                <SelectItem key={namespace} value={namespace}>
-                  {namespace}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+              <SelectContent>
+                {defaultI18nNamespaces.map((namespace: string) => (
+                  <SelectItem key={namespace} value={namespace}>
+                    {namespace}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
+            <Button
+              onClick={handleTranslateWithAI}
+              disabled={isTranslating || !hasMissingTranslations}
+            >
+              {isTranslating ? (
+                <>
+                  <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
+                  Translating...
+                </>
+              ) : (
+                'Translate missing with AI'
+              )}
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -196,7 +295,7 @@ export function TranslationsComparison({
           <TableBody>
             {filteredKeys.map((key) => (
               <TableRow key={key}>
-                <TableCell className="font-mono text-sm">
+                <TableCell width={350} className="text-sm">
                   <div className="flex items-center justify-between">
                     <span>{key}</span>
                   </div>
@@ -222,11 +321,33 @@ export function TranslationsComparison({
                       })}
                     >
                       <div className="flex items-center justify-between">
-                        <span>
-                          {value || (
-                            <span className="text-destructive">Missing</span>
-                          )}
-                        </span>
+                        <Input
+                          defaultValue={value || ''}
+                          onChange={(e) => {
+                            const value = e.target.value.trim();
+
+                            if (value === '') {
+                              toast.error('Translation cannot be empty');
+
+                              return;
+                            }
+
+                            if (value === baseValue) {
+                              toast.info('Translation is the same as base');
+
+                              return;
+                            }
+
+                            subject$.next({
+                              locale,
+                              namespace: selectedNamespace,
+                              key,
+                              value,
+                            });
+                          }}
+                          className="w-full font-mono text-sm"
+                          placeholder={isMissing ? 'Missing translation' : ''}
+                        />
                       </div>
                     </TableCell>
                   );

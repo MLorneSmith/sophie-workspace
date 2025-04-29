@@ -31,25 +31,32 @@ class ConnectivityService {
       };
     }
 
-    const response = await fetch(`${url}/auth/v1/health`, {
-      headers: {
-        apikey: anonKey,
-        Authorization: `Bearer ${anonKey}`,
-      },
-    });
+    try {
+      const response = await fetch(`${url}/auth/v1/health`, {
+        headers: {
+          apikey: anonKey,
+          Authorization: `Bearer ${anonKey}`,
+        },
+      });
 
-    if (!response.ok) {
+      if (!response.ok) {
+        return {
+          status: 'error' as const,
+          message:
+            'Failed to connect to Supabase. The Supabase Anon Key or URL is not valid.',
+        };
+      }
+
+      return {
+        status: 'success' as const,
+        message: 'Connected to Supabase',
+      };
+    } catch (error) {
       return {
         status: 'error' as const,
-        message:
-          'Failed to connect to Supabase. The Supabase Anon Key or URL is not valid.',
+        message: `Failed to connect to Supabase. ${error}`,
       };
     }
-
-    return {
-      status: 'success' as const,
-      message: 'Connected to Supabase',
-    };
   }
 
   async checkSupabaseAdminConnectivity() {
@@ -85,35 +92,42 @@ class ConnectivityService {
       };
     }
 
-    const response = await fetch(endpoint, {
-      headers: {
-        apikey,
-        Authorization: `Bearer ${adminKey}`,
-      },
-    });
+    try {
+      const response = await fetch(endpoint, {
+        headers: {
+          apikey,
+          Authorization: `Bearer ${adminKey}`,
+        },
+      });
 
-    if (!response.ok) {
+      if (!response.ok) {
+        return {
+          status: 'error' as const,
+          message:
+            'Failed to connect to Supabase Admin. The Supabase Service Role Key is not valid.',
+        };
+      }
+
+      const data = await response.json();
+
+      if (data.length === 0) {
+        return {
+          status: 'error' as const,
+          message:
+            'No accounts found in Supabase Admin. The data may not be seeded. Please run `pnpm run supabase:web:reset` to reset the database.',
+        };
+      }
+
+      return {
+        status: 'success' as const,
+        message: 'Connected to Supabase Admin',
+      };
+    } catch (error) {
       return {
         status: 'error' as const,
-        message:
-          'Failed to connect to Supabase Admin. The Supabase Service Role Key is not valid.',
+        message: `Failed to connect to Supabase Admin. ${error}`,
       };
     }
-
-    const data = await response.json();
-
-    if (data.length === 0) {
-      return {
-        status: 'error' as const,
-        message:
-          'No accounts found in Supabase Admin. The data may not be seeded. Please run `pnpm run supabase:web:reset` to reset the database.',
-      };
-    }
-
-    return {
-      status: 'success' as const,
-      message: 'Connected to Supabase Admin',
-    };
   }
 
   async checkStripeWebhookEndpoints() {
