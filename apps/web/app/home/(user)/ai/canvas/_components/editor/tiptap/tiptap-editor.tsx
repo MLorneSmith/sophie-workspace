@@ -26,6 +26,8 @@ import { type BaseImprovement } from '@kit/ai-gateway/src/prompts/types/improvem
 import { useSupabase } from '@kit/supabase/hooks/use-supabase';
 
 import { useSaveContext } from '../../../_lib/contexts/save-context';
+import { normalizeEditorContent } from '../../../_lib/utils/normalize-editor-content';
+import { type EditorContentTypes } from '../../../_types/editor-types';
 import { LoadingAnimation } from '../../suggestions/loading-animation';
 import './editor.css';
 import { Toolbar } from './toolbar';
@@ -33,7 +35,7 @@ import { Toolbar } from './toolbar';
 interface TiptapEditorProps {
   content: string;
   submissionId: string;
-  sectionType: 'situation' | 'complication' | 'answer' | 'outline';
+  sectionType: EditorContentTypes;
   onAcceptImprovement?: (improvement: BaseImprovement) => void;
   isLoading?: boolean;
 }
@@ -71,18 +73,53 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
     const { setSaveStatus, registerSaveCallback } = useSaveContext();
     const editorRef = useRef(null);
 
-    // Parse initial content
+    // Parse and normalize initial content
     const initialContent = useMemo(() => {
+      console.log('TiptapEditor parsing content:', {
+        sectionType,
+        contentType: typeof content,
+        contentLength:
+          typeof content === 'string' ? content.length : 'not a string',
+      });
+
       try {
-        return typeof content === 'string' ? JSON.parse(content) : content;
+        if (typeof content !== 'string') {
+          console.warn('TiptapEditor received non-string content:', content);
+          // Create a default empty document and normalize it
+          return normalizeEditorContent(
+            {
+              type: 'doc',
+              content: [{ type: 'paragraph', content: [] }],
+            },
+            sectionType,
+          );
+        }
+
+        // Parse the content string into an object
+        const parsed = JSON.parse(content);
+        console.log('Successfully parsed content:', {
+          type: parsed?.type,
+          contentLength: parsed?.content?.length,
+          firstNodeType: parsed?.content?.[0]?.type,
+        });
+
+        // Normalize the content before passing it to the editor
+        // This helps prevent ProseMirror model version conflicts
+        return normalizeEditorContent(parsed, sectionType);
       } catch (e) {
         console.error('Failed to parse content:', e);
-        return {
-          type: 'doc',
-          content: [{ type: 'paragraph', content: [] }],
-        };
+        // Return a normalized empty document as fallback
+        return normalizeEditorContent(
+          {
+            type: 'doc',
+            content: [
+              { type: 'paragraph', content: [{ type: 'text', text: ' ' }] },
+            ],
+          },
+          sectionType,
+        );
       }
-    }, [content]);
+    }, [content, sectionType]);
 
     // Initialize Tiptap editor
     const editor = useEditor({
@@ -208,19 +245,24 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
       },
     });
 
-    // Save content function
+    // Save content function with normalization
     const saveContent = useCallback(
       async (editorContent: any) => {
         try {
           setSaveStatus('saving');
-          await updateContent(editorContent);
+          // Normalize the content before saving to ensure it's valid
+          const normalizedContent = normalizeEditorContent(
+            editorContent,
+            sectionType,
+          );
+          await updateContent(normalizedContent);
         } catch (error) {
           console.error('Error saving content:', error);
           setSaveStatus('error');
           setTimeout(() => setSaveStatus('idle'), 3000);
         }
       },
-      [updateContent, setSaveStatus],
+      [updateContent, setSaveStatus, sectionType],
     );
 
     // Debounced save handler
@@ -243,16 +285,69 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
       registerSaveCallback(callback);
     }, [registerSaveCallback, saveContent, editor]);
 
-    // Update editor content when it changes
+    // Update editor content when it changes, with improved error handling
     useEffect(() => {
-      if (editor && initialContent) {
+      if (!editor || !initialContent) return;
+
+      try {
+        // Log the content types for debugging
+        console.log('Editor update effect with content:', {
+          sectionType,
+          initialContentType: typeof initialContent,
+          editorExists: !!editor,
+        });
+
         // Only update if content has changed to avoid loops
         const currentContent = editor.getJSON();
-        if (JSON.stringify(currentContent) !== JSON.stringify(initialContent)) {
-          editor.commands.setContent(initialContent);
+        const currentContentStr = JSON.stringify(currentContent);
+        const initialContentStr = JSON.stringify(initialContent);
+
+        // If content has changed, reset the editor completely to avoid ProseMirror model version conflicts
+        if (currentContentStr !== initialContentStr) {
+          console.log('Content changed, updating editor');
+
+          // Use a try-catch to handle potential errors
+          try {
+            // Use a timeout to ensure clean DOM updates
+            setTimeout(() => {
+              if (editor) {
+                try {
+                  // First clear content then set new content
+                  editor.commands.clearContent();
+                  // Use the normalized content to prevent model conflicts
+                  editor.commands.setContent(initialContent);
+                } catch (innerError) {
+                  console.error(
+                    'Error while setting editor content:',
+                    innerError,
+                  );
+
+                  // As a last resort, try recreating a minimal valid document
+                  const safeContent = normalizeEditorContent(
+                    {
+                      type: 'doc',
+                      content: [
+                        {
+                          type: 'paragraph',
+                          content: [{ type: 'text', text: ' ' }],
+                        },
+                      ],
+                    },
+                    sectionType,
+                  );
+
+                  editor.commands.setContent(safeContent);
+                }
+              }
+            }, 0);
+          } catch (error) {
+            console.error('Error updating editor content:', error);
+          }
         }
+      } catch (error) {
+        console.error('Error in editor update effect:', error);
       }
-    }, [editor, initialContent]);
+    }, [editor, initialContent, sectionType]);
 
     // Handle editor changes
     useEffect(() => {

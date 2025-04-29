@@ -4,6 +4,8 @@ import { Suspense, useCallback, useRef, useState } from 'react';
 
 import { useSearchParams } from 'next/navigation';
 
+import { useQueryClient } from '@tanstack/react-query';
+
 import { type BaseImprovement } from '@kit/ai-gateway/src/prompts/types/improvements';
 import { useSupabase } from '@kit/supabase/hooks/use-supabase';
 import {
@@ -16,12 +18,10 @@ import { Spinner } from '@kit/ui/spinner';
 import { Database } from '~/lib/database.types';
 
 import { generateIdeasAction } from '../_actions/generate-ideas';
-import { EDITOR_CONFIG } from '../_lib/config';
+import { generateOutlineAction } from '../_actions/generate-outline';
 import { useCostTracking } from '../_lib/contexts/cost-tracking-context';
 import { useActionWithCost } from '../_lib/hooks/use-action-with-cost';
-import { useOutlineContent } from '../_lib/hooks/use-outline-content';
 import { ActionToolbar } from './action-toolbar';
-import { insertImprovement } from './editor/tiptap/plugins/improvement-plugin';
 import { type TiptapEditorRef } from './editor/tiptap/tiptap-editor';
 import { TiptapTabContent } from './editor/tiptap/tiptap-tab-content';
 import { LoadingAnimation } from './suggestions/loading-animation';
@@ -52,10 +52,7 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
   const searchParams = useSearchParams();
   const submissionId = searchParams.get('id') ?? '';
   const _supabase = useSupabase<Database>();
-  const { data: content = '', regenerateOutline } =
-    useOutlineContent(submissionId);
-  const contentString =
-    typeof content === 'string' ? content : JSON.stringify(content);
+  const queryClient = useQueryClient();
 
   // Use cost tracking hooks
   const { sessionId } = useCostTracking();
@@ -66,6 +63,7 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
   const [isGenerating, setIsGenerating] = useState(false);
   const [messageIndex, setMessageIndex] = useState(0);
   const [isRegeneratingOutline, setIsRegeneratingOutline] = useState(false);
+  const [resetKey, setResetKey] = useState(0); // Add a key to force component remount
 
   const handleAcceptImprovement = useCallback(
     (improvement: BaseImprovement) => {
@@ -196,7 +194,17 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
                       <LoadingAnimation messageIndex={messageIndex} />
                     </div>
                   ) : (
-                    <TiptapTabContent ref={editorRef} sectionType="outline" />
+                    <>
+                      <div className="text-muted-foreground mb-2 text-sm">
+                        Outline tab active - displaying combined content from
+                        other tabs
+                      </div>
+                      <TiptapTabContent
+                        ref={editorRef}
+                        sectionType="outline"
+                        key={`outline-${submissionId}-${resetKey}`} // Force remount when resetKey changes
+                      />
+                    </>
                   )
                 ) : (
                   <TiptapTabContent ref={editorRef} sectionType={sectionType} />
@@ -218,12 +226,51 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
                           );
                           setIsRegeneratingOutline(true);
 
-                          await regenerateOutline();
+                          console.log(
+                            'Regenerating outline for submission:',
+                            submissionId,
+                          );
+
+                          // Call generateOutlineAction with forceRegenerate: true
+                          const result = (await generateOutlineAction({
+                            submissionId,
+                            forceRegenerate: true,
+                          })) as {
+                            success: boolean;
+                            data?: any;
+                            error?: string;
+                          };
+
+                          // Invalidate the query to force a refetch AND fully remount the component
+                          if (result.success) {
+                            console.log(
+                              'Successfully regenerated outline, invalidating cache',
+                            );
+
+                            // First, invalidate the query cache
+                            await queryClient.invalidateQueries({
+                              queryKey: ['submission', submissionId, 'outline'],
+                            });
+
+                            // Increment the reset key to force a complete remount
+                            setResetKey((prev) => prev + 1);
+
+                            // Set a brief delay to ensure everything is reset properly
+                            setTimeout(() => {
+                              setIsRegeneratingOutline(false);
+                            }, 500);
+                          } else {
+                            throw new Error(
+                              result.error || 'Failed to regenerate outline',
+                            );
+                          }
                         } catch (error) {
                           console.error('Failed to regenerate outline:', error);
                         } finally {
-                          // Always reset the loading state
-                          setIsRegeneratingOutline(false);
+                          // Make sure we reset the loading state even if there's an error
+                          setTimeout(() => {
+                            setIsRegeneratingOutline(false);
+                          }, 500);
                         }
                       }
                     : undefined
@@ -239,7 +286,7 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
         <ResizablePanel defaultSize={34}>
           <Suspense fallback={<LoadingFallback />}>
             <SuggestionsPane
-              _content={contentString}
+              _content={''}
               _submissionId={submissionId}
               _type={sectionType}
               onAcceptImprovement={handleAcceptImprovement}
