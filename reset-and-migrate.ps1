@@ -24,7 +24,7 @@ $ErrorActionPreference = "Stop"
 . "$PSScriptRoot\scripts\orchestration\utils\sql-error-logging.ps1"
 . "$PSScriptRoot\scripts\orchestration\phases\setup.ps1"
 . "$PSScriptRoot\scripts\orchestration\phases\processing.ps1"
-. "$PSScriptRoot\scripts\orchestration\phases\loading.ps1"
+. "$PSScriptRoot\scripts\orchestration\phases\loading-with-quiz-repair.ps1"
 
 # Global variables
 $script:overallSuccess = $true

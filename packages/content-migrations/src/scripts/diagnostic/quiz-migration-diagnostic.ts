@@ -351,7 +351,9 @@ function printDiagnosticResults(result: DiagnosticResult): void {
 }
 
 // Run the diagnostic if executed directly
-if (require.main === module) {
+// This ES module compatible check replaces the CommonJS require.main === module pattern
+const isMainModule = import.meta.url === `file://${process.argv[1]}`;
+if (isMainModule) {
   runDiagnostic()
     .then((result) => {
       process.exit(result.isHealthy ? 0 : 1);

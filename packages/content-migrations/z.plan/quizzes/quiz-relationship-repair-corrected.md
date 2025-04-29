@@ -4,7 +4,7 @@
 
 - Total Quizzes: 20
 - Quizzes Fixed: 20
-- Quizzes With No Relationships: 0
+- Quizzes With No Relationships: 20
 
 ## Fixed Quizzes
 
