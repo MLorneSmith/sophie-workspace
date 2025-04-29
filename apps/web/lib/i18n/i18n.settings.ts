@@ -12,7 +12,7 @@ const defaultLanguage = process.env.NEXT_PUBLIC_DEFAULT_LOCALE ?? 'en';
  * By default, only the default language is supported.
  * Add more languages here if needed.
  */
-export const languages: string[] = [defaultLanguage, 'it'];
+export const languages: string[] = [defaultLanguage];
 
 /**
  * The name of the cookie that stores the selected language.
