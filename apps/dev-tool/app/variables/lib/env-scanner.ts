@@ -152,11 +152,18 @@ export function processEnvDefinitions(
     if (!variableMap[variable.key]) {
       variableMap[variable.key] = {
         key: variable.key,
+        isVisible: true,
         definitions: [],
         effectiveValue: variable.value,
         effectiveSource: variable.source,
         isOverridden: false,
         category: model ? model.category : 'Custom',
+        validation: {
+          success: true,
+          error: {
+            issues: [],
+          },
+        },
       };
     }
 
@@ -212,6 +219,231 @@ export function processEnvDefinitions(
     }
   }
 
+  // after computing the effective values, we can check for errors
+  for (const key in variableMap) {
+    const model = envVariables.find((v) => key === v.name);
+    const varState = variableMap[key];
+
+    if (!varState) {
+      continue;
+    }
+
+    let validation: {
+      success: boolean;
+      error: {
+        issues: string[];
+      };
+    } = { success: true, error: { issues: [] } };
+
+    if (model) {
+      const allVariables = Object.values(variableMap).reduce(
+        (acc, variable) => {
+          return {
+            ...acc,
+            [variable.key]: variable.effectiveValue,
+          };
+        },
+        {} as Record<string, string>,
+      );
+
+      // First check if it's required but missing
+      if (model.required && !varState.effectiveValue) {
+        validation = {
+          success: false,
+          error: {
+            issues: [
+              `This variable is required but missing from your environment files`,
+            ],
+          },
+        };
+      } else if (model.contextualValidation) {
+        // Then check contextual validation
+        const dependenciesMet = model.contextualValidation.dependencies.some(
+          (dep) => {
+            const dependencyValue = allVariables[dep.variable] ?? '';
+
+            return dep.condition(dependencyValue, allVariables);
+          },
+        );
+
+        if (dependenciesMet) {
+          // Only check for missing value or run validation if dependencies are met
+          if (!varState.effectiveValue) {
+            const dependencyErrors = model.contextualValidation.dependencies
+              .map((dep) => {
+                const dependencyValue = allVariables[dep.variable] ?? '';
+
+                const shouldValidate = dep.condition(
+                  dependencyValue,
+                  allVariables,
+                );
+
+                if (shouldValidate) {
+                  const { success } = model.contextualValidation!.validate({
+                    value: varState.effectiveValue,
+                    variables: allVariables,
+                    mode,
+                  });
+
+                  if (success) {
+                    return null;
+                  }
+
+                  return dep.message;
+                }
+
+                return null;
+              })
+              .filter((message): message is string => message !== null);
+
+            validation = {
+              success: dependencyErrors.length === 0,
+              error: {
+                issues: dependencyErrors
+                  .map((message) => message)
+                  .filter((message) => !!message),
+              },
+            };
+          } else {
+            // If we have a value and dependencies are met, run contextual validation
+            const result = model.contextualValidation.validate({
+              value: varState.effectiveValue,
+              variables: allVariables,
+              mode,
+            });
+
+            if (!result.success) {
+              validation = {
+                success: false,
+                error: {
+                  issues: result.error.issues
+                    .map((issue) => issue.message)
+                    .filter((message) => !!message),
+                },
+              };
+            }
+          }
+        }
+      } else if (model.validate && varState.effectiveValue) {
+        // Only run regular validation if:
+        // 1. There's no contextual validation
+        // 2. There's a value to validate
+        const result = model.validate({
+          value: varState.effectiveValue,
+          variables: allVariables,
+          mode,
+        });
+
+        if (!result.success) {
+          validation = {
+            success: false,
+            error: {
+              issues: result.error.issues
+                .map((issue) => issue.message)
+                .filter((message) => !!message),
+            },
+          };
+        }
+      }
+    }
+
+    varState.validation = validation;
+  }
+
+  // Final pass: Validate missing variables that are marked as required
+  // or as having contextual validation
+  for (const model of envVariables) {
+    // If the variable exists in appState, use that
+    const existingVar = variableMap[model.name];
+
+    if (existingVar) {
+      // If the variable is already in the map, skip it
+      continue;
+    }
+
+    if (model.required || model.contextualValidation) {
+      if (model.contextualValidation) {
+        const allVariables = Object.values(variableMap).reduce(
+          (acc, variable) => {
+            return {
+              ...acc,
+              [variable.key]: variable.effectiveValue,
+            };
+          },
+          {} as Record<string, string>,
+        );
+
+        const errors =
+          model?.contextualValidation?.dependencies
+            .map((dep) => {
+              const dependencyValue = allVariables[dep.variable] ?? '';
+              const shouldValidate = dep.condition(
+                dependencyValue,
+                allVariables,
+              );
+
+              if (!shouldValidate) {
+                return [];
+              }
+
+              const effectiveValue = allVariables[dep.variable] ?? '';
+
+              const validation = model.contextualValidation!.validate({
+                value: effectiveValue,
+                variables: allVariables,
+                mode,
+              });
+
+              if (validation) {
+                return [dep.message];
+              }
+
+              return [];
+            })
+            .flat() ?? ([] as string[]);
+
+        if (errors.length === 0) {
+          continue;
+        } else {
+          variableMap[model.name] = {
+            key: model.name,
+            effectiveValue: '',
+            effectiveSource: 'MISSING',
+            isVisible: true,
+            category: model.category,
+            isOverridden: false,
+            definitions: [],
+            validation: {
+              success: false,
+              error: {
+                issues: errors.map((error) => error),
+              },
+            },
+          };
+        }
+      }
+
+      // If it doesn't exist but is required or has contextual validation, create an empty state
+      variableMap[model.name] = {
+        key: model.name,
+        effectiveValue: '',
+        effectiveSource: 'MISSING',
+        isVisible: true,
+        category: model.category,
+        isOverridden: false,
+        definitions: [],
+        validation: {
+          success: false,
+          error: {
+            issues: [
+              `This variable is required but missing from your environment files`,
+            ],
+          },
+        },
+      };
+    }
+  }
+
   return {
     appName: envInfo.appName,
     filePath: envInfo.filePath,
@@ -225,11 +457,6 @@ export async function getEnvState(
 ): Promise<AppEnvState[]> {
   const envInfos = await scanMonorepoEnv(options);
   return envInfos.map((info) => processEnvDefinitions(info, options.mode));
-}
-
-// Utility function to get list of env files for current mode
-export function getEnvFilesForMode(mode: EnvMode): string[] {
-  return ENV_FILE_PRECEDENCE[mode];
 }
 
 export async function getVariable(key: string, mode: EnvMode) {

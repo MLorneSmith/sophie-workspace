@@ -1,21 +1,23 @@
 'use client';
 
-import { Fragment, useCallback, useState } from 'react';
+import { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import { envVariables } from '@/app/variables/lib/env-variables-model';
+import { updateEnvironmentVariableAction } from '@/app/variables/lib/server-actions';
 import { EnvModeSelector } from '@/components/env-mode-selector';
 import {
-  ChevronDown,
-  ChevronUp,
   ChevronsUpDownIcon,
   Copy,
+  CopyIcon,
   Eye,
   EyeOff,
   EyeOffIcon,
   InfoIcon,
 } from 'lucide-react';
+import { Subject, debounceTime } from 'rxjs';
 
 import { Alert, AlertDescription, AlertTitle } from '@kit/ui/alert';
 import { Badge } from '@kit/ui/badge';
@@ -39,32 +41,77 @@ import {
 import { cn } from '@kit/ui/utils';
 
 import { AppEnvState, EnvVariableState } from '../lib/types';
-
-type ValidationResult = {
-  success: boolean;
-  error?: {
-    issues: Array<{ message: string }>;
-  };
-};
+import { DynamicFormInput } from './dynamic-form-input';
 
 export function AppEnvironmentVariablesManager({
   state,
 }: React.PropsWithChildren<{
   state: AppEnvState;
 }>) {
-  return (
-    <div className="flex flex-1 flex-col gap-y-4">
-      <Heading level={5}>Application: {state.appName}</Heading>
+  return <EnvList appState={state} />;
+}
 
-      <div className={'flex flex-col space-y-4'}>
-        <EnvList appState={state} />
+function EnvListDisplay({
+  groups,
+  className,
+  hideSecret = false,
+}: {
+  groups: Array<{
+    category: string;
+    variables: Array<EnvVariableState>;
+  }>;
+
+  className: string;
+  hideSecret?: boolean;
+}) {
+  return (
+    <div className={cn(className)}>
+      <div
+        className={
+          'text-muted-foreground relative flex h-full flex-col rounded-lg font-mono text-xs'
+        }
+      >
+        <div className="bg-muted/50 sticky top-0 flex flex-col gap-y-1 rounded-lg p-4">
+          <div className={'sticky top-0 h-full overflow-auto pb-16 break-all'}>
+            {groups.map((group) => (
+              <div className="mb-4" key={group.category}>
+                <span># {group.category}</span>
+
+                {group.variables.map((variable) => {
+                  const model = envVariables.find(
+                    (item) => item.name === variable.key,
+                  );
+
+                  const isSecret = model?.secret;
+                  const value =
+                    isSecret && hideSecret
+                      ? '••••••••'
+                      : variable.effectiveValue;
+
+                  return (
+                    <Link
+                      href={`#var_${variable.key.toLowerCase()}`}
+                      className={cn('block transition-all hover:underline', {
+                        ['text-orange-500']: variable.isOverridden,
+                        ['text-destructive']: !variable.validation.success,
+                        ['opacity-20']: !variable.isVisible,
+                      })}
+                      key={variable.key}
+                    >
+                      <span>{variable.key}</span>: {value}
+                    </Link>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
 }
 
 function EnvList({ appState }: { appState: AppEnvState }) {
-  const [expandedVars, setExpandedVars] = useState<Record<string, boolean>>({});
   const [showValues, setShowValues] = useState<Record<string, boolean>>({});
   const [search, setSearch] = useState('');
   const searchParams = useSearchParams();
@@ -75,13 +122,6 @@ function EnvList({ appState }: { appState: AppEnvState }) {
   const showOverriddenVars = searchParams.get('overridden') === 'true';
   const showInvalidVars = searchParams.get('invalid') === 'true';
 
-  const toggleExpanded = (key: string) => {
-    setExpandedVars((prev) => ({
-      ...prev,
-      [key]: !prev[key],
-    }));
-  };
-
   const toggleShowValue = (key: string) => {
     setShowValues((prev) => ({
       ...prev,
@@ -89,175 +129,86 @@ function EnvList({ appState }: { appState: AppEnvState }) {
     }));
   };
 
-  const copyToClipboard = async (text: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-    } catch (err) {
-      console.error('Failed to copy:', err);
-    }
-  };
-
   const renderValue = (value: string, isVisible: boolean) => {
     if (!isVisible) {
+      if (!value) {
+        return `(empty)`;
+      }
+
       return '••••••••';
     }
 
-    return value || '(empty)';
+    return value;
   };
 
   const allVariables = getEffectiveVariablesValue(appState);
 
-  // Create a map of all variables including missing ones that have contextual validation
-  const allVarsWithValidation = envVariables.reduce<
-    Record<string, EnvVariableState>
-  >((acc, model) => {
-    // If the variable exists in appState, use that
-    const existingVar = appState.variables[model.name];
-    if (existingVar) {
-      acc[model.name] = existingVar;
-    } else if (
-      // Show missing variables if they:
-      model.required || // Are marked as required
-      model.contextualValidation // OR have contextual validation
-    ) {
-      // If it doesn't exist but is required or has contextual validation, create an empty state
-      acc[model.name] = {
-        key: model.name,
-        effectiveValue: '',
-        effectiveSource: 'MISSING',
-        category: model.category,
-        isOverridden: false,
-        definitions: [],
-      };
-    }
-    return acc;
-  }, {});
+  const subject$ = useMemo(
+    () =>
+      new Subject<{
+        name: string;
+        value: string;
+      }>(),
+    [],
+  );
+
+  useEffect(() => {
+    const subscription = subject$
+      .pipe(debounceTime(1000))
+      .subscribe((props) => {
+        updateEnvironmentVariableAction({
+          ...props,
+          mode: appState.mode,
+        })
+          .then((result) => {
+            toast.success(result.message);
+          })
+          .catch((err) => {
+            toast.error(`Failed to update ${props.name}: ${err.message}`);
+          });
+      });
+
+    return () => {
+      return subscription.unsubscribe();
+    };
+  }, [subject$]);
+
+  const onValueChanged = useCallback(
+    (props: { value: string; name: string }) => {
+      subject$.next({
+        name: props.name,
+        value: props.value,
+      });
+    },
+    [subject$],
+  );
 
   const renderVariable = (varState: EnvVariableState) => {
-    const isExpanded = expandedVars[varState.key] ?? false;
-    const isClientBundledValue = varState.key.startsWith('NEXT_PUBLIC_');
-    const isValueVisible = showValues[varState.key] ?? isClientBundledValue;
-
     const model = envVariables.find(
       (variable) => variable.name === varState.key,
     );
 
-    // Enhanced validation logic to handle both regular and contextual validation
-    let validation: ValidationResult = {
-      success: true,
-    };
-
-    if (model) {
-      // First check if it's required but missing
-      if (model.required && !varState.effectiveValue) {
-        validation = {
-          success: false,
-          error: {
-            issues: [
-              {
-                message: `This variable is required but missing from your environment files`,
-              },
-            ],
-          },
-        };
-      } else if (model.contextualValidation) {
-        // Then check contextual validation
-        const dependenciesMet = model.contextualValidation.dependencies.some(
-          (dep) => {
-            const dependencyValue = allVariables[dep.variable] ?? '';
-
-            return dep.condition(dependencyValue, allVariables);
-          },
-        );
-
-        if (dependenciesMet) {
-          // Only check for missing value or run validation if dependencies are met
-          if (!varState.effectiveValue) {
-            const dependencyErrors = model.contextualValidation.dependencies
-              .map((dep) => {
-                const dependencyValue = allVariables[dep.variable] ?? '';
-
-                const shouldValidate = dep.condition(
-                  dependencyValue,
-                  allVariables,
-                );
-
-                if (shouldValidate) {
-                  const { success } = model.contextualValidation!.validate({
-                    value: varState.effectiveValue,
-                    variables: allVariables,
-                    mode: appState.mode,
-                  });
-
-                  if (success) {
-                    return null;
-                  }
-
-                  return dep.message;
-                }
-
-                return null;
-              })
-              .filter((message): message is string => message !== null);
-
-            validation = {
-              success: dependencyErrors.length === 0,
-              error: {
-                issues: dependencyErrors.map((message) => ({ message })),
-              },
-            };
-          } else {
-            // If we have a value and dependencies are met, run contextual validation
-            const result = model.contextualValidation.validate({
-              value: varState.effectiveValue,
-              variables: allVariables,
-              mode: appState.mode,
-            });
-
-            if (!result.success) {
-              validation = {
-                success: false,
-                error: {
-                  issues: result.error.issues.map((issue) => ({
-                    message: issue.message,
-                  })),
-                },
-              };
-            }
-          }
-        }
-      } else if (model.validate && varState.effectiveValue) {
-        // Only run regular validation if:
-        // 1. There's no contextual validation
-        // 2. There's a value to validate
-        const result = model.validate({
-          value: varState.effectiveValue,
-          variables: allVariables,
-          mode: appState.mode,
-        });
-
-        if (!result.success) {
-          validation = {
-            success: false,
-            error: {
-              issues: result.error.issues.map((issue) => ({
-                message: issue.message,
-              })),
-            },
-          };
-        }
-      }
-    }
-
-    const canExpand = varState.definitions.length > 1 || !validation.success;
+    const isClientBundledValue = varState.key.startsWith('NEXT_PUBLIC_');
+    const isValueVisible = showValues[varState.key] ?? !model?.secret;
 
     return (
-      <div key={varState.key} className="animate-in fade-in rounded-lg border">
-        <div className="p-4">
+      <div
+        id={`var_${varState.key.toLowerCase()}`}
+        key={varState.key}
+        className={cn('animate-in fade-in py-6 transition-all', {
+          hidden: !varState.isVisible,
+        })}
+      >
+        <div className={'flex flex-col space-y-2'}>
           <div className="flex items-start justify-between">
-            <div className="flex-1 flex-col gap-y-4">
+            <div className="flex max-w-full flex-1 flex-col">
               <div className="flex items-center gap-4">
-                <span className="font-mono text-sm font-semibold">
+                <span
+                  className={cn('font-mono text-sm font-semibold', {
+                    'text-orange-500': varState.isOverridden,
+                    'text-destructive': !varState.validation.success,
+                  })}
+                >
                   {varState.key}
                 </span>
 
@@ -311,11 +262,26 @@ function EnvList({ appState }: { appState: AppEnvState }) {
               </If>
 
               <div className="mt-2 flex items-center gap-2">
-                <div className="bg-muted text-muted-foreground flex-1 rounded px-2 py-2 font-mono text-xs">
-                  {renderValue(varState.effectiveValue, isValueVisible)}
-                </div>
+                <If
+                  condition={isValueVisible || !varState.effectiveValue}
+                  fallback={
+                    <div className="max-w-auto bg-muted text-muted-foreground flex h-9 w-auto flex-1 items-center overflow-x-auto rounded border px-2 py-2 font-mono text-xs">
+                      {renderValue(varState.effectiveValue, isValueVisible)}
+                    </div>
+                  }
+                >
+                  <DynamicFormInput
+                    type={model?.type ?? 'string'}
+                    name={varState.key}
+                    value={varState.effectiveValue}
+                    onChange={onValueChanged}
+                    placeholder={`Set a value for ${varState.key}`}
+                    enumValues={model?.values}
+                    className="text-xs"
+                  />
+                </If>
 
-                <If condition={!isClientBundledValue}>
+                <If condition={model?.secret}>
                   <Button
                     variant="ghost"
                     size={'icon'}
@@ -325,30 +291,27 @@ function EnvList({ appState }: { appState: AppEnvState }) {
                   </Button>
                 </If>
 
-                <Button
-                  variant="ghost"
-                  onClick={() => copyToClipboard(varState.effectiveValue)}
-                  size={'icon'}
-                >
-                  <Copy size={16} />
-                </Button>
+                <If condition={model && model.type !== 'boolean'}>
+                  <Button
+                    variant="ghost"
+                    onClick={() => copyToClipboard(varState.effectiveValue)}
+                    size={'icon'}
+                  >
+                    <Copy size={16} />
+                  </Button>
+                </If>
               </div>
-            </div>
 
-            {canExpand && (
-              <Button
-                size={'icon'}
-                variant="ghost"
-                className="ml-4 rounded p-1 hover:bg-gray-100"
-                onClick={() => toggleExpanded(varState.key)}
-              >
-                {isExpanded ? (
-                  <ChevronUp className="h-4 w-4" />
-                ) : (
-                  <ChevronDown className="h-4 w-4" />
+              <If condition={model?.hint}>
+                {(hint) => (
+                  <div className="mt-2 flex items-center gap-2">
+                    <span className="text-muted-foreground text-xs font-normal">
+                      {hint}
+                    </span>
+                  </div>
                 )}
-              </Button>
-            )}
+              </If>
+            </div>
           </div>
 
           <div className="mt-2 flex gap-x-2">
@@ -441,7 +404,7 @@ function EnvList({ appState }: { appState: AppEnvState }) {
               </Badge>
             </If>
 
-            <If condition={!validation.success}>
+            <If condition={!varState.validation.success}>
               <Badge variant="destructive">
                 Invalid Value
                 <TooltipProvider>
@@ -461,90 +424,73 @@ function EnvList({ appState }: { appState: AppEnvState }) {
           </div>
         </div>
 
-        {isExpanded && canExpand && (
-          <div className="flex flex-col gap-y-2 border-t bg-gray-50 p-4">
-            <If condition={!validation.success}>
-              <div className={'flex flex-col space-y-2'}>
-                <Heading level={6} className="Errors">
-                  Errors
-                </Heading>
+        <div className="flex w-full flex-col gap-y-2 py-4">
+          <If condition={!varState.validation.success}>
+            <div className={'flex flex-col space-y-2'}>
+              <Alert variant="destructive">
+                <AlertTitle>
+                  {varState.effectiveSource === 'MISSING'
+                    ? `The variable ${varState.key} is required but missing`
+                    : `The value for ${varState.key} is invalid`}
+                </AlertTitle>
 
-                <Alert variant="destructive">
-                  <AlertTitle>
-                    {varState.effectiveSource === 'MISSING'
-                      ? 'Missing Required Variable'
-                      : 'Invalid Value'}
-                  </AlertTitle>
-
-                  <AlertDescription>
-                    <div className="space-y-2">
-                      <div>
-                        {varState.effectiveSource === 'MISSING'
-                          ? `The variable ${varState.key} is required but missing from your environment files:`
-                          : `The value for ${varState.key} is invalid:`}
-                      </div>
-
-                      {/* Enhanced error display */}
-                      <div className="space-y-1">
-                        {validation.error?.issues.map((issue, index) => (
-                          <div key={index} className="text-sm">
-                            • {issue.message}
-                          </div>
-                        ))}
-                      </div>
-
-                      {/* Display dependency information if available */}
-                      {model?.contextualValidation?.dependencies && (
-                        <div className="mt-4 space-y-1">
-                          <div className="font-medium">Dependencies:</div>
-
-                          {model.contextualValidation.dependencies.map(
-                            (dep, index) => (
-                              <div key={index} className="text-sm">
-                                • Requires valid {dep.variable.toUpperCase()}{' '}
-                                when {dep.message}
-                              </div>
-                            ),
-                          )}
+                <AlertDescription>
+                  <div className="space-y-2">
+                    <div className="space-y-1">
+                      {varState.validation.error?.issues.map((issue, index) => (
+                        <div key={index} className="text-sm">
+                          • {issue}
                         </div>
-                      )}
+                      ))}
                     </div>
-                  </AlertDescription>
-                </Alert>
-              </div>
-            </If>
 
-            <If condition={varState.definitions.length > 1}>
-              <div className={'flex flex-col space-y-2'}>
-                <Heading level={6} className="text-sm font-medium">
-                  Override Chain
-                </Heading>
+                    {/* Display dependency information if available */}
+                    {model?.contextualValidation?.dependencies && (
+                      <div className="mt-4 space-y-1">
+                        <div className="font-medium">Dependencies:</div>
 
-                <div className="space-y-2">
-                  {varState.definitions.map((def) => (
-                    <div
-                      key={`${def.key}-${def.source}`}
-                      className="flex items-center gap-2"
-                    >
-                      <Badge
-                        variant={'outline'}
-                        className={cn({
-                          'text-destructive': def.source === '.env.production',
-                        })}
-                      >
-                        {def.source}
-                      </Badge>
-
-                      <div className="font-mono text-sm">
-                        {renderValue(def.value, isValueVisible)}
+                        {model.contextualValidation.dependencies.map(
+                          (dep, index) => (
+                            <div key={index} className="text-sm">
+                              • Requires valid {dep.variable.toUpperCase()} when{' '}
+                              {dep.message}
+                            </div>
+                          ),
+                        )}
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    )}
+                  </div>
+                </AlertDescription>
+              </Alert>
+            </div>
+          </If>
+
+          <If condition={varState.definitions.length > 1}>
+            <div className={'flex flex-col space-y-2'}>
+              <Heading level={6} className="text-sm font-medium">
+                Override Chain
+              </Heading>
+
+              <div className="w-full space-y-2">
+                {varState.definitions.map((def) => (
+                  <div
+                    key={`${def.key}-${def.source}`}
+                    className="flex items-center gap-2"
+                  >
+                    <Badge
+                      variant={'outline'}
+                      className={cn({
+                        'text-destructive': def.source === '.env.production',
+                      })}
+                    >
+                      {def.source}
+                    </Badge>
+                  </div>
+                ))}
               </div>
-            </If>
-          </div>
-        )}
+            </div>
+          </If>
+        </div>
       </div>
     );
   };
@@ -589,83 +535,20 @@ function EnvList({ appState }: { appState: AppEnvState }) {
       return varState.isOverridden;
     }
 
-    if (showInvalidVars) {
-      const allVariables = getEffectiveVariablesValue(appState);
-
-      let hasError = false;
-
-      if (model) {
-        if (model.contextualValidation) {
-          // Check for missing or invalid dependencies
-          const dependencyErrors = model.contextualValidation.dependencies
-            .map((dep) => {
-              const dependencyValue = allVariables[dep.variable] ?? '';
-
-              const shouldValidate = dep.condition(
-                dependencyValue,
-                allVariables,
-              );
-
-              if (shouldValidate) {
-                const { error } = model.contextualValidation!.validate({
-                  value: varState.effectiveValue,
-                  variables: allVariables,
-                  mode: appState.mode,
-                });
-
-                return error;
-              }
-
-              return false;
-            })
-            .filter(Boolean);
-
-          if (dependencyErrors.length > 0) {
-            hasError = true;
-          }
-        } else if (model.validate) {
-          // Fall back to regular validation
-          const result = model.validate({
-            value: varState.effectiveValue,
-            variables: allVariables,
-            mode: appState.mode,
-          });
-
-          hasError = !result.success;
-        }
-      }
-
-      return hasError && isInSearch;
+    if (showInvalidVars && isInSearch) {
+      return !varState.validation.success;
     }
 
     return isInSearch;
   };
 
   // Update groups to use allVarsWithValidation instead of appState.variables
-  const groups = Object.values(allVarsWithValidation)
-    .filter(filterVariable)
-    .reduce(
-      (acc, variable) => {
-        const group = acc.find((group) => group.category === variable.category);
-
-        if (!group) {
-          acc.push({
-            category: variable.category,
-            variables: [variable],
-          });
-        } else {
-          group.variables.push(variable);
-        }
-
-        return acc;
-      },
-      [] as Array<{ category: string; variables: Array<EnvVariableState> }>,
-    );
+  const groups = getGroups(appState, filterVariable);
 
   return (
-    <div className="flex flex-col gap-y-4">
+    <div className="flex h-full flex-1 flex-col gap-y-4">
       <div className="flex items-center">
-        <div className="flex w-full space-x-2">
+        <div className="flex w-full space-x-2 py-0.5">
           <div>
             <EnvModeSelector mode={appState.mode} />
           </div>
@@ -688,86 +571,66 @@ function EnvList({ appState }: { appState: AppEnvState }) {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
-
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="secondary"
-                  onClick={() => {
-                    const report = createReportFromEnvState(appState);
-                    const promise = copyToClipboard(report);
-
-                    toast.promise(promise, {
-                      loading: 'Copying report...',
-                      success:
-                        'Report copied to clipboard. Please paste it in your ticket.',
-                      error: 'Failed to copy report to clipboard',
-                    });
-                  }}
-                >
-                  Copy to Clipboard
-                </Button>
-              </TooltipTrigger>
-
-              <TooltipContent>
-                Create a report from the environment variables. Useful for
-                creating support tickets.
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
         </div>
       </div>
 
-      <div className="flex flex-col">
+      <div className="flex flex-1 flex-col gap-y-4 overflow-hidden">
         <Summary appState={appState} />
 
-        {groups.map((group) => (
-          <div
-            key={group.category}
-            className="flex flex-col gap-y-2.5 border-b border-dashed py-8 last:border-b-0"
-          >
-            <div>
-              <span className={'text-sm font-bold uppercase'}>
-                {group.category}
-              </span>
-            </div>
+        <div className="flex w-full flex-1 space-x-4 overflow-hidden">
+          <div className="flex w-6/12 flex-1 flex-col overflow-y-auto">
+            <div className="flex flex-col gap-y-4">
+              {groups.map((group) => {
+                const visibleVariables = group.variables.filter(
+                  (item) => item.isVisible,
+                );
 
-            <div className="flex flex-col space-y-4">
-              {group.variables.map((item) => {
+                if (visibleVariables.length === 0) {
+                  return null;
+                }
+
                 return (
-                  <Fragment key={item.key}>{renderVariable(item)}</Fragment>
+                  <div
+                    key={group.category}
+                    className="flex flex-col rounded-lg border p-4"
+                  >
+                    <div>
+                      <span className={'text-lg font-bold'}>
+                        {group.category}
+                      </span>
+                    </div>
+
+                    <div className="flex flex-col">
+                      {group.variables.map((item) => {
+                        return (
+                          <Fragment key={item.key}>
+                            {renderVariable(item)}
+                          </Fragment>
+                        );
+                      })}
+                    </div>
+                  </div>
                 );
               })}
-            </div>
-          </div>
-        ))}
 
-        <If condition={groups.length === 0}>
-          <div className="flex h-full flex-1 flex-col items-center justify-center gap-y-4 py-16">
-            <div className="text-muted-foreground text-sm">
-              No variables found
+              <If condition={groups.length === 0}>
+                <div className="flex h-full flex-1 flex-col items-center justify-center gap-y-4 py-16">
+                  <div className="text-muted-foreground text-sm">
+                    No variables found
+                  </div>
+                </div>
+              </If>
             </div>
           </div>
-        </If>
+
+          <EnvListDisplay
+            className="sticky top-0 w-6/12 overflow-y-auto"
+            groups={groups}
+          />
+        </div>
       </div>
     </div>
   );
-}
-
-function createReportFromEnvState(state: AppEnvState) {
-  let report = ``;
-
-  for (const key in state.variables) {
-    const variable = state.variables[key];
-
-    const variableReport = `${key}: ${JSON.stringify(variable, null, 2)}`;
-    ``;
-
-    report += variableReport + '\n';
-  }
-
-  return report;
 }
 
 function FilterSwitcher(props: {
@@ -875,66 +738,15 @@ function FilterSwitcher(props: {
 
 function Summary({ appState }: { appState: AppEnvState }) {
   const varsArray = Object.values(appState.variables);
-  const allVariables = getEffectiveVariablesValue(appState);
   const overridden = varsArray.filter((variable) => variable.isOverridden);
   const handleFilterChange = useUpdateFilteredVariables();
 
   // Find all variables with errors (including missing required and contextual validation)
-  const errors = envVariables.reduce<string[]>((acc, model) => {
-    // Get the current value of this variable
-    const varState = appState.variables[model.name];
-    const value = varState?.effectiveValue;
-    let hasError = false;
+  const variablesWithErrors = varsArray.filter((variable) => {
+    return !variable.validation.success;
+  });
 
-    // Check if it's required but missing
-    if (model.required && !value) {
-      hasError = true;
-    } else if (model.contextualValidation) {
-      // Check if any dependency conditions are met
-      const dependenciesErrors = model.contextualValidation.dependencies.some(
-        (dep) => {
-          const dependencyValue = allVariables[dep.variable] ?? '';
-
-          const shouldValidate = dep.condition(dependencyValue, allVariables);
-
-          if (shouldValidate) {
-            const { error } = model.contextualValidation!.validate({
-              value: varState?.effectiveValue ?? '',
-              variables: allVariables,
-              mode: appState.mode,
-            });
-
-            return error;
-          }
-        },
-      );
-
-      if (dependenciesErrors) {
-        hasError = true;
-      }
-    } else if (model.validate && value) {
-      // Only run regular validation if:
-      // 1. There's no contextual validation
-      // 2. There's a value to validate
-      const result = model.validate({
-        value,
-        variables: allVariables,
-        mode: appState.mode,
-      });
-
-      if (!result.success) {
-        hasError = true;
-      }
-    }
-
-    if (hasError) {
-      acc.push(model.name);
-    }
-
-    return acc;
-  }, []);
-
-  const validVariables = varsArray.length - errors.length;
+  const validVariables = varsArray.length - variablesWithErrors.length;
 
   return (
     <div className="flex justify-between space-x-4">
@@ -946,11 +758,11 @@ function Summary({ appState }: { appState: AppEnvState }) {
         <Badge
           variant={'outline'}
           className={cn({
-            'text-destructive': errors.length > 0,
-            'text-green-500': errors.length === 0,
+            'text-destructive': variablesWithErrors.length > 0,
+            'text-green-500': variablesWithErrors.length === 0,
           })}
         >
-          {errors.length} Invalid
+          {variablesWithErrors.length} Invalid
         </Badge>
 
         <If condition={overridden.length > 0}>
@@ -963,17 +775,59 @@ function Summary({ appState }: { appState: AppEnvState }) {
         </If>
       </div>
 
-      <div>
-        <If condition={errors.length > 0}>
+      <div className={'flex items-center gap-x-2'}>
+        <If condition={variablesWithErrors.length > 0}>
           <Button
             size={'sm'}
-            variant={'ghost'}
+            variant={'outline'}
             onClick={() => handleFilterChange('invalid', true, true)}
           >
             <EyeOffIcon className="mr-2 h-3 w-3" />
             Display Invalid only
           </Button>
         </If>
+
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="outline"
+                size={'sm'}
+                onClick={() => {
+                  let data = '';
+
+                  const groups = getGroups(appState, () => true);
+
+                  groups.forEach((group) => {
+                    data += `# ${group.category}\n`;
+
+                    group.variables.forEach((variable) => {
+                      data += `${variable.key}=${variable.effectiveValue}\n`;
+                    });
+
+                    data += '\n';
+                  });
+
+                  const promise = copyToClipboard(data);
+
+                  toast.promise(promise, {
+                    loading: 'Copying environment variables...',
+                    success: 'Environment variables copied to clipboard.',
+                    error: 'Failed to copy environment variables to clipboard',
+                  });
+                }}
+              >
+                <CopyIcon className={'mr-2 h-4 w-4'} />
+                <span>Copy env file to clipboard</span>
+              </Button>
+            </TooltipTrigger>
+
+            <TooltipContent>
+              Copy environment variables to clipboard. You can place it in your
+              hosting provider to set up the full environment.
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
     </div>
   );
@@ -1026,4 +880,36 @@ function useUpdateFilteredVariables() {
   };
 
   return useCallback(handleFilterChange, [router]);
+}
+
+async function copyToClipboard(text: string) {
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch (err) {
+    console.error('Failed to copy:', err);
+  }
+}
+
+function getGroups(
+  appState: AppEnvState,
+  filterVariable: (variable: EnvVariableState) => boolean,
+) {
+  return Object.values(appState.variables).reduce(
+    (acc, variable) => {
+      const group = acc.find((group) => group.category === variable.category);
+      variable.isVisible = filterVariable(variable);
+
+      if (!group) {
+        acc.push({
+          category: variable.category,
+          variables: [variable],
+        });
+      } else {
+        group.variables.push(variable);
+      }
+
+      return acc;
+    },
+    [] as Array<{ category: string; variables: Array<EnvVariableState> }>,
+  );
 }

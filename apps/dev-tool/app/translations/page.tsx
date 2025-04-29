@@ -18,12 +18,9 @@ export default async function TranslationsPage() {
     <Page style={'custom'}>
       <PageHeader
         displaySidebarTrigger={false}
+        title={'Translations'}
         description={
-          <AppBreadcrumbs
-            values={{
-              translations: 'Translations',
-            }}
-          />
+          'Compare translations across different languages. Ensure consistency and accuracy in your translations.'
         }
       />
 

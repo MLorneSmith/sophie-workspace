@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "node ./src/dev.mjs",
     "checks": "node ./src/checks.mjs",
-    "requirements": "node ./src/requirements.mjs"
+    "requirements": "node ./src/requirements.mjs",
+    "license": "node ./src/license.mjs"
   }
 }

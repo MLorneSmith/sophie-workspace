@@ -34,24 +34,23 @@ export default async function EmailPage(props: EmailPageProps) {
   const template = await loadEmailTemplate(id);
   const emailSettings = await getEmailSettings(mode);
 
+  const values: Record<string, string> = {
+    emails: 'Emails',
+    'invite-email': 'Invite Email',
+    'account-delete-email': 'Account Delete Email',
+    'confirm-email': 'Confirm Email',
+    'change-email-address-email': 'Change Email Address Email',
+    'reset-password-email': 'Reset Password Email',
+    'magic-link-email': 'Magic Link Email',
+    'otp-email': 'OTP Email',
+  };
+
   return (
     <Page style={'custom'}>
       <PageHeader
         displaySidebarTrigger={false}
-        description={
-          <AppBreadcrumbs
-            values={{
-              emails: 'Emails',
-              'invite-email': 'Invite Email',
-              'account-delete-email': 'Account Delete Email',
-              'confirm-email': 'Confirm Email',
-              'change-email-address-email': 'Change Email Address Email',
-              'reset-password-email': 'Reset Password Email',
-              'magic-link-email': 'Magic Link Email',
-              'otp-email': 'OTP Email',
-            }}
-          />
-        }
+        title={values[id]}
+        description={<AppBreadcrumbs values={values} />}
       >
         <EnvModeSelector mode={mode} />
       </PageHeader>

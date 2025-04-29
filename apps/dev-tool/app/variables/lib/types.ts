@@ -19,6 +19,13 @@ export type EnvVariableState = {
   effectiveValue: string;
   isOverridden: boolean;
   effectiveSource: string;
+  isVisible: boolean;
+  validation: {
+    success: boolean;
+    error: {
+      issues: string[];
+    };
+  };
 };
 
 export type AppEnvState = {

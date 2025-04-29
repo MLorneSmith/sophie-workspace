@@ -1,8 +1,6 @@
 import { execSync } from 'child_process';
-
-
-
-
+import { readFileSync } from 'fs';
+import path from 'path';
 
 const endpoint = 'https://makerkit.dev/api/license/check';
 
@@ -46,6 +44,21 @@ async function checkLicense() {
   if (gitEmail) {
     searchParams.append('email', gitEmail);
   }
+
+  try {
+    const makerkitConfig =
+      JSON.parse(
+        readFileSync(path.resolve(process.cwd(), '../../.makerkitrc'), 'utf-8'),
+      ) || {};
+
+    if (makerkitConfig.projectName) {
+      searchParams.append('projectName', makerkitConfig.projectName);
+    }
+
+    if (makerkitConfig.username) {
+      searchParams.append('projectUsername', makerkitConfig.username);
+    }
+  } catch {}
 
   const res = await fetch(`${endpoint}?${searchParams.toString()}`);
 
