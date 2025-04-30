@@ -121,6 +121,16 @@ export async function detectAllRelationships(): Promise<RelationshipMap> {
         relationships: [],
       };
 
+      // Filter out known utility/non-collection tables before checking relationships
+      const potentialTargetCollections = collections.filter(
+        (c) =>
+          c !== 'uuid_table_monitor' &&
+          c !== 'dynamic_uuid_tables' &&
+          c !== 'payload_preferences' && // Add other known non-content tables if necessary
+          c !== 'payload_migrations' &&
+          c !== 'payload_locked_documents',
+      );
+
       // Find relationship tables for this collection
       const relTableMatches = relTables.filter((table) => {
         return (
@@ -165,21 +175,36 @@ export async function detectAllRelationships(): Promise<RelationshipMap> {
               const sampleId = sampleResult.rows[0].id;
 
               // Try to find which collection this ID belongs to
-              for (const potentialTarget of collections) {
+              for (const potentialTarget of potentialTargetCollections) {
+                // Use filtered list
                 // Skip self-references to avoid confusion
                 if (potentialTarget === collection) continue;
 
-                const checkQuery = `
-                  SELECT COUNT(*) as count
-                  FROM payload.${potentialTarget}
-                  WHERE id = '${sampleId}'
+                // Check if the potential target table has an 'id' column before querying it
+                const columnCheckQuery = `
+                  SELECT 1 
+                  FROM information_schema.columns 
+                  WHERE table_schema = 'payload' 
+                  AND table_name = '${potentialTarget}' 
+                  AND column_name = 'id'
+                  LIMIT 1;
                 `;
+                const columnCheckResult = await executeSQL(columnCheckQuery);
 
-                const checkResult = await executeSQL(checkQuery);
+                // Only proceed if the 'id' column exists
+                if (columnCheckResult.rows.length > 0) {
+                  const checkQuery = `
+                    SELECT COUNT(*) as count
+                    FROM payload.${potentialTarget}
+                    WHERE id = '${sampleId}'
+                  `;
 
-                if (checkResult.rows[0].count > 0) {
-                  targetCollection = potentialTarget;
-                  break;
+                  const checkResult = await executeSQL(checkQuery);
+
+                  if (checkResult.rows[0].count > 0) {
+                    targetCollection = potentialTarget;
+                    break; // Found the target collection
+                  }
                 }
               }
 

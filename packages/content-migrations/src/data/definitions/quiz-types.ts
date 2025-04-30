@@ -36,7 +36,9 @@ export function validateQuizDefinition(quiz: QuizDefinition): boolean {
 
   // Ensure all questions have valid IDs and options
   return quiz.questions.every(
-    (q) =>
+    (
+      q: QuizQuestion, // Add explicit type QuizQuestion for parameter q
+    ) =>
       !!q.id &&
       !!q.text &&
       Array.isArray(q.options) &&

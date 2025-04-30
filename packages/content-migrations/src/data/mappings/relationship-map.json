@@ -31,8 +31,53 @@
           "sourceCollection": "course_quizzes",
           "sourceField": "questions",
           "targetCollection": "unknown",
-          "relationType": "hasOne",
+          "relationType": "hasMany",
           "relationshipPath": "questions",
+          "isRequired": false,
+          "relationshipTable": "course_quizzes_rels"
+        },
+        {
+          "sourceCollection": "course_quizzes",
+          "sourceField": "questions.0",
+          "targetCollection": "unknown",
+          "relationType": "hasMany",
+          "relationshipPath": "questions.0",
+          "isRequired": false,
+          "relationshipTable": "course_quizzes_rels"
+        },
+        {
+          "sourceCollection": "course_quizzes",
+          "sourceField": "questions.1",
+          "targetCollection": "unknown",
+          "relationType": "hasMany",
+          "relationshipPath": "questions.1",
+          "isRequired": false,
+          "relationshipTable": "course_quizzes_rels"
+        },
+        {
+          "sourceCollection": "course_quizzes",
+          "sourceField": "questions.2",
+          "targetCollection": "unknown",
+          "relationType": "hasMany",
+          "relationshipPath": "questions.2",
+          "isRequired": false,
+          "relationshipTable": "course_quizzes_rels"
+        },
+        {
+          "sourceCollection": "course_quizzes",
+          "sourceField": "questions.3",
+          "targetCollection": "unknown",
+          "relationType": "hasMany",
+          "relationshipPath": "questions.3",
+          "isRequired": false,
+          "relationshipTable": "course_quizzes_rels"
+        },
+        {
+          "sourceCollection": "course_quizzes",
+          "sourceField": "questions.4",
+          "targetCollection": "unknown",
+          "relationType": "hasMany",
+          "relationshipPath": "questions.4",
           "isRequired": false,
           "relationshipTable": "course_quizzes_rels"
         },

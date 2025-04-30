@@ -43,36 +43,48 @@ async function getPgModule() {
  * @returns {Promise<DbClient>} A database client with query method
  */
 export async function getClient(): Promise<DbClient> {
+  logger.info('getClient called.'); // Log entry
   if (!pool) {
+    logger.info('Pool does not exist, attempting to initialize...');
     try {
       // Dynamically import pg to get the Pool constructor
+      logger.info('Dynamically importing pg module...');
       const pg = await getPgModule();
+      logger.info('pg module imported successfully.');
       const { Pool } = pg;
 
       if (!Pool) {
         throw new Error('pg.Pool is not available');
       }
+      logger.info('pg.Pool constructor obtained.');
+
+      const connectionString =
+        process.env.DATABASE_URL ||
+        'postgresql://postgres:postgres@localhost:54322/postgres';
+      logger.info(`Using connection string: ${connectionString}`);
 
       // Initialize the connection pool
-      pool = new Pool({
-        connectionString:
-          process.env.DATABASE_URL ||
-          'postgresql://postgres:postgres@localhost:54322/postgres',
-      });
+      logger.info('Initializing new Pool...');
+      pool = new Pool({ connectionString });
+      logger.info('Pool instance created.');
 
       // Log pool creation
-      logger.info('Database connection pool created');
+      logger.info('Database connection pool initialization complete.');
 
       // Handle pool errors
       pool.on('error', (err: Error) => {
         logger.error('Unexpected database pool error', { error: err });
       });
+      logger.info('Pool error handler attached.');
     } catch (error) {
       logger.error('Failed to initialize database pool', { error });
       throw error;
     }
+  } else {
+    logger.info('Pool already exists, reusing.');
   }
 
+  logger.info('Creating client object wrapper...');
   // Create a simple client with query method
   const client: DbClient = {
     /**
@@ -111,6 +123,7 @@ export async function getClient(): Promise<DbClient> {
     },
   };
 
+  logger.info('Returning client object wrapper.');
   return client;
 }
 

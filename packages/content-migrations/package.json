@@ -70,6 +70,7 @@
     "verify:quiz-system": "tsx src/scripts/repair/quiz-management/utilities/verify-quiz-system-integrity-comprehensive.ts",
     "verify:quiz-relationship-migration": "tsx src/scripts/verification/verify-quiz-relationship-migration.ts",
     "verify:quiz-relationship-integrity": "tsx src/scripts/verification/verify-quiz-relationship-integrity.ts",
+    "fix:quiz-jsonb-sync": "tsx src/scripts/repair/quiz-system/fix-quiz-jsonb-sync.ts",
     "repair:quiz-system": "tsx src/scripts/repair/quiz-management/core/repair-quiz-system.ts",
     "repair:quiz-system-verify-only": "tsx src/scripts/repair/quiz-management/core/repair-quiz-system.ts --verify-only",
     "repair:quiz-system-with-tests": "tsx src/scripts/repair/quiz-management/core/repair-quiz-system.ts --run-tests",
