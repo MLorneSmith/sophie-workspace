@@ -1,0 +1,824 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20250430115424
+Username: SLIDEHEROES_DEN\msmit
+RunAs User: SLIDEHEROES_DEN\msmit
+Configuration Name: 
+Machine: SLIDEHEROES_DEN (Microsoft Windows NT 10.0.26100.0)
+Host Application: C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -noexit -command try { . "c:\Users\msmit\AppData\Local\Programs\Microsoft VS Code\resources\app\out\vs\workbench\contrib\terminal\common\scripts\shellIntegration.ps1" } catch {}
+Process ID: 20496
+PSVersion: 5.1.26100.3912
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.3912
+BuildVersion: 10.0.26100.3912
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcript started, output file is D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-log-20250430-115424-573.txt
+Starting migration process at 04/30/2025 11:54:24
+Detailed logs will be saved to: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250430-115424-573.txt
+
+Name                           Value
+----                           -----
+Timestamp                      20250430-115424-573
+LogsDirectory                  D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs
+DetailedLogFile                D:\SlideHeroes\App\repos\2025slideheroes\z.migration-log...
+LogFile                        D:\SlideHeroes\App\repos\2025slideheroes\z.migration-log...
+Performance timing initialized
+Checking PNPM configuration...
+True
+Project root: D:\SlideHeroes\App\repos\2025slideheroes
+PNPM configuration in root directory is already up to date
+Yarn configuration in root directory is already up to date
+True
+
+================================================================================
+PHASE 1/4: SETUP PHASE
+================================================================================
+
+================================================================================
+SETUP PHASE
+================================================================================
+
+------------------------------------------------------------
+STEP 1: Resetting Supabase database and running Web app migrations
+------------------------------------------------------------
+Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\apps\web
+Skipping Supabase restart (already done)
+Running supabase:reset...
+EXECUTING: pnpm run supabase:reset
+DESCRIPTION: Resetting Supabase database
+
+Running supabase migrations...
+EXECUTING: supabase migration up
+DESCRIPTION: Running Supabase migrations
+
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes
+EXECUTING: pnpm --filter @kit/content-migrations run verify:schema public
+DESCRIPTION: Verifying schema 'public' exists
+Schema 'public' exists
+âœ… Web app migrations completed successfully
+True
+
+------------------------------------------------------------
+STEP 2: Resetting Payload schema
+------------------------------------------------------------
+Dropping and recreating payload schema...
+Temporarily changed to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+EXECUTING: pnpm run utils:run-sql-file "C:\Users\msmit\AppData\Local\Temp\reset_payload_schema.sql"
+DESCRIPTION: Resetting Payload schema
+
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes
+âœ… Payload schema reset successfully
+True
+
++
+------------------------------------------------------------------------------
++
+|
+ [3/12] Running Payload migrations
+
+|
++
+------------------------------------------------------------------------------
++
+Migration Progress: [============                                      ] 25% (3/12)
+NOTE:
+The 'No email adapter provided' warning is expected in development environment and can be safely ignored
+Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\apps\payload
+Checking migration status...
+EXECUTING: pnpm migrate:status
+DESCRIPTION: Checking migration status
+Running all migrations...
+EXECUTING: pnpm payload migrate
+DESCRIPTION: Running Payload migrations
+
+Adding relationship ID columns to locked documents tables...
+Temporarily changed to directory: D:\SlideHeroes\App\repos\2025slideheroes
+EXECUTING: pnpm --filter @kit/content-migrations run sql:add-relationship-id-columns
+DESCRIPTION: Adding relationship ID columns to locked documents tables
+
+Managing UUID tables with enhanced approach...
+Running enhanced UUID table management...
+EXECUTING: pnpm run uuid:comprehensive
+DESCRIPTION: Running enhanced UUID table management
+
+âœ… UUID tables managed successfully with enhanced approach
+Verifying UUID tables and their required columns...
+EXECUTING: pnpm run uuid:verify
+DESCRIPTION: Running UUID tables verification
+
+âœ… UUID tables verified successfully
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\apps\payload
+Verifying migration status...
+EXECUTING: pnpm migrate:status
+DESCRIPTION: Verifying migration status
+âœ… All migrations have been applied successfully
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes
+EXECUTING: pnpm --filter @kit/content-migrations run verify:schema payload
+DESCRIPTION: Verifying schema 'payload' exists
+Schema 'payload' exists
+EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload courses
+DESCRIPTION: Verifying table 'payload.courses' exists
+Table 'payload.courses' exists
+EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload course_lessons
+DESCRIPTION: Verifying table 'payload.course_lessons' exists
+Table 'payload.course_lessons' exists
+EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload course_quizzes
+DESCRIPTION: Verifying table 'payload.course_quizzes' exists
+Table 'payload.course_quizzes' exists
+EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload quiz_questions
+DESCRIPTION: Verifying table 'payload.quiz_questions' exists
+Table 'payload.quiz_questions' exists
+EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload surveys
+DESCRIPTION: Verifying table 'payload.surveys' exists
+Table 'payload.surveys' exists
+EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload survey_questions
+DESCRIPTION: Verifying table 'payload.survey_questions' exists
+Table 'payload.survey_questions' exists
+âœ… Payload migrations completed successfully
+True
+âœ… Setup phase completed successfully
+âœ… SETUP PHASE phase completed successfully (61.02s)
+
+================================================================================
+PHASE 2/4: PROCESSING PHASE
+================================================================================
+
+
++
+------------------------------------------------------------------------------
++
+|
+ [4/12] Checking and processing raw data
+
+|
++
+------------------------------------------------------------------------------
++
+Migration Progress: [================                                  ] 33% (4/12)
+True
+Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+Processed data not found. Processing raw data...
+EXECUTING: pnpm run process:raw-data
+DESCRIPTION: Processing raw data
+
+Ensuring lesson metadata YAML is up to date...
+âœ… Lesson metadata YAML exists and is up to date
+Found HTML todo content file. Updating YAML with HTML content...
+EXECUTING: pnpm run process:parse-lesson-todo-html
+DESCRIPTION: Parsing HTML todo content
+
+Validating HTML parsing results...
+âœ… Updated YAML with HTML todo content
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+âœ… Raw data processing completed
+âœ… Step 4 completed successfully (1.49s)
+True
+
++
+------------------------------------------------------------------------------
++
+|
+ [5/12] Generating SQL seed files and fixing quiz ID consistency
+
+|
++
+------------------------------------------------------------------------------
++
+Migration Progress: [=====================                             ] 42% (5/12)
+True
+Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+Verifying quiz system integrity...
+EXECUTING: pnpm run verify:quiz-system-integrity
+DESCRIPTION: Verifying quiz system integrity
+Generating SQL seed files using YAML-based approach...
+EXECUTING: pnpm --filter @kit/content-migrations run generate:updated-sql
+DESCRIPTION: Generating SQL seed files using YAML metadata
+
+âœ… Successfully generated SQL seed files using YAML approach
+Fixing quiz ID consistency issues...
+EXECUTING: pnpm run fix:quiz-id-consistency
+DESCRIPTION: Fixing quiz ID consistency
+
+âœ… SQL seed files generated and ID consistency fixed successfully
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+âœ… Step 5 completed successfully (1.75s)
+True
+
++
+------------------------------------------------------------------------------
++
+|
+ [6/12] Fixing references to ensure consistency
+
+|
++
+------------------------------------------------------------------------------
++
+Migration Progress: [=========================                         ] 50% (6/12)
+True
+Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+Fixing lesson-quiz reference consistency...
+EXECUTING: pnpm run fix:lesson-quiz-references
+DESCRIPTION: Fixing lesson-quiz references
+
+Fixing additional lesson-quiz reference consistency...
+EXECUTING: pnpm run fix:lessons-quiz-references-sql
+DESCRIPTION: Fixing additional lesson-quiz references
+
+Fixing quiz question references...
+EXECUTING: pnpm run fix:questions-quiz-references
+DESCRIPTION: Fixing quiz question references
+
+Repairing quiz-question relationships...
+EXECUTING: pnpm run quiz:repair
+DESCRIPTION: Repairing quiz-question relationships
+
+Fixing quiz array relationships...
+EXECUTING: pnpm run fix:quiz-array-relationships
+DESCRIPTION: Fixing quiz array relationships
+
+Verifying quiz relationships...
+EXECUTING: pnpm run verify:quiz-relationship-migration
+DESCRIPTION: Verifying quiz relationships
+
+âœ… All references fixed successfully
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+âœ… Step 6 completed successfully (22.99s)
+True
+âœ… Processing phase completed successfully
+âœ… PROCESSING PHASE phase completed successfully (26.36s)
+
+================================================================================
+PHASE 3/4: LOADING PHASE
+================================================================================
+
+
++
+------------------------------------------------------------------------------
++
+|
+ [7/12] Running content migrations via Payload migrations
+
+|
++
+------------------------------------------------------------------------------
++
+Migration Progress: [=============================                     ] 58% (7/12)
+True
+Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\apps\payload
+Running all Payload migrations...
+EXECUTING: pnpm payload migrate
+DESCRIPTION: Running Payload migrations
+
+Verifying migrations...
+EXECUTING: pnpm migrate:status
+DESCRIPTION: Verifying migration status
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\apps\payload
+True
+Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+Running verification with automatic dependency handling...
+Running verification step 'verify:todo-fields' with automatic dependency handling...
+Ensuring dependencies for verification step 'verify:todo-fields' are run...
+Running dependency: sql:ensure-todo-column
+EXECUTING: pnpm run sql:ensure-todo-column
+DESCRIPTION: Running dependency: sql:ensure-todo-column
+Registered dependency: sql:ensure-todo-column (called by: Unknown, success: True)
+âœ… Dependency 'sql:ensure-todo-column' completed successfully (called by: Unknown)
+Running dependency: fix:todo-fields
+EXECUTING: pnpm run fix:todo-fields
+DESCRIPTION: Running dependency: fix:todo-fields
+Registered dependency: fix:todo-fields (called by: Unknown, success: True)
+âœ… Dependency 'fix:todo-fields' completed successfully (called by: Unknown)
+Running dependency: fix:lexical-format
+EXECUTING: pnpm run fix:lexical-format
+DESCRIPTION: Running dependency: fix:lexical-format
+Registered dependency: fix:lexical-format (called by: Unknown, success: True)
+âœ… Dependency 'fix:lexical-format' completed successfully (called by: Unknown)
+EXECUTING: pnpm run verify:todo-fields
+DESCRIPTION: Verifying todo fields with dependencies
+âœ… verify:todo-fields verification passed with automatic dependency handling
+âœ… Todo fields verification passed with automatic dependency handling
+Verifying basic database structure...
+EXECUTING: pnpm run sql:verify-schema
+DESCRIPTION: Verifying database structure
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+âœ… Content migrations completed successfully
+True
+Identifying steps that could potentially be run in parallel...
+
++
+------------------------------------------------------------------------------
++
+|
+ [8/12] Migrating blog posts with complete content
+
+|
++
+------------------------------------------------------------------------------
++
+Migration Progress: [==================================                ] 67% (8/12)
+True
+Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+Running specialized post migration script...
+EXECUTING: pnpm run migrate:posts-direct
+DESCRIPTION: Migrating blog posts with full content
+âœ… Successfully migrated/updated 9 of 9 blog posts
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+True
+
++
+------------------------------------------------------------------------------
++
+|
+ [8/12] Migrating private posts with complete content
+
+|
++
+------------------------------------------------------------------------------
++
+Migration Progress: [==================================                ] 67% (8/12)
+True
+Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+Running specialized private posts migration script...
+EXECUTING: pnpm run migrate:private-direct
+DESCRIPTION: Migrating private posts with full content
+âœ… Successfully migrated/updated 5 of 5 private posts
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+True
+
++
+------------------------------------------------------------------------------
++
+|
+ [8/12] Fixing UUID tables to ensure all required columns exist
+
+|
++
+------------------------------------------------------------------------------
++
+Migration Progress: [==================================                ] 67% (8/12)
+True
+Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+Running critical columns fix script to ensure all UUID tables have required columns...
+EXECUTING: pnpm run uuid:fix-critical-columns
+DESCRIPTION: Fixing critical columns in UUID tables
+
+Ensuring environment variables are correctly set up...
+EXECUTING: pnpm --filter @kit/content-migrations run uuid:ensure-env
+DESCRIPTION: Ensuring environment variables
+
+Running critical columns fix script to ensure all required columns exist...
+EXECUTING: pnpm --filter @kit/content-migrations run uuid:fix-critical-columns-safe
+DESCRIPTION: Fixing critical columns in UUID tables
+
+Verifying critical columns...
+EXECUTING: pnpm --filter @kit/content-migrations run uuid:verify-critical-columns
+DESCRIPTION: Verifying critical columns
+
+Running additional UUID tables fix script to add non-critical columns...
+EXECUTING: pnpm run fix:uuid-tables
+DESCRIPTION: Fixing UUID tables
+
+Verifying UUID tables with enhanced detection...
+EXECUTING: pnpm run uuid:verify:fixed
+DESCRIPTION: Verifying UUID tables with enhanced detection
+
+Ensuring all relationship columns exist...
+EXECUTING: pnpm --filter @kit/content-migrations run repair:relationship-columns
+DESCRIPTION: Fixing relationship columns
+
+Verifying columns were added...
+EXECUTING: pnpm --filter @kit/content-migrations run verify:relationship-columns
+DESCRIPTION: Verifying relationship columns
+
+âœ… UUID tables fixed and verified successfully
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+True
+
++
+------------------------------------------------------------------------------
++
+|
+ [9/12] Importing downloads from R2 bucket
+
+|
++
+------------------------------------------------------------------------------
++
+Migration Progress: [======================================            ] 75% (9/12)
+True
+Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+Importing downloads...
+EXECUTING: pnpm run import:downloads
+DESCRIPTION: Importing downloads from R2 bucket
+
+âœ… Downloads imported successfully
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+True
+
++
+------------------------------------------------------------------------------
++
+|
+ [10/12] Fixing relationships
+
+|
++
+------------------------------------------------------------------------------
++
+Migration Progress: [==========================================        ] 83% (10/12)
+True
+Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+Running edge case repairs...
+EXECUTING: pnpm run repair:edge-cases
+DESCRIPTION: Running edge case repairs
+
+Running Payload CMS relationship fix with strict typing...
+EXECUTING: pnpm run fix:payload-relationships-strict
+DESCRIPTION: Fixing Payload relationships with strict typing
+
+Starting Quiz System Repair at 04/30/2025 11:56:09
+Running quiz relationship integrity diagnostic...
+Quiz relationship diagnostic completed successfully.
+Running quiz relationship integrity verification and repair...
+Quiz relationship repair completed successfully.
+Running final quiz relationship integrity verification...
+âœ… Quiz relationship integrity verification successful.
+Quiz System Repair completed in 1.7563515 seconds
+âœ… Quiz system repair completed successfully, skipping legacy quiz repair scripts
+Running quiz relationship diagnostic for verification...
+EXECUTING: pnpm run diagnostic:quiz-relationships
+DESCRIPTION: Running quiz relationship diagnostic
+
+Running quiz relationship diagnostic after fixes...
+EXECUTING: pnpm run diagnostic:quiz-relationships
+DESCRIPTION: Running quiz relationship diagnostic after fixes
+
+Fixing any wrong field names in quiz_questions_rels...
+EXECUTING: pnpm run utils:run-sql --sql 'UPDATE payload.quiz_questions_rels SET field = ''quiz_id'' WHERE field != ''quiz_id'';'
+DESCRIPTION: Fixing wrong field names
+
+Verifying bidirectional quiz relationships...
+EXECUTING: pnpm run verify:quiz-relationship-migration
+DESCRIPTION: Verifying bidirectional quiz relationships
+
+Running source-of-truth based Quiz JSONB Synchronization Fix...
+EXECUTING: pnpm run fix:quiz-jsonb-sync
+DESCRIPTION: Synchronizing Quiz JSONB field from source of truth
+
+Running minimal DB test script...
+EXECUTING: pnpm --filter @kit/content-migrations run verify:minimal-db-test
+DESCRIPTION: Running minimal DB test script
+
+Running comprehensive quiz relationship verification...
+EXECUTING: pnpm run verify:comprehensive-quiz-relationships
+DESCRIPTION: Comprehensive quiz relationship verification
+âœ… Comprehensive quiz relationship verification passed successfully
+Verifying questions JSONB format...
+EXECUTING: pnpm run verify:questions-jsonb-format
+DESCRIPTION: Verifying questions JSONB format
+âœ… All quiz questions are properly formatted for Payload UI
+Verifying unidirectional quiz-question relationships...
+EXECUTING: pnpm run verify:unidirectional-quiz-questions
+DESCRIPTION: Verifying unidirectional quiz-question relationships
+
+Fixing survey questions population...
+EXECUTING: pnpm run fix:survey-questions-population
+DESCRIPTION: Fixing survey questions population
+
+Ensuring todo column exists in course_lessons table...
+EXECUTING: pnpm run sql:ensure-todo-column
+DESCRIPTION: Ensuring todo column exists
+
+Fixing todo fields in course_lessons table...
+EXECUTING: pnpm run fix:todo-fields
+DESCRIPTION: Fixing todo fields
+
+Fixing Lexical format in todo fields...
+EXECUTING: pnpm run fix:lexical-format
+DESCRIPTION: Fixing Lexical format
+
+Fixing Lexical format in posts and private posts...
+EXECUTING: pnpm run fix:post-lexical-format
+DESCRIPTION: Fixing Post Lexical format
+
+Fixing all Lexical fields across all collections...
+EXECUTING: pnpm run fix:all-lexical-fields
+DESCRIPTION: Fixing all Lexical fields
+
+Fixing bunny_video_id fields in course_lessons table...
+EXECUTING: pnpm run fix:bunny-video-ids
+DESCRIPTION: Fixing bunny video IDs
+
+Fixing post image relationships...
+EXECUTING: pnpm run fix:post-image-relationships
+DESCRIPTION: Fixing post image relationships
+
+Fixing downloads relationships and URLs...
+EXECUTING: pnpm run fix:downloads-relationships
+DESCRIPTION: Fixing downloads relationships and URLs
+
+Fixing downloads R2 integration...
+EXECUTING: pnpm run fix:downloads-r2-integration
+DESCRIPTION: Fixing downloads R2 integration
+
+Fixing downloads metadata...
+EXECUTING: pnpm run fix:downloads-metadata
+DESCRIPTION: Fixing downloads metadata
+
+Fixing download R2 URLs...
+EXECUTING: pnpm run fix:download-r2-urls
+DESCRIPTION: Fixing download R2 URLs
+
+Fixing download R2 mappings...
+EXECUTING: pnpm run fix:download-r2-mappings
+DESCRIPTION: Fixing download R2 mappings
+
+Clearing lesson content fields to fix template tag rendering...
+EXECUTING: pnpm run clear:lesson-content
+DESCRIPTION: Clearing lesson content fields
+
+Running comprehensive relationship repair system...
+This includes detecting, repairing, and verifying all relationships in the database
+Starting comprehensive relationship repair phase...
+Running relationship repair with arguments:
+EXECUTING: pnpm --filter @kit/content-migrations run repair:relationships
+DESCRIPTION: Running relationship repair
+Verifying relationship consistency...
+EXECUTING: pnpm --filter @kit/content-migrations run verify:relationships
+DESCRIPTION: Verifying relationships
+âœ… Relationship repair completed successfully!
+âœ… Standard relationship repair completed successfully!
+Running final verification...
+EXECUTING: pnpm run verify:all
+DESCRIPTION: Final verification
+âœ… All relationship issues have been fixed
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+True
+
++
+------------------------------------------------------------------------------
++
+|
+ [10/12] Fixing S3 storage issues
+
+|
++
+------------------------------------------------------------------------------
++
+Migration Progress: [==========================================        ] 83% (10/12)
+True
+Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+Creating fallback files for S3 storage...
+EXECUTING: pnpm --filter @kit/content-migrations run create:fallback-files
+DESCRIPTION: Creating fallback files
+
+Setting up S3 fallback middleware...
+EXECUTING: pnpm --filter @kit/content-migrations run setup:s3-fallback-middleware
+DESCRIPTION: Setting up S3 fallback middleware
+
+Fixing S3 references in database...
+EXECUTING: pnpm --filter @kit/content-migrations run fix:s3-references
+DESCRIPTION: Fixing S3 references
+
+Creating thumbnail placeholders...
+EXECUTING: pnpm --filter @kit/content-migrations run create:thumbnail-placeholders
+DESCRIPTION: Creating thumbnail placeholders
+
+âœ… S3 storage issues fixed successfully
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+True
+
++
+------------------------------------------------------------------------------
++
+|
+ [11/12] Performing comprehensive database verification
+
+|
++
+------------------------------------------------------------------------------
++
+Migration Progress: [==============================================    ] 92% (11/12)
+True
+Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+Checking database environment settings...
+âœ… Database environment settings are properly configured
+True
+Running comprehensive verification with dependency handling...
+Running verification step 'verify:todo-fields' with automatic dependency handling...
+Ensuring dependencies for verification step 'verify:todo-fields' are run...
+Dependency 'sql:ensure-todo-column' already completed (called by: Unknown), skipping
+Dependency 'fix:todo-fields' already completed (called by: Unknown), skipping
+Dependency 'fix:lexical-format' already completed (called by: Unknown), skipping
+EXECUTING: pnpm run verify:todo-fields
+DESCRIPTION: Verifying todo fields
+âœ… verify:todo-fields verification passed with automatic dependency handling
+âœ… Todo fields verification passed with dependency handling
+Running comprehensive quiz relationship verification...
+EXECUTING: pnpm run verify:comprehensive-quiz-relationships
+DESCRIPTION: Comprehensive quiz relationship verification
+WARNING: Quiz relationship verification found issues that need manual inspection
+Verifying database schema...
+EXECUTING: pnpm run sql:verify-schema
+DESCRIPTION: Final database verification
+âœ… Database schema verification passed
+Verifying relationship consistency using hybrid verification...
+EXECUTING: pnpm run verify:relationships:hybrid
+DESCRIPTION: Hybrid relationship verification
+âœ… Hybrid relationship verification passed
+Running final comprehensive verification...
+Running verification step 'verify:all' with automatic dependency handling...
+Ensuring dependencies for verification step 'verify:all' are run...
+Dependency 'sql:ensure-todo-column' already completed (called by: Unknown), skipping
+Dependency 'fix:todo-fields' already completed (called by: Unknown), skipping
+Dependency 'fix:lexical-format' already completed (called by: Unknown), skipping
+Running dependency: fix:payload-relationships-strict-improved
+EXECUTING: pnpm run fix:payload-relationships-strict-improved
+DESCRIPTION: Running dependency: fix:payload-relationships-strict-improved
+Registered dependency: fix:payload-relationships-strict-improved (called by: Unknown, success: True)
+âœ… Dependency 'fix:payload-relationships-strict-improved' completed successfully (called by: Unknown)
+EXECUTING: pnpm run verify:all
+DESCRIPTION: Final comprehensive verification
+âœ… verify:all verification passed with automatic dependency handling
+âœ… Comprehensive verification passed with dependency handling
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+âœ… Database verification completed successfully
+True
+
++
+------------------------------------------------------------------------------
++
+|
+ [12/12] Creating certificates storage bucket in Supabase
+
+|
++
+------------------------------------------------------------------------------
++
+Migration Progress: [================================================== ] 100% (12/12)
+
+Certificates bucket is created during migration with direct SQL INSERT
+âœ… Database migrations successfully handle certificates bucket creation
+True
+âœ… Loading phase completed successfully
+âœ… LOADING PHASE phase completed successfully (44.31s)
+
+================================================================================
+PHASE 4/4: POST-VERIFICATION PHASE
+================================================================================
+
+
++
+------------------------------------------------------------------------------
++
+|
+ [12/12] Verifying posts content integrity
+
+|
++
+------------------------------------------------------------------------------
++
+Migration Progress: [================================================== ] 100% (12/12)
+
+True
+Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+Running post content verification with dependency handling...
+Running verification step 'verify:post-content' with automatic dependency handling...
+Ensuring dependencies for verification step 'verify:post-content' are run...
+Running dependency: fix:post-lexical-format
+EXECUTING: pnpm run fix:post-lexical-format
+DESCRIPTION: Running dependency: fix:post-lexical-format
+Registered dependency: fix:post-lexical-format (called by: Unknown, success: True)
+âœ… Dependency 'fix:post-lexical-format' completed successfully (called by: Unknown)
+Running dependency: fix:all-lexical-fields
+EXECUTING: pnpm run fix:all-lexical-fields
+DESCRIPTION: Running dependency: fix:all-lexical-fields
+Registered dependency: fix:all-lexical-fields (called by: Unknown, success: True)
+âœ… Dependency 'fix:all-lexical-fields' completed successfully (called by: Unknown)
+Running dependency: fix:post-image-relationships
+EXECUTING: pnpm run fix:post-image-relationships
+DESCRIPTION: Running dependency: fix:post-image-relationships
+Registered dependency: fix:post-image-relationships (called by: Unknown, success: True)
+âœ… Dependency 'fix:post-image-relationships' completed successfully (called by: Unknown)
+EXECUTING: pnpm run verify:post-content
+DESCRIPTION: Verifying posts content with dependencies
+âœ… verify:post-content verification passed with automatic dependency handling
+âœ… Post content verification passed with automatic dependency handling
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+âœ… Step 12 completed successfully (3.24s)
+âœ… POST-VERIFICATION PHASE phase completed successfully (3.29s)
+Performance timing finalized. Total duration: 2.25 minutes
+âœ… All migrations and verifications completed successfully!
+Admin user created with email: michael@slideheroes.com
+
+================================================================================
+PERFORMANCE REPORT
+================================================================================
+
+Total Execution Time:
+2.25 minutes (135.16 seconds)
+
+Phase Timings:
+  SETUP PHASE
+61.02 seconds
+ (45.1% of total)
+  PROCESSING PHASE
+26.36 seconds
+ (19.5% of total)
+  LOADING PHASE
+44.31 seconds
+ (32.8% of total)
+  POST-VERIFICATION PHASE
+3.29 seconds
+ (2.4% of total)
+
+Step Timings (Top 10 longest steps):
+  6-Fixing references to ensure consistency
+23.01 seconds
+ (17% of total)
+  12-Verifying posts content integrity
+3.26 seconds
+ (2.4% of total)
+  5-Generating SQL seed files and fixing quiz ID consistency
+1.77 seconds
+ (1.3% of total)
+  4-Checking and processing raw data
+1.51 seconds
+ (1.1% of total)
+
+Migration Summary:
+Running migration diagnostic... (timeout: 20 seconds)
+True
+Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+
+=== DATABASE CONTENT SUMMARY ===
+Table                     | Count
+--------------------------|------
+courses                   | 1
+course_lessons            | 25
+course_quizzes            | 20
+quiz_questions            | 94
+surveys                   | 3
+survey_questions          | 32
+posts                     | 9
+private                   | 5
+downloads                 | 20
+
+=== UUID TABLES SUMMARY ===
+Total UUID tables tracked: 19
+First 5 UUID tables:
+- private
+- private_rels
+- private_categories
+- private_tags
+- private__downloads
+
+=== RELATIONSHIP TABLES ===
+Total relationship tables: 16
+course_lessons_rels       | 108
+course_quizzes_rels       | 80
+courses_rels              | 0
+documentation_downloads_rels | 0
+documentation_rels        | 5
+downloads_rels            | 0
+payload_locked_documents_rels | 0
+payload_preferences_rels  | 0
+posts_downloads_rels      | 0
+posts_rels                | 9
+private_downloads_rels    | 0
+private_rels              | 0
+quiz_questions_rels       | 94
+survey_questions_rels     | 32
+surveys_downloads_rels    | 0
+surveys_rels              | 32
+
+Note: Warning messages about 'No posts were migrated' are expected if posts already exist in the database.
+True
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+NOTE:
+Warning messages about 'No posts were migrated' are expected if all posts are already in the database.
+NOTE:
+Warning messages about 'verification found issues' during early phases are expected and will be fixed in later phases.
+NOTE:
+SQL errors related to 'ADD COLUMN cannot be performed on relation' for some tables are handled gracefully.
+All migrations and verifications completed successfully!
+**********************
+Windows PowerShell transcript end
+End time: 20250430115641
+**********************

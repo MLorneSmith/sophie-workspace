@@ -85,6 +85,23 @@ export default function AIWorkspaceDashboard() {
 
           <div className="rounded-lg bg-gray-50 p-6 shadow-md transition-shadow hover:shadow-lg">
             <FilePresentation className="mb-4 h-12 w-12 text-black" />
+            <h2 className="mb-2 text-xl font-semibold">Create Storyboard</h2>
+            <p className="mb-4 text-gray-600">
+              Create a storyboard for your presentation
+            </p>
+            <Link
+              href="/home/ai/storyboard"
+              className={buttonVariants({
+                variant: 'outline',
+                className: 'w-full',
+              })}
+            >
+              Create Storyboard
+            </Link>
+          </div>
+
+          <div className="rounded-lg bg-gray-50 p-6 shadow-md transition-shadow hover:shadow-lg">
+            <FilePresentation className="mb-4 h-12 w-12 text-black" />
             <h2 className="mb-2 text-xl font-semibold">
               Generate your PowerPoint
             </h2>

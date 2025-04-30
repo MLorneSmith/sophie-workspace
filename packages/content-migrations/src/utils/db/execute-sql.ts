@@ -36,9 +36,15 @@ export function getPool(): pg.Pool {
       process.env.DATABASE_URI ||
       'postgresql://postgres:postgres@localhost:54322/postgres?schema=payload';
 
-    console.log(`Connecting to database: ${connectionString}`);
+    console.log(`Attempting to connect to database: ${connectionString}`); // More specific log
 
-    pool = new Pool({ connectionString });
+    try {
+      pool = new Pool({ connectionString });
+      console.log('Database pool created successfully.'); // Success log
+    } catch (poolError) {
+      console.error('!!! FAILED TO CREATE DATABASE POOL !!!', poolError); // Explicit error log
+      throw poolError; // Re-throw to ensure script fails if pool creation fails
+    }
 
     // Add error handler to prevent silent failures
     pool.on('error', (err) => {

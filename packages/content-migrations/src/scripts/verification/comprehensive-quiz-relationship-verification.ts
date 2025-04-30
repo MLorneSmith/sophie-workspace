@@ -1,16 +1,28 @@
-/**
- * Comprehensive Quiz Relationship Verification
- *
- * This script performs a thorough verification of all aspects of quiz relationships:
- * 1. Checks that all records in course_quizzes_rels have path = 'questions' (not NULL)
- * 2. Verifies no duplicate relationship records exist
- * 3. Ensures question array length matches relationship count for each quiz
- * 4. Verifies each question in the questions array has a corresponding relationship record
- * 5. Verifies each relationship record has a corresponding entry in the questions array
- */
+// Log right at the start
 import chalk from 'chalk';
+import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-import { executeSQL } from '../../utils/db/execute-sql.js';
+// Restore getClient usage
+import { getClient } from '../../utils/db/client.js';
+
+console.log('--- SCRIPT FILE LOADED ---'); // Log right at the start
+
+// Get the current file's directory
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load environment variables based on the NODE_ENV
+const envFile =
+  process.env.NODE_ENV === 'production'
+    ? '.env.production'
+    : '.env.development';
+
+console.log(`Loading environment variables from ${envFile}`);
+dotenv.config({ path: path.resolve(__dirname, `../../../${envFile}`) });
+
+console.log('--- IMPORTS COMPLETED ---'); // Log after imports
 
 interface QuizVerificationResult {
   id: string;
@@ -44,17 +56,20 @@ async function verifyQuizRelationships(): Promise<VerificationSummary> {
   console.log(
     chalk.cyan('Starting comprehensive quiz relationship verification...'),
   );
-
+  let client;
   try {
-    // Get list of all quizzes with their questions array
-    const quizzesResult = await executeSQL(`
-      SELECT 
+    client = await getClient();
+
+    // Restore the actual verification logic here
+    // Fetch all quizzes with their questions relationship
+    const quizzesResult = await client.query(`
+      SELECT
         id::text as id,
         title,
         questions
-      FROM 
+      FROM
         payload.course_quizzes
-      WHERE 
+      WHERE
         jsonb_typeof(questions) = 'array'
     `);
 
@@ -65,6 +80,15 @@ async function verifyQuizRelationships(): Promise<VerificationSummary> {
     const results: QuizVerificationResult[] = [];
 
     for (const quiz of quizzes) {
+      // Ensure quiz.id is a string before proceeding
+      if (typeof quiz.id !== 'string') {
+        console.warn(
+          chalk.yellow(`Skipping quiz with non-string ID: ${quiz.id}`),
+        );
+        continue; // Skip this iteration if quiz.id is not a string
+      }
+      const currentQuizId: string = quiz.id; // Now guaranteed to be a string
+
       // Extract question IDs from questions array
       let arrayQuestionIds: string[] = [];
       try {
@@ -73,45 +97,50 @@ async function verifyQuizRelationships(): Promise<VerificationSummary> {
             ? JSON.parse(quiz.questions)
             : quiz.questions;
 
+        // Explicitly handle types during extraction and filtering
         arrayQuestionIds = questionsArray
-          .map((q: any) => {
+          .map((q: any): string | null => {
+            // Explicit return type for map
             // Handle different possible formats
             if (typeof q === 'string') {
               return q;
             } else if (q?.value?.id) {
-              return q.value.id;
+              return String(q.value.id); // Ensure string conversion
             } else if (q?.id) {
-              return q.id;
+              return String(q.id); // Ensure string conversion
             }
             return null;
           })
-          .filter(Boolean);
+          .filter((id): id is string => id !== null); // Use type predicate for filtering
       } catch (e) {
         console.error(
           chalk.red(
             `Error parsing questions array for quiz "${quiz.title}" (${quiz.id}):`,
-            e.message,
+            (e as Error).message, // Type assertion for error message
           ),
         );
         arrayQuestionIds = [];
       }
 
       // Get relationship records for this quiz
-      const quizRelResult = await executeSQL(
+      const quizRelResult = await client.query(
         `
-        SELECT 
+        SELECT
           quiz_questions_id,
           path
-        FROM 
+        FROM
           payload.course_quizzes_rels
-        WHERE 
+        WHERE
           _parent_id = $1
           AND field = 'questions'
       `,
-        [quiz.id],
+        [currentQuizId], // Use the guaranteed string ID
       );
 
-      const relQuestionIds = quizRelResult.rows.map((r) => r.quiz_questions_id);
+      // Filter out null/undefined IDs first, then map to string
+      const relQuestionIds: string[] = quizRelResult.rows
+        .filter((r) => r.quiz_questions_id != null) // Filter out null/undefined first
+        .map((r) => String(r.quiz_questions_id)); // Then map remaining to string
 
       // Check for duplicates
       const uniqueRelIds = [...new Set(relQuestionIds)];
@@ -140,7 +169,7 @@ async function verifyQuizRelationships(): Promise<VerificationSummary> {
 
       // Add to results
       results.push({
-        id: quiz.id,
+        id: currentQuizId, // Use the guaranteed string ID
         title: quiz.title || 'Unnamed Quiz',
         arrayCount: arrayQuestionIds.length,
         relCount: uniqueRelIds.length,
@@ -193,15 +222,17 @@ async function verifyQuizRelationships(): Promise<VerificationSummary> {
     };
 
     // Report verification results
-    reportVerificationResults(summary);
+    reportVerificationResults(summary); // Restore reporting
 
-    return summary;
+    return summary; // Return the actual summary
   } catch (error) {
-    console.error(
-      chalk.red('Error during quiz relationship verification:'),
-      error,
-    );
-    throw error;
+    console.error('Error in verifyQuizRelationships:', error); // More specific error log
+    throw error; // Re-throw to be caught by main
+  } finally {
+    // Use the closeClient utility function if available, otherwise handle directly
+    if (client && typeof client.end === 'function') {
+      await client.end();
+    }
   }
 }
 
@@ -209,6 +240,7 @@ async function verifyQuizRelationships(): Promise<VerificationSummary> {
  * Report verification results to console
  */
 function reportVerificationResults(summary: VerificationSummary) {
+  // Restore this function
   const {
     totalQuizzes,
     passedQuizzes,
@@ -335,19 +367,14 @@ function reportVerificationResults(summary: VerificationSummary) {
 async function main() {
   try {
     const summary = await verifyQuizRelationships();
-    process.exit(summary.isFullyConsistent ? 0 : 1);
+    process.exit(summary.isFullyConsistent ? 0 : 1); // Restore process.exit
   } catch (error) {
-    console.error(
-      chalk.red('Unhandled error in quiz relationship verification:'),
-      error,
-    );
+    console.error('Unhandled error in main:', error);
     process.exit(1);
   }
 }
 
 // Run when script is executed directly
-if (require.main === module) {
-  main();
-}
+main();
 
 export default verifyQuizRelationships;

@@ -1,0 +1,20 @@
+Payload CMS Migrations Limitations Analysis
+After researching the limitations of Payload CMS migrations with PostgreSQL, I've identified key limitations of how Payload CMS manages migrations
+
+Key Payload Migration Limitations
+
+No Native Trigger Support:
+- Payload's migration system doesn't natively support creating or managing PostgreSQL triggers
+- Triggers created in migrations aren't tracked by Payload's schema management
+
+Limited Data Synchronization:
+- Complex operations between tables aren't directly supported through Payload's migration API
+- Synchronizing JSONB arrays with relationship tables requires custom SQL outside Payload's typical patterns
+
+Type Casting Issues:
+- The error "This approach avoids type casting issues" is a known limitation
+- PostgreSQL is strict about type conversions between TEXT, UUID, and JSONB formats
+
+Migration Execution Context:
+- Migrations run in a specific transaction context that may limit certain operations
+- Not all PostgreSQL features are available or behave consistently within this context
