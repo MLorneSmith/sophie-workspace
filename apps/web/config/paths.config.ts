@@ -27,6 +27,7 @@ const PathsSchema = z.object({
     kanban: z.string().min(1),
     ai: z.string().min(1),
     blocks: z.string().min(1),
+    storyboard: z.string().min(1),
   }),
 });
 
@@ -57,6 +58,7 @@ const pathsConfig = PathsSchema.parse({
     kanban: '/home/kanban',
     ai: '/home/ai',
     blocks: '/home/ai/blocks',
+    storyboard: 'home/ai/storyboard',
   },
 } satisfies z.infer<typeof PathsSchema>);
 

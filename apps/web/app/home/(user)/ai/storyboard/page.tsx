@@ -1,36 +1,55 @@
-import { PageBody } from '@kit/ui/page';
-import { Trans } from '@kit/ui/trans';
-
 import { createI18nServerInstance } from '~/lib/i18n/i18n.server';
-import { withI18n } from '~/lib/i18n/with-i18n';
 
-import { HomeLayoutPageHeader } from '../../_components/home-page-header';
+import { ErrorBoundary } from './_components/error-boundary';
+import { StoryboardPage } from './_components/storyboard-page';
+
+interface StoryboardServerPageProps {
+  searchParams?: {
+    id?: string;
+  };
+}
 
 export const generateMetadata = async () => {
   const i18n = await createI18nServerInstance();
-  const title = i18n.t('common:routes.aiStoryboard');
+  const title = i18n.t('common:routes.Storyboard');
 
   return {
     title,
   };
 };
 
-function StoryboardPage() {
-  return (
-    <>
-      <HomeLayoutPageHeader
-        title={<Trans i18nKey={'common:routes.aiStoryboard'} />}
-        description={<Trans i18nKey={'common:aiStoryboardTabDescription'} />}
-      />
+export default async function StoryboardServerPage({
+  searchParams = {},
+}: StoryboardServerPageProps) {
+  const i18n = await createI18nServerInstance();
+  const title = i18n.t('common:routes.Storyboard');
+  const description = i18n.t('common:storyboardTabDescription');
 
-      <PageBody>
-        <div>
-          <h1>Storyboard Content</h1>
-          <p>This is the main content area for the storyboard.</p>
+  return (
+    <ErrorBoundary
+      fallback={(error) => (
+        <div className="flex h-full flex-col items-center justify-center p-4">
+          <h2 className="text-2xl font-bold text-red-600">
+            Something went wrong.
+          </h2>
+          <p className="mt-2 text-gray-700">
+            We're sorry, but an unexpected error occurred while loading the
+            storyboard.
+          </p>
+          {error && (
+            <p className="mt-2 text-sm text-gray-500">Error: {error.message}</p>
+          )}
+          <p className="mt-4 text-gray-700">Please try refreshing the page.</p>
+          <button
+            className="mt-4 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+            onClick={() => window.location.reload()}
+          >
+            Retry
+          </button>
         </div>
-      </PageBody>
-    </>
+      )}
+    >
+      <StoryboardPage title={title} description={description} />
+    </ErrorBoundary>
   );
 }
-
-export default withI18n(StoryboardPage);
