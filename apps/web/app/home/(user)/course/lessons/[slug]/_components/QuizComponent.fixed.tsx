@@ -140,7 +140,7 @@ export function QuizComponent({
   const lastAttempt = hasPreviousAttempts ? previousAttempts[0] : null;
 
   // If there's a previous successful attempt, show the results
-  if (hasPreviousAttempts && lastAttempt.passed) {
+  if (hasPreviousAttempts && lastAttempt && lastAttempt.passed) {
     return (
       <div className="space-y-4">
         <div className="rounded-lg border border-green-200 bg-green-50 p-4 shadow-sm dark:border-green-800 dark:bg-green-900/50">
@@ -256,10 +256,11 @@ export function QuizComponent({
           } else {
             // For single-answer questions, check if the selected option is correct
             const selectedIndex = selectedOptionIndices[0];
-            const selectedOption = options[selectedIndex];
-
-            if (selectedOption && selectedOption.isCorrect) {
-              correctAnswers++;
+            if (selectedIndex !== undefined && selectedIndex < options.length) {
+              const selectedOption = options[selectedIndex];
+              if (selectedOption && selectedOption.isCorrect) {
+                correctAnswers++;
+              }
             }
           }
         }
@@ -323,9 +324,20 @@ export function QuizComponent({
           // Get the next lesson
           const nextLesson = sortedLessons[currentIndex + 1];
 
-          // Navigate to the next lesson
-          if (nextLesson?.slug) {
-            window.location.href = `/home/course/lessons/${nextLesson.slug}`;
+          // Safe type checking for slug property
+          const slug =
+            nextLesson &&
+            typeof nextLesson === 'object' &&
+            nextLesson !== null &&
+            'slug' in nextLesson &&
+            nextLesson.slug !== undefined &&
+            nextLesson.slug !== null
+              ? String(nextLesson.slug)
+              : null;
+
+          // Navigate to the next lesson if we have a valid slug
+          if (slug) {
+            window.location.href = `/home/course/lessons/${slug}`;
             return;
           }
         }

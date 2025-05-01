@@ -275,8 +275,10 @@ function groupByField(
     const tokensValue =
       typeof log.total_tokens === 'number' ? log.total_tokens : 0;
 
-    groups[key]!.cost += costValue;
-    groups[key]!.tokens += tokensValue;
+    if (groups[key]) {
+      groups[key].cost += costValue;
+      groups[key].tokens += tokensValue;
+    }
   }
 
   return groups;

@@ -1,6 +1,11 @@
 'use client';
 
-import { Slide, SlideContent, StoryboardData } from '../types/index';
+import {
+  Slide,
+  SlideContent,
+  StoryboardData,
+  StoryboardSlide,
+} from '../types/index';
 
 /**
  * Helper function to generate UUID since we don't have access to @kit/shared/utils/uuid
@@ -65,9 +70,28 @@ export class TipTapTransformer {
     // Identify slide boundaries and create slide structure
     const slides = this.identifySlides(document);
 
+    // Convert Slide[] to StoryboardSlide[]
+    const storyboardSlides: StoryboardSlide[] = slides.map((slide) => {
+      return {
+        id: slide.id,
+        headline: slide.title,
+        order: slide.order,
+        storyboard: {
+          layoutId: slide.layoutId,
+          subHeadlines: slide.subheadlines,
+          contentAreas: [],
+          settings: {
+            chartTypes: {},
+            imageSettings: {},
+            tableSettings: {},
+          },
+        },
+      };
+    });
+
     return {
       title: presentationTitle,
-      slides,
+      slides: storyboardSlides,
     };
   }
 
