@@ -9,7 +9,6 @@ import sharp from 'sharp'
 import { fileURLToPath } from 'url'
 
 // Import React
-import React from 'react'
 
 // Import custom SCSS for Tailwind CSS
 // This import is causing issues with ESM, so we'll comment it out

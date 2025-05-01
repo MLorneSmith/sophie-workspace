@@ -125,9 +125,54 @@ function Fix-Relationships {
         Log-Message "Verifying bidirectional quiz relationships..." "Yellow"
         Exec-Command -command "pnpm run verify:quiz-relationship-migration" -description "Verifying bidirectional quiz relationships" -continueOnError
 
-        # NEW STEP: Run the source-of-truth based Quiz JSONB Synchronization Fix
-        Log-Message "Running source-of-truth based Quiz JSONB Synchronization Fix..." "Yellow"
-        Exec-Command -command "pnpm run fix:quiz-jsonb-sync" -description "Synchronizing Quiz JSONB field from source of truth" -continueOnError # Use continueOnError for now
+        # NEW STEP: Run the source-of-truth based Quiz JSONB Synchronization Fix with output capture
+        Log-Message "Running source-of-truth based Quiz JSONB Synchronization Fix (capturing output)..." "Yellow"
+        # Construct temp file path reliably based on the detailed log file's directory
+        $tempLogDir = Split-Path -Path $script:detailedLogFile -Parent
+        $tempLogFile = Join-Path $tempLogDir "fix-quiz-jsonb-sync-output.log"
+        Log-Message "Temporary log for this step: $tempLogFile" "Gray"
+        try {
+            # Ensure the directory exists before redirecting
+            if (-not (Test-Path $tempLogDir)) {
+                New-Item -ItemType Directory -Path $tempLogDir -Force | Out-Null
+            }
+            # Execute the command and redirect all output streams to the temp file
+            pnpm run fix:quiz-jsonb-sync *> $tempLogFile 2>&1
+            $exitCode = $LASTEXITCODE
+            Log-Message "Command 'pnpm run fix:quiz-jsonb-sync' finished with exit code: $exitCode" "Gray"
+
+            # Log the captured output
+            if (Test-Path $tempLogFile) {
+                $capturedOutput = Get-Content $tempLogFile -Raw -ErrorAction SilentlyContinue
+                if ($capturedOutput) {
+                    Log-Message "--- Output from fix:quiz-jsonb-sync ---" "Cyan"
+                    Log-Message $capturedOutput "Gray" # Log captured output directly
+                    Log-Message "--- End Output from fix:quiz-jsonb-sync ---" "Cyan"
+                } else {
+                    Log-Message "Temporary log file '$tempLogFile' was empty." "Gray"
+                }
+                Remove-Item $tempLogFile -ErrorAction SilentlyContinue # Clean up temp file
+            } else {
+                Log-Warning "Temporary log file '$tempLogFile' not found after command execution."
+            }
+
+            # Handle non-zero exit code if not using continueOnError logic implicitly
+            if ($exitCode -ne 0) {
+                 Log-Warning "'pnpm run fix:quiz-jsonb-sync' exited with code $exitCode. Continuing as per -continueOnError logic."
+                 # Or uncomment below to treat as error:
+                 # throw "Command 'pnpm run fix:quiz-jsonb-sync' failed with exit code $exitCode"
+            }
+
+        } catch {
+            $errorMsg = Get-SafeErrorMessage $_
+            Log-Warning "Error executing or processing output for 'pnpm run fix:quiz-jsonb-sync': $errorMsg. Continuing..."
+            # Ensure temp file is removed even on error
+            if (Test-Path $tempLogFile) {
+                Remove-Item $tempLogFile -ErrorAction SilentlyContinue
+            }
+            # If not using continueOnError logic implicitly, re-throw or handle error
+            # throw "Failed during fix:quiz-jsonb-sync execution: $errorMsg"
+        }
 
         # NEW STEP: Run minimal DB test script
         Log-Message "Running minimal DB test script..." "Yellow"
@@ -291,12 +336,8 @@ function Run-ContentMigrations {
             throw "Could not find apps/payload directory from project root"
         }
 
-        # Run all migrations (including content migrations)
-        Log-Message "Running all Payload migrations..." "Yellow"
-        Exec-Command -command "pnpm payload migrate" -description "Running Payload migrations"
-
-        # Verify migrations were applied
-        Log-Message "Verifying migrations..." "Yellow"
+        # Verify migrations were applied (Payload migrations are now run only in Setup phase)
+        Log-Message "Verifying migration status (Payload migrations run in Setup phase)..." "Yellow"
 
         try {
             $migrationStatus = Exec-Command -command "pnpm migrate:status" -description "Verifying migration status" -captureOutput -continueOnError
