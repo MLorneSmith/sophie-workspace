@@ -141,7 +141,7 @@ export function QuizComponent({
   const lastAttempt = hasPreviousAttempts ? previousAttempts[0] : null;
 
   // If there's a previous successful attempt, show the results
-  if (hasPreviousAttempts && lastAttempt.passed) {
+  if (hasPreviousAttempts && lastAttempt?.passed) {
     return (
       <div className="space-y-4">
         <div className="rounded-lg border border-green-200 bg-green-50 p-4 shadow-sm dark:border-green-800 dark:bg-green-900/50">
@@ -256,7 +256,6 @@ export function QuizComponent({
               if (!option) continue; // Skip undefined options
 
               // Check if this is a correct option that wasn't selected
-              // @ts-ignore - We've verified this is safe
               if (
                 option.isCorrect === true &&
                 !selectedOptionIndices.includes(optIndex)
@@ -265,7 +264,6 @@ export function QuizComponent({
               }
 
               // Check if this is an incorrect option that was selected
-              // @ts-ignore - We've verified this is safe
               if (
                 option.isCorrect === false &&
                 selectedOptionIndices.includes(optIndex)
@@ -282,7 +280,6 @@ export function QuizComponent({
             const selectedIndex = selectedOptionIndices[0];
             // Add guard clause to check if selectedIndex is defined
             if (selectedIndex !== undefined) {
-              // @ts-ignore - We've verified this is safe
               const selectedOption = options[selectedIndex];
               if (selectedOption && selectedOption.isCorrect === true) {
                 correctAnswers++;
@@ -333,17 +330,10 @@ export function QuizComponent({
 
       if (lessonsData?.docs && lessonsData.docs.length > 0) {
         try {
-          // Define a type for the lesson object
-          interface LessonType {
-            id: string;
-            slug?: string;
-            lesson_number?: number;
-          }
-
           // Sort lessons by lesson_number with proper type casting
           const sortedLessons = [...lessonsData.docs].sort((a: any, b: any) => {
-            const lessonA = a as LessonType;
-            const lessonB = b as LessonType;
+            const lessonA = a;
+            const lessonB = b;
             if (lessonA?.lesson_number && lessonB?.lesson_number) {
               return lessonA.lesson_number - lessonB.lesson_number;
             }
@@ -360,9 +350,14 @@ export function QuizComponent({
             // Get the next lesson
             const nextLesson = sortedLessons[currentIndex + 1];
 
-            // Navigate to the next lesson
-            // Use optional chaining and nullish coalescing
-            const slug = nextLesson?.slug ?? null;
+            // Safe type checking for slug property
+            const slug =
+              nextLesson &&
+              typeof nextLesson === 'object' &&
+              'slug' in nextLesson &&
+              nextLesson.slug
+                ? String(nextLesson.slug)
+                : null;
 
             if (slug) {
               window.location.href = `/home/course/lessons/${slug}`;
@@ -395,6 +390,16 @@ export function QuizComponent({
       />
     );
   }
+
+  // Check if answers exist for the current question
+  const hasCurrentAnswers =
+    selectedAnswers &&
+    Object.prototype.hasOwnProperty.call(
+      selectedAnswers,
+      currentQuestionIndex,
+    ) &&
+    selectedAnswers[currentQuestionIndex] &&
+    selectedAnswers[currentQuestionIndex].length > 0;
 
   // Show the current question
   return (
@@ -522,13 +527,7 @@ export function QuizComponent({
           >
             Previous
           </Button>
-          <Button
-            onClick={handleNextQuestion}
-            disabled={
-              !selectedAnswers[currentQuestionIndex] ||
-              selectedAnswers[currentQuestionIndex].length === 0
-            }
-          >
+          <Button onClick={handleNextQuestion} disabled={!hasCurrentAnswers}>
             {currentQuestionIndex === totalQuestions - 1
               ? 'Finish Quiz'
               : 'Next Question'}

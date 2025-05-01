@@ -21,6 +21,17 @@ interface StoryboardPageProps {
   description: string;
 }
 
+// Error fallback component to display when an error occurs
+const ErrorFallback = (error: Error | null) => (
+  <Alert variant="destructive">
+    <AlertCircle className="h-4 w-4" />
+    <AlertTitle>Error</AlertTitle>
+    <AlertDescription>
+      Something went wrong. Please try refreshing the page.
+    </AlertDescription>
+  </Alert>
+);
+
 export function StoryboardPage({ title, description }: StoryboardPageProps) {
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
@@ -29,17 +40,7 @@ export function StoryboardPage({ title, description }: StoryboardPageProps) {
   >(id);
 
   return (
-    <ErrorBoundary
-      fallback={
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>
-            Something went wrong. Please try refreshing the page.
-          </AlertDescription>
-        </Alert>
-      }
-    >
+    <ErrorBoundary fallback={ErrorFallback}>
       <StoryboardProvider>
         <Toaster />
         <HomeLayoutPageHeader title={title} description={description} />

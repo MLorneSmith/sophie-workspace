@@ -121,14 +121,10 @@ function processLogsToStats(logs: AiRequestLog[]): UsageStats {
   // Group logs by day for the chart
   const usageByDay = groupLogsByDay(logs);
 
-  // Group logs by model
-  const usageByModel = groupLogsByField(logs, 'model');
-
-  // Group logs by feature
-  const usageByFeature = groupLogsByField(logs, 'feature');
-
-  // Group logs by user
-  const usageByUser = groupLogsByField(logs, 'user_id');
+  // Group logs by model, feature, and user
+  const usageByModel = groupLogsByField(logs, (log) => log.model);
+  const usageByFeature = groupLogsByField(logs, (log) => log.feature);
+  const usageByUser = groupLogsByField(logs, (log) => log.user_id);
 
   // Sort and limit to top 10 users
   const mostActiveUsers = Object.entries(usageByUser)
@@ -195,27 +191,32 @@ function groupLogsByDay(
     .sort((a, b) => a.date.localeCompare(b.date));
 }
 
-// Group logs by a specific field
-function groupLogsByField(
-  logs: AiRequestLog[],
-  field: keyof AiRequestLog, // Use keyof to ensure field is a valid key
+// Group logs by a specific field using a selector function
+function groupLogsByField<T extends AiRequestLog>(
+  logs: T[],
+  selector: (log: T) => string | null | undefined,
 ): Record<string, { cost: number; tokens: number }> {
   const result: Record<string, { cost: number; tokens: number }> = {};
 
   for (const log of logs) {
-    const value = log[field];
-    const key =
-      value !== undefined && value !== null
-        ? String(value as string | number | boolean)
-        : 'unknown'; // Safely access, cast, and convert key
+    // Skip if log is null or undefined
+    if (!log) continue;
 
+    // Get the field value using the selector
+    const value = selector(log);
+
+    // Default to 'unknown' if value is null or undefined
+    const key =
+      value !== null && value !== undefined ? String(value) : 'unknown';
+
+    // Initialize if needed
     if (!result[key]) {
       result[key] = { cost: 0, tokens: 0 };
     }
-    // @ts-ignore - Ignoring this specific error as the type definition seems correct but the compiler is reporting an issue in this environment
-    result[key].cost += log.cost || 0;
-    // @ts-ignore - Ignoring this specific error as the type definition seems correct but the compiler is reporting an issue in this environment
-    result[key].tokens += log.total_tokens || 0;
+
+    // Add the cost and tokens using nullish coalescing
+    result[key].cost += log.cost ?? 0;
+    result[key].tokens += log.total_tokens ?? 0;
   }
 
   return result;
