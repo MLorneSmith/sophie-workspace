@@ -59,10 +59,10 @@ export default function AIWorkspaceDashboard() {
               Build New Presentation
             </h2>
             <p className="mb-4 text-gray-600">
-              Start by assembling the building blocks of a presentation
+              Start by creating a new presentation outline and storyboard.
             </p>
             <Link
-              href="/home/ai/blocks"
+              href="/home/ai/storyboard"
               className={buttonVariants({
                 variant: 'outline',
                 className: 'w-full',
@@ -78,7 +78,7 @@ export default function AIWorkspaceDashboard() {
               Edit Existing Presentation
             </h2>
             <p className="mb-4 text-gray-600">
-              Use our Canvas editor to refine your outline
+              Use our Canvas editor to refine your outline or storyboard.
             </p>
             <EditPresentationCombobox />
           </div>
@@ -106,7 +106,7 @@ export default function AIWorkspaceDashboard() {
               Generate your PowerPoint
             </h2>
             <p className="mb-4 text-gray-600">
-              Publish your outline into a PowerPoint file
+              Generate a PowerPoint file from your storyboard.
             </p>
             <Combobox
               options={[

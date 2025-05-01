@@ -4,9 +4,11 @@
   "courseTabLabel": "Deck for Decision Makers",
   "courseTabDescription": "Complete our flagship course: Decks for Decision Makers",
   "aiTabLabel": "AI Tab Label",
-  "aiTabDescription": "Create your presentation with AI",
+  "aiTabDescription": "Create your presentation outline, build a visual storyboard, and generate a PowerPoint file.",
   "blocksTabLabel": "Blocks Tab Label",
   "blocksTabDescription": "Assemble the Building Blocks of your presentation",
+  "storyboardTabLabel": "Storyboard Tab Label",
+  "storyboardTabDescription": "Storyboard Tab",
   "aiCanvasTabLabel": "AI Tab Label",
   "aiCanvasTabDescription": "AI-powered Presentation Outline Editor",
   "kanbanTabLabel": "Kanban Tab Label",
@@ -84,7 +86,8 @@
     "coaching": "Coaching",
     "assessment": "Self-Assessment",
     "blocks": "Building Blocks",
-    "aiCanvas": "AI Editor"
+    "aiCanvas": "AI Editor",
+    "storyboard": "Storyboard"
   },
   "roles": {
     "owner": {

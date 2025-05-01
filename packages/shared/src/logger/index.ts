@@ -1,5 +1,7 @@
 import { createRegistry } from '../registry';
-import { Logger as LoggerInstance } from './logger';
+import { type Logger, Logger as LoggerInstance } from './logger';
+
+// Import Logger and export it
 
 // Define the type for the logger provider.  Currently supporting 'pino'.
 type LoggerProvider = 'pino' | 'console';
@@ -31,3 +33,6 @@ loggerRegistry.register('console', async () => {
 export async function getLogger() {
   return loggerRegistry.get(LOGGER);
 }
+
+// Export the Logger interface
+export type { Logger };
