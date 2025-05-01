@@ -14,6 +14,13 @@ import { v4 as uuidv4 } from 'uuid';
 import { QUIZZES } from '../../../data/quizzes-quiz-qestions-truth.js';
 import { getClient } from '../../../utils/db/client.js';
 
+// ADDED DEBUG LOG HERE
+console.log(chalk.blue('DEBUG: Imported QUIZZES type:'), typeof QUIZZES);
+console.log(
+  chalk.blue('DEBUG: Imported QUIZZES keys:'),
+  QUIZZES ? Object.keys(QUIZZES).length : 'undefined/null',
+);
+
 // Source of Truth
 
 async function fixQuizJsonbSync() {
@@ -34,11 +41,22 @@ async function fixQuizJsonbSync() {
       `Processing ${quizDefinitions.length} quizzes from source of truth...`,
     );
 
+    console.log(chalk.yellow('DEBUG: About to start processing loop...')); // ADDED LOG
+
     for (const quizDef of quizDefinitions) {
       const quizId = quizDef.id;
       const quizTitle = quizDef.title;
       // Get the definitive list of question IDs from the source of truth
+      // DETAILED LOGGING ADDED HERE
+      console.log(
+        chalk.magenta(`  DEBUG: Full quizDef object:`),
+        JSON.stringify(quizDef, null, 2),
+      );
       const definitiveQuestionIds = quizDef.questions.map((q) => q.id);
+      console.log(
+        chalk.magenta(`  DEBUG: Extracted definitiveQuestionIds:`),
+        definitiveQuestionIds,
+      );
 
       console.log(
         `Processing quiz: "${quizTitle}" (${quizId}) - Expected questions: ${definitiveQuestionIds.length}`,
@@ -165,10 +183,19 @@ async function fixQuizJsonbSync() {
     return true;
   } catch (error) {
     // Rollback on error
+    // ADDED DETAILED LOGGING HERE
+    console.error(chalk.bgRed.white.bold('\n--- MAIN CATCH BLOCK ERROR ---'));
     console.error(
       chalk.red('\nError during quiz JSONB synchronization:'),
-      error,
+      error, // Log the full error object
     );
+    console.error(chalk.red('Error Name:'), error.name);
+    console.error(chalk.red('Error Message:'), error.message);
+    if (error.stack) {
+      console.error(chalk.red('Error Stack:'), error.stack);
+    }
+    console.error(chalk.bgRed.white.bold('--- END MAIN CATCH BLOCK ERROR ---'));
+
     try {
       await client.query('ROLLBACK');
       console.log(chalk.yellow('Transaction rolled back.'));
@@ -187,9 +214,24 @@ async function fixQuizJsonbSync() {
 
 // Execute and return result code for script integration
 fixQuizJsonbSync()
-  .then((success) => process.exit(success ? 0 : 1))
+  .then((success) => {
+    console.log(chalk.green(`Script finished with success status: ${success}`));
+    process.exit(success ? 0 : 1);
+  })
   .catch((err) => {
-    console.error(chalk.red('Unhandled error:'), err);
+    // ADDED DETAILED LOGGING HERE
+    console.error(
+      chalk.bgMagenta.white.bold('\n--- FINAL CATCH BLOCK ERROR ---'),
+    );
+    console.error(chalk.magenta('Error caught by final .catch():'), err);
+    console.error(chalk.magenta('Error Name:'), err?.name);
+    console.error(chalk.magenta('Error Message:'), err?.message);
+    if (err?.stack) {
+      console.error(chalk.magenta('Error Stack:'), err.stack);
+    }
+    console.error(
+      chalk.bgMagenta.white.bold('--- END FINAL CATCH BLOCK ERROR ---'),
+    );
     process.exit(1);
   });
 

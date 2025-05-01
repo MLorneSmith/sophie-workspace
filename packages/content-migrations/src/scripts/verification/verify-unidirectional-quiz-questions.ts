@@ -38,11 +38,11 @@ export async function verifyUnidirectionalQuizQuestions(): Promise<boolean> {
 
     for (const quiz of quizzes.rows) {
       // 2. Get relationship entries from course_quizzes_rels table
-      const relationshipRecords = await client.query(
-        `
-        SELECT value as question_id
-        FROM payload.course_quizzes_rels 
-        WHERE _parent_id = $1 AND field = 'questions'
+       const relationshipRecords = await client.query(
+         `
+         SELECT quiz_questions_id as question_id -- Use the correct column name
+         FROM payload.course_quizzes_rels 
+         WHERE _parent_id = $1 AND field = 'questions'
         ORDER BY _order ASC
       `,
         [quiz.id],
@@ -67,9 +67,11 @@ export async function verifyUnidirectionalQuizQuestions(): Promise<boolean> {
 
         // Verify that all question IDs are valid UUIDs
         const invalidQuestionIds = questionIdsFromRels.filter(
-          (id: string) =>
+          (
+            id: any, // Allow 'any' type temporarily for robust checking
+          ) =>
             !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-              id,
+              String(id), // Explicitly cast ID to string before regex test
             ),
         );
 

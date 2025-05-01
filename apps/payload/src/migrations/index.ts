@@ -37,7 +37,9 @@ import * as migration_20250425_153000_minimal_quiz_fix from './20250425_153000_m
 // import * as migration_20250425_190001_comprehensive_quiz_jsonb_format_fix from './20250425_190001_comprehensive_quiz_jsonb_format_fix'
 import * as migration_20250425_190002_comprehensive_quiz_jsonb_format_fix from './20250425_190002_comprehensive_quiz_jsonb_format_fix'
 import * as migration_20250425_195000_fix_quiz_questions_jsonb_format from './20250425_195000_fix_quiz_questions_jsonb_format'
-import * as migration_20250429_000000_fix_quiz_relationship_formats from './20250429_000000_fix_quiz_relationship_formats'
+// import * as migration_20250429_000000_fix_quiz_relationship_formats from './20250429_000000_fix_quiz_relationship_formats' // Removed import for non-existent file
+import * as migration_20250501_104300_add_status_to_quizzes from './20250501_104300_add_status_to_quizzes' // Import the status migration
+import * as migration_20250501_110000_fix_quiz_rels_schema from './20250501_110000_fix_quiz_rels_schema' // Import the schema fix migration
 // Don't import 20250424_130000_fix_uuid_dynamically_generated_tables directly to avoid circular dependencies
 
 export const migrations = [
@@ -210,10 +212,17 @@ export const migrations = [
     down: migration_20250425_195000_fix_quiz_questions_jsonb_format.down,
     name: '20250425_195000_fix_quiz_questions_jsonb_format',
   },
-  // Add comprehensive quiz relationship formats fix migration
+  // Removed entry for non-existent migration 20250429_000000_fix_quiz_relationship_formats
+  // Add the new migration for quiz status
   {
-    up: migration_20250429_000000_fix_quiz_relationship_formats.up,
-    down: migration_20250429_000000_fix_quiz_relationship_formats.down,
-    name: '20250429_000000_fix_quiz_relationship_formats',
+    up: migration_20250501_104300_add_status_to_quizzes.up,
+    down: migration_20250501_104300_add_status_to_quizzes.down,
+    name: '20250501_104300_add_status_to_quizzes',
+  },
+  // Add the schema fix migration
+  {
+    up: migration_20250501_110000_fix_quiz_rels_schema.up,
+    down: migration_20250501_110000_fix_quiz_rels_schema.down,
+    name: '20250501_110000_fix_quiz_rels_schema',
   },
 ]

@@ -91,10 +91,53 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
       }
     }
 
-    console.log(`Matched ${matchCount} lessons to quizzes`)
+    console.log(`Matched ${matchCount} lessons to quizzes based on title similarity`)
 
-    // Step 2: Update the quiz_id and quiz_id_id fields in the course_lessons table
-    console.log('Updating quiz_id and quiz_id_id fields in course_lessons table...')
+    // Step 2: Update specific lesson-quiz relationships (logic moved from 20250407 migration)
+    console.log('Updating specific known lesson-quiz relationships...')
+
+    // Define the specific lesson-quiz pairs to fix
+    const specificUpdates = [
+      {
+        lessonTitle: 'The Why: Building the Introduction',
+        quizId: 'a42f601d-f968-4d08-8b46-46bb62a43ad4',
+      },
+      { lessonTitle: 'The Why: Next Steps', quizId: '98025e2d-2d8f-4a49-960b-e9985c5fa992' },
+      { lessonTitle: 'Tables vs. Graphs', quizId: 'a9c824c9-9ce1-4c48-a742-91d31bbb77ea' },
+      { lessonTitle: 'Preparation and Practice', quizId: '22fa2e61-c1e4-4a25-9ea8-26ef03cf3b38' },
+    ]
+
+    let specificUpdatedCount = 0
+    for (const update of specificUpdates) {
+      // Verify quiz exists before attempting update
+      const { rows: quizExists } = await db.execute(
+        sql`SELECT id FROM payload.course_quizzes WHERE id = ${update.quizId};`,
+      )
+      if (quizExists.length > 0) {
+        const { rowCount } = await db.execute(sql`
+          UPDATE payload.course_lessons
+          SET 
+            quiz_id = ${update.quizId},
+            quiz_id_id = ${update.quizId}
+          WHERE title = ${update.lessonTitle}
+          AND (quiz_id IS NULL OR quiz_id_id IS NULL);
+        `)
+        if (rowCount > 0) {
+          specificUpdatedCount += rowCount
+          console.log(
+            `Specifically updated lesson "${update.lessonTitle}" with quiz ID ${update.quizId}`,
+          )
+        }
+      } else {
+        console.log(
+          `Skipping specific update for lesson "${update.lessonTitle}" - quiz ID ${update.quizId} not found`,
+        )
+      }
+    }
+    console.log(`Specifically updated ${specificUpdatedCount} lessons`)
+
+    // Step 2b: Update the quiz_id and quiz_id_id fields based on title matching (original Step 2)
+    console.log('Updating quiz_id and quiz_id_id fields based on title matching...')
 
     let updatedLessonsCount = 0
 
@@ -116,60 +159,8 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
 
     console.log(`Updated ${updatedLessonsCount} lessons with quiz relationships`)
 
-    // Step 3: Create bidirectional relationships between lessons and quizzes
-    console.log('Creating bidirectional relationships between lessons and quizzes...')
-
-    // Step 3.1: Create relationships from lessons to quizzes (course_lessons_rels)
-    const { rowCount: lessonRelsAdded } = await db.execute(sql`
-      WITH lessons_to_link AS (
-        SELECT id as lesson_id, quiz_id
-        FROM payload.course_lessons
-        WHERE quiz_id IS NOT NULL
-        AND NOT EXISTS (
-          SELECT 1 FROM payload.course_lessons_rels
-          WHERE _parent_id = id
-          AND field = 'quiz_id'
-          AND value = quiz_id
-        )
-      )
-      INSERT INTO payload.course_lessons_rels (id, _parent_id, field, value, created_at, updated_at)
-      SELECT 
-        gen_random_uuid(), 
-        lesson_id, 
-        'quiz_id', 
-        quiz_id,
-        NOW(),
-        NOW()
-      FROM lessons_to_link;
-    `)
-
-    console.log(`Created ${lessonRelsAdded} relationships in course_lessons_rels table`)
-
-    // Step 3.2: Create relationships from quizzes to lessons (course_quizzes_rels)
-    const { rowCount: quizRelsAdded } = await db.execute(sql`
-      WITH quizzes_to_link AS (
-        SELECT id as lesson_id, quiz_id
-        FROM payload.course_lessons
-        WHERE quiz_id IS NOT NULL
-        AND NOT EXISTS (
-          SELECT 1 FROM payload.course_quizzes_rels
-          WHERE _parent_id = quiz_id
-          AND field = 'lesson'
-          AND value = id
-        )
-      )
-      INSERT INTO payload.course_quizzes_rels (id, _parent_id, field, value, created_at, updated_at)
-      SELECT 
-        gen_random_uuid(), 
-        quiz_id, 
-        'lesson', 
-        lesson_id,
-        NOW(),
-        NOW()
-      FROM quizzes_to_link;
-    `)
-
-    console.log(`Created ${quizRelsAdded} relationships in course_quizzes_rels table`)
+    // Step 3: Removed explicit INSERTs into _rels tables. Relying on Payload's internal handling.
+    console.log('Skipping explicit INSERT into _rels tables (relying on Payload internal handling)')
 
     // Step 4: Fix relationship ID fields in course_quizzes_rels table
     console.log('Fixing relationship ID fields in course_quizzes_rels table...')

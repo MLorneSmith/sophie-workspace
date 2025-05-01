@@ -1,0 +1,3117 @@
+2025-05-01 14:49:00: Starting migration process at 05/01/2025 14:49:00
+2025-05-01 14:49:00: Detailed logs will be saved to: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250501-144900-316.txt
+2025-05-01 14:49:00: Performance timing initialized
+2025-05-01 14:49:00: Checking PNPM configuration...
+2025-05-01 14:49:00: Project root: D:\SlideHeroes\App\repos\2025slideheroes
+2025-05-01 14:49:00: PNPM configuration in root directory is already up to date
+2025-05-01 14:49:00: Yarn configuration in root directory is already up to date
+
+2025-05-01 14:49:00 - ================================================================================
+2025-05-01 14:49:00 - PHASE 1/4: SETUP PHASE
+2025-05-01 14:49:00 - ================================================================================
+2025-05-01 14:49:00: ================================================================================
+2025-05-01 14:49:00: SETUP PHASE
+2025-05-01 14:49:00: ================================================================================
+2025-05-01 14:49:00: 
+2025-05-01 14:49:00: ------------------------------------------------------------
+2025-05-01 14:49:00: STEP 1: Resetting Supabase database and running Web app migrations
+2025-05-01 14:49:00: ------------------------------------------------------------
+2025-05-01 14:49:00: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\apps\web
+2025-05-01 14:49:00: Skipping Supabase restart (already done)
+2025-05-01 14:49:00: Running supabase:reset...
+2025-05-01 14:49:00: EXECUTING: pnpm run supabase:reset
+2025-05-01 14:49:00: DESCRIPTION: Resetting Supabase database
+2025-05-01 14:49:34: Running supabase migrations...
+2025-05-01 14:49:34: EXECUTING: supabase migration up
+2025-05-01 14:49:34: DESCRIPTION: Running Supabase migrations
+2025-05-01 14:49:34: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes
+2025-05-01 14:49:34: EXECUTING: pnpm --filter @kit/content-migrations run verify:schema public
+2025-05-01 14:49:34: DESCRIPTION: Verifying schema 'public' exists
+--- Command Output Start ---
+apps/payload                             | ?WARN? The field "pnpm.onlyBuiltDependencies" was found in D:\SlideHeroes\App\repos\2025slideheroes\apps\payload/package.json. This will not take effect. You should configure "pnpm.onlyBuiltDependencies" at the root of the workspace instead.
+
+> @kit/content-migrations@0.1.0 verify:schema D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/scripts/verification/verify-schema.ts "public"
+
+Loading environment variables from .env.development
+Connecting to database: postgresql://postgres:postgres@localhost:54322/postgres?schema=payload
+Checking if schema 'public' exists...
+Schema 'public' exists
+
+--- Command Output End ---
+2025-05-01 14:49:35: Schema 'public' exists
+2025-05-01 14:49:35: âœ… Web app migrations completed successfully
+2025-05-01 14:49:36: 
+2025-05-01 14:49:36: ------------------------------------------------------------
+2025-05-01 14:49:36: STEP 2: Resetting Payload schema
+2025-05-01 14:49:36: ------------------------------------------------------------
+2025-05-01 14:49:36: Dropping and recreating payload schema...
+2025-05-01 14:49:36: Temporarily changed to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-05-01 14:49:36: EXECUTING: pnpm run utils:run-sql-file "C:\Users\msmit\AppData\Local\Temp\reset_payload_schema.sql"
+2025-05-01 14:49:36: DESCRIPTION: Resetting Payload schema
+2025-05-01 14:49:36: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes
+2025-05-01 14:49:36: âœ… Payload schema reset successfully
+
+2025-05-01 14:49:36 - ------------------------------------------------------------
+2025-05-01 14:49:36 - STEP 3: Running Payload migrations [STARTED]
+2025-05-01 14:49:36 - ------------------------------------------------------------
+2025-05-01 14:49:36 - EXPECTED WARNING: The 'No email adapter provided' warning is expected in development environment and can be safely ignored
+2025-05-01 14:49:36: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\apps\payload
+2025-05-01 14:49:36: Checking migration status...
+2025-05-01 14:49:36: EXECUTING: pnpm migrate:status
+2025-05-01 14:49:36: DESCRIPTION: Checking migration status
+--- Command Output Start ---
+
+> payload-app@1.0.0 migrate:status D:\SlideHeroes\App\repos\2025slideheroes\apps\payload
+> cross-env NODE_OPTIONS=--no-deprecation payload migrate:status
+
+[14:49:52] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[14:49:52] [32mINFO[39m: [36mReading migration files from D:\SlideHeroes\App\repos\2025slideheroes\apps\payload\src\migrations[39m
++---------------------------------------------------------------------+
+¦[37m [0m[01m                                                 Name[0m ¦[37m [0m[01mBatch[0m ¦[37m [0m[01mRan[0m ¦
++-------------------------------------------------------+-------+-----¦
+¦[37m [0m[31m                      20250402_100000_schema_creation[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m                          20250402_300000_base_schema[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m                     20250402_305000_seed_course_data[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m               20250402_310000_relationship_structure[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m          20250402_330000_bidirectional_relationships[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m                      20250402_340000_add_users_table[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m                    20250402_350000_create_admin_user[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m                      20250403_200000_process_content[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m              20250403_300000_add_lesson_enhancements[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m        20250404_100000_fix_lesson_quiz_relationships[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m             20250407_100000_add_survey_id_to_lessons[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m20250407_100000_fix_missing_lesson_quiz_relationships[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m             20250410_120500_relationship_columns_fix[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m               20250414_100000_add_private_collection[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m 20250414_150000_fix_private_id_column_in_uuid_tables[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m        20250415_100000_master_relationship_migration[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m             20250415_110000_master_relationship_view[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m      20250415_120000_proactive_uuid_table_monitoring[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m     20250415_130000_fix_downloads_relationships_view[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m                  20250415_140000_fix_missing_columns[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m                20250415_150000_fix_remaining_columns[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m                      20250415_160000_add_todo_column[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m      20250415_170000_convert_todo_fields_to_richtext[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m          20250415_180000_fix_downloads_thumbnail_url[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m                     20250415_190000_uuid_consistency[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m                    20250415_200000_add_video_support[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m             20250423_113700_fix_uuid_tables_function[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m        20250424_080000_fix-uuid-tables-view-function[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m                20250424_090000_add_path_to_downloads[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m        20250424_100000_fix_downloads_diagnostic_view[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m        20250424_100000_simplify_uuid_tables_tracking[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m         20250424_110000_enhance_relationship_columns[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m             20250424_120000_improved_uuid_monitoring[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m             20250424_120001_enhanced_uuid_monitoring[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m20250424_130000_fix_uuid_dynamically_generated_tables[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m        20250425_150000_remove_quiz_id_from_questions[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m                     20250425_153000_minimal_quiz_fix[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m                20250425_175000_quiz_jsonb_format_fix[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m  20250425_190002_comprehensive_quiz_jsonb_format_fix[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m      20250425_195000_fix_quiz_questions_jsonb_format[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m                20250501_104300_add_status_to_quizzes[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
+¦[37m [0m[31m                 20250501_110000_fix_quiz_rels_schema[0m ¦[37m [0m[31m     [0m ¦[37m [0m[31m No[0m ¦
++---------------------------------------------------------------------+
+[14:49:53] [32mINFO[39m: [36mDone.[39m
+
+--- Command Output End ---
+2025-05-01 14:49:53: Running all migrations...
+2025-05-01 14:49:53: EXECUTING: pnpm payload migrate
+2025-05-01 14:49:53: DESCRIPTION: Running Payload migrations
+2025-05-01 14:50:11: Adding relationship ID columns to locked documents tables...
+2025-05-01 14:50:11: Temporarily changed to directory: D:\SlideHeroes\App\repos\2025slideheroes
+2025-05-01 14:50:11: EXECUTING: pnpm --filter @kit/content-migrations run sql:add-relationship-id-columns
+2025-05-01 14:50:11: DESCRIPTION: Adding relationship ID columns to locked documents tables
+2025-05-01 14:50:11: Managing UUID tables with enhanced approach...
+2025-05-01 14:50:11: Running enhanced UUID table management...
+2025-05-01 14:50:11: EXECUTING: pnpm run uuid:comprehensive
+2025-05-01 14:50:11: DESCRIPTION: Running enhanced UUID table management
+2025-05-01 14:50:12: âœ… UUID tables managed successfully with enhanced approach
+2025-05-01 14:50:12: Verifying UUID tables and their required columns...
+2025-05-01 14:50:12: EXECUTING: pnpm run uuid:verify
+2025-05-01 14:50:12: DESCRIPTION: Running UUID tables verification
+2025-05-01 14:50:13: ERROR: Command failed with exit code: 1
+2025-05-01 14:50:13: ERROR: Error in step 'Running UUID tables verification': Command failed with exit code: 1
+2025-05-01 14:50:13: WARNING: UUID tables verification encountered issues, but continuing: Command failed with exit code: 1
+2025-05-01 14:50:13: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes
+2025-05-01 14:50:13: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\apps\payload
+2025-05-01 14:50:13: Verifying migration status...
+2025-05-01 14:50:13: EXECUTING: pnpm migrate:status
+2025-05-01 14:50:13: DESCRIPTION: Verifying migration status
+--- Command Output Start ---
+
+> payload-app@1.0.0 migrate:status D:\SlideHeroes\App\repos\2025slideheroes\apps\payload
+> cross-env NODE_OPTIONS=--no-deprecation payload migrate:status
+
+[14:50:15] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[14:50:15] [32mINFO[39m: [36mReading migration files from D:\SlideHeroes\App\repos\2025slideheroes\apps\payload\src\migrations[39m
++---------------------------------------------------------------------+
+¦[37m [0m[01m                                                 Name[0m ¦[37m [0m[01mBatch[0m ¦[37m [0m[01mRan[0m ¦
++-------------------------------------------------------+-------+-----¦
+¦[37m [0m[32m                      20250402_100000_schema_creation[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                          20250402_300000_base_schema[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                     20250402_305000_seed_course_data[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m               20250402_310000_relationship_structure[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m          20250402_330000_bidirectional_relationships[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                      20250402_340000_add_users_table[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                    20250402_350000_create_admin_user[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                      20250403_200000_process_content[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m              20250403_300000_add_lesson_enhancements[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m        20250404_100000_fix_lesson_quiz_relationships[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m             20250407_100000_add_survey_id_to_lessons[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m20250407_100000_fix_missing_lesson_quiz_relationships[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m             20250410_120500_relationship_columns_fix[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m               20250414_100000_add_private_collection[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m 20250414_150000_fix_private_id_column_in_uuid_tables[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m        20250415_100000_master_relationship_migration[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m             20250415_110000_master_relationship_view[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m      20250415_120000_proactive_uuid_table_monitoring[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m     20250415_130000_fix_downloads_relationships_view[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                  20250415_140000_fix_missing_columns[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                20250415_150000_fix_remaining_columns[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                      20250415_160000_add_todo_column[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m      20250415_170000_convert_todo_fields_to_richtext[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m          20250415_180000_fix_downloads_thumbnail_url[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                     20250415_190000_uuid_consistency[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                    20250415_200000_add_video_support[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m             20250423_113700_fix_uuid_tables_function[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m        20250424_080000_fix-uuid-tables-view-function[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                20250424_090000_add_path_to_downloads[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m        20250424_100000_fix_downloads_diagnostic_view[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m        20250424_100000_simplify_uuid_tables_tracking[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m         20250424_110000_enhance_relationship_columns[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m             20250424_120000_improved_uuid_monitoring[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m             20250424_120001_enhanced_uuid_monitoring[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m20250424_130000_fix_uuid_dynamically_generated_tables[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m        20250425_150000_remove_quiz_id_from_questions[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                     20250425_153000_minimal_quiz_fix[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                20250425_175000_quiz_jsonb_format_fix[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m  20250425_190002_comprehensive_quiz_jsonb_format_fix[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m      20250425_195000_fix_quiz_questions_jsonb_format[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                20250501_104300_add_status_to_quizzes[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                 20250501_110000_fix_quiz_rels_schema[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
++---------------------------------------------------------------------+
+[14:50:15] [32mINFO[39m: [36mDone.[39m
+
+--- Command Output End ---
+2025-05-01 14:50:15: âœ… All migrations have been applied successfully
+2025-05-01 14:50:15: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes
+2025-05-01 14:50:15: EXECUTING: pnpm --filter @kit/content-migrations run verify:schema payload
+2025-05-01 14:50:15: DESCRIPTION: Verifying schema 'payload' exists
+--- Command Output Start ---
+apps/payload                             | ?WARN? The field "pnpm.onlyBuiltDependencies" was found in D:\SlideHeroes\App\repos\2025slideheroes\apps\payload/package.json. This will not take effect. You should configure "pnpm.onlyBuiltDependencies" at the root of the workspace instead.
+
+> @kit/content-migrations@0.1.0 verify:schema D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/scripts/verification/verify-schema.ts "payload"
+
+Loading environment variables from .env.development
+Connecting to database: postgresql://postgres:postgres@localhost:54322/postgres?schema=payload
+Checking if schema 'payload' exists...
+Schema 'payload' exists
+
+--- Command Output End ---
+2025-05-01 14:50:16: Schema 'payload' exists
+2025-05-01 14:50:16: EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload courses
+2025-05-01 14:50:16: DESCRIPTION: Verifying table 'payload.courses' exists
+--- Command Output Start ---
+apps/payload                             | ?WARN? The field "pnpm.onlyBuiltDependencies" was found in D:\SlideHeroes\App\repos\2025slideheroes\apps\payload/package.json. This will not take effect. You should configure "pnpm.onlyBuiltDependencies" at the root of the workspace instead.
+
+> @kit/content-migrations@0.1.0 verify:table D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/scripts/verification/verify-table.ts "payload" "courses"
+
+Loading environment variables from .env.development
+Connecting to database: postgresql://postgres:postgres@localhost:54322/postgres?schema=payload
+Checking if table 'payload.courses' exists...
+Table 'payload.courses' exists
+
+--- Command Output End ---
+2025-05-01 14:50:16: Table 'payload.courses' exists
+2025-05-01 14:50:16: EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload course_lessons
+2025-05-01 14:50:16: DESCRIPTION: Verifying table 'payload.course_lessons' exists
+--- Command Output Start ---
+apps/payload                             | ?WARN? The field "pnpm.onlyBuiltDependencies" was found in D:\SlideHeroes\App\repos\2025slideheroes\apps\payload/package.json. This will not take effect. You should configure "pnpm.onlyBuiltDependencies" at the root of the workspace instead.
+
+> @kit/content-migrations@0.1.0 verify:table D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/scripts/verification/verify-table.ts "payload" "course_lessons"
+
+Loading environment variables from .env.development
+Connecting to database: postgresql://postgres:postgres@localhost:54322/postgres?schema=payload
+Checking if table 'payload.course_lessons' exists...
+Table 'payload.course_lessons' exists
+
+--- Command Output End ---
+2025-05-01 14:50:17: Table 'payload.course_lessons' exists
+2025-05-01 14:50:17: EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload course_quizzes
+2025-05-01 14:50:17: DESCRIPTION: Verifying table 'payload.course_quizzes' exists
+--- Command Output Start ---
+apps/payload                             | ?WARN? The field "pnpm.onlyBuiltDependencies" was found in D:\SlideHeroes\App\repos\2025slideheroes\apps\payload/package.json. This will not take effect. You should configure "pnpm.onlyBuiltDependencies" at the root of the workspace instead.
+
+> @kit/content-migrations@0.1.0 verify:table D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/scripts/verification/verify-table.ts "payload" "course_quizzes"
+
+Loading environment variables from .env.development
+Connecting to database: postgresql://postgres:postgres@localhost:54322/postgres?schema=payload
+Checking if table 'payload.course_quizzes' exists...
+Table 'payload.course_quizzes' exists
+
+--- Command Output End ---
+2025-05-01 14:50:18: Table 'payload.course_quizzes' exists
+2025-05-01 14:50:18: EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload quiz_questions
+2025-05-01 14:50:18: DESCRIPTION: Verifying table 'payload.quiz_questions' exists
+--- Command Output Start ---
+apps/payload                             | ?WARN? The field "pnpm.onlyBuiltDependencies" was found in D:\SlideHeroes\App\repos\2025slideheroes\apps\payload/package.json. This will not take effect. You should configure "pnpm.onlyBuiltDependencies" at the root of the workspace instead.
+
+> @kit/content-migrations@0.1.0 verify:table D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/scripts/verification/verify-table.ts "payload" "quiz_questions"
+
+Loading environment variables from .env.development
+Connecting to database: postgresql://postgres:postgres@localhost:54322/postgres?schema=payload
+Checking if table 'payload.quiz_questions' exists...
+Table 'payload.quiz_questions' exists
+
+--- Command Output End ---
+2025-05-01 14:50:18: Table 'payload.quiz_questions' exists
+2025-05-01 14:50:18: EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload surveys
+2025-05-01 14:50:18: DESCRIPTION: Verifying table 'payload.surveys' exists
+--- Command Output Start ---
+apps/payload                             | ?WARN? The field "pnpm.onlyBuiltDependencies" was found in D:\SlideHeroes\App\repos\2025slideheroes\apps\payload/package.json. This will not take effect. You should configure "pnpm.onlyBuiltDependencies" at the root of the workspace instead.
+
+> @kit/content-migrations@0.1.0 verify:table D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/scripts/verification/verify-table.ts "payload" "surveys"
+
+Loading environment variables from .env.development
+Connecting to database: postgresql://postgres:postgres@localhost:54322/postgres?schema=payload
+Checking if table 'payload.surveys' exists...
+Table 'payload.surveys' exists
+
+--- Command Output End ---
+2025-05-01 14:50:19: Table 'payload.surveys' exists
+2025-05-01 14:50:19: EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload survey_questions
+2025-05-01 14:50:19: DESCRIPTION: Verifying table 'payload.survey_questions' exists
+--- Command Output Start ---
+apps/payload                             | ?WARN? The field "pnpm.onlyBuiltDependencies" was found in D:\SlideHeroes\App\repos\2025slideheroes\apps\payload/package.json. This will not take effect. You should configure "pnpm.onlyBuiltDependencies" at the root of the workspace instead.
+
+> @kit/content-migrations@0.1.0 verify:table D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/scripts/verification/verify-table.ts "payload" "survey_questions"
+
+Loading environment variables from .env.development
+Connecting to database: postgresql://postgres:postgres@localhost:54322/postgres?schema=payload
+Checking if table 'payload.survey_questions' exists...
+Table 'payload.survey_questions' exists
+
+--- Command Output End ---
+2025-05-01 14:50:20: Table 'payload.survey_questions' exists
+2025-05-01 14:50:20: âœ… Payload migrations completed successfully
+2025-05-01 14:50:20: âœ… Setup phase completed successfully
+2025-05-01 14:50:20 - PHASE SETUP PHASE COMPLETED (79.65s)
+2025-05-01 14:50:20: âœ… SETUP PHASE phase completed successfully (79.65s)
+
+2025-05-01 14:50:20 - ================================================================================
+2025-05-01 14:50:20 - PHASE 2/4: PROCESSING PHASE
+2025-05-01 14:50:20 - ================================================================================
+
+2025-05-01 14:50:20 - ------------------------------------------------------------
+2025-05-01 14:50:20 - STEP 4: Checking and processing raw data [STARTED]
+2025-05-01 14:50:20 - ------------------------------------------------------------
+2025-05-01 14:50:20: Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+2025-05-01 14:50:20: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-05-01 14:50:20: Processed data not found. Processing raw data...
+2025-05-01 14:50:20: EXECUTING: pnpm run process:raw-data
+2025-05-01 14:50:20: DESCRIPTION: Processing raw data
+2025-05-01 14:50:20: Ensuring lesson metadata YAML is up to date...
+2025-05-01 14:50:20: âœ… Lesson metadata YAML exists and is up to date
+2025-05-01 14:50:20: Found HTML todo content file. Updating YAML with HTML content...
+2025-05-01 14:50:20: EXECUTING: pnpm run process:parse-lesson-todo-html
+2025-05-01 14:50:20: DESCRIPTION: Parsing HTML todo content
+2025-05-01 14:50:26: Validating HTML parsing results...
+2025-05-01 14:50:26: âœ… Updated YAML with HTML todo content
+2025-05-01 14:50:26: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-05-01 14:50:26: âœ… Raw data processing completed
+2025-05-01 14:50:26 - STEP 4: Checking and processing raw data [COMPLETED] (6.82s)
+2025-05-01 14:50:26 - Step duration: 6.84 seconds
+2025-05-01 14:50:26: âœ… Step 4 completed successfully (6.82s)
+
+2025-05-01 14:50:26 - ------------------------------------------------------------
+2025-05-01 14:50:26 - STEP 5: Generating SQL seed files and fixing quiz ID consistency [STARTED]
+2025-05-01 14:50:26 - ------------------------------------------------------------
+2025-05-01 14:50:26: Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+2025-05-01 14:50:26: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-05-01 14:50:26: Verifying quiz system integrity...
+2025-05-01 14:50:26: EXECUTING: pnpm run verify:quiz-system-integrity
+2025-05-01 14:50:26: DESCRIPTION: Verifying quiz system integrity
+--- Command Output Start ---
+
+> @kit/content-migrations@0.1.0 verify:quiz-system-integrity D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/scripts/verification/verify-quiz-system-integrity.ts
+
+Verifying quiz system integrity...
+Verifying quiz definitions...
+Verifying quiz IDs are unique...
+Verifying lesson-quiz relations...
+Verifying lookup functions...
+Quiz system integrity verified successfully!
+
+--- Command Output End ---
+2025-05-01 14:50:27: Generating SQL seed files using YAML-based approach...
+2025-05-01 14:50:27: EXECUTING: pnpm --filter @kit/content-migrations run generate:updated-sql
+2025-05-01 14:50:27: DESCRIPTION: Generating SQL seed files using YAML metadata
+2025-05-01 14:50:28: âœ… Successfully generated SQL seed files using YAML approach
+2025-05-01 14:50:28: Fixing quiz ID consistency issues...
+2025-05-01 14:50:28: EXECUTING: pnpm run fix:quiz-id-consistency
+2025-05-01 14:50:28: DESCRIPTION: Fixing quiz ID consistency
+2025-05-01 14:50:28: âœ… SQL seed files generated and ID consistency fixed successfully
+2025-05-01 14:50:28: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-05-01 14:50:28 - STEP 5: Generating SQL seed files and fixing quiz ID consistency [COMPLETED] (1.78s)
+2025-05-01 14:50:28 - Step duration: 1.79 seconds
+2025-05-01 14:50:28: âœ… Step 5 completed successfully (1.78s)
+
+2025-05-01 14:50:28 - ------------------------------------------------------------
+2025-05-01 14:50:28 - STEP 6: Fixing references to ensure consistency [STARTED]
+2025-05-01 14:50:28 - ------------------------------------------------------------
+2025-05-01 14:50:28: Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+2025-05-01 14:50:28: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-05-01 14:50:28: Fixing lesson-quiz reference consistency...
+2025-05-01 14:50:28: EXECUTING: pnpm run fix:lesson-quiz-references
+2025-05-01 14:50:28: DESCRIPTION: Fixing lesson-quiz references
+2025-05-01 14:50:29: Fixing additional lesson-quiz reference consistency...
+2025-05-01 14:50:29: EXECUTING: pnpm run fix:lessons-quiz-references-sql
+2025-05-01 14:50:29: DESCRIPTION: Fixing additional lesson-quiz references
+2025-05-01 14:50:29: Fixing quiz question references...
+2025-05-01 14:50:29: EXECUTING: pnpm run fix:questions-quiz-references
+2025-05-01 14:50:29: DESCRIPTION: Fixing quiz question references
+2025-05-01 14:50:29: Repairing quiz-question relationships...
+2025-05-01 14:50:29: EXECUTING: pnpm run quiz:repair
+2025-05-01 14:50:29: DESCRIPTION: Repairing quiz-question relationships
+2025-05-01 14:50:51: Fixing quiz array relationships...
+2025-05-01 14:50:51: EXECUTING: pnpm run fix:quiz-array-relationships
+2025-05-01 14:50:51: DESCRIPTION: Fixing quiz array relationships
+2025-05-01 14:50:52: Verifying quiz relationships...
+2025-05-01 14:50:52: EXECUTING: pnpm run verify:quiz-relationship-migration
+2025-05-01 14:50:52: DESCRIPTION: Verifying quiz relationships
+2025-05-01 14:50:52: âœ… All references fixed successfully
+2025-05-01 14:50:52: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-05-01 14:50:52 - STEP 6: Fixing references to ensure consistency [COMPLETED] (24.14s)
+2025-05-01 14:50:52 - Step duration: 24.15 seconds
+2025-05-01 14:50:52: âœ… Step 6 completed successfully (24.14s)
+2025-05-01 14:50:52: âœ… Processing phase completed successfully
+2025-05-01 14:50:52 - PHASE PROCESSING PHASE COMPLETED (32.84s)
+2025-05-01 14:50:52: âœ… PROCESSING PHASE phase completed successfully (32.84s)
+
+2025-05-01 14:50:52 - ================================================================================
+2025-05-01 14:50:52 - PHASE 3/4: LOADING PHASE
+2025-05-01 14:50:52 - ================================================================================
+
+2025-05-01 14:50:52 - ------------------------------------------------------------
+2025-05-01 14:50:52 - STEP 7: Running content migrations via Payload migrations [STARTED]
+2025-05-01 14:50:52 - ------------------------------------------------------------
+2025-05-01 14:50:52: Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+2025-05-01 14:50:52: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\apps\payload
+2025-05-01 14:50:52: Verifying migration status (Payload migrations run in Setup phase)...
+2025-05-01 14:50:52: EXECUTING: pnpm migrate:status
+2025-05-01 14:50:52: DESCRIPTION: Verifying migration status
+--- Command Output Start ---
+
+> payload-app@1.0.0 migrate:status D:\SlideHeroes\App\repos\2025slideheroes\apps\payload
+> cross-env NODE_OPTIONS=--no-deprecation payload migrate:status
+
+[14:50:55] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[14:50:55] [32mINFO[39m: [36mReading migration files from D:\SlideHeroes\App\repos\2025slideheroes\apps\payload\src\migrations[39m
++---------------------------------------------------------------------+
+¦[37m [0m[01m                                                 Name[0m ¦[37m [0m[01mBatch[0m ¦[37m [0m[01mRan[0m ¦
++-------------------------------------------------------+-------+-----¦
+¦[37m [0m[32m                      20250402_100000_schema_creation[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                          20250402_300000_base_schema[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                     20250402_305000_seed_course_data[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m               20250402_310000_relationship_structure[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m          20250402_330000_bidirectional_relationships[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                      20250402_340000_add_users_table[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                    20250402_350000_create_admin_user[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                      20250403_200000_process_content[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m              20250403_300000_add_lesson_enhancements[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m        20250404_100000_fix_lesson_quiz_relationships[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m             20250407_100000_add_survey_id_to_lessons[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m20250407_100000_fix_missing_lesson_quiz_relationships[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m             20250410_120500_relationship_columns_fix[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m               20250414_100000_add_private_collection[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m 20250414_150000_fix_private_id_column_in_uuid_tables[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m        20250415_100000_master_relationship_migration[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m             20250415_110000_master_relationship_view[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m      20250415_120000_proactive_uuid_table_monitoring[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m     20250415_130000_fix_downloads_relationships_view[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                  20250415_140000_fix_missing_columns[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                20250415_150000_fix_remaining_columns[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                      20250415_160000_add_todo_column[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m      20250415_170000_convert_todo_fields_to_richtext[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m          20250415_180000_fix_downloads_thumbnail_url[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                     20250415_190000_uuid_consistency[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                    20250415_200000_add_video_support[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m             20250423_113700_fix_uuid_tables_function[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m        20250424_080000_fix-uuid-tables-view-function[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                20250424_090000_add_path_to_downloads[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m        20250424_100000_fix_downloads_diagnostic_view[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m        20250424_100000_simplify_uuid_tables_tracking[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m         20250424_110000_enhance_relationship_columns[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m             20250424_120000_improved_uuid_monitoring[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m             20250424_120001_enhanced_uuid_monitoring[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m20250424_130000_fix_uuid_dynamically_generated_tables[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m        20250425_150000_remove_quiz_id_from_questions[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                     20250425_153000_minimal_quiz_fix[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                20250425_175000_quiz_jsonb_format_fix[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m  20250425_190002_comprehensive_quiz_jsonb_format_fix[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m      20250425_195000_fix_quiz_questions_jsonb_format[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                20250501_104300_add_status_to_quizzes[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
+¦[37m [0m[32m                 20250501_110000_fix_quiz_rels_schema[0m ¦[37m [0m[32m    1[0m ¦[37m [0m[32mYes[0m ¦
++---------------------------------------------------------------------+
+[14:50:55] [32mINFO[39m: [36mDone.[39m
+
+--- Command Output End ---
+2025-05-01 14:50:55: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\apps\payload
+2025-05-01 14:50:55: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-05-01 14:50:55: Running verification with automatic dependency handling...
+2025-05-01 14:50:55: Running verification step 'verify:todo-fields' with automatic dependency handling...
+2025-05-01 14:50:55: Ensuring dependencies for verification step 'verify:todo-fields' are run...
+2025-05-01 14:50:55: Running dependency: sql:ensure-todo-column
+2025-05-01 14:50:55: EXECUTING: pnpm run sql:ensure-todo-column
+2025-05-01 14:50:55: DESCRIPTION: Running dependency: sql:ensure-todo-column
+2025-05-01 14:50:55: Registered dependency: sql:ensure-todo-column (called by: Unknown, success: True)
+2025-05-01 14:50:55: âœ… Dependency 'sql:ensure-todo-column' completed successfully (called by: Unknown)
+2025-05-01 14:50:55: Running dependency: fix:todo-fields
+2025-05-01 14:50:55: EXECUTING: pnpm run fix:todo-fields
+2025-05-01 14:50:55: DESCRIPTION: Running dependency: fix:todo-fields
+2025-05-01 14:50:56: Registered dependency: fix:todo-fields (called by: Unknown, success: True)
+2025-05-01 14:50:56: âœ… Dependency 'fix:todo-fields' completed successfully (called by: Unknown)
+2025-05-01 14:50:56: Running dependency: fix:lexical-format
+2025-05-01 14:50:56: EXECUTING: pnpm run fix:lexical-format
+2025-05-01 14:50:56: DESCRIPTION: Running dependency: fix:lexical-format
+2025-05-01 14:50:57: Registered dependency: fix:lexical-format (called by: Unknown, success: True)
+2025-05-01 14:50:57: âœ… Dependency 'fix:lexical-format' completed successfully (called by: Unknown)
+2025-05-01 14:50:57: EXECUTING: pnpm run verify:todo-fields
+2025-05-01 14:50:57: DESCRIPTION: Verifying todo fields with dependencies
+2025-05-01 14:50:57: âœ… verify:todo-fields verification passed with automatic dependency handling
+2025-05-01 14:50:57: âœ… Todo fields verification passed with automatic dependency handling
+2025-05-01 14:50:57: Verifying basic database structure...
+2025-05-01 14:50:57: EXECUTING: pnpm run sql:verify-schema
+2025-05-01 14:50:57: DESCRIPTION: Verifying database structure
+--- Command Output Start ---
+
+> @kit/content-migrations@0.1.0 sql:verify-schema D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/scripts/sql/verify-database-schema.ts
+
+Loaded environment variables from D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations\.env.development
+Connecting to database: postgresql://postgres:postgres@localhost:54322/postgres?schema=payload
+Connected to database
+? Payload schema exists
+? Found 58 tables in payload schema
+? Required table 'courses' exists
+? Required table 'course_lessons' exists
+? Required table 'course_quizzes' exists
+? Required table 'quiz_questions' exists
+? Required table 'surveys' exists
+? Required table 'survey_questions' exists
+? Relationship table 'course_lessons_rels' exists
+? Relationship table 'course_quizzes_rels' exists
+? Relationship table 'quiz_questions_rels' exists
+? Relationship table 'survey_questions_rels' exists
+? Relationship table 'surveys_rels' exists
+
+Database verification completed successfully
+Database verification completed successfully
+
+--- Command Output End ---
+2025-05-01 14:50:58: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-05-01 14:50:58: âœ… Content migrations completed successfully
+2025-05-01 14:50:58: Identifying steps that could potentially be run in parallel...
+
+2025-05-01 14:50:58 - ------------------------------------------------------------
+2025-05-01 14:50:58 - STEP 8: Migrating blog posts with complete content [STARTED]
+2025-05-01 14:50:58 - ------------------------------------------------------------
+2025-05-01 14:50:58: Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+2025-05-01 14:50:58: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-05-01 14:50:58: Running specialized post migration script...
+2025-05-01 14:50:58: EXECUTING: pnpm run migrate:posts-direct
+2025-05-01 14:50:58: DESCRIPTION: Migrating blog posts with full content
+--- Command Output Start ---
+
+> @kit/content-migrations@0.1.0 migrate:posts-direct D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/scripts/core/migrate-posts-direct.ts
+
+Loading environment variables from .env.development
+Connecting to database: postgresql://postgres:postgres@localhost:54322/postgres?schema=payload
+Connected to database
+Validating dynamic_uuid_tables schema...
+Available columns in dynamic_uuid_tables: table_name, primary_key, created_at, needs_path_column, id, parent_id, path, private_id, order, course_id, course_lessons_id, course_quizzes_id, surveys_id, survey_questions_id, posts_id, documentation_id, downloads_id
+Schema validation successful. Available columns: table_name, primary_key, created_at, needs_path_column, id, parent_id, path, private_id, order, course_id, course_lessons_id, course_quizzes_id, surveys_id, survey_questions_id, posts_id, documentation_id, downloads_id
+Running proactive UUID table fix to ensure all columns exist...
+Running uuid table scanner function...
+UUID table scan completed successfully
+Blog posts directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations\src\data\raw\posts
+Found 9 blog post files to migrate.
+Starting migration of 9 blog post files...
+Processing art-craft-business-presentation-creation with content length: 1729 characters
+Created Lexical format for art-craft-business-presentation-creation: 5359 characters
+Creating new post with slug art-craft-business-presentation-creation and ID 744eb48a-15bb-4f60-8eb3-8f60c103b788
+Available columns in dynamic_uuid_tables: table_name, primary_key, created_at, needs_path_column, id, parent_id, path, private_id, order, course_id, course_lessons_id, course_quizzes_id, surveys_id, survey_questions_id, posts_id, documentation_id, downloads_id
+Successfully tracked UUID table: posts_744eb48a_15bb_4f60_8eb3_8f60c103b788
+Migrated blog post: art-craft-business-presentation-creation with ID: 744eb48a-15bb-4f60-8eb3-8f60c103b788
+Processing pitch-deck with content length: 11597 characters
+Created Lexical format for pitch-deck: 34770 characters
+Creating new post with slug pitch-deck and ID f6ba7d7f-1944-4482-9e9a-42d1cf76f33b
+Available columns in dynamic_uuid_tables: table_name, primary_key, created_at, needs_path_column, id, parent_id, path, private_id, order, course_id, course_lessons_id, course_quizzes_id, surveys_id, survey_questions_id, posts_id, documentation_id, downloads_id
+Successfully tracked UUID table: posts_f6ba7d7f_1944_4482_9e9a_42d1cf76f33b
+Migrated blog post: pitch-deck with ID: f6ba7d7f-1944-4482-9e9a-42d1cf76f33b
+Processing powerpoint-presentations-defense with content length: 118 characters
+Created Lexical format for powerpoint-presentations-defense: 499 characters
+Creating new post with slug powerpoint-presentations-defense and ID 84e1e0a8-7967-44e6-99c1-9844a8025ef0
+Available columns in dynamic_uuid_tables: table_name, primary_key, created_at, needs_path_column, id, parent_id, path, private_id, order, course_id, course_lessons_id, course_quizzes_id, surveys_id, survey_questions_id, posts_id, documentation_id, downloads_id
+Successfully tracked UUID table: posts_84e1e0a8_7967_44e6_99c1_9844a8025ef0
+Migrated blog post: powerpoint-presentations-defense with ID: 84e1e0a8-7967-44e6-99c1-9844a8025ef0
+Processing presentation-review-bcg with content length: 8909 characters
+Created Lexical format for presentation-review-bcg: 18536 characters
+Creating new post with slug presentation-review-bcg and ID 78bad1de-5065-4025-9c27-7fa320fd5ebc
+Available columns in dynamic_uuid_tables: table_name, primary_key, created_at, needs_path_column, id, parent_id, path, private_id, order, course_id, course_lessons_id, course_quizzes_id, surveys_id, survey_questions_id, posts_id, documentation_id, downloads_id
+Successfully tracked UUID table: posts_78bad1de_5065_4025_9c27_7fa320fd5ebc
+Migrated blog post: presentation-review-bcg with ID: 78bad1de-5065-4025-9c27-7fa320fd5ebc
+Processing presentation-tips with content length: 10953 characters
+Created Lexical format for presentation-tips: 33034 characters
+Creating new post with slug presentation-tips and ID 9d3e81cc-682b-4986-95c9-c097149ed6e2
+Available columns in dynamic_uuid_tables: table_name, primary_key, created_at, needs_path_column, id, parent_id, path, private_id, order, course_id, course_lessons_id, course_quizzes_id, surveys_id, survey_questions_id, posts_id, documentation_id, downloads_id
+Successfully tracked UUID table: posts_9d3e81cc_682b_4986_95c9_c097149ed6e2
+Migrated blog post: presentation-tips with ID: 9d3e81cc-682b-4986-95c9-c097149ed6e2
+Processing presentation-tools with content length: 576 characters
+Created Lexical format for presentation-tools: 2983 characters
+Creating new post with slug presentation-tools and ID bcbcaab5-00e3-4583-9546-1b29a8a174b0
+Available columns in dynamic_uuid_tables: table_name, primary_key, created_at, needs_path_column, id, parent_id, path, private_id, order, course_id, course_lessons_id, course_quizzes_id, surveys_id, survey_questions_id, posts_id, documentation_id, downloads_id
+Successfully tracked UUID table: posts_bcbcaab5_00e3_4583_9546_1b29a8a174b0
+Migrated blog post: presentation-tools with ID: bcbcaab5-00e3-4583-9546-1b29a8a174b0
+Processing public-speaking-anxiety with content length: 20951 characters
+Created Lexical format for public-speaking-anxiety: 62718 characters
+Creating new post with slug public-speaking-anxiety and ID 7a45e585-8a4b-4c21-b9d1-e26c26fc73e4
+Available columns in dynamic_uuid_tables: table_name, primary_key, created_at, needs_path_column, id, parent_id, path, private_id, order, course_id, course_lessons_id, course_quizzes_id, surveys_id, survey_questions_id, posts_id, documentation_id, downloads_id
+Successfully tracked UUID table: posts_7a45e585_8a4b_4c21_b9d1_e26c26fc73e4
+Migrated blog post: public-speaking-anxiety with ID: 7a45e585-8a4b-4c21-b9d1-e26c26fc73e4
+Processing seneca-partnership with content length: 612 characters
+Created Lexical format for seneca-partnership: 2077 characters
+Creating new post with slug seneca-partnership and ID 9e4a601d-b343-4101-bc7f-a12bd64a8478
+Available columns in dynamic_uuid_tables: table_name, primary_key, created_at, needs_path_column, id, parent_id, path, private_id, order, course_id, course_lessons_id, course_quizzes_id, surveys_id, survey_questions_id, posts_id, documentation_id, downloads_id
+Successfully tracked UUID table: posts_9e4a601d_b343_4101_bc7f_a12bd64a8478
+Migrated blog post: seneca-partnership with ID: 9e4a601d-b343-4101-bc7f-a12bd64a8478
+Processing typology-business-charts with content length: 10010 characters
+Created Lexical format for typology-business-charts: 30541 characters
+Creating new post with slug typology-business-charts and ID ad0f2125-9078-4c68-a6cb-a15b8772397c
+Available columns in dynamic_uuid_tables: table_name, primary_key, created_at, needs_path_column, id, parent_id, path, private_id, order, course_id, course_lessons_id, course_quizzes_id, surveys_id, survey_questions_id, posts_id, documentation_id, downloads_id
+Successfully tracked UUID table: posts_ad0f2125_9078_4c68_a6cb_a15b8772397c
+Migrated blog post: typology-business-charts with ID: ad0f2125-9078-4c68-a6cb-a15b8772397c
+Total posts in database after migration: 9
+Successfully migrated/updated 9 of 9 posts. ?
+=========================================
+Blog posts migration complete! ?
+Total posts in database: 9
+=========================================
+
+--- Command Output End ---
+2025-05-01 14:50:59: âœ… Successfully migrated/updated 9 of 9 blog posts
+2025-05-01 14:50:59: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+
+2025-05-01 14:50:59 - ------------------------------------------------------------
+2025-05-01 14:50:59 - STEP 8: Migrating private posts with complete content [STARTED]
+2025-05-01 14:50:59 - ------------------------------------------------------------
+2025-05-01 14:51:00: Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+2025-05-01 14:51:00: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-05-01 14:51:00: Running specialized private posts migration script...
+2025-05-01 14:51:00: EXECUTING: pnpm run migrate:private-direct
+2025-05-01 14:51:00: DESCRIPTION: Migrating private posts with full content
+--- Command Output Start ---
+
+> @kit/content-migrations@0.1.0 migrate:private-direct D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/scripts/core/migrate-private-direct.ts
+
+Loading environment variables from .env.development
+Connecting to database: postgresql://postgres:postgres@localhost:54322/postgres?schema=payload
+Connected to database
+Validating dynamic_uuid_tables schema...
+Available columns in dynamic_uuid_tables: table_name, primary_key, created_at, needs_path_column, id, parent_id, path, private_id, order, course_id, course_lessons_id, course_quizzes_id, surveys_id, survey_questions_id, posts_id, documentation_id, downloads_id
+Schema validation successful. Available columns: table_name, primary_key, created_at, needs_path_column, id, parent_id, path, private_id, order, course_id, course_lessons_id, course_quizzes_id, surveys_id, survey_questions_id, posts_id, documentation_id, downloads_id
+Running proactive UUID table fix to ensure all columns exist...
+Running uuid table scanner function...
+UUID table scan completed successfully
+Private posts directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations\src\data\raw\bpm
+Found 5 private post files to migrate.
+Starting migration of 5 private post files...
+Processing bpm-blueprint with content length: 22318 characters
+Created Lexical format for bpm-blueprint: 65857 characters
+Creating new private post with slug bpm-blueprint and ID 6c4613aa-66c5-4ae5-9228-0750108eeaeb
+Available columns in dynamic_uuid_tables: table_name, primary_key, created_at, needs_path_column, id, parent_id, path, private_id, order, course_id, course_lessons_id, course_quizzes_id, surveys_id, survey_questions_id, posts_id, documentation_id, downloads_id
+Successfully tracked UUID table: private_6c4613aa_66c5_4ae5_9228_0750108eeaeb
+Migrated private post: bpm-blueprint with ID: 6c4613aa-66c5-4ae5-9228-0750108eeaeb
+Processing bpm-prologue with content length: 23184 characters
+Created Lexical format for bpm-prologue: 66743 characters
+Creating new private post with slug bpm-prologue and ID fd5f7a84-4662-4d26-ada2-8066c5c305ca
+Available columns in dynamic_uuid_tables: table_name, primary_key, created_at, needs_path_column, id, parent_id, path, private_id, order, course_id, course_lessons_id, course_quizzes_id, surveys_id, survey_questions_id, posts_id, documentation_id, downloads_id
+Successfully tracked UUID table: private_fd5f7a84_4662_4d26_ada2_8066c5c305ca
+Migrated private post: bpm-prologue with ID: fd5f7a84-4662-4d26-ada2-8066c5c305ca
+Processing bpm-reinvented-1 with content length: 24769 characters
+Created Lexical format for bpm-reinvented-1: 68348 characters
+Creating new private post with slug bpm-reinvented-1 and ID cb14461b-eba7-4c91-833c-080bf0b6d925
+Available columns in dynamic_uuid_tables: table_name, primary_key, created_at, needs_path_column, id, parent_id, path, private_id, order, course_id, course_lessons_id, course_quizzes_id, surveys_id, survey_questions_id, posts_id, documentation_id, downloads_id
+Successfully tracked UUID table: private_cb14461b_eba7_4c91_833c_080bf0b6d925
+Migrated private post: bpm-reinvented-1 with ID: cb14461b-eba7-4c91-833c-080bf0b6d925
+Processing bpm-reinvented-2 with content length: 25153 characters
+Created Lexical format for bpm-reinvented-2: 68814 characters
+Creating new private post with slug bpm-reinvented-2 and ID 34441ad4-2ba4-41dd-87ac-834cfd18218b
+Available columns in dynamic_uuid_tables: table_name, primary_key, created_at, needs_path_column, id, parent_id, path, private_id, order, course_id, course_lessons_id, course_quizzes_id, surveys_id, survey_questions_id, posts_id, documentation_id, downloads_id
+Successfully tracked UUID table: private_34441ad4_2ba4_41dd_87ac_834cfd18218b
+Migrated private post: bpm-reinvented-2 with ID: 34441ad4-2ba4-41dd-87ac-834cfd18218b
+Processing bpm-reinvented-3 with content length: 26635 characters
+Created Lexical format for bpm-reinvented-3: 70337 characters
+Creating new private post with slug bpm-reinvented-3 and ID ad2d541e-fd09-4215-a6ca-7f67728f5019
+Available columns in dynamic_uuid_tables: table_name, primary_key, created_at, needs_path_column, id, parent_id, path, private_id, order, course_id, course_lessons_id, course_quizzes_id, surveys_id, survey_questions_id, posts_id, documentation_id, downloads_id
+Successfully tracked UUID table: private_ad2d541e_fd09_4215_a6ca_7f67728f5019
+Migrated private post: bpm-reinvented-3 with ID: ad2d541e-fd09-4215-a6ca-7f67728f5019
+Total private posts in database after migration: 5
+Successfully migrated/updated 5 of 5 private posts. ?
+=========================================
+Private posts migration complete! ?
+Total private posts in database: 5
+=========================================
+
+--- Command Output End ---
+2025-05-01 14:51:01: âœ… Successfully migrated/updated 5 of 5 private posts
+2025-05-01 14:51:01: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+
+2025-05-01 14:51:01 - ------------------------------------------------------------
+2025-05-01 14:51:01 - STEP 8: Fixing UUID tables to ensure all required columns exist [STARTED]
+2025-05-01 14:51:01 - ------------------------------------------------------------
+2025-05-01 14:51:01: Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+2025-05-01 14:51:01: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-05-01 14:51:01: Running critical columns fix script to ensure all UUID tables have required columns...
+2025-05-01 14:51:01: EXECUTING: pnpm run uuid:fix-critical-columns
+2025-05-01 14:51:01: DESCRIPTION: Fixing critical columns in UUID tables
+2025-05-01 14:51:01: Ensuring environment variables are correctly set up...
+2025-05-01 14:51:01: EXECUTING: pnpm --filter @kit/content-migrations run uuid:ensure-env
+2025-05-01 14:51:01: DESCRIPTION: Ensuring environment variables
+2025-05-01 14:51:02: Running critical columns fix script to ensure all required columns exist...
+2025-05-01 14:51:02: EXECUTING: pnpm --filter @kit/content-migrations run uuid:fix-critical-columns-safe
+2025-05-01 14:51:02: DESCRIPTION: Fixing critical columns in UUID tables
+2025-05-01 14:51:03: Verifying critical columns...
+2025-05-01 14:51:03: EXECUTING: pnpm --filter @kit/content-migrations run uuid:verify-critical-columns
+2025-05-01 14:51:03: DESCRIPTION: Verifying critical columns
+2025-05-01 14:51:03: Running additional UUID tables fix script to add non-critical columns...
+2025-05-01 14:51:03: EXECUTING: pnpm run fix:uuid-tables
+2025-05-01 14:51:03: DESCRIPTION: Fixing UUID tables
+2025-05-01 14:51:04: Verifying UUID tables with enhanced detection...
+2025-05-01 14:51:04: EXECUTING: pnpm run uuid:verify:fixed
+2025-05-01 14:51:04: DESCRIPTION: Verifying UUID tables with enhanced detection
+2025-05-01 14:51:05: Ensuring all relationship columns exist...
+2025-05-01 14:51:05: EXECUTING: pnpm --filter @kit/content-migrations run repair:relationship-columns
+2025-05-01 14:51:05: DESCRIPTION: Fixing relationship columns
+2025-05-01 14:51:05: Verifying columns were added...
+2025-05-01 14:51:05: EXECUTING: pnpm --filter @kit/content-migrations run verify:relationship-columns
+2025-05-01 14:51:05: DESCRIPTION: Verifying relationship columns
+2025-05-01 14:51:06: âœ… UUID tables fixed and verified successfully
+2025-05-01 14:51:06: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+
+2025-05-01 14:51:06 - ------------------------------------------------------------
+2025-05-01 14:51:06 - STEP 9: Importing downloads from R2 bucket [STARTED]
+2025-05-01 14:51:06 - ------------------------------------------------------------
+2025-05-01 14:51:06: Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+2025-05-01 14:51:06: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-05-01 14:51:06: Importing downloads...
+2025-05-01 14:51:06: EXECUTING: pnpm run import:downloads
+2025-05-01 14:51:06: DESCRIPTION: Importing downloads from R2 bucket
+2025-05-01 14:51:06: âœ… Downloads imported successfully
+2025-05-01 14:51:06: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+
+2025-05-01 14:51:06 - ------------------------------------------------------------
+2025-05-01 14:51:06 - STEP 10: Fixing relationships [STARTED]
+2025-05-01 14:51:06 - ------------------------------------------------------------
+2025-05-01 14:51:06: Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+2025-05-01 14:51:06: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-05-01 14:51:06: Running edge case repairs...
+2025-05-01 14:51:06: EXECUTING: pnpm run repair:edge-cases
+2025-05-01 14:51:06: DESCRIPTION: Running edge case repairs
+2025-05-01 14:51:07: Running Payload CMS relationship fix with strict typing...
+2025-05-01 14:51:07: EXECUTING: pnpm run fix:payload-relationships-strict
+2025-05-01 14:51:07: DESCRIPTION: Fixing Payload relationships with strict typing
+2025-05-01 14:51:09: âœ… Quiz system repair completed successfully, skipping legacy quiz repair scripts
+2025-05-01 14:51:09: Running quiz relationship diagnostic for verification...
+2025-05-01 14:51:09: EXECUTING: pnpm run diagnostic:quiz-relationships
+2025-05-01 14:51:09: DESCRIPTION: Running quiz relationship diagnostic
+2025-05-01 14:51:10: Running quiz relationship diagnostic after fixes...
+2025-05-01 14:51:10: EXECUTING: pnpm run diagnostic:quiz-relationships
+2025-05-01 14:51:10: DESCRIPTION: Running quiz relationship diagnostic after fixes
+2025-05-01 14:51:11: Fixing any wrong field names in quiz_questions_rels...
+2025-05-01 14:51:11: EXECUTING: pnpm run utils:run-sql --sql 'UPDATE payload.quiz_questions_rels SET field = ''quiz_id'' WHERE field != ''quiz_id'';'
+2025-05-01 14:51:11: DESCRIPTION: Fixing wrong field names
+2025-05-01 14:51:11: Verifying bidirectional quiz relationships...
+2025-05-01 14:51:11: EXECUTING: pnpm run verify:quiz-relationship-migration
+2025-05-01 14:51:11: DESCRIPTION: Verifying bidirectional quiz relationships
+2025-05-01 14:51:12: Running source-of-truth based Quiz JSONB Synchronization Fix (capturing output)...
+2025-05-01 14:51:12: Temporary log for this step: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\fix-quiz-jsonb-sync-output.log
+2025-05-01 14:51:12: Command 'pnpm run fix:quiz-jsonb-sync' finished with exit code: 0
+2025-05-01 14:51:12: --- Output from fix:quiz-jsonb-sync ---
+2025-05-01 14:51:12: 
+> @kit/content-migrations@0.1.0 fix:quiz-jsonb-sync D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/scripts/repair/quiz-system/fix-quiz-jsonb-sync.ts
+
+DEBUG: Imported QUIZZES type: object
+DEBUG: Imported QUIZZES keys: 20
+
+=== Starting Quiz JSONB Synchronization Fix ===
+
+2025-05-01T18:51:12.749Z [db:client] INFO: getClient called.
+2025-05-01T18:51:12.749Z [db:client] INFO: Pool does not exist, attempting to initialize...
+2025-05-01T18:51:12.749Z [db:client] INFO: Dynamically importing pg module...
+2025-05-01T18:51:12.783Z [db:client] INFO: pg module imported successfully.
+2025-05-01T18:51:12.783Z [db:client] INFO: pg.Pool constructor obtained.
+2025-05-01T18:51:12.783Z [db:client] INFO: Using connection string: postgresql://postgres:postgres@localhost:54322/postgres
+2025-05-01T18:51:12.783Z [db:client] INFO: Initializing new Pool...
+2025-05-01T18:51:12.783Z [db:client] INFO: Pool instance created.
+2025-05-01T18:51:12.783Z [db:client] INFO: Database connection pool initialization complete.
+2025-05-01T18:51:12.783Z [db:client] INFO: Pool error handler attached.
+2025-05-01T18:51:12.783Z [db:client] INFO: Creating client object wrapper...
+2025-05-01T18:51:12.783Z [db:client] INFO: Returning client object wrapper.
+2025-05-01T18:51:12.798Z [db:client] INFO: Query executed in 15ms
+{
+  "rows": null,
+  "duration": 15
+}
+Transaction started.
+Processing 20 quizzes from source of truth...
+DEBUG: About to start processing loop...
+  DEBUG: Full quizDef object: {
+  "id": "3c72b383-e17e-4b07-8a47-451cfbff29c0",
+  "slug": "gestalt-principles-quiz",
+  "title": "Gestalt Principles of Visual Perception Quiz",
+  "description": "Quiz on Gestalt principles and their application in design",
+  "passingScore": 70,
+  "questions": [
+    {
+      "id": "2e62e970-c4ac-4d05-b6a7-dad81250e986",
+      "text": "The principle of similarity states that we tend to group things which share visual characteristics such as:",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    },
+    {
+      "id": "74794823-dcb6-4f2d-a964-3e94f5863f5d",
+      "text": "What are the visual attribute triggers of pre-attentive processing?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    },
+    {
+      "id": "fc904a38-82f9-43aa-a0fd-1ae817d2c1dd",
+      "text": "What is visual thinking?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    }
+  ]
+}
+  DEBUG: Extracted definitiveQuestionIds: [
+  '2e62e970-c4ac-4d05-b6a7-dad81250e986',
+  '74794823-dcb6-4f2d-a964-3e94f5863f5d',
+  'fc904a38-82f9-43aa-a0fd-1ae817d2c1dd'
+]
+Processing quiz: "Gestalt Principles of Visual Perception Quiz" (3c72b383-e17e-4b07-8a47-451cfbff29c0) - Expected questions: 3
+2025-05-01T18:51:12.801Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 4,
+  "duration": 1
+}
+  - Deleted 4 existing relationship rows.
+2025-05-01T18:51:12.802Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 1,
+  "duration": 1
+}
+2025-05-01T18:51:12.803Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 1,
+  "duration": 1
+}
+2025-05-01T18:51:12.804Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 1,
+  "duration": 1
+}
+  - Inserted 3 relationship rows.
+2025-05-01T18:51:12.804Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+  - Updated questions JSONB field with 3 entries.
+  DEBUG: Full quizDef object: {
+  "id": "a84d3844-8c19-4c82-8a98-902c530a1a99",
+  "slug": "idea-generation-quiz",
+  "title": "Idea Generation Quiz",
+  "description": "Quiz for Idea Generation",
+  "passingScore": 70,
+  "questions": [
+    {
+      "id": "e3efc846-c4dc-418c-8452-98644c1e8b57",
+      "text": "What are the three Golden Rules to follow when applying the principle of abstraction and organizing your ideas?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    }
+  ]
+}
+  DEBUG: Extracted definitiveQuestionIds: [ 'e3efc846-c4dc-418c-8452-98644c1e8b57' ]
+Processing quiz: "Idea Generation Quiz" (a84d3844-8c19-4c82-8a98-902c530a1a99) - Expected questions: 1
+2025-05-01T18:51:12.805Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 3,
+  "duration": 0
+}
+  - Deleted 3 existing relationship rows.
+2025-05-01T18:51:12.806Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 1,
+  "duration": 1
+}
+  - Inserted 1 relationship rows.
+2025-05-01T18:51:12.806Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+  - Updated questions JSONB field with 1 entries.
+  DEBUG: Full quizDef object: {
+  "id": "5a8d6b7c-9e2f-4d3a-8b1c-0f9a2e4d5c6b",
+  "slug": "our-process-quiz",
+  "title": "Our Process Quiz",
+  "description": "Quiz for Our Process",
+  "passingScore": 70,
+  "questions": [
+    {
+      "id": "262b193c-b494-4aaa-868a-1b52cdd98c34",
+      "text": "What is the 3rd step of our process?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    },
+    {
+      "id": "26739c2c-56c2-48b2-8699-1f4a02784846",
+      "text": "What is the second step of the recommended preparation process?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    },
+    {
+      "id": "2ce69acb-8d3f-41b3-9851-7cd5cd508dc8",
+      "text": "Match the type of mental processing with the characteristic: 'Conscious, sequential, and slow/hard'",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    },
+    {
+      "id": "3d65df89-ba7b-4039-816b-f6a86ed6fb4a",
+      "text": "What is the 4th step of our process?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    },
+    {
+      "id": "4b951049-4e15-4cb0-b048-3db4d691255c",
+      "text": "What is the fourth step of the recommended preparation process?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    }
+  ]
+}
+  DEBUG: Extracted definitiveQuestionIds: [
+  '262b193c-b494-4aaa-868a-1b52cdd98c34',
+  '26739c2c-56c2-48b2-8699-1f4a02784846',
+  '2ce69acb-8d3f-41b3-9851-7cd5cd508dc8',
+  '3d65df89-ba7b-4039-816b-f6a86ed6fb4a',
+  '4b951049-4e15-4cb0-b048-3db4d691255c'
+]
+Processing quiz: "Our Process Quiz" (5a8d6b7c-9e2f-4d3a-8b1c-0f9a2e4d5c6b) - Expected questions: 5
+2025-05-01T18:51:12.808Z [db:client] INFO: Query executed in 2ms
+{
+  "rows": 9,
+  "duration": 2
+}
+  - Deleted 9 existing relationship rows.
+2025-05-01T18:51:12.809Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 1,
+  "duration": 1
+}
+2025-05-01T18:51:12.809Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+2025-05-01T18:51:12.810Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 1,
+  "duration": 1
+}
+2025-05-01T18:51:12.810Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+2025-05-01T18:51:12.811Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 1,
+  "duration": 1
+}
+  - Inserted 5 relationship rows.
+2025-05-01T18:51:12.811Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+  - Updated questions JSONB field with 5 entries.
+  DEBUG: Full quizDef object: {
+  "id": "791e27de-2c98-49ef-b684-6c88667d1571",
+  "slug": "fact-persuasion-quiz",
+  "title": "Overview of Fact-based Persuasion Quiz",
+  "description": "Quiz on using facts for persuasive presentations",
+  "passingScore": 70,
+  "questions": [
+    {
+      "id": "0a7fcdf6-2c26-4272-801a-d037946fac20",
+      "text": "What is the rule of 7 (updated)?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    },
+    {
+      "id": "0c09da5c-fff3-41f1-9505-da246426eb4e",
+      "text": "Pick the question that corresponds with the 'Personality' quadrant",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    },
+    {
+      "id": "0c13fb7a-23dc-46f4-8755-7658939b1695",
+      "text": "What chart type best communicates the 'Geospatial' relationship?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    }
+  ]
+}
+  DEBUG: Extracted definitiveQuestionIds: [
+  '0a7fcdf6-2c26-4272-801a-d037946fac20',
+  '0c09da5c-fff3-41f1-9505-da246426eb4e',
+  '0c13fb7a-23dc-46f4-8755-7658939b1695'
+]
+Processing quiz: "Overview of Fact-based Persuasion Quiz" (791e27de-2c98-49ef-b684-6c88667d1571) - Expected questions: 3
+2025-05-01T18:51:12.812Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 2,
+  "duration": 1
+}
+  - Deleted 2 existing relationship rows.
+2025-05-01T18:51:12.812Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+2025-05-01T18:51:12.813Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 1,
+  "duration": 1
+}
+2025-05-01T18:51:12.813Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+  - Inserted 3 relationship rows.
+2025-05-01T18:51:12.813Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+  - Updated questions JSONB field with 3 entries.
+  DEBUG: Full quizDef object: {
+  "id": "c7d8e9f0-a1b2-3c4d-5e6f-7a8b9c0d1e2f",
+  "slug": "overview-elements-of-design-quiz",
+  "title": "Overview of the Fundamental Elements of Design Quiz",
+  "description": "Quiz for Overview of the Fundamental Elements of Design",
+  "passingScore": 70,
+  "questions": [
+    {
+      "id": "1044fc96-82b5-4fab-8796-6836bd26d926",
+      "text": "What are some of the fundamental elements and principles of design?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    },
+    {
+      "id": "fce7779c-e79a-4f77-84af-c165c2ccd5e2",
+      "text": "What elements can be repeated on all slides?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    }
+  ]
+}
+  DEBUG: Extracted definitiveQuestionIds: [
+  '1044fc96-82b5-4fab-8796-6836bd26d926',
+  'fce7779c-e79a-4f77-84af-c165c2ccd5e2'
+]
+Processing quiz: "Overview of the Fundamental Elements of Design Quiz" (c7d8e9f0-a1b2-3c4d-5e6f-7a8b9c0d1e2f) - Expected questions: 2
+2025-05-01T18:51:12.814Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+  - Deleted 1 existing relationship rows.
+2025-05-01T18:51:12.814Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+2025-05-01T18:51:12.815Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 1,
+  "duration": 1
+}
+  - Inserted 2 relationship rows.
+2025-05-01T18:51:12.815Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+  - Updated questions JSONB field with 2 entries.
+  DEBUG: Full quizDef object: {
+  "id": "1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d",
+  "slug": "performance-quiz",
+  "title": "Performance Quiz",
+  "description": "Quiz for Performance",
+  "passingScore": 70,
+  "questions": [
+    {
+      "id": "0a7fcdf6-2c26-4272-801a-d037946fac20",
+      "text": "What is the rule of 7 (updated)?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    },
+    {
+      "id": "0c09da5c-fff3-41f1-9505-da246426eb4e",
+      "text": "Pick the question that corresponds with the 'Personality' quadrant",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    },
+    {
+      "id": "0c13fb7a-23dc-46f4-8755-7658939b1695",
+      "text": "What chart type best communicates the 'Geospatial' relationship?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    }
+  ]
+}
+  DEBUG: Extracted definitiveQuestionIds: [
+  '0a7fcdf6-2c26-4272-801a-d037946fac20',
+  '0c09da5c-fff3-41f1-9505-da246426eb4e',
+  '0c13fb7a-23dc-46f4-8755-7658939b1695'
+]
+Processing quiz: "Performance Quiz" (1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d) - Expected questions: 3
+2025-05-01T18:51:12.816Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 3,
+  "duration": 1
+}
+  - Deleted 3 existing relationship rows.
+2025-05-01T18:51:12.816Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+2025-05-01T18:51:12.816Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+2025-05-01T18:51:12.817Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+  - Inserted 3 relationship rows.
+2025-05-01T18:51:12.817Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+  - Updated questions JSONB field with 3 entries.
+  DEBUG: Full quizDef object: {
+  "id": "f1e2d3c4-b5a6-9876-5432-1098f7e6d5c4",
+  "slug": "preparation-practice-quiz",
+  "title": "Perparation & Practice Quiz",
+  "description": "Quiz for Perparation & Practice",
+  "passingScore": 70,
+  "questions": [
+    {
+      "id": "0a7fcdf6-2c26-4272-801a-d037946fac20",
+      "text": "What is the rule of 7 (updated)?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    },
+    {
+      "id": "0c09da5c-fff3-41f1-9505-da246426eb4e",
+      "text": "Pick the question that corresponds with the 'Personality' quadrant",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    },
+    {
+      "id": "0c13fb7a-23dc-46f4-8755-7658939b1695",
+      "text": "What chart type best communicates the 'Geospatial' relationship?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    }
+  ]
+}
+  DEBUG: Extracted definitiveQuestionIds: [
+  '0a7fcdf6-2c26-4272-801a-d037946fac20',
+  '0c09da5c-fff3-41f1-9505-da246426eb4e',
+  '0c13fb7a-23dc-46f4-8755-7658939b1695'
+]
+Processing quiz: "Perparation & Practice Quiz" (f1e2d3c4-b5a6-9876-5432-1098f7e6d5c4) - Expected questions: 3
+2025-05-01T18:51:12.818Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 8,
+  "duration": 1
+}
+  - Deleted 8 existing relationship rows.
+2025-05-01T18:51:12.818Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+2025-05-01T18:51:12.819Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 1,
+  "duration": 1
+}
+2025-05-01T18:51:12.819Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+  - Inserted 3 relationship rows.
+2025-05-01T18:51:12.820Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 1,
+  "duration": 1
+}
+  - Updated questions JSONB field with 3 entries.
+  DEBUG: Full quizDef object: {
+  "id": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
+  "slug": "slide-composition-quiz",
+  "title": "Slide Composition Quiz",
+  "description": "Quiz for Slide Composition",
+  "passingScore": 70,
+  "questions": [
+    {
+      "id": "eaa3bbc0-261c-4dc2-9048-f4e533079018",
+      "text": "What goes in the body of the slide?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    },
+    {
+      "id": "fce7779c-e79a-4f77-84af-c165c2ccd5e2",
+      "text": "What elements can be repeated on all slides?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    }
+  ]
+}
+  DEBUG: Extracted definitiveQuestionIds: [
+  'eaa3bbc0-261c-4dc2-9048-f4e533079018',
+  'fce7779c-e79a-4f77-84af-c165c2ccd5e2'
+]
+Processing quiz: "Slide Composition Quiz" (a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d) - Expected questions: 2
+2025-05-01T18:51:12.820Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 5,
+  "duration": 0
+}
+  - Deleted 5 existing relationship rows.
+2025-05-01T18:51:12.821Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 1,
+  "duration": 1
+}
+2025-05-01T18:51:12.821Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+  - Inserted 2 relationship rows.
+2025-05-01T18:51:12.821Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+  - Updated questions JSONB field with 2 entries.
+  DEBUG: Full quizDef object: {
+  "id": "d4c3b2a1-f6e5-8a7b-9c0d-1e2f3a4b5c6d",
+  "slug": "specialist-graphs-quiz",
+  "title": "Specialist Graphs Quiz",
+  "description": "Quiz for Specialist Graphs",
+  "passingScore": 70,
+  "questions": [
+    {
+      "id": "513ceeab-b02c-4072-92cb-60c31058691b",
+      "text": "What is graphical excellence?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    },
+    {
+      "id": "5a00e6fa-81dd-4adb-a881-6aa820eace27",
+      "text": "When should you use graphs?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    },
+    {
+      "id": "97d252f3-a7b5-41ab-bbbc-f6457d99ef4e",
+      "text": "What are some of the characteristics that define graphs?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    },
+    {
+      "id": "cd01c3f9-b427-4526-a27d-1d1f1bf84d68",
+      "text": "There are many types of relationships that we use graphs to display. What chart type best communicates the 'Part-to-Whole' relationship?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    }
+  ]
+}
+  DEBUG: Extracted definitiveQuestionIds: [
+  '513ceeab-b02c-4072-92cb-60c31058691b',
+  '5a00e6fa-81dd-4adb-a881-6aa820eace27',
+  '97d252f3-a7b5-41ab-bbbc-f6457d99ef4e',
+  'cd01c3f9-b427-4526-a27d-1d1f1bf84d68'
+]
+Processing quiz: "Specialist Graphs Quiz" (d4c3b2a1-f6e5-8a7b-9c0d-1e2f3a4b5c6d) - Expected questions: 4
+2025-05-01T18:51:12.822Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 6,
+  "duration": 0
+}
+  - Deleted 6 existing relationship rows.
+2025-05-01T18:51:12.822Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+2025-05-01T18:51:12.823Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 1,
+  "duration": 1
+}
+2025-05-01T18:51:12.823Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+2025-05-01T18:51:12.824Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 1,
+  "duration": 1
+}
+  - Inserted 4 relationship rows.
+2025-05-01T18:51:12.824Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+  - Updated questions JSONB field with 4 entries.
+  DEBUG: Full quizDef object: {
+  "id": "c11dbb26-7561-4d12-88c8-141c653a43fd",
+  "slug": "basic-graphs-quiz",
+  "title": "Standard Graphs Quiz",
+  "description": "Quiz on basic graph concepts and their applications",
+  "passingScore": 70,
+  "questions": [
+    {
+      "id": "513ceeab-b02c-4072-92cb-60c31058691b",
+      "text": "What is graphical excellence?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    },
+    {
+      "id": "5a00e6fa-81dd-4adb-a881-6aa820eace27",
+      "text": "When should you use graphs?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    },
+    {
+      "id": "97d252f3-a7b5-41ab-bbbc-f6457d99ef4e",
+      "text": "What are some of the characteristics that define graphs?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    },
+    {
+      "id": "cd01c3f9-b427-4526-a27d-1d1f1bf84d68",
+      "text": "There are many types of relationships that we use graphs to display. What chart type best communicates the 'Part-to-Whole' relationship?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    }
+  ]
+}
+  DEBUG: Extracted definitiveQuestionIds: [
+  '513ceeab-b02c-4072-92cb-60c31058691b',
+  '5a00e6fa-81dd-4adb-a881-6aa820eace27',
+  '97d252f3-a7b5-41ab-bbbc-f6457d99ef4e',
+  'cd01c3f9-b427-4526-a27d-1d1f1bf84d68'
+]
+Processing quiz: "Standard Graphs Quiz" (c11dbb26-7561-4d12-88c8-141c653a43fd) - Expected questions: 4
+2025-05-01T18:51:12.825Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 8,
+  "duration": 1
+}
+  - Deleted 8 existing relationship rows.
+2025-05-01T18:51:12.825Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+2025-05-01T18:51:12.826Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 1,
+  "duration": 1
+}
+2025-05-01T18:51:12.826Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+2025-05-01T18:51:12.827Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 1,
+  "duration": 1
+}
+  - Inserted 4 relationship rows.
+2025-05-01T18:51:12.827Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+  - Updated questions JSONB field with 4 entries.
+  DEBUG: Full quizDef object: {
+  "id": "1e2f3a4b-5c6d-7e8f-9a0b-1c2d3e4f5a6b",
+  "slug": "storyboards-in-film-quiz",
+  "title": "Storyboards in Film Quiz",
+  "description": "Quiz for Storyboards in Film",
+  "passingScore": 70,
+  "questions": [
+    {
+      "id": "63d41ee5-0cc8-41d9-9d9f-a7cfa4ec8695",
+      "text": "Who invented storyboards?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    },
+    {
+      "id": "d47c3f7b-70ef-43e7-93b8-51af5277c521",
+      "text": "What is a storyboard?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    },
+    {
+      "id": "e0db9c42-3f72-463e-b762-11bc56ea73cd",
+      "text": "What was the great innovation of storyboarding?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    },
+    {
+      "id": "e430ee32-6d08-45be-b16c-4a63d4ddb825",
+      "text": "What tools are recommended to use for storyboarding?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    }
+  ]
+}
+  DEBUG: Extracted definitiveQuestionIds: [
+  '63d41ee5-0cc8-41d9-9d9f-a7cfa4ec8695',
+  'd47c3f7b-70ef-43e7-93b8-51af5277c521',
+  'e0db9c42-3f72-463e-b762-11bc56ea73cd',
+  'e430ee32-6d08-45be-b16c-4a63d4ddb825'
+]
+Processing quiz: "Storyboards in Film Quiz" (1e2f3a4b-5c6d-7e8f-9a0b-1c2d3e4f5a6b) - Expected questions: 4
+2025-05-01T18:51:12.827Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 3,
+  "duration": 0
+}
+  - Deleted 3 existing relationship rows.
+2025-05-01T18:51:12.828Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 1,
+  "duration": 1
+}
+2025-05-01T18:51:12.828Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+2025-05-01T18:51:12.829Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 1,
+  "duration": 1
+}
+2025-05-01T18:51:12.829Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+  - Inserted 4 relationship rows.
+2025-05-01T18:51:12.829Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+  - Updated questions JSONB field with 4 entries.
+  DEBUG: Full quizDef object: {
+  "id": "a6b5c4d3-e2f1-0a9b-8c7d-6e5f4a3b2c1d",
+  "slug": "storyboards-in-presentations-quiz",
+  "title": "Storyboards in Presentations Quiz",
+  "description": "Quiz for Storyboards in Presentations",
+  "passingScore": 70,
+  "questions": [
+    {
+      "id": "63d41ee5-0cc8-41d9-9d9f-a7cfa4ec8695",
+      "text": "Who invented storyboards?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    },
+    {
+      "id": "d47c3f7b-70ef-43e7-93b8-51af5277c521",
+      "text": "What is a storyboard?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    },
+    {
+      "id": "e0db9c42-3f72-463e-b762-11bc56ea73cd",
+      "text": "What was the great innovation of storyboarding?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    },
+    {
+      "id": "e430ee32-6d08-45be-b16c-4a63d4ddb825",
+      "text": "What tools are recommended to use for storyboarding?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    }
+  ]
+}
+  DEBUG: Extracted definitiveQuestionIds: [
+  '63d41ee5-0cc8-41d9-9d9f-a7cfa4ec8695',
+  'd47c3f7b-70ef-43e7-93b8-51af5277c521',
+  'e0db9c42-3f72-463e-b762-11bc56ea73cd',
+  'e430ee32-6d08-45be-b16c-4a63d4ddb825'
+]
+Processing quiz: "Storyboards in Presentations Quiz" (a6b5c4d3-e2f1-0a9b-8c7d-6e5f4a3b2c1d) - Expected questions: 4
+2025-05-01T18:51:12.830Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 2,
+  "duration": 0
+}
+  - Deleted 2 existing relationship rows.
+2025-05-01T18:51:12.830Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+2025-05-01T18:51:12.831Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 1,
+  "duration": 1
+}
+2025-05-01T18:51:12.831Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+2025-05-01T18:51:12.832Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 1,
+  "duration": 1
+}
+  - Inserted 4 relationship rows.
+2025-05-01T18:51:12.832Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+  - Updated questions JSONB field with 4 entries.
+  DEBUG: Full quizDef object: {
+  "id": "f4e3d2c1-b6a5-8d7c-0e9f-5a4b3c2d1e0f",
+  "slug": "tables-vs-graphs-quiz",
+  "title": "Tables vs Graphs Quiz",
+  "description": "Quiz for Tables vs Graphs",
+  "passingScore": 70,
+  "questions": [
+    {
+      "id": "17075e05-b7b6-4978-8025-147842f6337d",
+      "text": "What re some of the primary benefits of a table?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    },
+    {
+      "id": "49b524ea-19cf-4cf9-a3e7-c7f49b3ce767",
+      "text": "What are the two defining characteristics of Tables?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    },
+    {
+      "id": "513ceeab-b02c-4072-92cb-60c31058691b",
+      "text": "What is graphical excellence?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    },
+    {
+      "id": "5a00e6fa-81dd-4adb-a881-6aa820eace27",
+      "text": "When should you use graphs?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    },
+    {
+      "id": "97d252f3-a7b5-41ab-bbbc-f6457d99ef4e",
+      "text": "What are some of the characteristics that define graphs?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    }
+  ]
+}
+  DEBUG: Extracted definitiveQuestionIds: [
+  '17075e05-b7b6-4978-8025-147842f6337d',
+  '49b524ea-19cf-4cf9-a3e7-c7f49b3ce767',
+  '513ceeab-b02c-4072-92cb-60c31058691b',
+  '5a00e6fa-81dd-4adb-a881-6aa820eace27',
+  '97d252f3-a7b5-41ab-bbbc-f6457d99ef4e'
+]
+Processing quiz: "Tables vs Graphs Quiz" (f4e3d2c1-b6a5-8d7c-0e9f-5a4b3c2d1e0f) - Expected questions: 5
+2025-05-01T18:51:12.833Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 4,
+  "duration": 0
+}
+  - Deleted 4 existing relationship rows.
+2025-05-01T18:51:12.833Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+2025-05-01T18:51:12.834Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 1,
+  "duration": 1
+}
+2025-05-01T18:51:12.834Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+2025-05-01T18:51:12.834Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+2025-05-01T18:51:12.835Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 1,
+  "duration": 1
+}
+  - Inserted 5 relationship rows.
+2025-05-01T18:51:12.835Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+  - Updated questions JSONB field with 5 entries.
+  DEBUG: Full quizDef object: {
+  "id": "42564568-76bb-4405-88a9-8e9fd0a9154a",
+  "slug": "elements-of-design-detail-quiz",
+  "title": "The Fundamental Elements of Design in Detail Quiz",
+  "description": "Comprehensive quiz on the detailed elements of design",
+  "passingScore": 70,
+  "questions": [
+    {
+      "id": "1044fc96-82b5-4fab-8796-6836bd26d926",
+      "text": "What are some of the fundamental elements and principles of design?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    },
+    {
+      "id": "fce7779c-e79a-4f77-84af-c165c2ccd5e2",
+      "text": "What elements can be repeated on all slides?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    }
+  ]
+}
+  DEBUG: Extracted definitiveQuestionIds: [
+  '1044fc96-82b5-4fab-8796-6836bd26d926',
+  'fce7779c-e79a-4f77-84af-c165c2ccd5e2'
+]
+Processing quiz: "The Fundamental Elements of Design in Detail Quiz" (42564568-76bb-4405-88a9-8e9fd0a9154a) - Expected questions: 2
+2025-05-01T18:51:12.836Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 6,
+  "duration": 1
+}
+  - Deleted 6 existing relationship rows.
+2025-05-01T18:51:12.836Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+2025-05-01T18:51:12.836Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+  - Inserted 2 relationship rows.
+2025-05-01T18:51:12.837Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 1,
+  "duration": 1
+}
+  - Updated questions JSONB field with 2 entries.
+  DEBUG: Full quizDef object: {
+  "id": "d5e6f7a8-b9c0-d1e2-f3a4-b5c6d7e8f9a0",
+  "slug": "the-who-quiz",
+  "title": "The Who Quiz",
+  "description": "Quiz for The Who",
+  "passingScore": 70,
+  "questions": [
+    {
+      "id": "2f7a2198-6da3-41f9-a394-c002c9218834",
+      "text": "Our first step is 'The Who'. What do we mean by this?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    },
+    {
+      "id": "34dd66c5-562c-40f0-adea-7f36d2a0aed4",
+      "text": "Who is Cicero?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    },
+    {
+      "id": "63d41ee5-0cc8-41d9-9d9f-a7cfa4ec8695",
+      "text": "Who invented storyboards?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    },
+    {
+      "id": "82d249e9-7d95-49cc-99b7-76578e8e0643",
+      "text": "What are the 4 quadrants of the Audience Map?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    },
+    {
+      "id": "a9e9b4bd-ead5-43ef-ac52-13585ba09f57",
+      "text": "Who is the hero of our presentation?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    }
+  ]
+}
+  DEBUG: Extracted definitiveQuestionIds: [
+  '2f7a2198-6da3-41f9-a394-c002c9218834',
+  '34dd66c5-562c-40f0-adea-7f36d2a0aed4',
+  '63d41ee5-0cc8-41d9-9d9f-a7cfa4ec8695',
+  '82d249e9-7d95-49cc-99b7-76578e8e0643',
+  'a9e9b4bd-ead5-43ef-ac52-13585ba09f57'
+]
+Processing quiz: "The Who Quiz" (d5e6f7a8-b9c0-d1e2-f3a4-b5c6d7e8f9a0) - Expected questions: 5
+2025-05-01T18:51:12.837Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 7,
+  "duration": 0
+}
+  - Deleted 7 existing relationship rows.
+2025-05-01T18:51:12.838Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 1,
+  "duration": 1
+}
+2025-05-01T18:51:12.838Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+2025-05-01T18:51:12.839Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 1,
+  "duration": 1
+}
+2025-05-01T18:51:12.839Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+2025-05-01T18:51:12.840Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 1,
+  "duration": 1
+}
+  - Inserted 5 relationship rows.
+2025-05-01T18:51:12.840Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+  - Updated questions JSONB field with 5 entries.
+  DEBUG: Full quizDef object: {
+  "id": "b75e29c7-1d9f-4f41-8c91-a72847d13747",
+  "slug": "introductions-quiz",
+  "title": "The Why (Introductions) Quiz",
+  "description": "Quiz for The Why (Introductions)",
+  "passingScore": 70,
+  "questions": [
+    {
+      "id": "2bf3a20e-e707-4d61-88f0-be78e56fce7d",
+      "text": "Why are stories like a cup?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    },
+    {
+      "id": "544f2d62-5cf3-403b-aba0-e972bf5230e0",
+      "text": "The second step in our process is 'The Why'. What do we mean by this?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    },
+    {
+      "id": "7b635d60-8dbd-4786-b63e-6dbec5450f17",
+      "text": "What do stories add to our presentations? Why should be use them?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    },
+    {
+      "id": "804f35a3-875e-4d49-869a-5bdb85989534",
+      "text": "Why have we repeated the principle of proximity in this lesson and the previous lesson?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    },
+    {
+      "id": "81e96916-d43a-48bd-9830-adb4dc203114",
+      "text": "Why are we creating our presentation?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    }
+  ]
+}
+  DEBUG: Extracted definitiveQuestionIds: [
+  '2bf3a20e-e707-4d61-88f0-be78e56fce7d',
+  '544f2d62-5cf3-403b-aba0-e972bf5230e0',
+  '7b635d60-8dbd-4786-b63e-6dbec5450f17',
+  '804f35a3-875e-4d49-869a-5bdb85989534',
+  '81e96916-d43a-48bd-9830-adb4dc203114'
+]
+Processing quiz: "The Why (Introductions) Quiz" (b75e29c7-1d9f-4f41-8c91-a72847d13747) - Expected questions: 5
+2025-05-01T18:51:12.841Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 6,
+  "duration": 1
+}
+  - Deleted 6 existing relationship rows.
+2025-05-01T18:51:12.841Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+2025-05-01T18:51:12.841Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+2025-05-01T18:51:12.842Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 1,
+  "duration": 1
+}
+2025-05-01T18:51:12.842Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+2025-05-01T18:51:12.843Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 1,
+  "duration": 1
+}
+  - Inserted 5 relationship rows.
+2025-05-01T18:51:12.843Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+  - Updated questions JSONB field with 5 entries.
+  DEBUG: Full quizDef object: {
+  "id": "e8f9a0b1-c2d3-e4f5-a6b7-c8d9e0f1a2b3",
+  "slug": "why-next-steps-quiz",
+  "title": "The Why (Next Steps) Quiz",
+  "description": "Quiz for The Why (Next Steps)",
+  "passingScore": 70,
+  "questions": [
+    {
+      "id": "2bf3a20e-e707-4d61-88f0-be78e56fce7d",
+      "text": "Why are stories like a cup?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    },
+    {
+      "id": "544f2d62-5cf3-403b-aba0-e972bf5230e0",
+      "text": "The second step in our process is 'The Why'. What do we mean by this?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    },
+    {
+      "id": "7b635d60-8dbd-4786-b63e-6dbec5450f17",
+      "text": "What do stories add to our presentations? Why should be use them?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    },
+    {
+      "id": "804f35a3-875e-4d49-869a-5bdb85989534",
+      "text": "Why have we repeated the principle of proximity in this lesson and the previous lesson?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    },
+    {
+      "id": "81e96916-d43a-48bd-9830-adb4dc203114",
+      "text": "Why are we creating our presentation?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    }
+  ]
+}
+  DEBUG: Extracted definitiveQuestionIds: [
+  '2bf3a20e-e707-4d61-88f0-be78e56fce7d',
+  '544f2d62-5cf3-403b-aba0-e972bf5230e0',
+  '7b635d60-8dbd-4786-b63e-6dbec5450f17',
+  '804f35a3-875e-4d49-869a-5bdb85989534',
+  '81e96916-d43a-48bd-9830-adb4dc203114'
+]
+Processing quiz: "The Why (Next Steps) Quiz" (e8f9a0b1-c2d3-e4f5-a6b7-c8d9e0f1a2b3) - Expected questions: 5
+2025-05-01T18:51:12.844Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 4,
+  "duration": 1
+}
+  - Deleted 4 existing relationship rows.
+2025-05-01T18:51:12.844Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+2025-05-01T18:51:12.844Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+2025-05-01T18:51:12.845Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 1,
+  "duration": 1
+}
+2025-05-01T18:51:12.845Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+2025-05-01T18:51:12.846Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 1,
+  "duration": 1
+}
+  - Inserted 5 relationship rows.
+2025-05-01T18:51:12.846Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+  - Updated questions JSONB field with 5 entries.
+  DEBUG: Full quizDef object: {
+  "id": "a0b1c2d3-e4f5-a6b7-c8d9-e0f1a2b3c4d5",
+  "slug": "using-stories-quiz",
+  "title": "Using Stories Quiz",
+  "description": "Quiz for Using Stories",
+  "passingScore": 70,
+  "questions": [
+    {
+      "id": "f1448bc2-6467-4389-9ad4-2f047ad8423e",
+      "text": "What chart types should we try and avoid using?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    }
+  ]
+}
+  DEBUG: Extracted definitiveQuestionIds: [ 'f1448bc2-6467-4389-9ad4-2f047ad8423e' ]
+Processing quiz: "Using Stories Quiz" (a0b1c2d3-e4f5-a6b7-c8d9-e0f1a2b3c4d5) - Expected questions: 1
+2025-05-01T18:51:12.846Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 3,
+  "duration": 0
+}
+  - Deleted 3 existing relationship rows.
+2025-05-01T18:51:12.847Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 1,
+  "duration": 1
+}
+  - Inserted 1 relationship rows.
+2025-05-01T18:51:12.847Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+  - Updated questions JSONB field with 1 entries.
+  DEBUG: Full quizDef object: {
+  "id": "f9e8d7c6-b5a4-3210-f9e8-d7c6b5a43210",
+  "slug": "visual-perception-quiz",
+  "title": "Visual Perception and Communication Quiz",
+  "description": "Quiz for Visual Perception and Communication",
+  "passingScore": 70,
+  "questions": [
+    {
+      "id": "2e62e970-c4ac-4d05-b6a7-dad81250e986",
+      "text": "The principle of similarity states that we tend to group things which share visual characteristics such as:",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    },
+    {
+      "id": "74794823-dcb6-4f2d-a964-3e94f5863f5d",
+      "text": "What are the visual attribute triggers of pre-attentive processing?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    },
+    {
+      "id": "fc904a38-82f9-43aa-a0fd-1ae817d2c1dd",
+      "text": "What is visual thinking?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    }
+  ]
+}
+  DEBUG: Extracted definitiveQuestionIds: [
+  '2e62e970-c4ac-4d05-b6a7-dad81250e986',
+  '74794823-dcb6-4f2d-a964-3e94f5863f5d',
+  'fc904a38-82f9-43aa-a0fd-1ae817d2c1dd'
+]
+Processing quiz: "Visual Perception and Communication Quiz" (f9e8d7c6-b5a4-3210-f9e8-d7c6b5a43210) - Expected questions: 3
+2025-05-01T18:51:12.847Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 4,
+  "duration": 0
+}
+  - Deleted 4 existing relationship rows.
+2025-05-01T18:51:12.848Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 1,
+  "duration": 1
+}
+2025-05-01T18:51:12.848Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+2025-05-01T18:51:12.849Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 1,
+  "duration": 1
+}
+  - Inserted 3 relationship rows.
+2025-05-01T18:51:12.849Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+  - Updated questions JSONB field with 3 entries.
+  DEBUG: Full quizDef object: {
+  "id": "c1d2e3f4-a5b6-7c8d-9e0f-1a2b3c4d5e6f",
+  "slug": "structure-quiz",
+  "title": "What is Structure? Quiz",
+  "description": "Quiz for What is Structure?",
+  "passingScore": 70,
+  "questions": [
+    {
+      "id": "0a7fcdf6-2c26-4272-801a-d037946fac20",
+      "text": "What is the rule of 7 (updated)?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    },
+    {
+      "id": "0c09da5c-fff3-41f1-9505-da246426eb4e",
+      "text": "Pick the question that corresponds with the 'Personality' quadrant",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    },
+    {
+      "id": "0c13fb7a-23dc-46f4-8755-7658939b1695",
+      "text": "What chart type best communicates the 'Geospatial' relationship?",
+      "options": [
+        "Option 1 (correct)",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ],
+      "correctOptionIndex": 0,
+      "explanation": "{\"root\":{\"type\":\"root\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"type\":\"paragraph\",\"format\":\"\",\"indent\":0,\"version\":1,\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Content placeholder\",\"type\":\"text\",\"version\":1}]}],\"direction\":\"ltr\"},\"format\":\"\",\"version\":1,\"syncedChunksData\":{},\"chunks\":[],\"downloadedDataVersions\":[],\"config\":{\"theme\":{\"text\":{\"bold\":\"lexical-bold\",\"code\":\"lexical-code\",\"italic\":\"lexical-italic\",\"strikethrough\":\"lexical-strikethrough\",\"subscript\":\"lexical-subscript\",\"superscript\":\"lexical-superscript\",\"underline\":\"lexical-underline\",\"underlineStrikethrough\":\"lexical-underlineStrikethrough\"}},\"namespace\":\"lexical\"}}"
+    }
+  ]
+}
+  DEBUG: Extracted definitiveQuestionIds: [
+  '0a7fcdf6-2c26-4272-801a-d037946fac20',
+  '0c09da5c-fff3-41f1-9505-da246426eb4e',
+  '0c13fb7a-23dc-46f4-8755-7658939b1695'
+]
+Processing quiz: "What is Structure? Quiz" (c1d2e3f4-a5b6-7c8d-9e0f-1a2b3c4d5e6f) - Expected questions: 3
+2025-05-01T18:51:12.850Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 6,
+  "duration": 1
+}
+  - Deleted 6 existing relationship rows.
+2025-05-01T18:51:12.850Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+2025-05-01T18:51:12.851Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 1,
+  "duration": 1
+}
+2025-05-01T18:51:12.851Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+  - Inserted 3 relationship rows.
+2025-05-01T18:51:12.851Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+  - Updated questions JSONB field with 3 entries.
+2025-05-01T18:51:12.854Z [db:client] INFO: Query executed in 3ms
+{
+  "rows": null,
+  "duration": 3
+}
+
+Transaction committed successfully.
+? Successfully processed 20 quizzes.
+? Total relationship rows written: 67.
+
+=== Quiz JSONB Synchronization Fix Completed ===
+
+2025-05-01T18:51:12.854Z [db:client] INFO: Database connection pool closed
+Database connection closed.
+Script finished with success status: true
+
+2025-05-01 14:51:12: --- End Output from fix:quiz-jsonb-sync ---
+2025-05-01 14:51:12: Running minimal DB test script...
+2025-05-01 14:51:12: EXECUTING: pnpm --filter @kit/content-migrations run verify:minimal-db-test
+2025-05-01 14:51:12: DESCRIPTION: Running minimal DB test script
+2025-05-01 14:51:13: Running comprehensive quiz relationship verification...
+2025-05-01 14:51:13: EXECUTING: pnpm run verify:comprehensive-quiz-relationships
+2025-05-01 14:51:13: DESCRIPTION: Comprehensive quiz relationship verification
+--- Command Output Start ---
+
+> @kit/content-migrations@0.1.0 verify:comprehensive-quiz-relationships D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/scripts/verification/comprehensive-quiz-relationship-verification.ts
+
+--- SCRIPT FILE LOADED ---
+Loading environment variables from .env.development
+--- IMPORTS COMPLETED ---
+Starting comprehensive quiz relationship verification...
+2025-05-01T18:51:13.906Z [db:client] INFO: getClient called.
+2025-05-01T18:51:13.907Z [db:client] INFO: Pool does not exist, attempting to initialize...
+2025-05-01T18:51:13.907Z [db:client] INFO: Dynamically importing pg module...
+2025-05-01T18:51:13.937Z [db:client] INFO: pg module imported successfully.
+2025-05-01T18:51:13.937Z [db:client] INFO: pg.Pool constructor obtained.
+2025-05-01T18:51:13.937Z [db:client] INFO: Using connection string: postgresql://postgres:postgres@localhost:54322/postgres?schema=payload
+2025-05-01T18:51:13.937Z [db:client] INFO: Initializing new Pool...
+2025-05-01T18:51:13.938Z [db:client] INFO: Pool instance created.
+2025-05-01T18:51:13.938Z [db:client] INFO: Database connection pool initialization complete.
+2025-05-01T18:51:13.938Z [db:client] INFO: Pool error handler attached.
+2025-05-01T18:51:13.938Z [db:client] INFO: Creating client object wrapper...
+2025-05-01T18:51:13.938Z [db:client] INFO: Returning client object wrapper.
+2025-05-01T18:51:13.954Z [db:client] INFO: Query executed in 16ms
+{
+  "rows": 20,
+  "duration": 16
+}
+Found 20 quizzes to verify
+2025-05-01T18:51:13.955Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 1,
+  "duration": 1
+}
+2025-05-01T18:51:13.956Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 3,
+  "duration": 1
+}
+2025-05-01T18:51:13.956Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 3,
+  "duration": 0
+}
+2025-05-01T18:51:13.957Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 2,
+  "duration": 1
+}
+2025-05-01T18:51:13.957Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 4,
+  "duration": 0
+}
+2025-05-01T18:51:13.958Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 4,
+  "duration": 1
+}
+2025-05-01T18:51:13.958Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 5,
+  "duration": 0
+}
+2025-05-01T18:51:13.959Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 2,
+  "duration": 1
+}
+2025-05-01T18:51:13.960Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 5,
+  "duration": 1
+}
+2025-05-01T18:51:13.960Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 5,
+  "duration": 0
+}
+2025-05-01T18:51:13.961Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 3,
+  "duration": 1
+}
+2025-05-01T18:51:13.961Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 3,
+  "duration": 0
+}
+2025-05-01T18:51:13.961Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 2,
+  "duration": 0
+}
+2025-05-01T18:51:13.962Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 5,
+  "duration": 1
+}
+2025-05-01T18:51:13.962Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 1,
+  "duration": 0
+}
+2025-05-01T18:51:13.963Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 3,
+  "duration": 1
+}
+2025-05-01T18:51:13.963Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 4,
+  "duration": 0
+}
+2025-05-01T18:51:13.964Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 4,
+  "duration": 1
+}
+2025-05-01T18:51:13.964Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 3,
+  "duration": 0
+}
+2025-05-01T18:51:13.965Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 5,
+  "duration": 1
+}
+
+=== Quiz Relationship Verification Results ===
+
+? All 20 quizzes have fully consistent relationships!
+
+=== End of Verification Results ===
+
+2025-05-01T18:51:13.965Z [db:client] INFO: Database connection pool closed
+
+--- Command Output End ---
+2025-05-01 14:51:13: âœ… Comprehensive quiz relationship verification passed successfully
+2025-05-01 14:51:13: Verifying questions JSONB format...
+2025-05-01 14:51:14: EXECUTING: pnpm run verify:questions-jsonb-format
+2025-05-01 14:51:14: DESCRIPTION: Verifying questions JSONB format
+--- Command Output Start ---
+
+> @kit/content-migrations@0.1.0 verify:questions-jsonb-format D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/scripts/verification/verify-questions-jsonb-format.ts
+
+Loaded environment variables from .env.development
+Attempting to connect to database: postgresql://postgres:postgres@localhost:54322/postgres?schema=payload
+Database pool created successfully.
+?? Verifying quiz questions JSONB format
+Query format: {"decoder":{},"shouldInlineParams":false,"queryChunks":[{"value":["\n      SELECT \n        id::text
+Executing SQL: 
+      SELECT 
+        id::text, 
+        title, 
+        questions::text
+      FROM 
+        payload.course_quizzes
+      WHERE 
+        questions IS NOT NULL
+    
+Query format: {"decoder":{},"shouldInlineParams":false,"queryChunks":[{"value":["\n      SELECT \n        _parent_
+Executing SQL: 
+      SELECT 
+        _parent_id::text as quiz_id, 
+        COUNT(quiz_questions_id) as rel_count
+      FROM 
+        payload.course_quizzes_rels
+      WHERE 
+        field = 'questions'
+      GROUP BY 
+        _parent_id
+    
+?? Analyzing first question format: {"id":"97b82c6d-f033-4d13-81fe-339be8bb49db","value":{"id":"e3efc846-c4dc-418c-8452-98644c1e8b57"},"relationTo":"quiz_questions"}
+?? Correctly formatted quiz example - "Idea Generation Quiz": {"id":"97b82c6d-f033-4d13-81fe-339be8bb49db","value":{"id":"e3efc846-c4dc-418c-8452-98644c1e8b57"},"relationTo":"quiz_questions"}
+?? Analyzing first question format: {"id":"a1a109e0-06e0-4893-a339-8e342c70669a","value":{"id":"0a7fcdf6-2c26-4272-801a-d037946fac20"},"relationTo":"quiz_questions"}
+?? Analyzing first question format: {"id":"8d54db89-6884-4e28-b843-02873a329a44","value":{"id":"0a7fcdf6-2c26-4272-801a-d037946fac20"},"relationTo":"quiz_questions"}
+?? Analyzing first question format: {"id":"0dbfbf50-18ea-4655-8ff0-ea60ab0cd510","value":{"id":"eaa3bbc0-261c-4dc2-9048-f4e533079018"},"relationTo":"quiz_questions"}
+?? Analyzing first question format: {"id":"5f3029b3-2fc2-46ae-85d7-0cd2d9008b6a","value":{"id":"513ceeab-b02c-4072-92cb-60c31058691b"},"relationTo":"quiz_questions"}
+?? Analyzing first question format: {"id":"ec04c07f-5404-4d51-b3d4-ee978c70d1a5","value":{"id":"513ceeab-b02c-4072-92cb-60c31058691b"},"relationTo":"quiz_questions"}
+?? Analyzing first question format: {"id":"ff96aab2-8353-4730-b047-1fa527afbaca","value":{"id":"17075e05-b7b6-4978-8025-147842f6337d"},"relationTo":"quiz_questions"}
+?? Analyzing first question format: {"id":"ef1b051a-e2ea-4c6e-8c5d-ed8bea1d9408","value":{"id":"1044fc96-82b5-4fab-8796-6836bd26d926"},"relationTo":"quiz_questions"}
+?? Analyzing first question format: {"id":"f1dcf461-5353-48a3-957b-1f565b5cfd1e","value":{"id":"2bf3a20e-e707-4d61-88f0-be78e56fce7d"},"relationTo":"quiz_questions"}
+?? Analyzing first question format: {"id":"6410d8bc-2284-405b-82b6-0fb7f8356c21","value":{"id":"2bf3a20e-e707-4d61-88f0-be78e56fce7d"},"relationTo":"quiz_questions"}
+?? Analyzing first question format: {"id":"063586a8-d755-4607-829a-b43776a0ec12","value":{"id":"2e62e970-c4ac-4d05-b6a7-dad81250e986"},"relationTo":"quiz_questions"}
+?? Analyzing first question format: {"id":"b0ec9afd-95ca-4eca-b864-a64c82ec4301","value":{"id":"0a7fcdf6-2c26-4272-801a-d037946fac20"},"relationTo":"quiz_questions"}
+?? Analyzing first question format: {"id":"e000591a-e545-43d2-9875-ce7488f84a69","value":{"id":"1044fc96-82b5-4fab-8796-6836bd26d926"},"relationTo":"quiz_questions"}
+?? Analyzing first question format: {"id":"85309a5f-1bfa-4df8-b216-4f242959fa65","value":{"id":"262b193c-b494-4aaa-868a-1b52cdd98c34"},"relationTo":"quiz_questions"}
+?? Analyzing first question format: {"id":"3d43ada8-2bea-44cc-b8bf-29d02c55d72b","value":{"id":"f1448bc2-6467-4389-9ad4-2f047ad8423e"},"relationTo":"quiz_questions"}
+?? Analyzing first question format: {"id":"54399a41-3f39-42dd-b1d8-46d452ffdebf","value":{"id":"2e62e970-c4ac-4d05-b6a7-dad81250e986"},"relationTo":"quiz_questions"}
+?? Analyzing first question format: {"id":"e99cf470-8155-4c1e-ae2a-92534a7b262e","value":{"id":"63d41ee5-0cc8-41d9-9d9f-a7cfa4ec8695"},"relationTo":"quiz_questions"}
+?? Analyzing first question format: {"id":"52d66fb6-4a93-459d-8419-8e4190577807","value":{"id":"63d41ee5-0cc8-41d9-9d9f-a7cfa4ec8695"},"relationTo":"quiz_questions"}
+?? Analyzing first question format: {"id":"48834c4b-45f1-461e-86af-28705dbede22","value":{"id":"0a7fcdf6-2c26-4272-801a-d037946fac20"},"relationTo":"quiz_questions"}
+?? Analyzing first question format: {"id":"2f7bd897-43bc-487e-8e09-2a0cb0361173","value":{"id":"2f7a2198-6da3-41f9-a394-c002c9218834"},"relationTo":"quiz_questions"}
+Query format: {"decoder":{},"shouldInlineParams":false,"queryChunks":[{"value":["\n      SELECT id::text, title, q
+Executing SQL: 
+      SELECT id::text, title, questions::text 
+      FROM payload.course_quizzes 
+      WHERE title LIKE '%Performance%'
+    
+?? Found Performance Quiz: Performance Quiz (1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d)
+Query format: {"decoder":{},"shouldInlineParams":false,"queryChunks":[{"value":["\n          SELECT COUNT(*) as co
+Executing SQL: 
+          SELECT COUNT(*) as count 
+          FROM payload.course_quizzes_rels 
+          WHERE _parent_id::text = '1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d' AND field = 'questions'
+        
+?? Performance Quiz detailed analysis:
+          - Questions array length: 3
+          - Relationship count: 3
+          - First question format: {"id":"48834c4b-45f1-461e-86af-28705dbede22","value":{"id":"0a7fcdf6-2c26-4272-801a-d037946fac20"},"relationTo":"quiz_questions"}
+        
+Query format: {"decoder":{},"shouldInlineParams":false,"queryChunks":[{"value":["\n          SELECT quiz_questions
+Executing SQL: 
+          SELECT quiz_questions_id 
+          FROM payload.course_quizzes_rels 
+          WHERE _parent_id::text = '1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d' 
+          AND field = 'questions'
+        
+?? Questions from relationship table: ["0a7fcdf6-2c26-4272-801a-d037946fac20","0c09da5c-fff3-41f1-9505-da246426eb4e","0c13fb7a-23dc-46f4-8755-7658939b1695"]...
+Query format: {"decoder":{},"shouldInlineParams":false,"queryChunks":[{"value":["\n      SELECT id::text, title, q
+Executing SQL: 
+      SELECT id::text, title, questions::text 
+      FROM payload.course_quizzes 
+      WHERE id::text = 'd5e6f7a8-b9c0-d1e2-f3a4-b5c6d7e8f9a0'::text 
+      OR title LIKE '%Who%'
+    
+?? Found "The Who" Quiz: The Who Quiz (d5e6f7a8-b9c0-d1e2-f3a4-b5c6d7e8f9a0)
+Query format: {"decoder":{},"shouldInlineParams":false,"queryChunks":[{"value":["\n        SELECT COUNT(*) as coun
+Executing SQL: 
+        SELECT COUNT(*) as count 
+        FROM payload.course_quizzes_rels 
+        WHERE _parent_id::text = 'd5e6f7a8-b9c0-d1e2-f3a4-b5c6d7e8f9a0' 
+        AND field = 'questions'
+      
+?? "The Who" Quiz has 5 questions in relationship table
+? All 20 quizzes have properly formatted questions arrays
+
+--- Command Output End ---
+2025-05-01 14:51:14: âœ… All quiz questions are properly formatted for Payload UI
+2025-05-01 14:51:14: Verifying unidirectional quiz-question relationships...
+2025-05-01 14:51:14: EXECUTING: pnpm run verify:unidirectional-quiz-questions
+2025-05-01 14:51:14: DESCRIPTION: Verifying unidirectional quiz-question relationships
+2025-05-01 14:51:15: Fixing survey questions population...
+2025-05-01 14:51:15: EXECUTING: pnpm run fix:survey-questions-population
+2025-05-01 14:51:15: DESCRIPTION: Fixing survey questions population
+2025-05-01 14:51:16: Ensuring todo column exists in course_lessons table...
+2025-05-01 14:51:16: EXECUTING: pnpm run sql:ensure-todo-column
+2025-05-01 14:51:16: DESCRIPTION: Ensuring todo column exists
+2025-05-01 14:51:16: Fixing todo fields in course_lessons table...
+2025-05-01 14:51:16: EXECUTING: pnpm run fix:todo-fields
+2025-05-01 14:51:16: DESCRIPTION: Fixing todo fields
+2025-05-01 14:51:17: Fixing Lexical format in todo fields...
+2025-05-01 14:51:17: EXECUTING: pnpm run fix:lexical-format
+2025-05-01 14:51:17: DESCRIPTION: Fixing Lexical format
+2025-05-01 14:51:18: Fixing Lexical format in posts and private posts...
+2025-05-01 14:51:18: EXECUTING: pnpm run fix:post-lexical-format
+2025-05-01 14:51:18: DESCRIPTION: Fixing Post Lexical format
+2025-05-01 14:51:19: Fixing all Lexical fields across all collections...
+2025-05-01 14:51:19: EXECUTING: pnpm run fix:all-lexical-fields
+2025-05-01 14:51:19: DESCRIPTION: Fixing all Lexical fields
+2025-05-01 14:51:20: Fixing bunny_video_id fields in course_lessons table...
+2025-05-01 14:51:20: EXECUTING: pnpm run fix:bunny-video-ids
+2025-05-01 14:51:20: DESCRIPTION: Fixing bunny video IDs
+2025-05-01 14:51:21: Fixing post image relationships...
+2025-05-01 14:51:21: EXECUTING: pnpm run fix:post-image-relationships
+2025-05-01 14:51:21: DESCRIPTION: Fixing post image relationships
+2025-05-01 14:51:22: Fixing downloads relationships and URLs...
+2025-05-01 14:51:22: EXECUTING: pnpm run fix:downloads-relationships
+2025-05-01 14:51:22: DESCRIPTION: Fixing downloads relationships and URLs
+2025-05-01 14:51:23: Fixing downloads R2 integration...
+2025-05-01 14:51:23: EXECUTING: pnpm run fix:downloads-r2-integration
+2025-05-01 14:51:23: DESCRIPTION: Fixing downloads R2 integration
+2025-05-01 14:51:23: Fixing downloads metadata...
+2025-05-01 14:51:23: EXECUTING: pnpm run fix:downloads-metadata
+2025-05-01 14:51:23: DESCRIPTION: Fixing downloads metadata
+2025-05-01 14:51:24: Fixing download R2 URLs...
+2025-05-01 14:51:24: EXECUTING: pnpm run fix:download-r2-urls
+2025-05-01 14:51:24: DESCRIPTION: Fixing download R2 URLs
+2025-05-01 14:51:24: Fixing download R2 mappings...
+2025-05-01 14:51:24: EXECUTING: pnpm run fix:download-r2-mappings
+2025-05-01 14:51:24: DESCRIPTION: Fixing download R2 mappings
+2025-05-01 14:51:25: Clearing lesson content fields to fix template tag rendering...
+2025-05-01 14:51:25: EXECUTING: pnpm run clear:lesson-content
+2025-05-01 14:51:25: DESCRIPTION: Clearing lesson content fields
+2025-05-01 14:51:26: Running comprehensive relationship repair system...
+2025-05-01 14:51:26: This includes detecting, repairing, and verifying all relationships in the database
+2025-05-01 14:51:26: Starting comprehensive relationship repair phase...
+2025-05-01 14:51:26: Running relationship repair with arguments: 
+2025-05-01 14:51:26: EXECUTING: pnpm --filter @kit/content-migrations run repair:relationships 
+2025-05-01 14:51:26: DESCRIPTION: Running relationship repair
+2025-05-01 14:51:27: Verifying relationship consistency...
+2025-05-01 14:51:27: EXECUTING: pnpm --filter @kit/content-migrations run verify:relationships
+2025-05-01 14:51:27: DESCRIPTION: Verifying relationships
+2025-05-01 14:51:27: âœ… Relationship repair completed successfully!
+2025-05-01 14:51:27: âœ… Standard relationship repair completed successfully!
+2025-05-01 14:51:27: Running final verification (verify:all)...
+2025-05-01 14:51:27: EXECUTING: pnpm run verify:all
+2025-05-01 14:51:27: DESCRIPTION: Final verification
+2025-05-01 14:51:28: âœ… Final verification step completed (output check skipped).
+2025-05-01 14:51:28: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+
+2025-05-01 14:51:28 - ------------------------------------------------------------
+2025-05-01 14:51:28 - STEP 10: Fixing S3 storage issues [STARTED]
+2025-05-01 14:51:28 - ------------------------------------------------------------
+2025-05-01 14:51:28: Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+2025-05-01 14:51:28: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-05-01 14:51:28: Creating fallback files for S3 storage...
+2025-05-01 14:51:28: EXECUTING: pnpm --filter @kit/content-migrations run create:fallback-files
+2025-05-01 14:51:28: DESCRIPTION: Creating fallback files
+2025-05-01 14:51:29: Setting up S3 fallback middleware...
+2025-05-01 14:51:29: EXECUTING: pnpm --filter @kit/content-migrations run setup:s3-fallback-middleware
+2025-05-01 14:51:29: DESCRIPTION: Setting up S3 fallback middleware
+2025-05-01 14:51:29: Fixing S3 references in database...
+2025-05-01 14:51:29: EXECUTING: pnpm --filter @kit/content-migrations run fix:s3-references
+2025-05-01 14:51:29: DESCRIPTION: Fixing S3 references
+2025-05-01 14:51:30: Creating thumbnail placeholders...
+2025-05-01 14:51:30: EXECUTING: pnpm --filter @kit/content-migrations run create:thumbnail-placeholders
+2025-05-01 14:51:30: DESCRIPTION: Creating thumbnail placeholders
+2025-05-01 14:51:31: âœ… S3 storage issues fixed successfully
+2025-05-01 14:51:31: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+
+2025-05-01 14:51:31 - ------------------------------------------------------------
+2025-05-01 14:51:31 - STEP 11: Performing comprehensive database verification [STARTED]
+2025-05-01 14:51:31 - ------------------------------------------------------------
+2025-05-01 14:51:31: Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+2025-05-01 14:51:31: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-05-01 14:51:31: Checking database environment settings...
+2025-05-01 14:51:31: Loading environment variables from .env.development
+2025-05-01 14:51:31: Set DATABASE_URL from DATABASE_URI in .env.development file
+2025-05-01 14:51:31: Set DATABASE_URL from .env.development file
+2025-05-01 14:51:31: âœ… Database environment settings are properly configured
+2025-05-01 14:51:31: Running comprehensive verification with dependency handling...
+2025-05-01 14:51:31: Running verification step 'verify:todo-fields' with automatic dependency handling...
+2025-05-01 14:51:31: Ensuring dependencies for verification step 'verify:todo-fields' are run...
+2025-05-01 14:51:31: Dependency 'sql:ensure-todo-column' already completed (called by: Unknown), skipping
+2025-05-01 14:51:31: Dependency 'fix:todo-fields' already completed (called by: Unknown), skipping
+2025-05-01 14:51:31: Dependency 'fix:lexical-format' already completed (called by: Unknown), skipping
+2025-05-01 14:51:31: EXECUTING: pnpm run verify:todo-fields
+2025-05-01 14:51:31: DESCRIPTION: Verifying todo fields
+2025-05-01 14:51:31: âœ… verify:todo-fields verification passed with automatic dependency handling
+2025-05-01 14:51:31: âœ… Todo fields verification passed with dependency handling
+2025-05-01 14:51:32: Running comprehensive quiz relationship verification...
+2025-05-01 14:51:32: EXECUTING: pnpm run verify:comprehensive-quiz-relationships
+2025-05-01 14:51:32: DESCRIPTION: Comprehensive quiz relationship verification
+--- Command Output Start ---
+
+> @kit/content-migrations@0.1.0 verify:comprehensive-quiz-relationships D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/scripts/verification/comprehensive-quiz-relationship-verification.ts
+
+--- SCRIPT FILE LOADED ---
+Loading environment variables from .env.development
+--- IMPORTS COMPLETED ---
+Starting comprehensive quiz relationship verification...
+2025-05-01T18:51:32.501Z [db:client] INFO: getClient called.
+2025-05-01T18:51:32.502Z [db:client] INFO: Pool does not exist, attempting to initialize...
+2025-05-01T18:51:32.502Z [db:client] INFO: Dynamically importing pg module...
+2025-05-01T18:51:32.534Z [db:client] INFO: pg module imported successfully.
+2025-05-01T18:51:32.534Z [db:client] INFO: pg.Pool constructor obtained.
+2025-05-01T18:51:32.534Z [db:client] INFO: Using connection string: postgresql://postgres:postgres@localhost:54322/postgres?schema=payload
+2025-05-01T18:51:32.534Z [db:client] INFO: Initializing new Pool...
+2025-05-01T18:51:32.534Z [db:client] INFO: Pool instance created.
+2025-05-01T18:51:32.534Z [db:client] INFO: Database connection pool initialization complete.
+2025-05-01T18:51:32.534Z [db:client] INFO: Pool error handler attached.
+2025-05-01T18:51:32.534Z [db:client] INFO: Creating client object wrapper...
+2025-05-01T18:51:32.534Z [db:client] INFO: Returning client object wrapper.
+2025-05-01T18:51:32.552Z [db:client] INFO: Query executed in 18ms
+{
+  "rows": 20,
+  "duration": 18
+}
+Found 20 quizzes to verify
+2025-05-01T18:51:32.553Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 1,
+  "duration": 1
+}
+2025-05-01T18:51:32.554Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 3,
+  "duration": 0
+}
+2025-05-01T18:51:32.555Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 3,
+  "duration": 1
+}
+2025-05-01T18:51:32.555Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 2,
+  "duration": 0
+}
+2025-05-01T18:51:32.556Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 4,
+  "duration": 1
+}
+2025-05-01T18:51:32.556Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 4,
+  "duration": 0
+}
+2025-05-01T18:51:32.557Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 5,
+  "duration": 1
+}
+2025-05-01T18:51:32.557Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 2,
+  "duration": 0
+}
+2025-05-01T18:51:32.558Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 5,
+  "duration": 1
+}
+2025-05-01T18:51:32.558Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 5,
+  "duration": 0
+}
+2025-05-01T18:51:32.559Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 3,
+  "duration": 1
+}
+2025-05-01T18:51:32.559Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 3,
+  "duration": 0
+}
+2025-05-01T18:51:32.560Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 2,
+  "duration": 1
+}
+2025-05-01T18:51:32.560Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 5,
+  "duration": 0
+}
+2025-05-01T18:51:32.561Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 1,
+  "duration": 1
+}
+2025-05-01T18:51:32.561Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 3,
+  "duration": 0
+}
+2025-05-01T18:51:32.561Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 4,
+  "duration": 0
+}
+2025-05-01T18:51:32.562Z [db:client] INFO: Query executed in 1ms
+{
+  "rows": 4,
+  "duration": 1
+}
+2025-05-01T18:51:32.562Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 3,
+  "duration": 0
+}
+2025-05-01T18:51:32.563Z [db:client] INFO: Query executed in 0ms
+{
+  "rows": 5,
+  "duration": 0
+}
+
+=== Quiz Relationship Verification Results ===
+
+? All 20 quizzes have fully consistent relationships!
+
+=== End of Verification Results ===
+
+2025-05-01T18:51:32.564Z [db:client] INFO: Database connection pool closed
+
+--- Command Output End ---
+2025-05-01 14:51:32: âœ… Comprehensive quiz relationship verification passed
+2025-05-01 14:51:32: Verifying database schema...
+2025-05-01 14:51:32: EXECUTING: pnpm run sql:verify-schema
+2025-05-01 14:51:32: DESCRIPTION: Final database verification
+--- Command Output Start ---
+
+> @kit/content-migrations@0.1.0 sql:verify-schema D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/scripts/sql/verify-database-schema.ts
+
+Loaded environment variables from D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations\.env.development
+Connecting to database: postgresql://postgres:postgres@localhost:54322/postgres?schema=payload
+Connected to database
+? Payload schema exists
+? Found 64 tables in payload schema
+? Required table 'courses' exists
+? Required table 'course_lessons' exists
+? Required table 'course_quizzes' exists
+? Required table 'quiz_questions' exists
+? Required table 'surveys' exists
+? Required table 'survey_questions' exists
+? Relationship table 'course_lessons_rels' exists
+? Relationship table 'course_quizzes_rels' exists
+? Relationship table 'quiz_questions_rels' exists
+? Relationship table 'survey_questions_rels' exists
+? Relationship table 'surveys_rels' exists
+
+Database verification completed successfully
+Database verification completed successfully
+
+--- Command Output End ---
+2025-05-01 14:51:33: âœ… Database schema verification passed
+2025-05-01 14:51:33: Verifying relationship consistency using hybrid verification...
+2025-05-01 14:51:33: EXECUTING: pnpm run verify:relationships:hybrid
+2025-05-01 14:51:33: DESCRIPTION: Hybrid relationship verification
+--- Command Output Start ---
+
+> @kit/content-migrations@0.1.0 verify:relationships:hybrid D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+> tsx src/scripts/verification/relationships/hybrid-verification.ts
+
+Loaded environment variables from .env.development
+
+--- Command Output End ---
+2025-05-01 14:51:33: âœ… Hybrid relationship verification passed
+2025-05-01 14:51:33: Running final comprehensive verification...
+2025-05-01 14:51:33: Running verification step 'verify:all' with automatic dependency handling...
+2025-05-01 14:51:33: Ensuring dependencies for verification step 'verify:all' are run...
+2025-05-01 14:51:33: Dependency 'sql:ensure-todo-column' already completed (called by: Unknown), skipping
+2025-05-01 14:51:33: Dependency 'fix:todo-fields' already completed (called by: Unknown), skipping
+2025-05-01 14:51:33: Dependency 'fix:lexical-format' already completed (called by: Unknown), skipping
+2025-05-01 14:51:33: Running dependency: fix:payload-relationships-strict-improved
+2025-05-01 14:51:33: EXECUTING: pnpm run fix:payload-relationships-strict-improved
+2025-05-01 14:51:33: DESCRIPTION: Running dependency: fix:payload-relationships-strict-improved
+2025-05-01 14:51:34: Registered dependency: fix:payload-relationships-strict-improved (called by: Unknown, success: True)
+2025-05-01 14:51:34: âœ… Dependency 'fix:payload-relationships-strict-improved' completed successfully (called by: Unknown)
+2025-05-01 14:51:34: EXECUTING: pnpm run verify:all
+2025-05-01 14:51:34: DESCRIPTION: Final comprehensive verification
+2025-05-01 14:51:35: âœ… verify:all verification passed with automatic dependency handling
+2025-05-01 14:51:35: âœ… Comprehensive verification passed with dependency handling
+2025-05-01 14:51:35: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-05-01 14:51:35: âœ… Database verification completed successfully
+
+2025-05-01 14:51:35 - ------------------------------------------------------------
+2025-05-01 14:51:35 - STEP 12: Creating certificates storage bucket in Supabase [STARTED]
+2025-05-01 14:51:35 - ------------------------------------------------------------
+2025-05-01 14:51:35: Certificates bucket is created during migration with direct SQL INSERT
+2025-05-01 14:51:35: âœ… Database migrations successfully handle certificates bucket creation
+2025-05-01 14:51:35: âœ… Loading phase completed successfully
+2025-05-01 14:51:35 - PHASE LOADING PHASE COMPLETED (42.18s)
+2025-05-01 14:51:35: âœ… LOADING PHASE phase completed successfully (42.18s)
+
+2025-05-01 14:51:35 - ================================================================================
+2025-05-01 14:51:35 - PHASE 4/4: POST-VERIFICATION PHASE
+2025-05-01 14:51:35 - ================================================================================
+
+2025-05-01 14:51:35 - ------------------------------------------------------------
+2025-05-01 14:51:35 - STEP 12: Verifying posts content integrity [STARTED]
+2025-05-01 14:51:35 - ------------------------------------------------------------
+2025-05-01 14:51:35: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-05-01 14:51:35: Running post content verification with dependency handling...
+2025-05-01 14:51:35: Running verification step 'verify:post-content' with automatic dependency handling...
+2025-05-01 14:51:35: Ensuring dependencies for verification step 'verify:post-content' are run...
+2025-05-01 14:51:35: Running dependency: fix:post-lexical-format
+2025-05-01 14:51:35: EXECUTING: pnpm run fix:post-lexical-format
+2025-05-01 14:51:35: DESCRIPTION: Running dependency: fix:post-lexical-format
+2025-05-01 14:51:36: Registered dependency: fix:post-lexical-format (called by: Unknown, success: True)
+2025-05-01 14:51:36: âœ… Dependency 'fix:post-lexical-format' completed successfully (called by: Unknown)
+2025-05-01 14:51:36: Running dependency: fix:all-lexical-fields
+2025-05-01 14:51:36: EXECUTING: pnpm run fix:all-lexical-fields
+2025-05-01 14:51:36: DESCRIPTION: Running dependency: fix:all-lexical-fields
+2025-05-01 14:51:37: Registered dependency: fix:all-lexical-fields (called by: Unknown, success: True)
+2025-05-01 14:51:37: âœ… Dependency 'fix:all-lexical-fields' completed successfully (called by: Unknown)
+2025-05-01 14:51:37: Running dependency: fix:post-image-relationships
+2025-05-01 14:51:37: EXECUTING: pnpm run fix:post-image-relationships
+2025-05-01 14:51:37: DESCRIPTION: Running dependency: fix:post-image-relationships
+2025-05-01 14:51:37: Registered dependency: fix:post-image-relationships (called by: Unknown, success: True)
+2025-05-01 14:51:37: âœ… Dependency 'fix:post-image-relationships' completed successfully (called by: Unknown)
+2025-05-01 14:51:37: EXECUTING: pnpm run verify:post-content
+2025-05-01 14:51:37: DESCRIPTION: Verifying posts content with dependencies
+2025-05-01 14:51:38: âœ… verify:post-content verification passed with automatic dependency handling
+2025-05-01 14:51:38: âœ… Post content verification passed with automatic dependency handling
+2025-05-01 14:51:38: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-05-01 14:51:38 - STEP 12: Verifying posts content integrity [COMPLETED] (3.13s)
+2025-05-01 14:51:38 - Step duration: 3.14 seconds
+2025-05-01 14:51:38: âœ… Step 12 completed successfully (3.13s)
+2025-05-01 14:51:38 - PHASE POST-VERIFICATION PHASE COMPLETED (3.16s)
+2025-05-01 14:51:38: âœ… POST-VERIFICATION PHASE phase completed successfully (3.16s)
+2025-05-01 14:51:38: Performance timing finalized. Total duration: 2.63 minutes
+2025-05-01 14:51:38: WARNING: Migration process completed with warnings or errors. Please check the logs for details.
+
+2025-05-01 14:51:38 - PERFORMANCE REPORT
+2025-05-01 14:51:38 - Total Execution Time: 2.63 minutes (157.97 seconds)
+2025-05-01 14:51:38 - Phase Timings:
+2025-05-01 14:51:38 -   SETUP PHASE - 79.65 seconds (50.4% of total)
+2025-05-01 14:51:38 -   PROCESSING PHASE - 32.84 seconds (20.8% of total)
+2025-05-01 14:51:38 -   LOADING PHASE - 42.18 seconds (26.7% of total)
+2025-05-01 14:51:38 -   POST-VERIFICATION PHASE - 3.16 seconds (2% of total)
+2025-05-01 14:51:38 - Step Timings (Top 10 longest steps):
+2025-05-01 14:51:38 -   6-Fixing references to ensure consistency - 24.15 seconds (15.3% of total)
+2025-05-01 14:51:38 -   4-Checking and processing raw data - 6.84 seconds (4.3% of total)
+2025-05-01 14:51:38 -   12-Verifying posts content integrity - 3.14 seconds (2% of total)
+2025-05-01 14:51:38 -   5-Generating SQL seed files and fixing quiz ID consistency - 1.79 seconds (1.1% of total)
+2025-05-01 14:51:38: Migration Status:
+2025-05-01 14:51:38: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-05-01 14:51:39: Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+2025-05-01 14:51:39: Error Summary:
+2025-05-01 14:51:39: Migration process completed with warnings or errors. Please check the logs for details.
+2025-05-01 14:51:39: Migration logs saved to:
+2025-05-01 14:51:39:   - Transcript log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-log-20250501-144900-316.txt
+2025-05-01 14:51:39:   - Detailed log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250501-144900-316.txt

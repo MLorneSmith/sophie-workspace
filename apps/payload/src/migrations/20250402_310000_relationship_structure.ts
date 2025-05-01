@@ -35,6 +35,8 @@ export async function up({ db, payload }: MigrateUpArgs): Promise<void> {
     await db.execute(sql`
       CREATE INDEX IF NOT EXISTS "course_lessons_rels_updated_at_idx" ON "payload"."course_lessons_rels" USING btree ("updated_at");
       CREATE INDEX IF NOT EXISTS "course_lessons_rels_created_at_idx" ON "payload"."course_lessons_rels" USING btree ("created_at");
+      -- Add unique constraint to prevent duplicate relationships
+      ALTER TABLE "payload"."course_lessons_rels" ADD CONSTRAINT "course_lessons_rels_parent_field_value_unique" UNIQUE ("_parent_id", "field", "value");
     `)
 
     // Ensure survey_questions_rels table exists with proper structure

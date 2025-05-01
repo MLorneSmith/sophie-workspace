@@ -1,0 +1,116 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20250501141359
+Username: SLIDEHEROES_DEN\msmit
+RunAs User: SLIDEHEROES_DEN\msmit
+Configuration Name: 
+Machine: SLIDEHEROES_DEN (Microsoft Windows NT 10.0.26100.0)
+Host Application: C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command Import-Module 'c:\Users\msmit\.vscode\extensions\ms-vscode.powershell-2025.0.0\modules\PowerShellEditorServices\PowerShellEditorServices.psd1'; Start-EditorServices -HostName 'Visual Studio Code Host' -HostProfileId 'Microsoft.VSCode' -HostVersion '2025.0.0' -BundledModulesPath 'c:\Users\msmit\.vscode\extensions\ms-vscode.powershell-2025.0.0\modules' -EnableConsoleRepl -StartupBanner "PowerShell Extension v2025.0.0
+Copyright (c) Microsoft Corporation.
+
+https://aka.ms/vscode-powershell
+Type 'help' to get help.
+" -LogLevel 'Warning' -LogPath 'c:\Users\msmit\AppData\Roaming\Code\logs\20250501T122958\window1\exthost\ms-vscode.powershell' -SessionDetailsPath 'c:\Users\msmit\AppData\Roaming\Code\User\globalStorage\ms-vscode.powershell\sessions\PSES-VSCode-20844-595339.json' -FeatureFlags @() 
+Process ID: 30176
+PSVersion: 5.1.26100.3912
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.3912
+BuildVersion: 10.0.26100.3912
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcript started, output file is D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-log-20250501-141359-912.txt
+Starting migration process at 05/01/2025 14:13:59
+Detailed logs will be saved to: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250501-141359-912.txt
+
+Name                           Value
+----                           -----
+Timestamp                      20250501-141359-912
+LogsDirectory                  D:\SlideHeroes\App\repos\2025slideheroes\...
+DetailedLogFile                D:\SlideHeroes\App\repos\2025slideheroes\...
+LogFile                        D:\SlideHeroes\App\repos\2025slideheroes\...
+Performance timing initialized
+Checking PNPM configuration...
+True
+Project root: D:\SlideHeroes\App\repos\2025slideheroes
+PNPM configuration in root directory is already up to date
+Yarn configuration in root directory is already up to date
+True
+
+================================================================================
+PHASE 1/4: SETUP PHASE
+================================================================================
+
+================================================================================
+SETUP PHASE
+================================================================================
+
+------------------------------------------------------------
+STEP 1: Resetting Supabase database and running Web app migrations
+------------------------------------------------------------
+Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\apps\web
+Skipping Supabase restart (already done)
+Running supabase:reset...
+EXECUTING: pnpm run supabase:reset
+DESCRIPTION: Resetting Supabase database
+
+Running supabase migrations...
+EXECUTING: supabase migration up
+DESCRIPTION: Running Supabase migrations
+
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes
+EXECUTING: pnpm --filter @kit/content-migrations run verify:schema public
+DESCRIPTION: Verifying schema 'public' exists
+Schema 'public' exists
+âœ… Web app migrations completed successfully
+True
+
+------------------------------------------------------------
+STEP 2: Resetting Payload schema
+------------------------------------------------------------
+Dropping and recreating payload schema...
+Temporarily changed to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+EXECUTING: pnpm run utils:run-sql-file "C:\Users\msmit\AppData\Local\Temp\reset_payload_schema.sql"
+DESCRIPTION: Resetting Payload schema
+
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes
+âœ… Payload schema reset successfully
+True
+
++
+------------------------------------------------------------------------------
++
+|
+ [3/12] Running Payload migrations
+
+|
++
+------------------------------------------------------------------------------
++
+Migration Progress: [============                                      ] 25% (3/12)
+NOTE:
+The 'No email adapter provided' warning is expected in development environment and can be safely ignored
+Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\apps\payload
+Checking migration status...
+EXECUTING: pnpm migrate:status
+DESCRIPTION: Checking migration status
+Running all migrations...
+EXECUTING: pnpm payload migrate
+DESCRIPTION: Running Payload migrations
+
+ERROR: Command failed with exit code: 1
+ERROR: Error in step 'Running Payload migrations': Command failed with exit code: 1
+PS>TerminatingError(): "Command failed with exit code: 1"
+ERROR: Failed to run Payload migrations: Command failed with exit code: 1
+PS>TerminatingError(): "Payload migration failed: Command failed with exit code: 1"
+>> TerminatingError(): "Payload migration failed: Command failed with exit code: 1"
+ERROR: CRITICAL ERROR: Migration process failed: Payload migration failed: Command failed with exit code: 1
+Please check the log files for details:
+  - Transcript log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-log-20250501-141359-912.txt
+  - Detailed log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250501-141359-912.txt
+**********************
+Windows PowerShell transcript end
+End time: 20250501141441
+**********************
