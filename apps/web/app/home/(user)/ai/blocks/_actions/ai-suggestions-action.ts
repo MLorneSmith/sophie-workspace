@@ -188,13 +188,17 @@ export const getSuggestions = enhanceAction(
       });
 
       // Parse numbered list response and remove quotes
-      const suggestions = response
+      // Access the text content from the response before splitting
+      const suggestions = (response.content as string) // Access text content
         .split('\n')
-        .map((line) =>
-          line
-            .replace(/^\d+\.\s*/, '') // Remove numbered list format
-            .replace(/^["']|["']$/g, '') // Remove leading/trailing quotes
-            .trim(),
+        .map(
+          (
+            line: string, // Explicitly type line
+          ) =>
+            line
+              .replace(/^\d+\.\s*/, '') // Remove numbered list format
+              .replace(/^["']|["']$/g, '') // Remove leading/trailing quotes
+              .trim(),
         )
         .filter(Boolean);
 

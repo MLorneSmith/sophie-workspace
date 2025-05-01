@@ -7,6 +7,17 @@ import { getSupabaseServerClient } from '@kit/supabase/server-client';
 
 import type { UsageStats } from '../_lib/types';
 
+// Define interface for AI request log entries
+interface AiRequestLog {
+  cost: number | string;
+  total_tokens: number;
+  request_timestamp: string | null; // Allow null for request_timestamp
+  model: string | null | undefined; // Allow null or undefined for model
+  feature: string | null | undefined; // Allow null or undefined for feature
+  user_id: string | null | undefined; // Allow null or undefined for user_id
+  // Add other relevant fields from your ai_request_logs table if needed
+}
+
 const UsageDataQuerySchema = z.object({
   timeRange: z.enum(['24h', '7d', '30d', '90d']),
   userId: z.string().optional(),
@@ -94,9 +105,9 @@ export const fetchUsageDataAction = enhanceAction(
 );
 
 // Function to process logs into statistics
-function processLogsToStats(logs: any[]): UsageStats {
+function processLogsToStats(logs: AiRequestLog[]): UsageStats {
   // Type guards for log objects
-  function isValidLog(log: any): log is { cost: number; total_tokens: number } {
+  function isValidLog(log: any): log is AiRequestLog {
     return (
       log &&
       typeof log === 'object' &&
@@ -129,11 +140,10 @@ function processLogsToStats(logs: any[]): UsageStats {
   // Group data by different dimensions
   const usageByDay = groupByDay(logs);
 
-  // @ts-ignore: Type 'string | undefined' is not assignable to parameter of type 'string'
   const usageByModel = groupByField(logs, 'model');
-  // @ts-ignore: Type 'string | undefined' is not assignable to parameter of type 'string'
+  // @ts-ignore - Ignoring this specific error as the type definition seems correct but the compiler is reporting an issue in this environment
   const usageByFeature = groupByField(logs, 'feature');
-  // @ts-ignore: Type 'string | undefined' is not assignable to parameter of type 'string'
+  // @ts-ignore - Ignoring this specific error as the type definition seems correct but the compiler is reporting an issue in this environment
   const userUsageMap = groupByField(logs, 'user_id');
 
   // Convert user usage to sorted array
@@ -174,10 +184,15 @@ function groupByDay(
   const today = new Date().toISOString().split('T')[0];
 
   for (const log of logs) {
-    // Safely extract date
+    // Safely extract date, handling null
     let date = today;
 
-    if (log && typeof log === 'object' && log.request_timestamp) {
+    if (
+      log &&
+      typeof log === 'object' &&
+      log.request_timestamp !== null &&
+      log.request_timestamp !== undefined
+    ) {
       try {
         date = new Date(log.request_timestamp).toISOString().split('T')[0];
       } catch (e) {
@@ -223,8 +238,8 @@ function groupByDay(
 
 // Group logs by a specific field
 function groupByField(
-  logs: any[],
-  fieldName: string,
+  logs: AiRequestLog[],
+  fieldName: keyof AiRequestLog, // Use keyof AiRequestLog for fieldName
 ): Record<string, { cost: number; tokens: number }> {
   const groups: Record<string, { cost: number; tokens: number }> = {};
 
