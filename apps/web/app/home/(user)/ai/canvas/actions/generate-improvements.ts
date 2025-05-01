@@ -110,7 +110,7 @@ ${improvementFormat}`,
       });
 
       // Parse the response using our utility
-      const improvements = parseImprovements(response, data.type);
+      const improvements = parseImprovements(response.content, data.type);
 
       // Debug log the parsed improvements
       console.log('Parsed Improvements:', improvements);

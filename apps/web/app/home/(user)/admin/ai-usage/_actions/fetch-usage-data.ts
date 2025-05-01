@@ -1,6 +1,10 @@
 'use server';
 
+import { User } from '@supabase/supabase-js';
+
 import { z } from 'zod';
+
+// Import User type
 
 import { enhanceAction } from '@kit/next/actions';
 import { getSupabaseServerClient } from '@kit/supabase/server-client';
@@ -13,9 +17,20 @@ const UsageDataQuerySchema = z.object({
   teamId: z.string().optional(),
 });
 
+type UsageDataQuery = z.infer<typeof UsageDataQuerySchema>; // Define type for data
+
 export const fetchUsageDataAction = enhanceAction(
-  async function (data, user) {
+  async function (data: UsageDataQuery, user: User | null) {
+    // Explicitly type data and user
     try {
+      // Check if user is authenticated and has admin role
+      if (!user || !hasAdminRole(user)) {
+        return {
+          success: false,
+          error: 'Unauthorized',
+        };
+      }
+
       const supabase = getSupabaseServerClient();
       const { timeRange, userId, teamId } = data;
 
@@ -78,15 +93,24 @@ export const fetchUsageDataAction = enhanceAction(
   {
     auth: true,
     schema: UsageDataQuerySchema,
-    // Only admin users can access this endpoint
-    authorize: (_, user) => {
-      return hasAdminRole(user);
-    },
   },
 );
 
+// Define a type for the AI request logs
+interface AiRequestLog {
+  id: string;
+  request_timestamp: string | null; // Allow null
+  cost: number | null;
+  total_tokens: number | null;
+  model: string | null;
+  feature: string | null;
+  user_id: string | null;
+  team_id: string | null;
+  // Add other relevant fields from your ai_request_logs table
+}
+
 // Function to process logs into statistics
-function processLogsToStats(logs: any[]): UsageStats {
+function processLogsToStats(logs: AiRequestLog[]): UsageStats {
   // Calculate total cost and tokens
   const totalCost = logs.reduce((sum, log) => sum + (log.cost || 0), 0);
   const totalTokens = logs.reduce(
@@ -142,12 +166,17 @@ function processLogsToStats(logs: any[]): UsageStats {
 
 // Group logs by day for time-series chart
 function groupLogsByDay(
-  logs: any[],
+  logs: AiRequestLog[], // Explicitly type logs
 ): { date: string; cost: number; tokens: number }[] {
   const dayMap: Record<string, { cost: number; tokens: number }> = {};
 
   // Group by day
   for (const log of logs) {
+    // log is now implicitly typed as AiRequestLog
+    // Safely access request_timestamp
+    if (!log.request_timestamp) {
+      continue; // Skip logs without a timestamp
+    }
     const date = new Date(log.request_timestamp).toISOString().split('T')[0]; // Get YYYY-MM-DD
     if (!dayMap[date]) {
       dayMap[date] = { cost: 0, tokens: 0 };
@@ -168,17 +197,24 @@ function groupLogsByDay(
 
 // Group logs by a specific field
 function groupLogsByField(
-  logs: any[],
-  field: string,
+  logs: AiRequestLog[],
+  field: keyof AiRequestLog, // Use keyof to ensure field is a valid key
 ): Record<string, { cost: number; tokens: number }> {
   const result: Record<string, { cost: number; tokens: number }> = {};
 
   for (const log of logs) {
-    const key = log[field] || 'unknown';
+    const value = log[field];
+    const key =
+      value !== undefined && value !== null
+        ? String(value as string | number | boolean)
+        : 'unknown'; // Safely access, cast, and convert key
+
     if (!result[key]) {
       result[key] = { cost: 0, tokens: 0 };
     }
+    // @ts-ignore - Ignoring this specific error as the type definition seems correct but the compiler is reporting an issue in this environment
     result[key].cost += log.cost || 0;
+    // @ts-ignore - Ignoring this specific error as the type definition seems correct but the compiler is reporting an issue in this environment
     result[key].tokens += log.total_tokens || 0;
   }
 

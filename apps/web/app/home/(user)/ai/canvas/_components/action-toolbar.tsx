@@ -93,7 +93,11 @@ export function ActionToolbar({
 
         if (result.success && result.response) {
           try {
-            const simplified = JSON.parse(result.response) as SimplifiedContent;
+            // Access the text content from the response before parsing
+            // Access the text content from the response before parsing
+            const simplified = JSON.parse(
+              result.response.content,
+            ) as SimplifiedContent;
 
             // Clear current content and insert simplified sections safely
             if (editorRef.current) {
@@ -121,7 +125,9 @@ export function ActionToolbar({
                         // Insert bullet point
                         editor.commands.insertContent({
                           type: 'paragraph',
-                          content: [{ type: 'text', text: `• ${section.content}` }],
+                          content: [
+                            { type: 'text', text: `• ${section.content}` },
+                          ],
                         });
                         editor.commands.enter();
                       }
