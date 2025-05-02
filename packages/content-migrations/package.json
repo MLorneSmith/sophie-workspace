@@ -167,7 +167,7 @@
     "@lexical/list": "^0.14.0",
     "@lexical/rich-text": "^0.14.0",
     "@lexical/table": "^0.14.0",
-    "@payloadcms/richtext-lexical": "^3.35.1",
+    "@payloadcms/richtext-lexical": "^3.36.1",
     "@types/commander": "^2.12.5",
     "@types/js-yaml": "^4.0.9",
     "@types/jsdom": "^21.1.7",

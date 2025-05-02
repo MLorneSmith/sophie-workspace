@@ -63,6 +63,7 @@ export const QuizQuestions: CollectionConfig = {
         description: 'Optional explanation for this question (plain text only)',
       },
     },
+    // Removed duplicate explanation field
     {
       name: 'order',
       type: 'number',

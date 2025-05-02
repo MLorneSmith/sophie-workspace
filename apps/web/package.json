@@ -60,7 +60,7 @@
     "@makerkit/data-loader-supabase-nextjs": "^1.2.5",
     "@marsidev/react-turnstile": "^1.1.0",
     "@nosecone/next": "1.0.0-beta.6",
-    "@payloadcms/db-postgres": "3.35.1",
+    "@payloadcms/db-postgres": "3.36.1",
     "@radix-ui/react-icons": "^1.3.2",
     "@supabase/supabase-js": "2.49.4",
     "@tanstack/react-query": "5.74.11",

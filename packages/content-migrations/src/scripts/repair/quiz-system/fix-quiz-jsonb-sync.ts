@@ -62,12 +62,36 @@ async function fixQuizJsonbSync() {
         `Processing quiz: "${quizTitle}" (${quizId}) - Expected questions: ${definitiveQuestionIds.length}`,
       );
 
-      // --- Step 1: Correct payload.course_quizzes_rels ---
-      // Delete existing relationship entries for this quiz
-      const deleteResult = await client.query(
+      // --- Step 1: (REMOVED) No longer need to manage _rels table for this test ---
+      // **Attempt 1: Delete specifically invalid rows first (where related ID is NULL)**
+      /* try {
+        const deleteInvalidResult = await client.query(
+          `
+          DELETE FROM payload.course_quizzes_rels 
+          WHERE _parent_id = $1 AND quiz_questions_id IS NULL
+        `,
+          [quizId],
+        );
+        if (deleteInvalidResult.rowCount > 0) {
+          console.log(
+            chalk.yellow(
+              `  - Deleted ${deleteInvalidResult.rowCount} invalid (NULL quiz_questions_id) relationship rows.`,
+            ),
+          );
+        }
+      } catch (deleteInvalidError) {
+        console.error(
+          chalk.red(`  - Error deleting invalid rows for quiz ${quizId}:`),
+          deleteInvalidError.message,
+        );
+        // Continue even if this fails, the next delete might still work
+      } */
+
+      // **Attempt 2: Delete ALL remaining relationship entries for this quiz ID to ensure a clean slate**
+      /* const deleteResult = await client.query(
         `
-        DELETE FROM payload.course_quizzes_rels 
-        WHERE _parent_id = $1 AND field = 'questions'
+        DELETE FROM payload.course_quizzes_rels
+        WHERE _parent_id = $1
       `,
         [quizId],
       );
@@ -77,12 +101,12 @@ async function fixQuizJsonbSync() {
             `  - Deleted ${deleteResult.rowCount} existing relationship rows.`,
           ),
         );
-      }
+      } */
 
       // Insert correct relationship entries based on the source of truth
-      let insertedRels = 0;
+      // let insertedRels = 0; // No longer inserting into _rels
       // Use a standard for loop to get index for path and allow 'continue'
-      for (let index = 0; index < definitiveQuestionIds.length; index++) {
+      /* for (let index = 0; index < definitiveQuestionIds.length; index++) {
         const questionId = definitiveQuestionIds[index];
         // Basic validation: Ensure questionId looks like a UUID
         if (!/^[0-9a-fA-F-]{36}$/.test(questionId)) {
@@ -114,7 +138,7 @@ async function fixQuizJsonbSync() {
             // Parameters match the placeholders $1, $2, $3, $4, $5
             [quizId, 'questions', `questions.${index}`, questionId, index], // Pass index for path and order
           );
-          insertedRels++;
+          // insertedRels++;
         } catch (insertError) {
           console.error(
             chalk.red(
@@ -124,18 +148,17 @@ async function fixQuizJsonbSync() {
           );
           // Decide whether to throw or continue based on error type if needed
         }
-      } // End for loop
-      totalRelationshipsWritten += insertedRels; // Note: This might be slightly off if inserts fail, but good enough for logging
-      console.log(
-        chalk.gray(`  - Inserted ${insertedRels} relationship rows.`),
-      );
+      } */ // End for loop
+      // totalRelationshipsWritten += insertedRels; // No longer tracking _rels inserts
+      // console.log(
+      //   chalk.gray(`  - Inserted ${insertedRels} relationship rows.`),
+      // );
 
       // --- Step 2: Correct payload.course_quizzes.questions JSONB field ---
-      // Construct the correctly formatted JSONB array string
+      // Construct the correctly formatted JSONB array string for the simple array field
       const correctJsonbArray = definitiveQuestionIds.map((questionId) => ({
-        id: uuidv4(), // Generate a unique ID for the array entry, required by Payload
-        relationTo: 'quiz_questions',
-        value: { id: questionId }, // The actual related question ID
+        questionId: questionId, // Store just the ID
+        id: uuidv4(), // Array fields still need a unique block ID
       }));
 
       const jsonbString = JSON.stringify(correctJsonbArray);
