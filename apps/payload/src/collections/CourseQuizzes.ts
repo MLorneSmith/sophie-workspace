@@ -1,9 +1,9 @@
 import { CollectionConfig } from 'payload'
 import { findCourseForQuiz } from '../db/relationships'
-import {
-  formatQuizQuestionsOnRead,
-  syncQuizQuestionRelationships,
-} from './hooks/quiz-relationships'
+// import {
+//   formatQuizQuestionsOnRead,
+//   syncQuizQuestionRelationships,
+// } from './hooks/quiz-relationships' // Removed hooks
 
 export const CourseQuizzes: CollectionConfig = {
   slug: 'course_quizzes',
@@ -22,7 +22,7 @@ export const CourseQuizzes: CollectionConfig = {
   hooks: {
     // Add hooks to manage course relationship
     beforeChange: [
-      syncQuizQuestionRelationships, // New hook for quiz question relationship format
+      // syncQuizQuestionRelationships, // Removed hook
       async ({ data, req }) => {
         // If no course_id provided but we're not creating a new quiz
         // (i.e., updating an existing one), attempt to get existing course_id
@@ -59,7 +59,7 @@ export const CourseQuizzes: CollectionConfig = {
       },
     ],
     afterRead: [
-      formatQuizQuestionsOnRead, // New hook for quiz question format
+      // formatQuizQuestionsOnRead, // Removed hook
       async ({ req, doc }) => {
         // Only process if we have a doc with ID
         if (doc?.id) {
@@ -135,12 +135,12 @@ export const CourseQuizzes: CollectionConfig = {
     },
     {
       name: 'questions',
-      type: 'relationship',
-      relationTo: 'quiz_questions' as any,
-      hasMany: true,
+      type: 'relationship', // Restored
+      relationTo: 'quiz_questions' as any, // Restored
+      hasMany: true, // Restored
       required: true,
       admin: {
-        description: 'Questions included in this quiz',
+        description: 'Questions included in this quiz', // Restored description
       },
     },
     // Downloads field removed - quizzes do not need downloads

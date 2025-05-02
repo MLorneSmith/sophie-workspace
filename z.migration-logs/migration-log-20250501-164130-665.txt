@@ -1,0 +1,111 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20250501164130
+Username: SLIDEHEROES_DEN\msmit
+RunAs User: SLIDEHEROES_DEN\msmit
+Configuration Name: 
+Machine: SLIDEHEROES_DEN (Microsoft Windows NT 10.0.26100.0)
+Host Application: C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -noexit -command try { . "c:\Users\msmit\AppData\Local\Programs\Microsoft VS Code\resources\app\out\vs\workbench\contrib\terminal\common\scripts\shellIntegration.ps1" } catch {}
+Process ID: 18988
+PSVersion: 5.1.26100.3912
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.3912
+BuildVersion: 10.0.26100.3912
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcript started, output file is D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-log-20250501-164130-665.txt
+Starting migration process at 05/01/2025 16:41:30
+Detailed logs will be saved to: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250501-164130-665.txt
+
+Name                           Value
+----                           -----
+Timestamp                      20250501-164130-665
+LogsDirectory                  D:\SlideHeroes\App\repos\2025slideheroes\z.migratio...
+DetailedLogFile                D:\SlideHeroes\App\repos\2025slideheroes\z.migratio...
+LogFile                        D:\SlideHeroes\App\repos\2025slideheroes\z.migratio...
+Performance timing initialized
+Checking PNPM configuration...
+True
+Project root: D:\SlideHeroes\App\repos\2025slideheroes
+PNPM configuration in root directory is already up to date
+Yarn configuration in root directory is already up to date
+True
+
+================================================================================
+PHASE 1/4: SETUP PHASE
+================================================================================
+
+================================================================================
+SETUP PHASE
+================================================================================
+
+------------------------------------------------------------
+STEP 1: Resetting Supabase database and running Web app migrations
+------------------------------------------------------------
+Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\apps\web
+Skipping Supabase restart (already done)
+Running supabase:reset...
+EXECUTING: pnpm run supabase:reset
+DESCRIPTION: Resetting Supabase database
+
+Running supabase migrations...
+EXECUTING: supabase migration up
+DESCRIPTION: Running Supabase migrations
+
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes
+EXECUTING: pnpm --filter @kit/content-migrations run verify:schema public
+DESCRIPTION: Verifying schema 'public' exists
+Schema 'public' exists
+âœ… Web app migrations completed successfully
+True
+
+------------------------------------------------------------
+STEP 2: Resetting Payload schema
+------------------------------------------------------------
+Dropping and recreating payload schema...
+Temporarily changed to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+EXECUTING: pnpm run utils:run-sql-file "C:\Users\msmit\AppData\Local\Temp\reset_payload_schema.sql"
+DESCRIPTION: Resetting Payload schema
+
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes
+âœ… Payload schema reset successfully
+True
+
++
+------------------------------------------------------------------------------
++
+|
+ [3/12] Running Payload migrations
+
+|
++
+------------------------------------------------------------------------------
++
+Migration Progress: [============                                      ] 25% (3/12)
+NOTE:
+The 'No email adapter provided' warning is expected in development environment and can be safely ignored
+Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\apps\payload
+Checking migration status...
+EXECUTING: pnpm migrate:status
+DESCRIPTION: Checking migration status
+Running all migrations...
+EXECUTING: pnpm payload migrate
+DESCRIPTION: Running Payload migrations
+
+ERROR: Command failed with exit code: 1
+ERROR: Error in step 'Running Payload migrations': Command failed with exit code: 1
+PS>TerminatingError(): "Command failed with exit code: 1"
+ERROR: Failed to run Payload migrations: Command failed with exit code: 1
+PS>TerminatingError(): "Payload migration failed: Command failed with exit code: 1"
+>> TerminatingError(): "Payload migration failed: Command failed with exit code: 1"
+ERROR: CRITICAL ERROR: Migration process failed: Payload migration failed: Command failed with exit code: 1
+Please check the log files for details:
+  - Transcript log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-log-20250501-164130-665.txt
+  - Detailed log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250501-164130-665.txt
+**********************
+Windows PowerShell transcript end
+End time: 20250501164210
+**********************
