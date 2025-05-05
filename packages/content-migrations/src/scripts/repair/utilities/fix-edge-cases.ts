@@ -118,18 +118,18 @@ async function main() {
       await pool
         .query(
           `
-        -- Find references to non-existent questions
-        WITH invalid_refs AS (
-          SELECT cqr._parent_id as quiz_id, cqr.value as question_id
-          FROM payload.course_quizzes_rels cqr
-          WHERE cqr.field = 'questions'
-          AND NOT EXISTS (
-            SELECT 1 
-            FROM payload.quiz_questions qq 
-            WHERE qq.id = cqr.value
-          )
-        )
-        -- Log how many invalid references were found
+         -- Find references to non-existent questions
+         WITH invalid_refs AS (
+           SELECT cqr._parent_id as quiz_id, cqr.quiz_questions_id as question_id -- Correct column name
+           FROM payload.course_quizzes_rels cqr
+           WHERE cqr.path = 'questions' -- Use path instead of field for consistency
+           AND NOT EXISTS (
+             SELECT 1
+             FROM payload.quiz_questions qq
+             WHERE qq.id = cqr.quiz_questions_id -- Correct column name
+           )
+         )
+         -- Log how many invalid references were found
         SELECT COUNT(*) as invalid_count FROM invalid_refs
       `,
         )

@@ -1,0 +1,186 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20250505121358
+Username: SLIDEHEROES_DEN\msmit
+RunAs User: SLIDEHEROES_DEN\msmit
+Configuration Name: 
+Machine: SLIDEHEROES_DEN (Microsoft Windows NT 10.0.26100.0)
+Host Application: C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command Import-Module 'c:\Users\msmit\.vscode\extensions\ms-vscode.powershell-2025.0.0\modules\PowerShellEditorServices\PowerShellEditorServices.psd1'; Start-EditorServices -HostName 'Visual Studio Code Host' -HostProfileId 'Microsoft.VSCode' -HostVersion '2025.0.0' -BundledModulesPath 'c:\Users\msmit\.vscode\extensions\ms-vscode.powershell-2025.0.0\modules' -EnableConsoleRepl -StartupBanner "PowerShell Extension v2025.0.0
+Copyright (c) Microsoft Corporation.
+
+https://aka.ms/vscode-powershell
+Type 'help' to get help.
+" -LogLevel 'Warning' -LogPath 'c:\Users\msmit\AppData\Roaming\Code\logs\20250505T115728\window1\exthost\ms-vscode.powershell' -SessionDetailsPath 'c:\Users\msmit\AppData\Roaming\Code\User\globalStorage\ms-vscode.powershell\sessions\PSES-VSCode-22204-737650.json' -FeatureFlags @() 
+Process ID: 13588
+PSVersion: 5.1.26100.3912
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.3912
+BuildVersion: 10.0.26100.3912
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcript started, output file is D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-log-20250505-121358-937.txt
+Starting migration process at 05/05/2025 12:13:58
+Detailed logs will be saved to: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250505-121358-937.txt
+
+Name                           Value
+----                           -----
+Timestamp                      20250505-121358-937
+LogsDirectory                  D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs
+DetailedLogFile                D:\SlideHeroes\App\repos\2025slideheroes\z.migration-log...
+LogFile                        D:\SlideHeroes\App\repos\2025slideheroes\z.migration-log...
+Performance timing initialized
+Checking PNPM configuration...
+True
+Project root: D:\SlideHeroes\App\repos\2025slideheroes
+PNPM configuration in root directory is already up to date
+Yarn configuration in root directory is already up to date
+True
+
+================================================================================
+PHASE 1/1: SETUP PHASE
+================================================================================
+
+================================================================================
+SETUP PHASE
+================================================================================
+
+------------------------------------------------------------
+STEP 1: Resetting Supabase database and running Web app migrations
+------------------------------------------------------------
+Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\apps\web
+Skipping Supabase restart (already done)
+Running supabase:reset...
+EXECUTING: pnpm run supabase:reset
+DESCRIPTION: Resetting Supabase database
+
+Running supabase migrations...
+EXECUTING: supabase migration up
+DESCRIPTION: Running Supabase migrations
+
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes
+EXECUTING: pnpm --filter @kit/content-migrations run verify:schema public
+DESCRIPTION: Verifying schema 'public' exists
+Schema 'public' exists
+âœ… Web app migrations completed successfully
+True
+
+------------------------------------------------------------
+STEP 2: Resetting Payload schema
+------------------------------------------------------------
+Dropping and recreating payload schema...
+Temporarily changed to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+EXECUTING: pnpm run utils:run-sql-file "C:\Users\msmit\AppData\Local\Temp\reset_payload_schema.sql"
+DESCRIPTION: Resetting Payload schema
+
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes
+âœ… Payload schema reset successfully
+True
+
++
+------------------------------------------------------------------------------
++
+|
+ [3/12] Running Payload migrations
+
+|
++
+------------------------------------------------------------------------------
++
+Migration Progress: [============                                      ] 25% (3/12)
+NOTE:
+The 'No email adapter provided' warning is expected in development environment and can be safely ignored
+Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\apps\payload
+Checking migration status...
+EXECUTING: pnpm migrate:status
+DESCRIPTION: Checking migration status
+Running all migrations...
+EXECUTING: pnpm payload migrate
+DESCRIPTION: Running Payload migrations
+
+Adding relationship ID columns to locked documents tables...
+Temporarily changed to directory: D:\SlideHeroes\App\repos\2025slideheroes
+EXECUTING: pnpm --filter @kit/content-migrations run sql:add-relationship-id-columns
+DESCRIPTION: Adding relationship ID columns to locked documents tables
+
+Managing UUID tables with enhanced approach...
+Running enhanced UUID table management...
+EXECUTING: pnpm run uuid:comprehensive
+DESCRIPTION: Running enhanced UUID table management
+
+âœ… UUID tables managed successfully with enhanced approach
+Verifying UUID tables and their required columns...
+EXECUTING: pnpm run uuid:verify
+DESCRIPTION: Running UUID tables verification
+
+âœ… UUID tables verified successfully
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\apps\payload
+Verifying migration status...
+EXECUTING: pnpm migrate:status
+DESCRIPTION: Verifying migration status
+âœ… All migrations have been applied successfully
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes
+EXECUTING: pnpm --filter @kit/content-migrations run verify:schema payload
+DESCRIPTION: Verifying schema 'payload' exists
+Schema 'payload' exists
+EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload courses
+DESCRIPTION: Verifying table 'payload.courses' exists
+Table 'payload.courses' exists
+EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload course_lessons
+DESCRIPTION: Verifying table 'payload.course_lessons' exists
+Table 'payload.course_lessons' exists
+EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload course_quizzes
+DESCRIPTION: Verifying table 'payload.course_quizzes' exists
+Table 'payload.course_quizzes' exists
+EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload quiz_questions
+DESCRIPTION: Verifying table 'payload.quiz_questions' exists
+Table 'payload.quiz_questions' exists
+EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload surveys
+DESCRIPTION: Verifying table 'payload.surveys' exists
+Table 'payload.surveys' exists
+EXECUTING: pnpm --filter @kit/content-migrations run verify:table payload survey_questions
+DESCRIPTION: Verifying table 'payload.survey_questions' exists
+Table 'payload.survey_questions' exists
+âœ… Payload migrations completed successfully
+True
+âœ… Setup phase completed successfully
+âœ… SETUP PHASE phase completed successfully (68.89s)
+
+================================================================================
+PHASE 2/2: ISOLATED PATH FIX TEST
+================================================================================
+
+
++
+------------------------------------------------------------------------------
++
+|
+ [1/1] Fixing quiz relationship paths (Isolated Test)
+
+|
++
+------------------------------------------------------------------------------
++
+Migration Progress: [================================================== ] 100% (1/1)
+
+True
+Changed to project root: D:\SlideHeroes\App\repos\2025slideheroes
+Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+Explicitly setting path='questions' in course_quizzes_rels...
+EXECUTING: pnpm --filter @kit/content-migrations run utils:run-sql --sql \"UPDATE payload.course_quizzes_rels SET path = 'questions' WHERE quiz_questions_id IS NOT NULL AND (path IS NULL OR path != 'questions');\"
+DESCRIPTION: Setting path in course_quizzes_rels
+
+âœ… Quiz relationship paths fixed successfully (Isolated Test)
+Returned to directory: D:\SlideHeroes\App\repos\2025slideheroes\packages\content-migrations
+True
+âœ… ISOLATED PATH FIX TEST phase completed successfully (1.04s)
+Skipping subsequent phases for isolated path fix test.
+Performance timing finalized. Total duration: 1.17 minutes
+âœ… Isolated path fix test completed. Check database for path column.
+All migrations and verifications completed successfully!
+**********************
+Windows PowerShell transcript end
+End time: 20250505121508
+**********************

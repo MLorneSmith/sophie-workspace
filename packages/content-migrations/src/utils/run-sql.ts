@@ -48,6 +48,9 @@ async function runSql(query: string): Promise<void> {
     // Execute query
     const result = await client.query(query);
 
+    // Explicitly commit the transaction to ensure changes are persisted
+    await client.query('COMMIT;');
+
     // Log result (for verification purposes)
     if (result.rows && result.rows.length > 0) {
       console.log('Query result:');

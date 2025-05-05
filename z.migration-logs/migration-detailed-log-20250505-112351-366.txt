@@ -1,0 +1,27 @@
+2025-05-05 11:23:51: Starting migration process at 05/05/2025 11:23:51
+2025-05-05 11:23:51: Detailed logs will be saved to: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250505-112351-366.txt
+2025-05-05 11:23:51: Performance timing initialized
+2025-05-05 11:23:51: Checking PNPM configuration...
+2025-05-05 11:23:51: Project root: D:\SlideHeroes\App\repos\2025slideheroes
+2025-05-05 11:23:51: PNPM configuration in root directory is already up to date
+2025-05-05 11:23:51: Yarn configuration in root directory is already up to date
+
+2025-05-05 11:23:51 - ================================================================================
+2025-05-05 11:23:51 - PHASE 1/4: SETUP PHASE
+2025-05-05 11:23:51 - ================================================================================
+2025-05-05 11:23:51: ================================================================================
+2025-05-05 11:23:51: SETUP PHASE
+2025-05-05 11:23:51: ================================================================================
+2025-05-05 11:23:51: 
+2025-05-05 11:23:51: ------------------------------------------------------------
+2025-05-05 11:23:51: STEP 1: Resetting Supabase database and running Web app migrations
+2025-05-05 11:23:51: ------------------------------------------------------------
+2025-05-05 11:23:51: Changed directory to: D:\SlideHeroes\App\repos\2025slideheroes\apps\web
+2025-05-05 11:23:51: Skipping Supabase restart (already done)
+2025-05-05 11:23:51: Running supabase:reset...
+2025-05-05 11:23:51: EXECUTING: pnpm run supabase:reset
+2025-05-05 11:23:51: DESCRIPTION: Resetting Supabase database
+2025-05-05 11:23:53: All migrations and verifications completed successfully!
+2025-05-05 11:23:53: Migration logs saved to:
+2025-05-05 11:23:53:   - Transcript log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-log-20250505-112351-366.txt
+2025-05-05 11:23:53:   - Detailed log: D:\SlideHeroes\App\repos\2025slideheroes\z.migration-logs\migration-detailed-log-20250505-112351-366.txt

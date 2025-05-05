@@ -2,7 +2,9 @@
  * Script to migrate course lessons directly to the database
  */
 import { ListItemNode, ListNode } from '@lexical/list';
+// Reverted to original import
 import { HeadingNode } from '@lexical/rich-text';
+// Reverted to original import
 import { $convertFromMarkdownString } from '@payloadcms/richtext-lexical';
 import { createHeadlessEditor } from '@payloadcms/richtext-lexical/lexical/headless';
 import dotenv from 'dotenv';
@@ -75,9 +77,9 @@ async function migrateCourseLessonsToDatabase() {
 
           // Convert Markdown content to Lexical format
           const lexicalContent = (() => {
-            // Create a headless editor instance with list nodes registered
+            // Create a headless editor instance without explicit nodes
             const headlessEditor = createHeadlessEditor({
-              nodes: [ListNode, ListItemNode, HeadingNode],
+              // nodes: [ListNode, ListItemNode, HeadingNode], // Removed explicit nodes
             });
 
             // Convert Markdown to Lexical format
@@ -116,15 +118,15 @@ async function migrateCourseLessonsToDatabase() {
           // Insert the lesson into the database
           await client.query(
             `INSERT INTO payload.course_lessons (
-              id, 
-              title, 
-              slug, 
-              description, 
-              content, 
-              lesson_number, 
-              estimated_duration, 
-              published_at, 
-              course_id, 
+              id,
+              title,
+              slug,
+              description,
+              content,
+              lesson_number,
+              estimated_duration,
+              published_at,
+              course_id,
               course_id_id,
               quiz_id,
               updated_at,

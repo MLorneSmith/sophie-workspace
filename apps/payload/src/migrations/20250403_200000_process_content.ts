@@ -1,7 +1,8 @@
-import { MigrateDownArgs, MigrateUpArgs, sql } from '@payloadcms/db-postgres'
+import { MigrateDownArgs, MigrateUpArgs, sql } from '@payloadcms/db-postgres' // Re-add sql import
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { execSync } from 'child_process' // Import execSync
 
 /**
  * Content Processing Migration
@@ -51,13 +52,26 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
 
       console.log(`Executing SQL seed file: ${file}`)
 
-      // Read the SQL file
-      const sqlContent = fs.readFileSync(filePath, 'utf8')
+      // Construct the command to execute the utility script
+      // Assuming the utility script is run from the package root
+      const packageJsonPath = path.resolve(
+        __dirname,
+        '../../../../packages/content-migrations/package.json',
+      ) // Adjust path as needed
+      const packageDir = path.dirname(packageJsonPath)
+      const command = `pnpm --filter @kit/content-migrations run utils:run-sql-file "${filePath}"`
 
-      // Execute the SQL
-      await db.execute(sql.raw(sqlContent))
+      console.log(`Executing command: ${command}`)
 
-      console.log(`Successfully executed SQL seed file: ${file}`)
+      try {
+        // Execute the command synchronously
+        execSync(command, { stdio: 'inherit', cwd: packageDir }) // Execute in the content-migrations package directory
+        console.log(`Successfully executed SQL seed file: ${file}`)
+      } catch (execError) {
+        console.error(`Error executing SQL seed file ${file}:`)
+        console.error(execError)
+        throw execError // Re-throw the error to stop the migration
+      }
     }
 
     // Fix relationships between collections

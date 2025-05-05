@@ -4,8 +4,10 @@
  * This script adds missing relationship columns to all relationship tables
  * It's designed to be run as part of the migration process
  */
+import { generateAddRelationshipColumnsSql } from '../../sql/utils/relationship-columns.js';
 import { executeSQL } from '../../utils/db/execute-sql.js';
-import { generateAddRelationshipColumnsSql } from '../sql/utils/relationship-columns.js';
+
+// Corrected path
 
 async function fixRelationshipColumns() {
   console.log('\nFixing relationship columns in all relationship tables...');
@@ -34,7 +36,7 @@ async function fixRelationshipColumns() {
       // Check if table exists
       const tableExistsResult = await executeSQL(`
         SELECT EXISTS (
-          SELECT FROM information_schema.tables 
+          SELECT FROM information_schema.tables
           WHERE table_schema = 'payload'
           AND table_name = '${table}'
         ) as table_exists;
@@ -98,56 +100,56 @@ async function fixRelationshipColumns() {
     const viewSql = `
       CREATE VIEW payload.downloads_relationships AS
       -- Documentation downloads
-      SELECT 
-        doc.id::text as table_name, 
+      SELECT
+        doc.id::text as table_name,
         dl.id::text as download_id,
         'documentation' as collection_type
       FROM payload.documentation doc
-      LEFT JOIN payload.documentation_rels dr 
+      LEFT JOIN payload.documentation_rels dr
         ON (doc.id = dr._parent_id OR doc.id = dr.parent_id)
-      LEFT JOIN payload.downloads dl 
+      LEFT JOIN payload.downloads dl
         ON (dl.id = dr.value OR dl.id = dr.downloads_id)
       WHERE dl.id IS NOT NULL
-      
+
       UNION ALL
-      
+
       -- Course lessons downloads
-      SELECT 
-        cl.id::text as table_name, 
+      SELECT
+        cl.id::text as table_name,
         dl.id::text as download_id,
         'course_lessons' as collection_type
       FROM payload.course_lessons cl
-      LEFT JOIN payload.course_lessons_rels clr 
+      LEFT JOIN payload.course_lessons_rels clr
         ON (cl.id = clr._parent_id OR cl.id = clr.parent_id)
-      LEFT JOIN payload.downloads dl 
+      LEFT JOIN payload.downloads dl
         ON (dl.id = clr.value OR dl.id = clr.downloads_id)
       WHERE dl.id IS NOT NULL
-      
+
       UNION ALL
-      
+
       -- Courses downloads
-      SELECT 
-        c.id::text as table_name, 
+      SELECT
+        c.id::text as table_name,
         dl.id::text as download_id,
         'courses' as collection_type
       FROM payload.courses c
-      LEFT JOIN payload.courses_rels cr 
+      LEFT JOIN payload.courses_rels cr
         ON (c.id = cr._parent_id OR c.id = cr.parent_id)
-      LEFT JOIN payload.downloads dl 
+      LEFT JOIN payload.downloads dl
         ON (dl.id = cr.value OR dl.id = cr.downloads_id)
       WHERE dl.id IS NOT NULL
-      
+
       UNION ALL
-      
+
       -- Course quizzes downloads
-      SELECT 
-        cq.id::text as table_name, 
+      SELECT
+        cq.id::text as table_name,
         dl.id::text as download_id,
         'course_quizzes' as collection_type
       FROM payload.course_quizzes cq
-      LEFT JOIN payload.course_quizzes_rels cqr 
+      LEFT JOIN payload.course_quizzes_rels cqr
         ON (cq.id = cqr._parent_id OR cq.id = cqr.parent_id)
-      LEFT JOIN payload.downloads dl 
+      LEFT JOIN payload.downloads dl
         ON (dl.id = cqr.value OR dl.id = cqr.downloads_id)
       WHERE dl.id IS NOT NULL
     `;
@@ -161,27 +163,27 @@ async function fixRelationshipColumns() {
       RETURNS void AS $$
       BEGIN
         -- Add parent_id if it doesn't exist
-        EXECUTE 'ALTER TABLE ' || table_name || 
+        EXECUTE 'ALTER TABLE ' || table_name ||
                 ' ADD COLUMN IF NOT EXISTS parent_id UUID';
-                
+
         -- Add downloads_id if it doesn't exist
-        EXECUTE 'ALTER TABLE ' || table_name || 
+        EXECUTE 'ALTER TABLE ' || table_name ||
                 ' ADD COLUMN IF NOT EXISTS downloads_id UUID';
-                
+
         -- Add private_id if it doesn't exist
-        EXECUTE 'ALTER TABLE ' || table_name || 
+        EXECUTE 'ALTER TABLE ' || table_name ||
                 ' ADD COLUMN IF NOT EXISTS private_id UUID';
-                
+
         -- Add other important relationship columns
-        EXECUTE 'ALTER TABLE ' || table_name || 
+        EXECUTE 'ALTER TABLE ' || table_name ||
                 ' ADD COLUMN IF NOT EXISTS documentation_id UUID';
-        EXECUTE 'ALTER TABLE ' || table_name || 
+        EXECUTE 'ALTER TABLE ' || table_name ||
                 ' ADD COLUMN IF NOT EXISTS courses_id UUID';
-        EXECUTE 'ALTER TABLE ' || table_name || 
+        EXECUTE 'ALTER TABLE ' || table_name ||
                 ' ADD COLUMN IF NOT EXISTS course_lessons_id UUID';
-        EXECUTE 'ALTER TABLE ' || table_name || 
+        EXECUTE 'ALTER TABLE ' || table_name ||
                 ' ADD COLUMN IF NOT EXISTS course_quizzes_id UUID';
-        EXECUTE 'ALTER TABLE ' || table_name || 
+        EXECUTE 'ALTER TABLE ' || table_name ||
                 ' ADD COLUMN IF NOT EXISTS quiz_questions_id UUID';
       END;
       $$ LANGUAGE plpgsql;

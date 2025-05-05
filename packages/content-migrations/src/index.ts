@@ -6,7 +6,6 @@
  */
 
 // Export utility functions
-export { getPayloadClient } from './utils/payload-client.js';
 export {
   validateCollectionSchema,
   validateMultipleCollectionSchemas,

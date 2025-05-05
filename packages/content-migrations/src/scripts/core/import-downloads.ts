@@ -6,7 +6,9 @@
 import fs from 'fs';
 import path from 'path';
 
-import { runImport } from '../import/import-r2-downloads';
+import { runImport } from '../import/import-r2-downloads.js';
+
+// Added .js extension
 
 async function main() {
   console.log('Starting download import process');

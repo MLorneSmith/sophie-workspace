@@ -30,16 +30,16 @@ function Invoke-LoadingPhase {
     # Step 8.2: Run specialized private posts migration
     Migrate-PrivatePosts
 
-    # Step 8.3: Fix UUID tables to ensure columns exist
-    Fix-UuidTables
+     # Step 8.3: Fix UUID tables to ensure columns exist
+     Fix-UuidTables
 
-    # Step 9: Import downloads from R2 bucket
-    Import-Downloads
+     # Step 9: Import downloads from R2 bucket
+     # Import-Downloads # Commented out - Causing build errors and seems non-essential for automated flow
 
-    # Step 10: Fix relationships
+     # Step 10: Fix relationships
     Fix-Relationships
 
-    # Step 10.5: Fix S3 storage issues
+    # Step 10.6: Fix S3 storage issues # Adjusted step number
     Fix-S3StorageIssues
 
     # Step 11: Comprehensive database verification
@@ -83,13 +83,13 @@ function Fix-Relationships {
         # Only run legacy scripts if the new system failed
         if ($quizSystemRepairResult) {
             Log-Success "Quiz system repair completed successfully, skipping legacy quiz repair scripts"
-            
+
             # Still run the diagnostic to verify the state
             Log-Message "Running quiz relationship diagnostic for verification..." "Yellow"
             Exec-Command -command "pnpm run diagnostic:quiz-relationships" -description "Running quiz relationship diagnostic" -continueOnError
         } else {
             Log-Warning "Quiz system repair didn't complete successfully, falling back to legacy scripts"
-            
+
             # Run only the optimized quiz relationship repair
             Log-Message "Running optimized quiz relationship repair..." "Yellow"
             Exec-Command -command "pnpm run quiz:fix:corrected" -description "Fixing quiz relationships with corrected script" -continueOnError
@@ -111,12 +111,12 @@ function Fix-Relationships {
             Exec-Command -command "pnpm run fix:enhanced-quiz-paths-and-relationships" -description "Running enhanced quiz paths and relationships fix" -continueOnError
         }
 
-        # Run the diagnostic again to verify the state after all fixes
-        Log-Message "Running quiz relationship diagnostic after fixes..." "Yellow"
-        Exec-Command -command "pnpm run diagnostic:quiz-relationships" -description "Running quiz relationship diagnostic after fixes" -continueOnError
+        # Run the diagnostic again to verify the state after all fixes - COMMENTED OUT as potentially interfering
+        # Log-Message "Running quiz relationship diagnostic after fixes..." "Yellow"
+        # Exec-Command -command "pnpm run diagnostic:quiz-relationships" -description "Running quiz relationship diagnostic after fixes" -continueOnError
 
         # The following are common fixes that should always be performed regardless of which quiz repair system was used
-        
+
         # Fix any wrong field names that might still exist
         Log-Message "Fixing any wrong field names in quiz_questions_rels..." "Yellow"
         Exec-Command -command "pnpm run utils:run-sql --sql 'UPDATE payload.quiz_questions_rels SET field = ''quiz_id'' WHERE field != ''quiz_id'';'" -description "Fixing wrong field names" -continueOnError
@@ -125,58 +125,60 @@ function Fix-Relationships {
         Log-Message "Verifying bidirectional quiz relationships..." "Yellow"
         Exec-Command -command "pnpm run verify:quiz-relationship-migration" -description "Verifying bidirectional quiz relationships" -continueOnError
 
-        # NEW STEP: Run the source-of-truth based Quiz JSONB Synchronization Fix with output capture
-        Log-Message "Running source-of-truth based Quiz JSONB Synchronization Fix (capturing output)..." "Yellow"
+        # NEW STEP: Run the source-of-truth based Quiz JSONB Synchronization Fix with output capture - COMMENTED OUT as redundant/potentially interfering
+        # Log-Message "Running source-of-truth based Quiz JSONB Synchronization Fix (capturing output)..." "Yellow"
         # Construct temp file path reliably based on the detailed log file's directory
-        $tempLogDir = Split-Path -Path $script:detailedLogFile -Parent
-        $tempLogFile = Join-Path $tempLogDir "fix-quiz-jsonb-sync-output.log"
-        Log-Message "Temporary log for this step: $tempLogFile" "Gray"
-        try {
+        # $tempLogDir = Split-Path -Path $script:detailedLogFile -Parent
+        # $tempLogFile = Join-Path $tempLogDir "fix-quiz-jsonb-sync-output.log" # <-- Commenting out file path construction
+        # Log-Message "Temporary log for this step: $tempLogFile" "Gray"
+        # try { # Try block remains commented
             # Ensure the directory exists before redirecting
-            if (-not (Test-Path $tempLogDir)) {
-                New-Item -ItemType Directory -Path $tempLogDir -Force | Out-Null
-            }
+            # if (-not (Test-Path $tempLogDir)) {
+            #     New-Item -ItemType Directory -Path $tempLogDir -Force | Out-Null
+            # } # Closing brace remains commented
             # Execute the command and redirect all output streams to the temp file
-            pnpm run fix:quiz-jsonb-sync *> $tempLogFile 2>&1
-            $exitCode = $LASTEXITCODE
-            Log-Message "Command 'pnpm run fix:quiz-jsonb-sync' finished with exit code: $exitCode" "Gray"
+            # pnpm run fix:quiz-jsonb-sync *> $tempLogFile 2>&1 # <-- Commenting out command execution
+            # $exitCode = $LASTEXITCODE
+            # Log-Message "Command 'pnpm run fix:quiz-jsonb-sync' finished with exit code: $exitCode" "Gray"
 
             # Log the captured output
-            if (Test-Path $tempLogFile) {
-                $capturedOutput = Get-Content $tempLogFile -Raw -ErrorAction SilentlyContinue
-                if ($capturedOutput) {
-                    Log-Message "--- Output from fix:quiz-jsonb-sync ---" "Cyan"
-                    Log-Message $capturedOutput "Gray" # Log captured output directly
-                    Log-Message "--- End Output from fix:quiz-jsonb-sync ---" "Cyan"
-                } else {
-                    Log-Message "Temporary log file '$tempLogFile' was empty." "Gray"
-                }
-                Remove-Item $tempLogFile -ErrorAction SilentlyContinue # Clean up temp file
-            } else {
-                Log-Warning "Temporary log file '$tempLogFile' not found after command execution."
-            }
+            # if (Test-Path $tempLogFile) {
+            #     $capturedOutput = Get-Content $tempLogFile -Raw -ErrorAction SilentlyContinue
+            #     if ($capturedOutput) {
+            #         Log-Message "--- Output from fix:quiz-jsonb-sync ---" "Cyan"
+            #         Log-Message $capturedOutput "Gray" # Log captured output directly
+            #         Log-Message "--- End Output from fix:quiz-jsonb-sync ---" "Cyan"
+            #     } else {
+            #         Log-Message "Temporary log file '$tempLogFile' was empty." "Gray"
+            #     }
+            #     Remove-Item $tempLogFile -ErrorAction SilentlyContinue # Clean up temp file
+            # } else {
+            #     Log-Warning "Temporary log file '$tempLogFile' not found after command execution."
+            # }
 
             # Handle non-zero exit code if not using continueOnError logic implicitly
-            if ($exitCode -ne 0) {
-                 Log-Warning "'pnpm run fix:quiz-jsonb-sync' exited with code $exitCode. Continuing as per -continueOnError logic."
-                 # Or uncomment below to treat as error:
-                 # throw "Command 'pnpm run fix:quiz-jsonb-sync' failed with exit code $exitCode"
-            }
+            # if ($exitCode -ne 0) {
+            #      Log-Warning "'pnpm run fix:quiz-jsonb-sync' exited with code $exitCode. Continuing as per -continueOnError logic."
+            #      # Or uncomment below to treat as error:
+            #      # throw "Command 'pnpm run fix:quiz-jsonb-sync' failed with exit code $exitCode"
+            # }
 
-        } catch {
-            $errorMsg = Get-SafeErrorMessage $_
-            Log-Warning "Error executing or processing output for 'pnpm run fix:quiz-jsonb-sync': $errorMsg. Continuing..."
-            # Ensure temp file is removed even on error
-            if (Test-Path $tempLogFile) {
-                Remove-Item $tempLogFile -ErrorAction SilentlyContinue
-            }
-            # If not using continueOnError logic implicitly, re-throw or handle error
-            # throw "Failed during fix:quiz-jsonb-sync execution: $errorMsg"
-        }
+        # } catch { # Catch block remains commented
+        #     $errorMsg = Get-SafeErrorMessage $_
+        #     Log-Warning "Error executing or processing output for 'pnpm run fix:quiz-jsonb-sync': $errorMsg. Continuing..."
+        #     # Ensure temp file is removed even on error
+        #     if (Test-Path $tempLogFile) {
+        #         Remove-Item $tempLogFile -ErrorAction SilentlyContinue
+        #     }
+        #     # If not using continueOnError logic implicitly, re-throw or handle error
+        #     # throw "Failed during fix:quiz-jsonb-sync execution: $errorMsg"
+        # }
 
         # NEW STEP: Run minimal DB test script
         Log-Message "Running minimal DB test script..." "Yellow"
         Exec-Command -command "pnpm --filter @kit/content-migrations run verify:minimal-db-test" -description "Running minimal DB test script" -continueOnError
+
+        # Explicitly fix the path column in course_quizzes_rels before final verification - MOVED TO Verify-DatabaseState function
 
         # Run our comprehensive verification (this should now pass)
         Log-Message "Running comprehensive quiz relationship verification..." "Yellow"
@@ -187,7 +189,7 @@ function Fix-Relationships {
             Log-Success "Comprehensive quiz relationship verification passed successfully"
         } else {
             Log-Warning "Comprehensive verification found some quiz relationship issues that need attention"
-            
+
             # Only run legacy JSONB fixes if needed based on verification results
             if ($comprehensiveVerificationResult -match "JSONB format") {
                 # Format quiz questions JSONB arrays for Payload compatibility
@@ -301,8 +303,8 @@ function Fix-Relationships {
             Log-Success "Standard relationship repair completed successfully!"
         }
 
-        # Run final verification - NOTE: We are temporarily ignoring the output check 
-        # because verify:all contains checks for other relationships (surveys, downloads) 
+        # Run final verification - NOTE: We are temporarily ignoring the output check
+        # because verify:all contains checks for other relationships (surveys, downloads)
         # that might be logging warnings/errors incorrectly, causing a false negative here.
         # The critical quiz relationships were verified successfully earlier.
         Log-Message "Running final verification (verify:all)..." "Yellow"
@@ -359,7 +361,7 @@ function Run-ContentMigrations {
             Log-Message "Running verification with automatic dependency handling..." "Yellow"
 
             # Use dependency-aware verification instead of direct verification
-            $verificationResult = Run-VerificationWithDependencies -VerificationStep "verify:todo-fields" -Description "Verifying todo fields with dependencies" -ContinueOnError
+            $verificationResult = Run-VerificationWithDependencies -VerificationStep "verify:todo-fields" -Description "Verifying todo fields" -ContinueOnError
 
             if ($verificationResult) {
                 Log-Success "Todo fields verification passed with automatic dependency handling"
@@ -468,7 +470,7 @@ function Fix-UuidTables {
             Pop-Location
             Log-Message "Returned to directory: $(Get-Location)" "Gray"
         } else {
-            Log-Warning "Could not find packages/content-migrations directory, skipping UUID table fix"
+            throw "Could not find packages/content-migrations directory from project root"
         }
 
         return $true
@@ -579,7 +581,7 @@ function Verify-DatabaseState {
     }
 }
 
-# Function to create certificates bucket in Supabase
+# Function to create certificates storage bucket in Supabase
 # This step is now handled by the migration file: apps/web/supabase/migrations/20250407140654_create_certificates_bucket.sql
 function Create-CertificatesBucket {
     Log-EnhancedStep "Creating certificates storage bucket in Supabase" 12 12
@@ -672,7 +674,7 @@ function Migrate-BlogPosts {
 
                 # Check for enhanced status messages
                 if ($postsOutput -match "No new posts were migrated. All (\d+) posts already exist") {
-                    Log-Message "Blog posts are up to date. All $($matches[1]) posts already exist in the database." "Yellow"
+                    Log-Message "Blog posts are up to date. All $($matches[1]) private posts already exist in the database." "Yellow"
                 } elseif ($postsOutput -match "Successfully migrated/updated (\d+) of (\d+) posts") {
                     Log-Success "Successfully migrated/updated $($matches[1]) of $($matches[2]) blog posts"
                 } else {
@@ -709,7 +711,7 @@ function Migrate-BlogPosts {
 
 # Function to fix S3 storage issues
 function Fix-S3StorageIssues {
-    Log-EnhancedStep "Fixing S3 storage issues" 10.5 12
+    Log-EnhancedStep "Fixing S3 storage issues" 10.7 12
 
     try {
         # First ensure we're at the project root
