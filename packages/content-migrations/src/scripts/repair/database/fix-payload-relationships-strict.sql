@@ -118,6 +118,13 @@ BEGIN
     END IF;
 END $$;
 
+-- Set path for existing quiz-question relationships
+UPDATE payload.course_quizzes_rels
+SET "path" = 'questions'
+WHERE quiz_questions_id IS NOT NULL AND ("path" IS NULL OR "path" != 'questions');
+
+RAISE NOTICE 'Updated path column for % quiz-question relationships', (SELECT COUNT(*) FROM payload.course_quizzes_rels WHERE quiz_questions_id IS NOT NULL AND "path" = 'questions');
+
 -- Step 4 (Quiz-Question Relationships) REMOVED as it's handled by fix:quiz-jsonb-sync
 
 -- Commit the transaction

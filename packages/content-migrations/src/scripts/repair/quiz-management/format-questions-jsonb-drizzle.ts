@@ -37,11 +37,11 @@ export const formatQuestionsJSONBDrizzle = async (): Promise<boolean> => {
 
     // 1. First get all quizzes with explicit type casting for safety
     const allQuizzesResult = await db.execute(sql.raw`
-      SELECT 
+      SELECT
         id::text as quiz_id,
         title as quiz_title,
         questions::jsonb as questions
-      FROM 
+      FROM
         payload.course_quizzes
       WHERE
         questions IS NOT NULL
@@ -49,22 +49,22 @@ export const formatQuestionsJSONBDrizzle = async (): Promise<boolean> => {
 
     // 2. Get all quizzes and their related questions from relationship tables with proper casting
     const quizQuestionsResult = await db.execute(sql.raw`
-      SELECT 
+      SELECT
         q.id::text as quiz_id,
         q.title as quiz_title,
         rel.quiz_questions_id::text as question_id,
         rel._parent_id::text as parent_id,
         rel.order::int as sort_order
-      FROM 
+      FROM
         payload.course_quizzes q
       JOIN
-        payload.course_quizzes_rels rel 
-      ON 
+        payload.course_quizzes_rels rel
+      ON
         q.id = rel._parent_id
-      WHERE 
+      WHERE
         rel.field = 'questions'
         AND rel.quiz_questions_id IS NOT NULL
-      ORDER BY 
+      ORDER BY
         q.id, COALESCE(rel.order, 0)
     `);
 
@@ -235,15 +235,12 @@ export const formatQuestionsJSONBDrizzle = async (): Promise<boolean> => {
 
       const jsonString = JSON.stringify(exactlyFormattedQuestions);
 
-      // Using a more direct SQL approach with exact JSONB casting
-      await db.execute(
-        sql.raw`
+      // Using a more direct SQL approach with embedded parameters
+      await db.execute(sql.raw`
         UPDATE payload.course_quizzes
-        SET questions = $1::jsonb
-        WHERE id::text = $2
-      `,
-        [jsonString, quizId],
-      );
+        SET questions = '${sql.raw(jsonString)}'::jsonb
+        WHERE id::text = '${sql.raw(quizId)}'
+      `);
 
       logAction(
         `Used direct SQL to ensure exact JSONB format for quiz "${quizData.title}"`,
@@ -255,8 +252,8 @@ export const formatQuestionsJSONBDrizzle = async (): Promise<boolean> => {
     // 5. Special explicit fix for "The Fundamental Elements of Design in Detail Quiz"
     // This is the one specifically mentioned in the error logs
     const problemQuizResult = await db.execute(sql.raw`
-      SELECT id::text, title 
-      FROM payload.course_quizzes 
+      SELECT id::text, title
+      FROM payload.course_quizzes
       WHERE title LIKE '%Fundamental Elements of Design in Detail%'
       OR id::text = '42564568-76bb-4405-88a9-8e9fd0a9154a'
     `);
@@ -268,16 +265,16 @@ export const formatQuestionsJSONBDrizzle = async (): Promise<boolean> => {
 
       // Get the relationships directly from the database for this quiz
       const questionRels = await db.execute(sql.raw`
-        SELECT 
+        SELECT
           quiz_questions_id::text as question_id,
           "order"::int as sort_order
-        FROM 
+        FROM
           payload.course_quizzes_rels
-        WHERE 
+        WHERE
           _parent_id::text = ${problemQuiz.id}
-        AND 
+        AND
           field = 'questions'
-        ORDER BY 
+        ORDER BY
           COALESCE("order", 0)
       `);
 
@@ -307,13 +304,13 @@ export const formatQuestionsJSONBDrizzle = async (): Promise<boolean> => {
 
         // Verify the fix worked
         const verifyFix = await db.execute(sql.raw`
-          SELECT 
+          SELECT
             jsonb_typeof(questions) as type,
             jsonb_array_length(questions) as count,
             questions::text as json_text
-          FROM 
+          FROM
             payload.course_quizzes
-          WHERE 
+          WHERE
             id::text = ${problemQuiz.id}
         `);
 
@@ -338,8 +335,8 @@ export const formatQuestionsJSONBDrizzle = async (): Promise<boolean> => {
 
     // 6. Additional check for Performance Quiz
     const performanceQuizResult = await db.execute(sql.raw`
-      SELECT id::text, title 
-      FROM payload.course_quizzes 
+      SELECT id::text, title
+      FROM payload.course_quizzes
       WHERE title LIKE '%Performance%'
     `);
 
@@ -351,13 +348,13 @@ export const formatQuestionsJSONBDrizzle = async (): Promise<boolean> => {
 
       // Verify its formatting
       const perfQuizFormat = await db.execute(sql.raw`
-        SELECT 
+        SELECT
           jsonb_typeof(questions) as type,
           jsonb_array_length(questions) as count,
           questions::text as json_text
-        FROM 
+        FROM
           payload.course_quizzes
-        WHERE 
+        WHERE
           id::text = ${performanceQuiz.id}
       `);
 
@@ -385,17 +382,17 @@ export const formatQuestionsJSONBDrizzle = async (): Promise<boolean> => {
 
     // 7. Run a comprehensive verification to be sure everything is fixed
     const verificationQuery = await db.execute(sql.raw`
-      SELECT 
+      SELECT
         COUNT(q.id)::int as total_count,
         COUNT(*) FILTER (WHERE jsonb_typeof(q.questions) = 'array')::int as array_count,
-        COUNT(*) FILTER (WHERE 
-          jsonb_typeof(q.questions) = 'array' AND 
-          jsonb_array_length(q.questions) > 0 AND 
+        COUNT(*) FILTER (WHERE
+          jsonb_typeof(q.questions) = 'array' AND
+          jsonb_array_length(q.questions) > 0 AND
           q.questions @> '[{"relationTo": "quiz_questions"}]'
         )::int as formatted_count
-      FROM 
+      FROM
         payload.course_quizzes q
-      WHERE 
+      WHERE
         q.questions IS NOT NULL
     `);
 
@@ -419,12 +416,12 @@ export const formatQuestionsJSONBDrizzle = async (): Promise<boolean> => {
 
       // Get details about any remaining problem quizzes
       const remainingProblems = await db.execute(sql.raw`
-        SELECT 
+        SELECT
           q.id::text as quiz_id,
           q.title as quiz_title
-        FROM 
+        FROM
           payload.course_quizzes q
-        WHERE 
+        WHERE
           q.questions IS NOT NULL
           AND (
             jsonb_typeof(q.questions) != 'array'

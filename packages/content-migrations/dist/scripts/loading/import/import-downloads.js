@@ -5,7 +5,9 @@
  */
 import fs from 'fs';
 import path from 'path';
-import { runImport } from '../import/import-r2-downloads';
+import { runImport } from '../import/import-r2-downloads.ts';
+// Try importing .ts directly
+// Added .js extension comment removed as it's now .ts
 async function main() {
     console.log('Starting download import process');
     try {

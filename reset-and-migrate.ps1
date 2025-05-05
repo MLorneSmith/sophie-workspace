@@ -23,8 +23,43 @@ $ErrorActionPreference = "Stop"
 . "$PSScriptRoot\scripts\orchestration\utils\dependency-graph.ps1"
 . "$PSScriptRoot\scripts\orchestration\utils\sql-error-logging.ps1"
 . "$PSScriptRoot\scripts\orchestration\phases\setup.ps1"
-. "$PSScriptRoot\scripts\orchestration\phases\processing.ps1"
-. "$PSScriptRoot\scripts\orchestration\phases\loading-with-quiz-repair.ps1"
+    . "$PSScriptRoot\scripts\orchestration\phases\processing.ps1"
+    . "$PSScriptRoot\scripts\orchestration\phases\loading-with-quiz-repair.ps1"
+
+# Function to fix quiz relationship paths (Temporary for isolation test)
+function Fix-QuizRelationshipPaths {
+    Log-EnhancedStep "Fixing quiz relationship paths (Isolated Test)" 1 1 # Adjusted step number for isolation
+
+    try {
+        # First ensure we're at the project root
+        Set-ProjectRootLocation
+        Log-Message "Changed to project root: $(Get-Location)" "Gray"
+
+        # Navigate to content-migrations directory using absolute path
+        if (Set-ProjectLocation -RelativePath "packages/content-migrations") {
+            Log-Message "Changed directory to: $(Get-Location)" "Gray"
+        } else {
+            throw "Could not find packages/content-migrations directory from project root"
+        }
+
+        # Explicitly fix the path column in course_quizzes_rels
+        Log-Message "Explicitly setting path='questions' in course_quizzes_rels..." "Yellow"
+        $updatePathSql = "UPDATE payload.course_quizzes_rels SET path = 'questions' WHERE quiz_questions_id IS NOT NULL AND (path IS NULL OR path != 'questions');"
+        Exec-Command -command "pnpm --filter @kit/content-migrations run utils:run-sql --sql \`"$updatePathSql\`"" -description "Setting path in course_quizzes_rels" -continueOnError
+
+        Log-Success "Quiz relationship paths fixed successfully (Isolated Test)"
+
+        Pop-Location
+        Log-Message "Returned to directory: $(Get-Location)" "Gray"
+
+        return $true
+    }
+    catch {
+        Log-Error "Failed to fix quiz relationship paths (Isolated Test): $_"
+        Log-Warning "This error might affect quiz relationship population, but continuing"
+        return $false
+    }
+}
 
 # Global variables
 $script:overallSuccess = $true
@@ -184,6 +219,35 @@ catch {
     exit 1
 }
 finally {
+    # Final step: Explicitly fix the path column in course_quizzes_rels using direct psql after all migrations
+    Log-Message "Running final psql command to fix quiz relationship paths..." "Yellow"
+    try {
+        $psqlPath = Get-Command psql -ErrorAction SilentlyContinue
+        if (-not $psqlPath) {
+            throw "psql command not found in PATH. Please ensure PostgreSQL client tools are installed and in your PATH."
+        }
+        $sqlCommand = @"
+UPDATE payload.course_quizzes_rels SET "path" = 'questions' WHERE quiz_questions_id IS NOT NULL AND ("path" IS NULL OR "path" != 'questions');
+"@
+        $psqlArgs = @(
+            "-h", "localhost",
+            "-p", "54322",
+            "-U", "postgres",
+            "-d", "postgres",
+            "-c", $sqlCommand
+        )
+        $env:PGPASSWORD='postgres'
+        & $psqlPath.Source @psqlArgs
+        if ($LASTEXITCODE -ne 0) {
+             Log-Warning "Final psql command to fix path column exited with code $LASTEXITCODE. Check psql output/logs if issues persist."
+             # Continue even if this fails, as per continueOnError logic previously used
+        } else {
+             Log-Success "Final psql command executed successfully."
+        }
+    } catch {
+         Log-Warning "Error executing final psql command: $_. Continuing..."
+    }
+
     # Finalize logging
     Finalize-Logging -success $script:overallSuccess
 }

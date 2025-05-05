@@ -39,10 +39,10 @@ export const formatQuestionsJSONBDirect = async (): Promise<boolean> => {
 
     // Get all quizzes
     const quizzes = await db.execute(sql.raw`
-      SELECT 
+      SELECT
         id::text as quiz_id,
         title as quiz_title
-      FROM 
+      FROM
         payload.course_quizzes
     `);
 
@@ -57,15 +57,15 @@ export const formatQuestionsJSONBDirect = async (): Promise<boolean> => {
       try {
         // Get the questions for this quiz from relationship table
         const questionsResult = await db.execute(sql.raw`
-          SELECT 
+          SELECT
             quiz_questions_id::text as question_id,
             COALESCE("order", 0)::int as order_num
-          FROM 
+          FROM
             payload.course_quizzes_rels
-          WHERE 
+          WHERE
             _parent_id::text = ${quiz.quiz_id}
             AND field = 'questions'
-          ORDER BY 
+          ORDER BY
             COALESCE("order", 0)::int ASC
         `);
 
@@ -86,15 +86,12 @@ export const formatQuestionsJSONBDirect = async (): Promise<boolean> => {
         // Convert to JSON string
         const questionsJson = JSON.stringify(formattedQuestions);
 
-        // Update with direct SQL approach and parameterized query
-        await db.execute(
-          sql.raw`
+        // Update with direct SQL approach, embedding parameters
+        await db.execute(sql.raw`
           UPDATE payload.course_quizzes
-          SET questions = $1::jsonb
-          WHERE id::text = $2
-        `,
-          [questionsJson, quiz.quiz_id],
-        );
+          SET questions = '${sql.raw(questionsJson)}'::jsonb
+          WHERE id::text = '${sql.raw(quiz.quiz_id)}'
+        `);
 
         logSuccess(
           `Updated ${formattedQuestions.length} questions for quiz "${quiz.quiz_title}"`,
@@ -156,15 +153,15 @@ async function fixSpecificQuiz(db: any, quizId: string, quizName?: string) {
 
     // Get the questions for this quiz
     const questionRels = await db.execute(sql.raw`
-      SELECT 
+      SELECT
         quiz_questions_id::text as question_id,
         COALESCE("order", 0)::int as order_num
-      FROM 
+      FROM
         payload.course_quizzes_rels
-      WHERE 
+      WHERE
         _parent_id::text = ${quizId}
         AND field = 'questions'
-      ORDER BY 
+      ORDER BY
         COALESCE("order", 0)::int ASC
     `);
 
@@ -185,25 +182,22 @@ async function fixSpecificQuiz(db: any, quizId: string, quizName?: string) {
     // Convert to JSON string
     const questionsJson = JSON.stringify(formattedQuestions);
 
-    // Update with direct SQL and parameterized query
-    await db.execute(
-      sql.raw`
+    // Update with direct SQL and embedded parameters
+    await db.execute(sql.raw`
       UPDATE payload.course_quizzes
-      SET questions = $1::jsonb
-      WHERE id::text = $2
-    `,
-      [questionsJson, quizId],
-    );
+      SET questions = '${sql.raw(questionsJson)}'::jsonb
+      WHERE id::text = '${sql.raw(quizId)}'
+    `);
 
     // Verify update
     const verifyResult = await db.execute(sql.raw`
-      SELECT 
+      SELECT
         jsonb_typeof(questions) as type,
         jsonb_array_length(questions) as count,
         questions::text as json_str
-      FROM 
+      FROM
         payload.course_quizzes
-      WHERE 
+      WHERE
         id::text = ${quizId}
     `);
 

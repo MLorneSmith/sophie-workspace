@@ -53,8 +53,9 @@ async function main() {
         '../scripts/repair/quiz-system/verification.js'
       );
       const db = await (
-        await import('../scripts/repair/quiz-system/utils/index.js')
-      ).getDbConnection({ schema: 'payload' });
+        await import('../scripts/repair/quiz-system/utils/db-connection.js')
+      ) // Corrected import path
+        .getDbConnection({ schema: 'payload' });
 
       const result = await verifyQuizSystem(db);
       logger.info(
@@ -76,8 +77,9 @@ async function main() {
         '../scripts/repair/quiz-system/detection.js'
       );
       const db = await (
-        await import('../scripts/repair/quiz-system/utils/index.js')
-      ).getDbConnection({ schema: 'payload' });
+        await import('../scripts/repair/quiz-system/utils/db-connection.js')
+      ) // Corrected import path
+        .getDbConnection({ schema: 'payload' });
 
       const state = await detectQuizRelationships(db);
       logDetectionSummary(state);

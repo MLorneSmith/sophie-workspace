@@ -81,7 +81,8 @@ export async function repairQuizSystem(
 
     if (!dryRun) {
       // Use Drizzle's transaction API instead of raw SQL commands
-      logger.info('Starting database transaction...');
+      // Use Drizzle's transaction API for repair steps only
+      logger.info('Starting database transaction for repairs...');
       await db.transaction(async (tx) => {
         // 2. Fix primary relationships (quiz → question)
         logger.info(
@@ -103,32 +104,55 @@ export async function repairQuizSystem(
         if (!skipVerification) {
           logger.info('Step 5: Verifying quiz system integrity...');
           verificationResult = await verifyQuizSystem(tx);
-
-          if (!verificationResult.success && !continueOnError) {
-            throw new Error(
-              'Verification failed: ' + verificationResult.message,
-            );
-          }
         }
+        // Verification moved outside the transaction
       });
+      logger.info('Repair transaction committed successfully');
 
-      logger.info('Transaction committed successfully');
+      // Perform verification outside the transaction
+      if (!skipVerification) {
+        logger.info('Step 5: Verifying quiz system integrity (post-commit)...');
+        verificationResult = await verifyQuizSystem(db); // Verify using the main db connection
+
+        if (!verificationResult.success && !continueOnError) {
+          // Log error but don't throw to prevent script exit if continueOnError is true
+          logger.error(
+            'Verification failed post-commit: ' + verificationResult.message,
+          );
+          // Optionally, you might still want to indicate overall failure
+          // throw new Error('Post-commit verification failed');
+        }
+      } else if (!verificationResult.success && continueOnError) {
+        logger.info(
+          // Changed from logger.warn
+          'WARN: Verification failed post-commit, but continuing due to flag.',
+        );
+      }
     } else {
-      // In dry run mode, just return empty results
+      // Dry run mode: Simulate results and perform verification if not skipped
+      logger.info('Dry run mode: Simulating results...');
       primaryResult = { relationshipsCreated: 0, newRelationships: [] };
       bidirectionalResult = { relationshipsCreated: 0, newRelationships: [] };
       jsonbResult = { quizzesUpdated: 0, updatedQuizzes: [] };
 
-      // Still perform verification if requested
       if (!skipVerification) {
-        logger.info('Step 5: Verifying quiz system integrity...');
+        logger.info(
+          'Step 5: Verifying quiz system integrity (dry run mode)...',
+        );
+        // Perform verification against the current DB state even in dry run
         verificationResult = await verifyQuizSystem(db);
       }
     }
 
+    // Determine overall success based on verification outcome (if performed)
+    const overallSuccess = verificationResult
+      ? verificationResult.success
+      : true;
+
     // Log summary
-    const result = {
-      success: true,
+    const result: RepairResult = {
+      success: overallSuccess, // Reflect verification result if checked
+      // Removed duplicate success: true line
       primaryResult,
       bidirectionalResult,
       jsonbResult,

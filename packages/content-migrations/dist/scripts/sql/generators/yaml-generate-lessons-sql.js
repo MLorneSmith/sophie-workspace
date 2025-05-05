@@ -2,12 +2,10 @@
  * Updated generator for lessons SQL that uses the YAML metadata file as the source of truth
  */
 import fs from 'fs';
-import matter from 'gray-matter';
 import yaml from 'js-yaml';
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
-import { DOWNLOAD_ID_MAP } from '../../../data/mappings/download-mappings.js';
-import { convertToLexical } from '../../utils/lexical-converter.js';
+import { DOWNLOAD_ID_MAP, LESSON_DOWNLOADS_MAPPING, } from '../../../data/mappings/download-mappings.js';
 import { generateQuizMap } from '../../utils/quiz-map-generator.js';
 import { COURSE_ID } from './generate-courses-sql.js';
 /**
@@ -71,20 +69,16 @@ BEGIN;
             ? lesson.bunnyVideo.id
             : null;
         const bunnyLibraryId = lesson.bunnyVideo?.library || '264486';
+        // Extract external video information (YouTube/Vimeo)
+        const videoSourceType = lesson.externalVideo?.source || 'youtube'; // default to youtube for backwards compatibility
+        const youtubeVideoId = lesson.externalVideo?.id || null;
         // Get the Lexical content from the .mdoc file
+        // We're intentionally NOT populating the content field to avoid duplication
+        // We still extract metadata like bunnyVideoId, but don't store the content itself
         const mdocFilePath = path.join(lessonsDir, `${lessonSlug}.mdoc`);
-        let lexicalContent = '{}'; // Empty Lexical document as fallback
-        if (fs.existsSync(mdocFilePath)) {
-            try {
-                const fileContent = fs.readFileSync(mdocFilePath, 'utf8');
-                const { content } = matter(fileContent);
-                lexicalContent = convertToLexical(content);
-            }
-            catch (error) {
-                console.error(`Error processing content for lesson ${lessonSlug}:`, error);
-            }
-        }
-        else {
+        let lexicalContent = null; // Set to NULL instead of empty object
+        // We still process the file to log warnings if it doesn't exist
+        if (!fs.existsSync(mdocFilePath)) {
             console.warn(`Lesson .mdoc file not found for ${lessonSlug}`);
         }
         // Add the lesson to the SQL
@@ -102,6 +96,8 @@ INSERT INTO payload.course_lessons (
   ${quizId ? 'quiz_id_id,' : ''}
   bunny_video_id,
   bunny_library_id,
+  video_source_type,
+  youtube_video_id,
   ${todo ? 'todo,' : ''}
   todo_complete_quiz,
   ${todoWatchContent ? 'todo_watch_content,' : ''}
@@ -114,7 +110,7 @@ INSERT INTO payload.course_lessons (
   '${lesson.title.replace(/'/g, "''")}',
   '${lessonSlug}',
   '${(lesson.description || '').replace(/'/g, "''")}',
-  '${lexicalContent.replace(/'/g, "''")}',
+  NULL, -- Intentionally set content field to NULL to avoid duplication
   ${lesson.lessonNumber || 0},
   ${lesson.lessonLength || 0},
   '${COURSE_ID}',
@@ -122,6 +118,8 @@ INSERT INTO payload.course_lessons (
   ${quizId ? `'${quizId}',` : ''}
   ${bunnyVideoId ? `'${bunnyVideoId}'` : 'NULL'},
   ${bunnyLibraryId ? `'${bunnyLibraryId}'` : "'264486'"},
+  ${videoSourceType ? `'${videoSourceType}'` : "'youtube'"},
+  ${youtubeVideoId ? `'${youtubeVideoId}'` : 'NULL'},
   ${todo ? `'${todo.replace(/'/g, "''")}'` : ''},
   ${todoCompleteQuiz ? 'TRUE' : 'FALSE'},
   ${todoWatchContent ? `'${todoWatchContent.replace(/'/g, "''")}'` : 'NULL'},
@@ -174,9 +172,13 @@ INSERT INTO payload.course_lessons_rels (
 `;
         }
         // Add relationship entries for downloads
-        if (lesson.downloads && lesson.downloads.length > 0) {
+        // Get downloads from either the lesson metadata or the LESSON_DOWNLOADS_MAPPING
+        const downloads = lesson.downloads && lesson.downloads.length > 0
+            ? lesson.downloads
+            : LESSON_DOWNLOADS_MAPPING[lessonSlug] || [];
+        if (downloads.length > 0) {
             sql += `-- Create relationship entries for the lesson to downloads\n`;
-            for (const downloadKey of lesson.downloads) {
+            for (const downloadKey of downloads) {
                 const downloadId = DOWNLOAD_ID_MAP[downloadKey];
                 if (downloadId) {
                     sql += `INSERT INTO payload.course_lessons_rels (

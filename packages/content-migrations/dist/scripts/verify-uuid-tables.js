@@ -86,12 +86,12 @@ async function verifyUuidTables() {
             if (columns.includes('has_downloads_id')) {
                 query += ', has_downloads_id';
             }
-            if (columns.includes('last_checked')) {
-                query += ', last_checked';
+            if (columns.includes('created_at')) {
+                query += ', created_at';
             }
             query += ' FROM payload.dynamic_uuid_tables';
-            if (columns.includes('last_checked')) {
-                query += ' ORDER BY last_checked DESC';
+            if (columns.includes('created_at')) {
+                query += ' ORDER BY created_at DESC';
             }
             // Execute the dynamic query
             const trackingEntries = await executeSQL(query);
@@ -102,8 +102,8 @@ async function verifyUuidTables() {
                 if (entry.has_downloads_id !== undefined) {
                     entryText += `: ${entry.has_downloads_id ? '✅' : '❌'} downloads_id column`;
                 }
-                if (entry.last_checked !== undefined) {
-                    entryText += `, last checked at ${entry.last_checked}`;
+                if (entry.created_at !== undefined) {
+                    entryText += `, created at ${entry.created_at}`;
                 }
                 console.log(entryText);
             }

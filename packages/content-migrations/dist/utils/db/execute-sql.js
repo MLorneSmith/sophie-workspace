@@ -1,55 +1,81 @@
 /**
- * Utility function to execute SQL statements against the database
+ * Database utility functions for executing SQL queries
+ * Designed for ES Module compatibility
  */
 import dotenv from 'dotenv';
 import path from 'path';
-import pkg from 'pg';
-const { Pool } = pkg;
-// Load environment variables based on the NODE_ENV
-const envFile = process.env.NODE_ENV === 'production'
-    ? '.env.production'
-    : process.env.NODE_ENV === 'test'
-        ? '.env.test'
-        : '.env.development';
-// Load from root directory - use path relative to project root
-dotenv.config({ path: path.resolve(process.cwd(), envFile) });
-// Database connection string from environment variables - check both possible names
-const connectionString = process.env.DATABASE_URL || process.env.DATABASE_URI;
-if (!connectionString) {
-    throw new Error('Neither DATABASE_URL nor DATABASE_URI environment variables are set');
+import pg from 'pg';
+import { fileURLToPath } from 'url';
+// Calculate the project root for environment variable loading
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const projectRoot = path.resolve(__dirname, '../../../');
+// Load environment variables with better error handling
+try {
+    dotenv.config({ path: path.join(projectRoot, '.env.development') });
+    console.log('Loaded environment variables from .env.development');
 }
-// Configure the connection pool
-const pool = new Pool({
-    connectionString,
-});
+catch (error) {
+    console.log('Could not load dotenv, using default connection string');
+}
+// Use named import to make it clear we're using the PostgreSQL client
+const { Pool } = pg;
+// Connection pool for reuse
+let pool = null;
 /**
- * Execute a SQL statement with optional parameters
- *
- * @param sql The SQL statement to execute
- * @param params Optional parameters for the SQL statement
- * @returns The result of the SQL statement
+ * Get database connection pool (singleton pattern)
+ * @returns PostgreSQL connection pool
  */
-export async function executeSQL(sql, params = []) {
-    let client;
+export function getPool() {
+    if (!pool) {
+        const connectionString = process.env.DATABASE_URI ||
+            'postgresql://postgres:postgres@localhost:54322/postgres?schema=payload';
+        console.log(`Attempting to connect to database: ${connectionString}`); // More specific log
+        try {
+            pool = new Pool({ connectionString });
+            console.log('Database pool created successfully.'); // Success log
+        }
+        catch (poolError) {
+            console.error('!!! FAILED TO CREATE DATABASE POOL !!!', poolError); // Explicit error log
+            throw poolError; // Re-throw to ensure script fails if pool creation fails
+        }
+        // Add error handler to prevent silent failures
+        pool.on('error', (err) => {
+            console.error('Unexpected error on idle client', err);
+            process.exit(-1);
+        });
+    }
+    return pool;
+}
+/**
+ * Execute SQL query with proper error handling
+ * @param query SQL query string
+ * @param params Optional query parameters
+ * @returns Query result
+ */
+export async function executeSQL(query, params = []) {
+    const client = await getPool().connect();
     try {
-        client = await pool.connect();
-        const result = await client.query(sql, params);
-        return result;
+        return await client.query(query, params);
     }
     catch (error) {
-        console.error('Error executing SQL:', error);
+        console.error(`SQL Error executing query: ${query.substring(0, 100)}...`);
+        console.error(`Error details: ${error}`);
         throw error;
     }
     finally {
-        if (client) {
-            client.release();
-        }
+        client.release();
     }
 }
 /**
- * Close the database connection pool
- * Should be called when the application is shutting down
+ * Close all database connections (for cleanup)
  */
-export async function closePool() {
-    await pool.end();
+export async function closeConnections() {
+    if (pool) {
+        await pool.end();
+        pool = null;
+        console.log('Database connections closed');
+    }
 }
+// Export the pg types for convenience
+export { pg };

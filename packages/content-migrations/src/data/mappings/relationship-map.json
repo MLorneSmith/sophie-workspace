@@ -4,12 +4,52 @@
       "name": "courses__downloads",
       "relationships": []
     },
+    "course_lessons_downloads": {
+      "name": "course_lessons_downloads",
+      "relationships": []
+    },
+    "private": {
+      "name": "private",
+      "relationships": []
+    },
+    "private_categories": {
+      "name": "private_categories",
+      "relationships": []
+    },
+    "private_tags": {
+      "name": "private_tags",
+      "relationships": []
+    },
+    "private__downloads": {
+      "name": "private__downloads",
+      "relationships": []
+    },
+    "dynamic_uuid_tables": {
+      "name": "dynamic_uuid_tables",
+      "relationships": []
+    },
+    "documentation__downloads": {
+      "name": "documentation__downloads",
+      "relationships": []
+    },
+    "posts__downloads": {
+      "name": "posts__downloads",
+      "relationships": []
+    },
+    "surveys__downloads": {
+      "name": "surveys__downloads",
+      "relationships": []
+    },
     "course_lessons__downloads": {
       "name": "course_lessons__downloads",
       "relationships": []
     },
     "course_quizzes__downloads": {
       "name": "course_quizzes__downloads",
+      "relationships": []
+    },
+    "downloads": {
+      "name": "downloads",
       "relationships": []
     },
     "uuid_table_monitor": {
@@ -20,10 +60,6 @@
       "name": "posts_downloads",
       "relationships": []
     },
-    "downloads": {
-      "name": "downloads",
-      "relationships": []
-    },
     "documentation_downloads": {
       "name": "documentation_downloads",
       "relationships": []
@@ -31,24 +67,6 @@
     "surveys_downloads": {
       "name": "surveys_downloads",
       "relationships": []
-    },
-    "private_downloads": {
-      "name": "private_downloads",
-      "relationships": []
-    },
-    "course_lessons": {
-      "name": "course_lessons",
-      "relationships": [
-        {
-          "sourceCollection": "course_lessons",
-          "sourceField": null,
-          "targetCollection": "unknown",
-          "relationType": "hasOne",
-          "relationshipPath": null,
-          "isRequired": false,
-          "relationshipTable": "course_lessons_rels"
-        }
-      ]
     },
     "course_quizzes": {
       "name": "course_quizzes",
@@ -73,9 +91,27 @@
         }
       ]
     },
+    "private_downloads": {
+      "name": "private_downloads",
+      "relationships": []
+    },
     "courses": {
       "name": "courses",
       "relationships": []
+    },
+    "course_lessons": {
+      "name": "course_lessons",
+      "relationships": [
+        {
+          "sourceCollection": "course_lessons",
+          "sourceField": null,
+          "targetCollection": "unknown",
+          "relationType": "hasOne",
+          "relationshipPath": null,
+          "isRequired": false,
+          "relationshipTable": "course_lessons_rels"
+        }
+      ]
     },
     "payload_migrations": {
       "name": "payload_migrations",
@@ -177,30 +213,6 @@
       "name": "payload_preferences",
       "relationships": []
     },
-    "private_categories": {
-      "name": "private_categories",
-      "relationships": []
-    },
-    "private_tags": {
-      "name": "private_tags",
-      "relationships": []
-    },
-    "private__downloads": {
-      "name": "private__downloads",
-      "relationships": []
-    },
-    "documentation__downloads": {
-      "name": "documentation__downloads",
-      "relationships": []
-    },
-    "posts__downloads": {
-      "name": "posts__downloads",
-      "relationships": []
-    },
-    "surveys__downloads": {
-      "name": "surveys__downloads",
-      "relationships": []
-    },
     "quiz_question_relationships": {
       "name": "quiz_question_relationships",
       "relationships": []
@@ -222,37 +234,25 @@
     "payload_locked_documents": {
       "name": "payload_locked_documents",
       "relationships": []
-    },
-    "course_lessons_downloads": {
-      "name": "course_lessons_downloads",
-      "relationships": []
-    },
-    "private": {
-      "name": "private",
-      "relationships": []
-    },
-    "dynamic_uuid_tables": {
-      "name": "dynamic_uuid_tables",
-      "relationships": []
     }
   },
   "relationshipTables": [
-    "posts_downloads_rels",
-    "documentation_downloads_rels",
-    "downloads_rels",
-    "surveys_downloads_rels",
-    "private_downloads_rels",
-    "private_rels",
-    "surveys_rels",
     "survey_questions_rels",
-    "documentation_rels",
-    "posts_rels",
     "courses_rels",
     "course_lessons_rels",
     "course_quizzes_rels",
     "quiz_questions_rels",
-    "payload_locked_documents_rels",
-    "payload_preferences_rels"
+    "payload_preferences_rels",
+    "private_rels",
+    "documentation_rels",
+    "posts_rels",
+    "downloads_rels",
+    "posts_downloads_rels",
+    "documentation_downloads_rels",
+    "surveys_downloads_rels",
+    "private_downloads_rels",
+    "surveys_rels",
+    "payload_locked_documents_rels"
   ],
   "uuidTables": []
 }
