@@ -1,0 +1,46 @@
+title: Course Feedback
+slug: feedback
+description: Please share your thoughts on the course
+status: published
+language: en
+questions:
+  - question: "Did 'Decks for Decision Makers' meet your expectations?"
+    answers:
+      - answer: 'Very dissatisfied'
+      - answer: 'Somewhat dissatisfied'
+      - answer: 'Neither satisfied nor dissatisfied'
+      - answer: 'Somewhat Satisfied'
+      - answer: 'Very satisfied'
+    questioncategory: satisfaction
+    questionspin: positive
+    type: scale
+  - question: 'How would you rate the quality of the training?'
+    answers:
+      - answer: 'Unacceptable'
+      - answer: 'Poor'
+      - answer: 'Satisfactory'
+      - answer: 'Good'
+      - answer: 'Outstanding'
+    questioncategory: quality
+    questionspin: positive
+    type: scale
+  - question: 'How likely are you to recommend this course to a friend, partner, or colleague?'
+    answers:
+      - answer: '1 - Unlikely'
+      - answer: '2'
+      - answer: '3'
+      - answer: '4'
+      - answer: '5'
+      - answer: '6'
+      - answer: '7'
+      - answer: '8'
+      - answer: '9'
+      - answer: '10 - Extremely likely'
+    questioncategory: recommendation
+    questionspin: positive
+    type: scale
+  - question: 'Do you have any suggestions to improve this course?'
+    answers: []
+    questioncategory: improvement
+    questionspin: positive
+    type: text_field
