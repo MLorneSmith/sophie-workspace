@@ -26,10 +26,10 @@
     "@kit/prettier-config": "workspace:*",
     "@kit/tsconfig": "workspace:*",
     "@kit/ui": "workspace:*",
-    "@types/node": "^22.15.3",
+    "@types/node": "^22.15.9",
     "@types/react": "19.1.2",
     "react": "19.1.0",
-    "zod": "^3.24.3"
+    "zod": "^3.24.4"
   },
   "typesVersions": {
     "*": {
