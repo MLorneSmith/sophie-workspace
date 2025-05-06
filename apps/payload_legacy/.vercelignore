@@ -1,0 +1,10 @@
+# Content migration scripts
+
+scripts/migrate-_.ts
+scripts/list-_.ts
+
+# Development files
+
+.vscode/
+.turbo/
+node_modules/

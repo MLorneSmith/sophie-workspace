@@ -1,14 +1,11 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
-    "lib": [
-      "DOM",
-      "DOM.Iterable",
-      "ES2022"
-    ],
+    "lib": ["DOM", "DOM.Iterable", "ES2022"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
+    "noImplicitAny": false,
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
@@ -23,22 +20,27 @@
       }
     ],
     "paths": {
-      "@/*": [
-        "./src/*"
-      ],
-      "@payload-config": [
-        "./src/payload.config.ts"
-      ]
+      "@/*": ["./src/*"],
+      "@payload-config": ["./src/payload.config.ts"]
     },
     "target": "ES2022",
+    "composite": true,
+    "declaration": true,
+    "declarationMap": false,
+    "outDir": "./dist"
   },
+  "references": [],
   "include": [
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "payload.config.ts-old",
+    "types/**/*.d.ts",
+    "src/app/(payload)/admin/importMap.js"
   ],
-  "exclude": [
-    "node_modules"
-  ]
+  "ts-node": {
+    "swc": true
+  },
+  "exclude": ["node_modules"]
 }
