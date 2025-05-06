@@ -77,39 +77,39 @@ function Fix-Relationships {
         Log-Message "Running Payload CMS relationship fix with strict typing..." "Yellow"
         Exec-Command -command "pnpm run fix:payload-relationships-strict" -description "Fixing Payload relationships with strict typing" -continueOnError
 
-        # NEW: Run the comprehensive Quiz System Repair
-        $quizSystemRepairResult = Invoke-QuizSystemRepair -Verbose -ContinueOnError
+        # # NEW: Run the comprehensive Quiz System Repair
+        # $quizSystemRepairResult = Invoke-QuizSystemRepair -Verbose -ContinueOnError
 
-        # Only run legacy scripts if the new system failed
-        if ($quizSystemRepairResult) {
-            Log-Success "Quiz system repair completed successfully, skipping legacy quiz repair scripts"
+        # # Only run legacy scripts if the new system failed
+        # if ($quizSystemRepairResult) {
+        #     Log-Success "Quiz system repair completed successfully, skipping legacy quiz repair scripts"
 
-            # Still run the diagnostic to verify the state
-            Log-Message "Running quiz relationship diagnostic for verification..." "Yellow"
-            Exec-Command -command "pnpm run diagnostic:quiz-relationships" -description "Running quiz relationship diagnostic" -continueOnError
-        } else {
-            Log-Warning "Quiz system repair didn't complete successfully, falling back to legacy scripts"
+        #     # Still run the diagnostic to verify the state
+        #     Log-Message "Running quiz relationship diagnostic for verification..." "Yellow"
+        #     Exec-Command -command "pnpm run diagnostic:quiz-relationships" -description "Running quiz relationship diagnostic" -continueOnError
+        # } else {
+        #     Log-Warning "Quiz system repair didn't complete successfully, falling back to legacy scripts"
 
-            # Run only the optimized quiz relationship repair
-            Log-Message "Running optimized quiz relationship repair..." "Yellow"
-            Exec-Command -command "pnpm run quiz:fix:corrected" -description "Fixing quiz relationships with corrected script" -continueOnError
+        #     # Run only the optimized quiz relationship repair
+        #     Log-Message "Running optimized quiz relationship repair..." "Yellow"
+        #     Exec-Command -command "pnpm run quiz:fix:corrected" -description "Fixing quiz relationships with corrected script" -continueOnError
 
-            # Run the diagnostic script to check the current state of quiz relationships
-            Log-Message "Running quiz relationship diagnostic..." "Yellow"
-            Exec-Command -command "pnpm run diagnostic:quiz-relationships" -description "Running quiz relationship diagnostic" -continueOnError
+        #     # Run the diagnostic script to check the current state of quiz relationships
+        #     Log-Message "Running quiz relationship diagnostic..." "Yellow"
+        #     Exec-Command -command "pnpm run diagnostic:quiz-relationships" -description "Running quiz relationship diagnostic" -continueOnError
 
-            # Run bidirectional quiz relationship fix with schema alignment
-            Log-Message "Running bidirectional quiz relationship fix..." "Yellow"
-            Exec-Command -command "pnpm run fix:bidirectional-quiz-relationships" -description "Fixing bidirectional quiz relationships" -continueOnError
+        #     # Run bidirectional quiz relationship fix with schema alignment
+        #     Log-Message "Running bidirectional quiz relationship fix..." "Yellow"
+        #     Exec-Command -command "pnpm run fix:bidirectional-quiz-relationships" -description "Fixing bidirectional quiz relationships" -continueOnError
 
-            # Run the combined path and relationship fix
-            Log-Message "Running combined quiz paths and relationships fix..." "Yellow"
-            Exec-Command -command "pnpm run fix:quiz-paths-and-relationships" -description "Fixing quiz paths and relationships" -continueOnError
+        #     # Run the combined path and relationship fix
+        #     Log-Message "Running combined quiz paths and relationships fix..." "Yellow"
+        #     Exec-Command -command "pnpm run fix:quiz-paths-and-relationships" -description "Fixing quiz paths and relationships" -continueOnError
 
-            # Run our enhanced quiz paths and relationships fix
-            Log-Message "Running enhanced quiz paths and relationships fix..." "Yellow"
-            Exec-Command -command "pnpm run fix:enhanced-quiz-paths-and-relationships" -description "Running enhanced quiz paths and relationships fix" -continueOnError
-        }
+        #     # Run our enhanced quiz paths and relationships fix
+        #     Log-Message "Running enhanced quiz paths and relationships fix..." "Yellow"
+        #     Exec-Command -command "pnpm run fix:enhanced-quiz-paths-and-relationships" -description "Running enhanced quiz paths and relationships fix" -continueOnError
+        # }
 
         # Run the diagnostic again to verify the state after all fixes - COMMENTED OUT as potentially interfering
         # Log-Message "Running quiz relationship diagnostic after fixes..." "Yellow"

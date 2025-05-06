@@ -235,9 +235,9 @@ function Generate-SqlSeedFiles {
         Exec-Command -command "pnpm --filter @kit/content-migrations run generate:updated-sql" -description "Generating SQL seed files using YAML metadata"
         Log-Success "Successfully generated SQL seed files using YAML approach"
         
-        # Fix quiz ID consistency issue - this will overwrite the 03-quizzes.sql with correct IDs
-        Log-Message "Fixing quiz ID consistency issues..." "Yellow"
-        Exec-Command -command "pnpm run fix:quiz-id-consistency" -description "Fixing quiz ID consistency"
+        # # Fix quiz ID consistency issue - this will overwrite the 03-quizzes.sql with correct IDs
+        # Log-Message "Fixing quiz ID consistency issues..." "Yellow"
+        # Exec-Command -command "pnpm run fix:quiz-id-consistency" -description "Fixing quiz ID consistency"
         
         Log-Success "SQL seed files generated and ID consistency fixed successfully"
 
@@ -281,9 +281,9 @@ function Fix-References {
         Log-Message "Fixing quiz question references..." "Yellow"
         Exec-Command -command "pnpm run fix:questions-quiz-references" -description "Fixing quiz question references"
         
-        # Repair quiz-question relationships in the database
-        Log-Message "Repairing quiz-question relationships..." "Yellow"
-        Exec-Command -command "pnpm run quiz:repair" -description "Repairing quiz-question relationships"
+        # # Repair quiz-question relationships in the database
+        # Log-Message "Repairing quiz-question relationships..." "Yellow"
+        # Exec-Command -command "pnpm run quiz:repair" -description "Repairing quiz-question relationships"
         
         # Fix quiz array relationships to ensure consistency between arrays and relationship tables
         Log-Message "Fixing quiz array relationships..." "Yellow"
