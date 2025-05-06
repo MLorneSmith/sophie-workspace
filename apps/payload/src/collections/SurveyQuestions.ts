@@ -14,6 +14,9 @@ export const SurveyQuestions: CollectionConfig = {
   access: {
     read: () => true, // Public read access
   },
+  versions: {
+    drafts: true,
+  },
   fields: [
     {
       name: 'text',
@@ -82,7 +85,7 @@ export const SurveyQuestions: CollectionConfig = {
       },
     },
     {
-      name: 'questionspin',
+      name: 'questionspin', // Keeping the original name for now, but noted as potential typo
       type: 'select',
       options: [
         { label: 'Positive', value: 'Positive' },

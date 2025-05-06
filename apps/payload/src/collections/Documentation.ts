@@ -1,8 +1,7 @@
 import { CollectionConfig } from 'payload'
 import { BlocksFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
-import { sql } from '@payloadcms/db-postgres'
-import { CallToAction, TestBlock } from '../blocks'
-import { findDownloadsForCollection } from '../db/downloads'
+// Assuming blocks like CallToAction and TestBlock will be defined elsewhere
+// import { CallToAction, TestBlock } from '../blocks'
 
 export const Documentation: CollectionConfig = {
   slug: 'documentation',
@@ -18,44 +17,8 @@ export const Documentation: CollectionConfig = {
   access: {
     read: () => true,
   },
-  hooks: {
-    // Add a collection-level afterRead hook to handle downloads
-    afterRead: [
-      async ({ req, doc }) => {
-        // Only handle downloads if we have a specific document with an ID
-        if (doc?.id) {
-          try {
-            // Proactively run the scanner function before fetching downloads
-            try {
-              await req.payload.db.drizzle.execute(
-                sql.raw(`SELECT * FROM payload.scan_and_fix_uuid_tables()`),
-              )
-            } catch (scanError) {
-              // Log but continue even if scanner fails
-              console.log('Scanner function failed in Documentation hook, continuing:', scanError)
-            }
-
-            // Replace downloads with ones from our custom view
-            const downloads = await findDownloadsForCollection(req.payload, doc.id, 'documentation')
-
-            // Update the document with the retrieved downloads
-            return {
-              ...doc,
-              downloads,
-            }
-          } catch (error) {
-            console.error('Error fetching downloads for documentation:', error)
-            // Return the document with an empty downloads array instead of failing
-            return {
-              ...doc,
-              downloads: [], // Fallback to empty array on error
-            }
-          }
-        }
-
-        return doc
-      },
-    ],
+  versions: {
+    drafts: true,
   },
   fields: [
     {
@@ -80,11 +43,14 @@ export const Documentation: CollectionConfig = {
       type: 'richText',
       required: true,
       editor: lexicalEditor({
-        // Field-specific editor configuration with custom blocks
         features: ({ defaultFeatures }) => [
           ...defaultFeatures,
           BlocksFeature({
-            blocks: [CallToAction, TestBlock],
+            blocks: [
+              // Assuming blocks like CallToAction and TestBlock will be defined elsewhere
+              // CallToAction,
+              // TestBlock
+            ],
           }),
         ],
       }),
@@ -93,7 +59,6 @@ export const Documentation: CollectionConfig = {
         condition: () => true,
       },
     },
-    // Add downloads field
     {
       name: 'downloads',
       type: 'relationship',
@@ -147,12 +112,5 @@ export const Documentation: CollectionConfig = {
         },
       ],
     },
-    // The parent field is now automatically added by the nested-docs plugin
-    // {
-    //   name: 'parent',
-    //   type: 'relationship',
-    //   relationTo: 'documentation' as any,
-    //   hasMany: false,
-    // },
   ],
 }

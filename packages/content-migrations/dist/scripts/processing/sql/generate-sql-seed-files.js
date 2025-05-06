@@ -1,7 +1,14 @@
+/**
+ * Updated SQL Seed Files Generator
+ * Uses YAML metadata and optimized approaches for generating SQL seed files
+ */
 import fs from 'fs';
 import * as jsYaml from 'js-yaml';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { QUIZZES } from '../../../data/quizzes-quiz-questions-truth.js';
+// Removed extension
+// Import the source of truth
 // Import quiz map generator
 import generateQuizMap from '../../utils/quiz-map-generator.js';
 // Get current directory (replacement for __dirname in ESM)
@@ -31,9 +38,9 @@ async function generateAllSqlSeedFiles() {
         // Generate SQL seed files
         await generateCoursesSql();
         await generateLessonsSql(lessonMetadata, quizMap);
-        await generateQuizzesSql(quizMap);
+        await generateQuizzesSql();
         await generateLessonQuizReferencesSql(lessonMetadata, quizMap);
-        await generateQuestionsSql(quizMap);
+        await generateQuestionsSql(); // Removed quizMap argument
         await generateSurveysSql();
         await generateSurveyQuestionsSql();
         await generatePostsSql();
@@ -184,41 +191,27 @@ INSERT INTO payload.course_lessons (id, title, slug, lesson_number, description,
     }
 }
 /**
- * Generate quizzes SQL
- * @param {Object} quizMap Quiz map
+ * Generate quizzes SQL from the source of truth
  */
-async function generateQuizzesSql(quizMap) {
+async function generateQuizzesSql() {
     try {
-        console.log('Generating quizzes SQL...');
-        // Attempt to use the existing file first for fallback
-        const existingFile = path.resolve(PAYLOAD_SEED_DIR, '03-quizzes.sql');
-        if (fs.existsSync(existingFile)) {
-            const content = fs.readFileSync(existingFile, 'utf8');
-            // Write to processed SQL directory
-            const outputFile = path.resolve(SQL_DIR, '03-quizzes.sql');
-            fs.writeFileSync(outputFile, content);
-            console.log('Quizzes SQL generated successfully (from existing file)');
-            return;
-        }
-        // If we have quizMap but no file, generate placeholder SQL
-        let quizSql = `-- Quiz data
-INSERT INTO payload.course_quizzes (id, title, slug, description) VALUES
+        console.log('Generating quizzes SQL from source of truth...');
+        let quizSql = `-- Quiz data (Generated from source of truth)
+INSERT INTO payload.course_quizzes (id, title, slug, description, pass_threshold, created_at, updated_at) VALUES
 `;
-        // Create SQL for each quiz in the map
-        const quizValues = Object.entries(quizMap)
-            .map(([slug, id]) => {
-            const title = slug
-                .replace(/-/g, ' ')
-                .replace(/\b\w/g, (c) => c.toUpperCase());
-            return `('${id}', '${title}', '${slug}', 'Quiz for ${title}')`;
+        const quizValues = Object.values(QUIZZES)
+            .map((quiz) => {
+            // Use dollar quoting for title and description
+            const escapedTitle = escapeSql(quiz.title);
+            const escapedDescription = escapeSql(quiz.description || '');
+            return `('${quiz.id}', $$${escapedTitle}$$, '${quiz.slug}', $$${escapedDescription}$$, ${quiz.passingScore || 0}, NOW(), NOW())`;
         })
             .join(',\n');
-        // Combine SQL
         quizSql += quizValues + ';';
         // Write to processed SQL directory
         const outputFile = path.resolve(SQL_DIR, '03-quizzes.sql');
         fs.writeFileSync(outputFile, quizSql);
-        console.log('Quizzes SQL generated successfully');
+        console.log(`Quizzes SQL generated successfully (${Object.keys(QUIZZES).length} quizzes).`);
     }
     catch (error) {
         console.error('Error generating quizzes SQL:', error);
@@ -268,31 +261,101 @@ VALUES
     }
 }
 /**
- * Generate questions SQL
- * @param {Object} quizMap Quiz map
+ * Generate questions SQL using the source of truth
  */
-async function generateQuestionsSql(quizMap) {
+async function generateQuestionsSql() {
     try {
-        console.log('Generating questions SQL...');
-        // Attempt to use the existing file for fallback
-        const existingFile = path.resolve(PAYLOAD_SEED_DIR, '04-questions.sql');
-        if (fs.existsSync(existingFile)) {
-            const content = fs.readFileSync(existingFile, 'utf8');
-            // Write to processed SQL directory
-            const outputFile = path.resolve(SQL_DIR, '04-questions.sql');
-            fs.writeFileSync(outputFile, content);
-            console.log('Questions SQL generated successfully (from existing file)');
-            return;
+        console.log('Generating questions SQL from source of truth...');
+        let questionsSql = `-- Seed data for the quiz questions table (Generated from source of truth)
+-- This file should be run after the quizzes seed file to ensure the quizzes exist
+
+BEGIN;
+
+`;
+        const allInserts = [];
+        // Iterate through each quiz defined in the source of truth
+        for (const quizSlug in QUIZZES) {
+            const quiz = QUIZZES[quizSlug];
+            if (quiz.questions && quiz.questions.length > 0) {
+                // Generate INSERT statements for each question in the quiz
+                quiz.questions.forEach((question, index) => {
+                    // Generate IDs for options and store them
+                    const optionsWithIds = question.options.map((optionText, optionIndex) => {
+                        const isCorrect = optionIndex === question.correctOptionIndex;
+                        return {
+                            id: crypto.randomUUID(), // Generate UUID for each option
+                            text: optionText,
+                            isCorrect: isCorrect,
+                        };
+                    });
+                    // Find the ID of the correct option
+                    const correctOption = optionsWithIds.find((option) => option.isCorrect);
+                    const correctAnswerId = correctOption
+                        ? `'${correctOption.id}'`
+                        : 'NULL';
+                    // Format options array for JSONB insertion
+                    const optionsJsonb = `jsonb_build_array(${optionsWithIds
+                        .map((option) => {
+                        // Use dollar quoting for the option text
+                        const escapedText = escapeSql(option.text);
+                        return `jsonb_build_object('id', '${option.id}'::text, 'text', $$${escapedText}$$, 'isCorrect', ${option.isCorrect})`;
+                    })
+                        .join(', ')})`;
+                    // Use dollar quoting for question text and explanation
+                    const escapedQuestion = escapeSql(question.text);
+                    // Explanation might be JSON string or plain text, handle accordingly
+                    let escapedExplanation = 'NULL';
+                    if (question.explanation) {
+                        // Basic check if it looks like JSON
+                        if (question.explanation.startsWith('{') &&
+                            question.explanation.endsWith('}')) {
+                            // Assume it's JSON, escape for SQL string literal, then cast to JSONB
+                            escapedExplanation = `'${escapeSql(question.explanation)}'::jsonb`;
+                        }
+                        else {
+                            // Treat as plain text, use dollar quoting
+                            escapedExplanation = `$$${escapedExplanation}$$`; // Fixed: Use escapedExplanation here
+                        }
+                    }
+                    const insertStatement = `
+INSERT INTO payload.quiz_questions (
+  id, question, type, options, explanation, "order", created_at, updated_at, correct_answer
+) VALUES (
+  '${question.id}',
+  $$${escapedQuestion}$$,
+  'multiple_choice', -- Assuming all are multiple choice based on source structure
+  ${optionsJsonb},
+  ${escapedExplanation},
+  ${index}, -- Use index as order for now
+  NOW(),
+  NOW(),
+  ${correctAnswerId} -- Correct option ID
+) ON CONFLICT (id) DO UPDATE SET
+  question = EXCLUDED.question,
+  type = EXCLUDED.type,
+  options = EXCLUDED.options,
+  explanation = EXCLUDED.explanation,
+  "order" = EXCLUDED.order,
+  updated_at = NOW(),
+  correct_answer = EXCLUDED.correct_answer;`; // Also update correct_answer on conflict
+                    allInserts.push(insertStatement);
+                });
+            }
         }
-        // If we have quizMap but no file, generate placeholder SQL
-        let questionsSql = `-- No quiz questions available`;
+        if (allInserts.length > 0) {
+            questionsSql += allInserts.join('\n');
+        }
+        else {
+            questionsSql += '-- No questions found in the source of truth file.';
+        }
+        questionsSql += '\n\nCOMMIT;';
         // Write to processed SQL directory
         const outputFile = path.resolve(SQL_DIR, '04-questions.sql');
         fs.writeFileSync(outputFile, questionsSql);
-        console.log('Questions SQL generated (placeholder)');
+        console.log(`Questions SQL generated successfully from source of truth (${allInserts.length} questions).`);
     }
     catch (error) {
-        console.error('Error generating questions SQL:', error);
+        console.error('Error generating questions SQL from source of truth:', error);
         throw error;
     }
 }
@@ -492,18 +555,22 @@ function copyFilesToPayloadSeedDir() {
     }
 }
 /**
- * Escape SQL string values including JSON content
- * @param {string} value String to escape
- * @returns {string} Escaped string
+ * Escape SQL string values for safe insertion, especially within dollar quotes.
+ * @param {string | number | boolean | null | undefined} value Value to escape
+ * @returns {string} Escaped string suitable for SQL
  */
 function escapeSql(value) {
-    if (typeof value !== 'string')
-        return '';
-    return value
-        .replace(/'/g, "''") // Escape single quotes with double single quotes for SQL
-        .replace(/\\/g, '\\\\') // Escape backslashes
-        .replace(/\n/g, '\\n') // Escape newlines
-        .replace(/\r/g, '\\r'); // Escape carriage returns
+    if (value === null || typeof value === 'undefined') {
+        return ''; // Represent null/undefined as empty string for dollar quoting context
+    }
+    if (typeof value === 'number' || typeof value === 'boolean') {
+        return String(value); // Numbers and booleans don't need escaping within $$
+    }
+    if (typeof value === 'string') {
+        // Only escape dollar quotes themselves if using dollar quoting
+        return value.replace(/\$\$/g, "$'$$'"); // Replace $$ with $'$$'
+    }
+    return ''; // Fallback for other types
 }
 // Run the main function
 generateAllSqlSeedFiles().catch((error) => {

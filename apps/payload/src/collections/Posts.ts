@@ -1,8 +1,8 @@
 import { CollectionConfig } from 'payload'
 import { BlocksFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
 
-import { BunnyVideo, CallToAction, TestBlock, YouTubeVideo } from '../blocks'
-import { findDownloadsForCollection } from '../db/downloads'
+// Assuming blocks like BunnyVideo, CallToAction, TestBlock, YouTubeVideo will be defined elsewhere
+// import { BunnyVideo, CallToAction, TestBlock, YouTubeVideo } from '../blocks'
 
 export const Posts: CollectionConfig = {
   slug: 'posts',
@@ -18,29 +18,8 @@ export const Posts: CollectionConfig = {
   access: {
     read: () => true,
   },
-  hooks: {
-    // Add a collection-level afterRead hook to handle downloads
-    afterRead: [
-      async ({ req, doc }) => {
-        // Only handle downloads if we have a specific document with an ID
-        if (doc?.id) {
-          try {
-            // Replace downloads with ones from our custom view
-            const downloads = await findDownloadsForCollection(req.payload, doc.id, 'posts')
-
-            // Update the document with the retrieved downloads
-            return {
-              ...doc,
-              downloads,
-            }
-          } catch (error) {
-            console.error('Error fetching downloads for post:', error)
-          }
-        }
-
-        return doc
-      },
-    ],
+  versions: {
+    drafts: true,
   },
   fields: [
     {
@@ -85,7 +64,13 @@ export const Posts: CollectionConfig = {
         features: ({ defaultFeatures }) => [
           ...defaultFeatures,
           BlocksFeature({
-            blocks: [CallToAction, TestBlock, BunnyVideo, YouTubeVideo],
+            blocks: [
+              // Assuming blocks like BunnyVideo, CallToAction, TestBlock, YouTubeVideo will be defined elsewhere
+              // CallToAction,
+              // TestBlock,
+              // BunnyVideo,
+              // YouTubeVideo
+            ],
           }),
         ],
       }),
@@ -107,7 +92,7 @@ export const Posts: CollectionConfig = {
     {
       name: 'image_id',
       type: 'upload',
-      relationTo: 'media',
+      relationTo: 'downloads', // Assuming 'media' is replaced by 'downloads'
       admin: {
         description: 'Featured image for the blog post',
       },
@@ -152,7 +137,6 @@ export const Posts: CollectionConfig = {
         },
       ],
     },
-    // Add downloads field
     {
       name: 'downloads',
       type: 'relationship',

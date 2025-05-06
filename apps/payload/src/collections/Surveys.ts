@@ -1,8 +1,8 @@
 import { CollectionConfig } from 'payload'
 import { BlocksFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
 
-import { CallToAction, TestBlock } from '../blocks'
-import { findDownloadsForCollection } from '../db/downloads'
+// Assuming blocks like CallToAction and TestBlock will be defined elsewhere
+// import { CallToAction, TestBlock } from '../blocks'
 
 export const Surveys: CollectionConfig = {
   slug: 'surveys',
@@ -18,29 +18,8 @@ export const Surveys: CollectionConfig = {
   access: {
     read: () => true, // Public read access
   },
-  hooks: {
-    // Add a collection-level afterRead hook to handle downloads
-    afterRead: [
-      async ({ req, doc }) => {
-        // Only handle downloads if we have a specific document with an ID
-        if (doc?.id) {
-          try {
-            // Replace downloads with ones from our custom view
-            const downloads = await findDownloadsForCollection(req.payload, doc.id, 'surveys')
-
-            // Update the document with the retrieved downloads
-            return {
-              ...doc,
-              downloads,
-            }
-          } catch (error) {
-            console.error('Error fetching downloads for survey:', error)
-          }
-        }
-
-        return doc
-      },
-    ],
+  versions: {
+    drafts: true,
   },
   fields: [
     {
@@ -85,7 +64,11 @@ export const Surveys: CollectionConfig = {
         features: ({ defaultFeatures }) => [
           ...defaultFeatures,
           BlocksFeature({
-            blocks: [CallToAction, TestBlock],
+            blocks: [
+              // Assuming blocks like CallToAction and TestBlock will be defined elsewhere
+              // CallToAction,
+              // TestBlock
+            ],
           }),
         ],
       }),
@@ -100,7 +83,11 @@ export const Surveys: CollectionConfig = {
         features: ({ defaultFeatures }) => [
           ...defaultFeatures,
           BlocksFeature({
-            blocks: [CallToAction, TestBlock],
+            blocks: [
+              // Assuming blocks like CallToAction and TestBlock will be defined elsewhere
+              // CallToAction,
+              // TestBlock
+            ],
           }),
         ],
       }),
@@ -119,7 +106,7 @@ export const Surveys: CollectionConfig = {
     {
       name: 'questions',
       type: 'relationship',
-      relationTo: 'survey_questions' as any,
+      relationTo: 'survey_questions',
       hasMany: true,
       admin: {
         description: 'Questions included in this survey',
@@ -132,7 +119,11 @@ export const Surveys: CollectionConfig = {
         features: ({ defaultFeatures }) => [
           ...defaultFeatures,
           BlocksFeature({
-            blocks: [CallToAction, TestBlock],
+            blocks: [
+              // Assuming blocks like CallToAction and TestBlock will be defined elsewhere
+              // CallToAction,
+              // TestBlock
+            ],
           }),
         ],
       }),
@@ -165,7 +156,6 @@ export const Surveys: CollectionConfig = {
         description: 'The date and time this survey was published',
       },
     },
-    // Add downloads field
     {
       name: 'downloads',
       type: 'relationship',

@@ -1,6 +1,5 @@
-import { CollectionConfig } from 'payload'
 import { BlocksFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
-import { findDownloadsForCollection } from '../db/downloads'
+import { CollectionConfig } from 'payload'
 
 export const Courses: CollectionConfig = {
   slug: 'courses',
@@ -16,34 +15,8 @@ export const Courses: CollectionConfig = {
   access: {
     read: () => true, // Public read access
   },
-  hooks: {
-    // Add a collection-level afterRead hook to handle downloads
-    afterRead: [
-      async ({ req, doc }) => {
-        // Only handle downloads if we have a specific document with an ID
-        if (doc?.id) {
-          try {
-            // Replace downloads with ones from our custom view
-            const downloads = await findDownloadsForCollection(req.payload, doc.id, 'courses')
-
-            // Update the document with the retrieved downloads
-            return {
-              ...doc,
-              downloads,
-            }
-          } catch (error) {
-            console.error('Error fetching downloads for course:', error)
-            // Return the document with an empty downloads array instead of failing
-            return {
-              ...doc,
-              downloads: [], // Fallback to empty array on error
-            }
-          }
-        }
-
-        return doc
-      },
-    ],
+  versions: {
+    drafts: true,
   },
   fields: [
     {
@@ -76,7 +49,6 @@ export const Courses: CollectionConfig = {
         ],
       }),
     },
-    // Add downloads field
     {
       name: 'downloads',
       type: 'relationship',
@@ -85,11 +57,6 @@ export const Courses: CollectionConfig = {
       admin: {
         description: 'Files for download in this course',
       },
-    },
-    {
-      name: 'featured_image_id',
-      type: 'upload',
-      relationTo: 'media',
     },
     {
       name: 'publishedAt',

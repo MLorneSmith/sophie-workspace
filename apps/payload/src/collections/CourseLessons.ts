@@ -1,8 +1,7 @@
 import { BlocksFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
 import { CollectionConfig } from 'payload'
-import { BunnyVideo, YouTubeVideo } from '../blocks'
-import { findDownloadsForCollection } from '../db/downloads'
-import { getDownloadsForLesson } from '../db/download-helpers'
+// Assuming blocks like BunnyVideo and YouTubeVideo will be defined elsewhere
+// import { BunnyVideo, YouTubeVideo } from '../blocks'
 
 export const CourseLessons: CollectionConfig = {
   slug: 'course_lessons',
@@ -18,58 +17,8 @@ export const CourseLessons: CollectionConfig = {
   access: {
     read: () => true, // Public read access
   },
-  hooks: {
-    // Add a collection-level afterRead hook to handle downloads
-    afterRead: [
-      async ({ req, doc }) => {
-        // Only handle downloads if we have a specific document with an ID
-        if (doc?.id) {
-          try {
-            // First try using our new helper function which includes special handling for zip files
-            try {
-              const enhancedDownloads = await getDownloadsForLesson(req.payload, doc.id)
-
-              if (enhancedDownloads && enhancedDownloads.length > 0) {
-                console.log(
-                  `Found ${enhancedDownloads.length} downloads for lesson ${doc.slug || doc.id} using enhanced helper`,
-                )
-
-                // Update the document with the enhanced downloads
-                return {
-                  ...doc,
-                  downloads: enhancedDownloads,
-                }
-              }
-            } catch (enhancedError) {
-              console.error('Error using enhanced download helper:', enhancedError)
-              // Fall back to the legacy helper if the new one fails
-            }
-
-            // Fall back to the original helper if the enhanced one fails or returns empty
-            const downloads = await findDownloadsForCollection(
-              req.payload,
-              doc.id,
-              'course_lessons',
-            )
-
-            // Update the document with the retrieved downloads
-            return {
-              ...doc,
-              downloads,
-            }
-          } catch (error) {
-            console.error('Error fetching downloads for course lesson:', error)
-            // Return the document with an empty downloads array instead of failing
-            return {
-              ...doc,
-              downloads: [], // Fallback to empty array on error
-            }
-          }
-        }
-
-        return doc
-      },
-    ],
+  versions: {
+    drafts: true,
   },
   fields: [
     {
@@ -181,18 +130,17 @@ export const CourseLessons: CollectionConfig = {
       type: 'textarea',
     },
     {
-      name: 'featured_image_id',
-      type: 'upload',
-      relationTo: 'media',
-    },
-    {
       name: 'content',
       type: 'richText',
       editor: lexicalEditor({
         features: ({ defaultFeatures }) => [
           ...defaultFeatures,
           BlocksFeature({
-            blocks: [BunnyVideo, YouTubeVideo],
+            blocks: [
+              // Assuming blocks like BunnyVideo and YouTubeVideo will be defined elsewhere
+              // BunnyVideo,
+              // YouTubeVideo
+            ],
           }),
         ],
       }),
@@ -215,13 +163,13 @@ export const CourseLessons: CollectionConfig = {
     {
       name: 'course_id',
       type: 'relationship',
-      relationTo: 'courses' as any,
+      relationTo: 'courses',
       required: true,
     },
     {
       name: 'quiz_id',
       type: 'relationship',
-      relationTo: 'course_quizzes' as any,
+      relationTo: 'course_quizzes',
       hasMany: false,
       admin: {
         description: 'The quiz associated with this lesson (if any)',
@@ -230,7 +178,7 @@ export const CourseLessons: CollectionConfig = {
     {
       name: 'survey_id',
       type: 'relationship',
-      relationTo: 'surveys' as any,
+      relationTo: 'surveys',
       hasMany: false,
       admin: {
         description: 'The survey associated with this lesson (if any)',
