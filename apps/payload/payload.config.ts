@@ -1,5 +1,5 @@
-import { buildConfig } from 'payload/config'
-import { collections } from './collections'
+import buildConfig from 'payload'
+import { collections } from './src/collections'
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { s3Storage } from '@payloadcms/storage-s3'
@@ -18,7 +18,7 @@ export default buildConfig({
     // Add globals here
   ],
   typescript: {
-    outputFile: path.resolve(dirname, '../payload-types.ts'),
+    outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
   editor: lexicalEditor({}),
   db: postgresAdapter({

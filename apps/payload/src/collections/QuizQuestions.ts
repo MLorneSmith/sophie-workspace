@@ -14,14 +14,15 @@ export const QuizQuestions: CollectionConfig = {
   access: {
     read: () => true,
   },
+  versions: {
+    drafts: true,
+  },
   fields: [
     {
       name: 'question',
       type: 'text',
       required: true,
     },
-    // 'quiz_id' field removed - using unidirectional relationship model
-    // Quiz questions are now referenced from quizzes instead (CourseQuizzes → QuizQuestions)
     {
       name: 'type',
       type: 'select',
@@ -63,7 +64,6 @@ export const QuizQuestions: CollectionConfig = {
         description: 'Optional explanation for this question (plain text only)',
       },
     },
-    // Removed duplicate explanation field
     {
       name: 'order',
       type: 'number',

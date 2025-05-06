@@ -167,7 +167,7 @@
     "@lexical/list": "^0.14.0",
     "@lexical/rich-text": "^0.14.0",
     "@lexical/table": "^0.14.0",
-    "@payloadcms/richtext-lexical": "^3.36.1",
+    "@payloadcms/richtext-lexical": "^3.37.0",
     "@supabase/supabase-js": "2.49.4",
     "@types/commander": "^2.12.5",
     "@types/js-yaml": "^4.0.9",

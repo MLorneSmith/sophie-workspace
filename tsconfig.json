@@ -10,7 +10,7 @@
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
@@ -23,5 +23,30 @@
       "@kit/payload/renderer": ["packages/cms/payload/src/renderer"]
     }
   },
+  "references": [
+    { "path": "./apps/dev-tool" },
+    { "path": "./apps/e2e" },
+    { "path": "./apps/payload" },
+    { "path": "./apps/web" },
+    { "path": "./packages/ai-gateway" },
+    { "path": "./packages/analytics" },
+    { "path": "./packages/apps" },
+    { "path": "./packages/billing" },
+    { "path": "./packages/cms" },
+    { "path": "./packages/content-migrations" },
+    { "path": "./packages/database-webhooks" },
+    { "path": "./packages/email-templates" },
+    { "path": "./packages/features" },
+    { "path": "./packages/i18n" },
+    { "path": "./packages/mailers" },
+    { "path": "./packages/monitoring" },
+    { "path": "./packages/next" },
+    { "path": "./packages/otp" },
+    { "path": "./packages/payload" },
+    { "path": "./packages/plugins" },
+    { "path": "./packages/shared" },
+    { "path": "./packages/supabase" },
+    { "path": "./packages/ui" }
+  ],
   "exclude": ["node_modules"]
 }

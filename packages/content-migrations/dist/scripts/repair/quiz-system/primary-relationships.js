@@ -1,4 +1,6 @@
+import { QUIZZES } from '../../../data/quizzes-quiz-questions-truth.js';
 import { getLogger } from '../../../utils/logging.js';
+// Import QUIZZES source of truth
 const logger = getLogger('QuizSystemPrimaryRelationships');
 /**
  * Fixes primary relationships (quiz → question)
@@ -15,129 +17,81 @@ export async function fixPrimaryRelationships(db, state) {
         logger.info('Creating missing primary relationships...');
         logger.info('Running SQL to create relationships...');
         // Simplified approach: First get all quizzes with JSONB questions
-        logger.info('Getting quizzes with questions in JSONB data...');
-        const quizzes = await db.execute(`
-      SELECT id, title, questions 
-      FROM payload.course_quizzes 
-      WHERE jsonb_array_length(questions) > 0
-    `);
-        const quizzesWithQuestions = Array.isArray(quizzes)
-            ? quizzes
-            : quizzes?.rows || [];
-        logger.info(`Found ${quizzesWithQuestions.length} quizzes with questions in JSONB data`);
-        // For each quiz, get existing relationships
+        logger.info('Starting to process quizzes from source of truth...');
         let totalRelationshipsCreated = 0;
         const createdRelationships = [];
-        // Process each quiz separately to handle errors gracefully
-        for (const quiz of quizzesWithQuestions) {
+        // Process each quiz from the source of truth
+        for (const quizSlug in QUIZZES) {
+            const quiz = QUIZZES[quizSlug];
+            logger.info(`Processing quiz "${quiz.title}" (${quiz.id}) from source of truth...`);
             try {
-                logger.info(`Processing quiz "${quiz.title}" (${quiz.id})...`);
-                // Extract question IDs from JSONB array
-                const questionIds = [];
-                try {
-                    const questionsArray = JSON.parse(JSON.stringify(quiz.questions));
-                    if (Array.isArray(questionsArray)) {
-                        for (const question of questionsArray) {
-                            if (question && question.id) {
-                                questionIds.push(question.id);
-                            }
-                        }
-                    }
-                }
-                catch (err) {
-                    logger.warning(`Could not parse questions for quiz ${quiz.id}: ${err.message}`);
-                    continue;
-                }
-                logger.info(`Quiz has ${questionIds.length} question IDs in JSONB data`);
-                // Get existing relationships for this quiz
-                const existingRels = await db.execute(`
-          SELECT quiz_questions_id 
-          FROM payload.course_quizzes_rels 
+                // 1. Delete existing relationships for this quiz
+                logger.info(`Deleting existing relationships for quiz ${quiz.id}...`);
+                const deleteResult = await db.execute(`
+          DELETE FROM payload.course_quizzes_rels 
           WHERE _parent_id = '${quiz.id}' AND path = 'questions'
         `);
-                const existingRelIds = new Set();
-                const existingRelsList = Array.isArray(existingRels)
-                    ? existingRels
-                    : existingRels?.rows || [];
-                existingRelsList.forEach((rel) => {
-                    if (rel.quiz_questions_id) {
-                        existingRelIds.add(rel.quiz_questions_id);
+                const deletedCount = Array.isArray(deleteResult)
+                    ? deleteResult.length
+                    : deleteResult?.rowCount || 0;
+                logger.info(`Deleted ${deletedCount} existing relationships for quiz ${quiz.id}`);
+                // 2. Insert correct relationships based on source of truth
+                logger.info(`Inserting relationships based on source of truth for quiz ${quiz.id}...`);
+                let order = 0;
+                logger.info(`Processing ${quiz.questions.length} questions for quiz ${quiz.id}...`);
+                for (const question of quiz.questions) {
+                    logger.info(`Processing question ${question.id} (Order: ${order})...`);
+                    // Check if question exists in the database
+                    logger.info(`Checking if question ${question.id} exists in database...`);
+                    const questionExists = await db.execute(`
+            SELECT id FROM payload.quiz_questions WHERE id = '${question.id}'
+          `);
+                    const questionExistsList = Array.isArray(questionExists)
+                        ? questionExists
+                        : questionExists?.rows || [];
+                    if (questionExistsList.length === 0) {
+                        logger.warning(`Question ${question.id} referenced in quiz ${quiz.id} (source of truth) doesn't exist in database, skipping relationship creation.`);
+                        continue;
                     }
-                });
-                logger.info(`Quiz has ${existingRelIds.size} existing relationships`);
-                // Create missing relationships
-                for (const questionId of questionIds) {
-                    if (!existingRelIds.has(questionId)) {
-                        // Check if question exists
-                        const questionExists = await db.execute(`
-              SELECT id FROM payload.quiz_questions WHERE id = '${questionId}'
-            `);
-                        const questionExistsList = Array.isArray(questionExists)
-                            ? questionExists
-                            : questionExists?.rows || [];
-                        if (questionExistsList.length === 0) {
-                            logger.warning(`Question ${questionId} referenced in quiz ${quiz.id} doesn't exist in database, skipping`);
-                            continue;
-                        }
-                        // Create relationship
-                        const relResult = await db.execute(`
-              INSERT INTO payload.course_quizzes_rels 
-              (id, _parent_id, quiz_questions_id, path, created_at, updated_at)
-              VALUES (
-                gen_random_uuid(),
-                '${quiz.id}',
-                '${questionId}',
-                'questions',
-                NOW(),
-                NOW()
-              )
-              RETURNING *
-            `);
-                        const insertedRels = Array.isArray(relResult)
-                            ? relResult
-                            : relResult?.rows || [];
-                        if (insertedRels.length > 0) {
-                            createdRelationships.push(insertedRels[0]);
-                            totalRelationshipsCreated++;
-                            logger.info(`Created relationship: Quiz ${quiz.id} → Question ${questionId}`);
-                        }
+                    logger.info(`Question ${question.id} exists in database.`);
+                    // Insert relationship
+                    logger.info(`Inserting relationship for quiz ${quiz.id} and question ${question.id} with order ${order}...`);
+                    const relResult = await db.execute(`
+            INSERT INTO payload.course_quizzes_rels 
+            (id, _parent_id, quiz_questions_id, path, _order, created_at, updated_at)
+            VALUES (
+              gen_random_uuid(),
+              '${quiz.id}',
+              '${question.id}',
+              'questions',
+              ${order},
+              NOW(),
+              NOW()
+            )
+            RETURNING *
+          `);
+                    const insertedRels = Array.isArray(relResult)
+                        ? relResult
+                        : relResult?.rows || [];
+                    if (insertedRels.length > 0) {
+                        createdRelationships.push(insertedRels[0]);
+                        totalRelationshipsCreated++;
+                        logger.info(`Created relationship: Quiz ${quiz.id} → Question ${question.id} (Order: ${order}). Insert result: ${JSON.stringify(insertedRels[0])}`);
                     }
+                    else {
+                        logger.warning(`Failed to create relationship for quiz ${quiz.id} and question ${question.id}. Insert result was empty.`);
+                    }
+                    order++;
                 }
+                logger.info(`Finished processing quiz ${quiz.id}. Attempted to create ${quiz.questions.length} relationships.`);
             }
             catch (error) {
-                logger.error(`Error processing quiz ${quiz.id}`, error);
+                logger.error(`Error processing quiz ${quiz.id} from source of truth`, error);
                 // Continue with next quiz
             }
         }
-        logger.info(`Created ${totalRelationshipsCreated} primary relationships in total`);
-        // Return dummy result structure for consistency
-        const result = {
-            rows: createdRelationships,
-            rowCount: totalRelationshipsCreated,
-        };
-        // Log the return structure for debugging
-        logger.info(`SQL query completed. Result format: ${typeof result}`);
-        // Use type assertion to resolve TypeScript errors
-        const dbResult = result;
-        logger.info(`Result has rows property: ${dbResult && 'rows' in dbResult}`);
-        logger.info(`Result has rowCount property: ${dbResult && 'rowCount' in dbResult}`);
-        // Handle both array and object return types from different database adapters
-        const resultRelationships = Array.isArray(dbResult)
-            ? dbResult
-            : dbResult?.rows || [];
-        const relationshipsCreated = Array.isArray(dbResult)
-            ? dbResult.length
-            : dbResult?.rowCount || dbResult?.rows?.length || 0;
-        logger.info(`Created ${relationshipsCreated} primary relationships`);
-        if (relationshipsCreated > 0) {
-            // Log some examples of created relationships
-            const exampleCount = Math.min(relationshipsCreated, 3);
-            logger.info(`Examples of created relationships:`);
-            for (let i = 0; i < exampleCount; i++) {
-                const rel = resultRelationships[i];
-                logger.info(`  - Quiz ${rel._parent_id} → Question ${rel.quiz_questions_id}`);
-            }
-        }
+        logger.info(`Created ${totalRelationshipsCreated} primary relationships in total based on source of truth.`);
+        // Return result structure
         return {
             relationshipsCreated: totalRelationshipsCreated,
             newRelationships: createdRelationships,

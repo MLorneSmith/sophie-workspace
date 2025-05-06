@@ -4,25 +4,26 @@ import { CourseQuizzes } from './CourseQuizzes'
 import { Courses } from './Courses'
 import { Documentation } from './Documentation'
 import { Downloads } from './Downloads'
-import { Media } from './Media'
 import { Posts } from './Posts'
+import { Private } from './Private'
 import { QuizQuestions } from './QuizQuestions'
 import { SurveyQuestions } from './SurveyQuestions'
-import { SurveyResponses } from './SurveyResponses'
 import { Surveys } from './Surveys'
+import { Media } from './Media'
 import { Users } from './Users'
 
 export const collections: CollectionConfig[] = [
+  Users,
+  Media,
   Courses,
   CourseLessons,
   CourseQuizzes,
   QuizQuestions,
   Surveys,
   SurveyQuestions,
-  SurveyResponses,
   Documentation,
   Posts,
-  Media,
+  Private,
   Downloads,
   Users,
 ]

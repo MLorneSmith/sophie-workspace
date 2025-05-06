@@ -10,7 +10,7 @@
  */
 import chalk from 'chalk';
 import { v4 as uuidv4 } from 'uuid';
-import { QUIZZES } from '../../../data/quizzes-quiz-qestions-truth.js';
+import { QUIZZES } from '../../../data/quizzes-quiz-questions-truth.js';
 import { getClient } from '../../../utils/db/client.js';
 // ADDED DEBUG LOG HERE
 console.log(chalk.blue('DEBUG: Imported QUIZZES type:'), typeof QUIZZES);

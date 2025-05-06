@@ -119,9 +119,20 @@ async function migrateQuizQuestionsToDatabase() {
                                 console.log(`Question already exists with ID: ${questionId}`);
                             }
                             else {
+                                // Prepare options array for the question
+                                const options = [];
+                                if (q.answers && Array.isArray(q.answers)) {
+                                    for (let j = 0; j < q.answers.length; j++) {
+                                        const option = q.answers[j];
+                                        options.push({
+                                            text: option.answer,
+                                            isCorrect: option.correct || false,
+                                        });
+                                    }
+                                }
                                 // Insert the question into the database
-                                const questionResult = await client.query(`INSERT INTO payload.quiz_questions (id, question, quiz_id, type, explanation, "order", updated_at, created_at)
-                   VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, NOW(), NOW())
+                                const questionResult = await client.query(`INSERT INTO payload.quiz_questions (id, question, quiz_id, type, explanation, "order", options, updated_at, created_at)
+                   VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, $6, NOW(), NOW())
                    RETURNING id`, [
                                     q.question,
                                     quizId,
@@ -130,34 +141,10 @@ async function migrateQuizQuestionsToDatabase() {
                                         : 'multiple_choice',
                                     q.explanation || '',
                                     i,
+                                    JSON.stringify(options), // Insert options as JSONB string
                                 ]);
                                 questionId = questionResult.rows[0].id;
                                 console.log(`Created question with ID: ${questionId}`);
-                            }
-                            // Prepare options array for the question
-                            const options = [];
-                            if (q.answers && Array.isArray(q.answers)) {
-                                for (let j = 0; j < q.answers.length; j++) {
-                                    const option = q.answers[j];
-                                    options.push({
-                                        text: option.answer,
-                                        isCorrect: option.correct || false,
-                                    });
-                                }
-                            }
-                            // Insert options for the question
-                            if (questionId && options.length > 0) {
-                                // First, delete any existing options for this question
-                                await client.query(`DELETE FROM payload.quiz_questions_options WHERE _parent_id = $1`, [questionId]);
-                                // Then insert the new options
-                                for (let j = 0; j < options.length; j++) {
-                                    const option = options[j];
-                                    if (option) {
-                                        await client.query(`INSERT INTO payload.quiz_questions_options (id, _order, _parent_id, text, is_correct, updated_at, created_at)
-                       VALUES (gen_random_uuid(), $1, $2, $3, $4, NOW(), NOW())`, [j, questionId, option.text, option.isCorrect]);
-                                    }
-                                }
-                                console.log(`Added ${options.length} options to the question`);
                             }
                             console.log(`Migrated question ${i + 1} for quiz: ${slug}`);
                         }
