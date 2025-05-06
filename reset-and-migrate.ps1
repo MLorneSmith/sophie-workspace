@@ -219,35 +219,6 @@ catch {
     exit 1
 }
 finally {
-    # Final step: Explicitly fix the path column in course_quizzes_rels using direct psql after all migrations
-    Log-Message "Running final psql command to fix quiz relationship paths..." "Yellow"
-    try {
-        $psqlPath = Get-Command psql -ErrorAction SilentlyContinue
-        if (-not $psqlPath) {
-            throw "psql command not found in PATH. Please ensure PostgreSQL client tools are installed and in your PATH."
-        }
-        $sqlCommand = @"
-UPDATE payload.course_quizzes_rels SET "path" = 'questions' WHERE quiz_questions_id IS NOT NULL AND ("path" IS NULL OR "path" != 'questions');
-"@
-        $psqlArgs = @(
-            "-h", "localhost",
-            "-p", "54322",
-            "-U", "postgres",
-            "-d", "postgres",
-            "-c", $sqlCommand
-        )
-        $env:PGPASSWORD='postgres'
-        & $psqlPath.Source @psqlArgs
-        if ($LASTEXITCODE -ne 0) {
-             Log-Warning "Final psql command to fix path column exited with code $LASTEXITCODE. Check psql output/logs if issues persist."
-             # Continue even if this fails, as per continueOnError logic previously used
-        } else {
-             Log-Success "Final psql command executed successfully."
-        }
-    } catch {
-         Log-Warning "Error executing final psql command: $_. Continuing..."
-    }
-
     # Finalize logging
     Finalize-Logging -success $script:overallSuccess
 }
