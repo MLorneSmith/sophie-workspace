@@ -13,7 +13,7 @@
     ".": "./src/index.ts"
   },
   "dependencies": {
-    "nodemailer": "^6.10.1"
+    "nodemailer": "^7.0.2"
   },
   "devDependencies": {
     "@kit/eslint-config": "workspace:*",
@@ -21,7 +21,7 @@
     "@kit/prettier-config": "workspace:*",
     "@kit/tsconfig": "workspace:*",
     "@types/nodemailer": "6.4.17",
-    "zod": "^3.24.3"
+    "zod": "^3.24.4"
   },
   "typesVersions": {
     "*": {

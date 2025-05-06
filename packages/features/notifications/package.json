@@ -20,9 +20,9 @@
     "@kit/tsconfig": "workspace:*",
     "@kit/ui": "workspace:*",
     "@supabase/supabase-js": "2.49.4",
-    "@tanstack/react-query": "5.74.11",
+    "@tanstack/react-query": "5.75.2",
     "@types/react": "19.1.2",
-    "lucide-react": "^0.503.0",
+    "lucide-react": "^0.507.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-i18next": "^15.5.1"
