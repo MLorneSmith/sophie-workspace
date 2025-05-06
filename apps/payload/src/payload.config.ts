@@ -1,4 +1,4 @@
-import { buildConfig } from 'payload/config'
+import { buildConfig } from 'payload'
 import { collections } from './collections'
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
@@ -12,7 +12,8 @@ const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
 export default buildConfig({
-  serverURL: process.env.PAYLOAD_PUBLIC_SERVER_URL,
+  secret: process.env.PAYLOAD_SECRET,
+  serverURL: process.env.PAYLOAD_PUBLIC_SERVER_URL || '', // Provide a default empty string
   collections: collections,
   globals: [
     // Add globals here

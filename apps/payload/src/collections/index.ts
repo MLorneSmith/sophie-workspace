@@ -25,5 +25,4 @@ export const collections: CollectionConfig[] = [
   Posts,
   Private,
   Downloads,
-  Users,
 ]

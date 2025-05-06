@@ -1,4 +1,4 @@
-import { CollectionConfig } from 'payload'
+import type { CollectionConfig, FieldHook } from 'payload'
 import { BlocksFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
 
 // Assuming blocks like BunnyVideo, CallToAction, TestBlock, YouTubeVideo will be defined elsewhere
@@ -36,7 +36,13 @@ export const Posts: CollectionConfig = {
       },
       hooks: {
         beforeValidate: [
-          ({ value, data }) => {
+          ({
+            value,
+            data,
+          }: {
+            value: string
+            data: Partial<{ title?: string }>
+          }): string | undefined => {
             // If no slug is provided, generate one from the title
             if (!value && data?.title) {
               return data.title

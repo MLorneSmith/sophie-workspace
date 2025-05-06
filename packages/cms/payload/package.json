@@ -10,11 +10,11 @@
   "dependencies": {
     "@kit/cms-types": "workspace:*",
     "@kit/supabase": "workspace:*",
-    "payload": "1.0.0",
+    "payload": "3.36.1",
     "react": "19.1.0"
   },
   "devDependencies": {
-    "@types/node": "^22.15.3",
+    "@types/node": "^22.15.9",
     "@types/react": "19.1.2",
     "typescript": "^5.8.3"
   },

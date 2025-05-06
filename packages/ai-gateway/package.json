@@ -13,12 +13,12 @@
     "@kit/supabase": "workspace:*",
     "openai": "^4.28.0",
     "portkey-ai": "^0.1.0",
-    "zod": "^3.24.3"
+    "zod": "^3.24.4"
   },
   "devDependencies": {
     "@kit/tsconfig": "workspace:*",
-    "@types/node": "^22.15.3",
-    "eslint": "^9.25.1",
+    "@types/node": "^22.15.9",
+    "eslint": "^9.26.0",
     "typescript": "^5.8.3"
   }
 }
