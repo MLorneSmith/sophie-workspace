@@ -351,7 +351,7 @@ export interface CourseLesson {
    */
   lesson_number: number;
   estimated_duration?: number | null;
-  course_id: string | Course;
+  course_id?: (string | null) | Course;
   /**
    * The quiz associated with this lesson (if any)
    */
@@ -383,7 +383,7 @@ export interface CourseQuizz {
    */
   slug: string;
   description?: string | null;
-  course_id: string | Course;
+  course_id?: (string | null) | Course;
   /**
    * Percentage required to pass the quiz
    */
@@ -391,7 +391,7 @@ export interface CourseQuizz {
   /**
    * Questions included in this quiz
    */
-  questions: (string | QuizQuestion)[];
+  questions?: (string | QuizQuestion)[] | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -600,6 +600,10 @@ export interface Documentation {
     [k: string]: unknown;
   } | null;
   /**
+   * Parent document for nesting
+   */
+  parent?: (string | null) | Documentation;
+  /**
    * Files for download in this documentation
    */
   downloads?: (string | Download)[] | null;
@@ -618,7 +622,6 @@ export interface Documentation {
         id?: string | null;
       }[]
     | null;
-  parent?: (string | null) | Documentation;
   breadcrumbs?:
     | {
         doc?: (string | null) | Documentation;
@@ -1042,6 +1045,7 @@ export interface DocumentationSelect<T extends boolean = true> {
   slug?: T;
   description?: T;
   content?: T;
+  parent?: T;
   downloads?: T;
   publishedAt?: T;
   status?: T;
@@ -1058,7 +1062,6 @@ export interface DocumentationSelect<T extends boolean = true> {
         tag?: T;
         id?: T;
       };
-  parent?: T;
   breadcrumbs?:
     | T
     | {

@@ -164,7 +164,7 @@ export const CourseLessons: CollectionConfig = {
       name: 'course_id',
       type: 'relationship',
       relationTo: 'courses',
-      required: true,
+      required: false, // Temporarily set to false for Stage 2 seeding
     },
     {
       name: 'quiz_id',

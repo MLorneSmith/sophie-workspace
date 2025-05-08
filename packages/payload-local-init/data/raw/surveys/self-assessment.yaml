@@ -1,6 +1,8 @@
 title: High-Stakes Presentations Self-Assessment
+slug: self-assessment
 questions:
-  - question: While presenting, no one has trouble following my thought process
+  - question: >-
+      While presenting, no one has trouble following my thought process
     answers:
       - answer: Strongly disagree
       - answer: Disagree
@@ -9,7 +11,8 @@ questions:
       - answer: Strongly agree
     questioncategory: structure
     questionspin: positive
-  - question: I regularly use metaphors, analogies, and anecdote in my presentations
+  - question: >-
+      I regularly use metaphors, analogies, and anecdote in my presentations
     answers:
       - answer: Strongly disagree
       - answer: Disagree
@@ -18,7 +21,8 @@ questions:
       - answer: Strongly agree
     questioncategory: story
     questionspin: positive
-  - question: I support my arguments with trustworthy evidence from authentic sources
+  - question: >-
+      I support my arguments with trustworthy evidence from authentic sources
     answers:
       - answer: Strongly disagree
       - answer: Disagree
@@ -27,7 +31,8 @@ questions:
       - answer: Strongly agree
     questioncategory: substance
     questionspin: positive
-  - question: I am good at designing simple, clear slides that convey my point
+  - question: >-
+      I am good at designing simple, clear slides that convey my point
     answers:
       - answer: Strongly disagree
       - answer: Disagree
@@ -36,7 +41,8 @@ questions:
       - answer: Strongly agree
     questioncategory: style
     questionspin: positive
-  - question: I always feel anxious and nervous before giving a presentation
+  - question: >-
+      I always feel anxious and nervous before giving a presentation
     answers:
       - answer: Strongly disagree
       - answer: Disagree
@@ -100,7 +106,8 @@ questions:
       - answer: Strongly agree
     questioncategory: self-confidence
     questionspin: positive
-  - question: I create presentations designed to meet the needs of my audience
+  - question: >-
+      I create presentations designed to meet the needs of my audience
     answers:
       - answer: Strongly disagree
       - answer: Disagree
@@ -109,7 +116,8 @@ questions:
       - answer: Strongly agree
     questioncategory: structure
     questionspin: positive
-  - question: I use storyboards to map out my presentations in advance
+  - question: >-
+      I use storyboards to map out my presentations in advance
     answers:
       - answer: Strongly disagree
       - answer: Disagree
@@ -118,7 +126,8 @@ questions:
       - answer: Strongly agree
     questioncategory: story
     questionspin: positive
-  - question: I create my ideas first, before creating slides
+  - question: >-
+      I create my ideas first, before creating slides
     answers:
       - answer: Strongly disagree
       - answer: Disagree
@@ -160,7 +169,8 @@ questions:
       - answer: Strongly agree
     questioncategory: structure
     questionspin: positive
-  - question: I am good at turning examples into colorful stories
+  - question: >-
+      I am good at turning examples into colorful stories
     answers:
       - answer: Strongly disagree
       - answer: Disagree
@@ -191,7 +201,8 @@ questions:
       - answer: Strongly agree
     questioncategory: style
     questionspin: positive
-  - question: I develop a script in advance of my most important meetings
+  - question: >-
+      I develop a script in advance of my most important meetings
     answers:
       - answer: Strongly disagree
       - answer: Disagree
@@ -222,7 +233,8 @@ questions:
       - answer: Strongly agree
     questioncategory: story
     questionspin: positive
-  - question: I am familiar with tornado diagrams and waterfall & marimekko charts
+  - question: >-
+      I am familiar with tornado diagrams and waterfall & marimekko charts
     answers:
       - answer: Strongly disagree
       - answer: Disagree
@@ -242,7 +254,8 @@ questions:
       - answer: Strongly agree
     questioncategory: style
     questionspin: positive
-  - question: I usually go well over my allotted time to speak
+  - question: >-
+      I usually go well over my allotted time to speak
     answers:
       - answer: Strongly disagree
       - answer: Disagree

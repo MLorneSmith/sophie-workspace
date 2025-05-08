@@ -40,7 +40,7 @@ export const CourseQuizzes: CollectionConfig = {
       name: 'course_id',
       type: 'relationship',
       relationTo: 'courses',
-      required: true,
+      required: false, // Temporarily set to false for Stage 2 seeding
     },
     {
       name: 'pass_threshold',
@@ -57,7 +57,7 @@ export const CourseQuizzes: CollectionConfig = {
       type: 'relationship',
       relationTo: 'quiz_questions',
       hasMany: true,
-      required: true,
+      required: false, // Temporarily set to false for Stage 2 seeding, will be populated in Stage 3
       admin: {
         description: 'Questions included in this quiz',
       },

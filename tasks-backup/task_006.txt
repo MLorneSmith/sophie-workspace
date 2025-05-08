@@ -1,0 +1,17 @@
+# Task ID: 6
+# Title: Define Survey-related Collections
+# Status: pending
+# Dependencies: 2
+# Priority: medium
+# Description: Create the Surveys and SurveyQuestions collection definitions with proper relationships between them.
+# Details:
+1. Create collection files for Surveys and SurveyQuestions
+2. For Surveys, include fields like title, description, status, and a relationship to SurveyQuestions
+3. For SurveyQuestions, include fields like question text, question type, options, and any validation rules
+4. Configure proper relationship fields between the collections
+5. Set up versioning if required
+6. Implement appropriate access control rules
+7. Configure indexes for efficient querying
+
+# Test Strategy:
+Create test surveys with multiple questions. Verify relationships work correctly by checking that questions appear properly in the survey editor. Test API retrieval with depth parameters to ensure related data is returned correctly.

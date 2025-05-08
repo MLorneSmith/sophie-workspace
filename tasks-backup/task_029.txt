@@ -1,0 +1,11 @@
+# Task ID: 29
+# Title: Implement Stage 3: Relationship Population
+# Status: pending
+# Dependencies: 28
+# Priority: high
+# Description: Develop Node.js scripts to establish relationships between documents. Read relationship SSOT files (e.g., quizzes-quiz-questions-truth.ts). Use Payload's Local API (payload.update) exclusively to update relationship fields, ensuring consistency between JSONB fields and _rels tables.
+# Details:
+
+
+# Test Strategy:
+

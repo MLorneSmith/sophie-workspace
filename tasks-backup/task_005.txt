@@ -1,0 +1,18 @@
+# Task ID: 5
+# Title: Define Posts and Private Posts Collections
+# Status: pending
+# Dependencies: 2
+# Priority: medium
+# Description: Create the Posts and Private Posts collection definitions with rich text field functionality and proper versioning configuration.
+# Details:
+1. Create collection files for Posts and Private Posts
+2. Configure common fields like title, slug, author, publishedDate, content (Lexical rich text), and featured image
+3. Set up specific fields for Private Posts that differentiate it from regular Posts
+4. Configure versioning with `versions: { drafts: true }`
+5. Implement hooks for slug generation and date handling
+6. Set up appropriate access control rules, ensuring Private Posts have stricter access controls
+7. Configure indexes for efficient querying
+8. Test rich text field functionality specifically as mentioned in the PRD
+
+# Test Strategy:
+Create test posts in both collections. Verify rich text editing works correctly, including complex formatting, links, and media embeds. Test draft/publish workflow and ensure access controls work as expected for Private Posts.

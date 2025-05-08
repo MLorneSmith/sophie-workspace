@@ -1,0 +1,19 @@
+# Task ID: 13
+# Title: Develop Data Verification System (Stage 4)
+# Status: pending
+# Dependencies: 12
+# Priority: medium
+# Description: Create scripts to verify data integrity and completeness after seeding and relationship population.
+# Details:
+1. Create a set of verification scripts that check for data integrity issues
+2. Implement checks for presence of all content from SSOT files
+3. Add verification of relationships in both JSONB fields and _rels tables
+4. Include checks for correct path column population in _rels tables
+5. Implement detection of orphaned relationship records
+6. Add validation of required fields (slugs, content, etc.)
+7. Create count verification for related items against SSOT definitions
+8. Generate clear, actionable reports for any issues found
+9. Ensure scripts do not attempt to fix issues, only report them
+
+# Test Strategy:
+Run the verification scripts against a known good database state to confirm they report no issues. Introduce deliberate errors (missing content, broken relationships) and verify that the scripts correctly identify and report these issues. Test with large datasets to ensure performance is acceptable.

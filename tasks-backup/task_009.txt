@@ -1,0 +1,18 @@
+# Task ID: 9
+# Title: Create Database Reset Script (Stage 0)
+# Status: pending
+# Dependencies: 8
+# Priority: medium
+# Description: Develop a script to drop and recreate the 'payload' schema or relevant tables in Supabase for development purposes.
+# Details:
+1. Create a new Node.js script for database reset
+2. Implement functionality to connect to Supabase using environment variables
+3. Add SQL commands to drop the `payload` schema if it exists
+4. Add SQL commands to recreate the `payload` schema
+5. Include proper error handling and logging
+6. Make the script executable from the command line
+7. Add safety checks to prevent accidental execution in production environments
+8. Document usage and parameters
+
+# Test Strategy:
+Run the script in a development environment and verify that the schema is correctly dropped and recreated. Confirm that after running the script, the database is in a clean state with no tables. Test with invalid credentials to ensure error handling works correctly.

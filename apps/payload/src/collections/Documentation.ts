@@ -60,6 +60,15 @@ export const Documentation: CollectionConfig = {
       },
     },
     {
+      name: 'parent', // Manually added parent field
+      type: 'relationship',
+      relationTo: 'documentation', // Self-referencing relationship
+      hasMany: false,
+      admin: {
+        description: 'Parent document for nesting',
+      },
+    },
+    {
       name: 'downloads',
       type: 'relationship',
       relationTo: 'downloads',

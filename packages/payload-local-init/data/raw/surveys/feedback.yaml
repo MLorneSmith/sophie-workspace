@@ -43,4 +43,4 @@ questions:
     answers: []
     questioncategory: improvement
     questionspin: positive
-    type: text_field
+    type: textarea

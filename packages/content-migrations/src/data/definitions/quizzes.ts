@@ -1,5 +1,7 @@
 import { QuizDefinition } from './quiz-types.js';
 
+export type { QuizDefinition }; // Export QuizDefinition
+
 /**
  * Static definitions for all quizzes in the system.
  * This is the SINGLE SOURCE OF TRUTH for quiz data.
@@ -16,23 +18,26 @@ export const QUIZZES: Record<string, QuizDefinition> = {
       {
         id: '2e62e970-c4ac-4d05-b6a7-dad81250e986',
         text: 'The principle of similarity states that we tend to group things which share visual characteristics such as:',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
       {
         id: '74794823-dcb6-4f2d-a964-3e94f5863f5d',
         text: 'What are the visual attribute triggers of pre-attentive processing?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
       {
         id: 'fc904a38-82f9-43aa-a0fd-1ae817d2c1dd',
         text: 'What is visual thinking?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
     ],
   },
@@ -46,9 +51,10 @@ export const QUIZZES: Record<string, QuizDefinition> = {
       {
         id: 'e3efc846-c4dc-418c-8452-98644c1e8b57',
         text: 'What are the three Golden Rules to follow when applying the principle of abstraction and organizing your ideas?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
     ],
   },
@@ -62,37 +68,42 @@ export const QUIZZES: Record<string, QuizDefinition> = {
       {
         id: '262b193c-b494-4aaa-868a-1b52cdd98c34',
         text: 'What is the 3rd step of our process?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
       {
         id: '26739c2c-56c2-48b2-8699-1f4a02784846',
         text: 'What is the second step of the recommended preparation process?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
       {
         id: '2ce69acb-8d3f-41b3-9851-7cd5cd508dc8',
-        text: 'Match the type of mental processing with the characteristic: \'Conscious, sequential, and slow/hard\'',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        text: "Match the type of mental processing with the characteristic: 'Conscious, sequential, and slow/hard'",
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
       {
         id: '3d65df89-ba7b-4039-816b-f6a86ed6fb4a',
         text: 'What is the 4th step of our process?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
       {
         id: '4b951049-4e15-4cb0-b048-3db4d691255c',
         text: 'What is the fourth step of the recommended preparation process?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
     ],
   },
@@ -106,23 +117,26 @@ export const QUIZZES: Record<string, QuizDefinition> = {
       {
         id: '0a7fcdf6-2c26-4272-801a-d037946fac20',
         text: 'What is the rule of 7 (updated)?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
       {
         id: '0c09da5c-fff3-41f1-9505-da246426eb4e',
-        text: 'Pick the question that corresponds with the \'Personality\' quadrant',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        text: "Pick the question that corresponds with the 'Personality' quadrant",
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
       {
         id: '0c13fb7a-23dc-46f4-8755-7658939b1695',
-        text: 'What chart type best communicates the \'Geospatial\' relationship?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        text: "What chart type best communicates the 'Geospatial' relationship?",
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
     ],
   },
@@ -136,16 +150,18 @@ export const QUIZZES: Record<string, QuizDefinition> = {
       {
         id: '1044fc96-82b5-4fab-8796-6836bd26d926',
         text: 'What are some of the fundamental elements and principles of design?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
       {
         id: 'fce7779c-e79a-4f77-84af-c165c2ccd5e2',
         text: 'What elements can be repeated on all slides?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
     ],
   },
@@ -159,23 +175,26 @@ export const QUIZZES: Record<string, QuizDefinition> = {
       {
         id: '0a7fcdf6-2c26-4272-801a-d037946fac20',
         text: 'What is the rule of 7 (updated)?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
       {
         id: '0c09da5c-fff3-41f1-9505-da246426eb4e',
-        text: 'Pick the question that corresponds with the \'Personality\' quadrant',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        text: "Pick the question that corresponds with the 'Personality' quadrant",
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
       {
         id: '0c13fb7a-23dc-46f4-8755-7658939b1695',
-        text: 'What chart type best communicates the \'Geospatial\' relationship?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        text: "What chart type best communicates the 'Geospatial' relationship?",
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
     ],
   },
@@ -189,23 +208,26 @@ export const QUIZZES: Record<string, QuizDefinition> = {
       {
         id: '0a7fcdf6-2c26-4272-801a-d037946fac20',
         text: 'What is the rule of 7 (updated)?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
       {
         id: '0c09da5c-fff3-41f1-9505-da246426eb4e',
-        text: 'Pick the question that corresponds with the \'Personality\' quadrant',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        text: "Pick the question that corresponds with the 'Personality' quadrant",
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
       {
         id: '0c13fb7a-23dc-46f4-8755-7658939b1695',
-        text: 'What chart type best communicates the \'Geospatial\' relationship?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        text: "What chart type best communicates the 'Geospatial' relationship?",
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
     ],
   },
@@ -219,16 +241,18 @@ export const QUIZZES: Record<string, QuizDefinition> = {
       {
         id: 'eaa3bbc0-261c-4dc2-9048-f4e533079018',
         text: 'What goes in the body of the slide?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
       {
         id: 'fce7779c-e79a-4f77-84af-c165c2ccd5e2',
         text: 'What elements can be repeated on all slides?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
     ],
   },
@@ -242,30 +266,34 @@ export const QUIZZES: Record<string, QuizDefinition> = {
       {
         id: '513ceeab-b02c-4072-92cb-60c31058691b',
         text: 'What is graphical excellence?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
       {
         id: '5a00e6fa-81dd-4adb-a881-6aa820eace27',
         text: 'When should you use graphs?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
       {
         id: '97d252f3-a7b5-41ab-bbbc-f6457d99ef4e',
         text: 'What are some of the characteristics that define graphs?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
       {
         id: 'cd01c3f9-b427-4526-a27d-1d1f1bf84d68',
-        text: 'There are many types of relationships that we use graphs to display. What chart type best communicates the \'Part-to-Whole\' relationship?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        text: "There are many types of relationships that we use graphs to display. What chart type best communicates the 'Part-to-Whole' relationship?",
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
     ],
   },
@@ -279,30 +307,34 @@ export const QUIZZES: Record<string, QuizDefinition> = {
       {
         id: '513ceeab-b02c-4072-92cb-60c31058691b',
         text: 'What is graphical excellence?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
       {
         id: '5a00e6fa-81dd-4adb-a881-6aa820eace27',
         text: 'When should you use graphs?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
       {
         id: '97d252f3-a7b5-41ab-bbbc-f6457d99ef4e',
         text: 'What are some of the characteristics that define graphs?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
       {
         id: 'cd01c3f9-b427-4526-a27d-1d1f1bf84d68',
-        text: 'There are many types of relationships that we use graphs to display. What chart type best communicates the \'Part-to-Whole\' relationship?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        text: "There are many types of relationships that we use graphs to display. What chart type best communicates the 'Part-to-Whole' relationship?",
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
     ],
   },
@@ -316,30 +348,34 @@ export const QUIZZES: Record<string, QuizDefinition> = {
       {
         id: '63d41ee5-0cc8-41d9-9d9f-a7cfa4ec8695',
         text: 'Who invented storyboards?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
       {
         id: 'd47c3f7b-70ef-43e7-93b8-51af5277c521',
         text: 'What is a storyboard?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
       {
         id: 'e0db9c42-3f72-463e-b762-11bc56ea73cd',
         text: 'What was the great innovation of storyboarding?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
       {
         id: 'e430ee32-6d08-45be-b16c-4a63d4ddb825',
         text: 'What tools are recommended to use for storyboarding?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
     ],
   },
@@ -353,30 +389,34 @@ export const QUIZZES: Record<string, QuizDefinition> = {
       {
         id: '63d41ee5-0cc8-41d9-9d9f-a7cfa4ec8695',
         text: 'Who invented storyboards?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
       {
         id: 'd47c3f7b-70ef-43e7-93b8-51af5277c521',
         text: 'What is a storyboard?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
       {
         id: 'e0db9c42-3f72-463e-b762-11bc56ea73cd',
         text: 'What was the great innovation of storyboarding?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
       {
         id: 'e430ee32-6d08-45be-b16c-4a63d4ddb825',
         text: 'What tools are recommended to use for storyboarding?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
     ],
   },
@@ -390,37 +430,42 @@ export const QUIZZES: Record<string, QuizDefinition> = {
       {
         id: '17075e05-b7b6-4978-8025-147842f6337d',
         text: 'What re some of the primary benefits of a table?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
       {
         id: '49b524ea-19cf-4cf9-a3e7-c7f49b3ce767',
         text: 'What are the two defining characteristics of Tables?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
       {
         id: '513ceeab-b02c-4072-92cb-60c31058691b',
         text: 'What is graphical excellence?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
       {
         id: '5a00e6fa-81dd-4adb-a881-6aa820eace27',
         text: 'When should you use graphs?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
       {
         id: '97d252f3-a7b5-41ab-bbbc-f6457d99ef4e',
         text: 'What are some of the characteristics that define graphs?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
     ],
   },
@@ -434,16 +479,18 @@ export const QUIZZES: Record<string, QuizDefinition> = {
       {
         id: '1044fc96-82b5-4fab-8796-6836bd26d926',
         text: 'What are some of the fundamental elements and principles of design?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
       {
         id: 'fce7779c-e79a-4f77-84af-c165c2ccd5e2',
         text: 'What elements can be repeated on all slides?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
     ],
   },
@@ -456,38 +503,43 @@ export const QUIZZES: Record<string, QuizDefinition> = {
     questions: [
       {
         id: '2f7a2198-6da3-41f9-a394-c002c9218834',
-        text: 'Our first step is \'The Who\'. What do we mean by this?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        text: "Our first step is 'The Who'. What do we mean by this?",
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
       {
         id: '34dd66c5-562c-40f0-adea-7f36d2a0aed4',
         text: 'Who is Cicero?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
       {
         id: '63d41ee5-0cc8-41d9-9d9f-a7cfa4ec8695',
         text: 'Who invented storyboards?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
       {
         id: '82d249e9-7d95-49cc-99b7-76578e8e0643',
         text: 'What are the 4 quadrants of the Audience Map?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
       {
         id: 'a9e9b4bd-ead5-43ef-ac52-13585ba09f57',
         text: 'Who is the hero of our presentation?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
     ],
   },
@@ -501,37 +553,42 @@ export const QUIZZES: Record<string, QuizDefinition> = {
       {
         id: '2bf3a20e-e707-4d61-88f0-be78e56fce7d',
         text: 'Why are stories like a cup?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
       {
         id: '544f2d62-5cf3-403b-aba0-e972bf5230e0',
-        text: 'The second step in our process is \'The Why\'. What do we mean by this?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        text: "The second step in our process is 'The Why'. What do we mean by this?",
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
       {
         id: '7b635d60-8dbd-4786-b63e-6dbec5450f17',
         text: 'What do stories add to our presentations? Why should be use them?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
       {
         id: '804f35a3-875e-4d49-869a-5bdb85989534',
         text: 'Why have we repeated the principle of proximity in this lesson and the previous lesson?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
       {
         id: '81e96916-d43a-48bd-9830-adb4dc203114',
         text: 'Why are we creating our presentation?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
     ],
   },
@@ -545,37 +602,42 @@ export const QUIZZES: Record<string, QuizDefinition> = {
       {
         id: '2bf3a20e-e707-4d61-88f0-be78e56fce7d',
         text: 'Why are stories like a cup?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
       {
         id: '544f2d62-5cf3-403b-aba0-e972bf5230e0',
-        text: 'The second step in our process is \'The Why\'. What do we mean by this?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        text: "The second step in our process is 'The Why'. What do we mean by this?",
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
       {
         id: '7b635d60-8dbd-4786-b63e-6dbec5450f17',
         text: 'What do stories add to our presentations? Why should be use them?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
       {
         id: '804f35a3-875e-4d49-869a-5bdb85989534',
         text: 'Why have we repeated the principle of proximity in this lesson and the previous lesson?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
       {
         id: '81e96916-d43a-48bd-9830-adb4dc203114',
         text: 'Why are we creating our presentation?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
     ],
   },
@@ -589,9 +651,10 @@ export const QUIZZES: Record<string, QuizDefinition> = {
       {
         id: 'f1448bc2-6467-4389-9ad4-2f047ad8423e',
         text: 'What chart types should we try and avoid using?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
     ],
   },
@@ -605,23 +668,26 @@ export const QUIZZES: Record<string, QuizDefinition> = {
       {
         id: '2e62e970-c4ac-4d05-b6a7-dad81250e986',
         text: 'The principle of similarity states that we tend to group things which share visual characteristics such as:',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
       {
         id: '74794823-dcb6-4f2d-a964-3e94f5863f5d',
         text: 'What are the visual attribute triggers of pre-attentive processing?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
       {
         id: 'fc904a38-82f9-43aa-a0fd-1ae817d2c1dd',
         text: 'What is visual thinking?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
     ],
   },
@@ -635,23 +701,26 @@ export const QUIZZES: Record<string, QuizDefinition> = {
       {
         id: '0a7fcdf6-2c26-4272-801a-d037946fac20',
         text: 'What is the rule of 7 (updated)?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
       {
         id: '0c09da5c-fff3-41f1-9505-da246426eb4e',
-        text: 'Pick the question that corresponds with the \'Personality\' quadrant',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        text: "Pick the question that corresponds with the 'Personality' quadrant",
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
       {
         id: '0c13fb7a-23dc-46f4-8755-7658939b1695',
-        text: 'What chart type best communicates the \'Geospatial\' relationship?',
-        options: ["Option 1 (correct)","Option 2","Option 3","Option 4"],
+        text: "What chart type best communicates the 'Geospatial' relationship?",
+        options: ['Option 1 (correct)', 'Option 2', 'Option 3', 'Option 4'],
         correctOptionIndex: 0,
-        explanation: '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
+        explanation:
+          '{"root":{"type":"root","format":"","indent":0,"version":1,"children":[{"type":"paragraph","format":"","indent":0,"version":1,"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Content placeholder","type":"text","version":1}]}],"direction":"ltr"},"format":"","version":1,"syncedChunksData":{},"chunks":[],"downloadedDataVersions":[],"config":{"theme":{"text":{"bold":"lexical-bold","code":"lexical-code","italic":"lexical-italic","strikethrough":"lexical-strikethrough","subscript":"lexical-subscript","superscript":"lexical-superscript","underline":"lexical-underline","underlineStrikethrough":"lexical-underlineStrikethrough"}},"namespace":"lexical"}}',
       },
     ],
   },

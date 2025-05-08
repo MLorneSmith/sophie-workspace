@@ -1,0 +1,17 @@
+# Task ID: 3
+# Title: Define Media Collection
+# Status: pending
+# Dependencies: 2
+# Priority: high
+# Description: Create the Media collection definition with proper S3/R2 plugin configuration for handling file uploads and storage.
+# Details:
+1. Create a new collection file for Media (Downloads) in the collections directory
+2. Configure the collection with appropriate fields including title, alt text, filename, filesize, etc.
+3. Set up S3/R2 integration for file storage
+4. Configure upload limits, allowed file types, and image transformations
+5. Implement proper hooks for file processing if needed
+6. Ensure proper indexing for efficient queries
+7. Add appropriate access control rules
+
+# Test Strategy:
+Test uploading various file types to the Media collection through the Payload admin UI. Verify files are correctly stored in R2 and that metadata is properly saved in the database. Test retrieval of files through the API.
