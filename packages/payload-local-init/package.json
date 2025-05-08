@@ -1,0 +1,33 @@
+{
+  "name": "@slideheroes/payload-local-init",
+  "version": "1.0.0",
+  "description": "Scripts and data for local Payload CMS initialization",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "seed:courses": "pnpm exec tsx ./stage-2-seed-core/seed-courses.ts",
+    "seed:course-lessons": "pnpm exec tsx ./stage-2-seed-core/seed-course-lessons.ts",
+    "seed:course-quizzes": "pnpm exec tsx ./stage-2-seed-core/seed-course-quizzes.ts",
+    "seed:documentation": "pnpm exec tsx ./stage-2-seed-core/seed-documentation.ts",
+    "seed:posts": "pnpm exec tsx ./stage-2-seed-core/seed-posts.ts",
+    "seed:private": "pnpm exec tsx ./stage-2-seed-core/seed-private.ts",
+    "seed:downloads": "pnpm exec tsx ./stage-2-seed-core/seed-downloads.ts",
+    "seed:media": "pnpm exec tsx ./stage-2-seed-core/seed-media.ts",
+    "seed:surveys": "pnpm exec tsx ./stage-2-seed-core/seed-surveys.ts",
+    "seed:survey-questions": "pnpm exec tsx ./stage-2-seed-core/seed-survey-questions.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/glob": "^8.1.0",
+    "@types/uuid": "^9.0.7",
+    "glob": "^10.3.10",
+    "gray-matter": "^4.0.3",
+    "js-yaml": "^4.1.0",
+    "payload": "^3.36.1",
+    "tsx": "^4.7.1",
+    "uuid": "^9.0.1"
+  }
+}

@@ -8,11 +8,11 @@ const dirname = path.dirname(filename)
 export const Downloads: CollectionConfig = {
   slug: 'downloads',
   upload: {
-    staticDir: path.resolve(dirname, '../../downloads'),
     mimeTypes: [
       'image/*',
       'application/pdf',
       'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+      'application/zip', // Added zip file support
     ],
   },
   access: {

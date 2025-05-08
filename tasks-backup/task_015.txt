@@ -1,0 +1,19 @@
+# Task ID: 15
+# Title: Implement Unit Tests for Utility Functions
+# Status: pending
+# Dependencies: 11, 12, 13
+# Priority: medium
+# Description: Create unit tests for individual Node.js utility functions used in parsing SSOTs, transforming data, or generating SQL.
+# Details:
+1. Set up a testing framework (Jest or similar)
+2. Create test files for each utility module
+3. Implement tests for SSOT parsing functions with various input formats
+4. Add tests for Markdown to Lexical JSON transformation
+5. Create tests for SQL generation utilities
+6. Implement tests for relationship handling functions
+7. Add tests for error handling and edge cases
+8. Set up CI integration for running tests automatically
+9. Ensure good test coverage for critical utilities
+
+# Test Strategy:
+Run the unit tests and verify that all tests pass. Check code coverage reports to ensure critical functions have adequate test coverage. Test with edge cases and malformed inputs to ensure robust error handling.

@@ -1,0 +1,17 @@
+# Task ID: 4
+# Title: Define Documentation Collection
+# Status: pending
+# Dependencies: 2
+# Priority: medium
+# Description: Create the Documentation collection definition with all required fields and relationships, adapting from the legacy implementation.
+# Details:
+1. Create a new collection file for Documentation
+2. Review the existing schema from payload_legacy
+3. Implement fields including title, slug, content (Lexical rich text), categories, and any other required fields
+4. Set up proper versioning configuration with `versions: { drafts: true }`
+5. Configure any necessary hooks for slug generation or content processing
+6. Set up appropriate indexes for efficient querying
+7. Implement access control rules
+
+# Test Strategy:
+Create test documentation entries through the Payload admin UI. Verify all fields save correctly and that versioning works as expected. Test retrieval via the API with various depth parameters.

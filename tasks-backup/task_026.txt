@@ -1,0 +1,11 @@
+# Task ID: 26
+# Title: Implement Stage 0: Database Reset Script
+# Status: pending
+# Dependencies: 25
+# Priority: medium
+# Description: Create a script (e.g., PowerShell or Node.js) to optionally drop and recreate the `payload` schema or relevant tables in the Supabase development database. This script will be the first step in the refactored `reset-and-migrate` orchestration.
+# Details:
+
+
+# Test Strategy:
+

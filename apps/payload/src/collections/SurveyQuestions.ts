@@ -69,9 +69,12 @@ export const SurveyQuestions: CollectionConfig = {
           required: true,
         },
       ],
-      validate: (options) => {
-        if (!options || options.length < 2) {
-          return 'At least two options are required'
+      validate: (options, { data }: { data?: SurveyQuestion }) => {
+        // Only apply validation if the type is multiple_choice or scale
+        if (data?.type === 'multiple_choice' || data?.type === 'scale') {
+          if (!options || options.length < 2) {
+            return 'At least two options are required'
+          }
         }
         return true
       },

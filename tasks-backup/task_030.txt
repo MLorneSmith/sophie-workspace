@@ -1,0 +1,11 @@
+# Task ID: 30
+# Title: Implement Stage 4: Verification
+# Status: pending
+# Dependencies: 29
+# Priority: medium
+# Description: Develop independent verification scripts (Node.js or SQL) to check data integrity after seeding and relationship population. Scripts should report errors, not fix them. Checks include SSOT presence, relationship consistency (JSONB vs _rels), _rels path correctness, orphaned records, key field population, and item counts.
+# Details:
+
+
+# Test Strategy:
+

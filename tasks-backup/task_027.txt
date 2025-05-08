@@ -1,0 +1,11 @@
+# Task ID: 27
+# Title: Implement Stage 1: Schema Application
+# Status: pending
+# Dependencies: 26
+# Priority: medium
+# Description: Integrate the `payload migrate` command into the refactored orchestration script. This stage ensures the database schema matches the defined Payload collections after the optional reset.
+# Details:
+
+
+# Test Strategy:
+

@@ -8,7 +8,7 @@ questions:
     answers: []
     questioncategory: goals
     questionspin: positive
-    type: text_field
+    type: textarea
   - question: "How experienced do you feel in this course's subject matter?"
     answers:
       - answer: '1 - Very inexperienced'
@@ -23,4 +23,4 @@ questions:
     answers: []
     questioncategory: roadblocks
     questionspin: positive
-    type: text_field
+    type: textarea
