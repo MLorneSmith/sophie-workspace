@@ -94,7 +94,7 @@ function setupPreCommit(params: { setupHealthCheck: boolean }) {
       : ``;
 
     const licenseCommand = `pnpm run --filter scripts license`;
-    const fileContent = `#!/bin/bash\n${healthCheckCommands}${licenseCommand}`;
+    const fileContent = `#!/bin/bash\n${healthCheckCommands}\n${licenseCommand}`;
 
     // write file
     execSync(`echo "${fileContent}" > ${filePath}`, {
