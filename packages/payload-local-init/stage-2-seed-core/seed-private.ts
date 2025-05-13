@@ -1,12 +1,8 @@
 import fs from 'fs';
-import yaml from 'js-yaml';
 import path from 'path';
 import type { Payload } from 'payload';
-import { getPayload } from 'payload';
 import { fileURLToPath } from 'url';
 import { v4 as uuidv4 } from 'uuid';
-
-import config from '../../../apps/payload/src/payload.config';
 
 // Placeholder for HTML to Lexical conversion utility
 // import { htmlToLexical } from '../utils/html-to-lexical';
@@ -21,16 +17,11 @@ const privateRawPath = path.resolve(
   '../data/raw/private', // Pointing to the correct location within payload-local-init
 );
 
-async function seedPrivate() {
+export async function seedPrivate(payload: Payload) {
   console.log('Starting Stage 2: Seed Private...');
 
-  let payload: Payload | null = null;
-
   try {
-    // Initialize Payload
-    console.log('Initializing Payload...');
-    payload = await getPayload({ config });
-    console.log('Payload initialized.');
+    console.log('Executing: Seed Private (via orchestrator)...');
 
     // Read raw private HTML files
     let privateFiles: string[] = [];
@@ -56,7 +47,7 @@ async function seedPrivate() {
       console.warn(
         `Warning: No private HTML files found in ${privateRawPath}. Skipping seeding.`,
       );
-      process.exit(0);
+      return;
     }
 
     // Seed Private collection
@@ -101,15 +92,29 @@ async function seedPrivate() {
                       version: 1,
                     },
                   ],
-                  direction: 'ltr',
-                  format: '',
+                  direction: 'ltr' as 'ltr' | 'rtl' | null,
+                  format: '' as
+                    | ''
+                    | 'left'
+                    | 'start'
+                    | 'center'
+                    | 'right'
+                    | 'end'
+                    | 'justify',
                   indent: 0,
                   type: 'paragraph',
                   version: 1,
                 },
               ],
-              direction: 'ltr',
-              format: '',
+              direction: 'ltr' as 'ltr' | 'rtl' | null,
+              format: '' as
+                | ''
+                | 'left'
+                | 'start'
+                | 'center'
+                | 'right'
+                | 'end'
+                | 'justify',
               indent: 0,
               type: 'root',
               version: 1,
@@ -121,7 +126,7 @@ async function seedPrivate() {
             title: title,
             slug: slug,
             content: lexicalContent,
-            status: 'draft', // Default status
+            status: 'draft' as 'draft' | 'published', // Default status
             published_at: null,
             // Add other default fields if necessary based on collection definition
           };
@@ -150,16 +155,10 @@ async function seedPrivate() {
     } // End of for loop
 
     console.log('Private seeding completed.');
-    process.exit(0); // Exit cleanly on success
   } catch (error: any) {
     // Catch errors from payload init or directory reading
     const errorMessage = error?.message ?? 'Unknown error';
     console.error('Error during Seed Private process:', errorMessage);
-    process.exit(1); // Exit with a non-zero code on failure
-  } finally {
-    // No payload shutdown needed, rely on process exit
-    console.log('Seed Private script finished.');
+    throw error; // Re-throw to be caught by the orchestrator
   }
 }
-
-seedPrivate();

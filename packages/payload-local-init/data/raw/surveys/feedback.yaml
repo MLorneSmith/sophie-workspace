@@ -4,7 +4,8 @@ description: Please share your thoughts on the course
 status: published
 language: en
 questions:
-  - question: "Did 'Decks for Decision Makers' meet your expectations?"
+  - questionSlug: did-course-meet-expectations
+    question: "Did 'Decks for Decision Makers' meet your expectations?"
     answers:
       - answer: 'Very dissatisfied'
       - answer: 'Somewhat dissatisfied'
@@ -14,7 +15,8 @@ questions:
     questioncategory: satisfaction
     questionspin: positive
     type: scale
-  - question: 'How would you rate the quality of the training?'
+  - questionSlug: rate-quality-of-training
+    question: 'How would you rate the quality of the training?'
     answers:
       - answer: 'Unacceptable'
       - answer: 'Poor'
@@ -24,7 +26,8 @@ questions:
     questioncategory: quality
     questionspin: positive
     type: scale
-  - question: 'How likely are you to recommend this course to a friend, partner, or colleague?'
+  - questionSlug: likely-to-recommend-course
+    question: 'How likely are you to recommend this course to a friend, partner, or colleague?'
     answers:
       - answer: '1 - Unlikely'
       - answer: '2'
@@ -39,7 +42,8 @@ questions:
     questioncategory: recommendation
     questionspin: positive
     type: scale
-  - question: 'Do you have any suggestions to improve this course?'
+  - questionSlug: suggestions-to-improve-course
+    question: 'Do you have any suggestions to improve this course?'
     answers: []
     questioncategory: improvement
     questionspin: positive

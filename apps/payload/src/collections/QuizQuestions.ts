@@ -34,6 +34,17 @@ export const QuizQuestions: CollectionConfig = {
       required: true,
     },
     {
+      name: 'questionSlug',
+      type: 'text',
+      required: true,
+      // unique: true, // Temporarily remove to isolate queryability issue
+      index: true, // Ensure the field is queryable
+      admin: {
+        readOnly: true,
+        description: 'Auto-generated unique slug for API lookups, derived from question text.',
+      },
+    },
+    {
       name: 'options',
       type: 'array',
       required: true,
@@ -50,8 +61,8 @@ export const QuizQuestions: CollectionConfig = {
         },
       ],
       validate: (options) => {
-        if (!options || options.length < 2) {
-          return 'At least two options are required'
+        if (!options || options.length < 1) {
+          return 'At least one option is required'
         }
         return true
       },

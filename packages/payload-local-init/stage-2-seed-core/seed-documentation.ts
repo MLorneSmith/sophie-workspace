@@ -5,12 +5,8 @@ import { glob } from 'glob';
 import yaml from 'js-yaml';
 import path from 'path';
 import type { Payload } from 'payload';
-import { getPayload } from 'payload';
 import { fileURLToPath } from 'url';
 import { v4 as uuidv4 } from 'uuid';
-
-// Import Payload config
-import config from '../../../apps/payload/src/payload.config';
 
 // Placeholder for Markdown to Lexical conversion utility
 // import { markdownToLexical } from '../utils/markdown-to-lexical';
@@ -30,14 +26,9 @@ console.log('Resolved documentationRawPath:', documentationRawPath);
 
 console.log('Starting Stage 2: Seed Documentation...');
 
-async function seedDocumentation() {
-  let payload: Payload | null = null;
-
+export async function seedDocumentation(payload: Payload) {
   try {
-    // Get a local copy of Payload
-    console.log('Initializing Payload...');
-    payload = await getPayload({ config });
-    console.log('Payload initialized.');
+    console.log('Executing: Seed Documentation (via orchestrator)...');
 
     // Find all documentation files with .mdoc extension
     const docFiles = glob.sync(
@@ -52,7 +43,7 @@ async function seedDocumentation() {
       console.warn(
         `Warning: No documentation files found in ${documentationRawPath}. Skipping seeding.`,
       );
-      process.exit(0); // Exit cleanly if no files are found
+      return; // Exit cleanly if no files are found
     }
 
     for (const filePath of docFiles) {
@@ -186,15 +177,8 @@ async function seedDocumentation() {
     } // End of for loop
 
     console.log('Documentation seeding completed.');
-    process.exit(0); // Exit cleanly on success
   } catch (error: any) {
     console.error('Error during Seed Documentation process:', error.message);
-    process.exit(1); // Exit with a non-zero code on failure
-  } finally {
-    if (payload) {
-      console.log('Seed Documentation script finished.');
-    }
+    throw error; // Re-throw to be caught by the orchestrator
   }
 }
-
-seedDocumentation();

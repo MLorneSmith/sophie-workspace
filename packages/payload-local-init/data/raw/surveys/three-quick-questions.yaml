@@ -4,12 +4,14 @@ description: A quick survey to help understand your goals
 status: published
 language: en
 questions:
-  - question: 'Fill in the blank: After taking this course, I will be able to ________________________.'
+  - questionSlug: fill-in-the-blank-after-taking-this-course
+    question: 'Fill in the blank: After taking this course, I will be able to ________________________.'
     answers: []
     questioncategory: goals
     questionspin: positive
     type: textarea
-  - question: "How experienced do you feel in this course's subject matter?"
+  - questionSlug: how-experienced-do-you-feel
+    question: "How experienced do you feel in this course's subject matter?"
     answers:
       - answer: '1 - Very inexperienced'
       - answer: '2'
@@ -19,7 +21,8 @@ questions:
     questioncategory: experience
     questionspin: positive
     type: scale
-  - question: "What's the biggest roadblock you have with this course's subject matter right now?"
+  - questionSlug: biggest-roadblock
+    question: "What's the biggest roadblock you have with this course's subject matter right now?"
     answers: []
     questioncategory: roadblocks
     questionspin: positive

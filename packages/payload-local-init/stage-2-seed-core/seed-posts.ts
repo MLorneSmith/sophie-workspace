@@ -1,16 +1,14 @@
 // seed-posts.ts
 // Script for Stage 2: Core Content Seeding - Posts
+// packages/payload-local-init/stage-2-seed-core/seed-posts.ts
+// Script for Stage 2: Core Content Seeding - Posts
 import fs from 'fs';
 import { glob } from 'glob';
 import yaml from 'js-yaml';
 import path from 'path';
 import type { Payload } from 'payload';
-import { getPayload } from 'payload';
 import { fileURLToPath } from 'url';
 import { v4 as uuidv4 } from 'uuid';
-
-// Import Payload config
-import config from '../../../apps/payload/src/payload.config';
 
 // Placeholder for Markdown to Lexical conversion utility
 // import { markdownToLexical } from '../utils/markdown-to-lexical';
@@ -29,14 +27,9 @@ console.log('Resolved postsRawPath:', postsRawPath);
 
 console.log('Starting Stage 2: Seed Posts...');
 
-async function seedPosts() {
-  let payload: Payload | null = null;
-
+export async function seedPosts(payload: Payload) {
   try {
-    // Get a local copy of Payload
-    console.log('Initializing Payload...');
-    payload = await getPayload({ config });
-    console.log('Payload initialized.');
+    console.log('Executing: Seed Posts (via orchestrator)...');
 
     // Find all post files with .mdoc extension (recursive glob)
     const postFiles = glob.sync(
@@ -51,7 +44,7 @@ async function seedPosts() {
       console.warn(
         `Warning: No post files found in ${postsRawPath}. Skipping seeding.`,
       );
-      process.exit(0); // Exit cleanly if no files are found
+      return; // Exit cleanly if no files are found
     }
 
     for (const filePath of postFiles) {
@@ -73,12 +66,21 @@ async function seedPosts() {
       try {
         postData = yaml.load(frontmatter) as any;
 
+        // Derive slug from filename if not in frontmatter
+        const derivedSlug = postData.slug || path.parse(filePath).name;
+        if (!derivedSlug) {
+          console.error(
+            `Error: Could not determine slug for post "${filePath}". Skipping.`,
+          );
+          continue;
+        }
+
         // Check if post already exists by slug
         const existingPost = await payload.find({
           collection: 'posts', // Correct collection slug
           where: {
             slug: {
-              equals: postData.slug,
+              equals: derivedSlug, // Use derived slug for checking
             },
           },
         });
@@ -144,7 +146,7 @@ async function seedPosts() {
           const postPayloadData: any = {
             id: postData.id || uuidv4(), // Use ID from frontmatter if available
             title: postData.title,
-            slug: postData.slug,
+            slug: derivedSlug, // Use derived slug for creation
             // author: postData.author, // Handle author relationship later if needed
             published_at: postData.publishedDate // Use published_at field name
               ? new Date(postData.publishedDate)
@@ -181,10 +183,10 @@ async function seedPosts() {
             collection: 'posts', // Correct collection slug
             data: postPayloadData,
           });
-          console.log(`Created Post: ${postData.title} (${postData.slug})`);
+          console.log(`Created Post: ${postData.title} (${derivedSlug})`);
         } else {
           console.log(
-            `Post already exists, skipping creation: ${postData.title} (${postData.slug})`,
+            `Post already exists, skipping creation: ${postData.title} (${derivedSlug})`,
           );
           // Optionally, update the existing post if needed
           // await payload.update({
@@ -215,15 +217,8 @@ async function seedPosts() {
     }
 
     console.log('Posts seeding completed.');
-    process.exit(0); // Exit cleanly on success
   } catch (error: any) {
     console.error('Error during Seed Posts process:', error.message);
-    process.exit(1); // Exit with a non-zero code on failure
-  } finally {
-    if (payload) {
-      console.log('Seed Posts script finished.');
-    }
+    throw error; // Re-throw to be caught by the orchestrator
   }
 }
-
-seedPosts();

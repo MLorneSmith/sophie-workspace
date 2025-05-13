@@ -40,17 +40,18 @@ export const Posts: CollectionConfig = {
             value,
             data,
           }: {
-            value: string
-            data: Partial<{ title?: string }>
+            value?: string | null
+            data?: Partial<{ title?: string }> // Made data optional as well
           }): string | undefined => {
-            // If no slug is provided, generate one from the title
+            // If no slug is provided (value is null, undefined, or empty string) and title exists in data
             if (!value && data?.title) {
+              // data?.title will safely access title
               return data.title
                 .toLowerCase()
                 .replace(/[^\w\s]/g, '')
                 .replace(/\s+/g, '-')
             }
-            return value
+            return value ?? undefined
           },
         ],
       },
@@ -98,7 +99,7 @@ export const Posts: CollectionConfig = {
     {
       name: 'image_id',
       type: 'upload',
-      relationTo: 'downloads', // Assuming 'media' is replaced by 'downloads'
+      relationTo: 'media', // Corrected: Should relate to 'media' for post images
       admin: {
         description: 'Featured image for the blog post',
       },
