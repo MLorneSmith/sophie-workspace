@@ -17,7 +17,7 @@
   },
   "devDependencies": {
     "@kit/tsconfig": "workspace:*",
-    "@types/node": "^22.15.9",
+    "@types/node": "^22.15.17",
     "eslint": "^9.26.0",
     "typescript": "^5.8.3"
   }
