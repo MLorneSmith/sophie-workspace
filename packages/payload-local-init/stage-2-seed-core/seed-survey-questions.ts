@@ -6,10 +6,8 @@ import { glob } from 'glob';
 import yaml from 'js-yaml';
 import path from 'path';
 import type { Payload } from 'payload';
-import { getPayload } from 'payload';
 
-// Import Payload config
-import config from '../../../apps/payload/src/payload.config';
+import { generateSlug } from '../src/utils/slugify.js';
 
 console.log('Current working directory:', process.cwd());
 
@@ -33,14 +31,9 @@ function generateQuestionId(
   return crypto.createHash('sha1').update(identifier).digest('hex');
 }
 
-async function seedSurveyQuestions() {
-  let payload: Payload | null = null;
-
+export async function seedSurveyQuestions(payload: Payload) {
   try {
-    // Get a local copy of Payload
-    console.log('Initializing Payload...');
-    payload = await getPayload({ config });
-    console.log('Payload initialized.');
+    console.log('Executing: Seed Survey Questions (via orchestrator)...');
     console.log(
       'Contents of surveysRawPath (inside async):',
       fs.readdirSync(surveysRawPath),
@@ -76,13 +69,21 @@ async function seedSurveyQuestions() {
             index,
           );
 
+          console.log(
+            `[Seeder] Generating ID for Survey: "${surveyData.slug}", Question Text: "${questionData.question}", Index: ${index}, Generated ID: ${questionId}`,
+          ); // DEBUG LOG
+
+          // Generate a slug for the question
+          const questionSlug = generateSlug(questionData.question);
+
           try {
-            // Check if question already exists by the generated ID
+            // Check if question already exists by the generated slug
             const existingQuestion = await payload.find({
               collection: 'survey_questions',
               where: {
-                id: {
-                  equals: questionId,
+                questionSlug: {
+                  // Use camelCase field name from collection config
+                  equals: questionSlug,
                 },
               },
             });
@@ -130,7 +131,8 @@ async function seedSurveyQuestions() {
               const position = parseInt(questionData.questionspin, 10); // Assuming questionspin is a number string
 
               const questionPayloadData: any = {
-                id: questionId, // Use the generated consistent ID
+                // id: questionId, // Let Payload generate the UUID
+                questionSlug: questionSlug, // Include the generated slug
                 text: questionData.question, // Use 'text' field as per schema
                 type:
                   payloadQuestionType === 'textarea'
@@ -164,6 +166,9 @@ async function seedSurveyQuestions() {
                 'Payload data for question:',
                 JSON.stringify(questionPayloadData, null, 2),
               );
+              console.log(
+                `[Seeder] Attempting to create question with ID: ${questionId} and slug: ${questionSlug}`,
+              ); // DEBUG LOG
 
               await payload.create({
                 collection: 'survey_questions',
@@ -195,15 +200,8 @@ async function seedSurveyQuestions() {
     }
 
     console.log('Survey Questions seeding completed.');
-    process.exit(0); // Exit cleanly on success
   } catch (error: any) {
     console.error('Error during Seed Survey Questions process:', error.message);
-    process.exit(1); // Exit with a non-zero code on failure
-  } finally {
-    if (payload) {
-      console.log('Seed Survey Questions script finished.');
-    }
+    throw error; // Re-throw to be caught by the orchestrator
   }
 }
-
-seedSurveyQuestions();

@@ -1,21 +1,14 @@
 import type { Payload } from 'payload';
-import { getPayload } from 'payload';
 
-import config from '../../../apps/payload/src/payload.config';
 import { R2_MEDIA_LIST } from '../data/r2-media-list';
 
 // Import the new SSOT
 
-async function seedMedia() {
+export async function seedMedia(payload: Payload) {
   console.log('Starting Stage 2: Seed Media...');
 
-  let payload: Payload | null = null;
-
   try {
-    // Initialize Payload
-    console.log('Initializing Payload...');
-    payload = await getPayload({ config });
-    console.log('Payload initialized.');
+    console.log('Executing: Seed Media (via orchestrator)...');
 
     const mediaObjects = R2_MEDIA_LIST; // Use the new SSOT
 
@@ -85,7 +78,6 @@ async function seedMedia() {
     }
 
     console.log('Media seeding completed.');
-    process.exit(0); // Exit cleanly on success
   } catch (error: any) {
     const errorMessage = error?.message ?? 'Unknown error';
     console.error('Error during Seed Media process:', errorMessage);
@@ -97,12 +89,6 @@ async function seedMedia() {
     } else {
       console.error('Full error object:', JSON.stringify(error, null, 2));
     }
-    process.exit(1); // Exit with a non-zero code on failure
-  } finally {
-    if (payload) {
-      console.log('Seed Media script finished.');
-    }
+    throw error; // Re-throw to be caught by the orchestrator
   }
 }
-
-seedMedia();

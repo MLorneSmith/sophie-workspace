@@ -1,35 +1,39 @@
-import { buildConfig } from 'payload'
-import { postgresAdapter } from '@payloadcms/db-postgres'
-import { lexicalEditor } from '@payloadcms/richtext-lexical'
-import { s3Storage } from '@payloadcms/storage-s3'
-import { nestedDocsPlugin } from '@payloadcms/plugin-nested-docs'
-import path from 'path'
-import sharp from 'sharp'
-import { fileURLToPath } from 'url'
+import { postgresAdapter } from '@payloadcms/db-postgres'; // UNCOMMENTED
+import { nestedDocsPlugin } from '@payloadcms/plugin-nested-docs'; // UNCOMMENTED
+import { s3Storage } from '@payloadcms/storage-s3'; // UNCOMMENTED
 
-import { CourseLessons } from './collections/CourseLessons'
-import { CourseQuizzes } from './collections/CourseQuizzes'
-import { Courses } from './collections/Courses'
-import { Documentation } from './collections/Documentation'
-import { Downloads } from './collections/Downloads'
-import { Posts } from './collections/Posts'
-import { Private } from './collections/Private'
-import { QuizQuestions } from './collections/QuizQuestions'
-import { SurveyQuestions } from './collections/SurveyQuestions'
-import { Surveys } from './collections/Surveys'
-import { Media } from './collections/Media'
-import { Users } from './collections/Users'
+console.log('[PAYLOAD-CONFIG] Starting payload.config.ts loading.'); // Added log
+import { lexicalEditor } from '@payloadcms/richtext-lexical'; // UNCOMMENTED
+import path from 'path';
+import { buildConfig } from 'payload'; // Changed from 'payload' to 'payload/config' for v3
+import sharp from 'sharp'; // Keep sharp import if used by other parts or for future
+import { fileURLToPath } from 'url';
 
-const filename = fileURLToPath(import.meta.url)
-const dirname = path.dirname(filename)
+import { CourseLessons } from './collections/CourseLessons';
+import { CourseQuizzes } from './collections/CourseQuizzes';
+import { Courses } from './collections/Courses';
+import { Documentation } from './collections/Documentation';
+import { Downloads } from './collections/Downloads';
+import { Media } from './collections/Media';
+import { Posts } from './collections/Posts';
+import { Private } from './collections/Private';
+import { QuizQuestions } from './collections/QuizQuestions';
+import { SurveyQuestions } from './collections/SurveyQuestions';
+import { Surveys } from './collections/Surveys';
+import { Users } from './collections/Users';
 
-const serverURL = process.env.PAYLOAD_PUBLIC_SERVER_URL || ''
-const payloadSecret = process.env.PAYLOAD_SECRET || ''
+const filename = fileURLToPath(import.meta.url);
+const dirname = path.dirname(filename);
+
+const serverURL = process.env.PAYLOAD_PUBLIC_SERVER_URL || '';
+const payloadSecret = process.env.PAYLOAD_SECRET || '';
+
+console.log('[PAYLOAD-CONFIG] About to call buildConfig.'); // Added log
 
 export default buildConfig({
   secret: payloadSecret,
   serverURL: serverURL,
-  collections: [
+  collections: [ // UNCOMMENTED collections array
     Users,
     Media,
     Courses,
@@ -49,28 +53,35 @@ export default buildConfig({
   typescript: {
     outputFile: path.resolve(dirname, '../payload-types.ts'),
   },
-  editor: lexicalEditor({}),
-  db: postgresAdapter({
-    pool: {
-      connectionString: process.env.DATABASE_URI,
-    },
-    push: false,
-    schemaName: 'payload',
-    idType: 'uuid',
-  }),
-  sharp: sharp as any,
+  editor: lexicalEditor({}), // UNCOMMENTED editor property
+
+  // This is the active DB configuration for Step 4.B (Reintroducing postgresAdapter)
+  db: (() => { // Wrap in IIFE to log before adapter call
+    console.log('[PAYLOAD-CONFIG] About to initialize postgresAdapter.'); // Added log
+    return postgresAdapter({
+      pool: {
+        connectionString: process.env.DATABASE_URI,
+      },
+      // push: false, // Option for postgresAdapter - Commented for Step 4.2
+      schemaName: 'payload', // Option for postgresAdapter - Commented for Step 4.2
+      // idType: 'uuid', // Option for postgresAdapter - Commented for Step 4.2
+    });
+  })(), // End IIFE
+
+  // sharp: sharp as any, // Can remain commented or be active if needed elsewhere
+
   plugins: [
-    s3Storage({
+    s3Storage({ // UNCOMMENTED s3Storage plugin
       collections: {
         media: {
           disableLocalStorage: true,
           generateFileURL: ({ filename }: { filename: string }) =>
             `https://images.slideheroes.com/${filename}`,
         },
-        downloads: {
-          disableLocalStorage: true,
-          generateFileURL: ({ filename }: { filename: string }) =>
-            `https://downloads.slideheroes.com/${encodeURIComponent(filename)}`,
+      downloads: {
+        disableLocalStorage: true,
+        generateFileURL: ({ filename }: { filename: string }) =>
+          `https://downloads.slideheroes.com/${encodeURIComponent(filename)}`,
         },
       },
       bucket: process.env.R2_BUCKET || '',
@@ -84,24 +95,19 @@ export default buildConfig({
         forcePathStyle: true,
       },
     }),
-    // Conditionally add nestedDocsPlugin if not disabled
-    ...(process.env.DISABLE_NESTED_DOCS_PLUGIN !== 'true'
-      ? [
-          nestedDocsPlugin({
-            collections: ['documentation'],
-            parentFieldSlug: 'parent', // Specify the slug of the manual parent field
-            generateLabel: ((_: any, doc: any) => doc?.title || '') as any,
-            generateURL: ((docs: any) =>
-              docs.reduce((url: string, doc: any) => `${url}/${doc.slug}`, '')) as any,
-          }),
-        ]
-      : []), // Include an empty array if plugin is disabled
+    nestedDocsPlugin({ // UNCOMMENTED nestedDocsPlugin
+      collections: ['documentation'],
+      parentFieldSlug: 'parent',
+      generateLabel: ((_: any, doc: any) => doc?.title || '') as any,
+      generateURL: ((docs: any) =>
+        docs.reduce((url: string, doc: any) => `${url}/${doc.slug}`, '')) as any,
+    }),
   ],
-  bin: [
+  bin: [ // This section seems unrelated to the hang, can be left as is
     {
       scriptPath: path.resolve(
         dirname,
-        './seed-static-collections.mjs', // Updated path
+        './seed-static-collections.mjs',
       ),
       key: 'seed-static-collections',
     },
@@ -126,6 +132,5 @@ export default buildConfig({
       ),
       key: 'seed-course-structure',
     },
-    // Add entries for Stage 3 and Stage 4 scripts later
   ],
-})
+});

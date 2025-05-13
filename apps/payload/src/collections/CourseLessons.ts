@@ -21,6 +21,7 @@ export const CourseLessons: CollectionConfig = {
     drafts: true,
   },
   fields: [
+    // ID field removed - Payload will default to UUID
     {
       name: 'title',
       type: 'text',

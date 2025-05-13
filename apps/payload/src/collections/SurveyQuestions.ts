@@ -1,4 +1,5 @@
 import { CollectionConfig } from 'payload'
+import { SurveyQuestion } from '../../payload-types' // Import the SurveyQuestion type
 
 export const SurveyQuestions: CollectionConfig = {
   slug: 'survey_questions',
@@ -18,6 +19,16 @@ export const SurveyQuestions: CollectionConfig = {
     drafts: true,
   },
   fields: [
+    {
+      name: 'questionSlug',
+      type: 'text',
+      required: true,
+      unique: true,
+      index: true, // Ensure the field is queryable
+      admin: {
+        description: 'Unique identifier for the survey question',
+      },
+    },
     {
       name: 'text',
       type: 'text',
@@ -69,9 +80,9 @@ export const SurveyQuestions: CollectionConfig = {
           required: true,
         },
       ],
-      validate: (options, { data }: { data?: SurveyQuestion }) => {
+      validate: (options, args: { data?: Partial<SurveyQuestion> }) => {
         // Only apply validation if the type is multiple_choice or scale
-        if (data?.type === 'multiple_choice' || data?.type === 'scale') {
+        if (args?.data?.type === 'multiple_choice' || args?.data?.type === 'scale') {
           if (!options || options.length < 2) {
             return 'At least two options are required'
           }

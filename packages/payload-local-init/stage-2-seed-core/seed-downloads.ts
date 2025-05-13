@@ -1,21 +1,16 @@
 import type { Payload } from 'payload';
-import { getPayload } from 'payload';
 
-import config from '../../../apps/payload/src/payload.config';
 import { R2_DOWNLOADS_LIST } from '../data/r2-downloads-list';
 
 // Import the new SSOT
 
-async function seedDownloads() {
+export async function seedDownloads(payload: Payload) {
   console.log('Starting Stage 2: Seed Downloads...');
 
-  let payload: Payload | null = null;
+  let errorCount = 0; // Declare errorCount here
 
   try {
-    // Initialize Payload
-    console.log('Initializing Payload...');
-    payload = await getPayload({ config });
-    console.log('Payload initialized.');
+    console.log('Executing: Seed Downloads (via orchestrator)...');
 
     const downloadObjects = R2_DOWNLOADS_LIST; // Use the new SSOT
 
@@ -71,7 +66,7 @@ async function seedDownloads() {
         }
       } catch (error: any) {
         console.error(
-          `Error creating download ${downloadObject.key}:`,
+          `Error creating download "${downloadObject.key}":`, // Log the key that failed
           error.message,
         );
         if (error.payloadErrors) {
@@ -80,13 +75,17 @@ async function seedDownloads() {
             JSON.stringify(error.payloadErrors, null, 2),
           );
         } else {
+          // Log the full error object for more details
           console.error('Full error object:', JSON.stringify(error, null, 2));
         }
+        errorCount++; // Track individual creation errors
       }
     }
 
-    console.log('Downloads seeding completed.');
-    process.exit(0); // Exit cleanly on success
+    console.log(`Downloads seeding completed with ${errorCount} errors.`); // Report total errors
+    if (errorCount > 0) {
+      throw new Error(`Seed Downloads encountered ${errorCount} errors.`); // Throw error to orchestrator
+    }
   } catch (error: any) {
     const errorMessage = error?.message ?? 'Unknown error';
     console.error('Error during Seed Downloads process:', errorMessage);
@@ -98,12 +97,6 @@ async function seedDownloads() {
     } else {
       console.error('Full error object:', JSON.stringify(error, null, 2));
     }
-    process.exit(1); // Exit with a non-zero code on failure
-  } finally {
-    if (payload) {
-      console.log('Seed Downloads script finished.');
-    }
+    throw error; // Re-throw to be caught by the orchestrator
   }
 }
-
-seedDownloads();

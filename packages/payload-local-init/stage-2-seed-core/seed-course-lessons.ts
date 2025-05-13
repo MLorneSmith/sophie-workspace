@@ -6,12 +6,7 @@ import path from 'path';
 import type { Payload } from 'payload';
 // Placeholder for Markdown to Lexical conversion utility
 // import { markdownToLexical } from '../utils/markdown-to-lexical';
-import { getPayload } from 'payload';
 import { fileURLToPath } from 'url';
-import { v4 as uuidv4 } from 'uuid';
-
-// Import Payload config
-import config from '../../../apps/payload/src/payload.config';
 
 // Workaround for __dirname in ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -39,19 +34,14 @@ console.log(`Using Structure YAML from: ${lessonsYamlPath}`);
 console.log(`Using Metadata YAML from: ${lessonsMetadataPath}`);
 console.log(`Using raw content from: ${lessonsRawContentPath}`);
 
-async function seedCourseLessons() {
-  let payload: Payload | null = null;
-
+export async function seedCourseLessons(payload: Payload) {
   try {
-    // Get a local copy of Payload
-    console.log('Initializing Payload...');
-    payload = await getPayload({ config });
-    console.log('Payload initialized.');
+    console.log('Executing: Seed Course Lessons (via orchestrator)...');
 
     // Load structured lesson definitions from YAML
     if (!fs.existsSync(lessonsYamlPath)) {
       console.error(`Error: Lessons YAML file not found at ${lessonsYamlPath}`);
-      process.exit(1);
+      throw new Error(`Lessons YAML file not found at ${lessonsYamlPath}`);
     }
     const lessonsYamlContent = fs.readFileSync(lessonsYamlPath, 'utf-8');
     const lessonsDefinition = (yaml.load(lessonsYamlContent) as any)
@@ -65,7 +55,7 @@ async function seedCourseLessons() {
       console.warn(
         'Warning: No lessons defined in structure YAML file or data is not an array. Skipping seeding.',
       );
-      process.exit(0);
+      return;
     }
 
     // Load lesson metadata from YAML
@@ -169,7 +159,7 @@ async function seedCourseLessons() {
           // --- End Load and transform ---
 
           const lessonPayloadData: any = {
-            id: lessonData.id || uuidv4(),
+            // id: lessonData.id || uuidv4(), // Let Payload generate the UUID
             title: lessonData.title,
             slug: lessonData.slug,
             lesson_number: lessonData.lesson_number, // Use lesson_number from structure YAML
@@ -243,15 +233,8 @@ async function seedCourseLessons() {
     }
 
     console.log('Course Lessons seeding completed.');
-    process.exit(0);
   } catch (error: any) {
     console.error('Error during Seed Course Lessons process:', error.message);
-    process.exit(1);
-  } finally {
-    if (payload) {
-      console.log('Seed Course Lessons script finished.');
-    }
+    throw error; // Re-throw to be caught by the orchestrator
   }
 }
-
-seedCourseLessons();

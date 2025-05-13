@@ -1,16 +1,16 @@
 // seed-surveys.ts
 // Script for Stage 2: Core Content Seeding - Surveys
+// packages/payload-local-init/stage-2-seed-core/seed-surveys.ts
+// Script for Stage 2: Core Content Seeding - Surveys
 import fs from 'fs';
 import { glob } from 'glob';
 import yaml from 'js-yaml';
 import path from 'path';
 import type { Payload } from 'payload';
-import { getPayload } from 'payload';
-import { title } from 'process';
 import { v4 as uuidv4 } from 'uuid';
 
 // Import Payload config
-import config from '../../../apps/payload/src/payload.config';
+// Removed: import config from '../../../apps/payload/src/payload.config';
 
 console.log('Current working directory:', process.cwd());
 
@@ -21,14 +21,9 @@ console.log('Resolved surveysRawPath:', surveysRawPath);
 
 console.log('Starting Stage 2: Seed Surveys...');
 
-async function seedSurveys() {
-  let payload: Payload | null = null;
-
+export async function seedSurveys(payload: Payload) {
   try {
-    // Get a local copy of Payload
-    console.log('Initializing Payload...');
-    payload = await getPayload({ config });
-    console.log('Payload initialized.');
+    console.log('Executing: Seed Surveys (via orchestrator)...');
     console.log(
       'Contents of surveysRawPath (inside async):',
       fs.readdirSync(surveysRawPath),
@@ -124,17 +119,9 @@ async function seedSurveys() {
     }
 
     console.log('Surveys seeding completed.');
-    process.exit(0); // Exit cleanly on success
+    console.log('Seed Surveys process finished.');
   } catch (error: any) {
     console.error('Error during Seed Surveys process:', error.message);
-    process.exit(1); // Exit with a non-zero code on failure
-  } finally {
-    if (payload) {
-      // Removed payload.shutdown() as it seems to not be a function in this context.
-      // The Node.js process exiting should handle cleanup.
-      console.log('Seed Surveys script finished.');
-    }
+    throw error; // Re-throw to be caught by the orchestrator
   }
 }
-
-seedSurveys();

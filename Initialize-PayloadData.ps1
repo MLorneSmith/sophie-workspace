@@ -79,110 +79,158 @@ try {
 
     # Stage 2: Core Content Seeding
     if (-not $SkipSeedCore.IsPresent) {
-        Write-Host "Executing Stage 2: Seed Core Content..."
-        $stage2Path = Join-Path $PayloadLocalInitPath "stage-2-seed-core"
-        $payloadAppPath = Join-Path $ScriptRoot "apps/payload"
+        Write-Host "Executing Stage 2: Seed Core Content (Orchestrated)..."
+
+        # Create a simple test script
+        $testScriptContent = "console.log('Simple test script executed successfully!'); process.exit(0);"
+        $testScriptPath = Join-Path $ScriptRoot "test-script.js"
+        $testScriptContent | Out-File $testScriptPath -Encoding UTF8
+
+        Write-Host "Running simple test script using direct execution..."
+        # Use direct execution to run the simple test script and capture output
+        $testScriptOutput = & node $testScriptPath *>&1 | Out-String
+        $exitCodeTest = $LASTEXITCODE
+
+        # Clean up test script
+        Remove-Item $testScriptPath -ErrorAction SilentlyContinue
+
+        if ($exitCodeTest -ne 0) {
+            Write-Error "Simple test script failed with exit code $exitCodeTest."
+            Write-Error "Output:"
+            Write-Error $testScriptOutput
+            throw "Simple test script execution failed. Investigate Node.js/PowerShell environment."
+        }
+
+        Write-Host "Simple test script completed successfully. Output:"
+        Write-Host $testScriptOutput
+
+        Write-Host "Running run-stage-2.ts (via pnpm run stage2:seed-all) using direct execution..."
 
         # Set environment variable to disable nestedDocsPlugin for Stage 2
         $env:DISABLE_NESTED_DOCS_PLUGIN = 'true'
 
-        Write-Host "Running seed-courses.ts..."
-        pnpm --filter @slideheroes/payload-local-init run seed:courses
-        if ($LASTEXITCODE -ne 0) { throw "Stage 2: seed-courses.ts failed." }
+        # Use direct execution to run the Stage 2 script and capture output
+        $stage2Output = & pnpm --filter @slideheroes/payload-local-init run stage2:seed-all *>&1 | Out-String
+        $exitCode = $LASTEXITCODE
 
-        Write-Host "Running seed-course-lessons.ts..."
-        pnpm --filter @slideheroes/payload-local-init run seed:course-lessons
-        if ($LASTEXITCODE -ne 0) { throw "Stage 2: seed-course-lessons.ts failed." }
+        $env:DISABLE_NESTED_DOCS_PLUGIN = $null # Reset env var
 
-        Write-Host "Running seed-course-quizzes.ts..."
-        pnpm --filter @slideheroes/payload-local-init run seed:course-quizzes
-        if ($LASTEXITCODE -ne 0) { throw "Stage 2: seed-course-quizzes.ts failed." }
+        # --- Error and Warning Handling ---
+        # With direct execution, stderr is part of the captured output string.
+        # We rely on the script's exit code for fatal errors.
+        # Warnings will be present in $stage2Output.
 
-        Write-Host "Running seed-surveys.ts..."
-        pnpm --filter @slideheroes/payload-local-init run seed:surveys
-        if ($LASTEXITCODE -ne 0) { throw "Stage 2: seed-surveys.ts failed." }
+        if ($exitCode -ne 0) {
+            Write-Error "Stage 2 failed with exit code $exitCode."
+            Write-Error "Output:"
+            Write-Error $stage2Output
+            throw "Stage 2: Orchestrated core content seeding (run-stage-2.ts) failed."
+        }
 
-        Write-Host "Running seed-downloads.ts..."
-        pnpm --filter @slideheroes/payload-local-init run seed:downloads
-        if ($LASTEXITCODE -ne 0) { throw "Stage 2: seed-downloads.ts failed." }
+        Write-Host "Stage 2 completed successfully (Exit Code: $exitCode)."
+        Write-Host "Stage 2 Output (including potential warnings):"
+        Write-Host $stage2Output # Display full output for debugging
 
-        Write-Host "Running seed-media.ts..."
-        pnpm --filter @slideheroes/payload-local-init run seed:media
-        if ($LASTEXITCODE -ne 0) { throw "Stage 2: seed-media.ts failed." }
+        # --- JSON Extraction and Validation ---
+        $jsonOutputObject = $null
+        $jsonOutputLine = $null
+        try {
+            # Extract the JSON output line (assuming it starts with '{' and ends with '}')
+            # This filters out pnpm warnings and other script output.
+            $jsonOutputLine = $stage2Output.Split([Environment]::NewLine) | Where-Object { $_.Trim().StartsWith('{') -and $_.Trim().EndsWith('}') } | Select-Object -Last 1
 
-        Write-Host "Running seed-posts.ts..."
-        pnpm --filter @slideheroes/payload-local-init run seed:posts
-        if ($LASTEXITCODE -ne 0) { throw "Stage 2: seed-posts.ts failed." }
+            if (-not $jsonOutputLine) {
+                Write-Error "Could not find valid JSON output line from Stage 2."
+                Write-Error "Stage 2 Full Output was:"
+                Write-Error $stage2Output
+                throw "Failed to extract JSON map from Stage 2 output."
+            }
 
-        Write-Host "Running seed-private.ts..."
-        pnpm --filter @slideheroes/payload-local-init run seed:private
-        if ($LASTEXITCODE -ne 0) { throw "Stage 2: seed-private.ts failed." }
+            $jsonOutputObject = $jsonOutputLine | ConvertFrom-Json -ErrorAction Stop
+            Write-Host "Successfully extracted and validated JSON map from Stage 2 output."
+        } catch {
+            Write-Error "Failed to parse Stage 2 output as JSON. Extracted line was: '$jsonOutputLine'"
+            Write-Error "Stage 2 Full Output was:"
+            Write-Error $stage2Output
+            throw "Invalid JSON map received from Stage 2."
+        }
 
-        Write-Host "Running seed-surveys.ts..."
-        pnpm --filter @slideheroes/payload-local-init run seed:surveys
-        if ($LASTEXITCODE -ne 0) { throw "Stage 2: seed-surveys.ts failed." }
+        # Add a delay to allow database operations to settle before Stage 3
+        Write-Host "Pausing for 5 seconds before starting Stage 3..."
+        Start-Sleep -Seconds 5
 
-        Write-Host "Running seed-survey-questions.ts..."
-        pnpm --filter @slideheroes/payload-local-init run seed:survey-questions
-        if ($LASTEXITCODE -ne 0) { throw "Stage 2: seed-survey-questions.ts failed." }
+        # Stage 3: Relationship Population
+        if (-not $SkipPopulateRelationships.IsPresent) {
+            Write-Host "Executing Stage 3: Populate Relationships..."
+            Write-Host "Running run-stage-3.ts (via pnpm run) and passing Stage 2 JSON map via environment variable..."
 
-        Write-Host "Running seed-documentation.ts..."
-        pnpm --filter @slideheroes/payload-local-init run seed:documentation # Added this line
-        if ($LASTEXITCODE -ne 0) { $env:DISABLE_NESTED_DOCS_PLUGIN = $null; throw "Stage 2: seed-documentation.ts failed." } # Added this line
+            # Convert the parsed PowerShell object back to a JSON string for the environment variable
+            $jsonInputString = $jsonOutputObject | ConvertTo-Json -Depth 10 # Use sufficient depth
 
-        # Unset environment variable after Stage 2
-        $env:DISABLE_NESTED_DOCS_PLUGIN = $null
+            # Set the environment variable in the current session
+            $env:SSOT_QUESTION_ID_MAP = $jsonInputString
+            
+            # Execute Stage 3 script directly, it will inherit the environment variable
+            & pnpm --filter @slideheroes/payload-local-init run stage3:populate-relationships *>&1 | Out-String
+            $exitCodeStage3 = $LASTEXITCODE
 
-        Write-Host "Stage 2 completed."
+            # Unset the environment variable
+            Remove-Item Env:SSOT_QUESTION_ID_MAP -ErrorAction SilentlyContinue
+
+            if ($exitCodeStage3 -ne 0) {
+                # Note: $stage3Output would contain the combined stdout/stderr if captured
+                # For simplicity, just throwing error based on exit code for now.
+                # Add output capturing if detailed error messages from Stage 3 are needed here.
+                throw "Stage 3: run-stage-3.ts failed with exit code $exitCodeStage3."
+            }
+
+            Write-Host "Stage 3 completed successfully (Exit Code: $exitCodeStage3)."
+
+        } else {
+            Write-Host "Skipping Stage 3: Populate Relationships."
+        }
     } else {
         Write-Host "Skipping Stage 2: Seed Core Content."
-    }
-
-    # Stage 3: Relationship Population
-    if (-not $SkipPopulateRelationships.IsPresent) {
-        Write-Host "Executing Stage 3: Populate Relationships..."
-        $stage3Path = Join-Path $PayloadLocalInitPath "stage-3-populate-relationships"
-        $payloadAppPath = Join-Path $ScriptRoot "apps/payload" # Define payloadAppPath for Stage 3 as well
-        # $effectiveEnvPathForNode is no longer needed as env vars are loaded by Payload init
-
-        # Change directory to apps/payload for Stage 3 scripts
-        Push-Location $payloadAppPath
-
-        # Revert Stage 3 scripts to original execution for now
-        Write-Host "Running populate-course-relationships.mjs..."
-        node (Join-Path $stage3Path "populate-course-relationships.mjs")
-        if ($LASTEXITCODE -ne 0) { Pop-Location; throw "Stage 3: populate-course-relationships.mjs failed." }
-
-        # Add calls for other relationship scripts here
-        # node (Join-Path $stage3Path "populate-content-download-relationships.mjs")
-        # if ($LASTEXITCODE -ne 0) { Pop-Location; throw "Stage 3: populate-content-download-relationships.mjs failed." }
-        # ... etc.
-        Write-Host "Stage 3 completed."
-    } else {
-        Write-Host "Skipping Stage 3: Populate Relationships."
+        # If Stage 2 is skipped, we don't have the ID map from its output.
+        # Stage 3 will likely fail if it relies on this map.
+        # We could add logic here to read from a previous run's file if available,
+        # but for now, let's assume Stage 2 is required for Stage 3 to work correctly.
+        if (-not $SkipPopulateRelationships.IsPresent) {
+             Write-Warning "Stage 2 was skipped, but Stage 3 requires data from Stage 2. Stage 3 will likely fail."
+             # Optionally, throw an error here if skipping Stage 2 makes Stage 3 impossible
+             # throw "Cannot run Stage 3 when Stage 2 is skipped."
+        }
     }
 
     # Stage 4: Verification
     if (-not $SkipVerification.IsPresent) {
         Write-Host "Executing Stage 4: Verification..."
-        $stage4Path = Join-Path $PayloadLocalInitPath "stage-4-verify"
-        $payloadAppPath = Join-Path $ScriptRoot "apps/payload" # Define payloadAppPath for Stage 4 as well
-        # $effectiveEnvPathForNode is no longer needed as env vars are loaded by Payload init
+        $stage4Path = Join-Path $PayloadLocalInitPath "stage-4-verification" # Corrected path
+        # $payloadAppPath is already defined and Push-Location is not strictly needed if scripts handle paths correctly,
+        # but pnpm filter handles workspace context. For consistency with Stage 2, we don't need to Push-Location here.
+        # If scripts inside payload-local-init need to resolve paths relative to apps/payload, they should do so internally or be passed the path.
+        # However, Stage 3 does Push-Location. Let's keep it for now if scripts assume CWD is apps/payload.
+        # $payloadAppPath = Join-Path $ScriptRoot "apps/payload" # Removed Push-Location for Stage 4
+        # Push-Location $payloadAppPath
 
-        # Change directory to apps/payload for Stage 4 scripts
-        Push-Location $payloadAppPath
 
-        # Revert Stage 4 scripts to original execution for now
-        Write-Host "Running verify-document-counts.mjs..."
-        node (Join-Path $stage4Path "verify-document-counts.mjs")
-        if ($LASTEXITCODE -ne 0) { Pop-Location; throw "Stage 4: verify-document-counts.mjs failed." }
+        Write-Host "Running verify-document-counts.ts..."
+        pnpm --filter @slideheroes/payload-local-init run verify:counts
+        if ($LASTEXITCODE -ne 0) { throw "Stage 4: verify-document-counts.ts failed." }
 
-        # Add calls for other verification scripts here
-        # node (Join-Path $stage4Path "verify-relationships-integrity.mjs")
-        # if ($LASTEXITCODE -ne 0) { Pop-Location; throw "Stage 4: verify-relationships-integrity.mjs failed." }
-        # ... etc.
-        # Return to the original directory
-        Pop-Location
+        # Write-Host "Running verify-ssot-content-presence.ts..."
+        # pnpm --filter @slideheroes/payload-local-init run verify:ssot-content-presence # If re-enabled
+        # if ($LASTEXITCODE -ne 0) { throw "Stage 4: verify-ssot-content-presence.ts failed." }
+
+        Write-Host "Running verify-relationships.ts..."
+        pnpm --filter @slideheroes/payload-local-init run verify:relationships
+        if ($LASTEXITCODE -ne 0) { throw "Stage 4: verify-relationships.ts failed." }
+
+        Write-Host "Running verify-related-item-counts.ts..."
+        pnpm --filter @slideheroes/payload-local-init run verify:related-item-counts
+        if ($LASTEXITCODE -ne 0) { throw "Stage 4: verify-related-item-counts.ts failed." }
+        
+        # Pop-Location # Removed Pop-Location
         Write-Host "Stage 4 completed."
     } else {
         Write-Host "Skipping Stage 4: Verification."

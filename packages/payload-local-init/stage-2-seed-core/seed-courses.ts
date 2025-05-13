@@ -2,10 +2,7 @@ import fs from 'fs';
 import yaml from 'js-yaml';
 import path from 'path';
 import type { Payload } from 'payload';
-import { getPayload } from 'payload';
 import { fileURLToPath } from 'url';
-
-import config from '../../../apps/payload/src/payload.config';
 
 // @ts-ignore
 const filename = fileURLToPath(import.meta.url);
@@ -13,16 +10,11 @@ const dirname = path.dirname(filename);
 
 const coursesRawPath = path.resolve(dirname, '../data/raw/courses');
 
-async function seedCourses() {
+export async function seedCourses(payload: Payload) {
   console.log('Starting Stage 2: Seed Courses...');
 
-  let payload: Payload | null = null;
-
   try {
-    // Initialize Payload
-    console.log('Initializing Payload...');
-    payload = await getPayload({ config });
-    console.log('Payload initialized.');
+    console.log('Executing: Seed Courses (via orchestrator)...');
 
     // Read and parse raw course data
     const courseFiles = fs
@@ -76,16 +68,9 @@ async function seedCourses() {
     }
 
     console.log('Courses seeding completed.');
-    process.exit(0); // Exit cleanly on success
   } catch (error: any) {
     const errorMessage = error?.message ?? 'Unknown error';
     console.error('Error during Seed Courses process:', errorMessage);
-    process.exit(1); // Exit with a non-zero code on failure
-  } finally {
-    if (payload) {
-      console.log('Seed Courses script finished.');
-    }
+    throw error; // Re-throw to be caught by the orchestrator
   }
 }
-
-seedCourses();
