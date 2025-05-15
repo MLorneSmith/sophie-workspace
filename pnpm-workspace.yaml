@@ -1,4 +1,7 @@
 packages:
-  - apps/*
+  - apps/payload
+  - apps/web
+  - apps/e2e
+  - apps/dev-tool
   - packages/**
   - tooling/*

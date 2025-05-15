@@ -21,7 +21,8 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
-      "@payload-config": ["./src/payload.config.ts"]
+      "@payload-config": ["./src/payload.config.ts"],
+      "@payload-local-init/*": ["../../packages/payload-local-init/*"]
     },
     "target": "ES2022",
     "composite": true,

@@ -14,9 +14,7 @@ export const QuizQuestions: CollectionConfig = {
   access: {
     read: () => true,
   },
-  versions: {
-    drafts: true,
-  },
+  versions: false, // Temporarily disable versioning for debugging
   fields: [
     {
       name: 'question',
@@ -69,10 +67,10 @@ export const QuizQuestions: CollectionConfig = {
     },
     {
       name: 'explanation',
-      type: 'text',
+      type: 'richText', // This was corrected earlier
       required: false,
       admin: {
-        description: 'Optional explanation for this question (plain text only)',
+        description: 'Optional explanation for this question (Lexical Rich Text)',
       },
     },
     {

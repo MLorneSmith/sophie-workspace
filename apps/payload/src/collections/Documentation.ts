@@ -59,15 +59,15 @@ export const Documentation: CollectionConfig = {
         condition: () => true,
       },
     },
-    {
-      name: 'parent', // Manually added parent field
-      type: 'relationship',
-      relationTo: 'documentation', // Self-referencing relationship
-      hasMany: false,
-      admin: {
-        description: 'Parent document for nesting',
-      },
-    },
+    // {
+    //   name: 'parent', // Manually added parent field
+    //   type: 'relationship',
+    //   relationTo: 'documentation', // Self-referencing relationship
+    //   hasMany: false,
+    //   admin: {
+    //     description: 'Parent document for nesting',
+    //   },
+    // },
     {
       name: 'downloads',
       type: 'relationship',
@@ -122,4 +122,5 @@ export const Documentation: CollectionConfig = {
       ],
     },
   ],
+  // Added a comment for migrate reliability test
 }
