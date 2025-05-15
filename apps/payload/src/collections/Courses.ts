@@ -44,7 +44,7 @@ export const Courses: CollectionConfig = {
         features: ({ defaultFeatures }) => [
           ...defaultFeatures,
           BlocksFeature({
-            blocks: [],
+            blocks: [], // Empty blocks array
           }),
         ],
       }),

@@ -1,5 +1,5 @@
 import { CollectionConfig } from 'payload'
-import { SurveyQuestion } from '../../payload-types' // Import the SurveyQuestion type
+import { SurveyQuestion } from '../../payload-types.js' // Import the SurveyQuestion type
 
 export const SurveyQuestions: CollectionConfig = {
   slug: 'survey_questions',

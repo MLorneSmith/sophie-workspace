@@ -19,8 +19,18 @@ export async function seedCourseQuizzes(
 
     // Seed Course Quizzes (Quiz documents themselves)
     console.log('Seeding Course Quizzes...');
+    console.log(`[seedCourseQuizzes] Starting quiz loop. Found ${Object.values(SSOT_QUIZZES).length} quizzes in SSOT.`);
+    let quizIndex = 0;
     for (const quiz of Object.values(SSOT_QUIZZES)) {
+      quizIndex++;
+      console.log(`[seedCourseQuizzes] Processing quiz ${quizIndex}/${Object.values(SSOT_QUIZZES).length}: "${quiz.title}" (SSOT ID: ${quiz.id}, Slug: ${quiz.slug})`);
+      
+      // Add runtime type check and logging for passingScore
+      console.log(`[seedCourseQuizzes] Type of quiz.passingScore: ${typeof quiz.passingScore}, Value: ${quiz.passingScore}`);
+
       try {
+        console.log(`[seedCourseQuizzes] Checking if quiz with slug "${quiz.slug}" exists...`);
+        console.log(`[seedCourseQuizzes] Calling payload.find for slug "${quiz.slug}"...`);
         const existingQuiz = await payload.find({
           collection: 'course_quizzes',
           where: {
@@ -30,10 +40,18 @@ export async function seedCourseQuizzes(
           },
           limit: 1,
         });
+        console.log(`[seedCourseQuizzes] payload.find for slug "${quiz.slug}" completed. Found: ${existingQuiz.docs.length > 0}`);
 
         if (existingQuiz.docs.length === 0) {
           const liveQuizId = uuidv4(); // Generate a fresh UUID for the quiz document
+          console.log(`[seedCourseQuizzes] Quiz with slug "${quiz.slug}" does not exist. Preparing to create with Live ID: ${liveQuizId}`);
 
+          // Explicitly parse as integer with radix 10 and default to 70 if invalid
+          const passingScoreNumber = parseInt(String(quiz.passingScore), 10);
+          const finalPassingScore = isNaN(passingScoreNumber) ? 70 : passingScoreNumber;
+
+
+          console.log(`[seedCourseQuizzes] Calling payload.create for slug "${quiz.slug}"...`);
           await payload.create({
             collection: 'course_quizzes',
             data: {
@@ -41,10 +59,11 @@ export async function seedCourseQuizzes(
               title: quiz.title,
               slug: quiz.slug, // Slug from SSOT is still used for lookup
               description: quiz.description,
-              pass_threshold: quiz.passingScore,
+              pass_threshold: finalPassingScore, // Use parsed and validated number
               // 'questions' relationship will be populated in Stage 3
             },
           });
+          console.log(`[seedCourseQuizzes] payload.create for slug "${quiz.slug}" completed.`);
           console.log(
             `Created Course Quiz: ${quiz.title} (Slug: ${quiz.slug}, Live ID: ${liveQuizId}, Original SSOT ID was: ${quiz.id})`,
           );
@@ -55,16 +74,23 @@ export async function seedCourseQuizzes(
             `Course Quiz "${quiz.title}" (Slug: ${quiz.slug}) already exists with Live ID ${existingLiveId}. SSOT ID was: ${quiz.id}. Skipping creation.`,
           );
           if (existingLiveId) {
-            quizIdMap[quiz.id] = existingLiveId; // Add existing ID to map
+            quizIdMap[quiz.id] = String(existingLiveId); // Convert to string
           } else {
             console.warn(
               `WARN: Existing quiz "${quiz.title}" (Slug: ${quiz.slug}) found but has no ID. Cannot add to map.`,
             );
           }
         }
+        console.log(`[seedCourseQuizzes] Finished processing quiz: "${quiz.title}"`);
+        
+        // Add a small delay after processing each quiz
+        console.log(`[seedCourseQuizzes] Adding 1000ms delay...`);
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        console.log(`[seedCourseQuizzes] Delay finished.`);
+
       } catch (error: any) {
         console.error(
-          `Error processing Course Quiz "${quiz.title}" (SSOT ID: ${quiz.id}):`,
+          `[seedCourseQuizzes] Error processing Course Quiz "${quiz.title}" (SSOT ID: ${quiz.id}):`,
           error.message,
           error.stack,
         );

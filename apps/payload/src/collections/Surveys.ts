@@ -11,7 +11,7 @@ export const Surveys: CollectionConfig = {
     plural: 'Surveys',
   },
   admin: {
-    useAsTitle: 'title',
+    // useAsTitle: 'title', // Comment out useAsTitle
     defaultColumns: ['title', 'status', 'publishedAt'],
     description: 'Surveys for user assessment and feedback',
   },
@@ -22,11 +22,11 @@ export const Surveys: CollectionConfig = {
     drafts: true,
   },
   fields: [
-    {
-      name: 'title',
-      type: 'text',
-      required: true,
-    },
+    // {
+    //   name: 'title',
+    //   type: 'text',
+    //   required: true,
+    // },
     {
       name: 'slug',
       type: 'text',
@@ -57,80 +57,62 @@ export const Surveys: CollectionConfig = {
         description: 'A brief summary of the survey',
       },
     },
-    {
-      name: 'startMessage',
-      type: 'richText',
-      editor: lexicalEditor({
-        features: ({ defaultFeatures }) => [
-          ...defaultFeatures,
-          BlocksFeature({
-            blocks: [
-              // Assuming blocks like CallToAction and TestBlock will be defined elsewhere
-              // CallToAction,
-              // TestBlock
-            ],
-          }),
-        ],
-      }),
-      admin: {
-        description: 'Introduction message shown before starting the survey',
-      },
-    },
-    {
-      name: 'endMessage',
-      type: 'richText',
-      editor: lexicalEditor({
-        features: ({ defaultFeatures }) => [
-          ...defaultFeatures,
-          BlocksFeature({
-            blocks: [
-              // Assuming blocks like CallToAction and TestBlock will be defined elsewhere
-              // CallToAction,
-              // TestBlock
-            ],
-          }),
-        ],
-      }),
-      admin: {
-        description: 'Message shown after completing the survey',
-      },
-    },
-    {
-      name: 'showProgressBar',
-      type: 'checkbox',
-      defaultValue: true,
-      admin: {
-        description: 'Show a progress bar during the survey',
-      },
-    },
-    {
-      name: 'questions',
-      type: 'relationship',
-      relationTo: 'survey_questions',
-      hasMany: true,
-      admin: {
-        description: 'Questions included in this survey',
-      },
-    },
-    {
-      name: 'summaryContent',
-      type: 'richText',
-      editor: lexicalEditor({
-        features: ({ defaultFeatures }) => [
-          ...defaultFeatures,
-          BlocksFeature({
-            blocks: [
-              // Assuming blocks like CallToAction and TestBlock will be defined elsewhere
-              // CallToAction,
-              // TestBlock
-            ],
-          }),
-        ],
-      }),
-      admin: {
-        description: 'Content shown on the summary page',
-      },
-    },
+    // {
+    //   name: 'startMessage',
+    //   type: 'richText',
+    //   editor: lexicalEditor({
+    //     features: ({ defaultFeatures }) => [
+    //       ...defaultFeatures,
+    //       // Removed BlocksFeature
+    //     ],
+    //   }),
+    //   admin: {
+    //     description: 'Introduction message shown before starting the survey',
+    //   },
+    // },
+    // {
+    //   name: 'endMessage',
+    //   type: 'richText',
+    //   editor: lexicalEditor({
+    //     features: ({ defaultFeatures }) => [
+    //       ...defaultFeatures,
+    //       // Removed BlocksFeature
+    //     ],
+    //   }),
+    //   admin: {
+    //     description: 'Message shown after completing the survey',
+    //   },
+    // },
+    // {
+    //   name: 'showProgressBar',
+    //   type: 'checkbox',
+    //   defaultValue: true,
+    //   admin: {
+    //     description: 'Show a progress bar during the survey',
+    //   },
+    // },
+    // {
+    //   name: 'questions',
+    //   type: 'relationship',
+    //   relationTo: 'survey_questions',
+    //   hasMany: true,
+    //   admin: {
+    //     description: 'Questions included in this survey',
+    //   },
+    // },
+    // {
+    //   name: 'summaryContent',
+    //   type: 'richText',
+    //   editor: lexicalEditor({
+    //     features: ({ defaultFeatures }) => [
+    //       ...defaultFeatures,
+    //       // Removed BlocksFeature
+    //     ],
+    //   }),
+    //   admin: {
+    //     description: 'Content shown on the summary page',
+    //   },
+    // },
     {
       name: 'status',
       type: 'select',

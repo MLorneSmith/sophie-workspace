@@ -69,16 +69,16 @@ export interface Config {
   collections: {
     users: User;
     media: Media;
+    downloads: Download;
+    posts: Post;
+    documentation: Documentation;
+    private: Private;
     courses: Course;
     course_lessons: CourseLesson;
     course_quizzes: CourseQuizz;
     quiz_questions: QuizQuestion;
-    surveys: Survey;
     survey_questions: SurveyQuestion;
-    documentation: Documentation;
-    posts: Post;
-    private: Private;
-    downloads: Download;
+    surveys: Survey;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -87,22 +87,22 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    downloads: DownloadsSelect<false> | DownloadsSelect<true>;
+    posts: PostsSelect<false> | PostsSelect<true>;
+    documentation: DocumentationSelect<false> | DocumentationSelect<true>;
+    private: PrivateSelect<false> | PrivateSelect<true>;
     courses: CoursesSelect<false> | CoursesSelect<true>;
     course_lessons: CourseLessonsSelect<false> | CourseLessonsSelect<true>;
     course_quizzes: CourseQuizzesSelect<false> | CourseQuizzesSelect<true>;
     quiz_questions: QuizQuestionsSelect<false> | QuizQuestionsSelect<true>;
-    surveys: SurveysSelect<false> | SurveysSelect<true>;
     survey_questions: SurveyQuestionsSelect<false> | SurveyQuestionsSelect<true>;
-    documentation: DocumentationSelect<false> | DocumentationSelect<true>;
-    posts: PostsSelect<false> | PostsSelect<true>;
-    private: PrivateSelect<false> | PrivateSelect<true>;
-    downloads: DownloadsSelect<false> | DownloadsSelect<true>;
+    surveys: SurveysSelect<false> | SurveysSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
   };
   db: {
-    defaultIDType: number;
+    defaultIDType: string;
   };
   globals: {};
   globalsSelect: {};
@@ -138,7 +138,7 @@ export interface UserAuthOperations {
  * via the `definition` "users".
  */
 export interface User {
-  id: number;
+  id: string;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -155,7 +155,7 @@ export interface User {
  * via the `definition` "media".
  */
 export interface Media {
-  id: number;
+  id: string;
   alt: string;
   updatedAt: string;
   createdAt: string;
@@ -170,13 +170,238 @@ export interface Media {
   focalY?: number | null;
 }
 /**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "downloads".
+ */
+export interface Download {
+  id: string;
+  title?: string | null;
+  description?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
+ * Blog posts for the website
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "posts".
+ */
+export interface Post {
+  id: string;
+  title: string;
+  /**
+   * The URL-friendly identifier for this post
+   */
+  slug: string;
+  /**
+   * A brief summary of the post
+   */
+  description?: string | null;
+  /**
+   * The main content of the blog post
+   */
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * The date and time this post was published
+   */
+  publishedAt?: string | null;
+  /**
+   * Featured image for the blog post
+   */
+  image_id?: (string | null) | Media;
+  /**
+   * Only published posts will be visible on the website
+   */
+  status: 'draft' | 'published';
+  /**
+   * Categories for this post
+   */
+  categories?:
+    | {
+        category?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Tags for this post
+   */
+  tags?:
+    | {
+        tag?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Files for download in this post
+   */
+  downloads?: (string | Download)[] | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Documentation content for the application
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "documentation".
+ */
+export interface Documentation {
+  id: string;
+  title: string;
+  /**
+   * The URL-friendly identifier for this document
+   */
+  slug: string;
+  description?: string | null;
+  /**
+   * The main content of the documentation
+   */
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Files for download in this documentation
+   */
+  downloads?: (string | Download)[] | null;
+  publishedAt?: string | null;
+  status: 'draft' | 'published';
+  order?: number | null;
+  categories?:
+    | {
+        category?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  tags?:
+    | {
+        tag?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Private posts that are not indexed by search engines
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "private".
+ */
+export interface Private {
+  id: string;
+  title: string;
+  /**
+   * The URL-friendly identifier for this private post
+   */
+  slug: string;
+  /**
+   * A brief summary of the private post
+   */
+  description?: string | null;
+  /**
+   * The main content of the private post
+   */
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * The date and time this post was published
+   */
+  publishedAt?: string | null;
+  /**
+   * Featured image for the private post
+   */
+  image_id?: (string | null) | Download;
+  /**
+   * Featured image (larger version) for the private post
+   */
+  featured_image_id?: (string | null) | Download;
+  /**
+   * Only published posts will be visible on the website
+   */
+  status: 'draft' | 'published';
+  /**
+   * Categories for this private post
+   */
+  categories?:
+    | {
+        category?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Tags for this private post
+   */
+  tags?:
+    | {
+        tag?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Files for download in this private post
+   */
+  downloads?: (string | Download)[] | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
  * Courses in the learning management system
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "courses".
  */
 export interface Course {
-  id: number;
+  id: string;
   title: string;
   /**
    * The URL-friendly identifier for this course
@@ -201,32 +426,12 @@ export interface Course {
   /**
    * Files for download in this course
    */
-  downloads?: (number | Download)[] | null;
+  downloads?: (string | Download)[] | null;
   publishedAt?: string | null;
   status: 'draft' | 'published';
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "downloads".
- */
-export interface Download {
-  id: number;
-  title?: string | null;
-  description?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
 }
 /**
  * Lessons for courses in the learning management system
@@ -235,7 +440,7 @@ export interface Download {
  * via the `definition` "course_lessons".
  */
 export interface CourseLesson {
-  id: number;
+  id: string;
   title: string;
   /**
    * Video ID from Bunny.net (if this lesson includes a video)
@@ -254,78 +459,6 @@ export interface CourseLesson {
    */
   youtube_video_id?: string | null;
   todo_complete_quiz?: boolean | null;
-  /**
-   * Content to watch - supports rich text formatting like bullet points and links
-   */
-  todo_watch_content?: {
-    root: {
-      type: string;
-      children: {
-        type: string;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  /**
-   * Content to read - supports rich text formatting like bullet points and links
-   */
-  todo_read_content?: {
-    root: {
-      type: string;
-      children: {
-        type: string;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  /**
-   * Course project instructions - supports rich text formatting like bullet points and links
-   */
-  todo_course_project?: {
-    root: {
-      type: string;
-      children: {
-        type: string;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  /**
-   * General todo instructions for this lesson - supports rich text formatting like bullet points and links
-   */
-  todo?: {
-    root: {
-      type: string;
-      children: {
-        type: string;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
   /**
    * The URL-friendly identifier for this lesson
    */
@@ -351,19 +484,19 @@ export interface CourseLesson {
    */
   lesson_number: number;
   estimated_duration?: number | null;
-  course_id?: (number | null) | Course;
+  course_id?: (string | null) | Course;
   /**
    * The quiz associated with this lesson (if any)
    */
-  quiz_id?: (number | null) | CourseQuizz;
+  quiz_id?: (string | null) | CourseQuizz;
   /**
    * The survey associated with this lesson (if any)
    */
-  survey_id?: (number | null) | Survey;
+  survey_id?: (string | null) | Survey;
   /**
    * Files for download in this lesson
    */
-  downloads?: (number | Download)[] | null;
+  downloads?: (string | Download)[] | null;
   publishedAt?: string | null;
   updatedAt: string;
   createdAt: string;
@@ -376,14 +509,14 @@ export interface CourseLesson {
  * via the `definition` "course_quizzes".
  */
 export interface CourseQuizz {
-  id: number;
+  id: string;
   title: string;
   /**
    * The URL-friendly identifier for this quiz
    */
   slug: string;
   description?: string | null;
-  course_id?: (number | null) | Course;
+  course_id?: (string | null) | Course;
   /**
    * Percentage required to pass the quiz
    */
@@ -391,7 +524,7 @@ export interface CourseQuizz {
   /**
    * Questions included in this quiz
    */
-  questions?: (number | QuizQuestion)[] | null;
+  questions?: (string | QuizQuestion)[] | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -403,7 +536,7 @@ export interface CourseQuizz {
  * via the `definition` "quiz_questions".
  */
 export interface QuizQuestion {
-  id: number;
+  id: string;
   question: string;
   type: 'multiple_choice';
   /**
@@ -416,16 +549,29 @@ export interface QuizQuestion {
     id?: string | null;
   }[];
   /**
-   * Optional explanation for this question (plain text only)
+   * Optional explanation for this question (Lexical Rich Text)
    */
-  explanation?: string | null;
+  explanation?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
    * Order within the quiz (lower numbers appear first)
    */
   order?: number | null;
   updatedAt: string;
   createdAt: string;
-  _status?: ('draft' | 'published') | null;
 }
 /**
  * Surveys for user assessment and feedback
@@ -434,8 +580,7 @@ export interface QuizQuestion {
  * via the `definition` "surveys".
  */
 export interface Survey {
-  id: number;
-  title: string;
+  id: string;
   /**
    * The URL-friendly identifier for this survey
    */
@@ -444,68 +589,6 @@ export interface Survey {
    * A brief summary of the survey
    */
   description?: string | null;
-  /**
-   * Introduction message shown before starting the survey
-   */
-  startMessage?: {
-    root: {
-      type: string;
-      children: {
-        type: string;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  /**
-   * Message shown after completing the survey
-   */
-  endMessage?: {
-    root: {
-      type: string;
-      children: {
-        type: string;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  /**
-   * Show a progress bar during the survey
-   */
-  showProgressBar?: boolean | null;
-  /**
-   * Questions included in this survey
-   */
-  questions?: (number | SurveyQuestion)[] | null;
-  /**
-   * Content shown on the summary page
-   */
-  summaryContent?: {
-    root: {
-      type: string;
-      children: {
-        type: string;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
   /**
    * Only published surveys will be visible to users
    */
@@ -517,7 +600,7 @@ export interface Survey {
   /**
    * Files for download in this survey
    */
-  downloads?: (number | Download)[] | null;
+  downloads?: (string | Download)[] | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -529,7 +612,7 @@ export interface Survey {
  * via the `definition` "survey_questions".
  */
 export interface SurveyQuestion {
-  id: number;
+  id: string;
   /**
    * Unique identifier for the survey question
    */
@@ -576,281 +659,64 @@ export interface SurveyQuestion {
   _status?: ('draft' | 'published') | null;
 }
 /**
- * Documentation content for the application
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "documentation".
- */
-export interface Documentation {
-  id: number;
-  title: string;
-  /**
-   * The URL-friendly identifier for this document
-   */
-  slug: string;
-  description?: string | null;
-  /**
-   * The main content of the documentation
-   */
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: string;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  /**
-   * Parent document for nesting
-   */
-  parent?: (number | null) | Documentation;
-  /**
-   * Files for download in this documentation
-   */
-  downloads?: (number | Download)[] | null;
-  publishedAt?: string | null;
-  status: 'draft' | 'published';
-  order?: number | null;
-  categories?:
-    | {
-        category?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  tags?:
-    | {
-        tag?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  breadcrumbs?:
-    | {
-        doc?: (number | null) | Documentation;
-        url?: string | null;
-        label?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * Blog posts for the website
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "posts".
- */
-export interface Post {
-  id: number;
-  title: string;
-  /**
-   * The URL-friendly identifier for this post
-   */
-  slug: string;
-  /**
-   * A brief summary of the post
-   */
-  description?: string | null;
-  /**
-   * The main content of the blog post
-   */
-  content: {
-    root: {
-      type: string;
-      children: {
-        type: string;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  };
-  /**
-   * The date and time this post was published
-   */
-  publishedAt?: string | null;
-  /**
-   * Featured image for the blog post
-   */
-  image_id?: (number | null) | Media;
-  /**
-   * Only published posts will be visible on the website
-   */
-  status: 'draft' | 'published';
-  /**
-   * Categories for this post
-   */
-  categories?:
-    | {
-        category?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Tags for this post
-   */
-  tags?:
-    | {
-        tag?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Files for download in this post
-   */
-  downloads?: (number | Download)[] | null;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * Private posts that are not indexed by search engines
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "private".
- */
-export interface Private {
-  id: number;
-  title: string;
-  /**
-   * The URL-friendly identifier for this private post
-   */
-  slug: string;
-  /**
-   * A brief summary of the private post
-   */
-  description?: string | null;
-  /**
-   * The main content of the private post
-   */
-  content: {
-    root: {
-      type: string;
-      children: {
-        type: string;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  };
-  /**
-   * The date and time this post was published
-   */
-  publishedAt?: string | null;
-  /**
-   * Featured image for the private post
-   */
-  image_id?: (number | null) | Download;
-  /**
-   * Featured image (larger version) for the private post
-   */
-  featured_image_id?: (number | null) | Download;
-  /**
-   * Only published posts will be visible on the website
-   */
-  status: 'draft' | 'published';
-  /**
-   * Categories for this private post
-   */
-  categories?:
-    | {
-        category?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Tags for this private post
-   */
-  tags?:
-    | {
-        tag?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Files for download in this private post
-   */
-  downloads?: (number | Download)[] | null;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
-  id: number;
+  id: string;
   document?:
     | ({
         relationTo: 'users';
-        value: number | User;
+        value: string | User;
       } | null)
     | ({
         relationTo: 'media';
-        value: number | Media;
-      } | null)
-    | ({
-        relationTo: 'courses';
-        value: number | Course;
-      } | null)
-    | ({
-        relationTo: 'course_lessons';
-        value: number | CourseLesson;
-      } | null)
-    | ({
-        relationTo: 'course_quizzes';
-        value: number | CourseQuizz;
-      } | null)
-    | ({
-        relationTo: 'quiz_questions';
-        value: number | QuizQuestion;
-      } | null)
-    | ({
-        relationTo: 'surveys';
-        value: number | Survey;
-      } | null)
-    | ({
-        relationTo: 'survey_questions';
-        value: number | SurveyQuestion;
-      } | null)
-    | ({
-        relationTo: 'documentation';
-        value: number | Documentation;
-      } | null)
-    | ({
-        relationTo: 'posts';
-        value: number | Post;
-      } | null)
-    | ({
-        relationTo: 'private';
-        value: number | Private;
+        value: string | Media;
       } | null)
     | ({
         relationTo: 'downloads';
-        value: number | Download;
+        value: string | Download;
+      } | null)
+    | ({
+        relationTo: 'posts';
+        value: string | Post;
+      } | null)
+    | ({
+        relationTo: 'documentation';
+        value: string | Documentation;
+      } | null)
+    | ({
+        relationTo: 'private';
+        value: string | Private;
+      } | null)
+    | ({
+        relationTo: 'courses';
+        value: string | Course;
+      } | null)
+    | ({
+        relationTo: 'course_lessons';
+        value: string | CourseLesson;
+      } | null)
+    | ({
+        relationTo: 'course_quizzes';
+        value: string | CourseQuizz;
+      } | null)
+    | ({
+        relationTo: 'quiz_questions';
+        value: string | QuizQuestion;
+      } | null)
+    | ({
+        relationTo: 'survey_questions';
+        value: string | SurveyQuestion;
+      } | null)
+    | ({
+        relationTo: 'surveys';
+        value: string | Survey;
       } | null);
   globalSlug?: string | null;
   user: {
     relationTo: 'users';
-    value: number | User;
+    value: string | User;
   };
   updatedAt: string;
   createdAt: string;
@@ -860,10 +726,10 @@ export interface PayloadLockedDocument {
  * via the `definition` "payload-preferences".
  */
 export interface PayloadPreference {
-  id: number;
+  id: string;
   user: {
     relationTo: 'users';
-    value: number | User;
+    value: string | User;
   };
   key?: string | null;
   value?:
@@ -883,7 +749,7 @@ export interface PayloadPreference {
  * via the `definition` "payload-migrations".
  */
 export interface PayloadMigration {
-  id: number;
+  id: string;
   name?: string | null;
   batch?: number | null;
   updatedAt: string;
@@ -894,6 +760,7 @@ export interface PayloadMigration {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  id?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -909,6 +776,7 @@ export interface UsersSelect<T extends boolean = true> {
  * via the `definition` "media_select".
  */
 export interface MediaSelect<T extends boolean = true> {
+  id?: T;
   alt?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -921,6 +789,113 @@ export interface MediaSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "downloads_select".
+ */
+export interface DownloadsSelect<T extends boolean = true> {
+  title?: T;
+  description?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "posts_select".
+ */
+export interface PostsSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  description?: T;
+  content?: T;
+  publishedAt?: T;
+  image_id?: T;
+  status?: T;
+  categories?:
+    | T
+    | {
+        category?: T;
+        id?: T;
+      };
+  tags?:
+    | T
+    | {
+        tag?: T;
+        id?: T;
+      };
+  downloads?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "documentation_select".
+ */
+export interface DocumentationSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  description?: T;
+  content?: T;
+  downloads?: T;
+  publishedAt?: T;
+  status?: T;
+  order?: T;
+  categories?:
+    | T
+    | {
+        category?: T;
+        id?: T;
+      };
+  tags?:
+    | T
+    | {
+        tag?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "private_select".
+ */
+export interface PrivateSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  description?: T;
+  content?: T;
+  publishedAt?: T;
+  image_id?: T;
+  featured_image_id?: T;
+  status?: T;
+  categories?:
+    | T
+    | {
+        category?: T;
+        id?: T;
+      };
+  tags?:
+    | T
+    | {
+        tag?: T;
+        id?: T;
+      };
+  downloads?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -949,10 +924,6 @@ export interface CourseLessonsSelect<T extends boolean = true> {
   video_source_type?: T;
   youtube_video_id?: T;
   todo_complete_quiz?: T;
-  todo_watch_content?: T;
-  todo_read_content?: T;
-  todo_course_project?: T;
-  todo?: T;
   slug?: T;
   description?: T;
   content?: T;
@@ -1001,27 +972,6 @@ export interface QuizQuestionsSelect<T extends boolean = true> {
   order?: T;
   updatedAt?: T;
   createdAt?: T;
-  _status?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "surveys_select".
- */
-export interface SurveysSelect<T extends boolean = true> {
-  title?: T;
-  slug?: T;
-  description?: T;
-  startMessage?: T;
-  endMessage?: T;
-  showProgressBar?: T;
-  questions?: T;
-  summaryContent?: T;
-  status?: T;
-  publishedAt?: T;
-  downloads?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1048,119 +998,17 @@ export interface SurveyQuestionsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "documentation_select".
+ * via the `definition` "surveys_select".
  */
-export interface DocumentationSelect<T extends boolean = true> {
-  title?: T;
+export interface SurveysSelect<T extends boolean = true> {
   slug?: T;
   description?: T;
-  content?: T;
-  parent?: T;
-  downloads?: T;
-  publishedAt?: T;
   status?: T;
-  order?: T;
-  categories?:
-    | T
-    | {
-        category?: T;
-        id?: T;
-      };
-  tags?:
-    | T
-    | {
-        tag?: T;
-        id?: T;
-      };
-  breadcrumbs?:
-    | T
-    | {
-        doc?: T;
-        url?: T;
-        label?: T;
-        id?: T;
-      };
-  updatedAt?: T;
-  createdAt?: T;
-  _status?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "posts_select".
- */
-export interface PostsSelect<T extends boolean = true> {
-  title?: T;
-  slug?: T;
-  description?: T;
-  content?: T;
   publishedAt?: T;
-  image_id?: T;
-  status?: T;
-  categories?:
-    | T
-    | {
-        category?: T;
-        id?: T;
-      };
-  tags?:
-    | T
-    | {
-        tag?: T;
-        id?: T;
-      };
   downloads?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "private_select".
- */
-export interface PrivateSelect<T extends boolean = true> {
-  title?: T;
-  slug?: T;
-  description?: T;
-  content?: T;
-  publishedAt?: T;
-  image_id?: T;
-  featured_image_id?: T;
-  status?: T;
-  categories?:
-    | T
-    | {
-        category?: T;
-        id?: T;
-      };
-  tags?:
-    | T
-    | {
-        tag?: T;
-        id?: T;
-      };
-  downloads?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  _status?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "downloads_select".
- */
-export interface DownloadsSelect<T extends boolean = true> {
-  title?: T;
-  description?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  url?: T;
-  thumbnailURL?: T;
-  filename?: T;
-  mimeType?: T;
-  filesize?: T;
-  width?: T;
-  height?: T;
-  focalX?: T;
-  focalY?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
