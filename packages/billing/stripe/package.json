@@ -17,7 +17,7 @@
   "dependencies": {
     "@stripe/react-stripe-js": "^3.7.0",
     "@stripe/stripe-js": "^7.3.0",
-    "stripe": "^18.1.0"
+    "stripe": "^18.1.1"
   },
   "devDependencies": {
     "@kit/billing": "workspace:*",
@@ -31,7 +31,7 @@
     "date-fns": "^4.1.0",
     "next": "15.3.2",
     "react": "19.1.0",
-    "zod": "^3.24.4"
+    "zod": "^3.25.7"
   },
   "typesVersions": {
     "*": {
