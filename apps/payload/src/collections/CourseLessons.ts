@@ -167,7 +167,7 @@ export const CourseLessons: CollectionConfig = {
       relationTo: 'courses',
       required: false, // Temporarily set to false for Stage 2 seeding
     },
-    // Temporarily commented out due to InvalidFieldRelationship error during config sanitization.
+    // Temporarily  commented out due to InvalidFieldRelationship error during config sanitization.
     // The 'course_quizzes' collection is not yet active.
     {
       name: 'quiz_id',
