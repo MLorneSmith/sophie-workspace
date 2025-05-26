@@ -34,8 +34,15 @@ export async function createStripeCheckout(
 
   const isSubscription = mode === 'subscription';
 
+  let trialDays: number | null | undefined = params.plan.trialDays;
+
+  // if the customer already exists, we do not set a trial period
+  if (customer) {
+    trialDays = undefined;
+  }
+
   const trialSettings =
-    params.plan.trialDays && enableTrialWithoutCreditCard
+    trialDays && enableTrialWithoutCreditCard
       ? {
           trial_settings: {
             end_behavior: {
@@ -50,7 +57,7 @@ export async function createStripeCheckout(
     | Stripe.Checkout.SessionCreateParams.SubscriptionData
     | undefined = isSubscription
     ? {
-        trial_period_days: params.plan.trialDays,
+        trial_period_days: trialDays,
         metadata: {
           accountId: params.accountId,
           ...(params.metadata ?? {}),
@@ -80,6 +87,12 @@ export async function createStripeCheckout(
       : { customer_creation: 'always' };
 
   const lineItems = params.plan.lineItems.map((item) => {
+    if (item.type === 'metered') {
+      return {
+        price: item.id,
+      };
+    }
+
     // if we pass a custom quantity for the item ID
     // we use that - otherwise we set it to 1 by default
     const quantity =

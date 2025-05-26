@@ -112,3 +112,31 @@
 .markdoc [role='alert'] h5 {
     color: inherit;
 }
+
+.markdoc table {
+    @apply w-full caption-bottom text-sm my-4;
+}
+
+.markdoc th {
+    @apply [&_tr]:border-b;
+}
+
+.markdoc tbody {
+    @apply [&_tr:last-child]:border-0;
+}
+
+.markdoc tfoot {
+    @apply bg-muted/50 border-t font-medium [&>tr]:last:border-b-0;
+}
+
+.markdoc tr {
+    @apply data-[state=selected]:bg-muted border-b transition-colors;
+}
+
+.markdoc th {
+    @apply text-muted-foreground h-10 px-2 text-left align-middle font-medium [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px];
+}
+
+.markdoc td {
+    @apply p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px];
+}
