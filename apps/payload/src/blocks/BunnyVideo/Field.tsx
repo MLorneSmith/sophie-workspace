@@ -1,11 +1,11 @@
 'use client'
 
 import React from 'react'
-import { Input } from '@kit/ui/input'
-import { Label } from '@kit/ui/label'
-import { Card, CardContent, CardHeader, CardTitle } from '@kit/ui/card'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@kit/ui/select'
-import { Switch } from '@kit/ui/switch'
+import { Input } from '../../../../../packages/ui/src/shadcn/input'
+import { Label } from '../../../../../packages/ui/src/shadcn/label'
+import { Card, CardContent, CardHeader, CardTitle } from '../../../../../packages/ui/src/shadcn/card'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../../../../packages/ui/src/shadcn/select'
+import { Switch } from '../../../../../packages/ui/src/shadcn/switch'
 
 // Define the type for the field props
 type FieldProps = {

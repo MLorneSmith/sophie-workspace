@@ -1,9 +1,9 @@
 'use client'
 
 import React from 'react'
-import { Input } from '@kit/ui/input'
-import { Label } from '@kit/ui/label'
-import { Card, CardContent, CardHeader, CardTitle } from '@kit/ui/card'
+import { Input } from '../../../../../packages/ui/src/shadcn/input'
+import { Label } from '../../../../../packages/ui/src/shadcn/label'
+import { Card, CardContent, CardHeader, CardTitle } from '../../../../../packages/ui/src/shadcn/card'
 
 // Define the type for the field props
 type FieldProps = {
