@@ -9,18 +9,18 @@ import { buildConfig } from 'payload'; // Changed from 'payload' to 'payload/con
 import sharp from 'sharp'; // Keep sharp import if used by other parts or for future
 import { fileURLToPath } from 'url';
 
-    import { CourseLessons } from './collections/CourseLessons.js';
-    import { CourseQuizzes } from './collections/CourseQuizzes.js';
-    import { Courses } from './collections/Courses.js';
-    import { Documentation } from './collections/Documentation.js';
-    import { Downloads } from './collections/Downloads.js'; // Uncomment Downloads import
-    import { Media } from './collections/Media.js';
-    import { Posts } from './collections/Posts.js'; // Uncomment Posts import
-    import { Private } from './collections/Private.js';
-    import { QuizQuestions } from './collections/QuizQuestions.js';
-    import { SurveyQuestions } from './collections/SurveyQuestions.js';
-    import { Surveys } from './collections/Surveys.js';
-import { Users } from './collections/Users.js';
+    import { CourseLessons } from './collections/CourseLessons';
+    import { CourseQuizzes } from './collections/CourseQuizzes';
+    import { Courses } from './collections/Courses';
+    import { Documentation } from './collections/Documentation';
+    import { Downloads } from './collections/Downloads'; // Uncomment Downloads import
+    import { Media } from './collections/Media';
+    import { Posts } from './collections/Posts'; // Uncomment Posts import
+    import { Private } from './collections/Private';
+    import { QuizQuestions } from './collections/QuizQuestions';
+    import { SurveyQuestions } from './collections/SurveyQuestions';
+    import { Surveys } from './collections/Surveys';
+import { Users } from './collections/Users';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
