@@ -30,7 +30,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@payloadcms/db-postgres": "^3.37.0",
+    "@payloadcms/db-postgres": "^3.39.1",
     "@types/glob": "^8.1.0",
     "@types/uuid": "^9.0.7",
     "esbuild": "^0.25.4",
