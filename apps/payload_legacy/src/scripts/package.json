@@ -1,9 +1,0 @@
-{
-  "name": "payload-data-loaders",
-  "version": "1.0.0",
-  "description": "Scripts for loading data into Payload CMS",
-  "type": "module",
-  "scripts": {
-    "build": "tsc"
-  }
-}
