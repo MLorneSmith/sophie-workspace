@@ -57,10 +57,36 @@ export default buildConfig({
 
   db: (() => {
     console.log('[PAYLOAD-CONFIG] About to initialize postgresAdapter.');
+    
+    // SSL configuration for production environments
+    const sslConfig = process.env.NODE_ENV === 'production' ? {
+      rejectUnauthorized: false, // For hosted Postgres providers like Supabase, PlanetScale, etc.
+      sslmode: 'require'
+    } : false;
+    
+    // Serverless-optimized connection pool settings
+    const poolConfig = {
+      connectionString: process.env.DATABASE_URI,
+      ssl: sslConfig,
+      max: 2, // Reduced pool size for serverless environments like Vercel
+      min: 0, // Allow pool to scale down to 0 connections
+      connectionTimeoutMillis: 10000, // 10 second connection timeout
+      idleTimeoutMillis: 30000, // 30 second idle timeout
+      acquireTimeoutMillis: 5000, // 5 second acquire timeout
+      createTimeoutMillis: 10000, // 10 second create timeout
+      destroyTimeoutMillis: 5000, // 5 second destroy timeout
+      reapIntervalMillis: 1000, // Check for idle connections every second
+      createRetryIntervalMillis: 200, // Retry interval for failed connections
+    };
+    
+    console.log('[PAYLOAD-CONFIG] Postgres pool config:', {
+      ...poolConfig,
+      connectionString: poolConfig.connectionString ? '[REDACTED]' : 'undefined',
+      ssl: sslConfig ? 'enabled' : 'disabled'
+    });
+    
     return postgresAdapter({
-      pool: {
-        connectionString: process.env.DATABASE_URI,
-      },
+      pool: poolConfig,
       schemaName: 'payload',
       idType: 'uuid', // Explicitly set ID type to UUID
       push: false, // Disable schema push in development
