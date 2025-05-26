@@ -1,2 +1,0 @@
--- Posts data
--- Placeholder for posts
