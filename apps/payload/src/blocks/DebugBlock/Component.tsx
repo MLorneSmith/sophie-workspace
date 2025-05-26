@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@kit/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '../../../../../packages/ui/src/shadcn/card'
 
 // Define our own component props type
 type ComponentProps = {

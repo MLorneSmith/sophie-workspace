@@ -1,8 +1,8 @@
 'use client'
 
 import React from 'react'
-import { Button } from '@kit/ui/button'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@kit/ui/card'
+import { Button } from '../../../../../packages/ui/src/shadcn/button'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../../../../../packages/ui/src/shadcn/card'
 // Define the type for the component props
 type CallToActionData = {
   headline?: string
