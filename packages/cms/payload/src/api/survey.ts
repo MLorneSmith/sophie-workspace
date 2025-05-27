@@ -1,4 +1,7 @@
 import { callPayloadAPI } from './payload-api';
+import { createEnvironmentLogger } from '@kit/shared/logger';
+
+const logger = createEnvironmentLogger('SURVEY-API');
 
 /**
  * Get a survey by slug
@@ -7,7 +10,7 @@ import { callPayloadAPI } from './payload-api';
  * @returns The survey data
  */
 export async function getSurvey(slug: string, supabaseClient?: any) {
-  console.log(`Getting survey with slug: ${slug}`);
+  logger.debug(`Getting survey with slug: ${slug}`);
 
   const result = await callPayloadAPI(
     `surveys?where[slug][equals]=${slug}&depth=3`,
@@ -15,10 +18,12 @@ export async function getSurvey(slug: string, supabaseClient?: any) {
     supabaseClient,
   );
 
-  console.log(
-    `Survey result for slug ${slug}:`,
-    JSON.stringify(result, null, 2),
-  );
+  // Only log full results in development
+  if (process.env.NODE_ENV === 'development') {
+    logger.debug(`Survey result for slug ${slug}:`, result);
+  } else {
+    logger.info(`Retrieved survey: ${slug}`);
+  }
 
   return result;
 }

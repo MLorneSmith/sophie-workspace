@@ -24,9 +24,9 @@
     }
   },
   "references": [
-    // Packages (assuming these are standard workspaces with tsconfig.json)
+    // Order matters: dependencies must come before dependents
+    { "path": "./packages/shared" },
     { "path": "./packages/cms/payload" }
-    // Other references removed until we fix their composite settings
   ],
-  "exclude": ["node_modules", "apps/payload_legacy"] // Also exclude payload_legacy
+  "exclude": ["node_modules", "apps/payload_legacy"]
 }

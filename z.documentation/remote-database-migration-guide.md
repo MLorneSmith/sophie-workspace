@@ -58,10 +58,20 @@ npm run payload migrate:create -- --name add_nested_docs_breadcrumbs
 3. **Apply Payload Migrations:**
 
 ```bash
-npm run payload migrate
+# From the root directory (recommended - uses SSL for remote connections)
+npm run payload:migrate:ssl
+
+# Alternative: Use production migration mode
+npm run payload:migrate:production
+
+# Or from the payload app directory
+cd apps/payload
+PAYLOAD_ENABLE_SSL=true npm run payload migrate
 ```
 
 - This applies all pending migrations to the `payload` schema.
+- The SSL-enabled commands automatically configure secure connections for remote databases.
+- **No longer requires** setting `NODE_ENV=production` which could break development tooling.
 
 ### Supabase Migration
 
@@ -142,6 +152,36 @@ supabase db diff --linked
 - `supabase db diff --linked` reports no differences.
 - Schema drift is eliminated, and the database is consistent with migration files.
 
+## 8. Environment Variables & SSL Control
+
+The enhanced database adapter now supports targeted SSL control without requiring `NODE_ENV=production`:
+
+### Environment Variables
+
+- **`PAYLOAD_ENABLE_SSL=true`**: Explicitly enables SSL connections for remote databases
+- **`PAYLOAD_MIGRATION_MODE=production`**: Uses production-optimized connection settings
+- **`NODE_ENV=production`**: Still supported for backward compatibility
+
+### Usage Examples
+
+```bash
+# Enable SSL for specific migration (recommended)
+PAYLOAD_ENABLE_SSL=true npm run payload migrate
+
+# Use production migration mode
+PAYLOAD_MIGRATION_MODE=production npm run payload migrate
+
+# Traditional approach (still works)
+NODE_ENV=production npm run payload migrate
+```
+
+### Benefits
+
+- ✅ **No more NODE_ENV conflicts**: Development tooling (manypkg, linters) continues to work
+- ✅ **Targeted SSL control**: Enable SSL only when needed for remote connections
+- ✅ **Better development experience**: No need to set production environment for SSL
+- ✅ **Backward compatibility**: Existing workflows continue to function
+
 ---
 
-This guide ensures future developers can replicate the migration process reliably, maintaining schema integrity and security with SSL configurations.
+This guide ensures future developers can replicate the migration process reliably, maintaining schema integrity and security with SSL configurations while preserving development tooling functionality.

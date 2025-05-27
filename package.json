@@ -13,7 +13,7 @@
   "scripts": {
     "turbo": "turbo",
     "preinstall": "pnpm run --filter scripts requirements",
-    "postinstall": "manypkg fix",
+    "postinstall": "node scripts/postinstall.js",
     "build": "turbo build --cache-dir=.turbo",
     "clean": "git clean -xdf node_modules dist .next",
     "clean:workspaces": "turbo clean",
@@ -35,7 +35,11 @@
     "stripe:listen": "pnpm --filter '@kit/stripe' start",
     "env:generate": "turbo gen env",
     "env:validate": "turbo gen validate-env",
-    "fetch-questions-temp": "tsx fetch-questions-temp.ts"
+    "fetch-questions-temp": "tsx fetch-questions-temp.ts",
+    "manypkg:check": "manypkg check",
+    "manypkg:fix": "manypkg fix",
+    "payload:migrate:ssl": "PAYLOAD_ENABLE_SSL=true pnpm --filter payload payload migrate",
+    "payload:migrate:production": "PAYLOAD_MIGRATION_MODE=production pnpm --filter payload payload migrate"
   },
   "prettier": "@kit/prettier-config",
   "packageManager": "pnpm@9.12.0",
@@ -43,7 +47,10 @@
     "overrides": {
       "react-is": "19.0.0",
       "require-in-the-middle": "7.5.2"
-    }
+    },
+    "onlyBuiltDependencies": [
+      "sharp"
+    ]
   },
   "devDependencies": {
     "@manypkg/cli": "^0.24.0",

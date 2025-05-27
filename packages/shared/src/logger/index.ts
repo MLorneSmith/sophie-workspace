@@ -36,3 +36,12 @@ export async function getLogger() {
 
 // Export the Logger interface
 export type { Logger };
+
+// Export environment logger utilities
+export {
+  createEnvironmentLogger,
+  EnvironmentLogger,
+  getLogLevel,
+  type LoggerConfig,
+  type LogLevel,
+} from './utils/environment-logger';

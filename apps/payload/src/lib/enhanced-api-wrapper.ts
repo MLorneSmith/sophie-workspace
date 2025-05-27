@@ -9,6 +9,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import type { Payload } from 'payload';
 import { withRequestDeduplication } from './request-deduplication';
+import { createEnvironmentLogger } from '@kit/shared/logger';
 
 interface APIMetrics {
   totalRequests: number;
@@ -34,6 +35,7 @@ class EnhancedAPIManager {
   private metrics: APIMetrics;
   private errorLog: ErrorDetails[] = [];
   private readonly maxErrorLogSize = 100;
+  private logger = createEnvironmentLogger('ENHANCED-API');
 
   constructor() {
     this.metrics = {
@@ -45,7 +47,7 @@ class EnhancedAPIManager {
       lastRequestTime: new Date(),
     };
 
-    this.log('Enhanced API Manager initialized', 'info');
+    this.logger.info('Enhanced API Manager initialized');
   }
 
   /**
@@ -84,9 +86,8 @@ class EnhancedAPIManager {
       this.metrics.lastRequestTime = new Date();
 
       // Log incoming request
-      this.log(
+      this.logger.info(
         `${method} ${url.pathname}${url.search}`,
-        'info',
         {
           requestId,
           method,
@@ -105,9 +106,8 @@ class EnhancedAPIManager {
         this.updateResponseMetrics(responseTime, true);
 
         // Log successful response
-        this.log(
+        this.logger.info(
           `${method} ${url.pathname} - ${response.status} (${responseTime}ms)`,
-          'info',
           {
             requestId,
             status: response.status,
@@ -234,14 +234,15 @@ class EnhancedAPIManager {
    * Log error with full context
    */
   private logError(errorDetails: ErrorDetails, originalError: unknown): void {
-    this.log(
-      `API Error: ${errorDetails.method} ${errorDetails.endpoint}`,
-      'error',
-      {
-        errorDetails,
-        stack: originalError instanceof Error ? originalError.stack : undefined,
-      }
-    );
+    // In production, don't log full stack traces
+    const errorData = process.env.NODE_ENV === 'production' 
+      ? { endpoint: errorDetails.endpoint, method: errorDetails.method }
+      : {
+          errorDetails,
+          stack: originalError instanceof Error ? originalError.stack : undefined,
+        };
+    
+    this.logger.error(`API Error: ${errorDetails.method} ${errorDetails.endpoint}`, errorData);
   }
 
   /**
@@ -267,28 +268,14 @@ class EnhancedAPIManager {
    */
   clearErrorLog(): void {
     this.errorLog = [];
-    this.log('Error log cleared', 'info');
+    this.logger.info('Error log cleared');
   }
 
   /**
    * Centralized logging
    */
   private log(message: string, level: 'debug' | 'info' | 'warn' | 'error' = 'info', data?: any): void {
-    const logLevel = process.env.API_LOG_LEVEL || (process.env.NODE_ENV === 'development' ? 'debug' : 'info');
-    const levels = { debug: 0, info: 1, warn: 2, error: 3 };
-    
-    if (levels[level] < levels[logLevel as keyof typeof levels]) {
-      return;
-    }
-
-    const timestamp = new Date().toISOString();
-    const prefix = `[ENHANCED-API-${level.toUpperCase()}] ${timestamp}`;
-    
-    if (data) {
-      console[level === 'error' ? 'error' : 'log'](`${prefix} ${message}`, data);
-    } else {
-      console[level === 'error' ? 'error' : 'log'](`${prefix} ${message}`);
-    }
+    this.logger[level](message, data);
   }
 }
 
@@ -311,18 +298,20 @@ export function getEnhancedAPIManager(): EnhancedAPIManager {
 /**
  * Create enhanced versions of Payload API handlers
  */
-export async function createEnhancedPayloadHandlers(config: any) {
-  const manager = getEnhancedAPIManager();
+import {
+  REST_DELETE,
+  REST_GET,
+  REST_OPTIONS,
+  REST_PATCH,
+  REST_POST,
+  REST_PUT,
+} from '@payloadcms/next/routes';
 
-  // Import the original Payload handlers using dynamic import
-  const {
-    REST_DELETE,
-    REST_GET,
-    REST_OPTIONS,
-    REST_PATCH,
-    REST_POST,
-    REST_PUT,
-  } = await import('@payloadcms/next/routes');
+/**
+ * Create enhanced versions of Payload API handlers
+ */
+export function createEnhancedPayloadHandlers(config: any) {
+  const manager = getEnhancedAPIManager();
 
   // Create enhanced handlers
   const enhancedHandlers = {
