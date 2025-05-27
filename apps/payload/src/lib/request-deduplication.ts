@@ -369,6 +369,7 @@ class RequestDeduplicationManager {
 
 // Global singleton instance
 declare global {
+  // eslint-disable-next-line no-var
   var __request_deduplication_manager: RequestDeduplicationManager | undefined;
 }
 
@@ -387,9 +388,9 @@ export function getDeduplicationManager(): RequestDeduplicationManager {
  */
 export function withRequestDeduplication<T extends (req: NextRequest) => Promise<NextResponse>>(
   handler: T,
-  config?: Partial<DeduplicationConfig>
+  _config?: Partial<DeduplicationConfig>
 ): T {
-  const manager = globalThis.__request_deduplication_manager || new RequestDeduplicationManager(config);
+  const manager = globalThis.__request_deduplication_manager || new RequestDeduplicationManager(_config);
   
   return (async (req: NextRequest) => {
     return manager.processRequest(req, handler);

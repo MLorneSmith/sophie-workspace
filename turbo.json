@@ -44,7 +44,12 @@
     "CONTACT_EMAIL",
     "DATABASE_URI",
     "PAYLOAD_SECRET",
-    "PAYLOAD_PUBLIC_SERVER_URL"
+    "PAYLOAD_PUBLIC_SERVER_URL",
+    "R2_BUCKET",
+    "R2_ACCESS_KEY_ID",
+    "R2_SECRET_ACCESS_KEY",
+    "R2_ENDPOINT",
+    "R2_REGION"
   ],
   "tasks": {
     "topo": {

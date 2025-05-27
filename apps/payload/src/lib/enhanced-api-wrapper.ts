@@ -70,13 +70,10 @@ class EnhancedAPIManager {
    * Create an enhanced wrapper for Payload API handlers
    */
   createEnhancedHandler(
-    originalHandler: (request: NextRequest) => Promise<NextResponse>,
+    originalHandler: (request: Request, args: any) => Promise<Response>,
     method: string
   ) {
-    // Apply request deduplication
-    const deduplicatedHandler = withRequestDeduplication(originalHandler);
-
-    return async (request: NextRequest): Promise<NextResponse> => {
+    return async (request: NextRequest, args?: any): Promise<NextResponse> => {
       const requestId = this.generateRequestId();
       const startTime = Date.now();
       const clientInfo = this.extractClientInfo(request);
@@ -100,8 +97,8 @@ class EnhancedAPIManager {
       );
 
       try {
-        // Execute the deduplication-wrapped handler
-        const response = await deduplicatedHandler(request);
+        // Execute the original handler
+        const response = await originalHandler(request, args || {});
         
         // Calculate response time
         const responseTime = Date.now() - startTime;
@@ -118,13 +115,20 @@ class EnhancedAPIManager {
           }
         );
 
+        // Create NextResponse from the Response
+        const nextResponse = new NextResponse(response.body, {
+          status: response.status,
+          statusText: response.statusText,
+          headers: response.headers,
+        });
+
         // Add response headers for debugging
         if (process.env.NODE_ENV === 'development') {
-          response.headers.set('X-Request-ID', requestId);
-          response.headers.set('X-Response-Time', `${responseTime}ms`);
+          nextResponse.headers.set('X-Request-ID', requestId);
+          nextResponse.headers.set('X-Response-Time', `${responseTime}ms`);
         }
 
-        return response;
+        return nextResponse;
 
       } catch (error) {
         const responseTime = Date.now() - startTime;
@@ -290,6 +294,7 @@ class EnhancedAPIManager {
 
 // Global singleton instance
 declare global {
+  // eslint-disable-next-line no-var
   var __enhanced_api_manager: EnhancedAPIManager | undefined;
 }
 
@@ -306,10 +311,10 @@ export function getEnhancedAPIManager(): EnhancedAPIManager {
 /**
  * Create enhanced versions of Payload API handlers
  */
-export function createEnhancedPayloadHandlers(config: any) {
+export async function createEnhancedPayloadHandlers(config: any) {
   const manager = getEnhancedAPIManager();
 
-  // Import the original Payload handlers
+  // Import the original Payload handlers using dynamic import
   const {
     REST_DELETE,
     REST_GET,
@@ -317,7 +322,7 @@ export function createEnhancedPayloadHandlers(config: any) {
     REST_PATCH,
     REST_POST,
     REST_PUT,
-  } = require('@payloadcms/next/routes');
+  } = await import('@payloadcms/next/routes');
 
   // Create enhanced handlers
   const enhancedHandlers = {
