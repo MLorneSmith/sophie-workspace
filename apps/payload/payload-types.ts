@@ -315,6 +315,15 @@ export interface Documentation {
         id?: string | null;
       }[]
     | null;
+  parent?: (string | null) | Documentation;
+  breadcrumbs?:
+    | {
+        doc?: (string | null) | Documentation;
+        url?: string | null;
+        label?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -864,6 +873,15 @@ export interface DocumentationSelect<T extends boolean = true> {
     | T
     | {
         tag?: T;
+        id?: T;
+      };
+  parent?: T;
+  breadcrumbs?:
+    | T
+    | {
+        doc?: T;
+        url?: T;
+        label?: T;
         id?: T;
       };
   updatedAt?: T;
