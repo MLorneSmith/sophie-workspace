@@ -1,5 +1,5 @@
 {
-  "id": "68a203aa-d1db-42e5-88bb-82f3707bc3b2",
+  "id": "a5008336-9494-41d6-89a4-8ab33e512d9c",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -10,9 +10,24 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar",
+          "type": "uuid",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "role": {
+          "name": "role",
+          "type": "enum_users_role",
+          "typeSchema": "payload",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'user'"
         },
         "updated_at": {
           "name": "updated_at",
@@ -4173,6 +4188,3044 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "payload.course_lessons": {
+      "name": "course_lessons",
+      "schema": "payload",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "title": {
+          "name": "title",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "bunny_video_id": {
+          "name": "bunny_video_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "bunny_library_id": {
+          "name": "bunny_library_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'264486'"
+        },
+        "video_source_type": {
+          "name": "video_source_type",
+          "type": "enum_course_lessons_video_source_type",
+          "typeSchema": "payload",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'youtube'"
+        },
+        "youtube_video_id": {
+          "name": "youtube_video_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "todo_complete_quiz": {
+          "name": "todo_complete_quiz",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "slug": {
+          "name": "slug",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "description": {
+          "name": "description",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "content": {
+          "name": "content",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "lesson_number": {
+          "name": "lesson_number",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "estimated_duration": {
+          "name": "estimated_duration",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "course_id_id": {
+          "name": "course_id_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "quiz_id_id": {
+          "name": "quiz_id_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "survey_id_id": {
+          "name": "survey_id_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "published_at": {
+          "name": "published_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "_status": {
+          "name": "_status",
+          "type": "enum_course_lessons_status",
+          "typeSchema": "payload",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'draft'"
+        }
+      },
+      "indexes": {
+        "course_lessons_slug_idx": {
+          "name": "course_lessons_slug_idx",
+          "columns": [
+            {
+              "expression": "slug",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "course_lessons_course_id_idx": {
+          "name": "course_lessons_course_id_idx",
+          "columns": [
+            {
+              "expression": "course_id_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "course_lessons_quiz_id_idx": {
+          "name": "course_lessons_quiz_id_idx",
+          "columns": [
+            {
+              "expression": "quiz_id_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "course_lessons_survey_id_idx": {
+          "name": "course_lessons_survey_id_idx",
+          "columns": [
+            {
+              "expression": "survey_id_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "course_lessons_updated_at_idx": {
+          "name": "course_lessons_updated_at_idx",
+          "columns": [
+            {
+              "expression": "updated_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "course_lessons_created_at_idx": {
+          "name": "course_lessons_created_at_idx",
+          "columns": [
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "course_lessons__status_idx": {
+          "name": "course_lessons__status_idx",
+          "columns": [
+            {
+              "expression": "_status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "course_lessons_course_id_id_courses_id_fk": {
+          "name": "course_lessons_course_id_id_courses_id_fk",
+          "tableFrom": "course_lessons",
+          "tableTo": "courses",
+          "schemaTo": "payload",
+          "columnsFrom": [
+            "course_id_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "course_lessons_quiz_id_id_course_quizzes_id_fk": {
+          "name": "course_lessons_quiz_id_id_course_quizzes_id_fk",
+          "tableFrom": "course_lessons",
+          "tableTo": "course_quizzes",
+          "schemaTo": "payload",
+          "columnsFrom": [
+            "quiz_id_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "course_lessons_survey_id_id_surveys_id_fk": {
+          "name": "course_lessons_survey_id_id_surveys_id_fk",
+          "tableFrom": "course_lessons",
+          "tableTo": "surveys",
+          "schemaTo": "payload",
+          "columnsFrom": [
+            "survey_id_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "payload.course_lessons_rels": {
+      "name": "course_lessons_rels",
+      "schema": "payload",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "order": {
+          "name": "order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "parent_id": {
+          "name": "parent_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "path": {
+          "name": "path",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "downloads_id": {
+          "name": "downloads_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "course_lessons_rels_order_idx": {
+          "name": "course_lessons_rels_order_idx",
+          "columns": [
+            {
+              "expression": "order",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "course_lessons_rels_parent_idx": {
+          "name": "course_lessons_rels_parent_idx",
+          "columns": [
+            {
+              "expression": "parent_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "course_lessons_rels_path_idx": {
+          "name": "course_lessons_rels_path_idx",
+          "columns": [
+            {
+              "expression": "path",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "course_lessons_rels_downloads_id_idx": {
+          "name": "course_lessons_rels_downloads_id_idx",
+          "columns": [
+            {
+              "expression": "downloads_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "course_lessons_rels_parent_fk": {
+          "name": "course_lessons_rels_parent_fk",
+          "tableFrom": "course_lessons_rels",
+          "tableTo": "course_lessons",
+          "schemaTo": "payload",
+          "columnsFrom": [
+            "parent_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "course_lessons_rels_downloads_fk": {
+          "name": "course_lessons_rels_downloads_fk",
+          "tableFrom": "course_lessons_rels",
+          "tableTo": "downloads",
+          "schemaTo": "payload",
+          "columnsFrom": [
+            "downloads_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "payload._course_lessons_v": {
+      "name": "_course_lessons_v",
+      "schema": "payload",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "parent_id": {
+          "name": "parent_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version_title": {
+          "name": "version_title",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version_bunny_video_id": {
+          "name": "version_bunny_video_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version_bunny_library_id": {
+          "name": "version_bunny_library_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'264486'"
+        },
+        "version_video_source_type": {
+          "name": "version_video_source_type",
+          "type": "enum__course_lessons_v_version_video_source_type",
+          "typeSchema": "payload",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'youtube'"
+        },
+        "version_youtube_video_id": {
+          "name": "version_youtube_video_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version_todo_complete_quiz": {
+          "name": "version_todo_complete_quiz",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "version_slug": {
+          "name": "version_slug",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version_description": {
+          "name": "version_description",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version_content": {
+          "name": "version_content",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version_lesson_number": {
+          "name": "version_lesson_number",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version_estimated_duration": {
+          "name": "version_estimated_duration",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version_course_id_id": {
+          "name": "version_course_id_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version_quiz_id_id": {
+          "name": "version_quiz_id_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version_survey_id_id": {
+          "name": "version_survey_id_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version_published_at": {
+          "name": "version_published_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version_updated_at": {
+          "name": "version_updated_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version_created_at": {
+          "name": "version_created_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version__status": {
+          "name": "version__status",
+          "type": "enum__course_lessons_v_version_status",
+          "typeSchema": "payload",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'draft'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "latest": {
+          "name": "latest",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "_course_lessons_v_parent_idx": {
+          "name": "_course_lessons_v_parent_idx",
+          "columns": [
+            {
+              "expression": "parent_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_course_lessons_v_version_version_slug_idx": {
+          "name": "_course_lessons_v_version_version_slug_idx",
+          "columns": [
+            {
+              "expression": "version_slug",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_course_lessons_v_version_version_course_id_idx": {
+          "name": "_course_lessons_v_version_version_course_id_idx",
+          "columns": [
+            {
+              "expression": "version_course_id_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_course_lessons_v_version_version_quiz_id_idx": {
+          "name": "_course_lessons_v_version_version_quiz_id_idx",
+          "columns": [
+            {
+              "expression": "version_quiz_id_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_course_lessons_v_version_version_survey_id_idx": {
+          "name": "_course_lessons_v_version_version_survey_id_idx",
+          "columns": [
+            {
+              "expression": "version_survey_id_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_course_lessons_v_version_version_updated_at_idx": {
+          "name": "_course_lessons_v_version_version_updated_at_idx",
+          "columns": [
+            {
+              "expression": "version_updated_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_course_lessons_v_version_version_created_at_idx": {
+          "name": "_course_lessons_v_version_version_created_at_idx",
+          "columns": [
+            {
+              "expression": "version_created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_course_lessons_v_version_version__status_idx": {
+          "name": "_course_lessons_v_version_version__status_idx",
+          "columns": [
+            {
+              "expression": "version__status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_course_lessons_v_created_at_idx": {
+          "name": "_course_lessons_v_created_at_idx",
+          "columns": [
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_course_lessons_v_updated_at_idx": {
+          "name": "_course_lessons_v_updated_at_idx",
+          "columns": [
+            {
+              "expression": "updated_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_course_lessons_v_latest_idx": {
+          "name": "_course_lessons_v_latest_idx",
+          "columns": [
+            {
+              "expression": "latest",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "_course_lessons_v_parent_id_course_lessons_id_fk": {
+          "name": "_course_lessons_v_parent_id_course_lessons_id_fk",
+          "tableFrom": "_course_lessons_v",
+          "tableTo": "course_lessons",
+          "schemaTo": "payload",
+          "columnsFrom": [
+            "parent_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "_course_lessons_v_version_course_id_id_courses_id_fk": {
+          "name": "_course_lessons_v_version_course_id_id_courses_id_fk",
+          "tableFrom": "_course_lessons_v",
+          "tableTo": "courses",
+          "schemaTo": "payload",
+          "columnsFrom": [
+            "version_course_id_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "_course_lessons_v_version_quiz_id_id_course_quizzes_id_fk": {
+          "name": "_course_lessons_v_version_quiz_id_id_course_quizzes_id_fk",
+          "tableFrom": "_course_lessons_v",
+          "tableTo": "course_quizzes",
+          "schemaTo": "payload",
+          "columnsFrom": [
+            "version_quiz_id_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "_course_lessons_v_version_survey_id_id_surveys_id_fk": {
+          "name": "_course_lessons_v_version_survey_id_id_surveys_id_fk",
+          "tableFrom": "_course_lessons_v",
+          "tableTo": "surveys",
+          "schemaTo": "payload",
+          "columnsFrom": [
+            "version_survey_id_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "payload._course_lessons_v_rels": {
+      "name": "_course_lessons_v_rels",
+      "schema": "payload",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "order": {
+          "name": "order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "parent_id": {
+          "name": "parent_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "path": {
+          "name": "path",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "downloads_id": {
+          "name": "downloads_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "_course_lessons_v_rels_order_idx": {
+          "name": "_course_lessons_v_rels_order_idx",
+          "columns": [
+            {
+              "expression": "order",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_course_lessons_v_rels_parent_idx": {
+          "name": "_course_lessons_v_rels_parent_idx",
+          "columns": [
+            {
+              "expression": "parent_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_course_lessons_v_rels_path_idx": {
+          "name": "_course_lessons_v_rels_path_idx",
+          "columns": [
+            {
+              "expression": "path",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_course_lessons_v_rels_downloads_id_idx": {
+          "name": "_course_lessons_v_rels_downloads_id_idx",
+          "columns": [
+            {
+              "expression": "downloads_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "_course_lessons_v_rels_parent_fk": {
+          "name": "_course_lessons_v_rels_parent_fk",
+          "tableFrom": "_course_lessons_v_rels",
+          "tableTo": "_course_lessons_v",
+          "schemaTo": "payload",
+          "columnsFrom": [
+            "parent_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "_course_lessons_v_rels_downloads_fk": {
+          "name": "_course_lessons_v_rels_downloads_fk",
+          "tableFrom": "_course_lessons_v_rels",
+          "tableTo": "downloads",
+          "schemaTo": "payload",
+          "columnsFrom": [
+            "downloads_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "payload.course_quizzes": {
+      "name": "course_quizzes",
+      "schema": "payload",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "title": {
+          "name": "title",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "slug": {
+          "name": "slug",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "description": {
+          "name": "description",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "course_id_id": {
+          "name": "course_id_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pass_threshold": {
+          "name": "pass_threshold",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 70
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "_status": {
+          "name": "_status",
+          "type": "enum_course_quizzes_status",
+          "typeSchema": "payload",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'draft'"
+        }
+      },
+      "indexes": {
+        "course_quizzes_slug_idx": {
+          "name": "course_quizzes_slug_idx",
+          "columns": [
+            {
+              "expression": "slug",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "course_quizzes_course_id_idx": {
+          "name": "course_quizzes_course_id_idx",
+          "columns": [
+            {
+              "expression": "course_id_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "course_quizzes_updated_at_idx": {
+          "name": "course_quizzes_updated_at_idx",
+          "columns": [
+            {
+              "expression": "updated_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "course_quizzes_created_at_idx": {
+          "name": "course_quizzes_created_at_idx",
+          "columns": [
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "course_quizzes__status_idx": {
+          "name": "course_quizzes__status_idx",
+          "columns": [
+            {
+              "expression": "_status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "course_quizzes_course_id_id_courses_id_fk": {
+          "name": "course_quizzes_course_id_id_courses_id_fk",
+          "tableFrom": "course_quizzes",
+          "tableTo": "courses",
+          "schemaTo": "payload",
+          "columnsFrom": [
+            "course_id_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "payload.course_quizzes_rels": {
+      "name": "course_quizzes_rels",
+      "schema": "payload",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "order": {
+          "name": "order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "parent_id": {
+          "name": "parent_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "path": {
+          "name": "path",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "quiz_questions_id": {
+          "name": "quiz_questions_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "course_quizzes_rels_order_idx": {
+          "name": "course_quizzes_rels_order_idx",
+          "columns": [
+            {
+              "expression": "order",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "course_quizzes_rels_parent_idx": {
+          "name": "course_quizzes_rels_parent_idx",
+          "columns": [
+            {
+              "expression": "parent_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "course_quizzes_rels_path_idx": {
+          "name": "course_quizzes_rels_path_idx",
+          "columns": [
+            {
+              "expression": "path",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "course_quizzes_rels_quiz_questions_id_idx": {
+          "name": "course_quizzes_rels_quiz_questions_id_idx",
+          "columns": [
+            {
+              "expression": "quiz_questions_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "course_quizzes_rels_parent_fk": {
+          "name": "course_quizzes_rels_parent_fk",
+          "tableFrom": "course_quizzes_rels",
+          "tableTo": "course_quizzes",
+          "schemaTo": "payload",
+          "columnsFrom": [
+            "parent_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "course_quizzes_rels_quiz_questions_fk": {
+          "name": "course_quizzes_rels_quiz_questions_fk",
+          "tableFrom": "course_quizzes_rels",
+          "tableTo": "quiz_questions",
+          "schemaTo": "payload",
+          "columnsFrom": [
+            "quiz_questions_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "payload._course_quizzes_v": {
+      "name": "_course_quizzes_v",
+      "schema": "payload",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "parent_id": {
+          "name": "parent_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version_title": {
+          "name": "version_title",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version_slug": {
+          "name": "version_slug",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version_description": {
+          "name": "version_description",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version_course_id_id": {
+          "name": "version_course_id_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version_pass_threshold": {
+          "name": "version_pass_threshold",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 70
+        },
+        "version_updated_at": {
+          "name": "version_updated_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version_created_at": {
+          "name": "version_created_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version__status": {
+          "name": "version__status",
+          "type": "enum__course_quizzes_v_version_status",
+          "typeSchema": "payload",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'draft'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "latest": {
+          "name": "latest",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "_course_quizzes_v_parent_idx": {
+          "name": "_course_quizzes_v_parent_idx",
+          "columns": [
+            {
+              "expression": "parent_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_course_quizzes_v_version_version_slug_idx": {
+          "name": "_course_quizzes_v_version_version_slug_idx",
+          "columns": [
+            {
+              "expression": "version_slug",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_course_quizzes_v_version_version_course_id_idx": {
+          "name": "_course_quizzes_v_version_version_course_id_idx",
+          "columns": [
+            {
+              "expression": "version_course_id_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_course_quizzes_v_version_version_updated_at_idx": {
+          "name": "_course_quizzes_v_version_version_updated_at_idx",
+          "columns": [
+            {
+              "expression": "version_updated_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_course_quizzes_v_version_version_created_at_idx": {
+          "name": "_course_quizzes_v_version_version_created_at_idx",
+          "columns": [
+            {
+              "expression": "version_created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_course_quizzes_v_version_version__status_idx": {
+          "name": "_course_quizzes_v_version_version__status_idx",
+          "columns": [
+            {
+              "expression": "version__status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_course_quizzes_v_created_at_idx": {
+          "name": "_course_quizzes_v_created_at_idx",
+          "columns": [
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_course_quizzes_v_updated_at_idx": {
+          "name": "_course_quizzes_v_updated_at_idx",
+          "columns": [
+            {
+              "expression": "updated_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_course_quizzes_v_latest_idx": {
+          "name": "_course_quizzes_v_latest_idx",
+          "columns": [
+            {
+              "expression": "latest",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "_course_quizzes_v_parent_id_course_quizzes_id_fk": {
+          "name": "_course_quizzes_v_parent_id_course_quizzes_id_fk",
+          "tableFrom": "_course_quizzes_v",
+          "tableTo": "course_quizzes",
+          "schemaTo": "payload",
+          "columnsFrom": [
+            "parent_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "_course_quizzes_v_version_course_id_id_courses_id_fk": {
+          "name": "_course_quizzes_v_version_course_id_id_courses_id_fk",
+          "tableFrom": "_course_quizzes_v",
+          "tableTo": "courses",
+          "schemaTo": "payload",
+          "columnsFrom": [
+            "version_course_id_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "payload._course_quizzes_v_rels": {
+      "name": "_course_quizzes_v_rels",
+      "schema": "payload",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "order": {
+          "name": "order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "parent_id": {
+          "name": "parent_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "path": {
+          "name": "path",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "quiz_questions_id": {
+          "name": "quiz_questions_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "_course_quizzes_v_rels_order_idx": {
+          "name": "_course_quizzes_v_rels_order_idx",
+          "columns": [
+            {
+              "expression": "order",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_course_quizzes_v_rels_parent_idx": {
+          "name": "_course_quizzes_v_rels_parent_idx",
+          "columns": [
+            {
+              "expression": "parent_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_course_quizzes_v_rels_path_idx": {
+          "name": "_course_quizzes_v_rels_path_idx",
+          "columns": [
+            {
+              "expression": "path",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_course_quizzes_v_rels_quiz_questions_id_idx": {
+          "name": "_course_quizzes_v_rels_quiz_questions_id_idx",
+          "columns": [
+            {
+              "expression": "quiz_questions_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "_course_quizzes_v_rels_parent_fk": {
+          "name": "_course_quizzes_v_rels_parent_fk",
+          "tableFrom": "_course_quizzes_v_rels",
+          "tableTo": "_course_quizzes_v",
+          "schemaTo": "payload",
+          "columnsFrom": [
+            "parent_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "_course_quizzes_v_rels_quiz_questions_fk": {
+          "name": "_course_quizzes_v_rels_quiz_questions_fk",
+          "tableFrom": "_course_quizzes_v_rels",
+          "tableTo": "quiz_questions",
+          "schemaTo": "payload",
+          "columnsFrom": [
+            "quiz_questions_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "payload.quiz_questions_options": {
+      "name": "quiz_questions_options",
+      "schema": "payload",
+      "columns": {
+        "_order": {
+          "name": "_order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "_parent_id": {
+          "name": "_parent_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id": {
+          "name": "id",
+          "type": "varchar",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "text": {
+          "name": "text",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "is_correct": {
+          "name": "is_correct",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        }
+      },
+      "indexes": {
+        "quiz_questions_options_order_idx": {
+          "name": "quiz_questions_options_order_idx",
+          "columns": [
+            {
+              "expression": "_order",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "quiz_questions_options_parent_id_idx": {
+          "name": "quiz_questions_options_parent_id_idx",
+          "columns": [
+            {
+              "expression": "_parent_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "quiz_questions_options_parent_id_fk": {
+          "name": "quiz_questions_options_parent_id_fk",
+          "tableFrom": "quiz_questions_options",
+          "tableTo": "quiz_questions",
+          "schemaTo": "payload",
+          "columnsFrom": [
+            "_parent_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "payload.quiz_questions": {
+      "name": "quiz_questions",
+      "schema": "payload",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "question": {
+          "name": "question",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "enum_quiz_questions_type",
+          "typeSchema": "payload",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'multiple_choice'"
+        },
+        "question_slug": {
+          "name": "question_slug",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "explanation": {
+          "name": "explanation",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "order": {
+          "name": "order",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "quiz_questions_question_slug_idx": {
+          "name": "quiz_questions_question_slug_idx",
+          "columns": [
+            {
+              "expression": "question_slug",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "quiz_questions_updated_at_idx": {
+          "name": "quiz_questions_updated_at_idx",
+          "columns": [
+            {
+              "expression": "updated_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "quiz_questions_created_at_idx": {
+          "name": "quiz_questions_created_at_idx",
+          "columns": [
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "payload.survey_questions_options": {
+      "name": "survey_questions_options",
+      "schema": "payload",
+      "columns": {
+        "_order": {
+          "name": "_order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "_parent_id": {
+          "name": "_parent_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id": {
+          "name": "id",
+          "type": "varchar",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "option": {
+          "name": "option",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "survey_questions_options_order_idx": {
+          "name": "survey_questions_options_order_idx",
+          "columns": [
+            {
+              "expression": "_order",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "survey_questions_options_parent_id_idx": {
+          "name": "survey_questions_options_parent_id_idx",
+          "columns": [
+            {
+              "expression": "_parent_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "survey_questions_options_parent_id_fk": {
+          "name": "survey_questions_options_parent_id_fk",
+          "tableFrom": "survey_questions_options",
+          "tableTo": "survey_questions",
+          "schemaTo": "payload",
+          "columnsFrom": [
+            "_parent_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "payload.survey_questions": {
+      "name": "survey_questions",
+      "schema": "payload",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "question_slug": {
+          "name": "question_slug",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "text": {
+          "name": "text",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "type": {
+          "name": "type",
+          "type": "enum_survey_questions_type",
+          "typeSchema": "payload",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'multiple_choice'"
+        },
+        "description": {
+          "name": "description",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "required": {
+          "name": "required",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        },
+        "category": {
+          "name": "category",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "questionspin": {
+          "name": "questionspin",
+          "type": "enum_survey_questions_questionspin",
+          "typeSchema": "payload",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'Positive'"
+        },
+        "position": {
+          "name": "position",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "_status": {
+          "name": "_status",
+          "type": "enum_survey_questions_status",
+          "typeSchema": "payload",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'draft'"
+        }
+      },
+      "indexes": {
+        "survey_questions_question_slug_idx": {
+          "name": "survey_questions_question_slug_idx",
+          "columns": [
+            {
+              "expression": "question_slug",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "survey_questions_updated_at_idx": {
+          "name": "survey_questions_updated_at_idx",
+          "columns": [
+            {
+              "expression": "updated_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "survey_questions_created_at_idx": {
+          "name": "survey_questions_created_at_idx",
+          "columns": [
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "survey_questions__status_idx": {
+          "name": "survey_questions__status_idx",
+          "columns": [
+            {
+              "expression": "_status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "payload._survey_questions_v_version_options": {
+      "name": "_survey_questions_v_version_options",
+      "schema": "payload",
+      "columns": {
+        "_order": {
+          "name": "_order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "_parent_id": {
+          "name": "_parent_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "option": {
+          "name": "option",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "_uuid": {
+          "name": "_uuid",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "_survey_questions_v_version_options_order_idx": {
+          "name": "_survey_questions_v_version_options_order_idx",
+          "columns": [
+            {
+              "expression": "_order",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_survey_questions_v_version_options_parent_id_idx": {
+          "name": "_survey_questions_v_version_options_parent_id_idx",
+          "columns": [
+            {
+              "expression": "_parent_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "_survey_questions_v_version_options_parent_id_fk": {
+          "name": "_survey_questions_v_version_options_parent_id_fk",
+          "tableFrom": "_survey_questions_v_version_options",
+          "tableTo": "_survey_questions_v",
+          "schemaTo": "payload",
+          "columnsFrom": [
+            "_parent_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "payload._survey_questions_v": {
+      "name": "_survey_questions_v",
+      "schema": "payload",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "parent_id": {
+          "name": "parent_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version_question_slug": {
+          "name": "version_question_slug",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version_text": {
+          "name": "version_text",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version_type": {
+          "name": "version_type",
+          "type": "enum__survey_questions_v_version_type",
+          "typeSchema": "payload",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'multiple_choice'"
+        },
+        "version_description": {
+          "name": "version_description",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version_required": {
+          "name": "version_required",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        },
+        "version_category": {
+          "name": "version_category",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version_questionspin": {
+          "name": "version_questionspin",
+          "type": "enum__survey_questions_v_version_questionspin",
+          "typeSchema": "payload",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'Positive'"
+        },
+        "version_position": {
+          "name": "version_position",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "version_updated_at": {
+          "name": "version_updated_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version_created_at": {
+          "name": "version_created_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version__status": {
+          "name": "version__status",
+          "type": "enum__survey_questions_v_version_status",
+          "typeSchema": "payload",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'draft'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "latest": {
+          "name": "latest",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "_survey_questions_v_parent_idx": {
+          "name": "_survey_questions_v_parent_idx",
+          "columns": [
+            {
+              "expression": "parent_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_survey_questions_v_version_version_question_slug_idx": {
+          "name": "_survey_questions_v_version_version_question_slug_idx",
+          "columns": [
+            {
+              "expression": "version_question_slug",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_survey_questions_v_version_version_updated_at_idx": {
+          "name": "_survey_questions_v_version_version_updated_at_idx",
+          "columns": [
+            {
+              "expression": "version_updated_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_survey_questions_v_version_version_created_at_idx": {
+          "name": "_survey_questions_v_version_version_created_at_idx",
+          "columns": [
+            {
+              "expression": "version_created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_survey_questions_v_version_version__status_idx": {
+          "name": "_survey_questions_v_version_version__status_idx",
+          "columns": [
+            {
+              "expression": "version__status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_survey_questions_v_created_at_idx": {
+          "name": "_survey_questions_v_created_at_idx",
+          "columns": [
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_survey_questions_v_updated_at_idx": {
+          "name": "_survey_questions_v_updated_at_idx",
+          "columns": [
+            {
+              "expression": "updated_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_survey_questions_v_latest_idx": {
+          "name": "_survey_questions_v_latest_idx",
+          "columns": [
+            {
+              "expression": "latest",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "_survey_questions_v_parent_id_survey_questions_id_fk": {
+          "name": "_survey_questions_v_parent_id_survey_questions_id_fk",
+          "tableFrom": "_survey_questions_v",
+          "tableTo": "survey_questions",
+          "schemaTo": "payload",
+          "columnsFrom": [
+            "parent_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "payload.surveys": {
+      "name": "surveys",
+      "schema": "payload",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "slug": {
+          "name": "slug",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "description": {
+          "name": "description",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "enum_surveys_status",
+          "typeSchema": "payload",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'draft'"
+        },
+        "published_at": {
+          "name": "published_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "_status": {
+          "name": "_status",
+          "type": "enum_surveys_status",
+          "typeSchema": "payload",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'draft'"
+        }
+      },
+      "indexes": {
+        "surveys_slug_idx": {
+          "name": "surveys_slug_idx",
+          "columns": [
+            {
+              "expression": "slug",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "surveys_updated_at_idx": {
+          "name": "surveys_updated_at_idx",
+          "columns": [
+            {
+              "expression": "updated_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "surveys_created_at_idx": {
+          "name": "surveys_created_at_idx",
+          "columns": [
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "surveys__status_idx": {
+          "name": "surveys__status_idx",
+          "columns": [
+            {
+              "expression": "_status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "payload.surveys_rels": {
+      "name": "surveys_rels",
+      "schema": "payload",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "order": {
+          "name": "order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "parent_id": {
+          "name": "parent_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "path": {
+          "name": "path",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "downloads_id": {
+          "name": "downloads_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "surveys_rels_order_idx": {
+          "name": "surveys_rels_order_idx",
+          "columns": [
+            {
+              "expression": "order",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "surveys_rels_parent_idx": {
+          "name": "surveys_rels_parent_idx",
+          "columns": [
+            {
+              "expression": "parent_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "surveys_rels_path_idx": {
+          "name": "surveys_rels_path_idx",
+          "columns": [
+            {
+              "expression": "path",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "surveys_rels_downloads_id_idx": {
+          "name": "surveys_rels_downloads_id_idx",
+          "columns": [
+            {
+              "expression": "downloads_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "surveys_rels_parent_fk": {
+          "name": "surveys_rels_parent_fk",
+          "tableFrom": "surveys_rels",
+          "tableTo": "surveys",
+          "schemaTo": "payload",
+          "columnsFrom": [
+            "parent_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "surveys_rels_downloads_fk": {
+          "name": "surveys_rels_downloads_fk",
+          "tableFrom": "surveys_rels",
+          "tableTo": "downloads",
+          "schemaTo": "payload",
+          "columnsFrom": [
+            "downloads_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "payload._surveys_v": {
+      "name": "_surveys_v",
+      "schema": "payload",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "parent_id": {
+          "name": "parent_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version_slug": {
+          "name": "version_slug",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version_description": {
+          "name": "version_description",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version_status": {
+          "name": "version_status",
+          "type": "enum__surveys_v_version_status",
+          "typeSchema": "payload",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'draft'"
+        },
+        "version_published_at": {
+          "name": "version_published_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version_updated_at": {
+          "name": "version_updated_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version_created_at": {
+          "name": "version_created_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version__status": {
+          "name": "version__status",
+          "type": "enum__surveys_v_version_status",
+          "typeSchema": "payload",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'draft'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "latest": {
+          "name": "latest",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "_surveys_v_parent_idx": {
+          "name": "_surveys_v_parent_idx",
+          "columns": [
+            {
+              "expression": "parent_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_surveys_v_version_version_slug_idx": {
+          "name": "_surveys_v_version_version_slug_idx",
+          "columns": [
+            {
+              "expression": "version_slug",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_surveys_v_version_version_updated_at_idx": {
+          "name": "_surveys_v_version_version_updated_at_idx",
+          "columns": [
+            {
+              "expression": "version_updated_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_surveys_v_version_version_created_at_idx": {
+          "name": "_surveys_v_version_version_created_at_idx",
+          "columns": [
+            {
+              "expression": "version_created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_surveys_v_version_version__status_idx": {
+          "name": "_surveys_v_version_version__status_idx",
+          "columns": [
+            {
+              "expression": "version__status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_surveys_v_created_at_idx": {
+          "name": "_surveys_v_created_at_idx",
+          "columns": [
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_surveys_v_updated_at_idx": {
+          "name": "_surveys_v_updated_at_idx",
+          "columns": [
+            {
+              "expression": "updated_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_surveys_v_latest_idx": {
+          "name": "_surveys_v_latest_idx",
+          "columns": [
+            {
+              "expression": "latest",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "_surveys_v_parent_id_surveys_id_fk": {
+          "name": "_surveys_v_parent_id_surveys_id_fk",
+          "tableFrom": "_surveys_v",
+          "tableTo": "surveys",
+          "schemaTo": "payload",
+          "columnsFrom": [
+            "parent_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "payload._surveys_v_rels": {
+      "name": "_surveys_v_rels",
+      "schema": "payload",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "order": {
+          "name": "order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "parent_id": {
+          "name": "parent_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "path": {
+          "name": "path",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "downloads_id": {
+          "name": "downloads_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "_surveys_v_rels_order_idx": {
+          "name": "_surveys_v_rels_order_idx",
+          "columns": [
+            {
+              "expression": "order",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_surveys_v_rels_parent_idx": {
+          "name": "_surveys_v_rels_parent_idx",
+          "columns": [
+            {
+              "expression": "parent_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_surveys_v_rels_path_idx": {
+          "name": "_surveys_v_rels_path_idx",
+          "columns": [
+            {
+              "expression": "path",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_surveys_v_rels_downloads_id_idx": {
+          "name": "_surveys_v_rels_downloads_id_idx",
+          "columns": [
+            {
+              "expression": "downloads_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "_surveys_v_rels_parent_fk": {
+          "name": "_surveys_v_rels_parent_fk",
+          "tableFrom": "_surveys_v_rels",
+          "tableTo": "_surveys_v",
+          "schemaTo": "payload",
+          "columnsFrom": [
+            "parent_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "_surveys_v_rels_downloads_fk": {
+          "name": "_surveys_v_rels_downloads_fk",
+          "tableFrom": "_surveys_v_rels",
+          "tableTo": "downloads",
+          "schemaTo": "payload",
+          "columnsFrom": [
+            "downloads_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "payload.payload_locked_documents": {
       "name": "payload_locked_documents",
       "schema": "payload",
@@ -4289,7 +7342,7 @@
         },
         "users_id": {
           "name": "users_id",
-          "type": "varchar",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": false
         },
@@ -4325,6 +7378,36 @@
         },
         "courses_id": {
           "name": "courses_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "course_lessons_id": {
+          "name": "course_lessons_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "course_quizzes_id": {
+          "name": "course_quizzes_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "quiz_questions_id": {
+          "name": "quiz_questions_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "survey_questions_id": {
+          "name": "survey_questions_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "surveys_id": {
+          "name": "surveys_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": false
@@ -4480,6 +7563,81 @@
           "concurrently": false,
           "method": "btree",
           "with": {}
+        },
+        "payload_locked_documents_rels_course_lessons_id_idx": {
+          "name": "payload_locked_documents_rels_course_lessons_id_idx",
+          "columns": [
+            {
+              "expression": "course_lessons_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "payload_locked_documents_rels_course_quizzes_id_idx": {
+          "name": "payload_locked_documents_rels_course_quizzes_id_idx",
+          "columns": [
+            {
+              "expression": "course_quizzes_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "payload_locked_documents_rels_quiz_questions_id_idx": {
+          "name": "payload_locked_documents_rels_quiz_questions_id_idx",
+          "columns": [
+            {
+              "expression": "quiz_questions_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "payload_locked_documents_rels_survey_questions_id_idx": {
+          "name": "payload_locked_documents_rels_survey_questions_id_idx",
+          "columns": [
+            {
+              "expression": "survey_questions_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "payload_locked_documents_rels_surveys_id_idx": {
+          "name": "payload_locked_documents_rels_surveys_id_idx",
+          "columns": [
+            {
+              "expression": "surveys_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
         }
       },
       "foreignKeys": {
@@ -4588,6 +7746,76 @@
           "schemaTo": "payload",
           "columnsFrom": [
             "courses_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "payload_locked_documents_rels_course_lessons_fk": {
+          "name": "payload_locked_documents_rels_course_lessons_fk",
+          "tableFrom": "payload_locked_documents_rels",
+          "tableTo": "course_lessons",
+          "schemaTo": "payload",
+          "columnsFrom": [
+            "course_lessons_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "payload_locked_documents_rels_course_quizzes_fk": {
+          "name": "payload_locked_documents_rels_course_quizzes_fk",
+          "tableFrom": "payload_locked_documents_rels",
+          "tableTo": "course_quizzes",
+          "schemaTo": "payload",
+          "columnsFrom": [
+            "course_quizzes_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "payload_locked_documents_rels_quiz_questions_fk": {
+          "name": "payload_locked_documents_rels_quiz_questions_fk",
+          "tableFrom": "payload_locked_documents_rels",
+          "tableTo": "quiz_questions",
+          "schemaTo": "payload",
+          "columnsFrom": [
+            "quiz_questions_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "payload_locked_documents_rels_survey_questions_fk": {
+          "name": "payload_locked_documents_rels_survey_questions_fk",
+          "tableFrom": "payload_locked_documents_rels",
+          "tableTo": "survey_questions",
+          "schemaTo": "payload",
+          "columnsFrom": [
+            "survey_questions_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "payload_locked_documents_rels_surveys_fk": {
+          "name": "payload_locked_documents_rels_surveys_fk",
+          "tableFrom": "payload_locked_documents_rels",
+          "tableTo": "surveys",
+          "schemaTo": "payload",
+          "columnsFrom": [
+            "surveys_id"
           ],
           "columnsTo": [
             "id"
@@ -4724,7 +7952,7 @@
         },
         "users_id": {
           "name": "users_id",
-          "type": "varchar",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": false
         }
@@ -4906,6 +8134,14 @@
     }
   },
   "enums": {
+    "payload.enum_users_role": {
+      "name": "enum_users_role",
+      "schema": "payload",
+      "values": [
+        "admin",
+        "user"
+      ]
+    },
     "payload.enum_posts_status": {
       "name": "enum_posts_status",
       "schema": "payload",
@@ -4964,6 +8200,127 @@
     },
     "payload.enum__courses_v_version_status": {
       "name": "enum__courses_v_version_status",
+      "schema": "payload",
+      "values": [
+        "draft",
+        "published"
+      ]
+    },
+    "payload.enum_course_lessons_video_source_type": {
+      "name": "enum_course_lessons_video_source_type",
+      "schema": "payload",
+      "values": [
+        "youtube",
+        "vimeo"
+      ]
+    },
+    "payload.enum_course_lessons_status": {
+      "name": "enum_course_lessons_status",
+      "schema": "payload",
+      "values": [
+        "draft",
+        "published"
+      ]
+    },
+    "payload.enum__course_lessons_v_version_video_source_type": {
+      "name": "enum__course_lessons_v_version_video_source_type",
+      "schema": "payload",
+      "values": [
+        "youtube",
+        "vimeo"
+      ]
+    },
+    "payload.enum__course_lessons_v_version_status": {
+      "name": "enum__course_lessons_v_version_status",
+      "schema": "payload",
+      "values": [
+        "draft",
+        "published"
+      ]
+    },
+    "payload.enum_course_quizzes_status": {
+      "name": "enum_course_quizzes_status",
+      "schema": "payload",
+      "values": [
+        "draft",
+        "published"
+      ]
+    },
+    "payload.enum__course_quizzes_v_version_status": {
+      "name": "enum__course_quizzes_v_version_status",
+      "schema": "payload",
+      "values": [
+        "draft",
+        "published"
+      ]
+    },
+    "payload.enum_quiz_questions_type": {
+      "name": "enum_quiz_questions_type",
+      "schema": "payload",
+      "values": [
+        "multiple_choice"
+      ]
+    },
+    "payload.enum_survey_questions_type": {
+      "name": "enum_survey_questions_type",
+      "schema": "payload",
+      "values": [
+        "multiple_choice",
+        "text_field",
+        "scale"
+      ]
+    },
+    "payload.enum_survey_questions_questionspin": {
+      "name": "enum_survey_questions_questionspin",
+      "schema": "payload",
+      "values": [
+        "Positive",
+        "Negative"
+      ]
+    },
+    "payload.enum_survey_questions_status": {
+      "name": "enum_survey_questions_status",
+      "schema": "payload",
+      "values": [
+        "draft",
+        "published"
+      ]
+    },
+    "payload.enum__survey_questions_v_version_type": {
+      "name": "enum__survey_questions_v_version_type",
+      "schema": "payload",
+      "values": [
+        "multiple_choice",
+        "text_field",
+        "scale"
+      ]
+    },
+    "payload.enum__survey_questions_v_version_questionspin": {
+      "name": "enum__survey_questions_v_version_questionspin",
+      "schema": "payload",
+      "values": [
+        "Positive",
+        "Negative"
+      ]
+    },
+    "payload.enum__survey_questions_v_version_status": {
+      "name": "enum__survey_questions_v_version_status",
+      "schema": "payload",
+      "values": [
+        "draft",
+        "published"
+      ]
+    },
+    "payload.enum_surveys_status": {
+      "name": "enum_surveys_status",
+      "schema": "payload",
+      "values": [
+        "draft",
+        "published"
+      ]
+    },
+    "payload.enum__surveys_v_version_status": {
+      "name": "enum__surveys_v_version_status",
       "schema": "payload",
       "values": [
         "draft",

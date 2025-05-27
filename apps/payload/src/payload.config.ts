@@ -1,4 +1,3 @@
-import { postgresAdapter } from '@payloadcms/db-postgres';
 import { nestedDocsPlugin } from '@payloadcms/plugin-nested-docs';
 import { s3Storage } from '@payloadcms/storage-s3';
 import { lexicalEditor } from '@payloadcms/richtext-lexical';
@@ -19,6 +18,7 @@ import { QuizQuestions } from './collections/QuizQuestions';
 import { SurveyQuestions } from './collections/SurveyQuestions';
 import { Surveys } from './collections/Surveys';
 import { Users } from './collections/Users';
+import { getDatabaseAdapter } from './lib/database-adapter-singleton';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -26,53 +26,66 @@ const dirname = path.dirname(filename);
 const serverURL = process.env.PAYLOAD_PUBLIC_SERVER_URL || '';
 const payloadSecret = process.env.PAYLOAD_SECRET || '';
 
-// Cache database adapter to prevent re-initialization
-let cachedDbAdapter: ReturnType<typeof postgresAdapter> | null = null;
+// Validate required environment variables
+if (!payloadSecret) {
+  throw new Error('PAYLOAD_SECRET environment variable is required');
+}
 
-function getDbAdapter() {
-  if (cachedDbAdapter) {
-    return cachedDbAdapter;
-  }
+if (!process.env.DATABASE_URI) {
+  throw new Error('DATABASE_URI environment variable is required');
+}
 
-  // SSL configuration for production environments
-  const sslConfig = process.env.NODE_ENV === 'production' ? {
-    rejectUnauthorized: false,
-    sslmode: 'require'
-  } : false;
+// Log configuration info (development only)
+if (process.env.NODE_ENV === 'development') {
+  console.log('[PAYLOAD-CONFIG] Initializing Payload CMS with enhanced database connection management');
+  console.log('[PAYLOAD-CONFIG] Environment:', process.env.NODE_ENV);
+  console.log('[PAYLOAD-CONFIG] Server URL:', serverURL || 'Not set');
+  console.log('[PAYLOAD-CONFIG] Database adapter: Enhanced PostgreSQL with singleton pattern');
+}
 
-  // Serverless-optimized connection pool settings
-  const poolConfig = {
-    connectionString: process.env.DATABASE_URI,
-    ssl: sslConfig,
-    max: 2, // Reduced pool size for serverless environments
-    min: 0, // Allow pool to scale down to 0 connections
-    connectionTimeoutMillis: 10000, // 10 second connection timeout
-    idleTimeoutMillis: 30000, // 30 second idle timeout
-    acquireTimeoutMillis: 5000, // 5 second acquire timeout
-    createTimeoutMillis: 10000, // 10 second create timeout
-    destroyTimeoutMillis: 5000, // 5 second destroy timeout
-    reapIntervalMillis: 1000, // Check for idle connections every second
-    createRetryIntervalMillis: 200, // Retry interval for failed connections
-  };
-
-  // Only log in development and only once
-  if (process.env.NODE_ENV === 'development') {
-    console.log('[PAYLOAD-CONFIG] Initializing database adapter with pool config:', {
-      ...poolConfig,
-      connectionString: poolConfig.connectionString ? '[REDACTED]' : 'undefined',
-      ssl: sslConfig ? 'enabled' : 'disabled'
+// Storage configuration for different environments
+const getStorageConfig = () => {
+  // If S3 configuration is available, use S3 storage
+  if (process.env.S3_BUCKET && process.env.S3_REGION) {
+    return s3Storage({
+      collections: {
+        media: true,
+        downloads: true,
+      },
+      bucket: process.env.S3_BUCKET,
+      config: {
+        region: process.env.S3_REGION,
+        credentials: process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY ? {
+          accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+        } : undefined,
+      },
     });
   }
+  
+  // Default to local storage in development
+  return undefined;
+};
 
-  cachedDbAdapter = postgresAdapter({
-    pool: poolConfig,
-    schemaName: 'payload',
-    idType: 'uuid', // Explicitly set ID type to UUID
-    push: false, // Disable schema push in development
-  });
-
-  return cachedDbAdapter;
-}
+// Plugin configuration
+const getPlugins = () => {
+  const plugins: any[] = [];
+  
+  // Add S3 storage plugin if configured
+  const storageConfig = getStorageConfig();
+  if (storageConfig) {
+    plugins.push(storageConfig);
+  }
+  
+  // Add nested docs plugin for hierarchical content
+  plugins.push(nestedDocsPlugin({
+    collections: ['documentation'],
+    generateLabel: (_, doc) => doc.title as string,
+    generateURL: (docs) => docs.reduce((url, doc) => `${url}/${doc.slug}`, ''),
+  }));
+  
+  return plugins;
+};
 
 export default buildConfig({
   secret: payloadSecret,
@@ -92,17 +105,28 @@ export default buildConfig({
     Surveys,
   ],
   globals: [
-    // Add globals here
+    // Add globals here as needed
   ],
   typescript: {
     outputFile: path.resolve(dirname, '../payload-types.ts'),
   },
-  editor: lexicalEditor({}),
-  db: getDbAdapter(),
-  plugins: [
-    // s3Storage({ ... }),
-    // nestedDocsPlugin({ ... }),
-  ],
+  editor: lexicalEditor({
+    features: ({ defaultFeatures }) => defaultFeatures,
+  }),
+  // Use the enhanced database adapter with singleton pattern
+  db: getDatabaseAdapter(),
+  plugins: getPlugins(),
+  admin: {
+    user: Users.slug,
+    meta: {
+      titleSuffix: '- SlideHeroes CMS',
+    },
+  },
+  // CORS configuration
+  cors: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : '*',
+  // Enhanced logging configuration
+  debug: process.env.NODE_ENV === 'development' || process.env.PAYLOAD_DEBUG === 'true',
+  // Custom scripts for seeding and maintenance
   bin: [
     {
       scriptPath: path.resolve(
