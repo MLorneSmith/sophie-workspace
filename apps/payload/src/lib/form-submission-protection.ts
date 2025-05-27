@@ -514,6 +514,7 @@ class FormSubmissionProtectionManager {
 
 // Global instance
 declare global {
+  // eslint-disable-next-line no-var
   var __form_submission_protection: FormSubmissionProtectionManager | undefined;
 }
 

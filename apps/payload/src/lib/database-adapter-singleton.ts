@@ -3,7 +3,9 @@ import type { PostgresAdapterArgs } from '@payloadcms/db-postgres';
 
 // Global variable to survive Next.js hot reloads
 declare global {
+  // eslint-disable-next-line no-var
   var __payload_db_adapter_manager: DatabaseAdapterManager | undefined;
+  // eslint-disable-next-line no-var
   var __payload_cached_adapter: ReturnType<typeof postgresAdapter> | undefined;
 }
 
