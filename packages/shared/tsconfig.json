@@ -1,8 +1,14 @@
 {
-  "extends": "@kit/tsconfig/base.json",
+  "extends": "../../tooling/typescript/base.json",
   "compilerOptions": {
-    "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json"
+    "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json",
+    "declaration": true,
+    "declarationMap": true,
+    "composite": true,
+    "outDir": "dist",
+    "noEmit": false,
+    "rootDir": "src"
   },
-  "include": ["*.ts", "src"],
-  "exclude": ["node_modules"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }

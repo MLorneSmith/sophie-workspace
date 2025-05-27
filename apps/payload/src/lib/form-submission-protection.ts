@@ -1,3 +1,5 @@
+import { createEnvironmentLogger } from '@kit/shared/logger';
+
 /**
  * Form Submission Protection for Payload CMS Admin Interface
  * 
@@ -41,6 +43,7 @@ class FormSubmissionProtectionManager {
   private readonly config: FormSubmissionConfig;
   private observers: MutationObserver[] = [];
   private isInitialized = false;
+  private logger = createEnvironmentLogger('FORM-PROTECTION');
 
   constructor(config?: Partial<FormSubmissionConfig>) {
     this.config = {
@@ -501,14 +504,7 @@ class FormSubmissionProtectionManager {
    * Centralized logging
    */
   private log(message: string, level: 'debug' | 'info' | 'warn' | 'error' = 'info'): void {
-    if (!this.config.enableLogging && level === 'debug') {
-      return;
-    }
-
-    const timestamp = new Date().toISOString();
-    const prefix = `[FORM-PROTECTION-${level.toUpperCase()}] ${timestamp}`;
-    
-    console[level === 'error' ? 'error' : 'log'](`${prefix} ${message}`);
+    this.logger[level](message);
   }
 }
 

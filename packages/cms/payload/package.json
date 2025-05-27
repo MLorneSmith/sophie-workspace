@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@kit/cms-types": "workspace:*",
+    "@kit/shared": "workspace:*",
     "@kit/supabase": "workspace:*",
     "payload": "3.39.1",
     "react": "19.1.0"

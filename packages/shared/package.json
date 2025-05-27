@@ -10,11 +10,31 @@
   },
   "prettier": "@kit/prettier-config",
   "exports": {
-    "./logger": "./src/logger/index.ts",
-    "./utils": "./src/utils.ts",
-    "./hooks": "./src/hooks/index.ts",
-    "./events": "./src/events/index.tsx",
-    "./registry": "./src/registry/index.ts"
+    "./logger": {
+      "types": "./dist/logger/index.d.ts",
+      "import": "./src/logger/index.ts",
+      "default": "./src/logger/index.ts"
+    },
+    "./utils": {
+      "types": "./dist/utils.d.ts",
+      "import": "./src/utils.ts",
+      "default": "./src/utils.ts"
+    },
+    "./hooks": {
+      "types": "./dist/hooks/index.d.ts",
+      "import": "./src/hooks/index.ts",
+      "default": "./src/hooks/index.ts"
+    },
+    "./events": {
+      "types": "./dist/events/index.d.ts",
+      "import": "./src/events/index.tsx",
+      "default": "./src/events/index.tsx"
+    },
+    "./registry": {
+      "types": "./dist/registry/index.d.ts",
+      "import": "./src/registry/index.ts",
+      "default": "./src/registry/index.ts"
+    }
   },
   "devDependencies": {
     "@kit/eslint-config": "workspace:*",
@@ -23,7 +43,8 @@
     "@types/react": "19.1.4"
   },
   "dependencies": {
-    "pino": "^9.6.0"
+    "pino": "^9.6.0",
+    "zod": "^3.25.7"
   },
   "typesVersions": {
     "*": {

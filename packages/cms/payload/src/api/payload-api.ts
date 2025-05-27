@@ -1,3 +1,5 @@
+import { createEnvironmentLogger } from '@kit/shared/logger';
+
 /**
  * Helper function to make authenticated requests to Payload CMS
  * @param endpoint The API endpoint to call (without the /api/ prefix)
@@ -5,6 +7,8 @@
  * @param supabaseClient Optional Supabase client (for client-side usage)
  * @returns The JSON response from the API
  */
+const logger = createEnvironmentLogger('PAYLOAD-API');
+
 export async function callPayloadAPI(
   endpoint: string,
   options: RequestInit = {},
@@ -32,14 +36,16 @@ export async function callPayloadAPI(
   // Use port 3020 to match the actual Payload CMS server port
   const payloadUrl =
     process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3020';
-
-  // Log the URL for debugging
-  console.log(`Calling Payload API at: ${payloadUrl}/api/${endpoint}`);
+  
+  // Only log detailed info in non-production environments
+  if (process.env.NODE_ENV !== 'production') {
+    logger.debug(`Calling Payload API at: ${payloadUrl}/api/${endpoint}`);
+  }
 
   try {
     // Add request ID for tracking in logs
     const requestId = Math.random().toString(36).substring(2, 15);
-    console.log(`[${requestId}] API Request: ${endpoint}`);
+    logger.debug(`API Request: ${endpoint}`, { requestId });
 
     const response = await fetch(`${payloadUrl}/api/${endpoint}`, {
       ...options,
@@ -105,9 +111,16 @@ export async function callPayloadAPI(
         `Failed to parse Payload API response: ${parseError.message}`,
       );
     }
-  } catch (error) {
+  } catch (error: unknown) {
     // Catch network errors or other exceptions
-    console.error('Payload API request failed:', error);
+    // Log error with appropriate level of detail based on environment
+    if (process.env.NODE_ENV === 'production') {
+      const statusCode = (error as any)?.status;
+      logger.error(`API Error: ${endpoint}`, { statusCode });
+    } else {
+      logger.error(`API Error: ${endpoint}`, { error });
+    }
     throw error;
   }
+
 }

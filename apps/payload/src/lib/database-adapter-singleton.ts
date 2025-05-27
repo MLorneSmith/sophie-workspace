@@ -1,5 +1,48 @@
 import { postgresAdapter } from '@payloadcms/db-postgres';
 import type { PostgresAdapterArgs } from '@payloadcms/db-postgres';
+// Simple logger interface for database adapter
+interface SimpleLogger {
+  debug(message: string, data?: any): void;
+  info(message: string, data?: any): void;
+  warn(message: string, data?: any): void;
+  error(message: string, data?: any): void;
+}
+
+// Create a simple console-based logger
+function createSimpleLogger(serviceName: string): SimpleLogger {
+  const logLevel = process.env.LOG_LEVEL || (process.env.NODE_ENV === 'development' ? 'debug' : 'info');
+  const levels = { debug: 0, info: 1, warn: 2, error: 3 };
+  const currentLevel = levels[logLevel as keyof typeof levels] ?? 1;
+
+  return {
+    debug(message: string, data?: any) {
+      if (currentLevel <= 0) {
+        const timestamp = new Date().toISOString();
+        const prefix = `[${serviceName}-DEBUG] ${timestamp}`;
+        data ? console.log(`${prefix} ${message}`, data) : console.log(`${prefix} ${message}`);
+      }
+    },
+    info(message: string, data?: any) {
+      if (currentLevel <= 1) {
+        const timestamp = new Date().toISOString();
+        const prefix = `[${serviceName}-INFO] ${timestamp}`;
+        data ? console.log(`${prefix} ${message}`, data) : console.log(`${prefix} ${message}`);
+      }
+    },
+    warn(message: string, data?: any) {
+      if (currentLevel <= 2) {
+        const timestamp = new Date().toISOString();
+        const prefix = `[${serviceName}-WARN] ${timestamp}`;
+        data ? console.warn(`${prefix} ${message}`, data) : console.warn(`${prefix} ${message}`);
+      }
+    },
+    error(message: string, data?: any) {
+      const timestamp = new Date().toISOString();
+      const prefix = `[${serviceName}-ERROR] ${timestamp}`;
+      data ? console.error(`${prefix} ${message}`, data) : console.error(`${prefix} ${message}`);
+    }
+  };
+}
 
 // Global variable to survive Next.js hot reloads
 declare global {
@@ -38,6 +81,7 @@ class DatabaseAdapterManager {
   private healthCheckInterval: NodeJS.Timeout | null = null;
   private validationPromise: Promise<void> | null = null;
   private readonly environment: string;
+  private logger = createSimpleLogger('DB-ADAPTER');
 
   constructor() {
     this.environment = process.env.NODE_ENV || 'development';
@@ -148,6 +192,24 @@ class DatabaseAdapterManager {
   }
 
   /**
+   * Determine if SSL should be enabled based on environment variables
+   */
+  private shouldEnableSSL(): boolean {
+    // Check for explicit SSL configuration first
+    if (process.env.PAYLOAD_ENABLE_SSL === 'true') {
+      return true;
+    }
+    
+    // For remote migrations, check if we're in migration mode
+    if (process.env.PAYLOAD_MIGRATION_MODE === 'production') {
+      return true;
+    }
+    
+    // Default to production environment check (backward compatibility)
+    return this.environment === 'production';
+  }
+
+  /**
    * Build environment-specific adapter configuration
    */
   private buildAdapterConfig(): PostgresAdapterArgs {
@@ -156,10 +218,10 @@ class DatabaseAdapterManager {
       throw new Error('DATABASE_URI environment variable is required');
     }
 
-    // SSL configuration
-    const sslConfig = this.environment === 'production' ? {
+    // Enhanced SSL configuration
+    const shouldUseSSL = this.shouldEnableSSL();
+    const sslConfig = shouldUseSSL ? {
       rejectUnauthorized: false,
-      
     } : false;
 
     // Environment-specific pool configurations
@@ -178,9 +240,12 @@ class DatabaseAdapterManager {
 
     this.log('Built adapter configuration', 'debug', {
       environment: this.environment,
+      sslEnabled: shouldUseSSL,
+      sslReason: process.env.PAYLOAD_ENABLE_SSL === 'true' ? 'PAYLOAD_ENABLE_SSL' : 
+                 process.env.PAYLOAD_MIGRATION_MODE === 'production' ? 'PAYLOAD_MIGRATION_MODE' :
+                 this.environment === 'production' ? 'NODE_ENV=production' : 'none',
       poolMax: poolConfig.max,
       poolMin: poolConfig.min,
-      ssl: sslConfig ? 'enabled' : 'disabled',
       schemaName: config.schemaName,
       idType: config.idType,
     });
@@ -190,24 +255,16 @@ class DatabaseAdapterManager {
 
   /**
    * Get environment-specific pool configuration
+   * Enhanced to consider SSL/migration mode for pool optimization
    */
   private getPoolConfig(): PoolConfig {
     const isDevelopment = this.environment === 'development';
     const isProduction = this.environment === 'production';
+    const isMigrationMode = process.env.PAYLOAD_MIGRATION_MODE === 'production';
+    const isSSLEnabled = this.shouldEnableSSL();
 
-    if (isDevelopment) {
-      return {
-        max: 8, // Development: max 8 connections
-        min: 1, // Keep at least 1 connection warm
-        connectionTimeoutMillis: 15000, // 15 seconds for dev debugging
-        idleTimeoutMillis: 60000, // 1 minute idle timeout
-        acquireTimeoutMillis: 10000, // 10 seconds to acquire connection
-        createTimeoutMillis: 15000, // 15 seconds to create connection
-        destroyTimeoutMillis: 5000, // 5 seconds to destroy connection
-        reapIntervalMillis: 2000, // Check for idle connections every 2 seconds
-        createRetryIntervalMillis: 500, // Retry every 500ms
-      };
-    } else if (isProduction) {
+    // If we're using SSL or in migration mode, use production-optimized settings
+    if (isProduction || isMigrationMode || isSSLEnabled) {
       return {
         max: 15, // Production: max 15 connections
         min: 2, // Keep at least 2 connections warm
@@ -218,6 +275,18 @@ class DatabaseAdapterManager {
         destroyTimeoutMillis: 5000, // 5 seconds to destroy connection
         reapIntervalMillis: 1000, // Check for idle connections every second
         createRetryIntervalMillis: 200, // Retry every 200ms
+      };
+    } else if (isDevelopment) {
+      return {
+        max: 8, // Development: max 8 connections
+        min: 1, // Keep at least 1 connection warm
+        connectionTimeoutMillis: 15000, // 15 seconds for dev debugging
+        idleTimeoutMillis: 60000, // 1 minute idle timeout
+        acquireTimeoutMillis: 10000, // 10 seconds to acquire connection
+        createTimeoutMillis: 15000, // 15 seconds to create connection
+        destroyTimeoutMillis: 5000, // 5 seconds to destroy connection
+        reapIntervalMillis: 2000, // Check for idle connections every 2 seconds
+        createRetryIntervalMillis: 500, // Retry every 500ms
       };
     } else {
       // Default configuration for other environments (test, staging, etc.)
@@ -322,21 +391,7 @@ class DatabaseAdapterManager {
    * Centralized logging with configurable levels
    */
   private log(message: string, level: 'debug' | 'info' | 'warn' | 'error' = 'info', data?: any): void {
-    const logLevel = process.env.DB_LOG_LEVEL || (this.environment === 'development' ? 'debug' : 'info');
-    const levels = { debug: 0, info: 1, warn: 2, error: 3 };
-    
-    if (levels[level] < levels[logLevel as keyof typeof levels]) {
-      return;
-    }
-
-    const timestamp = new Date().toISOString();
-    const prefix = `[DB-ADAPTER-${level.toUpperCase()}] ${timestamp}`;
-    
-    if (data) {
-      console[level === 'error' ? 'error' : 'log'](`${prefix} ${message}`, data);
-    } else {
-      console[level === 'error' ? 'error' : 'log'](`${prefix} ${message}`);
-    }
+    this.logger[level](message, data);
   }
 }
 

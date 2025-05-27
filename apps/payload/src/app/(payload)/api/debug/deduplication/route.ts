@@ -19,8 +19,20 @@ import {
   getRecentAPIErrors,
   clearAPIErrorLog 
 } from '../../../../../lib/enhanced-api-wrapper';
+import { createEnvironmentLogger } from '@kit/shared/logger';
+
+const logger = createEnvironmentLogger('DEBUG-API');
+
+// Only allow debug endpoints in non-production environments
+const isProduction = process.env.NODE_ENV === 'production';
 
 export async function GET(request: NextRequest) {
+  // Block access in production unless explicitly enabled
+  if (isProduction && process.env.ENABLE_DEBUG_ENDPOINTS !== 'true') {
+    logger.warn('Attempted to access debug endpoint in production');
+    return NextResponse.json({ error: 'Debug endpoints are disabled in production' }, { status: 403 });
+  }
+
   try {
     const url = new URL(request.url);
     const action = url.searchParams.get('action');
@@ -96,13 +108,8 @@ export async function GET(request: NextRequest) {
     return response;
 
   } catch (error) {
-    console.error('[DEBUG-ENDPOINT] Error fetching debug information:', error);
-    
-    return NextResponse.json({
-      error: 'Debug endpoint error',
-      message: error instanceof Error ? error.message : 'Unknown error',
-      timestamp: new Date().toISOString(),
-    }, { status: 500 });
+    logger.error('Error in debug endpoint', { error });
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 

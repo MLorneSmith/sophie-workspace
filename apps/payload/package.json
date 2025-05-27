@@ -20,6 +20,7 @@
     "init:data": "node dist/src/init-scripts/initialize-payload-data.js"
   },
   "dependencies": {
+    "@kit/shared": "workspace:*",
     "@lexical/list": "^0.28.0",
     "@lexical/rich-text": "^0.28.0",
     "@markdoc/markdoc": "^0.5.2",
@@ -71,10 +72,5 @@
   "engines": {
     "node": "^18.20.2 || >=20.9.0",
     "pnpm": "^9 || ^10"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "sharp"
-    ]
   }
 }
