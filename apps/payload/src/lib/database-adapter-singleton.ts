@@ -157,7 +157,7 @@ class DatabaseAdapterManager {
     // SSL configuration
     const sslConfig = this.environment === 'production' ? {
       rejectUnauthorized: false,
-      sslmode: 'require'
+      
     } : false;
 
     // Environment-specific pool configurations
