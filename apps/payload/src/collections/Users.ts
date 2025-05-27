@@ -1,24 +1,38 @@
 import type { CollectionConfig } from 'payload'
-import { v4 as uuidv4 } from 'uuid'; // Import uuid library
 
 export const Users: CollectionConfig = {
   slug: 'users',
   admin: {
     useAsTitle: 'email',
   },
-  auth: true, // Re-enable auth for Users collection
+  auth: true, // This automatically provides id, email, and password fields
   fields: [
+    // Payload automatically handles:
+    // - id field (UUID type from db adapter config)
+    // - email field (for authentication)
+    // - password field (for authentication)
+    
+    // Add custom fields as needed
     {
-      name: 'id',
-      type: 'text', // Use text type for UUIDs in Payload config
-      required: true,
-      unique: true,
-      admin: {
-        disabled: true, // Prevent editing in admin UI
-      },
-      defaultValue: () => uuidv4(), // Use uuidv4 for default value
+      name: 'name',
+      type: 'text',
+      label: 'Full Name',
     },
-    // Email added by default
-    // Add more fields as needed
+    {
+      name: 'role',
+      type: 'select',
+      options: [
+        {
+          label: 'Admin',
+          value: 'admin',
+        },
+        {
+          label: 'User',
+          value: 'user',
+        },
+      ],
+      defaultValue: 'user',
+      required: true,
+    },
   ],
 }

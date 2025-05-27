@@ -1,25 +1,23 @@
-import { postgresAdapter } from '@payloadcms/db-postgres'; // UNCOMMENTED
-import { nestedDocsPlugin } from '@payloadcms/plugin-nested-docs'; // UNCOMMENTED
-import { s3Storage } from '@payloadcms/storage-s3'; // UNCOMMENTED
-
-console.log('[PAYLOAD-CONFIG] Starting payload.config.ts loading.'); // Added log
-import { lexicalEditor } from '@payloadcms/richtext-lexical'; // UNCOMMENTED
+import { postgresAdapter } from '@payloadcms/db-postgres';
+import { nestedDocsPlugin } from '@payloadcms/plugin-nested-docs';
+import { s3Storage } from '@payloadcms/storage-s3';
+import { lexicalEditor } from '@payloadcms/richtext-lexical';
 import path from 'path';
-import { buildConfig } from 'payload'; // Changed from 'payload' to 'payload/config' for v3
-import sharp from 'sharp'; // Keep sharp import if used by other parts or for future
+import { buildConfig } from 'payload';
+import sharp from 'sharp';
 import { fileURLToPath } from 'url';
 
-    import { CourseLessons } from './collections/CourseLessons';
-    import { CourseQuizzes } from './collections/CourseQuizzes';
-    import { Courses } from './collections/Courses';
-    import { Documentation } from './collections/Documentation';
-    import { Downloads } from './collections/Downloads'; // Uncomment Downloads import
-    import { Media } from './collections/Media';
-    import { Posts } from './collections/Posts'; // Uncomment Posts import
-    import { Private } from './collections/Private';
-    import { QuizQuestions } from './collections/QuizQuestions';
-    import { SurveyQuestions } from './collections/SurveyQuestions';
-    import { Surveys } from './collections/Surveys';
+import { CourseLessons } from './collections/CourseLessons';
+import { CourseQuizzes } from './collections/CourseQuizzes';
+import { Courses } from './collections/Courses';
+import { Documentation } from './collections/Documentation';
+import { Downloads } from './collections/Downloads';
+import { Media } from './collections/Media';
+import { Posts } from './collections/Posts';
+import { Private } from './collections/Private';
+import { QuizQuestions } from './collections/QuizQuestions';
+import { SurveyQuestions } from './collections/SurveyQuestions';
+import { Surveys } from './collections/Surveys';
 import { Users } from './collections/Users';
 
 const filename = fileURLToPath(import.meta.url);
@@ -28,7 +26,53 @@ const dirname = path.dirname(filename);
 const serverURL = process.env.PAYLOAD_PUBLIC_SERVER_URL || '';
 const payloadSecret = process.env.PAYLOAD_SECRET || '';
 
-console.log('[PAYLOAD-CONFIG] About to call buildConfig.'); // Added log
+// Cache database adapter to prevent re-initialization
+let cachedDbAdapter: ReturnType<typeof postgresAdapter> | null = null;
+
+function getDbAdapter() {
+  if (cachedDbAdapter) {
+    return cachedDbAdapter;
+  }
+
+  // SSL configuration for production environments
+  const sslConfig = process.env.NODE_ENV === 'production' ? {
+    rejectUnauthorized: false,
+    sslmode: 'require'
+  } : false;
+
+  // Serverless-optimized connection pool settings
+  const poolConfig = {
+    connectionString: process.env.DATABASE_URI,
+    ssl: sslConfig,
+    max: 2, // Reduced pool size for serverless environments
+    min: 0, // Allow pool to scale down to 0 connections
+    connectionTimeoutMillis: 10000, // 10 second connection timeout
+    idleTimeoutMillis: 30000, // 30 second idle timeout
+    acquireTimeoutMillis: 5000, // 5 second acquire timeout
+    createTimeoutMillis: 10000, // 10 second create timeout
+    destroyTimeoutMillis: 5000, // 5 second destroy timeout
+    reapIntervalMillis: 1000, // Check for idle connections every second
+    createRetryIntervalMillis: 200, // Retry interval for failed connections
+  };
+
+  // Only log in development and only once
+  if (process.env.NODE_ENV === 'development') {
+    console.log('[PAYLOAD-CONFIG] Initializing database adapter with pool config:', {
+      ...poolConfig,
+      connectionString: poolConfig.connectionString ? '[REDACTED]' : 'undefined',
+      ssl: sslConfig ? 'enabled' : 'disabled'
+    });
+  }
+
+  cachedDbAdapter = postgresAdapter({
+    pool: poolConfig,
+    schemaName: 'payload',
+    idType: 'uuid', // Explicitly set ID type to UUID
+    push: false, // Disable schema push in development
+  });
+
+  return cachedDbAdapter;
+}
 
 export default buildConfig({
   secret: payloadSecret,
@@ -36,8 +80,8 @@ export default buildConfig({
   collections: [
     Users,
     Media,
-    Downloads, // Uncomment Downloads to include it in the schema
-    Posts, // Uncomment Posts to include it in the schema
+    Downloads,
+    Posts,
     Documentation,
     Private,
     Courses,
@@ -54,45 +98,7 @@ export default buildConfig({
     outputFile: path.resolve(dirname, '../payload-types.ts'),
   },
   editor: lexicalEditor({}),
-
-  db: (() => {
-    console.log('[PAYLOAD-CONFIG] About to initialize postgresAdapter.');
-    
-    // SSL configuration for production environments
-    const sslConfig = process.env.NODE_ENV === 'production' ? {
-      rejectUnauthorized: false, // For hosted Postgres providers like Supabase, PlanetScale, etc.
-      sslmode: 'require'
-    } : false;
-    
-    // Serverless-optimized connection pool settings
-    const poolConfig = {
-      connectionString: process.env.DATABASE_URI,
-      ssl: sslConfig,
-      max: 2, // Reduced pool size for serverless environments like Vercel
-      min: 0, // Allow pool to scale down to 0 connections
-      connectionTimeoutMillis: 10000, // 10 second connection timeout
-      idleTimeoutMillis: 30000, // 30 second idle timeout
-      acquireTimeoutMillis: 5000, // 5 second acquire timeout
-      createTimeoutMillis: 10000, // 10 second create timeout
-      destroyTimeoutMillis: 5000, // 5 second destroy timeout
-      reapIntervalMillis: 1000, // Check for idle connections every second
-      createRetryIntervalMillis: 200, // Retry interval for failed connections
-    };
-    
-    console.log('[PAYLOAD-CONFIG] Postgres pool config:', {
-      ...poolConfig,
-      connectionString: poolConfig.connectionString ? '[REDACTED]' : 'undefined',
-      ssl: sslConfig ? 'enabled' : 'disabled'
-    });
-    
-    return postgresAdapter({
-      pool: poolConfig,
-      schemaName: 'payload',
-      idType: 'uuid', // Explicitly set ID type to UUID
-      push: false, // Disable schema push in development
-    });
-  })(),
-
+  db: getDbAdapter(),
   plugins: [
     // s3Storage({ ... }),
     // nestedDocsPlugin({ ... }),
