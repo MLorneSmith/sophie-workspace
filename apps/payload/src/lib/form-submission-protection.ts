@@ -1,54 +1,52 @@
+'use client';
+
 import { createEnvironmentLogger } from '@kit/shared/logger';
 
-/**
- * Form Submission Protection for Payload CMS Admin Interface
- * 
- * This module provides client-side protection against form submission loops
- * and duplicate requests that can occur in the Payload admin interface.
- * 
- * Key Features:
- * - Button state management to prevent double-clicks
- * - Form submission locking during processing
- * - Automatic retry with exponential backoff
- * - Integration with Payload's form system
- */
-
 type SubmissionState = 'idle' | 'submitting' | 'success' | 'error';
+type FormType = 'server-rendered' | 'dynamic' | 'unknown';
 
 interface FormSubmissionConfig {
-  /** Maximum time to wait for submission completion */
   timeoutMs: number;
-  /** Delay before enabling retry */
   retryDelayMs: number;
-  /** Maximum number of retries */
   maxRetries: number;
-  /** Enable debug logging */
   enableLogging: boolean;
-  /** Selectors for form elements to protect */
   formSelectors: string[];
-  /** Button selectors to disable during submission */
   buttonSelectors: string[];
+  hydrationTimeoutMs: number;
 }
 
 interface FormSubmissionTracker {
-  formId: string;
   state: SubmissionState;
+  formType: FormType;
   startTime: number;
   attemptCount: number;
   lastError?: string;
+  isProtected: boolean;
+  originalButtonStates: Map<HTMLButtonElement | HTMLInputElement, { text: string; disabled: boolean }>;
 }
 
-class FormSubmissionProtectionManager {
-  private trackedForms = new Map<string, FormSubmissionTracker>();
+interface HydrationState {
+  isComplete: boolean;
+  startTime: number;
+  checkInterval?: number;
+  maxWaitTime: number;
+  confirmationSignals: number;
+  requiredSignals: number;
+}
+
+export class FormSubmissionProtectionManager {
+  private formTrackers = new WeakMap<HTMLFormElement, FormSubmissionTracker>();
+  private trackedForms = new Set<HTMLFormElement>();
   private readonly config: FormSubmissionConfig;
   private observers: MutationObserver[] = [];
   private isInitialized = false;
+  private hydrationState: HydrationState;
   private logger = createEnvironmentLogger('FORM-PROTECTION');
 
   constructor(config?: Partial<FormSubmissionConfig>) {
     this.config = {
-      timeoutMs: 30000, // 30 seconds
-      retryDelayMs: 2000, // 2 seconds
+      timeoutMs: 30000,
+      retryDelayMs: 2000,
       maxRetries: 3,
       enableLogging: process.env.NODE_ENV === 'development',
       formSelectors: [
@@ -63,110 +61,177 @@ class FormSubmissionProtectionManager {
         '.btn--style-primary',
         '.form-submit',
       ],
+      hydrationTimeoutMs: 10000, // Increased to 10 seconds
       ...config,
     };
 
-    this.log('Form submission protection manager initialized', 'info');
+    this.hydrationState = {
+      isComplete: false,
+      startTime: Date.now(),
+      maxWaitTime: this.config.hydrationTimeoutMs,
+      confirmationSignals: 0,
+      requiredSignals: 3, // Require multiple confirmation signals
+    };
+
+    this.log('FormSubmissionProtectionManager initialized - ULTRA-CONSERVATIVE MODE', 'info');
   }
 
-  /**
-   * Initialize form protection for the current page
-   */
   initialize(): void {
     if (this.isInitialized) {
       this.log('Already initialized', 'debug');
       return;
     }
+    this.log('Initializing ultra-conservative form submission protection', 'info');
 
-    this.log('Initializing form submission protection', 'info');
+    // ONLY setup memory-only protection - NO DOM modifications
+    this.setupMemoryOnlyProtection();
 
-    // Wait for DOM to be ready
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', () => {
-        this.setupFormProtection();
-      });
-    } else {
-      this.setupFormProtection();
-    }
-
-    this.isInitialized = true;
+    // Use ultra-conservative hydration detection
+    this.waitForUltraConservativeHydration(() => {
+      this.setupPostHydrationMonitoring();
+      this.isInitialized = true;
+    });
   }
 
-  /**
-   * Set up protection for all forms on the page
-   */
-  private setupFormProtection(): void {
-    // Find and protect existing forms
-    this.protectExistingForms();
-
-    // Set up observer for dynamically added forms
-    this.setupMutationObserver();
-
-    // Add global event listeners
+  private setupMemoryOnlyProtection(): void {
+    // Immediately protect all existing forms in memory ONLY
+    this.scanAndTrackForms();
     this.setupGlobalEventListeners();
-
-    this.log(`Form protection setup complete. Tracking ${this.trackedForms.size} forms`, 'info');
+    this.log('Memory-only form protection activated - NO DOM MODIFICATIONS', 'info');
   }
 
-  /**
-   * Protect all existing forms on the page
-   */
-  private protectExistingForms(): void {
+  private waitForUltraConservativeHydration(callback: () => void): void {
+    const checkHydration = () => {
+      const currentSignals = this.countHydrationSignals();
+      this.hydrationState.confirmationSignals = Math.max(this.hydrationState.confirmationSignals, currentSignals);
+      
+      const elapsed = Date.now() - this.hydrationState.startTime;
+      const minimumTimeElapsed = elapsed > 3000; // MINIMUM 3 seconds
+      const hasEnoughSignals = this.hydrationState.confirmationSignals >= this.hydrationState.requiredSignals;
+      
+      if (minimumTimeElapsed && hasEnoughSignals) {
+        this.hydrationState.isComplete = true;
+        this.log(`Ultra-conservative hydration detected complete after ${elapsed}ms with ${this.hydrationState.confirmationSignals} signals`, 'info');
+        callback();
+        return;
+      }
+
+      if (elapsed > this.hydrationState.maxWaitTime) {
+        this.log(`Hydration timeout reached after ${elapsed}ms, staying in SAFE MODE (no DOM modifications)`, 'warn');
+        this.hydrationState.isComplete = false; // Stay in safe mode
+        callback();
+        return;
+      }
+
+      // Continue checking more frequently for better detection
+      setTimeout(checkHydration, 50);
+    };
+
+    checkHydration();
+  }
+
+  private countHydrationSignals(): number {
+    let signals = 0;
+    
+    // Signal 1: Document complete
+    if (document.readyState === 'complete') signals++;
+    
+    // Signal 2: React roots present
+    if (document.querySelector('[data-reactroot]') !== null ||
+        document.querySelector('#__next') !== null ||
+        document.querySelector('#root') !== null) signals++;
+    
+    // Signal 3: Sufficient time passed
+    if (Date.now() - this.hydrationState.startTime > 3000) signals++;
+    
+    // Signal 4: No recent navigation
+    if (!this.hasRecentNavigation()) signals++;
+    
+    // Signal 5: React components likely mounted
+    if (document.querySelectorAll('[data-react-component], [data-reactid]').length > 0) signals++;
+    
+    return signals;
+  }
+
+  private hasRecentNavigation(): boolean {
+    // Simple heuristic - in a real app you might track navigation events
+    return false;
+  }
+
+  private setupPostHydrationMonitoring(): void {
+    // Even after hydration, we stay in ultra-conservative mode
+    this.setupMutationObserver();
+    this.log('Post-hydration monitoring activated - STILL NO DOM MODIFICATIONS', 'info');
+  }
+
+  private scanAndTrackForms(): void {
     this.config.formSelectors.forEach(selector => {
-      const forms = document.querySelectorAll(selector);
-      forms.forEach((form) => {
-        if (form instanceof HTMLFormElement) {
-          this.protectForm(form);
-        }
+      const forms = document.querySelectorAll<HTMLFormElement>(selector);
+      forms.forEach(form => {
+        this.trackFormInMemory(form);
       });
     });
   }
 
-  /**
-   * Set up mutation observer for dynamic content
-   */
+  private trackFormInMemory(form: HTMLFormElement): void {
+    if (this.formTrackers.has(form)) {
+      return;
+    }
+
+    // ULTRA-CONSERVATIVE: Assume ALL forms are server-rendered unless explicitly proven otherwise
+    const formType = this.determineFormTypeUltraConservative(form);
+    
+    const tracker: FormSubmissionTracker = {
+      state: 'idle',
+      formType,
+      startTime: 0,
+      attemptCount: 0,
+      isProtected: true,
+      originalButtonStates: new Map(),
+    };
+
+    this.formTrackers.set(form, tracker);
+    this.trackedForms.add(form);
+    
+    this.log(`Tracked ${formType} form in memory ONLY (no DOM changes)`, 'debug');
+  }
+
+  private determineFormTypeUltraConservative(form: HTMLFormElement): FormType {
+    // ULTRA-CONSERVATIVE: Only dynamic if EXPLICITLY and UNMISTAKABLY marked
+    if (form.hasAttribute('data-explicitly-dynamic-form') && 
+        form.getAttribute('data-explicitly-dynamic-form') === 'true') {
+      return 'dynamic';
+    }
+    
+    // EVERYTHING ELSE is treated as server-rendered to be safe
+    return 'server-rendered';
+  }
+
   private setupMutationObserver(): void {
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        mutation.addedNodes.forEach((node) => {
+    const observer = new MutationObserver(mutations => {
+      mutations.forEach(mutation => {
+        mutation.addedNodes.forEach(node => {
           if (node.nodeType === Node.ELEMENT_NODE) {
             const element = node as Element;
-            
-            // Check if the added node is a form
             this.config.formSelectors.forEach(selector => {
               if (element.matches && element.matches(selector)) {
-                this.protectForm(element as HTMLFormElement);
+                this.trackFormInMemory(element as HTMLFormElement);
               }
-              
-              // Check for forms within the added node
-              const childForms = element.querySelectorAll(selector);
-              childForms.forEach((form) => {
-                if (form instanceof HTMLFormElement) {
-                  this.protectForm(form);
-                }
-              });
+              const childForms = element.querySelectorAll<HTMLFormElement>(selector);
+              childForms.forEach(form => this.trackFormInMemory(form));
             });
           }
         });
       });
     });
-
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true,
-    });
-
+    observer.observe(document.body, { childList: true, subtree: true });
     this.observers.push(observer);
   }
 
-  /**
-   * Set up global event listeners
-   */
   private setupGlobalEventListeners(): void {
-    // Prevent double-clicks on buttons
-    document.addEventListener('click', (event) => {
+    // Event delegation for button clicks - MEMORY ONLY
+    document.addEventListener('click', event => {
       const target = event.target as Element;
-      
       this.config.buttonSelectors.forEach(selector => {
         if (target.matches && target.matches(selector)) {
           this.handleButtonClick(target as HTMLButtonElement, event);
@@ -174,95 +239,14 @@ class FormSubmissionProtectionManager {
       });
     }, true);
 
-    // Handle form submissions
-    document.addEventListener('submit', (event) => {
+    // Event delegation for form submission - MEMORY ONLY
+    document.addEventListener('submit', event => {
       const form = event.target as HTMLFormElement;
       this.handleFormSubmission(form, event);
     }, true);
   }
 
-  /**
-   * Protect a specific form
-   */
-  private protectForm(form: HTMLFormElement): void {
-    const formId = this.getFormId(form);
-    
-    if (this.trackedForms.has(formId)) {
-      this.log(`Form ${formId} already protected`, 'debug');
-      return;
-    }
-
-    // Create tracker
-    const tracker: FormSubmissionTracker = {
-      formId,
-      state: 'idle',
-      startTime: 0,
-      attemptCount: 0,
-    };
-
-    this.trackedForms.set(formId, tracker);
-
-    // Add visual indicators
-    this.addFormIndicators(form);
-
-    this.log(`Protected form: ${formId}`, 'debug');
-  }
-
-  /**
-   * Generate a unique form ID
-   */
-  private getFormId(form: HTMLFormElement): string {
-    // Use existing ID if available
-    if (form.id) {
-      return form.id;
-    }
-
-    // Generate ID based on action and method
-    const action = form.action || window.location.pathname;
-    const method = form.method || 'GET';
-    const hash = this.simpleHash(`${action}-${method}`);
-    
-    return `form-${hash}`;
-  }
-
-  /**
-   * Simple hash function for generating IDs
-   */
-  private simpleHash(str: string): string {
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-      const char = str.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
-      hash = hash & hash; // Convert to 32-bit integer
-    }
-    return Math.abs(hash).toString(36);
-  }
-
-  /**
-   * Add visual indicators to the form
-   */
-  private addFormIndicators(form: HTMLFormElement): void {
-    // Add data attribute for styling
-    form.setAttribute('data-form-protected', 'true');
-
-    // Add loading indicator container if not exists
-    if (!form.querySelector('.form-loading-indicator')) {
-      const indicator = document.createElement('div');
-      indicator.className = 'form-loading-indicator';
-      indicator.style.display = 'none';
-      indicator.innerHTML = `
-        <div class="loading-spinner"></div>
-        <span class="loading-text">Processing...</span>
-      `;
-      form.appendChild(indicator);
-    }
-  }
-
-  /**
-   * Handle button click events
-   */
   private handleButtonClick(button: HTMLButtonElement, event: MouseEvent): void {
-    // Skip if button is already disabled
     if (button.disabled) {
       event.preventDefault();
       event.stopPropagation();
@@ -270,209 +254,148 @@ class FormSubmissionProtectionManager {
       return;
     }
 
-    // Find the parent form
-    const form = button.closest('form') as HTMLFormElement;
-    if (!form) {
-      return;
-    }
+    const form = button.closest('form');
+    if (!form) return;
 
-    const formId = this.getFormId(form);
-    const tracker = this.trackedForms.get(formId);
-
+    const tracker = this.formTrackers.get(form);
     if (tracker && tracker.state === 'submitting') {
       event.preventDefault();
       event.stopPropagation();
-      this.log(`Prevented double-click on form ${formId}`, 'info');
-      return;
+      this.log('Prevented double-click on submitting form', 'info');
+      this.showMemoryMessage(form, 'Please wait, processing...', 'info');
     }
   }
 
-  /**
-   * Handle form submission events
-   */
   private handleFormSubmission(form: HTMLFormElement, event: SubmitEvent): void {
-    const formId = this.getFormId(form);
-    const tracker = this.trackedForms.get(formId);
-
+    let tracker = this.formTrackers.get(form);
+    
     if (!tracker) {
-      // Form not tracked, add protection
-      this.protectForm(form);
-      return;
+      this.trackFormInMemory(form);
+      tracker = this.formTrackers.get(form);
+      if (!tracker) return;
     }
 
     if (tracker.state === 'submitting') {
       event.preventDefault();
       event.stopPropagation();
-      this.log(`Prevented duplicate submission of form ${formId}`, 'info');
+      this.log('Prevented duplicate submission', 'info');
+      this.showMemoryMessage(form, 'Submission already in progress...', 'info');
       return;
     }
 
-    // Update tracker state
     tracker.state = 'submitting';
     tracker.startTime = Date.now();
     tracker.attemptCount++;
 
-    // Disable form
-    this.disableForm(form);
+    // ULTRA-CONSERVATIVE: NO DOM modifications for ANY forms
+    // Only store state in memory for ALL forms
+    this.disableFormInMemoryOnly(form, tracker);
 
-    // Set timeout
     setTimeout(() => {
-      if (tracker.state === 'submitting') {
+      if (tracker && tracker.state === 'submitting') {
         this.handleSubmissionTimeout(form, tracker);
       }
     }, this.config.timeoutMs);
 
-    this.log(`Form ${formId} submission started (attempt ${tracker.attemptCount})`, 'info');
+    this.log('Form submission started - MEMORY ONLY TRACKING', 'info');
   }
 
-  /**
-   * Disable form during submission
-   */
-  private disableForm(form: HTMLFormElement): void {
-    // Disable all buttons
+  private disableFormInMemoryOnly(form: HTMLFormElement, tracker: FormSubmissionTracker): void {
+    // Store original button states WITHOUT modifying DOM
     this.config.buttonSelectors.forEach(selector => {
-      const buttons = form.querySelectorAll(selector);
-      buttons.forEach((button) => {
-        if (button instanceof HTMLButtonElement || button instanceof HTMLInputElement) {
-          button.disabled = true;
-          button.setAttribute('data-original-text', button.textContent || button.value || '');
-          
-          if (button instanceof HTMLButtonElement) {
-            button.textContent = 'Processing...';
-          } else {
-            button.value = 'Processing...';
-          }
-        }
+      const buttons = form.querySelectorAll<HTMLButtonElement | HTMLInputElement>(selector);
+      buttons.forEach(button => {
+        tracker.originalButtonStates.set(button, {
+          text: button.textContent || button.value || '',
+          disabled: button.disabled,
+        });
       });
     });
-
-    // Show loading indicator
-    const indicator = form.querySelector('.form-loading-indicator') as HTMLElement;
-    if (indicator) {
-      indicator.style.display = 'block';
-    }
-
-    // Add submitting class
-    form.classList.add('form-submitting');
+    
+    this.log('Form disabled in memory only - NO DOM CHANGES', 'debug');
   }
 
-  /**
-   * Re-enable form after submission
-   */
   private enableForm(form: HTMLFormElement): void {
-    // Re-enable all buttons
-    this.config.buttonSelectors.forEach(selector => {
-      const buttons = form.querySelectorAll(selector);
-      buttons.forEach((button) => {
-        if (button instanceof HTMLButtonElement || button instanceof HTMLInputElement) {
-          button.disabled = false;
-          const originalText = button.getAttribute('data-original-text');
-          
-          if (originalText) {
-            if (button instanceof HTMLButtonElement) {
-              button.textContent = originalText;
-            } else {
-              button.value = originalText;
-            }
-            button.removeAttribute('data-original-text');
-          }
+    const tracker = this.formTrackers.get(form);
+    if (!tracker) return;
+
+    // ULTRA-CONSERVATIVE: Even restoration is very limited
+    // Only restore if we're absolutely certain about hydration AND it's explicitly dynamic
+    if (this.hydrationState.isComplete && 
+        this.hydrationState.confirmationSignals >= this.hydrationState.requiredSignals &&
+        tracker.formType === 'dynamic') {
+      
+      // Only restore button states for explicitly dynamic forms
+      tracker.originalButtonStates.forEach((originalState, button) => {
+        button.disabled = originalState.disabled;
+        if (button instanceof HTMLButtonElement) {
+          button.textContent = originalState.text;
+        } else if (button instanceof HTMLInputElement && button.type === 'submit') {
+          button.value = originalState.text;
         }
       });
-    });
-
-    // Hide loading indicator
-    const indicator = form.querySelector('.form-loading-indicator') as HTMLElement;
-    if (indicator) {
-      indicator.style.display = 'none';
     }
 
-    // Remove submitting class
-    form.classList.remove('form-submitting');
+    tracker.originalButtonStates.clear();
   }
 
-  /**
-   * Handle submission timeout
-   */
   private handleSubmissionTimeout(form: HTMLFormElement, tracker: FormSubmissionTracker): void {
-    this.log(`Form ${tracker.formId} submission timed out`, 'warn');
-    
+    this.log('Form submission timed out', 'warn');
     tracker.state = 'error';
-    tracker.lastError = 'Submission timeout';
-    
     this.enableForm(form);
-    
-    // Show error message
-    this.showMessage(form, 'Submission timed out. Please try again.', 'error');
+    this.showMemoryMessage(form, 'Submission timed out. Please try again.', 'error');
   }
 
-  /**
-   * Mark form submission as successful
-   */
-  markSubmissionSuccess(formId: string): void {
-    const tracker = this.trackedForms.get(formId);
-    if (tracker) {
-      tracker.state = 'success';
-      const form = document.querySelector(`[data-form-id="${formId}"]`) as HTMLFormElement;
-      if (form) {
-        this.enableForm(form);
-        this.showMessage(form, 'Submission successful!', 'success');
-      }
-      this.log(`Form ${formId} submission successful`, 'info');
+  markSubmissionSuccess(form: HTMLFormElement): void {
+    const tracker = this.formTrackers.get(form);
+    if (!tracker) return;
+    tracker.state = 'success';
+    this.enableForm(form);
+    this.showMemoryMessage(form, 'Submission successful!', 'success');
+    this.log('Form submission successful', 'info');
+  }
+
+  markSubmissionError(form: HTMLFormElement, error: string): void {
+    const tracker = this.formTrackers.get(form);
+    if (!tracker) return;
+    tracker.state = 'error';
+    tracker.lastError = error;
+    this.enableForm(form);
+    this.showMemoryMessage(form, `Error: ${error}`, 'error');
+    this.log(`Form submission failed: ${error}`, 'error');
+  }
+
+  private showMemoryMessage(form: HTMLFormElement, message: string, type: 'success' | 'error' | 'info'): void {
+    // ULTRA-CONSERVATIVE: NO visual messages - console only
+    this.log(`Form message (${type}): ${message}`, type === 'error' ? 'error' : 'info');
+    
+    // Optional: Could show native browser alerts for critical errors, but that's not DOM modification
+    if (type === 'error' && this.config.enableLogging) {
+      // Could use alert() for critical errors, but generally avoid it
+      // alert(`Form Error: ${message}`);
     }
   }
 
-  /**
-   * Mark form submission as failed
-   */
-  markSubmissionError(formId: string, error: string): void {
-    const tracker = this.trackedForms.get(formId);
-    if (tracker) {
-      tracker.state = 'error';
-      tracker.lastError = error;
-      const form = document.querySelector(`[data-form-id="${formId}"]`) as HTMLFormElement;
-      if (form) {
-        this.enableForm(form);
-        this.showMessage(form, `Error: ${error}`, 'error');
-      }
-      this.log(`Form ${formId} submission failed: ${error}`, 'error');
-    }
-  }
-
-  /**
-   * Show message to user
-   */
-  private showMessage(form: HTMLFormElement, message: string, type: 'success' | 'error' | 'info'): void {
-    // Remove existing messages
-    const existingMessages = form.querySelectorAll('.form-message');
-    existingMessages.forEach(msg => msg.remove());
-
-    // Create new message
-    const messageElement = document.createElement('div');
-    messageElement.className = `form-message form-message--${type}`;
-    messageElement.textContent = message;
-    
-    // Insert at the top of the form
-    form.insertBefore(messageElement, form.firstChild);
-
-    // Auto-remove after delay
-    setTimeout(() => {
-      messageElement.remove();
-    }, 5000);
-  }
-
-  /**
-   * Get current status
-   */
   getStatus() {
     const status = {
       totalForms: this.trackedForms.size,
       submittingForms: 0,
       errorForms: 0,
       successForms: 0,
-      forms: Array.from(this.trackedForms.values()),
+      serverRenderedForms: 0,
+      dynamicForms: 0,
+      hydrationComplete: this.hydrationState.isComplete,
+      hydrationSignals: this.hydrationState.confirmationSignals,
+      mode: 'ULTRA-CONSERVATIVE',
     };
 
-    for (const tracker of this.trackedForms.values()) {
+    this.trackedForms.forEach(form => {
+      const tracker = this.formTrackers.get(form);
+      if (!tracker) return;
+
+      if (tracker.formType === 'server-rendered') status.serverRenderedForms++;
+      if (tracker.formType === 'dynamic') status.dynamicForms++;
+
       switch (tracker.state) {
         case 'submitting':
           status.submittingForms++;
@@ -484,66 +407,50 @@ class FormSubmissionProtectionManager {
           status.successForms++;
           break;
       }
-    }
+    });
 
     return status;
   }
 
-  /**
-   * Cleanup resources
-   */
   cleanup(): void {
     this.observers.forEach(observer => observer.disconnect());
     this.observers = [];
+    this.formTrackers = new WeakMap();
     this.trackedForms.clear();
     this.isInitialized = false;
+    this.hydrationState.isComplete = false;
     this.log('Form submission protection cleaned up', 'info');
   }
 
-  /**
-   * Centralized logging
-   */
   private log(message: string, level: 'debug' | 'info' | 'warn' | 'error' = 'info'): void {
+    if (!this.config.enableLogging && level === 'debug') return;
     this.logger[level](message);
   }
 }
 
-// Global instance
+// Global singleton instance
 declare global {
-  // eslint-disable-next-line no-var
-  var __form_submission_protection: FormSubmissionProtectionManager | undefined;
+  var __formSubmissionProtectionManager: FormSubmissionProtectionManager | undefined;
 }
 
-/**
- * Get the global form submission protection manager
- */
-export function getFormProtectionManager(): FormSubmissionProtectionManager {
-  if (!globalThis.__form_submission_protection) {
-    globalThis.__form_submission_protection = new FormSubmissionProtectionManager();
+export function getFormSubmissionProtectionManager(): FormSubmissionProtectionManager {
+  if (!globalThis.__formSubmissionProtectionManager) {
+    globalThis.__formSubmissionProtectionManager = new FormSubmissionProtectionManager();
   }
-  return globalThis.__form_submission_protection;
+  return globalThis.__formSubmissionProtectionManager;
 }
 
-/**
- * Initialize form protection for the current page
- */
-export function initializeFormProtection(config?: Partial<FormSubmissionConfig>): void {
-  const manager = globalThis.__form_submission_protection || 
-                 new FormSubmissionProtectionManager(config);
-  
-  if (!globalThis.__form_submission_protection) {
-    globalThis.__form_submission_protection = manager;
+export function initializeFormSubmissionProtection(config?: Partial<FormSubmissionConfig>): void {
+  const manager = globalThis.__formSubmissionProtectionManager || new FormSubmissionProtectionManager(config);
+  if (!globalThis.__formSubmissionProtectionManager) {
+    globalThis.__formSubmissionProtectionManager = manager;
   }
-  
   manager.initialize();
 }
 
-/**
- * Cleanup form protection
- */
-export function cleanupFormProtection(): void {
-  if (globalThis.__form_submission_protection) {
-    globalThis.__form_submission_protection.cleanup();
-    globalThis.__form_submission_protection = undefined;
+export function cleanupFormSubmissionProtection(): void {
+  if (globalThis.__formSubmissionProtectionManager) {
+    globalThis.__formSubmissionProtectionManager.cleanup();
+    globalThis.__formSubmissionProtectionManager = undefined;
   }
 }
