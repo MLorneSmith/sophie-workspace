@@ -19,6 +19,15 @@ import { SurveyQuestions } from './collections/SurveyQuestions';
 import { Surveys } from './collections/Surveys';
 import { Users } from './collections/Users';
 import { getDatabaseAdapter } from './lib/database-adapter-singleton';
+import { 
+  getStorageType, 
+  getR2Config, 
+  getS3Config, 
+  logStorageConfig,
+  validateR2Config,
+  validateS3Config 
+} from './lib/storage-config';
+import { createURLGenerator } from './lib/storage-url-generators';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -41,102 +50,173 @@ if (process.env.NODE_ENV === 'development') {
   console.log('[PAYLOAD-CONFIG] Environment:', process.env.NODE_ENV);
   console.log('[PAYLOAD-CONFIG] Server URL:', serverURL || 'Not set');
   console.log('[PAYLOAD-CONFIG] Database adapter: Enhanced PostgreSQL with singleton pattern');
+  
+  // Log storage configuration
+  logStorageConfig();
 }
 
-// Storage configuration for different environments
-const getStorageConfig = () => {
-  // Check for Cloudflare R2 configuration using your existing environment variables
-  if (process.env.R2_ACCESS_KEY_ID && process.env.R2_SECRET_ACCESS_KEY && process.env.R2_ACCOUNT_ID && process.env.R2_MEDIA_BUCKET) {
-    if (process.env.NODE_ENV === 'development') {
-      console.log('[PAYLOAD-CONFIG] Configuring Cloudflare R2 storage');
-      console.log('[PAYLOAD-CONFIG] R2 Media Bucket:', process.env.R2_MEDIA_BUCKET);
-      console.log('[PAYLOAD-CONFIG] R2 Downloads Bucket:', process.env.R2_DOWNLOADS_BUCKET);
-      console.log('[PAYLOAD-CONFIG] R2 Account ID:', process.env.R2_ACCOUNT_ID);
-      console.log('[PAYLOAD-CONFIG] R2 Endpoint:', process.env.R2_ENDPOINT);
+/**
+ * Creates media storage plugin for Cloudflare R2
+ */
+const createR2MediaStorage = () => {
+  const config = getR2Config();
+  const urlGenerator = createURLGenerator('r2', 'media');
+  
+  return s3Storage({
+    collections: {
+      media: {
+        disableLocalStorage: true,
+        generateFileURL: urlGenerator,
+      },
+    },
+    bucket: config.mediaBucket,
+    config: {
+      endpoint: config.endpoint || `https://${config.accountId}.r2.cloudflarestorage.com`,
+      region: config.region,
+      credentials: {
+        accessKeyId: config.accessKeyId,
+        secretAccessKey: config.secretAccessKey,
+      },
+      forcePathStyle: true,
+    },
+  });
+};
+
+/**
+ * Creates downloads storage plugin for Cloudflare R2
+ */
+const createR2DownloadsStorage = () => {
+  const config = getR2Config();
+  const urlGenerator = createURLGenerator('r2', 'downloads');
+  
+  return s3Storage({
+    collections: {
+      downloads: {
+        disableLocalStorage: true,
+        generateFileURL: urlGenerator,
+      },
+    },
+    bucket: config.downloadsBucket,
+    config: {
+      endpoint: config.endpoint || `https://${config.accountId}.r2.cloudflarestorage.com`,
+      region: config.region,
+      credentials: {
+        accessKeyId: config.accessKeyId,
+        secretAccessKey: config.secretAccessKey,
+      },
+      forcePathStyle: true,
+    },
+  });
+};
+
+/**
+ * Creates media storage plugin for AWS S3
+ */
+const createS3MediaStorage = () => {
+  const config = getS3Config();
+  const urlGenerator = createURLGenerator('s3', 'media');
+  
+  return s3Storage({
+    collections: {
+      media: {
+        disableLocalStorage: true,
+        generateFileURL: urlGenerator,
+      },
+    },
+    bucket: config.bucket,
+    config: {
+      region: config.region,
+      credentials: config.accessKeyId && config.secretAccessKey ? {
+        accessKeyId: config.accessKeyId,
+        secretAccessKey: config.secretAccessKey,
+      } : undefined,
+    },
+  });
+};
+
+/**
+ * Creates downloads storage plugin for AWS S3
+ */
+const createS3DownloadsStorage = () => {
+  const config = getS3Config();
+  const urlGenerator = createURLGenerator('s3', 'downloads');
+  
+  return s3Storage({
+    collections: {
+      downloads: {
+        disableLocalStorage: true,
+        generateFileURL: urlGenerator,
+        prefix: 'downloads/', // Use prefix for S3 organization
+      },
+    },
+    bucket: config.bucket,
+    config: {
+      region: config.region,
+      credentials: config.accessKeyId && config.secretAccessKey ? {
+        accessKeyId: config.accessKeyId,
+        secretAccessKey: config.secretAccessKey,
+      } : undefined,
+    },
+  });
+};
+
+/**
+ * Gets storage plugins based on configuration
+ */
+const getStoragePlugins = () => {
+  const storageType = getStorageType();
+  const plugins: any[] = [];
+  
+  if (storageType === 'r2') {
+    const r2Validation = validateR2Config();
+    if (!r2Validation.isValid) {
+      console.error('[PAYLOAD-CONFIG] R2 validation failed:');
+      r2Validation.errors.forEach(error => console.error(`[PAYLOAD-CONFIG] - ${error}`));
+      throw new Error('Invalid R2 configuration. Please check your environment variables.');
     }
     
-    return s3Storage({
-      collections: {
-        media: {
-          // Change from 'true' to an object with more specific configuration
-          // This allows us to customize how the adapter handles this collection
-          disableLocalStorage: true,
-          // Add a generateFileURL function to ensure proper URL generation
-          generateFileURL: ({ filename }) => {
-            // Use the public media base URL if available, otherwise construct from R2
-            const baseUrl = process.env.PAYLOAD_PUBLIC_MEDIA_BASE_URL ||
-              `https://${process.env.R2_MEDIA_BUCKET}.${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`;
-            return `${baseUrl}/${filename}`;
-          },
-        },
-        downloads: {
-          // Similar configuration for downloads
-          disableLocalStorage: true,
-          generateFileURL: ({ filename }) => {
-            const baseUrl = process.env.PAYLOAD_PUBLIC_DOWNLOADS_BASE_URL ||
-              `https://${process.env.R2_DOWNLOADS_BUCKET || process.env.R2_MEDIA_BUCKET}.${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`;
-            return `${baseUrl}/${filename}`;
-          },
-        },
-      },
-      bucket: process.env.R2_MEDIA_BUCKET, // Primary bucket for media
-      config: {
-        // Use your configured R2 endpoint or build from account ID
-        endpoint: process.env.R2_ENDPOINT || `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
-        region: process.env.R2_REGION || 'auto',
-        credentials: {
-          accessKeyId: process.env.R2_ACCESS_KEY_ID,
-          secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
-        },
-        // Important: R2 requires these settings for compatibility
-        forcePathStyle: true,
-      },
-    });
-  }
-  
-  // Fallback to standard S3 configuration
-  if (process.env.S3_BUCKET && process.env.S3_REGION) {
     if (process.env.NODE_ENV === 'development') {
-      console.log('[PAYLOAD-CONFIG] Configuring standard S3 storage');
-      console.log('[PAYLOAD-CONFIG] S3 Bucket:', process.env.S3_BUCKET);
-      console.log('[PAYLOAD-CONFIG] S3 Region:', process.env.S3_REGION);
+      console.log('[PAYLOAD-CONFIG] Creating separate R2 storage plugins for media and downloads');
     }
     
-    return s3Storage({
-      collections: {
-        media: true,
-        downloads: true,
-      },
-      bucket: process.env.S3_BUCKET,
-      config: {
-        region: process.env.S3_REGION,
-        credentials: process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY ? {
-          accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-        } : undefined,
-      },
-    });
+    plugins.push(createR2MediaStorage());
+    plugins.push(createR2DownloadsStorage());
+    
+  } else if (storageType === 's3') {
+    const s3Validation = validateS3Config();
+    if (!s3Validation.isValid) {
+      console.error('[PAYLOAD-CONFIG] S3 validation failed:');
+      s3Validation.errors.forEach(error => console.error(`[PAYLOAD-CONFIG] - ${error}`));
+      throw new Error('Invalid S3 configuration. Please check your environment variables.');
+    }
+    
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[PAYLOAD-CONFIG] Creating separate S3 storage plugins for media and downloads');
+    }
+    
+    plugins.push(createS3MediaStorage());
+    plugins.push(createS3DownloadsStorage());
+    
+  } else {
+    // Log warning if no cloud storage is configured in production
+    if (process.env.NODE_ENV === 'production') {
+      console.warn('[PAYLOAD-CONFIG] WARNING: No cloud storage configured for production. This will cause errors in serverless environments.');
+      console.warn('[PAYLOAD-CONFIG] Please configure either Cloudflare R2 or AWS S3 environment variables.');
+    } else {
+      console.log('[PAYLOAD-CONFIG] No cloud storage configured, using local storage for development');
+    }
   }
   
-  // Log warning if no cloud storage is configured in production
-  if (process.env.NODE_ENV === 'production') {
-    console.warn('[PAYLOAD-CONFIG] WARNING: No cloud storage configured for production. This will cause errors in serverless environments.');
-    console.warn('[PAYLOAD-CONFIG] Please configure either Cloudflare R2 or AWS S3 environment variables.');
-  }
-  
-  // Default to undefined (no storage plugin) - Payload will try local storage
-  return undefined;
+  return plugins;
 };
 
 // Plugin configuration
 const getPlugins = () => {
   const plugins: any[] = [];
   
-  // Add S3 storage plugin if configured
-  const storageConfig = getStorageConfig();
-  if (storageConfig) {
-    plugins.push(storageConfig);
-  }
+  // Add storage plugins (separate instances for media and downloads)
+  const storagePlugins = getStoragePlugins();
+  plugins.push(...storagePlugins);
   
   // Add nested docs plugin for hierarchical content
   plugins.push(nestedDocsPlugin({
