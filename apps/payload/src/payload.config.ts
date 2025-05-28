@@ -57,8 +57,27 @@ const getStorageConfig = () => {
     
     return s3Storage({
       collections: {
-        media: true,
-        downloads: true,
+        media: {
+          // Change from 'true' to an object with more specific configuration
+          // This allows us to customize how the adapter handles this collection
+          disableLocalStorage: true,
+          // Add a generateFileURL function to ensure proper URL generation
+          generateFileURL: ({ filename }) => {
+            // Use the public media base URL if available, otherwise construct from R2
+            const baseUrl = process.env.PAYLOAD_PUBLIC_MEDIA_BASE_URL ||
+              `https://${process.env.R2_MEDIA_BUCKET}.${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`;
+            return `${baseUrl}/${filename}`;
+          },
+        },
+        downloads: {
+          // Similar configuration for downloads
+          disableLocalStorage: true,
+          generateFileURL: ({ filename }) => {
+            const baseUrl = process.env.PAYLOAD_PUBLIC_DOWNLOADS_BASE_URL ||
+              `https://${process.env.R2_DOWNLOADS_BUCKET || process.env.R2_MEDIA_BUCKET}.${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`;
+            return `${baseUrl}/${filename}`;
+          },
+        },
       },
       bucket: process.env.R2_MEDIA_BUCKET, // Primary bucket for media
       config: {
