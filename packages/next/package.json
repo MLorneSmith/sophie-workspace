@@ -20,9 +20,9 @@
     "@kit/prettier-config": "workspace:*",
     "@kit/supabase": "workspace:*",
     "@kit/tsconfig": "workspace:*",
-    "@supabase/supabase-js": "2.49.5",
+    "@supabase/supabase-js": "2.49.8",
     "next": "15.3.2",
-    "zod": "^3.25.7"
+    "zod": "^3.25.31"
   },
   "typesVersions": {
     "*": {

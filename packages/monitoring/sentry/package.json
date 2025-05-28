@@ -16,15 +16,15 @@
     "./config/server": "./src/sentry.client.server.ts"
   },
   "dependencies": {
-    "@sentry/nextjs": "^9.20.0",
-    "import-in-the-middle": "1.13.2"
+    "@sentry/nextjs": "^9.22.0",
+    "import-in-the-middle": "1.14.0"
   },
   "devDependencies": {
     "@kit/eslint-config": "workspace:*",
     "@kit/monitoring-core": "workspace:*",
     "@kit/prettier-config": "workspace:*",
     "@kit/tsconfig": "workspace:*",
-    "@types/react": "19.1.4",
+    "@types/react": "19.1.6",
     "react": "19.1.0"
   },
   "typesVersions": {

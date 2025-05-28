@@ -24,10 +24,10 @@
     "@kit/supabase": "workspace:*",
     "@kit/tsconfig": "workspace:*",
     "@kit/ui": "workspace:*",
-    "@types/react": "19.1.4",
+    "@types/react": "19.1.6",
     "next": "15.3.2",
     "react": "19.1.0",
-    "zod": "^3.25.7"
+    "zod": "^3.25.31"
   },
   "typesVersions": {
     "*": {
