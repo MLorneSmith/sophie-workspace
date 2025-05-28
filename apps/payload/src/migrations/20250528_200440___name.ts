@@ -3,6 +3,9 @@ import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-postgres'
 export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   await db.execute(sql`
    CREATE TYPE "payload"."enum_users_role" AS ENUM('admin', 'user');
+  CREATE TYPE "payload"."enum_media_type" AS ENUM('image', 'video', 'document');
+  CREATE TYPE "payload"."enum_downloads_category" AS ENUM('document', 'template', 'resource', 'software', 'media', 'archive', 'other');
+  CREATE TYPE "payload"."enum_downloads_access_level" AS ENUM('public', 'registered', 'premium');
   CREATE TYPE "payload"."enum_posts_status" AS ENUM('draft', 'published');
   CREATE TYPE "payload"."enum__posts_v_version_status" AS ENUM('draft', 'published');
   CREATE TYPE "payload"."enum_documentation_status" AS ENUM('draft', 'published');
@@ -41,9 +44,18 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"lock_until" timestamp(3) with time zone
   );
   
+  CREATE TABLE IF NOT EXISTS "payload"."media_tags" (
+  	"_order" integer NOT NULL,
+  	"_parent_id" uuid NOT NULL,
+  	"id" varchar PRIMARY KEY NOT NULL,
+  	"tag" varchar
+  );
+  
   CREATE TABLE IF NOT EXISTS "payload"."media" (
   	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-  	"alt" varchar,
+  	"alt" varchar NOT NULL,
+  	"caption" varchar,
+  	"type" "payload"."enum_media_type",
   	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
   	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
   	"url" varchar,
@@ -54,13 +66,42 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"width" numeric,
   	"height" numeric,
   	"focal_x" numeric,
-  	"focal_y" numeric
+  	"focal_y" numeric,
+  	"sizes_thumbnail_url" varchar,
+  	"sizes_thumbnail_width" numeric,
+  	"sizes_thumbnail_height" numeric,
+  	"sizes_thumbnail_mime_type" varchar,
+  	"sizes_thumbnail_filesize" numeric,
+  	"sizes_thumbnail_filename" varchar,
+  	"sizes_card_url" varchar,
+  	"sizes_card_width" numeric,
+  	"sizes_card_height" numeric,
+  	"sizes_card_mime_type" varchar,
+  	"sizes_card_filesize" numeric,
+  	"sizes_card_filename" varchar,
+  	"sizes_hero_url" varchar,
+  	"sizes_hero_width" numeric,
+  	"sizes_hero_height" numeric,
+  	"sizes_hero_mime_type" varchar,
+  	"sizes_hero_filesize" numeric,
+  	"sizes_hero_filename" varchar
+  );
+  
+  CREATE TABLE IF NOT EXISTS "payload"."downloads_tags" (
+  	"_order" integer NOT NULL,
+  	"_parent_id" uuid NOT NULL,
+  	"id" varchar PRIMARY KEY NOT NULL,
+  	"tag" varchar
   );
   
   CREATE TABLE IF NOT EXISTS "payload"."downloads" (
   	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-  	"title" varchar,
+  	"title" varchar NOT NULL,
   	"description" varchar,
+  	"category" "payload"."enum_downloads_category",
+  	"download_count" numeric DEFAULT 0,
+  	"featured" boolean DEFAULT false,
+  	"access_level" "payload"."enum_downloads_access_level" DEFAULT 'public',
   	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
   	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
   	"url" varchar,
@@ -646,6 +687,18 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   );
   
   DO $$ BEGIN
+   ALTER TABLE "payload"."media_tags" ADD CONSTRAINT "media_tags_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "payload"."media"("id") ON DELETE cascade ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "payload"."downloads_tags" ADD CONSTRAINT "downloads_tags_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "payload"."downloads"("id") ON DELETE cascade ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
    ALTER TABLE "payload"."posts_categories" ADD CONSTRAINT "posts_categories_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "payload"."posts"("id") ON DELETE cascade ON UPDATE no action;
   EXCEPTION
    WHEN duplicate_object THEN null;
@@ -1164,9 +1217,16 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX IF NOT EXISTS "users_updated_at_idx" ON "payload"."users" USING btree ("updated_at");
   CREATE INDEX IF NOT EXISTS "users_created_at_idx" ON "payload"."users" USING btree ("created_at");
   CREATE UNIQUE INDEX IF NOT EXISTS "users_email_idx" ON "payload"."users" USING btree ("email");
+  CREATE INDEX IF NOT EXISTS "media_tags_order_idx" ON "payload"."media_tags" USING btree ("_order");
+  CREATE INDEX IF NOT EXISTS "media_tags_parent_id_idx" ON "payload"."media_tags" USING btree ("_parent_id");
   CREATE INDEX IF NOT EXISTS "media_updated_at_idx" ON "payload"."media" USING btree ("updated_at");
   CREATE INDEX IF NOT EXISTS "media_created_at_idx" ON "payload"."media" USING btree ("created_at");
   CREATE UNIQUE INDEX IF NOT EXISTS "media_filename_idx" ON "payload"."media" USING btree ("filename");
+  CREATE INDEX IF NOT EXISTS "media_sizes_thumbnail_sizes_thumbnail_filename_idx" ON "payload"."media" USING btree ("sizes_thumbnail_filename");
+  CREATE INDEX IF NOT EXISTS "media_sizes_card_sizes_card_filename_idx" ON "payload"."media" USING btree ("sizes_card_filename");
+  CREATE INDEX IF NOT EXISTS "media_sizes_hero_sizes_hero_filename_idx" ON "payload"."media" USING btree ("sizes_hero_filename");
+  CREATE INDEX IF NOT EXISTS "downloads_tags_order_idx" ON "payload"."downloads_tags" USING btree ("_order");
+  CREATE INDEX IF NOT EXISTS "downloads_tags_parent_id_idx" ON "payload"."downloads_tags" USING btree ("_parent_id");
   CREATE INDEX IF NOT EXISTS "downloads_updated_at_idx" ON "payload"."downloads" USING btree ("updated_at");
   CREATE INDEX IF NOT EXISTS "downloads_created_at_idx" ON "payload"."downloads" USING btree ("created_at");
   CREATE UNIQUE INDEX IF NOT EXISTS "downloads_filename_idx" ON "payload"."downloads" USING btree ("filename");
@@ -1403,7 +1463,9 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
 export async function down({ db, payload, req }: MigrateDownArgs): Promise<void> {
   await db.execute(sql`
    DROP TABLE "payload"."users" CASCADE;
+  DROP TABLE "payload"."media_tags" CASCADE;
   DROP TABLE "payload"."media" CASCADE;
+  DROP TABLE "payload"."downloads_tags" CASCADE;
   DROP TABLE "payload"."downloads" CASCADE;
   DROP TABLE "payload"."posts_categories" CASCADE;
   DROP TABLE "payload"."posts_tags" CASCADE;
@@ -1459,6 +1521,9 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
   DROP TABLE "payload"."payload_preferences_rels" CASCADE;
   DROP TABLE "payload"."payload_migrations" CASCADE;
   DROP TYPE "payload"."enum_users_role";
+  DROP TYPE "payload"."enum_media_type";
+  DROP TYPE "payload"."enum_downloads_category";
+  DROP TYPE "payload"."enum_downloads_access_level";
   DROP TYPE "payload"."enum_posts_status";
   DROP TYPE "payload"."enum__posts_v_version_status";
   DROP TYPE "payload"."enum_documentation_status";

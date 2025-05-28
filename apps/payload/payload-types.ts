@@ -158,7 +158,27 @@ export interface User {
  */
 export interface Media {
   id: string;
+  /**
+   * Alternative text for accessibility and SEO
+   */
   alt: string;
+  /**
+   * Optional caption for the media
+   */
+  caption?: string | null;
+  /**
+   * Type of media file
+   */
+  type?: ('image' | 'video' | 'document') | null;
+  /**
+   * Tags for organizing and searching media
+   */
+  tags?:
+    | {
+        tag?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -170,6 +190,32 @@ export interface Media {
   height?: number | null;
   focalX?: number | null;
   focalY?: number | null;
+  sizes?: {
+    thumbnail?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    card?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    hero?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+  };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -177,8 +223,39 @@ export interface Media {
  */
 export interface Download {
   id: string;
-  title?: string | null;
+  /**
+   * Display name for the download file
+   */
+  title: string;
+  /**
+   * Description of what this file contains
+   */
   description?: string | null;
+  /**
+   * Category of the download file
+   */
+  category?: ('document' | 'template' | 'resource' | 'software' | 'media' | 'archive' | 'other') | null;
+  /**
+   * Tags for organizing and searching downloads
+   */
+  tags?:
+    | {
+        tag?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Number of times this file has been downloaded
+   */
+  downloadCount?: number | null;
+  /**
+   * Mark as featured download
+   */
+  featured?: boolean | null;
+  /**
+   * Who can access this download
+   */
+  accessLevel?: ('public' | 'registered' | 'premium') | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -789,6 +866,14 @@ export interface UsersSelect<T extends boolean = true> {
  */
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
+  caption?: T;
+  type?: T;
+  tags?:
+    | T
+    | {
+        tag?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -800,6 +885,40 @@ export interface MediaSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
+  sizes?:
+    | T
+    | {
+        thumbnail?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        card?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        hero?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+      };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -808,6 +927,16 @@ export interface MediaSelect<T extends boolean = true> {
 export interface DownloadsSelect<T extends boolean = true> {
   title?: T;
   description?: T;
+  category?: T;
+  tags?:
+    | T
+    | {
+        tag?: T;
+        id?: T;
+      };
+  downloadCount?: T;
+  featured?: T;
+  accessLevel?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
