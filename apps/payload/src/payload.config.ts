@@ -45,8 +45,44 @@ if (process.env.NODE_ENV === 'development') {
 
 // Storage configuration for different environments
 const getStorageConfig = () => {
-  // If S3 configuration is available, use S3 storage
+  // Check for Cloudflare R2 configuration using your existing environment variables
+  if (process.env.R2_ACCESS_KEY_ID && process.env.R2_SECRET_ACCESS_KEY && process.env.R2_ACCOUNT_ID && process.env.R2_MEDIA_BUCKET) {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[PAYLOAD-CONFIG] Configuring Cloudflare R2 storage');
+      console.log('[PAYLOAD-CONFIG] R2 Media Bucket:', process.env.R2_MEDIA_BUCKET);
+      console.log('[PAYLOAD-CONFIG] R2 Downloads Bucket:', process.env.R2_DOWNLOADS_BUCKET);
+      console.log('[PAYLOAD-CONFIG] R2 Account ID:', process.env.R2_ACCOUNT_ID);
+      console.log('[PAYLOAD-CONFIG] R2 Endpoint:', process.env.R2_ENDPOINT);
+    }
+    
+    return s3Storage({
+      collections: {
+        media: true,
+        downloads: true,
+      },
+      bucket: process.env.R2_MEDIA_BUCKET, // Primary bucket for media
+      config: {
+        // Use your configured R2 endpoint or build from account ID
+        endpoint: process.env.R2_ENDPOINT || `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+        region: process.env.R2_REGION || 'auto',
+        credentials: {
+          accessKeyId: process.env.R2_ACCESS_KEY_ID,
+          secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
+        },
+        // Important: R2 requires these settings for compatibility
+        forcePathStyle: true,
+      },
+    });
+  }
+  
+  // Fallback to standard S3 configuration
   if (process.env.S3_BUCKET && process.env.S3_REGION) {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[PAYLOAD-CONFIG] Configuring standard S3 storage');
+      console.log('[PAYLOAD-CONFIG] S3 Bucket:', process.env.S3_BUCKET);
+      console.log('[PAYLOAD-CONFIG] S3 Region:', process.env.S3_REGION);
+    }
+    
     return s3Storage({
       collections: {
         media: true,
@@ -63,7 +99,13 @@ const getStorageConfig = () => {
     });
   }
   
-  // Default to local storage in development
+  // Log warning if no cloud storage is configured in production
+  if (process.env.NODE_ENV === 'production') {
+    console.warn('[PAYLOAD-CONFIG] WARNING: No cloud storage configured for production. This will cause errors in serverless environments.');
+    console.warn('[PAYLOAD-CONFIG] Please configure either Cloudflare R2 or AWS S3 environment variables.');
+  }
+  
+  // Default to undefined (no storage plugin) - Payload will try local storage
   return undefined;
 };
 

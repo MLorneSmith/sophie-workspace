@@ -5,6 +5,7 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
+    "verify-config": "node scripts/verify-config.js",
     "build": "cross-env NODE_OPTIONS=--no-deprecation next build",
     "dev": "cross-env PORT=3020 NODE_OPTIONS=--no-deprecation next dev",
     "devsafe": "rm -rf .next && cross-env NODE_OPTIONS=--no-deprecation next dev",
