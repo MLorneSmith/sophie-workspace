@@ -99,7 +99,9 @@ export function createURLGenerator(storageType: 'r2' | 's3', collection: 'media'
   return ({ filename }: GenerateFileURLArgs): string => {
     try {
       if (!filename) {
-        throw new Error('Filename is required for URL generation');
+        // Instead of throwing, log warning and return fallback URL
+        console.warn(`[URL-GENERATOR] Warning: Filename is missing for ${collection} URL generation. Returning fallback URL.`);
+        return `/uploads/placeholder-${collection}.png`;
       }
       
       const url = generator({ filename });
@@ -113,7 +115,7 @@ export function createURLGenerator(storageType: 'r2' | 's3', collection: 'media'
       console.error(`[URL-GENERATOR] Error generating URL for ${collection}/${filename}:`, error);
       
       // Return a fallback URL
-      return `/uploads/${filename}`;
+      return `/uploads/${filename || 'unknown'}`;
     }
   };
 }
