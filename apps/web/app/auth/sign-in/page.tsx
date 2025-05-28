@@ -26,7 +26,7 @@ export const generateMetadata = async () => {
 };
 
 async function SignInPage({ searchParams }: SignInPageProps) {
-  const { invite_token: inviteToken, next = '' } = await searchParams;
+  const { invite_token: inviteToken, next } = await searchParams;
 
   const signUpPath =
     pathsConfig.auth.signUp +
@@ -34,7 +34,7 @@ async function SignInPage({ searchParams }: SignInPageProps) {
 
   const paths = {
     callback: pathsConfig.auth.callback,
-    returnPath: next ?? pathsConfig.app.home,
+    returnPath: next || pathsConfig.app.home,
     joinTeam: pathsConfig.app.joinTeam,
   };
 
