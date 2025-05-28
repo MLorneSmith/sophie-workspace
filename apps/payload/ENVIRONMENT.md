@@ -1,6 +1,6 @@
 # Payload CMS Environment Configuration
 
-This document outlines the required environment variables for Payload CMS, with special focus on database configuration for production deployments.
+This document outlines the required environment variables for Payload CMS, with special focus on database configuration and storage setup for production deployments.
 
 ## Required Environment Variables
 
@@ -88,6 +88,72 @@ NODE_ENV=development  # For local development
 NODE_ENV=production   # For production deployment
 ```
 
+### Storage Configuration
+
+#### Cloudflare R2 (Recommended for Production)
+
+For serverless deployments, Cloudflare R2 provides S3-compatible storage without egress fees.
+
+##### `CLOUDFLARE_R2_ACCOUNT_ID`
+Your Cloudflare account ID (required for R2 storage).
+
+```bash
+CLOUDFLARE_R2_ACCOUNT_ID=your-cloudflare-account-id
+```
+
+##### `CLOUDFLARE_R2_BUCKET`
+The name of your R2 bucket for storing media files.
+
+```bash
+CLOUDFLARE_R2_BUCKET=your-bucket-name
+```
+
+##### `CLOUDFLARE_R2_ACCESS_KEY_ID`
+The access key ID for your R2 API token.
+
+```bash
+CLOUDFLARE_R2_ACCESS_KEY_ID=your-r2-access-key-id
+```
+
+##### `CLOUDFLARE_R2_SECRET_ACCESS_KEY`
+The secret access key for your R2 API token.
+
+```bash
+CLOUDFLARE_R2_SECRET_ACCESS_KEY=your-r2-secret-access-key
+```
+
+#### Alternative: AWS S3
+
+##### `S3_BUCKET`
+The name of your S3 bucket (alternative to R2).
+
+```bash
+S3_BUCKET=your-s3-bucket-name
+```
+
+##### `S3_REGION`
+The AWS region for your S3 bucket.
+
+```bash
+S3_REGION=us-east-1
+```
+
+##### `AWS_ACCESS_KEY_ID`
+Your AWS access key ID.
+
+```bash
+AWS_ACCESS_KEY_ID=your-aws-access-key-id
+```
+
+##### `AWS_SECRET_ACCESS_KEY`
+Your AWS secret access key.
+
+```bash
+AWS_SECRET_ACCESS_KEY=your-aws-secret-access-key
+```
+
+**Important:** Without cloud storage configuration, Payload will attempt to use local file storage, which fails in serverless environments like Vercel, causing the "ENOENT: no such file or directory, mkdir 'media'" error.
+
 ## Environment File Setup
 
 ### Development (.env.local)
@@ -100,6 +166,12 @@ DATABASE_URI=postgresql://username:password@localhost:5432/payload_dev
 # Payload Configuration
 PAYLOAD_SECRET=your-development-secret-key-minimum-32-characters-long
 PAYLOAD_PUBLIC_SERVER_URL=http://localhost:3000
+
+# Cloudflare R2 Storage (recommended)
+CLOUDFLARE_R2_ACCOUNT_ID=your-cloudflare-account-id
+CLOUDFLARE_R2_BUCKET=your-bucket-name
+CLOUDFLARE_R2_ACCESS_KEY_ID=your-r2-access-key-id
+CLOUDFLARE_R2_SECRET_ACCESS_KEY=your-r2-secret-access-key
 
 # Environment
 NODE_ENV=development
@@ -116,9 +188,35 @@ DATABASE_URI=postgresql://user:pass@host:port/db?sslmode=require
 PAYLOAD_SECRET=your-production-secret-key-minimum-32-characters-long
 PAYLOAD_PUBLIC_SERVER_URL=https://your-production-domain.com
 
+# Cloudflare R2 Storage (required for production)
+CLOUDFLARE_R2_ACCOUNT_ID=your-cloudflare-account-id
+CLOUDFLARE_R2_BUCKET=your-bucket-name
+CLOUDFLARE_R2_ACCESS_KEY_ID=your-r2-access-key-id
+CLOUDFLARE_R2_SECRET_ACCESS_KEY=your-r2-secret-access-key
+
 # Environment
 NODE_ENV=production
 ```
+
+## Storage Troubleshooting
+
+### Common Storage Issues
+
+**Error: "ENOENT: no such file or directory, mkdir 'media'"**
+- **Cause:** No cloud storage configured, falling back to local storage in serverless environment
+- **Solution:** Configure Cloudflare R2 or AWS S3 environment variables
+
+**Error: "Access Denied" with R2**
+- **Cause:** Incorrect API token permissions or credentials
+- **Solution:** Regenerate R2 API tokens with proper permissions (Object Read, Write, Delete)
+
+**Error: "SignatureDoesNotMatch" with R2**
+- **Cause:** Incorrect secret access key or endpoint configuration
+- **Solution:** Double-check R2 credentials and Account ID
+
+**Error: "NoSuchBucket"**
+- **Cause:** Bucket name doesn't exist or incorrect
+- **Solution:** Verify bucket name matches exactly in R2 dashboard
 
 ## Database Connection Troubleshooting
 
@@ -160,9 +258,15 @@ The Payload configuration includes serverless-optimized settings:
    - Always use `sslmode=require` for hosted databases
    - Verify SSL certificate settings with your provider
 
-4. **Monitor connection usage**
+4. **Secure storage credentials**
+   - Use separate R2/S3 credentials for development and production
+   - Regularly rotate API tokens
+   - Apply principle of least privilege for storage permissions
+
+5. **Monitor connection usage**
    - Watch for connection pool exhaustion
    - Monitor database connection metrics in production
+   - Monitor storage usage and costs
 
 ## Verification
 
@@ -174,6 +278,7 @@ To verify your environment configuration:
    console.log('DATABASE_URI configured:', !!process.env.DATABASE_URI);
    console.log('NODE_ENV:', process.env.NODE_ENV);
    console.log('SSL mode:', process.env.NODE_ENV === 'production' ? 'enabled' : 'disabled');
+   console.log('R2 Storage configured:', !!(process.env.CLOUDFLARE_R2_BUCKET && process.env.CLOUDFLARE_R2_ACCOUNT_ID));
    ```
 
 2. **Test database connection:**
@@ -181,10 +286,15 @@ To verify your environment configuration:
    - Check console logs for connection success/failure
    - Access Payload admin panel at `/admin`
 
-3. **Monitor production logs:**
+3. **Test storage configuration:**
+   - Go to `/admin` and navigate to Media collection
+   - Try uploading a test file
+   - Verify file appears in your R2 bucket
+
+4. **Monitor production logs:**
    - Check Vercel/Railway/Netlify function logs
    - Look for database connection errors
-   - Monitor response times for database queries
+   - Monitor storage operation success/failure
 
 ## Support
 
@@ -193,4 +303,7 @@ If you encounter issues:
 1. Verify your DATABASE_URI format matches your provider's requirements
 2. Check that SSL parameters are included for production
 3. Ensure NODE_ENV is set to 'production' in production environment
-4. Review your hosting provider's database connection documentation
+4. Verify all R2/S3 environment variables are set correctly
+5. Test storage credentials using your cloud provider's dashboard or CLI
+6. Review your hosting provider's database connection documentation
+7. Check the detailed setup guide in `CLOUDFLARE_R2_SETUP.md`

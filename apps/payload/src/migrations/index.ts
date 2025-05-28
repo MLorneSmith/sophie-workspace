@@ -1,15 +1,9 @@
-import * as migration_20250527_161647 from './20250527_161647';
-import * as migration_20250527_175214_add_nested_docs_breadcrumbs from './20250527_175214_add_nested_docs_breadcrumbs';
+import * as migration_20250528_170746 from './20250528_170746';
 
 export const migrations = [
   {
-    up: migration_20250527_161647.up,
-    down: migration_20250527_161647.down,
-    name: '20250527_161647',
-  },
-  {
-    up: migration_20250527_175214_add_nested_docs_breadcrumbs.up,
-    down: migration_20250527_175214_add_nested_docs_breadcrumbs.down,
-    name: '20250527_175214_add_nested_docs_breadcrumbs'
+    up: migration_20250528_170746.up,
+    down: migration_20250528_170746.down,
+    name: '20250528_170746'
   },
 ];
