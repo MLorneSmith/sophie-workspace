@@ -26,7 +26,7 @@ const Layout = ({ children }: Args) => (
   <RootLayout config={config} importMap={importMap} serverFunction={serverFunction}>
     {children}
     {/* Form Protection Script */}
-    <script src="/admin/form-protection.js" async />
+    {/* <script src="/admin/form-protection.js" async /> */}
   </RootLayout>
 )
 
