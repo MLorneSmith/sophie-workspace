@@ -1,5 +1,5 @@
 {
-  "id": "c28ca3c8-c72f-4c86-9155-4843bfc14d91",
+  "id": "309c0947-6828-4bce-9f1f-45e7af8cff6b",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -147,15 +147,16 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar",
+          "type": "uuid",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "gen_random_uuid()"
         },
         "alt": {
           "name": "alt",
           "type": "varchar",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "updated_at": {
           "name": "updated_at",
@@ -635,7 +636,7 @@
         },
         "image_id_id": {
           "name": "image_id_id",
-          "type": "varchar",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": false
         },
@@ -1116,7 +1117,7 @@
         },
         "version_image_id_id": {
           "name": "version_image_id_id",
-          "type": "varchar",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": false
         },
@@ -7674,7 +7675,7 @@
         },
         "media_id": {
           "name": "media_id",
-          "type": "varchar",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": false
         },
