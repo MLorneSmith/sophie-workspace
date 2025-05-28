@@ -45,8 +45,10 @@ export function SignInMethodsContainer(props: {
 
       router.replace(joinTeamPath);
     } else {
+      const returnPath = props.paths.returnPath || '/home';
+
       // otherwise, we should redirect to the return path
-      router.replace(props.paths.returnPath);
+      router.replace(returnPath);
     }
   };
 

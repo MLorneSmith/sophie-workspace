@@ -38,7 +38,7 @@ export class StripePageObject {
   }
 
   submitForm() {
-    return this.getStripeCheckoutIframe().locator('form button').click();
+    return this.getStripeCheckoutIframe().getByTestId('hosted-payment-submit-button').click();
   }
 
   cardNumber() {

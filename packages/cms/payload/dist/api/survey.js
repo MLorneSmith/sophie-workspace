@@ -1,5 +1,5 @@
 import { callPayloadAPI } from './payload-api';
-import { createEnvironmentLogger } from '@kit/shared/logger/utils/environment-logger';
+import { createEnvironmentLogger } from '@kit/shared/logger';
 const logger = createEnvironmentLogger('SURVEY-API');
 /**
  * Get a survey by slug
