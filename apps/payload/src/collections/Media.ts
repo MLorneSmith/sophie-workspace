@@ -42,8 +42,8 @@ export const Media: CollectionConfig = {
       'video/quicktime',
       'video/webm',
     ],
-    // File size limits (10MB for images, 100MB for videos)
-    filesRequiredOnCreate: false,
+    // Require file on create to prevent null filenames
+    filesRequiredOnCreate: true,
     // The storage plugin will handle disableLocalStorage automatically
   },
   fields: [
@@ -111,6 +111,10 @@ export const Media: CollectionConfig = {
           } else {
             data.type = 'document';
           }
+        }
+        // Ensure filename is present before saving
+        if (!data.filename && req.file) {
+          data.filename = req.file.name;
         }
         return data;
       },
