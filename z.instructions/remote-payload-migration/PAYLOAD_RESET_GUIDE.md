@@ -45,27 +45,28 @@ export PAYLOAD_PUBLIC_SERVER_URL="https://payload.slideheroes.com"
 
 ### 4. Verify SSL Connection
 ```bash
-# Test connection before proceeding
-psql "$DATABASE_URI" -c "SELECT version();"
+# Use Supabase MCP: query
+# Parameters: { "sql": "SELECT version();" }
+# Expected result: PostgreSQL version string confirming connection
 ```
 
 ## 🔄 4-Step Reset Procedure
 
 ### Step 1: Drop Payload Schema
 ```bash
-# Connect and drop schema completely
-psql "$DATABASE_URI" -c "DROP SCHEMA IF EXISTS payload CASCADE;"
+# Use Supabase MCP: execute_sql
+# Parameters: { "query": "DROP SCHEMA IF EXISTS payload CASCADE;" }
+# Expected result: Schema dropped successfully
 
-# Verify schema is gone
-psql "$DATABASE_URI" -c "\dn payload"
-# Should return: No matching schemas found.
+# Use Supabase MCP: list_schemas
+# Expected result: 'payload' schema not listed (No matching schemas found)
 ```
 
 **Verification:**
 ```bash
-# Confirm no payload tables remain
-psql "$DATABASE_URI" -c "SELECT table_name FROM information_schema.tables WHERE table_schema = 'payload';"
-# Should return: (0 rows)
+# Use Supabase MCP: list_tables
+# Parameters: { "schemas": ["payload"] }
+# Expected result: Empty list (0 tables)
 ```
 
 ### Step 2: Delete Migration Files
@@ -128,44 +129,50 @@ npm run payload migrate
 
 **Verification:**
 ```bash
-# Check migration status
+# Run migration status command as usual
 npm run payload migrate -- --status
 
-# Verify schema was created
-psql "$DATABASE_URI" -c "\dn payload"
+# Use Supabase MCP: list_schemas
+# Expected result: 'payload' schema listed
 
-# Count tables created
-psql "$DATABASE_URI" -c "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'payload';"
-# Should show significant number of tables (20+)
+# Use Supabase MCP: list_tables
+# Parameters: { "schemas": ["payload"] }
+# Expected result: List of tables count 20+
 ```
 
 ## 🔍 Comprehensive Verification
 
 ### 1. Schema State Verification
 ```bash
-# List all payload tables
-psql "$DATABASE_URI" -c "\dt payload.*"
+# Use Supabase MCP: list_tables
+# Parameters: { "schemas": ["payload"] }
+# Expected result: List of all tables in payload schema
 
-# Check key collections exist
-psql "$DATABASE_URI" -c "SELECT table_name FROM information_schema.tables WHERE table_schema = 'payload' AND table_name IN ('courses', 'users', 'media', 'payload_migrations') ORDER BY table_name;"
+# Use Supabase MCP: query
+# Parameters: { "sql": "SELECT table_name FROM information_schema.tables WHERE table_schema = 'payload' AND table_name IN ('courses', 'users', 'media', 'payload_migrations') ORDER BY table_name;" }
+# Expected result: List of key tables present
 ```
 
 ### 2. Migration Record Verification
 ```bash
-# Check migration was recorded
-psql "$DATABASE_URI" -c "SELECT * FROM payload.payload_migrations ORDER BY created_at DESC LIMIT 1;"
+# Use Supabase MCP: query
+# Parameters: { "sql": "SELECT * FROM payload.payload_migrations ORDER BY created_at DESC LIMIT 1;" }
+# Expected result: Latest migration record details
 
-# Verify migration name and timestamp
-psql "$DATABASE_URI" -c "SELECT name, created_at FROM payload.payload_migrations WHERE name LIKE '%reset_schema%';"
+# Use Supabase MCP: query
+# Parameters: { "sql": "SELECT name, created_at FROM payload.payload_migrations WHERE name LIKE '%reset_schema%';" }
+# Expected result: Migration names matching reset_schema with timestamps
 ```
 
 ### 3. Schema Integrity Verification
 ```bash
-# Check foreign key constraints
-psql "$DATABASE_URI" -c "SELECT tc.table_name, tc.constraint_name, tc.constraint_type FROM information_schema.table_constraints tc WHERE tc.table_schema = 'payload' AND tc.constraint_type = 'FOREIGN KEY';"
+# Use Supabase MCP: query
+# Parameters: { "sql": "SELECT tc.table_name, tc.constraint_name, tc.constraint_type FROM information_schema.table_constraints tc WHERE tc.table_schema = 'payload' AND tc.constraint_type = 'FOREIGN KEY';" }
+# Expected result: List of foreign key constraints in payload schema
 
-# Verify indexes
-psql "$DATABASE_URI" -c "SELECT schemaname, tablename, indexname FROM pg_indexes WHERE schemaname = 'payload';"
+# Use Supabase MCP: query
+# Parameters: { "sql": "SELECT schemaname, tablename, indexname FROM pg_indexes WHERE schemaname = 'payload';" }
+# Expected result: List of indexes in payload schema
 ```
 
 ### 4. Application Health Verification
@@ -187,8 +194,9 @@ curl -f https://payload.slideheroes.com/api/health || echo "API not accessible"
 # Re-download SSL certificate
 curl -o supabase-ca-cert.crt https://supabase.com/docs/guides/database/ssl
 
-# Test SSL connection
-psql "$DATABASE_URI" -c "SELECT current_database();"
+# Use Supabase MCP: query
+# Parameters: { "sql": "SELECT current_database();" }
+# Expected result: Current database name confirming SSL connection
 
 # If still failing, check certificate permissions
 chmod 644 supabase-ca-cert.crt
@@ -208,20 +216,23 @@ npm run payload --help | grep migrate
 
 ### Schema Drop Failures
 ```bash
-# Check for active connections
-psql "$DATABASE_URI" -c "SELECT pid, usename, application_name FROM pg_stat_activity WHERE datname = current_database();"
+# Use Supabase MCP: query
+# Parameters: { "sql": "SELECT pid, usename, application_name FROM pg_stat_activity WHERE datname = current_database();" }
+# Expected result: List of active connections to current database
 
-# Force disconnect sessions if needed
-psql "$DATABASE_URI" -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = current_database() AND pid <> pg_backend_pid();"
+# Use Supabase MCP: query
+# Parameters: { "sql": "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = current_database() AND pid <> pg_backend_pid();" }
+# Expected result: Termination of other active connections
 
-# Retry schema drop
-psql "$DATABASE_URI" -c "DROP SCHEMA IF EXISTS payload CASCADE;"
+# Use Supabase MCP: execute_sql
+# Parameters: { "query": "DROP SCHEMA IF EXISTS payload CASCADE;" }
+# Expected result: Schema dropped successfully
 ```
 
 ### Migration Execution Failures
 ```bash
-# Check if schema exists before migration
-psql "$DATABASE_URI" -c "\dn payload"
+# Use Supabase MCP: list_schemas
+# Expected result: 'payload' schema listed if exists
 
 # Verify migration file integrity
 node -c src/migrations/*_reset_schema.ts
@@ -255,14 +266,14 @@ npm run payload migrate
 
 ### Option 1: Restore from Backup (Recommended)
 ```bash
-# Restore complete database from backup
+# Restore complete database from backup using psql as no direct MCP equivalent for restore
 psql "$DATABASE_URI" < backup_20250528_131900.sql
 ```
 
 ### Option 2: Re-run Reset (If Partial Failure)
 ```bash
-# Start over from Step 1
-psql "$DATABASE_URI" -c "DROP SCHEMA IF EXISTS payload CASCADE;"
+# Use Supabase MCP: execute_sql
+# Parameters: { "query": "DROP SCHEMA IF EXISTS payload CASCADE;" }
 # Continue with remaining steps...
 ```
 

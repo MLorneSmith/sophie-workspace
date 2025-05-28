@@ -42,8 +42,8 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   );
   
   CREATE TABLE IF NOT EXISTS "payload"."media" (
-  	"id" varchar PRIMARY KEY NOT NULL,
-  	"alt" varchar NOT NULL,
+  	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+  	"alt" varchar,
   	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
   	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
   	"url" varchar,
@@ -95,7 +95,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"description" varchar,
   	"content" jsonb,
   	"published_at" timestamp(3) with time zone,
-  	"image_id_id" varchar,
+  	"image_id_id" uuid,
   	"status" "payload"."enum_posts_status" DEFAULT 'draft',
   	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
   	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
@@ -134,7 +134,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"version_description" varchar,
   	"version_content" jsonb,
   	"version_published_at" timestamp(3) with time zone,
-  	"version_image_id_id" varchar,
+  	"version_image_id_id" uuid,
   	"version_status" "payload"."enum__posts_v_version_status" DEFAULT 'draft',
   	"version_updated_at" timestamp(3) with time zone,
   	"version_created_at" timestamp(3) with time zone,
@@ -608,7 +608,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"parent_id" uuid NOT NULL,
   	"path" varchar NOT NULL,
   	"users_id" uuid,
-  	"media_id" varchar,
+  	"media_id" uuid,
   	"downloads_id" uuid,
   	"posts_id" uuid,
   	"documentation_id" uuid,
