@@ -5,6 +5,8 @@ param(
     [int]$TimeoutSeconds = 60,
     [string]$Context = "",
     [switch]$Yes,
+    [switch]$AutoSplit,
+    [int]$MaxLines = 500,
     [switch]$Help
 )
 
@@ -15,18 +17,22 @@ Safe OpenCommit Wrapper
 This script runs OpenCommit with a timeout to prevent hanging.
 
 Usage:
-  .\scripts\safe-commit.ps1 [-TimeoutSeconds 60] [-Context "description"] [-Yes] [-Help]
+  .\scripts\safe-commit.ps1 [-TimeoutSeconds 60] [-Context "description"] [-Yes] [-AutoSplit] [-MaxLines 500] [-Help]
 
 Options:
   -TimeoutSeconds    Timeout in seconds (default: 60)
   -Context          Additional context for the commit message
   -Yes              Skip confirmation prompt
+  -AutoSplit        Automatically split large commits into smaller chunks
+  -MaxLines         Maximum lines per commit when auto-splitting (default: 500)
   -Help             Show this help message
 
 Examples:
   .\scripts\safe-commit.ps1
   .\scripts\safe-commit.ps1 -TimeoutSeconds 30 -Yes
   .\scripts\safe-commit.ps1 -Context "fix Sharp configuration"
+  .\scripts\safe-commit.ps1 -AutoSplit -MaxLines 300
+  .\scripts\safe-commit.ps1 -AutoSplit -Yes
 "@
     exit 0
 }
@@ -55,15 +61,104 @@ foreach ($line in $stats) {
 
 Write-Host "`nTotal lines changed: $totalLines" -ForegroundColor Yellow
 
-if ($totalLines -gt 1000) {
-    Write-Host "WARNING: Large commit detected! Consider splitting it into smaller commits." -ForegroundColor Yellow
-    Write-Host "   Use: .\scripts\split-commit.ps1" -ForegroundColor Gray
+# Auto-split logic
+if ($totalLines -gt $MaxLines) {
+    if ($AutoSplit) {
+        Write-Host "AUTO-SPLIT: Large commit detected ($totalLines lines > $MaxLines). Splitting automatically..." -ForegroundColor Cyan
 
-    if (-not $Yes) {
-        $response = Read-Host "Continue anyway? (y/n)"
-        if ($response -ne 'y' -and $response -ne 'Y') {
-            Write-Host "Aborted." -ForegroundColor Red
-            exit 1
+        # Reset staging area
+        git reset
+
+        # Group files by type and size
+        $allFiles = git diff --name-only HEAD
+        $fileGroups = @()
+        $currentGroup = @()
+        $currentGroupLines = 0
+
+        foreach ($file in $allFiles) {
+            if (Test-Path $file) {
+                # Get lines changed for this file
+                $fileStats = git diff --numstat HEAD -- $file
+                $fileLines = 0
+                if ($fileStats -match '^(\d+)\s+(\d+)\s+(.+)$') {
+                    $fileLines = [int]$matches[1]
+                }
+
+                # If adding this file would exceed MaxLines, start a new group
+                if (($currentGroupLines + $fileLines) -gt $MaxLines -and $currentGroup.Count -gt 0) {
+                    $fileGroups += ,@($currentGroup)
+                    $currentGroup = @()
+                    $currentGroupLines = 0
+                }
+
+                $currentGroup += $file
+                $currentGroupLines += $fileLines
+            }
+        }
+
+        # Add the last group
+        if ($currentGroup.Count -gt 0) {
+            $fileGroups += ,@($currentGroup)
+        }
+
+        Write-Host "Split into $($fileGroups.Count) commits:" -ForegroundColor Green
+
+        # Process each group
+        for ($i = 0; $i -lt $fileGroups.Count; $i++) {
+            $group = $fileGroups[$i]
+            $groupLines = 0
+            foreach ($file in $group) {
+                $fileStats = git diff --numstat HEAD -- $file
+                if ($fileStats -match '^(\d+)\s+(\d+)\s+(.+)$') {
+                    $groupLines += [int]$matches[1]
+                }
+            }
+
+            Write-Host "`nCommit $($i + 1)/$($fileGroups.Count): $($group.Count) files, $groupLines lines" -ForegroundColor Yellow
+            foreach ($file in $group) {
+                Write-Host "  - $file" -ForegroundColor Gray
+            }
+
+            # Stage this group
+            foreach ($file in $group) {
+                git add $file
+            }
+
+            # Commit this group
+            $groupContext = if ($Context) { "$Context (part $($i + 1)/$($fileGroups.Count))" } else { "Part $($i + 1) of $($fileGroups.Count)" }
+
+            Write-Host "Processing commit $($i + 1)..." -ForegroundColor Cyan
+            & $PSCommandPath -TimeoutSeconds $TimeoutSeconds -Context $groupContext -Yes:$Yes
+
+            if ($LASTEXITCODE -ne 0) {
+                Write-Host "Failed to commit group $($i + 1). Stopping auto-split." -ForegroundColor Red
+                exit 1
+            }
+        }
+
+        Write-Host "`nAuto-split completed successfully! Created $($fileGroups.Count) commits." -ForegroundColor Green
+        exit 0
+
+    } else {
+        Write-Host "WARNING: Large commit detected! ($totalLines lines > $MaxLines)" -ForegroundColor Yellow
+        Write-Host "Options:" -ForegroundColor Cyan
+        Write-Host "  1. Use -AutoSplit to automatically split this commit" -ForegroundColor White
+        Write-Host "  2. Use .\scripts\split-commit.ps1 for manual splitting" -ForegroundColor White
+        Write-Host "  3. Continue anyway (may timeout)" -ForegroundColor White
+
+        if (-not $Yes) {
+            Write-Host "`nChoose: [A]uto-split, [C]ontinue anyway, [Q]uit: " -ForegroundColor Yellow -NoNewline
+            $response = Read-Host
+
+            if ($response -eq 'A' -or $response -eq 'a') {
+                # Restart with AutoSplit
+                & $PSCommandPath -AutoSplit -TimeoutSeconds $TimeoutSeconds -Context $Context -Yes:$Yes -MaxLines $MaxLines
+                exit $LASTEXITCODE
+            } elseif ($response -eq 'Q' -or $response -eq 'q') {
+                Write-Host "Aborted." -ForegroundColor Red
+                exit 1
+            }
+            # Continue if 'C' or anything else
         }
     }
 }
@@ -84,7 +179,7 @@ Write-Host "Command: $command" -ForegroundColor Gray
 Write-Host "Starting OpenCommit process..." -ForegroundColor Gray
 
 try {
-    # Create process start info
+    # Create process start info with proper encoding
     $processInfo = New-Object System.Diagnostics.ProcessStartInfo
     $processInfo.FileName = "pnpm"
     $processInfo.Arguments = "exec opencommit" + $(if ($Context) { " --context `"$Context`"" } else { "" }) + $(if ($Yes) { " --yes" } else { "" })
@@ -92,6 +187,8 @@ try {
     $processInfo.RedirectStandardOutput = $true
     $processInfo.RedirectStandardError = $true
     $processInfo.WorkingDirectory = Get-Location
+    $processInfo.StandardOutputEncoding = [System.Text.Encoding]::UTF8
+    $processInfo.StandardErrorEncoding = [System.Text.Encoding]::UTF8
 
     # Start the process
     $process = [System.Diagnostics.Process]::Start($processInfo)
