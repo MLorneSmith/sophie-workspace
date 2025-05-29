@@ -1,7 +1,7 @@
 # Payload CMS Complete Reset Guide
 
 This guide documents the complete 4-step reset procedure for Payload CMS when schema corruption occurs or a fresh start is needed in production.
-test 
+
 
 ## 🚨 When to Use This Guide
 
@@ -49,11 +49,16 @@ export PAYLOAD_PUBLIC_SERVER_URL="https://payload.slideheroes.com"
 # Use Supabase MCP: query
 # Parameters: { "sql": "SELECT version();" }
 # Expected result: PostgreSQL version string confirming connection
+
+> **Note:** Use supabase-mcp MCP server, not postgres MCP server (postgres only works with local databases)
 ```
 
 ## 🔄 4-Step Reset Procedure
 
 ### Step 1: Drop Payload Schema
+
+> **Important:** Enum cleanup is now mandatory for reset success. Perform enum cleanup before proceeding to Step 2.
+
 ```bash
 # Use Supabase MCP: execute_sql
 # Parameters: { "query": "DROP SCHEMA IF EXISTS payload CASCADE;" }
@@ -70,6 +75,8 @@ export PAYLOAD_PUBLIC_SERVER_URL="https://payload.slideheroes.com"
 > DROP TYPE IF EXISTS public.enum_users_role CASCADE;
 > ```
 
+> **Updated:** Enum cleanup is now a required step in the main reset procedure, not optional troubleshooting.
+
 **Verification:**
 ```bash
 # Use Supabase MCP: list_tables
@@ -77,7 +84,9 @@ export PAYLOAD_PUBLIC_SERVER_URL="https://payload.slideheroes.com"
 # Expected result: Empty list (0 tables)
 ```
 
-### Step 2: Delete Migration Files
+:start_line:87
+-------
+### Step 3: Delete Migration Files
 ```bash
 cd apps/payload
 
@@ -96,12 +105,16 @@ find src/migrations/ -name "*.ts" -o -name "*.json" | wc -l
 # Should return: 0
 ```
 
-### Step 3: Generate Fresh Migration
+:start_line:106
+-------
+### Step 4: Generate Fresh Migration
 ```bash
 # Generate new comprehensive migration
 pnpm --filter payload payload migrate:create -- --name reset_schema
 
 # Verify migration was created
+:start_line:116
+-------
 ls -la src/migrations/
 ```
 
@@ -120,10 +133,77 @@ wc -l src/migrations/*_reset_schema.ts
 head -20 src/migrations/*_reset_schema.ts
 ```
 
-### Step 4: Execute Migration
+### Step 4.5: Add Enum Cleanup to Migration (Optional Safety Measure)
+For extra safety, you can add enum cleanup directly to your generated migration file:
+
+```typescript
+// Add this at the beginning of the up() function in your migration file:
+// First, drop any existing enums to ensure a clean slate - one by one for safety
+const enumDrops = [
+  'DROP TYPE IF EXISTS "payload"."enum_users_role" CASCADE;',
+  'DROP TYPE IF EXISTS "payload"."enum_media_type" CASCADE;',
+  'DROP TYPE IF EXISTS "payload"."enum_downloads_category" CASCADE;',
+  'DROP TYPE IF EXISTS "payload"."enum_downloads_access_level" CASCADE;',
+  'DROP TYPE IF EXISTS "payload"."enum_posts_status" CASCADE;',
+  'DROP TYPE IF EXISTS "payload"."enum__posts_v_version_status" CASCADE;',
+  'DROP TYPE IF EXISTS "payload"."enum_documentation_status" CASCADE;',
+  'DROP TYPE IF EXISTS "payload"."enum__documentation_v_version_status" CASCADE;',
+  'DROP TYPE IF EXISTS "payload"."enum_private_status" CASCADE;',
+  'DROP TYPE IF EXISTS "payload"."enum__private_v_version_status" CASCADE;',
+  'DROP TYPE IF EXISTS "payload"."enum_courses_status" CASCADE;',
+  'DROP TYPE IF EXISTS "payload"."enum__courses_v_version_status" CASCADE;',
+  'DROP TYPE IF EXISTS "payload"."enum_course_lessons_video_source_type" CASCADE;',
+  'DROP TYPE IF EXISTS "payload"."enum_course_lessons_status" CASCADE;',
+  'DROP TYPE IF EXISTS "payload"."enum__course_lessons_v_version_video_source_type" CASCADE;',
+  'DROP TYPE IF EXISTS "payload"."enum__course_lessons_v_version_status" CASCADE;',
+  'DROP TYPE IF EXISTS "payload"."enum_course_quizzes_status" CASCADE;',
+  'DROP TYPE IF EXISTS "payload"."enum__course_quizzes_v_version_status" CASCADE;',
+  'DROP TYPE IF EXISTS "payload"."enum_quiz_questions_type" CASCADE;',
+  'DROP TYPE IF EXISTS "payload"."enum_survey_questions_type" CASCADE;',
+  'DROP TYPE IF EXISTS "payload"."enum_survey_questions_questionspin" CASCADE;',
+  'DROP TYPE IF EXISTS "payload"."enum_survey_questions_status" CASCADE;',
+  'DROP TYPE IF EXISTS "payload"."enum__survey_questions_v_version_type" CASCADE;',
+  'DROP TYPE IF EXISTS "payload"."enum__survey_questions_v_version_questionspin" CASCADE;',
+  'DROP TYPE IF EXISTS "payload"."enum__survey_questions_v_version_status" CASCADE;',
+  'DROP TYPE IF EXISTS "payload"."enum_surveys_status" CASCADE;',
+  'DROP TYPE IF EXISTS "payload"."enum__surveys_v_version_status" CASCADE;'
+];
+
+// Execute enum drops one by one for safety
+for (const drop of enumDrops) {
+  try {
+    await db.execute(sql.raw(drop));
+  } catch (error) {
+    // Ignore errors if enum doesn't exist
+    console.log(`Enum drop ignored: ${drop}`);
+  }
+}
+```
+
+**Benefits:** This approach ensures enums are cleaned up as part of the migration itself, providing an additional safety layer.
+
+
+**Expected Results:**
+- New migration file: `20250528_XXXXXX_reset_schema.ts`
+- Corresponding JSON file: `20250528_XXXXXX_reset_schema.json`
+- Migration size: ~1,485+ lines (comprehensive schema)
+
+**Verification:**
 ```bash
-# Recreate the payload schema before applying migrations
-pnpm --filter payload payload migrate:create -- --recreate-schema
+# Check migration file size
+wc -l src/migrations/*_reset_schema.ts
+# Should show 1400+ lines
+
+# Preview migration content
+head -20 src/migrations/*_reset_schema.ts
+```
+
+:start_line:130
+-------
+### Step 5: Execute Migration
+```bash
+# Use Supabase MCP: execute_sql
+# Parameters: { "query": "CREATE SCHEMA IF NOT EXISTS payload;" }
 
 # Run the fresh migration
 npm run payload migrate
@@ -151,9 +231,11 @@ npm run payload migrate -- --status
 # Expected result: List of tables count 20+
 ```
 
+:start_line:161
+-------
 ## 🔍 Comprehensive Verification
 
-### 1. Schema State Verification
+### 6. Schema State Verification
 ```bash
 # Use Supabase MCP: list_tables
 # Parameters: { "schemas": ["payload"] }
@@ -164,7 +246,7 @@ npm run payload migrate -- --status
 # Expected result: List of key tables present
 ```
 
-### 2. Migration Record Verification
+### 7. Migration Record Verification
 ```bash
 # Use Supabase MCP: query
 # Parameters: { "sql": "SELECT * FROM payload.payload_migrations ORDER BY created_at DESC LIMIT 1;" }
@@ -175,7 +257,7 @@ npm run payload migrate -- --status
 # Expected result: Migration names matching reset_schema with timestamps
 ```
 
-### 3. Schema Integrity Verification
+### 8. Schema Integrity Verification
 ```bash
 # Use Supabase MCP: query
 # Parameters: { "sql": "SELECT tc.table_name, tc.constraint_name, tc.constraint_type FROM information_schema.table_constraints tc WHERE tc.table_schema = 'payload' AND tc.constraint_type = 'FOREIGN KEY';" }
@@ -186,7 +268,7 @@ npm run payload migrate -- --status
 # Expected result: List of indexes in payload schema
 ```
 
-### 4. Application Health Verification
+### 9. Application Health Verification
 ```bash
 # Test Payload CLI
 npm run payload --help
@@ -302,6 +384,51 @@ psql "$DATABASE_URI" < backup_20250528_131900.sql
 3. **Test**: Connection string format
 4. **Confirm**: Database server status
 
+:start_line:314
+-------
+## ⚠️ Known Issues
+
+### Payload/Drizzle Enum Conflict Workaround
+
+When recreating enums, you may encounter conflicts due to Payload and Drizzle enum handling. Use the following DO block to safely create enums without errors:
+
+```sql
+DO $$ BEGIN
+    CREATE TYPE "payload"."enum_name" AS ENUM('value1', 'value2');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+```
+
+### Enum Conflict Resolution During Reset
+
+If you encounter enum conflicts during the reset process, ensure the mandatory enum cleanup step is completed before dropping the schema. Use the following verification and cleanup commands as needed:
+
+```sql
+-- Verify existing enums
+SELECT typname, nspname
+FROM pg_type t
+JOIN pg_namespace n ON t.typnamespace = n.oid
+WHERE t.typtype = 'e'
+AND (nspname = 'payload' OR typname LIKE 'enum_%' OR typname LIKE '%payload%')
+ORDER BY nspname, typname;
+
+-- Cleanup enums manually if necessary
+DO $$
+DECLARE
+    enum_record RECORD;
+BEGIN
+    FOR enum_record IN
+        SELECT typname, nspname
+        FROM pg_type t
+        JOIN pg_namespace n ON t.typnamespace = n.oid
+        WHERE t.typtype = 'e' AND (nspname = 'payload' OR (nspname = 'public' AND typname LIKE 'enum_%'))
+    LOOP
+        EXECUTE 'DROP TYPE IF EXISTS ' || quote_ident(enum_record.nspname) || '.' || quote_ident(enum_record.typname) || ' CASCADE';
+    END LOOP;
+END $$;
+```
+
 ## 📝 Reset Completion Checklist
 
 - [ ] Database backup created and verified
@@ -315,14 +442,24 @@ psql "$DATABASE_URI" < backup_20250528_131900.sql
 - [ ] Application health check passed
 - [ ] Migration recorded in database
 - [ ] No error messages in final logs
-
 ## 🔗 Related Documentation
 
 - **Migration Guide**: `MIGRATION_GUIDE.md` - Standard migration procedures
 - **Quick Reference**: `QUICK_MIGRATION_REFERENCE.md` - Essential commands
-- **Config Files**: 
+- **Config Files**:
   - `src/payload.config.ts` - Payload configuration
   - `src/lib/database-adapter-singleton.ts` - Database adapter
+
+## 🆔 Supabase Project ID
+
+The Supabase project ID for this reset is:
+
+```
+ldebzombxtszzcgnylgq
+```
+
+> **Note:** When delegating tasks related to this reset, always provide this project ID to ensure correct context and access.
+
 
 ## 📞 Support
 
