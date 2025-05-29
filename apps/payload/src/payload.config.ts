@@ -3,7 +3,12 @@ import { s3Storage } from '@payloadcms/storage-s3';
 import { lexicalEditor } from '@payloadcms/richtext-lexical';
 import path from 'path';
 import { buildConfig } from 'payload';
-import sharp from 'sharp';
+/**
+ * Sharp import removed.
+ * Sharp is now initialized via platform-specific adapter in ./lib/serverless-sharp-adapter.
+ * This ensures compatibility with serverless environments (Vercel, Cloudflare, etc).
+ */
+import './lib/serverless-sharp-adapter';
 import { fileURLToPath } from 'url';
 
 import { CourseLessons } from './collections/CourseLessons';
