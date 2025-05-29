@@ -80,44 +80,68 @@ if ($Yes) {
 Write-Host "`nRunning OpenCommit with $TimeoutSeconds second timeout..." -ForegroundColor Green
 Write-Host "Command: $command" -ForegroundColor Gray
 
-# Run with timeout
-$job = Start-Job -ScriptBlock {
-    param($cmd)
-    Invoke-Expression $cmd
-} -ArgumentList $command
+# Run with timeout using process approach
+Write-Host "Starting OpenCommit process..." -ForegroundColor Gray
 
-$completed = Wait-Job $job -Timeout $TimeoutSeconds
+try {
+    # Create process start info
+    $processInfo = New-Object System.Diagnostics.ProcessStartInfo
+    $processInfo.FileName = "pnpm"
+    $processInfo.Arguments = "exec opencommit" + $(if ($Context) { " --context `"$Context`"" } else { "" }) + $(if ($Yes) { " --yes" } else { "" })
+    $processInfo.UseShellExecute = $false
+    $processInfo.RedirectStandardOutput = $true
+    $processInfo.RedirectStandardError = $true
+    $processInfo.WorkingDirectory = Get-Location
 
-if ($completed) {
-    $result = Receive-Job $job
-    Remove-Job $job
+    # Start the process
+    $process = [System.Diagnostics.Process]::Start($processInfo)
 
-    if ($LASTEXITCODE -eq 0) {
-        Write-Host "Commit successful!" -ForegroundColor Green
-        Write-Host $result
+    # Wait for completion with timeout
+    $completed = $process.WaitForExit($TimeoutSeconds * 1000)
+
+    if ($completed) {
+        $output = $process.StandardOutput.ReadToEnd()
+        $error = $process.StandardError.ReadToEnd()
+        $exitCode = $process.ExitCode
+
+        if ($exitCode -eq 0) {
+            Write-Host "Commit successful!" -ForegroundColor Green
+            Write-Host $output
+        } else {
+            Write-Host "ERROR: OpenCommit failed (Exit code: $exitCode)" -ForegroundColor Red
+            if ($output) { Write-Host $output }
+            if ($error) { Write-Host $error -ForegroundColor Red }
+
+            Write-Host "`nFallback: Create manual commit? (y/n): " -ForegroundColor Yellow -NoNewline
+            $fallback = Read-Host
+            if ($fallback -eq 'y' -or $fallback -eq 'Y') {
+                Write-Host "Enter commit message: " -ForegroundColor Cyan -NoNewline
+                $message = Read-Host
+                git commit -m $message
+            }
+        }
     } else {
-        Write-Host "ERROR: OpenCommit failed:" -ForegroundColor Red
-        Write-Host $result
+        Write-Host "TIMEOUT: OpenCommit timed out after $TimeoutSeconds seconds!" -ForegroundColor Red
+        $process.Kill()
+        $process.WaitForExit(5000) # Wait up to 5 seconds for cleanup
 
-        Write-Host "`nFallback: Create manual commit? (y/n): " -ForegroundColor Yellow -NoNewline
-        $fallback = Read-Host
-        if ($fallback -eq 'y' -or $fallback -eq 'Y') {
+        Write-Host "`nFallback options:" -ForegroundColor Yellow
+        Write-Host "1. Try with smaller changes: git reset && git add <specific-files>" -ForegroundColor White
+        Write-Host "2. Create manual commit: git commit -m 'your message'" -ForegroundColor White
+        Write-Host "3. Split commit: .\scripts\split-commit.ps1" -ForegroundColor White
+
+        Write-Host "`nCreate manual commit now? (y/n): " -ForegroundColor Yellow -NoNewline
+        $manual = Read-Host
+        if ($manual -eq 'y' -or $manual -eq 'Y') {
             Write-Host "Enter commit message: " -ForegroundColor Cyan -NoNewline
             $message = Read-Host
             git commit -m $message
+            Write-Host "Manual commit created!" -ForegroundColor Green
         }
     }
-} else {
-    Write-Host "TIMEOUT: OpenCommit timed out after $TimeoutSeconds seconds!" -ForegroundColor Red
-    Stop-Job $job
-    Remove-Job $job
-
-    Write-Host "`nFallback options:" -ForegroundColor Yellow
-    Write-Host "1. Try with smaller changes: git reset && git add <specific-files>" -ForegroundColor White
-    Write-Host "2. Create manual commit: git commit -m 'your message'" -ForegroundColor White
-    Write-Host "3. Split commit: .\scripts\split-commit.ps1" -ForegroundColor White
-
-    Write-Host "`nCreate manual commit now? (y/n): " -ForegroundColor Yellow -NoNewline
+} catch {
+    Write-Host "ERROR: Failed to start OpenCommit process: $_" -ForegroundColor Red
+    Write-Host "`nFallback: Create manual commit? (y/n): " -ForegroundColor Yellow -NoNewline
     $manual = Read-Host
     if ($manual -eq 'y' -or $manual -eq 'Y') {
         Write-Host "Enter commit message: " -ForegroundColor Cyan -NoNewline
