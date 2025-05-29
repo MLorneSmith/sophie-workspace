@@ -8,7 +8,6 @@ import { buildConfig } from 'payload';
  * Sharp is now initialized via platform-specific adapter in ./lib/serverless-sharp-adapter.
  * This ensures compatibility with serverless environments (Vercel, Cloudflare, etc).
  */
-import './lib/serverless-sharp-adapter';
 import { fileURLToPath } from 'url';
 
 import { CourseLessons } from './collections/CourseLessons';
