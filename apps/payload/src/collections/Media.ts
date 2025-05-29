@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload'
-import { getImageSizes, createOptimizedSharpInstance, getWebOptimizedFormatOptions } from '../lib/sharp-config'
+
 import { validateImageForProcessing, isFileSizeValid } from '../lib/image-validators'
 import { getSharpAdapter } from '../lib/serverless-sharp-adapter'
 import { getPlatformConfig, getSharpPlatformSettings } from '../lib/platform-optimizations'
@@ -27,10 +27,6 @@ export const Media: CollectionConfig = {
     ],
     // Require file on create to prevent null filenames
     filesRequiredOnCreate: true,
-    
-    // Serverless-optimized image sizes configuration
-    // Uses memory-efficient processing with timeout protection
-    imageSizes: getImageSizes(),
     
     // Admin thumbnail for immediate preview
     // Uses minimal processing to avoid timeouts in admin interface
@@ -214,8 +210,8 @@ export const Media: CollectionConfig = {
             if (doc.type === 'image' && doc.mimeType?.startsWith('image/') && doc.processingStatus === 'pending') {
               console.log(`[Media] Processing completed for: ${doc.filename}`);
               
-              // In this setup, Sharp processing happens during upload via imageSizes
-              // So we just need to mark as completed if we reach this point
+              // Mark as completed since basic upload succeeded
+              // No additional Sharp processing needed for admin interface
               const updatedData: Partial<typeof doc> = {
                 processingStatus: 'completed',
                 processingError: undefined,
