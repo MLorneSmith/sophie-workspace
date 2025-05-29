@@ -9,27 +9,6 @@ export const Media: CollectionConfig = {
     useAsTitle: 'filename',
   },
   upload: {
-    // Enhanced image processing for media collection
-    imageSizes: [
-      {
-        name: 'thumbnail',
-        width: 400,
-        height: 300,
-        position: 'centre',
-      },
-      {
-        name: 'card',
-        width: 768,
-        height: 1024,
-        position: 'centre',
-      },
-      {
-        name: 'hero',
-        width: 1920,
-        height: 1080,
-        position: 'centre',
-      },
-    ],
     // Specify allowed MIME types for media
     mimeTypes: [
       'image/jpeg',
@@ -45,6 +24,7 @@ export const Media: CollectionConfig = {
     // Require file on create to prevent null filenames
     filesRequiredOnCreate: true,
     // The storage plugin will handle disableLocalStorage automatically
+    // Note: Sharp processing removed to prevent timeouts - using Next.js Image Optimization instead
   },
   fields: [
     {
