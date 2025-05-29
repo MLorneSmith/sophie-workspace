@@ -62,6 +62,13 @@ export PAYLOAD_PUBLIC_SERVER_URL="https://payload.slideheroes.com"
 # Expected result: 'payload' schema not listed (No matching schemas found)
 ```
 
+> **Note:** You may need to clean up enum types manually if they persist after dropping the schema:
+> ```sql
+> DROP TYPE IF EXISTS enum_users_role CASCADE;
+> DROP TYPE IF EXISTS payload.enum_users_role CASCADE;
+> DROP TYPE IF EXISTS public.enum_users_role CASCADE;
+> ```
+
 **Verification:**
 ```bash
 # Use Supabase MCP: list_tables
@@ -91,7 +98,7 @@ find src/migrations/ -name "*.ts" -o -name "*.json" | wc -l
 ### Step 3: Generate Fresh Migration
 ```bash
 # Generate new comprehensive migration
-npm run payload generate:migration -- --name reset_schema
+pnpm --filter payload payload migrate:create -- --name reset_schema
 
 # Verify migration was created
 ls -la src/migrations/
@@ -114,6 +121,9 @@ head -20 src/migrations/*_reset_schema.ts
 
 ### Step 4: Execute Migration
 ```bash
+# Recreate the payload schema before applying migrations
+pnpm --filter payload payload migrate:create -- --recreate-schema
+
 # Run the fresh migration
 npm run payload migrate
 
@@ -245,10 +255,10 @@ npm run payload migrate
 ## 📊 Success Metrics
 
 ### Expected Schema Results
-- **Tables Created**: 25+ tables in payload schema
-- **Migration File Size**: 1,485+ lines
-- **Foreign Key Constraints**: 15+ constraints
-- **Indexes**: 30+ indexes created
+- **Tables Created**: 58+ tables in payload schema
+- **Migration File Size**: 1,548+ lines
+- **Foreign Key Constraints**: 88+ constraints
+- **Indexes**: 302+ indexes created
 - **Execution Time**: 30-60 seconds
 
 ### Verification Checklist
