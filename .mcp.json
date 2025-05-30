@@ -1,0 +1,42 @@
+{
+  "mcpServers": {
+    "exa": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "https://mcp.exa.ai/mcp?exaApiKey=9c7c0675-4d56-4aae-a039-f93cf72a6cbb"
+      ]
+    },
+    "perplexity-ask": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "server-perplexity-ask"
+      ],
+      "env": {
+        "PERPLEXITY_API_KEY": "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"
+      }
+    },
+    "supabase": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@supabase/mcp-server-supabase@latest",
+        "--access-token",
+        "sbp_0d60974b0dd5515e361ed129431845251c84ebfd"
+      ]
+    },
+    "dbhub-postgres-npx": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@bytebase/dbhub",
+        "--transport",
+        "stdio",
+        "--dsn",
+        "postgres://user:password@localhost:5432/dbname?sslmode=disable"
+      ]
+    }
+  }
+}
