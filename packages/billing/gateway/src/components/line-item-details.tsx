@@ -258,7 +258,7 @@ function Tiers({
                 i18nKey={'billing:andAbove'}
                 values={{
                   unit,
-                  previousTier: (previousTierFrom as number) - 1,
+                  previousTier: (Number(previousTierFrom) as number) - 1,
                 }}
               />
             </span>

@@ -265,12 +265,12 @@ export const envVariables: EnvVariableModel[] = [
   {
     name: 'NEXT_PUBLIC_SIDEBAR_COLLAPSIBLE_STYLE',
     description:
-      'Defines sidebar collapse behavior. Options: offscreen, icon, or none.',
+      'Defines sidebar collapse behavior. Options: offcanvas, icon, or none.',
     category: 'Navigation',
     type: 'enum',
-    values: ['offscreen', 'icon', 'none'],
+    values: ['offcanvas', 'icon', 'none'],
     validate: ({ value }) => {
-      return z.enum(['offscreen', 'icon', 'none']).optional().safeParse(value);
+      return z.enum(['offcanvas', 'icon', 'none']).optional().safeParse(value);
     },
   },
   {

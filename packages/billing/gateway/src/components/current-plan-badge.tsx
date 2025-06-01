@@ -4,43 +4,27 @@ import { Trans } from '@kit/ui/trans';
 
 type Status = Enums<'subscription_status'> | Enums<'payment_status'>;
 
+const statusBadgeMap: Record<Status, `success` | `destructive` | `warning`> = {
+  active: 'success',
+  succeeded: 'success',
+  trialing: 'success',
+  past_due: 'destructive',
+  failed: 'destructive',
+  canceled: 'destructive',
+  unpaid: 'destructive',
+  incomplete: 'warning',
+  pending: 'warning',
+  incomplete_expired: 'destructive',
+  paused: 'warning',
+}
+
 export function CurrentPlanBadge(
   props: React.PropsWithoutRef<{
     status: Status;
   }>,
 ) {
-  let variant: 'success' | 'warning' | 'destructive';
   const text = `billing:status.${props.status}.badge`;
-
-  switch (props.status) {
-    case 'active':
-    case 'succeeded':
-      variant = 'success';
-      break;
-    case 'trialing':
-      variant = 'success';
-      break;
-    case 'past_due':
-    case 'failed':
-      variant = 'destructive';
-      break;
-    case 'canceled':
-      variant = 'destructive';
-      break;
-    case 'unpaid':
-      variant = 'destructive';
-      break;
-    case 'incomplete':
-    case 'pending':
-      variant = 'warning';
-      break;
-    case 'incomplete_expired':
-      variant = 'destructive';
-      break;
-    case 'paused':
-      variant = 'warning';
-      break;
-  }
+  const variant = statusBadgeMap[props.status];
 
   return (
     <Badge data-test={'current-plan-card-status-badge'} variant={variant}>

@@ -128,7 +128,7 @@ export function parseAcceptLanguageHeader(
       const trimmedLocale = locale.trim();
       const numQ = Number(q.replace(/q ?=/, ''));
 
-      return [isNaN(numQ) ? 0 : numQ, trimmedLocale];
+      return [Number.isNaN(numQ) ? 0 : numQ, trimmedLocale];
     })
     .sort(([q1], [q2]) => q2 - q1) // Sort by quality value in descending order
     .flatMap(([_, locale]) => {

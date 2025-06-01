@@ -447,19 +447,16 @@ export class LemonSqueezyWebhookHandlerService
 
     return type;
   }
+
   private getOrderStatus(status: OrderStatus) {
-    switch (status) {
-      case 'paid':
-        return 'succeeded';
-      case 'pending':
-        return 'pending';
-      case 'failed':
-        return 'failed';
-      case 'refunded':
-        return 'failed';
-      default:
-        return 'pending';
-    }
+    const statusMap = {
+      paid: 'succeeded',
+      pending: 'pending',
+      failed: 'failed',
+      refunded: 'failed',
+    } satisfies Record<OrderStatus, UpsertOrderParams['status']>
+
+    return statusMap[status] ?? 'pending';
   }
 }
 

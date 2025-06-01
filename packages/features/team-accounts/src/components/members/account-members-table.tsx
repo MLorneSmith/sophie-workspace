@@ -92,7 +92,7 @@ export function AccountMembersTable({
     })
     .sort((prev, next) => {
       if (prev.primary_owner_user_id === prev.user_id) {
-        return -1;
+        return 0;
       }
 
       if (prev.role_hierarchy_level < next.role_hierarchy_level) {

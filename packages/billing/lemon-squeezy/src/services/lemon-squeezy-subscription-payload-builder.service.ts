@@ -1,4 +1,3 @@
-import { BillingConfig } from '@kit/billing';
 import { UpsertSubscriptionParams } from '@kit/billing/types';
 
 type SubscriptionStatus =
@@ -23,8 +22,6 @@ export function createLemonSqueezySubscriptionPayloadBuilderService() {
  * @description This class is used to build the subscription payload for Lemon Squeezy
  */
 class LemonSqueezySubscriptionPayloadBuilderService {
-  private config?: BillingConfig;
-
   /**
    * @name build
    * @description Build the subscription payload for Lemon Squeezy
@@ -103,24 +100,18 @@ class LemonSqueezySubscriptionPayloadBuilderService {
   }
 
   private getSubscriptionStatus(status: SubscriptionStatus) {
-    switch (status) {
-      case 'active':
-        return 'active';
-      case 'cancelled':
-        return 'canceled';
-      case 'paused':
-        return 'paused';
-      case 'on_trial':
-        return 'trialing';
-      case 'past_due':
-        return 'past_due';
-      case 'unpaid':
-        return 'unpaid';
-      case 'expired':
-        return 'past_due';
-      default:
-        return 'active';
-    }
+    const statusMap = {
+      active: 'active',
+      cancelled: 'canceled',
+      paused: 'paused',
+      on_trial: 'trialing',
+      past_due: 'past_due',
+      unpaid: 'unpaid',
+      expired: 'past_due',
+    } satisfies Record<SubscriptionStatus, UpsertSubscriptionParams['status']>;
+
+    // Default to 'active' if status is unknown
+    return statusMap[status] || 'active';
   }
 }
 

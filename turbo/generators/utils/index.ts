@@ -14,7 +14,7 @@ export namespace generator {
   }
 
   export function loadEnvironmentVariables(filePath: string) {
-    const file = readFileSync(filePath, 'utf-8');
+    const file = readFileSync(filePath, 'utf8');
     const vars = file.split('\n').filter((line) => line.trim() !== '');
 
     const env: Record<string, string> = {};
