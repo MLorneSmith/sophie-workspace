@@ -37,7 +37,7 @@ export async function updateTranslationAction(props: z.infer<typeof Schema>) {
 
   try {
     // Read the current translations file
-    const translationsFile = readFileSync(filePath, 'utf-8');
+    const translationsFile = readFileSync(filePath, 'utf8');
     const translations = JSON.parse(translationsFile) as Record<string, any>;
 
     // Update the nested key value
@@ -60,7 +60,7 @@ export async function updateTranslationAction(props: z.infer<typeof Schema>) {
     current[finalKey] = value;
 
     // Write the updated translations back to the file
-    writeFileSync(filePath, JSON.stringify(translations, null, 2), 'utf-8');
+    writeFileSync(filePath, JSON.stringify(translations, null, 2), 'utf8');
 
     revalidatePath(`/translations`);
 
@@ -95,7 +95,7 @@ export const translateWithAIAction = async (
 
     if (!existsSync(filePath)) {
       // create the file if it doesn't exist
-      writeFileSync(filePath, JSON.stringify({}, null, 2), 'utf-8');
+      writeFileSync(filePath, JSON.stringify({}, null, 2), 'utf8');
     }
 
     const results: Record<string, string> = {};

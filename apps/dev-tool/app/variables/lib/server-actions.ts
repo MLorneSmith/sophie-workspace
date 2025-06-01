@@ -53,10 +53,10 @@ export async function updateEnvironmentVariableAction(
   const filePath = `${root}/apps/web/${source}`;
 
   if (!existsSync(filePath)) {
-    writeFileSync(filePath, '', 'utf-8');
+    writeFileSync(filePath, '', 'utf8');
   }
 
-  const sourceEnvFile = readFileSync(`${root}apps/web/${source}`, 'utf-8');
+  const sourceEnvFile = readFileSync(`${root}apps/web/${source}`, 'utf8');
 
   let updatedEnvFile = '';
   const isInSourceFile = sourceEnvFile.includes(name);
@@ -73,7 +73,7 @@ export async function updateEnvironmentVariableAction(
   }
 
   // write the updated content back to the file
-  writeFileSync(`${root}/apps/web/${source}`, updatedEnvFile, 'utf-8');
+  writeFileSync(`${root}/apps/web/${source}`, updatedEnvFile, 'utf8');
 
   revalidatePath(`/variables`);
 

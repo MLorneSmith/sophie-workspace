@@ -392,7 +392,7 @@ const SidebarHeader: React.FC<React.ComponentPropsWithRef<'div'>> = ({
   return (
     <div
       data-sidebar="header"
-      className={cn('flex flex-col gap-2 p-2', className)}
+      className={cn('flex flex-col gap-2 p-2 group-data-[state=collapsed]:group-data-[collapsible=offcanvas]:hidden', className)}
       {...props}
     />
   );

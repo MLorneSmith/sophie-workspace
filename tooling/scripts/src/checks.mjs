@@ -6,7 +6,7 @@ const whitelist = {
   STRIPE_WEBHOOK_SECRET: [/whsec_*/],
   EMAIL_PASSWORD: ['password'],
   SUPABASE_DB_WEBHOOK_SECRET: ['WEBHOOKSECRET'],
-  SUPABASE_SERVICE_ROLE_KEY: ['eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU'],
+  SUPABASE_SERVICE_ROLE_KEY: [/qQwv8Hdp7fsn3W0YpN81IU/],
 };
 
 // List of sensitive environment variables that should not be in .env files

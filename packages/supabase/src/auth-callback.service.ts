@@ -244,7 +244,7 @@ function onError({
 
   console.error(
     {
-      error,
+      error: JSON.stringify(error).replace(/["\\]/g, '\\$&'),
       name: `auth.callback`,
     },
     `An error occurred while signing user in`,
