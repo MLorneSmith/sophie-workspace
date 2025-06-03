@@ -27,15 +27,32 @@
         "sbp_0d60974b0dd5515e361ed129431845251c84ebfd"
       ]
     },
-    "dbhub-postgres-npx": {
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"],
+      "env": {
+        "DEFAULT_MINIMUM_TOKENS": "6000"
+      }
+    },
+    "cloudflare-observability": {
+			"command": "npx",
+			"args": ["mcp-remote", "https://observability.mcp.cloudflare.com/sse"]
+		},
+		"cloudflare-bindings": {
+			"command": "npx",
+			"args": ["mcp-remote", "https://bindings.mcp.cloudflare.com/sse"]
+		},
+		"cloudflare-playwright": {
+			"command": "npx",
+			"args": ["mcp-remote", "https://playwright-mcp-example.slideheroes.workers.dev/sse"]
+		},
+    "postgres": {
       "command": "npx",
       "args": [
         "-y",
-        "@bytebase/dbhub",
-        "--transport",
-        "stdio",
-        "--dsn",
-        "postgres://user:password@localhost:5432/dbname?sslmode=disable"
+        "@henkey/postgres-mcp-server",
+        "--connection-string",
+        "postgresql://postgres:postgres@127.0.0.1:54322/postgres"
       ]
     }
   }
