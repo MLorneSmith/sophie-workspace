@@ -68,8 +68,10 @@
       "cache": false
     },
     "format": {
-      "outputs": ["node_modules/.cache/.prettiercache"],
-      "outputLogs": "new-only"
+      "outputs": []
+    },
+    "format:fix": {
+      "outputs": []
     },
     "lint": {
       "dependsOn": ["^topo"],
