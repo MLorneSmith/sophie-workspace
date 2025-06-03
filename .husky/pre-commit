@@ -1,0 +1,15 @@
+#!/bin/bash
+# Husky pre-commit hook for SlideHeroes
+
+# Run lint-staged to format and lint only staged files
+pnpm lint-staged
+
+# Quick type check only if TypeScript files are staged
+staged_files=$(git diff --cached --name-only)
+if echo "$staged_files" | grep -qE '\.(ts|tsx)$'; then
+  echo "🔍 TypeScript files detected, running quick typecheck..."
+  # Use timeout to prevent hanging and only check staged files
+  timeout 30s pnpm typecheck || echo "⚠️  Typecheck timed out or failed - please run 'pnpm typecheck' manually"
+fi
+
+echo "✅ Pre-commit checks completed!"

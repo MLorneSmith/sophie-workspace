@@ -253,3 +253,4 @@ Required environment variables:
 ## Command Line Tools
 
 - Use eza instead of ls
+
