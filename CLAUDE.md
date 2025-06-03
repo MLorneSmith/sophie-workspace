@@ -66,7 +66,7 @@ pnpm supabase:web:test         # Run database tests
 /packages/
   /features/               # Feature-specific packages
   /billing/               # Billing integrations
-  /cms/                  # CMS abstractions
+  /cms/                   # CMS abstractions
   /ui/                   # Shared UI components
   /supabase/             # Supabase client and utilities
 ```
@@ -245,3 +245,11 @@ Required environment variables:
 - Check `apps/web/supabase/tests/` for RLS policy examples
 - Use the dev-tool app for testing emails and environment variables
 - PowerShell scripts in `/scripts/` handle complex migrations (Windows/WSL)
+
+## Development Tooling
+
+- Use biome for formatting and linting (replacement for prettier and eslint)
+
+## Command Line Tools
+
+- Use eza instead of ls
