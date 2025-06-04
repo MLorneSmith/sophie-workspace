@@ -311,16 +311,21 @@ vi.mock('axios', () => ({
   }
 }));
 
-// Mock react-router-dom
-vi.mock('react-router-dom', () => ({
-  ...vi.importActual('react-router-dom'),
+// Mock Next.js navigation
+vi.mock('next/navigation', () => ({
+  useRouter: vi.fn().mockReturnValue({
+    push: vi.fn(),
+    replace: vi.fn(),
+    refresh: vi.fn(),
+    back: vi.fn(),
+    forward: vi.fn(),
+    prefetch: vi.fn(),
+  }),
   useParams: vi.fn().mockReturnValue({ id: '123' }),
-  useNavigate: vi.fn().mockReturnValue(vi.fn()),
-  useLocation: vi.fn().mockReturnValue({
-    pathname: '/test',
-    search: '?query=test',
-    hash: '#hash'
-  })
+  useSearchParams: vi.fn().mockReturnValue(new URLSearchParams('?query=test')),
+  usePathname: vi.fn().mockReturnValue('/test'),
+  redirect: vi.fn(),
+  notFound: vi.fn(),
 }));
 
 // Mock Supabase
@@ -480,12 +485,155 @@ test('test case 2', () => {
 
 ## Examples from Our Codebase
 
+### Project-Specific Mocks
+
+#### Mocking getSupabaseServerClient
+
+```typescript
+import { type SupabaseClient } from '@supabase/supabase-js';
+import { type Database } from '@kit/supabase/database';
+
+vi.mock('@kit/supabase/server-client', () => ({
+  getSupabaseServerClient: vi.fn(() => {
+    const mockClient = {
+      from: vi.fn((table: string) => ({
+        select: vi.fn().mockReturnThis(),
+        insert: vi.fn().mockReturnThis(),
+        update: vi.fn().mockReturnThis(),
+        delete: vi.fn().mockReturnThis(),
+        eq: vi.fn().mockReturnThis(),
+        neq: vi.fn().mockReturnThis(),
+        gt: vi.fn().mockReturnThis(),
+        gte: vi.fn().mockReturnThis(),
+        lt: vi.fn().mockReturnThis(),
+        lte: vi.fn().mockReturnThis(),
+        like: vi.fn().mockReturnThis(),
+        ilike: vi.fn().mockReturnThis(),
+        is: vi.fn().mockReturnThis(),
+        in: vi.fn().mockReturnThis(),
+        order: vi.fn().mockReturnThis(),
+        limit: vi.fn().mockReturnThis(),
+        single: vi.fn().mockReturnThis(),
+        maybeSingle: vi.fn().mockReturnThis(),
+        throwOnError: vi.fn().mockReturnThis(),
+        data: null,
+        error: null,
+      })),
+      auth: {
+        getUser: vi.fn().mockResolvedValue({
+          data: { user: { id: '123', email: 'test@example.com' } },
+          error: null,
+        }),
+        signOut: vi.fn().mockResolvedValue({ error: null }),
+      },
+      storage: {
+        from: vi.fn((bucket: string) => ({
+          upload: vi.fn().mockResolvedValue({ data: { path: 'file.pdf' }, error: null }),
+          download: vi.fn().mockResolvedValue({ data: new Blob(), error: null }),
+          remove: vi.fn().mockResolvedValue({ data: [], error: null }),
+          getPublicUrl: vi.fn().mockReturnValue({ data: { publicUrl: 'https://example.com/file.pdf' } }),
+        })),
+      },
+    } as unknown as SupabaseClient<Database>;
+    
+    return mockClient;
+  }),
+}));
+```
+
+#### Mocking enhanceAction
+
+```typescript
+import { enhanceAction } from '@kit/next/actions';
+import { z } from 'zod';
+
+vi.mock('@kit/next/actions', () => ({
+  enhanceAction: vi.fn((fn, options) => {
+    return async (data: any) => {
+      try {
+        // Validate with schema if provided
+        let validatedData = data;
+        if (options?.schema) {
+          const result = options.schema.safeParse(data);
+          if (!result.success) {
+            return { 
+              error: result.error.errors[0]?.message || 'Validation failed',
+              issues: result.error.errors
+            };
+          }
+          validatedData = result.data;
+        }
+        
+        // Mock user for authenticated actions
+        const mockUser = { 
+          id: '123', 
+          email: 'test@example.com',
+          app_metadata: {},
+          user_metadata: {},
+          aud: 'authenticated',
+          created_at: new Date().toISOString(),
+        };
+        
+        // Call the actual function
+        const result = await fn(validatedData, mockUser);
+        return result;
+      } catch (error) {
+        return { error: error.message };
+      }
+    };
+  }),
+}));
+```
+
+#### Mocking Portkey AI Gateway
+
+```typescript
+vi.mock('@kit/ai-gateway', () => ({
+  createAIGatewayClient: vi.fn((options) => ({
+    chat: {
+      completions: {
+        create: vi.fn().mockResolvedValue({
+          id: 'chatcmpl-123',
+          object: 'chat.completion',
+          created: Date.now(),
+          model: 'gpt-4',
+          choices: [{
+            index: 0,
+            message: {
+              role: 'assistant',
+              content: 'Mocked AI response',
+            },
+            finish_reason: 'stop',
+          }],
+          usage: {
+            prompt_tokens: 10,
+            completion_tokens: 20,
+            total_tokens: 30,
+          },
+        }),
+      },
+    },
+    // Track headers for testing
+    _headers: options?.headers || {},
+  })),
+}));
+
+// Test usage tracking
+test('AI Gateway includes user ID in headers', async () => {
+  const client = createAIGatewayClient({
+    headers: { 'x-metadata-user-id': '123' }
+  });
+  
+  expect(client._headers['x-metadata-user-id']).toBe('123');
+});
+```
+
 ### Mocking Supabase Queries
 
 ```typescript
 // Mock Supabase query for fetching courses
-vi.mock('@/lib/supabase', () => ({
-  supabaseClient: {
+vi.mock('@kit/supabase/server-client', () => ({
+  getSupabaseServerClient: vi.fn(() => ({
     from: vi.fn().mockImplementation((table) => {
       if (table === 'courses') {
         return {
@@ -506,7 +654,7 @@ vi.mock('@/lib/supabase', () => ({
         eq: vi.fn().mockReturnValue({ data: [], error: null })
       };
     })
-  }
+  }))
 }));
 ```
 
@@ -558,6 +706,71 @@ const handlers = [
 ];
 
 const server = setupServer(...handlers);
+```
+
+### Mocking Server Components and Server Actions
+
+```typescript
+// Mock Next.js server components
+vi.mock('./ServerComponent', () => ({
+  default: async function MockedServerComponent(props: any) {
+    // Simulate async data fetching
+    const data = await Promise.resolve({ id: 1, name: 'Mocked' });
+    return <div data-testid="server-component">{data.name}</div>;
+  }
+}));
+
+// Mock server-only imports
+vi.mock('server-only', () => ({}));
+
+// Mock Next.js headers
+vi.mock('next/headers', () => ({
+  cookies: vi.fn(() => ({
+    get: vi.fn((name) => ({ name, value: 'mocked-value' })),
+    set: vi.fn(),
+    delete: vi.fn(),
+  })),
+  headers: vi.fn(() => new Headers({ 'x-test': 'mocked' })),
+}));
+
+// Mock Next.js cache
+vi.mock('next/cache', () => ({
+  revalidatePath: vi.fn(),
+  revalidateTag: vi.fn(),
+  unstable_cache: vi.fn((fn) => fn),
+}));
+```
+
+### TypeScript Support for Mocks
+
+```typescript
+import { type Mock } from 'vitest';
+import { type SupabaseClient } from '@supabase/supabase-js';
+import { type Database } from '@kit/supabase/database';
+
+// Create typed mock functions
+const mockSelect: Mock<[], any> = vi.fn().mockReturnThis();
+const mockFrom: Mock<[string], any> = vi.fn(() => ({
+  select: mockSelect,
+  // ... other methods
+}));
+
+// Type-safe mock client
+const createMockSupabaseClient = (): SupabaseClient<Database> => {
+  return {
+    from: mockFrom,
+    // ... other properties
+  } as unknown as SupabaseClient<Database>;
+};
+
+// Usage in tests with full type safety
+test('typed mocks', () => {
+  const client = createMockSupabaseClient();
+  
+  // TypeScript knows about the mock methods
+  expect(mockFrom).toHaveBeenCalledWith('courses');
+  expect(mockSelect).toHaveBeenCalled();
+});
 ```
 
 ## Conclusion
