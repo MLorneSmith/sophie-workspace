@@ -31,6 +31,9 @@ yarn-error.log*
 .env
 packages/*/.env
 
+# MCP configuration (contains tokens)
+.mcp.json
+
 # vercel
 .vercel
 
