@@ -22,7 +22,10 @@
 			"mcp__postgresql-mcp__pg_execute_query",
 			"Bash(npx:*)",
 			"Bash(git add:*)",
-			"WebFetch(domain:app.warp.dev)"
+			"WebFetch(domain:app.warp.dev)",
+			"Bash(rg:*)",
+			"WebFetch(domain:makerkit.dev)",
+			"mcp__supabase__execute_sql"
 		],
 		"deny": []
 	},
