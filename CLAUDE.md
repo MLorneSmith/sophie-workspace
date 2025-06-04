@@ -253,4 +253,5 @@ Required environment variables:
 ## Command Line Tools
 
 - Use eza instead of ls
-
+- Use bat instead of cat
+- Use rg (Ripgrep) for fast searching instead of grep
