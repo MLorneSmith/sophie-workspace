@@ -1,40 +1,37 @@
 {
-  "mcpServers": {
-    "exa": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "mcp-remote",
-        "https://mcp.exa.ai/mcp?exaApiKey=9c7c0675-4d56-4aae-a039-f93cf72a6cbb"
-      ]
-    },
-    "perplexity-ask": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "server-perplexity-ask"
-      ],
-      "env": {
-        "PERPLEXITY_API_KEY": "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"
-      }
-    },
-    "supabase": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@supabase/mcp-server-supabase@latest",
-        "--access-token",
-        "sbp_0d60974b0dd5515e361ed129431845251c84ebfd"
-      ]
-    },
-    "context7": {
-      "command": "npx",
-      "args": ["-y", "@upstash/context7-mcp"],
-      "env": {
-        "DEFAULT_MINIMUM_TOKENS": "6000"
-      }
-    },
-    "cloudflare-observability": {
+	"mcpServers": {
+		"exa": {
+			"command": "npx",
+			"args": [
+				"-y",
+				"mcp-remote",
+				"https://mcp.exa.ai/mcp?exaApiKey=9c7c0675-4d56-4aae-a039-f93cf72a6cbb"
+			]
+		},
+		"perplexity-ask": {
+			"command": "npx",
+			"args": ["-y", "server-perplexity-ask"],
+			"env": {
+				"PERPLEXITY_API_KEY": "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"
+			}
+		},
+		"supabase": {
+			"command": "npx",
+			"args": [
+				"-y",
+				"@supabase/mcp-server-supabase@latest",
+				"--access-token",
+				"sbp_0d60974b0dd5515e361ed129431845251c84ebfd"
+			]
+		},
+		"context7": {
+			"command": "npx",
+			"args": ["-y", "@upstash/context7-mcp"],
+			"env": {
+				"DEFAULT_MINIMUM_TOKENS": "6000"
+			}
+		},
+		"cloudflare-observability": {
 			"command": "npx",
 			"args": ["mcp-remote", "https://observability.mcp.cloudflare.com/sse"]
 		},
@@ -44,16 +41,27 @@
 		},
 		"cloudflare-playwright": {
 			"command": "npx",
-			"args": ["mcp-remote", "https://playwright-mcp-example.slideheroes.workers.dev/sse"]
+			"args": [
+				"mcp-remote",
+				"https://playwright-mcp-example.slideheroes.workers.dev/sse"
+			]
 		},
-    "postgres": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@henkey/postgres-mcp-server",
-        "--connection-string",
-        "postgresql://postgres:postgres@127.0.0.1:54322/postgres"
-      ]
-    }
-  }
+		"postgres": {
+			"command": "npx",
+			"args": [
+				"-y",
+				"@henkey/postgres-mcp-server",
+				"--connection-string",
+				"postgresql://postgres:postgres@127.0.0.1:54322/postgres"
+			]
+		},
+		"browser-tools": {
+			"command": "npx",
+			"args": ["-y", "@agentdeskai/browser-tools-mcp@latest"]
+		},
+		"code-reasoning": {
+			"command": "npx",
+			"args": ["-y", "@mettamatt/code-reasoning"]
+		}
+	}
 }
