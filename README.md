@@ -138,3 +138,53 @@ pnpm dev
 - [Supabase Documentation](https://supabase.com/docs)
 - [OpenAI Documentation](https://platform.openai.com/docs)
 
+## Role-Based Context Priming
+
+This project uses Claude's context priming capabilities to provide specialized assistance based on different engineering roles. This helps Claude understand your codebase better and provide more relevant assistance.
+
+### Available Roles
+
+- **Full Stack Engineer** (`/read .claude/roles/full-stack-engineer.md`): End-to-end implementation across frontend and backend
+- **UI Engineer** (`/read .claude/roles/ui-engineer.md`): Frontend implementation, component design, user experience
+- **Data Engineer** (`/read .claude/roles/data-engineer.md`): Database design, data access patterns, authentication
+- **AI Engineer** (`/read .claude/roles/ai-engineer.md`): AI integration, prompt engineering, model optimization
+- **Architecture Engineer** (`/read .claude/roles/architecture-engineer.md`): System design, service integration
+- **Security Engineer** (`/read .claude/roles/security-engineer.md`): Authentication, authorization, data protection
+- **CMS Engineer** (`/read .claude/roles/cms-engineer.md`): Content management, editorial workflows
+- **Unit Test Writer** (`/read .claude/roles/unit-test-writer.md`): Test implementation, mocking, test-driven development
+
+### How to Use Roles
+
+1. **Switch to a role** at the beginning of your session:
+   ```
+   /read .claude/roles/ui-engineer.md
+   ```
+
+2. **Ask role-specific questions** after loading a role:
+   ```
+   Now that you're in UI Engineer role, help me implement a responsive navigation component.
+   ```
+
+3. **Combine roles** for complex tasks:
+   ```
+   /read .claude/roles/ui-engineer.md
+   /read .claude/roles/data-engineer.md
+   
+   I need to create a data table component that fetches and displays user data from Supabase.
+   ```
+
+4. **Use task-specific commands** for common workflows:
+   ```
+   /read .claude/tasks/ui/new-component.md
+   
+   I need a Button component with primary, secondary, and danger variants.
+   ```
+
+### Best Practices
+
+- Load the most relevant role for your current task
+- Use the **Full Stack Engineer** role for broad tasks that span frontend and backend
+- Be specific about what you're trying to accomplish
+- For complex tasks spanning multiple domains, load the most relevant roles in order of importance
+- If Claude seems to be missing context, try loading additional relevant documentation
+
