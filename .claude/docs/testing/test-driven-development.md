@@ -199,9 +199,336 @@ export function useCounter(initialValue = 0) {
 7. **Commit**: Commit your changes with a descriptive message.
 8. **Repeat**: Move on to the next feature or edge case.
 
+## TDD for Next.js Server Actions
+
+Apply TDD when creating server actions:
+
+```typescript
+// server-actions.test.ts
+import { describe, it, expect, vi } from 'vitest';
+import { createCourseAction } from './server-actions';
+
+describe('createCourseAction', () => {
+  it('should create a course with valid data', async () => {
+    const courseData = {
+      title: 'Test Course',
+      description: 'A comprehensive test course',
+      price: 99.99,
+    };
+    
+    const result = await createCourseAction(courseData);
+    
+    expect(result.success).toBe(true);
+    expect(result.data).toMatchObject({
+      id: expect.any(String),
+      ...courseData,
+    });
+  });
+
+  it('should validate required fields', async () => {
+    const invalidData = { title: '' };
+    
+    const result = await createCourseAction(invalidData);
+    
+    expect(result.error).toBe('Title is required');
+  });
+});
+```
+
+Then implement the server action:
+
+```typescript
+// server-actions.ts
+'use server';
+
+import { enhanceAction } from '@kit/next/actions';
+import { z } from 'zod';
+import { getSupabaseServerClient } from '@kit/supabase/server-client';
+
+const courseSchema = z.object({
+  title: z.string().min(1, 'Title is required'),
+  description: z.string().min(10, 'Description must be at least 10 characters'),
+  price: z.number().positive('Price must be positive'),
+});
+
+export const createCourseAction = enhanceAction(
+  async (data, user) => {
+    const supabase = getSupabaseServerClient();
+    
+    const { data: course, error } = await supabase
+      .from('courses')
+      .insert({
+        ...data,
+        user_id: user.id,
+      })
+      .select()
+      .single();
+    
+    if (error) {
+      return { error: error.message };
+    }
+    
+    return { success: true, data: course };
+  },
+  {
+    schema: courseSchema,
+  }
+);
+```
+
+## TDD for Database Operations and RLS
+
+Write tests for database operations and Row Level Security:
+
+```typescript
+// courses.test.ts
+import { describe, it, expect } from 'vitest';
+import { getCoursesByUser, updateCourse } from './courses';
+
+describe('Courses Database Operations', () => {
+  it('should only return courses owned by the user', async () => {
+    const userId = 'user-123';
+    const courses = await getCoursesByUser(userId);
+    
+    expect(courses.every(course => course.user_id === userId)).toBe(true);
+  });
+
+  it('should not allow updating courses owned by other users', async () => {
+    const userId = 'user-123';
+    const otherUserCourseId = 'course-456';
+    
+    const result = await updateCourse(otherUserCourseId, { title: 'Hacked!' }, userId);
+    
+    expect(result.error).toBe('Unauthorized');
+  });
+});
+```
+
+RLS Policy Test (in `supabase/tests/database/courses.test.sql`):
+
+```sql
+begin;
+select plan(2);
+
+-- Test that users can only update their own courses
+select tests.authenticate_as('user1');
+select is(
+  (update courses set title = 'Updated' where id = 'user1-course-id' returning id),
+  'user1-course-id',
+  'User can update their own course'
+);
+
+select tests.authenticate_as('user2');
+select throws_ok(
+  'update courses set title = ''Hacked'' where id = ''user1-course-id''',
+  'new row violates row-level security policy',
+  'User cannot update other users courses'
+);
+
+select * from finish();
+rollback;
+```
+
+## TDD for API Route Handlers
+
+Test Next.js route handlers:
+
+```typescript
+// route.test.ts
+import { describe, it, expect, vi } from 'vitest';
+import { GET, POST } from './route';
+import { NextRequest } from 'next/server';
+
+describe('API Route /api/courses', () => {
+  it('GET should return courses list', async () => {
+    const request = new NextRequest('http://localhost:3000/api/courses');
+    const response = await GET(request);
+    const data = await response.json();
+    
+    expect(response.status).toBe(200);
+    expect(Array.isArray(data.courses)).toBe(true);
+  });
+
+  it('POST should create a new course', async () => {
+    const courseData = { title: 'New Course', description: 'Test' };
+    const request = new NextRequest('http://localhost:3000/api/courses', {
+      method: 'POST',
+      body: JSON.stringify(courseData),
+    });
+    
+    const response = await POST(request);
+    const data = await response.json();
+    
+    expect(response.status).toBe(201);
+    expect(data.course).toMatchObject(courseData);
+  });
+
+  it('POST should validate input', async () => {
+    const request = new NextRequest('http://localhost:3000/api/courses', {
+      method: 'POST',
+      body: JSON.stringify({}),
+    });
+    
+    const response = await POST(request);
+    
+    expect(response.status).toBe(400);
+  });
+});
+```
+
+## TDD for React Server Components
+
+Test React Server Components with async rendering:
+
+```typescript
+// CoursePage.test.tsx
+import { describe, it, expect, vi } from 'vitest';
+import { render } from '@testing-library/react';
+import CoursePage from './page';
+
+// Mock data fetching
+vi.mock('./actions', () => ({
+  getCourse: vi.fn().mockResolvedValue({
+    id: '1',
+    title: 'Test Course',
+    lessons: [
+      { id: '1', title: 'Lesson 1' },
+      { id: '2', title: 'Lesson 2' },
+    ],
+  }),
+}));
+
+describe('CoursePage', () => {
+  it('should display course details', async () => {
+    const { findByRole, findAllByRole } = render(
+      await CoursePage({ params: { courseId: '1' } })
+    );
+    
+    expect(await findByRole('heading', { name: 'Test Course' })).toBeInTheDocument();
+    
+    const lessons = await findAllByRole('listitem');
+    expect(lessons).toHaveLength(2);
+  });
+});
+```
+
+## TDD for Form Validation with react-hook-form and Zod
+
+```typescript
+// ContactForm.test.tsx
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { ContactForm } from './ContactForm';
+
+describe('ContactForm', () => {
+  it('should show validation errors for invalid email', async () => {
+    const user = userEvent.setup();
+    render(<ContactForm onSubmit={vi.fn()} />);
+    
+    await user.type(screen.getByLabelText(/email/i), 'invalid-email');
+    await user.click(screen.getByRole('button', { name: /submit/i }));
+    
+    expect(await screen.findByText('Invalid email address')).toBeInTheDocument();
+  });
+
+  it('should submit valid form data', async () => {
+    const user = userEvent.setup();
+    const handleSubmit = vi.fn();
+    render(<ContactForm onSubmit={handleSubmit} />);
+    
+    await user.type(screen.getByLabelText(/name/i), 'John Doe');
+    await user.type(screen.getByLabelText(/email/i), 'john@example.com');
+    await user.type(screen.getByLabelText(/message/i), 'Test message');
+    
+    await user.click(screen.getByRole('button', { name: /submit/i }));
+    
+    await waitFor(() => {
+      expect(handleSubmit).toHaveBeenCalledWith({
+        name: 'John Doe',
+        email: 'john@example.com',
+        message: 'Test message',
+      });
+    });
+  });
+});
+```
+
+## TDD for Middleware
+
+Test Next.js middleware:
+
+```typescript
+// middleware.test.ts
+import { describe, it, expect } from 'vitest';
+import { middleware } from './middleware';
+import { NextRequest } from 'next/server';
+
+describe('Authentication Middleware', () => {
+  it('should redirect unauthenticated users to login', async () => {
+    const request = new NextRequest('http://localhost:3000/dashboard');
+    // Mock no auth cookie
+    
+    const response = await middleware(request);
+    
+    expect(response.status).toBe(307);
+    expect(response.headers.get('location')).toBe('/auth/sign-in');
+  });
+
+  it('should allow authenticated users', async () => {
+    const request = new NextRequest('http://localhost:3000/dashboard');
+    // Mock auth cookie
+    request.cookies.set('sb-auth-token', 'valid-token');
+    
+    const response = await middleware(request);
+    
+    expect(response).toBeUndefined(); // Middleware passes through
+  });
+});
+```
+
+## TDD for E2E Tests with Playwright
+
+Apply TDD principles to E2E tests:
+
+```typescript
+// courses.spec.ts
+import { test, expect } from '@playwright/test';
+
+test.describe('Course Management', () => {
+  test('should create a new course', async ({ page }) => {
+    // Arrange
+    await page.goto('/dashboard/courses');
+    
+    // Act
+    await page.click('text=New Course');
+    await page.fill('[name="title"]', 'E2E Test Course');
+    await page.fill('[name="description"]', 'This is an E2E test course');
+    await page.click('text=Create Course');
+    
+    // Assert
+    await expect(page.locator('text=E2E Test Course')).toBeVisible();
+    await expect(page.locator('text=Course created successfully')).toBeVisible();
+  });
+
+  test('should validate course form', async ({ page }) => {
+    await page.goto('/dashboard/courses/new');
+    
+    // Submit empty form
+    await page.click('text=Create Course');
+    
+    // Should show validation errors
+    await expect(page.locator('text=Title is required')).toBeVisible();
+    await expect(page.locator('text=Description is required')).toBeVisible();
+  });
+});
+```
+
 ## Resources
 
 - [Test-Driven Development: By Example](https://www.amazon.com/Test-Driven-Development-Kent-Beck/dp/0321146530) by Kent Beck
 - [Growing Object-Oriented Software, Guided by Tests](https://www.amazon.com/Growing-Object-Oriented-Software-Guided-Tests/dp/0321503627) by Steve Freeman and Nat Pryce
 - [React Testing Library Documentation](https://testing-library.com/docs/react-testing-library/intro/)
 - [Vitest Documentation](https://vitest.dev/)
+- [Next.js Testing Documentation](https://nextjs.org/docs/app/building-your-application/testing)
+- [Playwright Documentation](https://playwright.dev/)

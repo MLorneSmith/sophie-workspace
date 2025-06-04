@@ -25,7 +25,10 @@
 			"WebFetch(domain:app.warp.dev)",
 			"Bash(rg:*)",
 			"WebFetch(domain:makerkit.dev)",
-			"mcp__supabase__execute_sql"
+			"mcp__supabase__execute_sql",
+			"Bash(git commit:*)",
+			"mcp__github__search_repositories",
+			"mcp__github__get_file_contents"
 		],
 		"deny": []
 	},

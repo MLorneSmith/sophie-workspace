@@ -4,12 +4,12 @@ This document outlines the standard patterns and practices for unit testing in t
 
 ## Testing Framework
 
-We use Vite for unit tests as specified in the project standards. Our testing stack includes:
+We use Vitest as our test runner for unit tests as specified in the project standards. Our testing stack includes:
 
 - **Vitest**: Test runner and assertion library
-- **Testing Library**: For testing React components
-- **MSW**: For mocking API requests
-- **Sinon**: For spies, stubs, and mocks
+- **@testing-library/react**: For testing React components
+- **MSW (Mock Service Worker)**: For mocking API requests
+- **@testing-library/user-event**: For simulating user interactions
 
 ## Directory Structure
 
@@ -204,6 +204,302 @@ pnpm test:coverage
 
 # Run a specific test file
 pnpm test path/to/file.test.ts
+```
+
+## Testing Server Actions
+
+Test Next.js server actions wrapped with `enhanceAction`:
+
+```typescript
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { myAction } from './server-actions';
+import { enhanceAction } from '@kit/next/actions';
+
+// Mock the enhanceAction wrapper
+vi.mock('@kit/next/actions', () => ({
+  enhanceAction: vi.fn((fn, options) => {
+    return async (data: any) => {
+      // Validate with schema if provided
+      if (options?.schema) {
+        const result = options.schema.safeParse(data);
+        if (!result.success) {
+          return { error: 'Validation failed' };
+        }
+      }
+      // Call the actual function with validated data and mock user
+      const mockUser = { id: '123', email: 'test@example.com' };
+      return fn(result.data, mockUser);
+    };
+  }),
+}));
+
+describe('myAction', () => {
+  it('should process valid data', async () => {
+    const result = await myAction({ name: 'Test' });
+    expect(result).toEqual({ success: true, data: expect.any(Object) });
+  });
+
+  it('should handle validation errors', async () => {
+    const result = await myAction({ invalid: 'data' });
+    expect(result).toEqual({ error: 'Validation failed' });
+  });
+});
+```
+
+## Testing with Supabase
+
+### Testing Database Queries
+
+```typescript
+import { describe, it, expect, vi } from 'vitest';
+import { getSupabaseServerClient } from '@kit/supabase/server-client';
+import { getCourses } from './courses';
+
+vi.mock('@kit/supabase/server-client', () => ({
+  getSupabaseServerClient: vi.fn(() => ({
+    from: vi.fn((table: string) => ({
+      select: vi.fn().mockReturnThis(),
+      eq: vi.fn().mockReturnThis(),
+      order: vi.fn().mockReturnThis(),
+      single: vi.fn().mockResolvedValue({
+        data: { id: 1, title: 'Test Course' },
+        error: null,
+      }),
+      throwOnError: vi.fn().mockReturnThis(),
+    })),
+  })),
+}));
+
+describe('getCourses', () => {
+  it('should fetch courses from database', async () => {
+    const courses = await getCourses();
+    expect(courses).toHaveLength(1);
+    expect(courses[0].title).toBe('Test Course');
+  });
+});
+```
+
+### Testing RLS Policies
+
+RLS policies should be tested using the Supabase test framework:
+
+```bash
+pnpm supabase:web:test
+```
+
+Example RLS test file (`supabase/tests/database/courses.test.sql`):
+
+```sql
+begin;
+select plan(3);
+
+-- Test that users can only see their own courses
+select tests.authenticate_as('user1');
+select is(
+  (select count(*) from courses where user_id = auth.uid()),
+  2,
+  'User can see their own courses'
+);
+
+select tests.authenticate_as('user2');
+select is(
+  (select count(*) from courses where user_id = 'user1_id'),
+  0,
+  'User cannot see other users courses'
+);
+
+select * from finish();
+rollback;
+```
+
+## Testing React Server Components
+
+```typescript
+import { render } from '@testing-library/react';
+import { CoursePage } from './page';
+
+// Mock server-side data fetching
+vi.mock('@/lib/courses', () => ({
+  getCourse: vi.fn().mockResolvedValue({
+    id: 1,
+    title: 'Test Course',
+    description: 'Test Description',
+  }),
+}));
+
+describe('CoursePage', () => {
+  it('should render course information', async () => {
+    const { findByText } = render(await CoursePage({ params: { id: '1' } }));
+    
+    expect(await findByText('Test Course')).toBeInTheDocument();
+    expect(await findByText('Test Description')).toBeInTheDocument();
+  });
+});
+```
+
+## Testing with React Query
+
+```typescript
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { renderHook, waitFor } from '@testing-library/react';
+import { useCoursesQuery } from './use-courses-query';
+
+const createWrapper = () => {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: { retry: false },
+    },
+  });
+  
+  return ({ children }: { children: React.ReactNode }) => (
+    <QueryClientProvider client={queryClient}>
+      {children}
+    </QueryClientProvider>
+  );
+};
+
+describe('useCoursesQuery', () => {
+  it('should fetch courses', async () => {
+    const { result } = renderHook(() => useCoursesQuery(), {
+      wrapper: createWrapper(),
+    });
+
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBe(true);
+    });
+
+    expect(result.current.data).toHaveLength(2);
+  });
+});
+```
+
+## Testing Forms with Zod Validation
+
+```typescript
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { CourseForm } from './CourseForm';
+import { z } from 'zod';
+
+const schema = z.object({
+  title: z.string().min(1, 'Title is required'),
+  description: z.string().min(10, 'Description must be at least 10 characters'),
+});
+
+describe('CourseForm', () => {
+  it('should show validation errors', async () => {
+    const user = userEvent.setup();
+    const onSubmit = vi.fn();
+    
+    render(<CourseForm onSubmit={onSubmit} />);
+    
+    // Submit empty form
+    await user.click(screen.getByRole('button', { name: /submit/i }));
+    
+    // Check validation messages
+    expect(await screen.findByText('Title is required')).toBeInTheDocument();
+    expect(onSubmit).not.toHaveBeenCalled();
+  });
+
+  it('should submit valid data', async () => {
+    const user = userEvent.setup();
+    const onSubmit = vi.fn();
+    
+    render(<CourseForm onSubmit={onSubmit} />);
+    
+    // Fill form
+    await user.type(screen.getByLabelText(/title/i), 'Test Course');
+    await user.type(screen.getByLabelText(/description/i), 'This is a test description');
+    
+    // Submit form
+    await user.click(screen.getByRole('button', { name: /submit/i }));
+    
+    await waitFor(() => {
+      expect(onSubmit).toHaveBeenCalledWith({
+        title: 'Test Course',
+        description: 'This is a test description',
+      });
+    });
+  });
+});
+```
+
+## Testing i18n with Trans Component
+
+```typescript
+import { render } from '@testing-library/react';
+import { Trans } from '@kit/ui/trans';
+
+// Mock the translation provider
+vi.mock('@kit/ui/trans', () => ({
+  Trans: ({ i18nKey, defaults, values }: any) => {
+    let text = defaults || i18nKey;
+    if (values) {
+      Object.entries(values).forEach(([key, value]) => {
+        text = text.replace(`{{${key}}}`, value);
+      });
+    }
+    return <span>{text}</span>;
+  },
+}));
+
+describe('Component with translations', () => {
+  it('should render translated text with interpolation', () => {
+    const { getByText } = render(
+      <Trans
+        i18nKey="welcome.message"
+        defaults="Welcome, {{name}}!"
+        values={{ name: 'John' }}
+      />
+    );
+    
+    expect(getByText('Welcome, John!')).toBeInTheDocument();
+  });
+});
+```
+
+## Testing Authentication
+
+```typescript
+import { describe, it, expect, vi } from 'vitest';
+import { requireUser } from '@kit/supabase/require-user';
+import { redirect } from 'next/navigation';
+
+vi.mock('next/navigation', () => ({
+  redirect: vi.fn(),
+}));
+
+vi.mock('@kit/supabase/server-client', () => ({
+  getSupabaseServerClient: vi.fn(() => ({
+    auth: {
+      getUser: vi.fn().mockResolvedValue({
+        data: { user: { id: '123', email: 'test@example.com' } },
+        error: null,
+      }),
+    },
+  })),
+}));
+
+describe('requireUser', () => {
+  it('should return user when authenticated', async () => {
+    const user = await requireUser();
+    expect(user).toEqual({ id: '123', email: 'test@example.com' });
+  });
+
+  it('should redirect when not authenticated', async () => {
+    vi.mocked(getSupabaseServerClient).mockReturnValueOnce({
+      auth: {
+        getUser: vi.fn().mockResolvedValue({
+          data: { user: null },
+          error: null,
+        }),
+      },
+    });
+
+    await requireUser();
+    expect(redirect).toHaveBeenCalledWith('/auth/sign-in');
+  });
+});
 ```
 
 ## Continuous Integration
