@@ -238,7 +238,7 @@ export function QuizComponent({
 			// Calculate score
 			let correctAnswers = 0;
 
-			questions.forEach((question: any, questionIndex: number) => {
+			for (const [questionIndex, question] of questions.entries()) {
 				const selectedOptionIndices = selectedAnswers[questionIndex] || [];
 
 				if (selectedOptionIndices.length > 0) {
@@ -287,7 +287,7 @@ export function QuizComponent({
 						}
 					}
 				}
-			});
+			}
 
 			const calculatedScore = correctAnswers;
 			const calculatedPercentage = Math.round(

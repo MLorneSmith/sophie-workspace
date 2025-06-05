@@ -23,7 +23,7 @@ function generateStoryboardFromOutline(outline: any): StoryboardData {
 	if (outline?.content) {
 		let currentSlide: any = null;
 
-		outline.content.forEach((node: any) => {
+		for (const node of outline.content) {
 			// If it's a heading, create a new slide
 			if (node.type === "heading") {
 				const headingLevel = node.attrs?.level || 1;
@@ -66,7 +66,7 @@ function generateStoryboardFromOutline(outline: any): StoryboardData {
 				// Process list items
 				processList(node, currentSlide, "bullet");
 			}
-		});
+		}
 
 		// Add the last slide if we have one
 		if (currentSlide) {
@@ -108,9 +108,9 @@ function extractTextFromNode(node: any): string {
 function processList(node: any, slide: any, type: string) {
 	if (!node.content) return;
 
-	node.content.forEach((item: any) => {
+	for (const item of node.content) {
 		if (item.type === "listItem" && item.content) {
-			item.content.forEach((itemContent: any) => {
+			for (const itemContent of item.content) {
 				if (itemContent.type === "paragraph") {
 					slide.content.push({
 						type,
@@ -123,9 +123,9 @@ function processList(node: any, slide: any, type: string) {
 				) {
 					processList(itemContent, slide, "subbullet");
 				}
-			});
+			}
 		}
-	});
+	}
 }
 
 export function usePresentationStoryboard(presentationId: string) {

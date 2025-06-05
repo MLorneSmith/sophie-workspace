@@ -38,6 +38,6 @@
 
 	input::placeholder,
 	textarea::placeholder {
-		color: theme(--color-muted-foreground);
+		color: var(--color-muted-foreground);
 	}
 }

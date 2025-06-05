@@ -27,7 +27,9 @@ export function checkPendingMigrations() {
 				"⚠️  There are pending migrations that need to be applied:",
 			);
 
-			pendingMigrations.forEach((migration) => console.log(`  - ${migration}`));
+			for (const migration of pendingMigrations) {
+				console.log(`  - ${migration}`);
+			}
 
 			console.log(
 				"\nSome functionality may not work as expected until these migrations are applied.",

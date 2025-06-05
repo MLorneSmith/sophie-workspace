@@ -119,11 +119,11 @@ async function fetchLessonsFromPayload(
 		// Log the first few lessons for debugging
 		if (lessons.length > 0) {
 			console.log("Sample lessons:");
-			lessons.slice(0, 3).forEach((lesson: LessonData) => {
+			for (const lesson of lessons.slice(0, 3)) {
 				console.log(
 					`  - ${lesson.id}: Lesson ${lesson.lesson_number} - ${lesson.title}`,
 				);
-			});
+			}
 		}
 
 		return lessons;

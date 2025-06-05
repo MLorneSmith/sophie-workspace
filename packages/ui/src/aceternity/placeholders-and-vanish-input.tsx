@@ -176,7 +176,7 @@ export function PlaceholdersAndVanishInput({
 				const ctx = canvasRef.current?.getContext("2d");
 				if (ctx) {
 					ctx.clearRect(pos, 0, 800, 800);
-					newDataRef.current.forEach((t) => {
+					for (const t of newDataRef.current) {
 						const { x: n, y: i, r: s, color } = t;
 						if (n > pos) {
 							ctx.beginPath();
@@ -185,7 +185,7 @@ export function PlaceholdersAndVanishInput({
 							ctx.strokeStyle = color;
 							ctx.stroke();
 						}
-					});
+					}
 				}
 				if (newDataRef.current.length > 0) {
 					animateFrame(pos - 8);

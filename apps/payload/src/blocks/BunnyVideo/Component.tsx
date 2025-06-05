@@ -82,6 +82,28 @@ const Component: React.FC<ComponentProps> = (props) => {
 					{showPreview && finalPreviewUrl ? (
 						<div
 							className="absolute inset-0 flex items-center justify-center bg-black cursor-pointer"
+							role="button"
+							tabIndex={0}
+							onKeyDown={(e) => {
+								if (e.key === "Enter" || e.key === " ") {
+									e.preventDefault();
+									const container = document.getElementById(
+										`bunny-video-${videoId}`,
+									);
+									if (container) {
+										container.innerHTML = `
+	                    <iframe
+	                      src="https://iframe.mediadelivery.net/embed/${libraryId}/${videoId}?autoplay=0"
+	                      loading="lazy"
+	                      style="border: none; position: absolute; top: 0; left: 0; height: 100%; width: 100%;"
+	                      allow="accelerometer; gyroscope; encrypted-media; picture-in-picture;"
+	                      allowfullscreen="true"
+	                      title="${title || "Bunny.net Video"}"
+	                    ></iframe>
+	                  `;
+									}
+								}
+							}}
 							onClick={() => {
 								// This would ideally toggle a state to show the video instead
 								// But for simplicity, we'll just replace the preview with the iframe

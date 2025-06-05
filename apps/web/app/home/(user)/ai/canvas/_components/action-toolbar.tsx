@@ -112,7 +112,7 @@ export function ActionToolbar({
 										editor.commands.clearContent();
 
 										// Insert each section
-										simplified.sections.forEach((section) => {
+										for (const section of simplified.sections) {
 											if (section.type === "heading") {
 												// Insert heading
 												editor.commands.insertContent({
@@ -131,7 +131,7 @@ export function ActionToolbar({
 												});
 												editor.commands.enter();
 											}
-										});
+										}
 									} catch (innerError) {
 										console.warn("Error updating editor content:", innerError);
 									}

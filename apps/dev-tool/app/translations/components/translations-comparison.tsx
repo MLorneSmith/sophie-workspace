@@ -84,7 +84,7 @@ export function TranslationsComparison({
 	);
 
 	const locales = Object.keys(translations);
-	const baseLocale = locales[0]!;
+	const baseLocale = locales[0] || "en";
 
 	const [selectedLocales, setSelectedLocales] = useState<Set<string>>(
 		new Set(locales),
@@ -167,7 +167,7 @@ export function TranslationsComparison({
 		} finally {
 			setIsTranslating(false);
 		}
-	}, [flattenedTranslations, baseLocale, visibleLocales, selectedNamespace]);
+	}, [baseLocale, visibleLocales, selectedNamespace]);
 
 	// Calculate if there are any missing translations
 	const hasMissingTranslations = useMemo(() => {
@@ -184,7 +184,7 @@ export function TranslationsComparison({
 				(key) => !localeTranslations[key],
 			);
 		});
-	}, [flattenedTranslations, baseLocale, visibleLocales]);
+	}, [baseLocale, visibleLocales]);
 
 	// Set up subscription to handle debounced updates
 	useEffect(() => {

@@ -239,15 +239,15 @@ interface HydrationState {
 	function scanAndProtectForms(): number {
 		let protectedCount = 0;
 
-		CONFIG.formSelectors.forEach((selector) => {
+		for (const selector of CONFIG.formSelectors) {
 			try {
 				const forms = document.querySelectorAll<HTMLFormElement>(selector);
-				forms.forEach((form) => {
+				for (const form of forms) {
 					if (!formStates.has(form)) {
 						protectFormInMemoryOnly(form);
 						protectedCount++;
 					}
-				});
+				}
 			} catch (error) {
 				const errorMessage =
 					error instanceof Error ? error.message : String(error);
@@ -256,7 +256,7 @@ interface HydrationState {
 					"error",
 				);
 			}
-		});
+		}
 
 		if (protectedCount > 0) {
 			log(`Protected ${protectedCount} new forms in MEMORY ONLY`, "info");
@@ -270,8 +270,8 @@ interface HydrationState {
 		const observer = new MutationObserver((mutations) => {
 			let shouldCheck = false;
 
-			mutations.forEach((mutation) => {
-				mutation.addedNodes.forEach((node) => {
+			for (const mutation of mutations) {
+				for (const node of mutation.addedNodes) {
 					if (node.nodeType === Node.ELEMENT_NODE) {
 						const element = node as Element;
 
@@ -282,8 +282,8 @@ interface HydrationState {
 							shouldCheck = true;
 						}
 					}
-				});
-			});
+				}
+			}
 
 			if (shouldCheck) {
 				// Small delay to ensure new forms are fully initialized
@@ -379,17 +379,17 @@ interface HydrationState {
 		form: HTMLFormElement,
 		formState: FormState,
 	): void {
-		CONFIG.buttonSelectors.forEach((selector) => {
+		for (const selector of CONFIG.buttonSelectors) {
 			const buttons = form.querySelectorAll<
 				HTMLButtonElement | HTMLInputElement
 			>(selector);
-			buttons.forEach((button) => {
+			for (const button of buttons) {
 				formState.originalButtonStates.set(button, {
 					text: button.textContent || button.value || "",
 					disabled: button.disabled,
 				});
-			});
-		});
+			}
+		}
 		log(
 			`Button states stored in memory only for form ${formState.id}`,
 			"debug",

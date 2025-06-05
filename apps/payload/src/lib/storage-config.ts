@@ -193,9 +193,9 @@ export function logStorageConfig(): void {
 
 		if (validation.warnings.length > 0) {
 			console.log("[STORAGE-CONFIG] Warnings:");
-			validation.warnings.forEach((warning) =>
-				console.log(`[STORAGE-CONFIG] - ${warning}`),
-			);
+			for (const warning of validation.warnings) {
+				console.log(`[STORAGE-CONFIG] - ${warning}`);
+			}
 		}
 	} else if (storageType === "s3") {
 		const s3Config = getS3Config();
@@ -210,9 +210,9 @@ export function logStorageConfig(): void {
 
 		if (validation.warnings.length > 0) {
 			console.log("[STORAGE-CONFIG] Warnings:");
-			validation.warnings.forEach((warning) =>
-				console.log(`[STORAGE-CONFIG] - ${warning}`),
-			);
+			for (const warning of validation.warnings) {
+				console.log(`[STORAGE-CONFIG] - ${warning}`);
+			}
 		}
 	} else {
 		console.log("[STORAGE-CONFIG] No valid storage configuration found");
@@ -222,16 +222,16 @@ export function logStorageConfig(): void {
 
 		if (r2Validation.errors.length > 0) {
 			console.log("[STORAGE-CONFIG] R2 configuration errors:");
-			r2Validation.errors.forEach((error) =>
-				console.log(`[STORAGE-CONFIG] - ${error}`),
-			);
+			for (const error of r2Validation.errors) {
+				console.log(`[STORAGE-CONFIG] - ${error}`);
+			}
 		}
 
 		if (s3Validation.errors.length > 0) {
 			console.log("[STORAGE-CONFIG] S3 configuration errors:");
-			s3Validation.errors.forEach((error) =>
-				console.log(`[STORAGE-CONFIG] - ${error}`),
-			);
+			for (const error of s3Validation.errors) {
+				console.log(`[STORAGE-CONFIG] - ${error}`);
+			}
 		}
 	}
 }

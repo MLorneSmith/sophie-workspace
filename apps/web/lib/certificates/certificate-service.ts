@@ -155,9 +155,9 @@ export async function generateCertificate({
 		// Log all bucket names for debugging
 		if (buckets && buckets.length > 0) {
 			console.log("Existing buckets:");
-			buckets.forEach((bucket) => {
+			for (const bucket of buckets) {
 				console.log(`- ${bucket.name}`);
-			});
+			}
 		}
 
 		const certificatesBucket = buckets?.find(

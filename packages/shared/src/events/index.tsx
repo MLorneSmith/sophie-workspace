@@ -77,7 +77,9 @@ export function AppEventsProvider<
 		(event: AppEvent<T, K>) => {
 			const eventListeners = listeners.current[event.type] ?? [];
 
-			eventListeners.forEach((callback) => callback(event));
+			for (const callback of eventListeners) {
+				callback(event);
+			}
 		},
 		[listeners],
 	);

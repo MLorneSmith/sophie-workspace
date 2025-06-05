@@ -112,11 +112,11 @@ export async function getSurveyQuestions(
 			);
 
 			// Log all question IDs for debugging
-			allQuestionsResponse.docs.forEach((q: any) => {
+			for (const q of allQuestionsResponse.docs) {
 				console.log(
 					`Question ID: ${q.id}, Text: ${q.text?.substring(0, 30)}...`,
 				);
-			});
+			}
 
 			// Try to directly fetch the questions we know should be associated with this survey
 			// This is a workaround based on the database query results

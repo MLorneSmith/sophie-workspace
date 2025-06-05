@@ -15,12 +15,12 @@ interface HeadingNode {
 export function buildDocumentationTree(pages: Cms.ContentItem[]) {
 	const tree: Cms.ContentItem[] = [];
 
-	pages.forEach((page) => {
+	for (const page of pages) {
 		if (page.parentId) {
 			const parent = pages.find((item) => item.id === page.parentId);
 
 			if (!parent) {
-				return;
+				continue;
 			}
 
 			if (!parent.children) {
@@ -38,7 +38,7 @@ export function buildDocumentationTree(pages: Cms.ContentItem[]) {
 		} else {
 			tree.push(page);
 		}
-	});
+	}
 
 	// Filter out items that are already children of other items to avoid duplication
 	const filteredTree = tree.filter((item) => {
@@ -93,9 +93,9 @@ export function extractHeadingsFromJSX(jsx: {
 	}
 
 	try {
-		jsx.props.children.forEach((node) => {
+		for (const node of jsx.props.children) {
 			if (!node || typeof node !== "object" || !("type" in node)) {
-				return;
+				continue;
 			}
 
 			const nodeType = node.type as string;
@@ -142,7 +142,7 @@ export function extractHeadingsFromJSX(jsx: {
 					children: [],
 				});
 			}
-		});
+		}
 
 		return headings;
 	} catch {

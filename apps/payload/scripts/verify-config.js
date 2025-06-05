@@ -196,9 +196,9 @@ function testStorageConfiguration() {
 
 			if (validation.warnings.length > 0) {
 				log(colors.yellow, "Warnings:");
-				validation.warnings.forEach((warning) =>
-					log(colors.yellow, `  - ${warning}`),
-				);
+				for (const warning of validation.warnings) {
+					log(colors.yellow, `  - ${warning}`);
+				}
 			}
 
 			// Test URL generation
@@ -217,7 +217,9 @@ function testStorageConfiguration() {
 			return true;
 		}
 		log(colors.red, "❌ R2 configuration validation failed");
-		validation.errors.forEach((error) => log(colors.red, `  - ${error}`));
+		for (const error of validation.errors) {
+			log(colors.red, `  - ${error}`);
+		}
 		return false;
 	}
 	if (storageType === "s3") {
@@ -227,15 +229,17 @@ function testStorageConfiguration() {
 
 			if (validation.warnings.length > 0) {
 				log(colors.yellow, "Warnings:");
-				validation.warnings.forEach((warning) =>
-					log(colors.yellow, `  - ${warning}`),
-				);
+				for (const warning of validation.warnings) {
+					log(colors.yellow, `  - ${warning}`);
+				}
 			}
 
 			return true;
 		}
 		log(colors.red, "❌ S3 configuration validation failed");
-		validation.errors.forEach((error) => log(colors.red, `  - ${error}`));
+		for (const error of validation.errors) {
+			log(colors.red, `  - ${error}`);
+		}
 		return false;
 	}
 	log(colors.yellow, "⚠️  No cloud storage configured - using local storage");

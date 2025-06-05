@@ -284,56 +284,54 @@ export class PptxGenerator {
 			this.pptx.author = "SlideHeroes AI";
 
 			// Process each slide in the storyboard
-			storyboard.slides
-				.sort((a, b) => a.order - b.order) // Ensure slides are in the correct order
-				.forEach((slide) => {
-					// Create a slide using the appropriate master template
-					const masterName = this.getMasterNameForLayout(slide.layoutId);
-					const pptxSlide = this.pptx.addSlide({ masterName });
+			for (const slide of storyboard.slides.sort((a, b) => a.order - b.order)) {
+				// Create a slide using the appropriate master template
+				const masterName = this.getMasterNameForLayout(slide.layoutId);
+				const pptxSlide = this.pptx.addSlide({ masterName });
 
-					// Add headline text to specific slide elements based on the master layout
-					// Instead of using placeholder which isn't supported
-					this.addTitleToSlide(pptxSlide, slide.title, slide.layoutId);
+				// Add headline text to specific slide elements based on the master layout
+				// Instead of using placeholder which isn't supported
+				this.addTitleToSlide(pptxSlide, slide.title, slide.layoutId);
 
-					// Group content by column to handle multi-column layouts properly
-					const contentByColumn = this.groupContentByColumn(slide.content);
+				// Group content by column to handle multi-column layouts properly
+				const contentByColumn = this.groupContentByColumn(slide.content);
 
-					// Add subheadlines for each column that has content
-					Object.keys(contentByColumn).forEach((columnIndex, i) => {
-						const columnContent = contentByColumn[columnIndex];
+				// Add subheadlines for each column that has content
+				for (const [i, columnIndex] of Object.keys(contentByColumn).entries()) {
+					const columnContent = contentByColumn[columnIndex];
 
-						if (columnContent && columnContent.length > 0) {
-							// Find a subheadline in the column if any
-							const subheadlineContent = columnContent.find(
-								(item) => item.type === "text" && item.text?.trim(),
+					if (columnContent && columnContent.length > 0) {
+						// Find a subheadline in the column if any
+						const subheadlineContent = columnContent.find(
+							(item) => item.type === "text" && item.text?.trim(),
+						);
+
+						if (subheadlineContent?.text) {
+							// Add subheadline using coordinates from the layout
+							this.addSubheadlineToSlide(
+								pptxSlide,
+								subheadlineContent.text,
+								slide.layoutId,
+								i + 1, // subheadline index
 							);
-
-							if (subheadlineContent?.text) {
-								// Add subheadline using coordinates from the layout
-								this.addSubheadlineToSlide(
-									pptxSlide,
-									subheadlineContent.text,
-									slide.layoutId,
-									i + 1, // subheadline index
-								);
-							}
 						}
-					});
+					}
+				}
 
-					// Add content for each column
-					Object.entries(contentByColumn).forEach(
-						([columnIndex, contentItems]) => {
-							contentItems.forEach((contentItem) => {
-								this.addContentToSlide(
-									pptxSlide,
-									contentItem,
-									slide.layoutId,
-									Number.parseInt(columnIndex),
-								);
-							});
-						},
-					);
-				});
+				// Add content for each column
+				for (const [columnIndex, contentItems] of Object.entries(
+					contentByColumn,
+				)) {
+					for (const contentItem of contentItems) {
+						this.addContentToSlide(
+							pptxSlide,
+							contentItem,
+							slide.layoutId,
+							Number.parseInt(columnIndex),
+						);
+					}
+				}
+			}
 
 			// Generate and return the PowerPoint file as a buffer
 			// Use an explicit object parameter with outputType to satisfy TypeScript
