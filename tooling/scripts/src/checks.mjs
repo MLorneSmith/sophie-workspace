@@ -30,18 +30,18 @@ const envFiles = [".env", ".env.development", ".env.production"];
 function checkEnvFiles(rootPath) {
 	let hasSecrets = false;
 
-	envFiles.forEach((file) => {
+	for (const file of envFiles) {
 		try {
 			const envPath = path.join(process.cwd(), rootPath, file);
 			const contents = readFileSync(envPath, "utf8");
 			const lines = contents.split("\n");
 
-			lines.forEach((line, index) => {
+			for (const [index, line] of lines.entries()) {
 				// Skip empty lines and comments
-				if (!line || line.startsWith("#")) return;
+				if (!line || line.startsWith("#")) continue;
 
 				// Check if line contains any sensitive vars
-				sensitiveEnvVars.forEach((secret) => {
+				for (const secret of sensitiveEnvVars) {
 					if (line.startsWith(`${secret}=`)) {
 						// Extract the value
 						const value = line.split("=")[1].trim().replace(/["']/g, "");
@@ -57,15 +57,15 @@ function checkEnvFiles(rootPath) {
 
 						hasSecrets = true;
 					}
-				});
-			});
+				}
+			}
 		} catch (err) {
 			// File doesn't exist, skip
-			if (err.code === "ENOENT") return;
+			if (err.code === "ENOENT") continue;
 
 			throw err;
 		}
-	});
+	}
 
 	if (hasSecrets) {
 		console.error("\n❌ Error: Secret keys found in environment files");
@@ -88,9 +88,9 @@ function checkEnvFiles(rootPath) {
 
 const apps = readdirSync("../../apps");
 
-apps.forEach((app) => {
+for (const app of apps) {
 	checkEnvFiles(`../../apps/${app}`);
-});
+}
 
 function isValueWhitelisted(key, value) {
 	if (!(key in whitelist)) {

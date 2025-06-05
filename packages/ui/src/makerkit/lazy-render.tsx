@@ -39,7 +39,7 @@ export function LazyRender({
 			entry.isIntersecting || entry.intersectionRatio > 0;
 
 		const observer = new IntersectionObserver((entries, observer) => {
-			entries.forEach((entry) => {
+			for (const entry of entries) {
 				if (isIntersecting(entry)) {
 					setIsVisible(true);
 					observer.disconnect();
@@ -48,7 +48,7 @@ export function LazyRender({
 						onVisible();
 					}
 				}
-			});
+			}
 		}, options);
 
 		observer.observe(ref.current);

@@ -392,11 +392,11 @@ export class TipTapTransformer {
 	): void {
 		if (!node.content) return;
 
-		node.content.forEach((item: TipTapNode) => {
-			if (!item) return;
+		for (const item of node.content) {
+			if (!item) continue;
 			if (item.type === "listItem" && item.content) {
-				item.content.forEach((itemContent: TipTapNode) => {
-					if (!itemContent) return;
+				for (const itemContent of item.content) {
+					if (!itemContent) continue;
 					if (itemContent.type === "paragraph") {
 						slide.content.push({
 							type,
@@ -414,9 +414,9 @@ export class TipTapTransformer {
 							columnIndex,
 						);
 					}
-				});
+				}
 			}
-		});
+		}
 	}
 
 	/**
@@ -527,7 +527,7 @@ export class TipTapTransformer {
 	 * @param slides Array of slides to normalize
 	 */
 	private static normalizeSlideSubheadlines(slides: Slide[]): void {
-		slides.forEach((slide) => {
+		for (const slide of slides) {
 			// Determine expected number of subheadlines based on layout
 			let expectedCount = 1;
 
@@ -557,6 +557,6 @@ export class TipTapTransformer {
 			if (slide.subheadlines.length > expectedCount) {
 				slide.subheadlines = slide.subheadlines.slice(0, expectedCount);
 			}
-		});
+		}
 	}
 }

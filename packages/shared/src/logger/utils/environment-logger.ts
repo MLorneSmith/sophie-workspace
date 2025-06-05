@@ -104,7 +104,7 @@ export class EnvironmentLogger {
 		const sanitizeObject = (obj: any) => {
 			if (!obj || typeof obj !== "object") return;
 
-			Object.keys(obj).forEach((key) => {
+			for (const key of Object.keys(obj)) {
 				const lowerKey = key.toLowerCase();
 
 				// Mask sensitive fields
@@ -113,7 +113,7 @@ export class EnvironmentLogger {
 				} else if (typeof obj[key] === "object") {
 					sanitizeObject(obj[key]);
 				}
-			});
+			}
 		};
 
 		sanitizeObject(sanitized);

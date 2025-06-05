@@ -1,10 +1,11 @@
 # Debug Issue Command
 
 Usage: `/debug-issue [issue_reference]`
-- Issue ID: `ISSUE-1234567-abc`
-- Local file: `.claude/issues/2025-01-06-ISSUE-1234567-abc.md`
+- GitHub issue number: `123` (preferred format from log-issue command)
+- Issue ID: `ISSUE-123` 
+- Local file: `.claude/issues/2025-01-06-ISSUE-123.md`
 - GitHub URL: `https://github.com/owner/repo/issues/123`
-- GitHub ID: `#123`
+- Legacy format: `ISSUE-1234567-abc` (for older local-only issues)
 
 This command reads an issue specification and launches a focused debugging session to resolve it.
 
@@ -20,18 +21,47 @@ Load the debugging mindset:
 Based on the reference type:
 
 ```typescript
-// Parse reference type
-let issuePath;
-if (reference.startsWith('ISSUE-')) {
-  // Search by ID in .claude/issues/
+// Parse reference type (priority order based on new log-issue format)
+let issuePath, issueContent;
+
+if (/^\d+$/.test(reference)) {
+  // GitHub issue number (e.g., "123") - preferred format
+  const issueData = await mcp__github__get_issue({
+    owner: "repository_owner",
+    repo: "repository_name", 
+    issue_number: parseInt(reference)
+  });
+  issueContent = issueData.body;
+  
+  // Also try to find local file
+  issuePath = findLocalIssueFile(`ISSUE-${reference}`);
+} else if (reference.startsWith('ISSUE-')) {
+  // Issue ID format (e.g., "ISSUE-123" or "ISSUE-1234567-abc")
   issuePath = findIssueById(reference);
+  
+  // If it's a GitHub issue format, also fetch from GitHub
+  const githubNumber = reference.match(/^ISSUE-(\d+)$/)?.[1];
+  if (githubNumber) {
+    try {
+      const issueData = await mcp__github__get_issue({
+        owner: "repository_owner",
+        repo: "repository_name",
+        issue_number: parseInt(githubNumber)
+      });
+      issueContent = issueData.body; // Use GitHub as source of truth
+    } catch (error) {
+      // Fall back to local file
+    }
+  }
 } else if (reference.startsWith('http')) {
   // GitHub URL - fetch via API
   const issueNumber = extractIssueNumber(reference);
-  await fetchGitHubIssue(issueNumber);
+  const issueData = await fetchGitHubIssue(issueNumber);
+  issueContent = issueData.body;
 } else if (reference.startsWith('#')) {
-  // GitHub issue number
-  await fetchGitHubIssue(reference.slice(1));
+  // GitHub issue number with hash
+  const issueData = await fetchGitHubIssue(reference.slice(1));
+  issueContent = issueData.body;
 } else if (reference.endsWith('.md')) {
   // Direct file path
   issuePath = reference;

@@ -222,7 +222,7 @@ export class StoryboardService {
 		if (outline?.content) {
 			let currentStoryboardSlide: StoryboardSlide | null = null;
 
-			outline.content.forEach((node: any) => {
+			for (const node of outline.content) {
 				// If it's a heading, create a new slide
 				if (node.type === "heading") {
 					const headingLevel = node.attrs?.level || 1;
@@ -270,7 +270,7 @@ export class StoryboardService {
 					}
 				}
 				// Ignore other node types (paragraph, list, etc.) as their content is not stored in the storyboard JSONB
-			});
+			}
 
 			// Add the last slide if we have one
 			if (currentStoryboardSlide) {
@@ -354,9 +354,9 @@ export class StoryboardService {
 	): void {
 		if (!node.content) return;
 
-		node.content.forEach((item: any) => {
+		for (const item of node.content) {
 			if (item.type === "listItem" && item.content) {
-				item.content.forEach((itemContent: any) => {
+				for (const itemContent of item.content) {
 					if (itemContent.type === "paragraph") {
 						slide.content.push({
 							type,
@@ -369,8 +369,8 @@ export class StoryboardService {
 					) {
 						this.processList(itemContent, slide, "subbullet");
 					}
-				});
+				}
 			}
-		});
+		}
 	}
 }

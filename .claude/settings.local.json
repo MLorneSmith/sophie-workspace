@@ -37,7 +37,14 @@
       "Bash(wrangler whoami:*)",
       "WebFetch(domain:www.npmjs.com)",
       "mcp__cloudflare-playwright__browser_navigate",
-      "mcp__cloudflare-playwright__browser_click"
+      "mcp__cloudflare-playwright__browser_click",
+      "mcp__code-reasoning__code-reasoning",
+      "Bash(wrangler deployments list:*)",
+      "mcp__github__create_issue",
+      "mcp__github__update_issue",
+      "Bash(mkdir:*)",
+      "Bash(pnpm --filter web test _lib/services/storyboard-service.test.ts)",
+      "Bash(pnpm test:*)"
     ],
     "deny": []
   },

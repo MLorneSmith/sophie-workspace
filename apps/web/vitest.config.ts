@@ -89,10 +89,23 @@ export default defineConfig({
 			"@/lib": resolve(__dirname, "./lib"),
 			"@/config": resolve(__dirname, "./config"),
 			"@/app": resolve(__dirname, "./app"),
-			// Kit packages
+			// Kit packages with specific exports
 			"@kit/ui": resolve(__dirname, "../../packages/ui/src"),
 			"@kit/shared": resolve(__dirname, "../../packages/shared/src"),
+			"@kit/shared/logger": resolve(
+				__dirname,
+				"../../packages/shared/src/logger",
+			),
 			"@kit/supabase": resolve(__dirname, "../../packages/supabase/src"),
+			"@kit/supabase/server-client": resolve(
+				__dirname,
+				"../../packages/supabase/src/clients/server-client.ts",
+			),
+			"@kit/next": resolve(__dirname, "../../packages/next/src"),
+			"@kit/next/actions": resolve(
+				__dirname,
+				"../../packages/next/src/actions",
+			),
 			"@kit/auth": resolve(__dirname, "../../packages/auth/src"),
 			"@kit/billing": resolve(__dirname, "../../packages/billing/src"),
 		},

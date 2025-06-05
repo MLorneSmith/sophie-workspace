@@ -189,9 +189,9 @@ const getStoragePlugins = () => {
 		const r2Validation = validateR2Config();
 		if (!r2Validation.isValid) {
 			console.error("[PAYLOAD-CONFIG] R2 validation failed:");
-			r2Validation.errors.forEach((error) =>
-				console.error(`[PAYLOAD-CONFIG] - ${error}`),
-			);
+			for (const error of r2Validation.errors) {
+				console.error(`[PAYLOAD-CONFIG] - ${error}`);
+			}
 			throw new Error(
 				"Invalid R2 configuration. Please check your environment variables.",
 			);
@@ -209,9 +209,9 @@ const getStoragePlugins = () => {
 		const s3Validation = validateS3Config();
 		if (!s3Validation.isValid) {
 			console.error("[PAYLOAD-CONFIG] S3 validation failed:");
-			s3Validation.errors.forEach((error) =>
-				console.error(`[PAYLOAD-CONFIG] - ${error}`),
-			);
+			for (const error of s3Validation.errors) {
+				console.error(`[PAYLOAD-CONFIG] - ${error}`);
+			}
 			throw new Error(
 				"Invalid S3 configuration. Please check your environment variables.",
 			);

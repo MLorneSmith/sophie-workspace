@@ -229,12 +229,16 @@ function validateAgainstSchema(content: TiptapDocument): void {
 
 		// Validate child nodes recursively
 		if (node.content && Array.isArray(node.content)) {
-			node.content.forEach(validateNode);
+			for (const childNode of node.content) {
+				validateNode(childNode);
+			}
 		}
 	}
 
 	// Validate all top-level nodes
-	content.content.forEach(validateNode);
+	for (const node of content.content) {
+		validateNode(node);
+	}
 }
 
 /**

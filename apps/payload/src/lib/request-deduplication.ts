@@ -126,9 +126,9 @@ class RequestDeduplicationManager {
 		const body = await cloned.text();
 
 		const headers: Record<string, string> = {};
-		cloned.headers.forEach((value, key) => {
+		for (const [key, value] of cloned.headers.entries()) {
 			headers[key] = value;
-		});
+		}
 
 		return {
 			body,
@@ -332,9 +332,9 @@ class RequestDeduplicationManager {
 				0,
 				entries.length - this.config.maxDuplicates,
 			);
-			toRemove.forEach(([fingerprint]) => {
+			for (const [fingerprint] of toRemove) {
 				this.cache.delete(fingerprint);
-			});
+			}
 
 			this.log(
 				`Cache size limit reached, removed ${toRemove.length} oldest entries`,

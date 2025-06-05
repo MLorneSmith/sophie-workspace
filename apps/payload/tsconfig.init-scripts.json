@@ -1,40 +1,29 @@
 {
-  "extends": "../../tsconfig.json", // Extend from monorepo root tsconfig for base settings
-  "compilerOptions": {
-    "noEmit": false, // Override root tsconfig's noEmit: true
-    "outDir": "./dist", // Output directory relative to this tsconfig.json (apps/payload/dist)
-    "rootDir": "./",  // Root directory is now apps/payload/ itself
-
-    // Module settings for Node.js compatibility
-    "module": "NodeNext", // For modern ES module output
-    "moduleResolution": "NodeNext",
-    "target": "ES2022", // Target modern Node.js LTS versions
-
-    // Essential for running compiled JS
-    "sourceMap": true,       // Generate source maps for debugging
-    "declaration": false,    // No .d.ts files needed for these executable scripts
-    "declarationMap": false,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "resolveJsonModule": true, // If any .json files are directly imported as modules
-    "isolatedModules": true, // Good practice, though may not be strictly necessary here
-
-    // Strictness & Code Quality (inherit or set)
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true,    // Can speed up compilation by not checking lib files
-    "incremental": false   // Ensure it's not an incremental build issue
-
-    // Ensure 'baseUrl' and 'paths' are either inherited correctly or set
-  },
-  "include": [
-    "./src/init-scripts/**/*.ts",
-    "./src/payload.config.ts",
-    "./src/collections/**/*.ts",
-    "./src/init-scripts/data/schemas/**/*.ts" // Explicitly include schema files
-  ],
-  "exclude": [
-    "node_modules",
-    "./dist" // Exclude the output directory itself
-  ]
+	"extends": "../../tsconfig.json",
+	"compilerOptions": {
+		"noEmit": false,
+		"outDir": "./dist",
+		"rootDir": "./",
+		"module": "NodeNext",
+		"moduleResolution": "NodeNext",
+		"target": "ES2022",
+		"sourceMap": true,
+		"declaration": false,
+		"declarationMap": false,
+		"esModuleInterop": true,
+		"allowSyntheticDefaultImports": true,
+		"resolveJsonModule": true,
+		"isolatedModules": true,
+		"strict": true,
+		"forceConsistentCasingInFileNames": true,
+		"skipLibCheck": true,
+		"incremental": false
+	},
+	"include": [
+		"./src/init-scripts/**/*.ts",
+		"./src/payload.config.ts",
+		"./src/collections/**/*.ts",
+		"./src/init-scripts/data/schemas/**/*.ts"
+	],
+	"exclude": ["node_modules", "./dist"]
 }

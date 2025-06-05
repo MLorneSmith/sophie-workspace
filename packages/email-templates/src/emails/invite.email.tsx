@@ -85,7 +85,7 @@ export async function renderInviteEmail(props: Props) {
 
 							<Text
 								className="text-[16px] leading-[24px] text-[#242424]"
-								{/* biome-ignore lint/security/noDangerouslySetInnerHtml: Rendering trusted email template content */}
+								// biome-ignore lint/security/noDangerouslySetInnerHtml: Rendering trusted email template content
 								dangerouslySetInnerHTML={{ __html: mainText }}
 							/>
 

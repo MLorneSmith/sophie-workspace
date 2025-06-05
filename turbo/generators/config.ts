@@ -20,5 +20,7 @@ const generators = [
 ];
 
 export default function generator(plop: PlopTypes.NodePlopAPI): void {
-	generators.forEach((gen) => gen(plop));
+	for (const gen of generators) {
+		gen(plop);
+	}
 }

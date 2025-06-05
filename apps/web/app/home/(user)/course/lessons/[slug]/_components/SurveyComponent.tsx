@@ -184,11 +184,11 @@ export function SurveyComponent({
 			);
 
 			// Log each question for debugging
-			sortedQuestions.forEach((q, index) => {
+			for (const [index, q] of sortedQuestions.entries()) {
 				console.log(
 					`Question ${index + 1}: ${q.text} (ID: ${q.id}), Type: ${q.type}, Options: ${q.options.length}`,
 				);
-			});
+			}
 
 			setQuestions(sortedQuestions);
 		} else {

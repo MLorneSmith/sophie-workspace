@@ -38,7 +38,9 @@ function useAnalyticsMapping<T extends ConsumerProvidedEventTypes>(
 		);
 
 		return () => {
-			subscriptions.forEach((unsubscribe) => unsubscribe());
+			for (const unsubscribe of subscriptions) {
+				unsubscribe();
+			}
 		};
 	}, [appEvents, mapping]);
 }

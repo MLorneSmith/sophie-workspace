@@ -171,7 +171,7 @@ function EnvList({ appState }: { appState: AppEnvState }) {
 		return () => {
 			return subscription.unsubscribe();
 		};
-	}, [subject$]);
+	}, [subject$, appState.mode]);
 
 	const onValueChanged = useCallback(
 		(props: { value: string; name: string }) => {
@@ -798,15 +798,15 @@ function Summary({ appState }: { appState: AppEnvState }) {
 
 									const groups = getGroups(appState, () => true);
 
-									groups.forEach((group) => {
+									for (const group of groups) {
 										data += `# ${group.category}\n`;
 
-										group.variables.forEach((variable) => {
+										for (const variable of group.variables) {
 											data += `${variable.key}=${variable.effectiveValue}\n`;
-										});
+										}
 
 										data += "\n";
-									});
+									}
 
 									const promise = copyToClipboard(data);
 
@@ -879,7 +879,7 @@ function useUpdateFilteredVariables() {
 		router.push(`${path}?${searchParams.toString()}`);
 	};
 
-	return useCallback(handleFilterChange, [router]);
+	return useCallback(handleFilterChange, []);
 }
 
 async function copyToClipboard(text: string) {

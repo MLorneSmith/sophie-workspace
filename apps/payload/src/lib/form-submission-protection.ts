@@ -198,12 +198,12 @@ export class FormSubmissionProtectionManager {
 	}
 
 	private scanAndTrackForms(): void {
-		this.config.formSelectors.forEach((selector) => {
+		for (const selector of this.config.formSelectors) {
 			const forms = document.querySelectorAll<HTMLFormElement>(selector);
-			forms.forEach((form) => {
+			for (const form of forms) {
 				this.trackFormInMemory(form);
-			});
-		});
+			}
+		}
 	}
 
 	private trackFormInMemory(form: HTMLFormElement): void {
@@ -247,21 +247,23 @@ export class FormSubmissionProtectionManager {
 
 	private setupMutationObserver(): void {
 		const observer = new MutationObserver((mutations) => {
-			mutations.forEach((mutation) => {
-				mutation.addedNodes.forEach((node) => {
+			for (const mutation of mutations) {
+				for (const node of mutation.addedNodes) {
 					if (node.nodeType === Node.ELEMENT_NODE) {
 						const element = node as Element;
-						this.config.formSelectors.forEach((selector) => {
+						for (const selector of this.config.formSelectors) {
 							if (element.matches?.(selector)) {
 								this.trackFormInMemory(element as HTMLFormElement);
 							}
 							const childForms =
 								element.querySelectorAll<HTMLFormElement>(selector);
-							childForms.forEach((form) => this.trackFormInMemory(form));
-						});
+							for (const form of childForms) {
+								this.trackFormInMemory(form);
+							}
+						}
 					}
-				});
-			});
+				}
+			}
 		});
 		observer.observe(document.body, { childList: true, subtree: true });
 		this.observers.push(observer);
@@ -273,11 +275,11 @@ export class FormSubmissionProtectionManager {
 			"click",
 			(event) => {
 				const target = event.target as Element;
-				this.config.buttonSelectors.forEach((selector) => {
+				for (const selector of this.config.buttonSelectors) {
 					if (target.matches?.(selector)) {
 						this.handleButtonClick(target as HTMLButtonElement, event);
 					}
-				});
+				}
 			},
 			true,
 		);
@@ -358,17 +360,17 @@ export class FormSubmissionProtectionManager {
 		tracker: FormSubmissionTracker,
 	): void {
 		// Store original button states WITHOUT modifying DOM
-		this.config.buttonSelectors.forEach((selector) => {
+		for (const selector of this.config.buttonSelectors) {
 			const buttons = form.querySelectorAll<
 				HTMLButtonElement | HTMLInputElement
 			>(selector);
-			buttons.forEach((button) => {
+			for (const button of buttons) {
 				tracker.originalButtonStates.set(button, {
 					text: button.textContent || button.value || "",
 					disabled: button.disabled,
 				});
-			});
-		});
+			}
+		}
 
 		this.log("Form disabled in memory only - NO DOM CHANGES", "debug");
 	}
@@ -386,7 +388,7 @@ export class FormSubmissionProtectionManager {
 			tracker.formType === "dynamic"
 		) {
 			// Only restore button states for explicitly dynamic forms
-			tracker.originalButtonStates.forEach((originalState, button) => {
+			for (const [button, originalState] of tracker.originalButtonStates) {
 				button.disabled = originalState.disabled;
 				if (button instanceof HTMLButtonElement) {
 					button.textContent = originalState.text;
@@ -396,7 +398,7 @@ export class FormSubmissionProtectionManager {
 				) {
 					button.value = originalState.text;
 				}
-			});
+			}
 		}
 
 		tracker.originalButtonStates.clear();
@@ -466,9 +468,9 @@ export class FormSubmissionProtectionManager {
 			mode: "ULTRA-CONSERVATIVE",
 		};
 
-		this.trackedForms.forEach((form) => {
+		for (const form of this.trackedForms) {
 			const tracker = this.formTrackers.get(form);
-			if (!tracker) return;
+			if (!tracker) continue;
 
 			if (tracker.formType === "server-rendered") status.serverRenderedForms++;
 			if (tracker.formType === "dynamic") status.dynamicForms++;
@@ -484,13 +486,15 @@ export class FormSubmissionProtectionManager {
 					status.successForms++;
 					break;
 			}
-		});
+		}
 
 		return status;
 	}
 
 	cleanup(): void {
-		this.observers.forEach((observer) => observer.disconnect());
+		for (const observer of this.observers) {
+			observer.disconnect();
+		}
 		this.observers = [];
 		this.formTrackers = new WeakMap();
 		this.trackedForms.clear();

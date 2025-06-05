@@ -21,19 +21,19 @@ export class PayloadClient implements CmsClient {
 
 			// Create a map of items by ID for quick lookup
 			const itemsMap = new Map<string, Cms.ContentItem>();
-			items.forEach((item: Cms.ContentItem) => {
+			for (const item of items) {
 				itemsMap.set(item.id, item);
-			});
+			}
 
 			// Populate children arrays
-			items.forEach((item: Cms.ContentItem) => {
+			for (const item of items) {
 				if (item.parentId && itemsMap.has(item.parentId)) {
 					const parent = itemsMap.get(item.parentId);
 					if (parent) {
 						parent.children.push(item);
 					}
 				}
-			});
+			}
 
 			return {
 				total: data.totalDocs,
@@ -132,11 +132,11 @@ export class PayloadClient implements CmsClient {
 			const data = await response.json();
 
 			const categoriesSet = new Set<string>();
-			data.docs.forEach((doc: any) => {
-				(doc.categories || []).forEach((category: any) => {
+			for (const doc of data.docs) {
+				for (const category of doc.categories || []) {
 					categoriesSet.add(category.category);
-				});
-			});
+				}
+			}
 
 			return Array.from(categoriesSet).map((name) => ({
 				id: name,
@@ -164,11 +164,11 @@ export class PayloadClient implements CmsClient {
 			const data = await response.json();
 
 			const tagsSet = new Set<string>();
-			data.docs.forEach((doc: any) => {
-				(doc.tags || []).forEach((tag: any) => {
+			for (const doc of data.docs) {
+				for (const tag of doc.tags || []) {
 					tagsSet.add(tag.tag);
-				});
-			});
+				}
+			}
 
 			return Array.from(tagsSet).map((name) => ({
 				id: name,

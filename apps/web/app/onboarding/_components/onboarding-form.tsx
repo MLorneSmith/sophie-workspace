@@ -94,22 +94,22 @@ export function OnboardingForm() {
 	function flattenFormData(data: any): Record<string, string> {
 		const flattenedData: Record<string, string> = {};
 
-		Object.entries(data).forEach(([key, value]) => {
+		for (const [key, value] of Object.entries(data)) {
 			if (typeof value === "object" && value !== null) {
-				Object.entries(value).forEach(([subKey, subValue]) => {
+				for (const [subKey, subValue] of Object.entries(value)) {
 					if (typeof subValue === "object" && subValue !== null) {
-						Object.entries(subValue).forEach(([nestedKey, nestedValue]) => {
+						for (const [nestedKey, nestedValue] of Object.entries(subValue)) {
 							flattenedData[`${key}_${subKey}_${nestedKey}`] =
 								String(nestedValue);
-						});
+						}
 					} else {
 						flattenedData[`${key}_${subKey}`] = String(subValue);
 					}
-				});
+				}
 			} else {
 				flattenedData[key] = String(value);
 			}
-		});
+		}
 
 		return flattenedData;
 	}

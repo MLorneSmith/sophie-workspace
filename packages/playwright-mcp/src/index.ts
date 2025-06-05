@@ -1,7 +1,7 @@
-import { env } from 'cloudflare:workers';
+import { env } from "cloudflare:workers";
 
-import { createMcpAgent } from '@cloudflare/playwright-mcp';
+import { createMcpAgent } from "@cloudflare/playwright-mcp";
 
 export const PlaywrightMCP = createMcpAgent(env.BROWSER);
 
-export default PlaywrightMCP.mount('/sse');
+export default PlaywrightMCP.mount("/sse");

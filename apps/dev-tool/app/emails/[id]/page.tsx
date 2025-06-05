@@ -77,7 +77,7 @@ export default async function EmailPage(props: EmailPageProps) {
 				<IFrame className={"flex flex-1 flex-col"}>
 					<div
 						className={"flex flex-1 flex-col"}
-						{/* biome-ignore lint/security/noDangerouslySetInnerHtml: This is a dev-tool for previewing trusted email templates from the codebase */}
+						// biome-ignore lint/security/noDangerouslySetInnerHtml: This is a dev-tool for previewing trusted email templates from the codebase
 						dangerouslySetInnerHTML={{ __html: template.html }}
 					/>
 				</IFrame>

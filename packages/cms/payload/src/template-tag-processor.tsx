@@ -236,9 +236,9 @@ export function TemplateTagProcessor({ content }: TemplateTagProcessorProps) {
 		const logFirstMatches = (matches: string[], label: string) => {
 			if (matches.length > 0) {
 				debugLog(`${label} examples:`);
-				matches
-					.slice(0, 2)
-					.forEach((match, i) => debugLog(`  ${i + 1}. ${match}`));
+				for (const [i, match] of matches.slice(0, 2).entries()) {
+					debugLog(`  ${i + 1}. ${match}`);
+				}
 			}
 		};
 

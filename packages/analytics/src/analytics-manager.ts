@@ -25,7 +25,7 @@ export function createAnalyticsManager<T extends string, Config extends object>(
 	const registerActiveServices = (
 		options: CreateAnalyticsManagerOptions<T, Config>,
 	) => {
-		Object.keys(options.providers).forEach((provider) => {
+		for (const provider of Object.keys(options.providers)) {
 			const providerKey = provider as keyof typeof options.providers;
 			const factory = options.providers[providerKey];
 
@@ -34,14 +34,14 @@ export function createAnalyticsManager<T extends string, Config extends object>(
 					`Analytics provider '${provider}' not registered. Skipping initialization.`,
 				);
 
-				return;
+				continue;
 			}
 
 			const service = factory();
 			activeServices.set(provider as T, service);
 
 			void service.initialize();
-		});
+		}
 	};
 
 	registerActiveServices(options);

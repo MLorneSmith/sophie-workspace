@@ -79,7 +79,7 @@ export async function renderOtpEmail(props: Props) {
 
 							<Text
 								className="text-[16px] text-[#242424]"
-								{/* biome-ignore lint/security/noDangerouslySetInnerHtml: Rendering trusted email template content */}
+								// biome-ignore lint/security/noDangerouslySetInnerHtml: Rendering trusted email template content
 								dangerouslySetInnerHTML={{ __html: footerText }}
 							/>
 						</EmailContent>
