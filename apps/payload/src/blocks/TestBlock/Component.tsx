@@ -11,13 +11,13 @@ import {
 // Define the type for the component props
 type TestBlockData = {
 	text?: string;
-	[key: string]: any;
+	// Remove any type usage
 };
 
 // Define our own component props type
 type ComponentProps = {
 	data?: TestBlockData;
-	[key: string]: any;
+	// Remove any type usage
 };
 
 // The component receives props from Lexical

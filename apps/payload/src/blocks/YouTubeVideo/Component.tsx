@@ -15,13 +15,14 @@ type YouTubeVideoData = {
 	showPreview?: boolean;
 	title?: string;
 	aspectRatio?: string;
-	[key: string]: any;
+	// Remove any type usage
 };
 
 // Define our own component props type
 type ComponentProps = {
 	data?: YouTubeVideoData;
-	[key: string]: any;
+	blockType?: string;
+	id?: string;
 };
 
 // Helper function to extract YouTube ID from URL or ID
@@ -99,8 +100,9 @@ const Component: React.FC<ComponentProps> = (props) => {
 			<CardContent>
 				<div className="relative" style={{ paddingBottom: getPaddingBottom() }}>
 					{showPreview && finalPreviewUrl ? (
-						<div
-							className="absolute inset-0 flex cursor-pointer items-center justify-center bg-black"
+						<button
+							type="button"
+							className="absolute inset-0 flex cursor-pointer items-center justify-center bg-black border-0 p-0"
 							onClick={() => {
 								// Replace the preview with the iframe
 								const container = document.getElementById(
@@ -119,6 +121,26 @@ const Component: React.FC<ComponentProps> = (props) => {
                   `;
 								}
 							}}
+							onKeyDown={(e) => {
+								if (e.key === "Enter" || e.key === " ") {
+									e.preventDefault();
+									const container = document.getElementById(
+										`youtube-video-${youtubeId}`,
+									);
+									if (container) {
+										container.innerHTML = `
+											<iframe
+												src="https://www.youtube.com/embed/${youtubeId}?autoplay=1"
+												loading="lazy"
+												style="border: none; position: absolute; top: 0; left: 0; height: 100%; width: 100%;"
+												allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture;"
+												allowfullscreen="true"
+												title="${title || "YouTube Video"}"
+											></iframe>
+										`;
+									}
+								}
+							}}
 							id={`youtube-video-${youtubeId}`}
 						>
 							<img
@@ -131,7 +153,7 @@ const Component: React.FC<ComponentProps> = (props) => {
 									<div className="ml-1 h-0 w-0 border-b-8 border-l-16 border-t-8 border-b-transparent border-l-red-600 border-t-transparent" />
 								</div>
 							</div>
-						</div>
+						</button>
 					) : (
 						<iframe
 							src={`https://www.youtube.com/embed/${youtubeId}`}

@@ -15,9 +15,9 @@ type FieldProps = {
 	path: string;
 	name: string;
 	label?: string;
-	value?: any;
-	onChange?: (value: any) => void;
-	[key: string]: any;
+	value?: unknown;
+	onChange?: (value: unknown) => void;
+	[key: string]: unknown;
 };
 
 /**

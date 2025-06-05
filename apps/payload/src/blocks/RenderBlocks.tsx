@@ -18,7 +18,7 @@ type BlockType =
 	| "youtube-video";
 
 // Map block types to their respective components
-const blockComponents: Record<BlockType, React.FC<any>> = {
+const blockComponents: Record<BlockType, React.FC<Record<string, unknown>>> = {
 	"call-to-action": CallToActionComponent,
 	"custom-call-to-action": CallToActionComponent, // Support both slugs during transition
 	"test-block": TestBlockComponent,
@@ -30,7 +30,7 @@ const blockComponents: Record<BlockType, React.FC<any>> = {
 type RenderBlocksProps = {
 	blocks: Array<{
 		blockType: string;
-		[key: string]: any;
+		[key: string]: unknown;
 	}>;
 };
 
@@ -42,6 +42,8 @@ export const RenderBlocks: React.FC<RenderBlocksProps> = ({ blocks }) => {
 			<Fragment>
 				{blocks.map((block, index) => {
 					const { blockType } = block;
+					// Generate a stable key using blockType and index
+					const blockKey = `${blockType}-${index}`;
 
 					// Type guard to check if blockType is a valid BlockType
 					const isValidBlockType = (type: string): type is BlockType =>
@@ -54,13 +56,13 @@ export const RenderBlocks: React.FC<RenderBlocksProps> = ({ blocks }) => {
 
 					if (blockType && isValidBlockType(blockType)) {
 						const Block = blockComponents[blockType];
-						return <Block key={index} {...block} />;
+						return <Block key={blockKey} {...block} />;
 					}
 
 					// Fallback for unknown block types
 					return (
 						<div
-							key={index}
+							key={blockKey}
 							className="p-4 border-2 border-red-500 bg-red-50 rounded-md"
 						>
 							<h3 className="text-lg font-bold text-red-700">

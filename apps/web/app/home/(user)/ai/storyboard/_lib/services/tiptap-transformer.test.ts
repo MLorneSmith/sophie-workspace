@@ -3,11 +3,11 @@
  * Tests pure transformation functions for converting TipTap documents to storyboard format
  */
 
-import { describe, expect, it, beforeEach, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import type { Slide, StoryboardData } from "../types/index";
 // Import the class to test
 import { TipTapTransformer } from "./tiptap-transformer";
-import type { StoryboardData, Slide } from "../types/index";
 
 // Mock console.error to prevent test output pollution
 const originalConsoleError = console.error;
@@ -76,10 +76,7 @@ describe("TipTapTransformer", () => {
 			const invalidJson = "{ invalid json }";
 
 			// Act
-			const result = TipTapTransformer.transform(
-				invalidJson,
-				"Fallback Title",
-			);
+			const result = TipTapTransformer.transform(invalidJson, "Fallback Title");
 
 			// Assert
 			expect(result.title).toBe("Fallback Title");
@@ -399,7 +396,10 @@ describe("TipTapTransformer", () => {
 					{
 						type: "paragraph",
 						content: [
-							{ type: "text", text: "Revenue shows significant growth over time" },
+							{
+								type: "text",
+								text: "Revenue shows significant growth over time",
+							},
 						],
 					},
 				],
@@ -682,7 +682,7 @@ describe("TipTapTransformer", () => {
 						type: "heading",
 						attrs: { level: 1 },
 						// missing content property
-					} as any,
+					} as unknown,
 				],
 			};
 
@@ -695,7 +695,7 @@ describe("TipTapTransformer", () => {
 
 		it("should handle very deep nesting without stack overflow", () => {
 			// Arrange
-			let deepContent: any = { type: "text", text: "deep content" };
+			let deepContent: unknown = { type: "text", text: "deep content" };
 			for (let i = 0; i < 100; i++) {
 				deepContent = {
 					type: "paragraph",
