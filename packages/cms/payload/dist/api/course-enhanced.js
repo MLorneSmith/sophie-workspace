@@ -1,4 +1,4 @@
-import { callPayloadAPI } from './payload-api';
+import { callPayloadAPI } from "./payload-api";
 /**
  * Enhanced getQuiz function with improved unidirectional relationship handling
  *
@@ -15,24 +15,24 @@ import { callPayloadAPI } from './payload-api';
 export async function getQuizEnhanced(quizId, depth = 1, supabaseClient) {
     var _a, _b, _c;
     if (!quizId) {
-        console.error('getQuizEnhanced called with empty quizId');
+        console.error("getQuizEnhanced called with empty quizId");
         return null;
     }
     // Extract the actual ID value
     let actualQuizId;
     try {
-        if (typeof quizId === 'string') {
+        if (typeof quizId === "string") {
             actualQuizId = quizId;
         }
-        else if (quizId && typeof quizId === 'object') {
+        else if (quizId && typeof quizId === "object") {
             // Handle relationship object format
-            if (quizId.value && typeof quizId.value === 'string') {
+            if (quizId.value && typeof quizId.value === "string") {
                 actualQuizId = quizId.value;
             }
-            else if (quizId.id && typeof quizId.id === 'string') {
+            else if (quizId.id && typeof quizId.id === "string") {
                 actualQuizId = quizId.id;
             }
-            else if (quizId.relationTo === 'course_quizzes' && quizId.value) {
+            else if (quizId.relationTo === "course_quizzes" && quizId.value) {
                 actualQuizId = String(quizId.value);
             }
             else {
@@ -44,13 +44,13 @@ export async function getQuizEnhanced(quizId, depth = 1, supabaseClient) {
                     console.log(`getQuizEnhanced: Extracted UUID ${actualQuizId} from complex object`);
                 }
                 else {
-                    console.error('getQuizEnhanced: Invalid quiz ID format:', quizId);
+                    console.error("getQuizEnhanced: Invalid quiz ID format:", quizId);
                     throw new Error(`Invalid quiz ID format: ${JSON.stringify(quizId)}`);
                 }
             }
         }
         else {
-            console.error('getQuizEnhanced: Invalid quiz ID type:', typeof quizId);
+            console.error("getQuizEnhanced: Invalid quiz ID type:", typeof quizId);
             throw new Error(`Invalid quiz ID type: ${typeof quizId}`);
         }
     }
@@ -73,7 +73,7 @@ export async function getQuizEnhanced(quizId, depth = 1, supabaseClient) {
             if (quiz.questions &&
                 Array.isArray(quiz.questions) &&
                 quiz.questions.length > 0 &&
-                typeof quiz.questions[0] !== 'string' &&
+                typeof quiz.questions[0] !== "string" &&
                 quiz.questions[0].options) {
                 console.log(`getQuizEnhanced: Quiz has ${quiz.questions.length} questions with full details`);
                 return quiz;
@@ -84,11 +84,11 @@ export async function getQuizEnhanced(quizId, depth = 1, supabaseClient) {
                 quiz.questions.length > 0) {
                 console.log(`getQuizEnhanced: Quiz has ${quiz.questions.length} question IDs, fetching details`);
                 // Get the question IDs
-                const questionIds = quiz.questions.map((q) => typeof q === 'string' ? q : q.id || q.value || q);
+                const questionIds = quiz.questions.map((q) => typeof q === "string" ? q : q.id || q.value || q);
                 // Get full question details using their IDs
                 const queryParams = questionIds
                     .map((id) => `id[]=${id}`)
-                    .join('&');
+                    .join("&");
                 const questionsResponse = await callPayloadAPI(`quiz_questions?${queryParams}&sort=order`, {}, supabaseClient);
                 console.log(`getQuizEnhanced: Fetched ${((_a = questionsResponse.docs) === null || _a === void 0 ? void 0 : _a.length) || 0} detailed questions for quiz ${quiz.title}`);
                 return Object.assign(Object.assign({}, quiz), { questions: questionsResponse.docs || [] });
@@ -102,7 +102,7 @@ export async function getQuizEnhanced(quizId, depth = 1, supabaseClient) {
                 const questionIds = dbQuestions.map((q) => q.question_id);
                 const queryParams = questionIds
                     .map((id) => `id[]=${id}`)
-                    .join('&');
+                    .join("&");
                 const questionsResponse = await callPayloadAPI(`quiz_questions?${queryParams}&sort=order`, {}, supabaseClient);
                 console.log(`getQuizEnhanced: Fetched ${((_b = questionsResponse.docs) === null || _b === void 0 ? void 0 : _b.length) || 0} detailed questions from database fallback`);
                 return Object.assign(Object.assign({}, quiz), { questions: questionsResponse.docs || [] });
@@ -111,7 +111,7 @@ export async function getQuizEnhanced(quizId, depth = 1, supabaseClient) {
             return quiz;
         }
         catch (fetchError) {
-            console.error(`getQuizEnhanced: Error in primary fetch method:`, fetchError);
+            console.error("getQuizEnhanced: Error in primary fetch method:", fetchError);
             // Continue to fallback mechanism
         }
         // Second attempt: Use the direct API route
@@ -130,13 +130,13 @@ export async function getQuizEnhanced(quizId, depth = 1, supabaseClient) {
                 try {
                     const queryParams = questionIds
                         .map((id) => `id[]=${id}`)
-                        .join('&');
+                        .join("&");
                     const questionsResponse = await callPayloadAPI(`quiz_questions?${queryParams}&sort=order`, {}, supabaseClient);
                     console.log(`getQuizEnhanced: Fetched ${((_c = questionsResponse.docs) === null || _c === void 0 ? void 0 : _c.length) || 0} detailed questions from fallback`);
                     return Object.assign(Object.assign({}, quiz), { questions: questionsResponse.docs || [] });
                 }
                 catch (error) {
-                    console.error(`getQuizEnhanced: Error fetching question details:`, error);
+                    console.error("getQuizEnhanced: Error fetching question details:", error);
                     // Return quiz with just the question IDs
                     return Object.assign(Object.assign({}, quiz), { questions: questionIds.map((id) => ({ id })) });
                 }
@@ -165,13 +165,13 @@ async function getQuestionsForQuizFromDatabase(quizId) {
         // We need to use any for the dynamic require to avoid TypeScript errors
         const getPgClient = async () => {
             // @ts-ignore - Dynamic require is only supported in server context
-            if (typeof window === 'undefined') {
+            if (typeof window === "undefined") {
                 try {
                     // @ts-ignore - Using dynamic import syntax
-                    return await import('pg').catch(() => null);
+                    return await import("pg").catch(() => null);
                 }
                 catch (e) {
-                    console.error('Failed to import pg module:', e);
+                    console.error("Failed to import pg module:", e);
                     return null;
                 }
             }
@@ -179,11 +179,11 @@ async function getQuestionsForQuizFromDatabase(quizId) {
         };
         const pg = await getPgClient();
         if (!pg || !pg.Client) {
-            console.error('pg module not available (expected on server side only)');
+            console.error("pg module not available (expected on server side only)");
             return [];
         }
         const connectionString = process.env.DATABASE_URI ||
-            'postgresql://postgres:postgres@localhost:54322/postgres';
+            "postgresql://postgres:postgres@localhost:54322/postgres";
         const client = new pg.Client({ connectionString });
         await client.connect();
         try {
@@ -209,12 +209,12 @@ async function getQuestionsForQuizFromDatabase(quizId) {
         }
     }
     catch (error) {
-        console.error(`Error fetching questions from database:`, error);
+        console.error("Error fetching questions from database:", error);
         return [];
     }
 }
 // Re-export the original function for backwards compatibility
-export { getQuiz } from './course';
+export { getQuiz } from "./course";
 // Export a new function that's easier to use and is the preferred option
 export function getQuiz2(quizId, options = {}, supabaseClient) {
     return getQuizEnhanced(quizId, 2, supabaseClient);

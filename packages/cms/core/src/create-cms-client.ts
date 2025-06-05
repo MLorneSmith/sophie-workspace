@@ -1,5 +1,5 @@
-import { CmsClient, CmsType } from '@kit/cms-types';
-import { createRegistry } from '@kit/shared/registry';
+import type { CmsClient, CmsType } from "@kit/cms-types";
+import { createRegistry } from "@kit/shared/registry";
 
 /**
  * The type of CMS client to use.
@@ -10,21 +10,21 @@ const CMS_CLIENT = process.env.CMS_CLIENT as CmsType;
 const cmsRegistry = createRegistry<CmsClient, CmsType>();
 
 // Register the WordPress CMS client implementation
-cmsRegistry.register('wordpress', async () => {
-  const { createWordpressClient } = await import('@kit/wordpress');
-  return createWordpressClient();
+cmsRegistry.register("wordpress", async () => {
+	const { createWordpressClient } = await import("@kit/wordpress");
+	return createWordpressClient();
 });
 
 // Register the Keystatic CMS client implementation
-cmsRegistry.register('keystatic', async () => {
-  const { createKeystaticClient } = await import('@kit/keystatic');
-  return createKeystaticClient();
+cmsRegistry.register("keystatic", async () => {
+	const { createKeystaticClient } = await import("@kit/keystatic");
+	return createKeystaticClient();
 });
 
 // Register the Payload CMS client implementation
-cmsRegistry.register('payload', async () => {
-  const { createPayloadClient } = await import('@kit/payload');
-  return createPayloadClient();
+cmsRegistry.register("payload", async () => {
+	const { createPayloadClient } = await import("@kit/payload");
+	return createPayloadClient();
 });
 
 /**
@@ -35,5 +35,5 @@ cmsRegistry.register('payload', async () => {
  * @throws {Error} If the specified CMS type is unknown.
  */
 export async function createCmsClient(type: CmsType = CMS_CLIENT) {
-  return cmsRegistry.get(type);
+	return cmsRegistry.get(type);
 }

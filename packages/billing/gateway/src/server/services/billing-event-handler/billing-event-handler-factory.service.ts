@@ -1,13 +1,13 @@
-import 'server-only';
+import "server-only";
 
-import { z } from 'zod';
+import type { z } from "zod";
 
-import {
-  type BillingProviderSchema,
-  BillingWebhookHandlerService,
-  type PlanTypeMap,
-} from '@kit/billing';
-import { createRegistry } from '@kit/shared/registry';
+import type {
+	BillingProviderSchema,
+	BillingWebhookHandlerService,
+	PlanTypeMap,
+} from "@kit/billing";
+import { createRegistry } from "@kit/shared/registry";
 
 /**
  * @description Creates a registry for billing webhook handlers
@@ -15,34 +15,34 @@ import { createRegistry } from '@kit/shared/registry';
  * @returns The billing webhook handler registry
  */
 export function createBillingEventHandlerFactoryService(
-  planTypesMap: PlanTypeMap,
+	planTypesMap: PlanTypeMap,
 ) {
-  // Create a registry for billing webhook handlers
-  const billingWebhookHandlerRegistry = createRegistry<
-    BillingWebhookHandlerService,
-    z.infer<typeof BillingProviderSchema>
-  >();
+	// Create a registry for billing webhook handlers
+	const billingWebhookHandlerRegistry = createRegistry<
+		BillingWebhookHandlerService,
+		z.infer<typeof BillingProviderSchema>
+	>();
 
-  // Register the Stripe webhook handler
-  billingWebhookHandlerRegistry.register('stripe', async () => {
-    const { StripeWebhookHandlerService } = await import('@kit/stripe');
+	// Register the Stripe webhook handler
+	billingWebhookHandlerRegistry.register("stripe", async () => {
+		const { StripeWebhookHandlerService } = await import("@kit/stripe");
 
-    return new StripeWebhookHandlerService(planTypesMap);
-  });
+		return new StripeWebhookHandlerService(planTypesMap);
+	});
 
-  // Register the Lemon Squeezy webhook handler
-  billingWebhookHandlerRegistry.register('lemon-squeezy', async () => {
-    const { LemonSqueezyWebhookHandlerService } = await import(
-      '@kit/lemon-squeezy'
-    );
+	// Register the Lemon Squeezy webhook handler
+	billingWebhookHandlerRegistry.register("lemon-squeezy", async () => {
+		const { LemonSqueezyWebhookHandlerService } = await import(
+			"@kit/lemon-squeezy"
+		);
 
-    return new LemonSqueezyWebhookHandlerService(planTypesMap);
-  });
+		return new LemonSqueezyWebhookHandlerService(planTypesMap);
+	});
 
-  // Register Paddle webhook handler (not implemented yet)
-  billingWebhookHandlerRegistry.register('paddle', () => {
-    throw new Error('Paddle is not supported yet');
-  });
+	// Register Paddle webhook handler (not implemented yet)
+	billingWebhookHandlerRegistry.register("paddle", () => {
+		throw new Error("Paddle is not supported yet");
+	});
 
-  return billingWebhookHandlerRegistry;
+	return billingWebhookHandlerRegistry;
 }

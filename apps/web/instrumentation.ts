@@ -2,16 +2,16 @@
  * This file is used to register monitoring instrumentation
  * for your Next.js application.
  */
-import { type Instrumentation } from 'next';
+import type { Instrumentation } from "next";
 
 export async function register() {
-  const { registerMonitoringInstrumentation } = await import(
-    '@kit/monitoring/instrumentation'
-  );
+	const { registerMonitoringInstrumentation } = await import(
+		"@kit/monitoring/instrumentation"
+	);
 
-  // Register monitoring instrumentation
-  // based on the MONITORING_PROVIDER environment variable.
-  await registerMonitoringInstrumentation();
+	// Register monitoring instrumentation
+	// based on the MONITORING_PROVIDER environment variable.
+	await registerMonitoringInstrumentation();
 }
 
 /**
@@ -21,10 +21,10 @@ export async function register() {
  * @param err
  */
 export const onRequestError: Instrumentation.onRequestError = async (err) => {
-  const { getServerMonitoringService } = await import('@kit/monitoring/server');
+	const { getServerMonitoringService } = await import("@kit/monitoring/server");
 
-  const service = await getServerMonitoringService();
+	const service = await getServerMonitoringService();
 
-  await service.ready();
-  await service.captureException(err as Error);
+	await service.ready();
+	await service.captureException(err as Error);
 };

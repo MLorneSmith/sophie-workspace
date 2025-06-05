@@ -1,13 +1,13 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation } from "@tanstack/react-query";
 
-import { useSupabase } from './use-supabase';
+import { useSupabase } from "./use-supabase";
 
 export function useSignOut() {
-  const client = useSupabase();
+	const client = useSupabase();
 
-  return useMutation({
-    mutationFn: () => {
-      return client.auth.signOut();
-    },
-  });
+	return useMutation({
+		mutationFn: () => {
+			return client.auth.signOut();
+		},
+	});
 }

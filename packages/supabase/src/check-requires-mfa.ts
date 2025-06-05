@@ -1,6 +1,6 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
+import type { SupabaseClient } from "@supabase/supabase-js";
 
-const ASSURANCE_LEVEL_2 = 'aal2';
+const ASSURANCE_LEVEL_2 = "aal2";
 
 /**
  * @name checkRequiresMultiFactorAuthentication
@@ -9,23 +9,23 @@ const ASSURANCE_LEVEL_2 = 'aal2';
  * @param client
  */
 export async function checkRequiresMultiFactorAuthentication(
-  client: SupabaseClient,
+	client: SupabaseClient,
 ) {
-  // Suppress the getSession warning. Remove when the issue is fixed.
-  // https://github.com/supabase/auth-js/issues/873
-  // @ts-expect-error: suppressGetSessionWarning is not part of the public API
-  client.auth.suppressGetSessionWarning = true;
+	// Suppress the getSession warning. Remove when the issue is fixed.
+	// https://github.com/supabase/auth-js/issues/873
+	// @ts-expect-error: suppressGetSessionWarning is not part of the public API
+	client.auth.suppressGetSessionWarning = true;
 
-  const assuranceLevel = await client.auth.mfa.getAuthenticatorAssuranceLevel();
+	const assuranceLevel = await client.auth.mfa.getAuthenticatorAssuranceLevel();
 
-  // @ts-expect-error: suppressGetSessionWarning is not part of the public API
-  client.auth.suppressGetSessionWarning = false;
+	// @ts-expect-error: suppressGetSessionWarning is not part of the public API
+	client.auth.suppressGetSessionWarning = false;
 
-  if (assuranceLevel.error) {
-    throw new Error(assuranceLevel.error.message);
-  }
+	if (assuranceLevel.error) {
+		throw new Error(assuranceLevel.error.message);
+	}
 
-  const { nextLevel, currentLevel } = assuranceLevel.data;
+	const { nextLevel, currentLevel } = assuranceLevel.data;
 
-  return nextLevel === ASSURANCE_LEVEL_2 && nextLevel !== currentLevel;
+	return nextLevel === ASSURANCE_LEVEL_2 && nextLevel !== currentLevel;
 }

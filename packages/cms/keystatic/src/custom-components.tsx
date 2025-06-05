@@ -1,6 +1,6 @@
-import type { ComponentType } from 'react';
+import type { ComponentType } from "react";
 
-import type { Schema } from '@markdoc/markdoc';
+import type { Schema } from "@markdoc/markdoc";
 
 type Component = ComponentType<unknown>;
 
@@ -17,7 +17,7 @@ type Component = ComponentType<unknown>;
  * };
  */
 export const CustomMarkdocComponents: Record<string, Component> = {
-  // define your custom components here
+	// define your custom components here
 };
 
 /**
@@ -32,5 +32,5 @@ export const CustomMarkdocComponents: Record<string, Component> = {
  * }
  */
 export const CustomMarkdocTags: Record<string, Schema> = {
-  // define your custom tags here
+	// define your custom tags here
 };

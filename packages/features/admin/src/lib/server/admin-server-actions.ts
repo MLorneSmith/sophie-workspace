@@ -1,52 +1,52 @@
-'use server';
+"use server";
 
-import { revalidatePath } from 'next/cache';
-import { redirect } from 'next/navigation';
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
-import { enhanceAction } from '@kit/next/actions';
-import { getLogger } from '@kit/shared/logger';
-import { getSupabaseServerAdminClient } from '@kit/supabase/server-admin-client';
-import { getSupabaseServerClient } from '@kit/supabase/server-client';
+import { enhanceAction } from "@kit/next/actions";
+import { getLogger } from "@kit/shared/logger";
+import { getSupabaseServerAdminClient } from "@kit/supabase/server-admin-client";
+import { getSupabaseServerClient } from "@kit/supabase/server-client";
 
 import {
-  BanUserSchema,
-  DeleteAccountSchema,
-  DeleteUserSchema,
-  ImpersonateUserSchema,
-  ReactivateUserSchema,
-} from './schema/admin-actions.schema';
-import { CreateUserSchema } from './schema/create-user.schema';
-import { ResetPasswordSchema } from './schema/reset-password.schema';
-import { createAdminAccountsService } from './services/admin-accounts.service';
-import { createAdminAuthUserService } from './services/admin-auth-user.service';
-import { adminAction } from './utils/admin-action';
+	BanUserSchema,
+	DeleteAccountSchema,
+	DeleteUserSchema,
+	ImpersonateUserSchema,
+	ReactivateUserSchema,
+} from "./schema/admin-actions.schema";
+import { CreateUserSchema } from "./schema/create-user.schema";
+import { ResetPasswordSchema } from "./schema/reset-password.schema";
+import { createAdminAccountsService } from "./services/admin-accounts.service";
+import { createAdminAuthUserService } from "./services/admin-auth-user.service";
+import { adminAction } from "./utils/admin-action";
 
 /**
  * @name banUserAction
  * @description Ban a user from the system.
  */
 export const banUserAction = adminAction(
-  enhanceAction(
-    async ({ userId }) => {
-      const service = getAdminAuthService();
-      const logger = await getLogger();
+	enhanceAction(
+		async ({ userId }) => {
+			const service = getAdminAuthService();
+			const logger = await getLogger();
 
-      logger.info({ userId }, `Super Admin is banning user...`);
+			logger.info({ userId }, "Super Admin is banning user...");
 
-      await service.banUser(userId);
+			await service.banUser(userId);
 
-      logger.info({ userId }, `Super Admin has successfully banned user`);
+			logger.info({ userId }, "Super Admin has successfully banned user");
 
-      revalidateAdmin();
+			revalidateAdmin();
 
-      return {
-        success: true,
-      };
-    },
-    {
-      schema: BanUserSchema,
-    },
-  ),
+			return {
+				success: true,
+			};
+		},
+		{
+			schema: BanUserSchema,
+		},
+	),
 );
 
 /**
@@ -54,27 +54,27 @@ export const banUserAction = adminAction(
  * @description Reactivate a user in the system.
  */
 export const reactivateUserAction = adminAction(
-  enhanceAction(
-    async ({ userId }) => {
-      const service = getAdminAuthService();
-      const logger = await getLogger();
+	enhanceAction(
+		async ({ userId }) => {
+			const service = getAdminAuthService();
+			const logger = await getLogger();
 
-      logger.info({ userId }, `Super Admin is reactivating user...`);
+			logger.info({ userId }, "Super Admin is reactivating user...");
 
-      await service.reactivateUser(userId);
+			await service.reactivateUser(userId);
 
-      logger.info({ userId }, `Super Admin has successfully reactivated user`);
+			logger.info({ userId }, "Super Admin has successfully reactivated user");
 
-      revalidateAdmin();
+			revalidateAdmin();
 
-      return {
-        success: true,
-      };
-    },
-    {
-      schema: ReactivateUserSchema,
-    },
-  ),
+			return {
+				success: true,
+			};
+		},
+		{
+			schema: ReactivateUserSchema,
+		},
+	),
 );
 
 /**
@@ -82,19 +82,19 @@ export const reactivateUserAction = adminAction(
  * @description Impersonate a user in the system.
  */
 export const impersonateUserAction = adminAction(
-  enhanceAction(
-    async ({ userId }) => {
-      const service = getAdminAuthService();
-      const logger = await getLogger();
+	enhanceAction(
+		async ({ userId }) => {
+			const service = getAdminAuthService();
+			const logger = await getLogger();
 
-      logger.info({ userId }, `Super Admin is impersonating user...`);
+			logger.info({ userId }, "Super Admin is impersonating user...");
 
-      return await service.impersonateUser(userId);
-    },
-    {
-      schema: ImpersonateUserSchema,
-    },
-  ),
+			return await service.impersonateUser(userId);
+		},
+		{
+			schema: ImpersonateUserSchema,
+		},
+	),
 );
 
 /**
@@ -102,25 +102,25 @@ export const impersonateUserAction = adminAction(
  * @description Delete a user from the system.
  */
 export const deleteUserAction = adminAction(
-  enhanceAction(
-    async ({ userId }) => {
-      const service = getAdminAuthService();
-      const logger = await getLogger();
+	enhanceAction(
+		async ({ userId }) => {
+			const service = getAdminAuthService();
+			const logger = await getLogger();
 
-      logger.info({ userId }, `Super Admin is deleting user...`);
+			logger.info({ userId }, "Super Admin is deleting user...");
 
-      await service.deleteUser(userId);
+			await service.deleteUser(userId);
 
-      logger.info({ userId }, `Super Admin has successfully deleted user`);
+			logger.info({ userId }, "Super Admin has successfully deleted user");
 
-      revalidateAdmin();
+			revalidateAdmin();
 
-      return redirect('/admin/accounts');
-    },
-    {
-      schema: DeleteUserSchema,
-    },
-  ),
+			return redirect("/admin/accounts");
+		},
+		{
+			schema: DeleteUserSchema,
+		},
+	),
 );
 
 /**
@@ -128,28 +128,28 @@ export const deleteUserAction = adminAction(
  * @description Delete an account from the system.
  */
 export const deleteAccountAction = adminAction(
-  enhanceAction(
-    async ({ accountId }) => {
-      const service = getAdminAccountsService();
-      const logger = await getLogger();
+	enhanceAction(
+		async ({ accountId }) => {
+			const service = getAdminAccountsService();
+			const logger = await getLogger();
 
-      logger.info({ accountId }, `Super Admin is deleting account...`);
+			logger.info({ accountId }, "Super Admin is deleting account...");
 
-      await service.deleteAccount(accountId);
+			await service.deleteAccount(accountId);
 
-      logger.info(
-        { accountId },
-        `Super Admin has successfully deleted account`,
-      );
+			logger.info(
+				{ accountId },
+				"Super Admin has successfully deleted account",
+			);
 
-      revalidateAdmin();
+			revalidateAdmin();
 
-      return redirect('/admin/accounts');
-    },
-    {
-      schema: DeleteAccountSchema,
-    },
-  ),
+			return redirect("/admin/accounts");
+		},
+		{
+			schema: DeleteAccountSchema,
+		},
+	),
 );
 
 /**
@@ -157,40 +157,40 @@ export const deleteAccountAction = adminAction(
  * @description Create a new user in the system.
  */
 export const createUserAction = adminAction(
-  enhanceAction(
-    async ({ email, password, emailConfirm }) => {
-      const adminClient = getSupabaseServerAdminClient();
-      const logger = await getLogger();
+	enhanceAction(
+		async ({ email, password, emailConfirm }) => {
+			const adminClient = getSupabaseServerAdminClient();
+			const logger = await getLogger();
 
-      logger.info({ email }, `Super Admin is creating a new user...`);
+			logger.info({ email }, "Super Admin is creating a new user...");
 
-      const { data, error } = await adminClient.auth.admin.createUser({
-        email,
-        password,
-        email_confirm: emailConfirm,
-      });
+			const { data, error } = await adminClient.auth.admin.createUser({
+				email,
+				password,
+				email_confirm: emailConfirm,
+			});
 
-      if (error) {
-        logger.error({ error }, `Error creating user`);
-        throw new Error(`Error creating user: ${error.message}`);
-      }
+			if (error) {
+				logger.error({ error }, "Error creating user");
+				throw new Error(`Error creating user: ${error.message}`);
+			}
 
-      logger.info(
-        { userId: data.user.id },
-        `Super Admin has successfully created a new user`,
-      );
+			logger.info(
+				{ userId: data.user.id },
+				"Super Admin has successfully created a new user",
+			);
 
-      revalidateAdmin();
+			revalidateAdmin();
 
-      return {
-        success: true,
-        user: data.user,
-      };
-    },
-    {
-      schema: CreateUserSchema,
-    },
-  ),
+			return {
+				success: true,
+				user: data.user,
+			};
+		},
+		{
+			schema: CreateUserSchema,
+		},
+	),
 );
 
 /**
@@ -198,43 +198,43 @@ export const createUserAction = adminAction(
  * @description Reset a user's password by sending a password reset email.
  */
 export const resetPasswordAction = adminAction(
-  enhanceAction(
-    async ({ userId }) => {
-      const service = getAdminAuthService();
-      const logger = await getLogger();
+	enhanceAction(
+		async ({ userId }) => {
+			const service = getAdminAuthService();
+			const logger = await getLogger();
 
-      logger.info({ userId }, `Super Admin is resetting user password...`);
+			logger.info({ userId }, "Super Admin is resetting user password...");
 
-      const result = await service.resetPassword(userId);
+			const result = await service.resetPassword(userId);
 
-      logger.info(
-        { userId },
-        `Super Admin has successfully sent password reset email`,
-      );
+			logger.info(
+				{ userId },
+				"Super Admin has successfully sent password reset email",
+			);
 
-      revalidateAdmin();
+			revalidateAdmin();
 
-      return result;
-    },
-    {
-      schema: ResetPasswordSchema,
-    },
-  ),
+			return result;
+		},
+		{
+			schema: ResetPasswordSchema,
+		},
+	),
 );
 
 function revalidateAdmin() {
-  revalidatePath('/admin', 'layout');
+	revalidatePath("/admin", "layout");
 }
 
 function getAdminAuthService() {
-  const client = getSupabaseServerClient();
-  const adminClient = getSupabaseServerAdminClient();
+	const client = getSupabaseServerClient();
+	const adminClient = getSupabaseServerAdminClient();
 
-  return createAdminAuthUserService(client, adminClient);
+	return createAdminAuthUserService(client, adminClient);
 }
 
 function getAdminAccountsService() {
-  const adminClient = getSupabaseServerAdminClient();
+	const adminClient = getSupabaseServerAdminClient();
 
-  return createAdminAccountsService(adminClient);
+	return createAdminAccountsService(adminClient);
 }

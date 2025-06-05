@@ -1,3 +1,3 @@
-import { TestimonialsPage } from '@kit/testimonial/admin';
+import { TestimonialsPage } from "@kit/testimonial/admin";
 
 export default TestimonialsPage;

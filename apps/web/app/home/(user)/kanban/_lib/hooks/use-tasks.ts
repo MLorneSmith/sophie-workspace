@@ -1,51 +1,51 @@
-import { useCallback as _useCallback } from 'react';
+import { useCallback as _useCallback } from "react";
 
-import { type SupabaseClient } from '@supabase/supabase-js';
+import type { SupabaseClient } from "@supabase/supabase-js";
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { pino } from 'pino';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { pino } from "pino";
 
-import { useUserWorkspace } from '@kit/accounts/hooks/use-user-workspace';
-import { useSupabase } from '@kit/supabase/hooks/use-supabase';
+import { useUserWorkspace } from "@kit/accounts/hooks/use-user-workspace";
+import { useSupabase } from "@kit/supabase/hooks/use-supabase";
 
-import { type Database } from '~/lib/database.types';
+import type { Database } from "~/lib/database.types";
 
-import { DEFAULT_TASKS } from '../config/default-tasks';
-import type { Task } from '../schema/task.schema';
+import { DEFAULT_TASKS } from "../config/default-tasks";
+import type { Task } from "../schema/task.schema";
 import {
-  createTaskAction,
-  deleteTaskAction,
-  resetTasksAction,
-  updateSubtaskAction,
-  updateTaskAction,
-  updateTaskStatusAction,
-} from '../server/server-actions';
+	createTaskAction,
+	deleteTaskAction,
+	resetTasksAction,
+	updateSubtaskAction,
+	updateTaskAction,
+	updateTaskStatusAction,
+} from "../server/server-actions";
 
 type TypedSupabaseClient = SupabaseClient<Database>;
 
 const logger = pino({
-  browser: {
-    asObject: true,
-  },
-  level: 'debug',
-  base: {
-    env: process.env.NODE_ENV,
-  },
-  errorKey: 'error',
+	browser: {
+		asObject: true,
+	},
+	level: "debug",
+	base: {
+		env: process.env.NODE_ENV,
+	},
+	errorKey: "error",
 });
 
 async function getTasks(client: TypedSupabaseClient, userId: string) {
-  const ctx = {
-    name: 'get-tasks',
-    userId,
-  };
+	const ctx = {
+		name: "get-tasks",
+		userId,
+	};
 
-  logger.info(ctx, 'Fetching tasks...');
-  try {
-    const { data, error } = await client
-      .from('tasks')
-      .select(
-        `
+	logger.info(ctx, "Fetching tasks...");
+	try {
+		const { data, error } = await client
+			.from("tasks")
+			.select(
+				`
       id,
       title,
       description,
@@ -63,222 +63,222 @@ async function getTasks(client: TypedSupabaseClient, userId: string) {
         updated_at
       )
     `,
-      )
-      .eq('account_id', userId)
-      .order('created_at', { ascending: false });
+			)
+			.eq("account_id", userId)
+			.order("created_at", { ascending: false });
 
-    if (error) throw error;
+		if (error) throw error;
 
-    logger.info(ctx, 'Tasks fetched successfully');
-    return data as Task[];
-  } catch (error) {
-    logger.error(ctx, 'Failed to fetch tasks', { error });
-    throw error;
-  }
+		logger.info(ctx, "Tasks fetched successfully");
+		return data as Task[];
+	} catch (error) {
+		logger.error(ctx, "Failed to fetch tasks", { error });
+		throw error;
+	}
 }
 
 export function useTasks() {
-  const client = useSupabase();
-  const { user } = useUserWorkspace();
+	const client = useSupabase();
+	const { user } = useUserWorkspace();
 
-  return useQuery<Task[]>({
-    queryKey: ['tasks', user.id],
-    queryFn: async () => {
-      const tasks = await getTasks(client, user.id);
+	return useQuery<Task[]>({
+		queryKey: ["tasks", user.id],
+		queryFn: async () => {
+			const tasks = await getTasks(client, user.id);
 
-      // If no tasks exist, create default tasks
-      if (!tasks.length) {
-        const ctx = {
-          name: 'create-default-tasks',
-          userId: user.id,
-        };
+			// If no tasks exist, create default tasks
+			if (!tasks.length) {
+				const ctx = {
+					name: "create-default-tasks",
+					userId: user.id,
+				};
 
-        logger.info(ctx, 'Creating default tasks...');
+				logger.info(ctx, "Creating default tasks...");
 
-        try {
-          for (const task of DEFAULT_TASKS) {
-            await createTaskAction(task);
-          }
+				try {
+					for (const task of DEFAULT_TASKS) {
+						await createTaskAction(task);
+					}
 
-          logger.info(ctx, 'Default tasks created successfully');
-          return getTasks(client, user.id);
-        } catch (error) {
-          logger.error(ctx, 'Failed to create default tasks', { error });
-          throw error;
-        }
-      }
+					logger.info(ctx, "Default tasks created successfully");
+					return getTasks(client, user.id);
+				} catch (error) {
+					logger.error(ctx, "Failed to create default tasks", { error });
+					throw error;
+				}
+			}
 
-      return tasks;
-    },
-    staleTime: 60 * 1000,
-    retry: false,
-  });
+			return tasks;
+		},
+		staleTime: 60 * 1000,
+		retry: false,
+	});
 }
 
 export function useCreateTask() {
-  const queryClient = useQueryClient();
-  const { user } = useUserWorkspace();
+	const queryClient = useQueryClient();
+	const { user } = useUserWorkspace();
 
-  return useMutation({
-    mutationFn: createTaskAction,
-    onSuccess: (_, _variables) => {
-      const ctx = {
-        name: 'create-task',
-        userId: user.id,
-      };
-      logger.info(ctx, 'Task created successfully');
-      queryClient.invalidateQueries({ queryKey: ['tasks', user.id] });
-    },
-    onError: (error) => {
-      const ctx = {
-        name: 'create-task',
-        userId: user.id,
-      };
-      logger.error(ctx, 'Failed to create task', { error });
-    },
-  });
+	return useMutation({
+		mutationFn: createTaskAction,
+		onSuccess: (_, _variables) => {
+			const ctx = {
+				name: "create-task",
+				userId: user.id,
+			};
+			logger.info(ctx, "Task created successfully");
+			queryClient.invalidateQueries({ queryKey: ["tasks", user.id] });
+		},
+		onError: (error) => {
+			const ctx = {
+				name: "create-task",
+				userId: user.id,
+			};
+			logger.error(ctx, "Failed to create task", { error });
+		},
+	});
 }
 
 export function useUpdateTask() {
-  const queryClient = useQueryClient();
-  const { user } = useUserWorkspace();
+	const queryClient = useQueryClient();
+	const { user } = useUserWorkspace();
 
-  return useMutation({
-    mutationFn: updateTaskAction,
-    onSuccess: (_, variables) => {
-      const ctx = {
-        name: 'update-task',
-        userId: user.id,
-        taskId: variables.id,
-      };
-      logger.info(ctx, 'Task updated successfully');
-      queryClient.invalidateQueries({ queryKey: ['tasks', user.id] });
-    },
-    onError: (error, variables) => {
-      const ctx = {
-        name: 'update-task',
-        userId: user.id,
-        taskId: variables.id,
-      };
-      logger.error(ctx, 'Failed to update task', { error });
-    },
-  });
+	return useMutation({
+		mutationFn: updateTaskAction,
+		onSuccess: (_, variables) => {
+			const ctx = {
+				name: "update-task",
+				userId: user.id,
+				taskId: variables.id,
+			};
+			logger.info(ctx, "Task updated successfully");
+			queryClient.invalidateQueries({ queryKey: ["tasks", user.id] });
+		},
+		onError: (error, variables) => {
+			const ctx = {
+				name: "update-task",
+				userId: user.id,
+				taskId: variables.id,
+			};
+			logger.error(ctx, "Failed to update task", { error });
+		},
+	});
 }
 
 export function useUpdateTaskStatus() {
-  const queryClient = useQueryClient();
-  const { user } = useUserWorkspace();
+	const queryClient = useQueryClient();
+	const { user } = useUserWorkspace();
 
-  return useMutation({
-    mutationFn: updateTaskStatusAction,
-    onSuccess: (_, variables) => {
-      const ctx = {
-        name: 'update-task-status',
-        userId: user.id,
-        taskId: variables.id,
-      };
-      logger.info(ctx, 'Task status updated successfully');
-      queryClient.invalidateQueries({ queryKey: ['tasks', user.id] });
-    },
-    onError: (error, variables) => {
-      const ctx = {
-        name: 'update-task-status',
-        userId: user.id,
-        taskId: variables.id,
-      };
-      logger.error(ctx, 'Failed to update task status', { error });
-    },
-  });
+	return useMutation({
+		mutationFn: updateTaskStatusAction,
+		onSuccess: (_, variables) => {
+			const ctx = {
+				name: "update-task-status",
+				userId: user.id,
+				taskId: variables.id,
+			};
+			logger.info(ctx, "Task status updated successfully");
+			queryClient.invalidateQueries({ queryKey: ["tasks", user.id] });
+		},
+		onError: (error, variables) => {
+			const ctx = {
+				name: "update-task-status",
+				userId: user.id,
+				taskId: variables.id,
+			};
+			logger.error(ctx, "Failed to update task status", { error });
+		},
+	});
 }
 
 export function useDeleteTask() {
-  const queryClient = useQueryClient();
-  const { user } = useUserWorkspace();
+	const queryClient = useQueryClient();
+	const { user } = useUserWorkspace();
 
-  return useMutation({
-    mutationFn: deleteTaskAction,
-    onSuccess: (_, variables) => {
-      const ctx = {
-        name: 'delete-task',
-        userId: user.id,
-        taskId: variables.id,
-      };
-      logger.info(ctx, 'Task deleted successfully');
-      queryClient.invalidateQueries({ queryKey: ['tasks', user.id] });
-    },
-    onError: (error, variables) => {
-      const ctx = {
-        name: 'delete-task',
-        userId: user.id,
-        taskId: variables.id,
-      };
-      logger.error(ctx, 'Failed to delete task', { error });
-    },
-  });
+	return useMutation({
+		mutationFn: deleteTaskAction,
+		onSuccess: (_, variables) => {
+			const ctx = {
+				name: "delete-task",
+				userId: user.id,
+				taskId: variables.id,
+			};
+			logger.info(ctx, "Task deleted successfully");
+			queryClient.invalidateQueries({ queryKey: ["tasks", user.id] });
+		},
+		onError: (error, variables) => {
+			const ctx = {
+				name: "delete-task",
+				userId: user.id,
+				taskId: variables.id,
+			};
+			logger.error(ctx, "Failed to delete task", { error });
+		},
+	});
 }
 
 export function useUpdateSubtask() {
-  const queryClient = useQueryClient();
-  const { user } = useUserWorkspace();
+	const queryClient = useQueryClient();
+	const { user } = useUserWorkspace();
 
-  return useMutation({
-    mutationFn: updateSubtaskAction,
-    onMutate: async (variables) => {
-      // Cancel any outgoing refetches
-      await queryClient.cancelQueries({ queryKey: ['tasks', user.id] });
+	return useMutation({
+		mutationFn: updateSubtaskAction,
+		onMutate: async (variables) => {
+			// Cancel any outgoing refetches
+			await queryClient.cancelQueries({ queryKey: ["tasks", user.id] });
 
-      // Snapshot the previous value
-      const previousTasks = queryClient.getQueryData(['tasks', user.id]);
+			// Snapshot the previous value
+			const previousTasks = queryClient.getQueryData(["tasks", user.id]);
 
-      // Optimistically update
-      queryClient.setQueryData(['tasks', user.id], (old: Task[] | undefined) =>
-        old?.map((t) =>
-          t.id === variables.task_id
-            ? {
-                ...t,
-                subtasks: t.subtasks?.map((s) =>
-                  s.id === variables.id
-                    ? { ...s, is_completed: variables.is_completed }
-                    : s,
-                ),
-              }
-            : t,
-        ),
-      );
+			// Optimistically update
+			queryClient.setQueryData(["tasks", user.id], (old: Task[] | undefined) =>
+				old?.map((t) =>
+					t.id === variables.task_id
+						? {
+								...t,
+								subtasks: t.subtasks?.map((s) =>
+									s.id === variables.id
+										? { ...s, is_completed: variables.is_completed }
+										: s,
+								),
+							}
+						: t,
+				),
+			);
 
-      return { previousTasks };
-    },
-    onError: (err, _variables, context) => {
-      // Revert the optimistic update
-      queryClient.setQueryData(['tasks', user.id], context?.previousTasks);
-    },
-    onSettled: () => {
-      // Always refetch after error or success
-      queryClient.invalidateQueries({ queryKey: ['tasks', user.id] });
-    },
-  });
+			return { previousTasks };
+		},
+		onError: (err, _variables, context) => {
+			// Revert the optimistic update
+			queryClient.setQueryData(["tasks", user.id], context?.previousTasks);
+		},
+		onSettled: () => {
+			// Always refetch after error or success
+			queryClient.invalidateQueries({ queryKey: ["tasks", user.id] });
+		},
+	});
 }
 
 export function useResetTasks() {
-  const queryClient = useQueryClient();
-  const { user } = useUserWorkspace();
+	const queryClient = useQueryClient();
+	const { user } = useUserWorkspace();
 
-  return useMutation({
-    mutationFn: resetTasksAction,
-    onSuccess: () => {
-      const ctx = {
-        name: 'reset-tasks',
-        userId: user.id,
-      };
-      logger.info(ctx, 'Tasks reset successfully');
-      queryClient.invalidateQueries({ queryKey: ['tasks', user.id] });
-    },
-    onError: (error) => {
-      const ctx = {
-        name: 'reset-tasks',
-        userId: user.id,
-      };
-      logger.error(ctx, 'Failed to reset tasks', { error });
-    },
-  });
+	return useMutation({
+		mutationFn: resetTasksAction,
+		onSuccess: () => {
+			const ctx = {
+				name: "reset-tasks",
+				userId: user.id,
+			};
+			logger.info(ctx, "Tasks reset successfully");
+			queryClient.invalidateQueries({ queryKey: ["tasks", user.id] });
+		},
+		onError: (error) => {
+			const ctx = {
+				name: "reset-tasks",
+				userId: user.id,
+			};
+			logger.error(ctx, "Failed to reset tasks", { error });
+		},
+	});
 }

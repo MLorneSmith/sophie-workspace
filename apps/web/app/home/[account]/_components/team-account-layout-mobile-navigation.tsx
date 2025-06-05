@@ -1,185 +1,185 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
-import { Home, LogOut, Menu } from 'lucide-react';
+import { Home, LogOut, Menu } from "lucide-react";
 
-import { AccountSelector } from '@kit/accounts/account-selector';
-import { useSignOut } from '@kit/supabase/hooks/use-sign-out';
+import { AccountSelector } from "@kit/accounts/account-selector";
+import { useSignOut } from "@kit/supabase/hooks/use-sign-out";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@kit/ui/dialog';
+	Dialog,
+	DialogContent,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "@kit/ui/dialog";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@kit/ui/dropdown-menu';
-import { Trans } from '@kit/ui/trans';
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from "@kit/ui/dropdown-menu";
+import { Trans } from "@kit/ui/trans";
 
-import featureFlagsConfig from '~/config/feature-flags.config';
-import pathsConfig from '~/config/paths.config';
-import { getTeamAccountSidebarConfig } from '~/config/team-account-navigation.config';
+import featureFlagsConfig from "~/config/feature-flags.config";
+import pathsConfig from "~/config/paths.config";
+import { getTeamAccountSidebarConfig } from "~/config/team-account-navigation.config";
 
 type Accounts = Array<{
-  label: string | null;
-  value: string | null;
-  image: string | null;
+	label: string | null;
+	value: string | null;
+	image: string | null;
 }>;
 
 const features = {
-  enableTeamAccounts: featureFlagsConfig.enableTeamAccounts,
-  enableTeamCreation: featureFlagsConfig.enableTeamCreation,
+	enableTeamAccounts: featureFlagsConfig.enableTeamAccounts,
+	enableTeamCreation: featureFlagsConfig.enableTeamCreation,
 };
 
 export const TeamAccountLayoutMobileNavigation = (
-  props: React.PropsWithChildren<{
-    account: string;
-    userId: string;
-    accounts: Accounts;
-  }>,
+	props: React.PropsWithChildren<{
+		account: string;
+		userId: string;
+		accounts: Accounts;
+	}>,
 ) => {
-  const signOut = useSignOut();
+	const signOut = useSignOut();
 
-  const Links = getTeamAccountSidebarConfig(props.account).routes.map(
-    (item, index) => {
-      if ('children' in item) {
-        return item.children.map((child) => {
-          return (
-            <DropdownLink
-              key={child.path}
-              Icon={child.Icon}
-              path={child.path}
-              label={child.label}
-            />
-          );
-        });
-      }
+	const Links = getTeamAccountSidebarConfig(props.account).routes.map(
+		(item, index) => {
+			if ("children" in item) {
+				return item.children.map((child) => {
+					return (
+						<DropdownLink
+							key={child.path}
+							Icon={child.Icon}
+							path={child.path}
+							label={child.label}
+						/>
+					);
+				});
+			}
 
-      if ('divider' in item) {
-        return <DropdownMenuSeparator key={index} />;
-      }
-    },
-  );
+			if ("divider" in item) {
+				return <DropdownMenuSeparator key={index} />;
+			}
+		},
+	);
 
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger>
-        <Menu className={'h-9'} />
-      </DropdownMenuTrigger>
+	return (
+		<DropdownMenu>
+			<DropdownMenuTrigger>
+				<Menu className={"h-9"} />
+			</DropdownMenuTrigger>
 
-      <DropdownMenuContent sideOffset={10} className={'w-screen rounded-none'}>
-        <TeamAccountsModal
-          userId={props.userId}
-          accounts={props.accounts}
-          account={props.account}
-        />
+			<DropdownMenuContent sideOffset={10} className={"w-screen rounded-none"}>
+				<TeamAccountsModal
+					userId={props.userId}
+					accounts={props.accounts}
+					account={props.account}
+				/>
 
-        {Links}
+				{Links}
 
-        <DropdownMenuSeparator />
+				<DropdownMenuSeparator />
 
-        <SignOutDropdownItem onSignOut={() => signOut.mutateAsync()} />
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
+				<SignOutDropdownItem onSignOut={() => signOut.mutateAsync()} />
+			</DropdownMenuContent>
+		</DropdownMenu>
+	);
 };
 
 function DropdownLink(
-  props: React.PropsWithChildren<{
-    path: string;
-    label: string;
-    Icon: React.ReactNode;
-  }>,
+	props: React.PropsWithChildren<{
+		path: string;
+		label: string;
+		Icon: React.ReactNode;
+	}>,
 ) {
-  return (
-    <DropdownMenuItem asChild>
-      <Link
-        href={props.path}
-        className={'flex h-12 w-full items-center gap-x-3 px-3'}
-      >
-        {props.Icon}
+	return (
+		<DropdownMenuItem asChild>
+			<Link
+				href={props.path}
+				className={"flex h-12 w-full items-center gap-x-3 px-3"}
+			>
+				{props.Icon}
 
-        <span>
-          <Trans i18nKey={props.label} defaults={props.label} />
-        </span>
-      </Link>
-    </DropdownMenuItem>
-  );
+				<span>
+					<Trans i18nKey={props.label} defaults={props.label} />
+				</span>
+			</Link>
+		</DropdownMenuItem>
+	);
 }
 
 function SignOutDropdownItem(
-  props: React.PropsWithChildren<{
-    onSignOut: () => unknown;
-  }>,
+	props: React.PropsWithChildren<{
+		onSignOut: () => unknown;
+	}>,
 ) {
-  return (
-    <DropdownMenuItem
-      className={'flex h-12 w-full items-center space-x-2'}
-      onClick={props.onSignOut}
-    >
-      <LogOut className={'h-4'} />
+	return (
+		<DropdownMenuItem
+			className={"flex h-12 w-full items-center space-x-2"}
+			onClick={props.onSignOut}
+		>
+			<LogOut className={"h-4"} />
 
-      <span>
-        <Trans i18nKey={'common:signOut'} />
-      </span>
-    </DropdownMenuItem>
-  );
+			<span>
+				<Trans i18nKey={"common:signOut"} />
+			</span>
+		</DropdownMenuItem>
+	);
 }
 
 function TeamAccountsModal(props: {
-  accounts: Accounts;
-  userId: string;
-  account: string;
+	accounts: Accounts;
+	userId: string;
+	account: string;
 }) {
-  const router = useRouter();
+	const router = useRouter();
 
-  return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <DropdownMenuItem
-          className={'flex h-12 w-full items-center space-x-2'}
-          onSelect={(e) => e.preventDefault()}
-        >
-          <Home className={'h-4'} />
+	return (
+		<Dialog>
+			<DialogTrigger asChild>
+				<DropdownMenuItem
+					className={"flex h-12 w-full items-center space-x-2"}
+					onSelect={(e) => e.preventDefault()}
+				>
+					<Home className={"h-4"} />
 
-          <span>
-            <Trans i18nKey={'common:yourAccounts'} />
-          </span>
-        </DropdownMenuItem>
-      </DialogTrigger>
+					<span>
+						<Trans i18nKey={"common:yourAccounts"} />
+					</span>
+				</DropdownMenuItem>
+			</DialogTrigger>
 
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>
-            <Trans i18nKey={'common:yourAccounts'} />
-          </DialogTitle>
-        </DialogHeader>
+			<DialogContent>
+				<DialogHeader>
+					<DialogTitle>
+						<Trans i18nKey={"common:yourAccounts"} />
+					</DialogTitle>
+				</DialogHeader>
 
-        <div className={'py-6'}>
-          <AccountSelector
-            className={'w-full max-w-full'}
-            collisionPadding={0}
-            userId={props.userId}
-            accounts={props.accounts}
-            features={features}
-            selectedAccount={props.account}
-            onAccountChange={(value) => {
-              const path = value
-                ? pathsConfig.app.accountHome.replace('[account]', value)
-                : pathsConfig.app.home;
+				<div className={"py-6"}>
+					<AccountSelector
+						className={"w-full max-w-full"}
+						collisionPadding={0}
+						userId={props.userId}
+						accounts={props.accounts}
+						features={features}
+						selectedAccount={props.account}
+						onAccountChange={(value) => {
+							const path = value
+								? pathsConfig.app.accountHome.replace("[account]", value)
+								: pathsConfig.app.home;
 
-              router.replace(path);
-            }}
-          />
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
+							router.replace(path);
+						}}
+					/>
+				</div>
+			</DialogContent>
+		</Dialog>
+	);
 }

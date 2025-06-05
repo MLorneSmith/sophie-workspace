@@ -1,5 +1,5 @@
-import { CloudConfig, GitHubConfig, LocalConfig } from '@keystatic/core';
-import { z } from 'zod';
+import type { CloudConfig, GitHubConfig, LocalConfig } from "@keystatic/core";
+import { z } from "zod";
 
 type ZodOutputFor<T> = z.ZodType<T, z.ZodTypeDef, unknown>;
 
@@ -12,10 +12,10 @@ type ZodOutputFor<T> = z.ZodType<T, z.ZodTypeDef, unknown>;
  *
  */
 const STORAGE_KIND =
-  process.env.NEXT_PUBLIC_KEYSTATIC_STORAGE_KIND ??
-  /* @deprecated */
-  process.env.KEYSTATIC_STORAGE_KIND ??
-  'local';
+	process.env.NEXT_PUBLIC_KEYSTATIC_STORAGE_KIND ??
+	/* @deprecated */
+	process.env.KEYSTATIC_STORAGE_KIND ??
+	"local";
 
 /**
  * @name REPO
@@ -23,9 +23,9 @@ const STORAGE_KIND =
  * This can be provided through the `NEXT_PUBLIC_KEYSTATIC_STORAGE_REPO` environment variable. The previous environment variable `KEYSTATIC_STORAGE_REPO` is deprecated.
  */
 const REPO =
-  process.env.NEXT_PUBLIC_KEYSTATIC_STORAGE_REPO ??
-  /* @deprecated */
-  process.env.KEYSTATIC_STORAGE_REPO;
+	process.env.NEXT_PUBLIC_KEYSTATIC_STORAGE_REPO ??
+	/* @deprecated */
+	process.env.KEYSTATIC_STORAGE_REPO;
 
 const BRANCH_PREFIX = process.env.KEYSTATIC_STORAGE_BRANCH_PREFIX;
 const PATH_PREFIX = process.env.KEYSTATIC_PATH_PREFIX;
@@ -36,34 +36,34 @@ const PROJECT = process.env.KEYSTATIC_STORAGE_PROJECT;
  * @description The configuration for the local storage.
  */
 const local = z.object({
-  kind: z.literal('local'),
-}) satisfies ZodOutputFor<LocalConfig['storage']>;
+	kind: z.literal("local"),
+}) satisfies ZodOutputFor<LocalConfig["storage"]>;
 
 /**
  * @name cloud
  * @description The configuration for the cloud storage.
  */
 const cloud = z.object({
-  kind: z.literal('cloud'),
-  project: z
-    .string({
-      description: `The Keystatic Cloud project. Please provide the value through the "KEYSTATIC_STORAGE_PROJECT" environment variable.`,
-    })
-    .min(1),
-  branchPrefix: z.string().optional(),
-  pathPrefix: z.string().optional(),
-}) satisfies ZodOutputFor<CloudConfig['storage']>;
+	kind: z.literal("cloud"),
+	project: z
+		.string({
+			description: `The Keystatic Cloud project. Please provide the value through the "KEYSTATIC_STORAGE_PROJECT" environment variable.`,
+		})
+		.min(1),
+	branchPrefix: z.string().optional(),
+	pathPrefix: z.string().optional(),
+}) satisfies ZodOutputFor<CloudConfig["storage"]>;
 
 /**
  * @name github
  * @description The configuration for the GitHub storage.
  */
 const github = z.object({
-  kind: z.literal('github'),
-  repo: z.custom<`${string}/${string}`>(),
-  branchPrefix: z.string().optional(),
-  pathPrefix: z.string().optional(),
-}) satisfies ZodOutputFor<GitHubConfig['storage']>;
+	kind: z.literal("github"),
+	repo: z.custom<`${string}/${string}`>(),
+	branchPrefix: z.string().optional(),
+	pathPrefix: z.string().optional(),
+}) satisfies ZodOutputFor<GitHubConfig["storage"]>;
 
 /**
  * @name KeystaticStorage
@@ -71,9 +71,9 @@ const github = z.object({
  * This configuration is validated through Zod to ensure that the configuration is correct.
  */
 export const KeystaticStorage = z.union([local, cloud, github]).parse({
-  kind: STORAGE_KIND,
-  project: PROJECT,
-  repo: REPO,
-  branchPrefix: BRANCH_PREFIX,
-  pathPrefix: PATH_PREFIX,
+	kind: STORAGE_KIND,
+	project: PROJECT,
+	repo: REPO,
+	branchPrefix: BRANCH_PREFIX,
+	pathPrefix: PATH_PREFIX,
 });

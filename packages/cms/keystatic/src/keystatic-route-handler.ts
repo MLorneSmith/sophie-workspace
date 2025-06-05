@@ -1,9 +1,9 @@
-import { makeRouteHandler } from '@keystatic/next/route-handler';
+import { makeRouteHandler } from "@keystatic/next/route-handler";
 
-import { keyStaticConfig } from './keystatic.config';
+import { keyStaticConfig } from "./keystatic.config";
 
 const handlers = makeRouteHandler({
-  config: keyStaticConfig,
+	config: keyStaticConfig,
 });
 
 /**
@@ -12,11 +12,11 @@ const handlers = makeRouteHandler({
  * @param routeHandler
  */
 function productionGuard(routeHandler: (req: Request) => Promise<Response>) {
-  if (process.env.NODE_ENV === 'production') {
-    return new Response('Not found', { status: 404 });
-  }
+	if (process.env.NODE_ENV === "production") {
+		return new Response("Not found", { status: 404 });
+	}
 
-  return (req: Request) => routeHandler(req);
+	return (req: Request) => routeHandler(req);
 }
 
 /**
@@ -24,6 +24,6 @@ function productionGuard(routeHandler: (req: Request) => Promise<Response>) {
  * @description Route handlers for keystatic
  */
 export const keystaticRouteHandlers = {
-  POST: productionGuard(handlers.POST),
-  GET: productionGuard(handlers.GET),
+	POST: productionGuard(handlers.POST),
+	GET: productionGuard(handlers.GET),
 };

@@ -1,9 +1,9 @@
-import 'server-only';
+import "server-only";
 
-import { SupabaseClient } from '@supabase/supabase-js';
+import type { SupabaseClient } from "@supabase/supabase-js";
 
-import { loadTeamWorkspace } from '~/home/[account]/_lib/server/team-account-workspace.loader';
-import { Database } from '~/lib/database.types';
+import { loadTeamWorkspace } from "~/home/[account]/_lib/server/team-account-workspace.loader";
+import type { Database } from "~/lib/database.types";
 
 /**
  * Load data for the members page
@@ -11,15 +11,15 @@ import { Database } from '~/lib/database.types';
  * @param slug
  */
 export async function loadMembersPageData(
-  client: SupabaseClient<Database>,
-  slug: string,
+	client: SupabaseClient<Database>,
+	slug: string,
 ) {
-  return Promise.all([
-    loadAccountMembers(client, slug),
-    loadInvitations(client, slug),
-    canAddMember,
-    loadTeamWorkspace(slug),
-  ]);
+	return Promise.all([
+		loadAccountMembers(client, slug),
+		loadInvitations(client, slug),
+		canAddMember,
+		loadTeamWorkspace(slug),
+	]);
 }
 
 /**
@@ -33,7 +33,7 @@ export async function loadMembersPageData(
  *
  */
 async function canAddMember() {
-  return Promise.resolve(true);
+	return Promise.resolve(true);
 }
 
 /**
@@ -42,19 +42,19 @@ async function canAddMember() {
  * @param account
  */
 async function loadAccountMembers(
-  client: SupabaseClient<Database>,
-  account: string,
+	client: SupabaseClient<Database>,
+	account: string,
 ) {
-  const { data, error } = await client.rpc('get_account_members', {
-    account_slug: account,
-  });
+	const { data, error } = await client.rpc("get_account_members", {
+		account_slug: account,
+	});
 
-  if (error) {
-    console.error(error);
-    throw error;
-  }
+	if (error) {
+		console.error(error);
+		throw error;
+	}
 
-  return data ?? [];
+	return data ?? [];
 }
 
 /**
@@ -63,17 +63,17 @@ async function loadAccountMembers(
  * @param account
  */
 async function loadInvitations(
-  client: SupabaseClient<Database>,
-  account: string,
+	client: SupabaseClient<Database>,
+	account: string,
 ) {
-  const { data, error } = await client.rpc('get_account_invitations', {
-    account_slug: account,
-  });
+	const { data, error } = await client.rpc("get_account_invitations", {
+		account_slug: account,
+	});
 
-  if (error) {
-    console.error(error);
-    throw error;
-  }
+	if (error) {
+		console.error(error);
+		throw error;
+	}
 
-  return data ?? [];
+	return data ?? [];
 }

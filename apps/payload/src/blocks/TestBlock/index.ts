@@ -1,3 +1,3 @@
-import { TestBlock } from './config'
+import { TestBlock } from "./config";
 
-export default TestBlock
+export default TestBlock;

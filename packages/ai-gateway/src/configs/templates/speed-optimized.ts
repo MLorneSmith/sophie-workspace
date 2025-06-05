@@ -24,69 +24,69 @@
  * - Semantic caching to maximize hit rates
  * - User-specific namespacing to prevent conflicts
  */
-import { type Config } from '../types';
+import type { Config } from "../types";
 import {
-  type CacheNamespaceOptions,
-  addCacheNamespace,
-} from '../utils/cache-namespace';
+	type CacheNamespaceOptions,
+	addCacheNamespace,
+} from "../utils/cache-namespace";
 import {
-  type ForceRefreshCondition,
-  TimeBasedConditions,
-  UserRequestCondition,
-  withForceRefresh,
-} from '../utils/force-refresh';
+	type ForceRefreshCondition,
+	TimeBasedConditions,
+	UserRequestCondition,
+	withForceRefresh,
+} from "../utils/force-refresh";
 
 export function createSpeedOptimizedConfig(
-  namespaceOptions: CacheNamespaceOptions,
-  contentVersion?: string,
+	namespaceOptions: CacheNamespaceOptions,
+	contentVersion?: string,
 ): Config {
-  // Base configuration
-  const baseConfig: Config = {
-    strategy: {
-      mode: 'fallback',
-    },
-    targets: [
-      {
-        provider: 'groq',
-        override_params: {
-          model: 'llama-3.1-8b-instant',
-          temperature: 0.7,
-          max_tokens: 150,
-          response_format: { type: 'text' },
-        },
-      },
-      {
-        // Fallback to a reliable model if primary fails
-        provider: 'openai',
-        override_params: {
-          model: 'gpt-3.5-turbo',
-          temperature: 0.7,
-          max_tokens: 150,
-        },
-      },
-    ],
-    cache: {
-      mode: 'semantic',
-      max_age: 1800, // 30 minutes
-    },
-  };
+	// Base configuration
+	const baseConfig: Config = {
+		strategy: {
+			mode: "fallback",
+		},
+		targets: [
+			{
+				provider: "groq",
+				override_params: {
+					model: "llama-3.1-8b-instant",
+					temperature: 0.7,
+					max_tokens: 150,
+					response_format: { type: "text" },
+				},
+			},
+			{
+				// Fallback to a reliable model if primary fails
+				provider: "openai",
+				override_params: {
+					model: "gpt-3.5-turbo",
+					temperature: 0.7,
+					max_tokens: 150,
+				},
+			},
+		],
+		cache: {
+			mode: "semantic",
+			max_age: 1800, // 30 minutes
+		},
+	};
 
-  // Add cache namespace
-  const withNamespace = addCacheNamespace(baseConfig, namespaceOptions);
+	// Add cache namespace
+	const withNamespace = addCacheNamespace(baseConfig, namespaceOptions);
 
-  // Build force refresh conditions
-  const conditions: ForceRefreshCondition[] = [
-    TimeBasedConditions.HOURLY,
-    UserRequestCondition,
-  ];
+	// Build force refresh conditions
+	const conditions: ForceRefreshCondition[] = [
+		TimeBasedConditions.HOURLY,
+		UserRequestCondition,
+	];
 
-  // Add content version condition if provided
-  if (contentVersion) {
-    conditions.push({
-      type: 'content_change',
-      value: contentVersion,
-    });
-  }
+	// Add content version condition if provided
+	if (contentVersion) {
+		conditions.push({
+			type: "content_change",
+			value: contentVersion,
+		});
+	}
 
-  return withForceRefresh(withNamespace, conditions);
+	return withForceRefresh(withNamespace, conditions);
 }

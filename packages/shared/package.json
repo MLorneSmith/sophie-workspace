@@ -1,60 +1,58 @@
 {
-  "name": "@kit/shared",
-  "private": true,
-  "version": "0.1.0",
-  "scripts": {
-    "clean": "git clean -xdf .turbo node_modules",
-    "format": "prettier --check \"**/*.{ts,tsx}\"",
-    "lint": "eslint .",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest",
-    "test:run": "vitest run",
-    "test:watch": "vitest watch",
-    "test:coverage": "vitest run --coverage"
-  },
-  "prettier": "@kit/prettier-config",
-  "exports": {
-    "./logger": {
-      "types": "./dist/logger/index.d.ts",
-      "import": "./src/logger/index.ts",
-      "default": "./src/logger/index.ts"
-    },
-    "./utils": {
-      "types": "./dist/utils.d.ts",
-      "import": "./src/utils.ts",
-      "default": "./src/utils.ts"
-    },
-    "./hooks": {
-      "types": "./dist/hooks/index.d.ts",
-      "import": "./src/hooks/index.ts",
-      "default": "./src/hooks/index.ts"
-    },
-    "./events": {
-      "types": "./dist/events/index.d.ts",
-      "import": "./src/events/index.tsx",
-      "default": "./src/events/index.tsx"
-    },
-    "./registry": {
-      "types": "./dist/registry/index.d.ts",
-      "import": "./src/registry/index.ts",
-      "default": "./src/registry/index.ts"
-    }
-  },
-  "devDependencies": {
-    "@kit/eslint-config": "workspace:*",
-    "@kit/prettier-config": "workspace:*",
-    "@kit/tsconfig": "workspace:*",
-    "@types/react": "19.1.6"
-  },
-  "dependencies": {
-    "pino": "^9.6.0",
-    "zod": "^3.25.7"
-  },
-  "typesVersions": {
-    "*": {
-      "*": [
-        "src/*"
-      ]
-    }
-  }
+	"name": "@kit/shared",
+	"private": true,
+	"version": "0.1.0",
+	"scripts": {
+		"clean": "git clean -xdf .turbo node_modules",
+		"format": "prettier --check \"**/*.{ts,tsx}\"",
+		"lint": "eslint .",
+		"typecheck": "tsc --noEmit",
+		"test": "vitest",
+		"test:run": "vitest run",
+		"test:watch": "vitest watch",
+		"test:coverage": "vitest run --coverage"
+	},
+	"prettier": "@kit/prettier-config",
+	"exports": {
+		"./logger": {
+			"types": "./dist/logger/index.d.ts",
+			"import": "./src/logger/index.ts",
+			"default": "./src/logger/index.ts"
+		},
+		"./utils": {
+			"types": "./dist/utils.d.ts",
+			"import": "./src/utils.ts",
+			"default": "./src/utils.ts"
+		},
+		"./hooks": {
+			"types": "./dist/hooks/index.d.ts",
+			"import": "./src/hooks/index.ts",
+			"default": "./src/hooks/index.ts"
+		},
+		"./events": {
+			"types": "./dist/events/index.d.ts",
+			"import": "./src/events/index.tsx",
+			"default": "./src/events/index.tsx"
+		},
+		"./registry": {
+			"types": "./dist/registry/index.d.ts",
+			"import": "./src/registry/index.ts",
+			"default": "./src/registry/index.ts"
+		}
+	},
+	"devDependencies": {
+		"@kit/eslint-config": "workspace:*",
+		"@kit/prettier-config": "workspace:*",
+		"@kit/tsconfig": "workspace:*",
+		"@types/react": "19.1.6"
+	},
+	"dependencies": {
+		"pino": "^9.6.0",
+		"zod": "^3.25.7"
+	},
+	"typesVersions": {
+		"*": {
+			"*": ["src/*"]
+		}
+	}
 }

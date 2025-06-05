@@ -1,6 +1,6 @@
-import { useContext, useMemo } from 'react';
+import { useContext, useMemo } from "react";
 
-import { Captcha } from './captcha-provider';
+import { Captcha } from "./captcha-provider";
 
 /**
  * @name useCaptchaToken
@@ -8,16 +8,16 @@ import { Captcha } from './captcha-provider';
  * @returns The captcha token and reset function
  */
 export function useCaptchaToken() {
-  const context = useContext(Captcha);
+	const context = useContext(Captcha);
 
-  if (!context) {
-    throw new Error(`useCaptchaToken must be used within a CaptchaProvider`);
-  }
+	if (!context) {
+		throw new Error("useCaptchaToken must be used within a CaptchaProvider");
+	}
 
-  return useMemo(() => {
-    return {
-      captchaToken: context.token,
-      resetCaptchaToken: () => context.instance?.reset(),
-    };
-  }, [context]);
+	return useMemo(() => {
+		return {
+			captchaToken: context.token,
+			resetCaptchaToken: () => context.instance?.reset(),
+		};
+	}, [context]);
 }

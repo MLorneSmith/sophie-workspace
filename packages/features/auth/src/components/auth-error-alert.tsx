@@ -1,7 +1,7 @@
-import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
+import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 
-import { Alert, AlertDescription, AlertTitle } from '@kit/ui/alert';
-import { Trans } from '@kit/ui/trans';
+import { Alert, AlertDescription, AlertTitle } from "@kit/ui/alert";
+import { Trans } from "@kit/ui/trans";
 
 /**
  * @name AuthErrorAlert
@@ -12,32 +12,32 @@ import { Trans } from '@kit/ui/trans';
  * @constructor
  */
 export function AuthErrorAlert({
-  error,
+	error,
 }: {
-  error: Error | null | undefined | string;
+	error: Error | null | undefined | string;
 }) {
-  if (!error) {
-    return null;
-  }
+	if (!error) {
+		return null;
+	}
 
-  const DefaultError = <Trans i18nKey="auth:errors.default" />;
-  const errorCode = error instanceof Error ? error.message : error;
+	const DefaultError = <Trans i18nKey="auth:errors.default" />;
+	const errorCode = error instanceof Error ? error.message : error;
 
-  return (
-    <Alert variant={'destructive'}>
-      <ExclamationTriangleIcon className={'w-4'} />
+	return (
+		<Alert variant={"destructive"}>
+			<ExclamationTriangleIcon className={"w-4"} />
 
-      <AlertTitle>
-        <Trans i18nKey={`auth:errorAlertHeading`} />
-      </AlertTitle>
+			<AlertTitle>
+				<Trans i18nKey={"auth:errorAlertHeading"} />
+			</AlertTitle>
 
-      <AlertDescription data-test={'auth-error-message'}>
-        <Trans
-          i18nKey={`auth:errors.${errorCode}`}
-          defaults={'<DefaultError />'}
-          components={{ DefaultError }}
-        />
-      </AlertDescription>
-    </Alert>
-  );
+			<AlertDescription data-test={"auth-error-message"}>
+				<Trans
+					i18nKey={`auth:errors.${errorCode}`}
+					defaults={"<DefaultError />"}
+					components={{ DefaultError }}
+				/>
+			</AlertDescription>
+		</Alert>
+	);
 }

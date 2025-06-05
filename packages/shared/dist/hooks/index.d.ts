@@ -1,2 +1,2 @@
-export * from './use-csrf-token';
+export * from "./use-csrf-token";
 //# sourceMappingURL=index.d.ts.map

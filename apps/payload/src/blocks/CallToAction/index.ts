@@ -1,3 +1,3 @@
-import { CallToAction } from './config'
+import { CallToAction } from "./config";
 
-export default CallToAction
+export default CallToAction;

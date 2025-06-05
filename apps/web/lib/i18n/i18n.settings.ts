@@ -1,11 +1,11 @@
-import { createI18nSettings } from '@kit/i18n';
+import { createI18nSettings } from "@kit/i18n";
 
 /**
  * The default language of the application.
  * This is used as a fallback language when the selected language is not supported.
  *
  */
-const defaultLanguage = process.env.NEXT_PUBLIC_DEFAULT_LOCALE ?? 'en';
+const defaultLanguage = process.env.NEXT_PUBLIC_DEFAULT_LOCALE ?? "en";
 
 /**
  * The list of supported languages.
@@ -17,7 +17,7 @@ export const languages: string[] = [defaultLanguage];
 /**
  * The name of the cookie that stores the selected language.
  */
-export const I18N_COOKIE_NAME = 'lang';
+export const I18N_COOKIE_NAME = "lang";
 
 /**
  * The default array of Internationalization (i18n) namespaces.
@@ -26,15 +26,15 @@ export const I18N_COOKIE_NAME = 'lang';
  * Add your own namespaces here
  **/
 export const defaultI18nNamespaces = [
-  'common',
-  'auth',
-  'account',
-  'teams',
-  'billing',
-  'marketing',
-  'testimonials',
-  'kanban',
-  'assessment',
+	"common",
+	"auth",
+	"account",
+	"teams",
+	"billing",
+	"marketing",
+	"testimonials",
+	"kanban",
+	"assessment",
 ];
 
 /**
@@ -44,22 +44,22 @@ export const defaultI18nNamespaces = [
  * @param ns
  */
 export function getI18nSettings(
-  language: string | undefined,
-  ns: string | string[] = defaultI18nNamespaces,
+	language: string | undefined,
+	ns: string | string[] = defaultI18nNamespaces,
 ) {
-  let lng = language ?? defaultLanguage;
+	let lng = language ?? defaultLanguage;
 
-  if (!languages.includes(lng)) {
-    console.warn(
-      `Language "${lng}" is not supported. Falling back to "${defaultLanguage}"`,
-    );
+	if (!languages.includes(lng)) {
+		console.warn(
+			`Language "${lng}" is not supported. Falling back to "${defaultLanguage}"`,
+		);
 
-    lng = defaultLanguage;
-  }
+		lng = defaultLanguage;
+	}
 
-  return createI18nSettings({
-    language: lng,
-    namespaces: ns,
-    languages,
-  });
+	return createI18nSettings({
+		language: lng,
+		namespaces: ns,
+		languages,
+	});
 }

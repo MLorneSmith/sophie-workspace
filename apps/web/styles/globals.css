@@ -5,14 +5,14 @@
  */
 
 /* Tailwind CSS */
-@import 'tailwindcss';
+@import "tailwindcss";
 
 /* local styles - update the below if you add a new style */
-@import './theme.css';
-@import './theme.utilities.css';
-@import './shadcn-ui.css';
-@import './markdoc.css';
-@import './makerkit.css';
+@import "./theme.css";
+@import "./theme.utilities.css";
+@import "./shadcn-ui.css";
+@import "./markdoc.css";
+@import "./makerkit.css";
 
 /* plugins - update the below if you add a new plugin */
 @plugin "tailwindcss-animate";
@@ -29,21 +29,21 @@
 @variant dark (&:where(.dark, .dark *));
 
 @layer base {
-  body {
-    @apply bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
-  }
+	body {
+		@apply bg-background text-foreground;
+		font-feature-settings: "rlig" 1, "calt" 1;
+	}
 
-  *,
-  ::after,
-  ::before,
-  ::backdrop,
-  ::file-selector-button {
-    border-color: var(--border, currentColor);
-  }
+	*,
+	::after,
+	::before,
+	::backdrop,
+	::file-selector-button {
+		border-color: var(--border, currentColor);
+	}
 
-  input::placeholder,
-  textarea::placeholder {
-    color: theme(--color-muted-foreground);
-  }
+	input::placeholder,
+	textarea::placeholder {
+		color: theme(--color-muted-foreground);
+	}
 }

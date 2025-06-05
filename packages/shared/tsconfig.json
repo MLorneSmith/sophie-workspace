@@ -1,14 +1,14 @@
 {
-  "extends": "../../tooling/typescript/base.json",
-  "compilerOptions": {
-    "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json",
-    "declaration": true,
-    "declarationMap": true,
-    "composite": true,
-    "outDir": "dist",
-    "noEmit": false,
-    "rootDir": "src"
-  },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist"]
+	"extends": "../../tooling/typescript/base.json",
+	"compilerOptions": {
+		"tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json",
+		"declaration": true,
+		"declarationMap": true,
+		"composite": true,
+		"outDir": "dist",
+		"noEmit": false,
+		"rootDir": "src"
+	},
+	"include": ["src/**/*"],
+	"exclude": ["node_modules", "dist"]
 }

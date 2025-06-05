@@ -1,10 +1,10 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export const RoleSchema = z.object({
-  role: z.string().min(1),
+	role: z.string().min(1),
 });
 
 export const UpdateMemberRoleSchema = RoleSchema.extend({
-  accountId: z.string().uuid(),
-  userId: z.string().uuid(),
+	accountId: z.string().uuid(),
+	userId: z.string().uuid(),
 });

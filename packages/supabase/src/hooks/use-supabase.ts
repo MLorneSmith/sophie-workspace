@@ -1,8 +1,8 @@
-import { useMemo } from 'react';
+import { useMemo } from "react";
 
-import { getSupabaseBrowserClient } from '../clients/browser-client';
-import { Database } from '../database.types';
+import { getSupabaseBrowserClient } from "../clients/browser-client";
+import type { Database } from "../database.types";
 
 export function useSupabase<Db = Database>() {
-  return useMemo(() => getSupabaseBrowserClient<Db>(), []);
+	return useMemo(() => getSupabaseBrowserClient<Db>(), []);
 }

@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * Type definitions for the Canvas editor
@@ -6,23 +6,23 @@
 
 // Valid section types in the Canvas application
 export type EditorContentTypes =
-  | 'situation'
-  | 'complication'
-  | 'answer'
-  | 'outline';
+	| "situation"
+	| "complication"
+	| "answer"
+	| "outline";
 
 // Tiptap node structure
 export interface TiptapNode {
-  type: string;
-  content?: TiptapNode[];
-  attrs?: Record<string, any>;
-  marks?: { type: string; attrs?: Record<string, any> }[];
-  text?: string;
+	type: string;
+	content?: TiptapNode[];
+	attrs?: Record<string, any>;
+	marks?: { type: string; attrs?: Record<string, any> }[];
+	text?: string;
 }
 
 // Tiptap document structure (root level)
 export interface TiptapDocument {
-  type: string;
-  content: TiptapNode[];
-  meta?: Record<string, any>;
+	type: string;
+	content: TiptapNode[];
+	meta?: Record<string, any>;
 }

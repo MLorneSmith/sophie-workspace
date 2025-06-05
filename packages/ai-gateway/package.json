@@ -1,24 +1,24 @@
 {
-  "name": "@kit/ai-gateway",
-  "version": "0.0.1",
-  "private": true,
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
-  "scripts": {
-    "lint": "eslint .",
-    "type-check": "tsc --noEmit",
-    "build": "tsc --noEmit"
-  },
-  "dependencies": {
-    "@kit/supabase": "workspace:*",
-    "openai": "^4.28.0",
-    "portkey-ai": "^0.1.0",
-    "zod": "^3.25.7"
-  },
-  "devDependencies": {
-    "@kit/tsconfig": "workspace:*",
-    "@types/node": "^22.15.19",
-    "eslint": "^9.27.0",
-    "typescript": "^5.8.3"
-  }
+	"name": "@kit/ai-gateway",
+	"version": "0.0.1",
+	"private": true,
+	"main": "./src/index.ts",
+	"types": "./src/index.ts",
+	"scripts": {
+		"lint": "eslint .",
+		"type-check": "tsc --noEmit",
+		"build": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@kit/supabase": "workspace:*",
+		"openai": "^4.28.0",
+		"portkey-ai": "^0.1.0",
+		"zod": "^3.25.7"
+	},
+	"devDependencies": {
+		"@kit/tsconfig": "workspace:*",
+		"@types/node": "^22.15.19",
+		"eslint": "^9.27.0",
+		"typescript": "^5.8.3"
+	}
 }

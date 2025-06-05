@@ -1,23 +1,23 @@
-import 'server-only';
+import "server-only";
 
-import { SupabaseClient } from '@supabase/supabase-js';
+import type { SupabaseClient } from "@supabase/supabase-js";
 
-import { Database } from '@kit/supabase/database';
+import type { Database } from "@kit/supabase/database";
 
-type Notification = Database['public']['Tables']['notifications'];
+type Notification = Database["public"]["Tables"]["notifications"];
 
 export function createNotificationsService(client: SupabaseClient<Database>) {
-  return new NotificationsService(client);
+	return new NotificationsService(client);
 }
 
 class NotificationsService {
-  constructor(private readonly client: SupabaseClient<Database>) {}
+	constructor(private readonly client: SupabaseClient<Database>) {}
 
-  async createNotification(params: Notification['Insert']) {
-    const { error } = await this.client.from('notifications').insert(params);
+	async createNotification(params: Notification["Insert"]) {
+		const { error } = await this.client.from("notifications").insert(params);
 
-    if (error) {
-      throw error;
-    }
-  }
+		if (error) {
+			throw error;
+		}
+	}
 }

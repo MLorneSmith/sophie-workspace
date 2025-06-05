@@ -1,21 +1,21 @@
-import 'server-only';
+import "server-only";
 
-import { SupabaseClient } from '@supabase/supabase-js';
+import type { SupabaseClient } from "@supabase/supabase-js";
 
-import { addDays, formatISO } from 'date-fns';
-import { z } from 'zod';
+import { addDays, formatISO } from "date-fns";
+import type { z } from "zod";
 
-import { getLogger } from '@kit/shared/logger';
-import { Database } from '@kit/supabase/database';
+import { getLogger } from "@kit/shared/logger";
+import type { Database } from "@kit/supabase/database";
 
-import type { DeleteInvitationSchema } from '../../schema/delete-invitation.schema';
-import type { InviteMembersSchema } from '../../schema/invite-members.schema';
-import type { UpdateInvitationSchema } from '../../schema/update-invitation.schema';
+import type { DeleteInvitationSchema } from "../../schema/delete-invitation.schema";
+import type { InviteMembersSchema } from "../../schema/invite-members.schema";
+import type { UpdateInvitationSchema } from "../../schema/update-invitation.schema";
 
 export function createAccountInvitationsService(
-  client: SupabaseClient<Database>,
+	client: SupabaseClient<Database>,
 ) {
-  return new AccountInvitationsService(client);
+	return new AccountInvitationsService(client);
 }
 
 /**
@@ -23,274 +23,274 @@ export function createAccountInvitationsService(
  * @description Service for managing account invitations.
  */
 class AccountInvitationsService {
-  private readonly namespace = 'invitations';
+	private readonly namespace = "invitations";
 
-  constructor(private readonly client: SupabaseClient<Database>) {}
+	constructor(private readonly client: SupabaseClient<Database>) {}
 
-  /**
-   * @name deleteInvitation
-   * @description Removes an invitation from the database.
-   * @param params
-   */
-  async deleteInvitation(params: z.infer<typeof DeleteInvitationSchema>) {
-    const logger = await getLogger();
+	/**
+	 * @name deleteInvitation
+	 * @description Removes an invitation from the database.
+	 * @param params
+	 */
+	async deleteInvitation(params: z.infer<typeof DeleteInvitationSchema>) {
+		const logger = await getLogger();
 
-    const ctx = {
-      name: this.namespace,
-      ...params,
-    };
+		const ctx = {
+			name: this.namespace,
+			...params,
+		};
 
-    logger.info(ctx, 'Removing invitation...');
+		logger.info(ctx, "Removing invitation...");
 
-    const { data, error } = await this.client
-      .from('invitations')
-      .delete()
-      .match({
-        id: params.invitationId,
-      });
+		const { data, error } = await this.client
+			.from("invitations")
+			.delete()
+			.match({
+				id: params.invitationId,
+			});
 
-    if (error) {
-      logger.error(ctx, `Failed to remove invitation`);
+		if (error) {
+			logger.error(ctx, "Failed to remove invitation");
 
-      throw error;
-    }
+			throw error;
+		}
 
-    logger.info(ctx, 'Invitation successfully removed');
+		logger.info(ctx, "Invitation successfully removed");
 
-    return data;
-  }
+		return data;
+	}
 
-  /**
-   * @name updateInvitation
-   * @param params
-   * @description Updates an invitation in the database.
-   */
-  async updateInvitation(params: z.infer<typeof UpdateInvitationSchema>) {
-    const logger = await getLogger();
+	/**
+	 * @name updateInvitation
+	 * @param params
+	 * @description Updates an invitation in the database.
+	 */
+	async updateInvitation(params: z.infer<typeof UpdateInvitationSchema>) {
+		const logger = await getLogger();
 
-    const ctx = {
-      name: this.namespace,
-      ...params,
-    };
+		const ctx = {
+			name: this.namespace,
+			...params,
+		};
 
-    logger.info(ctx, 'Updating invitation...');
+		logger.info(ctx, "Updating invitation...");
 
-    const { data, error } = await this.client
-      .from('invitations')
-      .update({
-        role: params.role,
-      })
-      .match({
-        id: params.invitationId,
-      });
+		const { data, error } = await this.client
+			.from("invitations")
+			.update({
+				role: params.role,
+			})
+			.match({
+				id: params.invitationId,
+			});
 
-    if (error) {
-      logger.error(
-        {
-          ...ctx,
-          error,
-        },
-        'Failed to update invitation',
-      );
+		if (error) {
+			logger.error(
+				{
+					...ctx,
+					error,
+				},
+				"Failed to update invitation",
+			);
 
-      throw error;
-    }
+			throw error;
+		}
 
-    logger.info(ctx, 'Invitation successfully updated');
+		logger.info(ctx, "Invitation successfully updated");
 
-    return data;
-  }
+		return data;
+	}
 
-  async validateInvitation(
-    invitation: z.infer<typeof InviteMembersSchema>['invitations'][number],
-    accountSlug: string,
-  ) {
-    const { data: members, error } = await this.client.rpc(
-      'get_account_members',
-      {
-        account_slug: accountSlug,
-      },
-    );
+	async validateInvitation(
+		invitation: z.infer<typeof InviteMembersSchema>["invitations"][number],
+		accountSlug: string,
+	) {
+		const { data: members, error } = await this.client.rpc(
+			"get_account_members",
+			{
+				account_slug: accountSlug,
+			},
+		);
 
-    if (error) {
-      throw error;
-    }
+		if (error) {
+			throw error;
+		}
 
-    const isUserAlreadyMember = members.find((member) => {
-      return member.email === invitation.email;
-    });
+		const isUserAlreadyMember = members.find((member) => {
+			return member.email === invitation.email;
+		});
 
-    if (isUserAlreadyMember) {
-      throw new Error('User already member of the team');
-    }
-  }
+		if (isUserAlreadyMember) {
+			throw new Error("User already member of the team");
+		}
+	}
 
-  /**
-   * @name sendInvitations
-   * @description Sends invitations to join a team.
-   * @param accountSlug
-   * @param invitations
-   */
-  async sendInvitations({
-    accountSlug,
-    invitations,
-  }: {
-    invitations: z.infer<typeof InviteMembersSchema>['invitations'];
-    accountSlug: string;
-  }) {
-    const logger = await getLogger();
+	/**
+	 * @name sendInvitations
+	 * @description Sends invitations to join a team.
+	 * @param accountSlug
+	 * @param invitations
+	 */
+	async sendInvitations({
+		accountSlug,
+		invitations,
+	}: {
+		invitations: z.infer<typeof InviteMembersSchema>["invitations"];
+		accountSlug: string;
+	}) {
+		const logger = await getLogger();
 
-    const ctx = {
-      accountSlug,
-      name: this.namespace,
-    };
+		const ctx = {
+			accountSlug,
+			name: this.namespace,
+		};
 
-    logger.info(ctx, 'Storing invitations...');
+		logger.info(ctx, "Storing invitations...");
 
-    try {
-      await Promise.all(
-        invitations.map((invitation) =>
-          this.validateInvitation(invitation, accountSlug),
-        ),
-      );
-    } catch (error) {
-      logger.error(
-        {
-          ...ctx,
-          error: (error as Error).message,
-        },
-        'Error validating invitations',
-      );
+		try {
+			await Promise.all(
+				invitations.map((invitation) =>
+					this.validateInvitation(invitation, accountSlug),
+				),
+			);
+		} catch (error) {
+			logger.error(
+				{
+					...ctx,
+					error: (error as Error).message,
+				},
+				"Error validating invitations",
+			);
 
-      throw error;
-    }
+			throw error;
+		}
 
-    const accountResponse = await this.client
-      .from('accounts')
-      .select('name')
-      .eq('slug', accountSlug)
-      .single();
+		const accountResponse = await this.client
+			.from("accounts")
+			.select("name")
+			.eq("slug", accountSlug)
+			.single();
 
-    if (!accountResponse.data) {
-      logger.error(
-        ctx,
-        'Account not found in database. Cannot send invitations.',
-      );
+		if (!accountResponse.data) {
+			logger.error(
+				ctx,
+				"Account not found in database. Cannot send invitations.",
+			);
 
-      throw new Error('Account not found');
-    }
+			throw new Error("Account not found");
+		}
 
-    const response = await this.client.rpc('add_invitations_to_account', {
-      invitations,
-      account_slug: accountSlug,
-    });
+		const response = await this.client.rpc("add_invitations_to_account", {
+			invitations,
+			account_slug: accountSlug,
+		});
 
-    if (response.error) {
-      logger.error(
-        {
-          ...ctx,
-          error: response.error,
-        },
-        `Failed to add invitations to account ${accountSlug}`,
-      );
+		if (response.error) {
+			logger.error(
+				{
+					...ctx,
+					error: response.error,
+				},
+				`Failed to add invitations to account ${accountSlug}`,
+			);
 
-      throw response.error;
-    }
+			throw response.error;
+		}
 
-    const responseInvitations = Array.isArray(response.data)
-      ? response.data
-      : [response.data];
+		const responseInvitations = Array.isArray(response.data)
+			? response.data
+			: [response.data];
 
-    logger.info(
-      {
-        ...ctx,
-        count: responseInvitations.length,
-      },
-      'Invitations added to account',
-    );
-  }
+		logger.info(
+			{
+				...ctx,
+				count: responseInvitations.length,
+			},
+			"Invitations added to account",
+		);
+	}
 
-  /**
-   * @name acceptInvitationToTeam
-   * @description Accepts an invitation to join a team.
-   */
-  async acceptInvitationToTeam(
-    adminClient: SupabaseClient<Database>,
-    params: {
-      userId: string;
-      inviteToken: string;
-    },
-  ) {
-    const logger = await getLogger();
-    const ctx = {
-      name: this.namespace,
-      ...params,
-    };
+	/**
+	 * @name acceptInvitationToTeam
+	 * @description Accepts an invitation to join a team.
+	 */
+	async acceptInvitationToTeam(
+		adminClient: SupabaseClient<Database>,
+		params: {
+			userId: string;
+			inviteToken: string;
+		},
+	) {
+		const logger = await getLogger();
+		const ctx = {
+			name: this.namespace,
+			...params,
+		};
 
-    logger.info(ctx, 'Accepting invitation to team');
+		logger.info(ctx, "Accepting invitation to team");
 
-    const { error, data } = await adminClient.rpc('accept_invitation', {
-      token: params.inviteToken,
-      user_id: params.userId,
-    });
+		const { error, data } = await adminClient.rpc("accept_invitation", {
+			token: params.inviteToken,
+			user_id: params.userId,
+		});
 
-    if (error) {
-      logger.error(
-        {
-          ...ctx,
-          error,
-        },
-        'Failed to accept invitation to team',
-      );
+		if (error) {
+			logger.error(
+				{
+					...ctx,
+					error,
+				},
+				"Failed to accept invitation to team",
+			);
 
-      throw error;
-    }
+			throw error;
+		}
 
-    logger.info(ctx, 'Successfully accepted invitation to team');
+		logger.info(ctx, "Successfully accepted invitation to team");
 
-    return data;
-  }
+		return data;
+	}
 
-  /**
-   * @name renewInvitation
-   * @description Renews an invitation to join a team by extending the expiration date by 7 days.
-   * @param invitationId
-   */
-  async renewInvitation(invitationId: number) {
-    const logger = await getLogger();
+	/**
+	 * @name renewInvitation
+	 * @description Renews an invitation to join a team by extending the expiration date by 7 days.
+	 * @param invitationId
+	 */
+	async renewInvitation(invitationId: number) {
+		const logger = await getLogger();
 
-    const ctx = {
-      invitationId,
-      name: this.namespace,
-    };
+		const ctx = {
+			invitationId,
+			name: this.namespace,
+		};
 
-    logger.info(ctx, 'Renewing invitation...');
+		logger.info(ctx, "Renewing invitation...");
 
-    const sevenDaysFromNow = formatISO(addDays(new Date(), 7));
+		const sevenDaysFromNow = formatISO(addDays(new Date(), 7));
 
-    const { data, error } = await this.client
-      .from('invitations')
-      .update({
-        expires_at: sevenDaysFromNow,
-      })
-      .match({
-        id: invitationId,
-      });
+		const { data, error } = await this.client
+			.from("invitations")
+			.update({
+				expires_at: sevenDaysFromNow,
+			})
+			.match({
+				id: invitationId,
+			});
 
-    if (error) {
-      logger.error(
-        {
-          ...ctx,
-          error,
-        },
-        'Failed to renew invitation',
-      );
+		if (error) {
+			logger.error(
+				{
+					...ctx,
+					error,
+				},
+				"Failed to renew invitation",
+			);
 
-      throw error;
-    }
+			throw error;
+		}
 
-    logger.info(ctx, 'Invitation successfully renewed');
+		logger.info(ctx, "Invitation successfully renewed");
 
-    return data;
-  }
+		return data;
+	}
 }

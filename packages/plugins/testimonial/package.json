@@ -1,55 +1,50 @@
 {
-  "name": "@kit/testimonial",
-  "private": true,
-  "version": "0.1.0",
-  "scripts": {
-    "clean": "git clean -xdf .turbo node_modules",
-    "format": "prettier --check \"**/*.{ts,tsx}\"",
-    "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
-  },
-  "prettier": "@kit/prettier-config",
-  "exports": {
-    "./client": "./src/client.ts",
-    "./server": "./src/server.ts",
-    "./admin": "./src/admin.ts",
-    "./widgets": "./src/widgets.ts"
-  },
-  "devDependencies": {
-    "@hookform/resolvers": "^5.0.1",
-    "@kit/eslint-config": "workspace:*",
-    "@kit/next": "workspace:*",
-    "@kit/prettier-config": "workspace:*",
-    "@kit/shared": "workspace:*",
-    "@kit/supabase": "workspace:*",
-    "@kit/tsconfig": "workspace:*",
-    "@kit/ui": "workspace:*",
-    "@makerkit/data-loader-supabase-nextjs": "^1.2.5",
-    "@supabase/supabase-js": "2.49.5",
-    "@tanstack/react-query": "5.76.1",
-    "@tanstack/react-table": "^8.21.3",
-    "@types/react": "19.1.4",
-    "@types/react-dom": "19.1.5",
-    "lucide-react": "^0.511.0",
-    "next": "15.3.2",
-    "react": "19.1.0",
-    "react-confetti": "^6.1.0",
-    "react-dom": "19.1.0",
-    "react-hook-form": "^7.56.4",
-    "zod": "^3.25.7"
-  },
-  "eslintConfig": {
-    "root": true,
-    "extends": [
-      "@kit/eslint-config/base",
-      "@kit/eslint-config/react"
-    ]
-  },
-  "typesVersions": {
-    "*": {
-      "*": [
-        "src/*"
-      ]
-    }
-  }
+	"name": "@kit/testimonial",
+	"private": true,
+	"version": "0.1.0",
+	"scripts": {
+		"clean": "git clean -xdf .turbo node_modules",
+		"format": "prettier --check \"**/*.{ts,tsx}\"",
+		"lint": "eslint .",
+		"typecheck": "tsc --noEmit"
+	},
+	"prettier": "@kit/prettier-config",
+	"exports": {
+		"./client": "./src/client.ts",
+		"./server": "./src/server.ts",
+		"./admin": "./src/admin.ts",
+		"./widgets": "./src/widgets.ts"
+	},
+	"devDependencies": {
+		"@hookform/resolvers": "^5.0.1",
+		"@kit/eslint-config": "workspace:*",
+		"@kit/next": "workspace:*",
+		"@kit/prettier-config": "workspace:*",
+		"@kit/shared": "workspace:*",
+		"@kit/supabase": "workspace:*",
+		"@kit/tsconfig": "workspace:*",
+		"@kit/ui": "workspace:*",
+		"@makerkit/data-loader-supabase-nextjs": "^1.2.5",
+		"@supabase/supabase-js": "2.49.5",
+		"@tanstack/react-query": "5.76.1",
+		"@tanstack/react-table": "^8.21.3",
+		"@types/react": "19.1.4",
+		"@types/react-dom": "19.1.5",
+		"lucide-react": "^0.511.0",
+		"next": "15.3.2",
+		"react": "19.1.0",
+		"react-confetti": "^6.1.0",
+		"react-dom": "19.1.0",
+		"react-hook-form": "^7.56.4",
+		"zod": "^3.25.7"
+	},
+	"eslintConfig": {
+		"root": true,
+		"extends": ["@kit/eslint-config/base", "@kit/eslint-config/react"]
+	},
+	"typesVersions": {
+		"*": {
+			"*": ["src/*"]
+		}
+	}
 }

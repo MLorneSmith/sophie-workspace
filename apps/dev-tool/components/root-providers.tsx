@@ -1,32 +1,32 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-import { Toaster } from '@kit/ui/sonner';
+import { Toaster } from "@kit/ui/sonner";
 
 export function RootProviders({ children }: React.PropsWithChildren) {
-  return <ReactQueryProvider>{children}</ReactQueryProvider>;
+	return <ReactQueryProvider>{children}</ReactQueryProvider>;
 }
 
 function ReactQueryProvider(props: React.PropsWithChildren) {
-  const [queryClient] = useState(
-    () =>
-      new QueryClient({
-        defaultOptions: {
-          queries: {
-            staleTime: 60 * 1000,
-          },
-        },
-      }),
-  );
+	const [queryClient] = useState(
+		() =>
+			new QueryClient({
+				defaultOptions: {
+					queries: {
+						staleTime: 60 * 1000,
+					},
+				},
+			}),
+	);
 
-  return (
-    <QueryClientProvider client={queryClient}>
-      {props.children}
+	return (
+		<QueryClientProvider client={queryClient}>
+			{props.children}
 
-      <Toaster position="top-center" />
-    </QueryClientProvider>
-  );
+			<Toaster position="top-center" />
+		</QueryClientProvider>
+	);
 }

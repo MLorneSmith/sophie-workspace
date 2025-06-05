@@ -1,21 +1,21 @@
-import 'server-only';
+import "server-only";
 
-import { SupabaseClient } from '@supabase/supabase-js';
+import type { SupabaseClient } from "@supabase/supabase-js";
 
-import { z } from 'zod';
+import { z } from "zod";
 
-import { getLogger } from '@kit/shared/logger';
-import { Database } from '@kit/supabase/database';
+import { getLogger } from "@kit/shared/logger";
+import type { Database } from "@kit/supabase/database";
 
 const Schema = z.object({
-  accountId: z.string().uuid(),
-  userId: z.string().uuid(),
+	accountId: z.string().uuid(),
+	userId: z.string().uuid(),
 });
 
 export function createLeaveTeamAccountService(
-  client: SupabaseClient<Database>,
+	client: SupabaseClient<Database>,
 ) {
-  return new LeaveTeamAccountService(client);
+	return new LeaveTeamAccountService(client);
 }
 
 /**
@@ -23,41 +23,41 @@ export function createLeaveTeamAccountService(
  * @description Service for leaving a team account.
  */
 class LeaveTeamAccountService {
-  private readonly namespace = 'leave-team-account';
+	private readonly namespace = "leave-team-account";
 
-  constructor(private readonly adminClient: SupabaseClient<Database>) {}
+	constructor(private readonly adminClient: SupabaseClient<Database>) {}
 
-  /**
-   * @name leaveTeamAccount
-   * @description Leave a team account
-   * @param params
-   */
-  async leaveTeamAccount(params: z.infer<typeof Schema>) {
-    const logger = await getLogger();
+	/**
+	 * @name leaveTeamAccount
+	 * @description Leave a team account
+	 * @param params
+	 */
+	async leaveTeamAccount(params: z.infer<typeof Schema>) {
+		const logger = await getLogger();
 
-    const ctx = {
-      ...params,
-      name: this.namespace,
-    };
+		const ctx = {
+			...params,
+			name: this.namespace,
+		};
 
-    logger.info(ctx, 'Leaving team account...');
+		logger.info(ctx, "Leaving team account...");
 
-    const { accountId, userId } = Schema.parse(params);
+		const { accountId, userId } = Schema.parse(params);
 
-    const { error } = await this.adminClient
-      .from('accounts_memberships')
-      .delete()
-      .match({
-        account_id: accountId,
-        user_id: userId,
-      });
+		const { error } = await this.adminClient
+			.from("accounts_memberships")
+			.delete()
+			.match({
+				account_id: accountId,
+				user_id: userId,
+			});
 
-    if (error) {
-      logger.error({ ...ctx, error }, 'Failed to leave team account');
+		if (error) {
+			logger.error({ ...ctx, error }, "Failed to leave team account");
 
-      throw new Error('Failed to leave team account');
-    }
+			throw new Error("Failed to leave team account");
+		}
 
-    logger.info(ctx, 'Successfully left team account');
-  }
+		logger.info(ctx, "Successfully left team account");
+	}
 }

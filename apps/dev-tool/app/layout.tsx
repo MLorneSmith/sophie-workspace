@@ -1,27 +1,27 @@
-import type { Metadata } from 'next';
+import type { Metadata } from "next";
 
-import { DevToolLayout } from '@/components/app-layout';
-import { RootProviders } from '@/components/root-providers';
+import { DevToolLayout } from "@/components/app-layout";
+import { RootProviders } from "@/components/root-providers";
 
-import '../styles/globals.css';
+import "../styles/globals.css";
 
 export const metadata: Metadata = {
-  title: 'Makerkit | Dev Tool',
-  description: 'The dev tool for Makerkit',
+	title: "Makerkit | Dev Tool",
+	description: "The dev tool for Makerkit",
 };
 
 export default function RootLayout({
-  children,
+	children,
 }: Readonly<{
-  children: React.ReactNode;
+	children: React.ReactNode;
 }>) {
-  return (
-    <html lang="en">
-      <body>
-        <RootProviders>
-          <DevToolLayout>{children}</DevToolLayout>
-        </RootProviders>
-      </body>
-    </html>
-  );
+	return (
+		<html lang="en">
+			<body>
+				<RootProviders>
+					<DevToolLayout>{children}</DevToolLayout>
+				</RootProviders>
+			</body>
+		</html>
+	);
 }

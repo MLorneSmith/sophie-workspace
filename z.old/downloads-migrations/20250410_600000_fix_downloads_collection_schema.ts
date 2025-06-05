@@ -1,4 +1,8 @@
-import { MigrateDownArgs, MigrateUpArgs, sql } from '@payloadcms/db-postgres'
+import {
+	type MigrateDownArgs,
+	type MigrateUpArgs,
+	sql,
+} from "@payloadcms/db-postgres";
 
 /**
  * Migration to fix the Downloads collection schema
@@ -10,21 +14,21 @@ import { MigrateDownArgs, MigrateUpArgs, sql } from '@payloadcms/db-postgres'
  * - Size variants for image transformations
  */
 export async function up({ db, payload }: MigrateUpArgs): Promise<void> {
-  try {
-    // Start transaction
-    await db.execute(sql`BEGIN;`)
+	try {
+		// Start transaction
+		await db.execute(sql`BEGIN;`);
 
-    // Check if downloads table exists, create it if not
-    await db.execute(sql`
+		// Check if downloads table exists, create it if not
+		await db.execute(sql`
       CREATE TABLE IF NOT EXISTS payload.downloads (
         id TEXT PRIMARY KEY,
         created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
         updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
       );
-    `)
+    `);
 
-    // Add basic file metadata columns
-    await db.execute(sql`
+		// Add basic file metadata columns
+		await db.execute(sql`
       DO $$
       BEGIN
         -- Basic file metadata
@@ -45,10 +49,10 @@ export async function up({ db, payload }: MigrateUpArgs): Promise<void> {
         END IF;
       END
       $$;
-    `)
+    `);
 
-    // Add MIME type fields
-    await db.execute(sql`
+		// Add MIME type fields
+		await db.execute(sql`
       DO $$
       BEGIN
         -- MIME type fields (both snake_case and camelCase for compatibility)
@@ -61,10 +65,10 @@ export async function up({ db, payload }: MigrateUpArgs): Promise<void> {
         END IF;
       END
       $$;
-    `)
+    `);
 
-    // Add file size fields
-    await db.execute(sql`
+		// Add file size fields
+		await db.execute(sql`
       DO $$
       BEGIN
         -- File size fields (both snake_case and camelCase for compatibility)
@@ -77,10 +81,10 @@ export async function up({ db, payload }: MigrateUpArgs): Promise<void> {
         END IF;
       END
       $$;
-    `)
+    `);
 
-    // Add image dimension fields
-    await db.execute(sql`
+		// Add image dimension fields
+		await db.execute(sql`
       DO $$
       BEGIN
         -- Image dimensions and focal point
@@ -93,10 +97,10 @@ export async function up({ db, payload }: MigrateUpArgs): Promise<void> {
         END IF;
       END
       $$;
-    `)
+    `);
 
-    // Add focal point fields
-    await db.execute(sql`
+		// Add focal point fields
+		await db.execute(sql`
       DO $$
       BEGIN
         -- Focal point fields (both snake_case and camelCase for compatibility)
@@ -117,10 +121,10 @@ export async function up({ db, payload }: MigrateUpArgs): Promise<void> {
         END IF;
       END
       $$;
-    `)
+    `);
 
-    // Add thumbnail URL fields - all variations that Payload might use
-    await db.execute(sql`
+		// Add thumbnail URL fields - all variations that Payload might use
+		await db.execute(sql`
       DO $$
       BEGIN
         -- Add thumbnail URL fields in all possible formats that Payload CMS might use
@@ -141,10 +145,10 @@ export async function up({ db, payload }: MigrateUpArgs): Promise<void> {
         END IF;
       END
       $$;
-    `)
+    `);
 
-    // Add source fields
-    await db.execute(sql`
+		// Add source fields
+		await db.execute(sql`
       DO $$
       BEGIN
         -- Add source fields based on Payload's naming conventions
@@ -161,10 +165,10 @@ export async function up({ db, payload }: MigrateUpArgs): Promise<void> {
         END IF;
       END
       $$;
-    `)
+    `);
 
-    // Add alt text and other metadata fields
-    await db.execute(sql`
+		// Add alt text and other metadata fields
+		await db.execute(sql`
       DO $$
       BEGIN
         -- Alt text and additional metadata fields
@@ -181,10 +185,10 @@ export async function up({ db, payload }: MigrateUpArgs): Promise<void> {
         END IF;
       END
       $$;
-    `)
+    `);
 
-    // Add Payload CMS status fields
-    await db.execute(sql`
+		// Add Payload CMS status fields
+		await db.execute(sql`
       DO $$
       BEGIN
         -- Status fields for Payload CMS content
@@ -193,10 +197,10 @@ export async function up({ db, payload }: MigrateUpArgs): Promise<void> {
         END IF;
       END
       $$;
-    `)
+    `);
 
-    // Add size variant columns for image transformations (thumbnail)
-    await db.execute(sql`
+		// Add size variant columns for image transformations (thumbnail)
+		await db.execute(sql`
       DO $$
       BEGIN
         -- Thumbnail size fields
@@ -246,10 +250,10 @@ export async function up({ db, payload }: MigrateUpArgs): Promise<void> {
         END IF;
       END
       $$;
-    `)
+    `);
 
-    // Add size variant columns for image transformations (medium)
-    await db.execute(sql`
+		// Add size variant columns for image transformations (medium)
+		await db.execute(sql`
       DO $$
       BEGIN
         -- Medium size fields
@@ -299,10 +303,10 @@ export async function up({ db, payload }: MigrateUpArgs): Promise<void> {
         END IF;
       END
       $$;
-    `)
+    `);
 
-    // Add size variant columns for image transformations (large)
-    await db.execute(sql`
+		// Add size variant columns for image transformations (large)
+		await db.execute(sql`
       DO $$
       BEGIN
         -- Large size fields
@@ -352,23 +356,23 @@ export async function up({ db, payload }: MigrateUpArgs): Promise<void> {
         END IF;
       END
       $$;
-    `)
+    `);
 
-    // Commit transaction
-    await db.execute(sql`COMMIT;`)
-    console.log('Migration completed: Fixed Downloads collection schema')
-  } catch (error) {
-    // Rollback on error
-    await db.execute(sql`ROLLBACK;`)
-    console.error('Error in downloads schema migration:', error)
-    throw error
-  }
+		// Commit transaction
+		await db.execute(sql`COMMIT;`);
+		console.log("Migration completed: Fixed Downloads collection schema");
+	} catch (error) {
+		// Rollback on error
+		await db.execute(sql`ROLLBACK;`);
+		console.error("Error in downloads schema migration:", error);
+		throw error;
+	}
 }
 
 export async function down({ db, payload }: MigrateDownArgs): Promise<void> {
-  // We don't want to drop the downloads table or remove columns in case there's existing data
-  // Instead, log a message that manual intervention is required if this needs to be undone
-  console.log(
-    'This migration does not support down migration. Manual intervention required to undo schema changes.',
-  )
+	// We don't want to drop the downloads table or remove columns in case there's existing data
+	// Instead, log a message that manual intervention is required if this needs to be undone
+	console.log(
+		"This migration does not support down migration. Manual intervention required to undo schema changes.",
+	);
 }

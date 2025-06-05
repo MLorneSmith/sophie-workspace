@@ -1,15 +1,15 @@
-import { notFound } from 'next/navigation';
+import { notFound } from "next/navigation";
 
-import featureFlagsConfig from '~/config/feature-flags.config';
+import featureFlagsConfig from "~/config/feature-flags.config";
 
 function TeamAccountBillingLayout(props: React.PropsWithChildren) {
-  const isEnabled = featureFlagsConfig.enableTeamAccountBilling;
+	const isEnabled = featureFlagsConfig.enableTeamAccountBilling;
 
-  if (!isEnabled) {
-    notFound();
-  }
+	if (!isEnabled) {
+		notFound();
+	}
 
-  return <>{props.children}</>;
+	return <>{props.children}</>;
 }
 
 export default TeamAccountBillingLayout;

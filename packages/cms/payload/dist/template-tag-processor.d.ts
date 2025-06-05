@@ -7,7 +7,7 @@
  *
  * Includes enhanced error handling, logging, and better r2file tag handling.
  */
-import React from 'react';
+import React from "react";
 type TemplateTagProcessorProps = {
     content: string;
 };

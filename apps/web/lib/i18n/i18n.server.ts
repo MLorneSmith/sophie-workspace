@@ -1,24 +1,24 @@
-import 'server-only';
+import "server-only";
 
-import { cache } from 'react';
+import { cache } from "react";
 
-import { cookies, headers } from 'next/headers';
+import { cookies, headers } from "next/headers";
 
-import { z } from 'zod';
+import { z } from "zod";
 
 import {
-  initializeServerI18n,
-  parseAcceptLanguageHeader,
-} from '@kit/i18n/server';
+	initializeServerI18n,
+	parseAcceptLanguageHeader,
+} from "@kit/i18n/server";
 
-import featuresFlagConfig from '~/config/feature-flags.config';
+import featuresFlagConfig from "~/config/feature-flags.config";
 import {
-  I18N_COOKIE_NAME,
-  getI18nSettings,
-  languages,
-} from '~/lib/i18n/i18n.settings';
+	I18N_COOKIE_NAME,
+	getI18nSettings,
+	languages,
+} from "~/lib/i18n/i18n.settings";
 
-import { i18nResolver } from './i18n.resolver';
+import { i18nResolver } from "./i18n.resolver";
 
 /**
  * @name priority
@@ -35,27 +35,27 @@ const priority = featuresFlagConfig.languagePriority;
  * Initialize the i18n instance for every RSC server request (eg. each page/layout)
  */
 async function createInstance() {
-  const cookieStore = await cookies();
-  const langCookieValue = cookieStore.get(I18N_COOKIE_NAME)?.value;
+	const cookieStore = await cookies();
+	const langCookieValue = cookieStore.get(I18N_COOKIE_NAME)?.value;
 
-  let selectedLanguage: string | undefined = undefined;
+	let selectedLanguage: string | undefined = undefined;
 
-  // if the cookie is set, use the language from the cookie
-  if (langCookieValue) {
-    selectedLanguage = getLanguageOrFallback(langCookieValue);
-  }
+	// if the cookie is set, use the language from the cookie
+	if (langCookieValue) {
+		selectedLanguage = getLanguageOrFallback(langCookieValue);
+	}
 
-  // if not, check if the language priority is set to user and
-  // use the user's preferred language
-  if (!selectedLanguage && priority === 'user') {
-    const userPreferredLanguage = await getPreferredLanguageFromBrowser();
+	// if not, check if the language priority is set to user and
+	// use the user's preferred language
+	if (!selectedLanguage && priority === "user") {
+		const userPreferredLanguage = await getPreferredLanguageFromBrowser();
 
-    selectedLanguage = getLanguageOrFallback(userPreferredLanguage);
-  }
+		selectedLanguage = getLanguageOrFallback(userPreferredLanguage);
+	}
 
-  const settings = getI18nSettings(selectedLanguage);
+	const settings = getI18nSettings(selectedLanguage);
 
-  return initializeServerI18n(settings, i18nResolver);
+	return initializeServerI18n(settings, i18nResolver);
 }
 
 export const createI18nServerInstance = cache(createInstance);
@@ -65,15 +65,15 @@ export const createI18nServerInstance = cache(createInstance);
  * Get the user's preferred language from the accept-language header.
  */
 async function getPreferredLanguageFromBrowser() {
-  const headersStore = await headers();
-  const acceptLanguage = headersStore.get('accept-language');
+	const headersStore = await headers();
+	const acceptLanguage = headersStore.get("accept-language");
 
-  // no accept-language header, return
-  if (!acceptLanguage) {
-    return;
-  }
+	// no accept-language header, return
+	if (!acceptLanguage) {
+		return;
+	}
 
-  return parseAcceptLanguageHeader(acceptLanguage, languages)[0];
+	return parseAcceptLanguageHeader(acceptLanguage, languages)[0];
 }
 
 /**
@@ -82,17 +82,17 @@ async function getPreferredLanguageFromBrowser() {
  * @param selectedLanguage
  */
 function getLanguageOrFallback(selectedLanguage: string | undefined) {
-  const language = z
-    .enum(languages as [string, ...string[]])
-    .safeParse(selectedLanguage);
+	const language = z
+		.enum(languages as [string, ...string[]])
+		.safeParse(selectedLanguage);
 
-  if (language.success) {
-    return language.data;
-  }
+	if (language.success) {
+		return language.data;
+	}
 
-  console.warn(
-    `The language passed is invalid. Defaulted back to "${languages[0]}"`,
-  );
+	console.warn(
+		`The language passed is invalid. Defaulted back to "${languages[0]}"`,
+	);
 
-  return languages[0];
+	return languages[0];
 }

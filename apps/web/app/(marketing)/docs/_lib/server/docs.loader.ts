@@ -1,7 +1,7 @@
-import { cache } from 'react';
+import { cache } from "react";
 
-import { createCmsClient } from '@kit/cms';
-import { getLogger } from '@kit/shared/logger';
+import { createCmsClient } from "@kit/cms";
+import { getLogger } from "@kit/shared/logger";
 
 /**
  * @name getDocs
@@ -11,21 +11,21 @@ import { getLogger } from '@kit/shared/logger';
 export const getDocs = cache(docsLoader);
 
 async function docsLoader(language: string | undefined) {
-  const cms = await createCmsClient();
-  const logger = await getLogger();
+	const cms = await createCmsClient();
+	const logger = await getLogger();
 
-  try {
-    const data = await cms.getContentItems({
-      collection: 'documentation',
-      language,
-      limit: Infinity,
-      content: false,
-    });
+	try {
+		const data = await cms.getContentItems({
+			collection: "documentation",
+			language,
+			limit: Number.POSITIVE_INFINITY,
+			content: false,
+		});
 
-    return data.items;
-  } catch (error) {
-    logger.error({ error }, 'Failed to load documentation pages');
+		return data.items;
+	} catch (error) {
+		logger.error({ error }, "Failed to load documentation pages");
 
-    return [];
-  }
+		return [];
+	}
 }

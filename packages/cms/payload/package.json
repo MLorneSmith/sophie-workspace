@@ -1,32 +1,32 @@
 {
-  "name": "@kit/payload",
-  "version": "3.39.1",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "scripts": {
-    "build": "tsc",
-    "dev": "tsc -w"
-  },
-  "dependencies": {
-    "@kit/cms-types": "workspace:*",
-    "@kit/shared": "workspace:*",
-    "@kit/supabase": "workspace:*",
-    "payload": "3.39.1",
-    "react": "19.1.0"
-  },
-  "devDependencies": {
-    "@types/node": "^22.15.19",
-    "@types/react": "19.1.4",
-    "typescript": "^5.8.3"
-  },
-  "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    },
-    "./renderer": {
-      "import": "./dist/renderer.js",
-      "types": "./dist/renderer.d.ts"
-    }
-  }
+	"name": "@kit/payload",
+	"version": "3.39.1",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"scripts": {
+		"build": "tsc",
+		"dev": "tsc -w"
+	},
+	"dependencies": {
+		"@kit/cms-types": "workspace:*",
+		"@kit/shared": "workspace:*",
+		"@kit/supabase": "workspace:*",
+		"payload": "3.39.1",
+		"react": "19.1.0"
+	},
+	"devDependencies": {
+		"@types/node": "^22.15.19",
+		"@types/react": "19.1.4",
+		"typescript": "^5.8.3"
+	},
+	"exports": {
+		".": {
+			"import": "./dist/index.js",
+			"types": "./dist/index.d.ts"
+		},
+		"./renderer": {
+			"import": "./dist/renderer.js",
+			"types": "./dist/renderer.d.ts"
+		}
+	}
 }

@@ -1,6 +1,10 @@
-import { MigrateDownArgs, MigrateUpArgs, sql } from '@payloadcms/db-postgres'
+import {
+	type MigrateDownArgs,
+	type MigrateUpArgs,
+	sql,
+} from "@payloadcms/db-postgres";
 
-import { DOWNLOAD_ID_MAP } from '../../../../packages/content-migrations/src/data/download-id-map'
+import { DOWNLOAD_ID_MAP } from "../../../../packages/content-migrations/src/data/download-id-map";
 
 /**
  * Fix Downloads UUID Type Consistency
@@ -18,14 +22,14 @@ import { DOWNLOAD_ID_MAP } from '../../../../packages/content-migrations/src/dat
  * 3. Preserve predefined UUIDs from download-id-map.ts
  */
 export async function up({ db }: MigrateUpArgs): Promise<void> {
-  console.log('Running fix downloads UUID type consistency migration')
+	console.log("Running fix downloads UUID type consistency migration");
 
-  try {
-    // Start transaction
-    await db.execute(sql`BEGIN;`)
+	try {
+		// Start transaction
+		await db.execute(sql`BEGIN;`);
 
-    // 1. Add helper function for safe UUID comparison
-    await db.execute(sql`
+		// 1. Add helper function for safe UUID comparison
+		await db.execute(sql`
       CREATE OR REPLACE FUNCTION payload.safe_uuid_comparison(a TEXT, b TEXT) 
       RETURNS BOOLEAN AS $$
       BEGIN
@@ -36,10 +40,10 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
         RETURN a = b;
       END;
       $$ LANGUAGE plpgsql;
-    `)
+    `);
 
-    // 2. Create column alias function for downloads_id and related_id
-    await db.execute(sql`
+		// 2. Create column alias function for downloads_id and related_id
+		await db.execute(sql`
       CREATE OR REPLACE FUNCTION payload.ensure_downloads_id_columns(table_name TEXT)
       RETURNS VOID AS $$
       BEGIN
@@ -54,121 +58,129 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
         ', table_name);
       END;
       $$ LANGUAGE plpgsql;
-    `)
+    `);
 
-    // 3. Get all relationship tables that reference downloads
-    const collections = [
-      'documentation',
-      'posts',
-      'surveys',
-      'survey_questions',
-      'courses',
-      'course_lessons',
-      'course_quizzes',
-      'quiz_questions',
-    ]
+		// 3. Get all relationship tables that reference downloads
+		const collections = [
+			"documentation",
+			"posts",
+			"surveys",
+			"survey_questions",
+			"courses",
+			"course_lessons",
+			"course_quizzes",
+			"quiz_questions",
+		];
 
-    // 4. Loop through each collection and fix related tables
-    for (const collection of collections) {
-      const relationshipTable = `${collection}__downloads`
+		// 4. Loop through each collection and fix related tables
+		for (const collection of collections) {
+			const relationshipTable = `${collection}__downloads`;
 
-      // Check if table exists
-      const tableExists = await db.execute(sql`
+			// Check if table exists
+			const tableExists = await db.execute(sql`
         SELECT EXISTS (
           SELECT FROM information_schema.tables 
           WHERE table_schema = 'payload'
           AND table_name = ${relationshipTable}
         ) as exists
-      `)
+      `);
 
-      if (tableExists.rows.length > 0 && tableExists.rows[0].exists) {
-        console.log(`Checking ${relationshipTable} column types...`)
+			if (tableExists.rows.length > 0 && tableExists.rows[0].exists) {
+				console.log(`Checking ${relationshipTable} column types...`);
 
-        // Get downloads_id column type
-        const columnInfo = await db.execute(sql`
+				// Get downloads_id column type
+				const columnInfo = await db.execute(sql`
           SELECT data_type 
           FROM information_schema.columns
           WHERE table_schema = 'payload'
           AND table_name = ${relationshipTable}
           AND column_name = 'downloads_id'
-        `)
+        `);
 
-        // If downloads_id exists but is not UUID type, convert it
-        if (columnInfo.rows.length > 0 && columnInfo.rows[0].data_type !== 'uuid') {
-          console.log(
-            `Converting ${relationshipTable}.downloads_id from ${columnInfo.rows[0].data_type} to UUID type`,
-          )
+				// If downloads_id exists but is not UUID type, convert it
+				if (
+					columnInfo.rows.length > 0 &&
+					columnInfo.rows[0].data_type !== "uuid"
+				) {
+					console.log(
+						`Converting ${relationshipTable}.downloads_id from ${columnInfo.rows[0].data_type} to UUID type`,
+					);
 
-          // First, create a new UUID column
-          await db.execute(sql`
+					// First, create a new UUID column
+					await db.execute(sql`
             ALTER TABLE payload.${sql.raw(relationshipTable)}
             ADD COLUMN IF NOT EXISTS downloads_id_uuid UUID
-          `)
+          `);
 
-          // Copy values with safe casting
-          await db.execute(sql`
+					// Copy values with safe casting
+					await db.execute(sql`
             UPDATE payload.${sql.raw(relationshipTable)}
             SET downloads_id_uuid = CASE
               WHEN downloads_id IS NOT NULL THEN downloads_id::uuid
               ELSE NULL
             END
-          `)
+          `);
 
-          // Drop original column
-          await db.execute(sql`
+					// Drop original column
+					await db.execute(sql`
             ALTER TABLE payload.${sql.raw(relationshipTable)}
             DROP COLUMN IF EXISTS downloads_id
-          `)
+          `);
 
-          // Rename UUID column to downloads_id
-          await db.execute(sql`
+					// Rename UUID column to downloads_id
+					await db.execute(sql`
             ALTER TABLE payload.${sql.raw(relationshipTable)}
             RENAME COLUMN downloads_id_uuid TO downloads_id
-          `)
+          `);
 
-          // Create index
-          await db.execute(sql`
+					// Create index
+					await db.execute(sql`
             CREATE INDEX IF NOT EXISTS ${sql.raw(`${relationshipTable}_downloads_id_idx`)}
             ON payload.${sql.raw(relationshipTable)} (downloads_id)
-          `)
+          `);
 
-          console.log(`Successfully converted ${relationshipTable}.downloads_id to UUID type`)
-        }
-      }
-    }
+					console.log(
+						`Successfully converted ${relationshipTable}.downloads_id to UUID type`,
+					);
+				}
+			}
+		}
 
-    // 5. Fix downloads_rels._parent_id type if needed
-    const parentIdType = await db.execute(sql`
+		// 5. Fix downloads_rels._parent_id type if needed
+		const parentIdType = await db.execute(sql`
       SELECT data_type 
       FROM information_schema.columns
       WHERE table_schema = 'payload'
       AND table_name = 'downloads_rels' 
       AND column_name = '_parent_id'
-    `)
+    `);
 
-    // If _parent_id exists but is not UUID type, convert it
-    if (parentIdType.rows.length > 0 && parentIdType.rows[0].data_type !== 'uuid') {
-      console.log(
-        `Converting downloads_rels._parent_id from ${parentIdType.rows[0].data_type} to UUID type`,
-      )
+		// If _parent_id exists but is not UUID type, convert it
+		if (
+			parentIdType.rows.length > 0 &&
+			parentIdType.rows[0].data_type !== "uuid"
+		) {
+			console.log(
+				`Converting downloads_rels._parent_id from ${parentIdType.rows[0].data_type} to UUID type`,
+			);
 
-      // First, create a new UUID column
-      await db.execute(sql`
+			// First, create a new UUID column
+			await db.execute(sql`
         ALTER TABLE payload.downloads_rels
         ADD COLUMN _parent_id_uuid UUID
-      `)
+      `);
 
-      // Copy values with safe casting
-      await db.execute(sql`
+			// Copy values with safe casting
+			await db.execute(sql`
         UPDATE payload.downloads_rels
         SET _parent_id_uuid = CASE
           WHEN _parent_id IS NOT NULL THEN _parent_id::uuid
           ELSE NULL
         END
-      `)
+      `);
 
-      // Find and drop any foreign key constraints
-      await db.execute(sql`
+			// Find and drop any foreign key constraints
+			await db.execute(sql`
         DO $$
         DECLARE
           constraint_name text;
@@ -191,41 +203,43 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
           END IF;
         END
         $$;
-      `)
+      `);
 
-      // Drop original column
-      await db.execute(sql`
+			// Drop original column
+			await db.execute(sql`
         ALTER TABLE payload.downloads_rels
         DROP COLUMN _parent_id
-      `)
+      `);
 
-      // Rename UUID column to _parent_id
-      await db.execute(sql`
+			// Rename UUID column to _parent_id
+			await db.execute(sql`
         ALTER TABLE payload.downloads_rels
         RENAME COLUMN _parent_id_uuid TO _parent_id
-      `)
+      `);
 
-      // Re-create the foreign key constraint
-      await db.execute(sql`
+			// Re-create the foreign key constraint
+			await db.execute(sql`
         ALTER TABLE payload.downloads_rels 
         ADD CONSTRAINT downloads_rels_parent_fk 
         FOREIGN KEY (_parent_id) 
         REFERENCES payload.downloads(id) 
         ON DELETE CASCADE
-      `)
+      `);
 
-      // Create index
-      await db.execute(sql`
+			// Create index
+			await db.execute(sql`
         CREATE INDEX IF NOT EXISTS downloads_rels_parent_idx 
         ON payload.downloads_rels (_parent_id)
-      `)
+      `);
 
-      console.log(`Successfully converted downloads_rels._parent_id to UUID type`)
-    }
+			console.log(
+				"Successfully converted downloads_rels._parent_id to UUID type",
+			);
+		}
 
-    // 6. Create dynamic handler for temporary UUID tables
-    console.log('Creating solution for dynamically generated UUID tables')
-    await db.execute(sql`
+		// 6. Create dynamic handler for temporary UUID tables
+		console.log("Creating solution for dynamically generated UUID tables");
+		await db.execute(sql`
       -- Create a function that can be called when temporary tables are created
       CREATE OR REPLACE FUNCTION payload.ensure_downloads_id_column()
       RETURNS event_trigger AS $$
@@ -255,10 +269,10 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
         END LOOP;
       END;
       $$ LANGUAGE plpgsql;
-    `)
+    `);
 
-    // Try to create the event trigger, but gracefully handle insufficient privileges
-    await db.execute(sql`
+		// Try to create the event trigger, but gracefully handle insufficient privileges
+		await db.execute(sql`
       DO $$
       BEGIN
         -- Drop if exists
@@ -273,10 +287,10 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
         RAISE NOTICE 'Insufficient privileges to create event trigger - using fallback approach';
       END
       $$;
-    `)
+    `);
 
-    // 7. Create alias type for backwards compatibility
-    await db.execute(sql`
+		// 7. Create alias type for backwards compatibility
+		await db.execute(sql`
       -- Create a domain type that can accept both TEXT and UUID
       DO $$
       BEGIN
@@ -290,10 +304,10 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
         END IF;
       END
       $$;
-    `)
+    `);
 
-    // 8. Check and fix downloads table to ensure consistent IDs
-    await db.execute(sql`
+		// 8. Check and fix downloads table to ensure consistent IDs
+		await db.execute(sql`
       -- Ensure downloads table has the right ID columns
       DO $$
       BEGIN
@@ -316,30 +330,35 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
         END IF;
       END
       $$;
-    `)
+    `);
 
-    // Commit transaction
-    await db.execute(sql`COMMIT;`)
-    console.log('Download UUID type consistency migration completed successfully')
-  } catch (error) {
-    // Rollback on error
-    await db.execute(sql`ROLLBACK;`)
-    console.error('Error in fix downloads UUID type consistency migration:', error)
-    throw error
-  }
+		// Commit transaction
+		await db.execute(sql`COMMIT;`);
+		console.log(
+			"Download UUID type consistency migration completed successfully",
+		);
+	} catch (error) {
+		// Rollback on error
+		await db.execute(sql`ROLLBACK;`);
+		console.error(
+			"Error in fix downloads UUID type consistency migration:",
+			error,
+		);
+		throw error;
+	}
 }
 
 export async function down({ db }: MigrateDownArgs): Promise<void> {
-  console.log('Running down migration for fix downloads UUID type consistency')
+	console.log("Running down migration for fix downloads UUID type consistency");
 
-  // This is a non-destructive migration - just clean up helper functions
-  await db.execute(sql`
+	// This is a non-destructive migration - just clean up helper functions
+	await db.execute(sql`
     DROP FUNCTION IF EXISTS payload.safe_uuid_comparison(TEXT, TEXT);
     DROP FUNCTION IF EXISTS payload.ensure_downloads_id_columns(TEXT);
     DROP EVENT TRIGGER IF EXISTS downloads_id_dynamic_table_trigger;
     DROP FUNCTION IF EXISTS payload.ensure_downloads_id_column();
     DROP DOMAIN IF EXISTS payload.uuid_or_text;
-  `)
+  `);
 
-  console.log('Down migration for downloads UUID type consistency completed')
+	console.log("Down migration for downloads UUID type consistency completed");
 }

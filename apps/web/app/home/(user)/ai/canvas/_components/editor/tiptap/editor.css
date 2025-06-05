@@ -1,112 +1,112 @@
 /* Basic editor styling */
 .ProseMirror {
-  min-height: 100%;
-  padding: 0.5rem;
-  outline: none;
+	min-height: 100%;
+	padding: 0.5rem;
+	outline: none;
 }
 
 .ProseMirror p {
-  margin-bottom: 0.5rem;
+	margin-bottom: 0.5rem;
 }
 
 .ProseMirror h1 {
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin-bottom: 0.75rem;
-  margin-top: 1rem;
+	font-size: 1.5rem;
+	font-weight: bold;
+	margin-bottom: 0.75rem;
+	margin-top: 1rem;
 }
 
 .ProseMirror h2 {
-  font-size: 1.25rem;
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-  margin-top: 0.75rem;
+	font-size: 1.25rem;
+	font-weight: bold;
+	margin-bottom: 0.5rem;
+	margin-top: 0.75rem;
 }
 
 .ProseMirror h3 {
-  font-size: 1.125rem;
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-  margin-top: 0.75rem;
+	font-size: 1.125rem;
+	font-weight: bold;
+	margin-bottom: 0.5rem;
+	margin-top: 0.75rem;
 }
 
 .ProseMirror ul {
-  list-style-type: disc;
-  padding-left: 1.5rem;
-  margin-bottom: 0.5rem;
+	list-style-type: disc;
+	padding-left: 1.5rem;
+	margin-bottom: 0.5rem;
 }
 
 .ProseMirror ol {
-  list-style-type: decimal;
-  padding-left: 1.5rem;
-  margin-bottom: 0.5rem;
+	list-style-type: decimal;
+	padding-left: 1.5rem;
+	margin-bottom: 0.5rem;
 }
 
 .ProseMirror li {
-  margin-bottom: 0.25rem;
+	margin-bottom: 0.25rem;
 }
 
 /* Nested list styles */
 .ProseMirror ol ol {
-  list-style-type: lower-alpha;
+	list-style-type: lower-alpha;
 }
 
 .ProseMirror ol ol ol {
-  list-style-type: lower-roman;
+	list-style-type: lower-roman;
 }
 
 .ProseMirror ul ul {
-  list-style-type: circle;
+	list-style-type: circle;
 }
 
 .ProseMirror ul ul ul {
-  list-style-type: square;
+	list-style-type: square;
 }
 
 .ProseMirror li p {
-  margin: 0;
+	margin: 0;
 }
 
 .ProseMirror a {
-  color: #0070f3;
-  text-decoration: underline;
+	color: #0070f3;
+	text-decoration: underline;
 }
 
 .ProseMirror blockquote {
-  border-left: 3px solid #e2e8f0;
-  padding-left: 1rem;
-  margin-left: 0;
-  margin-right: 0;
-  font-style: italic;
+	border-left: 3px solid #e2e8f0;
+	padding-left: 1rem;
+	margin-left: 0;
+	margin-right: 0;
+	font-style: italic;
 }
 
 .ProseMirror code {
-  background-color: #f1f5f9;
-  padding: 0.2rem 0.4rem;
-  border-radius: 0.25rem;
-  font-family: monospace;
+	background-color: #f1f5f9;
+	padding: 0.2rem 0.4rem;
+	border-radius: 0.25rem;
+	font-family: monospace;
 }
 
 .ProseMirror pre {
-  background-color: #1e293b;
-  color: #f8fafc;
-  padding: 0.75rem 1rem;
-  border-radius: 0.25rem;
-  overflow-x: auto;
-  margin-bottom: 0.75rem;
+	background-color: #1e293b;
+	color: #f8fafc;
+	padding: 0.75rem 1rem;
+	border-radius: 0.25rem;
+	overflow-x: auto;
+	margin-bottom: 0.75rem;
 }
 
 .ProseMirror pre code {
-  background-color: transparent;
-  padding: 0;
-  color: inherit;
+	background-color: transparent;
+	padding: 0;
+	color: inherit;
 }
 
 /* Placeholder styling */
 .ProseMirror p.is-editor-empty:first-child::before {
-  content: attr(data-placeholder);
-  float: left;
-  color: #adb5bd;
-  pointer-events: none;
-  height: 0;
+	content: attr(data-placeholder);
+	float: left;
+	color: #adb5bd;
+	pointer-events: none;
+	height: 0;
 }

@@ -1,4 +1,4 @@
-import { simplifiedFormat } from '../../partials/simplified-format';
+import { simplifiedFormat } from "../../partials/simplified-format";
 
 export const textSimplifierSystem = `You are an expert at simplifying complex text while maintaining key information. Your task is to:
 

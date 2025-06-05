@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import dynamic from 'next/dynamic';
+import dynamic from "next/dynamic";
 
 export const EmbeddedCheckoutForm = dynamic(
-  async () => {
-    const { EmbeddedCheckout } = await import('@kit/billing-gateway/checkout');
+	async () => {
+		const { EmbeddedCheckout } = await import("@kit/billing-gateway/checkout");
 
-    return EmbeddedCheckout;
-  },
-  {
-    ssr: false,
-  },
+		return EmbeddedCheckout;
+	},
+	{
+		ssr: false,
+	},
 );

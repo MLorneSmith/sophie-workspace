@@ -1,0 +1,16 @@
+name = "slideheroes-playwright-mcp"
+main = "src/index.ts"
+compatibility_date = "2025-03-10"
+compatibility_flags = ["nodejs_compat"]
+account_id = "d33fc17df32ce7d9d48eb8045f1d340a"
+
+[browser]
+binding = "BROWSER"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["PlaywrightMCP"]
+
+[[durable_objects.bindings]]
+name = "MCP_OBJECT"
+class_name = "PlaywrightMCP"

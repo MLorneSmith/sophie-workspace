@@ -3,13 +3,15 @@
  * @returns The CSRF token.
  */
 export function useCsrfToken() {
-    var _a;
-    if (typeof document === 'undefined') {
-        return '';
-    }
-    const meta = document.querySelector('meta[name="csrf-token"]');
-    if (!meta) {
-        return '';
-    }
-    return (_a = meta.getAttribute('content')) !== null && _a !== void 0 ? _a : '';
+	var _a;
+	if (typeof document === "undefined") {
+		return "";
+	}
+	const meta = document.querySelector('meta[name="csrf-token"]');
+	if (!meta) {
+		return "";
+	}
+	return (_a = meta.getAttribute("content")) !== null && _a !== void 0
+		? _a
+		: "";
 }

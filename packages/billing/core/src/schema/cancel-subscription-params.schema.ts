@@ -1,6 +1,6 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export const CancelSubscriptionParamsSchema = z.object({
-  subscriptionId: z.string(),
-  invoiceNow: z.boolean().optional(),
+	subscriptionId: z.string(),
+	invoiceNow: z.boolean().optional(),
 });

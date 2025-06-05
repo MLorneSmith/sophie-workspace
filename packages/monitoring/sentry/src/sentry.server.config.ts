@@ -1,10 +1,10 @@
-import { init } from '@sentry/nextjs';
+import { init } from "@sentry/nextjs";
 
 type Parameters<T extends (args: never) => unknown> = T extends (
-  ...args: infer P
+	...args: infer P
 ) => unknown
-  ? P
-  : never;
+	? P
+	: never;
 
 /**
  * @name initializeSentryServerClient
@@ -12,16 +12,16 @@ type Parameters<T extends (args: never) => unknown> = T extends (
  * @param props
  */
 export function initializeSentryServerClient(
-  props: Parameters<typeof init>[0] = {},
+	props: Parameters<typeof init>[0] = {},
 ) {
-  return init({
-    dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
+	return init({
+		dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
 
-    // ...
+		// ...
 
-    // Note: if you want to override the automatic release value, do not set a
-    // `release` value here - use the environment variable `SENTRY_RELEASE`, so
-    // that it will also get attached to your source maps,
-    ...props,
-  });
+		// Note: if you want to override the automatic release value, do not set a
+		// `release` value here - use the environment variable `SENTRY_RELEASE`, so
+		// that it will also get attached to your source maps,
+		...props,
+	});
 }

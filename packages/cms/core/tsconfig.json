@@ -1,14 +1,14 @@
 {
-  "extends": "@kit/tsconfig/base.json",
-  "compilerOptions": {
-    "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json",
-    "baseUrl": "../../..",
-    "paths": {
-      "@kit/*": ["packages/*/src"],
-      "@kit/payload": ["packages/cms/payload/src"],
-      "@kit/payload/renderer": ["packages/cms/payload/src/renderer"]
-    }
-  },
-  "include": ["src"],
-  "exclude": ["node_modules"]
+	"extends": "@kit/tsconfig/base.json",
+	"compilerOptions": {
+		"tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json",
+		"baseUrl": "../../..",
+		"paths": {
+			"@kit/*": ["packages/*/src"],
+			"@kit/payload": ["packages/cms/payload/src"],
+			"@kit/payload/renderer": ["packages/cms/payload/src/renderer"]
+		}
+	},
+	"include": ["src"],
+	"exclude": ["node_modules"]
 }

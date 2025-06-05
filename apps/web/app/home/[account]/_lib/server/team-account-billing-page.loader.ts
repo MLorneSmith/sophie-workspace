@@ -1,11 +1,11 @@
-import 'server-only';
+import "server-only";
 
-import { cache } from 'react';
+import { cache } from "react";
 
-import { z } from 'zod';
+import { z } from "zod";
 
-import { getSupabaseServerClient } from '@kit/supabase/server-client';
-import { createTeamAccountsApi } from '@kit/team-accounts/api';
+import { getSupabaseServerClient } from "@kit/supabase/server-client";
+import { createTeamAccountsApi } from "@kit/team-accounts/api";
 
 /**
  * The variable BILLING_MODE represents the billing mode for a service. It can
@@ -18,9 +18,9 @@ import { createTeamAccountsApi } from '@kit/team-accounts/api';
  * if none of these suits your needs, please override the below function.
  */
 const BILLING_MODE = z
-  .enum(['subscription', 'one-time'])
-  .default('subscription')
-  .parse(process.env.BILLING_MODE);
+	.enum(["subscription", "one-time"])
+	.default("subscription")
+	.parse(process.env.BILLING_MODE);
 
 /**
  * @name loadTeamAccountBillingPage
@@ -29,15 +29,15 @@ const BILLING_MODE = z
 export const loadTeamAccountBillingPage = cache(teamAccountBillingPageLoader);
 
 function teamAccountBillingPageLoader(accountId: string) {
-  const client = getSupabaseServerClient();
-  const api = createTeamAccountsApi(client);
+	const client = getSupabaseServerClient();
+	const api = createTeamAccountsApi(client);
 
-  const data =
-    BILLING_MODE === 'subscription'
-      ? api.getSubscription(accountId)
-      : api.getOrder(accountId);
+	const data =
+		BILLING_MODE === "subscription"
+			? api.getSubscription(accountId)
+			: api.getOrder(accountId);
 
-  const customerId = api.getCustomerId(accountId);
+	const customerId = api.getCustomerId(accountId);
 
-  return Promise.all([data, customerId]);
+	return Promise.all([data, customerId]);
 }

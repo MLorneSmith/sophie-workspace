@@ -1,68 +1,68 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
+import { useEffect } from "react";
 
 interface LemonSqueezyWindow extends Window {
-  createLemonSqueezy: () => void;
-  LemonSqueezy: {
-    Setup: (options: {
-      eventHandler: (event: { event: string } | string) => void;
-    }) => void;
-    Refresh: () => void;
-    Url: {
-      Open: (url: string) => void;
-      Close: () => void;
-    };
-  };
+	createLemonSqueezy: () => void;
+	LemonSqueezy: {
+		Setup: (options: {
+			eventHandler: (event: { event: string } | string) => void;
+		}) => void;
+		Refresh: () => void;
+		Url: {
+			Open: (url: string) => void;
+			Close: () => void;
+		};
+	};
 }
 
 export function LemonSqueezyEmbeddedCheckout(props: {
-  checkoutToken: string;
-  onClose?: () => void;
+	checkoutToken: string;
+	onClose?: () => void;
 }) {
-  useLoadScript(props.checkoutToken, props.onClose);
+	useLoadScript(props.checkoutToken, props.onClose);
 
-  return null;
+	return null;
 }
 
 function useLoadScript(
-  checkoutToken: string,
-  onClose: (() => void) | undefined,
+	checkoutToken: string,
+	onClose: (() => void) | undefined,
 ) {
-  useEffect(() => {
-    const script = document.createElement('script');
+	useEffect(() => {
+		const script = document.createElement("script");
 
-    script.src = 'https://app.lemonsqueezy.com/js/lemon.js';
+		script.src = "https://app.lemonsqueezy.com/js/lemon.js";
 
-    script.onload = () => {
-      const win = window as unknown as LemonSqueezyWindow;
+		script.onload = () => {
+			const win = window as unknown as LemonSqueezyWindow;
 
-      win.createLemonSqueezy();
-      win.LemonSqueezy.Url.Open(checkoutToken);
+			win.createLemonSqueezy();
+			win.LemonSqueezy.Url.Open(checkoutToken);
 
-      if (onClose) {
-        win.LemonSqueezy.Setup({
-          eventHandler: (event) => {
-            if (typeof event === 'string') {
-              if (event === 'close') {
-                onClose();
-              }
+			if (onClose) {
+				win.LemonSqueezy.Setup({
+					eventHandler: (event) => {
+						if (typeof event === "string") {
+							if (event === "close") {
+								onClose();
+							}
 
-              return;
-            }
+							return;
+						}
 
-            if (event.event === 'PaymentMethodUpdate.Closed') {
-              onClose();
-            }
-          },
-        });
-      }
-    };
+						if (event.event === "PaymentMethodUpdate.Closed") {
+							onClose();
+						}
+					},
+				});
+			}
+		};
 
-    document.body.appendChild(script);
+		document.body.appendChild(script);
 
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, [checkoutToken, onClose]);
+		return () => {
+			document.body.removeChild(script);
+		};
+	}, [checkoutToken, onClose]);
 }

@@ -1,37 +1,37 @@
-'use client';
+"use client";
 
-import { useContext } from 'react';
+import { useContext } from "react";
 
-import { Turnstile, TurnstileProps } from '@marsidev/react-turnstile';
+import { Turnstile, type TurnstileProps } from "@marsidev/react-turnstile";
 
-import { Captcha } from './captcha-provider';
+import { Captcha } from "./captcha-provider";
 
 export function CaptchaTokenSetter(props: {
-  siteKey: string | undefined;
-  options?: TurnstileProps;
+	siteKey: string | undefined;
+	options?: TurnstileProps;
 }) {
-  const { setToken, setInstance } = useContext(Captcha);
+	const { setToken, setInstance } = useContext(Captcha);
 
-  if (!props.siteKey) {
-    return null;
-  }
+	if (!props.siteKey) {
+		return null;
+	}
 
-  const options = props.options ?? {
-    options: {
-      size: 'invisible',
-    },
-  };
+	const options = props.options ?? {
+		options: {
+			size: "invisible",
+		},
+	};
 
-  return (
-    <Turnstile
-      ref={(instance) => {
-        if (instance) {
-          setInstance(instance);
-        }
-      }}
-      siteKey={props.siteKey}
-      onSuccess={setToken}
-      {...options}
-    />
-  );
+	return (
+		<Turnstile
+			ref={(instance) => {
+				if (instance) {
+					setInstance(instance);
+				}
+			}}
+			siteKey={props.siteKey}
+			onSuccess={setToken}
+			{...options}
+		/>
+	);
 }

@@ -1,14 +1,14 @@
-'use server';
+"use server";
 
-import { redirect } from 'next/navigation';
+import { redirect } from "next/navigation";
 
-import { enhanceAction } from '@kit/next/actions';
-import { getSupabaseServerClient } from '@kit/supabase/server-client';
+import { enhanceAction } from "@kit/next/actions";
+import { getSupabaseServerClient } from "@kit/supabase/server-client";
 
-import featureFlagsConfig from '~/config/feature-flags.config';
+import featureFlagsConfig from "~/config/feature-flags.config";
 
-import { PersonalAccountCheckoutSchema } from '../schema/personal-account-checkout.schema';
-import { createUserBillingService } from './user-billing.service';
+import { PersonalAccountCheckoutSchema } from "../schema/personal-account-checkout.schema";
+import { createUserBillingService } from "./user-billing.service";
 
 /**
  * @name enabled
@@ -21,19 +21,19 @@ const enabled = featureFlagsConfig.enablePersonalAccountBilling;
  * @description Creates a checkout session for a personal account.
  */
 export const createPersonalAccountCheckoutSession = enhanceAction(
-  async function (data) {
-    if (!enabled) {
-      throw new Error('Personal account billing is not enabled');
-    }
+	async (data) => {
+		if (!enabled) {
+			throw new Error("Personal account billing is not enabled");
+		}
 
-    const client = getSupabaseServerClient();
-    const service = createUserBillingService(client);
+		const client = getSupabaseServerClient();
+		const service = createUserBillingService(client);
 
-    return await service.createCheckoutSession(data);
-  },
-  {
-    schema: PersonalAccountCheckoutSchema,
-  },
+		return await service.createCheckoutSession(data);
+	},
+	{
+		schema: PersonalAccountCheckoutSchema,
+	},
 );
 
 /**
@@ -41,18 +41,18 @@ export const createPersonalAccountCheckoutSession = enhanceAction(
  * @description Creates a billing Portal session for a personal account
  */
 export const createPersonalAccountBillingPortalSession = enhanceAction(
-  async () => {
-    if (!enabled) {
-      throw new Error('Personal account billing is not enabled');
-    }
+	async () => {
+		if (!enabled) {
+			throw new Error("Personal account billing is not enabled");
+		}
 
-    const client = getSupabaseServerClient();
-    const service = createUserBillingService(client);
+		const client = getSupabaseServerClient();
+		const service = createUserBillingService(client);
 
-    // get url to billing portal
-    const url = await service.createBillingPortalSession();
+		// get url to billing portal
+		const url = await service.createBillingPortalSession();
 
-    return redirect(url);
-  },
-  {},
+		return redirect(url);
+	},
+	{},
 );

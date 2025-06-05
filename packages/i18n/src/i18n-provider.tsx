@@ -1,27 +1,27 @@
-'use client';
+"use client";
 
-import type { InitOptions, i18n } from 'i18next';
+import type { InitOptions, i18n } from "i18next";
 
-import { initializeI18nClient } from './i18n.client';
+import { initializeI18nClient } from "./i18n.client";
 
 let i18nInstance: i18n;
 
 type Resolver = (
-  lang: string,
-  namespace: string,
+	lang: string,
+	namespace: string,
 ) => Promise<Record<string, string>>;
 
 export function I18nProvider({
-  settings,
-  children,
-  resolver,
+	settings,
+	children,
+	resolver,
 }: React.PropsWithChildren<{
-  settings: InitOptions;
-  resolver: Resolver;
+	settings: InitOptions;
+	resolver: Resolver;
 }>) {
-  useI18nClient(settings, resolver);
+	useI18nClient(settings, resolver);
 
-  return children;
+	return children;
 }
 
 /**
@@ -31,17 +31,17 @@ export function I18nProvider({
  * @param resolver
  */
 function useI18nClient(settings: InitOptions, resolver: Resolver) {
-  if (
-    !i18nInstance ||
-    i18nInstance.language !== settings.lng ||
-    i18nInstance.options.ns?.length !== settings.ns?.length
-  ) {
-    throw loadI18nInstance(settings, resolver);
-  }
+	if (
+		!i18nInstance ||
+		i18nInstance.language !== settings.lng ||
+		i18nInstance.options.ns?.length !== settings.ns?.length
+	) {
+		throw loadI18nInstance(settings, resolver);
+	}
 
-  return i18nInstance;
+	return i18nInstance;
 }
 
 async function loadI18nInstance(settings: InitOptions, resolver: Resolver) {
-  i18nInstance = await initializeI18nClient(settings, resolver);
+	i18nInstance = await initializeI18nClient(settings, resolver);
 }

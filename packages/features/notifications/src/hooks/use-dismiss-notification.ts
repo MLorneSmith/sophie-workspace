@@ -1,21 +1,21 @@
-import { useCallback } from 'react';
+import { useCallback } from "react";
 
-import { useSupabase } from '@kit/supabase/hooks/use-supabase';
+import { useSupabase } from "@kit/supabase/hooks/use-supabase";
 
 export function useDismissNotification() {
-  const client = useSupabase();
+	const client = useSupabase();
 
-  return useCallback(
-    async (notification: number) => {
-      const { error } = await client
-        .from('notifications')
-        .update({ dismissed: true })
-        .eq('id', notification);
+	return useCallback(
+		async (notification: number) => {
+			const { error } = await client
+				.from("notifications")
+				.update({ dismissed: true })
+				.eq("id", notification);
 
-      if (error) {
-        throw error;
-      }
-    },
-    [client],
-  );
+			if (error) {
+				throw error;
+			}
+		},
+		[client],
+	);
 }
