@@ -1,0 +1,435 @@
+# Unit Test Checklist Tracker
+
+## Progress Overview
+- Total Files: [To be calculated]
+- Files with Tests: [To be calculated]
+- Coverage: [To be calculated]%
+- Last Updated: 2025-01-06
+
+## Testing Guidelines
+- Focus on pure functions first (no side effects)
+- Mock external dependencies (AI services, database, file storage)
+- Test critical business logic before UI components
+- Aim for 80%+ coverage on Priority 1 & 2 areas
+
+## Priority 1: Core Custom Business Logic
+
+### AI Canvas/Editor System
+**Location**: `apps/web/app/home/(user)/ai/canvas/`
+
+#### Server Actions
+- [ ] `_actions/generate-ideas.ts`
+  - **Priority**: Critical
+  - **Test Coverage**: 0%
+  - **Test File**: `_actions/generate-ideas.test.ts`
+  - **Key Test Cases**:
+    - [ ] Valid prompt generates ideas array
+    - [ ] Handles empty/null prompts gracefully
+    - [ ] Cost tracking is updated correctly
+    - [ ] AI service failures are handled
+    - [ ] Response format validation
+  - **Dependencies to Mock**: AI Gateway Client, Cost Tracking
+  - **Estimated Effort**: 2-3 hours
+
+- [ ] `_actions/generate-outline.ts`
+  - **Priority**: Critical
+  - **Test Coverage**: 0%
+  - **Test File**: `_actions/generate-outline.test.ts`
+  - **Key Test Cases**:
+    - [ ] Generates valid outline structure
+    - [ ] Handles different input formats
+    - [ ] Validates outline hierarchy
+    - [ ] Error handling for malformed input
+  - **Dependencies to Mock**: AI Gateway Client
+  - **Estimated Effort**: 3-4 hours
+
+- [ ] `_actions/convert-editor-data.ts`
+  - **Priority**: High
+  - **Test Coverage**: 0%
+  - **Test File**: `_actions/convert-editor-data.test.ts`
+  - **Key Test Cases**:
+    - [ ] Converts between editor formats correctly
+    - [ ] Preserves all content during conversion
+    - [ ] Handles edge cases (empty data, special characters)
+    - [ ] Validates output format
+  - **Dependencies to Mock**: None (pure transformation)
+  - **Estimated Effort**: 2 hours
+
+- [ ] `_actions/simplify-text.ts`
+  - **Priority**: Medium
+  - **Test Coverage**: 0%
+  - **Test File**: `_actions/simplify-text.test.ts`
+  - **Key Test Cases**:
+    - [ ] Simplifies complex text appropriately
+    - [ ] Preserves key information
+    - [ ] Handles various text lengths
+    - [ ] Language detection and handling
+  - **Dependencies to Mock**: AI Gateway Client
+  - **Estimated Effort**: 2 hours
+
+- [ ] `_actions/update-building-block-title.action.ts`
+  - **Priority**: Medium
+  - **Test Coverage**: 0%
+  - **Test File**: `_actions/update-building-block-title.action.test.ts`
+  - **Key Test Cases**:
+    - [ ] Updates title successfully
+    - [ ] Validates title format
+    - [ ] Handles special characters
+    - [ ] Database update verification
+  - **Dependencies to Mock**: Database
+  - **Estimated Effort**: 1-2 hours
+
+#### Utils/Services
+- [~] `_lib/utils/normalize-editor-content.ts` ⭐ **START HERE** 🚧
+  - **Priority**: Critical (Pure Functions)
+  - **Test Coverage**: 0%
+  - **Test File**: `_lib/utils/normalize-editor-content.test.ts`
+  - **Test Cases**: [Detailed plan](test-cases/apps/web/app/home/(user)/ai/canvas/_lib/utils/normalize-editor-content.test-cases.md)
+  - **Key Test Cases**:
+    - [ ] Normalizes various content formats
+    - [ ] Handles nested structures
+    - [ ] Preserves formatting
+    - [ ] Edge cases (empty content, malformed data)
+  - **Dependencies to Mock**: None
+  - **Estimated Effort**: 2 hours
+
+- [ ] `_lib/contexts/cost-tracking-context.tsx`
+  - **Priority**: High
+  - **Test Coverage**: 0%
+  - **Test File**: `_lib/contexts/cost-tracking-context.test.tsx`
+  - **Key Test Cases**:
+    - [ ] Cost calculation accuracy
+    - [ ] State management
+    - [ ] Cost aggregation
+    - [ ] Reset functionality
+  - **Dependencies to Mock**: None
+  - **Estimated Effort**: 2-3 hours
+
+- [ ] `_lib/hooks/use-action-with-cost.ts`
+  - **Priority**: High
+  - **Test Coverage**: 0%
+  - **Test File**: `_lib/hooks/use-action-with-cost.test.ts`
+  - **Key Test Cases**:
+    - [ ] Tracks costs correctly
+    - [ ] Integrates with cost context
+    - [ ] Error handling
+    - [ ] Loading states
+  - **Dependencies to Mock**: Cost Context
+  - **Estimated Effort**: 2 hours
+
+### Storyboard/Presentation System
+**Location**: `apps/web/app/home/(user)/ai/storyboard/`
+
+#### Core Services
+- [ ] `_lib/services/storyboard-service.ts` ⭐ **HIGH PRIORITY**
+  - **Priority**: Critical
+  - **Test Coverage**: 0%
+  - **Test File**: `_lib/services/storyboard-service.test.ts`
+  - **Key Test Cases**:
+    - [ ] Create storyboard with slides
+    - [ ] Update slide order
+    - [ ] Delete slides
+    - [ ] Add/remove slides
+    - [ ] Validate storyboard structure
+    - [ ] Handle concurrent updates
+  - **Dependencies to Mock**: Database, Storage
+  - **Estimated Effort**: 4-5 hours
+
+- [ ] `_lib/services/tiptap-transformer.ts`
+  - **Priority**: High
+  - **Test Coverage**: 0%
+  - **Test File**: `_lib/services/tiptap-transformer.test.ts`
+  - **Key Test Cases**:
+    - [ ] Transform TipTap to internal format
+    - [ ] Transform internal to TipTap format
+    - [ ] Preserve formatting
+    - [ ] Handle complex nested structures
+  - **Dependencies to Mock**: None (pure transformation)
+  - **Estimated Effort**: 3 hours
+
+- [ ] `_lib/services/powerpoint/pptx-generator.ts`
+  - **Priority**: Critical
+  - **Test Coverage**: 0%
+  - **Test File**: `_lib/services/powerpoint/pptx-generator.test.ts`
+  - **Key Test Cases**:
+    - [ ] Generate valid PPTX file
+    - [ ] Include all slides
+    - [ ] Apply correct formatting
+    - [ ] Handle images and media
+    - [ ] Error handling for large files
+  - **Dependencies to Mock**: File System, PptxGenJS
+  - **Estimated Effort**: 4-5 hours
+
+- [ ] `_lib/services/storyboard-service-client.ts`
+  - **Priority**: Medium
+  - **Test Coverage**: 0%
+  - **Test File**: `_lib/services/storyboard-service-client.test.ts`
+  - **Key Test Cases**:
+    - [ ] Client-side data synchronization
+    - [ ] Optimistic updates
+    - [ ] Error recovery
+    - [ ] Cache management
+  - **Dependencies to Mock**: API Client
+  - **Estimated Effort**: 3 hours
+
+### Course/Lesson System
+**Location**: `apps/web/app/home/(user)/course/`
+
+#### Business Logic
+- [ ] `_components/CourseProgressBar.tsx` (logic only)
+  - **Priority**: High
+  - **Test Coverage**: 0%
+  - **Test File**: `_components/CourseProgressBar.test.tsx`
+  - **Key Test Cases**:
+    - [ ] Calculate progress percentage correctly
+    - [ ] Handle completed lessons
+    - [ ] Handle partially completed courses
+    - [ ] Edge cases (no lessons, all complete)
+  - **Dependencies to Mock**: None
+  - **Estimated Effort**: 2 hours
+
+- [ ] `lessons/[slug]/_components/QuizComponent.tsx` (logic only)
+  - **Priority**: High
+  - **Test Coverage**: 0%
+  - **Test File**: `lessons/[slug]/_components/QuizComponent.test.tsx`
+  - **Key Test Cases**:
+    - [ ] Score calculation accuracy
+    - [ ] Answer validation
+    - [ ] Progress tracking
+    - [ ] Retry logic
+  - **Dependencies to Mock**: Database
+  - **Estimated Effort**: 3 hours
+
+- [ ] `_lib/server/server-actions.ts`
+  - **Priority**: Critical
+  - **Test Coverage**: 0%
+  - **Test File**: `_lib/server/server-actions.test.ts`
+  - **Key Test Cases**:
+    - [ ] Course enrollment
+    - [ ] Progress updates
+    - [ ] Certificate generation
+    - [ ] Data validation
+  - **Dependencies to Mock**: Database, Auth
+  - **Estimated Effort**: 3-4 hours
+
+## Priority 2: Payload CMS Custom Logic
+
+### Custom Collections
+**Location**: `apps/payload/src/collections/`
+
+- [ ] `CourseLessons.ts`
+  - **Priority**: High
+  - **Test Coverage**: 0%
+  - **Test File**: `CourseLessons.test.ts`
+  - **Key Test Cases**:
+    - [ ] Field validation rules
+    - [ ] Hook execution order
+    - [ ] Relationship integrity
+    - [ ] Access control
+  - **Dependencies to Mock**: Payload internals
+  - **Estimated Effort**: 3 hours
+
+- [ ] `CourseQuizzes.ts`
+  - **Priority**: High
+  - **Test Coverage**: 0%
+  - **Test File**: `CourseQuizzes.test.ts`
+  - **Key Test Cases**:
+    - [ ] Quiz structure validation
+    - [ ] Question format validation
+    - [ ] Scoring rules
+    - [ ] Relationship to lessons
+  - **Dependencies to Mock**: Payload internals
+  - **Estimated Effort**: 3 hours
+
+- [ ] `Downloads.ts`
+  - **Priority**: Medium
+  - **Test Coverage**: 0%
+  - **Test File**: `Downloads.test.ts`
+  - **Key Test Cases**:
+    - [ ] File upload handling
+    - [ ] URL generation
+    - [ ] Access control
+    - [ ] Storage integration
+  - **Dependencies to Mock**: Storage, Payload
+  - **Estimated Effort**: 2-3 hours
+
+- [ ] `SurveyQuestions.ts`
+  - **Priority**: Medium
+  - **Test Coverage**: 0%
+  - **Test File**: `SurveyQuestions.test.ts`
+  - **Key Test Cases**:
+    - [ ] Question type validation
+    - [ ] Response format validation
+    - [ ] Conditional logic
+    - [ ] Data aggregation
+  - **Dependencies to Mock**: Payload internals
+  - **Estimated Effort**: 2-3 hours
+
+### Custom Blocks
+**Location**: `apps/payload/src/blocks/`
+
+- [ ] `BunnyVideo/Field.tsx`
+  - **Priority**: Medium
+  - **Test Coverage**: 0%
+  - **Test File**: `BunnyVideo/Field.test.tsx`
+  - **Key Test Cases**:
+    - [ ] Video ID extraction
+    - [ ] URL validation
+    - [ ] Error states
+    - [ ] Field state management
+  - **Dependencies to Mock**: React hooks
+  - **Estimated Effort**: 2 hours
+
+- [ ] `YouTubeVideo/Field.tsx`
+  - **Priority**: Medium
+  - **Test Coverage**: 0%
+  - **Test File**: `YouTubeVideo/Field.test.tsx`
+  - **Key Test Cases**:
+    - [ ] YouTube URL parsing
+    - [ ] Video ID extraction
+    - [ ] Invalid URL handling
+    - [ ] Preview functionality
+  - **Dependencies to Mock**: React hooks
+  - **Estimated Effort**: 2 hours
+
+### Enhanced Systems
+**Location**: `apps/payload/src/lib/`
+
+- [ ] `enhanced-api-wrapper.ts`
+  - **Priority**: High
+  - **Test Coverage**: 0%
+  - **Test File**: `enhanced-api-wrapper.test.ts`
+  - **Key Test Cases**:
+    - [ ] API enhancement logic
+    - [ ] Request interception
+    - [ ] Response transformation
+    - [ ] Error handling
+  - **Dependencies to Mock**: API layer
+  - **Estimated Effort**: 3 hours
+
+- [ ] `request-deduplication.ts`
+  - **Priority**: High
+  - **Test Coverage**: 0%
+  - **Test File**: `request-deduplication.test.ts`
+  - **Key Test Cases**:
+    - [ ] Deduplication algorithm
+    - [ ] Cache management
+    - [ ] Concurrent request handling
+    - [ ] Cache expiration
+  - **Dependencies to Mock**: Cache storage
+  - **Estimated Effort**: 3 hours
+
+- [ ] `form-submission-protection.ts`
+  - **Priority**: High
+  - **Test Coverage**: 0%
+  - **Test File**: `form-submission-protection.test.ts`
+  - **Key Test Cases**:
+    - [ ] Rate limiting
+    - [ ] Duplicate submission prevention
+    - [ ] Token validation
+    - [ ] Security measures
+  - **Dependencies to Mock**: Storage
+  - **Estimated Effort**: 2-3 hours
+
+- [ ] `storage-url-generators.ts`
+  - **Priority**: Medium
+  - **Test Coverage**: 0%
+  - **Test File**: `storage-url-generators.test.ts`
+  - **Key Test Cases**:
+    - [ ] URL generation accuracy
+    - [ ] Signed URL creation
+    - [ ] Path validation
+    - [ ] Expiration handling
+  - **Dependencies to Mock**: Storage client
+  - **Estimated Effort**: 2 hours
+
+## Priority 3: Integration Points
+
+### Custom API Routes
+**Location**: `apps/web/app/api/`
+
+- [ ] `ai-usage/session-cost/route.ts`
+  - **Priority**: High
+  - **Test Coverage**: 0%
+  - **Test File**: `ai-usage/session-cost/route.test.ts`
+  - **Key Test Cases**:
+    - [ ] Cost calculation endpoint
+    - [ ] Authentication
+    - [ ] Data validation
+    - [ ] Error responses
+  - **Dependencies to Mock**: Database, Auth
+  - **Estimated Effort**: 2 hours
+
+- [ ] `courses/[courseId]/lessons/route.ts`
+  - **Priority**: Medium
+  - **Test Coverage**: 0%
+  - **Test File**: `courses/[courseId]/lessons/route.test.ts`
+  - **Key Test Cases**:
+    - [ ] Lesson retrieval
+    - [ ] Authorization
+    - [ ] Pagination
+    - [ ] Error handling
+  - **Dependencies to Mock**: Database, Auth
+  - **Estimated Effort**: 2 hours
+
+### Kanban System
+**Location**: `apps/web/app/home/(user)/kanban/`
+
+- [ ] `_lib/api/tasks.ts`
+  - **Priority**: Medium
+  - **Test Coverage**: 0%
+  - **Test File**: `_lib/api/tasks.test.ts`
+  - **Key Test Cases**:
+    - [ ] CRUD operations
+    - [ ] Task state validation
+    - [ ] Ordering logic
+    - [ ] Filtering
+  - **Dependencies to Mock**: API client
+  - **Estimated Effort**: 3 hours
+
+- [ ] `_lib/server/server-actions.ts`
+  - **Priority**: Medium
+  - **Test Coverage**: 0%
+  - **Test File**: `_lib/server/server-actions.test.ts`
+  - **Key Test Cases**:
+    - [ ] Task creation
+    - [ ] State transitions
+    - [ ] Drag and drop logic
+    - [ ] Bulk operations
+  - **Dependencies to Mock**: Database
+  - **Estimated Effort**: 3 hours
+
+## Testing Implementation Schedule
+
+### Week 1: Foundation & Pure Functions
+1. Set up Vitest configuration
+2. Test `normalize-editor-content.ts` (Priority 1)
+3. Test `tiptap-transformer.ts` (Priority 1)
+4. Test `convert-editor-data.ts` (Priority 1)
+
+### Week 2: Core Business Logic
+1. Test `storyboard-service.ts` (Priority 1)
+2. Test `generate-ideas.ts` (Priority 1)
+3. Test `generate-outline.ts` (Priority 1)
+
+### Week 3: Complex Services
+1. Test `pptx-generator.ts` (Priority 1)
+2. Test course progress calculations
+3. Test quiz processing logic
+
+### Week 4: Payload CMS
+1. Test collection configurations
+2. Test custom field components
+3. Test enhanced systems
+
+### Week 5-6: Integration & API
+1. Test API routes
+2. Test server actions
+3. Test data persistence
+
+## Notes
+- Start with pure functions (no external dependencies)
+- Mock all external services (AI, database, storage)
+- Focus on business logic, not UI rendering
+- Update this checklist as tests are completed
+- Add new test cases as edge cases are discovered
