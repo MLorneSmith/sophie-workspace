@@ -16,13 +16,14 @@ type BunnyVideoData = {
 	showPreview?: boolean;
 	title?: string;
 	aspectRatio?: string;
-	[key: string]: any;
+	// Remove any type usage
 };
 
 // Define our own component props type
 type ComponentProps = {
 	data?: BunnyVideoData;
-	[key: string]: any;
+	blockType?: string;
+	id?: string;
 };
 
 // The component receives props from Lexical
@@ -80,9 +81,9 @@ const Component: React.FC<ComponentProps> = (props) => {
 			<CardContent>
 				<div className="relative" style={{ paddingBottom: getPaddingBottom() }}>
 					{showPreview && finalPreviewUrl ? (
-						<div
-							className="absolute inset-0 flex items-center justify-center bg-black cursor-pointer"
-							role="button"
+						<button
+							type="button"
+							className="absolute inset-0 flex items-center justify-center bg-black cursor-pointer border-0 p-0"
 							tabIndex={0}
 							onKeyDown={(e) => {
 								if (e.key === "Enter" || e.key === " ") {
@@ -135,7 +136,7 @@ const Component: React.FC<ComponentProps> = (props) => {
 									<div className="w-0 h-0 border-t-8 border-t-transparent border-b-8 border-b-transparent border-l-16 border-l-blue-600 ml-1" />
 								</div>
 							</div>
-						</div>
+						</button>
 					) : (
 						<iframe
 							src={`https://iframe.mediadelivery.net/embed/${libraryId}/${videoId}?autoplay=0`}

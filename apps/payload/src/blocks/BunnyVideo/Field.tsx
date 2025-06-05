@@ -51,7 +51,7 @@ const Field: React.FC<FieldProps> = (props) => {
 	const { path, value = {}, onChange } = props;
 
 	// Handle field changes
-	const handleChange = (fieldName: string, fieldValue: any) => {
+	const handleChange = (fieldName: string, fieldValue: unknown) => {
 		if (onChange) {
 			onChange({
 				...value,
