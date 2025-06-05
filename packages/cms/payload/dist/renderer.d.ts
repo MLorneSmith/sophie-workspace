@@ -1,1 +1,1 @@
-export { PayloadContentRenderer } from './content-renderer';
+export { PayloadContentRenderer } from "./content-renderer";

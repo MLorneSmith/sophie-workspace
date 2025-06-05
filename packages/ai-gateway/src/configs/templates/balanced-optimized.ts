@@ -30,73 +30,73 @@
  * - Semantic caching for response consistency
  * - Efficient namespace management for context preservation
  */
-import { type Config } from '../types';
+import type { Config } from "../types";
 import {
-  type CacheNamespaceOptions,
-  addCacheNamespace,
-} from '../utils/cache-namespace';
+	type CacheNamespaceOptions,
+	addCacheNamespace,
+} from "../utils/cache-namespace";
 import {
-  type ForceRefreshCondition,
-  TimeBasedConditions,
-  UserRequestCondition,
-  withForceRefresh,
-} from '../utils/force-refresh';
+	type ForceRefreshCondition,
+	TimeBasedConditions,
+	UserRequestCondition,
+	withForceRefresh,
+} from "../utils/force-refresh";
 
 export function createBalancedOptimizedConfig(
-  namespaceOptions: CacheNamespaceOptions,
-  contentVersion?: string,
+	namespaceOptions: CacheNamespaceOptions,
+	contentVersion?: string,
 ): Config {
-  // Base configuration
-  const baseConfig: Config = {
-    strategy: {
-      mode: 'fallback',
-    },
-    targets: [
-      {
-        provider: 'groq',
-        override_params: {
-          model: 'llama-3.3-70b-specdec',
-          temperature: 0.6, // Balance between quality and creativity
-          max_tokens: 300,
-          response_format: { type: 'text' },
-        },
-      },
-      {
-        // Fallback to fast but high-quality model
-        provider: 'anthropic',
-        override_params: {
-          model: 'claude-3-haiku',
-          temperature: 0.6,
-          max_tokens: 300,
-        },
-      },
-    ],
-    cache: {
-      mode: 'semantic',
-      max_age: 1800, // 30 minutes cache
-    },
-    retry: {
-      attempts: 2, // Fewer retries since speed is important
-      on_status_codes: [429, 503],
-    },
-  };
+	// Base configuration
+	const baseConfig: Config = {
+		strategy: {
+			mode: "fallback",
+		},
+		targets: [
+			{
+				provider: "groq",
+				override_params: {
+					model: "llama-3.3-70b-specdec",
+					temperature: 0.6, // Balance between quality and creativity
+					max_tokens: 300,
+					response_format: { type: "text" },
+				},
+			},
+			{
+				// Fallback to fast but high-quality model
+				provider: "anthropic",
+				override_params: {
+					model: "claude-3-haiku",
+					temperature: 0.6,
+					max_tokens: 300,
+				},
+			},
+		],
+		cache: {
+			mode: "semantic",
+			max_age: 1800, // 30 minutes cache
+		},
+		retry: {
+			attempts: 2, // Fewer retries since speed is important
+			on_status_codes: [429, 503],
+		},
+	};
 
-  // Add cache namespace
-  const withNamespace = addCacheNamespace(baseConfig, namespaceOptions);
+	// Add cache namespace
+	const withNamespace = addCacheNamespace(baseConfig, namespaceOptions);
 
-  // Build force refresh conditions
-  const conditions: ForceRefreshCondition[] = [
-    TimeBasedConditions.HOURLY,
-    UserRequestCondition,
-  ];
+	// Build force refresh conditions
+	const conditions: ForceRefreshCondition[] = [
+		TimeBasedConditions.HOURLY,
+		UserRequestCondition,
+	];
 
-  // Add content version condition if provided
-  if (contentVersion) {
-    conditions.push({
-      type: 'content_change',
-      value: contentVersion,
-    });
-  }
+	// Add content version condition if provided
+	if (contentVersion) {
+		conditions.push({
+			type: "content_change",
+			value: contentVersion,
+		});
+	}
 
-  return withForceRefresh(withNamespace, conditions);
+	return withForceRefresh(withNamespace, conditions);
 }

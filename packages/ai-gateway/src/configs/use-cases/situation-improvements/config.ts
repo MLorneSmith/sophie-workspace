@@ -1,9 +1,9 @@
-import { createQualityOptimizedConfig } from '../../templates/quality-optimized';
-import { type Config } from '../../types';
+import { createQualityOptimizedConfig } from "../../templates/quality-optimized";
+import type { Config } from "../../types";
 import {
-  type CacheNamespaceOptions,
-  addCacheNamespace,
-} from '../../utils/cache-namespace';
+	type CacheNamespaceOptions,
+	addCacheNamespace,
+} from "../../utils/cache-namespace";
 
 /**
  * Configuration for generating situation improvements
@@ -19,16 +19,16 @@ import {
  * @param contentVersion - Optional content version for cache invalidation
  */
 export function createSituationImprovementsConfig(
-  userId: string,
-  teamId?: string,
-  contentVersion?: string,
+	userId: string,
+	teamId?: string,
+	contentVersion?: string,
 ): Config {
-  return createQualityOptimizedConfig(
-    {
-      userId,
-      teamId,
-      context: 'situation-improvements',
-    },
-    contentVersion,
-  );
+	return createQualityOptimizedConfig(
+		{
+			userId,
+			teamId,
+			context: "situation-improvements",
+		},
+		contentVersion,
+	);
 }

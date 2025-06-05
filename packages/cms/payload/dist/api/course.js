@@ -1,4 +1,4 @@
-import { callPayloadAPI } from './payload-api';
+import { callPayloadAPI } from "./payload-api";
 /**
  * Get all published courses
  * @param options Additional options for the API call
@@ -6,7 +6,7 @@ import { callPayloadAPI } from './payload-api';
  * @returns The courses data
  */
 export async function getCourses(options = {}, supabaseClient) {
-    return callPayloadAPI(`courses?where[status][equals]=published&depth=1`, {}, supabaseClient);
+    return callPayloadAPI("courses?where[status][equals]=published&depth=1", {}, supabaseClient);
 }
 /**
  * Get a course by slug
@@ -48,25 +48,25 @@ export async function getLessonBySlug(slug, options = {}, supabaseClient) {
 export async function getQuiz(quizId, options = {}, supabaseClient) {
     var _a;
     if (!quizId) {
-        console.error('getQuiz called with empty quizId');
-        throw new Error('Quiz ID is required');
+        console.error("getQuiz called with empty quizId");
+        throw new Error("Quiz ID is required");
     }
     // Extract the actual ID value
     let actualQuizId;
-    let originalQuizId = quizId;
+    const originalQuizId = quizId;
     try {
-        if (typeof quizId === 'string') {
+        if (typeof quizId === "string") {
             actualQuizId = quizId;
         }
-        else if (quizId && typeof quizId === 'object') {
+        else if (quizId && typeof quizId === "object") {
             // Handle relationship object format
-            if (quizId.value && typeof quizId.value === 'string') {
+            if (quizId.value && typeof quizId.value === "string") {
                 actualQuizId = quizId.value;
             }
-            else if (quizId.id && typeof quizId.id === 'string') {
+            else if (quizId.id && typeof quizId.id === "string") {
                 actualQuizId = quizId.id;
             }
-            else if (quizId.relationTo === 'course_quizzes' && quizId.value) {
+            else if (quizId.relationTo === "course_quizzes" && quizId.value) {
                 // Handle special case for specific relationship format
                 actualQuizId = String(quizId.value);
             }
@@ -79,13 +79,13 @@ export async function getQuiz(quizId, options = {}, supabaseClient) {
                     console.log(`Extracted UUID ${actualQuizId} from complex object`);
                 }
                 else {
-                    console.error('getQuiz: Invalid quiz ID format:', quizId);
+                    console.error("getQuiz: Invalid quiz ID format:", quizId);
                     throw new Error(`Invalid quiz ID format: ${JSON.stringify(quizId)}`);
                 }
             }
         }
         else {
-            console.error('getQuiz: Invalid quiz ID type:', typeof quizId);
+            console.error("getQuiz: Invalid quiz ID type:", typeof quizId);
             throw new Error(`Invalid quiz ID type: ${typeof quizId}`);
         }
         // Validate the extracted ID looks like a UUID
@@ -118,14 +118,14 @@ export async function getQuiz(quizId, options = {}, supabaseClient) {
         }
         // If we have question IDs but need the full details, fetch them
         // This handles the case where questions are just IDs and not full objects
-        if (typeof quiz.questions[0] === 'string' || !quiz.questions[0].options) {
+        if (typeof quiz.questions[0] === "string" || !quiz.questions[0].options) {
             try {
                 // Get the question IDs
-                const questionIds = quiz.questions.map((q) => typeof q === 'string' ? q : q.id || q.value || q);
+                const questionIds = quiz.questions.map((q) => typeof q === "string" ? q : q.id || q.value || q);
                 // Get full question details using their IDs
                 const idQueryParams = questionIds
                     .map((id) => `id[]=${id}`)
-                    .join('&');
+                    .join("&");
                 const questionsResponse = await callPayloadAPI(`quiz_questions?${idQueryParams}&sort=order`, {}, supabaseClient);
                 console.log(`getQuiz: Fetched ${((_a = questionsResponse.docs) === null || _a === void 0 ? void 0 : _a.length) || 0} detailed questions for quiz`);
                 // Replace the questions array with the full details

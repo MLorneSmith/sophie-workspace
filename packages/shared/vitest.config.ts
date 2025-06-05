@@ -3,9 +3,7 @@
  * Tests utility functions and shared components
  */
 
-import { defineConfig } from 'vitest/config';
-import { createPackageConfig } from '../vitest.config.base';
+import { defineConfig } from "vitest/config";
+import { createPackageConfig } from "../vitest.config.base";
 
-export default defineConfig(
-  createPackageConfig(__dirname)
-);
+export default defineConfig(createPackageConfig(__dirname));

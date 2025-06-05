@@ -1,35 +1,35 @@
-import { PageBody } from '@kit/ui/page';
-import { Trans } from '@kit/ui/trans';
+import { PageBody } from "@kit/ui/page";
+import { Trans } from "@kit/ui/trans";
 
-import { createI18nServerInstance } from '~/lib/i18n/i18n.server';
-import { withI18n } from '~/lib/i18n/with-i18n';
+import { createI18nServerInstance } from "~/lib/i18n/i18n.server";
+import { withI18n } from "~/lib/i18n/with-i18n";
 
-import { HomeLayoutPageHeader } from '../_components/home-page-header';
+import { HomeLayoutPageHeader } from "../_components/home-page-header";
 // Cal.com calendar component
-import Calendar from './_components/calendar';
+import Calendar from "./_components/calendar";
 
 // local imports
 
 export const generateMetadata = async () => {
-  const i18n = await createI18nServerInstance();
-  const title = i18n.t('common:routes.coaching');
+	const i18n = await createI18nServerInstance();
+	const title = i18n.t("common:routes.coaching");
 
-  return {
-    title,
-  };
+	return {
+		title,
+	};
 };
 
 function CoachingPage() {
-  return (
-    <>
-      <HomeLayoutPageHeader
-        title={<Trans i18nKey={'common:routes.coaching'} />}
-        description={<Trans i18nKey={'common:coachingTabDescription'} />}
-      />
+	return (
+		<>
+			<HomeLayoutPageHeader
+				title={<Trans i18nKey={"common:routes.coaching"} />}
+				description={<Trans i18nKey={"common:coachingTabDescription"} />}
+			/>
 
-      <PageBody>{<Calendar />}</PageBody>
-    </>
-  );
+			<PageBody>{<Calendar />}</PageBody>
+		</>
+	);
 }
 
 export default withI18n(CoachingPage);

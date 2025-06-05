@@ -1,113 +1,113 @@
-import { useState, useTransition } from 'react';
+import { useState, useTransition } from "react";
 
-import { Alert, AlertDescription, AlertTitle } from '@kit/ui/alert';
+import { Alert, AlertDescription, AlertTitle } from "@kit/ui/alert";
 import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@kit/ui/alert-dialog';
-import { Button } from '@kit/ui/button';
-import { If } from '@kit/ui/if';
-import { Trans } from '@kit/ui/trans';
+	AlertDialog,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+} from "@kit/ui/alert-dialog";
+import { Button } from "@kit/ui/button";
+import { If } from "@kit/ui/if";
+import { Trans } from "@kit/ui/trans";
 
-import { deleteInvitationAction } from '../../server/actions/team-invitations-server-actions';
+import { deleteInvitationAction } from "../../server/actions/team-invitations-server-actions";
 
 export function DeleteInvitationDialog({
-  isOpen,
-  setIsOpen,
-  invitationId,
+	isOpen,
+	setIsOpen,
+	invitationId,
 }: {
-  isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
-  invitationId: number;
+	isOpen: boolean;
+	setIsOpen: (isOpen: boolean) => void;
+	invitationId: number;
 }) {
-  return (
-    <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>
-            <Trans i18nKey="team:deleteInvitation" />
-          </AlertDialogTitle>
+	return (
+		<AlertDialog open={isOpen} onOpenChange={setIsOpen}>
+			<AlertDialogContent>
+				<AlertDialogHeader>
+					<AlertDialogTitle>
+						<Trans i18nKey="team:deleteInvitation" />
+					</AlertDialogTitle>
 
-          <AlertDialogDescription>
-            <Trans i18nKey="team:deleteInvitationDialogDescription" />
-          </AlertDialogDescription>
-        </AlertDialogHeader>
+					<AlertDialogDescription>
+						<Trans i18nKey="team:deleteInvitationDialogDescription" />
+					</AlertDialogDescription>
+				</AlertDialogHeader>
 
-        <DeleteInvitationForm
-          setIsOpen={setIsOpen}
-          invitationId={invitationId}
-        />
-      </AlertDialogContent>
-    </AlertDialog>
-  );
+				<DeleteInvitationForm
+					setIsOpen={setIsOpen}
+					invitationId={invitationId}
+				/>
+			</AlertDialogContent>
+		</AlertDialog>
+	);
 }
 
 function DeleteInvitationForm({
-  invitationId,
-  setIsOpen,
+	invitationId,
+	setIsOpen,
 }: {
-  invitationId: number;
-  setIsOpen: (isOpen: boolean) => void;
+	invitationId: number;
+	setIsOpen: (isOpen: boolean) => void;
 }) {
-  const [isSubmitting, startTransition] = useTransition();
-  const [error, setError] = useState<boolean>();
+	const [isSubmitting, startTransition] = useTransition();
+	const [error, setError] = useState<boolean>();
 
-  const onInvitationRemoved = () => {
-    startTransition(async () => {
-      try {
-        await deleteInvitationAction({ invitationId });
+	const onInvitationRemoved = () => {
+		startTransition(async () => {
+			try {
+				await deleteInvitationAction({ invitationId });
 
-        setIsOpen(false);
-      } catch {
-        setError(true);
-      }
-    });
-  };
+				setIsOpen(false);
+			} catch {
+				setError(true);
+			}
+		});
+	};
 
-  return (
-    <form data-test={'delete-invitation-form'} action={onInvitationRemoved}>
-      <div className={'flex flex-col space-y-6'}>
-        <p className={'text-muted-foreground text-sm'}>
-          <Trans i18nKey={'common:modalConfirmationQuestion'} />
-        </p>
+	return (
+		<form data-test={"delete-invitation-form"} action={onInvitationRemoved}>
+			<div className={"flex flex-col space-y-6"}>
+				<p className={"text-muted-foreground text-sm"}>
+					<Trans i18nKey={"common:modalConfirmationQuestion"} />
+				</p>
 
-        <If condition={error}>
-          <RemoveInvitationErrorAlert />
-        </If>
+				<If condition={error}>
+					<RemoveInvitationErrorAlert />
+				</If>
 
-        <AlertDialogFooter>
-          <AlertDialogCancel>
-            <Trans i18nKey={'common:cancel'} />
-          </AlertDialogCancel>
+				<AlertDialogFooter>
+					<AlertDialogCancel>
+						<Trans i18nKey={"common:cancel"} />
+					</AlertDialogCancel>
 
-          <Button
-            type={'submit'}
-            variant={'destructive'}
-            disabled={isSubmitting}
-          >
-            <Trans i18nKey={'teams:deleteInvitation'} />
-          </Button>
-        </AlertDialogFooter>
-      </div>
-    </form>
-  );
+					<Button
+						type={"submit"}
+						variant={"destructive"}
+						disabled={isSubmitting}
+					>
+						<Trans i18nKey={"teams:deleteInvitation"} />
+					</Button>
+				</AlertDialogFooter>
+			</div>
+		</form>
+	);
 }
 
 function RemoveInvitationErrorAlert() {
-  return (
-    <Alert variant={'destructive'}>
-      <AlertTitle>
-        <Trans i18nKey={'teams:deleteInvitationErrorTitle'} />
-      </AlertTitle>
+	return (
+		<Alert variant={"destructive"}>
+			<AlertTitle>
+				<Trans i18nKey={"teams:deleteInvitationErrorTitle"} />
+			</AlertTitle>
 
-      <AlertDescription>
-        <Trans i18nKey={'teams:deleteInvitationErrorMessage'} />
-      </AlertDescription>
-    </Alert>
-  );
+			<AlertDescription>
+				<Trans i18nKey={"teams:deleteInvitationErrorMessage"} />
+			</AlertDescription>
+		</Alert>
+	);
 }

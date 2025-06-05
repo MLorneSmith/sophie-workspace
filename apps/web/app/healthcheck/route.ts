@@ -1,6 +1,6 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
 
-import { getSupabaseServerAdminClient } from '@kit/supabase/server-admin-client';
+import { getSupabaseServerAdminClient } from "@kit/supabase/server-admin-client";
 
 /**
  * Healthcheck endpoint for the web app. If this endpoint returns a 200, the web app will be considered healthy.
@@ -8,14 +8,14 @@ import { getSupabaseServerAdminClient } from '@kit/supabase/server-admin-client'
  * This endpoint can be used by Docker to determine if the web app is healthy and should be restarted.
  */
 export async function GET() {
-  const isDbHealthy = await getSupabaseHealthCheck();
+	const isDbHealthy = await getSupabaseHealthCheck();
 
-  return NextResponse.json({
-    services: {
-      database: isDbHealthy,
-      // add other services here
-    },
-  });
+	return NextResponse.json({
+		services: {
+			database: isDbHealthy,
+			// add other services here
+		},
+	});
 }
 
 /**
@@ -23,15 +23,15 @@ export async function GET() {
  * @returns true if the database is healthy, false otherwise
  */
 async function getSupabaseHealthCheck() {
-  try {
-    const client = getSupabaseServerAdminClient();
+	try {
+		const client = getSupabaseServerAdminClient();
 
-    const { error } = await client.rpc('is_set', {
-      field_name: 'billing_provider',
-    });
+		const { error } = await client.rpc("is_set", {
+			field_name: "billing_provider",
+		});
 
-    return !error;
-  } catch {
-    return false;
-  }
+		return !error;
+	} catch {
+		return false;
+	}
 }

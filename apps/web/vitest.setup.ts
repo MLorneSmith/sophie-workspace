@@ -3,112 +3,112 @@
  * Configures testing environment, mocks, and global test utilities
  */
 
-import { vi } from 'vitest';
-import '@testing-library/jest-dom';
+import { vi } from "vitest";
+import "@testing-library/jest-dom";
 
 // Mock Next.js router
-vi.mock('next/router', () => ({
-  useRouter: () => ({
-    push: vi.fn(),
-    replace: vi.fn(),
-    prefetch: vi.fn(),
-    back: vi.fn(),
-    beforePopState: vi.fn(),
-    asPath: '/',
-    pathname: '/',
-    query: {},
-    route: '/',
-    events: {
-      on: vi.fn(),
-      off: vi.fn(),
-      emit: vi.fn(),
-    },
-  }),
+vi.mock("next/router", () => ({
+	useRouter: () => ({
+		push: vi.fn(),
+		replace: vi.fn(),
+		prefetch: vi.fn(),
+		back: vi.fn(),
+		beforePopState: vi.fn(),
+		asPath: "/",
+		pathname: "/",
+		query: {},
+		route: "/",
+		events: {
+			on: vi.fn(),
+			off: vi.fn(),
+			emit: vi.fn(),
+		},
+	}),
 }));
 
 // Mock Next.js navigation (app directory)
-vi.mock('next/navigation', () => ({
-  useRouter: () => ({
-    push: vi.fn(),
-    replace: vi.fn(),
-    refresh: vi.fn(),
-    back: vi.fn(),
-    forward: vi.fn(),
-    prefetch: vi.fn(),
-  }),
-  usePathname: () => '/',
-  useSearchParams: () => new URLSearchParams(),
-  useParams: () => ({}),
+vi.mock("next/navigation", () => ({
+	useRouter: () => ({
+		push: vi.fn(),
+		replace: vi.fn(),
+		refresh: vi.fn(),
+		back: vi.fn(),
+		forward: vi.fn(),
+		prefetch: vi.fn(),
+	}),
+	usePathname: () => "/",
+	useSearchParams: () => new URLSearchParams(),
+	useParams: () => ({}),
 }));
 
 // Mock Next.js Image component
-vi.mock('next/image', () => ({
-  default: vi.fn().mockImplementation(({ src, alt, ...props }) => {
-    return {
-      type: 'img',
-      props: { src, alt, ...props },
-    };
-  }),
+vi.mock("next/image", () => ({
+	default: vi.fn().mockImplementation(({ src, alt, ...props }) => {
+		return {
+			type: "img",
+			props: { src, alt, ...props },
+		};
+	}),
 }));
 
 // Mock Supabase client
-vi.mock('@/lib/supabase/client', () => ({
-  createClient: vi.fn(() => ({
-    auth: {
-      getUser: vi.fn(),
-      signInWithPassword: vi.fn(),
-      signOut: vi.fn(),
-      onAuthStateChange: vi.fn(),
-    },
-    from: vi.fn(() => ({
-      select: vi.fn().mockReturnThis(),
-      insert: vi.fn().mockReturnThis(),
-      update: vi.fn().mockReturnThis(),
-      delete: vi.fn().mockReturnThis(),
-      eq: vi.fn().mockReturnThis(),
-      throwOnError: vi.fn().mockResolvedValue({ data: null, error: null }),
-    })),
-  })),
+vi.mock("@/lib/supabase/client", () => ({
+	createClient: vi.fn(() => ({
+		auth: {
+			getUser: vi.fn(),
+			signInWithPassword: vi.fn(),
+			signOut: vi.fn(),
+			onAuthStateChange: vi.fn(),
+		},
+		from: vi.fn(() => ({
+			select: vi.fn().mockReturnThis(),
+			insert: vi.fn().mockReturnThis(),
+			update: vi.fn().mockReturnThis(),
+			delete: vi.fn().mockReturnThis(),
+			eq: vi.fn().mockReturnThis(),
+			throwOnError: vi.fn().mockResolvedValue({ data: null, error: null }),
+		})),
+	})),
 }));
 
 // Mock environment variables
-process.env.NEXT_PUBLIC_SUPABASE_URL = 'http://localhost:54321';
-process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key';
-process.env.NODE_ENV = 'test';
+process.env.NEXT_PUBLIC_SUPABASE_URL = "http://localhost:54321";
+process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = "test-anon-key";
+process.env.NODE_ENV = "test";
 
 // Mock fetch for API testing
 global.fetch = vi.fn();
 
 // Mock window.matchMedia
-Object.defineProperty(window, 'matchMedia', {
-  writable: true,
-  value: vi.fn().mockImplementation(query => ({
-    matches: false,
-    media: query,
-    onchange: null,
-    addListener: vi.fn(), // deprecated
-    removeListener: vi.fn(), // deprecated
-    addEventListener: vi.fn(),
-    removeEventListener: vi.fn(),
-    dispatchEvent: vi.fn(),
-  })),
+Object.defineProperty(window, "matchMedia", {
+	writable: true,
+	value: vi.fn().mockImplementation((query) => ({
+		matches: false,
+		media: query,
+		onchange: null,
+		addListener: vi.fn(), // deprecated
+		removeListener: vi.fn(), // deprecated
+		addEventListener: vi.fn(),
+		removeEventListener: vi.fn(),
+		dispatchEvent: vi.fn(),
+	})),
 });
 
 // Mock ResizeObserver
 global.ResizeObserver = vi.fn().mockImplementation(() => ({
-  observe: vi.fn(),
-  unobserve: vi.fn(),
-  disconnect: vi.fn(),
+	observe: vi.fn(),
+	unobserve: vi.fn(),
+	disconnect: vi.fn(),
 }));
 
 // Mock IntersectionObserver
 global.IntersectionObserver = vi.fn().mockImplementation(() => ({
-  observe: vi.fn(),
-  unobserve: vi.fn(),
-  disconnect: vi.fn(),
+	observe: vi.fn(),
+	unobserve: vi.fn(),
+	disconnect: vi.fn(),
 }));
 
 // Setup cleanup between tests
 beforeEach(() => {
-  vi.clearAllMocks();
+	vi.clearAllMocks();
 });

@@ -1,1 +1,1 @@
-export * from './lemon-squeezy-embedded-checkout';
+export * from "./lemon-squeezy-embedded-checkout";

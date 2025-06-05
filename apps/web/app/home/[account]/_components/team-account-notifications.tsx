@@ -1,19 +1,19 @@
-import { NotificationsPopover } from '@kit/notifications/components';
+import { NotificationsPopover } from "@kit/notifications/components";
 
-import featuresFlagConfig from '~/config/feature-flags.config';
+import featuresFlagConfig from "~/config/feature-flags.config";
 
 export function TeamAccountNotifications(params: {
-  userId: string;
-  accountId: string;
+	userId: string;
+	accountId: string;
 }) {
-  if (!featuresFlagConfig.enableNotifications) {
-    return null;
-  }
+	if (!featuresFlagConfig.enableNotifications) {
+		return null;
+	}
 
-  return (
-    <NotificationsPopover
-      accountIds={[params.userId, params.accountId]}
-      realtime={featuresFlagConfig.realtimeNotifications}
-    />
-  );
+	return (
+		<NotificationsPopover
+			accountIds={[params.userId, params.accountId]}
+			realtime={featuresFlagConfig.realtimeNotifications}
+		/>
+	);
 }

@@ -1,2 +1,2 @@
-export * from './widgets/wall';
-export * from './widgets/compact';
+export * from "./widgets/wall";
+export * from "./widgets/compact";

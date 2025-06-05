@@ -1,7 +1,7 @@
 export function BodyStyle() {
-  return (
-    <style>
-      {`
+	return (
+		<style>
+			{`
         body {
           background-color: #fafafa;
           margin: auto;
@@ -9,6 +9,6 @@ export function BodyStyle() {
           color: #242424;
         }
     `}
-    </style>
-  );
+		</style>
+	);
 }

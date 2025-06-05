@@ -1,46 +1,46 @@
-'use client';
+"use client";
 
-import { useContext } from 'react';
+import { useContext } from "react";
 
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 
-import { AccountSelector } from '@kit/accounts/account-selector';
-import { SidebarContext } from '@kit/ui/shadcn-sidebar';
+import { AccountSelector } from "@kit/accounts/account-selector";
+import { SidebarContext } from "@kit/ui/shadcn-sidebar";
 
-import featureFlagsConfig from '~/config/feature-flags.config';
-import pathsConfig from '~/config/paths.config';
+import featureFlagsConfig from "~/config/feature-flags.config";
+import pathsConfig from "~/config/paths.config";
 
 const features = {
-  enableTeamCreation: featureFlagsConfig.enableTeamCreation,
+	enableTeamCreation: featureFlagsConfig.enableTeamCreation,
 };
 
 export function TeamAccountAccountsSelector(params: {
-  selectedAccount: string;
-  userId: string;
+	selectedAccount: string;
+	userId: string;
 
-  accounts: Array<{
-    label: string | null;
-    value: string | null;
-    image: string | null;
-  }>;
+	accounts: Array<{
+		label: string | null;
+		value: string | null;
+		image: string | null;
+	}>;
 }) {
-  const router = useRouter();
-  const ctx = useContext(SidebarContext);
+	const router = useRouter();
+	const ctx = useContext(SidebarContext);
 
-  return (
-    <AccountSelector
-      selectedAccount={params.selectedAccount}
-      accounts={params.accounts}
-      userId={params.userId}
-      collapsed={!ctx?.open}
-      features={features}
-      onAccountChange={(value) => {
-        const path = value
-          ? pathsConfig.app.accountHome.replace('[account]', value)
-          : pathsConfig.app.home;
+	return (
+		<AccountSelector
+			selectedAccount={params.selectedAccount}
+			accounts={params.accounts}
+			userId={params.userId}
+			collapsed={!ctx?.open}
+			features={features}
+			onAccountChange={(value) => {
+				const path = value
+					? pathsConfig.app.accountHome.replace("[account]", value)
+					: pathsConfig.app.home;
 
-        router.replace(path);
-      }}
-    />
-  );
+				router.replace(path);
+			}}
+		/>
+	);
 }

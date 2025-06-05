@@ -1,4 +1,4 @@
-import { Cms, CmsClient } from '@kit/cms-types';
+import type { Cms, CmsClient } from "@kit/cms-types";
 export declare class PayloadClient implements CmsClient {
     getContentItems(options?: Cms.GetContentItemsOptions): Promise<{
         total: any;

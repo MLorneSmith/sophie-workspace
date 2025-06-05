@@ -42,9 +42,14 @@
 		"cloudflare-playwright": {
 			"command": "npx",
 			"args": [
+				"-y",
 				"mcp-remote",
-				"https://playwright-mcp-example.slideheroes.workers.dev/sse"
-			]
+				"sse",
+				"https://slideheroes-playwright-mcp-dev.YOUR_SUBDOMAIN.workers.dev/sse"
+			],
+			"env": {
+				"PLAYWRIGHT_MCP_TOKEN": "YOUR_PLAYWRIGHT_MCP_TOKEN"
+			}
 		},
 		"postgres": {
 			"command": "npx",

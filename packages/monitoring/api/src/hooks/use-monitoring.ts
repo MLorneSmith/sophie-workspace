@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useContext } from 'react';
+import { useContext } from "react";
 
-import { MonitoringContext } from '@kit/monitoring-core';
+import { MonitoringContext } from "@kit/monitoring-core";
 
 /**
  * @name useMonitoring
@@ -10,5 +10,5 @@ import { MonitoringContext } from '@kit/monitoring-core';
  * Use Suspense to suspend while loading the service.
  */
 export function useMonitoring() {
-  return useContext(MonitoringContext);
+	return useContext(MonitoringContext);
 }

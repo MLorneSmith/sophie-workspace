@@ -1,57 +1,57 @@
-'use server';
+"use server";
 
-import { redirect } from 'next/navigation';
+import { redirect } from "next/navigation";
 
-import { enhanceAction } from '@kit/next/actions';
-import { getLogger } from '@kit/shared/logger';
-import { getSupabaseServerClient } from '@kit/supabase/server-client';
+import { enhanceAction } from "@kit/next/actions";
+import { getLogger } from "@kit/shared/logger";
+import { getSupabaseServerClient } from "@kit/supabase/server-client";
 
-import { UpdateTeamNameSchema } from '../../schema/update-team-name.schema';
+import { UpdateTeamNameSchema } from "../../schema/update-team-name.schema";
 
 export const updateTeamAccountName = enhanceAction(
-  async (params) => {
-    const client = getSupabaseServerClient();
-    const logger = await getLogger();
-    const { name, path, slug } = params;
+	async (params) => {
+		const client = getSupabaseServerClient();
+		const logger = await getLogger();
+		const { name, path, slug } = params;
 
-    const ctx = {
-      name: 'team-accounts.update',
-      accountName: name,
-    };
+		const ctx = {
+			name: "team-accounts.update",
+			accountName: name,
+		};
 
-    logger.info(ctx, `Updating team name...`);
+		logger.info(ctx, "Updating team name...");
 
-    const { error, data } = await client
-      .from('accounts')
-      .update({
-        name,
-        slug,
-      })
-      .match({
-        slug,
-      })
-      .select('slug')
-      .single();
+		const { error, data } = await client
+			.from("accounts")
+			.update({
+				name,
+				slug,
+			})
+			.match({
+				slug,
+			})
+			.select("slug")
+			.single();
 
-    if (error) {
-      logger.error({ ...ctx, error }, `Failed to update team name`);
+		if (error) {
+			logger.error({ ...ctx, error }, "Failed to update team name");
 
-      throw error;
-    }
+			throw error;
+		}
 
-    const newSlug = data.slug;
+		const newSlug = data.slug;
 
-    logger.info(ctx, `Team name updated`);
+		logger.info(ctx, "Team name updated");
 
-    if (newSlug) {
-      const nextPath = path.replace('[account]', newSlug);
+		if (newSlug) {
+			const nextPath = path.replace("[account]", newSlug);
 
-      redirect(nextPath);
-    }
+			redirect(nextPath);
+		}
 
-    return { success: true };
-  },
-  {
-    schema: UpdateTeamNameSchema,
-  },
+		return { success: true };
+	},
+	{
+		schema: UpdateTeamNameSchema,
+	},
 );

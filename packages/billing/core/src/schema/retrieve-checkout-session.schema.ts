@@ -1,5 +1,5 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export const RetrieveCheckoutSessionSchema = z.object({
-  sessionId: z.string(),
+	sessionId: z.string(),
 });

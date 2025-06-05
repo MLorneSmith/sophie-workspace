@@ -7,8 +7,8 @@ export declare function isBrowser(): boolean;
  * @description Format the currency based on the currency code
  */
 export declare function formatCurrency(params: {
-    currencyCode: string;
-    locale: string;
-    value: string | number;
+	currencyCode: string;
+	locale: string;
+	value: string | number;
 }): string;
 //# sourceMappingURL=utils.d.ts.map

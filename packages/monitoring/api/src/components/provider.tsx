@@ -1,55 +1,55 @@
-'use client';
+"use client";
 
-import { lazy } from 'react';
+import { lazy } from "react";
 
-import { createRegistry } from '@kit/shared/registry';
+import { createRegistry } from "@kit/shared/registry";
 
 import {
-  MonitoringProvider as MonitoringProviderType,
-  getMonitoringProvider,
-} from '../get-monitoring-provider';
+	type MonitoringProvider as MonitoringProviderType,
+	getMonitoringProvider,
+} from "../get-monitoring-provider";
 
 // Define the type for our provider components
 type ProviderComponent = {
-  default: React.ComponentType<React.PropsWithChildren>;
+	default: React.ComponentType<React.PropsWithChildren>;
 };
 
 const provider = getMonitoringProvider();
 
 const Provider = provider
-  ? lazy(() => monitoringProviderRegistry.get(provider))
-  : null;
+	? lazy(() => monitoringProviderRegistry.get(provider))
+	: null;
 
 // Create a registry for monitoring providers
 const monitoringProviderRegistry = createRegistry<
-  ProviderComponent,
-  NonNullable<MonitoringProviderType>
+	ProviderComponent,
+	NonNullable<MonitoringProviderType>
 >();
 
 // Register the Baselime provider
-monitoringProviderRegistry.register('baselime', async () => {
-  const { BaselimeProvider } = await import('@kit/baselime/provider');
+monitoringProviderRegistry.register("baselime", async () => {
+	const { BaselimeProvider } = await import("@kit/baselime/provider");
 
-  return {
-    default: function BaselimeProviderWrapper({
-      children,
-    }: React.PropsWithChildren) {
-      return <BaselimeProvider enableWebVitals>{children}</BaselimeProvider>;
-    },
-  };
+	return {
+		default: function BaselimeProviderWrapper({
+			children,
+		}: React.PropsWithChildren) {
+			return <BaselimeProvider enableWebVitals>{children}</BaselimeProvider>;
+		},
+	};
 });
 
 // Register the Sentry provider
-monitoringProviderRegistry.register('sentry', async () => {
-  const { SentryProvider } = await import('@kit/sentry/provider');
+monitoringProviderRegistry.register("sentry", async () => {
+	const { SentryProvider } = await import("@kit/sentry/provider");
 
-  return {
-    default: function SentryProviderWrapper({
-      children,
-    }: React.PropsWithChildren) {
-      return <SentryProvider>{children}</SentryProvider>;
-    },
-  };
+	return {
+		default: function SentryProviderWrapper({
+			children,
+		}: React.PropsWithChildren) {
+			return <SentryProvider>{children}</SentryProvider>;
+		},
+	};
 });
 
 /**
@@ -59,9 +59,9 @@ monitoringProviderRegistry.register('sentry', async () => {
  * @returns
  */
 export function MonitoringProvider(props: React.PropsWithChildren) {
-  if (!Provider) {
-    return <>{props.children}</>;
-  }
+	if (!Provider) {
+		return <>{props.children}</>;
+	}
 
-  return <Provider>{props.children}</Provider>;
+	return <Provider>{props.children}</Provider>;
 }

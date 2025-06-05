@@ -1,10 +1,10 @@
 export class PayloadClient {
     async getContentItems(options) {
-        const collection = (options === null || options === void 0 ? void 0 : options.collection) || 'documentation';
+        const collection = (options === null || options === void 0 ? void 0 : options.collection) || "documentation";
         // Use a large number (1000) instead of Infinity to avoid PostgreSQL errors
-        const limit = (options === null || options === void 0 ? void 0 : options.limit) === Infinity ? 1000 : (options === null || options === void 0 ? void 0 : options.limit) || 10;
+        const limit = (options === null || options === void 0 ? void 0 : options.limit) === Number.POSITIVE_INFINITY ? 1000 : (options === null || options === void 0 ? void 0 : options.limit) || 10;
         const offset = (options === null || options === void 0 ? void 0 : options.offset) || 0;
-        const status = (options === null || options === void 0 ? void 0 : options.status) || 'published';
+        const status = (options === null || options === void 0 ? void 0 : options.status) || "published";
         try {
             // Fetch all documents
             const response = await fetch(`${process.env.PAYLOAD_PUBLIC_SERVER_URL}/api/${collection}?limit=${limit}&page=${Math.floor(offset / limit) + 1}&where[status][equals]=${status}`);
@@ -31,7 +31,7 @@ export class PayloadClient {
             };
         }
         catch (error) {
-            console.error('Error fetching content items from Payload:', error);
+            console.error("Error fetching content items from Payload:", error);
             return {
                 total: 0,
                 items: [],
@@ -39,7 +39,7 @@ export class PayloadClient {
         }
     }
     async getContentItemBySlug(params) {
-        const { slug, collection, status = 'published' } = params;
+        const { slug, collection, status = "published" } = params;
         try {
             // Fetch the main document
             const response = await fetch(`${process.env.PAYLOAD_PUBLIC_SERVER_URL}/api/${collection}?where[slug][equals]=${slug}&where[status][equals]=${status}`);
@@ -50,7 +50,7 @@ export class PayloadClient {
             // Get the main item
             const item = this.mapContentItem(data.docs[0]);
             // Collections that don't support parent-child relationships
-            const nonHierarchicalCollections = ['posts'];
+            const nonHierarchicalCollections = ["posts"];
             // Only fetch child documents for collections that support hierarchical relationships
             if (!nonHierarchicalCollections.includes(collection)) {
                 try {
@@ -65,7 +65,7 @@ export class PayloadClient {
                             item.children = childrenData.docs.map((doc) => this.mapContentItem(doc));
                         }
                         else {
-                            console.warn('No child documents found or invalid response format');
+                            console.warn("No child documents found or invalid response format");
                             item.children = []; // Ensure children is an empty array
                         }
                     }
@@ -75,7 +75,7 @@ export class PayloadClient {
                     }
                 }
                 catch (childError) {
-                    console.error('Error fetching child documents:', childError);
+                    console.error("Error fetching child documents:", childError);
                     item.children = []; // Ensure children is an empty array
                 }
             }
@@ -86,13 +86,13 @@ export class PayloadClient {
             return item;
         }
         catch (error) {
-            console.error('Error fetching content item by slug from Payload:', error);
+            console.error("Error fetching content item by slug from Payload:", error);
             return undefined;
         }
     }
     async getCategories(options) {
         // Extract unique categories from the specified collection or documentation by default
-        const collection = (options === null || options === void 0 ? void 0 : options.collection) || 'documentation';
+        const collection = (options === null || options === void 0 ? void 0 : options.collection) || "documentation";
         try {
             const response = await fetch(`${process.env.PAYLOAD_PUBLIC_SERVER_URL}/api/${collection}?limit=100`);
             const data = await response.json();
@@ -105,11 +105,11 @@ export class PayloadClient {
             return Array.from(categoriesSet).map((name) => ({
                 id: name,
                 name,
-                slug: name.toLowerCase().replace(/\s+/g, '-'),
+                slug: name.toLowerCase().replace(/\s+/g, "-"),
             }));
         }
         catch (error) {
-            console.error('Error fetching categories from Payload:', error);
+            console.error("Error fetching categories from Payload:", error);
             return [];
         }
     }
@@ -119,7 +119,7 @@ export class PayloadClient {
     }
     async getTags(options) {
         // Extract unique tags from the specified collection or documentation by default
-        const collection = (options === null || options === void 0 ? void 0 : options.collection) || 'documentation';
+        const collection = (options === null || options === void 0 ? void 0 : options.collection) || "documentation";
         try {
             const response = await fetch(`${process.env.PAYLOAD_PUBLIC_SERVER_URL}/api/${collection}?limit=100`);
             const data = await response.json();
@@ -132,11 +132,11 @@ export class PayloadClient {
             return Array.from(tagsSet).map((name) => ({
                 id: name,
                 name,
-                slug: name.toLowerCase().replace(/\s+/g, '-'),
+                slug: name.toLowerCase().replace(/\s+/g, "-"),
             }));
         }
         catch (error) {
-            console.error('Error fetching tags from Payload:', error);
+            console.error("Error fetching tags from Payload:", error);
             return [];
         }
     }
@@ -153,12 +153,12 @@ export class PayloadClient {
         if (!url)
             return null;
         // If the URL contains r2.cloudflarestorage.com, transform it to the custom domain
-        if (url.includes('r2.cloudflarestorage.com')) {
-            const filename = url.split('/').pop();
+        if (url.includes("r2.cloudflarestorage.com")) {
+            const filename = url.split("/").pop();
             return `https://images.slideheroes.com/${filename}`;
         }
         // If the URL is just a filename (no protocol/domain), add the custom domain
-        if (!url.startsWith('http') && !url.startsWith('/')) {
+        if (!url.startsWith("http") && !url.startsWith("/")) {
             return `https://images.slideheroes.com/${url}`;
         }
         return url;
@@ -169,7 +169,7 @@ export class PayloadClient {
         // Check for both image and image_id fields
         const imageUrl = ((_a = item.image_id) === null || _a === void 0 ? void 0 : _a.url) || // Check for image_id field first (used in Posts collection)
             ((_b = item.image) === null || _b === void 0 ? void 0 : _b.url) || // Then check for image field (used in other collections)
-            (typeof item.image === 'string' ? item.image : null);
+            (typeof item.image === "string" ? item.image : null);
         const transformedImageUrl = this.transformImageUrl(imageUrl);
         // Map the item
         const mappedItem = {
@@ -186,21 +186,21 @@ export class PayloadClient {
             image_id: item.image_id,
             status: item.status,
             categories: (item.categories || []).map((category) => {
-                const categoryValue = category && category.category ? category.category : '';
+                const categoryValue = (category === null || category === void 0 ? void 0 : category.category) ? category.category : "";
                 return {
                     id: categoryValue,
                     name: categoryValue,
                     slug: categoryValue
-                        ? categoryValue.toLowerCase().replace(/\s+/g, '-')
-                        : '',
+                        ? categoryValue.toLowerCase().replace(/\s+/g, "-")
+                        : "",
                 };
             }),
             tags: (item.tags || []).map((tag) => {
-                const tagValue = tag && tag.tag ? tag.tag : '';
+                const tagValue = (tag === null || tag === void 0 ? void 0 : tag.tag) ? tag.tag : "";
                 return {
                     id: tagValue,
                     name: tagValue,
-                    slug: tagValue ? tagValue.toLowerCase().replace(/\s+/g, '-') : '',
+                    slug: tagValue ? tagValue.toLowerCase().replace(/\s+/g, "-") : "",
                 };
             }),
             parentId: item.parent ? item.parent.id : null,

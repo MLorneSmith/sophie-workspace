@@ -1,3 +1,3 @@
 export function useFactorsMutationKey(userId: string) {
-  return ['mfa-factors', userId];
+	return ["mfa-factors", userId];
 }

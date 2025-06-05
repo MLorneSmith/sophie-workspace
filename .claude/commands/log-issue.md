@@ -1,0 +1,313 @@
+# Log Issue Command
+
+Usage: `/log-issue [output_format]` (default: file)
+- `file`: Save to `.claude/issues/YYYY-MM-DD-HH-mm-ss-issue.md`
+- `github`: Create GitHub issue (requires mcp__github tools)
+- `both`: Save locally and create GitHub issue
+
+This command documents issues systematically using diagnostic tools and creates a standardized issue specification.
+
+## 1. Adopt Role
+Load the issue investigator mindset:
+```
+/read .claude/roles/full-stack-engineer.md
+```
+
+## 2. Initial Information Gathering
+
+### 2.1 User Interview
+Ask the user for:
+1. **Issue Title**: Brief description (for filename/GitHub title)
+2. **Issue Type**: 
+   - `bug`: Something broken
+   - `performance`: Slow or inefficient
+   - `error`: Explicit error messages
+   - `regression`: Previously working feature broken
+   - `integration`: Third-party service issues
+3. **Severity**: `critical`, `high`, `medium`, `low`
+4. **Affected Area**: Component/feature/page affected
+5. **Steps to Reproduce**: How to trigger the issue
+6. **Expected vs Actual**: What should happen vs what happens
+7. **Environment**: Development/staging/production
+8. **First Noticed**: When the issue started
+
+### 2.2 Automatic Context Collection
+Gather system information:
+```bash
+# Get current git branch and last commit
+git branch --show-current
+git log -1 --oneline
+
+# Check for recent changes to affected files
+git log --since="3 days ago" --oneline [affected_files]
+
+# Get package versions
+cat package.json | grep version
+```
+
+## 3. Diagnostic Tool Execution
+
+Based on issue type, run appropriate MCP diagnostics:
+
+### 3.1 For All Issues
+```typescript
+// Always capture current state
+const diagnostics = {
+  timestamp: new Date().toISOString(),
+  environment: process.env.NODE_ENV,
+  // Add git info, package versions, etc.
+};
+```
+
+### 3.2 Browser/UI Issues
+```typescript
+// Capture console state
+const consoleErrors = await mcp__browser-tools__getConsoleErrors();
+const consoleLogs = await mcp__browser-tools__getConsoleLogs();
+const networkErrors = await mcp__browser-tools__getNetworkErrors();
+
+// Visual evidence
+const screenshot = await mcp__browser-tools__takeScreenshot();
+
+// Performance snapshot
+const performanceAudit = await mcp__browser-tools__runPerformanceAudit();
+```
+
+### 3.3 Database Issues
+```typescript
+// Database health check
+const dbAnalysis = await mcp__postgres__pg_analyze_database({
+  analysisType: "performance",
+  connectionString: process.env.DATABASE_URL
+});
+
+// Current database state
+const dbMonitor = await mcp__postgres__pg_monitor_database({
+  includeQueries: true,
+  includeLocks: true
+});
+
+// Recent slow queries
+const slowQueries = await mcp__postgres__pg_manage_query({
+  operation: "get_slow_queries",
+  minDuration: 100,
+  limit: 5
+});
+```
+
+### 3.4 API/Worker Issues
+```typescript
+// Check worker logs
+const workerLogs = await mcp__cloudflare-observability__query_worker_observability({
+  query: {
+    view: "events",
+    parameters: {
+      filters: [{
+        key: "$metadata.error",
+        operation: "exists",
+        type: "string"
+      }]
+    },
+    timeframe: { /* last hour */ }
+  }
+});
+
+// Supabase service logs
+const supabaseLogs = await mcp__supabase__get_logs({
+  project_id: "project_id",
+  service: "api" // or relevant service
+});
+```
+
+## 4. Issue Specification Creation
+
+### 4.1 Standard Issue Format
+Create a structured issue document:
+
+```markdown
+# Issue: [Title]
+
+**ID**: ISSUE-[timestamp]-[hash]
+**Created**: [ISO timestamp]
+**Reporter**: [user/system]
+**Severity**: [critical|high|medium|low]
+**Status**: new
+**Type**: [bug|performance|error|regression|integration]
+
+## Summary
+[One paragraph description of the issue]
+
+## Environment
+- **Application Version**: [version]
+- **Environment**: [development|staging|production]
+- **Browser**: [if applicable]
+- **Node Version**: [version]
+- **Database**: [PostgreSQL version]
+- **Last Working**: [date/commit if known]
+
+## Reproduction Steps
+1. [Step 1]
+2. [Step 2]
+3. [Step 3]
+
+## Expected Behavior
+[What should happen]
+
+## Actual Behavior
+[What actually happens]
+
+## Diagnostic Data
+
+### Console Output
+```
+[Console errors/logs from MCP tools]
+```
+
+### Network Analysis
+```
+[Network errors/failed requests]
+```
+
+### Database Analysis
+```
+[Slow queries, locks, performance metrics]
+```
+
+### Performance Metrics
+```
+[Performance audit results]
+```
+
+### Screenshots
+[Links to screenshots if captured]
+
+## Error Stack Traces
+```
+[Any stack traces found]
+```
+
+## Related Code
+- **Affected Files**: 
+  - [file1.ts]
+  - [file2.tsx]
+- **Recent Changes**: [git commits affecting these files]
+- **Suspected Functions**: [specific functions/components]
+
+## Initial Analysis
+[Automated analysis based on diagnostic data]
+
+## Suggested Investigation Areas
+1. [Area 1 based on diagnostics]
+2. [Area 2 based on patterns]
+3. [Area 3 based on logs]
+
+## Additional Context
+[Any other relevant information]
+
+---
+*Generated by Claude Debug Assistant*
+*Tools Used: [List of MCP tools used]*
+```
+
+### 4.2 Save Issue Locally
+```typescript
+// Generate unique ID
+const issueId = `ISSUE-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+const filename = `.claude/issues/${new Date().toISOString().split('T')[0]}-${issueId}.md`;
+
+// Save the issue specification
+await writeFile(filename, issueContent);
+```
+
+### 4.3 Create GitHub Issue (if requested)
+```typescript
+if (outputFormat === 'github' || outputFormat === 'both') {
+  const issue = await mcp__github__create_issue({
+    owner: "repository_owner",
+    repo: "repository_name",
+    title: issueTitle,
+    body: issueContent,
+    labels: [severity, issueType, "needs-investigation"],
+    assignees: []
+  });
+  
+  // Update local file with GitHub issue number
+  issueContent = issueContent.replace(
+    '**ID**: ISSUE-',
+    `**ID**: ISSUE-${issue.number}-`
+  );
+}
+```
+
+## 5. Post-Creation Actions
+
+### 5.1 Summary Output
+Provide the user with:
+```
+✅ Issue logged successfully!
+
+📁 Local File: .claude/issues/2025-01-06-ISSUE-1234567-abc.md
+🔗 GitHub Issue: https://github.com/owner/repo/issues/123 (if created)
+🏷️ Issue ID: ISSUE-1234567-abc
+
+Next Steps:
+1. To debug this issue, run: /debug-issue ISSUE-1234567-abc
+2. To add more information, edit the file directly
+3. To share with team, use the GitHub link
+```
+
+### 5.2 Index Update
+Update `.claude/issues/index.md` with:
+- Issue ID
+- Title
+- Severity
+- Status
+- Created date
+- File path
+
+## 6. Diagnostic Patterns
+
+### Pattern Recognition
+Look for common patterns in diagnostic data:
+- **Memory Leaks**: Increasing memory usage in performance audits
+- **N+1 Queries**: Multiple similar queries in database logs
+- **CORS Issues**: Specific network error patterns
+- **RLS Violations**: Permission denied errors in Supabase
+- **Type Mismatches**: Console errors about undefined properties
+
+### Automatic Tagging
+Based on patterns found, add tags:
+- `#memory-leak`
+- `#slow-query`
+- `#cors-error`
+- `#auth-issue`
+- `#type-error`
+
+## Context Management
+
+### Information Hierarchy
+1. Essential: Error messages, stack traces, reproduction steps
+2. Important: Diagnostic tool output, recent changes
+3. Helpful: Performance metrics, related issues
+4. Optional: Full logs, historical data
+
+### Output Control
+- Keep issue specs under 2000 lines
+- Summarize verbose tool output
+- Link to full logs if needed
+- Focus on actionable information
+
+## Integration Notes
+
+### For Debug Command
+The debug-issue command expects:
+- Standardized issue format
+- Diagnostic data already collected
+- Clear reproduction steps
+- Identified affected areas
+
+### For Team Collaboration
+- GitHub integration enables team discussion
+- Local files allow offline work
+- Standardized format ensures consistency
+- Diagnostic data provides objective evidence

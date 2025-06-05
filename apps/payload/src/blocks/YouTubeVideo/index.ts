@@ -1,3 +1,3 @@
-import { YouTubeVideo } from './config'
+import { YouTubeVideo } from "./config";
 
-export default YouTubeVideo
+export default YouTubeVideo;

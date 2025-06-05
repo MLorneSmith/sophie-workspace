@@ -1,11 +1,11 @@
-import 'server-only';
+import "server-only";
 
-import { cache } from 'react';
+import { cache } from "react";
 
-import { z } from 'zod';
+import { z } from "zod";
 
-import { createAccountsApi } from '@kit/accounts/api';
-import { getSupabaseServerClient } from '@kit/supabase/server-client';
+import { createAccountsApi } from "@kit/accounts/api";
+import { getSupabaseServerClient } from "@kit/supabase/server-client";
 
 /**
  * The variable BILLING_MODE represents the billing mode for a service. It can
@@ -18,9 +18,9 @@ import { getSupabaseServerClient } from '@kit/supabase/server-client';
  * if none of these suits your needs, please override the below function.
  */
 const BILLING_MODE = z
-  .enum(['subscription', 'one-time'])
-  .default('subscription')
-  .parse(process.env.BILLING_MODE);
+	.enum(["subscription", "one-time"])
+	.default("subscription")
+	.parse(process.env.BILLING_MODE);
 
 /**
  * Load the personal account billing page data for the given user.
@@ -29,19 +29,19 @@ const BILLING_MODE = z
  * This function is cached per-request.
  */
 export const loadPersonalAccountBillingPageData = cache(
-  personalAccountBillingPageDataLoader,
+	personalAccountBillingPageDataLoader,
 );
 
 function personalAccountBillingPageDataLoader(userId: string) {
-  const client = getSupabaseServerClient();
-  const api = createAccountsApi(client);
+	const client = getSupabaseServerClient();
+	const api = createAccountsApi(client);
 
-  const data =
-    BILLING_MODE === 'subscription'
-      ? api.getSubscription(userId)
-      : api.getOrder(userId);
+	const data =
+		BILLING_MODE === "subscription"
+			? api.getSubscription(userId)
+			: api.getOrder(userId);
 
-  const customerId = api.getCustomerId(userId);
+	const customerId = api.getCustomerId(userId);
 
-  return Promise.all([data, customerId]);
+	return Promise.all([data, customerId]);
 }

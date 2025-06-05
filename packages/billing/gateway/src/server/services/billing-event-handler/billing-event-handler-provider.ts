@@ -1,18 +1,18 @@
-import 'server-only';
+import "server-only";
 
-import type { SupabaseClient } from '@supabase/supabase-js';
+import type { SupabaseClient } from "@supabase/supabase-js";
 
-import type { PlanTypeMap } from '@kit/billing';
-import { Database, Enums } from '@kit/supabase/database';
+import type { PlanTypeMap } from "@kit/billing";
+import type { Database, Enums } from "@kit/supabase/database";
 
-import { createBillingEventHandlerFactoryService } from './billing-event-handler-factory.service';
-import { createBillingEventHandlerService } from './billing-event-handler.service';
+import { createBillingEventHandlerFactoryService } from "./billing-event-handler-factory.service";
+import { createBillingEventHandlerService } from "./billing-event-handler.service";
 
 // a function that returns a Supabase client
 type ClientProvider = () => SupabaseClient<Database>;
 
 // the billing provider from the database
-type BillingProvider = Enums<'billing_provider'>;
+type BillingProvider = Enums<"billing_provider">;
 
 /**
  * @name getBillingEventHandlerService
@@ -21,12 +21,12 @@ type BillingProvider = Enums<'billing_provider'>;
  * defined in the host application.
  */
 export async function getBillingEventHandlerService(
-  clientProvider: ClientProvider,
-  provider: BillingProvider,
-  planTypesMap: PlanTypeMap,
+	clientProvider: ClientProvider,
+	provider: BillingProvider,
+	planTypesMap: PlanTypeMap,
 ) {
-  const strategy =
-    await createBillingEventHandlerFactoryService(planTypesMap).get(provider);
+	const strategy =
+		await createBillingEventHandlerFactoryService(planTypesMap).get(provider);
 
-  return createBillingEventHandlerService(clientProvider, strategy);
+	return createBillingEventHandlerService(clientProvider, strategy);
 }

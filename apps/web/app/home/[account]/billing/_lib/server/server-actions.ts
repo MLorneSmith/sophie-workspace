@@ -1,18 +1,18 @@
-'use server';
+"use server";
 
-import { redirect } from 'next/navigation';
+import { redirect } from "next/navigation";
 
-import { enhanceAction } from '@kit/next/actions';
-import { getSupabaseServerClient } from '@kit/supabase/server-client';
+import { enhanceAction } from "@kit/next/actions";
+import { getSupabaseServerClient } from "@kit/supabase/server-client";
 
-import featureFlagsConfig from '~/config/feature-flags.config';
+import featureFlagsConfig from "~/config/feature-flags.config";
 
 // billing imports
 import {
-  TeamBillingPortalSchema,
-  TeamCheckoutSchema,
-} from '../schema/team-billing.schema';
-import { createTeamBillingService } from './team-billing.service';
+	TeamBillingPortalSchema,
+	TeamCheckoutSchema,
+} from "../schema/team-billing.schema";
+import { createTeamBillingService } from "./team-billing.service";
 
 /**
  * @name enabled
@@ -25,19 +25,19 @@ const enabled = featureFlagsConfig.enableTeamAccountBilling;
  * @description Creates a checkout session for a team account.
  */
 export const createTeamAccountCheckoutSession = enhanceAction(
-  async (data) => {
-    if (!enabled) {
-      throw new Error('Team account billing is not enabled');
-    }
+	async (data) => {
+		if (!enabled) {
+			throw new Error("Team account billing is not enabled");
+		}
 
-    const client = getSupabaseServerClient();
-    const service = createTeamBillingService(client);
+		const client = getSupabaseServerClient();
+		const service = createTeamBillingService(client);
 
-    return service.createCheckout(data);
-  },
-  {
-    schema: TeamCheckoutSchema,
-  },
+		return service.createCheckout(data);
+	},
+	{
+		schema: TeamCheckoutSchema,
+	},
 );
 
 /**
@@ -46,20 +46,20 @@ export const createTeamAccountCheckoutSession = enhanceAction(
  * provider's hosted instance
  */
 export const createBillingPortalSession = enhanceAction(
-  async (formData: FormData) => {
-    if (!enabled) {
-      throw new Error('Team account billing is not enabled');
-    }
+	async (formData: FormData) => {
+		if (!enabled) {
+			throw new Error("Team account billing is not enabled");
+		}
 
-    const params = TeamBillingPortalSchema.parse(Object.fromEntries(formData));
+		const params = TeamBillingPortalSchema.parse(Object.fromEntries(formData));
 
-    const client = getSupabaseServerClient();
-    const service = createTeamBillingService(client);
+		const client = getSupabaseServerClient();
+		const service = createTeamBillingService(client);
 
-    // get url to billing portal
-    const url = await service.createBillingPortalSession(params);
+		// get url to billing portal
+		const url = await service.createBillingPortalSession(params);
 
-    return redirect(url);
-  },
-  {},
+		return redirect(url);
+	},
+	{},
 );

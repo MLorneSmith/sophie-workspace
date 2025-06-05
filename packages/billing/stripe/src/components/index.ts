@@ -1,1 +1,1 @@
-export * from './stripe-embedded-checkout';
+export * from "./stripe-embedded-checkout";

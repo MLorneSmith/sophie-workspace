@@ -1,6 +1,6 @@
-import { SupabaseClient } from '@supabase/supabase-js';
+import type { SupabaseClient } from "@supabase/supabase-js";
 
-import { Database } from '@kit/supabase/database';
+import type { Database } from "@kit/supabase/database";
 
 /**
  * @name isSuperAdmin
@@ -8,15 +8,15 @@ import { Database } from '@kit/supabase/database';
  * @param client
  */
 export async function isSuperAdmin(client: SupabaseClient<Database>) {
-  try {
-    const { data, error } = await client.rpc('is_super_admin');
+	try {
+		const { data, error } = await client.rpc("is_super_admin");
 
-    if (error) {
-      throw error;
-    }
+		if (error) {
+			throw error;
+		}
 
-    return data;
-  } catch {
-    return false;
-  }
+		return data;
+	} catch {
+		return false;
+	}
 }

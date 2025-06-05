@@ -1,16 +1,16 @@
-import { type SupabaseClient } from '@supabase/supabase-js';
+import type { SupabaseClient } from "@supabase/supabase-js";
 
-import { type Database } from '~/lib/database.types';
+import type { Database } from "~/lib/database.types";
 
-import { type TaskStatus } from '../schema/task.schema';
+import type { TaskStatus } from "../schema/task.schema";
 
 type TypedSupabaseClient = SupabaseClient<Database>;
 
 export function getTasks(client: TypedSupabaseClient) {
-  return client
-    .from('tasks')
-    .select(
-      `
+	return client
+		.from("tasks")
+		.select(
+			`
       *,
       subtasks (
         id,
@@ -20,15 +20,15 @@ export function getTasks(client: TypedSupabaseClient) {
         updated_at
       )
     `,
-    )
-    .throwOnError();
+		)
+		.throwOnError();
 }
 
 export function getTaskById(client: TypedSupabaseClient, id: string) {
-  return client
-    .from('tasks')
-    .select(
-      `
+	return client
+		.from("tasks")
+		.select(
+			`
       *,
       subtasks (
         id,
@@ -38,20 +38,20 @@ export function getTaskById(client: TypedSupabaseClient, id: string) {
         updated_at
       )
     `,
-    )
-    .eq('id', id)
-    .throwOnError()
-    .single();
+		)
+		.eq("id", id)
+		.throwOnError()
+		.single();
 }
 
 export function getTasksByStatus(
-  client: TypedSupabaseClient,
-  status: TaskStatus,
+	client: TypedSupabaseClient,
+	status: TaskStatus,
 ) {
-  return client
-    .from('tasks')
-    .select(
-      `
+	return client
+		.from("tasks")
+		.select(
+			`
       *,
       subtasks (
         id,
@@ -61,7 +61,7 @@ export function getTasksByStatus(
         updated_at
       )
     `,
-    )
-    .eq('status', status)
-    .throwOnError();
+		)
+		.eq("status", status)
+		.throwOnError();
 }

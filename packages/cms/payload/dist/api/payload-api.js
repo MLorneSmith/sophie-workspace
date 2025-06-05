@@ -1,4 +1,4 @@
-import { createEnvironmentLogger } from '@kit/shared/logger';
+import { createEnvironmentLogger } from "@kit/shared/logger";
 /**
  * Helper function to make authenticated requests to Payload CMS
  * @param endpoint The API endpoint to call (without the /api/ prefix)
@@ -6,7 +6,7 @@ import { createEnvironmentLogger } from '@kit/shared/logger';
  * @param supabaseClient Optional Supabase client (for client-side usage)
  * @returns The JSON response from the API
  */
-const logger = createEnvironmentLogger('PAYLOAD-API');
+const logger = createEnvironmentLogger("PAYLOAD-API");
 export async function callPayloadAPI(endpoint, options = {}, supabaseClient) {
     let session = null;
     try {
@@ -15,34 +15,34 @@ export async function callPayloadAPI(endpoint, options = {}, supabaseClient) {
             const { data } = await supabaseClient.auth.getSession();
             session = data.session;
         }
-        else if (typeof window === 'undefined') {
+        else if (typeof window === "undefined") {
             // Server-side: skip authentication in Payload CMS context
             // This avoids the server-only dependency chain
-            console.log('Server-side context detected, skipping authentication');
+            console.log("Server-side context detected, skipping authentication");
             // We'll continue without a session, which is fine for most Payload CMS operations
             // The user will still be authenticated through the Next.js middleware
         }
     }
     catch (error) {
-        console.error('Error getting auth session:', error);
+        console.error("Error getting auth session:", error);
         // Continue without authentication
     }
     // Use port 3020 to match the actual Payload CMS server port
-    const payloadUrl = process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3020';
+    const payloadUrl = process.env.PAYLOAD_PUBLIC_SERVER_URL || "http://localhost:3020";
     // Only log detailed info in non-production environments
-    if (process.env.NODE_ENV !== 'production') {
+    if (process.env.NODE_ENV !== "production") {
         logger.debug(`Calling Payload API at: ${payloadUrl}/api/${endpoint}`);
     }
     try {
         // Add request ID for tracking in logs
         const requestId = Math.random().toString(36).substring(2, 15);
         logger.debug(`API Request: ${endpoint}`, { requestId });
-        const response = await fetch(`${payloadUrl}/api/${endpoint}`, Object.assign(Object.assign({}, options), { headers: Object.assign(Object.assign({}, options.headers), { 'Content-Type': 'application/json', Authorization: session ? `Bearer ${session.access_token}` : '' }) }));
+        const response = await fetch(`${payloadUrl}/api/${endpoint}`, Object.assign(Object.assign({}, options), { headers: Object.assign(Object.assign({}, options.headers), { "Content-Type": "application/json", Authorization: session ? `Bearer ${session.access_token}` : "" }) }));
         if (!response.ok) {
             // Try to parse error as JSON, but handle case where it's not valid JSON
             try {
                 const errorText = await response.text();
-                let errorMessage = '';
+                let errorMessage = "";
                 try {
                     // Try to parse as JSON
                     const errorJson = JSON.parse(errorText);
@@ -81,7 +81,7 @@ export async function callPayloadAPI(endpoint, options = {}, supabaseClient) {
     catch (error) {
         // Catch network errors or other exceptions
         // Log error with appropriate level of detail based on environment
-        if (process.env.NODE_ENV === 'production') {
+        if (process.env.NODE_ENV === "production") {
             const statusCode = error === null || error === void 0 ? void 0 : error.status;
             logger.error(`API Error: ${endpoint}`, { statusCode });
         }

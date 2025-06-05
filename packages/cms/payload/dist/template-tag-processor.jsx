@@ -7,13 +7,13 @@
  *
  * Includes enhanced error handling, logging, and better r2file tag handling.
  */
-import React from 'react';
+import React from "react";
 // Enable detailed logging in development environment
-const DEBUG = process.env.NODE_ENV === 'development';
+const DEBUG = process.env.NODE_ENV === "development";
 // Helper logging function
 function debugLog(...args) {
     if (DEBUG) {
-        console.log('[TemplateTagProcessor]', ...args);
+        console.log("[TemplateTagProcessor]", ...args);
     }
 }
 /**
@@ -100,7 +100,7 @@ function processBunnyVideoTags(text) {
         if (DEBUG) {
             debugLog(`Processing bunny video: ID=${videoId}`);
         }
-        const libraryId = '264486'; // Default library ID
+        const libraryId = "264486"; // Default library ID
         return `
       <div class="my-8">
         <div class="relative" style="padding-bottom: 56.25%;">
@@ -134,17 +134,17 @@ function processCustomBulletTags(text) {
         if (DEBUG) {
             debugLog(`Processing custom bullet: status=${status}`);
         }
-        let bulletHtml = '';
+        let bulletHtml = "";
         switch (status) {
-            case 'right-arrow':
+            case "right-arrow":
                 bulletHtml =
                     '<span class="inline-block mr-2" data-bullet-type="right-arrow">→</span>';
                 break;
-            case 'check':
+            case "check":
                 bulletHtml =
                     '<span class="inline-block mr-2" data-bullet-type="check">✓</span>';
                 break;
-            case 'x':
+            case "x":
                 bulletHtml =
                     '<span class="inline-block mr-2" data-bullet-type="x">✗</span>';
                 break;
@@ -172,15 +172,15 @@ function processHeaderTags(text) {
  * @returns Component with processed content
  */
 export function TemplateTagProcessor({ content }) {
-    if (!content || typeof content !== 'string') {
+    if (!content || typeof content !== "string") {
         if (DEBUG) {
-            debugLog('Received empty or non-string content');
+            debugLog("Received empty or non-string content");
         }
         return null;
     }
     // Log basic stats about the content in development
     if (DEBUG) {
-        const contentPreview = content.length > 100 ? content.substring(0, 100) + '...' : content;
+        const contentPreview = content.length > 100 ? `${content.substring(0, 100)}...` : content;
         debugLog(`Processing content (${content.length} chars): ${contentPreview}`);
         // Count tag occurrences
         const r2fileMatches = content.match(/{%\s*r2file.*?\/%}/g) || [];
@@ -197,11 +197,11 @@ export function TemplateTagProcessor({ content }) {
             }
         };
         if (r2fileMatches.length > 0)
-            logFirstMatches(r2fileMatches, 'r2file');
+            logFirstMatches(r2fileMatches, "r2file");
         if (bunnyMatches.length > 0)
-            logFirstMatches(bunnyMatches, 'bunny');
+            logFirstMatches(bunnyMatches, "bunny");
         if (bulletMatches.length > 0)
-            logFirstMatches(bulletMatches, 'custombullet');
+            logFirstMatches(bulletMatches, "custombullet");
     }
     try {
         // Apply all processors in sequence
@@ -215,29 +215,32 @@ export function TemplateTagProcessor({ content }) {
         // Process headers last to avoid conflicts
         processedContent = processHeaderTags(processedContent);
         // Remove any duplicate HTML tags that might have been created during processing
-        processedContent = processedContent.replace(/<\/(div|h3|p)>\s*<\1>/g, ' ');
+        processedContent = processedContent.replace(/<\/(div|h3|p)>\s*<\1>/g, " ");
         // Add wrapper with diagnostic classes in development
-        return (<div className={`template-content ${DEBUG ? 'template-processed' : ''}`} data-processed-length={processedContent.length} data-original-length={content.length}>
-        <div dangerouslySetInnerHTML={{ __html: processedContent }}/>
-      </div>);
+        return (<div className={`template-content ${DEBUG ? "template-processed" : ""}`} data-processed-length={processedContent.length} data-original-length={content.length}>
+				{/* biome-ignore lint/security/noDangerouslySetInnerHtml: Processing trusted CMS content with template tags */}
+				<div dangerouslySetInnerHTML={{ __html: processedContent }}/>
+			</div>);
     }
     catch (error) {
         if (DEBUG) {
-            debugLog('Error processing template tags:', error);
+            debugLog("Error processing template tags:", error);
         }
         // Fallback to a basic rendering with error indication in development
         if (DEBUG) {
             return (<div className="template-content template-error">
-          <div className="rounded border border-red-200 bg-red-50 p-4">
-            <p className="text-red-700">Error processing template tags</p>
-            <pre className="mt-2 max-h-40 overflow-auto text-xs text-red-600">
-              {error instanceof Error ? error.toString() : String(error)}
-            </pre>
-          </div>
-          <div dangerouslySetInnerHTML={{ __html: content }}/>
-        </div>);
+					<div className="rounded border border-red-200 bg-red-50 p-4">
+						<p className="text-red-700">Error processing template tags</p>
+						<pre className="mt-2 max-h-40 overflow-auto text-xs text-red-600">
+							{error instanceof Error ? error.toString() : String(error)}
+						</pre>
+					</div>
+					{/* biome-ignore lint/security/noDangerouslySetInnerHtml: Fallback rendering of original CMS content when template processing fails */}
+					<div dangerouslySetInnerHTML={{ __html: content }}/>
+				</div>);
         }
         // In production, just render the content directly
+        // biome-ignore lint/security/noDangerouslySetInnerHtml: Production fallback for trusted CMS content
         return <div dangerouslySetInnerHTML={{ __html: content }}/>;
     }
 }
@@ -245,8 +248,8 @@ export function TemplateTagProcessor({ content }) {
  * Check if content contains template tags that need processing
  */
 export function containsTemplateTags(content) {
-    if (typeof content !== 'string') {
+    if (typeof content !== "string") {
         return false;
     }
-    return content.includes('{%') && content.includes('%}');
+    return content.includes("{%") && content.includes("%}");
 }

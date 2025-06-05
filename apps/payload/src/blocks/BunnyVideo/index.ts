@@ -1,3 +1,3 @@
-import { BunnyVideo } from './config'
+import { BunnyVideo } from "./config";
 
-export default BunnyVideo
+export default BunnyVideo;

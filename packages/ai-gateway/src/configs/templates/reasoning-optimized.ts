@@ -30,73 +30,73 @@
  * - Semantic caching to leverage similar reasoning patterns
  * - Namespace isolation to maintain context relevance
  */
-import { type Config } from '../types';
+import type { Config } from "../types";
 import {
-  type CacheNamespaceOptions,
-  addCacheNamespace,
-} from '../utils/cache-namespace';
+	type CacheNamespaceOptions,
+	addCacheNamespace,
+} from "../utils/cache-namespace";
 import {
-  type ForceRefreshCondition,
-  TimeBasedConditions,
-  UserRequestCondition,
-  withForceRefresh,
-} from '../utils/force-refresh';
+	type ForceRefreshCondition,
+	TimeBasedConditions,
+	UserRequestCondition,
+	withForceRefresh,
+} from "../utils/force-refresh";
 
 export function createReasoningOptimizedConfig(
-  namespaceOptions: CacheNamespaceOptions,
-  contentVersion?: string,
+	namespaceOptions: CacheNamespaceOptions,
+	contentVersion?: string,
 ): Config {
-  // Base configuration
-  const baseConfig: Config = {
-    strategy: {
-      mode: 'fallback',
-    },
-    targets: [
-      {
-        provider: 'openai',
-        override_params: {
-          model: 'o3-mini',
-          temperature: 0.4, // Balance between creativity and precision
-          max_tokens: 1000, // Longer responses for detailed reasoning
-          response_format: { type: 'json' },
-        },
-      },
-      {
-        // Fallback to Claude for strong reasoning capabilities
-        provider: 'anthropic',
-        override_params: {
-          model: 'claude-3-sonnet',
-          temperature: 0.4,
-          max_tokens: 1000,
-        },
-      },
-    ],
-    cache: {
-      mode: 'semantic',
-      max_age: 3600, // 1 hour cache
-    },
-    retry: {
-      attempts: 3,
-      on_status_codes: [429, 503], // Retry on rate limits and service unavailable
-    },
-  };
+	// Base configuration
+	const baseConfig: Config = {
+		strategy: {
+			mode: "fallback",
+		},
+		targets: [
+			{
+				provider: "openai",
+				override_params: {
+					model: "o3-mini",
+					temperature: 0.4, // Balance between creativity and precision
+					max_tokens: 1000, // Longer responses for detailed reasoning
+					response_format: { type: "json" },
+				},
+			},
+			{
+				// Fallback to Claude for strong reasoning capabilities
+				provider: "anthropic",
+				override_params: {
+					model: "claude-3-sonnet",
+					temperature: 0.4,
+					max_tokens: 1000,
+				},
+			},
+		],
+		cache: {
+			mode: "semantic",
+			max_age: 3600, // 1 hour cache
+		},
+		retry: {
+			attempts: 3,
+			on_status_codes: [429, 503], // Retry on rate limits and service unavailable
+		},
+	};
 
-  // Add cache namespace
-  const withNamespace = addCacheNamespace(baseConfig, namespaceOptions);
+	// Add cache namespace
+	const withNamespace = addCacheNamespace(baseConfig, namespaceOptions);
 
-  // Build force refresh conditions
-  const conditions: ForceRefreshCondition[] = [
-    TimeBasedConditions.HOURLY, // Hourly refresh for reasoning tasks
-    UserRequestCondition,
-  ];
+	// Build force refresh conditions
+	const conditions: ForceRefreshCondition[] = [
+		TimeBasedConditions.HOURLY, // Hourly refresh for reasoning tasks
+		UserRequestCondition,
+	];
 
-  // Add content version condition if provided
-  if (contentVersion) {
-    conditions.push({
-      type: 'content_change',
-      value: contentVersion,
-    });
-  }
+	// Add content version condition if provided
+	if (contentVersion) {
+		conditions.push({
+			type: "content_change",
+			value: contentVersion,
+		});
+	}
 
-  return withForceRefresh(withNamespace, conditions);
+	return withForceRefresh(withNamespace, conditions);
 }

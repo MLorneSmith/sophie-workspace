@@ -1,10 +1,10 @@
-import { cache } from 'react';
+import { cache } from "react";
 
-import { createAccountsApi } from '@kit/accounts/api';
-import { getSupabaseServerClient } from '@kit/supabase/server-client';
+import { createAccountsApi } from "@kit/accounts/api";
+import { getSupabaseServerClient } from "@kit/supabase/server-client";
 
-import featureFlagsConfig from '~/config/feature-flags.config';
-import { requireUserInServerComponent } from '~/lib/server/require-user-in-server-component';
+import featureFlagsConfig from "~/config/feature-flags.config";
+import { requireUserInServerComponent } from "~/lib/server/require-user-in-server-component";
 
 const shouldLoadAccounts = featureFlagsConfig.enableTeamAccounts;
 
@@ -19,24 +19,24 @@ export type UserWorkspace = Awaited<ReturnType<typeof loadUserWorkspace>>;
 export const loadUserWorkspace = cache(workspaceLoader);
 
 async function workspaceLoader() {
-  const client = getSupabaseServerClient();
-  const api = createAccountsApi(client);
+	const client = getSupabaseServerClient();
+	const api = createAccountsApi(client);
 
-  const accountsPromise = shouldLoadAccounts
-    ? () => api.loadUserAccounts()
-    : () => Promise.resolve([]);
+	const accountsPromise = shouldLoadAccounts
+		? () => api.loadUserAccounts()
+		: () => Promise.resolve([]);
 
-  const workspacePromise = api.getAccountWorkspace();
+	const workspacePromise = api.getAccountWorkspace();
 
-  const [accounts, workspace, user] = await Promise.all([
-    accountsPromise(),
-    workspacePromise,
-    requireUserInServerComponent(),
-  ]);
+	const [accounts, workspace, user] = await Promise.all([
+		accountsPromise(),
+		workspacePromise,
+		requireUserInServerComponent(),
+	]);
 
-  return {
-    accounts,
-    workspace,
-    user,
-  };
+	return {
+		accounts,
+		workspace,
+		user,
+	};
 }

@@ -1,4 +1,4 @@
-import type { InitOptions } from 'i18next';
+import type { InitOptions } from "i18next";
 
 /**
  * Get i18n settings for i18next.
@@ -7,35 +7,35 @@ import type { InitOptions } from 'i18next';
  * @param namespaces
  */
 export function createI18nSettings({
-  languages,
-  language,
-  namespaces,
+	languages,
+	language,
+	namespaces,
 }: {
-  languages: string[];
-  language: string;
-  namespaces?: string | string[];
+	languages: string[];
+	language: string;
+	namespaces?: string | string[];
 }): InitOptions {
-  const lng = language;
-  const ns = namespaces;
+	const lng = language;
+	const ns = namespaces;
 
-  return {
-    supportedLngs: languages,
-    fallbackLng: languages[0],
-    detection: undefined,
-    lng,
-    preload: false as const,
-    lowerCaseLng: true as const,
-    fallbackNS: ns,
-    missingInterpolationHandler: (text, value, options) => {
-      console.debug(
-        `Missing interpolation value for key: ${text}`,
-        value,
-        options,
-      );
-    },
-    ns,
-    react: {
-      useSuspense: true,
-    },
-  };
+	return {
+		supportedLngs: languages,
+		fallbackLng: languages[0],
+		detection: undefined,
+		lng,
+		preload: false as const,
+		lowerCaseLng: true as const,
+		fallbackNS: ns,
+		missingInterpolationHandler: (text, value, options) => {
+			console.debug(
+				`Missing interpolation value for key: ${text}`,
+				value,
+				options,
+			);
+		},
+		ns,
+		react: {
+			useSuspense: true,
+		},
+	};
 }

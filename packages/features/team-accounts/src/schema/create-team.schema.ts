@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 /**
  * @name RESERVED_NAMES_ARRAY
@@ -7,9 +7,9 @@ import { z } from 'zod';
  * Please include any new reserved names here.
  */
 const RESERVED_NAMES_ARRAY = [
-  'settings',
-  'billing',
-  // please add more reserved names here
+	"settings",
+	"billing",
+	// please add more reserved names here
 ];
 
 const SPECIAL_CHARACTERS_REGEX = /[!@#$%^&*()+=[\]{};':"\\|,.<>/?]/;
@@ -18,33 +18,33 @@ const SPECIAL_CHARACTERS_REGEX = /[!@#$%^&*()+=[\]{};':"\\|,.<>/?]/;
  * @name TeamNameSchema
  */
 export const TeamNameSchema = z
-  .string({
-    description: 'The name of the team account',
-  })
-  .min(2)
-  .max(50)
-  .refine(
-    (name) => {
-      console.log(name);
-      return !SPECIAL_CHARACTERS_REGEX.test(name);
-    },
-    {
-      message: 'teams:specialCharactersError',
-    },
-  )
-  .refine(
-    (name) => {
-      return !RESERVED_NAMES_ARRAY.includes(name.toLowerCase());
-    },
-    {
-      message: 'teams:reservedNameError',
-    },
-  );
+	.string({
+		description: "The name of the team account",
+	})
+	.min(2)
+	.max(50)
+	.refine(
+		(name) => {
+			console.log(name);
+			return !SPECIAL_CHARACTERS_REGEX.test(name);
+		},
+		{
+			message: "teams:specialCharactersError",
+		},
+	)
+	.refine(
+		(name) => {
+			return !RESERVED_NAMES_ARRAY.includes(name.toLowerCase());
+		},
+		{
+			message: "teams:reservedNameError",
+		},
+	);
 
 /**
  * @name CreateTeamSchema
  * @description Schema for creating a team account
  */
 export const CreateTeamSchema = z.object({
-  name: TeamNameSchema,
+	name: TeamNameSchema,
 });

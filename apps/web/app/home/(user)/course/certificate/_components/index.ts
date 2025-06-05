@@ -1,1 +1,1 @@
-export { CertificateViewClient } from './CertificateViewClient';
+export { CertificateViewClient } from "./CertificateViewClient";
