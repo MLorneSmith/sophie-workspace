@@ -23,7 +23,8 @@
 			"test-results/**",
 			"playwright-report/**",
 			"packages/playwright-mcp/temp-playwright-mcp/**",
-			"apps/payload/payload-types.ts"
+			"apps/payload/payload-types.ts",
+			"apps/payload/src/app/(payload)/admin/importMap.js"
 		]
 	},
 	"formatter": { "enabled": true, "indentStyle": "tab" },
