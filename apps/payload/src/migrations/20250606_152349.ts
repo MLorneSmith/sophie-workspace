@@ -1,14 +1,9 @@
-import {
-	type MigrateDownArgs,
-	type MigrateUpArgs,
-	sql,
-} from "@payloadcms/db-postgres";
+import { type MigrateUpArgs, type MigrateDownArgs, sql } from '@payloadcms/db-postgres'
 
 export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
-	await db.execute(sql`
+  await db.execute(sql`
    CREATE TYPE "payload"."enum_users_role" AS ENUM('admin', 'user');
   CREATE TYPE "payload"."enum_media_type" AS ENUM('image', 'video', 'document');
-  CREATE TYPE "payload"."enum_media_processing_status" AS ENUM('pending', 'processing', 'completed', 'failed');
   CREATE TYPE "payload"."enum_downloads_category" AS ENUM('document', 'template', 'resource', 'software', 'media', 'archive', 'other');
   CREATE TYPE "payload"."enum_downloads_access_level" AS ENUM('public', 'registered', 'premium');
   CREATE TYPE "payload"."enum_posts_status" AS ENUM('draft', 'published');
@@ -61,9 +56,6 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"alt" varchar NOT NULL,
   	"caption" varchar,
   	"type" "payload"."enum_media_type",
-  	"processing_status" "payload"."enum_media_processing_status" DEFAULT 'pending',
-  	"processing_error" varchar,
-  	"sharp_metadata" jsonb,
   	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
   	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
   	"url" varchar,
@@ -74,37 +66,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"width" numeric,
   	"height" numeric,
   	"focal_x" numeric,
-  	"focal_y" numeric,
-  	"sizes_thumbnail_url" varchar,
-  	"sizes_thumbnail_width" numeric,
-  	"sizes_thumbnail_height" numeric,
-  	"sizes_thumbnail_mime_type" varchar,
-  	"sizes_thumbnail_filesize" numeric,
-  	"sizes_thumbnail_filename" varchar,
-  	"sizes_small_url" varchar,
-  	"sizes_small_width" numeric,
-  	"sizes_small_height" numeric,
-  	"sizes_small_mime_type" varchar,
-  	"sizes_small_filesize" numeric,
-  	"sizes_small_filename" varchar,
-  	"sizes_medium_url" varchar,
-  	"sizes_medium_width" numeric,
-  	"sizes_medium_height" numeric,
-  	"sizes_medium_mime_type" varchar,
-  	"sizes_medium_filesize" numeric,
-  	"sizes_medium_filename" varchar,
-  	"sizes_large_url" varchar,
-  	"sizes_large_width" numeric,
-  	"sizes_large_height" numeric,
-  	"sizes_large_mime_type" varchar,
-  	"sizes_large_filesize" numeric,
-  	"sizes_large_filename" varchar,
-  	"sizes_xlarge_url" varchar,
-  	"sizes_xlarge_width" numeric,
-  	"sizes_xlarge_height" numeric,
-  	"sizes_xlarge_mime_type" varchar,
-  	"sizes_xlarge_filesize" numeric,
-  	"sizes_xlarge_filename" varchar
+  	"focal_y" numeric
   );
   
   CREATE TABLE IF NOT EXISTS "payload"."downloads_tags" (
@@ -1242,11 +1204,6 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX IF NOT EXISTS "media_updated_at_idx" ON "payload"."media" USING btree ("updated_at");
   CREATE INDEX IF NOT EXISTS "media_created_at_idx" ON "payload"."media" USING btree ("created_at");
   CREATE UNIQUE INDEX IF NOT EXISTS "media_filename_idx" ON "payload"."media" USING btree ("filename");
-  CREATE INDEX IF NOT EXISTS "media_sizes_thumbnail_sizes_thumbnail_filename_idx" ON "payload"."media" USING btree ("sizes_thumbnail_filename");
-  CREATE INDEX IF NOT EXISTS "media_sizes_small_sizes_small_filename_idx" ON "payload"."media" USING btree ("sizes_small_filename");
-  CREATE INDEX IF NOT EXISTS "media_sizes_medium_sizes_medium_filename_idx" ON "payload"."media" USING btree ("sizes_medium_filename");
-  CREATE INDEX IF NOT EXISTS "media_sizes_large_sizes_large_filename_idx" ON "payload"."media" USING btree ("sizes_large_filename");
-  CREATE INDEX IF NOT EXISTS "media_sizes_xlarge_sizes_xlarge_filename_idx" ON "payload"."media" USING btree ("sizes_xlarge_filename");
   CREATE INDEX IF NOT EXISTS "downloads_tags_order_idx" ON "payload"."downloads_tags" USING btree ("_order");
   CREATE INDEX IF NOT EXISTS "downloads_tags_parent_id_idx" ON "payload"."downloads_tags" USING btree ("_parent_id");
   CREATE INDEX IF NOT EXISTS "downloads_updated_at_idx" ON "payload"."downloads" USING btree ("updated_at");
@@ -1479,15 +1436,11 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX IF NOT EXISTS "payload_preferences_rels_path_idx" ON "payload"."payload_preferences_rels" USING btree ("path");
   CREATE INDEX IF NOT EXISTS "payload_preferences_rels_users_id_idx" ON "payload"."payload_preferences_rels" USING btree ("users_id");
   CREATE INDEX IF NOT EXISTS "payload_migrations_updated_at_idx" ON "payload"."payload_migrations" USING btree ("updated_at");
-  CREATE INDEX IF NOT EXISTS "payload_migrations_created_at_idx" ON "payload"."payload_migrations" USING btree ("created_at");`);
+  CREATE INDEX IF NOT EXISTS "payload_migrations_created_at_idx" ON "payload"."payload_migrations" USING btree ("created_at");`)
 }
 
-export async function down({
-	db,
-	payload,
-	req,
-}: MigrateDownArgs): Promise<void> {
-	await db.execute(sql`
+export async function down({ db, payload, req }: MigrateDownArgs): Promise<void> {
+  await db.execute(sql`
    DROP TABLE "payload"."users" CASCADE;
   DROP TABLE "payload"."media_tags" CASCADE;
   DROP TABLE "payload"."media" CASCADE;
@@ -1548,7 +1501,6 @@ export async function down({
   DROP TABLE "payload"."payload_migrations" CASCADE;
   DROP TYPE "payload"."enum_users_role";
   DROP TYPE "payload"."enum_media_type";
-  DROP TYPE "payload"."enum_media_processing_status";
   DROP TYPE "payload"."enum_downloads_category";
   DROP TYPE "payload"."enum_downloads_access_level";
   DROP TYPE "payload"."enum_posts_status";
@@ -1573,5 +1525,5 @@ export async function down({
   DROP TYPE "payload"."enum__survey_questions_v_version_questionspin";
   DROP TYPE "payload"."enum__survey_questions_v_version_status";
   DROP TYPE "payload"."enum_surveys_status";
-  DROP TYPE "payload"."enum__surveys_v_version_status";`);
+  DROP TYPE "payload"."enum__surveys_v_version_status";`)
 }

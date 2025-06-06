@@ -300,6 +300,10 @@ export default buildConfig({
 			titleSuffix: "- SlideHeroes CMS",
 		},
 	},
+	i18n: {
+		supportedLanguages: { en: "English" },
+		fallbackLanguage: "en",
+	},
 	// CORS configuration
 	cors: process.env.ALLOWED_ORIGINS
 		? process.env.ALLOWED_ORIGINS.split(",")
