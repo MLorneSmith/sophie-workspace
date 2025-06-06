@@ -25,9 +25,9 @@
     "@kit/tsconfig": "workspace:*",
     "@kit/ui": "workspace:*",
     "@types/react": "19.1.6",
-    "next": "15.3.2",
+    "next": "15.3.3",
     "react": "19.1.0",
-    "zod": "^3.25.31"
+    "zod": "^3.25.53"
   },
   "typesVersions": {
     "*": {

@@ -16,7 +16,7 @@
     "@kit/eslint-config": "workspace:*",
     "@kit/prettier-config": "workspace:*",
     "@kit/tsconfig": "workspace:*",
-    "zod": "^3.25.31"
+    "zod": "^3.25.53"
   },
   "typesVersions": {
     "*": {
