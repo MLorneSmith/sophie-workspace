@@ -5,11 +5,10 @@ import { useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 
-import { useQuery } from "@tanstack/react-query";
+import type { Session } from "@supabase/supabase-js";
 
 import { PersonalAccountDropdown } from "@kit/accounts/personal-account-dropdown";
 import { useSignOut } from "@kit/supabase/hooks/use-sign-out";
-import { useSupabase } from "@kit/supabase/hooks/use-supabase";
 import { Button } from "@kit/ui/button";
 import { If } from "@kit/ui/if";
 import { Trans } from "@kit/ui/trans";
@@ -33,23 +32,32 @@ const features = {
 	enableThemeToggle: featuresFlagConfig.enableThemeToggle,
 };
 
-export function SiteHeaderAccountSection() {
-	const session = useSession();
-	const signOut = useSignOut();
+interface SiteHeaderAccountSectionProps {
+	session: Session | null;
+}
 
-	if (session.data) {
-		return (
-			<PersonalAccountDropdown
-				showProfileName={false}
-				paths={paths}
-				features={features}
-				user={session.data.user}
-				signOutRequested={() => signOut.mutateAsync()}
-			/>
-		);
+export function SiteHeaderAccountSection({
+	session,
+}: SiteHeaderAccountSectionProps) {
+	if (session) {
+		return <AuthenticatedSection session={session} />;
 	}
 
 	return <AuthButtons />;
+}
+
+function AuthenticatedSection({ session }: { session: Session }) {
+	const signOut = useSignOut();
+
+	return (
+		<PersonalAccountDropdown
+			showProfileName={false}
+			paths={paths}
+			features={features}
+			user={session.user}
+			signOutRequested={() => signOut.mutateAsync()}
+		/>
+	);
 }
 
 function AuthButtons() {
@@ -87,15 +95,3 @@ function AuthButtons() {
 	);
 }
 
-function useSession() {
-	const client = useSupabase();
-
-	return useQuery({
-		queryKey: ["session"],
-		queryFn: async () => {
-			const { data } = await client.auth.getSession();
-
-			return data.session;
-		},
-	});
-}

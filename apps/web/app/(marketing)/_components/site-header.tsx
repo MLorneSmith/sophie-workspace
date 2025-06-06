@@ -10,7 +10,7 @@ export function SiteHeader() {
 		<Header
 			logo={<AppLogo />}
 			navigation={<SiteNavigation />}
-			actions={<SiteHeaderAccountSection />}
+			actions={<SiteHeaderAccountSection session={null} />}
 		/>
 	);
 }

@@ -5,8 +5,13 @@
 
 import { resolve } from "node:path";
 import { defineConfig } from "vitest/config";
+import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
+	plugins: [
+		// Synchronize TypeScript paths with Vitest/Vite module resolution
+		tsconfigPaths(),
+	],
 	test: {
 		// Environment setup
 		environment: "jsdom",
@@ -81,38 +86,17 @@ export default defineConfig({
 		},
 	},
 
-	// Path resolution to match Next.js
-	resolve: {
-		alias: {
-			"@": resolve(__dirname, "./"),
-			"@/components": resolve(__dirname, "./components"),
-			"@/lib": resolve(__dirname, "./lib"),
-			"@/config": resolve(__dirname, "./config"),
-			"@/app": resolve(__dirname, "./app"),
-			// Kit packages with specific exports
-			"@kit/ui": resolve(__dirname, "../../packages/ui/src"),
-			"@kit/shared": resolve(__dirname, "../../packages/shared/src"),
-			"@kit/shared/logger": resolve(
-				__dirname,
-				"../../packages/shared/src/logger",
-			),
-			"@kit/supabase": resolve(__dirname, "../../packages/supabase/src"),
-			"@kit/supabase/server-client": resolve(
-				__dirname,
-				"../../packages/supabase/src/clients/server-client.ts",
-			),
-			"@kit/next": resolve(__dirname, "../../packages/next/src"),
-			"@kit/next/actions": resolve(
-				__dirname,
-				"../../packages/next/src/actions",
-			),
-			"@kit/auth": resolve(__dirname, "../../packages/auth/src"),
-			"@kit/billing": resolve(__dirname, "../../packages/billing/src"),
-		},
-	},
+	// Path resolution handled by vite-tsconfig-paths plugin
 
 	// Define global constants for testing
 	define: {
 		"process.env.NODE_ENV": JSON.stringify("test"),
+	},
+
+	// Server-side module mocking for testing
+	server: {
+		deps: {
+			inline: ["server-only"],
+		},
 	},
 });

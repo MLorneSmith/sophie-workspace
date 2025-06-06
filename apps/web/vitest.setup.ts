@@ -71,6 +71,33 @@ vi.mock("@/lib/supabase/client", () => ({
 	})),
 }));
 
+// Mock server-only package to allow importing server components in tests
+vi.mock("server-only", () => ({}));
+
+// Mock Next.js server-side functions
+vi.mock("next/cache", () => ({
+	revalidatePath: vi.fn(),
+	revalidateTag: vi.fn(),
+	unstable_cache: vi.fn(),
+}));
+
+vi.mock("next/headers", () => ({
+	cookies: vi.fn(() => ({
+		get: vi.fn(),
+		set: vi.fn(),
+		delete: vi.fn(),
+		getAll: vi.fn(() => []),
+		setAll: vi.fn(),
+	})),
+	headers: vi.fn(() => ({
+		get: vi.fn(),
+		set: vi.fn(),
+		delete: vi.fn(),
+		has: vi.fn(),
+		entries: vi.fn(() => []),
+	})),
+}));
+
 // Mock environment variables
 process.env.NEXT_PUBLIC_SUPABASE_URL = "http://localhost:54321";
 process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = "test-anon-key";

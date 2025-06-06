@@ -381,10 +381,10 @@ export class StripeBillingStrategyService
 			const accountId = subscription.metadata?.accountId as string;
 
 			const periodStartsAt =
-				subscriptionPayloadBuilder.getPeriodStartsAt(subscription);
+				subscriptionPayloadBuilder.getPeriodStartsAt(subscription) ?? 0;
 
 			const periodEndsAt =
-				subscriptionPayloadBuilder.getPeriodEndsAt(subscription);
+				subscriptionPayloadBuilder.getPeriodEndsAt(subscription) ?? 0;
 
 			const lineItems = subscription.items.data.map((item) => {
 				return {
@@ -402,8 +402,8 @@ export class StripeBillingStrategyService
 				status: subscription.status,
 				currency: subscription.currency,
 				cancelAtPeriodEnd: subscription.cancel_at_period_end,
-				periodStartsAt,
-				periodEndsAt,
+				periodStartsAt: periodStartsAt ?? 0,
+				periodEndsAt: periodEndsAt ?? 0,
 				trialStartsAt: subscription.trial_start,
 				trialEndsAt: subscription.trial_end,
 			});

@@ -4,7 +4,7 @@ Usage: `/debug-issue [issue_reference]`
 - GitHub issue number: `123` (preferred format from log-issue command)
 - Issue ID: `ISSUE-123` 
 - Local file: `.claude/issues/2025-01-06-ISSUE-123.md`
-- GitHub URL: `https://github.com/owner/repo/issues/123`
+- GitHub URL: `https://github.com/MLorneSmith/2025slideheroes/issues/123`
 - Legacy format: `ISSUE-1234567-abc` (for older local-only issues)
 
 This command reads an issue specification and launches a focused debugging session to resolve it.
@@ -27,8 +27,8 @@ let issuePath, issueContent;
 if (/^\d+$/.test(reference)) {
   // GitHub issue number (e.g., "123") - preferred format
   const issueData = await mcp__github__get_issue({
-    owner: "repository_owner",
-    repo: "repository_name", 
+    owner: "MLorneSmith",
+    repo: "2025slideheroes", 
     issue_number: parseInt(reference)
   });
   issueContent = issueData.body;
@@ -44,8 +44,8 @@ if (/^\d+$/.test(reference)) {
   if (githubNumber) {
     try {
       const issueData = await mcp__github__get_issue({
-        owner: "repository_owner",
-        repo: "repository_name",
+        owner: "MLorneSmith",
+        repo: "2025slideheroes",
         issue_number: parseInt(githubNumber)
       });
       issueContent = issueData.body; // Use GitHub as source of truth
@@ -334,8 +334,8 @@ issue.resolution = resolutionReport;
 // Update GitHub if applicable
 if (issue.githubNumber) {
   await mcp__github__update_issue({
-    owner: "owner",
-    repo: "repo",
+    owner: "MLorneSmith",
+    repo: "2025slideheroes",
     issue_number: issue.githubNumber,
     state: "closed",
     body: issue.body + '\n\n' + resolutionReport

@@ -224,10 +224,10 @@ export class StripeWebhookHandlerService
 			const subscription = await stripe.subscriptions.retrieve(subscriptionId);
 
 			const periodStartsAt =
-				subscriptionPayloadBuilderService.getPeriodStartsAt(subscription);
+				subscriptionPayloadBuilderService.getPeriodStartsAt(subscription) ?? 0;
 
 			const periodEndsAt =
-				subscriptionPayloadBuilderService.getPeriodEndsAt(subscription);
+				subscriptionPayloadBuilderService.getPeriodEndsAt(subscription) ?? 0;
 
 			const lineItems = this.getLineItems(subscription);
 
@@ -238,8 +238,8 @@ export class StripeWebhookHandlerService
 				lineItems,
 				status: subscription.status,
 				currency: subscription.currency,
-				periodStartsAt,
-				periodEndsAt,
+				periodStartsAt: periodStartsAt ?? 0,
+				periodEndsAt: periodEndsAt ?? 0,
 				cancelAtPeriodEnd: subscription.cancel_at_period_end,
 				trialStartsAt: subscription.trial_start,
 				trialEndsAt: subscription.trial_end,
@@ -319,10 +319,10 @@ export class StripeWebhookHandlerService
 			createStripeSubscriptionPayloadBuilderService();
 
 		const periodStartsAt =
-			subscriptionPayloadBuilderService.getPeriodStartsAt(subscription);
+			subscriptionPayloadBuilderService.getPeriodStartsAt(subscription) ?? 0;
 
 		const periodEndsAt =
-			subscriptionPayloadBuilderService.getPeriodEndsAt(subscription);
+			subscriptionPayloadBuilderService.getPeriodEndsAt(subscription) ?? 0;
 
 		const lineItems = this.getLineItems(subscription);
 
@@ -422,10 +422,10 @@ export class StripeWebhookHandlerService
 		const accountId = subscription.metadata?.accountId as string;
 
 		const periodStartsAt =
-			subscriptionPayloadBuilderService.getPeriodStartsAt(subscription);
+			subscriptionPayloadBuilderService.getPeriodStartsAt(subscription) ?? 0;
 
 		const periodEndsAt =
-			subscriptionPayloadBuilderService.getPeriodEndsAt(subscription);
+			subscriptionPayloadBuilderService.getPeriodEndsAt(subscription) ?? 0;
 
 		const lineItems = this.getLineItems(subscription);
 

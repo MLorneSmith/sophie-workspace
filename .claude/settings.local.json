@@ -51,7 +51,14 @@
       "Bash(pnpm build:*)",
       "Bash(pnpm typecheck:*)",
       "Bash(pnpm payload:*)",
-      "mcp__supabase__get_logs"
+      "mcp__supabase__get_logs",
+      "Bash(pkill:*)",
+      "Bash(git show:*)",
+      "Bash(pnpm dev:*)",
+      "Bash(git log:*)",
+      "Bash(pnpm run dev:*)",
+      "Bash(grep:*)",
+      "Bash(pnpm install:*)"
     ],
     "deny": []
   },

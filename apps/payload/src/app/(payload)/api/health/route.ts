@@ -14,6 +14,6 @@ export async function GET() {
 			status: dbStatus,
 			lastCheck: metrics.lastHealthCheck.toISOString(),
 		},
-		version: "3.39.1",
+		version: "3.41.0",
 	});
 }

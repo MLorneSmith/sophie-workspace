@@ -24,7 +24,11 @@ type FieldProps = {
  * This component is used for the input card in the Lexical editor
  */
 const Field: React.FC<FieldProps> = (props) => {
-	const { path, value = {}, onChange } = props;
+	const { path, value, onChange } = props;
+
+	// Convert unknown value to string safely
+	const stringValue = typeof value === 'string' ? value : 
+		value ? JSON.stringify(value) : "Test Block";
 
 	// Handle field changes
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -41,7 +45,7 @@ const Field: React.FC<FieldProps> = (props) => {
 			<CardContent className="space-y-4">
 				<div className="space-y-2">
 					<Label>Text</Label>
-					<Input value={value || "Test Block"} onChange={handleChange} />
+					<Input value={stringValue} onChange={handleChange} />
 				</div>
 			</CardContent>
 		</Card>

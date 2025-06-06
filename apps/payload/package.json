@@ -1,6 +1,6 @@
 {
 	"name": "payload",
-	"version": "3.39.1",
+	"version": "3.41.0",
 	"description": "A blank template to get started with Payload 3.0",
 	"license": "MIT",
 	"type": "module",
@@ -37,6 +37,7 @@
 		"@payloadcms/plugin-nested-docs": "^3.41.0",
 		"@payloadcms/richtext-lexical": "^3.41.0",
 		"@payloadcms/storage-s3": "^3.41.0",
+		"@payloadcms/translations": "^3.41.0",
 		"cross-env": "^7.0.3",
 		"execa": "^9.5.3",
 		"graphql": "^16.8.1",

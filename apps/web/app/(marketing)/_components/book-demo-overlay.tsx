@@ -21,7 +21,8 @@ export function BookDemoOverlay({ isOpen, onClose }: BookDemoOverlayProps) {
 		setMounted(true);
 	}, []);
 
-	if (!mounted) return null;
+	// Don't render anything during SSR or if not mounted
+	if (!mounted || typeof document === "undefined") return null;
 
 	const overlayContent = (
 		<div
@@ -60,6 +61,7 @@ export function BookDemoOverlay({ isOpen, onClose }: BookDemoOverlayProps) {
 						src="https://cal.com/slideheroes.com/demo?embed=true&layout=month_view&theme=dark&hideEventTypeDetails=false"
 						className="h-full w-full"
 						style={{ border: "none" }}
+						title="Book a Demo - SlideHeroes Calendar"
 					/>
 				</div>
 			</div>
