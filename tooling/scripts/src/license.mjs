@@ -49,7 +49,7 @@ async function checkLicense() {
 	try {
 		const makerkitConfig =
 			JSON.parse(
-				readFileSync(path.resolve(process.cwd(), "../../.makerkitrc"), "utf-8"),
+				readFileSync(path.resolve(process.cwd(), "../../.makerkitrc"), "utf8"),
 			) || {};
 
 		if (makerkitConfig.projectName) {

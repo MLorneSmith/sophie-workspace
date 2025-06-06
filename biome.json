@@ -34,6 +34,10 @@
 			"recommended": true,
 			"security": {
 				"noDangerouslySetInnerHtml": "warn"
+			},
+			"suspicious": {
+				"noExplicitAny": "warn",
+				"noArrayIndexKey": "warn"
 			}
 		}
 	},

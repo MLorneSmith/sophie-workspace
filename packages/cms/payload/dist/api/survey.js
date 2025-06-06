@@ -26,7 +26,7 @@ export async function getSurvey(slug, supabaseClient) {
  * @returns The survey questions
  */
 export async function getSurveyQuestions(surveyId, supabaseClient) {
-    var _a, _b, _c, _d;
+    var _a, _b, _c, _d, _e;
     console.log(`Getting survey questions for survey ID: ${surveyId}`);
     try {
         // First, try to get the survey with its questions using a higher depth
@@ -71,10 +71,9 @@ export async function getSurveyQuestions(surveyId, supabaseClient) {
         if ((_d = allQuestionsResponse === null || allQuestionsResponse === void 0 ? void 0 : allQuestionsResponse.docs) === null || _d === void 0 ? void 0 : _d.length) {
             console.log(`Retrieved ${allQuestionsResponse.docs.length} total questions`);
             // Log all question IDs for debugging
-            allQuestionsResponse.docs.forEach((q) => {
-                var _a;
-                console.log(`Question ID: ${q.id}, Text: ${(_a = q.text) === null || _a === void 0 ? void 0 : _a.substring(0, 30)}...`);
-            });
+            for (const q of allQuestionsResponse.docs) {
+                console.log(`Question ID: ${q.id}, Text: ${(_e = q.text) === null || _e === void 0 ? void 0 : _e.substring(0, 30)}...`);
+            }
             // Try to directly fetch the questions we know should be associated with this survey
             // This is a workaround based on the database query results
             if (surveyId === "6f463bef-d7a0-4e5a-b0fa-a789b5d6f0e0") {

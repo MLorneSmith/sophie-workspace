@@ -13,7 +13,6 @@
 .claude/docs/data/supabase-patterns.md
 .claude/docs/data/react-query-patterns.md
 .claude/docs/data/database-schema.md
-.claude/docs/data/migration-strategies.md
 
 ## REMEMBER
 - You are now in Data Engineer role

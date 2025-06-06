@@ -13,18 +13,18 @@ export class PayloadClient {
             const items = data.docs.map((doc) => this.mapContentItem(doc));
             // Create a map of items by ID for quick lookup
             const itemsMap = new Map();
-            items.forEach((item) => {
+            for (const item of items) {
                 itemsMap.set(item.id, item);
-            });
+            }
             // Populate children arrays
-            items.forEach((item) => {
+            for (const item of items) {
                 if (item.parentId && itemsMap.has(item.parentId)) {
                     const parent = itemsMap.get(item.parentId);
                     if (parent) {
                         parent.children.push(item);
                     }
                 }
-            });
+            }
             return {
                 total: data.totalDocs,
                 items,
@@ -97,11 +97,11 @@ export class PayloadClient {
             const response = await fetch(`${process.env.PAYLOAD_PUBLIC_SERVER_URL}/api/${collection}?limit=100`);
             const data = await response.json();
             const categoriesSet = new Set();
-            data.docs.forEach((doc) => {
-                (doc.categories || []).forEach((category) => {
+            for (const doc of data.docs) {
+                for (const category of doc.categories || []) {
                     categoriesSet.add(category.category);
-                });
-            });
+                }
+            }
             return Array.from(categoriesSet).map((name) => ({
                 id: name,
                 name,
@@ -124,11 +124,11 @@ export class PayloadClient {
             const response = await fetch(`${process.env.PAYLOAD_PUBLIC_SERVER_URL}/api/${collection}?limit=100`);
             const data = await response.json();
             const tagsSet = new Set();
-            data.docs.forEach((doc) => {
-                (doc.tags || []).forEach((tag) => {
+            for (const doc of data.docs) {
+                for (const tag of doc.tags || []) {
                     tagsSet.add(tag.tag);
-                });
-            });
+                }
+            }
             return Array.from(tagsSet).map((name) => ({
                 id: name,
                 name,
