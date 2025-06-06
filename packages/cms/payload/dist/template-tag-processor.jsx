@@ -191,9 +191,9 @@ export function TemplateTagProcessor({ content }) {
         const logFirstMatches = (matches, label) => {
             if (matches.length > 0) {
                 debugLog(`${label} examples:`);
-                matches
-                    .slice(0, 2)
-                    .forEach((match, i) => debugLog(`  ${i + 1}. ${match}`));
+                for (const [i, match] of matches.slice(0, 2).entries()) {
+                    debugLog(`  ${i + 1}. ${match}`);
+                }
             }
         };
         if (r2fileMatches.length > 0)

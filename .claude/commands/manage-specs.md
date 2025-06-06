@@ -1,4 +1,4 @@
-# Manage Specifications Command
+lo# Manage Specifications Command
 
 Usage: `/manage-specs [action] [spec_name]`
 

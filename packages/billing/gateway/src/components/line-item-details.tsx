@@ -242,23 +242,23 @@ function Tiers({
 		const isIncluded = tier.cost === 0;
 
 		return (
-			<span className={"text-secondary-foreground text-xs"} key={index}>
-				<span>-</span>{" "}
+			<span className={'text-secondary-foreground text-xs'} key={index}>
+				<span>-</span>{' '}
 				<If condition={isLastTier}>
-					<span className={"font-bold"}>
+					<span className={'font-bold'}>
 						{formatCurrency({
 							currencyCode: currency.toLowerCase(),
 							value: tier.cost,
 							locale,
 						})}
-					</span>{" "}
+					</span>{' '}
 					<If condition={tiersLength > 1}>
 						<span>
 							<Trans
-								i18nKey={"billing:andAbove"}
+								i18nKey={'billing:andAbove'}
 								values={{
 									unit,
-									previousTier: (previousTierFrom as number) - 1,
+									previousTier: (Number(previousTierFrom) as number) - 1,
 								}}
 							/>
 						</span>
@@ -266,31 +266,31 @@ function Tiers({
 					<If condition={tiersLength === 1}>
 						<span>
 							<Trans
-								i18nKey={"billing:forEveryUnit"}
+								i18nKey={'billing:forEveryUnit'}
 								values={{
 									unit,
 								}}
 							/>
 						</span>
 					</If>
-				</If>{" "}
+				</If>{' '}
 				<If condition={!isLastTier}>
 					<If condition={isIncluded}>
 						<span>
-							<Trans i18nKey={"billing:includedUpTo"} values={{ unit, upTo }} />
+							<Trans i18nKey={'billing:includedUpTo'} values={{ unit, upTo }} />
 						</span>
-					</If>{" "}
+					</If>{' '}
 					<If condition={!isIncluded}>
-						<span className={"font-bold"}>
+						<span className={'font-bold'}>
 							{formatCurrency({
 								currencyCode: currency.toLowerCase(),
 								value: tier.cost,
 								locale,
 							})}
-						</span>{" "}
+						</span>{' '}
 						<span>
 							<Trans
-								i18nKey={"billing:fromPreviousTierUpTo"}
+								i18nKey={'billing:fromPreviousTierUpTo'}
 								values={{ previousTierFrom, unit, upTo }}
 							/>
 						</span>

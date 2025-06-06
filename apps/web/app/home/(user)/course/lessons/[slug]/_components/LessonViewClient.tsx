@@ -643,13 +643,8 @@ export function LessonViewClient({
 											// If we found a download section, use our custom processor to render it
 											return (
 												<div className="my-6">
-													<div
-														className="template-downloads"
-														{/* biome-ignore lint/security/noDangerouslySetInnerHtml: Rendering trusted course content with processed template tags */}
-														dangerouslySetInnerHTML={{
-															__html: processR2FileTags(downloadSection[0]),
-														}}
-													/>
+													{/* biome-ignore lint/security/noDangerouslySetInnerHtml: Rendering trusted course content with processed template tags */}
+													<div className="template-downloads" dangerouslySetInnerHTML={{ __html: processR2FileTags(downloadSection[0]) }} />
 												</div>
 											);
 										}

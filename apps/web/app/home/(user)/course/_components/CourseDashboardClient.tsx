@@ -241,11 +241,8 @@ export function CourseDashboardClient({
 		<div className="container mx-auto flex max-w-4xl flex-col space-y-6 p-4">
 			<div>
 				<h1 className="mb-4 text-center text-3xl font-bold">{course.title}</h1>
-				<div
-					className="mb-6"
-					{/* biome-ignore lint/security/noDangerouslySetInnerHtml: Rendering trusted course description from CMS */}
-					dangerouslySetInnerHTML={{ __html: course.description }}
-				/>
+				{/* biome-ignore lint/security/noDangerouslySetInnerHtml: Rendering trusted course description from CMS */}
+				<div className="mb-6" dangerouslySetInnerHTML={{ __html: course.description }} />
 			</div>
 
 			<CourseProgressBar

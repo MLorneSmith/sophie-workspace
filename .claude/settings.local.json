@@ -49,7 +49,9 @@
       "Bash(curl:*)",
       "Bash(pnpm generate:types:*)",
       "Bash(pnpm build:*)",
-      "Bash(pnpm typecheck:*)"
+      "Bash(pnpm typecheck:*)",
+      "Bash(pnpm payload:*)",
+      "mcp__supabase__get_logs"
     ],
     "deny": []
   },
