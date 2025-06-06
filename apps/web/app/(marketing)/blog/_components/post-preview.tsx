@@ -24,7 +24,10 @@ export function PostPreview({
 
 	// Get the image URL from the relationship field
 	// Use type assertion to handle the image_id property which might not be in the type definition
-	const imageUrl = (post as any).image_id?.url || post.image || null;
+	const imageUrl =
+		(post as { image_id?: { url?: string } }).image_id?.url ||
+		post.image ||
+		null;
 
 	const slug = `/blog/${post.slug}`;
 
@@ -55,9 +58,9 @@ export function PostPreview({
 					</div>
 				</div>
 
+				{/* biome-ignore lint/security/noDangerouslySetInnerHtml: Blog post descriptions from trusted CMS content */}
 				<p
 					className="text-muted-foreground mb-4 text-sm leading-relaxed"
-					{/* biome-ignore lint/security/noDangerouslySetInnerHtml: Blog post descriptions from trusted CMS content */}
 					dangerouslySetInnerHTML={{ __html: description ?? "" }}
 				/>
 			</div>

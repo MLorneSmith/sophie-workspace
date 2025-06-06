@@ -70,10 +70,10 @@ async function FAQPage() {
 
 	return (
 		<>
+			{/* biome-ignore lint/security/noDangerouslySetInnerHtml: Rendering structured data for SEO */}
 			<script
 				key={"ld:json"}
 				type="application/ld+json"
-				{/* biome-ignore lint/security/noDangerouslySetInnerHtml: Rendering structured data for SEO */}
 				dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
 			/>
 
@@ -85,8 +85,8 @@ async function FAQPage() {
 
 				<div className={"container flex flex-col space-y-8 pb-16"}>
 					<div className="flex w-full max-w-xl flex-col">
-						{faqItems.map((item, index) => {
-							return <FaqItem key={index} item={item} />;
+						{faqItems.map((item) => {
+							return <FaqItem key={item.question} item={item} />;
 						})}
 					</div>
 
