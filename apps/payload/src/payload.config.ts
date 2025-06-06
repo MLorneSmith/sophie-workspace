@@ -288,9 +288,7 @@ export default buildConfig({
 	typescript: {
 		outputFile: path.resolve(dirname, "../payload-types.ts"),
 	},
-	editor: lexicalEditor({
-		features: ({ defaultFeatures }) => defaultFeatures,
-	}),
+	editor: lexicalEditor({}),
 	// Use the enhanced database adapter with singleton pattern
 	db: getDatabaseAdapter(),
 	plugins: getPlugins(),

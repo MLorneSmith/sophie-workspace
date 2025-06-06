@@ -1,4 +1,5 @@
 import type { CollectionConfig } from "payload";
+import { lexicalEditor } from "@payloadcms/richtext-lexical";
 
 export const QuizQuestions: CollectionConfig = {
 	slug: "quiz_questions",
@@ -68,7 +69,8 @@ export const QuizQuestions: CollectionConfig = {
 		},
 		{
 			name: "explanation",
-			type: "richText", // This was corrected earlier
+			type: "richText",
+			editor: lexicalEditor(),
 			required: false,
 			admin: {
 				description:
