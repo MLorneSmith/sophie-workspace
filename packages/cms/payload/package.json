@@ -1,6 +1,6 @@
 {
 	"name": "@kit/payload",
-	"version": "3.39.1",
+	"version": "3.41.0",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
 	"scripts": {
@@ -11,7 +11,7 @@
 		"@kit/cms-types": "workspace:*",
 		"@kit/shared": "workspace:*",
 		"@kit/supabase": "workspace:*",
-		"payload": "3.39.1",
+		"payload": "3.41.0",
 		"react": "19.1.0"
 	},
 	"devDependencies": {
