@@ -42,6 +42,8 @@ Update the following files with the new version:
   - `"@payloadcms/plugin-nested-docs": "^[VERSION]"`
   - `"@payloadcms/richtext-lexical": "^[VERSION]"`
   - `"@payloadcms/storage-s3": "^[VERSION]"`
+- **Package version to update**:
+  - Line 3: `"version": "[VERSION]"` (Update the app's own version to match)
 
 #### Payload Integration Package
 - **File**: `packages/cms/payload/package.json`
@@ -53,15 +55,24 @@ Update the following files with the new version:
 - **Dependencies to update**:
   - `"@payloadcms/db-postgres": "^[VERSION]"`
 
-### 5. Update Dependencies
+### 5. Update Version References
+
+Update the following version references beyond package.json files:
+
+#### Health Check Route
+- **File**: `apps/payload/src/app/(payload)/api/health/route.ts`
+- **Update**: Replace hardcoded version string (e.g., "3.39.1") with new version
+
+### 6. Update Dependencies
 
 **⚠️ WARNING: The sed script approach is unreliable and can corrupt package.json files. Use manual editing instead.**
 
 Update each file manually using the Edit tool:
 
-1. **apps/payload/package.json**: Update all @payloadcms/* packages and payload to new version
+1. **apps/payload/package.json**: Update all @payloadcms/* packages, payload version, and app version
 2. **packages/cms/payload/package.json**: Update payload version (exact, no caret) and package version
 3. **apps/web/package.json**: Update @payloadcms/db-postgres to new version
+4. **apps/payload/src/app/(payload)/api/health/route.ts**: Update hardcoded version string
 
 **Alternative automated approach:**
 ```bash
@@ -69,7 +80,7 @@ Update each file manually using the Edit tool:
 # Then use MultiEdit tool to update multiple lines at once
 ```
 
-### 6. Install Updated Dependencies
+### 7. Install Updated Dependencies
 Clean install to ensure all dependencies are properly resolved:
 
 ```bash
@@ -82,7 +93,7 @@ pnpm install
 # If there are any peer dependency warnings, address them
 ```
 
-### 7. Regenerate Types
+### 8. Regenerate Types
 Always regenerate Payload types after version updates:
 
 ```bash
@@ -92,7 +103,7 @@ pnpm --filter payload generate:types
 
 **Note**: This command may timeout but usually completes successfully. Check the timestamp on `apps/payload/payload-types.ts` to confirm.
 
-### 8. Run Database Migrations
+### 9. Run Database Migrations
 Check if any database migrations are needed:
 
 ```bash
@@ -100,7 +111,7 @@ cd apps/payload
 pnpm payload migrate
 ```
 
-### 9. Test the Update
+### 10. Test the Update
 
 #### Start Development Servers
 ```bash
@@ -119,7 +130,7 @@ pnpm --filter web dev
 - [ ] No TypeScript errors
 - [ ] No console errors
 
-### 10. Run Tests
+### 11. Run Tests
 ```bash
 # Type checking (run from workspace root)
 pnpm -w run typecheck
@@ -137,13 +148,13 @@ pnpm biome check --write
 
 **Note**: Some pre-existing linting issues may appear but don't block the update if they're unrelated to Payload changes.
 
-### 11. Update Documentation
+### 12. Update Documentation
 If the update includes significant changes:
 - Update `z.instructions/update-payload-version.md` with new version info
 - Document any migration steps or breaking changes
 - Update any API documentation if endpoints changed
 
-### 12. Commit Changes
+### 13. Commit Changes
 ```bash
 git add -A
 

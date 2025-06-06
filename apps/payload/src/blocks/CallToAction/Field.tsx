@@ -10,6 +10,16 @@ import {
 import { Input } from "../../../../../packages/ui/src/shadcn/input";
 import { Label } from "../../../../../packages/ui/src/shadcn/label";
 
+// Define the type for Call To Action field data
+type CallToActionData = {
+	headline?: string;
+	subheadline?: string;
+	leftButtonLabel?: string;
+	leftButtonUrl?: string;
+	rightButtonLabel?: string;
+	rightButtonUrl?: string;
+};
+
 // Define the type for the field props
 type FieldProps = {
 	path: string;
@@ -36,17 +46,33 @@ const TextField: React.FC<TextFieldProps> = ({ label, value, onChange }) => {
 	);
 };
 
+// Type guard function to ensure value is a valid object
+const isCallToActionData = (value: unknown): value is CallToActionData => {
+	return typeof value === 'object' && value !== null;
+};
+
+// Helper function to safely get CallToActionData from unknown value
+const getCallToActionData = (value: unknown): CallToActionData => {
+	if (isCallToActionData(value)) {
+		return value;
+	}
+	return {};
+};
+
 /**
  * This component is used for the input card in the Lexical editor
  */
 const Field: React.FC<FieldProps> = (props) => {
-	const { path, value = {}, onChange } = props;
+	const { path, value, onChange } = props;
+	
+	// Get type-safe data from the unknown value
+	const data = getCallToActionData(value);
 
 	// Handle field changes
 	const handleChange = (fieldName: string, fieldValue: unknown) => {
 		if (onChange) {
 			onChange({
-				...value,
+				...data,
 				[fieldName]: fieldValue,
 			});
 		}
@@ -60,7 +86,7 @@ const Field: React.FC<FieldProps> = (props) => {
 			<CardContent className="space-y-4">
 				<TextField
 					label="Headline"
-					value={value.headline || "FREE Course Trial"}
+					value={data.headline || "FREE Course Trial"}
 					onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
 						handleChange("headline", e.target.value)
 					}
@@ -68,7 +94,7 @@ const Field: React.FC<FieldProps> = (props) => {
 				<TextField
 					label="Subheadline"
 					value={
-						value.subheadline ||
+						data.subheadline ||
 						"Start improving your presentations skills immediately with our free trial of the Decks for Decision Makers course."
 					}
 					onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -79,14 +105,14 @@ const Field: React.FC<FieldProps> = (props) => {
 					<div>
 						<TextField
 							label="Left Button Label"
-							value={value.leftButtonLabel || "Individuals"}
+							value={data.leftButtonLabel || "Individuals"}
 							onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
 								handleChange("leftButtonLabel", e.target.value)
 							}
 						/>
 						<TextField
 							label="Left Button URL"
-							value={value.leftButtonUrl || "/free-trial/individual"}
+							value={data.leftButtonUrl || "/free-trial/individual"}
 							onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
 								handleChange("leftButtonUrl", e.target.value)
 							}
@@ -95,14 +121,14 @@ const Field: React.FC<FieldProps> = (props) => {
 					<div>
 						<TextField
 							label="Right Button Label"
-							value={value.rightButtonLabel || "Teams"}
+							value={data.rightButtonLabel || "Teams"}
 							onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
 								handleChange("rightButtonLabel", e.target.value)
 							}
 						/>
 						<TextField
 							label="Right Button URL"
-							value={value.rightButtonUrl || "/free-trial/teams"}
+							value={data.rightButtonUrl || "/free-trial/teams"}
 							onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
 								handleChange("rightButtonUrl", e.target.value)
 							}

@@ -8,6 +8,7 @@ import { fileURLToPath } from "node:url";
 import { nestedDocsPlugin } from "@payloadcms/plugin-nested-docs";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
 import { s3Storage } from "@payloadcms/storage-s3";
+import { en } from "@payloadcms/translations/languages/en";
 import { buildConfig } from "payload";
 
 import { CourseLessons } from "./collections/CourseLessons";
@@ -299,7 +300,7 @@ export default buildConfig({
 		},
 	},
 	i18n: {
-		supportedLanguages: { en: "English" },
+		supportedLanguages: { en },
 		fallbackLanguage: "en",
 	},
 	// CORS configuration

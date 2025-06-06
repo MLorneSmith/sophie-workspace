@@ -1,4 +1,4 @@
-import { BlocksFeature, lexicalEditor } from "@payloadcms/richtext-lexical";
+import { lexicalEditor } from "@payloadcms/richtext-lexical";
 import type { CollectionConfig } from "payload";
 
 // Assuming blocks like CallToAction and TestBlock will be defined elsewhere
@@ -11,7 +11,7 @@ export const Surveys: CollectionConfig = {
 		plural: "Surveys",
 	},
 	admin: {
-		// useAsTitle: 'title', // Comment out useAsTitle
+		useAsTitle: 'title',
 		defaultColumns: ["title", "status", "publishedAt"],
 		description: "Surveys for user assessment and feedback",
 	},
@@ -22,11 +22,11 @@ export const Surveys: CollectionConfig = {
 		drafts: true,
 	},
 	fields: [
-		// {
-		//   name: 'title',
-		//   type: 'text',
-		//   required: true,
-		// },
+		{
+			name: 'title',
+			type: 'text',
+			required: true,
+		},
 		{
 			name: "slug",
 			type: "text",

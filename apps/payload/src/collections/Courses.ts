@@ -1,4 +1,4 @@
-import { BlocksFeature, lexicalEditor } from "@payloadcms/richtext-lexical";
+import { lexicalEditor } from "@payloadcms/richtext-lexical";
 import type { CollectionConfig } from "payload";
 
 export const Courses: CollectionConfig = {
@@ -43,9 +43,7 @@ export const Courses: CollectionConfig = {
 			editor: lexicalEditor({
 				features: ({ defaultFeatures }) => [
 					...defaultFeatures,
-					BlocksFeature({
-						blocks: [], // Empty blocks array
-					}),
+					// BlocksFeature removed since no blocks are configured
 				],
 			}),
 		},

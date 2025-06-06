@@ -18,6 +18,15 @@ import {
 } from "../../../../../packages/ui/src/shadcn/select";
 import { Switch } from "../../../../../packages/ui/src/shadcn/switch";
 
+// Define the type for YouTube Video field data
+type YouTubeVideoData = {
+	videoId?: string;
+	title?: string;
+	aspectRatio?: string;
+	showPreview?: boolean;
+	previewUrl?: string;
+};
+
 // Define the type for the field props
 type FieldProps = {
 	path: string;
@@ -44,17 +53,33 @@ const TextField: React.FC<TextFieldProps> = ({ label, value, onChange }) => {
 	);
 };
 
+// Type guard function to ensure value is a valid object
+const isYouTubeVideoData = (value: unknown): value is YouTubeVideoData => {
+	return typeof value === 'object' && value !== null;
+};
+
+// Helper function to safely get YouTubeVideoData from unknown value
+const getYouTubeVideoData = (value: unknown): YouTubeVideoData => {
+	if (isYouTubeVideoData(value)) {
+		return value;
+	}
+	return {};
+};
+
 /**
  * This component is used for the input card in the Lexical editor
  */
 const Field: React.FC<FieldProps> = (props) => {
-	const { path, value = {}, onChange } = props;
+	const { path, value, onChange } = props;
+	
+	// Get type-safe data from the unknown value
+	const data = getYouTubeVideoData(value);
 
 	// Handle field changes
 	const handleChange = (fieldName: string, fieldValue: unknown) => {
 		if (onChange) {
 			onChange({
-				...value,
+				...data,
 				[fieldName]: fieldValue,
 			});
 		}
@@ -73,7 +98,7 @@ const Field: React.FC<FieldProps> = (props) => {
 			<CardContent className="space-y-4">
 				<TextField
 					label="Video ID or URL"
-					value={value.videoId || ""}
+					value={data.videoId || ""}
 					onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
 						handleChange("videoId", e.target.value)
 					}
@@ -89,7 +114,7 @@ const Field: React.FC<FieldProps> = (props) => {
 					<p className="mb-2 text-sm font-medium">Preview Options</p>
 					<TextField
 						label="Custom Preview Image URL (optional)"
-						value={value.previewUrl || ""}
+						value={data.previewUrl || ""}
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
 							handleChange("previewUrl", e.target.value)
 						}
@@ -97,7 +122,7 @@ const Field: React.FC<FieldProps> = (props) => {
 					<div className="mt-4 flex items-center space-x-2">
 						<Switch
 							id="show-preview"
-							checked={value.showPreview || false}
+							checked={data.showPreview || false}
 							onCheckedChange={(checked) =>
 								handleChange("showPreview", checked)
 							}
@@ -109,7 +134,7 @@ const Field: React.FC<FieldProps> = (props) => {
 				</div>
 				<TextField
 					label="Title (optional)"
-					value={value.title || "YouTube Video"}
+					value={data.title || "YouTube Video"}
 					onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
 						handleChange("title", e.target.value)
 					}
@@ -117,7 +142,7 @@ const Field: React.FC<FieldProps> = (props) => {
 				<div className="space-y-2">
 					<Label>Aspect Ratio</Label>
 					<Select
-						value={value.aspectRatio || "16:9"}
+						value={data.aspectRatio || "16:9"}
 						onValueChange={handleAspectRatioChange}
 					>
 						<SelectTrigger className="w-full">

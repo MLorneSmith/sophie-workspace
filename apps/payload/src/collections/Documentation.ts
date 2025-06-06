@@ -1,4 +1,4 @@
-import { BlocksFeature, lexicalEditor } from "@payloadcms/richtext-lexical";
+import { lexicalEditor } from "@payloadcms/richtext-lexical";
 import type { CollectionConfig } from "payload";
 // Assuming blocks like CallToAction and TestBlock will be defined elsewhere
 // import { CallToAction, TestBlock } from '../blocks'
@@ -45,13 +45,7 @@ export const Documentation: CollectionConfig = {
 			editor: lexicalEditor({
 				features: ({ defaultFeatures }) => [
 					...defaultFeatures,
-					BlocksFeature({
-						blocks: [
-							// Assuming blocks like CallToAction and TestBlock will be defined elsewhere
-							// CallToAction,
-							// TestBlock
-						],
-					}),
+					// BlocksFeature will be added when blocks are properly configured
 				],
 			}),
 			admin: {

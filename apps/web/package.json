@@ -125,10 +125,15 @@
 		"tailwindcss": "4.1.7",
 		"tailwindcss-animate": "^1.0.7",
 		"typescript": "^5.8.3",
+		"vite-tsconfig-paths": "^5.1.4",
 		"vitest": "^3.1.2"
 	},
 	"prettier": "@kit/prettier-config",
-	"browserslist": ["last 1 versions", "> 0.7%", "not dead"],
+	"browserslist": [
+		"last 1 versions",
+		"> 0.7%",
+		"not dead"
+	],
 	"overrides": {
 		"motion": {
 			"react": "19.0.0-rc-66855b96-20241106",
