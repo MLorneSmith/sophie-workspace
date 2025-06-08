@@ -4,6 +4,6 @@ const Logger = {
   warn: console.warn,
   debug: console.debug,
   fatal: console.error,
-}
+};
 
 export { Logger };

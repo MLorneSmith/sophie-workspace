@@ -454,7 +454,7 @@ export class LemonSqueezyWebhookHandlerService
       pending: 'pending',
       failed: 'failed',
       refunded: 'failed',
-    } satisfies Record<OrderStatus, UpsertOrderParams['status']>
+    } satisfies Record<OrderStatus, UpsertOrderParams['status']>;
 
     return statusMap[status] ?? 'pending';
   }

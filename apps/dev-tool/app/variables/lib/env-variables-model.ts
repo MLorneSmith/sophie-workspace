@@ -883,7 +883,8 @@ export const envVariables: EnvVariableModel[] = [
   },
   {
     name: 'EMAIL_TLS',
-    description: 'Whether to use TLS for SMTP connection. Please check this in your SMTP provider settings.',
+    description:
+      'Whether to use TLS for SMTP connection. Please check this in your SMTP provider settings.',
     category: 'Email',
     type: 'boolean',
     contextualValidation: {
