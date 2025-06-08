@@ -16,7 +16,7 @@ const statusBadgeMap: Record<Status, `success` | `destructive` | `warning`> = {
   pending: 'warning',
   incomplete_expired: 'destructive',
   paused: 'warning',
-}
+};
 
 export function CurrentPlanBadge(
   props: React.PropsWithoutRef<{

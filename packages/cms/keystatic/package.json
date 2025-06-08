@@ -29,7 +29,7 @@
     "@types/node": "^22.15.30",
     "@types/react": "19.1.6",
     "react": "19.1.0",
-    "zod": "^3.25.53"
+    "zod": "^3.25.56"
   },
   "typesVersions": {
     "*": {

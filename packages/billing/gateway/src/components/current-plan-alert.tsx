@@ -2,7 +2,10 @@ import { Enums } from '@kit/supabase/database';
 import { Alert, AlertDescription, AlertTitle } from '@kit/ui/alert';
 import { Trans } from '@kit/ui/trans';
 
-const statusBadgeMap: Record<Enums<'subscription_status'>, `success` | `destructive` | `warning`> = {
+const statusBadgeMap: Record<
+  Enums<'subscription_status'>,
+  `success` | `destructive` | `warning`
+> = {
   active: 'success',
   trialing: 'success',
   past_due: 'destructive',
