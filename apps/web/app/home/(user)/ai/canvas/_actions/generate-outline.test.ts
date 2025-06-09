@@ -286,7 +286,7 @@ describe("Generate Outline Business Logic", () => {
 			};
 
 			const result = normalizeOutlineContent(input);
-			expect(result.content[0].content?.[0].text).toBe(" ");
+			expect(result.content[0]?.content?.[0]?.text).toBe(" ");
 		});
 
 		it("should normalize paragraphs without content", () => {
@@ -300,7 +300,7 @@ describe("Generate Outline Business Logic", () => {
 			};
 
 			const result = normalizeOutlineContent(input);
-			expect(result.content[0].content).toEqual([{ type: "text", text: " " }]);
+			expect(result.content[0]?.content).toEqual([{ type: "text", text: " " }]);
 		});
 
 		it("should normalize empty bullet lists", () => {
@@ -316,9 +316,9 @@ describe("Generate Outline Business Logic", () => {
 			const result = normalizeOutlineContent(input);
 			const bulletList = result.content[0];
 
-			expect(bulletList.content).toBeDefined();
-			expect(bulletList.content?.[0].type).toBe("listItem");
-			expect(bulletList.content?.[0].content?.[0].type).toBe("paragraph");
+			expect(bulletList?.content).toBeDefined();
+			expect(bulletList?.content?.[0]?.type).toBe("listItem");
+			expect(bulletList?.content?.[0]?.content?.[0]?.type).toBe("paragraph");
 		});
 
 		it("should normalize list items without proper paragraph structure", () => {
@@ -338,10 +338,10 @@ describe("Generate Outline Business Logic", () => {
 			};
 
 			const result = normalizeOutlineContent(input);
-			const listItem = result.content[0].content?.[0];
+			const listItem = result.content[0]?.content?.[0];
 
-			expect(listItem.content?.[0].type).toBe("paragraph");
-			expect(listItem.content?.[0].content?.[0].type).toBe("text");
+			expect(listItem?.content?.[0]?.type).toBe("paragraph");
+			expect(listItem?.content?.[0]?.content?.[0]?.type).toBe("text");
 		});
 
 		it("should handle nested content structures", () => {
@@ -372,11 +372,11 @@ describe("Generate Outline Business Logic", () => {
 
 			const result = normalizeOutlineContent(input);
 			const nestedList =
-				result.content[0].content?.[0].content?.[0].content?.[0];
+				result.content[0]?.content?.[0]?.content?.[0]?.content?.[0];
 
-			expect(nestedList.type).toBe("bulletList");
-			expect(nestedList.content).toBeDefined();
-			expect(nestedList.content?.length).toBeGreaterThan(0);
+			expect(nestedList?.type).toBe("bulletList");
+			expect(nestedList?.content).toBeDefined();
+			expect(nestedList?.content?.length).toBeGreaterThan(0);
 		});
 
 		it("should handle null/undefined nodes gracefully", () => {
@@ -388,8 +388,8 @@ describe("Generate Outline Business Logic", () => {
 			const result = normalizeOutlineContent(input);
 
 			expect(result.content).toHaveLength(2);
-			expect(result.content[0].type).toBe("paragraph");
-			expect(result.content[1].type).toBe("paragraph");
+			expect(result.content[0]?.type).toBe("paragraph");
+			expect(result.content[1]?.type).toBe("paragraph");
 		});
 
 		it("should preserve valid content without modification", () => {
@@ -410,9 +410,9 @@ describe("Generate Outline Business Logic", () => {
 
 			const result = normalizeOutlineContent(input);
 
-			expect(result.content[0].content?.[0].text).toBe("Valid content");
-			expect(result.content[1].content?.[0].text).toBe("Valid heading");
-			expect(result.content[1].attrs?.level).toBe(1);
+			expect(result.content[0]?.content?.[0]?.text).toBe("Valid content");
+			expect(result.content[1]?.content?.[0]?.text).toBe("Valid heading");
+			expect(result.content[1]?.attrs?.level).toBe(1);
 		});
 	});
 
@@ -442,7 +442,7 @@ describe("Generate Outline Business Logic", () => {
 
 			expect(result.type).toBe("doc");
 			expect(result.content).toHaveLength(1);
-			expect(result.content[0].type).toBe("paragraph");
+			expect(result.content[0]?.type).toBe("paragraph");
 		});
 
 		it("should convert Lexical format using converter", () => {

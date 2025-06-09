@@ -29,7 +29,12 @@
 		"supabase:typegen": "pnpm run supabase:typegen:packages && pnpm run supabase:typegen:app",
 		"supabase:typegen:packages": "supabase gen types typescript --local > ../../packages/supabase/src/database.types.ts",
 		"supabase:typegen:app": "supabase gen types typescript --local > ./lib/database.types.ts",
-		"supabase:db:dump:local": "supabase db dump --local --data-only"
+		"supabase:db:dump:local": "supabase db dump --local --data-only",
+		"test": "vitest",
+		"test:run": "vitest run",
+		"test:watch": "vitest --watch",
+		"test:coverage": "vitest run --coverage",
+		"test:ui": "vitest --ui"
 	},
 	"dependencies": {
 		"@edge-csrf/nextjs": "2.5.3-cloudflare-rc1",

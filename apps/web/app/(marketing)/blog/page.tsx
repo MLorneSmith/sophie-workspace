@@ -76,8 +76,8 @@ async function BlogPage(props: BlogPageProps) {
 					fallback={<Trans i18nKey="marketing:noPosts" />}
 				>
 					<PostsGridList>
-						{posts.map((post, idx) => {
-							return <PostPreview key={idx} post={post} />;
+						{posts.map((post) => {
+							return <PostPreview key={post.id} post={post} />;
 						})}
 					</PostsGridList>
 

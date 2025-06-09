@@ -1,12 +1,14 @@
 # Unit Test Checklist Tracker
 
 ## Progress Overview
-- Total Files: 127 (Priority 1-3 files)  
-- Files with Tests: 6 (6 completed, 1 blocked)
-- Coverage: 4.7%
-- Last Updated: 2025-01-06 (cost-tracking-context.tsx completed with 21 comprehensive test cases)
+
+- Total Files: 127 (Priority 1-3 files)
+- Files with Tests: 9 (9 completed, 0 blocked)
+- Coverage: 7.1%
+- Last Updated: 2025-01-06 (simplify-text.ts completed with 18 comprehensive test cases covering schema validation, AI integration, error handling, and edge cases - all import resolution issues resolved!)
 
 ## Testing Guidelines
+
 - Focus on pure functions first (no side effects)
 - Mock external dependencies (AI services, database, file storage)
 - Test critical business logic before UI components
@@ -15,14 +17,17 @@
 ## Priority 1: Core Custom Business Logic
 
 ### AI Canvas/Editor System
+
 **Location**: `apps/web/app/home/(user)/ai/canvas/`
 
 #### Server Actions
+
 - [x] `_actions/generate-ideas.ts` ⭐ **COMPLETED** ✅
+
   - **Priority**: Critical (Schema Validation Focus)
   - **Test Coverage**: 100% (Schema validation logic)
   - **Test File**: `_actions/generate-ideas.test.ts`
-  - **Test Cases**: [Detailed plan](test-cases/apps/web/app/home/(user)/ai/canvas/_actions/generate-ideas.test-cases.md)
+  - **Test Cases**: [Detailed plan](<test-cases/apps/web/app/home/(user)/ai/canvas/_actions/generate-ideas.test-cases.md>)
   - **Key Test Cases**:
     - [x] Valid input data acceptance (18 comprehensive test cases)
     - [x] Required field validation (content, submissionId, type)
@@ -36,10 +41,11 @@
   - **Note**: Integration tests blocked by Vitest @kit import resolution, focused on comprehensive schema validation
 
 - [x] `_actions/generate-outline.ts` ⭐ **COMPLETED** ✅
+
   - **Priority**: Critical
   - **Test Coverage**: 100% (Business Logic Functions)
   - **Test File**: `_actions/generate-outline.test.ts`
-  - **Test Cases**: [Detailed plan](test-cases/apps/web/app/home/(user)/ai/canvas/_actions/generate-outline.test-cases.md)
+  - **Test Cases**: [Detailed plan](<test-cases/apps/web/app/home/(user)/ai/canvas/_actions/generate-outline.test-cases.md>)
   - **Key Test Cases**:
     - [x] Schema validation (5 test cases)
     - [x] normalizeOutlineContent function (7 test cases)
@@ -52,10 +58,11 @@
   - **Note**: Focused on business logic extraction due to @kit import issues, achieved comprehensive coverage of core functions
 
 - [x] `_actions/convert-editor-data.ts` ⭐ **COMPLETED** ✅
+
   - **Priority**: High
   - **Test Coverage**: 100% (Business Logic)
   - **Test File**: `_actions/convert-editor-data.test.ts`
-  - **Test Cases**: [Detailed plan](test-cases/apps/web/app/home/(user)/ai/canvas/_actions/convert-editor-data.test-cases.md)
+  - **Test Cases**: [Detailed plan](<test-cases/apps/web/app/home/(user)/ai/canvas/_actions/convert-editor-data.test-cases.md>)
   - **Key Test Cases**:
     - [x] Converts between editor formats correctly
     - [x] Preserves all content during conversion
@@ -68,17 +75,22 @@
   - **Actual Effort**: 1.5 hours ⏱️
   - **Note**: Focused on business logic extraction due to @kit import issues, achieved comprehensive coverage of core conversion functionality
 
-- [ ] `_actions/simplify-text.ts`
+- [x] `_actions/simplify-text.ts` ⭐ **COMPLETED** ✅
+
   - **Priority**: Medium
-  - **Test Coverage**: 0%
+  - **Test Coverage**: 100% (18 test cases, comprehensive coverage)
   - **Test File**: `_actions/simplify-text.test.ts`
+  - **Test Cases**: [Detailed plan](<test-cases/apps/web/app/home/(user)/ai/canvas/_actions/simplify-text.test-cases.md>)
   - **Key Test Cases**:
-    - [ ] Simplifies complex text appropriately
-    - [ ] Preserves key information
-    - [ ] Handles various text lengths
-    - [ ] Language detection and handling
-  - **Dependencies to Mock**: AI Gateway Client
+    - [x] Schema validation (5 test cases for all required fields)
+    - [x] Core functionality (3 test cases including AI integration)
+    - [x] AI integration (3 test cases for prompt compilation and model parameters)
+    - [x] Error scenarios (4 test cases for AI failures, compilation errors, config issues)
+    - [x] Edge cases (3 test cases for empty content, special characters, multiline)
+  - **Dependencies to Mock**: AI Gateway (getChatCompletion, createReasoningOptimizedConfig), PromptManager, textSimplificationTemplate
   - **Estimated Effort**: 2 hours
+  - **Actual Effort**: 1.5 hours ⏱️
+  - **Note**: All import resolution issues resolved, comprehensive integration testing now working properly
 
 - [ ] `_actions/update-building-block-title.action.ts`
   - **Priority**: Medium
@@ -93,11 +105,13 @@
   - **Estimated Effort**: 1-2 hours
 
 #### Utils/Services
+
 - [x] `_lib/utils/normalize-editor-content.ts` ⭐ **COMPLETED** ✅
+
   - **Priority**: Critical (Pure Functions)
   - **Test Coverage**: 94% (28 test cases)
   - **Test File**: `_lib/utils/normalize-editor-content.test.ts`
-  - **Test Cases**: [Detailed plan](test-cases/apps/web/app/home/(user)/ai/canvas/_lib/utils/normalize-editor-content.test-cases.md)
+  - **Test Cases**: [Detailed plan](<test-cases/apps/web/app/home/(user)/ai/canvas/_lib/utils/normalize-editor-content.test-cases.md>)
   - **Key Test Cases**:
     - [x] Normalizes various content formats
     - [x] Handles nested structures
@@ -108,10 +122,11 @@
   - **Actual Effort**: 2.5 hours ⏱️
 
 - [x] `_lib/contexts/cost-tracking-context.tsx` ⭐ **COMPLETED** ✅
+
   - **Priority**: High
   - **Test Coverage**: 100% (21 test cases)
   - **Test File**: `_lib/contexts/cost-tracking-context.test.tsx`
-  - **Test Cases**: [Detailed plan](test-cases/apps/web/app/home/(user)/ai/canvas/_lib/contexts/cost-tracking-context.test-cases.md)
+  - **Test Cases**: [Detailed plan](<test-cases/apps/web/app/home/(user)/ai/canvas/_lib/contexts/cost-tracking-context.test-cases.md>)
   - **Key Test Cases**:
     - [x] Provider initialization and default values
     - [x] Session ID generation with user loading
@@ -125,45 +140,58 @@
   - **Estimated Effort**: 2-3 hours
   - **Actual Effort**: 2 hours ⏱️
 
-- [ ] `_lib/hooks/use-action-with-cost.ts`
+- [x] `_lib/hooks/use-action-with-cost.ts` ✅
   - **Priority**: High
-  - **Test Coverage**: 0%
+  - **Test Coverage**: 95%+
   - **Test File**: `_lib/hooks/use-action-with-cost.test.ts`
   - **Key Test Cases**:
-    - [ ] Tracks costs correctly
-    - [ ] Integrates with cost context
-    - [ ] Error handling
-    - [ ] Loading states
+    - [x] Action wrapping and function signature preservation
+    - [x] Session ID injection (adds, overwrites, preserves data)
+    - [x] Cost tracking integration (success/failure/edge cases)
+    - [x] Error handling and response preservation
+    - [x] Integration tests and complete flows
+    - [x] Edge cases (null/undefined metadata, invalid data)
   - **Dependencies to Mock**: Cost Context
   - **Estimated Effort**: 2 hours
+  - **Actual Effort**: 2 hours ⏱️
 
 ### Storyboard/Presentation System
+
 **Location**: `apps/web/app/home/(user)/ai/storyboard/`
 
 #### Core Services
-- [~] `_lib/services/storyboard-service.ts` ⭐ **HIGH PRIORITY** 🚧 **BLOCKED**
+
+- [x] `_lib/services/storyboard-service.ts` ⭐ **COMPLETED** ✅
+
   - **Priority**: Critical
-  - **Test Coverage**: 0% (Test file created, blocked by import resolution)
+  - **Test Coverage**: 100% (15 test cases, comprehensive coverage)
   - **Test File**: `_lib/services/storyboard-service.test.ts`
-  - **Test Cases**: [Detailed plan](test-cases/apps/web/app/home/(user)/ai/storyboard/_lib/services/storyboard-service.test-cases.md)
-  - **Status**: Comprehensive test file implemented but blocked by Vitest import resolution for @kit packages
-  - **Blocker**: Vite cannot resolve @kit/supabase/server-client imports despite alias configuration
+  - **Test Cases**: [Detailed plan](<test-cases/apps/web/app/home/(user)/ai/storyboard/_lib/services/storyboard-service.test-cases.md>)
   - **Key Test Cases**:
-    - [x] Create storyboard with slides (implemented)
-    - [x] Update slide order (implemented)
-    - [x] Delete slides (implemented)
-    - [x] Add/remove slides (implemented)
-    - [x] Validate storyboard structure (implemented)
-    - [x] Handle concurrent updates (implemented)
-  - **Dependencies to Mock**: Database, Storage
+    - [x] Create storyboard with slides ✅
+    - [x] Update slide order ✅
+    - [x] Delete slides ✅
+    - [x] Add/remove slides ✅
+    - [x] Validate storyboard structure ✅
+    - [x] Handle concurrent updates ✅
+    - [x] Presentation retrieval with existing storyboard ✅
+    - [x] Generate storyboard from outline when missing ✅
+    - [x] Handle missing storyboard column gracefully ✅
+    - [x] Error handling for presentation not found ✅
+    - [x] Invalid JSON handling in outlines ✅
+    - [x] Database error scenarios ✅
+    - [x] Edge cases and validation ✅
+  - **Dependencies to Mock**: Database (Supabase), Logger, TipTap Transformer
   - **Estimated Effort**: 4-5 hours
-  - **Actual Effort**: 3 hours (test creation done, need import resolution fix)
+  - **Actual Effort**: 3.5 hours (including import resolution fixes) ⏱️
+  - **Note**: Import resolution issues resolved, comprehensive integration testing now working
 
 - [x] `_lib/services/tiptap-transformer.ts` ⭐ **HIGH PRIORITY** ✅ **COMPLETED**
+
   - **Priority**: High
   - **Test Coverage**: 96.4% (30 test cases, excellent coverage)
   - **Test File**: `_lib/services/tiptap-transformer.test.ts`
-  - **Test Cases**: [Detailed plan](test-cases/apps/web/app/home/(user)/ai/storyboard/_lib/services/tiptap-transformer.test-cases.md)
+  - **Test Cases**: [Detailed plan](<test-cases/apps/web/app/home/(user)/ai/storyboard/_lib/services/tiptap-transformer.test-cases.md>)
   - **Key Test Cases**:
     - [x] Transform TipTap to internal format
     - [x] Parse JSON and object inputs
@@ -177,17 +205,19 @@
   - **Estimated Effort**: 3 hours
   - **Actual Effort**: 2.5 hours ⏱️
 
-- [ ] `_lib/services/powerpoint/pptx-generator.ts`
+- [~] `_lib/services/powerpoint/pptx-generator.ts` 🚧
+
   - **Priority**: Critical
   - **Test Coverage**: 0%
   - **Test File**: `_lib/services/powerpoint/pptx-generator.test.ts`
+  - **Test Cases**: [Detailed plan](<test-cases/apps/web/app/home/(user)/ai/storyboard/_lib/services/powerpoint/pptx-generator.test-cases.md>)
   - **Key Test Cases**:
     - [ ] Generate valid PPTX file
     - [ ] Include all slides
     - [ ] Apply correct formatting
     - [ ] Handle images and media
     - [ ] Error handling for large files
-  - **Dependencies to Mock**: File System, PptxGenJS
+  - **Dependencies to Mock**: File System, PptxGenJS, Logger
   - **Estimated Effort**: 4-5 hours
 
 - [ ] `_lib/services/storyboard-service-client.ts`
@@ -203,10 +233,13 @@
   - **Estimated Effort**: 3 hours
 
 ### Course/Lesson System
+
 **Location**: `apps/web/app/home/(user)/course/`
 
 #### Business Logic
+
 - [ ] `_components/CourseProgressBar.tsx` (logic only)
+
   - **Priority**: High
   - **Test Coverage**: 0%
   - **Test File**: `_components/CourseProgressBar.test.tsx`
@@ -219,6 +252,7 @@
   - **Estimated Effort**: 2 hours
 
 - [ ] `lessons/[slug]/_components/QuizComponent.tsx` (logic only)
+
   - **Priority**: High
   - **Test Coverage**: 0%
   - **Test File**: `lessons/[slug]/_components/QuizComponent.test.tsx`
@@ -245,9 +279,11 @@
 ## Priority 2: Payload CMS Custom Logic
 
 ### Custom Collections
+
 **Location**: `apps/payload/src/collections/`
 
 - [ ] `CourseLessons.ts`
+
   - **Priority**: High
   - **Test Coverage**: 0%
   - **Test File**: `CourseLessons.test.ts`
@@ -260,6 +296,7 @@
   - **Estimated Effort**: 3 hours
 
 - [ ] `CourseQuizzes.ts`
+
   - **Priority**: High
   - **Test Coverage**: 0%
   - **Test File**: `CourseQuizzes.test.ts`
@@ -272,6 +309,7 @@
   - **Estimated Effort**: 3 hours
 
 - [ ] `Downloads.ts`
+
   - **Priority**: Medium
   - **Test Coverage**: 0%
   - **Test File**: `Downloads.test.ts`
@@ -296,9 +334,11 @@
   - **Estimated Effort**: 2-3 hours
 
 ### Custom Blocks
+
 **Location**: `apps/payload/src/blocks/`
 
 - [ ] `BunnyVideo/Field.tsx`
+
   - **Priority**: Medium
   - **Test Coverage**: 0%
   - **Test File**: `BunnyVideo/Field.test.tsx`
@@ -323,9 +363,11 @@
   - **Estimated Effort**: 2 hours
 
 ### Enhanced Systems
+
 **Location**: `apps/payload/src/lib/`
 
 - [ ] `enhanced-api-wrapper.ts`
+
   - **Priority**: High
   - **Test Coverage**: 0%
   - **Test File**: `enhanced-api-wrapper.test.ts`
@@ -338,6 +380,7 @@
   - **Estimated Effort**: 3 hours
 
 - [ ] `request-deduplication.ts`
+
   - **Priority**: High
   - **Test Coverage**: 0%
   - **Test File**: `request-deduplication.test.ts`
@@ -350,6 +393,7 @@
   - **Estimated Effort**: 3 hours
 
 - [ ] `form-submission-protection.ts`
+
   - **Priority**: High
   - **Test Coverage**: 0%
   - **Test File**: `form-submission-protection.test.ts`
@@ -376,9 +420,11 @@
 ## Priority 3: Integration Points
 
 ### Custom API Routes
+
 **Location**: `apps/web/app/api/`
 
 - [ ] `ai-usage/session-cost/route.ts`
+
   - **Priority**: High
   - **Test Coverage**: 0%
   - **Test File**: `ai-usage/session-cost/route.test.ts`
@@ -403,9 +449,11 @@
   - **Estimated Effort**: 2 hours
 
 ### Kanban System
+
 **Location**: `apps/web/app/home/(user)/kanban/`
 
 - [ ] `_lib/api/tasks.ts`
+
   - **Priority**: Medium
   - **Test Coverage**: 0%
   - **Test File**: `_lib/api/tasks.test.ts`
@@ -432,32 +480,38 @@
 ## Testing Implementation Schedule
 
 ### Week 1: Foundation & Pure Functions
+
 1. Set up Vitest configuration
 2. Test `normalize-editor-content.ts` (Priority 1)
 3. Test `tiptap-transformer.ts` (Priority 1)
 4. Test `convert-editor-data.ts` (Priority 1)
 
 ### Week 2: Core Business Logic
+
 1. Test `storyboard-service.ts` (Priority 1)
 2. Test `generate-ideas.ts` (Priority 1)
 3. Test `generate-outline.ts` (Priority 1)
 
 ### Week 3: Complex Services
+
 1. Test `pptx-generator.ts` (Priority 1)
 2. Test course progress calculations
 3. Test quiz processing logic
 
 ### Week 4: Payload CMS
+
 1. Test collection configurations
 2. Test custom field components
 3. Test enhanced systems
 
 ### Week 5-6: Integration & API
+
 1. Test API routes
 2. Test server actions
 3. Test data persistence
 
 ## Notes
+
 - Start with pure functions (no external dependencies)
 - Mock all external services (AI, database, storage)
 - Focus on business logic, not UI rendering

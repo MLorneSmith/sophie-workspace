@@ -84,6 +84,13 @@ export default defineConfig({
 		outputFile: {
 			json: "./coverage/test-results.json",
 		},
+
+		// Server-side module handling for SSR components
+		server: {
+			deps: {
+				inline: ["server-only"],
+			},
+		},
 	},
 
 	// Path resolution handled by vite-tsconfig-paths plugin
@@ -91,12 +98,5 @@ export default defineConfig({
 	// Define global constants for testing
 	define: {
 		"process.env.NODE_ENV": JSON.stringify("test"),
-	},
-
-	// Server-side module mocking for testing
-	server: {
-		deps: {
-			inline: ["server-only"],
-		},
 	},
 });

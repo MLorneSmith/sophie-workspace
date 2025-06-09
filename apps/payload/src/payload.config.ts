@@ -10,6 +10,13 @@ import { lexicalEditor } from "@payloadcms/richtext-lexical";
 import { s3Storage } from "@payloadcms/storage-s3";
 import { en } from "@payloadcms/translations/languages/en";
 import { buildConfig } from "payload";
+import type { Plugin } from "payload";
+
+// Type for Payload plugins
+type PayloadPlugin =
+	| Plugin
+	| ReturnType<typeof s3Storage>
+	| ReturnType<typeof nestedDocsPlugin>;
 
 import { CourseLessons } from "./collections/CourseLessons";
 import { CourseQuizzes } from "./collections/CourseQuizzes";
@@ -184,7 +191,7 @@ const createS3DownloadsStorage = () => {
  */
 const getStoragePlugins = () => {
 	const storageType = getStorageType();
-	const plugins: any[] = [];
+	const plugins: PayloadPlugin[] = [];
 
 	if (storageType === "r2") {
 		const r2Validation = validateR2Config();
@@ -247,7 +254,7 @@ const getStoragePlugins = () => {
 
 // Plugin configuration
 const getPlugins = () => {
-	const plugins: any[] = [];
+	const plugins: PayloadPlugin[] = [];
 
 	// Add storage plugins (separate instances for media and downloads)
 	const storagePlugins = getStoragePlugins();

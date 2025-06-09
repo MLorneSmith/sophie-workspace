@@ -839,11 +839,11 @@ function getEffectiveVariablesValue(
 	const varsArray = Object.values(appState.variables);
 
 	return varsArray.reduce(
-		(acc, variable) => ({
-			...acc,
-			[variable.key]: variable.effectiveValue,
-		}),
-		{},
+		(acc, variable) => {
+			acc[variable.key] = variable.effectiveValue;
+			return acc;
+		},
+		{} as Record<string, string>,
 	);
 }
 
