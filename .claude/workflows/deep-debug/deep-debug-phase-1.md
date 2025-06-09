@@ -1,6 +1,8 @@
 # Deep Debug Phase 1: Investigation & Research
 
-Usage: `/deep-debug-phase-1 [issue_reference]`
+**Phase 1 of Deep Debug Workflow: Investigation & Research**
+
+This workflow is automatically invoked by `/deep-debug` when investigation is needed.
 
 - GitHub issue number: `123` (preferred format)
 - Issue ID: `ISSUE-123`

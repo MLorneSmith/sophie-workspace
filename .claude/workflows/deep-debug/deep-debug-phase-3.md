@@ -1,6 +1,8 @@
 # Deep Debug Phase 3: Implementation & Verification
 
-Usage: `/deep-debug-phase-3 [issue_reference]`
+**Phase 3 of Deep Debug Workflow: Implementation & Verification**
+
+This workflow is automatically invoked by `/deep-debug` when Phase 2 solution design is complete.
 
 - GitHub issue number: `123` (preferred format)
 - Issue ID: `ISSUE-123`
