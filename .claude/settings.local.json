@@ -59,7 +59,9 @@
 			"Bash(pnpm run dev:*)",
 			"Bash(grep:*)",
 			"Bash(pnpm install:*)",
-			"Bash(pnpm list:*)"
+			"Bash(pnpm list:*)",
+			"Bash(pnpm supabase:web:stop:*)",
+			"Bash(pnpm supabase:web:reset:*)"
 		],
 		"deny": []
 	},

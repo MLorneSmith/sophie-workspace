@@ -1,11 +1,7 @@
-import {
-	type MigrateDownArgs,
-	type MigrateUpArgs,
-	sql,
-} from "@payloadcms/db-postgres";
+import { type MigrateUpArgs, type MigrateDownArgs, sql } from '@payloadcms/db-postgres'
 
 export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
-	await db.execute(sql`
+  await db.execute(sql`
    CREATE TYPE "payload"."enum_users_role" AS ENUM('admin', 'user');
   CREATE TYPE "payload"."enum_media_type" AS ENUM('image', 'video', 'document');
   CREATE TYPE "payload"."enum_downloads_category" AS ENUM('document', 'template', 'resource', 'software', 'media', 'archive', 'other');
@@ -582,6 +578,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   
   CREATE TABLE IF NOT EXISTS "payload"."surveys" (
   	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+  	"title" varchar,
   	"slug" varchar,
   	"description" varchar,
   	"status" "payload"."enum_surveys_status" DEFAULT 'draft',
@@ -602,6 +599,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE TABLE IF NOT EXISTS "payload"."_surveys_v" (
   	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
   	"parent_id" uuid,
+  	"version_title" varchar,
   	"version_slug" varchar,
   	"version_description" varchar,
   	"version_status" "payload"."enum__surveys_v_version_status" DEFAULT 'draft',
@@ -1440,15 +1438,11 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX IF NOT EXISTS "payload_preferences_rels_path_idx" ON "payload"."payload_preferences_rels" USING btree ("path");
   CREATE INDEX IF NOT EXISTS "payload_preferences_rels_users_id_idx" ON "payload"."payload_preferences_rels" USING btree ("users_id");
   CREATE INDEX IF NOT EXISTS "payload_migrations_updated_at_idx" ON "payload"."payload_migrations" USING btree ("updated_at");
-  CREATE INDEX IF NOT EXISTS "payload_migrations_created_at_idx" ON "payload"."payload_migrations" USING btree ("created_at");`);
+  CREATE INDEX IF NOT EXISTS "payload_migrations_created_at_idx" ON "payload"."payload_migrations" USING btree ("created_at");`)
 }
 
-export async function down({
-	db,
-	payload,
-	req,
-}: MigrateDownArgs): Promise<void> {
-	await db.execute(sql`
+export async function down({ db, payload, req }: MigrateDownArgs): Promise<void> {
+  await db.execute(sql`
    DROP TABLE "payload"."users" CASCADE;
   DROP TABLE "payload"."media_tags" CASCADE;
   DROP TABLE "payload"."media" CASCADE;
@@ -1533,5 +1527,5 @@ export async function down({
   DROP TYPE "payload"."enum__survey_questions_v_version_questionspin";
   DROP TYPE "payload"."enum__survey_questions_v_version_status";
   DROP TYPE "payload"."enum_surveys_status";
-  DROP TYPE "payload"."enum__surveys_v_version_status";`);
+  DROP TYPE "payload"."enum__surveys_v_version_status";`)
 }

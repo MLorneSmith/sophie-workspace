@@ -4,6 +4,15 @@ const IS_PRODUCTION = process.env.NODE_ENV === "production";
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const ENABLE_REACT_COMPILER = process.env.ENABLE_REACT_COMPILER === "true";
 
+// New Relic configuration for local development
+let nrExternals;
+try {
+	nrExternals = require('newrelic/load-externals');
+} catch (err) {
+	// New Relic not available (e.g., in build without agent)
+	nrExternals = () => {};
+}
+
 const INTERNAL_PACKAGES = [
 	"@kit/ui",
 	"@kit/auth",
@@ -50,7 +59,12 @@ const config = {
 			fullUrl: true,
 		},
 	},
-	serverExternalPackages: [],
+	serverExternalPackages: ['newrelic'],
+	webpack: (config) => {
+		// Configure New Relic externals for proper agent loading
+		nrExternals(config);
+		return config;
+	},
 	// needed for supporting dynamic imports for local content
 	outputFileTracingIncludes: {
 		"/*": ["./content/**/*"],
@@ -63,6 +77,7 @@ const config = {
 	experimental: {
 		mdxRs: true,
 		reactCompiler: ENABLE_REACT_COMPILER,
+		instrumentation: true,
 		optimizePackageImports: [
 			"recharts",
 			"lucide-react",

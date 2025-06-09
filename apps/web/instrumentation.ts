@@ -5,6 +5,16 @@
 import type { Instrumentation } from "next";
 
 export async function register() {
+	// Initialize OpenTelemetry for Vercel/New Relic integration
+	if (process.env.NODE_ENV === "production") {
+		const { registerOTel } = await import("@vercel/otel");
+
+		registerOTel({
+			serviceName: process.env.OTEL_SERVICE_NAME || "slideheroes-web",
+			serviceVersion: process.env.OTEL_SERVICE_VERSION || "1.0.0",
+		});
+	}
+
 	const { registerMonitoringInstrumentation } = await import(
 		"@kit/monitoring/instrumentation"
 	);

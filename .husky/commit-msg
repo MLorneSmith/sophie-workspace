@@ -1,0 +1,5 @@
+#!/bin/bash
+# Husky commit-msg hook for SlideHeroes
+# Validates commit messages using commitlint
+
+npx --no -- commitlint --edit ${1}

@@ -82,10 +82,12 @@ export { UserProfile };
 
 ## Version Control Practices
 
+- **Use `pnpm commit` for commits** - Interactive prompts ensure proper conventional format
 - Commit frequently throughout development
 - NEVER use --no-verify when committing code
 - Follow conventional commit format: type(scope): message
 - Keep commits focused on single logical changes
+- `git commit` still works as fallback, but `pnpm commit` is preferred
 
 ## Testing Expectations
 
@@ -525,6 +527,7 @@ pnpm build                     # Build all apps
 pnpm typecheck                 # Type check all packages
 pnpm lint:fix                  # Fix linting issues
 pnpm format:fix                # Fix formatting
+pnpm commit                    # Interactive commit with conventional format
 ```
 
 ### Database & Migrations
