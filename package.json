@@ -51,8 +51,9 @@
 	"prettier": "@kit/prettier-config",
 	"packageManager": "pnpm@9.12.0",
 	"lint-staged": {
-		"*.{js,jsx,ts,tsx,json,md,mdx,css,yaml,yml}": ["biome format --write"],
-		"*.{js,jsx,ts,tsx}": ["biome lint --write --diagnostic-level=error"]
+		"*.{js,jsx,ts,tsx,json,css,yaml,yml}": ["biome format --write"],
+		"*.{js,jsx,ts,tsx}": ["biome lint --write --diagnostic-level=error"],
+		"*.{md,mdx}": ["prettier --write"]
 	},
 	"pnpm": {
 		"overrides": {
