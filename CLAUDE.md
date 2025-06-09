@@ -1,18 +1,6 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-
-## Project Overview
-
-Makerkit is a multi-tenant SaaS application using a Turborepo monorepo structure with distinct apps for the main web application, development tools, and e2e testing.
-
-### Monorepo Structure
-
-- `/apps/web` - Main Next.js SaaS application
-- `/apps/dev-tool` - Development utilities (port 3010)
-- `/apps/e2e` - Playwright end-to-end tests
-- `/packages/` - Shared packages and utilities
-- `/tooling/` - Build tools and development scripts
+This file provides guidance to Claude Code when working with code in this repository.
 
 ### Core Technologies
 
@@ -23,17 +11,24 @@ Makerkit is a multi-tenant SaaS application using a Turborepo monorepo structure
 - **Tailwind CSS 4** for styling
 - **Turborepo** for monorepo management
 
+### Monorepo Structure
+
+- @apps/web - Main Next.js SaaS application
+- @apps/dev-tool - Development utilities (port 3010)
+- @apps/e2e - Playwright end-to-end tests
+- @packages/ - Shared packages and utilities
+- @tooling/ - Build tools and development scripts
+
 ### Multi-Tenant Architecture
 
-Uses a dual account model:
+**Personal Accounts**: Individual user accounts (auth.users.id = accounts.id)
+**Team Accounts**: Shared workspaces with members, roles, and permissions
 
-- **Personal Accounts**: Individual user accounts (`auth.users.id = accounts.id`)
-- **Team Accounts**: Shared workspaces with members, roles, and permissions
-- Data associates with accounts via foreign keys for proper access control
+Data associates with accounts via foreign keys for proper access control.
 
 ## Essential Commands
 
-### Development
+### Development Workflow
 
 ```bash
 pnpm dev                    # Start all apps
@@ -74,7 +69,7 @@ app/
 └── api/                 # API routes
 ```
 
-See complete structure in @apps/web/app/ with examples like:
+Key Examples:
 
 - Marketing layout: @apps/web/app/(marketing)/layout.tsx
 - Personal dashboard: @apps/web/app/home/(user)/page.tsx
@@ -83,11 +78,11 @@ See complete structure in @apps/web/app/ with examples like:
 
 ### Component Organization
 
-- **Route-specific**: Use `_components/` directories
-- **Route utilities**: Use `_lib/` for client, `_lib/server/` for server-side
+- **Route-specific**: Use \_components/ directories
+- **Route utilities**: Use \_lib/ for client, \_lib/server/ for server-side
 - **Global components**: Root-level directories
 
-Example organization:
+Example:
 
 - Team components: @apps/web/app/home/[account]/\_components/
 - Team server utils: @apps/web/app/home/[account]/\_lib/server/
@@ -95,31 +90,111 @@ Example organization:
 
 ## Database Guidelines
 
-### Security & RLS
+### Security & RLS Implementation
+
+**Critical Security Guidelines - Read Carefully! ⚠️**
+
+#### Database Security Fundamentals
 
 - **Always enable RLS** on new tables unless explicitly instructed otherwise
-- Use helper functions for access control:
-  - `public.has_role_on_account(account_id, role?)` - Check team membership
-  - `public.has_permission(user_id, account_id, permission)` - Check permissions
-  - `public.is_account_owner(account_id)` - Verify ownership
+- **NEVER use SECURITY DEFINER functions** without explicit access controls - they bypass RLS entirely
+- **Always use security_invoker=true for views** to maintain proper access control
+- **Storage buckets MUST validate access** using account_id in the path structure. See @apps/web/supabase/schemas/16-storage.sql for proper implementation.
+- **Use locks if required**: Database locks prevent race conditions and timing attacks in concurrent operations. Make sure to take these into account for all database operations.
 
-See RLS examples in database schemas: @apps/web/supabase/schemas/
+#### Security Definer Function - Dangerous Pattern ❌
 
-### Schema Management
+```sql
+-- NEVER DO THIS - Allows any authenticated user to call function
+CREATE OR REPLACE FUNCTION public.dangerous_function()
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER AS $
+BEGIN
+  -- This bypasses all RLS policies!
+  DELETE FROM sensitive_table; -- Anyone can call this!
+END;
+$;
+GRANT EXECUTE ON FUNCTION public.dangerous_function() TO authenticated;
+```
 
-- Schemas in `apps/web/supabase/schemas/`
-- Create as `<number>-<name>.sql`
-- After changes: `pnpm --filter web supabase:db:diff` then `pnpm supabase:web:reset`
+#### Security Definer Function - Safe Pattern ✅
+
+```sql
+-- ONLY use SECURITY DEFINER with explicit access validation
+CREATE OR REPLACE FUNCTION public.safe_admin_function(target_account_id uuid)
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = '' AS $
+BEGIN
+  -- MUST validate caller has permission FIRST
+  IF NOT public.is_account_owner(target_account_id) THEN
+    RAISE EXCEPTION 'Access denied: insufficient permissions';
+  END IF;
+
+  -- Now safe to proceed with elevated privileges
+  -- Your admin operation here
+END;
+$;
+```
+
+#### Existing Helper Functions - Use These! 📚
+
+**DO NOT recreate these functions - they already exist:**
+
+```sql
+-- Account Access Control
+public.has_role_on_account(account_id, role?)     -- Check team membership
+public.has_permission(user_id, account_id, permission)  -- Check permissions
+public.is_account_owner(account_id)               -- Verify ownership
+public.has_active_subscription(account_id)        -- Subscription status
+public.is_team_member(account_id, user_id)        -- Direct membership check
+public.can_action_account_member(target_account_id, target_user_id) -- Member action rights
+
+-- Administrative Functions
+public.is_super_admin()                           -- Super admin check
+public.is_aal2()                                  -- MFA verification
+public.is_mfa_compliant()                         -- MFA compliance
+
+-- Configuration
+public.is_set(field_name)                         -- Feature flag checks
+```
+
+Always check @apps/web/supabase/schemas/ before creating new functions!
+
+#### RLS Policy Best Practices ✅
+
+```sql
+-- Proper RLS using existing helper functions
+CREATE POLICY "notes_read" ON public.notes FOR SELECT
+  TO authenticated USING (
+    account_id = (select auth.uid()) OR
+    public.has_role_on_account(account_id)
+  );
+
+-- For operations requiring specific permissions
+CREATE POLICY "notes_manage" ON public.notes FOR ALL
+  TO authenticated USING (
+    public.has_permission(auth.uid(), account_id, 'notes.manage'::app_permissions)
+  );
+```
+
+### Schema Management Workflow
+
+1. Create schemas in @apps/web/supabase/schemas/ as `<number>-<name>.sql`
+2. After changes: `pnpm supabase:web:stop`
+3. Run: `pnpm --filter web run supabase:db:diff -f <filename>`
+4. Restart: `pnpm supabase:web:start` and `pnpm supabase:web:reset`
+5. Generate types: `pnpm supabase:web:typegen`
 
 Key schema files:
 
-- Accounts: `apps/web/supabase/schemas/03-accounts.sql`
-- Memberships: `apps/web/supabase/schemas/05-memberships.sql`
-- Permissions: `apps/web/supabase/schemas/06-roles-permissions.sql`
+- Accounts: @apps/web/supabase/schemas/03-accounts.sql
+- Memberships: @apps/web/supabase/schemas/05-memberships.sql
+- Permissions: @apps/web/supabase/schemas/06-roles-permissions.sql
 
 ### Type Generation
-
-Import auto-generated types from @packages/supabase/src/types/database.ts:
 
 ```typescript
 import { Tables } from '@kit/supabase/database';
@@ -127,37 +202,130 @@ import { Tables } from '@kit/supabase/database';
 type Account = Tables<'accounts'>;
 ```
 
+Always prefer inferring types from generated Database types.
+
 ## Development Patterns
 
-### Data Fetching
+### Data Fetching Strategy
 
-- **Server Components**: Use `getSupabaseServerClient()` from @packages/supabase/src/clients/server-client.ts
-- **Client Components**: Use `useSupabase()` hook + React Query's `useQuery`
-- **Admin Operations**: Use `getSupabaseServerAdminClient()` from @packages/supabase/src/clients/server-admin-client.ts (rare cases only - bypasses RLS, use with caution!)
-- Prefer Server Components and pass data down when needed
+**Quick Decision Framework:**
 
-Use the Container/Presenter pattern for complex data components:
+- **Server Components**: Default choice for initial data loading
+- **Client Components**: For interactive features requiring hooks or real-time updates
+- **Admin Client**: Only for bypassing RLS (rare cases - requires manual auth/authorization)
+
+#### Server Components (Preferred) ✅
 
 ```typescript
-// Container: handles data fetching
-function UserProfileContainer() {
-  const userData = useUserData();
-  return <UserProfilePresenter data={userData.data} />;
-}
+import { getSupabaseServerClient } from '@kit/supabase/server-client';
 
-// Presenter: handles UI rendering
-function UserProfilePresenter({ data }: { data: UserData }) {
-  return <div>{data.name}</div>;
+async function NotesPage() {
+  const client = getSupabaseServerClient();
+  const { data, error } = await client.from('notes').select('*');
+
+  if (error) return <ErrorMessage error={error} />;
+  return <NotesList notes={data} />;
 }
 ```
 
-Example server-side data loading:
+**Key Insight**: Server Components automatically inherit RLS protection - no additional authorization checks needed!
 
-- User workspace loader: @apps/web/app/home/(user)/\_lib/server/load-user-workspace.ts
-- Team workspace loader: @apps/web/app/home/[account]/\_lib/server/team-account-workspace.loader.ts
-- Data provider pattern: @packages/features/team-accounts/src/components/members/roles-data-provider.tsx
+#### Client Components (Interactive) 🖱️
 
-### Server Actions
+```typescript
+'use client';
+import { useSupabase } from '@kit/supabase/hooks/use-supabase';
+import { useQuery } from '@tanstack/react-query';
+
+function InteractiveNotes() {
+  const supabase = useSupabase();
+  const { data, isLoading } = useQuery({
+    queryKey: ['notes'],
+    queryFn: () => supabase.from('notes').select('*')
+  });
+
+  if (isLoading) return <Spinner />;
+  return <NotesList notes={data} />;
+}
+```
+
+#### Performance Optimization - Parallel Data Fetching 🚀
+
+**Sequential (Slow) Pattern ❌**
+
+```typescript
+async function SlowDashboard() {
+  const userData = await loadUserData();
+  const notifications = await loadNotifications();
+  const metrics = await loadMetrics();
+  // Total time: sum of all requests
+}
+```
+
+**Parallel (Optimized) Pattern ✅**
+
+```typescript
+async function FastDashboard() {
+  // Execute all requests simultaneously
+  const [userData, notifications, metrics] = await Promise.all([
+    loadUserData(),
+    loadNotifications(),
+    loadMetrics()
+  ]);
+  // Total time: longest single request
+
+  return <Dashboard user={userData} notifications={notifications} metrics={metrics} />;
+}
+```
+
+**Performance Impact**: Parallel fetching can reduce page load time by 60-80% for multi-data pages!
+
+### Authorization Patterns - Critical Understanding 🔐
+
+#### RLS-Protected Data Fetching (Standard) ✅
+
+```typescript
+async function getUserNotes(userId: string) {
+  const client = getSupabaseServerClient();
+
+  // RLS automatically ensures user can only access their own notes
+  // NO additional authorization checks needed!
+  const { data } = await client.from('notes').select('*').eq('user_id', userId); // RLS validates this automatically
+
+  return data;
+}
+```
+
+#### Admin Client Usage (Dangerous - Rare Cases Only) ⚠️
+
+```typescript
+async function adminGetUserNotes(userId: string) {
+  const adminClient = getSupabaseServerAdminClient();
+
+  // CRITICAL: Manual authorization required - bypasses RLS!
+  const currentUser = await getCurrentUser();
+  if (!(await isSuperAdmin(currentUser))) {
+    throw new Error('Unauthorized: Admin access required');
+  }
+
+  // Additional validation: ensure current admin isn't targeting themselves
+  if (currentUser.id === userId) {
+    throw new Error('Cannot perform admin action on own account');
+  }
+
+  // Now safe to proceed with admin privileges
+  const { data } = await adminClient
+    .from('notes')
+    .select('*')
+    .eq('user_id', userId);
+
+  return data;
+}
+```
+
+**Rule of thumb**: If using standard Supabase client, trust RLS. If using admin client, validate everything manually.
+
+### Server Actions Implementation
 
 Always use `enhanceAction` from @packages/next/src/actions/index.ts:
 
@@ -186,14 +354,14 @@ Example server actions:
 ### Forms with React Hook Form & Zod
 
 ```typescript
-// 1. Define schema in separate file
+// 1. Schema in separate file
 export const CreateNoteSchema = z.object({
   title: z.string().min(1),
   content: z.string().min(1),
 });
 
 // 2. Client component with form
-('use client');
+'use client';
 const form = useForm({
   resolver: zodResolver(CreateNoteSchema),
 });
@@ -209,7 +377,7 @@ const onSubmit = (data) => {
 };
 ```
 
-See form examples:
+Form examples:
 
 - Contact form: @apps/web/app/(marketing)/contact/\_components/contact-form.tsx
 - Verify OTP form: @packages/otp/src/components/verify-otp-form.tsx
@@ -233,18 +401,21 @@ export const POST = enhanceRouteHandler(
 );
 ```
 
-Example API routes:
-
-- Billing webhook: @apps/web/app/api/billing/webhook/route.ts
-- Database webhook: @apps/web/app/api/db/webhook/route.ts
-
 ## React & TypeScript Best Practices
+
+### TS
+
+- Write clean, clear, well-designed, explicit Typescript
+- Use implicit type inference, unless impossible
+- `any` and `unknown` are a code smell and must justified if used
+- Handle errors gracefully using try/catch and appropriate error types. 
 
 ### Components
 
 - Use functional components with TypeScript
-- Always use `'use client'` directive for client components
+- Always use 'use client' directive for client components
 - Destructure props with proper TypeScript interfaces
+- Name files to match component name (e.g., user-profile.tsx)
 
 ### Conditional Rendering
 
@@ -252,7 +423,6 @@ Use the `If` component from @packages/ui/src/makerkit/if.tsx:
 
 ```tsx
 import { If } from '@kit/ui/if';
-import { Spinner } '@kit/ui/spinner';
 
 <If condition={isLoading} fallback={<Content />}>
   <Spinner />
@@ -266,12 +436,9 @@ import { Spinner } '@kit/ui/spinner';
 
 ### Testing Attributes
 
-Add data attributes for testing:
-
 ```tsx
 <button data-test="submit-button">Submit</button>
 <div data-test="user-profile" data-user-id={user.id}>Profile</div>
-<form data-test="signup-form">Form content</form>
 ```
 
 ### Internationalization
@@ -281,11 +448,9 @@ Always use `Trans` component from @packages/ui/src/makerkit/trans.tsx:
 ```tsx
 import { Trans } from '@kit/ui/trans';
 
-// Basic usage
 <Trans
   i18nKey="user:welcomeMessage"
   values={{ name: user.name }}
-  defaults="Welcome, {name}!"
 />
 
 // With HTML elements
@@ -294,60 +459,35 @@ import { Trans } from '@kit/ui/trans';
   components={{
     TermsLink: <a href="/terms" className="underline" />,
   }}
-  defaults="I agree to the <TermsLink>Terms</TermsLink>."
 />
-
-// Pluralization
-<Trans
-  i18nKey="notifications:count"
-  count={notifications.length}
-  defaults="{count, plural, =0 {No notifications} one {# notification} other {# notifications}}"
-/>
-```
-
-Use `LanguageSelector` component from @packages/ui/src/makerkit/language-selector.tsx:
-
-```tsx
-import { LanguageSelector } from '@kit/ui/language-selector';
-
-<LanguageSelector />;
 ```
 
 Adding new languages:
 
 1. Add language code to @apps/web/lib/i18n/i18n.settings.ts
 2. Create translation files in @apps/web/public/locales/[new-language]/
-3. Copy structure from English files as template
+3. Copy structure from English files
 
-Adding new namespaces:
+Translation files: @apps/web/public/locales/<locale>/<namespace>.json
 
-1. Add namespace to `defaultI18nNamespaces` in @apps/web/lib/i18n/i18n.settings.ts
-2. Create corresponding translation files for all supported languages
-
-Translation files located in @apps/web/public/locales/<locale>/<namespace>.json:
-
-- Common translations: @apps/web/public/locales/en/common.json
-- Auth translations: @apps/web/public/locales/en/auth.json
-- Team translations: @apps/web/public/locales/en/teams.json
-
-## Security Guidelines
+## Security Guidelines 🛡️
 
 ### Authentication & Authorization
 
 - Authentication enforced by middleware
-- Authorization typically handled by RLS at database level, unless using the admin client
-- For rare admin client usage, enforce both manually
-- User authentication helper: @apps/web/lib/server/require-user-in-server-component.ts if required or to obtain the authed user
+- Authorization handled by RLS at database level
+- Avoid defensive code - use RLS instead
+- For admin client usage, enforce both authentication and authorization
 
 ### Data Passing
 
 - **Never pass sensitive data** to Client Components
-- **Never expose server environment variables** to client (unless `NEXT_PUBLIC_`)
-- Always validate user input before processing
+- **Never expose server environment variables** to client (unless prefixed with NEXT_PUBLIC)
+- Always validate user input
 
 ### OTP for Sensitive Operations
 
-Use one-time tokens from @packages/otp/src/api/index.ts for destructive operations:
+Use one-time tokens from @packages/otp/src/api/index.ts:
 
 ```tsx
 import { VerifyOtpForm } from '@kit/otp/components';
@@ -361,8 +501,6 @@ import { VerifyOtpForm } from '@kit/otp/components';
 />;
 ```
 
-OTP schema and functions: @apps/web/supabase/schemas/12-one-time-tokens.sql
-
 ### Super Admin Protection
 
 For admin routes, use `AdminGuard` from @packages/features/admin/src/components/admin-guard.tsx:
@@ -373,35 +511,7 @@ import { AdminGuard } from '@kit/admin/components/admin-guard';
 export default AdminGuard(AdminPageComponent);
 ```
 
-For admin server actions, use `adminAction` wrapper:
-
-```tsx
-import { adminAction } from '@kit/admin';
-
-export const yourAdminAction = adminAction(
-  enhanceAction(
-    async (data) => {
-      // Action implementation
-    },
-    { schema: YourActionSchema },
-  ),
-);
-```
-
-Admin service security pattern:
-
-```typescript
-private async assertUserIsNotCurrentSuperAdmin(targetId: string) {
-  const { data } = await this.client.auth.getUser();
-  const currentUserId = data.user?.id;
-
-  if (currentUserId === targetId) {
-    throw new Error('Cannot perform destructive action on your own account');
-  }
-}
-```
-
-## UI Components
+## UI Components 🎨
 
 ### Core UI Library
 
@@ -410,40 +520,23 @@ Import from @packages/ui/src/:
 ```tsx
 // Shadcn components
 import { Button } from '@kit/ui/button';
-// @packages/ui/src/shadcn/button.tsx
 import { Card } from '@kit/ui/card';
-// @packages/ui/src/shadcn/sonner.tsx
-
 // Makerkit components
 import { If } from '@kit/ui/if';
-// @packages/ui/src/makerkit/trans.tsx
 import { ProfileAvatar } from '@kit/ui/profile-avatar';
-// @packages/ui/src/shadcn/card.tsx
 import { toast } from '@kit/ui/sonner';
-// @packages/ui/src/makerkit/if.tsx
 import { Trans } from '@kit/ui/trans';
-
-// @packages/ui/src/makerkit/profile-avatar.tsx
 ```
-
-### Key Component Categories
-
-- **Forms**: Form components in @packages/ui/src/shadcn/form.tsx
-- **Navigation**: Navigation menu in @packages/ui/src/shadcn/navigation-menu.tsx
-- **Data Display**: Data table in @packages/ui/src/makerkit/data-table.tsx
-- **Marketing**: Marketing components in @packages/ui/src/makerkit/marketing/
 
 ### Styling
 
-- Use Tailwind CSS with semantic classes
-- Prefer `bg-background`, `text-muted-foreground` over fixed colors
-- Use `cn()` utility from @packages/ui/src/lib/utils.ts for class merging
+- Use Tailwind CSS v4 with semantic classes
+- Prefer Shadcn-ui classes like `bg-background`, `text-muted-foreground`
+- Use `cn()` utility from @kit/ui/cn for class merging
 
-## Workspace Contexts
+## Workspace Contexts 🏢
 
-### Personal Account Context (`/home/(user)`)
-
-Use hook from `packages/features/accounts/src/hooks/use-user-workspace.ts`:
+### Personal Account Context (@apps/web/app/home/(user))
 
 ```tsx
 import { useUserWorkspace } from '@kit/accounts/hooks/use-user-workspace';
@@ -454,11 +547,9 @@ function PersonalComponent() {
 }
 ```
 
-Context provider: `packages/features/accounts/src/components/user-workspace-context-provider.tsx`
+Context provider: @packages/features/accounts/src/components/user-workspace-context-provider.tsx
 
-### Team Account Context (`/home/[account]`)
-
-Use hook from `packages/features/team-accounts/src/hooks/use-team-account-workspace.ts`:
+### Team Account Context (@apps/web/app/home/[account])
 
 ```tsx
 import { useTeamAccountWorkspace } from '@kit/team-accounts/hooks/use-team-account-workspace';
@@ -469,89 +560,59 @@ function TeamComponent() {
 }
 ```
 
-Context provider: `packages/features/team-accounts/src/components/team-account-workspace-context-provider.tsx`
+Context provider: @packages/features/team-accounts/src/components/team-account-workspace-context-provider.tsx
 
-## Error Handling & Logging
+## Error Handling & Logging 📊
 
 ### Structured Logging
 
-Use logger from `packages/shared/src/logger/logger.ts`:
+Use logger from @packages/shared/src/logger/logger.ts:
 
 ```typescript
 import { getLogger } from '@kit/shared/logger';
 
-const logger = await getLogger();
-const ctx = { name: 'myOperation', userId: user.id };
+async function myServerAction() {
+  const logger = await getLogger();
+  const ctx = { name: 'myOperation', userId: user.id };
 
-logger.info(ctx, 'Operation started');
-// ... operation
-logger.error({ ...ctx, error }, 'Operation failed');
-```
-
-### Error Boundaries
-
-Use proper error handling with meaningful user messages:
-
-```tsx
-try {
-  await operation();
-} catch (error) {
-  logger.error({ error, context }, 'Operation failed');
-  return { error: 'Unable to complete operation' }; // Generic message
+  try {
+    logger.info(ctx, 'Operation started');
+    // ...
+  } catch (error) {
+    logger.error({ ...ctx, error }, 'Operation failed');
+    // handle error
+  }
 }
 ```
-
-## Feature Development Workflow
-
-### Creating New Pages
-
-1. Create page component in appropriate route group
-2. Add `withI18n()` HOC from `apps/web/lib/i18n/with-i18n.tsx`
-3. Implement `generateMetadata()` for SEO
-4. Add loading state with `loading.tsx`
-5. Create components in `_components/` directory
-6. Add server utilities in `_lib/server/`
-
-Example page structure:
-
-- Marketing page: `apps/web/app/(marketing)/pricing/page.tsx`
-- Dashboard page: `apps/web/app/home/(user)/page.tsx`
-- Team page: `apps/web/app/home/[account]/members/page.tsx`
-
-### Permission Patterns
-
-- Check permissions before data operations
-- Guard premium features with `public.has_active_subscription`
-- Use role hierarchy for member management
-- Primary account owners have special privileges
-
-Permission helpers in database: `apps/web/supabase/schemas/06-roles-permissions.sql`
-
-### Database Development
-
-1. Create schema file: `apps/web/supabase/schemas/<number>-<name>.sql`
-2. Enable RLS and create policies
-3. Generate migration: `pnpm --filter web supabase:db:diff`
-4. Reset database: `pnpm supabase:web:reset`
-5. Generate types: `pnpm supabase:web:typegen`
 
 ## API Services
 
 ### Account Services
 
-- Personal accounts API: `packages/features/accounts/src/server/api.ts`
-- Team accounts API: `packages/features/team-accounts/src/server/api.ts`
-- Admin service: `packages/features/admin/src/lib/server/services/admin.service.ts`
+- Personal accounts API: @packages/features/accounts/src/server/api.ts
+- Team accounts API: @packages/features/team-accounts/src/server/api.ts
+- Admin service: @packages/features/admin/src/lib/server/services/admin.service.ts
 
 ### Billing Services
 
-- Personal billing: `apps/web/app/home/(user)/billing/_lib/server/user-billing.service.ts`
-- Team billing: `apps/web/app/home/[account]/billing/_lib/server/team-billing.service.ts`
-- Per-seat billing: `packages/features/team-accounts/src/server/services/account-per-seat-billing.service.ts`
+- Personal billing: @apps/web/app/home/(user)/billing/\_lib/server/user-billing.service.ts
+- Team billing: @apps/web/app/home/[account]/billing/\_lib/server/team-billing.service.ts
+- Per-seat billing: @packages/features/team-accounts/src/server/services/account-per-seat-billing.service.ts
 
 ## Key Configuration Files
 
 - **Feature flags**: @apps/web/config/feature-flags.config.ts
 - **i18n settings**: @apps/web/lib/i18n/i18n.settings.ts
-- **Supabase local config**: @apps/web/supabase/config.toml@
-- **Middleware**: @apps/web/middleware.ts`
+- **Supabase config**: @apps/web/supabase/config.toml
+- **Middleware**: @apps/web/middleware.ts
+
+## Quick Reference Checklist ✅
+
+### Development Workflow
+
+- [ ] Enable RLS on new tables
+- [ ] Generate TypeScript types after schema changes and infer types from these
+- [ ] Implement proper error handling with logging
+- [ ] Use Zod schemas for parsing all user input (including cookies, query params, etc.)
+- [ ] Add testing attributes to interactive elements
+- [ ] Validate permissions before sensitive operations
