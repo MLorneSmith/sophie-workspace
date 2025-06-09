@@ -1,5 +1,7 @@
 import { cache } from 'react';
 
+import type { Metadata } from 'next';
+
 import { createCmsClient } from '@kit/cms';
 import { getLogger } from '@kit/shared/logger';
 import { If } from '@kit/ui/if';
@@ -17,12 +19,27 @@ interface BlogPageProps {
   searchParams: Promise<{ page?: string }>;
 }
 
-export const generateMetadata = async () => {
-  const { t } = await createI18nServerInstance();
+const BLOG_POSTS_PER_PAGE = 10;
+
+export const generateMetadata = async (
+  props: BlogPageProps,
+): Promise<Metadata> => {
+  const { t, resolvedLanguage } = await createI18nServerInstance();
+  const searchParams = await props.searchParams;
+  const limit = BLOG_POSTS_PER_PAGE;
+
+  const page = searchParams.page ? parseInt(searchParams.page) : 0;
+  const offset = page * limit;
+
+  const { total } = await getContentItems(resolvedLanguage, limit, offset);
 
   return {
     title: t('marketing:blog'),
     description: t('marketing:blogSubtitle'),
+    pagination: {
+      previous: page > 0 ? `/blog?page=${page - 1}` : undefined,
+      next: offset + limit < total ? `/blog?page=${page + 1}` : undefined,
+    },
   };
 };
 
@@ -53,8 +70,8 @@ async function BlogPage(props: BlogPageProps) {
   const { t, resolvedLanguage: language } = await createI18nServerInstance();
   const searchParams = await props.searchParams;
 
+  const limit = BLOG_POSTS_PER_PAGE;
   const page = searchParams.page ? parseInt(searchParams.page) : 0;
-  const limit = 10;
   const offset = page * limit;
 
   const { total, items: posts } = await getContentItems(
