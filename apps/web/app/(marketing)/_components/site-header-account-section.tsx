@@ -21,6 +21,12 @@ const ModeToggle = dynamic(() =>
   })),
 );
 
+const MobileModeToggle = dynamic(() =>
+  import('@kit/ui/mobile-mode-toggle').then((mod) => ({
+    default: mod.MobileModeToggle,
+  })),
+);
+
 const paths = {
   home: pathsConfig.app.home,
 };
@@ -54,6 +60,12 @@ function AuthButtons() {
       <div className={'hidden md:flex'}>
         <If condition={features.enableThemeToggle}>
           <ModeToggle />
+        </If>
+      </div>
+
+      <div className={'md:hidden'}>
+        <If condition={features.enableThemeToggle}>
+          <MobileModeToggle />
         </If>
       </div>
 

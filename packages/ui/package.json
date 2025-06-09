@@ -119,6 +119,7 @@
     "./loading-overlay": "./src/makerkit/loading-overlay.tsx",
     "./profile-avatar": "./src/makerkit/profile-avatar.tsx",
     "./mode-toggle": "./src/makerkit/mode-toggle.tsx",
+    "./mobile-mode-toggle": "./src/makerkit/mobile-mode-toggle.tsx",
     "./enhanced-data-table": "./src/makerkit/data-table.tsx",
     "./language-selector": "./src/makerkit/language-selector.tsx",
     "./stepper": "./src/makerkit/stepper.tsx",
