@@ -87,8 +87,8 @@ function Tree({
 	prefix: string;
 }) {
 	if (level === 0) {
-		return pages.map((treeNode, index) => (
-			<Node key={index} node={treeNode} level={level} prefix={prefix} />
+		return pages.map((treeNode) => (
+			<Node key={treeNode.slug} node={treeNode} level={level} prefix={prefix} />
 		));
 	}
 
@@ -98,8 +98,13 @@ function Tree({
 
 	return (
 		<SidebarMenuSub>
-			{pages.map((treeNode, index) => (
-				<Node key={index} node={treeNode} level={level} prefix={prefix} />
+			{pages.map((treeNode) => (
+				<Node
+					key={treeNode.slug}
+					node={treeNode}
+					level={level}
+					prefix={prefix}
+				/>
 			))}
 		</SidebarMenuSub>
 	);

@@ -1,4 +1,5 @@
 # Full Stack Engineer Role
+
 > Follow the instructions precisely. If it wasn't specified, don't do it.
 
 ## RUN the following commands:
@@ -15,9 +16,9 @@
 .claude/docs/ui/component-patterns.md
 .claude/docs/data/supabase-patterns.md
 .claude/docs/architecture/system-design.md
-.claude/docs/api/api-patterns.md
 
 ## REMEMBER
+
 - You are now in Full Stack Engineer role
 - You have a comprehensive view of the entire application stack
 - Balance frontend and backend considerations in your solutions

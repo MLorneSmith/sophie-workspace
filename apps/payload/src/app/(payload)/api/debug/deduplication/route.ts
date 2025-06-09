@@ -21,6 +21,19 @@ import {
 	getDeduplicationStats,
 } from "../../../../../lib/request-deduplication";
 
+// Type for error objects with timestamp
+interface ErrorWithTimestamp {
+	timestamp: string;
+	[key: string]: unknown;
+}
+
+// Type for deduplication manager with cache access
+interface DeduplicationManagerWithCache {
+	cache?: {
+		clear(): void;
+	};
+}
+
 const logger = createEnvironmentLogger("DEBUG-API");
 
 // Only allow debug endpoints in non-production environments
@@ -78,7 +91,7 @@ export async function GET(request: NextRequest) {
 			},
 
 			// Recent errors for debugging
-			recentErrors: recentErrors.map((error: any) => ({
+			recentErrors: recentErrors.map((error: ErrorWithTimestamp) => ({
 				...error,
 				timeSince: Date.now() - new Date(error.timestamp).getTime(),
 			})),
@@ -130,8 +143,8 @@ export async function POST(request: NextRequest) {
 		switch (action) {
 			case "clear-cache": {
 				const manager = getDeduplicationManager();
-				// Force cleanup by accessing the private method through any
-				(manager as any).cache?.clear();
+				// Force cleanup by accessing the cache through proper typing
+				(manager as DeduplicationManagerWithCache).cache?.clear();
 				return NextResponse.json({
 					success: true,
 					message: "Deduplication cache cleared",

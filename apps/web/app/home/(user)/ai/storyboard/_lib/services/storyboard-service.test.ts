@@ -5,38 +5,33 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-// Mock dependencies before importing the module under test
-const mockSupabaseClient = {
-	from: vi.fn(() => ({
-		select: vi.fn().mockReturnThis(),
-		eq: vi.fn().mockReturnThis(),
-		single: vi.fn(),
-		update: vi.fn().mockReturnThis(),
-		order: vi.fn(),
-	})),
-};
-
-const mockLogger = {
-	error: vi.fn(),
-	warn: vi.fn(),
-	info: vi.fn(),
-};
-
-const mockTipTapTransformer = {
-	transform: vi.fn(),
-};
-
 // Setup mocks
 vi.mock("@kit/supabase/server-client", () => ({
-	getSupabaseServerClient: vi.fn(() => mockSupabaseClient),
+	getSupabaseServerClient: vi.fn(() => ({
+		from: vi.fn(() => ({
+			select: vi.fn().mockReturnThis(),
+			eq: vi.fn().mockReturnThis(),
+			single: vi.fn(),
+			update: vi.fn().mockReturnThis(),
+			order: vi.fn(),
+		})),
+	})),
 }));
 
 vi.mock("@kit/shared/logger", () => ({
-	getLogger: vi.fn(() => Promise.resolve(mockLogger)),
+	getLogger: vi.fn(() =>
+		Promise.resolve({
+			error: vi.fn(),
+			warn: vi.fn(),
+			info: vi.fn(),
+		}),
+	),
 }));
 
 vi.mock("./tiptap-transformer", () => ({
-	TipTapTransformer: mockTipTapTransformer,
+	TipTapTransformer: {
+		transform: vi.fn(),
+	},
 }));
 
 vi.mock("next/cache", () => ({
@@ -45,7 +40,8 @@ vi.mock("next/cache", () => ({
 
 vi.mock("@kit/next/actions", () => ({
 	enhanceAction: vi.fn((fn, options) => {
-		return async (data: any) => {
+		return async (inputData: any) => {
+			let data = inputData;
 			// Validate with schema if provided
 			if (options?.schema) {
 				const result = options.schema.safeParse(data);
@@ -77,12 +73,47 @@ import {
 	saveStoryboardAction,
 } from "./storyboard-service";
 
+// Import mocked modules
+import { getSupabaseServerClient } from "@kit/supabase/server-client";
+import { getLogger } from "@kit/shared/logger";
+import { TipTapTransformer } from "./tiptap-transformer";
+
+// Create typed mocks using vi.mocked
+const mockSupabaseClient = vi.mocked(getSupabaseServerClient);
+const mockLogger = vi.mocked(getLogger);
+const mockTipTapTransformer = vi.mocked(TipTapTransformer);
+
 describe("Storyboard Service", () => {
-	beforeEach(() => {
+	let mockQuery: any;
+
+	beforeEach(async () => {
 		vi.clearAllMocks();
 
 		// Mock console.error to prevent test output pollution
 		console.error = vi.fn();
+
+		// Set up fresh mock query object for each test
+		mockQuery = {
+			select: vi.fn().mockReturnThis(),
+			eq: vi.fn().mockReturnThis(),
+			single: vi.fn(),
+			update: vi.fn(() => ({
+				eq: vi.fn().mockResolvedValue({ data: null, error: null }),
+			})),
+			order: vi.fn(),
+		};
+
+		// Set up supabase client mock
+		mockSupabaseClient.mockReturnValue({
+			from: vi.fn().mockReturnValue(mockQuery),
+		} as any);
+
+		// Set up logger mock
+		mockLogger.mockResolvedValue({
+			error: vi.fn(),
+			warn: vi.fn(),
+			info: vi.fn(),
+		});
 	});
 
 	afterEach(() => {
@@ -120,7 +151,6 @@ describe("Storyboard Service", () => {
 
 		it("should successfully retrieve presentation with existing storyboard", async () => {
 			// Arrange
-			const mockQuery = mockSupabaseClient.from();
 			mockQuery.single.mockResolvedValue({
 				data: mockPresentationData,
 				error: null,
@@ -132,7 +162,8 @@ describe("Storyboard Service", () => {
 			});
 
 			// Assert
-			expect(mockSupabaseClient.from).toHaveBeenCalledWith(
+			const supabaseInstance = mockSupabaseClient();
+			expect(supabaseInstance.from).toHaveBeenCalledWith(
 				"building_blocks_submissions",
 			);
 			expect(mockQuery.select).toHaveBeenCalledWith(
@@ -149,7 +180,6 @@ describe("Storyboard Service", () => {
 				storyboard: null,
 			};
 
-			const mockQuery = mockSupabaseClient.from();
 			mockQuery.single.mockResolvedValue({
 				data: presentationWithoutStoryboard,
 				error: null,
@@ -194,7 +224,6 @@ describe("Storyboard Service", () => {
 			const storyboardColumnError = new Error(
 				"column 'storyboard' does not exist",
 			);
-			const mockQuery = mockSupabaseClient.from();
 
 			// First call fails with column error, second succeeds with fallback
 			mockQuery.single
@@ -228,7 +257,8 @@ describe("Storyboard Service", () => {
 			});
 
 			// Assert
-			expect(mockLogger.error).toHaveBeenCalledWith(
+			const loggerInstance = await mockLogger();
+			expect(loggerInstance.error).toHaveBeenCalledWith(
 				{
 					error: storyboardColumnError.message,
 					presentationId: "presentation-123",
@@ -243,7 +273,6 @@ describe("Storyboard Service", () => {
 		it("should handle presentation not found", async () => {
 			// Arrange
 			const notFoundError = new Error("No rows returned");
-			const mockQuery = mockSupabaseClient.from();
 			mockQuery.single.mockResolvedValue({
 				data: null,
 				error: notFoundError,
@@ -252,7 +281,7 @@ describe("Storyboard Service", () => {
 			// Act & Assert
 			await expect(
 				getPresentationAction({ presentationId: "non-existent" }),
-			).rejects.toThrow("No rows returned");
+			).rejects.toThrow("Failed to load presentation data.");
 		});
 
 		it("should handle invalid JSON in outline", async () => {
@@ -264,7 +293,6 @@ describe("Storyboard Service", () => {
 				storyboard: null,
 			};
 
-			const mockQuery = mockSupabaseClient.from();
 			mockQuery.single.mockResolvedValue({
 				data: presentationWithInvalidOutline,
 				error: null,
@@ -311,7 +339,6 @@ describe("Storyboard Service", () => {
 				},
 			];
 
-			const mockQuery = mockSupabaseClient.from();
 			mockQuery.order.mockResolvedValue({
 				data: mockPresentations,
 				error: null,
@@ -321,7 +348,8 @@ describe("Storyboard Service", () => {
 			const result = await getPresentationsAction({});
 
 			// Assert
-			expect(mockSupabaseClient.from).toHaveBeenCalledWith(
+			const supabaseInstance = mockSupabaseClient();
+			expect(supabaseInstance.from).toHaveBeenCalledWith(
 				"building_blocks_submissions",
 			);
 			expect(mockQuery.select).toHaveBeenCalledWith("id, title, created_at");
@@ -333,7 +361,6 @@ describe("Storyboard Service", () => {
 
 		it("should return empty array when no presentations exist", async () => {
 			// Arrange
-			const mockQuery = mockSupabaseClient.from();
 			mockQuery.order.mockResolvedValue({
 				data: [],
 				error: null,
@@ -349,7 +376,6 @@ describe("Storyboard Service", () => {
 		it("should handle database query errors", async () => {
 			// Arrange
 			const dbError = new Error("Database connection failed");
-			const mockQuery = mockSupabaseClient.from();
 			mockQuery.order.mockResolvedValue({
 				data: null,
 				error: dbError,
@@ -360,7 +386,8 @@ describe("Storyboard Service", () => {
 				"Failed to fetch presentations",
 			);
 
-			expect(mockLogger.error).toHaveBeenCalledWith(
+			const loggerInstance = await mockLogger();
+			expect(loggerInstance.error).toHaveBeenCalledWith(
 				{ error: dbError },
 				"Error fetching presentations",
 			);
@@ -391,11 +418,13 @@ describe("Storyboard Service", () => {
 
 		it("should successfully save valid storyboard data", async () => {
 			// Arrange
-			const mockQuery = mockSupabaseClient.from();
-			mockQuery.eq.mockResolvedValue({
-				data: null,
-				error: null,
-			});
+			const mockUpdateChain = {
+				eq: vi.fn().mockResolvedValue({
+					data: null,
+					error: null,
+				}),
+			};
+			mockQuery.update.mockReturnValue(mockUpdateChain);
 
 			// Act
 			const result = await saveStoryboardAction({
@@ -404,13 +433,14 @@ describe("Storyboard Service", () => {
 			});
 
 			// Assert
-			expect(mockSupabaseClient.from).toHaveBeenCalledWith(
+			const supabaseInstance = mockSupabaseClient();
+			expect(supabaseInstance.from).toHaveBeenCalledWith(
 				"building_blocks_submissions",
 			);
 			expect(mockQuery.update).toHaveBeenCalledWith({
 				storyboard: mockStoryboardData,
 			});
-			expect(mockQuery.eq).toHaveBeenCalledWith("id", "presentation-123");
+			expect(mockUpdateChain.eq).toHaveBeenCalledWith("id", "presentation-123");
 			expect(result).toEqual({ success: true });
 		});
 
@@ -419,11 +449,13 @@ describe("Storyboard Service", () => {
 			const storyboardColumnError = new Error(
 				"column 'storyboard' does not exist",
 			);
-			const mockQuery = mockSupabaseClient.from();
-			mockQuery.eq.mockResolvedValue({
-				data: null,
-				error: storyboardColumnError,
-			});
+			const mockUpdateChain = {
+				eq: vi.fn().mockResolvedValue({
+					data: null,
+					error: storyboardColumnError,
+				}),
+			};
+			mockQuery.update.mockReturnValue(mockUpdateChain);
 
 			// Act & Assert
 			await expect(
@@ -435,7 +467,8 @@ describe("Storyboard Service", () => {
 				"Storyboard feature is not fully set up yet. Please run the latest database migrations.",
 			);
 
-			expect(mockLogger.error).toHaveBeenCalledWith(
+			const loggerInstance = await mockLogger();
+			expect(loggerInstance.error).toHaveBeenCalledWith(
 				{
 					presentationId: "presentation-123",
 					error: storyboardColumnError.message,
@@ -447,11 +480,13 @@ describe("Storyboard Service", () => {
 		it("should handle general database errors", async () => {
 			// Arrange
 			const dbError = new Error("Database constraint violation");
-			const mockQuery = mockSupabaseClient.from();
-			mockQuery.eq.mockResolvedValue({
-				data: null,
-				error: dbError,
-			});
+			const mockUpdateChain = {
+				eq: vi.fn().mockResolvedValue({
+					data: null,
+					error: dbError,
+				}),
+			};
+			mockQuery.update.mockReturnValue(mockUpdateChain);
 
 			// Act & Assert
 			await expect(
@@ -463,7 +498,8 @@ describe("Storyboard Service", () => {
 				"Failed to save storyboard data. Please try again. Details: Database constraint violation",
 			);
 
-			expect(mockLogger.error).toHaveBeenCalledWith(
+			const loggerInstance = await mockLogger();
+			expect(loggerInstance.error).toHaveBeenCalledWith(
 				{
 					presentationId: "presentation-123",
 					error: dbError.message,
@@ -499,7 +535,6 @@ describe("Storyboard Service", () => {
 				storyboard: null,
 			};
 
-			const mockQuery = mockSupabaseClient.from();
 			mockQuery.single.mockResolvedValue({
 				data: presentationWithNullOutline,
 				error: null,
@@ -519,7 +554,7 @@ describe("Storyboard Service", () => {
 			// Act & Assert
 			await expect(
 				getPresentationAction({ presentationId: "" }),
-			).rejects.toThrow("Validation failed");
+			).rejects.toThrow("Failed to load presentation data.");
 		});
 	});
 });

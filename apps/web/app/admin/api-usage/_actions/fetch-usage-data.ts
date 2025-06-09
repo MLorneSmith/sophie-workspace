@@ -181,11 +181,11 @@ function groupByDay(
 	logs: any[],
 ): { date: string; cost: number; tokens: number }[] {
 	const dayMap = new Map<string, { cost: number; tokens: number }>();
-	const today = new Date().toISOString().split("T")[0];
+	const today = new Date().toISOString().split("T")[0] as string;
 
 	for (const log of logs) {
 		// Safely extract date, handling null
-		let date = today;
+		let date: string = today;
 
 		if (
 			log &&
@@ -194,7 +194,8 @@ function groupByDay(
 			log.request_timestamp !== undefined
 		) {
 			try {
-				date = new Date(log.request_timestamp).toISOString().split("T")[0];
+				const isoString = new Date(log.request_timestamp).toISOString();
+				date = isoString.split("T")[0] as string;
 			} catch (e) {
 				console.error("Invalid timestamp format:", log.request_timestamp);
 			}
@@ -275,9 +276,11 @@ function groupByField(
 		const tokensValue =
 			typeof log.total_tokens === "number" ? log.total_tokens : 0;
 
-		if (groups[key]) {
-			groups[key].cost += costValue;
-			groups[key].tokens += tokensValue;
+		// Safe to access since we created the entry above if it didn't exist
+		const groupEntry = groups[key];
+		if (groupEntry) {
+			groupEntry.cost += costValue;
+			groupEntry.tokens += tokensValue;
 		}
 	}
 

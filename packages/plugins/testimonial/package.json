@@ -25,7 +25,7 @@
 		"@kit/tsconfig": "workspace:*",
 		"@kit/ui": "workspace:*",
 		"@makerkit/data-loader-supabase-nextjs": "^1.2.5",
-		"@supabase/supabase-js": "2.49.10",
+		"@supabase/supabase-js": "2.50.0",
 		"@tanstack/react-query": "5.80.6",
 		"@tanstack/react-table": "^8.21.3",
 		"@types/react": "19.1.4",

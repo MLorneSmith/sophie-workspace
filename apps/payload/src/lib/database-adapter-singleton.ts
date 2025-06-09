@@ -1,11 +1,20 @@
 import { postgresAdapter } from "@payloadcms/db-postgres";
 import type { PostgresAdapterArgs } from "@payloadcms/db-postgres";
+// Type for log data - allows objects, arrays, primitives, but excludes functions
+type LogData =
+	| Record<string, unknown>
+	| string
+	| number
+	| boolean
+	| null
+	| undefined;
+
 // Simple logger interface for database adapter
 interface SimpleLogger {
-	debug(message: string, data?: any): void;
-	info(message: string, data?: any): void;
-	warn(message: string, data?: any): void;
-	error(message: string, data?: any): void;
+	debug(message: string, data?: LogData): void;
+	info(message: string, data?: LogData): void;
+	warn(message: string, data?: LogData): void;
+	error(message: string, data?: LogData): void;
 }
 
 // Create a simple console-based logger
@@ -17,7 +26,7 @@ function createSimpleLogger(serviceName: string): SimpleLogger {
 	const currentLevel = levels[logLevel as keyof typeof levels] ?? 1;
 
 	return {
-		debug(message: string, data?: any) {
+		debug(message: string, data?: LogData) {
 			if (currentLevel <= 0) {
 				const timestamp = new Date().toISOString();
 				const prefix = `[${serviceName}-DEBUG] ${timestamp}`;
@@ -26,7 +35,7 @@ function createSimpleLogger(serviceName: string): SimpleLogger {
 					: console.log(`${prefix} ${message}`);
 			}
 		},
-		info(message: string, data?: any) {
+		info(message: string, data?: LogData) {
 			if (currentLevel <= 1) {
 				const timestamp = new Date().toISOString();
 				const prefix = `[${serviceName}-INFO] ${timestamp}`;
@@ -35,7 +44,7 @@ function createSimpleLogger(serviceName: string): SimpleLogger {
 					: console.log(`${prefix} ${message}`);
 			}
 		},
-		warn(message: string, data?: any) {
+		warn(message: string, data?: LogData) {
 			if (currentLevel <= 2) {
 				const timestamp = new Date().toISOString();
 				const prefix = `[${serviceName}-WARN] ${timestamp}`;
@@ -44,7 +53,7 @@ function createSimpleLogger(serviceName: string): SimpleLogger {
 					: console.warn(`${prefix} ${message}`);
 			}
 		},
-		error(message: string, data?: any) {
+		error(message: string, data?: LogData) {
 			const timestamp = new Date().toISOString();
 			const prefix = `[${serviceName}-ERROR] ${timestamp}`;
 			data
@@ -430,7 +439,7 @@ class DatabaseAdapterManager {
 	private log(
 		message: string,
 		level: "debug" | "info" | "warn" | "error" = "info",
-		data?: any,
+		data?: LogData,
 	): void {
 		this.logger[level](message, data);
 	}

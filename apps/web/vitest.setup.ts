@@ -3,7 +3,7 @@
  * Configures testing environment, mocks, and global test utilities
  */
 
-import { vi } from "vitest";
+import { vi, beforeEach } from "vitest";
 import "@testing-library/jest-dom";
 
 // Mock Next.js router
@@ -101,7 +101,7 @@ vi.mock("next/headers", () => ({
 // Mock environment variables
 process.env.NEXT_PUBLIC_SUPABASE_URL = "http://localhost:54321";
 process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = "test-anon-key";
-process.env.NODE_ENV = "test";
+// NODE_ENV is set in vitest.config.ts via define option
 
 // Mock fetch for API testing
 global.fetch = vi.fn();

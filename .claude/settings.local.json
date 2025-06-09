@@ -61,7 +61,9 @@
 			"Bash(pnpm install:*)",
 			"Bash(pnpm list:*)",
 			"Bash(pnpm supabase:web:stop:*)",
-			"Bash(pnpm supabase:web:reset:*)"
+			"Bash(pnpm supabase:web:reset:*)",
+			"Bash(pnpm --filter web vitest run:*)",
+			"Bash(pnpm --filter web test:run)"
 		],
 		"deny": []
 	},

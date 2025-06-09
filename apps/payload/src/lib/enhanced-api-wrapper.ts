@@ -11,6 +11,18 @@ import { type NextRequest, NextResponse } from "next/server";
 import type { Payload } from "payload";
 import { withRequestDeduplication } from "./request-deduplication";
 
+// Type for log data - consistent with database adapter
+type LogData =
+	| Record<string, unknown>
+	| string
+	| number
+	| boolean
+	| null
+	| undefined;
+
+// Type for Payload API route arguments (commonly params like { collection: string })
+type PayloadRouteArgs = Record<string, string | string[]> | undefined;
+
 interface APIMetrics {
 	totalRequests: number;
 	successfulRequests: number;
@@ -75,10 +87,16 @@ class EnhancedAPIManager {
 	 * Create an enhanced wrapper for Payload API handlers
 	 */
 	createEnhancedHandler(
-		originalHandler: (request: Request, args: any) => Promise<Response>,
+		originalHandler: (
+			request: Request,
+			args: PayloadRouteArgs,
+		) => Promise<Response>,
 		method: string,
 	) {
-		return async (request: NextRequest, args?: any): Promise<NextResponse> => {
+		return async (
+			request: NextRequest,
+			args?: PayloadRouteArgs,
+		): Promise<NextResponse> => {
 			const requestId = this.generateRequestId();
 			const startTime = Date.now();
 			const clientInfo = this.extractClientInfo(request);
@@ -307,7 +325,7 @@ class EnhancedAPIManager {
 	private log(
 		message: string,
 		level: "debug" | "info" | "warn" | "error" = "info",
-		data?: any,
+		data?: LogData,
 	): void {
 		this.logger[level](message, data);
 	}
@@ -344,7 +362,7 @@ import {
 /**
  * Create enhanced versions of Payload API handlers
  */
-export function createEnhancedPayloadHandlers(config: any) {
+export function createEnhancedPayloadHandlers(config: Payload) {
 	const manager = getEnhancedAPIManager();
 
 	// Create enhanced handlers

@@ -173,12 +173,24 @@ function groupLogsByDay(
 		if (!log.request_timestamp) {
 			continue; // Skip logs without a timestamp
 		}
-		const date = new Date(log.request_timestamp).toISOString().split("T")[0]; // Get YYYY-MM-DD
+
+		let date: string;
+		try {
+			date = new Date(log.request_timestamp)
+				.toISOString()
+				.split("T")[0] as string; // Get YYYY-MM-DD
+		} catch (error) {
+			console.error("Invalid timestamp:", log.request_timestamp);
+			continue; // Skip logs with invalid timestamps
+		}
 		if (!dayMap[date]) {
 			dayMap[date] = { cost: 0, tokens: 0 };
 		}
-		dayMap[date].cost += log.cost || 0;
-		dayMap[date].tokens += log.total_tokens || 0;
+		const dayEntry = dayMap[date];
+		if (dayEntry) {
+			dayEntry.cost += log.cost || 0;
+			dayEntry.tokens += log.total_tokens || 0;
+		}
 	}
 
 	// Convert to array and sort by date
