@@ -29,13 +29,13 @@ export function createCloudflareGenerator(plop: PlopTypes.NodePlopAPI) {
 				type: "modify",
 				path: "apps/web/next.config.mjs",
 				async transform(content) {
-					content += `
+					const updatedContent = `${content}
            import { initOpenNextCloudflareForDev } from '@opennextjs/cloudflare';
 
           void initOpenNextCloudflareForDev();
          `;
 
-					return content;
+					return updatedContent;
 				},
 			},
 			{
@@ -57,7 +57,10 @@ export function createCloudflareGenerator(plop: PlopTypes.NodePlopAPI) {
 
 					for (const dep of deps) {
 						const version = await getVersion(dep);
-						pkg.devDependencies![dep] = `^${version}`;
+						if (!pkg.devDependencies) {
+							pkg.devDependencies = {};
+						}
+						pkg.devDependencies[dep] = `^${version}`;
 					}
 
 					pkg.scripts.preview =

@@ -1,6 +1,6 @@
 "use client";
 
-import {
+import React, {
 	type ReactNode,
 	createContext,
 	useContext,
@@ -20,13 +20,10 @@ type CostTrackingContextType = {
 	isLoading: boolean;
 };
 
-// Create the context with default values
-const CostTrackingContext = createContext<CostTrackingContextType>({
-	sessionCost: 0,
-	sessionId: "",
-	addCost: () => {},
-	isLoading: true,
-});
+// Create the context with undefined as default to enable error detection
+const CostTrackingContext = createContext<CostTrackingContextType | undefined>(
+	undefined,
+);
 
 // Create the provider component
 export function CostTrackingProvider({ children }: { children: ReactNode }) {
@@ -60,7 +57,7 @@ export function CostTrackingProvider({ children }: { children: ReactNode }) {
 		}
 
 		fetchInitialCosts();
-	}, [userQuery.data?.id]);
+	}, [userQuery.data]);
 
 	// Function to add new costs
 	const addCost = (cost: number) => {

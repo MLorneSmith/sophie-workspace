@@ -48,7 +48,7 @@ const TextField: React.FC<TextFieldProps> = ({ label, value, onChange }) => {
 
 // Type guard function to ensure value is a valid object
 const isCallToActionData = (value: unknown): value is CallToActionData => {
-	return typeof value === 'object' && value !== null;
+	return typeof value === "object" && value !== null;
 };
 
 // Helper function to safely get CallToActionData from unknown value
@@ -64,7 +64,7 @@ const getCallToActionData = (value: unknown): CallToActionData => {
  */
 const Field: React.FC<FieldProps> = (props) => {
 	const { path, value, onChange } = props;
-	
+
 	// Get type-safe data from the unknown value
 	const data = getCallToActionData(value);
 

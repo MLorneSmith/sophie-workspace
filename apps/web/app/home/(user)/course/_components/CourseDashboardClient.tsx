@@ -128,6 +128,7 @@ export function CourseDashboardClient({
 	}, [lessonsData]);
 
 	// Filter out lessons 801 and 802 unless course is completed
+	// biome-ignore lint/correctness/useExhaustiveDependencies: lessonProgress is a prop, not an outer scope value
 	useEffect(() => {
 		if (lessons.length > 0) {
 			// Count completed required lessons using our enhanced matching function
@@ -203,7 +204,7 @@ export function CourseDashboardClient({
 				const requiredLessonsWithProgress = lessons.filter(
 					(l) =>
 						REQUIRED_LESSON_NUMBERS.includes(String(l.lesson_number)) &&
-						getLessonCompletionStatus(l.id, l.lesson_number),
+						lessonProgress.find((p) => p.lesson_id === l.id && p.completed_at),
 				);
 
 				// If we have more orphaned progress records than missing required lessons,
@@ -242,7 +243,10 @@ export function CourseDashboardClient({
 			<div>
 				<h1 className="mb-4 text-center text-3xl font-bold">{course.title}</h1>
 				{/* biome-ignore lint/security/noDangerouslySetInnerHtml: Rendering trusted course description from CMS */}
-				<div className="mb-6" dangerouslySetInnerHTML={{ __html: course.description }} />
+				<div
+					className="mb-6"
+					dangerouslySetInnerHTML={{ __html: course.description }}
+				/>
 			</div>
 
 			<CourseProgressBar
@@ -373,7 +377,10 @@ export function CourseDashboardClient({
 					</p>
 					<div className="mt-4 flex justify-end">
 						<Link href="/home/course/certificate">
-							<button className="rounded bg-green-600 px-4 py-2 text-white hover:bg-green-700">
+							<button
+								type="button"
+								className="rounded bg-green-600 px-4 py-2 text-white hover:bg-green-700"
+							>
 								View Certificate
 							</button>
 						</Link>

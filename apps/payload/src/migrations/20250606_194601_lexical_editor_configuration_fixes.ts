@@ -1,13 +1,21 @@
-import { type MigrateUpArgs, type MigrateDownArgs, sql } from '@payloadcms/db-postgres'
+import {
+	type MigrateDownArgs,
+	type MigrateUpArgs,
+	sql,
+} from "@payloadcms/db-postgres";
 
 export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
-  await db.execute(sql`
+	await db.execute(sql`
    ALTER TABLE "payload"."surveys" ADD COLUMN "title" varchar;
-  ALTER TABLE "payload"."_surveys_v" ADD COLUMN "version_title" varchar;`)
+  ALTER TABLE "payload"."_surveys_v" ADD COLUMN "version_title" varchar;`);
 }
 
-export async function down({ db, payload, req }: MigrateDownArgs): Promise<void> {
-  await db.execute(sql`
+export async function down({
+	db,
+	payload,
+	req,
+}: MigrateDownArgs): Promise<void> {
+	await db.execute(sql`
    ALTER TABLE "payload"."surveys" DROP COLUMN IF EXISTS "title";
-  ALTER TABLE "payload"."_surveys_v" DROP COLUMN IF EXISTS "version_title";`)
+  ALTER TABLE "payload"."_surveys_v" DROP COLUMN IF EXISTS "version_title";`);
 }

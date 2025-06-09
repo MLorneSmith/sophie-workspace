@@ -643,6 +643,7 @@ export interface QuizQuestion {
  */
 export interface Survey {
   id: string;
+  title: string;
   /**
    * The URL-friendly identifier for this survey
    */
@@ -1090,6 +1091,7 @@ export interface SurveyQuestionsSelect<T extends boolean = true> {
  * via the `definition` "surveys_select".
  */
 export interface SurveysSelect<T extends boolean = true> {
+  title?: T;
   slug?: T;
   description?: T;
   status?: T;

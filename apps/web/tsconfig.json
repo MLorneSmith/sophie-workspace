@@ -8,15 +8,29 @@
 			"~/components/*": ["./components/*"],
 			"~/lib/*": ["./lib/*"],
 			"@kit/*": ["../../packages/*/src"],
-			"@kit/supabase/server-client": ["../../packages/supabase/src/clients/server-client.ts"],
-			"@kit/supabase/server-admin-client": ["../../packages/supabase/src/clients/server-admin-client.ts"],
-			"@kit/supabase/middleware-client": ["../../packages/supabase/src/clients/middleware-client.ts"],
-			"@kit/supabase/browser-client": ["../../packages/supabase/src/clients/browser-client.ts"],
-			"@kit/supabase/require-user": ["../../packages/supabase/src/require-user.ts"],
+			"@kit/supabase/server-client": [
+				"../../packages/supabase/src/clients/server-client.ts"
+			],
+			"@kit/supabase/server-admin-client": [
+				"../../packages/supabase/src/clients/server-admin-client.ts"
+			],
+			"@kit/supabase/middleware-client": [
+				"../../packages/supabase/src/clients/middleware-client.ts"
+			],
+			"@kit/supabase/browser-client": [
+				"../../packages/supabase/src/clients/browser-client.ts"
+			],
+			"@kit/supabase/require-user": [
+				"../../packages/supabase/src/require-user.ts"
+			],
 			"@kit/next/actions": ["../../packages/next/src/actions"],
 			"@kit/shared/logger": ["../../packages/shared/src/logger"],
-			"@kit/auth/captcha/server": ["../../packages/features/auth/src/captcha/server"],
-			"@kit/auth/captcha/client": ["../../packages/features/auth/src/captcha/client"],
+			"@kit/auth/captcha/server": [
+				"../../packages/features/auth/src/captcha/server"
+			],
+			"@kit/auth/captcha/client": [
+				"../../packages/features/auth/src/captcha/client"
+			],
 			"@kit/payload": ["../../packages/cms/payload/src"],
 			"@kit/payload/renderer": ["../../packages/cms/payload/src/renderer"]
 		},

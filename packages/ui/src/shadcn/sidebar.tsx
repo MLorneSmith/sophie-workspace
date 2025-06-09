@@ -104,7 +104,7 @@ const SidebarProvider: React.FC<
 	// Helper to toggle the sidebar.
 	const toggleSidebar = React.useCallback(() => {
 		return isMobile ? setOpenMobile((open) => !open) : setOpen((open) => !open);
-	}, [isMobile, setOpen, setOpenMobile]);
+	}, [isMobile, setOpen]);
 
 	// Adds a keyboard shortcut to toggle the sidebar.
 	React.useEffect(() => {
@@ -136,7 +136,7 @@ const SidebarProvider: React.FC<
 			setOpenMobile,
 			toggleSidebar,
 		}),
-		[state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar],
+		[state, open, setOpen, isMobile, openMobile, toggleSidebar],
 	);
 
 	const sidebarWidth = !open
@@ -392,7 +392,10 @@ const SidebarHeader: React.FC<React.ComponentPropsWithRef<"div">> = ({
 	return (
 		<div
 			data-sidebar="header"
-			className={cn('flex flex-col gap-2 p-2 group-data-[state=collapsed]:group-data-[collapsible=offcanvas]:hidden', className)}
+			className={cn(
+				"flex flex-col gap-2 p-2 group-data-[state=collapsed]:group-data-[collapsible=offcanvas]:hidden",
+				className,
+			)}
 			{...props}
 		/>
 	);

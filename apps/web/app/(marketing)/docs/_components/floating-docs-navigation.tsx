@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { usePathname } from "next/navigation";
 
@@ -21,11 +21,13 @@ export function FloatingDocumentationNavigation(
 
 	const [isVisible, setIsVisible] = useState(false);
 
-	const enableScrolling = (element: HTMLElement) =>
-		(element.style.overflowY = "");
+	const enableScrolling = useCallback((element: HTMLElement) => {
+		element.style.overflowY = "";
+	}, []);
 
-	const disableScrolling = (element: HTMLElement) =>
-		(element.style.overflowY = "hidden");
+	const disableScrolling = useCallback((element: HTMLElement) => {
+		element.style.overflowY = "hidden";
+	}, []);
 
 	// enable/disable body scrolling when the docs are toggled
 	useEffect(() => {
@@ -38,9 +40,10 @@ export function FloatingDocumentationNavigation(
 		} else {
 			enableScrolling(body);
 		}
-	}, [isVisible, body]);
+	}, [isVisible, body, disableScrolling, enableScrolling]);
 
 	// hide docs when navigating to another page
+	// biome-ignore lint/correctness/useExhaustiveDependencies: We want this to run when activePath changes
 	useEffect(() => {
 		setIsVisible(false);
 	}, [activePath]);

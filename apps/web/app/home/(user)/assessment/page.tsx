@@ -83,7 +83,15 @@ async function AssessmentPage() {
 						{survey.title}
 					</h1>
 					{/* biome-ignore lint/security/noDangerouslySetInnerHtml: Rendering trusted assessment content from CMS */}
-					<div className="prose prose-slate dark:prose-invert mb-6 max-w-none" dangerouslySetInnerHTML={{ __html: survey.startMessage?.root?.children?.[0]?.children?.[0]?.text || survey.description || "Welcome to the Self-Assessment Survey. This survey is designed to help you evaluate your current skills and knowledge in various areas related to public speaking and presentation." }} />
+					<div
+						className="prose prose-slate dark:prose-invert mb-6 max-w-none"
+						dangerouslySetInnerHTML={{
+							__html:
+								survey.startMessage?.root?.children?.[0]?.children?.[0]?.text ||
+								survey.description ||
+								"Welcome to the Self-Assessment Survey. This survey is designed to help you evaluate your current skills and knowledge in various areas related to public speaking and presentation.",
+						}}
+					/>
 					<div className="flex justify-center">
 						<Link href="/home/assessment/survey">
 							<Button

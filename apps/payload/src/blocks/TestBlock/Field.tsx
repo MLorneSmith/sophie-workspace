@@ -27,8 +27,12 @@ const Field: React.FC<FieldProps> = (props) => {
 	const { path, value, onChange } = props;
 
 	// Convert unknown value to string safely
-	const stringValue = typeof value === 'string' ? value : 
-		value ? JSON.stringify(value) : "Test Block";
+	const stringValue =
+		typeof value === "string"
+			? value
+			: value
+				? JSON.stringify(value)
+				: "Test Block";
 
 	// Handle field changes
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
