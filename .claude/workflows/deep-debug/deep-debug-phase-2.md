@@ -1,6 +1,8 @@
 # Deep Debug Phase 2: Root Cause Analysis & Solution Design
 
-Usage: `/deep-debug-phase-2 [issue_reference]`
+**Phase 2 of Deep Debug Workflow: Root Cause Analysis & Solution Design**
+
+This workflow is automatically invoked by `/deep-debug` when Phase 1 investigation is complete.
 
 - GitHub issue number: `123` (preferred format)
 - Issue ID: `ISSUE-123`
