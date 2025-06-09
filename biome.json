@@ -24,7 +24,11 @@
 			"playwright-report/**",
 			"packages/playwright-mcp/temp-playwright-mcp/**",
 			"apps/payload/payload-types.ts",
-			"apps/payload/src/app/(payload)/admin/importMap.js"
+			"apps/payload/src/app/(payload)/admin/importMap.js",
+			"z.docs/**",
+			"z.old/**",
+			"z.test/**",
+			"turbo/generators/**"
 		]
 	},
 	"formatter": { "enabled": true, "indentStyle": "tab" },
