@@ -27,8 +27,12 @@ const Field: React.FC<FieldProps> = (props) => {
 	const { path, value, onChange } = props;
 
 	// Convert unknown value to string safely
-	const stringValue = typeof value === 'string' ? value : 
-		value ? JSON.stringify(value) : "Debug information will appear here";
+	const stringValue =
+		typeof value === "string"
+			? value
+			: value
+				? JSON.stringify(value)
+				: "Debug information will appear here";
 
 	// Handle field changes
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -45,10 +49,7 @@ const Field: React.FC<FieldProps> = (props) => {
 			<CardContent className="space-y-4">
 				<div className="space-y-2">
 					<Label>Debug Information</Label>
-					<Input
-						value={stringValue}
-						onChange={handleChange}
-					/>
+					<Input value={stringValue} onChange={handleChange} />
 				</div>
 				<div className="text-xs text-gray-500">
 					<p>Path: {path}</p>

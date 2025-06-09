@@ -94,16 +94,15 @@ export function AccountSelector({
 			<Popover open={open} onOpenChange={setOpen}>
 				<PopoverTrigger asChild>
 					<Button
-						data-test={'account-selector-trigger'}
-						size={collapsed ? 'icon' : 'default'}
+						data-test={"account-selector-trigger"}
+						size={collapsed ? "icon" : "default"}
 						variant="ghost"
-						role="combobox"
 						aria-expanded={open}
 						className={cn(
-							'dark:shadow-primary/10 group w-full min-w-0 px-2 lg:w-auto lg:max-w-fit mr-1',
+							"dark:shadow-primary/10 group w-full min-w-0 px-2 lg:w-auto lg:max-w-fit mr-1",
 							{
-								'justify-start': !collapsed,
-								'm-auto justify-center px-2 lg:w-full': collapsed,
+								"justify-start": !collapsed,
+								"m-auto justify-center px-2 lg:w-full": collapsed,
 							},
 							className,
 						)}
@@ -112,31 +111,31 @@ export function AccountSelector({
 							condition={selected}
 							fallback={
 								<span
-									className={cn('flex max-w-full items-center', {
-										'justify-center gap-x-0': collapsed,
-										'gap-x-2': !collapsed,
+									className={cn("flex max-w-full items-center", {
+										"justify-center gap-x-0": collapsed,
+										"gap-x-2": !collapsed,
 									})}
 								>
 									<PersonalAccountAvatar />
 
 									<span
-										className={cn('truncate', {
+										className={cn("truncate", {
 											hidden: collapsed,
 										})}
 									>
-										<Trans i18nKey={'teams:personalAccount'} />
+										<Trans i18nKey={"teams:personalAccount"} />
 									</span>
 								</span>
 							}
 						>
 							{(account) => (
 								<span
-									className={cn('flex max-w-full items-center', {
-										'justify-center gap-x-0': collapsed,
-										'gap-x-2': !collapsed,
+									className={cn("flex max-w-full items-center", {
+										"justify-center gap-x-0": collapsed,
+										"gap-x-2": !collapsed,
 									})}
 								>
-									<Avatar className={'rounded-xs h-6 w-6'}>
+									<Avatar className={"rounded-xs h-6 w-6"}>
 										<AvatarImage src={account.image ?? undefined} />
 
 										<AvatarFallback
@@ -158,7 +157,7 @@ export function AccountSelector({
 						</If>
 
 						<CaretSortIcon
-							className={cn('ml-1 h-4 w-4 shrink-0 opacity-50', {
+							className={cn("ml-1 h-4 w-4 shrink-0 opacity-50", {
 								hidden: collapsed,
 							})}
 						/>

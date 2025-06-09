@@ -55,7 +55,7 @@ const TextField: React.FC<TextFieldProps> = ({ label, value, onChange }) => {
 
 // Type guard function to ensure value is a valid object
 const isYouTubeVideoData = (value: unknown): value is YouTubeVideoData => {
-	return typeof value === 'object' && value !== null;
+	return typeof value === "object" && value !== null;
 };
 
 // Helper function to safely get YouTubeVideoData from unknown value
@@ -71,7 +71,7 @@ const getYouTubeVideoData = (value: unknown): YouTubeVideoData => {
  */
 const Field: React.FC<FieldProps> = (props) => {
 	const { path, value, onChange } = props;
-	
+
 	// Get type-safe data from the unknown value
 	const data = getYouTubeVideoData(value);
 

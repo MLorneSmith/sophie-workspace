@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useCallback, useEffect, useState, useTransition } from "react";
 
 import Link from "next/link";
 
@@ -174,7 +174,7 @@ export function LessonViewClient({
 	const courseId = getCourseId();
 
 	// Mark lesson as viewed when component mounts
-	const markLessonAsViewed = () => {
+	const markLessonAsViewed = useCallback(() => {
 		if (!isCompleted) {
 			startTransition(async () => {
 				try {
@@ -188,7 +188,7 @@ export function LessonViewClient({
 				}
 			});
 		}
-	};
+	}, [isCompleted, courseId, lesson.id]);
 
 	// Automatically show survey when component mounts if lesson has a survey and it's not completed
 	useEffect(() => {
@@ -196,7 +196,7 @@ export function LessonViewClient({
 			markLessonAsViewed();
 			setShowSurvey(true);
 		}
-	}, [hasSurvey, surveyCompleted, courseId, lesson.id, isCompleted]);
+	}, [hasSurvey, surveyCompleted, markLessonAsViewed]);
 
 	// Mark lesson as completed
 	const markLessonAsCompleted = () => {
@@ -644,7 +644,12 @@ export function LessonViewClient({
 											return (
 												<div className="my-6">
 													{/* biome-ignore lint/security/noDangerouslySetInnerHtml: Rendering trusted course content with processed template tags */}
-													<div className="template-downloads" dangerouslySetInnerHTML={{ __html: processR2FileTags(downloadSection[0]) }} />
+													<div
+														className="template-downloads"
+														dangerouslySetInnerHTML={{
+															__html: processR2FileTags(downloadSection[0]),
+														}}
+													/>
 												</div>
 											);
 										}

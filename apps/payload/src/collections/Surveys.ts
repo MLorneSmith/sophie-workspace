@@ -11,7 +11,7 @@ export const Surveys: CollectionConfig = {
 		plural: "Surveys",
 	},
 	admin: {
-		useAsTitle: 'title',
+		useAsTitle: "title",
 		defaultColumns: ["title", "status", "publishedAt"],
 		description: "Surveys for user assessment and feedback",
 	},
@@ -23,8 +23,8 @@ export const Surveys: CollectionConfig = {
 	},
 	fields: [
 		{
-			name: 'title',
-			type: 'text',
+			name: "title",
+			type: "text",
 			required: true,
 		},
 		{

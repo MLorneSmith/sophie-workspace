@@ -56,7 +56,7 @@ const TextField: React.FC<TextFieldProps> = ({ label, value, onChange }) => {
 
 // Type guard function to ensure value is a valid object
 const isBunnyVideoData = (value: unknown): value is BunnyVideoData => {
-	return typeof value === 'object' && value !== null;
+	return typeof value === "object" && value !== null;
 };
 
 // Helper function to safely get BunnyVideoData from unknown value
@@ -72,7 +72,7 @@ const getBunnyVideoData = (value: unknown): BunnyVideoData => {
  */
 const Field: React.FC<FieldProps> = (props) => {
 	const { path, value, onChange } = props;
-	
+
 	// Get type-safe data from the unknown value
 	const data = getBunnyVideoData(value);
 

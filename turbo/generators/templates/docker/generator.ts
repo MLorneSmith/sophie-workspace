@@ -70,7 +70,9 @@ function getDeps() {
 		];
 	}
 	if (arch === "x64") {
-		const isMusl = process.config?.variables?.hasOwnProperty("musl");
+		const isMusl =
+			process.config?.variables &&
+			Object.hasOwn(process.config.variables, "musl");
 
 		return isMusl
 			? ["lightningcss-linux-x64-musl", "@tailwindcss/oxide-linux-x64-musl"]
