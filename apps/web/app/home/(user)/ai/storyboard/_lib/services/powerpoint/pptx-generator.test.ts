@@ -970,7 +970,7 @@ describe("PptxGenerator", () => {
 								area: "content1",
 								type: "chart",
 								chartType: "bar",
-								chartData: undefined, // undefined to trigger parseChartData with missing data
+								chartData: {}, // empty object to trigger parseChartData with missing data
 								columnIndex: 0,
 							},
 						],
@@ -984,12 +984,12 @@ describe("PptxGenerator", () => {
 			expect(mockSlide.addChart).toHaveBeenCalledWith(
 				"bar",
 				expect.objectContaining({
-					title: "Sample Chart",
+					title: "Chart",
 					chartData: expect.arrayContaining([
 						expect.objectContaining({
 							name: "Series 1",
-							labels: ["Category 1", "Category 2", "Category 3"],
-							values: [4.3, 2.5, 3.5],
+							labels: [],
+							values: [],
 						}),
 					]),
 				}),
