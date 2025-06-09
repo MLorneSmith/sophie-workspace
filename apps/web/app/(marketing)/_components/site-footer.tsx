@@ -94,58 +94,58 @@ const RESOURCES = [
 	},
 	{
 		title: "Advanced Guide to McKinsey Presentations",
-		href: "/",
+		href: "/resources/mckinsey-guide",
 	},
 	{
 		title: "Pitch Decks & Funding Proposals",
-		href: "/",
+		href: "/resources/pitch-decks",
 	},
 	{
 		title: "Complete Guide to Business Charts",
-		href: "/",
+		href: "/resources/business-charts",
 	},
 	{
 		title: "Conquering Public Speaking Anxiety",
-		href: "/",
+		href: "/resources/public-speaking",
 	},
 	{
 		title: "The Best Presentation Tools",
-		href: "/",
+		href: "/resources/presentation-tools",
 	},
 ] as const;
 
 const PROGRAMMATIC_SEO_PAGES = [
 	{
 		title: "Presentation Training in New York",
-		href: "/",
+		href: "/training/new-york",
 	},
 	{
 		title: "Presentation Training in Chicago",
-		href: "/",
+		href: "/training/chicago",
 	},
 	{
 		title: "Presentation Training in London",
-		href: "/",
+		href: "/training/london",
 	},
 	{
 		title: "Presentation Training in San Francisco",
-		href: "/",
+		href: "/training/san-francisco",
 	},
 	{
 		title: "Presentation Training in Los Angeles",
-		href: "/",
+		href: "/training/los-angeles",
 	},
 	{
 		title: "Presentation Training in Boston",
-		href: "/",
+		href: "/training/boston",
 	},
 	{
 		title: "Presentation Training in Toronto",
-		href: "/",
+		href: "/training/toronto",
 	},
 	{
 		title: "Presentation Training in Washington",
-		href: "/",
+		href: "/training/washington",
 	},
 ] as const;
 
