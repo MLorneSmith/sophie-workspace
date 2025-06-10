@@ -1,0 +1,111 @@
+name: Context Staleness Detection
+
+on:
+  schedule:
+    - cron: '0 9 * * 1'  # Every Monday at 9 AM
+  workflow_dispatch:
+
+jobs:
+  detect-stale-context:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Detect Stale Issues
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'story',
+              sort: 'updated',
+              direction: 'asc'
+            });
+            
+            const oneWeekAgo = new Date();
+            oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+            
+            for (const issue of issues) {
+              const lastUpdated = new Date(issue.updated_at);
+              if (lastUpdated < oneWeekAgo) {
+                // Check if already labeled as stale
+                const hasStaleLabel = issue.labels.some(label => label.name === 'stale-context');
+                
+                if (!hasStaleLabel) {
+                  // Add stale-context label
+                  await github.rest.issues.addLabels({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: issue.number,
+                    labels: ['stale-context']
+                  });
+                  
+                  // Add comment with refresh checklist
+                  await github.rest.issues.createComment({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: issue.number,
+                    body: `🤖 **Context Staleness Alert**
+
+This story has been inactive for over a week. The development context may be stale and should be refreshed before resuming development.
+
+## Context Refresh Checklist
+- [ ] Review story relevance and acceptance criteria
+- [ ] Verify technical approach is still appropriate
+- [ ] Update file paths and dependencies
+- [ ] Refresh progress notes with current status
+- [ ] Verify development environment is ready
+- [ ] Update story context in \`.claude/contexts/story-${issue.number}/\`
+
+## Next Steps
+1. Load the appropriate Claude role for this story
+2. Review existing context files
+3. Update context with current codebase state
+4. Plan next development session
+
+*This is an automated message from the AAFD v2.0 methodology system.*`
+                  });
+                  
+                  console.log(\`Added stale-context label to issue #${issue.number}: ${issue.title}\`);
+                }
+              }
+            }
+            
+            // Also check for very stale issues (> 2 weeks)
+            const twoWeeksAgo = new Date();
+            twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+            
+            for (const issue of issues) {
+              const lastUpdated = new Date(issue.updated_at);
+              if (lastUpdated < twoWeeksAgo) {
+                const hasVeryStaleLabel = issue.labels.some(label => label.name === 'very-stale-context');
+                
+                if (!hasVeryStaleLabel) {
+                  await github.rest.issues.addLabels({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: issue.number,
+                    labels: ['very-stale-context']
+                  });
+                  
+                  await github.rest.issues.createComment({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: issue.number,
+                    body: `⚠️ **Very Stale Context Alert**
+
+This story has been inactive for over 2 weeks. Consider:
+- Whether this story is still relevant
+- If it should be closed or moved to backlog
+- If it needs major context refresh or re-planning
+
+*This is an automated message from the AAFD v2.0 methodology system.*`
+                  });
+                  
+                  console.log(\`Added very-stale-context label to issue #${issue.number}: ${issue.title}\`);
+                }
+              }
+            }

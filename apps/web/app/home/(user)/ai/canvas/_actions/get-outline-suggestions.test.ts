@@ -1,0 +1,476 @@
+/**
+ * Unit tests for get-outline-suggestions.ts
+ * Tests AI-powered outline suggestion generation with SCQA content processing
+ */
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+
+// Mock AI Gateway
+vi.mock('@kit/ai-gateway', () => ({
+  getChatCompletion: vi.fn(),
+}));
+
+vi.mock('@kit/ai-gateway/src/configs/templates', () => ({
+  createQualityOptimizedConfig: vi.fn(),
+}));
+
+vi.mock('@kit/ai-gateway/src/prompts/partials/base-instructions', () => ({
+  baseInstructions: 'Base instructions for AI',
+}));
+
+vi.mock('@kit/ai-gateway/src/prompts/partials/improvement-format', () => ({
+  improvementFormat: 'Improvement format guidelines',
+}));
+
+vi.mock('@kit/ai-gateway/src/prompts/partials/outline-rewrite', () => ({
+  outlineRewriteInstructions: 'Outline rewrite instructions',
+}));
+
+// Mock enhanceAction to pass through the function
+vi.mock('@kit/next/actions', () => ({
+  enhanceAction: vi.fn((fn, options) => {
+    return async (data: any) => {
+      // Validate with schema if provided
+      if (options?.schema) {
+        const result = options.schema.safeParse(data);
+        if (!result.success) {
+          return { error: 'Validation failed' };
+        }
+      }
+      // Call function with mock user
+      const mockUser = { id: 'user-123', email: 'test@example.com' };
+      return fn(data, mockUser);
+    };
+  }),
+}));
+
+// Mock Supabase with a more direct approach
+vi.mock('@kit/supabase/server-client', () => ({
+  getSupabaseServerClient: vi.fn(),
+}));
+
+// Mock format conversion
+vi.mock('../_components/editor/tiptap/utils/format-conversion', () => ({
+  lexicalToTiptap: vi.fn(),
+}));
+
+// Import after mocks
+import { getOutlineSuggestionsAction } from './get-outline-suggestions';
+import { getChatCompletion } from '@kit/ai-gateway';
+import { createQualityOptimizedConfig } from '@kit/ai-gateway/src/configs/templates';
+import { getSupabaseServerClient } from '@kit/supabase/server-client';
+import { lexicalToTiptap } from '../_components/editor/tiptap/utils/format-conversion';
+
+describe('getOutlineSuggestionsAction', () => {
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    
+    // Setup mock implementations
+    vi.mocked(createQualityOptimizedConfig).mockReturnValue({
+      model: 'gpt-4',
+      temperature: 0.7,
+    });
+    
+    vi.mocked(getChatCompletion).mockResolvedValue({
+      content: JSON.stringify({
+        suggestions: [
+          { type: 'improvement', text: 'Suggestion 1' },
+          { type: 'alternative', text: 'Suggestion 2' },
+        ],
+      }),
+    });
+  });
+
+  describe('Schema Validation', () => {
+    it('should accept valid submissionId', async () => {
+      // Arrange
+      const validData = { submissionId: 'valid-uuid-123' };
+      
+      // Setup Supabase mock
+      const mockSupabase = {
+        from: vi.fn(() => ({
+          select: vi.fn().mockReturnThis(),
+          eq: vi.fn().mockReturnThis(),
+          single: vi.fn().mockResolvedValue({
+            data: {
+              situation: '{"type":"doc","content":[]}',
+              complication: '{"type":"doc","content":[]}',
+              answer: '{"type":"doc","content":[]}',
+            },
+            error: null,
+          }),
+        })),
+      };
+      vi.mocked(getSupabaseServerClient).mockReturnValue(mockSupabase as any);
+
+      // Act
+      const result = await getOutlineSuggestionsAction(validData);
+
+      // Assert
+      expect(result.success).toBe(true);
+    });
+
+    it('should reject empty submissionId', async () => {
+      // Arrange
+      const invalidData = { submissionId: '' };
+
+      // Act
+      const result = await getOutlineSuggestionsAction(invalidData);
+
+      // Assert
+      expect(result.error).toBe('Validation failed');
+    });
+
+    it('should reject missing submissionId', async () => {
+      // Arrange
+      const invalidData = {};
+
+      // Act
+      const result = await getOutlineSuggestionsAction(invalidData as any);
+
+      // Assert
+      expect(result.error).toBe('Validation failed');
+    });
+  });
+
+  describe('Core Functionality', () => {
+    it('should successfully generate outline suggestions', async () => {
+      // Arrange
+      const submissionData = {
+        situation: '{"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"Market situation"}]}]}',
+        complication: '{"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"Competition issue"}]}]}',
+        answer: '{"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"Our solution"}]}]}',
+      };
+
+      // Setup Supabase mock
+      const mockSupabase = {
+        from: vi.fn(() => ({
+          select: vi.fn().mockReturnThis(),
+          eq: vi.fn().mockReturnThis(),
+          single: vi.fn().mockResolvedValue({
+            data: submissionData,
+            error: null,
+          }),
+        })),
+      };
+      vi.mocked(getSupabaseServerClient).mockReturnValue(mockSupabase as any);
+
+      const expectedSuggestions = {
+        suggestions: [
+          { type: 'improvement', text: 'Suggestion 1' },
+          { type: 'alternative', text: 'Suggestion 2' },
+        ],
+      };
+
+      vi.mocked(getChatCompletion).mockResolvedValue({
+        content: JSON.stringify(expectedSuggestions),
+      });
+
+      // Act
+      const result = await getOutlineSuggestionsAction({ submissionId: 'test-id' });
+
+      // Assert
+      expect(result.success).toBe(true);
+      expect(result.data).toEqual(expectedSuggestions);
+    });
+
+    it('should handle Lexical to Tiptap conversion when needed', async () => {
+      // Arrange
+      const lexicalContent = '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Lexical content","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}';
+      
+      const convertedTiptap = {
+        type: 'doc',
+        content: [
+          {
+            type: 'paragraph',
+            content: [{ type: 'text', text: 'Lexical content' }],
+          },
+        ],
+      };
+
+      // Setup Supabase mock
+      const mockSupabase = {
+        from: vi.fn(() => ({
+          select: vi.fn().mockReturnThis(),
+          eq: vi.fn().mockReturnThis(),
+          single: vi.fn().mockResolvedValue({
+            data: {
+              situation: lexicalContent,
+              complication: null,
+              answer: null,
+            },
+            error: null,
+          }),
+        })),
+      };
+      vi.mocked(getSupabaseServerClient).mockReturnValue(mockSupabase as any);
+
+      vi.mocked(lexicalToTiptap).mockReturnValue(convertedTiptap);
+
+      // Act
+      const result = await getOutlineSuggestionsAction({ submissionId: 'test-id' });
+
+      // Assert
+      expect(result.success).toBe(true);
+      expect(lexicalToTiptap).toHaveBeenCalledWith(lexicalContent);
+      expect(getChatCompletion).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          expect.objectContaining({
+            role: 'user',
+            content: expect.stringMatching(/Situation:\s*Lexical content/),
+          }),
+        ]),
+        expect.any(Object)
+      );
+    });
+  });
+
+  describe('Text Extraction', () => {
+    it('should extract text from simple paragraph nodes', async () => {
+      // Arrange
+      const simpleContent = {
+        type: 'doc',
+        content: [
+          {
+            type: 'paragraph',
+            content: [{ type: 'text', text: 'Simple text' }],
+          },
+        ],
+      };
+
+      // Setup Supabase mock
+      const mockSupabase = {
+        from: vi.fn(() => ({
+          select: vi.fn().mockReturnThis(),
+          eq: vi.fn().mockReturnThis(),
+          single: vi.fn().mockResolvedValue({
+            data: {
+              situation: JSON.stringify(simpleContent),
+              complication: null,
+              answer: null,
+            },
+            error: null,
+          }),
+        })),
+      };
+      vi.mocked(getSupabaseServerClient).mockReturnValue(mockSupabase as any);
+
+      // Act
+      const result = await getOutlineSuggestionsAction({ submissionId: 'test-id' });
+
+      // Assert
+      expect(result.success).toBe(true);
+      expect(getChatCompletion).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          expect.objectContaining({
+            role: 'user',
+            content: expect.stringMatching(/Situation:\s*Simple text/),
+          }),
+        ]),
+        expect.any(Object)
+      );
+    });
+
+    it('should handle empty content gracefully', async () => {
+      // Arrange
+      // Setup Supabase mock
+      const mockSupabase = {
+        from: vi.fn(() => ({
+          select: vi.fn().mockReturnThis(),
+          eq: vi.fn().mockReturnThis(),
+          single: vi.fn().mockResolvedValue({
+            data: {
+              situation: null,
+              complication: '',
+              answer: '{"type":"doc","content":[]}',
+            },
+            error: null,
+          }),
+        })),
+      };
+      vi.mocked(getSupabaseServerClient).mockReturnValue(mockSupabase as any);
+
+      // Act
+      const result = await getOutlineSuggestionsAction({ submissionId: 'test-id' });
+
+      // Assert
+      expect(result.success).toBe(true);
+      expect(getChatCompletion).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          expect.objectContaining({
+            role: 'user',
+            content: expect.stringMatching(/Situation:\s*\n\nComplication:\s*\n\nAnswer:/),
+          }),
+        ]),
+        expect.any(Object)
+      );
+    });
+  });
+
+  describe('Error Scenarios', () => {
+    it('should handle database connection failure', async () => {
+      // Arrange
+      // Setup Supabase mock with error
+      const mockSupabase = {
+        from: vi.fn(() => ({
+          select: vi.fn().mockReturnThis(),
+          eq: vi.fn().mockReturnThis(),
+          single: vi.fn().mockResolvedValue({
+            data: null,
+            error: { message: 'Connection timeout' },
+          }),
+        })),
+      };
+      vi.mocked(getSupabaseServerClient).mockReturnValue(mockSupabase as any);
+
+      // Act
+      const result = await getOutlineSuggestionsAction({ submissionId: 'test-id' });
+
+      // Assert
+      expect(result.success).toBe(false);
+      expect(result.error).toBe('Failed to fetch submission data');
+    });
+
+    it('should handle AI service failure', async () => {
+      // Arrange
+      // Setup Supabase mock for basic data
+      const mockSupabase = {
+        from: vi.fn(() => ({
+          select: vi.fn().mockReturnThis(),
+          eq: vi.fn().mockReturnThis(),
+          single: vi.fn().mockResolvedValue({
+            data: {
+              situation: '{"type":"doc","content":[]}',
+              complication: '{"type":"doc","content":[]}',
+              answer: '{"type":"doc","content":[]}',
+            },
+            error: null,
+          }),
+        })),
+      };
+      vi.mocked(getSupabaseServerClient).mockReturnValue(mockSupabase as any);
+      
+      vi.mocked(getChatCompletion).mockRejectedValue(new Error('AI service unavailable'));
+
+      // Act
+      const result = await getOutlineSuggestionsAction({ submissionId: 'test-id' });
+
+      // Assert
+      expect(result.success).toBe(false);
+      expect(result.error).toBe('AI service unavailable');
+    });
+
+    it('should handle malformed JSON in AI response', async () => {
+      // Arrange
+      // Setup Supabase mock for basic data
+      const mockSupabase = {
+        from: vi.fn(() => ({
+          select: vi.fn().mockReturnThis(),
+          eq: vi.fn().mockReturnThis(),
+          single: vi.fn().mockResolvedValue({
+            data: {
+              situation: '{"type":"doc","content":[]}',
+              complication: '{"type":"doc","content":[]}',
+              answer: '{"type":"doc","content":[]}',
+            },
+            error: null,
+          }),
+        })),
+      };
+      vi.mocked(getSupabaseServerClient).mockReturnValue(mockSupabase as any);
+      
+      vi.mocked(getChatCompletion).mockResolvedValue({
+        content: 'Invalid JSON response',
+      });
+
+      // Act
+      const result = await getOutlineSuggestionsAction({ submissionId: 'test-id' });
+
+      // Assert
+      expect(result.success).toBe(false);
+      expect(result.error).toContain('Unexpected token');
+    });
+  });
+
+  describe('Edge Cases', () => {
+    it('should handle null/undefined content fields', async () => {
+      // Arrange
+      // Setup Supabase mock
+      const mockSupabase = {
+        from: vi.fn(() => ({
+          select: vi.fn().mockReturnThis(),
+          eq: vi.fn().mockReturnThis(),
+          single: vi.fn().mockResolvedValue({
+            data: {
+              situation: null,
+              complication: undefined,
+              answer: null,
+            },
+            error: null,
+          }),
+        })),
+      };
+      vi.mocked(getSupabaseServerClient).mockReturnValue(mockSupabase as any);
+
+      // Act
+      const result = await getOutlineSuggestionsAction({ submissionId: 'test-id' });
+
+      // Assert
+      expect(result.success).toBe(true);
+      expect(getChatCompletion).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          expect.objectContaining({
+            role: 'user',
+            content: expect.stringMatching(/Situation:\s*\n\nComplication:\s*\n\nAnswer:/),
+          }),
+        ]),
+        expect.any(Object)
+      );
+    });
+
+    it('should handle special characters and Unicode', async () => {
+      // Arrange
+      const unicodeContent = {
+        type: 'doc',
+        content: [
+          {
+            type: 'paragraph',
+            content: [{ type: 'text', text: 'Special chars: 🚀 中文 €ñ' }],
+          },
+        ],
+      };
+
+      // Setup Supabase mock
+      const mockSupabase = {
+        from: vi.fn(() => ({
+          select: vi.fn().mockReturnThis(),
+          eq: vi.fn().mockReturnThis(),
+          single: vi.fn().mockResolvedValue({
+            data: {
+              situation: JSON.stringify(unicodeContent),
+              complication: null,
+              answer: null,
+            },
+            error: null,
+          }),
+        })),
+      };
+      vi.mocked(getSupabaseServerClient).mockReturnValue(mockSupabase as any);
+
+      // Act
+      const result = await getOutlineSuggestionsAction({ submissionId: 'test-id' });
+
+      // Assert
+      expect(result.success).toBe(true);
+      expect(getChatCompletion).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          expect.objectContaining({
+            role: 'user',
+            content: expect.stringMatching(/Situation:\s*Special chars: 🚀 中文 €ñ/),
+          }),
+        ]),
+        expect.any(Object)
+      );
+    });
+  });
+});
