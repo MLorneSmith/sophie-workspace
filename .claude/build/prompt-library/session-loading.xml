@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<prompt>
+  <task>Load complete context for productive Claude Code development session</task>
+  
+  <pre_conditions>
+    <context_loading>
+      <load_role>{RELEVANT_CLAUDE_ROLE}</load_role>
+      <read_files>{CONTEXT_FILES}</read_files>
+      <review_standards>Read CLAUDE.md for project standards</review_standards>
+      <load_story_context>Read story context from .claude/build/contexts/stories/story-{id}/</load_story_context>
+    </context_loading>
+  </pre_conditions>
+  
+  <instructions>
+    <step number="1">
+      <title>Load Context and Standards</title>
+      <description>Load relevant Claude role, read project standards from CLAUDE.md, and review story context files. Understand SlideHeroes architecture and patterns.</description>
+    </step>
+    
+    <step number="2">
+      <title>Understand Existing Patterns</title>
+      <description>Review similar implementations in SlideHeroes codebase. Identify patterns for components, server actions, database operations, AI integration, and testing.</description>
+    </step>
+    
+    <step number="3">
+      <title>Implement with Tests</title>
+      <description>Implement feature following SlideHeroes standards. Write tests using existing test patterns. Use enhanceAction for server actions. Follow MakerKit patterns.</description>
+    </step>
+    
+    <step number="4">
+      <title>Validate Against Acceptance Criteria</title>
+      <description>Test implementation against story acceptance criteria. Ensure all functionality works as specified in SlideHeroes environment.</description>
+    </step>
+    
+    <step number="5">
+      <title>Update Documentation</title>
+      <description>Update relevant documentation, add code comments, and document any architectural decisions. Update context files with progress.</description>
+    </step>
+    
+    <step number="6">
+      <title>Prepare for Review</title>
+      <description>Run linting, type checking, and tests. Create PR with clear description and context. Follow SlideHeroes commit conventions.</description>
+    </step>
+  </instructions>
+  
+  <input>
+    <story_context>{STORY_DETAILS}</story_context>
+    <acceptance_criteria>{CRITERIA_LIST}</acceptance_criteria>
+    <technical_tasks>{TASK_LIST}</technical_tasks>
+    <context_files>{FILES_TO_LOAD}</context_files>
+  </input>
+  
+  <implementation_standards>
+    <code_quality>
+      <no_any_types>Use proper TypeScript typing</no_any_types>
+      <use_zod>Validate all inputs with Zod schemas</use_zod>
+      <server_components>Prefer Server Components over Client Components</server_components>
+      <rls_security>Always use Row Level Security, never bypass</rls_security>
+    </code_quality>
+    
+    <slideheroes_patterns>
+      <server_actions>Wrap all server actions with enhanceAction</server_actions>
+      <ai_integration>Use Portkey AI Gateway for all AI requests</ai_integration>
+      <error_handling>Implement user-friendly error messages</error_handling>
+      <file_structure>Follow existing file naming and organization patterns</file_structure>
+      <testing>Write unit tests for logic, integration tests for workflows</testing>
+    </slideheroes_patterns>
+  </implementation_standards>
+  
+  <output_requirements>
+    <working_feature>All acceptance criteria met</working_feature>
+    <tests_passing>Unit and integration tests pass</tests_passing>
+    <linting_clean>No linting or type errors</linting_clean>
+    <documentation_updated>Relevant docs and comments added</documentation_updated>
+    <context_updated>Progress and technical notes updated</context_updated>
+    <pr_ready>Pull request with clear description</pr_ready>
+  </output_requirements>
+  
+  <context_loading_checklist>
+    <step number="1">
+      <action>Load Primary Role</action>
+      <command>/read .claude/build/roles/{PRIMARY_ROLE}.md</command>
+      <purpose>Set appropriate mental model for development work</purpose>
+    </step>
+    
+    <step number="2">
+      <action>Review Project Standards</action>
+      <command>/read CLAUDE.md</command>
+      <purpose>Understand SlideHeroes-specific patterns and constraints</purpose>
+    </step>
+    
+    <step number="3">
+      <action>Load Story Context</action>
+      <command>/read .claude/build/contexts/stories/story-{STORY_ID}/context.md</command>
+      <purpose>Understand story requirements and acceptance criteria</purpose>
+    </step>
+    
+    <step number="4">
+      <action>Review Technical Notes</action>
+      <command>/read .claude/build/contexts/stories/story-{STORY_ID}/technical-notes.md</command>
+      <purpose>Understand previous technical decisions and approaches</purpose>
+    </step>
+    
+    <step number="5">
+      <action>Check Progress</action>
+      <command>/read .claude/build/contexts/stories/story-{STORY_ID}/progress.md</command>
+      <purpose>Understand current implementation status and next steps</purpose>
+    </step>
+    
+    <step number="6">
+      <action>Load Implementation Context</action>
+      <files>{CONTEXT_FILES_LIST}</files>
+      <purpose>Understand existing SlideHeroes patterns and implementation approaches</purpose>
+    </step>
+  </context_loading_checklist>
+  
+  <session_readiness_check>
+    <understanding>
+      <story_requirements>Can you summarize the story requirements?</story_requirements>
+      <acceptance_criteria>What are the key acceptance criteria?</acceptance_criteria>
+      <technical_approach>What technical approach will you use?</technical_approach>
+      <current_progress>What is the current implementation status?</current_progress>
+      <slideheroes_patterns>Which SlideHeroes patterns will you follow?</slideheroes_patterns>
+    </understanding>
+    
+    <implementation_plan>
+      <next_tasks>What are the immediate next tasks?</next_tasks>
+      <file_changes>Which files need to be modified?</file_changes>
+      <testing_approach>How will you validate the implementation?</testing_approach>
+      <potential_blockers>What challenges do you anticipate?</potential_blockers>
+    </implementation_plan>
+  </session_readiness_check>
+</prompt>
