@@ -22,6 +22,11 @@ body:
         **As a** {type of user}
         **I want** {some goal or functionality}
         **So that** {some reason or benefit}
+        
+        Example:
+        **As a** SlideHeroes user
+        **I want** to generate AI-powered slide titles
+        **So that** I can create more compelling and professional presentations
     validations:
       required: true
       
@@ -31,12 +36,13 @@ body:
       label: Acceptance Criteria
       description: Specific, testable criteria for story completion
       placeholder: |
-        - [ ] User can access outline generator from canvas page
-        - [ ] User can input presentation topic (required field)
-        - [ ] AI generates outline with 3-7 main sections
-        - [ ] Generated outline appears in canvas outline panel
-        - [ ] User receives feedback during generation process
-        - [ ] Generation completes within 10 seconds or shows progress
+        - [ ] User can access title generator from slide editor
+        - [ ] User can input slide context (required field)
+        - [ ] AI generates 3-5 title suggestions within 5 seconds
+        - [ ] User can preview suggestions before applying
+        - [ ] User can apply suggestion to slide with one click
+        - [ ] System tracks AI usage for billing
+        - [ ] Error handling for AI service failures with user-friendly messages
     validations:
       required: true
       
@@ -46,78 +52,42 @@ body:
       label: Technical Tasks
       description: Detailed tasks for implementation
       placeholder: |
-        - [ ] Create OutlineGeneratorDialog component with form validation
-          - **Files to modify**: apps/web/app/home/(user)/ai/canvas/_components/
+        - [ ] Create TitleSuggestionsDialog component with form validation
+          - **Files**: apps/web/app/home/(user)/editor/_components/TitleSuggestionsDialog.tsx
           - **Estimated time**: 2 hours
-        - [ ] Implement generateOutlineAction server action with Portkey integration
-          - **Files to modify**: apps/web/app/home/(user)/ai/canvas/_actions/
+        - [ ] Implement generateTitleSuggestionsAction server action
+          - **Files**: apps/web/app/home/(user)/editor/_actions/title-suggestions.action.ts
           - **Estimated time**: 3 hours
         - [ ] Add AI usage tracking to user account
-          - **Files to modify**: packages/supabase/src/schema/
+          - **Files**: packages/supabase/src/schema/ai-usage.schema.ts
           - **Estimated time**: 1 hour
-        - [ ] Write unit tests for outline generation logic
-          - **Files to modify**: Test files
+        - [ ] Write unit tests for title generation logic
+          - **Files**: apps/web/app/home/(user)/editor/_actions/title-suggestions.test.ts
           - **Estimated time**: 1.5 hours
     validations:
       required: true
       
-  - type: textarea
-    id: implementation-notes
-    attributes:
-      label: Implementation Notes
-      description: Reference existing patterns and technical approach
-      placeholder: |
-        ### Existing Patterns
-        Reference similar implementations in the codebase:
-        - **Pattern**: {Description of similar feature}
-        - **Location**: {File paths to reference}
-        
-        ### Technical Approach
-        - **Frontend**: {React components, state management}
-        - **Backend**: {Server actions, API endpoints}
-        - **Database**: {Schema changes, queries}
-        - **Testing**: {Test strategy and coverage}
-        
-  - type: textarea
-    id: context-requirements
-    attributes:
-      label: Context Requirements for Claude Code
-      description: Information needed for effective AI development sessions
-      placeholder: |
-        ### Role to Load
-        - **Primary**: {AI Engineer/UI Engineer/Data Engineer}
-        - **Secondary**: {Additional role if needed}
-        
-        ### Files to Read for Context
-        - `{file-path}` - {Why this file is relevant}
-        - `{file-path}` - {Why this file is relevant}
-        
-        ### Documentation to Review
-        - {Documentation section or external docs}
-        - {Project patterns or standards}
-        
   - type: dropdown
     id: story-points
     attributes:
-      label: Story Points (Estimation)
-      description: Complexity and effort estimation
+      label: Story Points
+      description: Complexity estimation using fibonacci sequence
       options:
-        - "To be estimated"
         - "1"
-        - "2"
+        - "2" 
         - "3"
         - "5"
         - "8"
         - "13"
         - "21"
     validations:
-      required: true
+      required: false
       
   - type: dropdown
     id: priority
     attributes:
       label: Priority
-      description: Development priority for this story
+      description: Story priority within the epic
       options:
         - Critical
         - High
@@ -126,45 +96,97 @@ body:
     validations:
       required: true
       
-  - type: checkboxes
-    id: technical-domains
+  - type: textarea
+    id: technical-domains-note
     attributes:
       label: Technical Domains
-      description: Which areas of the system will this story touch?
-      options:
-        - label: Frontend (React components, UI)
-        - label: Backend (Server actions, APIs)
-        - label: Database (Schema changes, queries)
-        - label: AI (AI integration, prompts)
-        - label: DevOps (Build, deployment)
-        - label: Testing (Test implementation)
+      description: "Note: Technical domains will be added as labels after issue creation"
+      value: |
+        **Technical Domain Labels to Add:**
         
+        Check which domains this story touches, and the maintainer will add the appropriate labels:
+        - [ ] `domain:frontend` - React components, UI
+        - [ ] `domain:backend` - Server actions, APIs  
+        - [ ] `domain:database` - Schema changes, queries
+        - [ ] `domain:ai` - AI integration, prompts
+        - [ ] `domain:devops` - Build, deployment
+        - [ ] `domain:testing` - Test implementation
+        
+        *These will be converted to GitHub labels for better filtering and automation.*
+        
+  - type: input
+    id: epic-reference
+    attributes:
+      label: Parent Epic
+      description: Link to the parent epic issue
+      placeholder: "#123"
+    validations:
+      required: false
+      
+  - type: textarea
+    id: implementation-notes
+    attributes:
+      label: Implementation Notes
+      description: Technical approach and patterns to follow
+      placeholder: |
+        **Existing Patterns**: Reference similar implementations in the codebase
+        - Pattern: AI integration | Location: apps/web/app/home/(user)/ai/canvas/_actions/
+        - Pattern: Dialog components | Location: packages/ui/src/dialog.tsx
+        
+        **Technical Approach**:
+        - Frontend: React component with Zod form validation
+        - Backend: Portkey AI Gateway integration with usage tracking
+        - Database: Extend ai_usage table with new feature tracking
+        - Testing: Unit tests for AI response parsing and error handling
+    validations:
+      required: false
+      
+  - type: textarea
+    id: context-requirements
+    attributes:
+      label: Context Requirements for Claude Code
+      description: Information needed for AI-assisted implementation
+      placeholder: |
+        **Primary Role**: AI Engineer
+        **Secondary Role**: UI Engineer (for component work)
+        
+        **Files to Read for Context**:
+        - apps/web/app/home/(user)/ai/canvas/_actions/generate-outline.action.ts - AI integration pattern
+        - apps/web/app/home/(user)/editor/_components/SlideEditor.tsx - Editor context
+        - packages/ai-gateway/src/slide-generator.ts - Existing AI functionality
+        - CLAUDE.md - Project standards and patterns
+        
+        **Documentation to Review**:
+        - Portkey AI Gateway configuration
+        - SlideHeroes editor architecture
+        - AI usage billing requirements
+    validations:
+      required: false
+      
   - type: textarea
     id: dependencies
     attributes:
       label: Dependencies
-      description: Blocking and related work
+      description: What must be completed before this story can be worked on?
       placeholder: |
-        ### Blocking Stories
-        - #{Issue numbers that must be completed first}
-        
-        ### Related Stories
-        - #{Issue numbers for coordination}
-        
-        ### External Dependencies
-        - {Third-party services, APIs, etc.}
-        
-  - type: textarea
+        **Blocking Stories**: #456 (Epic infrastructure setup)
+        **Related Stories**: #789 (AI Usage Dashboard), #012 (Editor Performance)
+        **External Dependencies**: Portkey AI Gateway service availability
+    validations:
+      required: false
+      
+  - type: checkboxes
     id: definition-of-done
     attributes:
       label: Definition of Done
       description: Checklist for story completion
-      value: |
-        - [ ] All acceptance criteria met
-        - [ ] Unit tests written and passing
-        - [ ] Integration tests passing
-        - [ ] Code review completed
-        - [ ] Documentation updated
-        - [ ] No linting or type errors
-        - [ ] Accessibility requirements met
-        - [ ] Performance requirements met
+      options:
+        - label: All acceptance criteria met
+        - label: Unit tests written and passing
+        - label: Integration tests passing
+        - label: Code review completed
+        - label: Documentation updated
+        - label: No linting or type errors
+        - label: Performance requirements met
+        - label: Accessibility requirements met
+        - label: AI usage tracking implemented (if applicable)

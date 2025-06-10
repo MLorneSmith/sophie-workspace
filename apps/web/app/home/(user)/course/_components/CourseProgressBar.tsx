@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { Progress } from "@kit/ui/progress";
 
 interface CourseProgressBarProps {

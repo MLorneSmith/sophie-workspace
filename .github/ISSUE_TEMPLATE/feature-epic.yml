@@ -20,7 +20,7 @@ body:
       description: Problem statement and business value
       placeholder: |
         **Problem**: What problem does this feature solve?
-        **User Impact**: How will this benefit users?
+        **User Impact**: How will this benefit SlideHeroes users?
         **Business Value**: What is the expected business impact?
     validations:
       required: true
@@ -45,6 +45,7 @@ body:
         - [ ] Users can generate AI-powered presentation outlines
         - [ ] Generated outlines integrate with existing canvas system
         - [ ] Outline generation completes within acceptable time limits
+        - [ ] AI usage is tracked for billing purposes
     validations:
       required: true
       
@@ -61,95 +62,86 @@ body:
     validations:
       required: true
       
-  - type: checkboxes
-    id: technical-domains
+  - type: textarea
+    id: technical-domains-note
     attributes:
       label: Technical Domains
-      description: Which areas of the system will this epic touch?
-      options:
-        - label: Frontend (React components, UI)
-        - label: Backend (Server actions, APIs)
-        - label: Database (Schema changes, queries)
-        - label: AI (AI integration, prompts)
-        - label: DevOps (Build, deployment)
-        - label: Testing (Test implementation)
+      description: "Note: Technical domains will be added as labels after issue creation"
+      value: |
+        **Technical Domain Labels to Add:**
+        
+        Check which domains this epic touches, and the maintainer will add the appropriate labels:
+        - [ ] `domain:frontend` - React components, UI
+        - [ ] `domain:backend` - Server actions, APIs  
+        - [ ] `domain:database` - Schema changes, queries
+        - [ ] `domain:ai` - AI integration, prompts
+        - [ ] `domain:devops` - Build, deployment
+        - [ ] `domain:testing` - Test implementation
+        
+        *These will be converted to GitHub labels for better filtering and automation.*
         
   - type: textarea
     id: technical-overview
     attributes:
       label: Technical Overview
-      description: Architecture impact, required technologies, database changes, API changes
+      description: High-level technical approach and requirements
       placeholder: |
-        ### Architecture Impact
-        How will this feature affect the current architecture?
-        
-        ### Required Technologies
-        What new technologies or libraries are needed?
-        
-        ### Database Changes
-        What database schema changes are required?
-        
-        ### API Changes
-        What new API endpoints or changes are needed?
-        
+        **Architecture Impact**: How will this feature affect SlideHeroes architecture?
+        **Required Technologies**: What new technologies or libraries are needed?
+        **Database Changes**: What database schema changes are required?
+        **API Changes**: What new API endpoints or changes are needed?
+        **Integration Points**: How does this integrate with existing features?
+    validations:
+      required: false
+      
   - type: textarea
     id: cross-cutting-concerns
     attributes:
       label: Cross-cutting Concerns
-      description: Security, performance, testing, and documentation considerations
+      description: Shared components, security, performance, and other considerations
       placeholder: |
-        ### Security
-        What security considerations are relevant?
-        
-        ### Performance
-        What performance implications should be considered?
-        
-        ### Testing
-        What testing strategy is needed?
-        
-        ### Documentation
-        What documentation updates are required?
-        
-  - type: textarea
-    id: implementation-approach
-    attributes:
-      label: Implementation Approach
-      description: High-level implementation phases
-      placeholder: |
-        ### Phase 1: Foundation
-        - {High-level implementation step}
-        - {High-level implementation step}
-        
-        ### Phase 2: Integration
-        - {High-level implementation step}
-        - {High-level implementation step}
-        
+        **Security**: What security considerations are relevant?
+        **Performance**: What performance implications should be considered?
+        **Testing**: What testing strategy is needed?
+        **Documentation**: What documentation updates are required?
+        **AI Usage**: How will AI usage be tracked and billed?
+    validations:
+      required: false
+      
   - type: textarea
     id: success-metrics
     attributes:
       label: Success Metrics
       description: How will we measure the success of this feature?
       placeholder: |
-        - **Technical**: {Performance/quality metrics}
-        - **User**: {User experience metrics}
-        - **Business**: {Business impact metrics}
-        
+        **Technical**: Performance/quality metrics
+        **User**: User experience metrics  
+        **Business**: Business impact metrics
+    validations:
+      required: false
+      
   - type: textarea
     id: dependencies
     attributes:
-      label: Dependencies and Risks
-      description: Dependencies and risk mitigation strategies
+      label: Dependencies
+      description: What must be completed before this epic can be worked on?
       placeholder: |
-        ### Dependencies
-        - [ ] {Dependency description}
-        - [ ] {Dependency description}
+        - [ ] Dependency description
+        - [ ] External service integration
+        - [ ] Other epic completion
+    validations:
+      required: false
+      
+  - type: textarea
+    id: risks
+    attributes:
+      label: Risks and Mitigation
+      description: Potential risks and how to address them
+      placeholder: |
+        **Technical Risks**:
+        - Risk: Description | Impact: High/Medium/Low | Mitigation: Approach
         
-        ### Technical Risks
-        - **Risk**: {Description}
-          - **Impact**: {High/Medium/Low}
-          - **Mitigation**: {Approach}
-          
-        ### Business Risks
-        - **Risk**: {Description}
-          - **Impact**: {High/Medium/Low}
-          - **Mitigation**: {Approach}
+        **Business Risks**: 
+        - Risk: Description | Impact: High/Medium/Low | Mitigation: Approach
+    validations:
+      required: false
