@@ -3,18 +3,20 @@
 SlideHeroes is a SaaS platform for learning how to write board-level business presentations and accelerating presentation creation with AI-powered tools.
 
 ## Target Customers
-SlideHeroes targets small and medium sized consultancies, advisory firms, and technology companies. SlideHeroes also targets individual professionals and subject matter experts who are responsible for creating high-stakes presentations. 
+
+SlideHeroes targets small and medium sized consultancies, advisory firms, and technology companies. SlideHeroes also targets individual professionals and subject matter experts who are responsible for creating high-stakes presentations.
 
 # SlideHeroes App and Website
 
 ## Current status
-The SlideHeroes app and website are currently under active development.  The app is not yet feature complete, and the website is not yet fully launched.  The app is currently in a private beta, and the website is currently in a private preview. 
+
+The SlideHeroes app and website are currently under active development. The app is not yet feature complete, and the website is not yet fully launched. The app is currently in a private beta, and the website is currently in a private preview.
 
 ## Technical Overview
 
 ### Technical Stack
 
-This repository is built using the MakerKit Next.js Supabase SaaS Starter Kit.  The following are the key technologies used:
+This repository is built using the MakerKit Next.js Supabase SaaS Starter Kit. The following are the key technologies used:
 
 - Next.js 15 with React 19
 - TypeScript
@@ -44,7 +46,8 @@ Nearly all of our development is focused on the web and payload apps.
 The website is located at: apps\web\app\(marketing)\[...slug]\page.tsx
 
 ### The Course
-A key portion of our web app is a course.  It is located at: apps\web\app\home\(user)\course
+
+A key portion of our web app is a course. It is located at: apps\web\app\home\(user)\course
 
 apps\web\app\home\(user)\course\page.tsx is the home page for our main course 'Decks for Decision Makers'.
 
@@ -55,6 +58,7 @@ apps\web\app\home\(user)\course\page.tsx is the home page for our main course 'D
 The content for these courses, lessons and quizzes comes from Payload CMS. As does the content for our surveys, blog posts and documentation.
 
 ### AI Tools
+
 The page apps\web\app\home\(user)\ai\page.tsx has three sections:
 
 1. Build new presentation: A multi-step form for inputing the building block content for a business presentation
@@ -62,18 +66,22 @@ The page apps\web\app\home\(user)\ai\page.tsx has three sections:
 3. Generate a powerpoint file: A tool for generating a powerpoint file from the outline of a presentation
 
 ### Kanban
+
 The page apps\web\app\home\(user)\kanban\page.tsx is a kanban board for managing presentation tasks.
 
 ### Coaching
+
 The page apps\web\app\home\(user)\coaching\page.tsx is a page for scheduling and managing coaching sessions.
 
 ### Assessment
+
 The page apps\web\app\home\(user)\assessment\page.tsx is a page for taking our 'Self-Assessment Survey'.
 
 ## Backend
 
 ### Payload CMS
-Payload CMS is a headless CMS that we use for managing all of our content.  It is located in the apps\payload directory.  It is built on top of Next.js and uses a PostgreSQL database hosted by Supabase.  We use Payload for storing the following content:
+
+Payload CMS is a headless CMS that we use for managing all of our content. It is located in the apps\payload directory. It is built on top of Next.js and uses a PostgreSQL database hosted by Supabase. We use Payload for storing the following content:
 
 - Courses
 - Lessons
@@ -88,11 +96,12 @@ Payload CMS is a headless CMS that we use for managing all of our content.  It i
 - Downloads
 
 ### Supabase
-Supabase is our primary database.  It is used for storing user data, as well as for managing relationships between our Payload content.  For example, we use Supabase to store the relationship between a user and the courses they have enrolled in.  We also use Supabase to store the relationship between a user and the survey responses they have submitted.
+
+Supabase is our primary database. It is used for storing user data, as well as for managing relationships between our Payload content. For example, we use Supabase to store the relationship between a user and the courses they have enrolled in. We also use Supabase to store the relationship between a user and the survey responses they have submitted.
 
 ### Portkey AI Gateway
 
-Portkey AI Gateway is used for managing all of our AI integrations.  It is located in the packages\ai-gateway directory.  It is built on top of the OpenAI SDK and uses the Portkey AI Gateway API.  We use Portkey for the following:
+Portkey AI Gateway is used for managing all of our AI integrations. It is located in the packages\ai-gateway directory. It is built on top of the OpenAI SDK and uses the Portkey AI Gateway API. We use Portkey for the following:
 
 - Managing API keys for all of our AI providers
 - Managing AI requests and responses
@@ -100,7 +109,7 @@ Portkey AI Gateway is used for managing all of our AI integrations.  It is locat
 
 ### Billing
 
-Billing is handled by Stripe. 
+Billing is handled by Stripe.
 
 ## Getting Started
 
@@ -109,6 +118,7 @@ Billing is handled by Stripe.
 - Node.js 18+
 - pnpm
 - Docker
+- GitHub CLI (`gh`) - for automation and repository management
 - Stripe account
 - Supabase account
 - Portkey account
@@ -128,6 +138,28 @@ pnpm supabase:web:typegen
 
 # Start all development servers
 pnpm dev
+```
+
+#### Installing GitHub CLI (if not available)
+
+For WSL2/Ubuntu environments:
+
+```bash
+# Download and install to ~/.local/bin (no sudo required)
+cd /tmp
+curl -fLO https://github.com/cli/cli/releases/latest/download/gh_$(curl -s https://api.github.com/repos/cli/cli/releases/latest | grep tag_name | cut -d'"' -f4 | sed 's/v//')_linux_amd64.tar.gz
+tar -xzf gh_*_linux_amd64.tar.gz
+cp gh_*/bin/gh ~/.local/bin/
+chmod +x ~/.local/bin/gh
+
+# Verify installation
+gh --version
+```
+
+Configure authentication:
+
+```bash
+gh auth login
 ```
 
 ## Documentation
@@ -156,27 +188,31 @@ This project uses Claude's context priming capabilities to provide specialized a
 ### How to Use Roles
 
 1. **Switch to a role** at the beginning of your session:
+
    ```
    /read .claude/roles/ui-engineer.md
    ```
 
 2. **Ask role-specific questions** after loading a role:
+
    ```
    Now that you're in UI Engineer role, help me implement a responsive navigation component.
    ```
 
 3. **Combine roles** for complex tasks:
+
    ```
    /read .claude/roles/ui-engineer.md
    /read .claude/roles/data-engineer.md
-   
+
    I need to create a data table component that fetches and displays user data from Supabase.
    ```
 
 4. **Use task-specific commands** for common workflows:
+
    ```
    /read .claude/tasks/ui/new-component.md
-   
+
    I need a Button component with primary, secondary, and danger variants.
    ```
 
@@ -187,4 +223,3 @@ This project uses Claude's context priming capabilities to provide specialized a
 - Be specific about what you're trying to accomplish
 - For complex tasks spanning multiple domains, load the most relevant roles in order of importance
 - If Claude seems to be missing context, try loading additional relevant documentation
-

@@ -1,474 +1,482 @@
-# Build Feature Command
+# Build Feature Command v2.0 (AAFD Methodology)
 
-Usage: `/build-feature [feature_spec_name]`
+Usage: `/build-feature-v2 [epic-id|feature-name]`
 
-This command reads a feature specification from `.claude/specs/features/` and systematically implements the feature according to the spec requirements.
+This command orchestrates the complete AAFD v2.0 feature development workflow, from Epic creation through implementation, using our structured methodology and GitHub Projects integration.
 
-## How It Works
+## Overview
 
-When you run `/build-feature [name]`, the command will:
-1. Look for a file at `.claude/specs/features/approved/[name].md`
-2. Read and parse the feature specification
-3. Create a comprehensive implementation plan
-4. Execute the implementation in phases
-5. Verify the implementation with tests
-6. Update documentation
+The Build Feature v2.0 command guides you through:
 
-## Usage Examples
+1. **Epic Creation & PRD** - Transform ideas into structured PRDs
+2. **Technical Chunking** - Break PRDs into implementation chunks
+3. **Story Creation** - Create actionable user stories
+4. **Sprint Planning** - Organize work into sprints
+5. **Implementation** - Execute with context-aware Claude Code sessions
+6. **Review & Verification** - Ensure quality and completeness
 
-```
-/build-feature user-onboarding-flow
-/build-feature ai-presentation-builder
-/build-feature course-progress-tracking
-/build-feature team-collaboration-tools
-```
+## Command Flow
 
-## Command Execution Steps
+### 1. Initialization & Detection
 
-### 1. Parse Command Input and Validate
+When you run `/build-feature-v2`, the command will:
 
-Extract the feature spec name and validate it exists:
 ```typescript
-const featureSpecName = commandArgs[0];
-if (!featureSpecName) {
-  console.log("Please specify a feature spec name. Usage: /build-feature [feature_spec_name]");
-  listAvailableSpecs();
-  return;
+// Detect if we're starting fresh or continuing
+if (isGitHubIssueNumber(input)) {
+  const issue = await getGitHubIssue(input);
+  const phase = detectCurrentPhase(issue);
+  return continueFromPhase(phase, issue);
+} else {
+  // Start new feature workflow
+  return startNewFeature(input);
 }
 ```
 
-### 2. Load Feature Specification
+### 2. Phase Detection Logic
 
-Attempt to read the corresponding feature spec file:
-```
-/read .claude/specs/features/approved/${featureSpecName}.md
-```
-
-If the file doesn't exist, check other locations and list available specs:
-```bash
-# Check if spec exists in draft folder
-ls .claude/specs/features/draft/${featureSpecName}.md 2>/dev/null && echo "Found in draft - move to approved first"
-
-# List all available specs by status
-echo "Available approved specs:"
-ls .claude/specs/features/approved/*.md 2>/dev/null || echo "No approved specs found"
-
-echo "Available draft specs:"
-ls .claude/specs/features/draft/*.md 2>/dev/null || echo "No draft specs found"
-```
-
-### 3. Adopt Appropriate Role
-
-Based on the feature type in the spec, load the relevant role:
 ```typescript
-// Determine primary role based on feature type
-const roleMapping = {
-  'ui': '.claude/roles/ui-engineer.md',
-  'api': '.claude/roles/data-engineer.md', 
-  'ai': '.claude/roles/ai-engineer.md',
-  'cms': '.claude/roles/cms-engineer.md',
-  'auth': '.claude/roles/security-engineer.md',
-  'system': '.claude/roles/architecture-engineer.md'
-};
+function detectCurrentPhase(issue) {
+  // Check custom fields in GitHub Projects
+  const aafdStage = issue.customFields['AAFD Stage'];
 
-// Load primary role
-/read ${roleMapping[featureSpec.primaryType]}
-```
-
-### 4. Load Development Context
-
-Read essential development guidelines and patterns:
-```
-/read CLAUDE.md
-/read .claude/docs/development/patterns.md
-/read .claude/docs/security/guidelines.md
-/read .claude/docs/testing/strategy.md
-```
-
-### 5. Parse Feature Specification
-
-Extract and validate key information from the spec:
-```typescript
-const featureSpec = parseFeatureSpecification(specContent);
-
-// Validate required sections
-const requiredSections = [
-  'userStories',
-  'technicalSpecifications', 
-  'implementationPlan',
-  'securityRequirements',
-  'testingStrategy'
-];
-
-validateSpecCompleteness(featureSpec, requiredSections);
-```
-
-### 6. Create Implementation Plan with TodoWrite
-
-Use the TodoWrite tool to create a comprehensive task breakdown:
-```typescript
-// Create implementation plan based on spec phases
-const implementationTodos = [];
-
-// Phase 1: Foundation
-implementationTodos.push({
-  id: `${featureSpecName}-foundation-setup`,
-  content: "Set up foundational components and data structures",
-  status: "pending",
-  priority: "high"
-});
-
-// Phase 2: Core Implementation  
-for (const userStory of featureSpec.userStories) {
-  implementationTodos.push({
-    id: `${featureSpecName}-story-${userStory.id}`,
-    content: `Implement: ${userStory.title}`,
-    status: "pending", 
-    priority: userStory.priority || "medium"
-  });
-}
-
-// Phase 3: Integration & Testing
-implementationTodos.push({
-  id: `${featureSpecName}-testing-setup`,
-  content: "Create comprehensive test suite",
-  status: "pending",
-  priority: "high"
-});
-
-// Phase 4: Security & Validation
-implementationTodos.push({
-  id: `${featureSpecName}-security-review`,
-  content: "Implement security requirements and RLS policies",
-  status: "pending",
-  priority: "high"
-});
-
-// Phase 5: Documentation & Verification
-implementationTodos.push({
-  id: `${featureSpecName}-documentation`,
-  content: "Update documentation and verify implementation",
-  status: "pending",
-  priority: "medium"
-});
-
-// Create todos
-/invoke TodoWrite { todos: implementationTodos }
-```
-
-### 7. Implementation Execution
-
-Execute implementation in phases according to the feature spec:
-
-#### Phase 1: Foundation Setup
-
-Mark foundation todo as in_progress and begin implementation:
-```typescript
-// Update todo status
-/invoke TodoWrite { todos: [{ 
-  id: `${featureSpecName}-foundation-setup`,
-  status: "in_progress",
-  // ... other todo properties
-}] }
-
-// Database schema setup
-if (featureSpec.dataModel) {
-  // Create migration files
-  // Set up Supabase tables
-  // Define RLS policies
-}
-
-// API structure setup  
-if (featureSpec.apiRequirements) {
-  // Create server actions
-  // Set up validation schemas
-  // Define error handling patterns
-}
-
-// UI component foundations
-if (featureSpec.uiComponents) {
-  // Create base components
-  // Set up shared types
-  // Configure routing if needed
-}
-```
-
-#### Phase 2: Core Feature Implementation
-
-Implement each user story systematically:
-```typescript
-for (const userStory of featureSpec.userStories) {
-  // Mark story as in_progress
-  /invoke TodoWrite { todos: [{ 
-    id: `${featureSpecName}-story-${userStory.id}`,
-    status: "in_progress"
-  }] }
-  
-  // Implement acceptance criteria
-  for (const criteria of userStory.acceptanceCriteria) {
-    implementAcceptanceCriteria(criteria);
+  switch (aafdStage) {
+    case 'Idea':
+      return 'epic-creation';
+    case 'PRD':
+      return 'prd-refinement';
+    case 'Chunks':
+      return 'technical-chunking';
+    case 'Stories':
+      return 'story-creation';
+    case 'Ready':
+      return 'implementation';
+    case 'Blocked':
+      return 'unblock-resolution';
+    default:
+      return 'epic-creation';
   }
-  
-  // Verify user story completion
-  verifyUserStoryImplementation(userStory);
-  
-  // Mark story as completed
-  /invoke TodoWrite { todos: [{ 
-    id: `${featureSpecName}-story-${userStory.id}`,
-    status: "completed"
-  }] }
 }
 ```
 
-#### Phase 3: Security Implementation
+## Workflow Phases
 
-Implement security requirements following SlideHeroes patterns:
+### Phase 1: Epic Creation & PRD
+
+**What happens:**
+
+1. Load Feature Planning prompt
+2. Create structured PRD from feature idea
+3. Create GitHub Epic issue
+4. Set up GitHub Projects tracking
+
+**Actions:**
+
+```
+1. Load prompt: /read .claude/build/prompt-library/feature-planning.xml
+2. Apply prompt with feature description
+3. Create Epic issue with generated PRD
+4. Add to GitHub Projects board
+5. Set AAFD Stage = "PRD"
+```
+
+**Outputs:**
+
+- GitHub Epic issue with complete PRD
+- Technical requirements documented
+- Cross-cutting concerns identified
+- Success metrics defined
+
+### Phase 2: Technical Chunking
+
+**What happens:**
+
+1. Analyze PRD structure
+2. Identify logical implementation chunks
+3. Create chunk issues linked to Epic
+4. Document dependencies
+
+**Actions:**
+
+```
+1. Load prompt: /read .claude/build/prompt-library/implementation-planning.xml
+2. Apply prompt to PRD content
+3. Create 2-4 chunk issues
+4. Link chunks to parent Epic
+5. Set AAFD Stage = "Chunks"
+```
+
+**Outputs:**
+
+- 2-4 implementation chunks
+- Dependency documentation
+- Parallel work streams identified
+- Risk assessment per chunk
+
+### Phase 3: Story Creation & Estimation
+
+**What happens:**
+
+1. Break chunks into user stories
+2. Create detailed technical tasks
+3. Estimate story points
+4. Set up context files
+
+**Actions:**
+
+```
+1. For each chunk, create 2-5 user stories
+2. Use GitHub Story template for each
+3. Estimate using Fibonacci sequence
+4. Create context directories:
+   - .claude/build/contexts/stories/story-{id}/
+   - Add context.md, technical-notes.md, progress.md
+5. Set AAFD Stage = "Stories"
+```
+
+**Outputs:**
+
+- Implementable user stories
+- Story point estimates
+- Context files prepared
+- Technical tasks defined
+
+### Phase 4: Sprint Planning
+
+**What happens:**
+
+1. Review capacity and velocity
+2. Select stories for sprint
+3. Order by dependencies
+4. Prepare implementation contexts
+
+**Actions:**
+
+```
+1. Calculate available capacity
+2. Select stories within capacity
+3. Create sprint milestone
+4. Move stories to "Ready"
+5. Set AAFD Stage = "Ready"
+```
+
+**Outputs:**
+
+- Sprint backlog defined
+- Implementation order set
+- Context loading prepared
+- Session schedule planned
+
+### Phase 5: Implementation Execution
+
+**What happens:**
+
+1. Load story context
+2. Implement with Claude Code
+3. Track progress in real-time
+4. Update GitHub Projects
+
+**For each story:**
+
+```
+1. Load context:
+   - /read .claude/build/contexts/session-templates/{role}.md
+   - /read .claude/build/contexts/stories/story-{id}/context.md
+   - /read CLAUDE.md
+
+2. Implement story:
+   - Follow acceptance criteria
+   - Use project patterns
+   - Write tests
+   - Update documentation
+
+3. Track progress:
+   - Update progress.md
+   - Move through project board
+   - Document decisions
+
+4. Complete story:
+   - Run quality checks
+   - Create PR
+   - Update tracking
+```
+
+### Phase 6: Review & Verification
+
+**What happens:**
+
+1. Validate implementation
+2. Run quality checks
+3. Update documentation
+4. Complete retrospective
+
+**Actions:**
+
+```
+1. Verify all acceptance criteria
+2. Run test suite
+3. Check code quality
+4. Update documentation
+5. Complete feature retrospective
+6. Close Epic and related issues
+```
+
+## Command Implementation
+
+### Start New Feature
+
 ```typescript
-// Mark security todo as in_progress
-/invoke TodoWrite { todos: [{ 
-  id: `${featureSpecName}-security-review`,
-  status: "in_progress"
-}] }
+async function startNewFeature(featureName: string) {
+  console.log(`🚀 Starting new feature: ${featureName}`);
 
-// RLS Policies
-if (featureSpec.rlsPolicies) {
-  // Create RLS policies according to spec
-  // Test policies with sample data
-  // Verify access control works correctly
-}
+  // Step 1: Create Epic with PRD
+  console.log('\n📋 Phase 1: Creating Epic and PRD...');
+  const prd = await createPRD(featureName);
+  const epic = await createGitHubEpic(prd);
 
-// Input Validation
-if (featureSpec.inputValidation) {
-  // Create Zod schemas
-  // Implement server-side validation
-  // Add client-side validation feedback
-}
+  // Step 2: Guide through workflow
+  console.log(`
+✅ Epic created: #${epic.number}
 
-// API Security
-if (featureSpec.apiSecurity) {
-  // Use enhanceAction wrapper
-  // Implement rate limiting if specified
-  // Add audit logging if required
+Next steps:
+1. Review the PRD in the issue description
+2. Run: /build-feature-v2 ${epic.number} --continue
+   
+This will guide you through:
+- Technical chunking
+- Story creation
+- Sprint planning
+- Implementation
+`);
 }
 ```
 
-#### Phase 4: Testing Implementation
+### Continue Existing Feature
 
-Create comprehensive test suite:
 ```typescript
-// Mark testing todo as in_progress
-/invoke TodoWrite { todos: [{ 
-  id: `${featureSpecName}-testing-setup`,
-  status: "in_progress"
-}] }
+async function continueFromPhase(phase: string, issue: Issue) {
+  switch (phase) {
+    case 'prd-refinement':
+      console.log('📋 Continuing: PRD Refinement...');
+      await guidePRDRefinement(issue);
+      break;
 
-// Unit Tests
-if (featureSpec.unitTests) {
-  // Test utility functions
-  // Test business logic
-  // Test validation schemas
+    case 'technical-chunking':
+      console.log('🔧 Continuing: Technical Chunking...');
+      await guideTechnicalChunking(issue);
+      break;
+
+    case 'story-creation':
+      console.log('📝 Continuing: Story Creation...');
+      await guideStoryCreation(issue);
+      break;
+
+    case 'implementation':
+      console.log('💻 Continuing: Implementation...');
+      await guideImplementation(issue);
+      break;
+  }
 }
-
-// Integration Tests  
-if (featureSpec.integrationTests) {
-  // Test API endpoints
-  // Test database operations
-  // Test RLS policies
-}
-
-// End-to-End Tests
-if (featureSpec.e2eTests) {
-  // Test critical user journeys
-  // Test error scenarios
-  // Test performance requirements
-}
-
-// Run test suite and verify coverage
-runTestSuite();
-verifyTestCoverage(featureSpec.coverageTargets);
 ```
 
-#### Phase 5: Documentation & Verification
+## Interactive Guidance
 
-Complete implementation with documentation and final verification:
-```typescript
-// Mark documentation todo as in_progress
-/invoke TodoWrite { todos: [{ 
-  id: `${featureSpecName}-documentation`,
-  status: "in_progress"
-}] }
+### PRD Creation Example
 
-// Update documentation
-updateApiDocumentation(featureSpec.apiRequirements);
-updateUserDocumentation(featureSpec.userExperience);
-updateTechnicalDocumentation(featureSpec.technicalSpecs);
+```
+🚀 Creating PRD for: AI Slide Title Suggestions
 
-// Verify success metrics are trackable
-implementSuccessMetrics(featureSpec.successMetrics);
+I'll help you create a comprehensive PRD. Please provide:
 
-// Final verification
-verifyAllAcceptanceCriteria(featureSpec.userStories);
-verifySecurityRequirements(featureSpec.securityRequirements);
-verifyPerformanceRequirements(featureSpec.performanceRequirements);
+1. **Problem Statement**: What problem does this solve?
+   > Users spend too much time thinking of slide titles
+
+2. **Target Users**: Who will use this feature?
+   > SlideHeroes users creating presentations
+
+3. **Key Functionality**: Core features needed?
+   > Generate 3-5 title suggestions based on slide content
+   > Allow customization of suggestions
+   > Track AI usage for billing
+
+[Generating PRD...]
+
+✅ PRD Created! Review at: https://github.com/MLorneSmith/2025slideheroes/issues/21
+
+Next: Run `/build-feature-v2 21 --continue` to proceed with technical chunking
 ```
 
-### 8. Code Quality & Standards Compliance
+### Story Implementation Example
 
-Ensure all code follows SlideHeroes standards:
-```bash
-# Run linting and formatting
-pnpm lint:fix
-pnpm format:fix
+```
+💻 Implementing Story: Generate AI Slide Title Suggestions
 
-# Run type checking
-pnpm typecheck
+Loading context...
+✅ AI Engineer role loaded
+✅ Story context loaded
+✅ Project standards loaded
 
-# Run tests
-pnpm test
+Current Task: Create OutlineGeneratorDialog component
 
-# Verify database migrations
-pnpm supabase:web:test
+Files to modify:
+- apps/web/app/home/(user)/editor/_components/SlideSuggestionsDialog.tsx
+- apps/web/app/home/(user)/editor/_actions/slide-suggestions.action.ts
+
+Would you like me to:
+1. Show the implementation plan
+2. Start implementing the component
+3. Review similar patterns first
+
+Choice: _
 ```
 
-### 9. Feature Verification
+## Progress Tracking
 
-Verify the feature meets all requirements:
-```typescript
-const verificationResults = {
-  userStoriesCompleted: checkUserStoriesCompletion(featureSpec.userStories),
-  securityRequirementsMet: checkSecurityCompliance(featureSpec.securityRequirements),
-  performanceTargetsMet: checkPerformanceTargets(featureSpec.performanceRequirements),
-  testCoverageMet: checkTestCoverage(featureSpec.testingStrategy),
-  documentationComplete: checkDocumentationCompleteness(featureSpec)
-};
+The command maintains progress through:
 
-generateVerificationReport(verificationResults);
-```
+1. **GitHub Projects Board**
 
-### 10. Completion Summary
+   - Visual progress tracking
+   - Automated status updates
+   - Dependency visualization
 
-Provide comprehensive completion summary:
-```
-✅ Feature Implementation Complete!
+2. **Context Files**
 
-📋 Feature: [Feature Name]
-🎯 User Stories Implemented: [X/Y]  
-🔒 Security Requirements: ✅ Met
-🧪 Test Coverage: [X]% (Target: [Y]%)
-📊 Performance Targets: ✅ Met
-📚 Documentation: ✅ Complete
+   - Story progress in `.claude/build/contexts/stories/`
+   - Decision documentation
+   - Session continuity
 
-📁 Files Created/Modified:
-  - [component files]
-  - [API routes/actions]
-  - [database migrations]
-  - [test files]
-
-🚀 Next Steps:
-1. Review implementation against feature spec
-2. Test feature in development environment
-3. Create pull request for code review
-4. Deploy to staging for stakeholder review
-5. Monitor success metrics post-deployment
-
-💡 Deployment Notes:
-- [Any special deployment considerations]
-- [Environment variables to set]
-- [Database migrations to run]
-```
+3. **Todo List**
+   - Real-time task tracking
+   - Progress indicators
+   - Next action guidance
 
 ## Error Handling
 
-### Missing Feature Spec
+### Missing Prerequisites
+
 ```
-❌ Feature spec '[name]' not found in .claude/specs/features/approved/
+❌ GitHub Projects not configured!
 
-📁 Available approved specs:
-- user-authentication-flow
-- presentation-builder  
-- team-dashboard
+Please set up GitHub Projects first:
+1. Go to: https://github.com/MLorneSmith/2025slideheroes/projects
+2. Create project "SlideHeroes AAFD v2.0"
+3. Configure custom fields as documented
+4. Run command again
 
-📝 Available draft specs:
-- user-onboarding-flow (move to approved to implement)
-- ai-chat-feature (move to approved to implement)
-
-💡 To create a new feature spec:
-1. Run: /write-feature-spec [name]
-2. Review the generated spec in draft/
-3. Move to approved/ when ready: mv .claude/specs/features/draft/[name].md .claude/specs/features/approved/
-4. Run: /build-feature [name]
-
-🔄 To move draft to approved:
-mv .claude/specs/features/draft/[name].md .claude/specs/features/approved/
+Need help? See: .claude/build/docs/methodology/getting-started.md
 ```
 
-### Incomplete Feature Spec
+### Incomplete Context
+
 ```
-⚠️ Feature spec validation failed!
+⚠️ Story context incomplete!
 
-Missing required sections:
-- [ ] Technical Specifications
-- [ ] Security Requirements  
-- [x] User Stories
-- [x] Implementation Plan
+Missing required context files:
+- [ ] .claude/build/contexts/stories/story-123/context.md
+- [x] .claude/build/contexts/stories/story-123/progress.md
+- [ ] .claude/build/contexts/stories/story-123/technical-notes.md
 
-Please complete the feature spec before implementation.
-```
+Would you like me to:
+1. Create missing files from issue data
+2. Guide you through context creation
+3. Skip and continue anyway
 
-### Implementation Failures
-```
-❌ Implementation failed at Phase [X]
-
-Error: [specific error message]
-
-Current Progress:
-- [x] Phase 1: Foundation ✅
-- [~] Phase 2: Core Implementation ⚠️ 
-- [ ] Phase 3: Security Implementation
-- [ ] Phase 4: Testing
-- [ ] Phase 5: Documentation
-
-Suggestion: Fix the error and resume with:
-/build-feature [name] --resume-from-phase-2
+Choice: _
 ```
 
-## Advanced Options
+### Implementation Blocked
 
-### Resume Implementation
 ```
-/build-feature [name] --resume-from-phase-[X]
+🚫 Implementation blocked!
+
+Blocker: Missing API endpoint specification
+Story: #125 - AI Title Generation
+
+Options:
+1. Document blocker and switch stories
+2. Research and resolve blocker
+3. Create spike story for investigation
+
+Choice: _
 ```
 
-### Specific Phase Implementation
-```
-/build-feature [name] --phase=[phase_name]
-```
+## Advanced Features
 
-### Dry Run Mode
+### Batch Story Implementation
+
 ```
-/build-feature [name] --dry-run
+/build-feature-v2 --batch-implement 21
 ```
 
-## Integration Notes
+Implements multiple stories from Epic #21 in sequence.
 
-### With Other Commands
-- Use `/write-unit-tests` for comprehensive test coverage
-- Use `/log-issue` if bugs are discovered during implementation  
-- Use `/debug-issue` for implementation problems
+### Context Refresh
 
-### Feature Spec Requirements
-The feature spec must include:
-- Complete user stories with acceptance criteria
-- Technical architecture specifications
-- Security and RLS requirements
-- Testing strategy and coverage targets
-- Success metrics and monitoring requirements
+```
+/build-feature-v2 --refresh-context 125
+```
 
-### SlideHeroes Patterns
-All implementations must follow:
-- Server Components preference
-- enhanceAction wrapper for server actions
-- Zod validation for all inputs
-- RLS policies for data access
-- TypeScript strict typing
-- Proper error handling and user feedback
+Refreshes stale context for story #125.
+
+### Phase Jump
+
+```
+/build-feature-v2 21 --jump-to implementation
+```
+
+Skips to specific phase (use with caution).
+
+### Dry Run
+
+```
+/build-feature-v2 "New Feature" --dry-run
+```
+
+Shows what would happen without creating issues.
+
+## Integration with Other Commands
+
+- **`/write-unit-tests`** - Automatically triggered for test implementation
+- **`/deep-debug`** - Used when implementation issues arise
+- **`/log-issue`** - For bugs discovered during implementation
+
+## Best Practices
+
+1. **Always start with Epic creation** - Don't skip the PRD phase
+2. **Keep chunks small** - 2-4 chunks maximum per Epic
+3. **Maintain context** - Update progress files after each session
+4. **Follow the workflow** - The methodology is designed for success
+5. **Document decisions** - Use technical-notes.md for important choices
+
+## Quick Reference
+
+```bash
+# Start new feature
+/build-feature-v2 "AI Slide Suggestions"
+
+# Continue existing feature
+/build-feature-v2 21
+
+# Continue with specific phase
+/build-feature-v2 21 --continue
+
+# Refresh stale context
+/build-feature-v2 --refresh-context 125
+
+# Batch implement stories
+/build-feature-v2 --batch-implement 21
+```
+
+## Methodology Benefits
+
+Using this command ensures:
+
+- ✅ Structured planning before implementation
+- ✅ Context preserved across sessions
+- ✅ GitHub Projects integration
+- ✅ Quality standards enforcement
+- ✅ Systematic progress tracking
+- ✅ AI-optimized development flow
+
+The AAFD v2.0 methodology transforms feature development from ad-hoc coding to systematic, high-quality delivery!
