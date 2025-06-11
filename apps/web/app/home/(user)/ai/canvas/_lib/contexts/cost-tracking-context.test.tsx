@@ -12,6 +12,8 @@ import {
 	renderHook,
 } from "@testing-library/react";
 import React, { type ReactNode } from "react";
+import type { User } from "@supabase/supabase-js";
+import type { UseQueryResult } from "@tanstack/react-query";
 import { CostTrackingProvider, useCostTracking } from "./cost-tracking-context";
 
 // Mock dependencies - mock the entire context file's dependencies at the module level
@@ -55,6 +57,52 @@ function TestWrapper({ children }: { children: ReactNode }) {
 	return <CostTrackingProvider>{children}</CostTrackingProvider>;
 }
 
+// Helper function to create a complete User mock
+function createMockUser(overrides: Partial<User> = {}): User {
+	return {
+		id: "user-123",
+		email: "test@example.com",
+		aud: "authenticated",
+		role: "authenticated",
+		created_at: "2023-01-01T00:00:00.000Z",
+		updated_at: "2023-01-01T00:00:00.000Z",
+		app_metadata: {},
+		user_metadata: {},
+		identities: [],
+		...overrides,
+	} as User;
+}
+
+// Helper function to create a proper UseQueryResult mock
+function createMockUseQueryResult<T>(
+	data: T | null | undefined,
+	overrides: Partial<UseQueryResult<T, Error>> = {},
+): UseQueryResult<T, Error> {
+	return {
+		data,
+		error: null,
+		isError: false,
+		isPending: false,
+		isLoading: false,
+		isSuccess: data !== null && data !== undefined,
+		status: data !== null && data !== undefined ? "success" : "pending",
+		dataUpdatedAt: Date.now(),
+		errorUpdatedAt: 0,
+		failureCount: 0,
+		failureReason: null,
+		fetchStatus: "idle",
+		isInitialLoading: false,
+		isLoadingError: false,
+		isPaused: false,
+		isPlaceholderData: false,
+		isRefetchError: false,
+		isRefetching: false,
+		isStale: false,
+		refetch: vi.fn(),
+		...overrides,
+	} as UseQueryResult<T, Error>;
+}
+
 describe("CostTrackingContext", () => {
 	const mockUseUser = vi.mocked(useUser);
 
@@ -70,7 +118,7 @@ describe("CostTrackingContext", () => {
 	describe("Provider Component", () => {
 		it("initializes with default values when user is not loaded", () => {
 			// Arrange
-			mockUseUser.mockReturnValue({ data: null });
+			mockUseUser.mockReturnValue(createMockUseQueryResult(null));
 
 			// Act
 			render(
@@ -88,9 +136,11 @@ describe("CostTrackingContext", () => {
 
 		it("generates session ID when user loads", async () => {
 			// Arrange
-			mockUseUser.mockReturnValue({
-				data: { id: "user-123", email: "test@example.com" },
-			});
+			mockUseUser.mockReturnValue(
+				createMockUseQueryResult(
+					createMockUser({ id: "user-123", email: "test@example.com" }),
+				),
+			);
 
 			mockFetch.mockResolvedValueOnce({
 				ok: true,
@@ -117,9 +167,11 @@ describe("CostTrackingContext", () => {
 
 		it("fetches initial costs on user load", async () => {
 			// Arrange
-			mockUseUser.mockReturnValue({
-				data: { id: "user-123", email: "test@example.com" },
-			});
+			mockUseUser.mockReturnValue(
+				createMockUseQueryResult(
+					createMockUser({ id: "user-123", email: "test@example.com" }),
+				),
+			);
 
 			mockFetch.mockResolvedValueOnce({
 				ok: true,
@@ -145,9 +197,11 @@ describe("CostTrackingContext", () => {
 
 		it("handles successful API response with zero cost", async () => {
 			// Arrange
-			mockUseUser.mockReturnValue({
-				data: { id: "user-123", email: "test@example.com" },
-			});
+			mockUseUser.mockReturnValue(
+				createMockUseQueryResult(
+					createMockUser({ id: "user-123", email: "test@example.com" }),
+				),
+			);
 
 			mockFetch.mockResolvedValueOnce({
 				ok: true,
@@ -171,9 +225,11 @@ describe("CostTrackingContext", () => {
 
 		it("handles successful API response with existing cost", async () => {
 			// Arrange
-			mockUseUser.mockReturnValue({
-				data: { id: "user-123", email: "test@example.com" },
-			});
+			mockUseUser.mockReturnValue(
+				createMockUseQueryResult(
+					createMockUser({ id: "user-123", email: "test@example.com" }),
+				),
+			);
 
 			mockFetch.mockResolvedValueOnce({
 				ok: true,
@@ -197,9 +253,11 @@ describe("CostTrackingContext", () => {
 
 		it("handles API response without cost property", async () => {
 			// Arrange
-			mockUseUser.mockReturnValue({
-				data: { id: "user-123", email: "test@example.com" },
-			});
+			mockUseUser.mockReturnValue(
+				createMockUseQueryResult(
+					createMockUser({ id: "user-123", email: "test@example.com" }),
+				),
+			);
 
 			mockFetch.mockResolvedValueOnce({
 				ok: true,
@@ -226,9 +284,11 @@ describe("CostTrackingContext", () => {
 			const consoleSpy = vi
 				.spyOn(console, "error")
 				.mockImplementation(() => {});
-			mockUseUser.mockReturnValue({
-				data: { id: "user-123", email: "test@example.com" },
-			});
+			mockUseUser.mockReturnValue(
+				createMockUseQueryResult(
+					createMockUser({ id: "user-123", email: "test@example.com" }),
+				),
+			);
 
 			mockFetch.mockResolvedValueOnce({
 				ok: true,
@@ -257,9 +317,11 @@ describe("CostTrackingContext", () => {
 			const consoleSpy = vi
 				.spyOn(console, "error")
 				.mockImplementation(() => {});
-			mockUseUser.mockReturnValue({
-				data: { id: "user-123", email: "test@example.com" },
-			});
+			mockUseUser.mockReturnValue(
+				createMockUseQueryResult(
+					createMockUser({ id: "user-123", email: "test@example.com" }),
+				),
+			);
 
 			mockFetch.mockRejectedValueOnce(new Error("Network error"));
 
@@ -289,9 +351,11 @@ describe("CostTrackingContext", () => {
 			const consoleSpy = vi
 				.spyOn(console, "error")
 				.mockImplementation(() => {});
-			mockUseUser.mockReturnValue({
-				data: { id: "user-123", email: "test@example.com" },
-			});
+			mockUseUser.mockReturnValue(
+				createMockUseQueryResult(
+					createMockUser({ id: "user-123", email: "test@example.com" }),
+				),
+			);
 
 			mockFetch.mockResolvedValueOnce({
 				ok: true,
@@ -323,9 +387,11 @@ describe("CostTrackingContext", () => {
 
 		it("re-initializes when user ID changes", async () => {
 			// Arrange - Start with first user
-			mockUseUser.mockReturnValue({
-				data: { id: "user-123", email: "test1@example.com" },
-			});
+			mockUseUser.mockReturnValue(
+				createMockUseQueryResult(
+					createMockUser({ id: "user-123", email: "test1@example.com" }),
+				),
+			);
 
 			mockFetch.mockResolvedValueOnce({
 				ok: true,
@@ -347,9 +413,11 @@ describe("CostTrackingContext", () => {
 			expect(screen.getByTestId("cost")).toHaveTextContent("10");
 
 			// Change to second user
-			mockUseUser.mockReturnValue({
-				data: { id: "user-456", email: "test2@example.com" },
-			});
+			mockUseUser.mockReturnValue(
+				createMockUseQueryResult(
+					createMockUser({ id: "user-456", email: "test2@example.com" }),
+				),
+			);
 
 			mockFetch.mockResolvedValueOnce({
 				ok: true,
@@ -374,9 +442,11 @@ describe("CostTrackingContext", () => {
 
 	describe("addCost Function", () => {
 		beforeEach(async () => {
-			mockUseUser.mockReturnValue({
-				data: { id: "user-123", email: "test@example.com" },
-			});
+			mockUseUser.mockReturnValue(
+				createMockUseQueryResult(
+					createMockUser({ id: "user-123", email: "test@example.com" }),
+				),
+			);
 
 			mockFetch.mockResolvedValueOnce({
 				ok: true,
@@ -587,9 +657,11 @@ describe("CostTrackingContext", () => {
 	describe("useCostTracking Hook", () => {
 		it("returns context values correctly", async () => {
 			// Arrange
-			mockUseUser.mockReturnValue({
-				data: { id: "user-123", email: "test@example.com" },
-			});
+			mockUseUser.mockReturnValue(
+				createMockUseQueryResult(
+					createMockUser({ id: "user-123", email: "test@example.com" }),
+				),
+			);
 
 			mockFetch.mockResolvedValueOnce({
 				ok: true,
@@ -625,9 +697,11 @@ describe("CostTrackingContext", () => {
 
 		it("addCost function from hook updates context state", async () => {
 			// Arrange
-			mockUseUser.mockReturnValue({
-				data: { id: "user-123", email: "test@example.com" },
-			});
+			mockUseUser.mockReturnValue(
+				createMockUseQueryResult(
+					createMockUser({ id: "user-123", email: "test@example.com" }),
+				),
+			);
 
 			mockFetch.mockResolvedValueOnce({
 				ok: true,
@@ -657,9 +731,11 @@ describe("CostTrackingContext", () => {
 	describe("Integration Tests", () => {
 		it("complete user flow from loading to cost tracking", async () => {
 			// Arrange
-			mockUseUser.mockReturnValue({
-				data: { id: "user-123", email: "test@example.com" },
-			});
+			mockUseUser.mockReturnValue(
+				createMockUseQueryResult(
+					createMockUser({ id: "user-123", email: "test@example.com" }),
+				),
+			);
 
 			mockFetch.mockResolvedValueOnce({
 				ok: true,
@@ -699,9 +775,11 @@ describe("CostTrackingContext", () => {
 
 		it("multiple components can share cost tracking state", async () => {
 			// Arrange
-			mockUseUser.mockReturnValue({
-				data: { id: "user-123", email: "test@example.com" },
-			});
+			mockUseUser.mockReturnValue(
+				createMockUseQueryResult(
+					createMockUser({ id: "user-123", email: "test@example.com" }),
+				),
+			);
 
 			mockFetch.mockResolvedValueOnce({
 				ok: true,
@@ -776,9 +854,11 @@ describe("CostTrackingContext", () => {
 	describe("Edge Cases", () => {
 		it("handles very large cost values", async () => {
 			// Arrange
-			mockUseUser.mockReturnValue({
-				data: { id: "user-123", email: "test@example.com" },
-			});
+			mockUseUser.mockReturnValue(
+				createMockUseQueryResult(
+					createMockUser({ id: "user-123", email: "test@example.com" }),
+				),
+			);
 
 			mockFetch.mockResolvedValueOnce({
 				ok: true,

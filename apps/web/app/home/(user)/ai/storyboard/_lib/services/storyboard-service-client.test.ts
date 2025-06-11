@@ -160,10 +160,10 @@ describe("StoryboardService", () => {
 			const result = await service.getStoryboard("submission-1");
 
 			// Assert
-			expect(result.title).toBe("Main Title");
-			expect(result.slides).toHaveLength(2);
-			expect(result.slides[0].headline).toBe("Main Title");
-			expect(result.slides[1].headline).toBe("Slide 1");
+			expect(result?.title).toBe("Main Title");
+			expect(result?.slides).toHaveLength(2);
+			expect(result?.slides?.[0]?.headline).toBe("Main Title");
+			expect(result?.slides?.[1]?.headline).toBe("Slide 1");
 			expect(mockSupabase.update).toHaveBeenCalled(); // Should save generated storyboard
 		});
 
@@ -198,8 +198,8 @@ describe("StoryboardService", () => {
 			const result = await service.getStoryboard("submission-1");
 
 			// Assert
-			expect(result.title).toBe("Fallback Title");
-			expect(result.slides).toHaveLength(1);
+			expect(result?.title).toBe("Fallback Title");
+			expect(result?.slides).toHaveLength(1);
 			expect(mockSupabase.select).toHaveBeenCalledWith("id, outline, title"); // Fallback query
 		});
 

@@ -44,7 +44,7 @@ describe("normalizeEditorContent", () => {
 			// Assert
 			expect(result.type).toBe("doc");
 			expect(result.content).toHaveLength(1);
-			expect(result.content[0].type).toBe("paragraph");
+			expect(result.content?.[0]?.type).toBe("paragraph");
 			expect(result.meta).toEqual({
 				sectionType: "situation",
 				timestamp: "2024-01-01T00:00:00.000Z",
@@ -91,9 +91,9 @@ describe("normalizeEditorContent", () => {
 			const result = normalizeEditorContent(input, sectionType);
 
 			// Assert
-			expect(result.content[0].type).toBe("heading");
-			expect(result.content[0].attrs?.level).toBe(1);
-			expect(result.content[0].content?.[0]).toEqual({
+			expect(result.content?.[0]?.type).toBe("heading");
+			expect(result.content?.[0]?.attrs?.level).toBe(1);
+			expect(result.content?.[0]?.content?.[0]).toEqual({
 				type: "text",
 				text: "Presentation Outline",
 			});
@@ -123,8 +123,8 @@ describe("normalizeEditorContent", () => {
 
 			// Assert
 			expect(result.content).toHaveLength(2); // Should not add another heading
-			expect(result.content[0].type).toBe("heading");
-			expect(result.content[0].content?.[0]).toEqual({
+			expect(result.content?.[0]?.type).toBe("heading");
+			expect(result.content?.[0]?.content?.[0]).toEqual({
 				type: "text",
 				text: "My Outline",
 			});
@@ -143,8 +143,8 @@ describe("normalizeEditorContent", () => {
 			// Assert
 			expect(result.type).toBe("doc");
 			expect(result.content).toHaveLength(1);
-			expect(result.content[0].type).toBe("paragraph");
-			expect(result.content[0].content?.[0]).toEqual({
+			expect(result.content?.[0]?.type).toBe("paragraph");
+			expect(result.content?.[0]?.content?.[0]).toEqual({
 				type: "text",
 				text: " ",
 			});
@@ -161,8 +161,8 @@ describe("normalizeEditorContent", () => {
 			// Assert
 			expect(result.type).toBe("doc");
 			expect(result.content).toHaveLength(1);
-			expect(result.content[0].type).toBe("paragraph");
-			expect(result.content[0].content?.[0]).toEqual({
+			expect(result.content?.[0]?.type).toBe("paragraph");
+			expect(result.content?.[0]?.content?.[0]).toEqual({
 				type: "text",
 				text: " ",
 			});
@@ -182,8 +182,8 @@ describe("normalizeEditorContent", () => {
 			// Assert
 			expect(result.type).toBe("doc");
 			expect(result.content).toHaveLength(1);
-			expect(result.content[0].type).toBe("paragraph");
-			expect(result.content[0].content?.[0]).toEqual({
+			expect(result.content?.[0]?.type).toBe("paragraph");
+			expect(result.content?.[0]?.content?.[0]).toEqual({
 				type: "text",
 				text: " ",
 			});
@@ -204,8 +204,8 @@ describe("normalizeEditorContent", () => {
 			// Assert
 			expect(result.type).toBe("doc");
 			expect(result.content).toHaveLength(1);
-			expect(result.content[0].type).toBe("paragraph");
-			expect(result.content[0].content?.[0]).toEqual({
+			expect(result.content?.[0]?.type).toBe("paragraph");
+			expect(result.content?.[0]?.content?.[0]).toEqual({
 				type: "text",
 				text: " ",
 			});
@@ -222,8 +222,8 @@ describe("normalizeEditorContent", () => {
 			// Assert
 			expect(result.type).toBe("doc");
 			expect(result.content).toHaveLength(1);
-			expect(result.content[0].type).toBe("paragraph");
-			expect(result.content[0].content?.[0]).toEqual({
+			expect(result.content?.[0]?.type).toBe("paragraph");
+			expect(result.content?.[0]?.content?.[0]).toEqual({
 				type: "text",
 				text: " ",
 			});
@@ -248,7 +248,7 @@ describe("normalizeEditorContent", () => {
 			const result = normalizeEditorContent(input, sectionType);
 
 			// Assert
-			expect(result.content[0].content?.[0]).toEqual({
+			expect(result.content?.[0]?.content?.[0]).toEqual({
 				type: "text",
 				text: " ",
 			});
@@ -271,7 +271,7 @@ describe("normalizeEditorContent", () => {
 			const result = normalizeEditorContent(input, sectionType);
 
 			// Assert
-			expect(result.content[0].content?.[0]).toEqual({
+			expect(result.content?.[0]?.content?.[0]).toEqual({
 				type: "text",
 				text: " ",
 			});
@@ -291,7 +291,9 @@ describe("normalizeEditorContent", () => {
 			const result = normalizeEditorContent(input, sectionType);
 
 			// Assert
-			expect(result.content[0].content).toEqual([{ type: "text", text: " " }]);
+			expect(result.content?.[0]?.content).toEqual([
+				{ type: "text", text: " " },
+			]);
 		});
 
 		it("should fix paragraphs with empty content array", () => {
@@ -306,7 +308,9 @@ describe("normalizeEditorContent", () => {
 			const result = normalizeEditorContent(input, sectionType);
 
 			// Assert
-			expect(result.content[0].content).toEqual([{ type: "text", text: " " }]);
+			expect(result.content?.[0]?.content).toEqual([
+				{ type: "text", text: " " },
+			]);
 		});
 
 		it("should fix empty bullet lists", () => {
@@ -323,9 +327,9 @@ describe("normalizeEditorContent", () => {
 			const result = normalizeEditorContent(input, sectionType);
 
 			// Assert
-			expect(result.content[0].content).toHaveLength(1);
-			expect(result.content[0].content?.[0].type).toBe("listItem");
-			expect(result.content[0].content?.[0].content?.[0].type).toBe(
+			expect(result.content?.[0]?.content).toHaveLength(1);
+			expect(result.content?.[0]?.content?.[0]?.type).toBe("listItem");
+			expect(result.content?.[0]?.content?.[0]?.content?.[0]?.type).toBe(
 				"paragraph",
 			);
 		});
@@ -342,9 +346,9 @@ describe("normalizeEditorContent", () => {
 			const result = normalizeEditorContent(input, sectionType);
 
 			// Assert
-			expect(result.content[0].content).toHaveLength(1);
-			expect(result.content[0].content?.[0].type).toBe("listItem");
-			expect(result.content[0].content?.[0].content?.[0].type).toBe(
+			expect(result.content?.[0]?.content).toHaveLength(1);
+			expect(result.content?.[0]?.content?.[0]?.type).toBe("listItem");
+			expect(result.content?.[0]?.content?.[0]?.content?.[0]?.type).toBe(
 				"paragraph",
 			);
 		});
@@ -371,9 +375,9 @@ describe("normalizeEditorContent", () => {
 			const result = normalizeEditorContent(input, sectionType);
 
 			// Assert
-			const listItem = result.content[0].content?.[0];
-			expect(listItem?.content?.[0].type).toBe("paragraph");
-			expect(listItem?.content?.[0].content?.[0]).toEqual({
+			const listItem = result.content?.[0]?.content?.[0];
+			expect(listItem?.content?.[0]?.type).toBe("paragraph");
+			expect(listItem?.content?.[0]?.content?.[0]).toEqual({
 				type: "text",
 				text: "Direct text",
 			});
@@ -399,11 +403,13 @@ describe("normalizeEditorContent", () => {
 			const result = normalizeEditorContent(input, sectionType);
 
 			// Assert
-			expect(result.content[0].content).toHaveLength(2);
-			result.content[0].content?.forEach((item) => {
-				expect(item.type).toBe("listItem");
-				expect(item.content?.[0].type).toBe("paragraph");
-			});
+			expect(result.content?.[0]?.content).toHaveLength(2);
+			if (result.content?.[0]?.content) {
+				for (const item of result.content[0].content) {
+					expect(item.type).toBe("listItem");
+					expect(item.content?.[0]?.type).toBe("paragraph");
+				}
+			}
 		});
 	});
 
@@ -436,7 +442,7 @@ describe("normalizeEditorContent", () => {
 
 			// Assert
 			const nestedText =
-				result.content[0].content?.[0].content?.[0].content?.[0];
+				result.content?.[0]?.content?.[0]?.content?.[0]?.content?.[0];
 			expect(nestedText).toEqual({ type: "text", text: " " });
 		});
 
@@ -465,9 +471,9 @@ describe("normalizeEditorContent", () => {
 			const result = normalizeEditorContent(input, sectionType);
 
 			// Assert
-			const listItemContent = result.content[0].content?.[0].content;
+			const listItemContent = result.content?.[0]?.content?.[0]?.content;
 			expect(listItemContent).toHaveLength(2);
-			expect(listItemContent?.[0].type).toBe("paragraph");
+			expect(listItemContent?.[0]?.type).toBe("paragraph");
 			expect(listItemContent?.[1]).toEqual({
 				type: "text",
 				text: "Valid text",
@@ -508,10 +514,10 @@ describe("normalizeEditorContent", () => {
 			// Assert
 			// Looking at the source code, when a listItem has non-paragraph content,
 			// it wraps it in a paragraph. So the bulletList gets wrapped.
-			const outerList = result.content[0]; // Outer bullet list
-			expect(outerList.type).toBe("bulletList");
+			const outerList = result.content?.[0]; // Outer bullet list
+			expect(outerList?.type).toBe("bulletList");
 
-			const outerListItem = outerList.content?.[0]; // First list item
+			const outerListItem = outerList?.content?.[0]; // First list item
 			expect(outerListItem?.type).toBe("listItem");
 
 			// The listItem normalization logic wraps the inner bulletList in a paragraph
@@ -556,7 +562,7 @@ describe("normalizeEditorContent", () => {
 			);
 			expect(result.type).toBe("doc"); // Should fallback to safe content
 			expect(result.content).toHaveLength(1);
-			expect(result.content[0].type).toBe("paragraph");
+			expect(result.content?.[0]?.type).toBe("paragraph");
 		});
 
 		it("should validate root content array exists", () => {
@@ -633,7 +639,7 @@ describe("normalizeEditorContent", () => {
 			// Assert
 			// The function normalizes before validating, so this should succeed
 			expect(result.type).toBe("doc");
-			expect(result.content[0].content?.[0]).toEqual({
+			expect(result.content?.[0]?.content?.[0]).toEqual({
 				type: "text",
 				text: " ",
 			});
@@ -684,7 +690,7 @@ describe("normalizeEditorContent", () => {
 			const result = normalizeEditorContent(input, sectionType);
 
 			// Assert
-			expect(result.content[0].content?.[0]).not.toBe(sharedTextNode); // Should be a different object
+			expect(result.content?.[0]?.content?.[0]).not.toBe(sharedTextNode); // Should be a different object
 			expect(sharedTextNode.text).toBe("Shared"); // Original should remain unchanged
 		});
 	});
@@ -698,7 +704,7 @@ describe("normalizeEditorContent", () => {
 				"outline",
 			];
 
-			testCases.forEach((sectionType) => {
+			for (const sectionType of testCases) {
 				// Arrange
 				const input: TiptapDocument = {
 					type: "doc",
@@ -719,7 +725,7 @@ describe("normalizeEditorContent", () => {
 					timestamp: "2024-01-01T00:00:00.000Z",
 					version: "1.0",
 				});
-			});
+			}
 		});
 
 		it("should override existing metadata with new metadata structure", () => {

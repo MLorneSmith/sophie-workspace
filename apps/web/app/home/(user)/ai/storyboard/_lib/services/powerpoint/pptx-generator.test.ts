@@ -1105,24 +1105,24 @@ describe("PptxGenerator", () => {
 
 			for (const layout of expectedLayouts) {
 				expect(LAYOUT_POSITIONS[layout]).toBeDefined();
-				expect(LAYOUT_POSITIONS[layout].title).toBeDefined();
-				expect(LAYOUT_POSITIONS[layout].title.x).toBeTypeOf("number");
-				expect(LAYOUT_POSITIONS[layout].title.y).toBeTypeOf("number");
+				expect(LAYOUT_POSITIONS[layout]?.title).toBeDefined();
+				expect(LAYOUT_POSITIONS[layout]?.title?.x).toBeTypeOf("number");
+				expect(LAYOUT_POSITIONS[layout]?.title?.y).toBeTypeOf("number");
 			}
 		});
 
 		it("should have different positioning for different layouts", () => {
 			// Title layout should have different positioning from content layouts
-			expect(LAYOUT_POSITIONS.title.title.y).not.toBe(
-				LAYOUT_POSITIONS["one-column"].title.y,
+			expect(LAYOUT_POSITIONS.title?.title?.y).not.toBe(
+				LAYOUT_POSITIONS["one-column"]?.title?.y,
 			);
-			expect(LAYOUT_POSITIONS.title.title.fontSize).toBeGreaterThan(
-				LAYOUT_POSITIONS["one-column"].title.fontSize || 0,
+			expect(LAYOUT_POSITIONS.title?.title?.fontSize).toBeGreaterThan(
+				LAYOUT_POSITIONS["one-column"]?.title?.fontSize || 0,
 			);
 
 			// Two-column should have subheadline2 while one-column should not
-			expect(LAYOUT_POSITIONS["two-column"].subheadline2).toBeDefined();
-			expect(LAYOUT_POSITIONS["one-column"].subheadline2).toBeUndefined();
+			expect(LAYOUT_POSITIONS["two-column"]?.subheadline2).toBeDefined();
+			expect(LAYOUT_POSITIONS["one-column"]?.subheadline2).toBeUndefined();
 		});
 	});
 });

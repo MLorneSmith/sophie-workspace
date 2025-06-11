@@ -63,7 +63,9 @@
 			"Bash(pnpm supabase:web:stop:*)",
 			"Bash(pnpm supabase:web:reset:*)",
 			"Bash(pnpm --filter web vitest run:*)",
-			"Bash(pnpm --filter web test:run)"
+			"Bash(pnpm --filter web test:run)",
+			"Bash(gh run list:*)",
+			"Bash(gh auth:*)"
 		],
 		"deny": []
 	},
