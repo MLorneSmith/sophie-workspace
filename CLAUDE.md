@@ -62,12 +62,12 @@ This will set Claude in the appropriate mental model for your current task.
 function UserProfile(props: UserProfileProps) {
   // Hooks at the top
   const [isEditing, setIsEditing] = useState(false);
-  
+
   // Server actions inside component
   const updateProfile = async (data) => {
     // Implementation
   };
-  
+
   // Return JSX
   return (
     <div>
@@ -88,6 +88,8 @@ export { UserProfile };
 - Follow conventional commit format: type(scope): message
 - Keep commits focused on single logical changes
 - `git commit` still works as fallback, but `pnpm commit` is preferred
+- my github username is MLorneSmith
+- the repo is 2025slideheroes
 
 ## Testing Expectations
 
@@ -153,16 +155,19 @@ The app is in private beta and the website is in private preview.
 ## Key Features
 
 ### Learning Platform
+
 - Course: 'Decks for Decision Makers'
 - Lessons with optional quizzes
 - Content managed through Payload CMS
 
 ### AI Tools
+
 - Presentation builder
 - Document editor for presentation outlines
 - PowerPoint file generator
 
 ### Project Management
+
 - Kanban board for presentation tasks
 - Coaching session scheduling
 - Self-assessment surveys
@@ -172,6 +177,7 @@ The app is in private beta and the website is in private preview.
 ## Data Fetching
 
 ### Server Components (Preferred)
+
 ```typescript
 async function Page() {
   const supabase = getSupabaseServerClient();
@@ -181,14 +187,17 @@ async function Page() {
 ```
 
 ### Server Actions
+
 ```typescript
 export const myAction = enhanceAction(
   async (data, user) => {
     // Implementation
   },
   {
-    schema: z.object({ /* validation schema */ }),
-  }
+    schema: z.object({
+      /* validation schema */
+    }),
+  },
 );
 ```
 
@@ -204,12 +213,14 @@ export const myAction = enhanceAction(
 ## Code Standards
 
 **File Naming**
+
 - Components: `component-name.tsx`
 - Server actions: `server-actions.ts`
 - Hooks: `use-hook-name.ts`
 - Utilities: `utility-name.ts`
 
 **Component Structure**
+
 ```typescript
 // Use function declarations for components
 function ComponentName(props: Props) {
@@ -225,36 +236,41 @@ export { ComponentName };
 ## Database & Security Standards
 
 ### Row Level Security (RLS)
+
 - Always use RLS for data access control
 - Never bypass RLS with service role
 - Test RLS policies with `pnpm supabase:web:test`
 
 ### Authentication
+
 - Use Supabase Auth for all authentication
 - Implement server-side checks in middleware
 - Use `requireUser` helper for protected routes
-
 
 # Project Code Patterns
 
 ## Common Patterns
 
 ### Loading States
+
 - Use Suspense boundaries with loading.tsx files
 - Show skeletons for better UX
 - Handle error boundaries properly
 
 ### Modals and Sheets
+
 - Use Shadcn Dialog/Sheet components
 - Manage state with URL params when possible
 - Implement proper focus management
 
 ### Tables and Lists
+
 - Use ShadcnDataTable component for complex tables
 - Implement pagination server-side
 - Add proper loading and empty states
 
 ### File Uploads
+
 - Use Supabase Storage for files
 - Implement proper validation
 - Show upload progress
@@ -262,6 +278,7 @@ export { ComponentName };
 ## Data Fetching Patterns
 
 ### Server Components (Default)
+
 ```typescript
 // In server components - direct database access
 async function Page() {
@@ -270,7 +287,9 @@ async function Page() {
   return <div>{/* render data */}</div>;
 }
 ```
+
 ### Client Components
+
 ```typescript
 // Use React Query for client-side fetching
 const { data } = useQuery({
@@ -282,6 +301,7 @@ const { data } = useQuery({
 ### Server Actions Pattern
 
 Always wrap server actions with `enhanceAction`:
+
 ```typescript
 import { enhanceAction } from '@kit/next/actions';
 
@@ -291,14 +311,17 @@ export const myAction = enhanceAction(
     // implement logic here
   },
   {
-    schema: z.object({ /* validation schema */ }),
-  }
+    schema: z.object({
+      /* validation schema */
+    }),
+  },
 );
 ```
 
 ## React Query Implementation
 
 ### Provider Configuration
+
 ```typescript
 // Our standard React Query provider setup
 export function ReactQueryProvider(props: React.PropsWithChildren) {
@@ -323,9 +346,11 @@ export function ReactQueryProvider(props: React.PropsWithChildren) {
 ```
 
 ### Query Function Structure
+
 ```typescript
 // Standard pattern for Supabase query functions
 import { type SupabaseClient } from '@supabase/supabase-js';
+
 import { type Database } from '@kit/supabase/database';
 
 type TypedSupabaseClient = SupabaseClient<Database>;
@@ -339,6 +364,7 @@ export function getData(client: TypedSupabaseClient) {
 ```
 
 ### Using Queries in Components
+
 ```typescript
 function MyComponent() {
   const supabase = useSupabase();
@@ -357,6 +383,7 @@ function MyComponent() {
 ```
 
 ### Mutations and Server Actions
+
 ```typescript
 function UpdateItemComponent() {
   const queryClient = useQueryClient();
@@ -375,6 +402,7 @@ function UpdateItemComponent() {
 ```
 
 ### SSR and Hydration
+
 ```typescript
 // Server Component prefetching pattern
 export default async function Layout({
@@ -395,22 +423,26 @@ export default async function Layout({
 ## React Query Best Practices
 
 ### Query Keys
+
 - Use array syntax for query keys: `['items']`, `['items', itemId]`
 - Keep keys consistent across the application
 - Use prefixes for related queries: `['items', 'list']`, `['items', 'detail', itemId]`
 
 ### Error Handling
+
 - Always use `throwOnError()` in Supabase queries
 - Handle errors at the component level
 - Use error boundaries for fallbacks
 
 ### Loading States
+
 - Always handle loading states
 - Use skeletons or loading spinners
 - Consider suspense boundaries
 
 ### Caching Strategies
-- Set appropriate staleTime for your data (default: 60 * 1000)
+
+- Set appropriate staleTime for your data (default: 60 \* 1000)
 - Use invalidateQueries for related data
 - Consider background refetching
 - Use prefetchQuery for anticipated data needs
@@ -430,7 +462,9 @@ const schema = z.object({ name: z.string() });
 const form = useForm({ resolver: zodResolver(schema) });
 
 // 3. Server action
-const action = enhanceAction(async (data) => { /* ... */ });
+const action = enhanceAction(async (data) => {
+  /* ... */
+});
 
 // 4. Handle submission
 const onSubmit = form.handleSubmit(async (data) => {
@@ -440,13 +474,15 @@ const onSubmit = form.handleSubmit(async (data) => {
 ```
 
 ## AI Gateway Integration Patterns
+
 **Always use server-side AI calls through Portkey:**
+
 ```typescript
 // In server actions only
 import { createAIGatewayClient } from '@kit/ai-gateway';
 
 const client = createAIGatewayClient({
-  headers: { 'x-metadata-user-id': userId }
+  headers: { 'x-metadata-user-id': userId },
 });
 
 const response = await client.chat.completions.create({
@@ -474,6 +510,7 @@ const response = await client.chat.completions.create({
 ## Environment Setup
 
 Required environment variables:
+
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY`
@@ -506,11 +543,12 @@ Required environment variables:
 - Use rg (Ripgrep) for fast searching instead of grep
 - Use biome instead of prettier and eslint for formatting and linting
 
-
 # Getting Started
+
 ## Essential Commands
 
 ### Quick Start
+
 ```bash
 pnpm install                    # Install dependencies
 pnpm supabase:web:start        # Start local Supabase
@@ -519,6 +557,7 @@ pnpm dev                       # Start all development servers
 ```
 
 ### Development
+
 ```bash
 pnpm dev                       # Start all apps
 pnpm --filter web dev          # Start web app only
@@ -531,6 +570,7 @@ pnpm commit                    # Interactive commit with conventional format
 ```
 
 ### Database & Migrations
+
 ```bash
 pnpm supabase:web:reset        # Reset local database
 pnpm supabase:web:typegen      # Generate TypeScript types
@@ -539,6 +579,7 @@ pnpm --filter payload payload migrate  # Run Payload migrations
 ```
 
 ### Testing
+
 ```bash
 pnpm test                      # Run unit tests
 pnpm --filter e2e test         # Run E2E tests

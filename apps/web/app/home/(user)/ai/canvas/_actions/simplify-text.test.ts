@@ -56,6 +56,25 @@ import { createReasoningOptimizedConfig } from "@kit/ai-gateway/src/configs/temp
 import { PromptManager } from "@kit/ai-gateway/src/prompts/prompt-manager";
 import { simplifyTextAction } from "./simplify-text";
 
+// Helper function to create proper CompletionResult mock
+function createMockCompletionResult(content: string) {
+	return {
+		content,
+		metadata: {
+			requestId: "test-request-id",
+			cost: 0.001,
+			tokens: {
+				prompt: 100,
+				completion: 50,
+				total: 150,
+			},
+			provider: "openai",
+			model: "gpt-4",
+			feature: "text-simplification",
+		},
+	};
+}
+
 describe("simplifyTextAction", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
@@ -73,7 +92,9 @@ describe("simplifyTextAction", () => {
 		);
 
 		// Default successful getChatCompletion
-		vi.mocked(getChatCompletion).mockResolvedValue("Default simplified text");
+		vi.mocked(getChatCompletion).mockResolvedValue(
+			createMockCompletionResult("Default simplified text"),
+		);
 	});
 
 	describe("Schema Validation", () => {
@@ -86,14 +107,17 @@ describe("simplifyTextAction", () => {
 				sectionType: "situation",
 			};
 
-			vi.mocked(getChatCompletion).mockResolvedValue("Simplified text");
+			vi.mocked(getChatCompletion).mockResolvedValue(
+				createMockCompletionResult("Simplified text"),
+			);
 
 			// Act
 			const result = await simplifyTextAction(validInput);
 
 			// Assert
 			expect(result.success).toBe(true);
-			expect(result.response).toBe("Simplified text");
+			expect(result.response).toBeDefined();
+			expect(result.response?.content).toBe("Simplified text");
 		});
 
 		it("should reject missing content field", async () => {
@@ -162,7 +186,9 @@ describe("simplifyTextAction", () => {
 			// Arrange
 			const mockResponse =
 				"This is simplified text that's easier to understand.";
-			vi.mocked(getChatCompletion).mockResolvedValue(mockResponse);
+			vi.mocked(getChatCompletion).mockResolvedValue(
+				createMockCompletionResult(mockResponse),
+			);
 
 			const input = {
 				content: "Complex business synergies and paradigm shifts",
@@ -177,7 +203,7 @@ describe("simplifyTextAction", () => {
 			// Assert
 			expect(result).toEqual({
 				success: true,
-				response: mockResponse,
+				response: createMockCompletionResult(mockResponse),
 			});
 		});
 
@@ -215,7 +241,9 @@ describe("simplifyTextAction", () => {
 			const content = "Complex business jargon that needs simplification";
 			const expectedResponse = "Simple business terms";
 
-			vi.mocked(getChatCompletion).mockResolvedValue(expectedResponse);
+			vi.mocked(getChatCompletion).mockResolvedValue(
+				createMockCompletionResult(expectedResponse),
+			);
 
 			const input = {
 				content,
@@ -230,7 +258,7 @@ describe("simplifyTextAction", () => {
 			// Assert
 			expect(result).toEqual({
 				success: true,
-				response: expectedResponse,
+				response: createMockCompletionResult(expectedResponse),
 			});
 
 			// Verify the AI was called with compiled messages and correct options
@@ -257,7 +285,9 @@ describe("simplifyTextAction", () => {
 		it("should compile prompt template correctly", async () => {
 			// Arrange
 			const content = "Complex technical jargon needs simplification";
-			vi.mocked(getChatCompletion).mockResolvedValue("Simplified text");
+			vi.mocked(getChatCompletion).mockResolvedValue(
+				createMockCompletionResult("Simplified text"),
+			);
 
 			const input = {
 				content,
@@ -278,7 +308,9 @@ describe("simplifyTextAction", () => {
 
 		it("should use correct model and parameters", async () => {
 			// Arrange
-			vi.mocked(getChatCompletion).mockResolvedValue("Simplified text");
+			vi.mocked(getChatCompletion).mockResolvedValue(
+				createMockCompletionResult("Simplified text"),
+			);
 
 			const input = {
 				content: "Test content",
@@ -312,7 +344,9 @@ describe("simplifyTextAction", () => {
 		it("should handle long content strings", async () => {
 			// Arrange
 			const longContent = "A".repeat(5000);
-			vi.mocked(getChatCompletion).mockResolvedValue("Simplified version");
+			vi.mocked(getChatCompletion).mockResolvedValue(
+				createMockCompletionResult("Simplified version"),
+			);
 
 			const input = {
 				content: longContent,
@@ -432,7 +466,9 @@ describe("simplifyTextAction", () => {
 	describe("Edge Cases", () => {
 		it("should handle empty content string", async () => {
 			// Arrange
-			vi.mocked(getChatCompletion).mockResolvedValue(""); // AI might return empty response
+			vi.mocked(getChatCompletion).mockResolvedValue(
+				createMockCompletionResult(""),
+			); // AI might return empty response
 
 			const input = {
 				content: "",
@@ -454,7 +490,7 @@ describe("simplifyTextAction", () => {
 			const content =
 				'Content with émojis 🚀, special chars: @#$%^&*()_+{}|:"<>?, and unicode: ñáéíóú';
 			vi.mocked(getChatCompletion).mockResolvedValue(
-				"Simplified special content",
+				createMockCompletionResult("Simplified special content"),
 			);
 
 			const input = {
@@ -479,7 +515,9 @@ describe("simplifyTextAction", () => {
 			Second line with   extra spaces
 			Third line with more content`;
 
-			vi.mocked(getChatCompletion).mockResolvedValue("Simplified multiline");
+			vi.mocked(getChatCompletion).mockResolvedValue(
+				createMockCompletionResult("Simplified multiline"),
+			);
 
 			const input = {
 				content: multilineContent,

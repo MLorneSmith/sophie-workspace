@@ -32,10 +32,21 @@ type TestRequestData = {
 type TestResponseData = {
 	success: boolean;
 	data?: string;
+	error?: string;
 	metadata?: {
 		cost?: number;
 		tokens?: number;
+		processingTime?: number;
+		model?: string;
 	};
+};
+
+// Type for the action function to match what the hook expects
+type ActionFunction = (data: TestRequestData) => Promise<TestResponseData>;
+
+// Helper function to create properly typed mock actions
+const createMockAction = () => {
+	return vi.fn() as ActionFunction & ReturnType<typeof vi.fn>;
 };
 
 describe("useActionWithCost", () => {
@@ -62,7 +73,8 @@ describe("useActionWithCost", () => {
 	describe("Action Wrapping", () => {
 		it("wraps action function correctly", () => {
 			// Arrange
-			const mockAction = vi.fn().mockResolvedValue({
+			const mockAction = createMockAction();
+			mockAction.mockResolvedValue({
 				success: true,
 				data: "test response",
 			});
@@ -77,12 +89,11 @@ describe("useActionWithCost", () => {
 
 		it("preserves action function type signature", () => {
 			// Arrange
-			const mockAction = vi
-				.fn<[TestRequestData], Promise<TestResponseData>>()
-				.mockResolvedValue({
-					success: true,
-					data: "test response",
-				});
+			const mockAction = createMockAction();
+			mockAction.mockResolvedValue({
+				success: true,
+				data: "test response",
+			});
 
 			// Act
 			const { result } = renderHook(() => useActionWithCost(mockAction));
@@ -93,7 +104,8 @@ describe("useActionWithCost", () => {
 
 		it("returns stable reference when dependencies unchanged", () => {
 			// Arrange
-			const mockAction = vi.fn().mockResolvedValue({ success: true });
+			const mockAction = createMockAction();
+			mockAction.mockResolvedValue({ success: true });
 
 			// Act
 			const { result, rerender } = renderHook(() =>
@@ -110,8 +122,10 @@ describe("useActionWithCost", () => {
 
 		it("creates new reference when action changes", () => {
 			// Arrange
-			const mockAction1 = vi.fn().mockResolvedValue({ success: true });
-			const mockAction2 = vi.fn().mockResolvedValue({ success: true });
+			const mockAction1 = createMockAction();
+			mockAction1.mockResolvedValue({ success: true });
+			const mockAction2 = createMockAction();
+			mockAction2.mockResolvedValue({ success: true });
 
 			// Act
 			const { result, rerender } = renderHook(
@@ -129,7 +143,8 @@ describe("useActionWithCost", () => {
 
 		it("creates new reference when addCost changes", () => {
 			// Arrange
-			const mockAction = vi.fn().mockResolvedValue({ success: true });
+			const mockAction = createMockAction();
+			mockAction.mockResolvedValue({ success: true });
 			const newMockAddCost = vi.fn();
 
 			// Act
@@ -155,7 +170,8 @@ describe("useActionWithCost", () => {
 
 		it("creates new reference when sessionId changes", () => {
 			// Arrange
-			const mockAction = vi.fn().mockResolvedValue({ success: true });
+			const mockAction = createMockAction();
+			mockAction.mockResolvedValue({ success: true });
 
 			// Act
 			const { result, rerender } = renderHook(() =>
@@ -182,7 +198,8 @@ describe("useActionWithCost", () => {
 	describe("Session ID Injection", () => {
 		it("adds sessionId to request data", async () => {
 			// Arrange
-			const mockAction = vi.fn().mockResolvedValue({
+			const mockAction = createMockAction();
+			mockAction.mockResolvedValue({
 				success: true,
 				data: "test response",
 			});
@@ -208,7 +225,8 @@ describe("useActionWithCost", () => {
 
 		it("overwrites existing sessionId in request data", async () => {
 			// Arrange
-			const mockAction = vi.fn().mockResolvedValue({
+			const mockAction = createMockAction();
+			mockAction.mockResolvedValue({
 				success: true,
 				data: "test response",
 			});
@@ -234,7 +252,8 @@ describe("useActionWithCost", () => {
 
 		it("handles empty request data", async () => {
 			// Arrange
-			const mockAction = vi.fn().mockResolvedValue({
+			const mockAction = createMockAction();
+			mockAction.mockResolvedValue({
 				success: true,
 			});
 
@@ -255,7 +274,8 @@ describe("useActionWithCost", () => {
 
 		it("preserves all original data properties", async () => {
 			// Arrange
-			const mockAction = vi.fn().mockResolvedValue({
+			const mockAction = createMockAction();
+			mockAction.mockResolvedValue({
 				success: true,
 			});
 
@@ -282,7 +302,8 @@ describe("useActionWithCost", () => {
 
 		it("uses current sessionId from context", async () => {
 			// Arrange
-			const mockAction = vi.fn().mockResolvedValue({ success: true });
+			const mockAction = createMockAction();
+			mockAction.mockResolvedValue({ success: true });
 			const requestData: TestRequestData = { message: "test" };
 
 			// Start with first session ID
@@ -327,7 +348,8 @@ describe("useActionWithCost", () => {
 		it("calls addCost when action succeeds with cost metadata", async () => {
 			// Arrange
 			const costValue = 1.25;
-			const mockAction = vi.fn().mockResolvedValue({
+			const mockAction = createMockAction();
+			mockAction.mockResolvedValue({
 				success: true,
 				data: "test response",
 				metadata: { cost: costValue },
@@ -348,7 +370,8 @@ describe("useActionWithCost", () => {
 
 		it("does not call addCost when action fails", async () => {
 			// Arrange
-			const mockAction = vi.fn().mockResolvedValue({
+			const mockAction = createMockAction();
+			mockAction.mockResolvedValue({
 				success: false,
 				metadata: { cost: 1.25 },
 			});
@@ -367,7 +390,8 @@ describe("useActionWithCost", () => {
 
 		it("does not call addCost when action succeeds but no cost metadata", async () => {
 			// Arrange
-			const mockAction = vi.fn().mockResolvedValue({
+			const mockAction = createMockAction();
+			mockAction.mockResolvedValue({
 				success: true,
 				data: "test response",
 			});
@@ -386,7 +410,8 @@ describe("useActionWithCost", () => {
 
 		it("does not call addCost when metadata exists but no cost property", async () => {
 			// Arrange
-			const mockAction = vi.fn().mockResolvedValue({
+			const mockAction = createMockAction();
+			mockAction.mockResolvedValue({
 				success: true,
 				data: "test response",
 				metadata: { tokens: 150 }, // Has metadata but no cost
@@ -406,7 +431,8 @@ describe("useActionWithCost", () => {
 
 		it("handles zero cost correctly", async () => {
 			// Arrange
-			const mockAction = vi.fn().mockResolvedValue({
+			const mockAction = createMockAction();
+			mockAction.mockResolvedValue({
 				success: true,
 				data: "test response",
 				metadata: { cost: 0 },
@@ -427,7 +453,8 @@ describe("useActionWithCost", () => {
 		it("handles decimal cost values correctly", async () => {
 			// Arrange
 			const costValue = 2.75;
-			const mockAction = vi.fn().mockResolvedValue({
+			const mockAction = createMockAction();
+			mockAction.mockResolvedValue({
 				success: true,
 				data: "test response",
 				metadata: { cost: costValue },
@@ -448,7 +475,8 @@ describe("useActionWithCost", () => {
 		it("handles very small cost values correctly", async () => {
 			// Arrange
 			const costValue = 0.001;
-			const mockAction = vi.fn().mockResolvedValue({
+			const mockAction = createMockAction();
+			mockAction.mockResolvedValue({
 				success: true,
 				data: "test response",
 				metadata: { cost: costValue },
@@ -469,7 +497,8 @@ describe("useActionWithCost", () => {
 		it("handles large cost values correctly", async () => {
 			// Arrange
 			const costValue = 99.99;
-			const mockAction = vi.fn().mockResolvedValue({
+			const mockAction = createMockAction();
+			mockAction.mockResolvedValue({
 				success: true,
 				data: "test response",
 				metadata: { cost: costValue },
@@ -492,7 +521,8 @@ describe("useActionWithCost", () => {
 		it("preserves action errors without modification", async () => {
 			// Arrange
 			const errorMessage = "Network error";
-			const mockAction = vi.fn().mockRejectedValue(new Error(errorMessage));
+			const mockAction = createMockAction();
+			mockAction.mockRejectedValue(new Error(errorMessage));
 
 			const requestData: TestRequestData = { message: "test" };
 			const { result } = renderHook(() => useActionWithCost(mockAction));
@@ -510,7 +540,8 @@ describe("useActionWithCost", () => {
 
 		it("does not call addCost when action throws error", async () => {
 			// Arrange
-			const mockAction = vi.fn().mockRejectedValue(new Error("Test error"));
+			const mockAction = createMockAction();
+			mockAction.mockRejectedValue(new Error("Test error"));
 
 			const requestData: TestRequestData = { message: "test" };
 			const { result } = renderHook(() => useActionWithCost(mockAction));
@@ -530,7 +561,8 @@ describe("useActionWithCost", () => {
 
 		it("preserves action behavior for non-conforming response", async () => {
 			// Arrange - action that doesn't return success boolean
-			const mockAction = vi.fn().mockResolvedValue({
+			const mockAction = vi.fn();
+			mockAction.mockResolvedValue({
 				data: "response without success flag",
 			});
 
@@ -549,7 +581,8 @@ describe("useActionWithCost", () => {
 
 		it("handles addCost function errors gracefully", async () => {
 			// Arrange
-			const mockAction = vi.fn().mockResolvedValue({
+			const mockAction = createMockAction();
+			mockAction.mockResolvedValue({
 				success: true,
 				metadata: { cost: 1.25 },
 			});
@@ -580,7 +613,8 @@ describe("useActionWithCost", () => {
 				metadata: { cost: 1.25, tokens: 150 },
 			};
 
-			const mockAction = vi.fn().mockResolvedValue(expectedResponse);
+			const mockAction = createMockAction();
+			mockAction.mockResolvedValue(expectedResponse);
 
 			const requestData: TestRequestData = { message: "test" };
 			const { result } = renderHook(() => useActionWithCost(mockAction));
@@ -602,7 +636,8 @@ describe("useActionWithCost", () => {
 				metadata: { cost: 0.5 },
 			};
 
-			const mockAction = vi.fn().mockResolvedValue(expectedResponse);
+			const mockAction = createMockAction();
+			mockAction.mockResolvedValue(expectedResponse);
 
 			const requestData: TestRequestData = { message: "test" };
 			const { result } = renderHook(() => useActionWithCost(mockAction));
@@ -636,7 +671,8 @@ describe("useActionWithCost", () => {
 				},
 			};
 
-			const mockAction = vi.fn().mockResolvedValue(expectedResponse);
+			const mockAction = createMockAction();
+			mockAction.mockResolvedValue(expectedResponse);
 
 			const requestData: TestRequestData = { message: "test" };
 			const { result } = renderHook(() => useActionWithCost(mockAction));
@@ -656,7 +692,8 @@ describe("useActionWithCost", () => {
 		it("complete successful flow with cost tracking", async () => {
 			// Arrange
 			const costValue = 3.75;
-			const mockAction = vi.fn().mockResolvedValue({
+			const mockAction = createMockAction();
+			mockAction.mockResolvedValue({
 				success: true,
 				data: "AI generated content",
 				metadata: { cost: costValue, tokens: 200 },
@@ -689,7 +726,8 @@ describe("useActionWithCost", () => {
 
 		it("complete failure flow without cost tracking", async () => {
 			// Arrange
-			const mockAction = vi.fn().mockResolvedValue({
+			const mockAction = createMockAction();
+			mockAction.mockResolvedValue({
 				success: false,
 				error: "API rate limit exceeded",
 				metadata: { cost: 1.0 }, // Cost present but should not be tracked
@@ -722,8 +760,8 @@ describe("useActionWithCost", () => {
 
 		it("handles multiple sequential calls correctly", async () => {
 			// Arrange
-			const mockAction = vi
-				.fn()
+			const mockAction = createMockAction();
+			mockAction
 				.mockResolvedValueOnce({
 					success: true,
 					data: "first response",
@@ -768,7 +806,8 @@ describe("useActionWithCost", () => {
 	describe("Edge Cases", () => {
 		it("handles null metadata gracefully", async () => {
 			// Arrange
-			const mockAction = vi.fn().mockResolvedValue({
+			const mockAction = createMockAction();
+			mockAction.mockResolvedValue({
 				success: true,
 				data: "test response",
 				metadata: null,
@@ -789,7 +828,8 @@ describe("useActionWithCost", () => {
 
 		it("handles undefined metadata gracefully", async () => {
 			// Arrange
-			const mockAction = vi.fn().mockResolvedValue({
+			const mockAction = createMockAction();
+			mockAction.mockResolvedValue({
 				success: true,
 				data: "test response",
 				// metadata is undefined
@@ -810,7 +850,8 @@ describe("useActionWithCost", () => {
 
 		it("handles non-numeric cost values gracefully", async () => {
 			// Arrange
-			const mockAction = vi.fn().mockResolvedValue({
+			const mockAction = createMockAction();
+			mockAction.mockResolvedValue({
 				success: true,
 				data: "test response",
 				metadata: { cost: "invalid" as any },
@@ -825,7 +866,7 @@ describe("useActionWithCost", () => {
 			});
 
 			// Assert
-			expect(response.metadata.cost).toBe("invalid");
+			expect(response.metadata?.cost).toBe("invalid");
 			expect(mockAddCost).toHaveBeenCalledWith("invalid"); // Hook passes through any truthy cost value
 		});
 
@@ -838,7 +879,8 @@ describe("useActionWithCost", () => {
 				isLoading: false,
 			});
 
-			const mockAction = vi.fn().mockResolvedValue({
+			const mockAction = createMockAction();
+			mockAction.mockResolvedValue({
 				success: true,
 				metadata: { cost: 1.0 },
 			});
@@ -867,7 +909,8 @@ describe("useActionWithCost", () => {
 				);
 			});
 
-			const mockAction = vi.fn().mockResolvedValue({ success: true });
+			const mockAction = createMockAction();
+			mockAction.mockResolvedValue({ success: true });
 
 			// Act & Assert
 			expect(() => {

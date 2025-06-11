@@ -5,6 +5,7 @@ import { useCallback, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { useSupabase } from "@kit/supabase/hooks/use-supabase";
+import type { Json } from "@kit/supabase/database";
 import { toast } from "@kit/ui/sonner";
 
 import {
@@ -217,8 +218,8 @@ export function usePresentationStoryboard(presentationId: string) {
 					.from("building_blocks_submissions")
 					.update({
 						// Use a type assertion to tell TypeScript we know what we're doing
-						storyboard: storyboardData,
-					} as Partial<BuildingBlocksSubmission>)
+						storyboard: storyboardData as unknown as Json,
+					})
 					.eq("id", presentationId);
 
 				if (result.error) {
