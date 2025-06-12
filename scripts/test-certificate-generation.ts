@@ -74,7 +74,7 @@ const TEST_USER_EMAIL = "test2@slideheroes.com";
  * @param courseId The course ID to fetch lessons for
  * @returns Array of lesson data
  */
-async function fetchLessonsFromPayload(courseId: string): Promise<any[]> {
+async function fetchLessonsFromPayload(courseId: string): Promise<unknown[]> {
 	console.log(
 		`Fetching lessons from Payload CMS for course ID: ${courseId}...`,
 	);
@@ -89,7 +89,7 @@ async function fetchLessonsFromPayload(courseId: string): Promise<any[]> {
 			throw new Error(`Failed to fetch lessons: ${response.statusText}`);
 		}
 
-		const data = (await response.json()) as any;
+		const data = (await response.json()) as { docs?: unknown[] };
 		const lessons = data.docs || [];
 
 		console.log(

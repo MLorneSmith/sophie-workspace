@@ -235,7 +235,7 @@ function groupLogsByField<T extends AiRequestLog>(
 }
 
 // Check if user has admin role
-function hasAdminRole(user: any): boolean {
+function hasAdminRole(user: User): boolean {
 	// Implement your admin role check logic here
 	// This is a placeholder - you should replace with your actual admin role check
 	return user.email?.endsWith("@slideheroes.com") || false;

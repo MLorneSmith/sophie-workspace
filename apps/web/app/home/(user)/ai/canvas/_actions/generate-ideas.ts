@@ -24,7 +24,7 @@ import { getSupabaseServerClient } from "@kit/supabase/server-client";
 // Return type with metadata for cost tracking
 interface ActionResponse {
 	success: boolean;
-	data?: any;
+	data?: unknown;
 	error?: string;
 	metadata?: {
 		cost?: number;

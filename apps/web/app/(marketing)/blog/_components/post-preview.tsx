@@ -58,11 +58,9 @@ export function PostPreview({
 					</div>
 				</div>
 
-				{/* biome-ignore lint/security/noDangerouslySetInnerHtml: Blog post descriptions from trusted CMS content */}
-				<p
-					className="text-muted-foreground mb-4 text-sm leading-relaxed"
-					dangerouslySetInnerHTML={{ __html: description ?? "" }}
-				/>
+				<p className="text-muted-foreground mb-4 text-sm leading-relaxed">
+					{description}
+				</p>
 			</div>
 		</div>
 	);

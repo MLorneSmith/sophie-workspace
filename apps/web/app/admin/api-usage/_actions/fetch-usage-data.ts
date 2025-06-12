@@ -107,7 +107,7 @@ export const fetchUsageDataAction = enhanceAction(
 // Function to process logs into statistics
 function processLogsToStats(logs: AiRequestLog[]): UsageStats {
 	// Type guards for log objects
-	function isValidLog(log: any): log is AiRequestLog {
+	function isValidLog(log: unknown): log is AiRequestLog {
 		return (
 			log &&
 			typeof log === "object" &&
@@ -117,7 +117,7 @@ function processLogsToStats(logs: AiRequestLog[]): UsageStats {
 	}
 
 	// Extract numbers safely
-	function getNumericValue(value: any): number {
+	function getNumericValue(value: unknown): number {
 		if (typeof value === "number") return value;
 		if (typeof value === "string") {
 			const parsed = Number.parseFloat(value);
@@ -178,7 +178,7 @@ function processLogsToStats(logs: AiRequestLog[]): UsageStats {
 
 // Group logs by day for time-series chart
 function groupByDay(
-	logs: any[],
+	logs: AiRequestLog[],
 ): { date: string; cost: number; tokens: number }[] {
 	const dayMap = new Map<string, { cost: number; tokens: number }>();
 	const today = new Date().toISOString().split("T")[0] as string;

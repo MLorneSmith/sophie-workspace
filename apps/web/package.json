@@ -11,8 +11,8 @@
 		"clean": "git clean -xdf .next .turbo node_modules",
 		"dev": "dotenv -e .env.local -- node -r newrelic node_modules/next/dist/bin/next dev --turbo | pino-pretty -c",
 		"dev:no-newrelic": "next dev --turbo | pino-pretty -c",
-		"lint": "eslint .",
-		"lint:fix": "next lint --fix",
+		"lint": "biome lint .",
+		"lint:fix": "biome lint --write .",
 		"format": "prettier --check \"**/*.{js,cjs,mjs,ts,tsx,md,json}\"",
 		"start": "NODE_OPTIONS='-r newrelic' next start",
 		"start:test": "NODE_ENV=test next start",
@@ -107,7 +107,6 @@
 		"zod": "^3.25.56"
 	},
 	"devDependencies": {
-		"@kit/eslint-config": "workspace:*",
 		"@kit/prettier-config": "workspace:*",
 		"@kit/tsconfig": "workspace:*",
 		"@next/bundle-analyzer": "15.3.3",

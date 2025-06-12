@@ -51,7 +51,7 @@ interface LessonData {
 	id: string;
 	lesson_number: string | number;
 	title: string;
-	[key: string]: any;
+	[key: string]: unknown;
 }
 
 interface ProgressData {
@@ -61,7 +61,7 @@ interface ProgressData {
 	lesson_id?: string;
 	completion_percentage: number;
 	completed_at: string | null;
-	[key: string]: any;
+	[key: string]: unknown;
 }
 
 // Hardcoded Supabase credentials
@@ -109,7 +109,7 @@ async function fetchLessonsFromPayload(
 			throw new Error(`Failed to fetch lessons: ${response.statusText}`);
 		}
 
-		const data = (await response.json()) as any;
+		const data = (await response.json()) as { docs?: LessonData[] };
 		const lessons = data.docs || [];
 
 		console.log(
@@ -300,7 +300,7 @@ async function main() {
 
 				// Check if this lesson is completed
 				return lessonProgress.some(
-					(p: any) => p.lesson_id === lesson.id && p.completed_at,
+					(p: ProgressData) => p.lesson_id === lesson.id && p.completed_at,
 				);
 			},
 		).length;
