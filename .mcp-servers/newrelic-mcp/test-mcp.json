@@ -1,0 +1,17 @@
+{
+	"mcpServers": {
+		"newrelic": {
+			"command": "/home/msmith/.local/bin/uv",
+			"args": [
+				"--directory",
+				"/home/msmith/projects/2025slideheroes/.mcp-servers/newrelic-mcp",
+				"run",
+				"newrelic_mcp_server.py"
+			],
+			"env": {
+				"NEW_RELIC_API_KEY": "NRAK-43D25BM1YBGU5L3KJO33067BW75",
+				"NEW_RELIC_ACCOUNT_ID": "6814711"
+			}
+		}
+	}
+}

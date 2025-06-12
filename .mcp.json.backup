@@ -1,0 +1,91 @@
+{
+	"mcpServers": {
+		"exa": {
+			"command": "npx",
+			"args": [
+				"-y",
+				"mcp-remote",
+				"https://mcp.exa.ai/mcp?exaApiKey=9c7c0675-4d56-4aae-a039-f93cf72a6cbb"
+			]
+		},
+		"perplexity-ask": {
+			"command": "npx",
+			"args": ["-y", "server-perplexity-ask"],
+			"env": {
+				"PERPLEXITY_API_KEY": "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"
+			}
+		},
+		"supabase": {
+			"command": "npx",
+			"args": [
+				"-y",
+				"@supabase/mcp-server-supabase@latest",
+				"--access-token",
+				"sbp_0d60974b0dd5515e361ed129431845251c84ebfd"
+			]
+		},
+		"context7": {
+			"command": "npx",
+			"args": ["-y", "@upstash/context7-mcp"],
+			"env": {
+				"DEFAULT_MINIMUM_TOKENS": "6000"
+			}
+		},
+		"cloudflare-observability": {
+			"command": "npx",
+			"args": ["-y", "mcp-remote", "https://observability.mcp.cloudflare.com/sse"]
+		},
+		"cloudflare-bindings": {
+			"command": "npx",
+			"args": ["-y", "mcp-remote", "https://bindings.mcp.cloudflare.com/sse"]
+		},
+		"cloudflare-playwright": {
+			"command": "npx",
+			"args": [
+				"-y",
+				"mcp-remote",
+				"https://slideheroes-playwright-mcp.slideheroes.workers.dev/sse"
+			],
+			"env": {
+				"MCP_AUTH_TOKEN": "Bearer a49353e7155fe097ecc939b4275cedc2a1be0ff137c5a06dc8aa4f7671712aa7"
+			}
+		},
+		"postgres": {
+			"command": "npx",
+			"args": [
+				"-y",
+				"@henkey/postgres-mcp-server",
+				"--connection-string",
+				"postgresql://postgres:postgres@127.0.0.1:54322/postgres"
+			]
+		},
+		"browser-tools": {
+			"command": "npx",
+			"args": ["-y", "@agentdeskai/browser-tools-mcp@latest"]
+		},
+		"code-reasoning": {
+			"command": "npx",
+			"args": ["-y", "@mettamatt/code-reasoning"]
+		},
+		"github": {
+			"command": "npx",
+			"args": ["-y", "@modelcontextprotocol/server-github"],
+			"env": {
+				"GITHUB_PERSONAL_ACCESS_TOKEN": "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"
+			}
+		},
+		"newrelic": {
+			"command": "/home/msmith/.local/bin/uv",
+			"args": [
+				"--directory",
+				"/home/msmith/projects/2025slideheroes/.mcp-servers/newrelic-mcp",
+				"run",
+				"newrelic_mcp_server.py"
+			],
+			"env": {
+				"NEW_RELIC_API_KEY": "NRAK-43D25BM1YBGU5L3KJO33067BW75",
+				"NEW_RELIC_ACCOUNT_ID": "6814711"
+			}
+		}
+	}
+}

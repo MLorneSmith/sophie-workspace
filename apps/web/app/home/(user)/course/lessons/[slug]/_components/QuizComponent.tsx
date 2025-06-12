@@ -189,7 +189,7 @@ export function QuizComponent({
 
 		// Count correct options
 		const correctOptions = (question?.options || []).filter(
-			(option: any) => option.isCorrect,
+			(option: any) => option && option.isCorrect,
 		);
 
 		// If more than one correct option, treat as multi-answer
@@ -436,6 +436,7 @@ export function QuizComponent({
 						<div className="space-y-4">
 							{(currentQuestion?.options || []).map(
 								(option: any, optionIndex: number) => {
+									if (!option) return null;
 									return (
 										<div
 											key={optionIndex}
@@ -495,6 +496,7 @@ export function QuizComponent({
 						>
 							{(currentQuestion?.options || []).map(
 								(option: any, optionIndex: number) => {
+									if (!option) return null;
 									return (
 										<div
 											key={optionIndex}

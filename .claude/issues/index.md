@@ -25,9 +25,10 @@ This directory contains systematically documented issues and their resolutions.
 
 ## Issues Log
 
-| ID       | Title                                        | Type  | Severity | Status | Created    | Resolved |
-| -------- | -------------------------------------------- | ----- | -------- | ------ | ---------- | -------- |
-| ISSUE-24 | Vitest Module Not Found in Web App Workspace | error | high     | 🆕 new | 2025-01-06 | -        |
+| ID       | Title                                                                     | Type        | Severity | Status | Created    | Resolved |
+| -------- | ------------------------------------------------------------------------- | ----------- | -------- | ------ | ---------- | -------- |
+| ISSUE-27 | MCP Docker Infrastructure - Multiple Servers Not Achieving Healthy Status | integration | high     | 🆕 new | 2025-06-12 | -        |
+| ISSUE-24 | Vitest Module Not Found in Web App Workspace                              | error       | high     | 🆕 new | 2025-01-06 | -        |
 
 ## Commands
 
