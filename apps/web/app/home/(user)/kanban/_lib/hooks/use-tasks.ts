@@ -1,5 +1,3 @@
-import { useCallback as _useCallback } from "react";
-
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";

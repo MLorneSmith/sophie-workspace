@@ -236,7 +236,7 @@ test.describe("Admin", () => {
 			"Team account tests are disabled",
 		);
 
-		let testUserEmail: string;
+		let _testUserEmail: string;
 		let teamName: string;
 		let slug: string;
 
@@ -244,7 +244,7 @@ test.describe("Admin", () => {
 			selectors.setTestIdAttribute("data-test");
 
 			// Create a new test user and team account
-			testUserEmail = await createUser(page, {
+			_testUserEmail = await createUser(page, {
 				afterSignIn: async () => {
 					teamName = `test-${Math.random().toString(36).substring(2, 15)}`;
 

@@ -6,7 +6,6 @@ import {
 } from "@/app/variables/lib/env-scanner";
 import type { EnvMode } from "@/app/variables/lib/types";
 
-import { AppBreadcrumbs } from "@kit/ui/app-breadcrumbs";
 import { Page, PageBody, PageHeader } from "@kit/ui/page";
 
 import { AppEnvironmentVariablesManager } from "./components/app-environment-variables-manager";

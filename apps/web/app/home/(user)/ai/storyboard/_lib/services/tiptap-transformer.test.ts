@@ -4,8 +4,6 @@
  */
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
-
-import type { Slide, StoryboardData } from "../types/index";
 // Import the class to test
 import { TipTapTransformer } from "./tiptap-transformer";
 

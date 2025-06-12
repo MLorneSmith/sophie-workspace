@@ -1,7 +1,5 @@
 "use client";
 
-import React from "react";
-
 import type { Tables } from "@kit/supabase/database";
 import { Avatar, AvatarFallback, AvatarImage } from "@kit/ui/avatar";
 import {

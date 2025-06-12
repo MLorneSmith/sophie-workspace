@@ -25,7 +25,7 @@ import { Button } from "@kit/ui/button";
 import { Card, CardContent } from "@kit/ui/card";
 import { cn } from "@kit/ui/utils";
 
-import { type Slide, SlideContent } from "../_lib/types";
+import type { Slide } from "../_lib/types";
 // Corrected import path and type name
 import { HeadlineEditor } from "./headline-editor";
 import { LayoutSelector } from "./layout-selector";

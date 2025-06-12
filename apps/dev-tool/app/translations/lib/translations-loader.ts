@@ -33,7 +33,7 @@ export async function loadTranslations() {
 				const filePath = join(localesPath, locale, `${namespace}.json`);
 				const content = readFileSync(filePath, "utf8");
 				translations[locale][namespace] = JSON.parse(content);
-			} catch (error) {
+			} catch (_error) {
 				console.warn(
 					`Warning: Translation file not found for locale "${locale}" and namespace "${namespace}"`,
 				);

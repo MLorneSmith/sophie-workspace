@@ -1,4 +1,4 @@
-import { StorageFileApi } from "@supabase/storage-js";
+
 
 declare module "@supabase/storage-js" {
 	interface StorageFileApi {

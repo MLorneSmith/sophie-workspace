@@ -2,7 +2,7 @@
  * Unit tests for updateBuildingBlockTitleAction server action
  * Tests schema validation, database updates, and error handling
  */
-import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { updateBuildingBlockTitleAction } from "./update-building-block-title.action";
 
 // Mock dependencies

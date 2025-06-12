@@ -2,7 +2,6 @@
 
 import { AlertCircle, CheckCircle2, XCircle } from "lucide-react";
 
-import { Alert, AlertDescription, AlertTitle } from "@kit/ui/alert";
 import { Card, CardContent } from "@kit/ui/card";
 
 export const ServiceStatus = {

@@ -14,10 +14,6 @@ import { improvementFormat } from "@kit/ai-gateway/src/prompts/partials/improvem
 import { improvementProcess } from "@kit/ai-gateway/src/prompts/partials/improvement-process";
 import { presentationContext } from "@kit/ai-gateway/src/prompts/partials/presentation-context";
 import { sectionAnalysis } from "@kit/ai-gateway/src/prompts/partials/section-analysis";
-import type {
-	BaseImprovement as _BaseImprovement,
-	ImprovementType as _ImprovementType,
-} from "@kit/ai-gateway/src/prompts/types/improvements";
 import { parseImprovements } from "@kit/ai-gateway/src/utils/parse-improvements";
 import { enhanceAction } from "@kit/next/actions";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";

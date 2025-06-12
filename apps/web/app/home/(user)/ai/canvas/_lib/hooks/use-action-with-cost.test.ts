@@ -7,10 +7,6 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import React, { type ReactNode } from "react";
 import { useActionWithCost } from "./use-action-with-cost";
-import {
-	CostTrackingProvider,
-	useCostTracking,
-} from "../contexts/cost-tracking-context";
 
 // Mock the cost tracking context
 vi.mock("../contexts/cost-tracking-context", () => ({

@@ -1,5 +1,4 @@
 import OpenAI from "openai";
-import * as Portkey from "portkey-ai";
 
 // Define the Portkey Gateway URL
 const PORTKEY_GATEWAY_URL = "https://api.portkey.ai/v1/proxy";

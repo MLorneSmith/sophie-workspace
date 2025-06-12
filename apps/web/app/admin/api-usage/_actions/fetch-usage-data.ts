@@ -28,7 +28,7 @@ const UsageDataQuerySchema = z.object({
 type UsageDataQuery = z.infer<typeof UsageDataQuerySchema>;
 
 export const fetchUsageDataAction = enhanceAction(
-	async (data: UsageDataQuery, user) => {
+	async (data: UsageDataQuery, _user) => {
 		try {
 			const supabase = getSupabaseServerClient();
 			const { timeRange, userId, teamId } = data;
@@ -196,7 +196,7 @@ function groupByDay(
 			try {
 				const isoString = new Date(log.request_timestamp).toISOString();
 				date = isoString.split("T")[0] as string;
-			} catch (e) {
+			} catch (_e) {
 				console.error("Invalid timestamp format:", log.request_timestamp);
 			}
 		}

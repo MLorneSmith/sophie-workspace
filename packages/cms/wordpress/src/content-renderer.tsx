@@ -1,4 +1,4 @@
-import React from "react";
+
 
 export function WordpressContentRenderer(props: { content: unknown }) {
 	// biome-ignore lint/security/noDangerouslySetInnerHtml: Rendering trusted WordPress CMS content

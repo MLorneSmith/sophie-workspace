@@ -6,7 +6,7 @@ import { enhanceRouteHandler } from "@kit/next/routes";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
 
 // Define the response schema
-const SessionCostResponseSchema = z.object({
+const _SessionCostResponseSchema = z.object({
 	sessionId: z.string().optional(),
 	timeframe: z.enum(["session", "day", "week", "month"]).optional(),
 });

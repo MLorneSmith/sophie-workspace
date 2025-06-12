@@ -8,11 +8,7 @@ import { useSupabase } from "@kit/supabase/hooks/use-supabase";
 import type { Json } from "@kit/supabase/database";
 import { toast } from "@kit/ui/sonner";
 
-import {
-	type BuildingBlocksSubmission,
-	Slide,
-	type StoryboardData,
-} from "../types";
+import type { BuildingBlocksSubmission, StoryboardData } from "../types";
 
 // Basic transformer from TipTap document to storyboard format
 function generateStoryboardFromOutline(outline: any): StoryboardData {

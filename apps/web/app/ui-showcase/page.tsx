@@ -23,13 +23,7 @@ import { useEffect, useState } from "react";
 
 import Link from "next/link";
 
-import {
-	ArrowRightIcon,
-	ChevronRight,
-	LayoutDashboard,
-	Menu,
-	Users,
-} from "lucide-react";
+import { ArrowRightIcon } from "lucide-react";
 
 // UI Components
 import {
@@ -58,7 +52,6 @@ import {
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
-	DialogTrigger,
 } from "@kit/ui/dialog";
 import {
 	DropdownMenu,
@@ -79,16 +72,10 @@ import { Label } from "@kit/ui/label";
 // Marketing Components
 import {
 	CtaButton,
-	FeatureCard,
-	FeatureGrid,
-	FeatureShowcase,
-	FeatureShowcaseIconContainer,
-	Footer,
 	Header,
 	Hero,
 	Pill,
 	PillActionButton,
-	SecondaryHero,
 } from "@kit/ui/marketing";
 // Utility Components
 import { ModeToggle } from "@kit/ui/mode-toggle";
@@ -113,29 +100,20 @@ import { Trans } from "@kit/ui/trans";
 import { AppLogo } from "~/components/app-logo";
 
 import { SiteFooter } from "../(marketing)/_components/site-footer";
-import { SiteHeader } from "../(marketing)/_components/site-header";
 // Site Navigation Components
 import { SiteNavigation } from "../(marketing)/_components/site-navigation";
-import { SiteNavigationItem } from "../(marketing)/_components/site-navigation-item";
 import { SitePageHeader } from "../(marketing)/_components/site-page-header";
 import { BlogPagination } from "../(marketing)/blog/_components/blog-pagination";
-import { CoverImage } from "../(marketing)/blog/_components/cover-image";
-import { DateFormatter } from "../(marketing)/blog/_components/date-formatter";
-import { Post } from "../(marketing)/blog/_components/post";
 import { PostHeader } from "../(marketing)/blog/_components/post-header";
 // Blog Components
 import { PostPreview } from "../(marketing)/blog/_components/post-preview";
 // Docs Components
 import { DocsCard } from "../(marketing)/docs/_components/docs-card";
-import { DocsNavLink } from "../(marketing)/docs/_components/docs-nav-link";
-import { DocsNavigation } from "../(marketing)/docs/_components/docs-navigation";
 import { DocsPageLink } from "../(marketing)/docs/_components/docs-page-link";
 import { DocsTableOfContents } from "../(marketing)/docs/_components/docs-table-of-contents";
-import { FloatingDocumentationNavigation } from "../(marketing)/docs/_components/floating-docs-navigation";
 // Admin Components
 import { AdminSidebar } from "../admin/_components/admin-sidebar";
 import { HomeMenuNavigation } from "../home/(user)/_components/home-menu-navigation";
-import { HomeMobileNavigation } from "../home/(user)/_components/home-mobile-navigation";
 import { HomeLayoutPageHeader } from "../home/(user)/_components/home-page-header";
 // Home Components
 import { HomeSidebar } from "../home/(user)/_components/home-sidebar";
