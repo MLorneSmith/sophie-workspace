@@ -3,7 +3,7 @@
  * Tests storyboard data operations, outline parsing, and slide generation
  */
 
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { StoryboardService } from "./storyboard-service-client";
 
 // Mock dependencies
@@ -54,23 +54,15 @@ describe("StoryboardService", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
 
-		// Create a proper chain mock that includes all query methods
-		const createChainMock = () => ({
-			from: vi.fn().mockReturnThis(),
-			select: vi.fn().mockReturnThis(),
-			eq: vi.fn().mockReturnThis(),
+		// Create proper Supabase mock with chaining
+		mockSupabase = {
+			from: vi.fn().mockImplementation(() => mockSupabase),
+			select: vi.fn().mockImplementation(() => mockSupabase),
+			eq: vi.fn().mockImplementation(() => mockSupabase),
 			single: vi.fn(),
-			update: vi.fn().mockReturnThis(),
+			update: vi.fn().mockImplementation(() => mockSupabase),
 			order: vi.fn(),
-		});
-
-		mockSupabase = createChainMock();
-
-		// Ensure all methods return the chain object
-		mockSupabase.from.mockReturnValue(mockSupabase);
-		mockSupabase.select.mockReturnValue(mockSupabase);
-		mockSupabase.eq.mockReturnValue(mockSupabase);
-		mockSupabase.update.mockReturnValue(mockSupabase);
+		};
 
 		service = new StoryboardService(mockSupabase);
 	});
@@ -153,8 +145,8 @@ describe("StoryboardService", () => {
 			};
 
 			mockSupabase.single.mockResolvedValue({ data: mockData, error: null });
-			mockSupabase.update.mockReturnThis();
-			mockSupabase.eq.mockReturnValue({ error: null });
+			// Mock the save operation chain
+			mockSupabase.eq.mockResolvedValue({ error: null });
 
 			// Act
 			const result = await service.getStoryboard("submission-1");
@@ -170,7 +162,6 @@ describe("StoryboardService", () => {
 		it("should handle missing storyboard column gracefully", async () => {
 			// Arrange
 			const columnError = new Error("column 'storyboard' does not exist");
-			mockSupabase.single.mockRejectedValueOnce(columnError);
 
 			const mockOutline = {
 				content: [
@@ -188,11 +179,16 @@ describe("StoryboardService", () => {
 				outline: JSON.stringify(mockOutline),
 			};
 
-			// Mock fallback query
-			mockSupabase.single.mockResolvedValueOnce({
-				data: fallbackData,
-				error: null,
-			});
+			// Mock the first call to fail with column error, then succeed on fallback
+			mockSupabase.single
+				.mockRejectedValueOnce(columnError)
+				.mockResolvedValueOnce({
+					data: fallbackData,
+					error: null,
+				});
+
+			// Mock saveStoryboard call - it should not throw in this case
+			mockSupabase.eq.mockResolvedValue({ error: null });
 
 			// Act
 			const result = await service.getStoryboard("submission-1");
@@ -285,8 +281,11 @@ describe("StoryboardService", () => {
 			// Arrange
 			const storyboardData = { title: "Test", slides: [] };
 			const dbError = { message: "Database connection failed" };
-			mockSupabase.update.mockReturnThis();
-			mockSupabase.eq.mockReturnValue({ error: dbError });
+
+			// Mock the await result from the update chain
+			// The code does: const result = await this.supabase.from().update().eq()
+			// So the final .eq() call should return the error
+			mockSupabase.eq.mockResolvedValue({ error: dbError });
 
 			// Act & Assert
 			await expect(

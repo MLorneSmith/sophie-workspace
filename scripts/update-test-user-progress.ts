@@ -42,11 +42,6 @@ const REQUIRED_LESSON_NUMBERS = [
 const TOTAL_REQUIRED_LESSONS = REQUIRED_LESSON_NUMBERS.length; // 23
 
 // Define types
-interface UserData {
-	id: string;
-	email?: string;
-}
-
 interface LessonData {
 	id: string;
 	lesson_number: string | number;

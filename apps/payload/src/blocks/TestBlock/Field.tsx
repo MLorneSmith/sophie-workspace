@@ -24,7 +24,7 @@ type FieldProps = {
  * This component is used for the input card in the Lexical editor
  */
 const Field: React.FC<FieldProps> = (props) => {
-	const { path, value, onChange } = props;
+	const { path: _path, value, onChange } = props;
 
 	// Convert unknown value to string safely
 	const stringValue =

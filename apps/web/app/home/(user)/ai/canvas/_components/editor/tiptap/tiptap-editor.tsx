@@ -18,7 +18,7 @@ import ListItem from "@tiptap/extension-list-item";
 import OrderedList from "@tiptap/extension-ordered-list";
 import Placeholder from "@tiptap/extension-placeholder";
 import Underline from "@tiptap/extension-underline";
-import { EditorContent, useEditor } from "@tiptap/react";
+import { EditorContent, useEditor, type Editor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import debounce from "lodash/debounce";
 
@@ -43,6 +43,9 @@ interface TiptapEditorProps {
 export interface TiptapEditorRef {
 	insertContent: (content: string) => void;
 	update: (fn: () => void) => void;
+	getText: () => string;
+	clearContent: () => void;
+	getEditor: () => Editor | null;
 }
 
 interface SubmissionData {
@@ -52,11 +55,11 @@ interface SubmissionData {
 	complication: string | null;
 	answer: string | null;
 	outline: string | null;
-	[key: string]: any;
+	[key: string]: string | null;
 }
 
 interface MutationContext {
-	previousContent: any | null;
+	previousContent: unknown | null;
 }
 
 export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
@@ -65,13 +68,13 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 			content,
 			submissionId,
 			sectionType,
-			onAcceptImprovement,
+			// onAcceptImprovement, // Currently unused
 			isLoading,
 		} = props;
 		const supabase = useSupabase();
 		const queryClient = useQueryClient();
 		const { setSaveStatus, registerSaveCallback } = useSaveContext();
-		const editorRef = useRef(null);
+		const _editorRef = useRef(null);
 
 		// Parse and normalize initial content
 		const initialContent = useMemo(() => {
@@ -173,16 +176,27 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 						.run();
 				}
 			},
+			getText: () => {
+				return editor?.getText() ?? "";
+			},
+			clearContent: () => {
+				if (editor) {
+					editor.commands.clearContent();
+				}
+			},
+			getEditor: () => {
+				return editor;
+			},
 		}));
 
 		// Mutation for saving content
 		const { mutate: updateContent } = useMutation<
 			SubmissionData,
 			Error,
-			any,
+			unknown,
 			MutationContext
 		>({
-			mutationFn: async (newContent: any) => {
+			mutationFn: async (newContent: unknown) => {
 				console.debug("Saving content:", { sectionType, newContent });
 				const { data, error } = await supabase
 					.from("building_blocks_submissions")
@@ -194,7 +208,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 				if (error) throw error;
 				return data;
 			},
-			onMutate: async (newContent: any): Promise<MutationContext> => {
+			onMutate: async (newContent: unknown): Promise<MutationContext> => {
 				// Cancel outgoing refetches
 				await queryClient.cancelQueries({
 					queryKey: ["submission", submissionId, sectionType],
@@ -203,7 +217,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 
 				// Save previous value
 				const previousContent =
-					queryClient.getQueryData<any>([
+					queryClient.getQueryData<unknown>([
 						"submission",
 						submissionId,
 						sectionType,
@@ -217,7 +231,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 
 				return { previousContent };
 			},
-			onError: (err, newContent, context: MutationContext | undefined) => {
+			onError: (err, _newContent, context: MutationContext | undefined) => {
 				console.error("Error saving content:", err);
 				setSaveStatus("error");
 				// Rollback on error
@@ -247,7 +261,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 
 		// Save content function with normalization
 		const saveContent = useCallback(
-			async (editorContent: any) => {
+			async (editorContent: unknown) => {
 				try {
 					setSaveStatus("saving");
 					// Normalize the content before saving to ensure it's valid
@@ -353,7 +367,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 		useEffect(() => {
 			if (!editor) return;
 
-			const handleUpdate = ({ editor }: { editor: any }) => {
+			const handleUpdate = ({ editor }: { editor: Editor }) => {
 				debouncedSave(editor.getJSON());
 			};
 

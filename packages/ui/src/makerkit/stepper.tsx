@@ -49,7 +49,7 @@ export function Stepper(props: {
 			const { label, number } = getStepLabel(labelOrKey, index);
 
 			return (
-				<Fragment key={index}>
+				<Fragment key={labelOrKey}>
 					<div aria-selected={selected} className={className}>
 						<span className={labelClassName}>
 							{number}

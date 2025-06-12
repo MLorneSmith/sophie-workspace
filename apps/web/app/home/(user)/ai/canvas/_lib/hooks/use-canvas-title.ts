@@ -9,7 +9,10 @@ export function useCanvasTitle(id: string | null) {
 
 	return useQuery({
 		queryKey: ["canvas-title", id],
-		queryFn: () => getCanvasTitle(supabase, id!),
+		queryFn: () => {
+			if (!id) throw new Error("Canvas ID is required");
+			return getCanvasTitle(supabase, id);
+		},
 		enabled: !!id,
 	});
 }

@@ -3,6 +3,7 @@
 This directory contains systematically documented issues and their resolutions.
 
 ## Structure
+
 ```
 .claude/issues/
 ├── index.md                    # This file
@@ -14,6 +15,7 @@ This directory contains systematically documented issues and their resolutions.
 ```
 
 ## Issue Status Legend
+
 - 🆕 `new` - Just created, needs investigation
 - 🔍 `investigating` - Currently being debugged
 - 🔧 `in-progress` - Fix is being implemented
@@ -22,14 +24,18 @@ This directory contains systematically documented issues and their resolutions.
 - 🔄 `reopened` - Previously resolved but issue returned
 
 ## Issues Log
-| ID | Title | Type | Severity | Status | Created | Resolved |
-|----|-------|------|----------|--------|---------|----------|
-| *Issues will be listed here automatically* |
+
+| ID       | Title                                        | Type  | Severity | Status | Created    | Resolved |
+| -------- | -------------------------------------------- | ----- | -------- | ------ | ---------- | -------- |
+| ISSUE-24 | Vitest Module Not Found in Web App Workspace | error | high     | 🆕 new | 2025-01-06 | -        |
 
 ## Commands
+
 - **Log new issue**: `/log-issue [file|github|both]`
 - **Debug existing issue**: `/debug-issue ISSUE-ID`
 
 ## Patterns Library
+
 Common patterns discovered through issue resolution:
+
 - [Add patterns as they are identified]

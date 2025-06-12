@@ -246,7 +246,7 @@ export function useUpdateSubtask() {
 
 			return { previousTasks };
 		},
-		onError: (err, _variables, context) => {
+		onError: (_err, _variables, context) => {
 			// Revert the optimistic update
 			queryClient.setQueryData(["tasks", user.id], context?.previousTasks);
 		},

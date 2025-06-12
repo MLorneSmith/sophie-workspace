@@ -26,7 +26,7 @@ export function SurveyComponent({
 	onComplete,
 }: SurveyComponentProps) {
 	const [isPending, startTransition] = useTransition();
-	const supabase = useSupabase();
+	const _supabase = useSupabase();
 
 	const [questions, setQuestions] = useState<any[]>([]);
 	const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -301,7 +301,7 @@ export function SurveyComponent({
 				} else {
 					setCurrentQuestionIndex(currentQuestionIndex + 1);
 				}
-			} catch (error) {
+			} catch (_error) {
 				toast.error("Failed to save response. Please try again.");
 			}
 		});

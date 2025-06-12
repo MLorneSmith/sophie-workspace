@@ -75,7 +75,7 @@ interface BuildingBlocksSubmission {
 
 // Action to get presentation data by ID
 export const getPresentationAction = enhanceAction(
-	async (data, user) => {
+	async (data, _user) => {
 		const supabase = getSupabaseServerClient();
 
 		try {
@@ -216,7 +216,7 @@ export const getPresentationAction = enhanceAction(
 
 // Action to get all presentations
 export const getPresentationsAction = enhanceAction(
-	async (data, user) => {
+	async (_data, _user) => {
 		const supabase = getSupabaseServerClient();
 
 		try {
@@ -270,7 +270,7 @@ async function generateStoryboardFromOutline(
 
 // Action to save storyboard data
 export const saveStoryboardAction = enhanceAction(
-	async (data, user) => {
+	async (data, _user) => {
 		const supabase = getSupabaseServerClient();
 		const logger = await getLogger();
 

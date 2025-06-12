@@ -2,17 +2,17 @@
  * Unit tests for task schema validation
  * Tests Zod schemas for task management system including validation rules and type safety
  */
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import {
+	type CreateTaskInput,
+	CreateTaskSchema,
+	SubtaskSchema,
 	TaskPriorityEnum,
 	TaskStatusEnum,
-	SubtaskSchema,
-	CreateTaskSchema,
-	UpdateTaskSchema,
-	UpdateTaskStatusSchema,
-	type CreateTaskInput,
 	type UpdateTaskInput,
+	UpdateTaskSchema,
 	type UpdateTaskStatusInput,
+	UpdateTaskStatusSchema,
 } from "./task.schema";
 
 describe("Task Schema Validation", () => {
@@ -479,8 +479,8 @@ describe("Task Schema Validation", () => {
 
 			const result = CreateTaskSchema.parse(task);
 			expect(result.subtasks).toHaveLength(2);
-			expect(result.subtasks![0].title).toBe("First subtask");
-			expect(result.subtasks![1].is_completed).toBe(false);
+			expect(result.subtasks?.[0].title).toBe("First subtask");
+			expect(result.subtasks?.[1].is_completed).toBe(false);
 		});
 
 		it("should reject task with invalid subtasks", () => {

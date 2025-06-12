@@ -3,9 +3,9 @@
  * Tests core functionality for converting storyboard data to PPTX files
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { PptxGenerator, LAYOUT_POSITIONS } from "./pptx-generator";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { StoryboardData } from "../../types";
+import { LAYOUT_POSITIONS, PptxGenerator } from "./pptx-generator";
 
 // Mock PptxGenJS library
 const mockSlide = {

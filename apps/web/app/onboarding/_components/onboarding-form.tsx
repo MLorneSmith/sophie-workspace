@@ -56,7 +56,7 @@ const imageStyle = {
 
 export function OnboardingForm() {
 	const router = useRouter();
-	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [_isSubmitting, setIsSubmitting] = useState(false);
 	const formRef = useRef<HTMLDivElement>(null);
 
 	// Initialize form with React Hook Form
@@ -356,7 +356,7 @@ function ProfileStep() {
 function GoalsStep() {
 	const { nextStep, prevStep, form } = useMultiStepFormContext();
 	const primaryGoal = form.watch("goals.primary");
-	const secondaryGoals = form.watch("goals.secondary");
+	const _secondaryGoals = form.watch("goals.secondary");
 
 	// No need to initialize fields when primary goal changes
 	// since we've already initialized all fields in the form's default values

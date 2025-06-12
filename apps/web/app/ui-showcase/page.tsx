@@ -129,7 +129,7 @@ type NavigationItem = {
 /**
  * Sample navigation items for demonstration
  */
-const navigationItems: NavigationItem[] = [
+const _navigationItems: NavigationItem[] = [
 	{ path: "/blog", label: "Blog" },
 	{ path: "/docs", label: "Documentation" },
 	{ path: "/pricing", label: "Pricing" },

@@ -191,7 +191,7 @@ export class StoryboardService {
 	 * @returns Promise resolving to ArrayBuffer containing the PowerPoint file
 	 */
 	async generatePowerPoint(
-		storyboardData: StoryboardData,
+		_storyboardData: StoryboardData,
 	): Promise<ArrayBuffer> {
 		try {
 			// In the real implementation, this would use PptxGenJS

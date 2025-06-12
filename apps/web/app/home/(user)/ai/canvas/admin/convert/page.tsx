@@ -10,7 +10,7 @@ import { convertExistingRecordsToTiptap } from "../../_actions/convert-editor-da
 
 export default function ConvertEditorDataPage() {
 	const [isConverting, setIsConverting] = useState(false);
-	const [results, setResults] = useState<any>(null);
+	const [results, setResults] = useState<unknown>(null);
 	const [error, setError] = useState<string | null>(null);
 
 	const handleConvert = async () => {

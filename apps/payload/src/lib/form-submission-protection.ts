@@ -438,7 +438,7 @@ export class FormSubmissionProtectionManager {
 	}
 
 	private showMemoryMessage(
-		form: HTMLFormElement,
+		_form: HTMLFormElement,
 		message: string,
 		type: "success" | "error" | "info",
 	): void {

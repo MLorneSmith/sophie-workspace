@@ -70,11 +70,10 @@ async function FAQPage() {
 
 	return (
 		<>
-			{/* biome-ignore lint/security/noDangerouslySetInnerHtml: Safe structured data for SEO */}
 			<script
 				key={"ld:json"}
 				type="application/ld+json"
-				// biome-ignore lint/security/noDangerouslySetInnerHtml: Safe structured data for SEO  
+				// biome-ignore lint/security/noDangerouslySetInnerHtml: Safe structured data for SEO
 				dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
 			/>
 

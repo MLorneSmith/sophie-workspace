@@ -3,7 +3,7 @@
  * Configures testing environment, mocks, and global test utilities
  */
 
-import { vi, beforeEach } from "vitest";
+import { beforeEach, vi } from "vitest";
 import "@testing-library/jest-dom";
 
 // Mock Next.js router

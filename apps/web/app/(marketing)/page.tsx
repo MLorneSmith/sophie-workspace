@@ -50,9 +50,9 @@ const SectionLoader: React.FC = () => (
 		<div className="mx-auto h-8 w-2/3 rounded-md bg-gray-200 dark:bg-gray-800" />
 		<div className="mx-auto h-4 w-1/2 rounded-md bg-gray-200 dark:bg-gray-800" />
 		<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-			{[...Array(3)].map((_, i) => (
-				<div key={`skeleton-${i}`} className="h-64 rounded-lg bg-gray-200 dark:bg-gray-800" />
-			))}
+			<div className="h-64 rounded-lg bg-gray-200 dark:bg-gray-800" />
+			<div className="h-64 rounded-lg bg-gray-200 dark:bg-gray-800" />
+			<div className="h-64 rounded-lg bg-gray-200 dark:bg-gray-800" />
 		</div>
 	</div>
 );

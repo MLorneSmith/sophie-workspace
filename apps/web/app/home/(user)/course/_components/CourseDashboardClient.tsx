@@ -92,7 +92,7 @@ export function CourseDashboardClient({
 	quizAttempts,
 	userId,
 }: CourseDashboardClientProps) {
-	const supabase = useSupabase();
+	const _supabase = useSupabase();
 	const [lessons, setLessons] = useState<any[]>([]);
 	const [displayedLessons, setDisplayedLessons] = useState<any[]>([]);
 	const [isCourseCompleted, setIsCourseCompleted] = useState<boolean>(false);

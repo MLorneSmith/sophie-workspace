@@ -47,8 +47,8 @@ export function ImprovementCard({
 						{improvement.implementedSummaryPoint}
 					</p>
 					<ul className="mt-2 space-y-1">
-						{improvement.implementedSupportingPoints.map((point, index) => (
-							<li key={index} className="text-muted-foreground text-xs">
+						{improvement.implementedSupportingPoints.map((point) => (
+							<li key={point} className="text-muted-foreground text-xs">
 								• {point}
 							</li>
 						))}

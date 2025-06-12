@@ -13,7 +13,7 @@ vi.mock("../_components/editor/tiptap/utils/format-conversion", () => ({
 
 // Create a test wrapper that mimics enhanceAction behavior
 const createTestAction = (schema: z.ZodSchema) => {
-	return async (data: any) => {
+	return async (data: unknown) => {
 		const result = schema.safeParse(data);
 		if (!result.success) {
 			return { error: "Validation failed" };
@@ -46,7 +46,7 @@ const EMPTY_TIPTAP_DOCUMENT: TiptapDocument = {
 	content: [],
 };
 
-const SPACER_PARAGRAPH: TiptapNode = {
+const _SPACER_PARAGRAPH: TiptapNode = {
 	type: "paragraph",
 	content: [
 		{

@@ -90,7 +90,7 @@ function useSuggestions(_userId: string) {
 				setSuggestions,
 			);
 		},
-		[setIsLoadingSuggestions, setSuggestions],
+		[debouncedFetchSuggestions],
 	);
 
 	return {
@@ -118,9 +118,9 @@ const SuggestionsList = ({
 			{isLoading && !isFromSuggestion ? (
 				<Spinner className="h-5 w-5" />
 			) : (
-				suggestions.map((suggestion, index) => (
+				suggestions.map((suggestion) => (
 					<Button
-						key={index}
+						key={suggestion}
 						type="button"
 						variant="outline"
 						size="sm"
@@ -242,7 +242,7 @@ export function SetupForm({ _userId }: SetupFormProps) {
 
 	useEffect(() => {
 		setErrors({});
-	}, [formData, setErrors]);
+	}, [setErrors]);
 
 	useEffect(() => {
 		const currentField = currentPath[currentQuestion];

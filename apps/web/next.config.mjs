@@ -7,8 +7,8 @@ const ENABLE_REACT_COMPILER = process.env.ENABLE_REACT_COMPILER === "true";
 // New Relic configuration for local development
 let nrExternals;
 try {
-	nrExternals = require('newrelic/load-externals');
-} catch (err) {
+	nrExternals = require("newrelic/load-externals");
+} catch (_err) {
 	// New Relic not available (e.g., in build without agent)
 	nrExternals = () => {};
 }
@@ -59,7 +59,7 @@ const config = {
 			fullUrl: true,
 		},
 	},
-	serverExternalPackages: ['newrelic'],
+	serverExternalPackages: ["newrelic"],
 	webpack: (config) => {
 		// Configure New Relic externals for proper agent loading
 		nrExternals(config);

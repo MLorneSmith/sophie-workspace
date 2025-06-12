@@ -7,7 +7,7 @@ import { z } from "zod";
 
 // Create a test wrapper that mimics enhanceAction behavior
 const createTestAction = (schema: z.ZodSchema) => {
-	return async (data: any) => {
+	return async (data: unknown) => {
 		const result = schema.safeParse(data);
 		if (!result.success) {
 			return { error: "Validation failed" };
@@ -30,7 +30,9 @@ const IdeasSchema = z.object({
 });
 
 describe("Generate Ideas Schema Validation", () => {
-	let testAction: (data: any) => Promise<any>;
+	let testAction: (
+		data: unknown,
+	) => Promise<{ error?: string; success?: boolean; data?: unknown }>;
 
 	beforeEach(() => {
 		vi.clearAllMocks();

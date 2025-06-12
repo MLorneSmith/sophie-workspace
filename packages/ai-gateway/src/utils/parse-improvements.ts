@@ -129,7 +129,7 @@ function improvementsFromParsed(parsed: any): BaseImprovement[] {
  */
 export function parseImprovements(
 	response: string,
-	type: ImprovementType,
+	_type: ImprovementType,
 ): BaseImprovement[] {
 	try {
 		// Log the raw response for debugging
@@ -175,7 +175,7 @@ export function parseImprovements(
 						try {
 							const improvement = JSON.parse(improvementJson);
 							improvementResults.push(improvement);
-						} catch (err) {
+						} catch (_err) {
 							console.log(
 								"Failed to parse individual improvement:",
 								improvementJson,
@@ -220,7 +220,7 @@ export function parseImprovements(
 					const improvements = [];
 
 					// Match patterns for each improvement block
-					const blockPattern =
+					const _blockPattern =
 						/"improvementHeadline"[^}]+?(?="improvementHeadline"|$)/g;
 					const headlines =
 						cleanedJson.match(/"improvementHeadline"\s*:\s*"([^"]+)"/g) || [];

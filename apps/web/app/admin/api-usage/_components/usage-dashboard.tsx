@@ -79,7 +79,7 @@ export function UsageDashboard({ initialData }: UsageDashboardProps) {
 		cost: { label: "Cost ($)", color: "var(--chart-1)" },
 	};
 
-	const tokensConfig = {
+	const _tokensConfig = {
 		tokens: { label: "Tokens", color: "var(--chart-2)" },
 	};
 

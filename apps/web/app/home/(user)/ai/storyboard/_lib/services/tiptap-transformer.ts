@@ -138,7 +138,7 @@ export class TipTapTransformer {
 	private static identifySlides(document: TipTapDocument): Slide[] {
 		const slides: Slide[] = [];
 		let currentSlide: Slide | null = null;
-		const slideCount = 0;
+		const _slideCount = 0;
 		let currentColumnIndex = 0;
 
 		// Process each node in the document
@@ -306,7 +306,7 @@ export class TipTapTransformer {
 	 */
 	private static determineInitialLayout(
 		headingLevel: number,
-		headingNode: TipTapNode,
+		_headingNode: TipTapNode,
 		followingNodes: TipTapNode[],
 	): string {
 		// Title slide for level 1 headings

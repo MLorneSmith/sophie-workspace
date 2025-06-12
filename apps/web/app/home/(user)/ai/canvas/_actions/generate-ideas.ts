@@ -17,16 +17,6 @@ import { parseImprovements } from "@kit/ai-gateway/src/utils/parse-improvements"
 import { enhanceAction } from "@kit/next/actions";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
 
-// Return type with metadata for cost tracking
-interface ActionResponse {
-	success: boolean;
-	data?: unknown;
-	error?: string;
-	metadata?: {
-		cost?: number;
-	};
-}
-
 // Define Zod schema for request validation
 const IdeasSchema = z.object({
 	content: z.string().min(1, "Content is required"),

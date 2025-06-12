@@ -19,7 +19,6 @@ import type { Database } from "~/lib/database.types";
 
 import { generateIdeasAction } from "../_actions/generate-ideas";
 import { generateOutlineAction } from "../_actions/generate-outline";
-import { useCostTracking } from "../_lib/contexts/cost-tracking-context";
 import { useActionWithCost } from "../_lib/hooks/use-action-with-cost";
 import { ActionToolbar } from "./action-toolbar";
 import type { TiptapEditorRef } from "./editor/tiptap/tiptap-editor";
@@ -55,7 +54,7 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
 	const queryClient = useQueryClient();
 
 	// Use cost tracking hooks
-	const { sessionId } = useCostTracking();
+	// const { sessionId } = useCostTracking(); // Commented out as it's unused
 	const generateIdeasWithCost = useActionWithCost(generateIdeasAction);
 
 	const editorRef = useRef<TiptapEditorRef>(null);
@@ -94,7 +93,7 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
 				console.error("Error accepting improvement:", error);
 			}
 		},
-		[editorRef],
+		[],
 	);
 
 	const handleImproveStructure = useCallback(async () => {
@@ -109,7 +108,7 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
 		} catch (error) {
 			console.warn("Error improving structure:", error);
 		}
-	}, [editorRef, submissionId]);
+	}, [submissionId]);
 
 	const handleGenerateIdeas = useCallback(async () => {
 		if (!editorRef.current || !submissionId) return;
@@ -132,7 +131,7 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
 					editorRef.current.update(() => {
 						try {
 							// Get content from Tiptap editor
-							const editor = (editorRef.current as any).editor;
+							const editor = editorRef.current?.getEditor();
 							if (editor) {
 								content = editor.getText();
 								resolve(content);
@@ -176,7 +175,7 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
 		} finally {
 			setIsGenerating(false);
 		}
-	}, [editorRef, submissionId, sectionType, generateIdeasWithCost]);
+	}, [submissionId, sectionType, generateIdeasWithCost]);
 
 	return (
 		<div className="flex h-[calc(100vh-180px)] flex-col">
@@ -234,7 +233,7 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
 														forceRegenerate: true,
 													})) as {
 														success: boolean;
-														data?: any;
+														data?: unknown;
 														error?: string;
 													};
 

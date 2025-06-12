@@ -2,7 +2,7 @@
  * Unit tests for get-outline-suggestions.ts
  * Tests AI-powered outline suggestion generation with SCQA content processing
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // Mock AI Gateway
 vi.mock("@kit/ai-gateway", () => ({
@@ -28,7 +28,7 @@ vi.mock("@kit/ai-gateway/src/prompts/partials/outline-rewrite", () => ({
 // Mock enhanceAction to pass through the function
 vi.mock("@kit/next/actions", () => ({
 	enhanceAction: vi.fn((fn, options) => {
-		return async (data: any) => {
+		return async (data: unknown) => {
 			// Validate with schema if provided
 			if (options?.schema) {
 				const result = options.schema.safeParse(data);
@@ -53,12 +53,12 @@ vi.mock("../_components/editor/tiptap/utils/format-conversion", () => ({
 	lexicalToTiptap: vi.fn(),
 }));
 
-// Import after mocks
-import { getOutlineSuggestionsAction } from "./get-outline-suggestions";
 import { getChatCompletion } from "@kit/ai-gateway";
 import { createQualityOptimizedConfig } from "@kit/ai-gateway/src/configs/templates";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
 import { lexicalToTiptap } from "../_components/editor/tiptap/utils/format-conversion";
+// Import after mocks
+import { getOutlineSuggestionsAction } from "./get-outline-suggestions";
 
 describe("getOutlineSuggestionsAction", () => {
 	beforeEach(() => {
@@ -112,7 +112,9 @@ describe("getOutlineSuggestionsAction", () => {
 					}),
 				})),
 			};
-			vi.mocked(getSupabaseServerClient).mockReturnValue(mockSupabase as any);
+			vi.mocked(getSupabaseServerClient).mockReturnValue(
+				mockSupabase as unknown,
+			);
 
 			// Act
 			const result = await getOutlineSuggestionsAction(validData);
@@ -167,7 +169,9 @@ describe("getOutlineSuggestionsAction", () => {
 					}),
 				})),
 			};
-			vi.mocked(getSupabaseServerClient).mockReturnValue(mockSupabase as any);
+			vi.mocked(getSupabaseServerClient).mockReturnValue(
+				mockSupabase as unknown,
+			);
 
 			const expectedSuggestions = {
 				suggestions: [
@@ -232,7 +236,9 @@ describe("getOutlineSuggestionsAction", () => {
 					}),
 				})),
 			};
-			vi.mocked(getSupabaseServerClient).mockReturnValue(mockSupabase as any);
+			vi.mocked(getSupabaseServerClient).mockReturnValue(
+				mockSupabase as unknown,
+			);
 
 			vi.mocked(lexicalToTiptap).mockReturnValue(convertedTiptap);
 
@@ -284,7 +290,9 @@ describe("getOutlineSuggestionsAction", () => {
 					}),
 				})),
 			};
-			vi.mocked(getSupabaseServerClient).mockReturnValue(mockSupabase as any);
+			vi.mocked(getSupabaseServerClient).mockReturnValue(
+				mockSupabase as unknown,
+			);
 
 			// Act
 			const result = await getOutlineSuggestionsAction({
@@ -321,7 +329,9 @@ describe("getOutlineSuggestionsAction", () => {
 					}),
 				})),
 			};
-			vi.mocked(getSupabaseServerClient).mockReturnValue(mockSupabase as any);
+			vi.mocked(getSupabaseServerClient).mockReturnValue(
+				mockSupabase as unknown,
+			);
 
 			// Act
 			const result = await getOutlineSuggestionsAction({
@@ -358,7 +368,9 @@ describe("getOutlineSuggestionsAction", () => {
 					}),
 				})),
 			};
-			vi.mocked(getSupabaseServerClient).mockReturnValue(mockSupabase as any);
+			vi.mocked(getSupabaseServerClient).mockReturnValue(
+				mockSupabase as unknown,
+			);
 
 			// Act
 			const result = await getOutlineSuggestionsAction({
@@ -387,7 +399,9 @@ describe("getOutlineSuggestionsAction", () => {
 					}),
 				})),
 			};
-			vi.mocked(getSupabaseServerClient).mockReturnValue(mockSupabase as any);
+			vi.mocked(getSupabaseServerClient).mockReturnValue(
+				mockSupabase as unknown,
+			);
 
 			vi.mocked(getChatCompletion).mockRejectedValue(
 				new Error("AI service unavailable"),
@@ -420,7 +434,9 @@ describe("getOutlineSuggestionsAction", () => {
 					}),
 				})),
 			};
-			vi.mocked(getSupabaseServerClient).mockReturnValue(mockSupabase as any);
+			vi.mocked(getSupabaseServerClient).mockReturnValue(
+				mockSupabase as unknown,
+			);
 
 			vi.mocked(getChatCompletion).mockResolvedValue({
 				content: "Invalid JSON response",
@@ -467,7 +483,9 @@ describe("getOutlineSuggestionsAction", () => {
 					}),
 				})),
 			};
-			vi.mocked(getSupabaseServerClient).mockReturnValue(mockSupabase as any);
+			vi.mocked(getSupabaseServerClient).mockReturnValue(
+				mockSupabase as unknown,
+			);
 
 			// Act
 			const result = await getOutlineSuggestionsAction({
@@ -516,7 +534,9 @@ describe("getOutlineSuggestionsAction", () => {
 					}),
 				})),
 			};
-			vi.mocked(getSupabaseServerClient).mockReturnValue(mockSupabase as any);
+			vi.mocked(getSupabaseServerClient).mockReturnValue(
+				mockSupabase as unknown,
+			);
 
 			// Act
 			const result = await getOutlineSuggestionsAction({

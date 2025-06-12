@@ -179,7 +179,10 @@ export function TaskForm({
 								<FormControl>
 									<div className="space-y-2">
 										{field.value?.map((subtask, index) => (
-											<div key={index} className="flex items-center gap-2">
+											<div
+												key={`subtask-${index}-${subtask.title || `new-${Date.now()}`}`}
+												className="flex items-center gap-2"
+											>
 												<Input
 													placeholder="Subtask title"
 													value={subtask.title}

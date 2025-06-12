@@ -33,51 +33,6 @@ const EMPTY_EDITOR_STATE = {
 	],
 };
 
-interface TiptapNode {
-	type: string;
-	content?: TiptapNode[];
-	attrs?: Record<string, any>;
-	marks?: { type: string }[];
-	text?: string;
-}
-
-// This improved hasValidText is more comprehensive and includes all content
-function hasValidText(node: TiptapNode): boolean {
-	// Check for text content in paragraphs and headings
-	if (
-		(node.type === "paragraph" || node.type === "heading") &&
-		node.content &&
-		node.content.length > 0
-	) {
-		return node.content.some(
-			(child: TiptapNode) =>
-				child.type === "text" &&
-				typeof child.text === "string" &&
-				child.text.trim().length > 0,
-		);
-	}
-
-	// Check for list structures
-	if (
-		node.type === "bulletList" ||
-		node.type === "orderedList" ||
-		node.type === "listItem"
-	) {
-		return true;
-	}
-
-	// Check other block types
-	if (
-		node.type === "blockquote" ||
-		node.type === "codeBlock" ||
-		node.type === "table"
-	) {
-		return true;
-	}
-
-	return false;
-}
-
 export const TiptapTabContent = forwardRef<TiptapEditorRef, TabContentProps>(
 	function TiptapTabContent({ sectionType }, ref) {
 		// Add state to track content loading errors
@@ -149,7 +104,7 @@ export const TiptapTabContent = forwardRef<TiptapEditorRef, TabContentProps>(
 						const result = (await generateOutlineAction({
 							submissionId: id,
 							forceRegenerate: false,
-						})) as { success: boolean; data?: any; error?: string };
+						})) as { success: boolean; data?: unknown; error?: string };
 
 						if (result.success && result.data) {
 							console.log("Successfully generated outline");
@@ -168,7 +123,7 @@ export const TiptapTabContent = forwardRef<TiptapEditorRef, TabContentProps>(
 				}
 
 				// Standard handling for other sections
-				const rawContent = (data as Record<string, any>)[sectionType];
+				const rawContent = (data as Record<string, unknown>)[sectionType];
 				console.debug("Loading content for section:", { sectionType });
 
 				if (!rawContent) return EMPTY_EDITOR_STATE;
@@ -238,6 +193,7 @@ export const TiptapTabContent = forwardRef<TiptapEditorRef, TabContentProps>(
 				<div className="flex h-[200px] flex-col items-center justify-center text-red-500">
 					<p className="mb-2">{contentError}</p>
 					<button
+						type="button"
 						className="bg-primary text-primary-foreground rounded px-3 py-1"
 						onClick={async () => {
 							if (id) {

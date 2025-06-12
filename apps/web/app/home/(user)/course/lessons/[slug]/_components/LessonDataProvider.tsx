@@ -140,10 +140,10 @@ export async function LessonDataProvider({
 					.order("completed_at", { ascending: false });
 
 				quizAttempts = attempts || [];
-			} catch (error) {
+			} catch (_error) {
 				// Continue with empty quiz attempts
 			}
-		} catch (error) {
+		} catch (_error) {
 			// Continue without quiz data
 		}
 	}
@@ -236,10 +236,10 @@ export async function LessonDataProvider({
 				if (responses) {
 					surveyResponses = [responses];
 				}
-			} catch (error) {
+			} catch (_error) {
 				// Continue with empty survey responses
 			}
-		} catch (error) {
+		} catch (_error) {
 			// Continue without survey data
 		}
 	}

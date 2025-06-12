@@ -4,7 +4,7 @@ import { getCourseLessons } from "@kit/cms/payload";
 import { enhanceRouteHandler } from "@kit/next/routes";
 
 export const GET = enhanceRouteHandler(
-	async ({ params, user }) => {
+	async ({ params, user: _user }) => {
 		if (!params?.courseId) {
 			return NextResponse.json(
 				{ error: "Course ID is required" },

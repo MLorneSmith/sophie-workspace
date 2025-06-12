@@ -191,7 +191,7 @@ const CompleteSurveySchema = z.object({
  * Complete a survey
  */
 export const completeSurveyAction = enhanceAction(
-	async (data, user) => {
+	async (data, _user) => {
 		const supabase = getSupabaseServerClient();
 
 		try {

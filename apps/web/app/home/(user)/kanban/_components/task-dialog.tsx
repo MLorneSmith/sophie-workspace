@@ -318,7 +318,10 @@ export function TaskDialog({ open, onOpenChange, task }: TaskDialogProps) {
 									<FormControl>
 										<div className="space-y-2">
 											{field.value?.map((subtask, index) => (
-												<div key={index} className="flex items-center gap-2">
+												<div
+													key={`subtask-${index}-${subtask.title || "empty"}`}
+													className="flex items-center gap-2"
+												>
 													<Input
 														placeholder={t(
 															"kanban:task.form.subtaskPlaceholder",

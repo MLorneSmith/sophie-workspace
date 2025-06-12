@@ -12,20 +12,20 @@ interface LexicalNode {
 	children?: LexicalNode[];
 	format?: number;
 	text?: string;
-	[key: string]: any;
+	[key: string]: unknown;
 }
 
 // Base node interface
 interface TiptapNode {
 	type: string;
-	attrs?: Record<string, any>;
+	attrs?: Record<string, unknown>;
 	marks?: TiptapMark[];
 }
 
 // Mark interface
 interface TiptapMark {
 	type: string;
-	attrs?: Record<string, any>;
+	attrs?: Record<string, unknown>;
 }
 
 // Text node - must have text property
@@ -78,7 +78,7 @@ interface TiptapDocument {
 	content: Array<TiptapContentNode>;
 }
 
-export function lexicalToTiptap(lexicalContent: any): TiptapDocument {
+export function lexicalToTiptap(lexicalContent: unknown): TiptapDocument {
 	if (!lexicalContent) {
 		return {
 			type: "doc",

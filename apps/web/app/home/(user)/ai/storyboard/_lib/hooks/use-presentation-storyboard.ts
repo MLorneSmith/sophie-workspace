@@ -4,8 +4,8 @@ import { useCallback, useState } from "react";
 
 import { useQuery } from "@tanstack/react-query";
 
-import { useSupabase } from "@kit/supabase/hooks/use-supabase";
 import type { Json } from "@kit/supabase/database";
+import { useSupabase } from "@kit/supabase/hooks/use-supabase";
 import { toast } from "@kit/ui/sonner";
 
 import type { BuildingBlocksSubmission, StoryboardData } from "../types";

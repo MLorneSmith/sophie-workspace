@@ -1,4 +1,3 @@
-
 import type { CollectionConfig } from "payload";
 
 // Assuming blocks like CallToAction and TestBlock will be defined elsewhere

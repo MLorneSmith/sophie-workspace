@@ -9,7 +9,10 @@ export function useBuildingBlocksPresentation(id: string | null) {
 
 	return useQuery({
 		queryKey: ["building-blocks-presentation", id],
-		queryFn: () => getBuildingBlocksPresentation(supabase, id!),
+		queryFn: () => {
+			if (!id) throw new Error("Building block ID is required");
+			return getBuildingBlocksPresentation(supabase, id);
+		},
 		enabled: !!id,
 	});
 }

@@ -396,7 +396,7 @@ function main() {
 	allGood &&= storageTestPassed;
 
 	// Verify storage architecture
-	const architectureValid = verifyStorageArchitecture();
+	const _architectureValid = verifyStorageArchitecture();
 
 	// Results Summary
 	log(colors.blue + colors.bold, "\n📋 Configuration Summary:");
