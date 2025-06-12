@@ -19,7 +19,7 @@ import { lexicalToTiptap } from "../_components/editor/tiptap/utils/format-conve
 interface TiptapNode {
 	type: string;
 	content?: TiptapNode[];
-	attrs?: Record<string, any>;
+	attrs?: Record<string, unknown>;
 	marks?: { type: string }[];
 	text?: string;
 }

@@ -385,7 +385,7 @@ class RequestDeduplicationManager {
 	private log(
 		message: string,
 		level: "debug" | "info" | "warn" | "error" = "info",
-		data?: any,
+		data?: unknown,
 	): void {
 		if (!this.config.enableLogging && level === "debug") {
 			return;

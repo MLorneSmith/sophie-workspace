@@ -437,8 +437,8 @@ function EnvList({ appState }: { appState: AppEnvState }) {
 								<AlertDescription>
 									<div className="space-y-2">
 										<div className="space-y-1">
-											{varState.validation.error?.issues.map((issue, index) => (
-												<div key={index} className="text-sm">
+											{varState.validation.error?.issues.map((issue) => (
+												<div key={`issue-${issue}`} className="text-sm">
 													• {issue}
 												</div>
 											))}
@@ -449,14 +449,15 @@ function EnvList({ appState }: { appState: AppEnvState }) {
 											<div className="mt-4 space-y-1">
 												<div className="font-medium">Dependencies:</div>
 
-												{model.contextualValidation.dependencies.map(
-													(dep, index) => (
-														<div key={index} className="text-sm">
-															• Requires valid {dep.variable.toUpperCase()} when{" "}
-															{dep.message}
-														</div>
-													),
-												)}
+												{model.contextualValidation.dependencies.map((dep) => (
+													<div
+														key={`dep-${dep.variable}-${dep.message}`}
+														className="text-sm"
+													>
+														• Requires valid {dep.variable.toUpperCase()} when{" "}
+														{dep.message}
+													</div>
+												))}
 											</div>
 										)}
 									</div>

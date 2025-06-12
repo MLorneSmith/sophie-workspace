@@ -38,11 +38,19 @@
 		"rules": {
 			"recommended": true,
 			"security": {
-				"noDangerouslySetInnerHtml": "warn"
+				"noDangerouslySetInnerHtml": "error"
 			},
 			"suspicious": {
-				"noExplicitAny": "warn",
-				"noArrayIndexKey": "warn"
+				"noExplicitAny": "error",
+				"noArrayIndexKey": "error"
+			},
+			"style": {
+				"noUnusedTemplateLiteral": "error",
+				"useImportType": "error"
+			},
+			"correctness": {
+				"noUnusedVariables": "error",
+				"noUnusedImports": "error"
 			}
 		}
 	},

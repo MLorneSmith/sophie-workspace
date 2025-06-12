@@ -31,11 +31,9 @@ export function PostHeader({ post }: { post: Cms.ContentItem }) {
 						</span>
 					</div>
 
-					{/* biome-ignore lint/security/noDangerouslySetInnerHtml: Rendering trusted blog post description from CMS */}
-					<h2
-						className={"text-muted-foreground text-base xl:text-lg"}
-						dangerouslySetInnerHTML={{ __html: description ?? "" }}
-					/>
+					<h2 className={"text-muted-foreground text-base xl:text-lg"}>
+						{description}
+					</h2>
 				</div>
 			</div>
 

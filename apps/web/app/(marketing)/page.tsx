@@ -51,7 +51,7 @@ const SectionLoader: React.FC = () => (
 		<div className="mx-auto h-4 w-1/2 rounded-md bg-gray-200 dark:bg-gray-800" />
 		<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
 			{[...Array(3)].map((_, i) => (
-				<div key={i} className="h-64 rounded-lg bg-gray-200 dark:bg-gray-800" />
+				<div key={`skeleton-${i}`} className="h-64 rounded-lg bg-gray-200 dark:bg-gray-800" />
 			))}
 		</div>
 	</div>
@@ -146,7 +146,7 @@ function Home() {
 								...item,
 								content: (
 									<OptimizedImage
-										key={index}
+										key={`sticky-${item.title}`}
 										src={item.imageSrc}
 										alt={item.title}
 										width={1200}
@@ -176,9 +176,9 @@ function Home() {
 						{homepageContentConfig.features.subtitle}
 					</p>
 					<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-8">
-						{homepageContentConfig.features.cards.map((card, index) => (
+						{homepageContentConfig.features.cards.map((card) => (
 							<Suspense
-								key={index}
+								key={`feature-${card.title}`}
 								fallback={
 									<div className="h-64 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-800" />
 								}
@@ -260,9 +260,9 @@ function Home() {
 						{homepageContentConfig.essentialReads.subtitle}
 					</p>
 					<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-8">
-						{homepageContentConfig.essentialReads.posts.map((post, index) => (
+						{homepageContentConfig.essentialReads.posts.map((post) => (
 							<Suspense
-								key={index}
+								key={`post-${post.title}`}
 								fallback={
 									<div className="h-64 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-800" />
 								}
