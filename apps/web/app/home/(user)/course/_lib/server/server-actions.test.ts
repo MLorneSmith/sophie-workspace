@@ -39,14 +39,14 @@ vi.mock("@kit/next/actions", () => ({
 // Create comprehensive Supabase client mock
 const mockSupabaseClient = {
 	from: vi.fn((table: string) => {
-		const queryBuilder = {
-			select: vi.fn().mockReturnThis(),
-			insert: vi.fn().mockReturnThis(),
-			update: vi.fn().mockReturnThis(),
-			eq: vi.fn().mockReturnThis(),
-			single: vi.fn(),
-		};
-		return queryBuilder;
+		const createQueryBuilder = () => ({
+			select: vi.fn().mockReturnValue(createQueryBuilder()),
+			insert: vi.fn().mockReturnValue(createQueryBuilder()),
+			update: vi.fn().mockReturnValue(createQueryBuilder()),
+			eq: vi.fn().mockReturnValue(createQueryBuilder()),
+			single: vi.fn().mockResolvedValue({ data: null, error: null }),
+		});
+		return createQueryBuilder();
 	}),
 };
 
