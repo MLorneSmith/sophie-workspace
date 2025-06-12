@@ -9,7 +9,6 @@ import { type Logger, getLogger } from "@kit/shared/logger";
 // Import the logger
 
 import type {
-	Slide,
 	SlideContent,
 	SlideContentFormatting,
 	StoryboardData,

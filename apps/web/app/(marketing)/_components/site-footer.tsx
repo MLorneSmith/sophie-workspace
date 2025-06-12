@@ -1,5 +1,3 @@
-import React from "react";
-
 import { cn } from "@kit/ui/utils";
 
 import { FooterLinkList } from "./site-footer-link-list";

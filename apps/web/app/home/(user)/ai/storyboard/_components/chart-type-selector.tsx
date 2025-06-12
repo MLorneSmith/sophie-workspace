@@ -8,7 +8,6 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@kit/ui/select";
-import { cn } from "@kit/ui/utils";
 
 import { useStoryboard } from "../_lib/providers/storyboard-provider";
 import type { Slide } from "../_lib/types";

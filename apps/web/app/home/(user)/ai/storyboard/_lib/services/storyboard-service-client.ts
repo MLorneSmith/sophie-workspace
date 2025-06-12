@@ -11,7 +11,6 @@ import {
 	PRESET_LAYOUTS,
 	// Import PRESET_LAYOUTS
 	type Slide,
-	SlideContent,
 	type StoryboardData,
 	type StoryboardSlide,
 } from "../types/index";

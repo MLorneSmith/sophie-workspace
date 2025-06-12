@@ -2,16 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-import {
-	Bar,
-	BarChart,
-	CartesianGrid,
-	Legend,
-	ResponsiveContainer,
-	Tooltip,
-	XAxis,
-	YAxis,
-} from "recharts";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 import { Button } from "@kit/ui/button";
 import {

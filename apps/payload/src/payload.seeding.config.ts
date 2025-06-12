@@ -2,23 +2,11 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { postgresAdapter } from "@payloadcms/db-postgres";
 import { buildConfig } from "payload";
-
-// Import collections with .js extensions for compilation compatibility
-import { CourseLessons } from "./collections/CourseLessons.js";
-import { CourseQuizzes } from "./collections/CourseQuizzes.js";
-import { Courses } from "./collections/Courses.js";
-import { Documentation } from "./collections/Documentation.js";
-import { Downloads } from "./collections/Downloads.js";
 import { Media } from "./collections/Media.js";
-import { Posts } from "./collections/Posts.js";
-import { Private } from "./collections/Private.js";
-import { QuizQuestions } from "./collections/QuizQuestions.js";
-import { SurveyQuestions } from "./collections/SurveyQuestions.js";
-import { Surveys } from "./collections/Surveys.js";
 import { Users } from "./collections/Users.js";
 
 const filename = fileURLToPath(import.meta.url);
-const dirname = path.dirname(filename);
+const _dirname = path.dirname(filename);
 
 const serverURL = process.env.PAYLOAD_PUBLIC_SERVER_URL || "";
 const payloadSecret = process.env.PAYLOAD_SECRET || "";

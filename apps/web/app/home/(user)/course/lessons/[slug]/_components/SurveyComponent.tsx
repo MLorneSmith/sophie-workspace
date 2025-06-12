@@ -11,7 +11,6 @@ import { Progress } from "@kit/ui/progress";
 
 import { saveResponseAction } from "../../../../assessment/_lib/server/server-actions";
 import { QuestionCard } from "../../../../assessment/survey/_components/question-card";
-import { SurveySummary } from "../../../../assessment/survey/_components/survey-summary";
 
 type SurveyComponentProps = {
 	survey: any;

@@ -1,9 +1,3 @@
-/**
- * Vitest configuration for the web application
- * Configures testing environment, path resolution, and mocking for Next.js
- */
-
-import { resolve } from "node:path";
 import tsconfigPaths from "vite-tsconfig-paths";
 import { defineConfig } from "vitest/config";
 

@@ -2,7 +2,6 @@ import { describe, expect, test } from "vitest";
 
 import type {
 	PresentationStructure,
-	SlideContent,
 	SlideContentItem,
 	TipTapDocument,
 	TipTapTextNode,

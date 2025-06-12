@@ -7,7 +7,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type {
 	EditorContentTypes,
 	TiptapDocument,
-	TiptapNode,
 } from "../../_types/editor-types";
 import { normalizeEditorContent } from "./normalize-editor-content";
 

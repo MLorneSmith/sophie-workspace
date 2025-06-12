@@ -26,10 +26,7 @@ import {
 import { Textarea } from "@kit/ui/textarea";
 import { cn } from "@kit/ui/utils";
 
-import type {
-	CreateTaskInput,
-	Task as _Task,
-} from "../_lib/schema/task.schema";
+import type { CreateTaskInput } from "../_lib/schema/task.schema";
 import {
 	CreateTaskSchema,
 	TaskPriorityEnum,

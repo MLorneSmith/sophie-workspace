@@ -13,10 +13,6 @@ import { ideasCreatorSystem } from "@kit/ai-gateway/src/prompts/messages/system/
 import { baseInstructions } from "@kit/ai-gateway/src/prompts/partials/base-instructions";
 import { improvementFormat } from "@kit/ai-gateway/src/prompts/partials/improvement-format";
 import { presentationContext } from "@kit/ai-gateway/src/prompts/partials/presentation-context";
-import type {
-	BaseImprovement as _BaseImprovement,
-	ImprovementType as _ImprovementType,
-} from "@kit/ai-gateway/src/prompts/types/improvements";
 import { parseImprovements } from "@kit/ai-gateway/src/utils/parse-improvements";
 import { enhanceAction } from "@kit/next/actions";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";

@@ -16,7 +16,7 @@ async function checkLicense() {
 		}
 
 		gitEmail = execSync("git config user.email").toString().trim();
-	} catch (error) {
+	} catch (_error) {
 		console.warn(`Error checking git user: ${error.message}`);
 	}
 
@@ -28,7 +28,7 @@ async function checkLicense() {
 
 	try {
 		gitEmail = execSync("git config user.email").toString().trim();
-	} catch (error) {
+	} catch (_error) {
 		console.info("Error getting git config:", error.message);
 
 		if (!gitUser) {
@@ -80,7 +80,7 @@ function checkVisibility() {
 		remoteUrl = execSync("git config --get remote.origin.url")
 			.toString()
 			.trim();
-	} catch (error) {
+	} catch (_error) {
 		return Promise.resolve();
 	}
 
@@ -136,7 +136,7 @@ async function isOnline() {
 				}
 			});
 		}).catch(() => false);
-	} catch (e) {
+	} catch (_e) {
 		return false;
 	}
 }
@@ -156,7 +156,7 @@ async function main() {
 			console.error(`Check failed with error: ${error.message}`);
 			process.exit(1);
 		});
-	} catch (error) {
+	} catch (_error) {
 		console.error(`Check failed with error: ${error.message}`);
 
 		process.exit(1);

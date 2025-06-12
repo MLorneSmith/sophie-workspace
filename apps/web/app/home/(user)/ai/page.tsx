@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 import { PageBody } from "@kit/ui/page";
 import { Trans } from "@kit/ui/trans";
 

@@ -1,13 +1,4 @@
-/**
- * Enhanced Template Tag Processor
- *
- * Provides processing for template-style tags in content strings before they are
- * rendered by the standard Lexical renderer. This improves compatibility with
- * template-based content that contains {% ... %} tags.
- *
- * Includes enhanced error handling, logging, and better r2file tag handling.
- */
-import React from "react";
+
 
 // Enable detailed logging in development environment
 const DEBUG = process.env.NODE_ENV === "development";

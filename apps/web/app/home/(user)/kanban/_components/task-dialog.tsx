@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo as _useMemo, useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ImageIcon, Loader2Icon, TrashIcon } from "lucide-react";

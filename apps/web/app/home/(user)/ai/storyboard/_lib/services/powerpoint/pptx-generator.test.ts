@@ -5,7 +5,7 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { PptxGenerator, LAYOUT_POSITIONS } from "./pptx-generator";
-import type { StoryboardData, Slide, SlideContent } from "../../types";
+import type { StoryboardData } from "../../types";
 
 // Mock PptxGenJS library
 const mockSlide = {

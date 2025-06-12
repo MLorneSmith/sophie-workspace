@@ -11,7 +11,7 @@ import {
 	waitFor,
 	renderHook,
 } from "@testing-library/react";
-import React, { type ReactNode } from "react";
+import type { ReactNode } from "react";
 import type { User } from "@supabase/supabase-js";
 import type { UseQueryResult } from "@tanstack/react-query";
 import { CostTrackingProvider, useCostTracking } from "./cost-tracking-context";

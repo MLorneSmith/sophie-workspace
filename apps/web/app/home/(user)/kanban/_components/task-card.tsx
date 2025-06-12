@@ -6,16 +6,7 @@ import Image from "next/image";
 
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import {
-	CheckCircle2Icon,
-	AlertCircleIcon as _AlertCircleIcon,
-	Loader2Icon as _Loader2Icon,
-} from "lucide-react";
-
-import {
-	Alert as _Alert,
-	AlertDescription as _AlertDescription,
-} from "@kit/ui/alert";
+import { CheckCircle2Icon } from "lucide-react";
 import {
 	Card,
 	CardContent,

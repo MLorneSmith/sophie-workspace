@@ -1,9 +1,5 @@
 import { createQualityOptimizedConfig } from "../../templates/quality-optimized";
 import type { Config } from "../../types";
-import {
-	type CacheNamespaceOptions,
-	addCacheNamespace,
-} from "../../utils/cache-namespace";
 
 /**
  * Configuration for generating situation improvements

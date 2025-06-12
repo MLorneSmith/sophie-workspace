@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-
-import { AppBreadcrumbs } from "@kit/ui/app-breadcrumbs";
 import { Page, PageBody, PageHeader } from "@kit/ui/page";
 
 import { TranslationsComparison } from "./components/translations-comparison";
