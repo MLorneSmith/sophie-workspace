@@ -1,5 +1,3 @@
-
-
 // Enable detailed logging in development environment
 const DEBUG = process.env.NODE_ENV === "development";
 
@@ -30,14 +28,16 @@ function processR2FileTags(text: string): string {
 		/{%\s*r2file\s+awsurl="([^"]+)"\s+filedescription="([^"]+)"\s*\/%}/g;
 
 	// Process standard format
-	let processedText = text.replace(r2filePattern, (match, url, description) => {
-		if (DEBUG) {
-			debugLog(
-				`Processing r2file: URL=${url.substring(0, 30)}..., Description=${description}`,
-			);
-		}
+	let processedText = text.replace(
+		r2filePattern,
+		(_match, url, description) => {
+			if (DEBUG) {
+				debugLog(
+					`Processing r2file: URL=${url.substring(0, 30)}..., Description=${description}`,
+				);
+			}
 
-		return `
+			return `
       <div class="flex items-center justify-between rounded-lg border border-gray-200 p-3 dark:border-gray-700 my-2">
         <div class="flex-grow">
           <p class="font-medium">${description}</p>
@@ -54,7 +54,8 @@ function processR2FileTags(text: string): string {
         </a>
       </div>
     `;
-	});
+		},
+	);
 
 	// Alternative format (in case order is different)
 	const alternativePattern =
@@ -62,7 +63,7 @@ function processR2FileTags(text: string): string {
 
 	processedText = processedText.replace(
 		alternativePattern,
-		(match, description, url) => {
+		(_match, description, url) => {
 			if (DEBUG) {
 				debugLog(
 					`Processing alternative r2file: Description=${description}, URL=${url.substring(0, 30)}...`,
@@ -114,7 +115,7 @@ function processBunnyVideoTags(text: string): string {
 
 	const bunnyPattern = /{%\s*bunny\s+bunnyvideoid="([^"]+)"\s*\/%}/g;
 
-	return text.replace(bunnyPattern, (match, videoId) => {
+	return text.replace(bunnyPattern, (_match, videoId) => {
 		if (DEBUG) {
 			debugLog(`Processing bunny video: ID=${videoId}`);
 		}
@@ -153,7 +154,7 @@ function processCustomBulletTags(text: string): string {
 
 	const bulletPattern = /{%\s*custombullet\s+status="([^"]+)"\s*\/%}/g;
 
-	return text.replace(bulletPattern, (match, status) => {
+	return text.replace(bulletPattern, (_match, status) => {
 		if (DEBUG) {
 			debugLog(`Processing custom bullet: status=${status}`);
 		}
@@ -186,7 +187,7 @@ function processCustomBulletTags(text: string): string {
  * Format: ### Lesson Header
  */
 function processHeaderTags(text: string): string {
-	return text.replace(/^###\s+(.*)$/gm, (match, headerText) => {
+	return text.replace(/^###\s+(.*)$/gm, (_match, headerText) => {
 		if (DEBUG) {
 			debugLog(`Processing header: "${headerText}"`);
 		}

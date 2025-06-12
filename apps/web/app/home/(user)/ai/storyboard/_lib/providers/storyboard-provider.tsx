@@ -128,7 +128,7 @@ export function StoryboardProvider({ children }: StoryboardProviderProps) {
 					setStoryboard(updatedStoryboard);
 				});
 
-				const result = await saveStoryboardAction({
+				const _result = await saveStoryboardAction({
 					presentationId: currentPresentationId,
 					storyboard: updatedStoryboard,
 				});

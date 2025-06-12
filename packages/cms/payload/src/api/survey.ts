@@ -314,7 +314,10 @@ export async function getSurveyQuestions(
 /**
  * @deprecated Use Supabase directly instead
  */
-export async function getUserSurveyResponse(userId: string, surveyId: string) {
+export async function getUserSurveyResponse(
+	_userId: string,
+	_surveyId: string,
+) {
 	console.warn(
 		"getUserSurveyResponse is deprecated. Use Supabase directly instead.",
 	);
@@ -324,7 +327,7 @@ export async function getUserSurveyResponse(userId: string, surveyId: string) {
 /**
  * @deprecated Use Supabase directly instead
  */
-export async function createSurveyResponse(data: any) {
+export async function createSurveyResponse(_data: any) {
 	console.warn(
 		"createSurveyResponse is deprecated. Use Supabase directly instead.",
 	);
@@ -334,7 +337,7 @@ export async function createSurveyResponse(data: any) {
 /**
  * @deprecated Use Supabase directly instead
  */
-export async function updateSurveyResponse(id: string, data: any) {
+export async function updateSurveyResponse(id: string, _data: any) {
 	console.warn(
 		"updateSurveyResponse is deprecated. Use Supabase directly instead.",
 	);
@@ -344,7 +347,7 @@ export async function updateSurveyResponse(id: string, data: any) {
 /**
  * @deprecated Use Supabase directly instead
  */
-export async function completeSurvey(id: string, data: any) {
+export async function completeSurvey(id: string, _data: any) {
 	console.warn("completeSurvey is deprecated. Use Supabase directly instead.");
 	return { id };
 }

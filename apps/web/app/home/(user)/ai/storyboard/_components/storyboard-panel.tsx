@@ -50,7 +50,10 @@ export function StoryboardPanel({
 				</div>
 				<div className="space-y-4">
 					{Array.from({ length: 4 }).map((_, i) => (
-						<Skeleton key={i} className="h-32 w-full" />
+						<Skeleton
+							key={`storyboard-skeleton-${i}`}
+							className="h-32 w-full"
+						/>
 					))}
 				</div>
 			</Card>

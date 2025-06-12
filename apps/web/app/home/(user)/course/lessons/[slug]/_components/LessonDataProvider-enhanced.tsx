@@ -272,10 +272,10 @@ export async function LessonDataProviderEnhanced({
 				if (responses) {
 					surveyResponses = [responses];
 				}
-			} catch (error) {
+			} catch (_error) {
 				// Continue with empty survey responses
 			}
-		} catch (error) {
+		} catch (_error) {
 			// Continue without survey data
 		}
 	}

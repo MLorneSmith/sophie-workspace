@@ -22,7 +22,7 @@ type ComponentProps = {
 // The component receives props from Lexical
 const Component: React.FC<ComponentProps> = (props) => {
 	// Extract useful debug information
-	const { data, field, schemaPath, blockType } = props;
+	const { data: _data, field, schemaPath, blockType } = props;
 	const fieldName = field?.name;
 
 	// Render debug information

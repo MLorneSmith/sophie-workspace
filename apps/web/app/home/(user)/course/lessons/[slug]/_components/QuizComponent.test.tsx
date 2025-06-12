@@ -1,6 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { QuizComponent } from "./QuizComponent";
 
 // Mock dependencies
@@ -94,7 +94,7 @@ vi.mock("@kit/ui/progress", () => ({
 			className={className}
 			{...props}
 		>
-			<div style={{ width: `${value}%` }}></div>
+			<div style={{ width: `${value}%` }} />
 		</div>
 	),
 }));

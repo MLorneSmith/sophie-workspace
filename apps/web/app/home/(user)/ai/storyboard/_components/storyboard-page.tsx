@@ -22,7 +22,7 @@ interface StoryboardPageProps {
 }
 
 // Error fallback component to display when an error occurs
-const ErrorFallback = (error: Error | null) => (
+const ErrorFallback = (_error: Error | null) => (
 	<Alert variant="destructive">
 		<AlertCircle className="h-4 w-4" />
 		<AlertTitle>Error</AlertTitle>

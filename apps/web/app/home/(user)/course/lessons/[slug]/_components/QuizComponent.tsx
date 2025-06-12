@@ -371,7 +371,7 @@ export function QuizComponent({
 
 			// If we couldn't find the next lesson or there was an error, go back to the course page
 			window.location.href = "/home/course";
-		} catch (error) {
+		} catch (_error) {
 			// Fallback to course page
 			window.location.href = "/home/course";
 		}

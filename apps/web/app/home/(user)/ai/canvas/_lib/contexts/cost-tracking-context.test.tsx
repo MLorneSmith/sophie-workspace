@@ -3,17 +3,17 @@
  * Tests cost calculation, state management, and API integration
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import {
-	render,
-	screen,
-	act,
-	waitFor,
-	renderHook,
-} from "@testing-library/react";
-import type { ReactNode } from "react";
 import type { User } from "@supabase/supabase-js";
 import type { UseQueryResult } from "@tanstack/react-query";
+import {
+	act,
+	render,
+	renderHook,
+	screen,
+	waitFor,
+} from "@testing-library/react";
+import type { ReactNode } from "react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { CostTrackingProvider, useCostTracking } from "./cost-tracking-context";
 
 // Mock dependencies - mock the entire context file's dependencies at the module level

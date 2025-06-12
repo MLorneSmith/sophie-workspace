@@ -2,13 +2,13 @@
  * Unit tests for updateBuildingBlockTitleAction server action
  * Tests schema validation, database updates, and error handling
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { updateBuildingBlockTitleAction } from "./update-building-block-title.action";
 
 // Mock dependencies
 vi.mock("@kit/next/actions", () => ({
 	enhanceAction: vi.fn((fn, options) => {
-		return async (data: any) => {
+		return async (data: unknown) => {
 			let validatedData = data;
 			// Validate with schema if provided
 			if (options?.schema) {
@@ -77,8 +77,8 @@ describe("updateBuildingBlockTitleAction", () => {
 
 		it("should reject invalid data types", async () => {
 			const result = await updateBuildingBlockTitleAction({
-				id: 123 as any,
-				title: null as any,
+				id: 123 as unknown,
+				title: null as unknown,
 			});
 
 			expect(result).toEqual({ error: "Validation failed" });
@@ -86,8 +86,8 @@ describe("updateBuildingBlockTitleAction", () => {
 
 		it("should reject missing fields", async () => {
 			const result = await updateBuildingBlockTitleAction({
-				id: undefined as any,
-			} as any);
+				id: undefined as unknown,
+			} as unknown);
 
 			expect(result).toEqual({ error: "Validation failed" });
 		});

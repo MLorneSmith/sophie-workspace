@@ -1,5 +1,5 @@
-import type { Metadata } from "next";
 import { Page, PageBody, PageHeader } from "@kit/ui/page";
+import type { Metadata } from "next";
 
 import { TranslationsComparison } from "./components/translations-comparison";
 import { loadTranslations } from "./lib/translations-loader";

@@ -6,7 +6,7 @@ import { callPayloadAPI } from "./payload-api";
  * @param supabaseClient Optional Supabase client (for client-side usage)
  * @returns The courses data
  */
-export async function getCourses(options = {}, supabaseClient?: any) {
+export async function getCourses(_options = {}, supabaseClient?: any) {
 	return callPayloadAPI(
 		"courses?where[status][equals]=published&depth=1",
 		{},
@@ -23,7 +23,7 @@ export async function getCourses(options = {}, supabaseClient?: any) {
  */
 export async function getCourseBySlug(
 	slug: string,
-	options = {},
+	_options = {},
 	supabaseClient?: any,
 ) {
 	return callPayloadAPI(
@@ -42,7 +42,7 @@ export async function getCourseBySlug(
  */
 export async function getCourseLessons(
 	courseId: string,
-	options = {},
+	_options = {},
 	supabaseClient?: any,
 ) {
 	return callPayloadAPI(
@@ -61,7 +61,7 @@ export async function getCourseLessons(
  */
 export async function getLessonBySlug(
 	slug: string,
-	options = {},
+	_options = {},
 	supabaseClient?: any,
 ) {
 	return callPayloadAPI(
@@ -80,7 +80,7 @@ export async function getLessonBySlug(
  */
 export async function getQuiz(
 	quizId: string | { value: string; relationTo?: string } | any,
-	options = {},
+	_options = {},
 	supabaseClient?: any,
 ) {
 	if (!quizId) {

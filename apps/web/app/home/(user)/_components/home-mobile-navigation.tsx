@@ -27,7 +27,8 @@ import type { UserWorkspace } from "../_lib/server/load-user-workspace";
 export function HomeMobileNavigation(props: { workspace: UserWorkspace }) {
 	const signOut = useSignOut();
 
-	const Links = personalAccountNavigationConfig.routes.map((item, index) => {
+	let dividerCount = 0;
+	const Links = personalAccountNavigationConfig.routes.map((item, _index) => {
 		if ("children" in item) {
 			return item.children.map((child) => {
 				return (
@@ -42,7 +43,7 @@ export function HomeMobileNavigation(props: { workspace: UserWorkspace }) {
 		}
 
 		if ("divider" in item) {
-			return <DropdownMenuSeparator key={`divider-${index}`} />;
+			return <DropdownMenuSeparator key={`nav-divider-${++dividerCount}`} />;
 		}
 	});
 

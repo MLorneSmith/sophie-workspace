@@ -35,7 +35,7 @@ vi.mock("@kit/ai-gateway/src/prompts/templates/text-simplification", () => ({
 
 vi.mock("@kit/next/actions", () => ({
 	enhanceAction: vi.fn((fn, options) => {
-		return async (data: any) => {
+		return async (data: unknown) => {
 			// Validate with schema if provided
 			if (options?.schema) {
 				const result = options.schema.safeParse(data);
@@ -86,7 +86,7 @@ describe("simplifyTextAction", () => {
 		});
 
 		vi.mocked(PromptManager.compile).mockImplementation(
-			(template: string, variables: any) => {
+			(template: string, variables: Record<string, unknown>) => {
 				return template.replace("{{content}}", variables.content);
 			},
 		);
@@ -129,7 +129,7 @@ describe("simplifyTextAction", () => {
 			};
 
 			// Act
-			const result = await simplifyTextAction(invalidInput as any);
+			const result = await simplifyTextAction(invalidInput as unknown);
 
 			// Assert
 			expect(result.error).toBe("Validation failed");
@@ -144,7 +144,7 @@ describe("simplifyTextAction", () => {
 			};
 
 			// Act
-			const result = await simplifyTextAction(invalidInput as any);
+			const result = await simplifyTextAction(invalidInput as unknown);
 
 			// Assert
 			expect(result.error).toBe("Validation failed");
@@ -159,7 +159,7 @@ describe("simplifyTextAction", () => {
 			};
 
 			// Act
-			const result = await simplifyTextAction(invalidInput as any);
+			const result = await simplifyTextAction(invalidInput as unknown);
 
 			// Assert
 			expect(result.error).toBe("Validation failed");
@@ -174,7 +174,7 @@ describe("simplifyTextAction", () => {
 			};
 
 			// Act
-			const result = await simplifyTextAction(invalidInput as any);
+			const result = await simplifyTextAction(invalidInput as unknown);
 
 			// Assert
 			expect(result.error).toBe("Validation failed");

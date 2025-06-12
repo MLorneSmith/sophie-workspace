@@ -1,5 +1,3 @@
-
-
 import { createPortal } from "react-dom";
 
 import ReactConfetti from "react-confetti";

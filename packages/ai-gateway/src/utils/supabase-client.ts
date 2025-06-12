@@ -16,16 +16,16 @@ export type SupabaseClient = any;
 function createMockClient(): SupabaseClient {
 	return {
 		// Table operations
-		from: (table: string) => ({
+		from: (_table: string) => ({
 			// Insert operations
-			insert: (data: any) => ({
-				select: (columns: string) => ({
+			insert: (_data: any) => ({
+				select: (_columns: string) => ({
 					single: () => ({ data: null, error: null }),
 				}),
 			}),
 			// Select operations
-			select: (columns?: string) => ({
-				eq: (column: string, value: any) => ({
+			select: (_columns?: string) => ({
+				eq: (_column: string, _value: any) => ({
 					single: () => ({ data: null, error: null }),
 					order: () => ({ limit: () => ({ data: null, error: null }) }),
 				}),
@@ -36,7 +36,7 @@ function createMockClient(): SupabaseClient {
 				error: null,
 			}),
 			// Update operations
-			update: (data: any) => ({
+			update: (_data: any) => ({
 				eq: () => ({ data: null, error: null }),
 				match: () => ({ data: null, error: null }),
 				data: null,
@@ -51,13 +51,13 @@ function createMockClient(): SupabaseClient {
 			}),
 		}),
 		// RPC calls
-		rpc: (func: string, params?: any) => ({ data: null, error: null }),
+		rpc: (_func: string, _params?: any) => ({ data: null, error: null }),
 		// Schema operations
-		schema: (schema: string) => ({
-			from: (table: string) => ({
-				select: (columns?: string) => ({ data: null, error: null }),
-				insert: (data: any) => ({ data: null, error: null }),
-				update: (data: any) => ({ data: null, error: null }),
+		schema: (_schema: string) => ({
+			from: (_table: string) => ({
+				select: (_columns?: string) => ({ data: null, error: null }),
+				insert: (_data: any) => ({ data: null, error: null }),
+				update: (_data: any) => ({ data: null, error: null }),
 				delete: () => ({ data: null, error: null }),
 			}),
 		}),

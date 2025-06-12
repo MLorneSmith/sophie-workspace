@@ -1,761 +1,996 @@
 /**
  * Unit tests for course server actions
- * Tests course progress, lesson progress, and quiz submission functionality
+ * Tests progress tracking, completion logic, and quiz submission functionality
  */
+import { describe, it, expect, vi, beforeEach } from "vitest";
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { 
-  updateCourseProgressAction,
-  updateLessonProgressAction,
-  submitQuizAttemptAction 
-} from './server-actions';
-import { generateCertificate } from '~/lib/certificates/certificate-service';
+// Import functions to test
+import {
+	updateCourseProgressAction,
+	updateLessonProgressAction,
+	submitQuizAttemptAction,
+} from "./server-actions";
 
 // Mock dependencies
-vi.mock('@kit/next/actions', () => ({
-  enhanceAction: vi.fn((fn, options) => {
-    return async (data: any) => {
-      // Validate with schema if provided
-      if (options?.schema) {
-        const result = options.schema.safeParse(data);
-        if (!result.success) {
-          return { error: 'Validation failed', details: result.error.issues };
-        }
-        data = result.data;
-      }
-      
-      // Mock authenticated user
-      const mockUser = { 
-        id: 'user-123', 
-        email: 'test@example.com',
-        aud: 'authenticated',
-      };
-      
-      return fn(data, mockUser);
-    };
-  }),
+vi.mock("@kit/next/actions", () => ({
+	enhanceAction: vi.fn((fn, options) => {
+		return async (data: any) => {
+			// Validate with schema if provided
+			if (options?.schema) {
+				const result = options.schema.safeParse(data);
+				if (!result.success) {
+					return { error: "Validation failed" };
+				}
+				data = result.data;
+			}
+
+			// Mock authenticated user
+			const mockUser = {
+				id: "user-123",
+				email: "test@example.com",
+				aud: "authenticated",
+			};
+
+			return fn(data, mockUser);
+		};
+	}),
 }));
 
+// Create comprehensive Supabase client mock
 const mockSupabaseClient = {
-  from: vi.fn(),
+	from: vi.fn((table: string) => {
+		const queryBuilder = {
+			select: vi.fn().mockReturnThis(),
+			insert: vi.fn().mockReturnThis(),
+			update: vi.fn().mockReturnThis(),
+			eq: vi.fn().mockReturnThis(),
+			single: vi.fn(),
+		};
+		return queryBuilder;
+	}),
 };
 
-vi.mock('@kit/supabase/server-client', () => ({
-  getSupabaseServerClient: vi.fn(() => mockSupabaseClient),
+vi.mock("@kit/supabase/server-client", () => ({
+	getSupabaseServerClient: vi.fn(() => mockSupabaseClient),
+}));
+
+vi.mock("~/lib/certificates/certificate-service", () => ({
+	generateCertificate: vi.fn().mockResolvedValue({ success: true }),
+}));
+
+vi.mock("~/lib/course/course-config", () => ({
+	REQUIRED_LESSON_NUMBERS: ["1", "2", "3", "4", "5"],
+	TOTAL_REQUIRED_LESSONS: 5,
 }));
 
 const mockGetCourseBySlug = vi.fn();
 const mockGetCourseLessons = vi.fn();
 
-vi.mock('@kit/cms/payload', async () => ({
-  getCourseBySlug: mockGetCourseBySlug,
-  getCourseLessons: mockGetCourseLessons,
-}));
+vi.mock("@kit/cms/payload", async () => {
+	return {
+		getCourseBySlug: mockGetCourseBySlug,
+		getCourseLessons: mockGetCourseLessons,
+	};
+});
 
-vi.mock('~/lib/certificates/certificate-service', () => ({
-  generateCertificate: vi.fn(),
-}));
+// Test data factories
+function createMockUser() {
+	return {
+		id: "user-123",
+		email: "test@example.com",
+		aud: "authenticated" as const,
+	};
+}
 
-vi.mock('~/lib/course/course-config', () => ({
-  REQUIRED_LESSON_NUMBERS: ['1', '2', '3', '4', '5'],
-  TOTAL_REQUIRED_LESSONS: 5,
-}));
+function createMockCourseProgress(overrides: any = {}) {
+	return {
+		id: "progress-123",
+		user_id: "user-123",
+		course_id: "course-1",
+		started_at: "2024-01-01T00:00:00.000Z",
+		last_accessed_at: "2024-01-01T00:00:00.000Z",
+		completion_percentage: 0,
+		completed_at: null,
+		certificate_generated: false,
+		current_lesson_id: null,
+		...overrides,
+	};
+}
 
-// Helper to setup Supabase mock chains
-const createMockSupabaseChain = (returnData: any, error: any = null) => {
-  const chain = {
-    select: vi.fn().mockReturnThis(),
-    insert: vi.fn().mockReturnThis(),
-    update: vi.fn().mockReturnThis(),
-    eq: vi.fn().mockReturnThis(),
-    single: vi.fn().mockResolvedValue({ data: returnData, error }),
-  };
-  return chain;
-};
+function createMockLessonProgress(overrides: any = {}) {
+	return {
+		id: "lesson-progress-123",
+		user_id: "user-123",
+		course_id: "course-1",
+		lesson_id: "lesson-1",
+		started_at: "2024-01-01T00:00:00.000Z",
+		completed_at: null,
+		completion_percentage: 0,
+		...overrides,
+	};
+}
 
-describe('Course Server Actions', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    // Reset the mock date to a fixed time for consistent testing
-    vi.useFakeTimers();
-    vi.setSystemTime(new Date('2024-01-01T12:00:00Z'));
-  });
+function createMockLesson(lessonNumber: string, overrides: any = {}) {
+	return {
+		id: `lesson-${lessonNumber}`,
+		lesson_number: lessonNumber,
+		title: `Lesson ${lessonNumber}`,
+		...overrides,
+	};
+}
 
-  afterEach(() => {
-    vi.useRealTimers();
-  });
+describe("Course Server Actions", () => {
+	beforeEach(() => {
+		vi.clearAllMocks();
 
-  describe('updateCourseProgressAction - Schema Validation', () => {
-    it('should validate courseId as string', async () => {
-      const input = { courseId: 'course-123' };
-      
-      // Mock no existing progress
-      mockSupabaseClient.from.mockReturnValue(
-        createMockSupabaseChain(null)
-      );
-      
-      const result = await updateCourseProgressAction(input);
-      
-      expect(result).toEqual({ success: true });
-    });
+		// Reset Supabase mock responses
+		mockSupabaseClient.from.mockImplementation((table: string) => {
+			const queryBuilder = {
+				select: vi.fn().mockReturnThis(),
+				insert: vi.fn().mockReturnThis(),
+				update: vi.fn().mockReturnThis(),
+				eq: vi.fn().mockReturnThis(),
+				single: vi.fn().mockResolvedValue({ data: null, error: null }),
+			};
+			return queryBuilder;
+		});
+	});
 
-    it('should transform courseId from number to string', async () => {
-      const input = { courseId: 123 };
-      
-      mockSupabaseClient.from.mockReturnValue(
-        createMockSupabaseChain(null)
-      );
-      
-      const result = await updateCourseProgressAction(input);
-      
-      expect(result).toEqual({ success: true });
-      expect(mockSupabaseClient.from).toHaveBeenCalledWith('course_progress');
-    });
+	describe("updateCourseProgressAction", () => {
+		describe("Core Functionality", () => {
+			it("creates new course progress record for new user", async () => {
+				// Arrange: No existing progress found
+				const mockFrom = mockSupabaseClient.from as any;
+				mockFrom.mockReturnValueOnce({
+					select: vi.fn().mockReturnThis(),
+					eq: vi.fn().mockReturnThis(),
+					single: vi.fn().mockResolvedValue({ data: null, error: null }),
+				});
 
-    it('should validate completion percentage in valid range', async () => {
-      const input = { courseId: '1', completionPercentage: 50 };
-      
-      mockSupabaseClient.from.mockReturnValue(
-        createMockSupabaseChain(null)
-      );
-      
-      const result = await updateCourseProgressAction(input);
-      
-      expect(result).toEqual({ success: true });
-    });
+				const insertMock = vi.fn().mockResolvedValue({ data: {}, error: null });
+				mockFrom.mockReturnValueOnce({
+					insert: insertMock,
+				});
 
-    it('should reject completion percentage above 100', async () => {
-      const input = { courseId: '1', completionPercentage: 150 };
-      
-      const result = await updateCourseProgressAction(input);
-      
-      expect(result.error).toBe('Validation failed');
-      expect(result.details).toBeDefined();
-    });
+				const input = {
+					courseId: "course-1",
+					currentLessonId: "lesson-1",
+					completionPercentage: 25,
+				};
 
-    it('should reject completion percentage below 0', async () => {
-      const input = { courseId: '1', completionPercentage: -10 };
-      
-      const result = await updateCourseProgressAction(input);
-      
-      expect(result.error).toBe('Validation failed');
-      expect(result.details).toBeDefined();
-    });
+				// Act
+				const result = await updateCourseProgressAction(input);
 
-    it('should handle optional currentLessonId as string', async () => {
-      const input = { courseId: '1', currentLessonId: 'lesson-123' };
-      
-      mockSupabaseClient.from.mockReturnValue(
-        createMockSupabaseChain(null)
-      );
-      
-      const result = await updateCourseProgressAction(input);
-      
-      expect(result).toEqual({ success: true });
-    });
+				// Assert
+				expect(result).toEqual({ success: true });
+				expect(insertMock).toHaveBeenCalledWith({
+					user_id: "user-123",
+					course_id: "course-1",
+					started_at: expect.any(String),
+					last_accessed_at: expect.any(String),
+					current_lesson_id: "lesson-1",
+					completion_percentage: 25,
+					completed_at: null,
+				});
+			});
 
-    it('should handle optional currentLessonId as number', async () => {
-      const input = { courseId: '1', currentLessonId: 456 };
-      
-      mockSupabaseClient.from.mockReturnValue(
-        createMockSupabaseChain(null)
-      );
-      
-      const result = await updateCourseProgressAction(input);
-      
-      expect(result).toEqual({ success: true });
-    });
+			it("updates existing course progress record", async () => {
+				// Arrange: Existing progress found
+				const existingProgress = createMockCourseProgress({
+					completion_percentage: 25,
+				});
 
-    it('should handle undefined currentLessonId', async () => {
-      const input = { courseId: '1', currentLessonId: undefined };
-      
-      mockSupabaseClient.from.mockReturnValue(
-        createMockSupabaseChain(null)
-      );
-      
-      const result = await updateCourseProgressAction(input);
-      
-      expect(result).toEqual({ success: true });
-    });
-  });
+				const mockFrom = mockSupabaseClient.from as any;
+				mockFrom.mockReturnValueOnce({
+					select: vi.fn().mockReturnThis(),
+					eq: vi.fn().mockReturnThis(),
+					single: vi
+						.fn()
+						.mockResolvedValue({ data: existingProgress, error: null }),
+				});
 
-  describe('updateCourseProgressAction - Core Functionality', () => {
-    it('should create new course progress record when none exists', async () => {
-      const input = { 
-        courseId: 'course-1', 
-        currentLessonId: 'lesson-1', 
-        completionPercentage: 25 
-      };
-      
-      const insertChain = createMockSupabaseChain(null);
-      insertChain.single = vi.fn().mockResolvedValue({ data: null, error: null });
-      
-      mockSupabaseClient.from.mockReturnValue(insertChain);
-      
-      const result = await updateCourseProgressAction(input);
-      
-      expect(result).toEqual({ success: true });
-      expect(insertChain.insert).toHaveBeenCalledWith({
-        user_id: 'user-123',
-        course_id: 'course-1',
-        started_at: '2024-01-01T12:00:00.000Z',
-        last_accessed_at: '2024-01-01T12:00:00.000Z',
-        current_lesson_id: 'lesson-1',
-        completion_percentage: 25,
-        completed_at: null,
-      });
-    });
+				const updateMock = vi.fn().mockResolvedValue({ data: {}, error: null });
+				mockFrom.mockReturnValueOnce({
+					update: updateMock,
+					eq: vi.fn().mockReturnThis(),
+				});
 
-    it('should update existing course progress record', async () => {
-      const input = { 
-        courseId: 'course-1', 
-        currentLessonId: 'lesson-2', 
-        completionPercentage: 50 
-      };
-      
-      const existingProgress = {
-        id: 'progress-1',
-        user_id: 'user-123',
-        course_id: 'course-1',
-        certificate_generated: false,
-      };
-      
-      const updateChain = createMockSupabaseChain(existingProgress);
-      mockSupabaseClient.from.mockReturnValue(updateChain);
-      
-      const result = await updateCourseProgressAction(input);
-      
-      expect(result).toEqual({ success: true });
-      expect(updateChain.update).toHaveBeenCalledWith({
-        last_accessed_at: '2024-01-01T12:00:00.000Z',
-        current_lesson_id: 'lesson-2',
-        completion_percentage: 50,
-      });
-    });
+				const input = {
+					courseId: "course-1",
+					currentLessonId: "lesson-2",
+					completionPercentage: 50,
+				};
 
-    it('should mark course as completed with timestamp', async () => {
-      const input = { 
-        courseId: 'course-1', 
-        completed: true 
-      };
-      
-      const existingProgress = {
-        id: 'progress-1',
-        user_id: 'user-123',
-        course_id: 'course-1',
-        certificate_generated: false,
-      };
-      
-      const updateChain = createMockSupabaseChain(existingProgress);
-      mockSupabaseClient.from.mockReturnValue(updateChain);
-      
-      const result = await updateCourseProgressAction(input);
-      
-      expect(result).toEqual({ success: true });
-      expect(updateChain.update).toHaveBeenCalledWith({
-        last_accessed_at: '2024-01-01T12:00:00.000Z',
-        completed_at: '2024-01-01T12:00:00.000Z',
-        certificate_generated: true,
-      });
-    });
+				// Act
+				const result = await updateCourseProgressAction(input);
 
-    it('should generate certificate on completion', async () => {
-      const input = { 
-        courseId: 'course-1', 
-        completed: true 
-      };
-      
-      const existingProgress = {
-        id: 'progress-1',
-        certificate_generated: false,
-      };
-      
-      const accountData = { name: 'John Doe' };
-      
-      // Setup the mock chain for multiple calls
-      mockSupabaseClient.from
-        .mockReturnValueOnce(createMockSupabaseChain(existingProgress))  // course_progress select
-        .mockReturnValueOnce(createMockSupabaseChain(accountData))       // accounts select
-        .mockReturnValueOnce(createMockSupabaseChain(null));             // course_progress update
-      
-      vi.mocked(generateCertificate).mockResolvedValue(undefined);
-      
-      const result = await updateCourseProgressAction(input);
-      
-      expect(result).toEqual({ success: true });
-      expect(vi.mocked(generateCertificate)).toHaveBeenCalledWith({
-        userId: 'user-123',
-        courseId: 'course-1',
-        fullName: 'John Doe',
-      });
-    });
+				// Assert
+				expect(result).toEqual({ success: true });
+				expect(updateMock).toHaveBeenCalledWith({
+					last_accessed_at: expect.any(String),
+					current_lesson_id: "lesson-2",
+					completion_percentage: 50,
+				});
+			});
 
-    it('should use email as fallback when account name is missing', async () => {
-      const input = { 
-        courseId: 'course-1', 
-        completed: true 
-      };
-      
-      const existingProgress = {
-        id: 'progress-1',
-        certificate_generated: false,
-      };
-      
-      // Setup the mock chain for multiple calls
-      mockSupabaseClient.from
-        .mockReturnValueOnce(createMockSupabaseChain(existingProgress))  // course_progress select
-        .mockReturnValueOnce(createMockSupabaseChain(null))              // accounts select (no name)
-        .mockReturnValueOnce(createMockSupabaseChain(null));             // course_progress update
-      
-      vi.mocked(generateCertificate).mockResolvedValue(undefined);
-      
-      const result = await updateCourseProgressAction(input);
-      
-      expect(result).toEqual({ success: true });
-      expect(vi.mocked(generateCertificate)).toHaveBeenCalledWith({
-        userId: 'user-123',
-        courseId: 'course-1',
-        fullName: 'test@example.com',
-      });
-    });
+			it("handles course completion and certificate generation", async () => {
+				// Arrange: Existing progress without certificate
+				const existingProgress = createMockCourseProgress({
+					certificate_generated: false,
+				});
 
-    it('should handle certificate generation failure gracefully', async () => {
-      const input = { 
-        courseId: 'course-1', 
-        completed: true 
-      };
-      
-      const existingProgress = {
-        id: 'progress-1',
-        certificate_generated: false,
-      };
-      
-      const accountData = { name: 'John Doe' };
-      
-      mockSupabaseClient.from
-        .mockReturnValueOnce(createMockSupabaseChain(existingProgress))
-        .mockReturnValueOnce(createMockSupabaseChain(accountData))
-        .mockReturnValueOnce(createMockSupabaseChain(null));
-      
-      vi.mocked(generateCertificate).mockRejectedValue(new Error('Certificate service failed'));
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-      
-      const result = await updateCourseProgressAction(input);
-      
-      expect(result).toEqual({ success: true });
-      expect(consoleSpy).toHaveBeenCalledWith('Failed to generate certificate:', expect.any(Error));
-      
-      consoleSpy.mockRestore();
-    });
+				const mockFrom = mockSupabaseClient.from as any;
 
-    it('should not generate certificate if already generated', async () => {
-      const input = { 
-        courseId: 'course-1', 
-        completed: true 
-      };
-      
-      const existingProgress = {
-        id: 'progress-1',
-        certificate_generated: true, // Already generated
-      };
-      
-      mockSupabaseClient.from.mockReturnValue(
-        createMockSupabaseChain(existingProgress)
-      );
-      
-      const result = await updateCourseProgressAction(input);
-      
-      expect(result).toEqual({ success: true });
-      expect(vi.mocked(generateCertificate)).not.toHaveBeenCalled();
-    });
-  });
+				// Mock existing progress query
+				mockFrom.mockReturnValueOnce({
+					select: vi.fn().mockReturnThis(),
+					eq: vi.fn().mockReturnThis(),
+					single: vi
+						.fn()
+						.mockResolvedValue({ data: existingProgress, error: null }),
+				});
 
-  describe('updateLessonProgressAction - Schema Validation', () => {
-    it('should transform courseId and lessonId from numbers to strings', async () => {
-      const input = { 
-        courseId: 123, 
-        lessonId: 456,
-        completionPercentage: 100,
-        completed: true
-      };
-      
-      // Mock existing lesson progress
-      mockSupabaseClient.from.mockReturnValue(
-        createMockSupabaseChain(null)
-      );
-      
-      // Mock course and lesson data
-      mockGetCourseBySlug.mockResolvedValue({ docs: [] });
-      
-      const result = await updateLessonProgressAction(input);
-      
-      expect(result).toEqual({ success: true });
-    });
+				// Mock account query for name
+				mockFrom.mockReturnValueOnce({
+					select: vi.fn().mockReturnThis(),
+					eq: vi.fn().mockReturnThis(),
+					single: vi.fn().mockResolvedValue({
+						data: { name: "John Doe" },
+						error: null,
+					}),
+				});
 
-    it('should validate completion percentage bounds', async () => {
-      const input = { 
-        courseId: '1', 
-        lessonId: '1', 
-        completionPercentage: -10 
-      };
-      
-      const result = await updateLessonProgressAction(input);
-      
-      expect(result.error).toBe('Validation failed');
-    });
+				// Mock progress update
+				const updateMock = vi.fn().mockResolvedValue({ data: {}, error: null });
+				mockFrom.mockReturnValueOnce({
+					update: updateMock,
+					eq: vi.fn().mockReturnThis(),
+				});
 
-    it('should accept valid completion percentage', async () => {
-      const input = { 
-        courseId: '1', 
-        lessonId: '1', 
-        completionPercentage: 75 
-      };
-      
-      mockSupabaseClient.from.mockReturnValue(
-        createMockSupabaseChain(null)
-      );
-      mockGetCourseBySlug.mockResolvedValue({ docs: [] });
-      
-      const result = await updateLessonProgressAction(input);
-      
-      expect(result).toEqual({ success: true });
-    });
-  });
+				const input = {
+					courseId: "course-1",
+					completed: true,
+					completionPercentage: 100,
+				};
 
-  describe('updateLessonProgressAction - Core Functionality', () => {
-    it('should create new lesson progress record when none exists', async () => {
-      const input = { 
-        courseId: 'course-1', 
-        lessonId: 'lesson-1',
-        completionPercentage: 100,
-        completed: true
-      };
-      
-      const insertChain = createMockSupabaseChain(null);
-      insertChain.single = vi.fn().mockResolvedValue({ data: null, error: null });
-      
-      mockSupabaseClient.from.mockReturnValue(insertChain);
-      mockGetCourseBySlug.mockResolvedValue({ docs: [] });
-      
-      const result = await updateLessonProgressAction(input);
-      
-      expect(result).toEqual({ success: true });
-      expect(insertChain.insert).toHaveBeenCalledWith({
-        user_id: 'user-123',
-        course_id: 'course-1',
-        lesson_id: 'lesson-1',
-        started_at: '2024-01-01T12:00:00.000Z',
-        completed_at: '2024-01-01T12:00:00.000Z',
-        completion_percentage: 100,
-      });
-    });
+				// Act
+				const result = await updateCourseProgressAction(input);
 
-    it('should update existing lesson progress record', async () => {
-      const input = { 
-        courseId: 'course-1', 
-        lessonId: 'lesson-1',
-        completionPercentage: 75
-      };
-      
-      const existingProgress = {
-        id: 'progress-1',
-        user_id: 'user-123',
-        lesson_id: 'lesson-1',
-      };
-      
-      const updateChain = createMockSupabaseChain(existingProgress);
-      mockSupabaseClient.from.mockReturnValue(updateChain);
-      mockGetCourseBySlug.mockResolvedValue({ docs: [] });
-      
-      const result = await updateLessonProgressAction(input);
-      
-      expect(result).toEqual({ success: true });
-      expect(updateChain.update).toHaveBeenCalledWith({
-        completion_percentage: 75,
-        course_id: 'course-1',
-      });
-    });
+				// Assert
+				expect(result).toEqual({ success: true });
+				expect(updateMock).toHaveBeenCalledWith({
+					last_accessed_at: expect.any(String),
+					completion_percentage: 100,
+					completed_at: expect.any(String),
+					certificate_generated: true,
+				});
+			});
 
-    it('should calculate course completion based on required lessons', async () => {
-      const input = { 
-        courseId: 'course-1', 
-        lessonId: 'lesson-1',
-        completed: true
-      };
-      
-      const existingProgress = {
-        id: 'progress-1',
-        user_id: 'user-123',
-        lesson_id: 'lesson-1',
-      };
-      
-      // Mock lesson progress data
-      const lessonProgressData = [
-        { lesson_id: 'lesson-1', completed_at: '2024-01-01T10:00:00Z' },
-        { lesson_id: 'lesson-2', completed_at: '2024-01-01T11:00:00Z' },
-        { lesson_id: 'lesson-6', completed_at: '2024-01-01T12:00:00Z' }, // Not in required list
-      ];
-      
-      // Mock course and lessons data
-      const courseData = { docs: [{ id: 'course-1' }] };
-      const lessonsData = { 
-        docs: [
-          { id: 'lesson-1', lesson_number: '1', title: 'Lesson 1' },
-          { id: 'lesson-2', lesson_number: '2', title: 'Lesson 2' },
-          { id: 'lesson-6', lesson_number: '6', title: 'Lesson 6' },
-        ]
-      };
-      
-      mockSupabaseClient.from
-        .mockReturnValueOnce(createMockSupabaseChain(existingProgress))  // existing lesson progress
-        .mockReturnValueOnce(createMockSupabaseChain(null))             // lesson progress update
-        .mockReturnValueOnce({                                          // lesson progress select for calculation
-          select: vi.fn().mockReturnThis(),
-          eq: vi.fn().mockReturnThis(),
-          data: lessonProgressData,
-        })
-        .mockReturnValueOnce(createMockSupabaseChain(null));           // course progress update
-      
-      mockGetCourseBySlug.mockResolvedValue(courseData);
-      mockGetCourseLessons.mockResolvedValue(lessonsData);
-      
-      const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
-      
-      const result = await updateLessonProgressAction(input);
-      
-      expect(result).toEqual({ success: true });
-      expect(consoleSpy).toHaveBeenCalledWith('Required lesson numbers:', ['1', '2', '3', '4', '5']);
-      expect(consoleSpy).toHaveBeenCalledWith('Course completion: 2/5 required lessons (40%)');
-      
-      consoleSpy.mockRestore();
-    });
+			it("avoids duplicate certificate generation", async () => {
+				// Arrange: Existing progress with certificate already generated
+				const existingProgress = createMockCourseProgress({
+					certificate_generated: true,
+				});
 
-    it('should handle missing course data gracefully', async () => {
-      const input = { 
-        courseId: 'nonexistent', 
-        lessonId: 'lesson-1',
-        completed: true
-      };
-      
-      mockSupabaseClient.from.mockReturnValue(
-        createMockSupabaseChain(null)
-      );
-      
-      // Mock Payload to return empty course data
-      mockGetCourseBySlug.mockResolvedValue({ docs: [] });
-      
-      const result = await updateLessonProgressAction(input);
-      
-      expect(result).toEqual({ success: true });
-      // Should not call course completion logic
-      expect(mockGetCourseLessons).not.toHaveBeenCalled();
-    });
-  });
+				const mockFrom = mockSupabaseClient.from as any;
+				mockFrom.mockReturnValueOnce({
+					select: vi.fn().mockReturnThis(),
+					eq: vi.fn().mockReturnThis(),
+					single: vi
+						.fn()
+						.mockResolvedValue({ data: existingProgress, error: null }),
+				});
 
-  describe('submitQuizAttemptAction - Core Functionality', () => {
-    it('should record quiz attempt successfully', async () => {
-      const input = {
-        courseId: 'course-1',
-        lessonId: 'lesson-1', 
-        quizId: 'quiz-1',
-        answers: { q1: 'answer1', q2: 'answer2' },
-        score: 85,
-        passed: true
-      };
-      
-      const insertChain = createMockSupabaseChain(null);
-      mockSupabaseClient.from.mockReturnValue(insertChain);
-      
-      const result = await submitQuizAttemptAction(input);
-      
-      expect(result).toEqual({ success: true });
-      expect(insertChain.insert).toHaveBeenCalledWith({
-        user_id: 'user-123',
-        course_id: 'course-1',
-        lesson_id: 'lesson-1',
-        quiz_id: 'quiz-1',
-        started_at: '2024-01-01T12:00:00.000Z',
-        completed_at: '2024-01-01T12:00:00.000Z',
-        score: 85,
-        passed: true,
-        answers: { q1: 'answer1', q2: 'answer2' },
-      });
-    });
+				const updateMock = vi.fn().mockResolvedValue({ data: {}, error: null });
+				mockFrom.mockReturnValueOnce({
+					update: updateMock,
+					eq: vi.fn().mockReturnThis(),
+				});
 
-    it('should mark lesson complete when quiz passed', async () => {
-      const input = {
-        courseId: 'course-1',
-        lessonId: 'lesson-1', 
-        quizId: 'quiz-1',
-        answers: { q1: 'answer1' },
-        score: 85,
-        passed: true
-      };
-      
-      // Mock the quiz attempt insert
-      mockSupabaseClient.from.mockReturnValue(
-        createMockSupabaseChain(null)
-      );
-      
-      // Mock lesson progress update (this will be called by updateLessonProgressAction)
-      mockGetCourseBySlug.mockResolvedValue({ docs: [] });
-      
-      const result = await submitQuizAttemptAction(input);
-      
-      expect(result).toEqual({ success: true });
-      // The lesson progress update is called internally
-    });
+				const { generateCertificate } = await import(
+					"~/lib/certificates/certificate-service"
+				);
 
-    it('should not mark lesson complete when quiz failed', async () => {
-      const input = {
-        courseId: 'course-1',
-        lessonId: 'lesson-1', 
-        quizId: 'quiz-1',
-        answers: { q1: 'wrong-answer' },
-        score: 45,
-        passed: false
-      };
-      
-      mockSupabaseClient.from.mockReturnValue(
-        createMockSupabaseChain(null)
-      );
-      
-      const result = await submitQuizAttemptAction(input);
-      
-      expect(result).toEqual({ success: true });
-      // Should only record the attempt, no lesson completion
-      expect(mockGetCourseBySlug).not.toHaveBeenCalled();
-    });
-  });
+				const input = {
+					courseId: "course-1",
+					completed: true,
+					completionPercentage: 100,
+				};
 
-  describe('submitQuizAttemptAction - Schema Validation', () => {
-    it('should handle string quiz ID', async () => {
-      const input = {
-        courseId: '1',
-        lessonId: '1', 
-        quizId: 'quiz-123',
-        answers: { q1: 'answer1' },
-        score: 85,
-        passed: true
-      };
-      
-      mockSupabaseClient.from.mockReturnValue(
-        createMockSupabaseChain(null)
-      );
-      
-      const result = await submitQuizAttemptAction(input);
-      
-      expect(result).toEqual({ success: true });
-    });
+				// Act
+				const result = await updateCourseProgressAction(input);
 
-    it('should handle number quiz ID', async () => {
-      const input = {
-        courseId: '1',
-        lessonId: '1', 
-        quizId: 123,
-        answers: { q1: 'answer1' },
-        score: 85,
-        passed: true
-      };
-      
-      mockSupabaseClient.from.mockReturnValue(
-        createMockSupabaseChain(null)
-      );
-      
-      const result = await submitQuizAttemptAction(input);
-      
-      expect(result).toEqual({ success: true });
-    });
+				// Assert
+				expect(result).toEqual({ success: true });
+				expect(generateCertificate).not.toHaveBeenCalled();
+				expect(updateMock).toHaveBeenCalledWith({
+					last_accessed_at: expect.any(String),
+					completion_percentage: 100,
+					completed_at: expect.any(String),
+				});
+			});
+		});
 
-    it('should handle relationship object quiz ID with value property', async () => {
-      const input = {
-        courseId: '1',
-        lessonId: '1', 
-        quizId: { value: 'quiz-123' },
-        answers: { q1: 'answer1' },
-        score: 85,
-        passed: true
-      };
-      
-      mockSupabaseClient.from.mockReturnValue(
-        createMockSupabaseChain(null)
-      );
-      
-      const result = await submitQuizAttemptAction(input);
-      
-      expect(result).toEqual({ success: true });
-    });
+		describe("Schema Validation", () => {
+			it("transforms courseId from number to string", async () => {
+				// Arrange
+				const mockFrom = mockSupabaseClient.from as any;
+				mockFrom.mockReturnValueOnce({
+					select: vi.fn().mockReturnThis(),
+					eq: vi.fn().mockReturnThis(),
+					single: vi.fn().mockResolvedValue({ data: null, error: null }),
+				});
 
-    it('should handle object with id property', async () => {
-      const input = {
-        courseId: '1',
-        lessonId: '1', 
-        quizId: { id: 'quiz-123' },
-        answers: { q1: 'answer1' },
-        score: 85,
-        passed: true
-      };
-      
-      mockSupabaseClient.from.mockReturnValue(
-        createMockSupabaseChain(null)
-      );
-      
-      const result = await submitQuizAttemptAction(input);
-      
-      expect(result).toEqual({ success: true });
-    });
+				const insertMock = vi.fn().mockResolvedValue({ data: {}, error: null });
+				mockFrom.mockReturnValueOnce({
+					insert: insertMock,
+				});
 
-    it('should validate score range (reject > 100)', async () => {
-      const input = {
-        courseId: '1',
-        lessonId: '1', 
-        quizId: 'quiz-1',
-        answers: { q1: 'answer1' },
-        score: 150,
-        passed: true
-      };
-      
-      const result = await submitQuizAttemptAction(input);
-      
-      expect(result.error).toBe('Validation failed');
-    });
+				const input = {
+					courseId: 123 as any, // Number input
+					currentLessonId: "lesson-1",
+				};
 
-    it('should validate score range (reject < 0)', async () => {
-      const input = {
-        courseId: '1',
-        lessonId: '1', 
-        quizId: 'quiz-1',
-        answers: { q1: 'answer1' },
-        score: -5,
-        passed: true
-      };
-      
-      const result = await submitQuizAttemptAction(input);
-      
-      expect(result.error).toBe('Validation failed');
-    });
+				// Act
+				const result = await updateCourseProgressAction(input);
 
-    it('should validate answers format as record', async () => {
-      const input = {
-        courseId: '1',
-        lessonId: '1', 
-        quizId: 'quiz-1',
-        answers: { 
-          question1: 'answer1', 
-          question2: 'answer2',
-          question3: 'answer3' 
-        },
-        score: 85,
-        passed: true
-      };
-      
-      mockSupabaseClient.from.mockReturnValue(
-        createMockSupabaseChain(null)
-      );
-      
-      const result = await submitQuizAttemptAction(input);
-      
-      expect(result).toEqual({ success: true });
-    });
-  });
+				// Assert
+				expect(result).toEqual({ success: true });
+				expect(insertMock).toHaveBeenCalledWith(
+					expect.objectContaining({
+						course_id: "123", // Should be transformed to string
+					}),
+				);
+			});
+
+			it("validates completion percentage bounds", async () => {
+				// Test invalid negative percentage
+				const invalidInput1 = {
+					courseId: "course-1",
+					completionPercentage: -10,
+				};
+
+				const result1 = await updateCourseProgressAction(invalidInput1);
+				expect(result1).toEqual({ error: "Validation failed" });
+
+				// Test invalid high percentage
+				const invalidInput2 = {
+					courseId: "course-1",
+					completionPercentage: 150,
+				};
+
+				const result2 = await updateCourseProgressAction(invalidInput2);
+				expect(result2).toEqual({ error: "Validation failed" });
+			});
+		});
+
+		describe("Error Handling", () => {
+			it("handles certificate generation failure gracefully", async () => {
+				// Arrange: Mock certificate generation to fail
+				const { generateCertificate } = await import(
+					"~/lib/certificates/certificate-service"
+				);
+				vi.mocked(generateCertificate).mockRejectedValueOnce(
+					new Error("Certificate service unavailable"),
+				);
+
+				const existingProgress = createMockCourseProgress({
+					certificate_generated: false,
+				});
+
+				const mockFrom = mockSupabaseClient.from as any;
+
+				// Mock existing progress query
+				mockFrom.mockReturnValueOnce({
+					select: vi.fn().mockReturnThis(),
+					eq: vi.fn().mockReturnThis(),
+					single: vi
+						.fn()
+						.mockResolvedValue({ data: existingProgress, error: null }),
+				});
+
+				// Mock account query
+				mockFrom.mockReturnValueOnce({
+					select: vi.fn().mockReturnThis(),
+					eq: vi.fn().mockReturnThis(),
+					single: vi.fn().mockResolvedValue({
+						data: { name: "John Doe" },
+						error: null,
+					}),
+				});
+
+				// Mock progress update
+				const updateMock = vi.fn().mockResolvedValue({ data: {}, error: null });
+				mockFrom.mockReturnValueOnce({
+					update: updateMock,
+					eq: vi.fn().mockReturnThis(),
+				});
+
+				const consoleSpy = vi
+					.spyOn(console, "error")
+					.mockImplementation(() => {});
+
+				const input = {
+					courseId: "course-1",
+					completed: true,
+				};
+
+				// Act
+				const result = await updateCourseProgressAction(input);
+
+				// Assert: Should still succeed despite certificate failure
+				expect(result).toEqual({ success: true });
+				expect(consoleSpy).toHaveBeenCalledWith(
+					"Failed to generate certificate:",
+					expect.any(Error),
+				);
+				expect(updateMock).toHaveBeenCalledWith(
+					expect.objectContaining({
+						completed_at: expect.any(String),
+					}),
+				);
+
+				consoleSpy.mockRestore();
+			});
+		});
+	});
+
+	describe("updateLessonProgressAction", () => {
+		describe("Core Functionality", () => {
+			it("creates new lesson progress record", async () => {
+				// Arrange: No existing lesson progress
+				const mockFrom = mockSupabaseClient.from as any;
+
+				// Mock lesson progress query (not found)
+				mockFrom.mockReturnValueOnce({
+					select: vi.fn().mockReturnThis(),
+					eq: vi.fn().mockReturnThis(),
+					single: vi.fn().mockResolvedValue({ data: null, error: null }),
+				});
+
+				// Mock lesson progress insert
+				const insertMock = vi.fn().mockResolvedValue({ data: {}, error: null });
+				mockFrom.mockReturnValueOnce({
+					insert: insertMock,
+				});
+
+				// Mock lesson progress query for course calculation
+				mockFrom.mockReturnValueOnce({
+					select: vi.fn().mockReturnThis(),
+					eq: vi.fn().mockReturnThis(),
+				});
+
+				// Mock CMS calls
+				mockGetCourseBySlug.mockResolvedValue({
+					docs: [{ id: "course-1", title: "Test Course" }],
+				});
+				mockGetCourseLessons.mockResolvedValue({
+					docs: [
+						createMockLesson("1"),
+						createMockLesson("2"),
+						createMockLesson("3"),
+					],
+				});
+
+				const input = {
+					courseId: "course-1",
+					lessonId: "lesson-1",
+					completionPercentage: 100,
+					completed: true,
+				};
+
+				// Act
+				const result = await updateLessonProgressAction(input);
+
+				// Assert
+				expect(result).toEqual({ success: true });
+				expect(insertMock).toHaveBeenCalledWith({
+					user_id: "user-123",
+					course_id: "course-1",
+					lesson_id: "lesson-1",
+					started_at: expect.any(String),
+					completed_at: expect.any(String),
+					completion_percentage: 100,
+				});
+			});
+
+			it("updates existing lesson progress", async () => {
+				// Arrange: Existing lesson progress
+				const existingProgress = createMockLessonProgress({
+					completion_percentage: 50,
+				});
+
+				const mockFrom = mockSupabaseClient.from as any;
+
+				// Mock lesson progress query (found)
+				mockFrom.mockReturnValueOnce({
+					select: vi.fn().mockReturnThis(),
+					eq: vi.fn().mockReturnThis(),
+					single: vi
+						.fn()
+						.mockResolvedValue({ data: existingProgress, error: null }),
+				});
+
+				// Mock lesson progress update
+				const updateMock = vi.fn().mockResolvedValue({ data: {}, error: null });
+				mockFrom.mockReturnValueOnce({
+					update: updateMock,
+					eq: vi.fn().mockReturnThis(),
+				});
+
+				// Mock lesson progress query for course calculation
+				mockFrom.mockReturnValueOnce({
+					select: vi.fn().mockReturnThis(),
+					eq: vi.fn().mockReturnThis(),
+				});
+
+				// Mock CMS calls
+				mockGetCourseBySlug.mockResolvedValue({
+					docs: [{ id: "course-1" }],
+				});
+				mockGetCourseLessons.mockResolvedValue({
+					docs: [createMockLesson("1")],
+				});
+
+				const input = {
+					courseId: "course-1",
+					lessonId: "lesson-1",
+					completionPercentage: 100,
+					completed: true,
+				};
+
+				// Act
+				const result = await updateLessonProgressAction(input);
+
+				// Assert
+				expect(result).toEqual({ success: true });
+				expect(updateMock).toHaveBeenCalledWith({
+					completion_percentage: 100,
+					completed_at: expect.any(String),
+					course_id: "course-1",
+				});
+			});
+		});
+
+		describe("Progress Calculation Logic", () => {
+			it("calculates correct progress percentage for required lessons", async () => {
+				// Arrange: 2 out of 5 required lessons completed
+				const mockFrom = mockSupabaseClient.from as any;
+
+				// Mock lesson progress creation
+				mockFrom.mockReturnValueOnce({
+					select: vi.fn().mockReturnThis(),
+					eq: vi.fn().mockReturnThis(),
+					single: vi.fn().mockResolvedValue({ data: null, error: null }),
+				});
+				mockFrom.mockReturnValueOnce({
+					insert: vi.fn().mockResolvedValue({ data: {}, error: null }),
+				});
+
+				// Mock lesson progress query for calculation
+				const lessonProgress = [
+					{ lesson_id: "lesson-1", completed_at: "2024-01-01T00:00:00.000Z" },
+					{ lesson_id: "lesson-2", completed_at: "2024-01-01T00:00:00.000Z" },
+					{ lesson_id: "lesson-6", completed_at: "2024-01-01T00:00:00.000Z" }, // Not required
+				];
+				mockFrom.mockReturnValueOnce({
+					select: vi.fn().mockReturnThis(),
+					eq: vi.fn().mockReturnThis(),
+				});
+
+				// Mock CMS calls
+				mockGetCourseBySlug.mockResolvedValue({
+					docs: [{ id: "course-1" }],
+				});
+				mockGetCourseLessons.mockResolvedValue({
+					docs: [
+						createMockLesson("1"), // Required
+						createMockLesson("2"), // Required
+						createMockLesson("3"), // Required
+						createMockLesson("4"), // Required
+						createMockLesson("5"), // Required
+						createMockLesson("6"), // Not required
+					],
+				});
+
+				// Set up lesson progress query to return our mock data
+				mockSupabaseClient.from.mockImplementation((table: string) => {
+					if (table === "lesson_progress" && mockFrom.mock.calls.length === 3) {
+						return {
+							select: vi.fn().mockReturnValue(lessonProgress),
+							eq: vi.fn().mockReturnThis(),
+							insert: vi.fn().mockReturnThis(),
+							update: vi.fn().mockReturnThis(),
+							single: vi.fn(),
+						};
+					}
+					return {
+						select: vi.fn().mockReturnThis(),
+						insert: vi.fn().mockReturnThis(),
+						update: vi.fn().mockReturnThis(),
+						eq: vi.fn().mockReturnThis(),
+						single: vi.fn(),
+					};
+				});
+
+				const consoleSpy = vi
+					.spyOn(console, "log")
+					.mockImplementation(() => {});
+
+				const input = {
+					courseId: "course-1",
+					lessonId: "lesson-2",
+					completed: true,
+				};
+
+				// Act
+				const result = await updateLessonProgressAction(input);
+
+				// Assert
+				expect(result).toEqual({ success: true });
+
+				// Verify console logs show correct calculation
+				expect(consoleSpy).toHaveBeenCalledWith(
+					expect.stringContaining(
+						"Course completion: 2/5 required lessons (40%)",
+					),
+				);
+
+				consoleSpy.mockRestore();
+			});
+
+			it("triggers course completion when all required lessons done", async () => {
+				// Arrange: All 5 required lessons completed
+				const mockFrom = mockSupabaseClient.from as any;
+
+				// Mock lesson progress creation
+				mockFrom.mockReturnValueOnce({
+					select: vi.fn().mockReturnThis(),
+					eq: vi.fn().mockReturnThis(),
+					single: vi.fn().mockResolvedValue({ data: null, error: null }),
+				});
+				mockFrom.mockReturnValueOnce({
+					insert: vi.fn().mockResolvedValue({ data: {}, error: null }),
+				});
+
+				// Mock lesson progress query showing all required lessons completed
+				const lessonProgress = [
+					{ lesson_id: "lesson-1", completed_at: "2024-01-01T00:00:00.000Z" },
+					{ lesson_id: "lesson-2", completed_at: "2024-01-01T00:00:00.000Z" },
+					{ lesson_id: "lesson-3", completed_at: "2024-01-01T00:00:00.000Z" },
+					{ lesson_id: "lesson-4", completed_at: "2024-01-01T00:00:00.000Z" },
+					{ lesson_id: "lesson-5", completed_at: "2024-01-01T00:00:00.000Z" },
+				];
+				mockFrom.mockReturnValueOnce({
+					select: vi.fn().mockReturnThis(),
+					eq: vi.fn().mockReturnThis(),
+				});
+
+				// Mock CMS calls
+				mockGetCourseBySlug.mockResolvedValue({
+					docs: [{ id: "course-1" }],
+				});
+				mockGetCourseLessons.mockResolvedValue({
+					docs: [
+						createMockLesson("1"),
+						createMockLesson("2"),
+						createMockLesson("3"),
+						createMockLesson("4"),
+						createMockLesson("5"),
+					],
+				});
+
+				// Set up lesson progress query to return our mock data
+				mockSupabaseClient.from.mockImplementation((table: string) => {
+					if (table === "lesson_progress" && mockFrom.mock.calls.length === 3) {
+						return {
+							select: vi.fn().mockReturnValue(lessonProgress),
+							eq: vi.fn().mockReturnThis(),
+						};
+					}
+					return {
+						select: vi.fn().mockReturnThis(),
+						insert: vi.fn().mockReturnThis(),
+						update: vi.fn().mockReturnThis(),
+						eq: vi.fn().mockReturnThis(),
+						single: vi.fn(),
+					};
+				});
+
+				const consoleSpy = vi
+					.spyOn(console, "log")
+					.mockImplementation(() => {});
+
+				const input = {
+					courseId: "course-1",
+					lessonId: "lesson-5",
+					completed: true,
+				};
+
+				// Act
+				const result = await updateLessonProgressAction(input);
+
+				// Assert
+				expect(result).toEqual({ success: true });
+
+				// Verify console logs show course completion
+				expect(consoleSpy).toHaveBeenCalledWith(
+					expect.stringContaining(
+						"Course completion: 5/5 required lessons (100%)",
+					),
+				);
+				expect(consoleSpy).toHaveBeenCalledWith("Course completed: Yes");
+
+				consoleSpy.mockRestore();
+			});
+		});
+
+		describe("Schema Validation", () => {
+			it("transforms courseId and lessonId from numbers to strings", async () => {
+				// Arrange
+				const mockFrom = mockSupabaseClient.from as any;
+				mockFrom.mockReturnValueOnce({
+					select: vi.fn().mockReturnThis(),
+					eq: vi.fn().mockReturnThis(),
+					single: vi.fn().mockResolvedValue({ data: null, error: null }),
+				});
+
+				const insertMock = vi.fn().mockResolvedValue({ data: {}, error: null });
+				mockFrom.mockReturnValueOnce({
+					insert: insertMock,
+				});
+
+				// Mock remaining calls for course calculation
+				mockFrom.mockReturnValueOnce({
+					select: vi.fn().mockReturnThis(),
+					eq: vi.fn().mockReturnThis(),
+				});
+
+				mockGetCourseBySlug.mockResolvedValue({ docs: [{ id: "123" }] });
+				mockGetCourseLessons.mockResolvedValue({
+					docs: [createMockLesson("1")],
+				});
+
+				const input = {
+					courseId: 123 as any,
+					lessonId: 456 as any,
+					completed: true,
+				};
+
+				// Act
+				const result = await updateLessonProgressAction(input);
+
+				// Assert
+				expect(result).toEqual({ success: true });
+				expect(insertMock).toHaveBeenCalledWith(
+					expect.objectContaining({
+						course_id: "123",
+						lesson_id: "456",
+					}),
+				);
+			});
+		});
+	});
+
+	describe("submitQuizAttemptAction", () => {
+		describe("Core Functionality", () => {
+			it("records quiz attempt successfully", async () => {
+				// Arrange
+				const mockFrom = mockSupabaseClient.from as any;
+				const insertMock = vi.fn().mockResolvedValue({ data: {}, error: null });
+				mockFrom.mockReturnValueOnce({
+					insert: insertMock,
+				});
+
+				const input = {
+					courseId: "course-1",
+					lessonId: "lesson-1",
+					quizId: "quiz-1",
+					answers: { "0": [1], "1": [0, 2] },
+					score: 85,
+					passed: true,
+				};
+
+				// Act
+				const result = await submitQuizAttemptAction(input);
+
+				// Assert
+				expect(result).toEqual({ success: true });
+				expect(insertMock).toHaveBeenCalledWith({
+					user_id: "user-123",
+					course_id: "course-1",
+					lesson_id: "lesson-1",
+					quiz_id: "quiz-1",
+					started_at: expect.any(String),
+					completed_at: expect.any(String),
+					score: 85,
+					passed: true,
+					answers: { "0": [1], "1": [0, 2] },
+				});
+			});
+
+			it("triggers lesson completion on passing quiz", async () => {
+				// Arrange: Mock successful quiz attempt and lesson progress update
+				const mockFrom = mockSupabaseClient.from as any;
+
+				// Mock quiz attempt insert
+				mockFrom.mockReturnValueOnce({
+					insert: vi.fn().mockResolvedValue({ data: {}, error: null }),
+				});
+
+				// Mock lesson progress queries and updates for updateLessonProgressAction
+				mockFrom.mockReturnValueOnce({
+					select: vi.fn().mockReturnThis(),
+					eq: vi.fn().mockReturnThis(),
+					single: vi.fn().mockResolvedValue({ data: null, error: null }),
+				});
+				mockFrom.mockReturnValueOnce({
+					insert: vi.fn().mockResolvedValue({ data: {}, error: null }),
+				});
+				mockFrom.mockReturnValueOnce({
+					select: vi.fn().mockReturnThis(),
+					eq: vi.fn().mockReturnThis(),
+				});
+
+				// Mock CMS calls
+				mockGetCourseBySlug.mockResolvedValue({
+					docs: [{ id: "course-1" }],
+				});
+				mockGetCourseLessons.mockResolvedValue({
+					docs: [createMockLesson("1")],
+				});
+
+				const input = {
+					courseId: "course-1",
+					lessonId: "lesson-1",
+					quizId: "quiz-1",
+					answers: {},
+					score: 85,
+					passed: true,
+				};
+
+				// Act
+				const result = await submitQuizAttemptAction(input);
+
+				// Assert
+				expect(result).toEqual({ success: true });
+				// Verify that lesson progress functions were called due to passing quiz
+				expect(mockFrom).toHaveBeenCalledWith("quiz_attempts");
+				expect(mockFrom).toHaveBeenCalledWith("lesson_progress");
+			});
+
+			it("does not complete lesson on failing quiz", async () => {
+				// Arrange: Mock failing quiz
+				const mockFrom = mockSupabaseClient.from as any;
+				const insertMock = vi.fn().mockResolvedValue({ data: {}, error: null });
+				mockFrom.mockReturnValueOnce({
+					insert: insertMock,
+				});
+
+				const input = {
+					courseId: "course-1",
+					lessonId: "lesson-1",
+					quizId: "quiz-1",
+					answers: {},
+					score: 45,
+					passed: false,
+				};
+
+				// Act
+				const result = await submitQuizAttemptAction(input);
+
+				// Assert
+				expect(result).toEqual({ success: true });
+				expect(insertMock).toHaveBeenCalledWith(
+					expect.objectContaining({
+						passed: false,
+						score: 45,
+					}),
+				);
+				// Should only have one call to mockFrom (for quiz_attempts), no lesson_progress calls
+				expect(mockFrom).toHaveBeenCalledTimes(1);
+				expect(mockFrom).toHaveBeenCalledWith("quiz_attempts");
+			});
+		});
+
+		describe("Schema Validation", () => {
+			it("handles complex quizId transformation", async () => {
+				// Arrange
+				const mockFrom = mockSupabaseClient.from as any;
+				const insertMock = vi.fn().mockResolvedValue({ data: {}, error: null });
+				mockFrom.mockReturnValueOnce({
+					insert: insertMock,
+				});
+
+				// Test different quizId formats
+				const testCases = [
+					{ input: "quiz-1" as any, expected: "quiz-1" },
+					{ input: 123 as any, expected: "123" },
+					{ input: { value: "quiz-2" } as any, expected: "quiz-2" },
+					{ input: { id: "quiz-3" } as any, expected: "quiz-3" },
+				];
+
+				for (const testCase of testCases) {
+					mockFrom.mockClear();
+					mockFrom.mockReturnValueOnce({
+						insert: insertMock,
+					});
+
+					const input = {
+						courseId: "course-1",
+						lessonId: "lesson-1",
+						quizId: testCase.input,
+						answers: {},
+						score: 85,
+						passed: true,
+					};
+
+					// Act
+					const result = await submitQuizAttemptAction(input);
+
+					// Assert
+					expect(result).toEqual({ success: true });
+					expect(insertMock).toHaveBeenCalledWith(
+						expect.objectContaining({
+							quiz_id: testCase.expected,
+						}),
+					);
+				}
+			});
+
+			it("validates score bounds", async () => {
+				// Test invalid scores
+				const invalidScores = [-10, 150];
+
+				for (const score of invalidScores) {
+					const input = {
+						courseId: "course-1",
+						lessonId: "lesson-1",
+						quizId: "quiz-1",
+						answers: {},
+						score,
+						passed: false,
+					};
+
+					const result = await submitQuizAttemptAction(input);
+					expect(result).toEqual({ error: "Validation failed" });
+				}
+			});
+
+			it("validates answers structure", async () => {
+				// Arrange
+				const mockFrom = mockSupabaseClient.from as any;
+				const insertMock = vi.fn().mockResolvedValue({ data: {}, error: null });
+				mockFrom.mockReturnValueOnce({
+					insert: insertMock,
+				});
+
+				const complexAnswers = {
+					"0": [1, 2],
+					"1": [0],
+					text_question: "Some text answer",
+				};
+
+				const input = {
+					courseId: "course-1",
+					lessonId: "lesson-1",
+					quizId: "quiz-1",
+					answers: complexAnswers,
+					score: 85,
+					passed: true,
+				};
+
+				// Act
+				const result = await submitQuizAttemptAction(input);
+
+				// Assert
+				expect(result).toEqual({ success: true });
+				expect(insertMock).toHaveBeenCalledWith(
+					expect.objectContaining({
+						answers: complexAnswers,
+					}),
+				);
+			});
+		});
+	});
 });

@@ -15,8 +15,8 @@ export type EditorContentTypes =
 export interface TiptapNode {
 	type: string;
 	content?: TiptapNode[];
-	attrs?: Record<string, any>;
-	marks?: { type: string; attrs?: Record<string, any> }[];
+	attrs?: Record<string, unknown>;
+	marks?: { type: string; attrs?: Record<string, unknown> }[];
 	text?: string;
 }
 
@@ -24,5 +24,5 @@ export interface TiptapNode {
 export interface TiptapDocument {
 	type: string;
 	content: TiptapNode[];
-	meta?: Record<string, any>;
+	meta?: Record<string, unknown>;
 }

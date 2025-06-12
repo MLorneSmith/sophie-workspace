@@ -63,7 +63,7 @@ const getCallToActionData = (value: unknown): CallToActionData => {
  * This component is used for the input card in the Lexical editor
  */
 const Field: React.FC<FieldProps> = (props) => {
-	const { path, value, onChange } = props;
+	const { path: _path, value, onChange } = props;
 
 	// Get type-safe data from the unknown value
 	const data = getCallToActionData(value);

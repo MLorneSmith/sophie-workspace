@@ -55,8 +55,10 @@ function processR2FileTags(text: string): string {
 		/{%\s*r2file\s+awsurl="([^"]+)"\s+filedescription="([^"]+)"\s*\/%}/g;
 
 	// Process standard format
-	let processedText = text.replace(r2filePattern, (match, url, description) => {
-		return `
+	let processedText = text.replace(
+		r2filePattern,
+		(_match, url, description) => {
+			return `
       <div class="flex items-center justify-between rounded-lg border border-gray-200 p-3 dark:border-gray-700 my-2">
         <div class="flex-grow">
           <p class="font-medium">${description}</p>
@@ -73,7 +75,8 @@ function processR2FileTags(text: string): string {
         </a>
       </div>
     `;
-	});
+		},
+	);
 
 	// Alternative format (in case order is different)
 	const alternativePattern =
@@ -81,7 +84,7 @@ function processR2FileTags(text: string): string {
 
 	processedText = processedText.replace(
 		alternativePattern,
-		(match, description, url) => {
+		(_match, description, url) => {
 			return `
       <div class="flex items-center justify-between rounded-lg border border-gray-200 p-3 dark:border-gray-700 my-2">
         <div class="flex-grow">
@@ -126,7 +129,7 @@ export function LessonViewClient({
 	const [isMarkingCompleted, setIsMarkingCompleted] = useState(false);
 
 	// Calculate progress
-	const progress = lessonProgress?.completion_percentage || 0;
+	const _progress = lessonProgress?.completion_percentage || 0;
 	const isCompleted = !!lessonProgress?.completed_at;
 
 	// Check if lesson has a quiz that was successfully loaded
@@ -183,7 +186,7 @@ export function LessonViewClient({
 						lessonId: lesson.id,
 						completionPercentage: 50, // Mark as partially completed when viewed
 					});
-				} catch (error) {
+				} catch (_error) {
 					toast.error("Failed to update lesson progress. Please try again.");
 				}
 			});
@@ -217,7 +220,7 @@ export function LessonViewClient({
 
 				// Navigate to the next lesson automatically
 				navigateToNextLesson();
-			} catch (error) {
+			} catch (_error) {
 				toast.error("Failed to mark lesson as completed. Please try again.");
 				setIsMarkingCompleted(false);
 			}
@@ -254,7 +257,7 @@ export function LessonViewClient({
 
 					// Remove automatic navigation - let user click the Next Lesson button in summary
 				}
-			} catch (error) {
+			} catch (_error) {
 				toast.error("Failed to submit quiz. Please try again.");
 			}
 		});
@@ -293,7 +296,7 @@ export function LessonViewClient({
 
 			// If we couldn't find the next lesson or there was an error, go back to the course page
 			window.location.href = "/home/course";
-		} catch (error) {
+		} catch (_error) {
 			// Fallback to course page
 			window.location.href = "/home/course";
 		}

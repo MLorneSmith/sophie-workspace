@@ -8,8 +8,6 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@kit/ui/select";
-
-import { useStoryboard } from "../_lib/providers/storyboard-provider";
 import type { Slide } from "../_lib/types";
 
 interface ChartTypeSelectorProps {
@@ -28,7 +26,7 @@ export function ChartTypeSelector({
 	slide,
 	contentAreaIndex,
 }: ChartTypeSelectorProps) {
-	const { updateSlide } = useStoryboard();
+	// const { updateSlide } = useStoryboard(); // Currently unused
 
 	const handleChartTypeChange = (chartTypeId: string) => {
 		// TODO: Implement logic to update the specific content area's chart type and data

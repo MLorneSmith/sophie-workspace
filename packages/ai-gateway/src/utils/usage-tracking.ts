@@ -439,7 +439,7 @@ export async function calculateCost(
  * @returns number Estimated cost
  */
 export function estimateCost(
-	provider: string,
+	_provider: string,
 	model: string,
 	promptTokens: number,
 	completionTokens: number,

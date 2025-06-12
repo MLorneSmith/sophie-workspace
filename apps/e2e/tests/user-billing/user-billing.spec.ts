@@ -13,7 +13,7 @@ test.describe("User Billing", () => {
 		await po.setup();
 	});
 
-	test("user can subscribe to a plan", async ({ page }) => {
+	test("user can subscribe to a plan", async ({ page: _page }) => {
 		await po.billing.selectPlan(0);
 		await po.billing.proceedToCheckout();
 

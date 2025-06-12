@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CourseProgressBar } from "./CourseProgressBar";
 
 // Mock the Progress component from @kit/ui/progress
@@ -235,7 +235,7 @@ describe("CourseProgressBar", () => {
 			];
 
 			testCases.forEach(
-				({ percentage, totalLessons, completedLessons, expected }, index) => {
+				({ percentage, totalLessons, completedLessons, expected }, _index) => {
 					// Act
 					const { unmount } = render(
 						<CourseProgressBar
@@ -266,7 +266,7 @@ describe("CourseProgressBar", () => {
 			];
 
 			testCases.forEach(
-				({ totalLessons, completedLessons, expected }, index) => {
+				({ totalLessons, completedLessons, expected }, _index) => {
 					// Act
 					const { unmount } = render(
 						<CourseProgressBar

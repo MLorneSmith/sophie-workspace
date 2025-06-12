@@ -288,7 +288,8 @@ async function main() {
 
 				// Check if this lesson is completed
 				return lessonProgress.some(
-					(p: any) => p.lesson_id === lesson.id && p.completed_at,
+					(p: { lesson_id: string; completed_at: string | null }) =>
+						p.lesson_id === lesson.id && p.completed_at,
 				);
 			},
 		).length;

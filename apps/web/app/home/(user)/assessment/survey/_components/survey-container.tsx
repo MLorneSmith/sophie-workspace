@@ -29,7 +29,7 @@ export function SurveyContainer({
 	userId,
 	initialProgress,
 }: SurveyContainerProps) {
-	const router = useRouter();
+	const _router = useRouter();
 	const supabase = useSupabase();
 	const [isPending, startTransition] = useTransition();
 
@@ -118,8 +118,8 @@ export function SurveyContainer({
 						([, a], [, b]) => b - a,
 					);
 
-					const highestCategory = sortedCategories[0]?.[0] || "";
-					const lowestCategory =
+					const _highestCategory = sortedCategories[0]?.[0] || "";
+					const _lowestCategory =
 						sortedCategories[sortedCategories.length - 1]?.[0] || "";
 
 					// We'll show the summary regardless of whether we can complete the survey in Payload

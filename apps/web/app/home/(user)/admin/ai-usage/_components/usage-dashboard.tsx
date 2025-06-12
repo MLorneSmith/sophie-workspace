@@ -33,7 +33,7 @@ interface UsageDashboardProps {
 
 export function UsageDashboard({ initialData }: UsageDashboardProps) {
 	const [selectedTimeRange, setSelectedTimeRange] = useState("7d");
-	const [currentData, setCurrentData] = useState(initialData);
+	const [currentData, _setCurrentData] = useState(initialData);
 	const [isLoading, setIsLoading] = useState(false);
 
 	// In a real implementation, this would fetch from the server
@@ -77,7 +77,7 @@ export function UsageDashboard({ initialData }: UsageDashboardProps) {
 		cost: { label: "Cost ($)", color: "var(--chart-1)" },
 	};
 
-	const tokensConfig = {
+	const _tokensConfig = {
 		tokens: { label: "Tokens", color: "var(--chart-2)" },
 	};
 

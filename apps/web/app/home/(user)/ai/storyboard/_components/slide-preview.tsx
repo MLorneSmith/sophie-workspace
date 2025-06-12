@@ -186,7 +186,7 @@ export function SlidePreview({ slide }: SlidePreviewProps) {
 
 				return (
 					<div
-						key={index}
+						key={sub}
 						className="text-muted-foreground absolute text-sm"
 						style={{
 							left: `${subheadlinePosition.x * scaleFactor}px`,

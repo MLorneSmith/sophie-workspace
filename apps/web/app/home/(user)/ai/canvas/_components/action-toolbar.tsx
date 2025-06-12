@@ -45,10 +45,10 @@ export function ActionToolbar({
 		try {
 			setIsSimplifying(true);
 
-			// Get current editor content safely with try/catch
+			// Get current editor content safely
 			let content = "";
 			try {
-				// Create a promise to get the content safely
+				// Get content directly from the editor ref
 				const getContentPromise = new Promise<string>((resolve) => {
 					if (!editorRef.current) {
 						resolve("");
@@ -56,23 +56,10 @@ export function ActionToolbar({
 					}
 
 					try {
-						editorRef.current.update(() => {
-							try {
-								// Get content from Tiptap editor
-								const editor = (editorRef.current as any).editor;
-								if (editor) {
-									content = editor.getText();
-									resolve(content);
-								} else {
-									resolve("");
-								}
-							} catch (error) {
-								console.warn("Error getting editor content:", error);
-								resolve("");
-							}
-						});
+						content = editorRef.current.getText();
+						resolve(content);
 					} catch (error) {
-						console.warn("Error updating editor:", error);
+						console.warn("Error getting editor content:", error);
 						resolve("");
 					}
 				});
@@ -102,42 +89,35 @@ export function ActionToolbar({
 						// Clear current content and insert simplified sections safely
 						if (editorRef.current) {
 							try {
-								editorRef.current.update(() => {
-									try {
-										// Get the editor instance
-										const editor = (editorRef.current as any).editor;
-										if (!editor) return;
+								// Clear the editor content
+								editorRef.current.clearContent();
 
-										// Clear the editor content
-										editor.commands.clearContent();
-
-										// Insert each section
-										for (const section of simplified.sections) {
-											if (section.type === "heading") {
-												// Insert heading
-												editor.commands.insertContent({
-													type: "heading",
-													attrs: { level: 2 },
-													content: [{ type: "text", text: section.content }],
-												});
-												editor.commands.enter();
-											} else {
-												// Insert bullet point
-												editor.commands.insertContent({
-													type: "paragraph",
-													content: [
-														{ type: "text", text: `• ${section.content}` },
-													],
-												});
-												editor.commands.enter();
-											}
+								// Insert each section using the editor instance
+								const editor = editorRef.current.getEditor();
+								if (editor) {
+									for (const section of simplified.sections) {
+										if (section.type === "heading") {
+											// Insert heading
+											editor.commands.insertContent({
+												type: "heading",
+												attrs: { level: 2 },
+												content: [{ type: "text", text: section.content }],
+											});
+											editor.commands.enter();
+										} else {
+											// Insert bullet point
+											editor.commands.insertContent({
+												type: "paragraph",
+												content: [
+													{ type: "text", text: `• ${section.content}` },
+												],
+											});
+											editor.commands.enter();
 										}
-									} catch (innerError) {
-										console.warn("Error updating editor content:", innerError);
 									}
-								});
+								}
 							} catch (updateError) {
-								console.warn("Error calling editor update:", updateError);
+								console.warn("Error updating editor content:", updateError);
 							}
 						}
 					} catch (parseError) {
@@ -161,10 +141,10 @@ export function ActionToolbar({
 		if (!editorRef.current || !canvasId || !user) return;
 
 		try {
-			// Get content safely with try/catch
+			// Get content safely
 			let content = "";
 			try {
-				// Create a promise to get the content safely
+				// Get content directly from the editor ref
 				const getContentPromise = new Promise<string>((resolve) => {
 					if (!editorRef.current) {
 						resolve("");
@@ -172,23 +152,10 @@ export function ActionToolbar({
 					}
 
 					try {
-						editorRef.current.update(() => {
-							try {
-								// Get content from Tiptap editor
-								const editor = (editorRef.current as any).editor;
-								if (editor) {
-									content = editor.getText();
-									resolve(content);
-								} else {
-									resolve("");
-								}
-							} catch (error) {
-								console.warn("Error getting editor content:", error);
-								resolve("");
-							}
-						});
+						content = editorRef.current.getText();
+						resolve(content);
 					} catch (error) {
-						console.warn("Error updating editor:", error);
+						console.warn("Error getting editor content:", error);
 						resolve("");
 					}
 				});

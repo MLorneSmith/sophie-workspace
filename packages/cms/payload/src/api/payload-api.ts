@@ -68,7 +68,7 @@ export async function callPayloadAPI(
 					console.error(`[${requestId}] Payload API error:`, errorJson);
 					errorMessage =
 						errorJson.message || errorJson.error || JSON.stringify(errorJson);
-				} catch (parseError) {
+				} catch (_parseError) {
 					// Not valid JSON
 					console.error(
 						`[${requestId}] Payload API error (non-JSON):`,
@@ -84,7 +84,7 @@ export async function callPayloadAPI(
 				throw new Error(
 					`Failed to call Payload API (${endpoint}): ${response.status} ${response.statusText} - ${errorMessage}`,
 				);
-			} catch (jsonError) {
+			} catch (_jsonError) {
 				// If error response couldn't be read at all
 				console.error(
 					`[${requestId}] Payload API error (unreadable):`,

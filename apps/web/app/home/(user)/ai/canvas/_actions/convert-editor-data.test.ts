@@ -99,7 +99,7 @@ function processSubmissions(
 }
 
 // Mock console.error to prevent test output pollution
-const mockConsoleError = vi
+const _mockConsoleError = vi
 	.spyOn(console, "error")
 	.mockImplementation(() => {});
 

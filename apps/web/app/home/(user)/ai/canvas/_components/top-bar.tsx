@@ -25,8 +25,10 @@ export function TopBar() {
 	const queryClient = useQueryClient();
 
 	const { mutate } = useMutation({
-		mutationFn: (title: string) =>
-			updateBuildingBlockTitleAction({ id: id!, title }),
+		mutationFn: (title: string) => {
+			if (!id) throw new Error("Canvas ID is required");
+			return updateBuildingBlockTitleAction({ id, title });
+		},
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["canvas-title", id] });
 		},

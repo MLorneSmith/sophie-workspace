@@ -111,7 +111,7 @@ function normalizeOutlineContent(content: TiptapDocument): TiptapDocument {
 interface TiptapNode {
 	type: string;
 	content?: TiptapNode[];
-	attrs?: Record<string, any>;
+	attrs?: Record<string, unknown>;
 	marks?: { type: string }[];
 	text?: string;
 }
@@ -236,7 +236,7 @@ export const generateOutlineAction = enhanceAction(
 							);
 							return { success: true, data: parsedOutline };
 						}
-					} catch (e) {
+					} catch (_e) {
 						// If parsing fails, continue to regeneration
 						console.log("Failed to parse existing outline, will regenerate");
 					}
@@ -403,7 +403,7 @@ export const generateOutlineAction = enhanceAction(
 	{
 		schema: GenerateOutlineSchema,
 		auth: true,
-		typeCheck: (data: any): GenerateOutlineParams => {
+		typeCheck: (data: unknown): GenerateOutlineParams => {
 			// The typecheck option helps with Zod optional field handling
 			return {
 				submissionId: data.submissionId,

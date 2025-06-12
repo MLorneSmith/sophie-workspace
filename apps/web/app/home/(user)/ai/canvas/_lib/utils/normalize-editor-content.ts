@@ -22,7 +22,7 @@ const EMPTY_DOCUMENT: TiptapDocument = {
  * to ensure compatibility with the editor
  */
 export function normalizeEditorContent(
-	content: any,
+	content: unknown,
 	sectionType: EditorContentTypes,
 ): TiptapDocument {
 	// Parse input content safely
@@ -54,7 +54,7 @@ export function normalizeEditorContent(
 /**
  * Safely parse content from various input formats
  */
-function parseContent(content: any): TiptapDocument {
+function parseContent(content: unknown): TiptapDocument {
 	if (!content) {
 		return createSafeContent();
 	}

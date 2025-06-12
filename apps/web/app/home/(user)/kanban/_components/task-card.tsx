@@ -6,7 +6,6 @@ import Image from "next/image";
 
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { CheckCircle2Icon } from "lucide-react";
 import {
 	Card,
 	CardContent,
@@ -17,6 +16,7 @@ import {
 import { Checkbox } from "@kit/ui/checkbox";
 import { Trans } from "@kit/ui/trans";
 import { cn } from "@kit/ui/utils";
+import { CheckCircle2Icon } from "lucide-react";
 
 import { useUpdateSubtask } from "../_lib/hooks/use-tasks";
 import type { Subtask, Task } from "../_lib/schema/task.schema";

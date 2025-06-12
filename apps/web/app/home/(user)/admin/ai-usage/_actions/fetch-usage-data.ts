@@ -179,7 +179,7 @@ function groupLogsByDay(
 			date = new Date(log.request_timestamp)
 				.toISOString()
 				.split("T")[0] as string; // Get YYYY-MM-DD
-		} catch (error) {
+		} catch (_error) {
 			console.error("Invalid timestamp:", log.request_timestamp);
 			continue; // Skip logs with invalid timestamps
 		}

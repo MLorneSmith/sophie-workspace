@@ -332,6 +332,6 @@ async function getQuestionsForQuizFromDatabase(quizId: string): Promise<any[]> {
 export { getQuiz } from "./course";
 
 // Export a new function that's easier to use and is the preferred option
-export function getQuiz2(quizId: any, options = {}, supabaseClient?: any) {
+export function getQuiz2(quizId: any, _options = {}, supabaseClient?: any) {
 	return getQuizEnhanced(quizId, 2, supabaseClient);
 }

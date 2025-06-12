@@ -3,9 +3,9 @@
  * Tests action wrapping, session ID injection, and cost tracking integration
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { renderHook, act } from "@testing-library/react";
+import { act, renderHook } from "@testing-library/react";
 import React, { type ReactNode } from "react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { useActionWithCost } from "./use-action-with-cost";
 
 // Mock the cost tracking context

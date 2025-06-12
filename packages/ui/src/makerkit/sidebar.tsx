@@ -317,7 +317,7 @@ export function SidebarNavigation({
 		<>
 			{config.routes.map((item, index) => {
 				if ("divider" in item) {
-					return <SidebarDivider key={index} />;
+					return <SidebarDivider key={`divider-${index}`} />;
 				}
 
 				if ("children" in item) {

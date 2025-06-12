@@ -1,5 +1,3 @@
-
-
 declare module "@supabase/storage-js" {
 	interface StorageFileApi {
 		/**

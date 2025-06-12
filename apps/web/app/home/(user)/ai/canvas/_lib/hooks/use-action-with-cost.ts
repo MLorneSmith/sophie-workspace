@@ -8,7 +8,7 @@ import { useCostTracking } from "../contexts/cost-tracking-context";
 type ActionFunction<T, R> = (data: T) => Promise<R>;
 
 export function useActionWithCost<
-	T extends Record<string, any>,
+	T extends Record<string, unknown>,
 	R extends { success: boolean; metadata?: { cost?: number } },
 >(action: ActionFunction<T, R>) {
 	const { addCost, sessionId } = useCostTracking();

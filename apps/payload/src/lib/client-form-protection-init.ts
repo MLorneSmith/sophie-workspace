@@ -516,21 +516,29 @@ interface HydrationState {
 	if (document.readyState === "loading") {
 		document.addEventListener("DOMContentLoaded", () => {
 			if ("requestIdleCallback" in window) {
-				(window as Window & { requestIdleCallback: (cb: () => void) => void }).requestIdleCallback(initialize);
+				(
+					window as Window & { requestIdleCallback: (cb: () => void) => void }
+				).requestIdleCallback(initialize);
 			} else {
 				setTimeout(initialize, 200);
 			}
 		});
 	} else {
 		if ("requestIdleCallback" in window) {
-			(window as Window & { requestIdleCallback: (cb: () => void) => void }).requestIdleCallback(initialize);
+			(
+				window as Window & { requestIdleCallback: (cb: () => void) => void }
+			).requestIdleCallback(initialize);
 		} else {
 			setTimeout(initialize, 200);
 		}
 	}
 
 	// Expose status for debugging
-	(globalThis as typeof globalThis & { __ultraConservativeFormProtectionStatus: () => object }).__ultraConservativeFormProtectionStatus = () => {
+	(
+		globalThis as typeof globalThis & {
+			__ultraConservativeFormProtectionStatus: () => object;
+		}
+	).__ultraConservativeFormProtectionStatus = () => {
 		return {
 			initialized: isInitialized,
 			hydrationComplete: hydrationState.isComplete,
