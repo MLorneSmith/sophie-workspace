@@ -16,4 +16,4 @@ export declare function getQuizEnhanced(quizId: string | {
     relationTo?: string;
 } | any, depth?: number, supabaseClient?: any): Promise<any>;
 export { getQuiz } from "./course";
-export declare function getQuiz2(quizId: any, options?: {}, supabaseClient?: any): Promise<any>;
+export declare function getQuiz2(quizId: any, _options?: {}, supabaseClient?: any): Promise<any>;

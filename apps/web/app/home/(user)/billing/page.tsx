@@ -1,3 +1,5 @@
+
+import { resolveProductPlan } from '@kit/billing-gateway';
 import {
 	BillingPortalCard,
 	CurrentLifetimeOrderCard,
@@ -10,7 +12,6 @@ import { Trans } from "@kit/ui/trans";
 
 import billingConfig from "~/config/billing.config";
 import { createI18nServerInstance } from "~/lib/i18n/i18n.server";
-import { withI18n } from "~/lib/i18n/with-i18n";
 import { requireUserInServerComponent } from "~/lib/server/require-user-in-server-component";
 
 // local imports
@@ -33,12 +34,38 @@ async function PersonalAccountBillingPage() {
 
 	const [data, customerId] = await loadPersonalAccountBillingPageData(user.id);
 
+<<<<<<< HEAD
 	return (
 		<>
 			<HomeLayoutPageHeader
 				title={<Trans i18nKey={"common:routes.billing"} />}
 				description={<AppBreadcrumbs />}
 			/>
+=======
+  let productPlan: {
+    product: ProductSchema;
+    plan: z.infer<typeof PlanSchema>;
+  } | null = null;
+
+  if (data) {
+    const firstLineItem = data.items[0];
+
+    if (firstLineItem) {
+      productPlan = await resolveProductPlan(
+        billingConfig,
+        firstLineItem.variant_id,
+        data.currency,
+      );
+    }
+  }
+
+  return (
+    <>
+      <HomeLayoutPageHeader
+        title={<Trans i18nKey={'common:routes.billing'} />}
+        description={<AppBreadcrumbs />}
+      />
+>>>>>>> ab0e1c994805d9ea7eaf1f1baceb38180cf47950
 
 			<PageBody>
 				<div className={"flex flex-col space-y-4"}>
@@ -50,6 +77,7 @@ async function PersonalAccountBillingPage() {
 						</If>
 					</If>
 
+<<<<<<< HEAD
 					<If condition={data}>
 						{(data) => (
 							<div className={"flex w-full max-w-2xl flex-col space-y-6"}>
@@ -64,6 +92,24 @@ async function PersonalAccountBillingPage() {
 										config={billingConfig}
 									/>
 								)}
+=======
+          <If condition={data}>
+            {(data) => (
+              <div className={'flex w-full max-w-2xl flex-col space-y-6'}>
+                {'active' in data ? (
+                  <CurrentSubscriptionCard
+                    subscription={data}
+                    product={productPlan!.product}
+                    plan={productPlan!.plan}
+                  />
+                ) : (
+                  <CurrentLifetimeOrderCard
+                    order={data}
+                    product={productPlan!.product}
+                    plan={productPlan!.plan}
+                  />
+                )}
+>>>>>>> ab0e1c994805d9ea7eaf1f1baceb38180cf47950
 
 								<If condition={!data}>
 									<PersonalAccountCheckoutForm customerId={customerId} />

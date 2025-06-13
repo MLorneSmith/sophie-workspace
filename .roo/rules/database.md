@@ -1,27 +1,32 @@
 ---
 description: Detailed Database Schema and Architecture
-globs: 
+globs:
 alwaysApply: true
 ---
+
 # Database Rules
 
 ## Database Architecture
+
 - Supabase uses Postgres
 - We strive to create a safe, robust, performant schema
 - Accounts are the general concept of a user account, defined by the having the same ID as Supabase Auth's users (personal). They can be a team account or a personal account.
 - Generally speaking, other tables will be used to store data related to the account. For example, a table `notes` would have a foreign key `account_id` to link it to an account.
 
 ## Schemas
+
 - The DB schemas are available at `apps/web/supabase/schemas`
 - To edit the DB schema, we can either change the schema files, or created new ones
 - To create a new schema, create a file at `apps/web/supabase/schemas/<number>-<name>.sql`
 
 ## Migrations
+
 - After creating a schema, we can create a migration
 - Use the command `pnpm --filter web supabase:db:diff` for creating migrations from schemas
-- After generating a migration, reset the database for applying the changes using the command `pnpm --filter web supabase:db:reset`
+- After generating a migration, reset the database for applying the changes using the command `pnpm run supabase:web:reset`
 
 ## Security & RLS
+
 - Using RLS, we must ensure that only the account owner can access the data. Always write safe RLS policies and ensure that the policies are enforced.
 - Unless specified, always enable RLS when creating a table. Propose the required RLS policies ensuring the safety of the data.
 - Always consider any required constraints and triggers are in place for data consistency
@@ -116,22 +121,25 @@ type Notification = Tables<'notifications'>;
 #### Always Enable RLS
 
 Always enable RLS for your tables unless you have a specific reason not to.
-  ```sql
-  ALTER TABLE public.my_table ENABLE ROW LEVEL SECURITY;
-  ```
+
+```sql
+ALTER TABLE public.my_table ENABLE ROW LEVEL SECURITY;
+```
 
 #### Use Helper Functions to validate permissions and access control
-Use the existing structure for policies:
-  ```sql
-  -- SELECT policy
-  CREATE POLICY "my_table_read" ON public.my_table FOR SELECT
-    TO authenticated USING (
-      account_id = (select auth.uid()) OR
-      public.has_role_on_account(account_id)
-    );
 
-  -- INSERT/UPDATE/DELETE policies follow similar patterns
-  ```
+Use the existing structure for policies:
+
+```sql
+-- SELECT policy
+CREATE POLICY "my_table_read" ON public.my_table FOR SELECT
+  TO authenticated USING (
+    account_id = (select auth.uid()) OR
+    public.has_role_on_account(account_id)
+  );
+
+-- INSERT/UPDATE/DELETE policies follow similar patterns
+```
 
 When using RLS at team-account level, use `public.has_role_on_account(account_id)` for a generic check to understand if a user is part of a team.
 
@@ -167,6 +175,7 @@ When requiring a specific role, use the role parameter `public.has_role_on_accou
 ### 4. Schema Organization
 
 - **Use Schemas Explicitly**: Always use schema prefixes explicitly:
+
   ```sql
   -- Good
   SELECT * FROM public.accounts;
@@ -186,6 +195,7 @@ When requiring a specific role, use the role parameter `public.has_role_on_accou
 ### 5. Types and Constraints
 
 - **Use Enums for Constrained Values**: Create and use enum types for values with a fixed set:
+
   ```sql
   CREATE TYPE public.my_status AS ENUM('active', 'inactive', 'pending');
 
@@ -211,6 +221,7 @@ When requiring a specific role, use the role parameter `public.has_role_on_accou
 ### 7. Function Security
 
 - **Apply Security Definer Carefully**: For functions that need elevated privileges:
+
   ```sql
   CREATE OR REPLACE FUNCTION public.my_function()
   RETURNS void
@@ -258,31 +269,37 @@ You always must use `(security_invoker = true)` for views.
 ## Key Functions to Know
 
 1. **Account Access**
+
    - `public.has_role_on_account(account_id, account_role)`
    - `public.is_account_owner(account_id)`
    - `public.is_team_member(account_id, user_id)`
 
 2. **Permissions**
+
    - `public.has_permission(user_id, account_id, permission_name)`
    - `public.has_more_elevated_role(target_user_id, target_account_id, role_name)`
 
 3. **Team Management**
+
    - `public.create_team_account(account_name)`
 
 4. **Billing & Subscriptions**
+
    - `public.has_active_subscription(target_account_id)`
 
 5. **One-Time Tokens**
+
    - `public.create_nonce(...)`
    - `public.verify_nonce(...)`
    - `public.revoke_nonce(...)`
 
 6. **Super Admins**
-    - `public.is_super_admin()`
+
+   - `public.is_super_admin()`
 
 7. **MFA**:
-    - `public.is_aal2()`
-    - `public.is_mfa_compliant()`
+   - `public.is_aal2()`
+   - `public.is_mfa_compliant()`
 
 ## Configuration Control
 

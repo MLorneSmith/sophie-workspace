@@ -1,5 +1,10 @@
 import { BadgeCheck } from "lucide-react";
 
+<<<<<<< HEAD
+=======
+import { PlanSchema, type ProductSchema } from '@kit/billing';
+import { Tables } from '@kit/supabase/database';
+>>>>>>> ab0e1c994805d9ea7eaf1f1baceb38180cf47950
 import {
 	type BillingConfig,
 	getProductPlanPairByVariantId,
@@ -25,12 +30,23 @@ interface Props {
 		items: LineItem[];
 	};
 
+<<<<<<< HEAD
 	config: BillingConfig;
 }
 
 export function CurrentLifetimeOrderCard({
 	order,
 	config,
+=======
+  product: ProductSchema;
+  plan: ReturnType<(typeof PlanSchema)['parse']>;
+}
+
+export function CurrentLifetimeOrderCard({
+  order,
+  product,
+  plan,
+>>>>>>> ab0e1c994805d9ea7eaf1f1baceb38180cf47950
 }: React.PropsWithChildren<Props>) {
 	const lineItems = order.items;
 	const firstLineItem = lineItems[0];
@@ -39,6 +55,7 @@ export function CurrentLifetimeOrderCard({
 		throw new Error("No line items found in subscription");
 	}
 
+<<<<<<< HEAD
 	const { product, plan } = getProductPlanPairByVariantId(
 		config,
 		firstLineItem.variant_id,
@@ -51,6 +68,9 @@ export function CurrentLifetimeOrderCard({
 	}
 
 	const productLineItems = plan.lineItems;
+=======
+  const productLineItems = plan.lineItems;
+>>>>>>> ab0e1c994805d9ea7eaf1f1baceb38180cf47950
 
 	return (
 		<Card>
