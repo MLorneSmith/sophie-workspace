@@ -6,7 +6,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Plus, X } from 'lucide-react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { toast } from 'sonner';
 
 import { Button } from '@kit/ui/button';
 import {
@@ -27,6 +26,7 @@ import {
 } from '@kit/ui/form';
 import { If } from '@kit/ui/if';
 import { Input } from '@kit/ui/input';
+import { toast } from '@kit/ui/sonner';
 import {
   Tooltip,
   TooltipContent,

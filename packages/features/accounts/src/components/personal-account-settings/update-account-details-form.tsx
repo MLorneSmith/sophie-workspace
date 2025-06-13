@@ -1,7 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { toast } from 'sonner';
 
 import { Database } from '@kit/supabase/database';
 import { Button } from '@kit/ui/button';
@@ -14,6 +13,7 @@ import {
   FormMessage,
 } from '@kit/ui/form';
 import { Input } from '@kit/ui/input';
+import { toast } from '@kit/ui/sonner';
 import { Trans } from '@kit/ui/trans';
 
 import { useUpdateAccountData } from '../../hooks/use-update-account';

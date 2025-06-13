@@ -16,7 +16,7 @@
     "./config/server": "./src/sentry.client.server.ts"
   },
   "dependencies": {
-    "@sentry/nextjs": "^9.27.0",
+    "@sentry/nextjs": "^9.28.1",
     "import-in-the-middle": "1.14.0"
   },
   "devDependencies": {
@@ -24,7 +24,7 @@
     "@kit/monitoring-core": "workspace:*",
     "@kit/prettier-config": "workspace:*",
     "@kit/tsconfig": "workspace:*",
-    "@types/react": "19.1.6",
+    "@types/react": "19.1.8",
     "react": "19.1.0"
   },
   "typesVersions": {

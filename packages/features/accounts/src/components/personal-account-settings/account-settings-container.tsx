@@ -1,5 +1,7 @@
 'use client';
 
+import type { Provider } from '@supabase/supabase-js';
+
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -17,6 +19,7 @@ import { Trans } from '@kit/ui/trans';
 import { usePersonalAccountData } from '../../hooks/use-personal-account-data';
 import { AccountDangerZone } from './account-danger-zone';
 import { UpdateEmailFormContainer } from './email/update-email-form-container';
+import { LinkAccountsList } from './link-accounts';
 import { MultiFactorAuthFactorsList } from './mfa/multi-factor-auth-list';
 import { UpdatePasswordFormContainer } from './password/update-password-container';
 import { UpdateAccountDetailsFormContainer } from './update-account-details-form-container';
@@ -29,11 +32,14 @@ export function PersonalAccountSettingsContainer(
     features: {
       enableAccountDeletion: boolean;
       enablePasswordUpdate: boolean;
+      enableAccountLinking: boolean;
     };
 
     paths: {
       callback: string;
     };
+
+    providers: Provider[];
   }>,
 ) {
   const supportsLanguageSelection = useSupportMultiLanguage();
@@ -149,6 +155,24 @@ export function PersonalAccountSettingsContainer(
           <MultiFactorAuthFactorsList userId={props.userId} />
         </CardContent>
       </Card>
+
+      <If condition={props.features.enableAccountLinking}>
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              <Trans i18nKey={'account:linkedAccounts'} />
+            </CardTitle>
+
+            <CardDescription>
+              <Trans i18nKey={'account:linkedAccountsDescription'} />
+            </CardDescription>
+          </CardHeader>
+
+          <CardContent>
+            <LinkAccountsList providers={props.providers} />
+          </CardContent>
+        </Card>
+      </If>
 
       <If condition={props.features.enableAccountDeletion}>
         <Card className={'border-destructive'}>

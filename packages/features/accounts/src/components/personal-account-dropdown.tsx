@@ -91,7 +91,7 @@ export function PersonalAccountDropdown({
         aria-label="Open your profile menu"
         data-test={'account-dropdown-trigger'}
         className={cn(
-          'animate-in fade-in focus:outline-primary flex cursor-pointer items-center duration-500 group-data-[minimized=true]:px-0',
+          'animate-in group/trigger fade-in focus:outline-primary flex cursor-pointer items-center border border-dashed group-data-[minimized=true]:px-0',
           className ?? '',
           {
             ['active:bg-secondary/50 items-center gap-4 rounded-md' +
@@ -100,7 +100,9 @@ export function PersonalAccountDropdown({
         )}
       >
         <ProfileAvatar
-          className={'rounded-md'}
+          className={
+            'group-hover/trigger:border-background/50 rounded-md border border-transparent transition-colors'
+          }
           fallbackClassName={'rounded-md border'}
           displayName={displayName ?? user?.email ?? ''}
           pictureUrl={personalAccountData?.picture_url}

@@ -15,7 +15,7 @@ export function AuthLayoutShell({
       {Logo ? <Logo /> : null}
 
       <div
-        className={`bg-background flex w-full max-w-[23rem] flex-col gap-y-6 rounded-lg px-6 md:w-8/12 md:px-8 md:py-6 lg:w-5/12 lg:px-8 xl:w-4/12 xl:gap-y-8 xl:py-8`}
+        className={`bg-background flex w-full max-w-[23rem] flex-col gap-y-6 rounded-lg px-6 md:w-8/12 md:px-8 md:py-6 lg:w-5/12 lg:px-8 xl:w-4/12 xl:py-8`}
       >
         {children}
       </div>

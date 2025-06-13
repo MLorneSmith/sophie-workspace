@@ -8,8 +8,10 @@ import { If } from '@kit/ui/if';
 import { Separator } from '@kit/ui/separator';
 import { Trans } from '@kit/ui/trans';
 
+import { ExistingAccountHint } from './existing-account-hint';
 import { MagicLinkAuthContainer } from './magic-link-auth-container';
 import { OauthProviders } from './oauth-providers';
+import { OtpSignInContainer } from './otp-sign-in-container';
 import { EmailPasswordSignUpContainer } from './password-sign-up-container';
 
 export function SignUpMethodsContainer(props: {
@@ -21,6 +23,7 @@ export function SignUpMethodsContainer(props: {
   providers: {
     password: boolean;
     magicLink: boolean;
+    otp: boolean;
     oAuth: Provider[];
   };
 
@@ -32,6 +35,9 @@ export function SignUpMethodsContainer(props: {
 
   return (
     <>
+      {/* Show hint if user might already have an account */}
+      <ExistingAccountHint />
+
       <If condition={props.inviteToken}>
         <InviteAlert />
       </If>
@@ -42,6 +48,10 @@ export function SignUpMethodsContainer(props: {
           defaultValues={defaultValues}
           displayTermsCheckbox={props.displayTermsCheckbox}
         />
+      </If>
+
+      <If condition={props.providers.otp}>
+        <OtpSignInContainer shouldCreateUser={true} />
       </If>
 
       <If condition={props.providers.magicLink}>

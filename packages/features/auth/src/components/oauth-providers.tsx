@@ -12,6 +12,7 @@ import { If } from '@kit/ui/if';
 import { LoadingOverlay } from '@kit/ui/loading-overlay';
 import { Trans } from '@kit/ui/trans';
 
+import { useLastAuthMethod } from '../hooks/use-last-auth-method';
 import { AuthErrorAlert } from './auth-error-alert';
 import { AuthProviderButton } from './auth-provider-button';
 
@@ -42,6 +43,7 @@ export const OauthProviders: React.FC<{
   };
 }> = (props) => {
   const signInWithProviderMutation = useSignInWithProvider();
+  const { recordAuthMethod } = useLastAuthMethod();
 
   // we make the UI "busy" until the next page is fully loaded
   const loading = signInWithProviderMutation.isPending;
@@ -105,9 +107,15 @@ export const OauthProviders: React.FC<{
                     },
                   } satisfies SignInWithOAuthCredentials;
 
-                  return onSignInWithProvider(() =>
-                    signInWithProviderMutation.mutateAsync(credentials),
-                  );
+                  return onSignInWithProvider(async () => {
+                    const result =
+                      await signInWithProviderMutation.mutateAsync(credentials);
+
+                    // Record successful OAuth sign-in
+                    recordAuthMethod('oauth', { provider });
+
+                    return result;
+                  });
                 }}
               >
                 <Trans

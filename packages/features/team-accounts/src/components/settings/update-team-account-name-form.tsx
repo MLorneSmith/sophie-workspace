@@ -7,7 +7,6 @@ import { isRedirectError } from 'next/dist/client/components/redirect-error';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { toast } from 'sonner';
 
 import { Button } from '@kit/ui/button';
 import {
@@ -19,6 +18,7 @@ import {
   FormMessage,
 } from '@kit/ui/form';
 import { Input } from '@kit/ui/input';
+import { toast } from '@kit/ui/sonner';
 import { Trans } from '@kit/ui/trans';
 
 import { TeamNameFormSchema } from '../../schema/update-team-name.schema';

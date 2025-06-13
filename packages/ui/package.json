@@ -9,7 +9,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@hookform/resolvers": "^5.1.0",
+    "@hookform/resolvers": "^5.1.1",
     "@radix-ui/react-accordion": "1.2.11",
     "@radix-ui/react-alert-dialog": "^1.1.14",
     "@radix-ui/react-avatar": "^1.1.10",
@@ -33,19 +33,19 @@
     "clsx": "^2.1.1",
     "cmdk": "1.1.1",
     "input-otp": "1.4.2",
-    "lucide-react": "^0.513.0",
+    "lucide-react": "^0.514.0",
     "react-top-loading-bar": "3.0.2",
     "recharts": "2.15.3",
-    "tailwind-merge": "^3.3.0"
+    "tailwind-merge": "^3.3.1"
   },
   "devDependencies": {
     "@kit/eslint-config": "workspace:*",
     "@kit/prettier-config": "workspace:*",
     "@kit/tsconfig": "workspace:*",
     "@radix-ui/react-icons": "^1.3.2",
-    "@tanstack/react-query": "5.80.6",
+    "@tanstack/react-query": "5.80.7",
     "@tanstack/react-table": "^8.21.3",
-    "@types/react": "19.1.6",
+    "@types/react": "19.1.8",
     "@types/react-dom": "19.1.6",
     "class-variance-authority": "^0.7.1",
     "date-fns": "^4.1.0",
@@ -55,12 +55,12 @@
     "prettier": "^3.5.3",
     "react-day-picker": "^9.7.0",
     "react-hook-form": "^7.57.0",
-    "react-i18next": "^15.5.2",
+    "react-i18next": "^15.5.3",
     "sonner": "^2.0.5",
-    "tailwindcss": "4.1.8",
+    "tailwindcss": "4.1.10",
     "tailwindcss-animate": "^1.0.7",
     "typescript": "^5.8.3",
-    "zod": "^3.25.56"
+    "zod": "^3.25.63"
   },
   "prettier": "@kit/prettier-config",
   "imports": {
@@ -129,7 +129,8 @@
     "./multi-step-form": "./src/makerkit/multi-step-form.tsx",
     "./app-breadcrumbs": "./src/makerkit/app-breadcrumbs.tsx",
     "./empty-state": "./src/makerkit/empty-state.tsx",
-    "./marketing": "./src/makerkit/marketing/index.tsx"
+    "./marketing": "./src/makerkit/marketing/index.tsx",
+    "./oauth-provider-logo-image": "./src/makerkit/oauth-provider-logo-image.tsx"
   },
   "typesVersions": {
     "*": {

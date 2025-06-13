@@ -46,11 +46,7 @@ function PageWithSidebar(props: PageProps) {
       >
         {MobileNavigation}
 
-        <div
-          className={
-            'bg-background flex flex-1 flex-col px-4 lg:px-0'
-          }
-        >
+        <div className={'bg-background flex flex-1 flex-col px-4 lg:px-0'}>
           {Children}
         </div>
       </div>

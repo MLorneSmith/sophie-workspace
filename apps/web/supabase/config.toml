@@ -100,9 +100,14 @@ subject = "Sign in to Makerkit"
 content_path = "./supabase/templates/magic-link.html"
 
 [analytics]
-enabled = false
+enabled = true
+port = 54327
+backend = "postgres"
 
 [db.migrations]
 schema_paths = [
   "./schemas/*.sql",
 ]
+
+[db.seed]
+sql_paths = ['seed.sql', './seeds/*.sql']

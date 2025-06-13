@@ -46,6 +46,9 @@ const config = {
     resolveExtensions: ['.ts', '.tsx', '.js', '.jsx'],
     resolveAlias: getModulesAliases(),
   },
+  devIndicators: {
+    position: 'bottom-right',
+  },
   experimental: {
     mdxRs: true,
     reactCompiler: ENABLE_REACT_COMPILER,

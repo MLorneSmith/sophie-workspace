@@ -1,5 +1,7 @@
 'use client';
 
+import { useCallback } from 'react';
+
 import { useRouter } from 'next/navigation';
 
 import type { Provider } from '@supabase/supabase-js';
@@ -9,8 +11,10 @@ import { If } from '@kit/ui/if';
 import { Separator } from '@kit/ui/separator';
 import { Trans } from '@kit/ui/trans';
 
+import { LastAuthMethodHint } from './last-auth-method-hint';
 import { MagicLinkAuthContainer } from './magic-link-auth-container';
 import { OauthProviders } from './oauth-providers';
+import { OtpSignInContainer } from './otp-sign-in-container';
 import { PasswordSignInContainer } from './password-sign-in-container';
 
 export function SignInMethodsContainer(props: {
@@ -25,6 +29,7 @@ export function SignInMethodsContainer(props: {
   providers: {
     password: boolean;
     magicLink: boolean;
+    otp: boolean;
     oAuth: Provider[];
   };
 }) {
@@ -34,7 +39,7 @@ export function SignInMethodsContainer(props: {
     ? new URL(props.paths.callback, window?.location.origin).toString()
     : '';
 
-  const onSignIn = () => {
+  const onSignIn = useCallback(() => {
     // if the user has an invite token, we should join the team
     if (props.inviteToken) {
       const searchParams = new URLSearchParams({
@@ -50,10 +55,12 @@ export function SignInMethodsContainer(props: {
       // otherwise, we should redirect to the return path
       router.replace(returnPath);
     }
-  };
+  }, [props.inviteToken, props.paths.joinTeam, props.paths.returnPath, router]);
 
   return (
     <>
+      <LastAuthMethodHint />
+
       <If condition={props.providers.password}>
         <PasswordSignInContainer onSignIn={onSignIn} />
       </If>
@@ -64,6 +71,10 @@ export function SignInMethodsContainer(props: {
           redirectUrl={redirectUrl}
           shouldCreateUser={false}
         />
+      </If>
+
+      <If condition={props.providers.otp}>
+        <OtpSignInContainer shouldCreateUser={false} onSignIn={onSignIn} />
       </If>
 
       <If condition={props.providers.oAuth.length}>

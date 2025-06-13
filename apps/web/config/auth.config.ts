@@ -15,12 +15,21 @@ const AuthConfigSchema = z.object({
       description: 'Whether to display the terms checkbox during sign-up.',
     })
     .optional(),
+  enableIdentityLinking: z
+    .boolean({
+      description: 'Allow linking and unlinking of auth identities.',
+    })
+    .optional()
+    .default(false),
   providers: z.object({
     password: z.boolean({
       description: 'Enable password authentication.',
     }),
     magicLink: z.boolean({
       description: 'Enable magic link authentication.',
+    }),
+    otp: z.boolean({
+      description: 'Enable one-time password authentication.',
     }),
     oAuth: providers.array(),
   }),
@@ -35,11 +44,17 @@ const authConfig = AuthConfigSchema.parse({
   displayTermsCheckbox:
     process.env.NEXT_PUBLIC_DISPLAY_TERMS_AND_CONDITIONS_CHECKBOX === 'true',
 
+  // whether to enable identity linking:
+  // This needs to be enabled in the Supabase Console as well for it to work.
+  enableIdentityLinking:
+    process.env.NEXT_PUBLIC_AUTH_IDENTITY_LINKING === 'true',
+
   // NB: Enable the providers below in the Supabase Console
   // in your production project
   providers: {
     password: process.env.NEXT_PUBLIC_AUTH_PASSWORD === 'true',
     magicLink: process.env.NEXT_PUBLIC_AUTH_MAGIC_LINK === 'true',
+    otp: process.env.NEXT_PUBLIC_AUTH_OTP === 'true',
     oAuth: ['google'],
   },
 } satisfies z.infer<typeof AuthConfigSchema>);

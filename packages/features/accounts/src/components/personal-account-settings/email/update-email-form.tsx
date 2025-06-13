@@ -6,7 +6,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { CheckIcon } from '@radix-ui/react-icons';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { toast } from 'sonner';
 
 import { useUpdateUser } from '@kit/supabase/hooks/use-update-user-mutation';
 import { Alert, AlertDescription, AlertTitle } from '@kit/ui/alert';
@@ -21,6 +20,7 @@ import {
 } from '@kit/ui/form';
 import { If } from '@kit/ui/if';
 import { Input } from '@kit/ui/input';
+import { toast } from '@kit/ui/sonner';
 import { Trans } from '@kit/ui/trans';
 
 import { UpdateEmailSchema } from '../../../schema/update-email.schema';

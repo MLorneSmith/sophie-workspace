@@ -13,7 +13,10 @@ import { requireUserInServerComponent } from '~/lib/server/require-user-in-serve
 const features = {
   enableAccountDeletion: featureFlagsConfig.enableAccountDeletion,
   enablePasswordUpdate: authConfig.providers.password,
+  enableAccountLinking: authConfig.enableIdentityLinking,
 };
+
+const providers = authConfig.providers.oAuth;
 
 const callbackPath = pathsConfig.auth.callback;
 const accountHomePath = pathsConfig.app.accountHome;
@@ -41,6 +44,7 @@ function PersonalAccountSettingsPage() {
           userId={user.id}
           features={features}
           paths={paths}
+          providers={providers}
         />
       </div>
     </PageBody>

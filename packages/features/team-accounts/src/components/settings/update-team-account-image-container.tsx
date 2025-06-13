@@ -5,10 +5,10 @@ import { useCallback } from 'react';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 import { useTranslation } from 'react-i18next';
-import { toast } from 'sonner';
 
 import { useSupabase } from '@kit/supabase/hooks/use-supabase';
 import { ImageUploader } from '@kit/ui/image-uploader';
+import { toast } from '@kit/ui/sonner';
 import { Trans } from '@kit/ui/trans';
 
 const AVATARS_BUCKET = 'account_image';

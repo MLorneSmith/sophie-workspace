@@ -10,11 +10,9 @@ export function BaselimeProvider({
   children,
   apiKey,
   enableWebVitals,
-  ErrorPage,
 }: React.PropsWithChildren<{
   apiKey?: string;
   enableWebVitals?: boolean;
-  ErrorPage?: React.ReactElement;
 }>) {
   const key = apiKey ?? process.env.NEXT_PUBLIC_BASELIME_KEY ?? '';
 
@@ -28,11 +26,7 @@ export function BaselimeProvider({
   }
 
   return (
-    <BaselimeRum
-      apiKey={key}
-      enableWebVitals={enableWebVitals}
-      fallback={ErrorPage ?? null}
-    >
+    <BaselimeRum apiKey={key} enableWebVitals={enableWebVitals}>
       <MonitoringProvider>{children}</MonitoringProvider>
     </BaselimeRum>
   );

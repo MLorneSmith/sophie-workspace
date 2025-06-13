@@ -8,7 +8,6 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { ArrowLeftIcon } from 'lucide-react';
 import { useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { useSupabase } from '@kit/supabase/hooks/use-supabase';
@@ -40,6 +39,7 @@ import {
   InputOTPSeparator,
   InputOTPSlot,
 } from '@kit/ui/input-otp';
+import { toast } from '@kit/ui/sonner';
 import { Trans } from '@kit/ui/trans';
 
 import { refreshAuthSession } from '../../../server/personal-accounts-server-actions';
