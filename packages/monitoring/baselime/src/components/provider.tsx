@@ -7,7 +7,6 @@ import { MonitoringContext } from "@kit/monitoring-core";
 import { useBaselime } from "../hooks/use-baselime";
 
 export function BaselimeProvider({
-<<<<<<< HEAD
 	children,
 	apiKey,
 	enableWebVitals,
@@ -16,14 +15,6 @@ export function BaselimeProvider({
 	apiKey?: string;
 	enableWebVitals?: boolean;
 	ErrorPage?: React.ReactElement;
-=======
-  children,
-  apiKey,
-  enableWebVitals,
-}: React.PropsWithChildren<{
-  apiKey?: string;
-  enableWebVitals?: boolean;
->>>>>>> ab0e1c994805d9ea7eaf1f1baceb38180cf47950
 }>) {
 	const key = apiKey ?? process.env.NEXT_PUBLIC_BASELIME_KEY ?? "";
 
@@ -36,7 +27,6 @@ export function BaselimeProvider({
 		return children;
 	}
 
-<<<<<<< HEAD
 	return (
 		<BaselimeRum
 			apiKey={key}
@@ -46,13 +36,6 @@ export function BaselimeProvider({
 			<MonitoringProvider>{children}</MonitoringProvider>
 		</BaselimeRum>
 	);
-=======
-  return (
-    <BaselimeRum apiKey={key} enableWebVitals={enableWebVitals}>
-      <MonitoringProvider>{children}</MonitoringProvider>
-    </BaselimeRum>
-  );
->>>>>>> ab0e1c994805d9ea7eaf1f1baceb38180cf47950
 }
 
 function MonitoringProvider(props: React.PropsWithChildren) {

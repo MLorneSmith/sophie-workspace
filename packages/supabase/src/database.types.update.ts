@@ -3,7 +3,7 @@ export type SurveyResponsesRow = {
 	id: string;
 	user_id: string;
 	survey_id: string;
-	responses: any[]; // JSONB array of responses
+	responses: Record<string, unknown>[]; // JSONB array of responses
 	category_scores: Record<string, number>; // JSONB object of category scores
 	highest_scoring_category: string | null;
 	lowest_scoring_category: string | null;
@@ -16,7 +16,7 @@ export type SurveyResponsesInsert = {
 	id?: string;
 	user_id: string;
 	survey_id: string;
-	responses?: any[];
+	responses?: Record<string, unknown>[];
 	category_scores?: Record<string, number>;
 	highest_scoring_category?: string | null;
 	lowest_scoring_category?: string | null;
@@ -29,7 +29,7 @@ export type SurveyResponsesUpdate = {
 	id?: string;
 	user_id?: string;
 	survey_id?: string;
-	responses?: any[];
+	responses?: Record<string, unknown>[];
 	category_scores?: Record<string, number>;
 	highest_scoring_category?: string | null;
 	lowest_scoring_category?: string | null;
