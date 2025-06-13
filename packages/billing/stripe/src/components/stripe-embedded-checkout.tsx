@@ -65,6 +65,7 @@ function EmbeddedCheckoutPopup({
         className={className}
         onOpenAutoFocus={(e) => e.preventDefault()}
         onInteractOutside={(e) => e.preventDefault()}
+        onEscapeKeyDown={(e) => e.preventDefault()}
       >
         <DialogTitle className={'hidden'}>Checkout</DialogTitle>
         <div>{children}</div>
