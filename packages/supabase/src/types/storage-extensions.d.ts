@@ -9,6 +9,6 @@ declare module "@supabase/storage-js" {
 			name: string;
 			allowed_operations: string[];
 			definition: string;
-		}): Promise<{ data: any; error: any }>;
+		}): Promise<{ data: unknown; error: unknown }>;
 	}
 }
