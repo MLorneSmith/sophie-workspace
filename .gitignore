@@ -75,4 +75,7 @@ node_modules/
 # Task files (but not .claude/tasks)
 tasks.json
 /tasks/
-.vscode/tasks/ 
+.vscode/tasks/
+
+# ts-node cache
+node-compile-cache/

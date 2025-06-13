@@ -1,13 +1,3 @@
-/**
- * Enhanced Template Tag Processor
- *
- * Provides processing for template-style tags in content strings before they are
- * rendered by the standard Lexical renderer. This improves compatibility with
- * template-based content that contains {% ... %} tags.
- *
- * Includes enhanced error handling, logging, and better r2file tag handling.
- */
-import React from "react";
 // Enable detailed logging in development environment
 const DEBUG = process.env.NODE_ENV === "development";
 // Helper logging function
@@ -29,7 +19,7 @@ function processR2FileTags(text) {
     // Standard pattern
     const r2filePattern = /{%\s*r2file\s+awsurl="([^"]+)"\s+filedescription="([^"]+)"\s*\/%}/g;
     // Process standard format
-    let processedText = text.replace(r2filePattern, (match, url, description) => {
+    let processedText = text.replace(r2filePattern, (_match, url, description) => {
         if (DEBUG) {
             debugLog(`Processing r2file: URL=${url.substring(0, 30)}..., Description=${description}`);
         }
@@ -53,7 +43,7 @@ function processR2FileTags(text) {
     });
     // Alternative format (in case order is different)
     const alternativePattern = /{%\s*r2file\s+filedescription="([^"]+)"\s+awsurl="([^"]+)"\s*\/%}/g;
-    processedText = processedText.replace(alternativePattern, (match, description, url) => {
+    processedText = processedText.replace(alternativePattern, (_match, description, url) => {
         if (DEBUG) {
             debugLog(`Processing alternative r2file: Description=${description}, URL=${url.substring(0, 30)}...`);
         }
@@ -96,7 +86,7 @@ function processBunnyVideoTags(text) {
         debugLog(`Found ${matches.length} bunny video tags`);
     }
     const bunnyPattern = /{%\s*bunny\s+bunnyvideoid="([^"]+)"\s*\/%}/g;
-    return text.replace(bunnyPattern, (match, videoId) => {
+    return text.replace(bunnyPattern, (_match, videoId) => {
         if (DEBUG) {
             debugLog(`Processing bunny video: ID=${videoId}`);
         }
@@ -130,7 +120,7 @@ function processCustomBulletTags(text) {
         debugLog(`Found ${matches.length} custom bullet tags`);
     }
     const bulletPattern = /{%\s*custombullet\s+status="([^"]+)"\s*\/%}/g;
-    return text.replace(bulletPattern, (match, status) => {
+    return text.replace(bulletPattern, (_match, status) => {
         if (DEBUG) {
             debugLog(`Processing custom bullet: status=${status}`);
         }
@@ -159,7 +149,7 @@ function processCustomBulletTags(text) {
  * Format: ### Lesson Header
  */
 function processHeaderTags(text) {
-    return text.replace(/^###\s+(.*)$/gm, (match, headerText) => {
+    return text.replace(/^###\s+(.*)$/gm, (_match, headerText) => {
         if (DEBUG) {
             debugLog(`Processing header: "${headerText}"`);
         }

@@ -1,6 +1,12 @@
 "use client";
 
+<<<<<<< HEAD
 import { useTranslation } from "react-i18next";
+=======
+import type { Provider } from '@supabase/supabase-js';
+
+import { useTranslation } from 'react-i18next';
+>>>>>>> ab0e1c994805d9ea7eaf1f1baceb38180cf47950
 
 import {
 	Card,
@@ -14,6 +20,7 @@ import { LanguageSelector } from "@kit/ui/language-selector";
 import { LoadingOverlay } from "@kit/ui/loading-overlay";
 import { Trans } from "@kit/ui/trans";
 
+<<<<<<< HEAD
 import { usePersonalAccountData } from "../../hooks/use-personal-account-data";
 import { AccountDangerZone } from "./account-danger-zone";
 import { UpdateEmailFormContainer } from "./email/update-email-form-container";
@@ -21,11 +28,22 @@ import { MultiFactorAuthFactorsList } from "./mfa/multi-factor-auth-list";
 import { UpdatePasswordFormContainer } from "./password/update-password-container";
 import { UpdateAccountDetailsFormContainer } from "./update-account-details-form-container";
 import { UpdateAccountImageContainer } from "./update-account-image-container";
+=======
+import { usePersonalAccountData } from '../../hooks/use-personal-account-data';
+import { AccountDangerZone } from './account-danger-zone';
+import { UpdateEmailFormContainer } from './email/update-email-form-container';
+import { LinkAccountsList } from './link-accounts';
+import { MultiFactorAuthFactorsList } from './mfa/multi-factor-auth-list';
+import { UpdatePasswordFormContainer } from './password/update-password-container';
+import { UpdateAccountDetailsFormContainer } from './update-account-details-form-container';
+import { UpdateAccountImageContainer } from './update-account-image-container';
+>>>>>>> ab0e1c994805d9ea7eaf1f1baceb38180cf47950
 
 export function PersonalAccountSettingsContainer(
 	props: React.PropsWithChildren<{
 		userId: string;
 
+<<<<<<< HEAD
 		features: {
 			enableAccountDeletion: boolean;
 			enablePasswordUpdate: boolean;
@@ -35,6 +53,20 @@ export function PersonalAccountSettingsContainer(
 			callback: string;
 		};
 	}>,
+=======
+    features: {
+      enableAccountDeletion: boolean;
+      enablePasswordUpdate: boolean;
+      enableAccountLinking: boolean;
+    };
+
+    paths: {
+      callback: string;
+    };
+
+    providers: Provider[];
+  }>,
+>>>>>>> ab0e1c994805d9ea7eaf1f1baceb38180cf47950
 ) {
 	const supportsLanguageSelection = useSupportMultiLanguage();
 	const user = usePersonalAccountData(props.userId);
@@ -150,12 +182,39 @@ export function PersonalAccountSettingsContainer(
 				</CardContent>
 			</Card>
 
+<<<<<<< HEAD
 			<If condition={props.features.enableAccountDeletion}>
 				<Card className={"border-destructive"}>
 					<CardHeader>
 						<CardTitle>
 							<Trans i18nKey={"account:dangerZone"} />
 						</CardTitle>
+=======
+      <If condition={props.features.enableAccountLinking}>
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              <Trans i18nKey={'account:linkedAccounts'} />
+            </CardTitle>
+
+            <CardDescription>
+              <Trans i18nKey={'account:linkedAccountsDescription'} />
+            </CardDescription>
+          </CardHeader>
+
+          <CardContent>
+            <LinkAccountsList providers={props.providers} />
+          </CardContent>
+        </Card>
+      </If>
+
+      <If condition={props.features.enableAccountDeletion}>
+        <Card className={'border-destructive'}>
+          <CardHeader>
+            <CardTitle>
+              <Trans i18nKey={'account:dangerZone'} />
+            </CardTitle>
+>>>>>>> ab0e1c994805d9ea7eaf1f1baceb38180cf47950
 
 						<CardDescription>
 							<Trans i18nKey={"account:dangerZoneDescription"} />

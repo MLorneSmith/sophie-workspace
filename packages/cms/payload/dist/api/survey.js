@@ -213,28 +213,28 @@ export async function getSurveyQuestions(surveyId, supabaseClient) {
 /**
  * @deprecated Use Supabase directly instead
  */
-export async function getUserSurveyResponse(userId, surveyId) {
+export async function getUserSurveyResponse(_userId, _surveyId) {
     console.warn("getUserSurveyResponse is deprecated. Use Supabase directly instead.");
     return { docs: [] };
 }
 /**
  * @deprecated Use Supabase directly instead
  */
-export async function createSurveyResponse(data) {
+export async function createSurveyResponse(_data) {
     console.warn("createSurveyResponse is deprecated. Use Supabase directly instead.");
     return { id: null };
 }
 /**
  * @deprecated Use Supabase directly instead
  */
-export async function updateSurveyResponse(id, data) {
+export async function updateSurveyResponse(id, _data) {
     console.warn("updateSurveyResponse is deprecated. Use Supabase directly instead.");
     return { id };
 }
 /**
  * @deprecated Use Supabase directly instead
  */
-export async function completeSurvey(id, data) {
+export async function completeSurvey(id, _data) {
     console.warn("completeSurvey is deprecated. Use Supabase directly instead.");
     return { id };
 }

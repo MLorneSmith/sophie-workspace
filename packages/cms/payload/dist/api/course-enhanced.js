@@ -216,6 +216,6 @@ async function getQuestionsForQuizFromDatabase(quizId) {
 // Re-export the original function for backwards compatibility
 export { getQuiz } from "./course";
 // Export a new function that's easier to use and is the preferred option
-export function getQuiz2(quizId, options = {}, supabaseClient) {
+export function getQuiz2(quizId, _options = {}, supabaseClient) {
     return getQuizEnhanced(quizId, 2, supabaseClient);
 }

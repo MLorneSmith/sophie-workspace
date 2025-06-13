@@ -60,12 +60,24 @@ export abstract class BillingStrategyProviderService {
 		success: boolean;
 	}>;
 
+<<<<<<< HEAD
 	abstract getPlanById(planId: string): Promise<{
 		id: string;
 		name: string;
 		interval: string;
 		amount: number;
 	}>;
+=======
+  abstract getPlanById(planId: string): Promise<{
+    id: string;
+    name: string;
+    description?: string;
+    interval: string;
+    amount: number;
+    type: 'recurring' | 'one_time';
+    intervalCount?: number;
+  }>;
+>>>>>>> ab0e1c994805d9ea7eaf1f1baceb38180cf47950
 
 	abstract getSubscription(subscriptionId: string): Promise<
 		UpsertSubscriptionParams & {

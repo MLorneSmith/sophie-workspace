@@ -5,7 +5,7 @@ import { callPayloadAPI } from "./payload-api";
  * @param supabaseClient Optional Supabase client (for client-side usage)
  * @returns The courses data
  */
-export async function getCourses(options = {}, supabaseClient) {
+export async function getCourses(_options = {}, supabaseClient) {
     return callPayloadAPI("courses?where[status][equals]=published&depth=1", {}, supabaseClient);
 }
 /**
@@ -15,7 +15,7 @@ export async function getCourses(options = {}, supabaseClient) {
  * @param supabaseClient Optional Supabase client (for client-side usage)
  * @returns The course data
  */
-export async function getCourseBySlug(slug, options = {}, supabaseClient) {
+export async function getCourseBySlug(slug, _options = {}, supabaseClient) {
     return callPayloadAPI(`courses?where[slug][equals]=${slug}&depth=1`, {}, supabaseClient);
 }
 /**
@@ -25,7 +25,7 @@ export async function getCourseBySlug(slug, options = {}, supabaseClient) {
  * @param supabaseClient Optional Supabase client (for client-side usage)
  * @returns The course lessons
  */
-export async function getCourseLessons(courseId, options = {}, supabaseClient) {
+export async function getCourseLessons(courseId, _options = {}, supabaseClient) {
     return callPayloadAPI(`course_lessons?where[course_id][equals]=${courseId}&sort=lesson_number&depth=2&limit=100`, {}, supabaseClient);
 }
 /**
@@ -35,7 +35,7 @@ export async function getCourseLessons(courseId, options = {}, supabaseClient) {
  * @param supabaseClient Optional Supabase client (for client-side usage)
  * @returns The lesson data
  */
-export async function getLessonBySlug(slug, options = {}, supabaseClient) {
+export async function getLessonBySlug(slug, _options = {}, supabaseClient) {
     return callPayloadAPI(`course_lessons?where[slug][equals]=${slug}&depth=2`, {}, supabaseClient);
 }
 /**
@@ -45,7 +45,7 @@ export async function getLessonBySlug(slug, options = {}, supabaseClient) {
  * @param supabaseClient Optional Supabase client (for client-side usage)
  * @returns The quiz data with questions
  */
-export async function getQuiz(quizId, options = {}, supabaseClient) {
+export async function getQuiz(quizId, _options = {}, supabaseClient) {
     var _a;
     if (!quizId) {
         console.error("getQuiz called with empty quizId");

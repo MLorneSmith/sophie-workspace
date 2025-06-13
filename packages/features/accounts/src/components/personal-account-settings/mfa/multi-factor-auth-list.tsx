@@ -4,17 +4,25 @@ import { useCallback, useState } from "react";
 
 import type { Factor } from "@supabase/supabase-js";
 
+<<<<<<< HEAD
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ShieldCheck, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+=======
+import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { ShieldCheck, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+>>>>>>> ab0e1c994805d9ea7eaf1f1baceb38180cf47950
 
 import { useFetchAuthFactors } from "@kit/supabase/hooks/use-fetch-mfa-factors";
 import { useSupabase } from "@kit/supabase/hooks/use-supabase";
 import { useFactorsMutationKey } from "@kit/supabase/hooks/use-user-factors-mutation-key";
 import { Alert, AlertDescription, AlertTitle } from "@kit/ui/alert";
 import {
+<<<<<<< HEAD
 	AlertDialog,
 	AlertDialogAction,
 	AlertDialogCancel,
@@ -28,6 +36,22 @@ import { Badge } from "@kit/ui/badge";
 import { Button } from "@kit/ui/button";
 import { If } from "@kit/ui/if";
 import { Spinner } from "@kit/ui/spinner";
+=======
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@kit/ui/alert-dialog';
+import { Badge } from '@kit/ui/badge';
+import { Button } from '@kit/ui/button';
+import { If } from '@kit/ui/if';
+import { toast } from '@kit/ui/sonner';
+import { Spinner } from '@kit/ui/spinner';
+>>>>>>> ab0e1c994805d9ea7eaf1f1baceb38180cf47950
 import {
 	Table,
 	TableBody,

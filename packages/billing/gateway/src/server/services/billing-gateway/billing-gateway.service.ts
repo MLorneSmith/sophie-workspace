@@ -114,6 +114,7 @@ class BillingGatewayService {
 		return strategy.queryUsage(payload);
 	}
 
+<<<<<<< HEAD
 	/**
 	 * Updates a subscription with the specified parameters.
 	 * @param params
@@ -123,6 +124,27 @@ class BillingGatewayService {
 	) {
 		const strategy = await this.getStrategy();
 		const payload = UpdateSubscriptionParamsSchema.parse(params);
+=======
+  /**
+   * Retrieves plan details from the billing provider.
+   * @param planId - The identifier of the plan on the provider side.
+   */
+  async getPlanById(planId: string) {
+    const strategy = await this.getStrategy();
+
+    return strategy.getPlanById(planId);
+  }
+
+  /**
+   * Updates a subscription with the specified parameters.
+   * @param params
+   */
+  async updateSubscriptionItem(
+    params: z.infer<typeof UpdateSubscriptionParamsSchema>,
+  ) {
+    const strategy = await this.getStrategy();
+    const payload = UpdateSubscriptionParamsSchema.parse(params);
+>>>>>>> ab0e1c994805d9ea7eaf1f1baceb38180cf47950
 
 		return strategy.updateSubscriptionItem(payload);
 	}

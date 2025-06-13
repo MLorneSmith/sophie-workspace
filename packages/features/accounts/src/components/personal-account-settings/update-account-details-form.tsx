@@ -1,11 +1,18 @@
+<<<<<<< HEAD
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+=======
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+>>>>>>> ab0e1c994805d9ea7eaf1f1baceb38180cf47950
 
 import type { Database } from "@kit/supabase/database";
 import { Button } from "@kit/ui/button";
 import {
+<<<<<<< HEAD
 	Form,
 	FormControl,
 	FormField,
@@ -15,6 +22,18 @@ import {
 } from "@kit/ui/form";
 import { Input } from "@kit/ui/input";
 import { Trans } from "@kit/ui/trans";
+=======
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@kit/ui/form';
+import { Input } from '@kit/ui/input';
+import { toast } from '@kit/ui/sonner';
+import { Trans } from '@kit/ui/trans';
+>>>>>>> ab0e1c994805d9ea7eaf1f1baceb38180cf47950
 
 import { useUpdateAccountData } from "../../hooks/use-update-account";
 import { AccountDetailsSchema } from "../../schema/account-details.schema";
