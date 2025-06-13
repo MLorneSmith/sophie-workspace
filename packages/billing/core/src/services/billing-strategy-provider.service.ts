@@ -63,8 +63,11 @@ export abstract class BillingStrategyProviderService {
   abstract getPlanById(planId: string): Promise<{
     id: string;
     name: string;
+    description?: string;
     interval: string;
     amount: number;
+    type: 'recurring' | 'one_time';
+    intervalCount?: number;
   }>;
 
   abstract getSubscription(subscriptionId: string): Promise<

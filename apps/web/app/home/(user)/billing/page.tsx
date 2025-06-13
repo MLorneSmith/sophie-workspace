@@ -1,3 +1,7 @@
+import { z } from 'zod';
+
+import { PlanSchema, ProductSchema } from '@kit/billing';
+import { resolveProductPlan } from '@kit/billing-gateway';
 import {
   BillingPortalCard,
   CurrentLifetimeOrderCard,
@@ -33,6 +37,23 @@ async function PersonalAccountBillingPage() {
 
   const [data, customerId] = await loadPersonalAccountBillingPageData(user.id);
 
+  let productPlan: {
+    product: ProductSchema;
+    plan: z.infer<typeof PlanSchema>;
+  } | null = null;
+
+  if (data) {
+    const firstLineItem = data.items[0];
+
+    if (firstLineItem) {
+      productPlan = await resolveProductPlan(
+        billingConfig,
+        firstLineItem.variant_id,
+        data.currency,
+      );
+    }
+  }
+
   return (
     <>
       <HomeLayoutPageHeader
@@ -56,12 +77,14 @@ async function PersonalAccountBillingPage() {
                 {'active' in data ? (
                   <CurrentSubscriptionCard
                     subscription={data}
-                    config={billingConfig}
+                    product={productPlan!.product}
+                    plan={productPlan!.plan}
                   />
                 ) : (
                   <CurrentLifetimeOrderCard
                     order={data}
-                    config={billingConfig}
+                    product={productPlan!.product}
+                    plan={productPlan!.plan}
                   />
                 )}
 

@@ -481,7 +481,12 @@ export class LemonSqueezyBillingStrategyService
       id: data.data.id,
       name: attrs.name,
       interval: attrs.interval ?? '',
+      description: attrs.description ?? '',
       amount: attrs.price,
+      type: attrs.is_subscription
+        ? ('recurring' as const)
+        : ('one_time' as const),
+      intervalCount: attrs.interval_count ?? undefined,
     };
   }
 }

@@ -115,6 +115,16 @@ class BillingGatewayService {
   }
 
   /**
+   * Retrieves plan details from the billing provider.
+   * @param planId - The identifier of the plan on the provider side.
+   */
+  async getPlanById(planId: string) {
+    const strategy = await this.getStrategy();
+
+    return strategy.getPlanById(planId);
+  }
+
+  /**
    * Updates a subscription with the specified parameters.
    * @param params
    */

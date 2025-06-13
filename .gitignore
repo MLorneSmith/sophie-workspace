@@ -45,3 +45,6 @@ yarn-error.log*
 
 # contentlayer
 .contentlayer/
+
+# ts-node cache
+node-compile-cache/

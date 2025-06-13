@@ -1,5 +1,8 @@
 import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
+import { z } from 'zod';
 
+import { PlanSchema, ProductSchema } from '@kit/billing';
+import { resolveProductPlan } from '@kit/billing-gateway';
 import {
   BillingPortalCard,
   CurrentLifetimeOrderCard,
@@ -42,6 +45,23 @@ async function TeamAccountBillingPage({ params }: TeamAccountBillingPageProps) {
   const accountId = workspace.account.id;
 
   const [data, customerId] = await loadTeamAccountBillingPage(accountId);
+
+  let productPlan: {
+    product: ProductSchema;
+    plan: z.infer<typeof PlanSchema>;
+  } | null = null;
+
+  if (data) {
+    const firstLineItem = data.items[0];
+
+    if (firstLineItem) {
+      productPlan = await resolveProductPlan(
+        billingConfig,
+        firstLineItem.variant_id,
+        data.currency,
+      );
+    }
+  }
 
   const canManageBilling =
     workspace.account.permissions.includes('billing.manage');
@@ -98,13 +118,18 @@ async function TeamAccountBillingPage({ params }: TeamAccountBillingPageProps) {
                 return (
                   <CurrentSubscriptionCard
                     subscription={data}
-                    config={billingConfig}
+                    product={productPlan!.product}
+                    plan={productPlan!.plan}
                   />
                 );
               }
 
               return (
-                <CurrentLifetimeOrderCard order={data} config={billingConfig} />
+                <CurrentLifetimeOrderCard
+                  order={data}
+                  product={productPlan!.product}
+                  plan={productPlan!.plan}
+                />
               );
             }}
           </If>

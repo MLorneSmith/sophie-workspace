@@ -341,15 +341,20 @@ export class StripeBillingStrategyService
     const stripe = await this.stripeProvider();
 
     try {
-      const plan = await stripe.plans.retrieve(planId);
+      const price = await stripe.prices.retrieve(planId, {
+        expand: ['product'],
+      });
 
       logger.info(ctx, 'Plan retrieved successfully');
 
       return {
-        id: plan.id,
-        name: plan.nickname ?? '',
-        amount: plan.amount ?? 0,
-        interval: plan.interval,
+        id: price.id,
+        name: (price.product as Stripe.Product).name,
+        description: (price.product as Stripe.Product).description || '',
+        amount: price.unit_amount ? price.unit_amount / 100 : 0,
+        type: price.type,
+        interval: price.recurring?.interval ?? 'month',
+        intervalCount: price.recurring?.interval_count,
       };
     } catch (error) {
       logger.error({ ...ctx, error }, 'Failed to retrieve plan');
