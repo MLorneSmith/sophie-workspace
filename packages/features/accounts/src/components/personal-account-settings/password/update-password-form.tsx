@@ -4,26 +4,17 @@ import { useState } from "react";
 
 import type { User } from "@supabase/supabase-js";
 
-<<<<<<< HEAD
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import { Check } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-=======
-import { zodResolver } from '@hookform/resolvers/zod';
-import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
-import { Check } from 'lucide-react';
-import { useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
->>>>>>> ab0e1c994805d9ea7eaf1f1baceb38180cf47950
 
 import { useUpdateUser } from "@kit/supabase/hooks/use-update-user-mutation";
 import { Alert, AlertDescription, AlertTitle } from "@kit/ui/alert";
 import { Button } from "@kit/ui/button";
 import {
-<<<<<<< HEAD
 	Form,
 	FormControl,
 	FormDescription,
@@ -36,21 +27,6 @@ import { If } from "@kit/ui/if";
 import { Input } from "@kit/ui/input";
 import { Label } from "@kit/ui/label";
 import { Trans } from "@kit/ui/trans";
-=======
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@kit/ui/form';
-import { If } from '@kit/ui/if';
-import { Input } from '@kit/ui/input';
-import { Label } from '@kit/ui/label';
-import { toast } from '@kit/ui/sonner';
-import { Trans } from '@kit/ui/trans';
->>>>>>> ab0e1c994805d9ea7eaf1f1baceb38180cf47950
 
 import { PasswordUpdateSchema } from "../../../schema/update-password.schema";
 

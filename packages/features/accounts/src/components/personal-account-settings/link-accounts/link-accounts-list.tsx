@@ -20,7 +20,7 @@ import {
 } from '@kit/ui/alert-dialog';
 import { Button } from '@kit/ui/button';
 import { If } from '@kit/ui/if';
-import { OauthProviderLogoImage } from '@kit/ui/oauth-provider-logo-image';
+import { OauthProviderLogoImage } from './oauth-provider-logo-image';
 import { Separator } from '@kit/ui/separator';
 import { toast } from '@kit/ui/sonner';
 import { Spinner } from '@kit/ui/spinner';

@@ -12,14 +12,8 @@ import { If } from "@kit/ui/if";
 import { LoadingOverlay } from "@kit/ui/loading-overlay";
 import { Trans } from "@kit/ui/trans";
 
-<<<<<<< HEAD
 import { AuthErrorAlert } from "./auth-error-alert";
 import { AuthProviderButton } from "./auth-provider-button";
-=======
-import { useLastAuthMethod } from '../hooks/use-last-auth-method';
-import { AuthErrorAlert } from './auth-error-alert';
-import { AuthProviderButton } from './auth-provider-button';
->>>>>>> ab0e1c994805d9ea7eaf1f1baceb38180cf47950
 
 /**
  * @name OAUTH_SCOPES
@@ -47,12 +41,7 @@ export const OauthProviders: React.FC<{
 		returnPath: string;
 	};
 }> = (props) => {
-<<<<<<< HEAD
 	const signInWithProviderMutation = useSignInWithProvider();
-=======
-  const signInWithProviderMutation = useSignInWithProvider();
-  const { recordAuthMethod } = useLastAuthMethod();
->>>>>>> ab0e1c994805d9ea7eaf1f1baceb38180cf47950
 
 	// we make the UI "busy" until the next page is fully loaded
 	const loading = signInWithProviderMutation.isPending;
@@ -116,7 +105,6 @@ export const OauthProviders: React.FC<{
 										},
 									} satisfies SignInWithOAuthCredentials;
 
-<<<<<<< HEAD
 									return onSignInWithProvider(() =>
 										signInWithProviderMutation.mutateAsync(credentials),
 									);
@@ -132,29 +120,6 @@ export const OauthProviders: React.FC<{
 						);
 					})}
 				</div>
-=======
-                  return onSignInWithProvider(async () => {
-                    const result =
-                      await signInWithProviderMutation.mutateAsync(credentials);
-
-                    // Record successful OAuth sign-in
-                    recordAuthMethod('oauth', { provider });
-
-                    return result;
-                  });
-                }}
-              >
-                <Trans
-                  i18nKey={'auth:signInWithProvider'}
-                  values={{
-                    provider: getProviderName(provider),
-                  }}
-                />
-              </AuthProviderButton>
-            );
-          })}
-        </div>
->>>>>>> ab0e1c994805d9ea7eaf1f1baceb38180cf47950
 
 				<AuthErrorAlert error={signInWithProviderMutation.error} />
 			</div>

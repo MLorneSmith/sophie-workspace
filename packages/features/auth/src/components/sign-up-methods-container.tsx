@@ -8,17 +8,9 @@ import { If } from "@kit/ui/if";
 import { Separator } from "@kit/ui/separator";
 import { Trans } from "@kit/ui/trans";
 
-<<<<<<< HEAD
 import { MagicLinkAuthContainer } from "./magic-link-auth-container";
 import { OauthProviders } from "./oauth-providers";
 import { EmailPasswordSignUpContainer } from "./password-sign-up-container";
-=======
-import { ExistingAccountHint } from './existing-account-hint';
-import { MagicLinkAuthContainer } from './magic-link-auth-container';
-import { OauthProviders } from './oauth-providers';
-import { OtpSignInContainer } from './otp-sign-in-container';
-import { EmailPasswordSignUpContainer } from './password-sign-up-container';
->>>>>>> ab0e1c994805d9ea7eaf1f1baceb38180cf47950
 
 export function SignUpMethodsContainer(props: {
 	paths: {
@@ -26,20 +18,11 @@ export function SignUpMethodsContainer(props: {
 		appHome: string;
 	};
 
-<<<<<<< HEAD
 	providers: {
 		password: boolean;
 		magicLink: boolean;
 		oAuth: Provider[];
 	};
-=======
-  providers: {
-    password: boolean;
-    magicLink: boolean;
-    otp: boolean;
-    oAuth: Provider[];
-  };
->>>>>>> ab0e1c994805d9ea7eaf1f1baceb38180cf47950
 
 	displayTermsCheckbox?: boolean;
 	inviteToken?: string;
@@ -47,22 +30,11 @@ export function SignUpMethodsContainer(props: {
 	const redirectUrl = getCallbackUrl(props);
 	const defaultValues = getDefaultValues();
 
-<<<<<<< HEAD
 	return (
 		<>
 			<If condition={props.inviteToken}>
 				<InviteAlert />
 			</If>
-=======
-  return (
-    <>
-      {/* Show hint if user might already have an account */}
-      <ExistingAccountHint />
-
-      <If condition={props.inviteToken}>
-        <InviteAlert />
-      </If>
->>>>>>> ab0e1c994805d9ea7eaf1f1baceb38180cf47950
 
 			<If condition={props.providers.password}>
 				<EmailPasswordSignUpContainer
@@ -72,7 +44,6 @@ export function SignUpMethodsContainer(props: {
 				/>
 			</If>
 
-<<<<<<< HEAD
 			<If condition={props.providers.magicLink}>
 				<MagicLinkAuthContainer
 					inviteToken={props.inviteToken}
@@ -82,21 +53,6 @@ export function SignUpMethodsContainer(props: {
 					displayTermsCheckbox={props.displayTermsCheckbox}
 				/>
 			</If>
-=======
-      <If condition={props.providers.otp}>
-        <OtpSignInContainer shouldCreateUser={true} />
-      </If>
-
-      <If condition={props.providers.magicLink}>
-        <MagicLinkAuthContainer
-          inviteToken={props.inviteToken}
-          redirectUrl={redirectUrl}
-          shouldCreateUser={true}
-          defaultValues={defaultValues}
-          displayTermsCheckbox={props.displayTermsCheckbox}
-        />
-      </If>
->>>>>>> ab0e1c994805d9ea7eaf1f1baceb38180cf47950
 
 			<If condition={props.providers.oAuth.length}>
 				<div className="relative">

@@ -1,17 +1,18 @@
-
+import { use } from "react";
 
 import { PersonalAccountSettingsContainer } from "@kit/accounts/personal-account-settings";
 import { PageBody } from "@kit/ui/page";
 
+import authConfig from "~/config/auth.config";
+import featureFlagsConfig from "~/config/feature-flags.config";
+import pathsConfig from "~/config/paths.config";
+import { createI18nServerInstance } from "~/lib/i18n/i18n.server";
+import { withI18n } from "~/lib/i18n/with-i18n";
+import { requireUserInServerComponent } from "~/lib/server/require-user-in-server-component";
+
 const features = {
-<<<<<<< HEAD
 	enableAccountDeletion: featureFlagsConfig.enableAccountDeletion,
 	enablePasswordUpdate: authConfig.providers.password,
-=======
-  enableAccountDeletion: featureFlagsConfig.enableAccountDeletion,
-  enablePasswordUpdate: authConfig.providers.password,
-  enableAccountLinking: authConfig.enableIdentityLinking,
->>>>>>> ab0e1c994805d9ea7eaf1f1baceb38180cf47950
 };
 
 const providers = authConfig.providers.oAuth;
@@ -35,7 +36,6 @@ export const generateMetadata = async () => {
 function PersonalAccountSettingsPage() {
 	const user = use(requireUserInServerComponent());
 
-<<<<<<< HEAD
 	return (
 		<PageBody>
 			<div className={"flex w-full flex-1 flex-col lg:max-w-2xl"}>
@@ -47,20 +47,6 @@ function PersonalAccountSettingsPage() {
 			</div>
 		</PageBody>
 	);
-=======
-  return (
-    <PageBody>
-      <div className={'flex w-full flex-1 flex-col lg:max-w-2xl'}>
-        <PersonalAccountSettingsContainer
-          userId={user.id}
-          features={features}
-          paths={paths}
-          providers={providers}
-        />
-      </div>
-    </PageBody>
-  );
->>>>>>> ab0e1c994805d9ea7eaf1f1baceb38180cf47950
 }
 
 export default withI18n(PersonalAccountSettingsPage);
