@@ -1,11 +1,5 @@
-<<<<<<< HEAD
-=======
-import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
-import type { z } from 'zod';
->>>>>>> ab0e1c994805d9ea7eaf1f1baceb38180cf47950
+import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 
-import type { PlanSchema, ProductSchema } from '@kit/billing';
-import { resolveProductPlan } from '@kit/billing-gateway';
 import {
 	BillingPortalCard,
 	CurrentLifetimeOrderCard,
@@ -20,6 +14,7 @@ import { cn } from "@kit/ui/utils";
 
 import billingConfig from "~/config/billing.config";
 import { createI18nServerInstance } from "~/lib/i18n/i18n.server";
+import { withI18n } from "~/lib/i18n/with-i18n";
 
 // local imports
 import { TeamAccountLayoutPageHeader } from "../_components/team-account-layout-page-header";
@@ -48,30 +43,8 @@ async function TeamAccountBillingPage({ params }: TeamAccountBillingPageProps) {
 
 	const [data, customerId] = await loadTeamAccountBillingPage(accountId);
 
-<<<<<<< HEAD
 	const canManageBilling =
 		workspace.account.permissions.includes("billing.manage");
-=======
-  let productPlan: {
-    product: ProductSchema;
-    plan: z.infer<typeof PlanSchema>;
-  } | null = null;
-
-  if (data) {
-    const firstLineItem = data.items[0];
-
-    if (firstLineItem) {
-      productPlan = await resolveProductPlan(
-        billingConfig,
-        firstLineItem.variant_id,
-        data.currency,
-      );
-    }
-  }
-
-  const canManageBilling =
-    workspace.account.permissions.includes('billing.manage');
->>>>>>> ab0e1c994805d9ea7eaf1f1baceb38180cf47950
 
 	const Checkout = () => {
 		if (!canManageBilling) {
@@ -106,7 +79,6 @@ async function TeamAccountBillingPage({ params }: TeamAccountBillingPageProps) {
 				description={<AppBreadcrumbs />}
 			/>
 
-<<<<<<< HEAD
 			<PageBody>
 				<div
 					className={cn("flex w-full flex-col space-y-4", {
@@ -136,42 +108,6 @@ async function TeamAccountBillingPage({ params }: TeamAccountBillingPageProps) {
 							);
 						}}
 					</If>
-=======
-      <PageBody>
-        <div
-          className={cn(`flex w-full flex-col space-y-4`, {
-            'max-w-2xl': data,
-          })}
-        >
-          <If
-            condition={data}
-            fallback={
-              <div>
-                <Checkout />
-              </div>
-            }
-          >
-            {(data) => {
-              if ('active' in data) {
-                return (
-                  <CurrentSubscriptionCard
-                    subscription={data}
-                    product={productPlan!.product}
-                    plan={productPlan!.plan}
-                  />
-                );
-              }
-
-              return (
-                <CurrentLifetimeOrderCard
-                  order={data}
-                  product={productPlan!.product}
-                  plan={productPlan!.plan}
-                />
-              );
-            }}
-          </If>
->>>>>>> ab0e1c994805d9ea7eaf1f1baceb38180cf47950
 
 					<BillingPortal />
 				</div>

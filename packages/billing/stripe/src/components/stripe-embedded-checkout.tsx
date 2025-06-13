@@ -55,7 +55,6 @@ function EmbeddedCheckoutPopup({
 					onClose();
 				}
 
-<<<<<<< HEAD
 				setOpen(open);
 			}}
 		>
@@ -72,23 +71,4 @@ function EmbeddedCheckoutPopup({
 			</DialogContent>
 		</Dialog>
 	);
-=======
-        setOpen(open);
-      }}
-    >
-      <DialogContent
-        style={{
-          maxHeight: '98vh',
-        }}
-        className={className}
-        onOpenAutoFocus={(e) => e.preventDefault()}
-        onInteractOutside={(e) => e.preventDefault()}
-        onEscapeKeyDown={(e) => e.preventDefault()}
-      >
-        <DialogTitle className={'hidden'}>Checkout</DialogTitle>
-        <div>{children}</div>
-      </DialogContent>
-    </Dialog>
-  );
->>>>>>> ab0e1c994805d9ea7eaf1f1baceb38180cf47950
 }

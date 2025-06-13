@@ -2,18 +2,11 @@
 
 import { useState, useTransition } from "react";
 
-<<<<<<< HEAD
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus, X } from "lucide-react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-=======
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Plus, X } from 'lucide-react';
-import { useFieldArray, useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
->>>>>>> ab0e1c994805d9ea7eaf1f1baceb38180cf47950
 
 import { Button } from "@kit/ui/button";
 import {
@@ -25,7 +18,6 @@ import {
 	DialogTrigger,
 } from "@kit/ui/dialog";
 import {
-<<<<<<< HEAD
 	Form,
 	FormControl,
 	FormField,
@@ -35,18 +27,6 @@ import {
 } from "@kit/ui/form";
 import { If } from "@kit/ui/if";
 import { Input } from "@kit/ui/input";
-=======
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@kit/ui/form';
-import { If } from '@kit/ui/if';
-import { Input } from '@kit/ui/input';
-import { toast } from '@kit/ui/sonner';
->>>>>>> ab0e1c994805d9ea7eaf1f1baceb38180cf47950
 import {
 	Tooltip,
 	TooltipContent,

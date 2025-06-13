@@ -32,16 +32,10 @@ export function usePasswordSignUpFlow({
 	captchaToken,
 	resetCaptchaToken,
 }: UseSignUpFlowProps) {
-<<<<<<< HEAD
 	const router = useRouter();
 	const signUpMutation = useSignUpWithEmailAndPassword();
 	const appEvents = useAppEvents();
-=======
-  const router = useRouter();
-  const signUpMutation = useSignUpWithEmailAndPassword();
-  const appEvents = useAppEvents();
-  const { recordAuthMethod } = useLastAuthMethod();
->>>>>>> ab0e1c994805d9ea7eaf1f1baceb38180cf47950
+	const { recordAuthMethod } = useLastAuthMethod();
 
 	const signUp = useCallback(
 		async (credentials: SignUpCredentials) => {
@@ -56,7 +50,9 @@ export function usePasswordSignUpFlow({
 					captchaToken,
 				});
 
-<<<<<<< HEAD
+				// Store the auth method for future use
+				recordAuthMethod('password');
+
 				// emit event to track sign up
 				appEvents.emit({
 					type: "user.signedUp",
@@ -89,49 +85,9 @@ export function usePasswordSignUpFlow({
 			router,
 			onSignUp,
 			resetCaptchaToken,
+			recordAuthMethod,
 		],
 	);
-=======
-        // Record last auth method
-        recordAuthMethod('password', { email: credentials.email });
-
-        // emit event to track sign up
-        appEvents.emit({
-          type: 'user.signedUp',
-          payload: {
-            method: 'password',
-          },
-        });
-
-        // Update URL with success status. This is useful for password managers
-        // to understand that the form was submitted successfully.
-        const url = new URL(window.location.href);
-
-        url.searchParams.set('status', 'success');
-        router.replace(url.pathname + url.search);
-
-        if (onSignUp) {
-          onSignUp(data.user?.id);
-        }
-      } catch (error) {
-        console.error(error);
-
-        throw error;
-      } finally {
-        resetCaptchaToken?.();
-      }
-    },
-    [
-      signUpMutation,
-      emailRedirectTo,
-      captchaToken,
-      appEvents,
-      router,
-      onSignUp,
-      resetCaptchaToken,
-    ],
-  );
->>>>>>> ab0e1c994805d9ea7eaf1f1baceb38180cf47950
 
 	return {
 		signUp,

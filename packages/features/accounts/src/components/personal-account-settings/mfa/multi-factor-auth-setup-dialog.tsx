@@ -2,7 +2,6 @@
 
 import { useCallback, useState } from "react";
 
-<<<<<<< HEAD
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -11,15 +10,6 @@ import { useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { z } from "zod";
-=======
-import { zodResolver } from '@hookform/resolvers/zod';
-import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeftIcon } from 'lucide-react';
-import { useForm, useWatch } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-import { z } from 'zod';
->>>>>>> ab0e1c994805d9ea7eaf1f1baceb38180cf47950
 
 import { useSupabase } from "@kit/supabase/hooks/use-supabase";
 import { useFactorsMutationKey } from "@kit/supabase/hooks/use-user-factors-mutation-key";
@@ -45,22 +35,12 @@ import {
 import { If } from "@kit/ui/if";
 import { Input } from "@kit/ui/input";
 import {
-<<<<<<< HEAD
 	InputOTP,
 	InputOTPGroup,
 	InputOTPSeparator,
 	InputOTPSlot,
 } from "@kit/ui/input-otp";
 import { Trans } from "@kit/ui/trans";
-=======
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSeparator,
-  InputOTPSlot,
-} from '@kit/ui/input-otp';
-import { toast } from '@kit/ui/sonner';
-import { Trans } from '@kit/ui/trans';
->>>>>>> ab0e1c994805d9ea7eaf1f1baceb38180cf47950
 
 import { refreshAuthSession } from "../../../server/personal-accounts-server-actions";
 

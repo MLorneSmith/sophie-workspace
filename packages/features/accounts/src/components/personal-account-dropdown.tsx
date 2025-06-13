@@ -85,7 +85,6 @@ export function PersonalAccountDropdown({
 		return hasAdminRole && hasTotpFactor;
 	}, [user]);
 
-<<<<<<< HEAD
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger
@@ -106,30 +105,6 @@ export function PersonalAccountDropdown({
 					displayName={displayName ?? user?.email ?? ""}
 					pictureUrl={personalAccountData?.picture_url}
 				/>
-=======
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger
-        aria-label="Open your profile menu"
-        data-test={'account-dropdown-trigger'}
-        className={cn(
-          'animate-in group/trigger fade-in focus:outline-primary flex cursor-pointer items-center border border-dashed group-data-[minimized=true]:px-0',
-          className ?? '',
-          {
-            ['active:bg-secondary/50 items-center gap-4 rounded-md' +
-            ' hover:bg-secondary p-2 transition-colors']: showProfileName,
-          },
-        )}
-      >
-        <ProfileAvatar
-          className={
-            'group-hover/trigger:border-background/50 rounded-md border border-transparent transition-colors'
-          }
-          fallbackClassName={'rounded-md border'}
-          displayName={displayName ?? user?.email ?? ''}
-          pictureUrl={personalAccountData?.picture_url}
-        />
->>>>>>> ab0e1c994805d9ea7eaf1f1baceb38180cf47950
 
 				<If condition={showProfileName}>
 					<div

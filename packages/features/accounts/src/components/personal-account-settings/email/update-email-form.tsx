@@ -2,24 +2,16 @@
 
 import type { User } from "@supabase/supabase-js";
 
-<<<<<<< HEAD
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckIcon } from "@radix-ui/react-icons";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-=======
-import { zodResolver } from '@hookform/resolvers/zod';
-import { CheckIcon } from '@radix-ui/react-icons';
-import { useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
->>>>>>> ab0e1c994805d9ea7eaf1f1baceb38180cf47950
 
 import { useUpdateUser } from "@kit/supabase/hooks/use-update-user-mutation";
 import { Alert, AlertDescription, AlertTitle } from "@kit/ui/alert";
 import { Button } from "@kit/ui/button";
 import {
-<<<<<<< HEAD
 	Form,
 	FormControl,
 	FormField,
@@ -30,19 +22,6 @@ import {
 import { If } from "@kit/ui/if";
 import { Input } from "@kit/ui/input";
 import { Trans } from "@kit/ui/trans";
-=======
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@kit/ui/form';
-import { If } from '@kit/ui/if';
-import { Input } from '@kit/ui/input';
-import { toast } from '@kit/ui/sonner';
-import { Trans } from '@kit/ui/trans';
->>>>>>> ab0e1c994805d9ea7eaf1f1baceb38180cf47950
 
 import { UpdateEmailSchema } from "../../../schema/update-email.schema";
 
