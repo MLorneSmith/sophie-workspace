@@ -1150,7 +1150,7 @@ export async function myServerAction() {
 ## Migrations
 - After creating a schema, we can create a migration
 - Use the command `pnpm --filter web supabase:db:diff` for creating migrations from schemas
-- After generating a migration, reset the database for applying the changes using the command `pnpm --filter web supabase:db:reset`
+- After generating a migration, reset the database for applying the changes using the command `pnpm --filter web supabase:reset`
 
 ## Security & RLS
 - Using RLS, we must ensure that only the account owner can access the data. Always write safe RLS policies and ensure that the policies are enforced.
