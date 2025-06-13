@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { useAppEvents } from "@kit/shared/events";
 import { useSignUpWithEmailAndPassword } from "@kit/supabase/hooks/use-sign-up-with-email-password";
 
-import { useLastAuthMethod } from './use-last-auth-method';
+import { useLastAuthMethod } from "./use-last-auth-method";
 
 type SignUpCredentials = {
 	email: string;
@@ -51,7 +51,7 @@ export function usePasswordSignUpFlow({
 				});
 
 				// Store the auth method for future use
-				recordAuthMethod('password');
+				recordAuthMethod("password");
 
 				// emit event to track sign up
 				appEvents.emit({

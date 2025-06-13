@@ -91,7 +91,9 @@ export function OnboardingForm() {
 	});
 
 	// Helper function to flatten form data for analytics
-	function flattenFormData(data: any): Record<string, string> {
+	function flattenFormData(
+		data: z.infer<typeof FormSchema>,
+	): Record<string, string> {
 		const flattenedData: Record<string, string> = {};
 
 		for (const [key, value] of Object.entries(data)) {

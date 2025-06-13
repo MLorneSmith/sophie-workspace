@@ -66,7 +66,7 @@ export abstract class BillingStrategyProviderService {
 		description?: string;
 		interval: string;
 		amount: number;
-		type: 'recurring' | 'one_time';
+		type: "recurring" | "one_time";
 		intervalCount?: number;
 	}>;
 

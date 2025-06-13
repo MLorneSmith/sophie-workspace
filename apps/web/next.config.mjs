@@ -34,85 +34,85 @@ const INTERNAL_PACKAGES = [
 
 /** @type {import('next').NextConfig} */
 const config = {
-  reactStrictMode: true,
-  /** Enables hot reloading for local packages without a build step */
-  transpilePackages: INTERNAL_PACKAGES,
-  images: {
-    remotePatterns: [
-      ...getRemotePatterns(),
-      {
-        protocol: "https",
-        hostname: "*.supabase.co",
-      },
-      {
-        protocol: "https",
-        hostname: "*.r2.cloudflarestorage.com",
-      },
-      {
-        protocol: "https",
-        hostname: "images.slideheroes.com",
-      },
-    ],
-  },
-  logging: {
-    fetches: {
-      fullUrl: true,
-    },
-  },
-  serverExternalPackages: ["newrelic"],
-  webpack: (config) => {
-    // Configure New Relic externals for proper agent loading
-    nrExternals(config);
-    return config;
-  },
-  // needed for supporting dynamic imports for local content
-  outputFileTracingIncludes: {
-    "/*": ["./content/**/*"],
-  },
-  redirects: getRedirects,
-  turbopack: {
-    resolveExtensions: [".ts", ".tsx", ".js", ".jsx"],
-    resolveAlias: getModulesAliases(),
-  },
-  devIndicators: {
-    position: "bottom-right",
-  },
-  experimental: {
-    mdxRs: true,
-    reactCompiler: ENABLE_REACT_COMPILER,
-    instrumentation: true,
-    optimizePackageImports: [
-      "recharts",
-      "lucide-react",
-      "@radix-ui/react-icons",
-      "@radix-ui/react-avatar",
-      "@radix-ui/react-select",
-      "date-fns",
-      ...INTERNAL_PACKAGES,
-    ],
-  },
-  modularizeImports: {
-    lodash: {
-      transform: "lodash/{{member}}",
-    },
-  },
-  /** We already do linting and typechecking as separate tasks in CI */
-  eslint: { ignoreDuringBuilds: true },
-  typescript: { ignoreBuildErrors: true },
-  skipTrailingSlashRedirect: true,
-  async rewrites() {
-    // NOTE: change `eu` to `us` if applicable
-    return [
-      {
-        source: "/ingest/static/:path*",
-        destination: "https://eu-assets.i.posthog.com/static/:path*",
-      },
-      {
-        source: "/ingest/:path*",
-        destination: "https://eu.i.posthog.com/:path*",
-      },
-    ];
-  },
+	reactStrictMode: true,
+	/** Enables hot reloading for local packages without a build step */
+	transpilePackages: INTERNAL_PACKAGES,
+	images: {
+		remotePatterns: [
+			...getRemotePatterns(),
+			{
+				protocol: "https",
+				hostname: "*.supabase.co",
+			},
+			{
+				protocol: "https",
+				hostname: "*.r2.cloudflarestorage.com",
+			},
+			{
+				protocol: "https",
+				hostname: "images.slideheroes.com",
+			},
+		],
+	},
+	logging: {
+		fetches: {
+			fullUrl: true,
+		},
+	},
+	serverExternalPackages: ["newrelic"],
+	webpack: (config) => {
+		// Configure New Relic externals for proper agent loading
+		nrExternals(config);
+		return config;
+	},
+	// needed for supporting dynamic imports for local content
+	outputFileTracingIncludes: {
+		"/*": ["./content/**/*"],
+	},
+	redirects: getRedirects,
+	turbopack: {
+		resolveExtensions: [".ts", ".tsx", ".js", ".jsx"],
+		resolveAlias: getModulesAliases(),
+	},
+	devIndicators: {
+		position: "bottom-right",
+	},
+	experimental: {
+		mdxRs: true,
+		reactCompiler: ENABLE_REACT_COMPILER,
+		instrumentation: true,
+		optimizePackageImports: [
+			"recharts",
+			"lucide-react",
+			"@radix-ui/react-icons",
+			"@radix-ui/react-avatar",
+			"@radix-ui/react-select",
+			"date-fns",
+			...INTERNAL_PACKAGES,
+		],
+	},
+	modularizeImports: {
+		lodash: {
+			transform: "lodash/{{member}}",
+		},
+	},
+	/** We already do linting and typechecking as separate tasks in CI */
+	eslint: { ignoreDuringBuilds: true },
+	typescript: { ignoreBuildErrors: true },
+	skipTrailingSlashRedirect: true,
+	async rewrites() {
+		// NOTE: change `eu` to `us` if applicable
+		return [
+			{
+				source: "/ingest/static/:path*",
+				destination: "https://eu-assets.i.posthog.com/static/:path*",
+			},
+			{
+				source: "/ingest/:path*",
+				destination: "https://eu.i.posthog.com/:path*",
+			},
+		];
+	},
 };
 
 export default withBundleAnalyzer({

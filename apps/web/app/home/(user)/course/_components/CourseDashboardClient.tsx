@@ -11,6 +11,7 @@ import { CheckCircle, XCircle } from "lucide-react";
 import { useSupabase } from "@kit/supabase/hooks/use-supabase";
 import { Badge } from "@kit/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@kit/ui/card";
+import type { Database } from "~/lib/database.types";
 
 import { REQUIRED_LESSON_NUMBERS } from "~/lib/course/course-config";
 
@@ -58,10 +59,17 @@ const LESSON_PLACEHOLDER_MAP: Record<string, string> = {
 // Default placeholder image path
 const DEFAULT_PLACEHOLDER = "/images/course-lessons/default-lesson.svg";
 
+// Define type aliases for cleaner code
+type Course = Database["payload"]["Tables"]["courses"]["Row"];
+type CourseProgress = Database["public"]["Tables"]["course_progress"]["Row"];
+type LessonProgress = Database["public"]["Tables"]["lesson_progress"]["Row"];
+type QuizAttempt = Database["public"]["Tables"]["quiz_attempts"]["Row"];
+type CourseLesson = Database["payload"]["Tables"]["course_lessons"]["Row"];
+
 /**
  * Get the best placeholder image based on lesson title or filename
  */
-function getPlaceholderImage(lesson: any): string {
+function getPlaceholderImage(lesson: CourseLesson): string {
 	if (!lesson?.title) return DEFAULT_PLACEHOLDER;
 
 	const title = lesson.title.toLowerCase();
@@ -78,10 +86,10 @@ function getPlaceholderImage(lesson: any): string {
 }
 
 interface CourseDashboardClientProps {
-	course: any;
-	courseProgress: any;
-	lessonProgress: any[];
-	quizAttempts: any[];
+	course: Course;
+	courseProgress: CourseProgress | null;
+	lessonProgress: LessonProgress[];
+	quizAttempts: QuizAttempt[];
 	userId: string;
 }
 
@@ -90,11 +98,11 @@ export function CourseDashboardClient({
 	courseProgress,
 	lessonProgress,
 	quizAttempts,
-	userId,
+	_userId,
 }: CourseDashboardClientProps) {
 	const _supabase = useSupabase();
-	const [lessons, setLessons] = useState<any[]>([]);
-	const [displayedLessons, setDisplayedLessons] = useState<any[]>([]);
+	const [lessons, setLessons] = useState<CourseLesson[]>([]);
+	const [displayedLessons, setDisplayedLessons] = useState<CourseLesson[]>([]);
 	const [isCourseCompleted, setIsCourseCompleted] = useState<boolean>(false);
 	// Cache to remember failed image URLs to prevent repeated errors
 	const [failedImageUrls, setFailedImageUrls] = useState<Set<string>>(
@@ -242,11 +250,13 @@ export function CourseDashboardClient({
 		<div className="container mx-auto flex max-w-4xl flex-col space-y-6 p-4">
 			<div>
 				<h1 className="mb-4 text-center text-3xl font-bold">{course.title}</h1>
-				{/* biome-ignore lint/security/noDangerouslySetInnerHtml: Rendering trusted course description from CMS */}
-				<div
-					className="mb-6"
-					dangerouslySetInnerHTML={{ __html: course.description }}
-				/>
+				<div className="mb-6">
+					{course.description && (
+						<div className="prose prose-sm max-w-none">
+							{course.description}
+						</div>
+					)}
+				</div>
 			</div>
 
 			<CourseProgressBar

@@ -1,6 +1,5 @@
 "use client";
 
-// @ts-ignore - Disable TypeScript errors for this file
 import { useState } from "react";
 
 import { ChevronRight } from "lucide-react";
@@ -18,14 +17,38 @@ import { Label } from "@kit/ui/label";
 import { Progress } from "@kit/ui/progress";
 import { RadioGroup, RadioGroupItem } from "@kit/ui/radio-group";
 
+interface QuizOption {
+	text: string;
+	iscorrect: boolean;
+}
+
+interface QuizQuestion {
+	question: string;
+	questiontype: "single-answer" | "multi-answer";
+	options: QuizOption[];
+}
+
+interface PayloadQuiz {
+	questions: QuizQuestion[];
+	passingScore: number;
+}
+
+interface QuizAttempt {
+	id: string;
+	score: number;
+	passed: boolean;
+	answers: Record<string, unknown>;
+	created_at: string;
+}
+
 interface QuizComponentProps {
-	quiz: any;
+	quiz: PayloadQuiz;
 	onSubmit: (
-		answers: Record<string, any>,
+		answers: Record<string, unknown>,
 		score: number,
 		passed: boolean,
 	) => void;
-	previousAttempts: any[];
+	previousAttempts: QuizAttempt[];
 	courseId: string;
 	currentLessonId: string;
 	currentLessonNumber: number;
@@ -108,7 +131,7 @@ export function QuizComponent({
 	previousAttempts = [],
 	courseId,
 	currentLessonId,
-	currentLessonNumber,
+	_currentLessonNumber,
 }: QuizComponentProps) {
 	// Define state for the quiz
 	const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -181,7 +204,7 @@ export function QuizComponent({
 	const passingScore = quiz.passingScore || 70;
 
 	// Helper function to determine if a question allows multiple answers
-	const isMultiAnswerQuestion = (question: any): boolean => {
+	const isMultiAnswerQuestion = (question: QuizQuestion): boolean => {
 		// Check if the question type is multi-answer
 		if (question?.questiontype === "multi-answer") {
 			return true;
@@ -189,7 +212,7 @@ export function QuizComponent({
 
 		// Count correct options
 		const correctOptions = (question?.options || []).filter(
-			(option: any) => option?.isCorrect,
+			(option: QuizOption) => option?.iscorrect,
 		);
 
 		// If more than one correct option, treat as multi-answer
@@ -208,7 +231,7 @@ export function QuizComponent({
 	const handleMultiAnswerSelect = (optionIndex: number, isChecked: boolean) => {
 		const currentAnswers = selectedAnswers[currentQuestionIndex] || [];
 
-		let newAnswers;
+		let newAnswers: number[];
 		if (isChecked) {
 			// Add the option if it's checked and not already in the array
 			newAnswers = [...currentAnswers, optionIndex];
@@ -331,18 +354,21 @@ export function QuizComponent({
 			if (lessonsData?.docs && lessonsData.docs.length > 0) {
 				try {
 					// Sort lessons by lesson_number with proper type casting
-					const sortedLessons = [...lessonsData.docs].sort((a: any, b: any) => {
-						const lessonA = a;
-						const lessonB = b;
-						if (lessonA?.lesson_number && lessonB?.lesson_number) {
-							return lessonA.lesson_number - lessonB.lesson_number;
-						}
-						return 0;
-					});
+					const sortedLessons = [...lessonsData.docs].sort(
+						(a: { lesson_number?: number }, b: { lesson_number?: number }) => {
+							const lessonA = a;
+							const lessonB = b;
+							if (lessonA?.lesson_number && lessonB?.lesson_number) {
+								return lessonA.lesson_number - lessonB.lesson_number;
+							}
+							return 0;
+						},
+					);
 
 					// Find the index of the current lesson
 					const currentIndex = sortedLessons.findIndex(
-						(lesson: any) => lesson && lesson.id === currentLessonId,
+						(lesson: { id?: string }) =>
+							lesson && lesson.id === currentLessonId,
 					);
 
 					// If we found the current lesson and it's not the last one
@@ -435,18 +461,30 @@ export function QuizComponent({
 						// Render checkboxes for multi-answer questions
 						<div className="space-y-4">
 							{(currentQuestion?.options || []).map(
-								(option: any, optionIndex: number) => {
+								(option: QuizOption, optionIndex: number) => {
 									if (!option) return null;
 									return (
 										<div
-											key={optionIndex}
+											key={option.text || `option-${optionIndex}`}
 											className="hover:bg-accent flex cursor-pointer items-start rounded-md p-3 transition-colors"
+											role="button"
+											tabIndex={0}
 											onClick={() =>
 												handleMultiAnswerSelect(
 													optionIndex,
 													!isOptionSelected(optionIndex),
 												)
 											}
+											onKeyDown={(e) => {
+												if (e.key === "Enter" || e.key === " ") {
+													e.preventDefault();
+													handleMultiAnswerSelect(
+														optionIndex,
+														!isOptionSelected(optionIndex),
+													);
+												}
+											}}
+											aria-label={`Select option: ${option.text}`}
 										>
 											<div className="flex w-full items-center space-x-3">
 												<Checkbox
@@ -495,13 +533,22 @@ export function QuizComponent({
 							className="space-y-4"
 						>
 							{(currentQuestion?.options || []).map(
-								(option: any, optionIndex: number) => {
+								(option: QuizOption, optionIndex: number) => {
 									if (!option) return null;
 									return (
 										<div
-											key={optionIndex}
+											key={option.text || `option-${optionIndex}`}
 											className="hover:bg-accent flex cursor-pointer items-start space-x-3 rounded-md p-3"
+											role="button"
+											tabIndex={0}
 											onClick={() => handleSingleAnswerSelect(optionIndex)}
+											onKeyDown={(e) => {
+												if (e.key === "Enter" || e.key === " ") {
+													e.preventDefault();
+													handleSingleAnswerSelect(optionIndex);
+												}
+											}}
+											aria-label={`Select option: ${option.text}`}
 										>
 											<RadioGroupItem
 												value={optionIndex.toString()}

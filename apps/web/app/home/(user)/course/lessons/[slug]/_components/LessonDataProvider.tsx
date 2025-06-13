@@ -1,5 +1,66 @@
-// Import the server client using dynamic import to avoid issues with next/headers
+import type { Database } from "@kit/supabase/database";
+/**
+ * LessonDataProvider - Server component for fetching lesson-related data
+ * Handles quiz, survey, and progress data for lesson display
+ */
 import { updateLessonProgressAction } from "../../../_lib/server/server-actions";
+
+// Type definitions for Payload CMS data structures
+interface PayloadLesson {
+	id: string;
+	title: string;
+	lesson_number: number;
+	quiz_id?: string | { id: string; value: string };
+	quiz_id_id?: string | { id: string; value: string };
+	survey_id?: string | { id: string; value: string };
+	survey_id_id?: string | { id: string; value: string };
+}
+
+interface PayloadQuiz {
+	id: string;
+	title: string;
+	questions?: PayloadQuizQuestion[];
+}
+
+interface PayloadQuizQuestion {
+	id: string;
+	question: string;
+	answers: string[];
+	correct_answer: number;
+}
+
+interface PayloadSurvey {
+	id: string;
+	title: string;
+	questions?: PayloadSurveyQuestion[];
+}
+
+interface PayloadSurveyQuestion {
+	id: string;
+	question: string;
+	type: string;
+}
+
+// Database types
+type QuizAttempt = Database["public"]["Tables"]["quiz_attempts"]["Row"];
+type LessonProgress = Database["public"]["Tables"]["lesson_progress"]["Row"];
+type SurveyResponse = Database["public"]["Tables"]["survey_responses"]["Row"];
+
+// Props interface
+interface LessonDataProviderProps {
+	children: (data: {
+		quiz: PayloadQuiz | null;
+		quizAttempts: QuizAttempt[];
+		lessonProgress: LessonProgress | null;
+		userId: string;
+		survey: PayloadSurvey | null;
+		surveyResponses: SurveyResponse[];
+	}) => React.ReactNode;
+	slug: string;
+	lessonId: string;
+	courseId: string;
+	lesson: PayloadLesson;
+}
 
 /**
  * Server component responsible for data fetching
@@ -7,17 +68,11 @@ import { updateLessonProgressAction } from "../../../_lib/server/server-actions"
  */
 export async function LessonDataProvider({
 	children,
-	slug,
+	slug: _slug,
 	lessonId,
 	courseId,
 	lesson,
-}: {
-	children: (data: any) => React.ReactNode;
-	slug: string;
-	lessonId: string;
-	courseId: string;
-	lesson: any;
-}) {
+}: LessonDataProviderProps) {
 	// Dynamically import the server client to avoid issues with next/headers
 	const { getSupabaseServerClient } = await import(
 		"@kit/supabase/server-client"
@@ -51,8 +106,8 @@ export async function LessonDataProvider({
 	}
 
 	// Get quiz data if lesson has a quiz
-	let quiz = null;
-	let quizAttempts: any[] = [];
+	let quiz: PayloadQuiz | null = null;
+	let quizAttempts: QuizAttempt[] = [];
 
 	// Check for quiz relationship using quiz_id or quiz_id_id
 	const quizId = lesson.quiz_id || lesson.quiz_id_id;
@@ -149,8 +204,8 @@ export async function LessonDataProvider({
 	}
 
 	// Get survey data if lesson has a survey
-	let survey = null;
-	let surveyResponses: any[] = [];
+	let survey: PayloadSurvey | null = null;
+	let surveyResponses: SurveyResponse[] = [];
 
 	// Check for survey relationship - Payload might use either survey_id or survey_id_id
 	const surveyId = lesson.survey_id || lesson.survey_id_id;

@@ -64,11 +64,20 @@ export const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
 							task.priority === "low" &&
 								"border-l-success hover:border-l-success/80 border-l-4",
 						)}
+						role="button"
+						tabIndex={0}
 						onClick={(_e) => {
 							if (!isDragging) {
 								setIsDialogOpen(true);
 							}
 						}}
+						onKeyDown={(e) => {
+							if ((e.key === "Enter" || e.key === " ") && !isDragging) {
+								e.preventDefault();
+								setIsDialogOpen(true);
+							}
+						}}
+						aria-label={`Open task: ${task.title}`}
 						{...attributes}
 						{...listeners}
 					>
@@ -104,17 +113,25 @@ export const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
 									</div>
 									<div className="space-y-1">
 										{task.subtasks.map((subtask) => (
-											<div
+											<button
 												key={subtask.id}
-												className="flex items-center gap-2"
+												type="button"
+												className="flex items-center gap-2 w-full text-left bg-transparent border-none p-0"
 												onClick={(e) => {
 													e.stopPropagation();
 													e.preventDefault();
+													updateSubtask.mutate({
+														id: subtask.id || "",
+														task_id: task.id,
+														title: subtask.title,
+														is_completed: !subtask.is_completed,
+													});
 												}}
 												onMouseDown={(e) => {
 													// Prevent drag initiation when clicking subtasks
 													e.stopPropagation();
 												}}
+												aria-label={`Toggle completion for ${subtask.title}`}
 											>
 												<div className="relative z-20">
 													<Checkbox
@@ -123,7 +140,7 @@ export const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
 														disabled={(subtask as Subtask).isUpdating}
 														onCheckedChange={(checked) => {
 															updateSubtask.mutate({
-																id: subtask.id!,
+																id: subtask.id || "",
 																task_id: task.id,
 																title: subtask.title,
 																is_completed: checked as boolean,
@@ -141,7 +158,7 @@ export const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
 												>
 													{subtask.title}
 												</label>
-											</div>
+											</button>
 										))}
 									</div>
 								</div>

@@ -26,14 +26,16 @@ export function TeamAccountNavigationMenu(props: {
 		}>
 	>((acc, item) => {
 		if ("children" in item) {
-			return [...acc, ...item.children];
+			acc.push(...item.children);
+			return acc;
 		}
 
 		if ("divider" in item) {
 			return acc;
 		}
 
-		return [...acc, item];
+		acc.push(item);
+		return acc;
 	}, []);
 
 	return (

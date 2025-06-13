@@ -71,8 +71,7 @@ export function TaskDialog({ open, onOpenChange, task }: TaskDialogProps) {
 	});
 
 	const onSubmit = useCallback(
-		async (data: any) => {
-			// TODO: Replace with proper type
+		async (data: z.infer<typeof CreateTaskSchema>) => {
 			try {
 				if (task) {
 					await updateTask.mutateAsync({ ...data, id: task.id });
@@ -263,7 +262,7 @@ export function TaskDialog({ open, onOpenChange, task }: TaskDialogProps) {
 													{/* eslint-disable-next-line @next/next/no-img-element */}
 													<img
 														src={imagePreview}
-														alt="Task image"
+														alt="Task attachment preview"
 														className="h-40 w-full rounded-lg object-cover"
 													/>
 													<Button

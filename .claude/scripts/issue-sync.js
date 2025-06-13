@@ -5,9 +5,9 @@
  * Automatically syncs GitHub issues to local cache files for search/grep functionality
  */
 
-import { readFile, writeFile, stat, mkdir } from "fs/promises";
-import { join, dirname } from "path";
-import { fileURLToPath } from "url";
+import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -48,7 +48,7 @@ async function fetchGitHubIssue(issueNumber) {
 
 	// Add authentication if token is available
 	if (process.env.GITHUB_TOKEN) {
-		headers["Authorization"] = `Bearer ${process.env.GITHUB_TOKEN}`;
+		headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
 	}
 
 	try {
@@ -157,7 +157,7 @@ async function checkLocalCache(issueNumber) {
 				path: path,
 				isStale: ageInHours > 24, // Consider stale if older than 24 hours
 			};
-		} catch (error) {
+		} catch (_error) {
 			// File doesn't exist, continue checking
 		}
 	}
@@ -181,10 +181,9 @@ async function autoSyncIfNeeded(issueNumber) {
 				`🔄 Local cache ${cache.exists ? "stale" : "missing"} for issue #${issueNumber}, syncing...`,
 			);
 			return await syncIssue(issueNumber);
-		} else {
-			console.log(`✅ Local cache up-to-date for issue #${issueNumber}`);
-			return { alreadyCached: true, path: cache.path };
 		}
+		console.log(`✅ Local cache up-to-date for issue #${issueNumber}`);
+		return { alreadyCached: true, path: cache.path };
 	} catch (error) {
 		console.error(
 			`⚠️ Auto-sync failed for issue #${issueNumber}, continuing with GitHub data:`,
@@ -210,7 +209,7 @@ async function updateSyncMetadata(syncResult) {
 	try {
 		const existing = await readFile(metadataPath, "utf8");
 		metadata = { ...metadata, ...JSON.parse(existing) };
-	} catch (error) {
+	} catch (_error) {
 		// File doesn't exist yet, use defaults
 	}
 
@@ -271,7 +270,7 @@ Examples:
 
 	const issueNumber = Number.parseInt(args[0]);
 
-	if (isNaN(issueNumber)) {
+	if (Number.isNaN(issueNumber)) {
 		console.error("❌ Issue number must be a valid integer");
 		process.exit(1);
 	}

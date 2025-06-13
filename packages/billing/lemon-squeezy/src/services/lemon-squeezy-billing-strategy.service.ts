@@ -483,7 +483,10 @@ export class LemonSqueezyBillingStrategyService
 			description: attrs.description ?? undefined,
 			interval: attrs.interval ?? "",
 			amount: attrs.price,
-			type: attrs.interval === "month" || attrs.interval === "year" ? "recurring" as const : "one_time" as const,
+			type:
+				attrs.interval === "month" || attrs.interval === "year"
+					? ("recurring" as const)
+					: ("one_time" as const),
 			intervalCount: 1,
 		};
 	}

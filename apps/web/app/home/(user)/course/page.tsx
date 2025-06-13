@@ -6,6 +6,7 @@ import { getSupabaseServerClient } from "@kit/supabase/server-client";
 import { PageBody } from "@kit/ui/page";
 import { Trans } from "@kit/ui/trans";
 
+import type { Database } from "~/lib/database.types";
 import { createI18nServerInstance } from "~/lib/i18n/i18n.server";
 import { withI18n } from "~/lib/i18n/with-i18n";
 
@@ -41,10 +42,13 @@ async function CoursePage() {
 	const coursesData = await getCourses();
 	const courses = coursesData.docs || [];
 
+	// Define type alias for cleaner code
+	type Course = Database["payload"]["Tables"]["courses"]["Row"];
+
 	// Find the "Decks for Decision Makers" course
 	const decksForDecisionMakersCourse =
 		courses.find(
-			(course: any) => course.slug === "decks-for-decision-makers",
+			(course: Course) => course.slug === "decks-for-decision-makers",
 		) || courses[0];
 
 	if (!decksForDecisionMakersCourse) {

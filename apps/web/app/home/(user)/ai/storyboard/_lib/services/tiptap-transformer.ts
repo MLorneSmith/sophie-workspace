@@ -45,25 +45,25 @@ interface TipTapTextNode extends TipTapNode {
  * TipTapTransformer - Responsible for converting TipTap JSON documents to Storyboard format
  * Implements the logic defined in Task #4 of the Storyboard System
  */
-export class TipTapTransformer {
+export namespace TipTapTransformer {
 	/**
 	 * Transform a TipTap JSON document into storyboard format
 	 * @param tipTapDocument The TipTap JSON document or string
 	 * @param title Optional title for the presentation (used if no title found in document)
 	 * @returns StoryboardData representing the presentation
 	 */
-	static transform(
+	export function transform(
 		tipTapDocument: string | TipTapDocument,
 		title = "Untitled Presentation",
 	): StoryboardData {
 		// Parse document if it's a string
-		const document = TipTapTransformer.parseDocument(tipTapDocument);
+		const document = parseDocument(tipTapDocument);
 
 		// Extract presentation title from the document or use provided title
-		const presentationTitle = TipTapTransformer.extractTitle(document) || title;
+		const presentationTitle = extractTitle(document) || title;
 
 		// Identify slide boundaries and create slide structure
-		const slides = TipTapTransformer.identifySlides(document);
+		const slides = identifySlides(document);
 
 		// Convert Slide[] to StoryboardSlide[]
 		const storyboardSlides: StoryboardSlide[] = slides.map((slide) => {
@@ -95,9 +95,7 @@ export class TipTapTransformer {
 	 * @param document The TipTap document or string
 	 * @returns Parsed TipTapDocument
 	 */
-	private static parseDocument(
-		document: string | TipTapDocument,
-	): TipTapDocument {
+	function parseDocument(document: string | TipTapDocument): TipTapDocument {
 		if (typeof document === "string") {
 			try {
 				return JSON.parse(document) as TipTapDocument;
@@ -115,7 +113,7 @@ export class TipTapTransformer {
 	 * @param document The TipTap document
 	 * @returns The extracted title or null if not found
 	 */
-	private static extractTitle(document: TipTapDocument): string | null {
+	function extractTitle(document: TipTapDocument): string | null {
 		if (!document.content || document.content.length === 0) {
 			return null;
 		}
@@ -123,7 +121,7 @@ export class TipTapTransformer {
 		// Look for the first level 1 heading
 		for (const node of document.content) {
 			if (node.type === "heading" && node.attrs?.level === 1) {
-				return TipTapTransformer.extractTextFromNode(node);
+				return extractTextFromNode(node);
 			}
 		}
 
@@ -135,7 +133,7 @@ export class TipTapTransformer {
 	 * @param document The TipTap document
 	 * @returns Array of Slide objects
 	 */
-	private static identifySlides(document: TipTapDocument): Slide[] {
+	function identifySlides(document: TipTapDocument): Slide[] {
 		const slides: Slide[] = [];
 		let currentSlide: Slide | null = null;
 		const _slideCount = 0;
@@ -152,13 +150,13 @@ export class TipTapTransformer {
 				// Handle heading nodes (potential slide boundaries)
 				if (node.type === "heading") {
 					const headingLevel = node.attrs?.level || 1;
-					const headingText = TipTapTransformer.extractTextFromNode(node);
+					const headingText = extractTextFromNode(node);
 
 					// Level 1 and 2 headings become new slides
 					if (headingLevel <= 2) {
 						// Determine slide type and layout based on heading level
 						const slideType = headingLevel === 1 ? "title" : "section";
-						const layoutId = TipTapTransformer.determineInitialLayout(
+						const layoutId = determineInitialLayout(
 							headingLevel,
 							node,
 							document.content.slice(i + 1).filter(Boolean),
@@ -223,7 +221,7 @@ export class TipTapTransformer {
 				}
 				// Handle paragraph nodes
 				else if (node.type === "paragraph" && currentSlide) {
-					const text = TipTapTransformer.extractTextFromNode(node);
+					const text = extractTextFromNode(node);
 					if (text.trim().length > 0) {
 						currentSlide.content.push({
 							type: "text",
@@ -232,20 +230,15 @@ export class TipTapTransformer {
 						});
 
 						// Check if this paragraph contains data that might be better as a chart
-						if (TipTapTransformer.mightBeChartData(text)) {
-							TipTapTransformer.suggestChartTypeForSlide(currentSlide, text);
+						if (mightBeChartData(text)) {
+							suggestChartTypeForSlide(currentSlide, text);
 						}
 					}
 				}
 				// Handle bullet lists
 				else if (node.type === "bulletList" && currentSlide) {
 					// Process list items
-					TipTapTransformer.processList(
-						node,
-						currentSlide,
-						"bullet",
-						currentColumnIndex,
-					);
+					processList(node, currentSlide, "bullet", currentColumnIndex);
 
 					// Update layout if mostly bullets
 					if (
@@ -259,12 +252,7 @@ export class TipTapTransformer {
 				}
 				// Handle ordered lists
 				else if (node.type === "orderedList" && currentSlide) {
-					TipTapTransformer.processList(
-						node,
-						currentSlide,
-						"bullet",
-						currentColumnIndex,
-					);
+					processList(node, currentSlide, "bullet", currentColumnIndex);
 				}
 			}
 
@@ -292,7 +280,7 @@ export class TipTapTransformer {
 		}
 
 		// Ensure all slides have correct subheadlines arrays based on their layouts
-		TipTapTransformer.normalizeSlideSubheadlines(slides);
+		normalizeSlideSubheadlines(slides);
 
 		return slides;
 	}
@@ -304,7 +292,7 @@ export class TipTapTransformer {
 	 * @param followingNodes The nodes that follow this heading
 	 * @returns Layout ID string
 	 */
-	private static determineInitialLayout(
+	function determineInitialLayout(
 		headingLevel: number,
 		_headingNode: TipTapNode,
 		followingNodes: TipTapNode[],
@@ -343,7 +331,7 @@ export class TipTapTransformer {
 				paragraphCount++;
 
 				// Check for numerical content
-				const text = TipTapTransformer.extractTextFromNode(node);
+				const text = extractTextFromNode(node);
 				if (TipTapTransformer.mightBeChartData(text)) {
 					hasNumericalContent = true;
 				}
@@ -379,7 +367,7 @@ export class TipTapTransformer {
 	 * @param type The type of list item to create
 	 * @param columnIndex The column index for the content
 	 */
-	private static processList(
+	function processList(
 		node: TipTapNode,
 		slide: Slide,
 		type: "bullet" | "subbullet",
@@ -395,19 +383,14 @@ export class TipTapTransformer {
 					if (itemContent.type === "paragraph") {
 						slide.content.push({
 							type,
-							text: TipTapTransformer.extractTextFromNode(itemContent),
+							text: extractTextFromNode(itemContent),
 							columnIndex,
 						});
 					} else if (
 						itemContent.type === "bulletList" ||
 						itemContent.type === "orderedList"
 					) {
-						TipTapTransformer.processList(
-							itemContent,
-							slide,
-							"subbullet",
-							columnIndex,
-						);
+						processList(itemContent, slide, "subbullet", columnIndex);
 					}
 				}
 			}
@@ -419,7 +402,7 @@ export class TipTapTransformer {
 	 * @param text The text to analyze
 	 * @returns Boolean indicating if this might be chart data
 	 */
-	private static mightBeChartData(text: string): boolean {
+	function mightBeChartData(text: string): boolean {
 		// Check for percentage patterns
 		const percentagePattern = /\b\d+(\.\d+)?%\b/;
 		if (percentagePattern.test(text)) return true;
@@ -453,7 +436,7 @@ export class TipTapTransformer {
 	 * @param slide The slide to modify
 	 * @param text Text containing potential chart data
 	 */
-	private static suggestChartTypeForSlide(slide: Slide, text: string): void {
+	function suggestChartTypeForSlide(slide: Slide, text: string): void {
 		// Analyze text to determine best chart type
 		let chartType: "bar" | "line" | "pie" | "area" = "bar";
 
@@ -504,7 +487,7 @@ export class TipTapTransformer {
 	 * @param node The TipTap node to extract text from
 	 * @returns The extracted text content
 	 */
-	private static extractTextFromNode(node: TipTapNode): string {
+	function extractTextFromNode(node: TipTapNode): string {
 		if (!node.content) return "";
 
 		return node.content
@@ -512,7 +495,7 @@ export class TipTapTransformer {
 				if ((contentNode as TipTapTextNode).text !== undefined) {
 					return (contentNode as TipTapTextNode).text;
 				}
-				return TipTapTransformer.extractTextFromNode(contentNode);
+				return extractTextFromNode(contentNode);
 			})
 			.join("");
 	}
@@ -521,7 +504,7 @@ export class TipTapTransformer {
 	 * Ensure all slides have appropriate subheadlines arrays based on their layouts
 	 * @param slides Array of slides to normalize
 	 */
-	private static normalizeSlideSubheadlines(slides: Slide[]): void {
+	function normalizeSlideSubheadlines(slides: Slide[]): void {
 		for (const slide of slides) {
 			// Determine expected number of subheadlines based on layout
 			let expectedCount = 1;
