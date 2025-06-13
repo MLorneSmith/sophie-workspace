@@ -139,7 +139,9 @@ describe("getOutlineSuggestionsAction", () => {
 			const invalidData = {};
 
 			// Act
-			const result = await getOutlineSuggestionsAction(invalidData as any);
+			const result = await getOutlineSuggestionsAction(
+				invalidData as Parameters<typeof getOutlineSuggestionsAction>[0],
+			);
 
 			// Assert
 			expect(result.error).toBe("Validation failed");

@@ -31,7 +31,7 @@ const createTestAction = (schema: z.ZodSchema) => {
 interface TiptapNode {
 	type: string;
 	content?: TiptapNode[];
-	attrs?: Record<string, any>;
+	attrs?: Record<string, unknown>;
 	marks?: { type: string }[];
 	text?: string;
 }
@@ -210,7 +210,7 @@ describe("Generate Outline Business Logic", () => {
 	});
 
 	describe("Schema Validation", () => {
-		let testAction: (data: any) => Promise<any>;
+		let testAction: (data: unknown) => Promise<unknown>;
 
 		beforeEach(() => {
 			testAction = createTestAction(GenerateOutlineSchema);
@@ -382,7 +382,10 @@ describe("Generate Outline Business Logic", () => {
 		it("should handle null/undefined nodes gracefully", () => {
 			const input: TiptapDocument = {
 				type: "doc",
-				content: [undefined as any, null as any],
+				content: [
+					undefined as unknown as TiptapNode,
+					null as unknown as TiptapNode,
+				],
 			};
 
 			const result = normalizeOutlineContent(input);

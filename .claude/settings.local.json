@@ -65,7 +65,8 @@
 			"Bash(pnpm --filter web vitest run:*)",
 			"Bash(pnpm --filter web test:run)",
 			"Bash(gh run list:*)",
-			"Bash(gh auth:*)"
+			"Bash(gh auth:*)",
+			"Bash(.claude/scripts/sync-issue.sh:*)"
 		],
 		"deny": []
 	},

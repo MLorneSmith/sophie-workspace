@@ -13,16 +13,18 @@ import { Trans } from "@kit/ui/trans";
 import { useSurveyScores } from "../../_lib/client/hooks/use-survey-scores";
 import { RadarChart } from "./radar-chart";
 
+import type { Survey } from "../../../../../../../apps/payload/payload-types";
+
 type SurveySummaryProps = {
-	survey: any;
+	survey: Survey;
 	categoryScores?: Record<string, number>;
 	totalQuestions: number;
 };
 
 export function SurveySummary({
-	survey,
+	survey: _survey,
 	categoryScores: initialCategoryScores,
-	totalQuestions,
+	totalQuestions: _totalQuestions,
 }: SurveySummaryProps) {
 	// Get the current user
 	const { user } = useUserWorkspace();
@@ -30,10 +32,10 @@ export function SurveySummary({
 	// Fetch scores from database if not provided
 	const {
 		categoryScores: dbCategoryScores,
-		highestCategory: dbHighestCategory,
-		lowestCategory: dbLowestCategory,
-		isLoading,
-	} = useSurveyScores(user?.id || "", String(survey.id));
+		highestCategory: _dbHighestCategory,
+		lowestCategory: _dbLowestCategory,
+		isLoading: _isLoading,
+	} = useSurveyScores(user?.id || "", String(_survey.id));
 
 	// Use provided scores or fall back to database scores
 	const categoryScores =
@@ -67,12 +69,7 @@ export function SurveySummary({
 				);
 			}
 		}
-	}, [
-		categoryScores,
-		dbHighestCategory,
-		dbLowestCategory,
-		initialCategoryScores,
-	]);
+	}, [categoryScores, initialCategoryScores]);
 
 	// Get category names - using the category key directly since we don't have a mapping
 	const getCategoryName = (categoryKey: string) => {

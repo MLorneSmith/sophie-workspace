@@ -38,7 +38,7 @@ interface TipTapNode {
 interface TipTapTextNode extends TipTapNode {
 	type: "text";
 	text: string;
-	marks?: { type: string; attrs?: Record<string, any> }[];
+	marks?: { type: string; attrs?: Record<string, unknown> }[];
 }
 
 /**

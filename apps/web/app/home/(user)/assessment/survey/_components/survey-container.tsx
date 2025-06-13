@@ -16,9 +16,14 @@ import {
 import { QuestionCard } from "./question-card";
 import { SurveySummary } from "./survey-summary";
 
+import type {
+	Survey,
+	SurveyQuestion,
+} from "../../../../../../../apps/payload/payload-types";
+
 type SurveyContainerProps = {
-	survey: any;
-	questions: any[];
+	survey: Survey;
+	questions: SurveyQuestion[];
 	userId: string;
 	initialProgress: number;
 };
@@ -42,7 +47,7 @@ export function SurveyContainer({
 		initialProgress < questions.length ? initialProgress : 0,
 	);
 
-	const [responses, setResponses] = useState<Record<string, any>>({});
+	const [responses, setResponses] = useState<Record<string, unknown>>({});
 	const [categoryScores, setCategoryScores] = useState<Record<string, number>>(
 		{},
 	);

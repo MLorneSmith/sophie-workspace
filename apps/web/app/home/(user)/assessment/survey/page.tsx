@@ -82,13 +82,7 @@ async function SurveyPage() {
 		questionspin?: string;
 		position?: number;
 		options: Array<{ option: string }>;
-		[key: string]: any;
-	};
-
-	type TransformedOption = {
-		id: string;
-		text: string;
-		score: number;
+		[key: string]: unknown;
 	};
 
 	// Transform and sort questions

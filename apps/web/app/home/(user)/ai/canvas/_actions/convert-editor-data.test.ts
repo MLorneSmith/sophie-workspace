@@ -31,7 +31,7 @@ interface ConversionResult {
  */
 function convertSubmissionData(
 	submission: SubmissionData,
-	lexicalToTiptapFn: (data: any) => any,
+	lexicalToTiptapFn: (data: unknown) => unknown,
 ): {
 	convertedData: Record<string, string | null>;
 	error?: string;
@@ -72,7 +72,7 @@ function convertSubmissionData(
  */
 function processSubmissions(
 	submissions: SubmissionData[],
-	lexicalToTiptapFn: (data: any) => any,
+	lexicalToTiptapFn: (data: unknown) => unknown,
 ): ConversionResult {
 	const results: ConversionResult = {
 		total: submissions.length,
@@ -82,7 +82,7 @@ function processSubmissions(
 	};
 
 	for (const submission of submissions) {
-		const { convertedData, error } = convertSubmissionData(
+		const { convertedData: _convertedData, error } = convertSubmissionData(
 			submission,
 			lexicalToTiptapFn,
 		);

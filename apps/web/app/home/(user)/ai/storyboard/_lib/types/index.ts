@@ -45,7 +45,7 @@ export interface BuildingBlocksSubmission {
 	/**
 	 * The JSON outline data
 	 */
-	outline?: any;
+	outline?: TipTapDocument;
 
 	/**
 	 * The storyboard data for the presentation
@@ -65,7 +65,7 @@ export interface StoryboardData {
 	/**
 	 * Array of slides in the presentation
 	 */
-	slides: StoryboardSlide[]; // Updated to use StoryboardSlide
+	slides: Slide[];
 }
 
 /**
@@ -150,7 +150,7 @@ export interface SlideContent {
 	 * Chart data for chart content
 	 * Can be a string (JSON) or an object with the structure expected by PptxGenJS
 	 */
-	chartData?: any;
+	chartData?: string | Record<string, unknown>;
 
 	/**
 	 * Image URL or base64 data for image content
@@ -160,7 +160,7 @@ export interface SlideContent {
 	/**
 	 * Table data for table content
 	 */
-	tableData?: any;
+	tableData?: string[][] | Record<string, unknown>;
 
 	/**
 	 * Optional formatting options
@@ -196,7 +196,7 @@ export interface TipTapNode {
 export interface TipTapTextNode {
 	type: "text";
 	text: string;
-	marks?: { type: string; attrs?: Record<string, any> }[];
+	marks?: { type: string; attrs?: Record<string, unknown> }[];
 }
 
 // PptxGenJS-optimized Data Structure (Outgoing Data Model) - for reference
@@ -236,8 +236,8 @@ export interface ContentArea {
 }
 
 // Placeholder interfaces for settings (define as needed)
-type ImageSettings = {};
-type TableSettings = {};
+type ImageSettings = Record<string, unknown>;
+type TableSettings = Record<string, unknown>;
 
 // Layout Template Definition
 export interface LayoutTemplate {

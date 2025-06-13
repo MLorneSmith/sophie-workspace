@@ -50,11 +50,14 @@ export function SortableSlideList({
 		}),
 	);
 
-	const handleDragStart = (event: any) => {
+	const handleDragStart = (event: { active: { id: unknown } }) => {
 		setActiveId(event.active.id as string);
 	};
 
-	const handleDragEnd = (event: any) => {
+	const handleDragEnd = (event: {
+		active: { id: unknown };
+		over: { id: unknown } | null;
+	}) => {
 		const { active, over } = event;
 
 		if (over && active.id !== over.id) {
@@ -187,9 +190,11 @@ function SortableSlideItem({
 					>
 						<GripVertical className="h-5 w-5" />
 					</div>
-					<div
-						className="flex flex-1 cursor-pointer items-center justify-between"
+					<button
+						type="button"
+						className="flex flex-1 cursor-pointer items-center justify-between text-left"
 						onClick={onToggleExpand}
+						aria-label={`Toggle slide ${slide.order + 1} details`}
 					>
 						<div>
 							<div className="font-medium">{slide.title}</div>
@@ -202,7 +207,7 @@ function SortableSlideItem({
 								Slide {slide.order + 1}
 							</span>
 						</div>
-					</div>
+					</button>
 				</div>
 
 				{isExpanded && (

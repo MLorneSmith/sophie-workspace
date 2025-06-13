@@ -3,6 +3,7 @@
 export default function Calendar() {
 	return (
 		<iframe
+			title="SlideHeroes Coaching Calendar - Schedule a 60-minute session"
 			src="https://cal.com/slideheroes.com/60min?embed=true&layout=month_view"
 			style={{
 				width: "100%",

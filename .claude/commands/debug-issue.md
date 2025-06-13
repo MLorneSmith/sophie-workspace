@@ -1,8 +1,9 @@
 # Debug Issue Command
 
 Usage: `/debug-issue [issue_reference]`
+
 - GitHub issue number: `123` (preferred format from log-issue command)
-- Issue ID: `ISSUE-123` 
+- Issue ID: `ISSUE-123`
 - Local file: `.claude/issues/2025-01-06-ISSUE-123.md`
 - GitHub URL: `https://github.com/MLorneSmith/2025slideheroes/issues/123`
 - Legacy format: `ISSUE-1234567-abc` (for older local-only issues)
@@ -10,65 +11,62 @@ Usage: `/debug-issue [issue_reference]`
 This command reads an issue specification and launches a focused debugging session to resolve it.
 
 ## 1. Adopt Role
+
 Load the debugging mindset:
+
 ```
 /read .claude/roles/full-stack-engineer.md
 ```
 
 ## 2. Load Issue Specification
 
-### 2.1 Locate Issue
-Based on the reference type:
+### 2.1 Auto-Sync and Locate Issue
 
-```typescript
-// Parse reference type (priority order based on new log-issue format)
-let issuePath, issueContent;
+Use the auto-sync service to fetch/cache issues automatically:
 
-if (/^\d+$/.test(reference)) {
-  // GitHub issue number (e.g., "123") - preferred format
-  const issueData = await mcp__github__get_issue({
-    owner: "MLorneSmith",
-    repo: "2025slideheroes", 
-    issue_number: parseInt(reference)
-  });
-  issueContent = issueData.body;
-  
-  // Also try to find local file
-  issuePath = findLocalIssueFile(`ISSUE-${reference}`);
-} else if (reference.startsWith('ISSUE-')) {
-  // Issue ID format (e.g., "ISSUE-123" or "ISSUE-1234567-abc")
-  issuePath = findIssueById(reference);
-  
-  // If it's a GitHub issue format, also fetch from GitHub
-  const githubNumber = reference.match(/^ISSUE-(\d+)$/)?.[1];
-  if (githubNumber) {
-    try {
-      const issueData = await mcp__github__get_issue({
-        owner: "MLorneSmith",
-        repo: "2025slideheroes",
-        issue_number: parseInt(githubNumber)
-      });
-      issueContent = issueData.body; // Use GitHub as source of truth
-    } catch (error) {
-      // Fall back to local file
-    }
-  }
-} else if (reference.startsWith('http')) {
-  // GitHub URL - fetch via API
-  const issueNumber = extractIssueNumber(reference);
-  const issueData = await fetchGitHubIssue(issueNumber);
-  issueContent = issueData.body;
-} else if (reference.startsWith('#')) {
-  // GitHub issue number with hash
-  const issueData = await fetchGitHubIssue(reference.slice(1));
-  issueContent = issueData.body;
-} else if (reference.endsWith('.md')) {
-  // Direct file path
-  issuePath = reference;
-}
+```bash
+# First, run auto-sync to ensure we have the latest issue data
+.claude/scripts/sync-issue.sh ${issue_reference}
+
+# The script will:
+# 1. Detect if it's a GitHub issue (number, ISSUE-123, #123, URL)
+# 2. Auto-fetch from GitHub if needed
+# 3. Create/update local cache file
+# 4. Handle fallbacks gracefully
+```
+
+### 2.2 Parse Issue Reference
+
+The auto-sync service handles all reference formats:
+
+```bash
+# Examples of supported formats:
+.claude/scripts/sync-issue.sh 30              # GitHub issue #30
+.claude/scripts/sync-issue.sh ISSUE-30        # ISSUE-30 format
+.claude/scripts/sync-issue.sh "#30"           # Hash format
+.claude/scripts/sync-issue.sh "https://github.com/MLorneSmith/2025slideheroes/issues/30"  # Full URL
+.claude/scripts/sync-issue.sh "2025-06-13-ISSUE-30.md"  # Direct local file (legacy)
+```
+
+### 2.3 Load Synced Issue
+
+After auto-sync completes, read the local file:
+
+```bash
+# Auto-sync creates files in format: YYYY-MM-DD-ISSUE-{number}.md
+# Find the synced file
+issue_file=$(find .claude/issues -name "*-ISSUE-${issue_number}.md" | head -1)
+
+if [ -z "$issue_file" ]; then
+  echo "❌ Issue file not found after auto-sync"
+  exit 1
+fi
+
+echo "📁 Using issue file: $issue_file"
 ```
 
 ### 2.2 Read and Parse Issue
+
 ```typescript
 // Read the issue specification
 const issueContent = await readFile(issuePath);
@@ -82,19 +80,21 @@ const {
   affectedFiles,
   diagnosticData,
   reproductionSteps,
-  suggestedAreas
+  suggestedAreas,
 } = issue;
 ```
 
 ### 2.3 Load Context Docs
+
 Based on issue type, load relevant debugging docs:
+
 ```typescript
 const contextDocs = {
-  'bug': ['.claude/docs/debugging/common-patterns.md'],
-  'performance': ['.claude/docs/debugging/performance-debugging.md'],
-  'error': ['.claude/docs/debugging/error-handling.md'],
-  'database': ['.claude/docs/debugging/database-debugging.md'],
-  'integration': ['.claude/docs/debugging/integration-debugging.md']
+  bug: ['.claude/docs/debugging/common-patterns.md'],
+  performance: ['.claude/docs/debugging/performance-debugging.md'],
+  error: ['.claude/docs/debugging/error-handling.md'],
+  database: ['.claude/docs/debugging/database-debugging.md'],
+  integration: ['.claude/docs/debugging/integration-debugging.md'],
 };
 
 // Read relevant context
@@ -106,7 +106,9 @@ for (const doc of contextDocs[issue.type]) {
 ## 3. Issue Analysis & Planning
 
 ### 3.1 Review Diagnostic Data
+
 Analyze the pre-collected diagnostic information:
+
 1. **Error Patterns**: Look for specific error messages
 2. **Performance Metrics**: Identify bottlenecks
 3. **Query Analysis**: Find inefficient queries
@@ -114,32 +116,39 @@ Analyze the pre-collected diagnostic information:
 5. **Console Output**: Review warnings and errors
 
 ### 3.2 Create Debug Plan
+
 Based on issue analysis:
+
 ```markdown
 ## Debug Plan for [Issue ID]
 
 ### Priority 1: Immediate Actions
+
 - [ ] Reproduce issue locally
 - [ ] Verify diagnostic data is current
 - [ ] Check recent code changes
 
 ### Priority 2: Root Cause Analysis
+
 - [ ] Investigate [suggested area 1]
 - [ ] Test hypothesis: [based on diagnostics]
 - [ ] Check related components
 
 ### Priority 3: Solution Implementation
+
 - [ ] Implement fix for root cause
 - [ ] Add error handling/logging
 - [ ] Create tests to prevent regression
 
 ### Priority 4: Verification
+
 - [ ] Test fix in development
 - [ ] Re-run diagnostic tools
 - [ ] Update documentation
 ```
 
 ### 3.3 Set Up Debug Environment
+
 ```bash
 # Checkout relevant branch if needed
 git checkout [branch]
@@ -154,10 +163,12 @@ pnpm dev
 ## 4. Reproduction & Investigation
 
 ### 4.1 Reproduce the Issue
+
 Follow the documented reproduction steps:
+
 ```typescript
 // Use MCP tools to monitor while reproducing
-mcp__browser-tools__wipeLogs(); // Clear logs
+mcp__browser - tools__wipeLogs(); // Clear logs
 
 // Execute reproduction steps
 for (const step of issue.reproductionSteps) {
@@ -166,50 +177,57 @@ for (const step of issue.reproductionSteps) {
 }
 
 // Capture new diagnostic data
-const currentErrors = await mcp__browser-tools__getConsoleErrors();
-const currentNetwork = await mcp__browser-tools__getNetworkErrors();
+const currentErrors = (await mcp__browser) - tools__getConsoleErrors();
+const currentNetwork = (await mcp__browser) - tools__getNetworkErrors();
 ```
 
 ### 4.2 Deep Dive Investigation
+
 Based on issue type, perform targeted investigation:
 
 #### For Runtime Errors:
+
 1. Set breakpoints in suspected functions
 2. Add console.log statements for variable inspection
 3. Check error boundaries and try-catch blocks
 4. Verify async/await handling
 
 #### For Performance Issues:
+
 1. Profile the application
 2. Check React DevTools for re-renders
 3. Analyze bundle size
 4. Review database query plans
 
 #### For Database Issues:
+
 1. Test queries in isolation
 2. Check RLS policies
 3. Verify indexes
 4. Monitor connection pool
 
 #### For Type Errors:
+
 1. Run targeted type checking
 2. Check interface definitions
 3. Verify API response shapes
 4. Review type assertions
 
 ### 4.3 Compare with Baseline
+
 ```typescript
 // Compare current state with issue report
 const comparison = {
   original: issue.diagnosticData,
   current: currentDiagnosticData,
-  differences: findDifferences(issue.diagnosticData, currentDiagnosticData)
+  differences: findDifferences(issue.diagnosticData, currentDiagnosticData),
 };
 ```
 
 ## 5. Solution Implementation
 
 ### 5.1 Implement Fix
+
 Based on root cause analysis:
 
 ```typescript
@@ -239,19 +257,20 @@ switch (issue.type) {
 ```
 
 ### 5.2 Add Defensive Measures
+
 ```typescript
 // Add logging for future debugging
 logger.info('Fixed issue context', {
   issueId: issue.id,
   action: 'specific_action',
-  timestamp: new Date()
+  timestamp: new Date(),
 });
 
 // Add error tracking
 if (error) {
   errorReporter.capture(error, {
     issueId: issue.id,
-    context: debugContext
+    context: debugContext,
   });
 }
 
@@ -262,6 +281,7 @@ performance.measure('issue-fix', 'issue-fix-start');
 ```
 
 ### 5.3 Create Tests
+
 ```typescript
 // Create regression test
 const testFile = `${affectedFile}.test.ts`;
@@ -272,29 +292,31 @@ await writeFile(testFile, testContent);
 ## 6. Verification & Documentation
 
 ### 6.1 Verify Fix
+
 Re-run diagnostic tools to confirm resolution:
 
 ```typescript
 // Clear and re-test
-mcp__browser-tools__wipeLogs();
+mcp__browser - tools__wipeLogs();
 
 // Reproduce original steps
 // Should no longer see the issue
 
 // Run diagnostic tools
 const verificationResults = {
-  consoleErrors: await mcp__browser-tools__getConsoleErrors(),
-  networkErrors: await mcp__browser-tools__getNetworkErrors(),
-  performance: await mcp__browser-tools__runPerformanceAudit()
+  consoleErrors: (await mcp__browser) - tools__getConsoleErrors(),
+  networkErrors: (await mcp__browser) - tools__getNetworkErrors(),
+  performance: (await mcp__browser) - tools__runPerformanceAudit(),
 };
 
 // For database fixes
 const dbVerification = await mcp__postgres__pg_analyze_database({
-  analysisType: "performance"
+  analysisType: 'performance',
 });
 ```
 
 ### 6.2 Update Issue Documentation
+
 Create resolution report:
 
 ```markdown
@@ -305,26 +327,32 @@ Create resolution report:
 **Resolver**: Claude Debug Assistant
 
 ### Root Cause
+
 [Detailed explanation of what caused the issue]
 
 ### Solution Implemented
+
 [Description of the fix]
 
 ### Files Modified
+
 - [file1.ts] - [brief description of changes]
 - [file2.tsx] - [brief description of changes]
 
 ### Verification Results
+
 - ✅ Issue no longer reproducible
 - ✅ No new errors introduced
 - ✅ Performance metrics improved/maintained
 - ✅ Tests added to prevent regression
 
 ### Lessons Learned
+
 [Key takeaways for preventing similar issues]
 ```
 
 ### 6.3 Update Issue Status
+
 ```typescript
 // Update local issue file
 issue.status = 'resolved';
@@ -334,11 +362,11 @@ issue.resolution = resolutionReport;
 // Update GitHub if applicable
 if (issue.githubNumber) {
   await mcp__github__update_issue({
-    owner: "MLorneSmith",
-    repo: "2025slideheroes",
+    owner: 'MLorneSmith',
+    repo: '2025slideheroes',
     issue_number: issue.githubNumber,
-    state: "closed",
-    body: issue.body + '\n\n' + resolutionReport
+    state: 'closed',
+    body: issue.body + '\n\n' + resolutionReport,
   });
 }
 ```
@@ -346,6 +374,7 @@ if (issue.githubNumber) {
 ## 7. Post-Debug Actions
 
 ### 7.1 Create PR if Needed
+
 ```bash
 # Create branch for fix
 git checkout -b fix/issue-${issueId}
@@ -364,13 +393,16 @@ gh pr create --title "Fix: ${issue.title}" --body "..."
 ```
 
 ### 7.2 Knowledge Base Update
+
 If the issue revealed a gap:
+
 1. Update debugging documentation
 2. Add to common patterns
 3. Create troubleshooting guide
 4. Update team runbook
 
 ### 7.3 Summary Output
+
 ```
 ✅ Issue Resolved Successfully!
 
@@ -390,12 +422,14 @@ Next Steps:
 ## Context Management
 
 ### Focus Strategies
+
 1. **Single Issue Focus**: Work on one issue at a time
 2. **Relevant Context**: Only load files mentioned in issue
 3. **Incremental Changes**: Make small, testable changes
 4. **Regular Verification**: Test after each change
 
 ### When to Stop
+
 - Issue is resolved and verified
 - Hit context limits (suggest continuing in new session)
 - Need additional information not in issue spec
@@ -404,13 +438,16 @@ Next Steps:
 ## Integration with Log-Issue
 
 ### Feedback Loop
+
 - Update issue specs with new findings
 - Add discovered patterns to diagnostics
 - Improve reproduction steps
 - Document workarounds if no fix possible
 
 ### Pattern Library
+
 Build a library of issue patterns:
+
 ```
 .claude/issues/patterns/
 ├── slow-query-pattern.md

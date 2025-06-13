@@ -89,7 +89,7 @@ export function SlidePreview({ slide }: SlidePreviewProps) {
 							// Render image if imageUrl is provided
 							<img
 								src={item.imageUrl}
-								alt="Slide image preview"
+								alt="Slide content"
 								className="h-full w-full object-contain" // Use object-contain to fit without stretching
 							/>
 						) : (
@@ -166,7 +166,8 @@ export function SlidePreview({ slide }: SlidePreviewProps) {
 						height: `${layoutPositions.title.h * scaleFactor}px`,
 						fontSize: `${layoutPositions.title.fontSize}px`, // Use font size from layout
 						fontWeight: "bold", // Titles are typically bold
-						textAlign: layoutPositions.title.align as any, // Use alignment from layout
+						textAlign: layoutPositions.title
+							.align as React.CSSProperties["textAlign"], // Use alignment from layout
 					}}
 				>
 					{slide.title}
@@ -194,7 +195,7 @@ export function SlidePreview({ slide }: SlidePreviewProps) {
 							width: `${subheadlinePosition.w * scaleFactor}px`,
 							height: `${subheadlinePosition.h * scaleFactor}px`,
 							fontSize: "18px", // Subheadline font size from PptxGenerator
-							textAlign: (layoutPositions as any).align || "left", // Use layout align or default
+							textAlign: "left", // Default alignment for subheadlines
 						}}
 					>
 						{sub}

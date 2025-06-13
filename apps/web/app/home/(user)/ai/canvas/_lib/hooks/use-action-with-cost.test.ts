@@ -850,7 +850,7 @@ describe("useActionWithCost", () => {
 			mockAction.mockResolvedValue({
 				success: true,
 				data: "test response",
-				metadata: { cost: "invalid" as any },
+				metadata: { cost: "invalid" as unknown },
 			});
 
 			const requestData: TestRequestData = { message: "test" };

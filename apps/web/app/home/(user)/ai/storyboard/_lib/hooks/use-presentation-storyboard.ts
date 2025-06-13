@@ -8,17 +8,25 @@ import type { Json } from "@kit/supabase/database";
 import { useSupabase } from "@kit/supabase/hooks/use-supabase";
 import { toast } from "@kit/ui/sonner";
 
-import type { BuildingBlocksSubmission, StoryboardData } from "../types";
+import type {
+	BuildingBlocksSubmission,
+	Slide,
+	StoryboardData,
+	TipTapDocument,
+	TipTapNode,
+} from "../types";
 
 // Basic transformer from TipTap document to storyboard format
-function generateStoryboardFromOutline(outline: any): StoryboardData {
+function generateStoryboardFromOutline(
+	outline: TipTapDocument | unknown,
+): StoryboardData {
 	let slideCount = 0;
-	const slides: any[] = [];
+	const slides: Slide[] = [];
 	const title = extractTitle(outline) || "Untitled Presentation";
 
 	// Process the content to extract slides
 	if (outline?.content) {
-		let currentSlide: any = null;
+		let currentSlide: Slide | null = null;
 
 		for (const node of outline.content) {
 			// If it's a heading, create a new slide
@@ -77,7 +85,7 @@ function generateStoryboardFromOutline(outline: any): StoryboardData {
 	};
 }
 
-function extractTitle(outline: any): string | null {
+function extractTitle(outline: TipTapDocument | unknown): string | null {
 	// Try to find the first level 1 heading
 	if (outline?.content) {
 		for (const node of outline.content) {
@@ -89,11 +97,11 @@ function extractTitle(outline: any): string | null {
 	return null;
 }
 
-function extractTextFromNode(node: any): string {
+function extractTextFromNode(node: TipTapNode | unknown): string {
 	if (!node.content) return "";
 
 	return node.content
-		.map((contentNode: any) => {
+		.map((contentNode: TipTapNode | unknown) => {
 			if (contentNode.type === "text") {
 				return contentNode.text;
 			}
@@ -102,7 +110,7 @@ function extractTextFromNode(node: any): string {
 		.join("");
 }
 
-function processList(node: any, slide: any, type: string) {
+function processList(node: TipTapNode | unknown, slide: Slide, type: string) {
 	if (!node.content) return;
 
 	for (const item of node.content) {

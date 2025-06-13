@@ -391,7 +391,7 @@ describe("normalizeEditorContent", () => {
 						type: "bulletList",
 						content: [
 							{ type: "text", text: "Invalid item" }, // Should be listItem
-							null as any, // Null item
+							null as unknown, // Null item
 						],
 					},
 				],
@@ -456,7 +456,7 @@ describe("normalizeEditorContent", () => {
 							{
 								type: "listItem",
 								content: [
-									null as any, // Null element
+									null as unknown, // Null element
 									{ type: "text", text: "Valid text" },
 								],
 							},
@@ -601,7 +601,7 @@ describe("normalizeEditorContent", () => {
 				type: "doc",
 				content: [
 					{ type: "text", text: "Valid text" },
-					{} as any, // Missing type property
+					{} as unknown, // Missing type property
 				],
 			};
 			const sectionType: EditorContentTypes = "situation";
@@ -625,7 +625,7 @@ describe("normalizeEditorContent", () => {
 					{
 						type: "paragraph",
 						content: [
-							{ type: "text" } as any, // Missing text property - gets normalized before validation
+							{ type: "text" } as unknown, // Missing text property - gets normalized before validation
 						],
 					},
 				],

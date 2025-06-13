@@ -16,10 +16,16 @@ import {
 	getPresentationAction,
 	saveStoryboardAction,
 } from "../services/storyboard-service";
-import type { BuildingBlocksSubmission, Slide, StoryboardData } from "../types";
+import type {
+	BuildingBlocksSubmission,
+	Slide,
+	StoryboardData,
+	TipTapDocument,
+	TipTapNode,
+} from "../types";
 
 // Basic debounce function
-function debounce<T extends (...args: any[]) => void>(
+function debounce<T extends (...args: unknown[]) => void>(
 	func: T,
 	delay: number,
 ): (...args: Parameters<T>) => void {
@@ -324,7 +330,9 @@ export function useStoryboard() {
 }
 
 // Basic transformer function from TipTap JSON to storyboard format
-function generateStoryboardFromOutline(outline: any): StoryboardData {
+function generateStoryboardFromOutline(
+	outline: TipTapDocument,
+): StoryboardData {
 	let slideCount = 0;
 	const slides: Slide[] = [];
 	const title = extractTitle(outline) || "Untitled Presentation";
@@ -415,7 +423,7 @@ function generateStoryboardFromOutline(outline: any): StoryboardData {
 	};
 }
 
-function extractTitle(outline: any): string | null {
+function extractTitle(outline: TipTapDocument): string | null {
 	// Try to find the first level 1 heading
 	if (outline?.content) {
 		for (const node of outline.content) {
@@ -427,11 +435,11 @@ function extractTitle(outline: any): string | null {
 	return null;
 }
 
-function extractTextFromNode(node: any): string {
+function extractTextFromNode(node: TipTapNode): string {
 	if (!node.content) return "";
 
 	return node.content
-		.map((contentNode: any) => {
+		.map((contentNode: TipTapNode) => {
 			if (contentNode.type === "text") {
 				return contentNode.text;
 			}
@@ -441,7 +449,7 @@ function extractTextFromNode(node: any): string {
 }
 
 function processList(
-	node: any,
+	node: TipTapNode,
 	slide: Slide,
 	type: "bullet" | "subbullet" = "bullet",
 ) {

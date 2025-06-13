@@ -7,8 +7,10 @@ import { Label } from "@kit/ui/label";
 import { Textarea } from "@kit/ui/textarea";
 import { Trans } from "@kit/ui/trans";
 
+import type { SurveyQuestion } from "../../../../../../../apps/payload/payload-types";
+
 type TextFieldQuestionProps = {
-	question: any;
+	question: SurveyQuestion;
 	onAnswer: (questionId: string, answer: string, score: number) => void;
 	isLoading: boolean;
 };
