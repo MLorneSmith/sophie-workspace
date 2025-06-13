@@ -108,3 +108,7 @@ enabled = false
 schema_paths = [
   "./schemas/*.sql",
 ]
+
+[edge_runtime]
+# Inspector port for debugging Edge Functions.
+inspector_port = 8083

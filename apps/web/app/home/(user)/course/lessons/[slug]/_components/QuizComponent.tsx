@@ -189,7 +189,7 @@ export function QuizComponent({
 
 		// Count correct options
 		const correctOptions = (question?.options || []).filter(
-			(option: any) => option && option.isCorrect,
+			(option: any) => option?.isCorrect,
 		);
 
 		// If more than one correct option, treat as multi-answer

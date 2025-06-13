@@ -8,7 +8,7 @@ interface CourseProgressBarProps {
 }
 
 export function CourseProgressBar({
-	percentage,
+	percentage: _percentage,
 	totalLessons,
 	completedLessons,
 }: CourseProgressBarProps) {

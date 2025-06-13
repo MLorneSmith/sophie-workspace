@@ -7,8 +7,23 @@ import { Label } from "@kit/ui/label";
 import { RadioGroup, RadioGroupItem } from "@kit/ui/radio-group";
 import { Trans } from "@kit/ui/trans";
 
+interface QuestionOption {
+	id: string;
+	text: string;
+	score?: number;
+}
+
+interface Question {
+	id: string;
+	type: "text_field" | "scale" | "multiple_choice";
+	title: string;
+	text?: string;
+	description?: string;
+	options?: QuestionOption[];
+}
+
 type ScaleQuestionProps = {
-	question: any;
+	question: Question;
 	onAnswer: (questionId: string, answer: string, score: number) => void;
 	isLoading: boolean;
 };
@@ -22,8 +37,8 @@ export function ScaleQuestion({
 
 	const handleSubmit = () => {
 		if (selectedOption) {
-			const option = question.options.find(
-				(opt: any) => opt.id === selectedOption,
+			const option = question.options?.find(
+				(opt: QuestionOption) => opt.id === selectedOption,
 			);
 
 			if (option) {
@@ -51,11 +66,13 @@ export function ScaleQuestion({
 				onValueChange={setSelectedOption}
 				className="space-y-3"
 			>
-				{question.options?.map((option: any) => (
-					<div
+				{question.options?.map((option: QuestionOption) => (
+					<button
 						key={option.id}
-						className="hover:bg-accent flex cursor-pointer items-center space-x-2 rounded-md border p-4"
+						type="button"
+						className="hover:bg-accent flex cursor-pointer items-center space-x-2 rounded-md border p-4 text-left w-full"
 						onClick={() => setSelectedOption(option.id)}
+						aria-label={`Select option: ${option.text}`}
 					>
 						<RadioGroupItem value={option.id} id={option.id} />
 						<Label
@@ -64,7 +81,7 @@ export function ScaleQuestion({
 						>
 							{option.text}
 						</Label>
-					</div>
+					</button>
 				))}
 			</RadioGroup>
 

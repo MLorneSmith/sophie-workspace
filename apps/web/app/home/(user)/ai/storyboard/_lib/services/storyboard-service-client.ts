@@ -6,13 +6,12 @@ import { toast } from "@kit/ui/sonner";
 
 import {
 	type BuildingBlocksSubmission,
-	type LayoutTemplate, // Import LayoutTemplate
-	// Import StoryboardSlide
+	type LayoutTemplate,
 	PRESET_LAYOUTS,
-	// Import PRESET_LAYOUTS
 	type Slide,
 	type StoryboardData,
-	type StoryboardSlide,
+	type TipTapDocument,
+	type TipTapNode,
 } from "../types/index";
 
 /**
@@ -210,7 +209,7 @@ export class StoryboardService {
 	 * @returns StoryboardData representing the presentation
 	 */
 	private generateStoryboardFromOutline(
-		outline: any,
+		outline: TipTapDocument | unknown,
 		title = "Untitled Presentation",
 	): StoryboardData {
 		let slideCount = 0;
@@ -310,7 +309,7 @@ export class StoryboardService {
 	 * @param outline The TipTap JSON document
 	 * @returns The extracted title or null if not found
 	 */
-	private extractTitle(outline: any): string | null {
+	private extractTitle(outline: TipTapDocument | unknown): string | null {
 		// Try to find the first level 1 heading
 		if (outline?.content) {
 			for (const node of outline.content) {
@@ -327,11 +326,11 @@ export class StoryboardService {
 	 * @param node The TipTap node to extract text from
 	 * @returns The extracted text content
 	 */
-	private extractTextFromNode(node: any): string {
+	private extractTextFromNode(node: TipTapNode | unknown): string {
 		if (!node.content) return "";
 
 		return node.content
-			.map((contentNode: any) => {
+			.map((contentNode: TipTapNode | unknown) => {
 				if (contentNode.type === "text") {
 					return contentNode.text;
 				}
@@ -347,7 +346,7 @@ export class StoryboardService {
 	 * @param type The type of list item to create
 	 */
 	private processList(
-		node: any,
+		node: TipTapNode | unknown,
 		slide: Slide,
 		type: "bullet" | "subbullet",
 	): void {

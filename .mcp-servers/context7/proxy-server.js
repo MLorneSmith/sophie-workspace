@@ -4,8 +4,8 @@
  * Provides HTTP health endpoint for containerized context7-mcp
  */
 
-const { spawn } = require("child_process");
-const http = require("http");
+const { spawn } = require("node:child_process");
+const http = require("node:http");
 
 const PORT = process.env.PORT || 3000;
 
@@ -18,14 +18,14 @@ const mcpProcess = spawn("context7-mcp", [], {
 });
 
 let isHealthy = false;
-let outputBuffer = "";
+let _outputBuffer = "";
 
 mcpProcess.stdout.on("data", (data) => {
 	const output = data.toString();
 	process.stdout.write(data);
 
 	// Add to buffer for health detection
-	outputBuffer += output;
+	_outputBuffer += output;
 
 	// Mark as healthy when server starts
 	if (output.includes("running on stdio") || output.includes("Context7")) {

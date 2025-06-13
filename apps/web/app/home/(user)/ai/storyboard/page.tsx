@@ -18,9 +18,9 @@ export const generateMetadata = async () => {
 	};
 };
 
-export default async function StoryboardServerPage({
-	searchParams = {},
-}: StoryboardServerPageProps) {
+export default async function StoryboardServerPage(
+	_props: StoryboardServerPageProps,
+) {
 	const i18n = await createI18nServerInstance();
 	const title = i18n.t("common:routes.Storyboard");
 	const description = i18n.t("common:storyboardTabDescription");
@@ -41,6 +41,7 @@ export default async function StoryboardServerPage({
 					)}
 					<p className="mt-4 text-gray-700">Please try refreshing the page.</p>
 					<button
+						type="button"
 						className="mt-4 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
 						onClick={() => window.location.reload()}
 					>

@@ -4,8 +4,8 @@
  * Proxies MCP requests to remote Cloudflare Bindings service
  */
 
-const { spawn } = require("child_process");
-const http = require("http");
+const { spawn } = require("node:child_process");
+const http = require("node:http");
 
 const PORT = process.env.PORT || 3000;
 const REMOTE_URL =

@@ -4,8 +4,8 @@
  * Provides HTTP health endpoint for containerized postgres-mcp server
  */
 
-const { spawn } = require("child_process");
-const http = require("http");
+const { spawn } = require("node:child_process");
+const http = require("node:http");
 
 const PORT = process.env.PORT || 3000;
 const CONNECTION_STRING = process.env.POSTGRES_CONNECTION_STRING;

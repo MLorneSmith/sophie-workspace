@@ -10,8 +10,23 @@ import { Trans } from "@kit/ui/trans";
 import { ScaleQuestion } from "./scale-question";
 import { TextFieldQuestion } from "./text-field-question";
 
+interface QuestionOption {
+	id: string;
+	text: string;
+	score?: number;
+}
+
+interface Question {
+	id: string;
+	type: "text_field" | "scale" | "multiple_choice";
+	title: string;
+	text?: string;
+	description?: string;
+	options?: QuestionOption[];
+}
+
 type QuestionCardProps = {
-	question: any;
+	question: Question;
 	onAnswer: (questionId: string, answer: string, score: number) => void;
 	isLoading: boolean;
 };
@@ -51,9 +66,7 @@ export function QuestionCard({
 			console.log("Selected option:", selectedOption);
 			console.log("Available options:", question.options);
 
-			const option = question.options.find(
-				(opt: any) => opt.id === selectedOption,
-			);
+			const option = question.options?.find((opt) => opt.id === selectedOption);
 
 			if (option) {
 				onAnswer(question.id, option.text, option.score || 0);
@@ -78,11 +91,13 @@ export function QuestionCard({
 				onValueChange={setSelectedOption}
 				className="space-y-3"
 			>
-				{question.options?.map((option: any) => (
-					<div
+				{question.options?.map((option) => (
+					<button
 						key={option.id}
-						className="hover:bg-accent flex cursor-pointer items-center space-x-2 rounded-md border p-4"
+						type="button"
+						className="hover:bg-accent flex cursor-pointer items-center space-x-2 rounded-md border p-4 text-left w-full"
 						onClick={() => setSelectedOption(option.id)}
+						aria-label={`Select option: ${option.text}`}
 					>
 						<RadioGroupItem value={option.id} id={option.id} />
 						<Label
@@ -91,7 +106,7 @@ export function QuestionCard({
 						>
 							{option.text}
 						</Label>
-					</div>
+					</button>
 				))}
 			</RadioGroup>
 

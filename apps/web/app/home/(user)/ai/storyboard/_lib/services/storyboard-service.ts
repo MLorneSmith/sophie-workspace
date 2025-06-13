@@ -8,7 +8,7 @@ import { enhanceAction } from "@kit/next/actions";
 import { getLogger } from "@kit/shared/logger";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
 
-import type { StoryboardData } from "../types";
+import type { BuildingBlocksSubmission, StoryboardData } from "../types";
 import { TipTapTransformer } from "./tiptap-transformer";
 
 // Schema for validation
@@ -63,15 +63,6 @@ const StoryboardDataSchema = z.object({
 		}),
 	),
 });
-
-// Interface for building blocks submission
-interface BuildingBlocksSubmission {
-	id?: string;
-	title?: string;
-	outline?: any;
-	storyboard?: StoryboardData;
-	[key: string]: any;
-}
 
 // Action to get presentation data by ID
 export const getPresentationAction = enhanceAction(
@@ -172,8 +163,8 @@ export const getPresentationAction = enhanceAction(
 						await supabase
 							.from("building_blocks_submissions")
 							.update({
-								// Use explicit typing to handle adding the storyboard property
-								...({ storyboard: storyboard } as any),
+								storyboard:
+									storyboard as DatabaseBuildingBlocksUpdate["storyboard"],
 							})
 							.eq("id", data.presentationId);
 					} catch (saveError) {
@@ -241,33 +232,6 @@ export const getPresentationsAction = enhanceAction(
 	},
 );
 
-/**
- * Generate a storyboard from an outline using the TipTapTransformer
- * @param outline The TipTap outline data
- * @param title The presentation title
- * @returns A storyboard data structure
- */
-async function generateStoryboardFromOutline(
-	outline: any,
-	title = "Untitled Presentation",
-): Promise<StoryboardData> {
-	try {
-		// Parse outline if it's a string
-		const outlineData =
-			typeof outline === "string" ? JSON.parse(outline) : outline;
-
-		// Use the TipTapTransformer to transform the outline to storyboard format
-		return TipTapTransformer.transform(
-			outlineData,
-			title,
-		) as unknown as StoryboardData;
-	} catch (error) {
-		const logger = await getLogger();
-		logger.error({ error }, "Error generating storyboard from outline");
-		throw new Error("Failed to generate storyboard from outline");
-	}
-}
-
 // Action to save storyboard data
 export const saveStoryboardAction = enhanceAction(
 	async (data, _user) => {
@@ -279,9 +243,9 @@ export const saveStoryboardAction = enhanceAction(
 			const { error } = await supabase
 				.from("building_blocks_submissions")
 				.update({
-					// Cast to any to handle the case where the column doesn't exist yet
-					storyboard: data.storyboard as any,
-				} as any)
+					storyboard:
+						data.storyboard as DatabaseBuildingBlocksUpdate["storyboard"],
+				} satisfies DatabaseBuildingBlocksUpdate)
 				.eq("id", data.presentationId);
 
 			if (error) {

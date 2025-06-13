@@ -23,7 +23,7 @@ export function StoryboardPanel({
 }: StoryboardPanelProps) {
 	const { data, isLoading, isError, saveStoryboard } =
 		usePresentationStoryboard(presentationId);
-	const [storyboardData, setStoryboardData] = useState<any>(null);
+	const [storyboardData, setStoryboardData] = useState<unknown>(null);
 
 	useEffect(() => {
 		if (data && !isLoading) {
@@ -49,12 +49,10 @@ export function StoryboardPanel({
 					<Skeleton className="h-10 w-24" />
 				</div>
 				<div className="space-y-4">
-					{Array.from({ length: 4 }).map((_, i) => (
-						<Skeleton
-							key={`storyboard-skeleton-${i}`}
-							className="h-32 w-full"
-						/>
-					))}
+					<Skeleton className="h-32 w-full" />
+					<Skeleton className="h-32 w-full" />
+					<Skeleton className="h-32 w-full" />
+					<Skeleton className="h-32 w-full" />
 				</div>
 			</Card>
 		);

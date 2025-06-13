@@ -1,7 +1,7 @@
 export interface BuildingBlocksSubmission {
 	id: string;
 	title?: string;
-	outline?: any;
+	outline?: unknown;
 	storyboard?: StoryboardData;
 	user_id?: string;
 	created_at?: string;
@@ -47,8 +47,8 @@ export interface SlideContent {
 		| "bubble"
 		| "radar"
 		| "doughnut";
-	chartData?: any;
-	tableData?: any;
+	chartData?: unknown;
+	tableData?: unknown;
 	formatting?: SlideContentFormatting;
 	// Add position property based on PRD's ContentArea?
 	// position?: { x: number; y: number; w: number; h: number };

@@ -23,6 +23,7 @@ export function RadialProgress({
 				height={size}
 				viewBox={`0 0 ${size} ${size}`}
 			>
+				<title>Course Progress: {value.toFixed(1)}% complete</title>
 				{/* Background circle */}
 				<circle
 					className="text-muted-foreground/20"
