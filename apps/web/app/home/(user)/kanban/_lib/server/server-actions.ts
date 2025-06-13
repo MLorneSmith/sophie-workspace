@@ -349,9 +349,11 @@ const resetTasksAction = enhanceAction(
 			// Delete all images from Vercel Blob
 			if (tasksWithImages) {
 				await Promise.all(
-					tasksWithImages.map((task) =>
-						deleteTaskImageAction({ url: task.image_url! }),
-					),
+					tasksWithImages
+						.filter((task) => task.image_url)
+						.map((task) =>
+							deleteTaskImageAction({ url: task.image_url as string }),
+						),
 				);
 			}
 

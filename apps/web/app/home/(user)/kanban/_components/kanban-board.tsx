@@ -137,12 +137,9 @@ export function KanbanBoard() {
 						</div>
 						<div className="bg-muted/40 flex-1 animate-pulse rounded-lg p-4">
 							<div className="space-y-4">
-								{Array.from({ length: 3 }).map((_, i) => (
-									<div
-										key={i}
-										className="bg-background/40 h-24 animate-pulse rounded-lg"
-									/>
-								))}
+								<div className="bg-background/40 h-24 animate-pulse rounded-lg" />
+								<div className="bg-background/40 h-24 animate-pulse rounded-lg" />
+								<div className="bg-background/40 h-24 animate-pulse rounded-lg" />
 							</div>
 						</div>
 					</div>

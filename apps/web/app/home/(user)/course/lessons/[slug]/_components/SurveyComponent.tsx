@@ -8,13 +8,46 @@ import { toast } from "sonner";
 import { useSupabase } from "@kit/supabase/hooks/use-supabase";
 import { Card } from "@kit/ui/card";
 import { Progress } from "@kit/ui/progress";
+import type { Database } from "~/lib/database.types";
 
 import { saveResponseAction } from "../../../../assessment/_lib/server/server-actions";
 import { QuestionCard } from "../../../../assessment/survey/_components/question-card";
 
+// Define proper types for survey data
+type PayloadSurvey = {
+	id: string;
+	title?: string;
+	slug?: string;
+	questions?: Array<{
+		id: string;
+		text?: string;
+		question?: string;
+		type?: string;
+		category?: string;
+		position?: number;
+		options?: Array<{
+			id?: string;
+			text?: string;
+			option?: string;
+			score?: number;
+		}>;
+	}>;
+};
+
+type Question = {
+	id: string;
+	text: string;
+	type: string;
+	category: string;
+	position: number;
+	options: Array<{ id: string; text: string; score?: number }>;
+};
+
+type SurveyResponse = Database["public"]["Tables"]["survey_responses"]["Row"];
+
 type SurveyComponentProps = {
-	survey: any;
-	surveyResponses?: any[];
+	survey: PayloadSurvey;
+	surveyResponses?: SurveyResponse[];
 	userId: string;
 	onComplete: () => void;
 };
@@ -22,15 +55,17 @@ type SurveyComponentProps = {
 export function SurveyComponent({
 	survey,
 	surveyResponses = [],
-	userId,
+	_userId,
 	onComplete,
 }: SurveyComponentProps) {
 	const [isPending, startTransition] = useTransition();
 	const _supabase = useSupabase();
 
-	const [questions, setQuestions] = useState<any[]>([]);
+	const [questions, setQuestions] = useState<Question[]>([]);
 	const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-	const [responses, setResponses] = useState<Record<string, any>>({});
+	const [responses, setResponses] = useState<
+		Record<string, { answer: string; score: number; category: string }>
+	>({});
 	const [showSummary, setShowSummary] = useState(false);
 
 	// Fetch survey questions - with improved handling for pre-fetched questions
@@ -51,7 +86,7 @@ export function SurveyComponent({
 
 				// Check if questions are fully populated with text
 				const hasFullyPopulatedQuestions = survey.questions.some(
-					(q: any) => q.text || q.question,
+					(q: PayloadSurvey["questions"][0]) => q.text || q.question,
 				);
 
 				if (hasFullyPopulatedQuestions) {
@@ -110,68 +145,68 @@ export function SurveyComponent({
 			console.log("Processing questionsData:", questionsData);
 
 			// Transform questions to ensure they have the right format
-			const transformedQuestions = questionsData.map((q: any) => {
-				console.log("Processing question:", q);
+			const transformedQuestions = questionsData.map(
+				(q: PayloadSurvey["questions"][0]) => {
+					console.log("Processing question:", q);
 
-				// Ensure each question has the required properties
-				const question: {
-					id: string;
-					text: string;
-					type: string;
-					category: string;
-					position: number;
-					options: Array<{ id: string; text: string; score?: number }>;
-				} = {
-					id: q.id,
-					text: q.text || q.question || "",
-					type: q.type || "multiple_choice",
-					category: q.category || "general",
-					position: q.position || 0,
-					options: [],
-				};
+					// Ensure each question has the required properties
+					const question: Question = {
+						id: q.id,
+						text: q.text || q.question || "",
+						type: q.type || "multiple_choice",
+						category: q.category || "general",
+						position: q.position || 0,
+						options: [],
+					};
 
-				// Special handling for scale questions
-				if (q.type === "scale") {
-					// Create default scale options if none exist
-					if (!Array.isArray(q.options) || q.options.length === 0) {
-						question.options = [
-							{ id: `${q.id}_option_1`, text: "1 - Very inexperienced" },
-							{ id: `${q.id}_option_2`, text: "2 - Somewhat inexperienced" },
-							{ id: `${q.id}_option_3`, text: "3 - Neutral" },
-							{ id: `${q.id}_option_4`, text: "4 - Somewhat experienced" },
-							{ id: `${q.id}_option_5`, text: "5 - Very experienced" },
-						];
+					// Special handling for scale questions
+					if (q.type === "scale") {
+						// Create default scale options if none exist
+						if (!Array.isArray(q.options) || q.options.length === 0) {
+							question.options = [
+								{ id: `${q.id}_option_1`, text: "1 - Very inexperienced" },
+								{ id: `${q.id}_option_2`, text: "2 - Somewhat inexperienced" },
+								{ id: `${q.id}_option_3`, text: "3 - Neutral" },
+								{ id: `${q.id}_option_4`, text: "4 - Somewhat experienced" },
+								{ id: `${q.id}_option_5`, text: "5 - Very experienced" },
+							];
+						}
 					}
-				}
 
-				// Handle options based on different possible formats
-				else if (Array.isArray(q.options)) {
-					question.options = q.options.map((opt: any, index: number) => {
-						if (typeof opt === "string") {
-							return { id: `${q.id}_option_${index}`, text: opt };
-						}
-						if (typeof opt === "object") {
-							return {
-								id: `${q.id}_option_${index}`,
-								text: opt.option || opt.text || `Option ${index + 1}`,
-							};
-						}
-						return {
-							id: `${q.id}_option_${index}`,
-							text: `Option ${index + 1}`,
-						};
-					});
-				}
+					// Handle options based on different possible formats
+					else if (Array.isArray(q.options)) {
+						question.options = q.options.map(
+							(
+								opt: PayloadSurvey["questions"][0]["options"][0],
+								index: number,
+							) => {
+								if (typeof opt === "string") {
+									return { id: `${q.id}_option_${index}`, text: opt };
+								}
+								if (typeof opt === "object") {
+									return {
+										id: `${q.id}_option_${index}`,
+										text: opt.option || opt.text || `Option ${index + 1}`,
+									};
+								}
+								return {
+									id: `${q.id}_option_${index}`,
+									text: `Option ${index + 1}`,
+								};
+							},
+						);
+					}
 
-				// Special handling for text_field questions
-				if (q.type === "text_field") {
-					// Text field questions don't need options
-					question.options = [];
-				}
+					// Special handling for text_field questions
+					if (q.type === "text_field") {
+						// Text field questions don't need options
+						question.options = [];
+					}
 
-				console.log("Transformed question:", question);
-				return question;
-			});
+					console.log("Transformed question:", question);
+					return question;
+				},
+			);
 
 			// Sort questions by position
 			const sortedQuestions = [...transformedQuestions].sort(

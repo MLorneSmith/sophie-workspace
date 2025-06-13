@@ -63,7 +63,9 @@ export const TeamAccountLayoutMobileNavigation = (
 			}
 
 			if ("divider" in item) {
-				return <DropdownMenuSeparator key={`divider-${index}`} />;
+				return (
+					<DropdownMenuSeparator key={`nav-divider-${item.divider || index}`} />
+				);
 			}
 		},
 	);

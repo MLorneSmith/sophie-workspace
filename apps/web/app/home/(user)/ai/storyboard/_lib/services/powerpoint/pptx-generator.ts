@@ -15,53 +15,11 @@ import type {
 } from "../../types";
 
 // PptxGenJS types for better type safety
-type PptxSlide = any;
-
-// Define the properties used for text in slides
-interface TextProps {
-	x?: number | string;
-	y?: number | string;
-	w?: number | string;
-	h?: number | string;
-	fontSize?: number;
-	fontFace?: string;
-	color?: string;
-	bold?: boolean;
-	italic?: boolean;
-	underline?: boolean;
-	align?: string;
-	bullet?: { type: string };
-	indentLevel?: number;
-}
-
-// Define slide object interfaces for more precise typing
-interface SlideObject {
-	rect?: {
-		x: number | string;
-		y: number | string;
-		w: number | string;
-		h: number | string;
-		fill: { color: string };
-	};
-	text?: {
-		text: string;
-		options: TextProps;
-	};
-	line?: {
-		x: number;
-		y: number;
-		w: number;
-		h: number;
-		line: { color: string; width: number };
-	};
-}
-
-// Define slide master interface
-interface SlideMaster {
-	title: string;
-	background: { color: string };
-	objects: SlideObject[];
-	slideNumber?: { x: number | string; y: number | string };
+interface PptxSlide {
+	addText(text: string, options?: Record<string, unknown>): void;
+	addChart(chartData: Record<string, unknown>): void;
+	addImage(imagePath: string, options?: Record<string, unknown>): void;
+	[key: string]: unknown; // Allow other methods
 }
 
 // Augment pptxgen types to ensure proper type support
@@ -76,7 +34,9 @@ declare module "pptxgenjs" {
 		write(outputType: "nodebuffer"): Promise<Buffer>;
 		write(outputType: "uint8array"): Promise<Uint8Array>;
 		// Define the generic write method that accepts WriteProps
-		write(options: WriteProps): Promise<any>;
+		write(
+			options: WriteProps,
+		): Promise<ArrayBuffer | string | Blob | Buffer | Uint8Array>;
 	}
 
 	// Ensure pptxgenjs understands our coordinate types
@@ -335,7 +295,7 @@ export class PptxGenerator {
 			// Generate and return the PowerPoint file as a buffer
 			// Use an explicit object parameter with outputType to satisfy TypeScript
 			return this.pptx.write({ outputType: "nodebuffer" }) as Promise<Buffer>;
-		} catch (error: any) {
+		} catch (error: unknown) {
 			this.logger.error(error, "Error generating PowerPoint:");
 			throw new Error(`Failed to generate PowerPoint file: ${error.message}`);
 		}
@@ -460,7 +420,7 @@ export class PptxGenerator {
 	 * @param columnIndex The column index for positioning
 	 */
 	private addContentToSlide(
-		slide: any,
+		slide: PptxSlide,
 		content: SlideContent,
 		layoutId: string,
 		columnIndex: number,
@@ -576,7 +536,7 @@ export class PptxGenerator {
 								slide.addChart(this.pptx.ChartType.bar, commonChartProps);
 								break;
 						}
-					} catch (error: any) {
+					} catch (error: unknown) {
 						this.logger.error(
 							{ chartType: content.chartType, error: error.message },
 							"Error adding chart to slide",
@@ -609,7 +569,7 @@ export class PptxGenerator {
 							w: position.w,
 							h: position.h,
 						});
-					} catch (error: any) {
+					} catch (error: unknown) {
 						this.logger.error(
 							{ imageUrl: content.imageUrl, error: error.message },
 							"Error adding image to slide",
@@ -650,7 +610,7 @@ export class PptxGenerator {
 							border: { pt: 0.5, color: "666666" },
 							autoPage: true,
 						});
-					} catch (error: any) {
+					} catch (error: unknown) {
 						this.logger.error(error, "Error adding table to slide:");
 
 						// Add error text instead of failing completely
@@ -769,7 +729,7 @@ export class PptxGenerator {
 	 * @param content The chart content item
 	 * @returns Parsed chart data in PptxGenJS format
 	 */
-	private parseChartData(content: SlideContent): any {
+	private parseChartData(content: SlideContent): Record<string, unknown> {
 		// If there's no chartData, return a default structure
 		if (!content.chartData) {
 			return {
@@ -820,11 +780,13 @@ export class PptxGenerator {
 					legendPos: chartData.legendPosition || "b",
 					dataLabelPosition: chartData.labelPosition || "outEnd",
 					showDataLabels: true,
-					chartData: chartData.series.map((series: any) => ({
-						name: series.name || "Series",
-						labels: series.labels || [],
-						values: series.values || [],
-					})),
+					chartData: chartData.series.map(
+						(series: Record<string, unknown>) => ({
+							name: series.name || "Series",
+							labels: series.labels || [],
+							values: series.values || [],
+						}),
+					),
 				};
 			}
 
@@ -845,7 +807,7 @@ export class PptxGenerator {
 					},
 				],
 			};
-		} catch (error: any) {
+		} catch (error: unknown) {
 			this.logger.error(error, "Error parsing chart data:");
 
 			// Return default chart data on error

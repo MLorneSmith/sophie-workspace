@@ -17,14 +17,38 @@ import { Label } from "@kit/ui/label";
 import { Progress } from "@kit/ui/progress";
 import { RadioGroup, RadioGroupItem } from "@kit/ui/radio-group";
 
+interface QuizOption {
+	text: string;
+	iscorrect: boolean;
+}
+
+interface QuizQuestion {
+	question: string;
+	questiontype: "single-answer" | "multi-answer";
+	options: QuizOption[];
+}
+
+interface PayloadQuiz {
+	questions: QuizQuestion[];
+	passingScore: number;
+}
+
+interface QuizAttempt {
+	id: string;
+	score: number;
+	passed: boolean;
+	answers: Record<string, unknown>;
+	created_at: string;
+}
+
 interface QuizComponentProps {
-	quiz: any;
+	quiz: PayloadQuiz;
 	onSubmit: (
-		answers: Record<string, any>,
+		answers: Record<string, unknown>,
 		score: number,
 		passed: boolean,
 	) => void;
-	previousAttempts: any[];
+	previousAttempts: QuizAttempt[];
 	courseId: string;
 	currentLessonId: string;
 	currentLessonNumber: number;
@@ -180,7 +204,7 @@ export function QuizComponent({
 	const passingScore = quiz.passingScore || 70;
 
 	// Helper function to determine if a question allows multiple answers
-	const isMultiAnswerQuestion = (question: any): boolean => {
+	const isMultiAnswerQuestion = (question: QuizQuestion): boolean => {
 		return question?.questiontype === "multi-answer";
 	};
 

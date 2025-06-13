@@ -5,14 +5,14 @@
  * Simple interface for auto-syncing GitHub issues during debug workflows
  */
 
+import { writeFile } from "node:fs/promises";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import {
 	autoSyncIfNeeded,
-	fetchGitHubIssue,
 	convertToLocalFormat,
+	fetchGitHubIssue,
 } from "./issue-sync.js";
-import { writeFile } from "fs/promises";
-import { join, dirname } from "path";
-import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -58,7 +58,7 @@ async function autoSyncForDebug(issueReference) {
 		const result = await autoSyncIfNeeded(issueNumber);
 
 		if (result.error) {
-			console.log(`⚠️ Auto-sync failed, fetching directly from GitHub...`);
+			console.log("⚠️ Auto-sync failed, fetching directly from GitHub...");
 			// Fallback: fetch from GitHub without caching
 			const issue = await fetchGitHubIssue(issueNumber);
 			return {
@@ -87,7 +87,7 @@ async function autoSyncForDebug(issueReference) {
 		}
 	} catch (error) {
 		console.log(`⚠️ Auto-sync error: ${error.message}`);
-		console.log(`🔄 Falling back to direct GitHub fetch...`);
+		console.log("🔄 Falling back to direct GitHub fetch...");
 
 		// Final fallback: direct fetch
 		try {
@@ -137,7 +137,8 @@ async function debugIntegration(issueReference) {
 				source: result.source,
 				message: `Ready to debug using ${result.source} data`,
 			};
-		} else if (result.issueData) {
+		}
+		if (result.issueData) {
 			// We have GitHub data, create temp local file
 			const tempPath = await createTempLocalFile(result.issueData);
 			return {

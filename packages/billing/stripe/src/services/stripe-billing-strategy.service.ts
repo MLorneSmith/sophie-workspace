@@ -351,7 +351,7 @@ export class StripeBillingStrategyService
 				description: plan.metadata?.description,
 				amount: plan.amount ?? 0,
 				interval: plan.interval,
-				type: 'recurring' as const,
+				type: "recurring" as const,
 				intervalCount: plan.interval_count,
 			};
 		} catch (error) {

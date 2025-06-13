@@ -4,6 +4,7 @@ import { z } from "zod";
 
 import { enhanceAction } from "@kit/next/actions";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
+import type { Database } from "~/lib/database.types";
 
 import { generateCertificate } from "~/lib/certificates/certificate-service";
 import {
@@ -36,9 +37,10 @@ export const updateCourseProgressAction = enhanceAction(
 
 		if (existingProgress) {
 			// Update existing record
-			const updateData: any = {
-				last_accessed_at: now,
-			};
+			const updateData: Database["public"]["Tables"]["course_progress"]["Update"] =
+				{
+					last_accessed_at: now,
+				};
 
 			if (data.currentLessonId) {
 				updateData.current_lesson_id = data.currentLessonId;
@@ -127,7 +129,8 @@ export const updateLessonProgressAction = enhanceAction(
 
 		if (existingProgress) {
 			// Update existing record
-			const updateData: any = {};
+			const updateData: Database["public"]["Tables"]["lesson_progress"]["Update"] =
+				{};
 
 			if (data.completionPercentage !== undefined) {
 				updateData.completion_percentage = data.completionPercentage;

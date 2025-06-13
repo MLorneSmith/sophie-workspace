@@ -15,7 +15,7 @@ const features = {
 	enablePasswordUpdate: authConfig.providers.password,
 };
 
-const providers = authConfig.providers.oAuth;
+const _providers = authConfig.providers.oAuth;
 
 const callbackPath = pathsConfig.auth.callback;
 const accountHomePath = pathsConfig.app.accountHome;

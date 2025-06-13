@@ -32,18 +32,18 @@ export function OauthProviderLogoImage({
 }
 
 function getOAuthProviderLogos(): Record<string, string | React.ReactNode> {
-  return {
-    password: <AtSign className={'size-[18px]'} />,
-    email: <AtSign className={'size-[18px]'} />,
-    phone: <Phone className={'size-[18px]'} />,
-    google: '/images/oauth/google.webp',
-    facebook: '/images/oauth/facebook.webp',
-    github: '/images/oauth/github.webp',
-    microsoft: '/images/oauth/microsoft.webp',
-    apple: '/images/oauth/apple.webp',
-    twitter: <XLogo />,
-    // add more logos here if needed
-  };
+	return {
+		password: <AtSign className={"size-[18px]"} />,
+		email: <AtSign className={"size-[18px]"} />,
+		phone: <Phone className={"size-[18px]"} />,
+		google: "/images/oauth/google.webp",
+		facebook: "/images/oauth/facebook.webp",
+		github: "/images/oauth/github.webp",
+		microsoft: "/images/oauth/microsoft.webp",
+		apple: "/images/oauth/apple.webp",
+		twitter: <XLogo />,
+		// add more logos here if needed
+	};
 }
 
 function XLogo() {

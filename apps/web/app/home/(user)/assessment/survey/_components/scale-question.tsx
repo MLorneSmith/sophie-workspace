@@ -72,6 +72,12 @@ export function ScaleQuestion({
 						type="button"
 						className="hover:bg-accent flex cursor-pointer items-center space-x-2 rounded-md border p-4 text-left w-full"
 						onClick={() => setSelectedOption(option.id)}
+						onKeyDown={(e) => {
+							if (e.key === "Enter" || e.key === " ") {
+								e.preventDefault();
+								setSelectedOption(option.id);
+							}
+						}}
 						aria-label={`Select option: ${option.text}`}
 					>
 						<RadioGroupItem value={option.id} id={option.id} />

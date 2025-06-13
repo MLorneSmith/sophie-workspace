@@ -40,7 +40,7 @@ vi.mock("next/cache", () => ({
 
 vi.mock("@kit/next/actions", () => ({
 	enhanceAction: vi.fn((fn, options) => {
-		return async (inputData: any) => {
+		return async (inputData: unknown) => {
 			let data = inputData;
 			// Validate with schema if provided
 			if (options?.schema) {
@@ -83,8 +83,17 @@ const mockSupabaseClient = vi.mocked(getSupabaseServerClient);
 const mockLogger = vi.mocked(getLogger);
 const mockTipTapTransformer = vi.mocked(TipTapTransformer);
 
+// Create interfaces for better type safety in tests
+interface MockSupabaseQuery {
+	select: ReturnType<typeof vi.fn>;
+	eq: ReturnType<typeof vi.fn>;
+	single: ReturnType<typeof vi.fn>;
+	update: ReturnType<typeof vi.fn>;
+	order: ReturnType<typeof vi.fn>;
+}
+
 describe("Storyboard Service", () => {
-	let mockQuery: any;
+	let mockQuery: MockSupabaseQuery;
 
 	beforeEach(async () => {
 		vi.clearAllMocks();
@@ -106,7 +115,7 @@ describe("Storyboard Service", () => {
 		// Set up supabase client mock
 		mockSupabaseClient.mockReturnValue({
 			from: vi.fn().mockReturnValue(mockQuery),
-		} as any);
+		} as unknown as ReturnType<typeof getSupabaseServerClient>);
 
 		// Set up logger mock
 		mockLogger.mockResolvedValue({
@@ -318,7 +327,9 @@ describe("Storyboard Service", () => {
 		it("should validate input schema", async () => {
 			// Act & Assert
 			await expect(
-				getPresentationAction({ presentationId: 123 } as any),
+				getPresentationAction({ presentationId: 123 } as unknown as Parameters<
+					typeof getPresentationAction
+				>[0]),
 			).rejects.toThrow("Validation failed");
 		});
 	});
@@ -519,7 +530,9 @@ describe("Storyboard Service", () => {
 			await expect(
 				saveStoryboardAction({
 					presentationId: "presentation-123",
-					storyboard: invalidStoryboardData as any,
+					storyboard: invalidStoryboardData as unknown as Parameters<
+						typeof saveStoryboardAction
+					>[0]["storyboard"],
 				}),
 			).rejects.toThrow("Validation failed");
 		});

@@ -1,22 +1,22 @@
-import type { UserIdentity } from '@supabase/supabase-js';
+import type { UserIdentity } from "@supabase/supabase-js";
 
-import { useMutation } from '@tanstack/react-query';
+import { useMutation } from "@tanstack/react-query";
 
-import { useSupabase } from './use-supabase';
+import { useSupabase } from "./use-supabase";
 
 export function useUnlinkIdentity() {
-  const client = useSupabase();
-  const mutationKey = ['auth', 'unlink-identity'];
+	const client = useSupabase();
+	const mutationKey = ["auth", "unlink-identity"];
 
-  const mutationFn = async (identity: UserIdentity) => {
-    const { error } = await client.auth.unlinkIdentity(identity);
+	const mutationFn = async (identity: UserIdentity) => {
+		const { error } = await client.auth.unlinkIdentity(identity);
 
-    if (error) {
-      throw error.message ?? error;
-    }
+		if (error) {
+			throw error.message ?? error;
+		}
 
-    await client.auth.refreshSession();
-  };
+		await client.auth.refreshSession();
+	};
 
-  return useMutation({ mutationKey, mutationFn });
+	return useMutation({ mutationKey, mutationFn });
 }

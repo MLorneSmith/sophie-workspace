@@ -58,11 +58,19 @@ export function getPostPlaceholderImage(): string {
 }
 
 /**
+ * Interface for post objects with image properties
+ */
+interface PostWithImage {
+	image_id?: { url?: string } | string;
+	image?: string;
+}
+
+/**
  * Get the best available image URL from a post object
  * @param post The post object from CMS
  * @returns The best available image URL or null
  */
-export function getBestPostImageUrl(post: any): string | null {
+export function getBestPostImageUrl(post: PostWithImage): string | null {
 	// Try all possible image field paths
 	const imageUrl =
 		// From image_id relationship field

@@ -1,9 +1,36 @@
+import type { Database } from "~/lib/database.types";
 // Import the server client using dynamic import to avoid issues with next/headers
 import { updateLessonProgressAction } from "../../../_lib/server/server-actions";
 
-// Import types without the actual implementations (for type checking)
-type QuizType = any;
-type LessonType = any;
+// Define proper types for Payload CMS data structures
+type PayloadLesson = Database["payload"]["Tables"]["course_lessons"]["Row"];
+type PayloadQuiz = {
+	id: string;
+	title: string;
+	questions: Array<{
+		id: string;
+		text: string;
+		options?: Array<{ id: string; text: string; isCorrect?: boolean }>;
+		[key: string]: unknown;
+	}>;
+	[key: string]: unknown;
+};
+type PayloadSurvey = {
+	id: string;
+	title: string;
+	questions?: Array<{
+		id: string;
+		text: string;
+		type: string;
+		[key: string]: unknown;
+	}>;
+	[key: string]: unknown;
+};
+
+// Define Supabase database types
+type QuizAttempt = Database["public"]["Tables"]["quiz_attempts"]["Row"];
+type LessonProgress = Database["public"]["Tables"]["lesson_progress"]["Row"];
+type SurveyResponse = Database["public"]["Tables"]["survey_responses"]["Row"];
 
 /**
  * Enhanced Server component responsible for data fetching
@@ -11,16 +38,23 @@ type LessonType = any;
  */
 export async function LessonDataProviderEnhanced({
 	children,
-	slug,
+	_slug,
 	lessonId,
 	courseId,
 	lesson,
 }: {
-	children: (data: any) => React.ReactNode;
-	slug: string;
+	children: (data: {
+		quiz: PayloadQuiz | null;
+		quizAttempts: QuizAttempt[];
+		lessonProgress: LessonProgress | null;
+		userId: string;
+		survey: PayloadSurvey | null;
+		surveyResponses: SurveyResponse[];
+	}) => React.ReactNode;
+	_slug: string;
 	lessonId: string;
 	courseId: string;
-	lesson: any;
+	lesson: PayloadLesson;
 }) {
 	// Dynamically import the server client to avoid issues with next/headers
 	const { getSupabaseServerClient } = await import(
@@ -55,8 +89,8 @@ export async function LessonDataProviderEnhanced({
 	}
 
 	// Get quiz data if lesson has a quiz
-	let quiz: QuizType = null;
-	let quizAttempts: any[] = [];
+	let quiz: PayloadQuiz | null = null;
+	let quizAttempts: QuizAttempt[] = [];
 
 	// Check for quiz relationship using quiz_id or quiz_id_id
 	const quizId = lesson.quiz_id || lesson.quiz_id_id;
@@ -115,8 +149,11 @@ export async function LessonDataProviderEnhanced({
 							const { callPayloadAPI } = await import("@kit/cms/payload");
 
 							// Get the question IDs
-							const questionIds = quiz.questions.map((q: any) =>
-								typeof q === "string" ? q : q.id || q.value || q,
+							const questionIds = quiz.questions.map(
+								(q: string | Record<string, unknown>) =>
+									typeof q === "string"
+										? q
+										: (q.id as string) || (q.value as string) || String(q),
 							);
 
 							if (questionIds.length > 0) {
@@ -185,8 +222,8 @@ export async function LessonDataProviderEnhanced({
 	}
 
 	// Get survey data if lesson has a survey
-	let survey = null;
-	let surveyResponses: any[] = [];
+	let survey: PayloadSurvey | null = null;
+	let surveyResponses: SurveyResponse[] = [];
 
 	// Check for survey relationship - Payload might use either survey_id or survey_id_id
 	const surveyId = lesson.survey_id || lesson.survey_id_id;

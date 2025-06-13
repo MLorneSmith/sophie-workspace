@@ -33,14 +33,52 @@ import {
 import { QuizComponent } from "./QuizComponent";
 import { SurveyComponent } from "./SurveyComponent";
 
+// Import database types
+import type { Database } from "~/lib/database.types";
+
+// Type aliases for better readability
+type QuizAttempt = Database["public"]["Tables"]["quiz_attempts"]["Row"];
+type LessonProgress = Database["public"]["Tables"]["lesson_progress"]["Row"];
+type SurveyResponse = Database["public"]["Tables"]["survey_responses"]["Row"];
+
+// Payload CMS types
+interface PayloadLesson {
+	title: string;
+	content: string;
+	lessonNumber: number;
+	id: string;
+}
+
+interface PayloadQuiz {
+	questions: Array<{
+		question: string;
+		questiontype: "single-answer" | "multi-answer";
+		options: Array<{
+			text: string;
+			iscorrect: boolean;
+		}>;
+	}>;
+	passingScore: number;
+}
+
+interface PayloadSurvey {
+	questions: Array<{
+		question: string;
+		type: string;
+		options?: Array<{
+			text: string;
+		}>;
+	}>;
+}
+
 interface LessonViewClientProps {
-	lesson: any;
-	quiz: any;
-	quizAttempts: any[];
-	lessonProgress: any;
+	lesson: PayloadLesson;
+	quiz: PayloadQuiz | null;
+	quizAttempts: QuizAttempt[];
+	lessonProgress: LessonProgress | null;
 	userId: string;
-	survey?: any;
-	surveyResponses?: any[];
+	survey?: PayloadSurvey | null;
+	surveyResponses?: SurveyResponse[];
 }
 
 /**
@@ -229,7 +267,7 @@ export function LessonViewClient({
 
 	// Handle quiz submission
 	const handleQuizSubmit = (
-		answers: Record<string, any>,
+		answers: Record<string, string | string[] | boolean>,
 		score: number,
 		passed: boolean,
 	) => {
