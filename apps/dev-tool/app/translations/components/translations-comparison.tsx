@@ -32,7 +32,6 @@ import {
 } from '@kit/ui/table';
 import { cn } from '@kit/ui/utils';
 
-import { defaultI18nNamespaces } from '../../../../web/lib/i18n/i18n.settings';
 import {
   translateWithAIAction,
   updateTranslationAction,
@@ -67,10 +66,6 @@ export function TranslationsComparison({
   const [search, setSearch] = useState('');
   const [isTranslating, setIsTranslating] = useState(false);
 
-  const [selectedNamespace, setSelectedNamespace] = useState(
-    defaultI18nNamespaces[0] as string,
-  );
-
   // Create RxJS Subject for handling translation updates
   const subject$ = useMemo(
     () =>
@@ -85,6 +80,7 @@ export function TranslationsComparison({
 
   const locales = Object.keys(translations);
   const baseLocale = locales[0]!;
+  const namespaces = Object.keys(translations[baseLocale] || {});
 
   const [selectedLocales, setSelectedLocales] = useState<Set<string>>(
     new Set(locales),
@@ -92,6 +88,10 @@ export function TranslationsComparison({
 
   // Flatten translations for the selected namespace
   const flattenedTranslations: FlattenedTranslations = {};
+
+  const [selectedNamespace, setSelectedNamespace] = useState(
+    namespaces[0] as string,
+  );
 
   for (const locale of locales) {
     const namespaceData = translations[locale]?.[selectedNamespace];
@@ -254,7 +254,7 @@ export function TranslationsComparison({
               </SelectTrigger>
 
               <SelectContent>
-                {defaultI18nNamespaces.map((namespace: string) => (
+                {namespaces.map((namespace: string) => (
                   <SelectItem key={namespace} value={namespace}>
                     {namespace}
                   </SelectItem>

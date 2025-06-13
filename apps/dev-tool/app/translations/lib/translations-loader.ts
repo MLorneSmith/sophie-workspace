@@ -1,15 +1,6 @@
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 
-const defaultI18nNamespaces = [
-  'common',
-  'auth',
-  'account',
-  'teams',
-  'billing',
-  'marketing',
-];
-
 export type TranslationData = {
   [key: string]: string | TranslationData;
 };
@@ -28,16 +19,24 @@ export async function loadTranslations() {
   for (const locale of locales) {
     translations[locale] = {};
 
-    for (const namespace of defaultI18nNamespaces) {
+    const namespaces = readdirSync(join(localesPath, locale)).filter(
+      (file) => file.endsWith('.json'),
+    );
+
+    for (const namespace of namespaces) {
+      const namespaceName = namespace.replace('.json', '');
+
       try {
-        const filePath = join(localesPath, locale, `${namespace}.json`);
+        const filePath = join(localesPath, locale, namespace);
         const content = readFileSync(filePath, 'utf8');
-        translations[locale][namespace] = JSON.parse(content);
+
+        translations[locale][namespaceName] = JSON.parse(content);
       } catch (error) {
         console.warn(
-          `Warning: Translation file not found for locale "${locale}" and namespace "${namespace}"`,
+          `Warning: Translation file not found for locale "${locale}" and namespace "${namespaceName}"`,
         );
-        translations[locale][namespace] = {};
+
+        translations[locale][namespaceName] = {};
       }
     }
   }
