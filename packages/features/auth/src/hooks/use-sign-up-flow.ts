@@ -87,6 +87,7 @@ export function usePasswordSignUpFlow({
       router,
       onSignUp,
       resetCaptchaToken,
+      recordAuthMethod,
     ],
   );
 

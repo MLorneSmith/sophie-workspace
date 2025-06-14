@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 
 import { UserCheck } from 'lucide-react';
 
@@ -33,6 +34,14 @@ export function ExistingAccountHintImpl({
   const { hasLastMethod, methodType, providerName, isOAuth } =
     useLastAuthMethod();
 
+  const params = useSearchParams();
+
+  const isInvite = params.get('invite_token');
+
+  if (isInvite) {
+    signInPath = signInPath + '?invite_token=' + isInvite;
+  }
+
   // Get the appropriate method description for the hint
   // This must be called before any conditional returns to follow Rules of Hooks
   const methodDescription = useMemo(() => {
@@ -42,13 +51,13 @@ export function ExistingAccountHintImpl({
 
     switch (methodType) {
       case 'password':
-        return 'email and password';
+        return 'auth:methodPassword';
       case 'otp':
-        return 'email verification';
+        return 'auth:methodOtp';
       case 'magic_link':
-        return 'email link';
+        return 'auth:methodMagicLink';
       default:
-        return 'another method';
+        return 'auth:methodDefault';
     }
   }, [methodType, isOAuth, providerName]);
 

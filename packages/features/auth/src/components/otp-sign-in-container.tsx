@@ -34,17 +34,16 @@ import { AuthErrorAlert } from './auth-error-alert';
 const EmailSchema = z.object({ email: z.string().email() });
 const OtpSchema = z.object({ token: z.string().min(6).max(6) });
 
-export function OtpSignInContainer({
-  onSignIn,
-  shouldCreateUser,
-}: {
-  onSignIn?: (userId?: string) => void;
+type OtpSignInContainerProps = {
   shouldCreateUser: boolean;
-}) {
+  inviteToken?: string;
+};
+
+export function OtpSignInContainer(props: OtpSignInContainerProps) {
   const verifyMutation = useVerifyOtp();
   const router = useRouter();
-  const params = useSearchParams();
   const { recordAuthMethod } = useLastAuthMethod();
+  const params = useSearchParams();
 
   const otpForm = useForm({
     resolver: zodResolver(OtpSchema.merge(EmailSchema)),
@@ -61,6 +60,9 @@ export function OtpSignInContainer({
 
   const isEmailStep = !email;
 
+  const shouldCreateUser =
+    'shouldCreateUser' in props && props.shouldCreateUser;
+
   const handleVerifyOtp = async ({
     token,
     email,
@@ -68,7 +70,7 @@ export function OtpSignInContainer({
     token: string;
     email: string;
   }) => {
-    const result = await verifyMutation.mutateAsync({
+    await verifyMutation.mutateAsync({
       type: 'email',
       email,
       token,
@@ -77,14 +79,18 @@ export function OtpSignInContainer({
     // Record successful OTP sign-in
     recordAuthMethod('otp', { email });
 
-    if (onSignIn) {
-      return onSignIn(result?.user?.id);
-    }
+    // on sign ups we redirect to the app home
+    const inviteToken = props.inviteToken;
+    const next = params.get('next') ?? '/home';
 
-    // on sign ups  we redirect to the app home
-    if (shouldCreateUser) {
-      const next = params.get('next') ?? '/home';
+    if (inviteToken) {
+      const params = new URLSearchParams({
+        invite_token: inviteToken,
+        next,
+      });
 
+      router.replace(`/join?${params.toString()}`);
+    } else {
       router.replace(next);
     }
   };

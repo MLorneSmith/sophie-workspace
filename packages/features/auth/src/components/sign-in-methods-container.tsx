@@ -74,7 +74,10 @@ export function SignInMethodsContainer(props: {
       </If>
 
       <If condition={props.providers.otp}>
-        <OtpSignInContainer shouldCreateUser={false} onSignIn={onSignIn} />
+        <OtpSignInContainer
+          inviteToken={props.inviteToken}
+          shouldCreateUser={false}
+        />
       </If>
 
       <If condition={props.providers.oAuth.length}>

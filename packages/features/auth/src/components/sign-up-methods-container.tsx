@@ -51,7 +51,10 @@ export function SignUpMethodsContainer(props: {
       </If>
 
       <If condition={props.providers.otp}>
-        <OtpSignInContainer shouldCreateUser={true} />
+        <OtpSignInContainer
+          inviteToken={props.inviteToken}
+          shouldCreateUser={true}
+        />
       </If>
 
       <If condition={props.providers.magicLink}>
