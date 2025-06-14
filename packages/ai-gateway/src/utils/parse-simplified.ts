@@ -32,7 +32,7 @@ export function parseSimplified(response: string): SimplifiedContent {
 				if (parsed?.sections?.length > 0) {
 					// Validate each section has required fields
 					const validSections = parsed.sections.every(
-						(section: any) =>
+						(section: Record<string, unknown>): section is SimplifiedSection =>
 							section.type &&
 							(section.type === "heading" || section.type === "bullet") &&
 							typeof section.content === "string",

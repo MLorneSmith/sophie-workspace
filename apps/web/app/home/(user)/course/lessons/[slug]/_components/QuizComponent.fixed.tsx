@@ -19,7 +19,7 @@ import { RadioGroup, RadioGroupItem } from "@kit/ui/radio-group";
 
 interface QuizOption {
 	text: string;
-	iscorrect: boolean;
+	isCorrect: boolean;
 }
 
 interface QuizQuestion {
@@ -39,6 +39,12 @@ interface QuizAttempt {
 	passed: boolean;
 	answers: Record<string, unknown>;
 	created_at: string;
+}
+
+interface Lesson {
+	id: string;
+	lesson_number?: number;
+	slug?: string;
 }
 
 interface QuizComponentProps {
@@ -131,7 +137,7 @@ export function QuizComponent({
 	previousAttempts = [],
 	courseId,
 	currentLessonId,
-	currentLessonNumber,
+	currentLessonNumber: _currentLessonNumber,
 }: QuizComponentProps) {
 	// Define state for the quiz
 	const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -220,7 +226,7 @@ export function QuizComponent({
 	const handleMultiAnswerSelect = (optionIndex: number, isChecked: boolean) => {
 		const currentAnswers = selectedAnswers[currentQuestionIndex] || [];
 
-		let newAnswers;
+		let newAnswers: number[];
 		if (isChecked) {
 			// Add the option if it's checked and not already in the array
 			newAnswers = [...currentAnswers, optionIndex];
@@ -250,7 +256,7 @@ export function QuizComponent({
 			// Calculate score
 			let correctAnswers = 0;
 
-			questions.forEach((question: any, questionIndex: number) => {
+			questions.forEach((question: QuizQuestion, questionIndex: number) => {
 				const selectedOptionIndices = selectedAnswers[questionIndex] || [];
 
 				if (selectedOptionIndices.length > 0) {
@@ -262,7 +268,7 @@ export function QuizComponent({
 						let allCorrectSelected = true;
 						let noIncorrectSelected = true;
 
-						options.forEach((option: any, optionIndex: number) => {
+						options.forEach((option: QuizOption, optionIndex: number) => {
 							const isSelected = selectedOptionIndices.includes(optionIndex);
 
 							if (option.isCorrect && !isSelected) {
@@ -331,16 +337,18 @@ export function QuizComponent({
 
 			if (lessonsData?.docs && lessonsData.docs.length > 0) {
 				// Sort lessons by lesson_number
-				const sortedLessons = [...lessonsData.docs].sort((a: any, b: any) => {
-					if (a?.lesson_number && b?.lesson_number) {
-						return a.lesson_number - b.lesson_number;
-					}
-					return 0;
-				});
+				const sortedLessons = [...lessonsData.docs].sort(
+					(a: Lesson, b: Lesson) => {
+						if (a?.lesson_number && b?.lesson_number) {
+							return a.lesson_number - b.lesson_number;
+						}
+						return 0;
+					},
+				);
 
 				// Find the index of the current lesson
 				const currentIndex = sortedLessons.findIndex(
-					(lesson: any) => lesson?.id === currentLessonId,
+					(lesson: Lesson) => lesson?.id === currentLessonId,
 				);
 
 				// If we found the current lesson and it's not the last one
@@ -423,17 +431,29 @@ export function QuizComponent({
 						// Render checkboxes for multi-answer questions
 						<div className="space-y-4">
 							{(currentQuestion?.options || []).map(
-								(option: any, optionIndex: number) => {
+								(option: QuizOption, optionIndex: number) => {
 									return (
 										<div
-											key={optionIndex}
+											key={`${currentQuestionIndex}-multi-${option.text}`}
 											className="hover:bg-accent flex cursor-pointer items-start space-x-3 rounded-md p-3"
+											// biome-ignore lint/a11y/useSemanticElements: Container with checkbox input inside requires role="button" for proper interaction
+											role="button"
+											tabIndex={0}
 											onClick={() =>
 												handleMultiAnswerSelect(
 													optionIndex,
 													!isOptionSelected(optionIndex),
 												)
 											}
+											onKeyDown={(e) => {
+												if (e.key === "Enter" || e.key === " ") {
+													e.preventDefault();
+													handleMultiAnswerSelect(
+														optionIndex,
+														!isOptionSelected(optionIndex),
+													);
+												}
+											}}
 										>
 											<Checkbox
 												id={`q${currentQuestionIndex}-o${optionIndex}`}
@@ -469,12 +489,21 @@ export function QuizComponent({
 							className="space-y-4"
 						>
 							{(currentQuestion?.options || []).map(
-								(option: any, optionIndex: number) => {
+								(option: QuizOption, optionIndex: number) => {
 									return (
 										<div
-											key={optionIndex}
+											key={`${currentQuestionIndex}-single-${option.text}`}
 											className="hover:bg-accent flex cursor-pointer items-start space-x-3 rounded-md p-3"
+											// biome-ignore lint/a11y/useSemanticElements: Container with radio input inside requires role="button" for proper interaction
+											role="button"
+											tabIndex={0}
 											onClick={() => handleSingleAnswerSelect(optionIndex)}
+											onKeyDown={(e) => {
+												if (e.key === "Enter" || e.key === " ") {
+													e.preventDefault();
+													handleSingleAnswerSelect(optionIndex);
+												}
+											}}
 										>
 											<RadioGroupItem
 												value={optionIndex.toString()}

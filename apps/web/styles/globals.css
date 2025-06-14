@@ -44,6 +44,6 @@
 
 	input::placeholder,
 	textarea::placeholder {
-		color: theme(--color-muted-foreground);
+		color: hsl(var(--muted-foreground));
 	}
 }

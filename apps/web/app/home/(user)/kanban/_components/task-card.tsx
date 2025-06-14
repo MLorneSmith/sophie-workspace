@@ -64,6 +64,7 @@ export const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
 							task.priority === "low" &&
 								"border-l-success hover:border-l-success/80 border-l-4",
 						)}
+						// biome-ignore lint/a11y/useSemanticElements: Card component needs role="button" due to drag-and-drop functionality conflicts with semantic button element
 						role="button"
 						tabIndex={0}
 						onClick={(_e) => {

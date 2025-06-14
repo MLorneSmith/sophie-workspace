@@ -282,13 +282,13 @@ describe("Task Schema Validation", () => {
 				"https://cdn.example.com/assets/image.webp",
 			];
 
-			validUrls.forEach((url) => {
+			for (const url of validUrls) {
 				const task = {
 					title: "Task with image URL",
 					image_url: url,
 				};
 				expect(() => CreateTaskSchema.parse(task)).not.toThrow();
-			});
+			}
 		});
 
 		it("should accept valid relative paths", () => {
@@ -298,13 +298,13 @@ describe("Task Schema Validation", () => {
 				"/static/placeholder.svg",
 			];
 
-			validPaths.forEach((path) => {
+			for (const path of validPaths) {
 				const task = {
 					title: "Task with image path",
 					image_url: path,
 				};
 				expect(() => CreateTaskSchema.parse(task)).not.toThrow();
-			});
+			}
 		});
 
 		it("should reject invalid URL formats", () => {
@@ -315,13 +315,13 @@ describe("Task Schema Validation", () => {
 				"../relative", // Not URL and doesn't start with /
 			];
 
-			invalidUrls.forEach((url) => {
+			for (const url of invalidUrls) {
 				const task = {
 					title: "Task with invalid URL",
 					image_url: url,
 				};
 				expect(() => CreateTaskSchema.parse(task)).toThrow();
-			});
+			}
 		});
 
 		it("should accept FTP URLs as valid URLs", () => {
@@ -332,13 +332,13 @@ describe("Task Schema Validation", () => {
 				"data:image/png;base64,iVBORw0K...",
 			];
 
-			validUrls.forEach((url) => {
+			for (const url of validUrls) {
 				const task = {
 					title: "Task with URL",
 					image_url: url,
 				};
 				expect(() => CreateTaskSchema.parse(task)).not.toThrow();
-			});
+			}
 		});
 
 		it("should accept null image_url", () => {
@@ -424,13 +424,13 @@ describe("Task Schema Validation", () => {
 		it("should validate all status values", () => {
 			const statuses: Array<"do" | "doing" | "done"> = ["do", "doing", "done"];
 
-			statuses.forEach((status) => {
+			for (const status of statuses) {
 				const statusUpdate = {
 					id: validUuid,
 					status,
 				};
 				expect(() => UpdateTaskStatusSchema.parse(statusUpdate)).not.toThrow();
-			});
+			}
 		});
 
 		it("should reject status update with invalid UUID", () => {
@@ -445,7 +445,7 @@ describe("Task Schema Validation", () => {
 		it("should reject status update with invalid status", () => {
 			const statusUpdate = {
 				id: validUuid,
-				status: "invalid" as any,
+				status: "invalid" as "do" | "doing" | "done",
 			};
 
 			expect(() => UpdateTaskStatusSchema.parse(statusUpdate)).toThrow();
@@ -528,11 +528,11 @@ describe("Task Schema Validation", () => {
 				"Task\nwith\nnewlines",
 			];
 
-			specialTitles.forEach((title) => {
+			for (const title of specialTitles) {
 				const task = { title };
 				expect(() => CreateTaskSchema.parse(task)).not.toThrow();
 				expect(CreateTaskSchema.parse(task).title).toBe(title);
-			});
+			}
 		});
 
 		it("should handle boundary file size conditions", () => {

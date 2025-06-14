@@ -24,7 +24,7 @@ vi.mock("@kit/ui/button", () => ({
 		variant,
 		className,
 		...props
-	}: any) => (
+	}: React.ComponentProps<"button"> & { variant?: string }) => (
 		<button
 			onClick={onClick}
 			disabled={disabled}
@@ -38,35 +38,65 @@ vi.mock("@kit/ui/button", () => ({
 }));
 
 vi.mock("@kit/ui/card", () => ({
-	Card: ({ children, ...props }: any) => (
+	Card: ({
+		children,
+		...props
+	}: React.PropsWithChildren<React.HTMLAttributes<HTMLDivElement>>) => (
 		<div data-testid="card" {...props}>
 			{children}
 		</div>
 	),
-	CardContent: ({ children, ...props }: any) => (
+	CardContent: ({
+		children,
+		...props
+	}: React.PropsWithChildren<React.HTMLAttributes<HTMLDivElement>>) => (
 		<div data-testid="card-content" {...props}>
 			{children}
 		</div>
 	),
-	CardFooter: ({ children, ...props }: any) => (
+	CardFooter: ({
+		children,
+		...props
+	}: React.PropsWithChildren<React.HTMLAttributes<HTMLDivElement>>) => (
 		<div data-testid="card-footer" {...props}>
 			{children}
 		</div>
 	),
-	CardHeader: ({ children, ...props }: any) => (
+	CardHeader: ({
+		children,
+		...props
+	}: React.PropsWithChildren<React.HTMLAttributes<HTMLDivElement>>) => (
 		<div data-testid="card-header" {...props}>
 			{children}
 		</div>
 	),
-	CardTitle: ({ children, className, ...props }: any) => (
+	CardTitle: ({
+		children,
+		className,
+		...props
+	}: React.PropsWithChildren<React.HTMLAttributes<HTMLHeadingElement>>) => (
 		<h2 data-testid="card-title" className={className} {...props}>
 			{children}
 		</h2>
 	),
 }));
 
+interface CheckboxProps {
+	id?: string;
+	checked?: boolean;
+	onCheckedChange?: (checked: boolean) => void;
+	className?: string;
+	[key: string]: unknown;
+}
+
 vi.mock("@kit/ui/checkbox", () => ({
-	Checkbox: ({ id, checked, onCheckedChange, className, ...props }: any) => (
+	Checkbox: ({
+		id,
+		checked,
+		onCheckedChange,
+		className,
+		...props
+	}: CheckboxProps) => (
 		<input
 			type="checkbox"
 			id={id}
@@ -79,16 +109,29 @@ vi.mock("@kit/ui/checkbox", () => ({
 	),
 }));
 
+interface LabelProps extends React.PropsWithChildren {
+	htmlFor?: string;
+	onClick?: () => void;
+	className?: string;
+	[key: string]: unknown;
+}
+
 vi.mock("@kit/ui/label", () => ({
-	Label: ({ children, htmlFor, onClick, className, ...props }: any) => (
+	Label: ({ children, htmlFor, onClick, className, ...props }: LabelProps) => (
 		<label htmlFor={htmlFor} onClick={onClick} className={className} {...props}>
 			{children}
 		</label>
 	),
 }));
 
+interface ProgressProps {
+	value?: number;
+	className?: string;
+	[key: string]: unknown;
+}
+
 vi.mock("@kit/ui/progress", () => ({
-	Progress: ({ value, className, ...props }: any) => (
+	Progress: ({ value, className, ...props }: ProgressProps) => (
 		<div
 			data-testid="progress"
 			data-value={value}
@@ -100,6 +143,22 @@ vi.mock("@kit/ui/progress", () => ({
 	),
 }));
 
+interface RadioGroupProps extends React.PropsWithChildren {
+	value?: string;
+	onValueChange?: (value: string) => void;
+	className?: string;
+	onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+	[key: string]: unknown;
+}
+
+interface RadioGroupItemProps {
+	value?: string;
+	id?: string;
+	className?: string;
+	checked?: boolean;
+	[key: string]: unknown;
+}
+
 vi.mock("@kit/ui/radio-group", () => {
 	const RadioGroup = ({
 		children,
@@ -107,8 +166,8 @@ vi.mock("@kit/ui/radio-group", () => {
 		onValueChange,
 		className,
 		...props
-	}: any) => {
-		const handleChange = (e: any) => {
+	}: RadioGroupProps) => {
+		const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 			if (e.target.type === "radio" && e.target.checked) {
 				onValueChange?.(e.target.value);
 			}
@@ -122,7 +181,7 @@ vi.mock("@kit/ui/radio-group", () => {
 				onChange={handleChange}
 				{...props}
 			>
-				{React.Children.map(children, (child: any) => {
+				{React.Children.map(children, (child: React.ReactNode) => {
 					if (React.isValidElement(child) && child.props.value !== undefined) {
 						return React.cloneElement(child, {
 							...child.props,
@@ -135,7 +194,13 @@ vi.mock("@kit/ui/radio-group", () => {
 		);
 	};
 
-	const RadioGroupItem = ({ value, id, className, checked, ...props }: any) => (
+	const RadioGroupItem = ({
+		value,
+		id,
+		className,
+		checked,
+		...props
+	}: RadioGroupItemProps) => (
 		<input
 			type="radio"
 			value={value}

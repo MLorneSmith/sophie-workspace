@@ -49,6 +49,11 @@ interface PayloadLesson {
 	id: string;
 }
 
+interface Download {
+	url: string;
+	title?: string;
+}
+
 interface PayloadQuiz {
 	questions: Array<{
 		question: string;
@@ -545,7 +550,7 @@ export function LessonViewClient({
 											<div className="my-6">
 												<div className="space-y-2">
 													{lesson.downloads.map(
-														(download: any, index: number) => {
+														(download: Download, index: number) => {
 															// Additional validation
 															if (!download) {
 																console.warn(
@@ -564,7 +569,7 @@ export function LessonViewClient({
 																if (download.filename || download.description) {
 																	return (
 																		<div
-																			key={index}
+																			key={download.url || `download-${index}`}
 																			className="flex items-center justify-between rounded-lg border border-gray-200 p-3 dark:border-gray-700"
 																		>
 																			<div className="flex-grow">
@@ -611,7 +616,7 @@ export function LessonViewClient({
 
 															return (
 																<div
-																	key={index}
+																	key={download.url || `download-${index}`}
 																	className="flex flex-col rounded-lg border border-gray-200 p-3 dark:border-gray-700"
 																>
 																	<div className="flex items-center justify-between">
@@ -684,9 +689,9 @@ export function LessonViewClient({
 											// If we found a download section, use our custom processor to render it
 											return (
 												<div className="my-6">
-													{/* biome-ignore lint/security/noDangerouslySetInnerHtml: Rendering trusted course content with processed template tags */}
 													<div
 														className="template-downloads"
+														// biome-ignore lint/security/noDangerouslySetInnerHtml: Rendering trusted course content with processed template tags
 														dangerouslySetInnerHTML={{
 															__html: processR2FileTags(downloadSection[0]),
 														}}

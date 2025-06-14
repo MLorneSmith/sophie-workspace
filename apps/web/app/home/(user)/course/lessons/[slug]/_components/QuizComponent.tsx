@@ -467,6 +467,7 @@ export function QuizComponent({
 										<div
 											key={option.text || `option-${optionIndex}`}
 											className="hover:bg-accent flex cursor-pointer items-start rounded-md p-3 transition-colors"
+											// biome-ignore lint/a11y/useSemanticElements: Container with checkbox input inside requires role="button" for proper interaction
 											role="button"
 											tabIndex={0}
 											onClick={() =>
@@ -539,6 +540,7 @@ export function QuizComponent({
 										<div
 											key={option.text || `option-${optionIndex}`}
 											className="hover:bg-accent flex cursor-pointer items-start space-x-3 rounded-md p-3"
+											// biome-ignore lint/a11y/useSemanticElements: Container with radio input inside requires role="button" for proper interaction
 											role="button"
 											tabIndex={0}
 											onClick={() => handleSingleAnswerSelect(optionIndex)}

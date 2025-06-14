@@ -68,7 +68,7 @@ function useDispatchAppEventFromAuthEvent() {
 				case "USER_UPDATED":
 					emit({
 						type: "user.updated",
-						payload: { userId: userId!, ...traits },
+						payload: { userId: userId ?? "", ...traits },
 					});
 
 					break;

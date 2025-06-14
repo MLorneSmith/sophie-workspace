@@ -74,9 +74,7 @@ export const submitOnboardingFormAction = enhanceAction(
 			}
 
 			// Upsert to onboarding table
-			// Note: This will work after running the migration and generating types
-			// For now, we'll use the any type to bypass TypeScript errors
-			const { error } = await (supabase as any)
+			const { error } = await supabase
 				.from("onboarding")
 				.upsert(onboardingData, { onConflict: "user_id" });
 

@@ -12,7 +12,7 @@
  * - Production-optimized performance
  */
 
-import crypto from "node:crypto";
+import * as crypto from "node:crypto";
 import { type NextRequest, NextResponse } from "next/server";
 
 interface CachedResponse {
@@ -126,9 +126,9 @@ class RequestDeduplicationManager {
 		const body = await cloned.text();
 
 		const headers: Record<string, string> = {};
-		for (const [key, value] of cloned.headers.entries()) {
+		cloned.headers.forEach((value, key) => {
 			headers[key] = value;
-		}
+		});
 
 		return {
 			body,
@@ -303,7 +303,7 @@ class RequestDeduplicationManager {
 		const initialSize = this.cache.size;
 		let removed = 0;
 
-		for (const [fingerprint, entry] of this.cache.entries()) {
+		for (const [fingerprint, entry] of Array.from(this.cache.entries())) {
 			const age = now - entry.timestamp;
 			const maxAge = entry.isProcessing
 				? this.config.processingTimeout
@@ -354,7 +354,7 @@ class RequestDeduplicationManager {
 			totalDuplicates: 0,
 		};
 
-		for (const entry of this.cache.values()) {
+		for (const entry of Array.from(this.cache.values())) {
 			if (entry.isProcessing) {
 				stats.processingEntries++;
 			} else {

@@ -32,7 +32,7 @@ function getProviderForModel(model: string): string {
 function createPortkeyConfigHeaders(options: {
 	provider: string;
 	apiKey: string;
-	config?: any;
+	config?: string | Record<string, unknown>;
 }) {
 	const { provider, apiKey, config } = options;
 
@@ -69,7 +69,7 @@ interface PortkeyClientOptions {
 	teamId?: string;
 	feature?: string;
 	sessionId?: string;
-	config?: any; // The config object or ID
+	config?: string | Record<string, unknown>; // The config object or ID
 	model?: string; // Added model parameter to determine provider
 }
 

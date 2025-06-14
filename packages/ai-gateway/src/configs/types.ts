@@ -44,7 +44,7 @@ const BaseConfigProperties = {
 };
 
 // Config object schema
-export const ConfigSchema: z.ZodType<any> = z.lazy(() =>
+export const ConfigSchema: z.ZodSchema = z.lazy(() =>
 	z.object({
 		...BaseConfigProperties,
 		strategy: StrategySchema.optional(),

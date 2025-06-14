@@ -17,6 +17,7 @@ function LogoImage({
 			fill="none"
 			xmlns="http://www.w3.org/2000/svg"
 		>
+			<title>SlideHeroes Logo</title>
 			<g>
 				<polygon
 					points="97.3 68.9 41.5 68.9 41.5 78 106.4 78 106.4 39.4 97.3 39.4 97.3 68.9"
