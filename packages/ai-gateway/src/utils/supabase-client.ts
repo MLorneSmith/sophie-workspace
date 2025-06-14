@@ -7,7 +7,48 @@
  */
 
 // Type definition for the Supabase client
-export type SupabaseClient = any;
+type SupabaseResponse<T = unknown> = {
+	data: T | null;
+	error: { message: string; code?: string; details?: string } | null;
+};
+
+type SupabaseQueryBuilder = {
+	select: (columns?: string) => SupabaseQueryBuilder;
+	eq: (column: string, value: unknown) => SupabaseQueryBuilder;
+	single: () => SupabaseResponse;
+	order: (column?: string) => SupabaseQueryBuilder;
+	limit: (count: number) => SupabaseResponse;
+	data: unknown;
+	error: unknown;
+};
+
+type SupabaseClient = {
+	from: (table: string) => {
+		insert: (data: Record<string, unknown>) => {
+			select: (columns: string) => {
+				single: () => SupabaseResponse;
+			};
+		};
+		select: (columns?: string) => SupabaseQueryBuilder;
+		update: (data: Record<string, unknown>) => SupabaseQueryBuilder;
+		delete: () => SupabaseQueryBuilder;
+	};
+	rpc: (func: string, params?: Record<string, unknown>) => SupabaseResponse;
+	schema: (schema: string) => {
+		from: (table: string) => {
+			select: (columns?: string) => SupabaseResponse;
+			insert: (data: Record<string, unknown>) => SupabaseResponse;
+			update: (data: Record<string, unknown>) => SupabaseResponse;
+			delete: () => SupabaseResponse;
+		};
+	};
+	auth: {
+		getUser: () => Promise<SupabaseResponse>;
+		getSession: () => Promise<SupabaseResponse>;
+	};
+};
+
+export type { SupabaseClient };
 
 /**
  * Create a mock Supabase client with all necessary methods implemented
@@ -18,14 +59,14 @@ function createMockClient(): SupabaseClient {
 		// Table operations
 		from: (_table: string) => ({
 			// Insert operations
-			insert: (_data: any) => ({
+			insert: (_data: Record<string, unknown>) => ({
 				select: (_columns: string) => ({
 					single: () => ({ data: null, error: null }),
 				}),
 			}),
 			// Select operations
 			select: (_columns?: string) => ({
-				eq: (_column: string, _value: any) => ({
+				eq: (_column: string, _value: unknown) => ({
 					single: () => ({ data: null, error: null }),
 					order: () => ({ limit: () => ({ data: null, error: null }) }),
 				}),
@@ -36,7 +77,7 @@ function createMockClient(): SupabaseClient {
 				error: null,
 			}),
 			// Update operations
-			update: (_data: any) => ({
+			update: (_data: Record<string, unknown>) => ({
 				eq: () => ({ data: null, error: null }),
 				match: () => ({ data: null, error: null }),
 				data: null,
@@ -51,13 +92,22 @@ function createMockClient(): SupabaseClient {
 			}),
 		}),
 		// RPC calls
-		rpc: (_func: string, _params?: any) => ({ data: null, error: null }),
+		rpc: (_func: string, _params?: Record<string, unknown>) => ({
+			data: null,
+			error: null,
+		}),
 		// Schema operations
 		schema: (_schema: string) => ({
 			from: (_table: string) => ({
 				select: (_columns?: string) => ({ data: null, error: null }),
-				insert: (_data: any) => ({ data: null, error: null }),
-				update: (_data: any) => ({ data: null, error: null }),
+				insert: (_data: Record<string, unknown>) => ({
+					data: null,
+					error: null,
+				}),
+				update: (_data: Record<string, unknown>) => ({
+					data: null,
+					error: null,
+				}),
 				delete: () => ({ data: null, error: null }),
 			}),
 		}),

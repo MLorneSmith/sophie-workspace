@@ -14,14 +14,15 @@ import {
 // Mock enhanceAction to preserve schema validation
 vi.mock("@kit/next/actions", () => ({
 	enhanceAction: vi.fn((fn, options) => {
-		return async (data: any) => {
+		return async (data: unknown) => {
 			// Validate with schema if provided
+			let validatedData = data;
 			if (options?.schema) {
 				const result = options.schema.safeParse(data);
 				if (!result.success) {
 					return { error: "Validation failed", details: result.error };
 				}
-				data = result.data;
+				validatedData = result.data;
 			}
 
 			// Mock authenticated user
@@ -31,7 +32,7 @@ vi.mock("@kit/next/actions", () => ({
 				aud: "authenticated",
 			};
 
-			return fn(data, mockUser);
+			return fn(validatedData, mockUser);
 		};
 	}),
 }));

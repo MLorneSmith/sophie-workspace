@@ -1,6 +1,7 @@
 import { OpenAI } from "openai";
 import { z } from "zod";
 
+import type { Config } from "./configs/types";
 import { createGatewayClient } from "./enhanced-gateway-client";
 import { initializeAiGatewayDatabase } from "./utils/db-init";
 import { getSupabaseClient } from "./utils/supabase-client";
@@ -133,7 +134,7 @@ const ChatMessagesSchema = z.array(ChatMessageSchema);
 export interface ChatCompletionOptions {
 	model?: string;
 	temperature?: number;
-	config?: any;
+	config?: string | Config;
 	userId?: string;
 	teamId?: string;
 	feature?: string;
@@ -234,7 +235,7 @@ export async function getChatCompletion(
 		});
 
 		// Configure request options WITHOUT the config parameter
-		const requestOptions: any = {
+		const requestOptions: OpenAI.Chat.ChatCompletionCreateParams = {
 			messages,
 			model,
 			temperature,
@@ -473,7 +474,7 @@ export async function* getStreamingChatCompletion(
 		});
 
 		// Configure request options WITHOUT the config parameter
-		const requestOptions: any = {
+		const requestOptions: OpenAI.Chat.ChatCompletionCreateParams = {
 			messages,
 			model,
 			temperature,

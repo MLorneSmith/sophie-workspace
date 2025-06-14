@@ -94,7 +94,19 @@ export const ServerFormSchema = z.object({
 // Client-side schema will be created in the component using createStepSchema
 
 // Helper function to validate the goals step
-export const validateGoalsStep = (formData: any): boolean => {
+export const validateGoalsStep = (formData: {
+	goals: {
+		primary: "work" | "personal" | "school";
+		secondary: {
+			learn: boolean;
+			automate: boolean;
+			feedback: boolean;
+		};
+		workCompany?: string;
+		personalFrequency?: string;
+		schoolProject?: string;
+	};
+}): boolean => {
 	// Check if at least one secondary goal is selected
 	const hasSecondaryGoal = hasAtLeastOneSecondaryGoal(formData.goals.secondary);
 

@@ -169,14 +169,24 @@ export default function UIShowcasePage() {
 		useState<boolean>(false);
 
 	// Mock data for components that require it
-	const mockPost = {
+	const mockPost: import("@kit/cms").Cms.ContentItem = {
+		id: "1",
 		title: "Sample Blog Post",
+		label: "Sample Blog Post",
+		url: "/blog/sample-blog-post",
 		slug: "sample-blog-post",
 		// Setting image to null to avoid Next.js image domain restrictions
-		image: null,
+		image: undefined,
 		publishedAt: new Date().toISOString(),
 		description:
 			"This is a sample blog post description for demonstration purposes.",
+		content: {},
+		status: "published",
+		categories: [],
+		tags: [],
+		order: 0,
+		children: [],
+		parentId: undefined,
 	};
 
 	const mockDocsLink = {
@@ -185,7 +195,9 @@ export default function UIShowcasePage() {
 	};
 
 	// Mock user workspace for home components
-	const mockUserWorkspace = {
+	const mockUserWorkspace: import(
+		"~/app/home/(user)/_lib/server/load-user-workspace",
+	).UserWorkspace = {
 		workspace: {
 			id: "1",
 			name: "Personal Account",
@@ -634,14 +646,14 @@ export default function UIShowcasePage() {
 								<div className="space-y-4">
 									<h3 className="text-xl font-semibold">Post Preview</h3>
 									<div className="rounded-lg border p-4">
-										<PostPreview post={mockPost as any} />
+										<PostPreview post={mockPost} />
 									</div>
 								</div>
 
 								<div className="space-y-4">
 									<h3 className="text-xl font-semibold">Post Header</h3>
 									<div className="rounded-lg border p-4">
-										<PostHeader post={mockPost as any} />
+										<PostHeader post={mockPost} />
 									</div>
 								</div>
 
@@ -793,7 +805,7 @@ export default function UIShowcasePage() {
 									</h3>
 									<div className="h-64 overflow-auto rounded-lg border p-4">
 										{/* Mocking the required workspace prop */}
-										<HomeMenuNavigation workspace={mockUserWorkspace as any} />
+										<HomeMenuNavigation workspace={mockUserWorkspace} />
 									</div>
 								</div>
 
@@ -812,7 +824,7 @@ export default function UIShowcasePage() {
 										{isHomeSidebarVisible && (
 											<div className="relative h-96 w-64 overflow-hidden">
 												<SidebarProvider defaultOpen={true}>
-													<HomeSidebar workspace={mockUserWorkspace as any} />
+													<HomeSidebar workspace={mockUserWorkspace} />
 												</SidebarProvider>
 											</div>
 										)}

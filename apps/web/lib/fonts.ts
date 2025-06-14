@@ -37,7 +37,8 @@ export function getFontsClassName(theme?: string) {
 		(acc, curr) => {
 			if (acc.includes(curr)) return acc;
 
-			return [...acc, curr];
+			acc.push(curr);
+			return acc;
 		},
 		[],
 	);

@@ -91,7 +91,7 @@ export function OnboardingForm() {
 	});
 
 	// Helper function to flatten form data for analytics
-	function flattenFormData(
+	const flattenFormData = useCallback((
 		data: z.infer<typeof FormSchema>,
 	): Record<string, string> {
 		const flattenedData: Record<string, string> = {};
@@ -113,7 +113,7 @@ export function OnboardingForm() {
 			}
 		}
 
-		return flattenedData;
+			return flattenedData;
 	}
 
 	// Form submission handler
@@ -142,7 +142,7 @@ export function OnboardingForm() {
 				setIsSubmitting(false);
 			}
 		},
-		[router],
+		[router, flattenFormData],
 	);
 
 	// Steps for the stepper component

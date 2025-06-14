@@ -30,7 +30,7 @@ export function LineItemDetails(
 				// the item properties in the translation.
 				if (item.description) {
 					return (
-						<div key={index} className={className}>
+						<div key={item.id || `item-${index}`} className={className}>
 							<span className={"flex items-center space-x-1.5"}>
 								<PlusSquare className={"w-4"} />
 
@@ -128,7 +128,7 @@ export function LineItemDetails(
 				);
 
 				const PerSeat = () => (
-					<div key={index} className={"flex flex-col"}>
+					<div key={item.id || `per-seat-${index}`} className={"flex flex-col"}>
 						<div className={className}>
 							<span className={"flex items-center space-x-1.5"}>
 								<PlusSquare className={"w-3"} />
@@ -160,7 +160,7 @@ export function LineItemDetails(
 				);
 
 				const Metered = () => (
-					<div key={index} className={"flex flex-col"}>
+					<div key={item.id || `metered-${index}`} className={"flex flex-col"}>
 						<div className={className}>
 							<span className={"flex items-center space-x-1"}>
 								<span className={"flex items-center space-x-1.5"}>
@@ -242,7 +242,7 @@ function Tiers({
 		const isIncluded = tier.cost === 0;
 
 		return (
-			<span className={"text-secondary-foreground text-xs"} key={index}>
+			<span className={"text-secondary-foreground text-xs"} key={`tier-${tier.cost}-${tier.upTo}`}>
 				<span>-</span>{" "}
 				<If condition={isLastTier}>
 					<span className={"font-bold"}>

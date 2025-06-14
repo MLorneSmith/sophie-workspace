@@ -77,8 +77,12 @@ export async function generateCertificate({
 	if (fieldInfo.info?.FieldsInfo?.Fields) {
 		const fields = fieldInfo.info.FieldsInfo.Fields;
 		// Look for a field that might be for the name
+		type FieldInfo = {
+			FieldName: string;
+			Type: string;
+		};
 		const nameField = fields.find(
-			(field: any) =>
+			(field: FieldInfo) =>
 				field.FieldName.toLowerCase().includes("name") ||
 				field.Type === "EditBox",
 		);
@@ -233,7 +237,7 @@ export async function generateCertificate({
 
 	try {
 		console.log("Uploading certificate to Supabase Storage");
-		const { data: uploadData, error: uploadError } = await supabase.storage
+		const { error: uploadError } = await supabase.storage
 			.from("certificates")
 			.upload(fileName, certificateBuffer, {
 				contentType: "application/pdf",

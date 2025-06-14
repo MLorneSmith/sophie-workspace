@@ -104,7 +104,7 @@ const SidebarProvider: React.FC<
 	// Helper to toggle the sidebar.
 	const toggleSidebar = React.useCallback(() => {
 		return isMobile ? setOpenMobile((open) => !open) : setOpen((open) => !open);
-	}, [isMobile, setOpen, setOpenMobile]);
+	}, [isMobile, setOpen]);
 
 	// Adds a keyboard shortcut to toggle the sidebar.
 	React.useEffect(() => {
@@ -136,7 +136,7 @@ const SidebarProvider: React.FC<
 			setOpenMobile,
 			toggleSidebar,
 		}),
-		[state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar],
+		[state, open, setOpen, isMobile, openMobile, toggleSidebar],
 	);
 
 	const sidebarWidth = !open
@@ -770,7 +770,7 @@ export function SidebarNavigation({
 				const isLast = index === config.routes.length - 1;
 
 				if ("divider" in item) {
-					return <SidebarSeparator key={`divider-${index}`} />;
+					// Use a combination of position and context for stable keys\n\t\t\t\t\tconst prevItem = config.routes[index - 1];\n\t\t\t\t\tconst nextItem = config.routes[index + 1];\n\t\t\t\t\tconst contextKey = [\n\t\t\t\t\t\tprevItem && 'label' in prevItem ? prevItem.label : 'start',\n\t\t\t\t\t\tnextItem && 'label' in nextItem ? nextItem.label : 'end'\n\t\t\t\t\t].join('-');\n\t\t\t\t\treturn <SidebarSeparator key={`divider-${contextKey}`} />;
 				}
 
 				if ("children" in item) {
@@ -798,7 +798,7 @@ export function SidebarNavigation({
 					};
 
 					return (
-						<Container key={`collapsible-${index}`}>
+						<Container key={`nav-${item.label}`}>
 							<SidebarGroup key={item.label}>
 								<If
 									condition={item.collapsible}
@@ -936,7 +936,9 @@ export function SidebarNavigation({
 												};
 
 												return (
-													<Container key={`group-${index}-${childIndex}`}>
+													<Container
+														key={`child-${child.label || child.path || childIndex}`}
+													>
 														<SidebarMenuItem>
 															<TriggerItem />
 
