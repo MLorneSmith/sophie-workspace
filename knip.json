@@ -1,0 +1,46 @@
+{
+	"$schema": "https://unpkg.com/knip@5/schema.json",
+	"workspaces": {
+		".": {
+			"entry": ["scripts/**/*.{js,ts}"],
+			"project": ["scripts/**/*.{js,ts}"],
+			"ignore": ["**/dist/**", "**/.next/**", "**/build/**"]
+		},
+		"apps/web": {
+			"entry": [
+				"app/**/*.{ts,tsx}",
+				"lib/**/*.ts",
+				"config/**/*.{ts,tsx}",
+				"components/**/*.{ts,tsx}"
+			],
+			"project": ["app/**/*.{ts,tsx}", "lib/**/*.ts", "config/**/*.{ts,tsx}"],
+			"ignore": [
+				"**/*.test.{ts,tsx}",
+				"**/*.spec.{ts,tsx}",
+				"**/dist/**",
+				"**/.next/**"
+			]
+		},
+		"apps/payload": {
+			"entry": ["src/**/*.{ts,tsx}"],
+			"project": ["src/**/*.{ts,tsx}"],
+			"ignore": [
+				"**/*.test.{ts,tsx}",
+				"**/*.spec.{ts,tsx}",
+				"**/dist/**",
+				"**/build/**"
+			]
+		},
+		"packages/*": {
+			"entry": ["src/index.ts", "src/**/*.ts"],
+			"project": ["src/**/*.ts"],
+			"ignore": [
+				"**/*.test.{ts,tsx}",
+				"**/*.spec.{ts,tsx}",
+				"**/dist/**",
+				"**/build/**"
+			]
+		}
+	},
+	"ignoreDependencies": ["@types/*", "husky", "lint-staged"]
+}

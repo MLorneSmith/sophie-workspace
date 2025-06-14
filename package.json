@@ -41,7 +41,11 @@
 		"payload:migrate:ssl": "PAYLOAD_ENABLE_SSL=true pnpm --filter payload payload migrate",
 		"payload:migrate:production": "PAYLOAD_MIGRATION_MODE=production pnpm --filter payload payload migrate",
 		"prepare": "husky",
-		"commit": "cz"
+		"commit": "cz",
+		"knip": "knip",
+		"knip:production": "knip --production",
+		"knip:workspace": "knip --workspace",
+		"knip:fix": "knip --fix"
 	},
 	"config": {
 		"commitizen": {
@@ -74,6 +78,7 @@
 		"cross-env": "^7.0.3",
 		"cz-conventional-changelog": "^3.3.0",
 		"husky": "^9.1.7",
+		"knip": "^5.61.0",
 		"lint-staged": "^16.1.0",
 		"prettier": "^3.5.3",
 		"tailwind-merge": "^3.3.0",
