@@ -1,6 +1,7 @@
 "use client";
 
 import type React from "react";
+import Image from "next/image";
 import {
 	Card,
 	CardContent,
@@ -33,15 +34,19 @@ const Component: React.FC<ComponentProps> = (props) => {
 		<Card className="my-6 bg-blue-100">
 			<CardHeader>
 				<div className="flex items-center">
-					<img
+					<Image
 						src="/images/doodle.png"
 						alt="Doodle"
+						width={32}
+						height={32}
 						className="w-8 h-auto transform -rotate-45 mr-4"
 					/>
 					<CardTitle className="mb-2">Test Block</CardTitle>
-					<img
+					<Image
 						src="/images/doodle.png"
 						alt="Doodle"
+						width={32}
+						height={32}
 						className="w-8 h-auto transform rotate-45 ml-4"
 					/>
 				</div>

@@ -36,6 +36,9 @@ export function QuestionCard({
 	onAnswer,
 	isLoading,
 }: QuestionCardProps) {
+	// Always call hooks at the top level, even if not used in all branches
+	const [selectedOption, setSelectedOption] = useState<string | null>(null);
+
 	// Render different question types based on the question type
 	if (question.type === "text_field") {
 		return (
@@ -58,7 +61,6 @@ export function QuestionCard({
 	}
 
 	// Default to multiple choice question
-	const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
 	const handleSubmit = () => {
 		if (selectedOption) {

@@ -420,7 +420,7 @@ export function QuizComponent({
 	// Check if answers exist for the current question
 	const hasCurrentAnswers =
 		selectedAnswers &&
-		Object.prototype.hasOwnProperty.call(
+		Object.hasOwn(
 			selectedAnswers,
 			currentQuestionIndex,
 		) &&

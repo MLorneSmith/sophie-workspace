@@ -3,12 +3,13 @@
 import { useQueryClient } from "@tanstack/react-query";
 
 export function DebugProviders() {
-	try {
-		const queryClient = useQueryClient();
-		console.log("QueryClient available:", !!queryClient);
-		return <div>Providers OK</div>;
-	} catch (error) {
-		console.error("QueryClient not available:", error);
+	const queryClient = useQueryClient();
+
+	if (!queryClient) {
+		console.error("QueryClient not available");
 		return <div>Providers Error</div>;
 	}
+
+	console.log("QueryClient available:", !!queryClient);
+	return <div>Providers OK</div>;
 }

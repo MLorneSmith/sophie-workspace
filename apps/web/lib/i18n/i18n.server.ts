@@ -38,7 +38,7 @@ async function createInstance() {
 	const cookieStore = await cookies();
 	const langCookieValue = cookieStore.get(I18N_COOKIE_NAME)?.value;
 
-	let selectedLanguage: string | undefined = undefined;
+	let selectedLanguage: string | undefined ;
 
 	// if the cookie is set, use the language from the cookie
 	if (langCookieValue) {

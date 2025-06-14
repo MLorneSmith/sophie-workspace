@@ -1,6 +1,7 @@
 "use client";
 
 import type React from "react";
+import Image from "next/image";
 import { Button } from "../../../../../packages/ui/src/shadcn/button";
 import {
 	Card,
@@ -50,9 +51,11 @@ const Component: React.FC<ComponentProps> = (props) => {
 			<CardContent className="flex flex-col sm:flex-row justify-end gap-4">
 				<div className="relative">
 					<div className="absolute -left-10 top-1/2 -translate-y-1/2">
-						<img
+						<Image
 							src="/images/doodle.png"
 							alt="Doodle"
+							width={32}
+							height={32}
 							className="w-8 h-auto transform -rotate-90"
 						/>
 					</div>
@@ -65,9 +68,11 @@ const Component: React.FC<ComponentProps> = (props) => {
 						<a href={rightButtonUrl}>{rightButtonLabel}</a>
 					</Button>
 					<div className="absolute -right-10 top-1/2 -translate-y-1/2">
-						<img
+						<Image
 							src="/images/doodle.png"
 							alt="Doodle"
+							width={32}
+							height={32}
 							className="w-8 h-auto transform rotate-90"
 						/>
 					</div>
