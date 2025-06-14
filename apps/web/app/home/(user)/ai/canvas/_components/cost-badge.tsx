@@ -1,9 +1,8 @@
 "use client";
 
-import { Coins } from "lucide-react";
-
 import { Badge, type BadgeProps } from "@kit/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@kit/ui/tooltip";
+import { Coins } from "lucide-react";
 
 import { useCostTracking } from "../_lib/contexts/cost-tracking-context";
 

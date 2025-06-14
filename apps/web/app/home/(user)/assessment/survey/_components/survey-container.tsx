@@ -1,13 +1,14 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
-
-import { useRouter } from "next/navigation";
-
 import { useSupabase } from "@kit/supabase/hooks/use-supabase";
 import { Card } from "@kit/ui/card";
 import { Progress } from "@kit/ui/progress";
-
+import { useRouter } from "next/navigation";
+import { useEffect, useState, useTransition } from "react";
+import type {
+	Survey,
+	SurveyQuestion,
+} from "../../../../../../../apps/payload/payload-types";
 import {
 	completeSurveyAction,
 	saveResponseAction,
@@ -15,11 +16,6 @@ import {
 // Import from the same directory
 import { QuestionCard } from "./question-card";
 import { SurveySummary } from "./survey-summary";
-
-import type {
-	Survey,
-	SurveyQuestion,
-} from "../../../../../../../apps/payload/payload-types";
 
 type SurveyContainerProps = {
 	survey: Survey;

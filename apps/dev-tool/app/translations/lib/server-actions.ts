@@ -1,14 +1,12 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
-
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:url";
 import { openai } from "@ai-sdk/openai";
-import { generateText } from "ai";
-import { z } from "zod";
-
 import { getLogger } from "@kit/shared/logger";
+import { generateText } from "ai";
+import { revalidatePath } from "next/cache";
+import { z } from "zod";
 
 const Schema = z.object({
 	locale: z.string().min(1),

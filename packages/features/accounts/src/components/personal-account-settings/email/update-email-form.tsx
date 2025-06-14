@@ -1,13 +1,6 @@
 "use client";
 
-import type { User } from "@supabase/supabase-js";
-
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CheckIcon } from "@radix-ui/react-icons";
-import { useForm } from "react-hook-form";
-import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
-
 import { useUpdateUser } from "@kit/supabase/hooks/use-update-user-mutation";
 import { Alert, AlertDescription, AlertTitle } from "@kit/ui/alert";
 import { Button } from "@kit/ui/button";
@@ -22,6 +15,11 @@ import {
 import { If } from "@kit/ui/if";
 import { Input } from "@kit/ui/input";
 import { Trans } from "@kit/ui/trans";
+import { CheckIcon } from "@radix-ui/react-icons";
+import type { User } from "@supabase/supabase-js";
+import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 
 import { UpdateEmailSchema } from "../../../schema/update-email.schema";
 

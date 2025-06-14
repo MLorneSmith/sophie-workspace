@@ -1,15 +1,13 @@
 "use client";
 
-import { useMemo } from "react";
-
-import dynamic from "next/dynamic";
-import Link from "next/link";
-
-import { UserCheck } from "lucide-react";
-
 import { Alert, AlertDescription } from "@kit/ui/alert";
 import { If } from "@kit/ui/if";
 import { Trans } from "@kit/ui/trans";
+
+import { UserCheck } from "lucide-react";
+import dynamic from "next/dynamic";
+import Link from "next/link";
+import { useMemo } from "react";
 
 import { useLastAuthMethod } from "../hooks/use-last-auth-method";
 

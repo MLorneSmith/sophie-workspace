@@ -1,16 +1,14 @@
 "use client";
 
+import { useUser } from "@kit/supabase/hooks/use-user";
 import {
-	type ReactNode,
 	createContext,
+	type ReactNode,
 	useContext,
 	useEffect,
 	useState,
 } from "react";
-
 import { v4 as uuidv4 } from "uuid";
-
-import { useUser } from "@kit/supabase/hooks/use-user";
 
 // Define the context type
 type CostTrackingContextType = {

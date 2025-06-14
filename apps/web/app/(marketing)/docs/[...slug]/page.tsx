@@ -1,11 +1,9 @@
-import { cache } from "react";
-
-import { notFound } from "next/navigation";
-
 import { ContentRenderer, createCmsClient } from "@kit/cms";
 import { If } from "@kit/ui/if";
 import { Separator } from "@kit/ui/separator";
 import { cn } from "@kit/ui/utils";
+import { notFound } from "next/navigation";
+import { cache } from "react";
 
 import { withI18n } from "~/lib/i18n/with-i18n";
 

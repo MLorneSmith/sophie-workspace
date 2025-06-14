@@ -1,14 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { Dialog, DialogContent, DialogTitle } from "@kit/ui/dialog";
 
 import {
 	EmbeddedCheckout,
 	EmbeddedCheckoutProvider,
 } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
-
-import { Dialog, DialogContent, DialogTitle } from "@kit/ui/dialog";
+import { useState } from "react";
 
 import { StripeClientEnvSchema } from "../schema/stripe-client-env.schema";
 

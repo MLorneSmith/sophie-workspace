@@ -1,14 +1,13 @@
 "use client";
 
-import { PlusSquare } from "lucide-react";
-import { useTranslation } from "react-i18next";
-import type { z } from "zod";
-
 import type { LineItemSchema } from "@kit/billing";
 import { formatCurrency } from "@kit/shared/utils";
 import { If } from "@kit/ui/if";
 import { Trans } from "@kit/ui/trans";
 import { cn } from "@kit/ui/utils";
+import { PlusSquare } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import type { z } from "zod";
 
 const className = "flex text-secondary-foreground items-center text-sm";
 
@@ -242,7 +241,10 @@ function Tiers({
 		const isIncluded = tier.cost === 0;
 
 		return (
-			<span className={"text-secondary-foreground text-xs"} key={`tier-${tier.cost}-${tier.upTo}`}>
+			<span
+				className={"text-secondary-foreground text-xs"}
+				key={`tier-${tier.cost}-${tier.upTo}`}
+			>
 				<span>-</span>{" "}
 				<If condition={isLastTier}>
 					<span className={"font-bold"}>

@@ -1,5 +1,8 @@
 "use client";
 
+import { Button } from "@kit/ui/button";
+import { Separator } from "@kit/ui/separator";
+import { cn } from "@kit/ui/utils";
 import type { Editor } from "@tiptap/react";
 import {
 	Bold,
@@ -11,10 +14,6 @@ import {
 	Underline,
 	Undo,
 } from "lucide-react";
-
-import { Button } from "@kit/ui/button";
-import { Separator } from "@kit/ui/separator";
-import { cn } from "@kit/ui/utils";
 
 interface ToolbarProps {
 	editor: Editor | null;

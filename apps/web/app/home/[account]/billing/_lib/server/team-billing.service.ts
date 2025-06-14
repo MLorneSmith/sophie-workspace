@@ -1,15 +1,13 @@
 import "server-only";
 
-import type { SupabaseClient } from "@supabase/supabase-js";
-
-import type { z } from "zod";
-
 import type { LineItemSchema } from "@kit/billing";
 import { getBillingGatewayProvider } from "@kit/billing-gateway";
 import { getLogger } from "@kit/shared/logger";
 import { requireUser } from "@kit/supabase/require-user";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
 import { createTeamAccountsApi } from "@kit/team-accounts/api";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { z } from "zod";
 
 import appConfig from "~/config/app.config";
 import billingConfig from "~/config/billing.config";

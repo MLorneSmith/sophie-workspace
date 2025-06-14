@@ -1,19 +1,5 @@
 "use client";
 
-import { useMemo } from "react";
-
-import Link from "next/link";
-
-import type { User } from "@supabase/supabase-js";
-
-import {
-	ChevronsUpDown,
-	Home,
-	LogOut,
-	MessageCircleQuestion,
-	Shield,
-} from "lucide-react";
-
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -26,6 +12,16 @@ import { SubMenuModeToggle } from "@kit/ui/mode-toggle";
 import { ProfileAvatar } from "@kit/ui/profile-avatar";
 import { Trans } from "@kit/ui/trans";
 import { cn } from "@kit/ui/utils";
+import type { User } from "@supabase/supabase-js";
+import {
+	ChevronsUpDown,
+	Home,
+	LogOut,
+	MessageCircleQuestion,
+	Shield,
+} from "lucide-react";
+import Link from "next/link";
+import { useMemo } from "react";
 
 import { usePersonalAccountData } from "../hooks/use-personal-account-data";
 

@@ -3,9 +3,9 @@ import {
 	Head,
 	Html,
 	Preview,
+	render,
 	Tailwind,
 	Text,
-	render,
 } from "@react-email/components";
 
 import { BodyStyle } from "../components/body-style";

@@ -1,16 +1,14 @@
 "use server";
 
-import { z } from "zod";
-
 import { enhanceAction } from "@kit/next/actions";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
-import type { Database } from "~/lib/database.types";
-
+import { z } from "zod";
 import { generateCertificate } from "~/lib/certificates/certificate-service";
 import {
 	REQUIRED_LESSON_NUMBERS,
 	TOTAL_REQUIRED_LESSONS,
 } from "~/lib/course/course-config";
+import type { Database } from "~/lib/database.types";
 
 // Start or update course progress
 const UpdateCourseProgressSchema = z.object({

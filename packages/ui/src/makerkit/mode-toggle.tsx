@@ -1,9 +1,8 @@
 "use client";
 
-import { useMemo } from "react";
-
 import { Computer, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
+import { useMemo } from "react";
 
 import { cn } from "../lib/utils";
 import { Button } from "../shadcn/button";

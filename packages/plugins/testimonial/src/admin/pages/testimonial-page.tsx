@@ -1,7 +1,3 @@
-import Link from "next/link";
-
-import { ExternalLinkIcon } from "lucide-react";
-
 import { getSupabaseServerAdminClient } from "@kit/supabase/server-admin-client";
 import { Avatar, AvatarFallback, AvatarImage } from "@kit/ui/avatar";
 import { Badge } from "@kit/ui/badge";
@@ -9,6 +5,8 @@ import { Button } from "@kit/ui/button";
 import { Heading } from "@kit/ui/heading";
 import { If } from "@kit/ui/if";
 import { PageBody } from "@kit/ui/page";
+import { ExternalLinkIcon } from "lucide-react";
+import Link from "next/link";
 
 import { createTestimonialService } from "../../server/testimonial.service";
 import { DeleteTestimonialDialog } from "../components/delete-testimonial-dialog";

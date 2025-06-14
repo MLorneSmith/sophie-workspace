@@ -1,8 +1,7 @@
 "use client";
 
-import Image from "next/image";
-
 import { cn } from "@kit/ui/utils";
+import Image from "next/image";
 
 import {
 	getPostPlaceholderImage,

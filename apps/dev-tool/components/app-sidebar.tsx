@@ -1,15 +1,5 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-
-import {
-	BoltIcon,
-	LanguagesIcon,
-	LayoutDashboardIcon,
-	MailIcon,
-} from "lucide-react";
-
 import {
 	Sidebar,
 	SidebarGroup,
@@ -20,6 +10,15 @@ import {
 	SidebarMenuItem,
 } from "@kit/ui/shadcn-sidebar";
 import { isRouteActive } from "@kit/ui/utils";
+
+import {
+	BoltIcon,
+	LanguagesIcon,
+	LayoutDashboardIcon,
+	MailIcon,
+} from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const routes = [
 	{

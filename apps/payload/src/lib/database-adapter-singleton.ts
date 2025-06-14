@@ -1,5 +1,6 @@
-import { postgresAdapter } from "@payloadcms/db-postgres";
 import type { PostgresAdapterArgs } from "@payloadcms/db-postgres";
+import { postgresAdapter } from "@payloadcms/db-postgres";
+
 // Type for log data - allows objects, arrays, primitives, but excludes functions
 type LogData =
 	| Record<string, unknown>

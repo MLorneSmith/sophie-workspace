@@ -1,9 +1,8 @@
 "use client";
 
+import { ContainerScroll as BaseContainerScroll } from "@kit/ui/container-scroll-animation";
 import type { ReactNode } from "react";
 import { Suspense } from "react";
-
-import { ContainerScroll as BaseContainerScroll } from "@kit/ui/container-scroll-animation";
 
 interface ContainerScrollProps {
 	children: ReactNode;

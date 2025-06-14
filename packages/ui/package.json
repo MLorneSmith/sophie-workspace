@@ -67,7 +67,9 @@
 	},
 	"prettier": "@kit/prettier-config",
 	"imports": {
-		"#utils": ["./src/lib/utils/index.ts"]
+		"#utils": [
+			"./src/lib/utils/index.ts"
+		]
 	},
 	"exports": {
 		"./accordion": "./src/shadcn/accordion.tsx",
@@ -144,7 +146,9 @@
 	},
 	"typesVersions": {
 		"*": {
-			"*": ["src/*"]
+			"*": [
+				"src/*"
+			]
 		}
 	}
 }

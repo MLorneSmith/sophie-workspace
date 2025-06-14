@@ -1,9 +1,8 @@
 import "server-only";
 
-import type { SupabaseClient } from "@supabase/supabase-js";
-
 import { getLogger } from "@kit/shared/logger";
 import type { Database, Json } from "@kit/supabase/database";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 import type {
 	CreateNonceParams,

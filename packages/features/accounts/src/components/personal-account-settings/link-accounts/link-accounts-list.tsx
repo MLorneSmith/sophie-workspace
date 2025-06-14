@@ -1,9 +1,5 @@
 "use client";
 
-import type { Provider, UserIdentity } from "@supabase/supabase-js";
-
-import { CheckCircle } from "lucide-react";
-
 import { useLinkIdentityWithProvider } from "@kit/supabase/hooks/use-link-identity-with-provider";
 import { useUnlinkUserIdentity } from "@kit/supabase/hooks/use-unlink-user-identity";
 import { useUserIdentities } from "@kit/supabase/hooks/use-user-identities";
@@ -24,6 +20,8 @@ import { Separator } from "@kit/ui/separator";
 import { toast } from "@kit/ui/sonner";
 import { Spinner } from "@kit/ui/spinner";
 import { Trans } from "@kit/ui/trans";
+import type { Provider, UserIdentity } from "@supabase/supabase-js";
+import { CheckCircle } from "lucide-react";
 import { OauthProviderLogoImage } from "./oauth-provider-logo-image";
 
 export function LinkAccountsList(props: { providers: Provider[] }) {

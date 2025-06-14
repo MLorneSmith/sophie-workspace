@@ -1,8 +1,7 @@
-import type Stripe from "stripe";
-
 import type { BillingWebhookHandlerService, PlanTypeMap } from "@kit/billing";
 import { getLogger } from "@kit/shared/logger";
 import type { Database, Enums } from "@kit/supabase/database";
+import type Stripe from "stripe";
 
 import { StripeServerEnvSchema } from "../schema/stripe-server-env.schema";
 import { createStripeClient } from "./stripe-sdk";

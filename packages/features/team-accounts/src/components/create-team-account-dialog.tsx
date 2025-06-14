@@ -1,13 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
-
-import { isRedirectError } from "next/dist/client/components/redirect-error";
-
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import type { z } from "zod";
-
 import { Alert, AlertDescription, AlertTitle } from "@kit/ui/alert";
 import { Button } from "@kit/ui/button";
 import {
@@ -29,6 +22,10 @@ import {
 import { If } from "@kit/ui/if";
 import { Input } from "@kit/ui/input";
 import { Trans } from "@kit/ui/trans";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
+import { useState, useTransition } from "react";
+import { useForm } from "react-hook-form";
+import type { z } from "zod";
 
 import { CreateTeamSchema } from "../schema/create-team.schema";
 import { createTeamAccountAction } from "../server/actions/create-team-account-server-actions";

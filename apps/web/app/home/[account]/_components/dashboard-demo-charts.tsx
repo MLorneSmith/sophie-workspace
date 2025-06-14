@@ -1,19 +1,5 @@
 "use client";
 
-import { useMemo, useState } from "react";
-
-import { ArrowDown, ArrowUp, Menu, TrendingUp } from "lucide-react";
-import {
-	Area,
-	AreaChart,
-	Bar,
-	BarChart,
-	CartesianGrid,
-	Line,
-	LineChart,
-	XAxis,
-} from "recharts";
-
 import { Badge } from "@kit/ui/badge";
 import {
 	Card,
@@ -37,6 +23,18 @@ import {
 	TableHeader,
 	TableRow,
 } from "@kit/ui/table";
+import { ArrowDown, ArrowUp, Menu, TrendingUp } from "lucide-react";
+import { useMemo, useState } from "react";
+import {
+	Area,
+	AreaChart,
+	Bar,
+	BarChart,
+	CartesianGrid,
+	Line,
+	LineChart,
+	XAxis,
+} from "recharts";
 
 export default function DashboardDemo() {
 	const mrr = useMemo(() => generateDemoData(), []);

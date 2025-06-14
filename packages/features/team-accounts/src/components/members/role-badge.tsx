@@ -1,7 +1,6 @@
-import { cva } from "class-variance-authority";
-
 import { Badge } from "@kit/ui/badge";
 import { Trans } from "@kit/ui/trans";
+import { cva } from "class-variance-authority";
 
 type Role = string;
 

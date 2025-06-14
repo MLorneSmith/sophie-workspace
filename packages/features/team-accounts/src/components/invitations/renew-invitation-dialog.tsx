@@ -1,5 +1,3 @@
-import { useState, useTransition } from "react";
-
 import { Alert, AlertDescription, AlertTitle } from "@kit/ui/alert";
 import {
 	AlertDialog,
@@ -13,6 +11,7 @@ import {
 import { Button } from "@kit/ui/button";
 import { If } from "@kit/ui/if";
 import { Trans } from "@kit/ui/trans";
+import { useState, useTransition } from "react";
 
 import { renewInvitationAction } from "../../server/actions/team-invitations-server-actions";
 

@@ -1,6 +1,5 @@
-import Image from "next/image";
-
 import { AtSign, Phone } from "lucide-react";
+import Image from "next/image";
 
 const DEFAULT_IMAGE_SIZE = 18;
 

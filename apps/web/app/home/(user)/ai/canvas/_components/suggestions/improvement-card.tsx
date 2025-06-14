@@ -1,12 +1,10 @@
 "use client";
 
-import { useCallback } from "react";
-
-import { Check, X } from "lucide-react";
-
 import type { BaseImprovement } from "@kit/ai-gateway/src/prompts/types/improvements";
 import { Button } from "@kit/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@kit/ui/card";
+import { Check, X } from "lucide-react";
+import { useCallback } from "react";
 
 export interface ImprovementCardProps {
 	improvement: BaseImprovement;

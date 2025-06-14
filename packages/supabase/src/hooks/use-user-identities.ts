@@ -1,8 +1,6 @@
-import { useMemo } from "react";
-
 import type { Provider } from "@supabase/supabase-js";
-
 import { useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
 
 import { useSupabase } from "./use-supabase";
 

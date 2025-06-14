@@ -1,12 +1,10 @@
 import "server-only";
 
-import type { SupabaseClient } from "@supabase/supabase-js";
-
 import type { PlanTypeMap } from "@kit/billing";
 import type { Database, Enums } from "@kit/supabase/database";
-
-import { createBillingEventHandlerFactoryService } from "./billing-event-handler-factory.service";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { createBillingEventHandlerService } from "./billing-event-handler.service";
+import { createBillingEventHandlerFactoryService } from "./billing-event-handler-factory.service";
 
 // a function that returns a Supabase client
 type ClientProvider = () => SupabaseClient<Database>;

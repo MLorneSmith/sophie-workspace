@@ -1,11 +1,9 @@
 "use client";
 
+import { UploadCloud, X } from "lucide-react";
+import Image from "next/image";
 import type { FormEvent, MouseEventHandler } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
-
-import Image from "next/image";
-
-import { UploadCloud, X } from "lucide-react";
 
 import { cn } from "../lib/utils";
 import { Button } from "../shadcn/button";

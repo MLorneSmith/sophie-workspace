@@ -1,7 +1,6 @@
-import { NextResponse } from "next/server";
-
 import { getCourseLessons } from "@kit/cms/payload";
 import { enhanceRouteHandler } from "@kit/next/routes";
+import { NextResponse } from "next/server";
 
 export const GET = enhanceRouteHandler(
 	async ({ params, user: _user }) => {

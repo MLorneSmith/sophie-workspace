@@ -1,11 +1,10 @@
 "use client";
 
 import { useDroppable } from "@dnd-kit/core";
-import { SortableContext, rectSortingStrategy } from "@dnd-kit/sortable";
-import { Loader2Icon } from "lucide-react";
-
+import { rectSortingStrategy, SortableContext } from "@dnd-kit/sortable";
 import { Trans } from "@kit/ui/trans";
 import { cn } from "@kit/ui/utils";
+import { Loader2Icon } from "lucide-react";
 
 import type { Task } from "../_lib/schema/task.schema";
 import { TaskCard } from "./task-card";

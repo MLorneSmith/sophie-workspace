@@ -1,14 +1,6 @@
 "use client";
 
-import Link from "next/link";
-
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CheckIcon, ExclamationTriangleIcon } from "@radix-ui/react-icons";
-import { ArrowRightIcon } from "lucide-react";
-import { useForm } from "react-hook-form";
-import { useTranslation } from "react-i18next";
-import type { z } from "zod";
-
 import { useUpdateUser } from "@kit/supabase/hooks/use-update-user-mutation";
 import { Alert, AlertDescription, AlertTitle } from "@kit/ui/alert";
 import { Button } from "@kit/ui/button";
@@ -23,6 +15,12 @@ import {
 import { Heading } from "@kit/ui/heading";
 import { Input } from "@kit/ui/input";
 import { Trans } from "@kit/ui/trans";
+import { CheckIcon, ExclamationTriangleIcon } from "@radix-ui/react-icons";
+import { ArrowRightIcon } from "lucide-react";
+import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import type { z } from "zod";
 
 import { PasswordResetSchema } from "../schemas/password-reset.schema";
 

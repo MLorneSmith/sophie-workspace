@@ -1,6 +1,5 @@
-import type Stripe from "stripe";
-
 import type { UpsertSubscriptionParams } from "@kit/billing/types";
+import type Stripe from "stripe";
 
 /**
  * @name createStripeSubscriptionPayloadBuilderService

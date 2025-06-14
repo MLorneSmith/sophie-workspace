@@ -1,5 +1,3 @@
-import type { z } from "zod";
-
 import type { BillingProviderSchema } from "@kit/billing";
 import {
 	CancelSubscriptionParamsSchema,
@@ -10,6 +8,7 @@ import {
 	RetrieveCheckoutSessionSchema,
 	UpdateSubscriptionParamsSchema,
 } from "@kit/billing/schema";
+import type { z } from "zod";
 
 import { billingStrategyRegistry } from "./billing-gateway-registry";
 

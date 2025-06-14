@@ -1,8 +1,7 @@
 "use client";
 
-import Image from "next/image";
-
 import { BookOpen, LineChart, Presentation, Sparkles } from "lucide-react";
+import Image from "next/image";
 
 import { cn } from "../lib/utils";
 

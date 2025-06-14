@@ -1,7 +1,6 @@
+import type { CreateBillingCheckoutSchema } from "@kit/billing/schema";
 import type { Stripe } from "stripe";
 import type { z } from "zod";
-
-import type { CreateBillingCheckoutSchema } from "@kit/billing/schema";
 
 /**
  * @description If set to true, users can start a trial without entering their credit card details

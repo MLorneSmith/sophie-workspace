@@ -1,10 +1,5 @@
 "use client";
 
-import { useState, useTransition } from "react";
-
-import dynamic from "next/dynamic";
-import { useParams } from "next/navigation";
-
 import { PlanPicker } from "@kit/billing-gateway/components";
 import { useAppEvents } from "@kit/shared/events";
 import {
@@ -15,6 +10,9 @@ import {
 	CardTitle,
 } from "@kit/ui/card";
 import { Trans } from "@kit/ui/trans";
+import dynamic from "next/dynamic";
+import { useParams } from "next/navigation";
+import { useState, useTransition } from "react";
 
 import billingConfig from "~/config/billing.config";
 

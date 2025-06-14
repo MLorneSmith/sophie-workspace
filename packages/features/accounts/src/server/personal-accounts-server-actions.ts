@@ -1,13 +1,12 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
-
 import { enhanceAction } from "@kit/next/actions";
 import { createOtpApi } from "@kit/otp";
 import { getLogger } from "@kit/shared/logger";
 import { getSupabaseServerAdminClient } from "@kit/supabase/server-admin-client";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 import { DeletePersonalAccountSchema } from "../schema/delete-personal-account.schema";
 import { createDeletePersonalAccountService } from "./services/delete-personal-account.service";

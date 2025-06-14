@@ -1,9 +1,4 @@
-import { useState, useTransition } from "react";
-
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { useTranslation } from "react-i18next";
-
 import { Alert, AlertDescription, AlertTitle } from "@kit/ui/alert";
 import { Button } from "@kit/ui/button";
 import {
@@ -24,6 +19,9 @@ import {
 } from "@kit/ui/form";
 import { If } from "@kit/ui/if";
 import { Trans } from "@kit/ui/trans";
+import { useState, useTransition } from "react";
+import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 
 import { RoleSchema } from "../../schema/update-member-role.schema";
 import { updateInvitationAction } from "../../server/actions/team-invitations-server-actions";

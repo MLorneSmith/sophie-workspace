@@ -1,11 +1,9 @@
 import "server-only";
 
-import { cache } from "react";
-
-import { redirect } from "next/navigation";
-
 import { requireUser } from "@kit/supabase/require-user";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
+import { redirect } from "next/navigation";
+import { cache } from "react";
 
 /**
  * @name requireUserInServerComponent

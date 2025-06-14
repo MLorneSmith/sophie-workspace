@@ -1,13 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
-
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Plus, X } from "lucide-react";
-import { useFieldArray, useForm } from "react-hook-form";
-import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
-
 import { Button } from "@kit/ui/button";
 import {
 	Dialog,
@@ -34,6 +27,11 @@ import {
 	TooltipTrigger,
 } from "@kit/ui/tooltip";
 import { Trans } from "@kit/ui/trans";
+import { Plus, X } from "lucide-react";
+import { useState, useTransition } from "react";
+import { useFieldArray, useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 
 import { InviteMembersSchema } from "../../schema/invite-members.schema";
 import { createInvitationsAction } from "../../server/actions/team-invitations-server-actions";

@@ -1,16 +1,14 @@
 "use client";
 
-import { useCallback } from "react";
-
-import type {
-	Provider,
-	SignInWithOAuthCredentials,
-} from "@supabase/supabase-js";
-
 import { useSignInWithProvider } from "@kit/supabase/hooks/use-sign-in-with-provider";
 import { If } from "@kit/ui/if";
 import { LoadingOverlay } from "@kit/ui/loading-overlay";
 import { Trans } from "@kit/ui/trans";
+import type {
+	Provider,
+	SignInWithOAuthCredentials,
+} from "@supabase/supabase-js";
+import { useCallback } from "react";
 
 import { AuthErrorAlert } from "./auth-error-alert";
 import { AuthProviderButton } from "./auth-provider-button";

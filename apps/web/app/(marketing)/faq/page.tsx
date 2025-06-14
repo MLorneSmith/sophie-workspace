@@ -1,9 +1,7 @@
-import Link from "next/link";
-
-import { ArrowRight, ChevronDown } from "lucide-react";
-
 import { Button } from "@kit/ui/button";
 import { Trans } from "@kit/ui/trans";
+import { ArrowRight, ChevronDown } from "lucide-react";
+import Link from "next/link";
 
 import { SitePageHeader } from "~/(marketing)/_components/site-page-header";
 import { createI18nServerInstance } from "~/lib/i18n/i18n.server";

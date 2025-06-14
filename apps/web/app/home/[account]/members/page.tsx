@@ -1,5 +1,3 @@
-import { PlusCircle } from "lucide-react";
-
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
 import {
 	AccountInvitationsTable,
@@ -18,6 +16,7 @@ import {
 import { If } from "@kit/ui/if";
 import { PageBody } from "@kit/ui/page";
 import { Trans } from "@kit/ui/trans";
+import { PlusCircle } from "lucide-react";
 
 import { createI18nServerInstance } from "~/lib/i18n/i18n.server";
 import { withI18n } from "~/lib/i18n/with-i18n";

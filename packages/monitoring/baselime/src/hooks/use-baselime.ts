@@ -1,8 +1,6 @@
-import { useMemo } from "react";
-
 import { useBaselimeRum } from "@baselime/react-rum";
-
 import type { MonitoringService } from "@kit/monitoring-core";
+import { useMemo } from "react";
 
 /**
  * @name useBaselime

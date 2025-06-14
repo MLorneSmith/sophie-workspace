@@ -1,24 +1,21 @@
 "use client";
 
-import { useState } from "react";
-
-import Link from "next/link";
-
-import { ArrowRight, CheckCircle } from "lucide-react";
-import { useTranslation } from "react-i18next";
-import type { z } from "zod";
-
 import {
 	type BillingConfig,
-	type LineItemSchema,
 	getPlanIntervals,
 	getPrimaryLineItem,
+	type LineItemSchema,
 } from "@kit/billing";
 import { Badge } from "@kit/ui/badge";
 import { Button } from "@kit/ui/button";
 import { If } from "@kit/ui/if";
 import { Trans } from "@kit/ui/trans";
 import { cn } from "@kit/ui/utils";
+import { ArrowRight, CheckCircle } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import type { z } from "zod";
 
 import { LineItemDetails } from "./line-item-details";
 import { PlanCostDisplay } from "./plan-cost-display";

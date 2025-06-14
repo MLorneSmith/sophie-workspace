@@ -1,14 +1,9 @@
-import Link from "next/link";
-
 import { Checkbox } from "@kit/ui/checkbox";
 import { FormControl, FormField, FormItem, FormMessage } from "@kit/ui/form";
 import { Trans } from "@kit/ui/trans";
+import Link from "next/link";
 
-export function TermsAndConditionsFormField(
-	props: {
-		name?: string;
-	} = {},
-) {
+export function TermsAndConditionsFormField(props: { name?: string } = {}) {
 	return (
 		<FormField
 			name={props.name ?? "termsAccepted"}

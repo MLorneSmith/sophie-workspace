@@ -1,9 +1,5 @@
 "use client";
 
-import { useState } from "react";
-
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
-
 import { Button } from "@kit/ui/button";
 import {
 	Card,
@@ -25,6 +21,8 @@ import {
 	SelectValue,
 } from "@kit/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@kit/ui/tabs";
+import { useState } from "react";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import type { UsageStats } from "../_lib/types";
 
 interface UsageDashboardProps {

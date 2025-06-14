@@ -34,12 +34,11 @@
  * }
  * ```
  */
-import type { SupabaseClient } from "@supabase/supabase-js";
 
 import type { Database } from "@kit/supabase/database";
-
-import { createOtpEmailService } from "../server/otp-email.service";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { createOtpService } from "../server/otp.service";
+import { createOtpEmailService } from "../server/otp-email.service";
 import type {
 	CreateNonceParams,
 	GetNonceStatusParams,

@@ -1,29 +1,5 @@
 "use client";
 
-/**
- * UI Components Showcase Page
- *
- * This page serves as a comprehensive showcase of all UI components available in the SaaS kit.
- * It's organized into tabs for different component categories to make it easier to browse and test.
- *
- * Purpose:
- * - Provides a visual reference for all available UI components
- * - Allows developers to see how components look with different props and variants
- * - Serves as documentation for how to use each component
- * - Makes it easier to test and tweak the design system
- *
- * Structure:
- * - Components: Basic UI components like buttons, cards, forms, etc.
- * - Marketing: Components used for marketing pages like hero sections, feature showcases
- * - Navigation: Header, footer, and navigation components
- * - Colors: Color palette showcase
- * - Typography: Text styles and headings
- */
-import { useEffect, useState } from "react";
-
-import Link from "next/link";
-
-import { ArrowRightIcon } from "lucide-react";
 
 // UI Components
 import {
@@ -95,6 +71,28 @@ import { Switch } from "@kit/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@kit/ui/tabs";
 import { Textarea } from "@kit/ui/textarea";
 import { Trans } from "@kit/ui/trans";
+import { ArrowRightIcon } from "lucide-react";
+import Link from "next/link";
+/**
+ * UI Components Showcase Page
+ *
+ * This page serves as a comprehensive showcase of all UI components available in the SaaS kit.
+ * It's organized into tabs for different component categories to make it easier to browse and test.
+ *
+ * Purpose:
+ * - Provides a visual reference for all available UI components
+ * - Allows developers to see how components look with different props and variants
+ * - Serves as documentation for how to use each component
+ * - Makes it easier to test and tweak the design system
+ *
+ * Structure:
+ * - Components: Basic UI components like buttons, cards, forms, etc.
+ * - Marketing: Components used for marketing pages like hero sections, feature showcases
+ * - Navigation: Header, footer, and navigation components
+ * - Colors: Color palette showcase
+ * - Typography: Text styles and headings
+ */
+import { useEffect, useState } from "react";
 
 // App Components
 import { AppLogo } from "~/components/app-logo";

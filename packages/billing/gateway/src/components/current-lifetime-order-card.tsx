@@ -1,5 +1,3 @@
-import { BadgeCheck } from "lucide-react";
-
 import {
 	type BillingConfig,
 	getProductPlanPairByVariantId,
@@ -13,6 +11,7 @@ import {
 	CardTitle,
 } from "@kit/ui/card";
 import { Trans } from "@kit/ui/trans";
+import { BadgeCheck } from "lucide-react";
 
 import { CurrentPlanBadge } from "./current-plan-badge";
 import { LineItemDetails } from "./line-item-details";

@@ -1,10 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
-
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-
 import { Alert, AlertDescription, AlertTitle } from "@kit/ui/alert";
 import { Button } from "@kit/ui/button";
 import {
@@ -18,6 +14,8 @@ import {
 import { Input } from "@kit/ui/input";
 import { Textarea } from "@kit/ui/textarea";
 import { Trans } from "@kit/ui/trans";
+import { useState, useTransition } from "react";
+import { useForm } from "react-hook-form";
 
 import { ContactEmailSchema } from "~/(marketing)/contact/_lib/contact-email.schema";
 import { sendContactEmail } from "~/(marketing)/contact/_lib/server/server-actions";

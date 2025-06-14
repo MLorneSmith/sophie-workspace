@@ -1,6 +1,6 @@
 import {
-	TemplateTagProcessor,
 	containsTemplateTags,
+	TemplateTagProcessor,
 } from "./template-tag-processor";
 
 // Enable detailed logging in development environment

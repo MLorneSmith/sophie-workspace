@@ -1,14 +1,7 @@
 "use client";
 
-import {
-	forwardRef,
-	useCallback,
-	useEffect,
-	useImperativeHandle,
-	useMemo,
-	useRef,
-} from "react";
-
+import type { BaseImprovement } from "@kit/ai-gateway/src/prompts/types/improvements";
+import { useSupabase } from "@kit/supabase/hooks/use-supabase";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Bold from "@tiptap/extension-bold";
 import BulletList from "@tiptap/extension-bullet-list";
@@ -21,9 +14,14 @@ import Underline from "@tiptap/extension-underline";
 import { type Editor, EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import debounce from "lodash/debounce";
-
-import type { BaseImprovement } from "@kit/ai-gateway/src/prompts/types/improvements";
-import { useSupabase } from "@kit/supabase/hooks/use-supabase";
+import {
+	forwardRef,
+	useCallback,
+	useEffect,
+	useImperativeHandle,
+	useMemo,
+	useRef,
+} from "react";
 
 import { useSaveContext } from "../../../_lib/contexts/save-context";
 import { normalizeEditorContent } from "../../../_lib/utils/normalize-editor-content";

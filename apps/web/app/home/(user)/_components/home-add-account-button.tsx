@@ -1,10 +1,9 @@
 "use client";
 
-import { useState } from "react";
-
 import { CreateTeamAccountDialog } from "@kit/team-accounts/components";
 import { Button } from "@kit/ui/button";
 import { Trans } from "@kit/ui/trans";
+import { useState } from "react";
 
 export function HomeAddAccountButton(props: { className?: string }) {
 	const [isAddingAccount, setIsAddingAccount] = useState(false);

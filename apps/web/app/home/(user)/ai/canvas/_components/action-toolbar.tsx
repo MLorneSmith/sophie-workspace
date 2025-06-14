@@ -1,11 +1,5 @@
 "use client";
 
-import { useCallback, useState } from "react";
-
-import { useSearchParams } from "next/navigation";
-
-import { FileText, LayoutTemplate, Lightbulb, RotateCcw } from "lucide-react";
-
 import { useUserWorkspace } from "@kit/accounts/hooks/use-user-workspace";
 import type {
 	BaseImprovement,
@@ -14,6 +8,9 @@ import type {
 import type { SimplifiedContent } from "@kit/ai-gateway/src/utils/parse-simplified";
 import { Button } from "@kit/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@kit/ui/tooltip";
+import { FileText, LayoutTemplate, Lightbulb, RotateCcw } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { useCallback, useState } from "react";
 
 import { generateIdeasAction } from "../_actions/generate-ideas";
 import { simplifyTextAction } from "../_actions/simplify-text";

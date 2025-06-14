@@ -4,9 +4,9 @@ import type React from "react";
 import { createContext, useContext, useEffect, useState } from "react";
 
 import {
+	getPath,
 	type PresentationPathType,
 	type QuestionField,
-	getPath,
 } from "../_config/formContent";
 
 export interface FormData {

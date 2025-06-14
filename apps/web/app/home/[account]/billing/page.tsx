@@ -1,5 +1,3 @@
-import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
-
 import {
 	BillingPortalCard,
 	CurrentLifetimeOrderCard,
@@ -11,6 +9,7 @@ import { If } from "@kit/ui/if";
 import { PageBody } from "@kit/ui/page";
 import { Trans } from "@kit/ui/trans";
 import { cn } from "@kit/ui/utils";
+import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 
 import billingConfig from "~/config/billing.config";
 import { createI18nServerInstance } from "~/lib/i18n/i18n.server";

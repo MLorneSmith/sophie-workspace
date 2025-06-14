@@ -1,14 +1,6 @@
 "use client";
 
-import { useTransition } from "react";
-
-import { isRedirectError } from "next/dist/client/components/redirect-error";
-
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
-
 import { Button } from "@kit/ui/button";
 import {
 	Form,
@@ -20,6 +12,11 @@ import {
 } from "@kit/ui/form";
 import { Input } from "@kit/ui/input";
 import { Trans } from "@kit/ui/trans";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
+import { useTransition } from "react";
+import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 
 import { TeamNameFormSchema } from "../../schema/update-team-name.schema";
 import { updateTeamAccountName } from "../../server/actions/team-details-server-actions";

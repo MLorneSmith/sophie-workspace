@@ -1,7 +1,7 @@
 "use client";
 
-import type React from "react";
 import Image from "next/image";
+import type React from "react";
 import { Button } from "../../../../../packages/ui/src/shadcn/button";
 import {
 	Card,
@@ -10,6 +10,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "../../../../../packages/ui/src/shadcn/card";
+
 // Define the type for the component props
 type CallToActionData = {
 	headline?: string;

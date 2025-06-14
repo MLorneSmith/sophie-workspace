@@ -1,8 +1,7 @@
 "use client";
 
+import { getLogger, type Logger } from "@kit/shared/logger";
 import { Component, type ReactNode } from "react";
-
-import { type Logger, getLogger } from "@kit/shared/logger";
 
 interface Props {
 	children: ReactNode;

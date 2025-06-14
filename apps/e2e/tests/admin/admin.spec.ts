@@ -1,4 +1,4 @@
-import { type Page, expect, selectors, test } from "@playwright/test";
+import { expect, type Page, selectors, test } from "@playwright/test";
 
 import { AuthPageObject } from "../authentication/auth.po";
 import { TeamAccountsPageObject } from "../team-accounts/team-accounts.po";

@@ -1,7 +1,5 @@
 "use client";
 
-import { CheckCircle, PauseIcon, XCircle } from "lucide-react";
-
 import type { Tables } from "@kit/supabase/database";
 import {
 	Select,
@@ -10,6 +8,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@kit/ui/select";
+import { CheckCircle, PauseIcon, XCircle } from "lucide-react";
 
 import { updateTestimonialStatusAction } from "../server/server-actions";
 

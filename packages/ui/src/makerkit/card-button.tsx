@@ -1,7 +1,6 @@
-import type * as React from "react";
-
 import { Slot, Slottable } from "@radix-ui/react-slot";
 import { ChevronRight } from "lucide-react";
+import type * as React from "react";
 
 import { cn } from "../lib/utils";
 

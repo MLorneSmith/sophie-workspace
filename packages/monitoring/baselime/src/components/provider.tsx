@@ -1,8 +1,6 @@
-import { useRef } from "react";
-
 import { BaselimeRum } from "@baselime/react-rum";
-
 import { MonitoringContext } from "@kit/monitoring-core";
+import { useRef } from "react";
 
 import { useBaselime } from "../hooks/use-baselime";
 

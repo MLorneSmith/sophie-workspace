@@ -1,8 +1,7 @@
-import { notFound, redirect } from "next/navigation";
-
 import { getBillingGatewayProvider } from "@kit/billing-gateway";
 import { BillingSessionStatus } from "@kit/billing-gateway/components";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
+import { notFound, redirect } from "next/navigation";
 
 import billingConfig from "~/config/billing.config";
 import { withI18n } from "~/lib/i18n/with-i18n";

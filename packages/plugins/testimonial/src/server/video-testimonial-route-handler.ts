@@ -1,7 +1,6 @@
-import { NextResponse } from "next/server";
-
 import { enhanceRouteHandler } from "@kit/next/routes";
 import { getSupabaseServerAdminClient } from "@kit/supabase/server-admin-client";
+import { NextResponse } from "next/server";
 
 import { VideoTestimonialSchema } from "../schema/create-testimonial.schema";
 import { createTestimonialService } from "./testimonial.service";

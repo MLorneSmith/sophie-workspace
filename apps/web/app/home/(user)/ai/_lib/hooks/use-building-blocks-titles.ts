@@ -1,7 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
-
 import { useUserWorkspace } from "@kit/accounts/hooks/use-user-workspace";
 import { useSupabase } from "@kit/supabase/hooks/use-supabase";
+import { useQuery } from "@tanstack/react-query";
 
 import { getBuildingBlocksTitles } from "../queries/building-blocks-titles";
 

@@ -1,11 +1,6 @@
 "use client";
 
-import { useFormStatus } from "react-dom";
-
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, useWatch } from "react-hook-form";
-import { z } from "zod";
-
 import { ErrorBoundary } from "@kit/monitoring/components";
 import { VerifyOtpForm } from "@kit/otp/components";
 import { useUser } from "@kit/supabase/hooks/use-user";
@@ -33,6 +28,9 @@ import {
 import { Input } from "@kit/ui/input";
 import { LoadingOverlay } from "@kit/ui/loading-overlay";
 import { Trans } from "@kit/ui/trans";
+import { useFormStatus } from "react-dom";
+import { useForm, useWatch } from "react-hook-form";
+import { z } from "zod";
 
 import { deleteTeamAccountAction } from "../../server/actions/delete-team-account-server-actions";
 import { leaveTeamAccountAction } from "../../server/actions/leave-team-account-server-actions";

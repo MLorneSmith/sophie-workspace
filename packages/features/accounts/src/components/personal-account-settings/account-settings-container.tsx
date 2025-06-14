@@ -1,7 +1,5 @@
 "use client";
 
-import { useTranslation } from "react-i18next";
-
 import {
 	Card,
 	CardContent,
@@ -13,6 +11,7 @@ import { If } from "@kit/ui/if";
 import { LanguageSelector } from "@kit/ui/language-selector";
 import { LoadingOverlay } from "@kit/ui/loading-overlay";
 import { Trans } from "@kit/ui/trans";
+import { useTranslation } from "react-i18next";
 
 import { usePersonalAccountData } from "../../hooks/use-personal-account-data";
 import { AccountDangerZone } from "./account-danger-zone";

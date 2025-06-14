@@ -7,8 +7,8 @@
  */
 import type { Config } from "../types";
 import {
-	type CacheNamespaceOptions,
 	addCacheNamespace,
+	type CacheNamespaceOptions,
 } from "../utils/cache-namespace";
 import {
 	type ForceRefreshCondition,

@@ -1,7 +1,5 @@
 "use server";
 
-import { z } from "zod";
-
 import { type ChatMessage, getChatCompletion } from "@kit/ai-gateway";
 import { createQualityOptimizedConfig } from "@kit/ai-gateway/src/configs/templates";
 import { baseInstructions } from "@kit/ai-gateway/src/prompts/partials/base-instructions";
@@ -9,6 +7,7 @@ import { improvementFormat } from "@kit/ai-gateway/src/prompts/partials/improvem
 import { outlineRewriteInstructions } from "@kit/ai-gateway/src/prompts/partials/outline-rewrite";
 import { enhanceAction } from "@kit/next/actions";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
+import { z } from "zod";
 
 import { lexicalToTiptap } from "../_components/editor/tiptap/utils/format-conversion";
 

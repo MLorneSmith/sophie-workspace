@@ -1,9 +1,8 @@
 "use server";
 
-import { z } from "zod";
-
 import { getMailer } from "@kit/mailers";
 import { enhanceAction } from "@kit/next/actions";
+import { z } from "zod";
 
 import { ContactEmailSchema } from "../contact-email.schema";
 

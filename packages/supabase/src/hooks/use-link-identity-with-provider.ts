@@ -5,9 +5,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
 
 export function useLinkIdentityWithProvider(
-	props: {
-		redirectToPath?: string;
-	} = {},
+	props: { redirectToPath?: string } = {},
 ) {
 	const client = useSupabase();
 	const mutationKey = ["auth", "link-identity"];

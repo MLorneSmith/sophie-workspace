@@ -1,24 +1,5 @@
 "use client";
 
-import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
-
-import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-
-import { envVariables } from "@/app/variables/lib/env-variables-model";
-import { updateEnvironmentVariableAction } from "@/app/variables/lib/server-actions";
-import { EnvModeSelector } from "@/components/env-mode-selector";
-import {
-	ChevronsUpDownIcon,
-	Copy,
-	CopyIcon,
-	Eye,
-	EyeOff,
-	EyeOffIcon,
-	InfoIcon,
-} from "lucide-react";
-import { Subject, debounceTime } from "rxjs";
-
 import { Alert, AlertDescription, AlertTitle } from "@kit/ui/alert";
 import { Badge } from "@kit/ui/badge";
 import { Button } from "@kit/ui/button";
@@ -39,6 +20,22 @@ import {
 	TooltipTrigger,
 } from "@kit/ui/tooltip";
 import { cn } from "@kit/ui/utils";
+import {
+	ChevronsUpDownIcon,
+	Copy,
+	CopyIcon,
+	Eye,
+	EyeOff,
+	EyeOffIcon,
+	InfoIcon,
+} from "lucide-react";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
+import { debounceTime, Subject } from "rxjs";
+import { envVariables } from "@/app/variables/lib/env-variables-model";
+import { updateEnvironmentVariableAction } from "@/app/variables/lib/server-actions";
+import { EnvModeSelector } from "@/components/env-mode-selector";
 
 import type { AppEnvState, EnvVariableState } from "../lib/types";
 import { DynamicFormInput } from "./dynamic-form-input";

@@ -1,7 +1,6 @@
 import { z } from "zod";
-
-import { KeystaticStorage } from "./keystatic-storage";
 import { keyStaticConfig } from "./keystatic.config";
+import { KeystaticStorage } from "./keystatic-storage";
 
 /**
  * @name createKeystaticReader

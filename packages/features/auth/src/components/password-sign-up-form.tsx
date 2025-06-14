@@ -1,10 +1,6 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowRight } from "lucide-react";
-import { useForm } from "react-hook-form";
-import { useTranslation } from "react-i18next";
-
 import { Button } from "@kit/ui/button";
 import {
 	Form,
@@ -18,6 +14,9 @@ import {
 import { If } from "@kit/ui/if";
 import { Input } from "@kit/ui/input";
 import { Trans } from "@kit/ui/trans";
+import { ArrowRight } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 
 import { PasswordSignUpSchema } from "../schemas/password-sign-up.schema";
 import { TermsAndConditionsFormField } from "./terms-and-conditions-form-field";

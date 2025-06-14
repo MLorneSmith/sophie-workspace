@@ -1,9 +1,5 @@
 "use client";
 
-import * as React from "react";
-
-import { Check, ChevronsUpDown } from "lucide-react";
-
 import { Button } from "@kit/ui/button";
 import {
 	Command,
@@ -14,6 +10,8 @@ import {
 	CommandList,
 } from "@kit/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@kit/ui/popover";
+import { Check, ChevronsUpDown } from "lucide-react";
+import * as React from "react";
 
 import { cn } from "~/lib/utils";
 

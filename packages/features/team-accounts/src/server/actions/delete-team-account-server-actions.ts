@@ -1,14 +1,12 @@
 "use server";
 
-import { redirect } from "next/navigation";
-
-import type { SupabaseClient } from "@supabase/supabase-js";
-
 import { enhanceAction } from "@kit/next/actions";
 import { createOtpApi } from "@kit/otp";
 import { getLogger } from "@kit/shared/logger";
 import type { Database } from "@kit/supabase/database";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { redirect } from "next/navigation";
 
 import { DeleteTeamAccountSchema } from "../../schema/delete-team-account.schema";
 import { createDeleteTeamAccountService } from "../services/delete-team-account.service";

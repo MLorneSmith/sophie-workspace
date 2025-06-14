@@ -1,18 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-
-import { createPortal } from "react-dom";
-
-import dynamic from "next/dynamic";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useTheme } from "next-themes";
-import { useForm, useWatch } from "react-hook-form";
-import type { z } from "zod";
-
 import { analytics } from "@kit/analytics";
 import { Button } from "@kit/ui/button";
 import { Checkbox } from "@kit/ui/checkbox";
@@ -27,14 +16,22 @@ import {
 } from "@kit/ui/form";
 import { Input } from "@kit/ui/input";
 import {
+	createStepSchema,
 	MultiStepForm,
 	MultiStepFormContextProvider,
 	MultiStepFormHeader,
 	MultiStepFormStep,
-	createStepSchema,
 	useMultiStepFormContext,
 } from "@kit/ui/multi-step-form";
 import { Stepper } from "@kit/ui/stepper";
+import dynamic from "next/dynamic";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
+import { useForm, useWatch } from "react-hook-form";
+import type { z } from "zod";
 
 import { FormSchemaShape } from "../_lib/onboarding-form.schema";
 import { submitOnboardingFormAction } from "../_lib/server/server-actions";

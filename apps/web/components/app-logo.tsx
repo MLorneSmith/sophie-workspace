@@ -1,6 +1,5 @@
-import Link from "next/link";
-
 import { cn } from "@kit/ui/utils";
+import Link from "next/link";
 
 function LogoImage({
 	className,

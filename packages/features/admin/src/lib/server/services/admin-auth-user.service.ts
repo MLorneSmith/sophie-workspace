@@ -1,10 +1,8 @@
 import "server-only";
 
-import type { SupabaseClient } from "@supabase/supabase-js";
-
-import { z } from "zod";
-
 import type { Database } from "@kit/supabase/database";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { z } from "zod";
 
 export function createAdminAuthUserService(
 	client: SupabaseClient<Database>,

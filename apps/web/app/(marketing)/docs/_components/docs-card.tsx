@@ -1,8 +1,7 @@
-import Link from "next/link";
+import { Trans } from "@kit/ui/trans";
 
 import { ChevronRight } from "lucide-react";
-
-import { Trans } from "@kit/ui/trans";
+import Link from "next/link";
 
 export function DocsCard({
 	title,

@@ -1,10 +1,9 @@
 "use server";
 
-import { redirect } from "next/navigation";
-
 import { enhanceAction } from "@kit/next/actions";
 import { getLogger } from "@kit/shared/logger";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
+import { redirect } from "next/navigation";
 
 import { UpdateTeamNameSchema } from "../../schema/update-team-name.schema";
 

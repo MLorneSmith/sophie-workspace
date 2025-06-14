@@ -1,9 +1,7 @@
-import { createPortal } from "react-dom";
-
-import ReactConfetti from "react-confetti";
-
 import { Alert, AlertDescription, AlertTitle } from "@kit/ui/alert";
 import { Trans } from "@kit/ui/trans";
+import ReactConfetti from "react-confetti";
+import { createPortal } from "react-dom";
 
 export function TestimonialSuccessMessage() {
 	return (

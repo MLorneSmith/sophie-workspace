@@ -1,9 +1,8 @@
 "use client";
 
-import { useFormStatus } from "react-dom";
-
 import { Button } from "@kit/ui/button";
 import { Trans } from "@kit/ui/trans";
+import { useFormStatus } from "react-dom";
 
 export function InvitationSubmitButton(props: {
 	accountName: string;

@@ -1,9 +1,6 @@
 "use client";
 
-import { useState } from "react";
-
-import Link from "next/link";
-
+import { Button, buttonVariants } from "@kit/ui/button";
 import {
 	Edit,
 	FileIcon as FilePresentation,
@@ -11,8 +8,8 @@ import {
 	Maximize2,
 	Minimize2,
 } from "lucide-react";
-
-import { Button, buttonVariants } from "@kit/ui/button";
+import Link from "next/link";
+import { useState } from "react";
 
 import { Combobox } from "./combobox";
 import { EditPresentationCombobox } from "./edit-presentation-combobox";

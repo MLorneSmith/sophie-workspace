@@ -1,12 +1,10 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
-
-import { pino } from "pino";
-import { z } from "zod";
-
 import { enhanceAction } from "@kit/next/actions";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
+import { revalidatePath } from "next/cache";
+import { pino } from "pino";
+import { z } from "zod";
 
 import { DEFAULT_TASKS } from "../config/default-tasks";
 import {
@@ -42,7 +40,7 @@ const createTaskAction = enhanceAction(
 
 		try {
 			// Upload image if provided
-			let imageUrl: string | undefined ;
+			let imageUrl: string | undefined;
 			if (image) {
 				const { data: uploadResult, success } = await uploadTaskImageAction({
 					file: image,

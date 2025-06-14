@@ -1,5 +1,6 @@
 "use client";
 
+import { useId } from "react";
 import type React from "react";
 import {
 	Card,
@@ -71,6 +72,7 @@ const getYouTubeVideoData = (value: unknown): YouTubeVideoData => {
  */
 const Field: React.FC<FieldProps> = (props) => {
 	const { path: _path, value, onChange } = props;
+	const showPreviewId = useId();
 
 	// Get type-safe data from the unknown value
 	const data = getYouTubeVideoData(value);
@@ -121,13 +123,13 @@ const Field: React.FC<FieldProps> = (props) => {
 					/>
 					<div className="mt-4 flex items-center space-x-2">
 						<Switch
-							id="show-preview"
+							id={showPreviewId}
 							checked={data.showPreview || false}
 							onCheckedChange={(checked) =>
 								handleChange("showPreview", checked)
 							}
 						/>
-						<Label htmlFor="show-preview">
+						<Label htmlFor={showPreviewId}>
 							Show preview image before playing
 						</Label>
 					</div>

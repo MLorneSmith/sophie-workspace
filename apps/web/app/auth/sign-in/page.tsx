@@ -1,9 +1,8 @@
-import Link from "next/link";
-
 import { SignInMethodsContainer } from "@kit/auth/sign-in";
 import { Button } from "@kit/ui/button";
 import { Heading } from "@kit/ui/heading";
 import { Trans } from "@kit/ui/trans";
+import Link from "next/link";
 
 import authConfig from "~/config/auth.config";
 import pathsConfig from "~/config/paths.config";

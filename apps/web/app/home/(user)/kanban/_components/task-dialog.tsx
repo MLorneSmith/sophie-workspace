@@ -1,12 +1,7 @@
 "use client";
 
-import { useCallback, useState } from "react";
-
+import Image from "next/image";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ImageIcon, Loader2Icon, TrashIcon } from "lucide-react";
-import { useForm } from "react-hook-form";
-import { useTranslation } from "react-i18next";
-
 import { Button } from "@kit/ui/button";
 import {
 	Dialog,
@@ -34,6 +29,10 @@ import {
 import { Textarea } from "@kit/ui/textarea";
 import { Trans } from "@kit/ui/trans";
 import { cn } from "@kit/ui/utils";
+import { ImageIcon, Loader2Icon, TrashIcon } from "lucide-react";
+import { useCallback, useState, useId } from "react";
+import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 
 import { useCreateTask, useUpdateTask } from "../_lib/hooks/use-tasks";
 import type { Task } from "../_lib/schema/task.schema";
@@ -56,6 +55,7 @@ export function TaskDialog({ open, onOpenChange, task }: TaskDialogProps) {
 	const [imagePreview, setImagePreview] = useState<string | null>(
 		task?.image_url ?? null,
 	);
+	const imageUploadId = useId();
 
 	const form = useForm({
 		resolver: zodResolver(CreateTaskSchema),
@@ -259,11 +259,12 @@ export function TaskDialog({ open, onOpenChange, task }: TaskDialogProps) {
 										<div className="space-y-2">
 											{imagePreview ? (
 												<div className="relative">
-													{/* eslint-disable-next-line @next/next/no-img-element */}
-													<img
+													<Image
 														src={imagePreview}
 														alt="Task attachment preview"
 														className="h-40 w-full rounded-lg object-cover"
+														width={400}
+														height={160}
 													/>
 													<Button
 														type="button"
@@ -290,7 +291,7 @@ export function TaskDialog({ open, onOpenChange, task }: TaskDialogProps) {
 														</span>
 													</div>
 													<input
-														id="image-upload"
+														id={imageUploadId}
 														type="file"
 														accept="image/*"
 														className="hidden"

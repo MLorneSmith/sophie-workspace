@@ -1,8 +1,3 @@
-import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
-
-import { ArrowLeft } from "lucide-react";
-
 import { AuthLayoutShell } from "@kit/auth/shared";
 import { requireUser } from "@kit/supabase/require-user";
 import { getSupabaseServerAdminClient } from "@kit/supabase/server-admin-client";
@@ -12,6 +7,9 @@ import { AcceptInvitationContainer } from "@kit/team-accounts/components";
 import { Button } from "@kit/ui/button";
 import { Heading } from "@kit/ui/heading";
 import { Trans } from "@kit/ui/trans";
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
+import { notFound, redirect } from "next/navigation";
 
 import { AppLogo } from "~/components/app-logo";
 import pathsConfig from "~/config/paths.config";

@@ -1,13 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
-import { ChevronLeft } from "lucide-react";
-
 import { Button } from "@kit/ui/button";
 import { Card } from "@kit/ui/card";
 import { Skeleton } from "@kit/ui/skeleton";
 import { toast } from "@kit/ui/sonner";
+import { ChevronLeft } from "lucide-react";
+import { useEffect, useState } from "react";
 
 import { usePresentationStoryboard } from "../_lib/hooks/use-presentation-storyboard";
 import { SortableSlideList } from "./sortable-slide-list";

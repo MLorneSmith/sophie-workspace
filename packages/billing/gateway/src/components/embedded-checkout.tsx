@@ -1,7 +1,6 @@
-import { Suspense, forwardRef, lazy, memo, useMemo } from "react";
-
 import type { Enums } from "@kit/supabase/database";
 import { LoadingOverlay } from "@kit/ui/loading-overlay";
+import { forwardRef, lazy, memo, Suspense, useMemo } from "react";
 
 type BillingProvider = Enums<"billing_provider">;
 

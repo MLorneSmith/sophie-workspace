@@ -1,10 +1,8 @@
-import Link from "next/link";
-
-import { ArrowLeft } from "lucide-react";
-
 import { Button } from "@kit/ui/button";
 import { Heading } from "@kit/ui/heading";
 import { Trans } from "@kit/ui/trans";
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
 
 import { SiteHeader } from "~/(marketing)/_components/site-header";
 import { createI18nServerInstance } from "~/lib/i18n/i18n.server";

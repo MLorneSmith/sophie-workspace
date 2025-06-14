@@ -1,6 +1,5 @@
+import { getLogger, type Logger } from "@kit/shared/logger";
 import pptxgen from "pptxgenjs";
-
-import { type Logger, getLogger } from "@kit/shared/logger";
 
 // Import Logger from the root
 

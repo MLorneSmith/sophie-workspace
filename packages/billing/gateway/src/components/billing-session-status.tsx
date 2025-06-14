@@ -1,10 +1,8 @@
-import Link from "next/link";
-
-import { Check, ChevronRight } from "lucide-react";
-
 import { Button } from "@kit/ui/button";
 import { Heading } from "@kit/ui/heading";
 import { Trans } from "@kit/ui/trans";
+import { Check, ChevronRight } from "lucide-react";
+import Link from "next/link";
 
 /**
  * Retrieves the session status for a Stripe checkout session.

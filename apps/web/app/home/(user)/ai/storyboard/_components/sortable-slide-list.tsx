@@ -1,29 +1,27 @@
 "use client";
 
-import { useState } from "react";
-
 import {
+	closestCenter,
 	DndContext,
 	DragOverlay,
 	KeyboardSensor,
 	PointerSensor,
-	closestCenter,
 	useSensor,
 	useSensors,
 } from "@dnd-kit/core";
 import {
-	SortableContext,
 	arrayMove,
+	SortableContext,
 	sortableKeyboardCoordinates,
 	useSortable,
 	verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { GripVertical } from "lucide-react";
-
 import { Button } from "@kit/ui/button";
 import { Card, CardContent } from "@kit/ui/card";
 import { cn } from "@kit/ui/utils";
+import { GripVertical } from "lucide-react";
+import { useState } from "react";
 
 import type { Slide } from "../_lib/types";
 // Corrected import path and type name

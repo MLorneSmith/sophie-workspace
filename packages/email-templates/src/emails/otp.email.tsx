@@ -4,10 +4,10 @@ import {
 	Head,
 	Html,
 	Preview,
+	render,
 	Section,
 	Tailwind,
 	Text,
-	render,
 } from "@react-email/components";
 
 import { BodyStyle } from "../components/body-style";

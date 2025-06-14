@@ -1,11 +1,5 @@
 "use client";
 
-import { useMemo, useState } from "react";
-
-import type { ColumnDef } from "@tanstack/react-table";
-import { Ellipsis } from "lucide-react";
-import { useTranslation } from "react-i18next";
-
 import type { Database } from "@kit/supabase/database";
 import { Badge } from "@kit/ui/badge";
 import { Button } from "@kit/ui/button";
@@ -20,6 +14,10 @@ import { If } from "@kit/ui/if";
 import { Input } from "@kit/ui/input";
 import { ProfileAvatar } from "@kit/ui/profile-avatar";
 import { Trans } from "@kit/ui/trans";
+import type { ColumnDef } from "@tanstack/react-table";
+import { Ellipsis } from "lucide-react";
+import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { RoleBadge } from "../members/role-badge";
 import { DeleteInvitationDialog } from "./delete-invitation-dialog";

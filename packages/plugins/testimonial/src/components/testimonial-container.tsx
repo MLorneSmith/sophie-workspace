@@ -1,13 +1,11 @@
 "use client";
 
-import { type ReactNode, useState } from "react";
-
-import { PencilIcon, VideoIcon } from "lucide-react";
-
 import { Button } from "@kit/ui/button";
 import { If } from "@kit/ui/if";
 import { Trans } from "@kit/ui/trans";
 import { cn } from "@kit/ui/utils";
+import { PencilIcon, VideoIcon } from "lucide-react";
+import { type ReactNode, useState } from "react";
 
 interface TestimonialContainerProps {
 	className?: string;

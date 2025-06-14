@@ -1,10 +1,5 @@
 "use client";
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-
-import { Home, LogOut, Menu } from "lucide-react";
-
 import { AccountSelector } from "@kit/accounts/account-selector";
 import { useSignOut } from "@kit/supabase/hooks/use-sign-out";
 import {
@@ -22,6 +17,9 @@ import {
 	DropdownMenuTrigger,
 } from "@kit/ui/dropdown-menu";
 import { Trans } from "@kit/ui/trans";
+import { Home, LogOut, Menu } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 import featureFlagsConfig from "~/config/feature-flags.config";
 import pathsConfig from "~/config/paths.config";

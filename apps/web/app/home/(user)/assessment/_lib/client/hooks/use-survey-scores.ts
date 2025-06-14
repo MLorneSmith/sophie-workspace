@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
 import { useSupabase } from "@kit/supabase/hooks/use-supabase";
+import { useEffect, useState } from "react";
 
 export type CategoryScores = Record<string, number>;
 

@@ -1,7 +1,6 @@
+import type { CreateBillingPortalSessionSchema } from "@kit/billing/schema";
 import { getCustomer } from "@lemonsqueezy/lemonsqueezy.js";
 import type { z } from "zod";
-
-import type { CreateBillingPortalSessionSchema } from "@kit/billing/schema";
 
 import { initializeLemonSqueezyClient } from "./lemon-squeezy-sdk";
 

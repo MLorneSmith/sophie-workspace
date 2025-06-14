@@ -1,8 +1,7 @@
 import "server-only";
 
-import { z } from "zod";
-
 import type { Mailer, MailerSchema } from "@kit/mailers-shared";
+import { z } from "zod";
 
 type Config = z.infer<typeof MailerSchema>;
 

@@ -1,7 +1,5 @@
 "use client";
 
-import React, { useState } from "react";
-
 import { AnimatePresence, motion } from "framer-motion";
 import {
 	BarChart3,
@@ -12,6 +10,7 @@ import {
 	Presentation,
 	Sparkles,
 } from "lucide-react";
+import React, { useState } from "react";
 
 import { cn } from "../lib/utils";
 

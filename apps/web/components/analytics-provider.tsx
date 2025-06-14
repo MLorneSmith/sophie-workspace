@@ -1,9 +1,5 @@
 "use client";
 
-import { useCallback, useEffect } from "react";
-
-import { usePathname, useSearchParams } from "next/navigation";
-
 import { analytics } from "@kit/analytics";
 import {
 	type AppEvent,
@@ -12,6 +8,8 @@ import {
 	useAppEvents,
 } from "@kit/shared/events";
 import { isBrowser } from "@kit/shared/utils";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useCallback, useEffect } from "react";
 
 type AnalyticsMapping<
 	T extends ConsumerProvidedEventTypes = NonNullable<unknown>,
