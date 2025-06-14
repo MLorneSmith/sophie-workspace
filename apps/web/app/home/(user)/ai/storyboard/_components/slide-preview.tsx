@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { cn } from "@kit/ui/utils";
 
 import { LAYOUT_POSITIONS } from "../_lib/services/powerpoint/pptx-generator";
@@ -87,10 +88,11 @@ export function SlidePreview({ slide }: SlidePreviewProps) {
 					>
 						{item.imageUrl ? (
 							// Render image if imageUrl is provided
-							<img
+							<Image
 								src={item.imageUrl}
 								alt="Slide content"
-								className="h-full w-full object-contain" // Use object-contain to fit without stretching
+								fill
+								className="object-contain" // Use object-contain to fit without stretching
 							/>
 						) : (
 							// Show placeholder if no imageUrl

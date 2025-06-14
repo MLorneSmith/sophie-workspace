@@ -281,7 +281,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 
 									// Regular expression to match YouTube video ID from various URL formats
 									const regExp =
-										/^.*(?:(?:youtu\.be\/|v\/|vi\/|u\/\w\/|embed\/|shorts\/)|(?:(?:watch)?\?v(?:i)?=|\&v(?:i)?=))([^#\&\?]*).*/;
+										/^.*(?:(?:youtu\.be\/|v\/|vi\/|u\/\w\/|embed\/|shorts\/)|(?:(?:watch)?\?v(?:i)?=|&v(?:i)?=))([^#&?]*).*/;
 									const match = input.match(regExp);
 
 									if (match?.[1]) {
@@ -573,7 +573,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 
 										// Regular expression to match YouTube video ID from various URL formats
 										const regExp =
-											/^.*(?:(?:youtu\.be\/|v\/|vi\/|u\/\w\/|embed\/|shorts\/)|(?:(?:watch)?\?v(?:i)?=|\&v(?:i)?=))([^#\&\?]*).*/;
+											/^.*(?:(?:youtu\.be\/|v\/|vi\/|u\/\w\/|embed\/|shorts\/)|(?:(?:watch)?\?v(?:i)?=|&v(?:i)?=))([^#&?]*).*/;
 										const match = input.match(regExp);
 
 										if (match?.[1]) {

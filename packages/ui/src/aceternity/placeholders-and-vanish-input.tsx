@@ -81,7 +81,7 @@ export function PlaceholdersAndVanishInput({
 			}
 			document.removeEventListener("visibilitychange", handleVisibilityChange);
 		};
-	}, [placeholders, handleVisibilityChange, startAnimation]);
+	}, [handleVisibilityChange, startAnimation]);
 
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const newDataRef = useRef<PixelData[]>([]);
@@ -146,7 +146,7 @@ export function PlaceholdersAndVanishInput({
 
 	useEffect(() => {
 		draw();
-	}, [value, draw]);
+	}, [draw]);
 
 	const animate = (start: number) => {
 		const animateFrame = (pos = 0) => {

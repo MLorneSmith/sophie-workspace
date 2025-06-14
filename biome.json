@@ -1,5 +1,5 @@
 {
-	"$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+	"$schema": "https://biomejs.dev/schemas/2.0.0-beta.6/schema.json",
 	"vcs": {
 		"enabled": true,
 		"clientKind": "git",
@@ -8,31 +8,35 @@
 	"files": {
 		"ignoreUnknown": false,
 		"maxSize": 2097152,
-		"ignore": [
-			".next/**",
-			"dist/**",
-			"build/**",
-			"node_modules/**",
-			"*.min.js",
-			"*.bundle.js",
-			".vscode/PrimeSelections.json",
-			"**/.next/**",
-			"**/dist/**",
-			"**/build/**",
-			"coverage/**",
-			"test-results/**",
-			"playwright-report/**",
-			"packages/playwright-mcp/temp-playwright-mcp/**",
-			"apps/payload/payload-types.ts",
-			"apps/payload/src/app/(payload)/admin/importMap.js",
-			"z.docs/**",
-			"z.old/**",
-			"z.test/**",
-			"turbo/generators/**"
+		"includes": [
+			"**",
+			"!**/.next/**",
+			"!**/dist/**",
+			"!**/build/**",
+			"!**/node_modules/**",
+			"!**/*.min.js",
+			"!**/*.bundle.js",
+			"!**/.vscode/PrimeSelections.json",
+			"!**/coverage/**",
+			"!**/test-results/**",
+			"!**/playwright-report/**",
+			"!**/packages/playwright-mcp/temp-playwright-mcp/**",
+			"!**/apps/payload/payload-types.ts",
+			"!**/apps/payload/src/app/(payload)/admin/importMap.js",
+			"!**/z.docs/**",
+			"!**/z.old/**",
+			"!**/z.test/**",
+			"!**/turbo/generators/**"
 		]
 	},
 	"formatter": { "enabled": true, "indentStyle": "tab" },
-	"organizeImports": { "enabled": true },
+	"assist": {
+		"actions": {
+			"source": {
+				"organizeImports": "on"
+			}
+		}
+	},
 	"linter": {
 		"enabled": true,
 		"rules": {

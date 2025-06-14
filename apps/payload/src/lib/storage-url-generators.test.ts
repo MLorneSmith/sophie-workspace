@@ -11,7 +11,6 @@ import {
   generateS3DownloadsURL,
   getURLGenerator,
   createURLGenerator,
-  type GenerateFileURLArgs
 } from './storage-url-generators';
 import { getR2Config } from './storage-config';
 
@@ -416,7 +415,7 @@ describe('Storage URL Generators', () => {
         mediaBucket: 'media-bucket',
         mediaBaseUrl: 'https://custom.domain.com'
       }));
-      const longFilename = 'a'.repeat(1000) + '.jpg';
+      const longFilename = `${'a'.repeat(1000)}.jpg`;
 
       // Act
       const result = generateMediaURL({ filename: longFilename });

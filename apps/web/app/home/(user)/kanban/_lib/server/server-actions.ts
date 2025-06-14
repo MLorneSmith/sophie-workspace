@@ -42,7 +42,7 @@ const createTaskAction = enhanceAction(
 
 		try {
 			// Upload image if provided
-			let imageUrl: string | undefined = undefined;
+			let imageUrl: string | undefined ;
 			if (image) {
 				const { data: uploadResult, success } = await uploadTaskImageAction({
 					file: image,

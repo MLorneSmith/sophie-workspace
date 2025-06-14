@@ -1,6 +1,7 @@
 "use client";
 
 import type React from "react";
+import Image from "next/image";
 import {
 	Card,
 	CardContent,
@@ -126,10 +127,11 @@ const Component: React.FC<ComponentProps> = (props) => {
 							}}
 							id={`bunny-video-${videoId}`}
 						>
-							<img
+							<Image
 								src={finalPreviewUrl}
 								alt={`Preview for ${title}`}
-								className="absolute inset-0 w-full h-full object-cover"
+								fill
+								className="object-cover"
 							/>
 							<div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
 								<div className="w-16 h-16 bg-white bg-opacity-80 rounded-full flex items-center justify-center">

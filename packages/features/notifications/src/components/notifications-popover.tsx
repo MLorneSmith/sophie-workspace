@@ -60,7 +60,7 @@ export function NotificationsPopover(params: {
 		let time: number;
 
 		const daysAgo = Math.floor(
-			(new Date().getTime() - date.getTime()) / (1000 * 60 * 60 * 24),
+			(Date.now()- date.getTime()) / (1000 * 60 * 60 * 24),
 		);
 
 		const formatter = new Intl.RelativeTimeFormat(i18n.language, {
@@ -68,7 +68,7 @@ export function NotificationsPopover(params: {
 		});
 
 		if (daysAgo < 1) {
-			time = Math.floor((new Date().getTime() - date.getTime()) / (1000 * 60));
+			time = Math.floor((Date.now()- date.getTime()) / (1000 * 60));
 
 			if (time < 5) {
 				return t("common:justNow");
@@ -85,7 +85,7 @@ export function NotificationsPopover(params: {
 
 		const unit = (() => {
 			const minutesAgo = Math.floor(
-				(new Date().getTime() - date.getTime()) / (1000 * 60),
+				(Date.now()- date.getTime()) / (1000 * 60),
 			);
 
 			if (minutesAgo <= 60) {

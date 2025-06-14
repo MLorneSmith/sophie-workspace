@@ -1,6 +1,7 @@
 "use client";
 
 import type React from "react";
+import Image from "next/image";
 import {
 	Card,
 	CardContent,
@@ -32,7 +33,7 @@ const extractYouTubeId = (input: string): string => {
 
 	// Regular expression to match YouTube video ID from various URL formats
 	const regExp =
-		/^.*(?:(?:youtu\.be\/|v\/|vi\/|u\/\w\/|embed\/|shorts\/)|(?:(?:watch)?\?v(?:i)?=|\&v(?:i)?=))([^#\&\?]*).*/;
+		/^.*(?:(?:youtu\.be\/|v\/|vi\/|u\/\w\/|embed\/|shorts\/)|(?:(?:watch)?\?v(?:i)?=|&v(?:i)?=))([^#&?]*).*/;
 	const match = input.match(regExp);
 
 	if (match?.[1]) {
@@ -143,10 +144,11 @@ const Component: React.FC<ComponentProps> = (props) => {
 							}}
 							id={`youtube-video-${youtubeId}`}
 						>
-							<img
+							<Image
 								src={finalPreviewUrl}
 								alt={`Preview for ${title}`}
-								className="absolute inset-0 h-full w-full object-cover"
+								fill
+								className="object-cover"
 							/>
 							<div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30">
 								<div className="flex h-16 w-16 items-center justify-center rounded-full bg-white bg-opacity-80">
