@@ -1,3 +1,4 @@
+import { NavigationConfigSchema } from "@kit/ui/navigation-schema";
 import {
 	BookCheck,
 	BrainIcon,
@@ -9,8 +10,6 @@ import {
 	User,
 } from "lucide-react";
 import type { z } from "zod";
-
-import { NavigationConfigSchema } from "@kit/ui/navigation-schema";
 
 import featureFlagsConfig from "~/config/feature-flags.config";
 import pathsConfig from "~/config/paths.config";

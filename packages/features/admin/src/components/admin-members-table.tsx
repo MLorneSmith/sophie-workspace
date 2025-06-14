@@ -1,12 +1,10 @@
 "use client";
 
-import Link from "next/link";
-
-import type { ColumnDef } from "@tanstack/react-table";
-
 import type { Database } from "@kit/supabase/database";
 import { DataTable } from "@kit/ui/enhanced-data-table";
 import { ProfileAvatar } from "@kit/ui/profile-avatar";
+import type { ColumnDef } from "@tanstack/react-table";
+import Link from "next/link";
 
 type Memberships =
 	Database["public"]["Functions"]["get_account_members"]["Returns"][number];

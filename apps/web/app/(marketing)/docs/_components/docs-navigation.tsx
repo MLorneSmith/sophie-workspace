@@ -1,5 +1,3 @@
-import { ChevronDown } from "lucide-react";
-
 import type { Cms } from "@kit/cms";
 import { CollapsibleContent, CollapsibleTrigger } from "@kit/ui/collapsible";
 import {
@@ -11,11 +9,72 @@ import {
 	SidebarMenuItem,
 	SidebarMenuSub,
 } from "@kit/ui/shadcn-sidebar";
+import { ChevronDown } from "lucide-react";
 
 import { DocsNavLink } from "~/(marketing)/docs/_components/docs-nav-link";
 import { DocsNavigationCollapsible } from "~/(marketing)/docs/_components/docs-navigation-collapsible";
 
 import { FloatingDocumentationNavigation } from "./floating-docs-navigation";
+
+// Helper components to avoid nested component definitions
+function NodeContainer({
+	node,
+	prefix,
+	children,
+}: {
+	node: Cms.ContentItem;
+	prefix: string;
+	children: React.ReactNode;
+}) {
+	if (node.collapsible) {
+		return (
+			<DocsNavigationCollapsible node={node} prefix={prefix}>
+				{children}
+			</DocsNavigationCollapsible>
+		);
+	}
+
+	return <>{children}</>;
+}
+
+function NodeContentContainer({
+	node,
+	children,
+}: {
+	node: Cms.ContentItem;
+	children: React.ReactNode;
+}) {
+	if (node.collapsible) {
+		return <CollapsibleContent>{children}</CollapsibleContent>;
+	}
+
+	return <>{children}</>;
+}
+
+function NodeTrigger({
+	node,
+	label,
+	url,
+}: {
+	node: Cms.ContentItem;
+	label: string;
+	url: string;
+}) {
+	if (node.collapsible) {
+		return (
+			<CollapsibleTrigger asChild>
+				<SidebarMenuItem>
+					<SidebarMenuButton>
+						{label}
+						<ChevronDown className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
+					</SidebarMenuButton>
+				</SidebarMenuItem>
+			</CollapsibleTrigger>
+		);
+	}
+
+	return <DocsNavLink label={label} url={url} />;
+}
 
 function Node({
 	node,
@@ -29,51 +88,14 @@ function Node({
 	const url = `${prefix}/${node.slug}`;
 	const label = node.label ? node.label : node.title;
 
-	const Container = (props: React.PropsWithChildren) => {
-		if (node.collapsible) {
-			return (
-				<DocsNavigationCollapsible node={node} prefix={prefix}>
-					{props.children}
-				</DocsNavigationCollapsible>
-			);
-		}
-
-		return props.children;
-	};
-
-	const ContentContainer = (props: React.PropsWithChildren) => {
-		if (node.collapsible) {
-			return <CollapsibleContent>{props.children}</CollapsibleContent>;
-		}
-
-		return props.children;
-	};
-
-	const Trigger = () => {
-		if (node.collapsible) {
-			return (
-				<CollapsibleTrigger asChild>
-					<SidebarMenuItem>
-						<SidebarMenuButton>
-							{label}
-							<ChevronDown className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
-						</SidebarMenuButton>
-					</SidebarMenuItem>
-				</CollapsibleTrigger>
-			);
-		}
-
-		return <DocsNavLink label={label} url={url} />;
-	};
-
 	return (
-		<Container>
-			<Trigger />
+		<NodeContainer node={node} prefix={prefix}>
+			<NodeTrigger node={node} label={label} url={url} />
 
-			<ContentContainer>
+			<NodeContentContainer node={node}>
 				<Tree pages={node.children ?? []} level={level + 1} prefix={prefix} />
-			</ContentContainer>
-		</Container>
+			</NodeContentContainer>
+		</NodeContainer>
 	);
 }
 

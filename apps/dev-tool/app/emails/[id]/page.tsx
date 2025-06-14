@@ -1,10 +1,3 @@
-import { EmailTesterForm } from "@/app/emails/[id]/components/email-tester-form";
-import { loadEmailTemplate } from "@/app/emails/lib/email-loader";
-import { getVariable } from "@/app/variables/lib/env-scanner";
-import type { EnvMode } from "@/app/variables/lib/types";
-import { EnvModeSelector } from "@/components/env-mode-selector";
-import { IFrame } from "@/components/iframe";
-
 import { AppBreadcrumbs } from "@kit/ui/app-breadcrumbs";
 import { Button } from "@kit/ui/button";
 import {
@@ -14,6 +7,12 @@ import {
 	DialogTrigger,
 } from "@kit/ui/dialog";
 import { Page, PageBody, PageHeader } from "@kit/ui/page";
+import { EmailTesterForm } from "@/app/emails/[id]/components/email-tester-form";
+import { loadEmailTemplate } from "@/app/emails/lib/email-loader";
+import { getVariable } from "@/app/variables/lib/env-scanner";
+import type { EnvMode } from "@/app/variables/lib/types";
+import { EnvModeSelector } from "@/components/env-mode-selector";
+import { IFrame } from "@/components/iframe";
 
 type EmailPageProps = React.PropsWithChildren<{
 	params: Promise<{

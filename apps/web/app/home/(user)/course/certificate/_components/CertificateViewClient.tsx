@@ -1,11 +1,9 @@
 "use client";
 
-import Link from "next/link";
-
-import { ChevronLeft, Download } from "lucide-react";
-
 import { Button } from "@kit/ui/button";
 import { Card, CardContent } from "@kit/ui/card";
+import { ChevronLeft, Download } from "lucide-react";
+import Link from "next/link";
 
 interface CertificateViewClientProps {
 	certificateUrl: string;

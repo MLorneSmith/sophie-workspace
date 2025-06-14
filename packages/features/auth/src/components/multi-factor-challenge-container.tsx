@@ -1,15 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
-
-import { useRouter } from "next/navigation";
-
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
-import { useMutation } from "@tanstack/react-query";
-import { useForm, useWatch } from "react-hook-form";
-import { z } from "zod";
-
 import { useFetchAuthFactors } from "@kit/supabase/hooks/use-fetch-mfa-factors";
 import { useSignOut } from "@kit/supabase/hooks/use-sign-out";
 import { useSupabase } from "@kit/supabase/hooks/use-supabase";
@@ -33,6 +24,12 @@ import {
 } from "@kit/ui/input-otp";
 import { Spinner } from "@kit/ui/spinner";
 import { Trans } from "@kit/ui/trans";
+import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
+import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { useForm, useWatch } from "react-hook-form";
+import { z } from "zod";
 
 export function MultiFactorChallengeContainer({
 	paths,

@@ -1,13 +1,11 @@
 "use client";
 
-import Link from "next/link";
-
-import type { ColumnDef } from "@tanstack/react-table";
-
 import type { Tables } from "@kit/supabase/database";
 import { Avatar, AvatarFallback, AvatarImage } from "@kit/ui/avatar";
 import { Button } from "@kit/ui/button";
 import { DataTable } from "@kit/ui/enhanced-data-table";
+import type { ColumnDef } from "@tanstack/react-table";
+import Link from "next/link";
 
 import { Rating } from "./rating";
 import { TestimonialsStatus } from "./testimonials-status";

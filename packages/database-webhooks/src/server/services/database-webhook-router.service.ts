@@ -1,6 +1,5 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
-
 import type { Database } from "@kit/supabase/database";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 import type { RecordChange, Tables } from "../record-change.type";
 

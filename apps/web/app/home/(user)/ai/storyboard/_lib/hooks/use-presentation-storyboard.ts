@@ -1,12 +1,10 @@
 "use client";
 
-import { useCallback, useState } from "react";
-
-import { useQuery } from "@tanstack/react-query";
-
 import type { Json } from "@kit/supabase/database";
 import { useSupabase } from "@kit/supabase/hooks/use-supabase";
 import { toast } from "@kit/ui/sonner";
+import { useQuery } from "@tanstack/react-query";
+import { useCallback, useState } from "react";
 
 import type {
 	BuildingBlocksSubmission,

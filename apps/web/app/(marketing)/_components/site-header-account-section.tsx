@@ -1,17 +1,14 @@
 "use client";
 
-import { useState } from "react";
-
-import dynamic from "next/dynamic";
-import Link from "next/link";
-
-import type { Session } from "@supabase/supabase-js";
-
 import { PersonalAccountDropdown } from "@kit/accounts/personal-account-dropdown";
 import { useSignOut } from "@kit/supabase/hooks/use-sign-out";
 import { Button } from "@kit/ui/button";
 import { If } from "@kit/ui/if";
 import { Trans } from "@kit/ui/trans";
+import type { Session } from "@supabase/supabase-js";
+import dynamic from "next/dynamic";
+import Link from "next/link";
+import { useState } from "react";
 
 import featuresFlagConfig from "~/config/feature-flags.config";
 import pathsConfig from "~/config/paths.config";

@@ -1,7 +1,5 @@
 "use server";
 
-import { z } from "zod";
-
 import {
 	type ChatCompletionOptions,
 	type ChatMessage,
@@ -11,6 +9,7 @@ import { createReasoningOptimizedConfig } from "@kit/ai-gateway/src/configs/temp
 import { PromptManager } from "@kit/ai-gateway/src/prompts/prompt-manager";
 import { textSimplificationTemplate } from "@kit/ai-gateway/src/prompts/templates/text-simplification";
 import { enhanceAction } from "@kit/next/actions";
+import { z } from "zod";
 
 const SimplifyTextSchema = z.object({
 	content: z.string(),

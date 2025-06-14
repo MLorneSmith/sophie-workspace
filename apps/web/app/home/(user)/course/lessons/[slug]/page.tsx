@@ -1,7 +1,6 @@
-import { notFound } from "next/navigation";
-
 import { getLessonBySlug } from "@kit/cms/payload";
 import { PageBody } from "@kit/ui/page";
+import { notFound } from "next/navigation";
 
 import { createI18nServerInstance } from "~/lib/i18n/i18n.server";
 import { withI18n } from "~/lib/i18n/with-i18n";
@@ -37,11 +36,7 @@ export const generateMetadata = async ({
  * This page uses the improved LessonDataProviderEnhanced component that handles
  * the unidirectional relationship model for quizzes and questions
  */
-async function LessonPage({
-	params,
-}: {
-	params: Promise<{ slug: string }>;
-}) {
+async function LessonPage({ params }: { params: Promise<{ slug: string }> }) {
 	// Await the params to get the slug
 	const resolvedParams = await params;
 

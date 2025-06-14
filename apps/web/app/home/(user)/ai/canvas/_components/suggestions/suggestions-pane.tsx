@@ -1,13 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-
 import type {
 	BaseImprovement,
 	ImprovementType,
 } from "@kit/ai-gateway/src/prompts/types/improvements";
 import { Button } from "@kit/ui/button";
 import { Spinner } from "@kit/ui/spinner";
+import { useCallback, useEffect, useState } from "react";
 
 import { ImprovementCard } from "./improvement-card";
 import { LoadingAnimation } from "./loading-animation";

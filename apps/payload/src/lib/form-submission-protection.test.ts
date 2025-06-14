@@ -6,8 +6,8 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
-	FormSubmissionProtectionManager,
 	cleanupFormSubmissionProtection,
+	FormSubmissionProtectionManager,
 	getFormSubmissionProtectionManager,
 	initializeFormSubmissionProtection,
 } from "./form-submission-protection";
@@ -43,7 +43,11 @@ function createTestForm(
 
 // Helper function to create real button elements with jsdom
 function createTestButton(
-	options: { disabled?: boolean; textContent?: string; type?: "button" | "submit" | "reset" } = {},
+	options: {
+		disabled?: boolean;
+		textContent?: string;
+		type?: "button" | "submit" | "reset";
+	} = {},
 ): HTMLButtonElement {
 	const button = document.createElement("button");
 	button.type = options.type || "submit";
@@ -63,7 +67,7 @@ describe("FormSubmissionProtectionManager", () => {
 		global.MutationObserver = mockMutationObserver;
 
 		// Clear global state
-		(globalThis as any).__formSubmissionProtectionManager = undefined;
+		globalThis.__formSubmissionProtectionManager = undefined;
 
 		// Clear DOM
 		document.body.innerHTML = "";
@@ -80,7 +84,7 @@ describe("FormSubmissionProtectionManager", () => {
 		document.body.innerHTML = "";
 
 		// Clear global state
-		(globalThis as any).__formSubmissionProtectionManager = undefined;
+		globalThis.__formSubmissionProtectionManager = undefined;
 
 		vi.restoreAllMocks();
 	});
@@ -203,7 +207,9 @@ describe("FormSubmissionProtectionManager", () => {
 
 			const status = manager.getStatus();
 			// Most forms should be classified as server-rendered by default
-			expect(status.serverRenderedForms).toBeGreaterThanOrEqual(status.dynamicForms);
+			expect(status.serverRenderedForms).toBeGreaterThanOrEqual(
+				status.dynamicForms,
+			);
 		});
 
 		it("tracks forms in memory without DOM modifications", () => {
@@ -246,7 +252,7 @@ describe("FormSubmissionProtectionManager", () => {
 
 			// Simulate second submission (should be prevented)
 			const event2 = new Event("submit", { cancelable: true });
-			const _preventDefaultSpy = vi.spyOn(event2, 'preventDefault');
+			const _preventDefaultSpy = vi.spyOn(event2, "preventDefault");
 			form.dispatchEvent(event2);
 
 			// The manager should have prevented the second submission
@@ -376,13 +382,13 @@ describe("FormSubmissionProtectionManager", () => {
 			const manager = new FormSubmissionProtectionManager({
 				hydrationTimeoutMs: 50, // Very short timeout
 			});
-			
+
 			// Fast-forward time to meet minimum requirement
 			vi.spyOn(Date, "now").mockReturnValue(1000000 + 4000); // +4 seconds
-			
+
 			// Clear previous calls
 			mockMutationObserver.mockClear();
-			
+
 			manager.initialize();
 
 			// Wait for hydration to complete and mutation observer to be set up
@@ -410,13 +416,13 @@ describe("FormSubmissionProtectionManager", () => {
 			const manager = new FormSubmissionProtectionManager({
 				hydrationTimeoutMs: 50, // Very short timeout
 			});
-			
+
 			// Fast-forward time to meet minimum requirement
 			vi.spyOn(Date, "now").mockReturnValue(1000000 + 4000); // +4 seconds
-			
+
 			// Clear previous calls to get clean observer instance
 			mockMutationObserver.mockClear();
-			
+
 			manager.initialize();
 
 			// Wait for hydration to complete and mutation observer to be set up
@@ -459,8 +465,11 @@ describe("FormSubmissionProtectionManager", () => {
 			manager.initialize();
 
 			// Simulate button click
-			const clickEvent = new Event("click", { cancelable: true, bubbles: true });
-			const preventDefaultSpy = vi.spyOn(clickEvent, 'preventDefault');
+			const clickEvent = new Event("click", {
+				cancelable: true,
+				bubbles: true,
+			});
+			const preventDefaultSpy = vi.spyOn(clickEvent, "preventDefault");
 			button.dispatchEvent(clickEvent);
 
 			// Should not prevent enabled button clicks in idle forms
@@ -476,7 +485,10 @@ describe("FormSubmissionProtectionManager", () => {
 			manager.initialize();
 
 			// Simulate click on disabled button
-			const clickEvent = new Event("click", { cancelable: true, bubbles: true });
+			const clickEvent = new Event("click", {
+				cancelable: true,
+				bubbles: true,
+			});
 			button.dispatchEvent(clickEvent);
 
 			// Should handle gracefully without errors
@@ -496,7 +508,7 @@ describe("Global Singleton Management", () => {
 		global.MutationObserver = mockMutationObserver;
 
 		// Clear global state
-		(globalThis as any).__formSubmissionProtectionManager = undefined;
+		globalThis.__formSubmissionProtectionManager = undefined;
 
 		// Clear DOM
 		document.body.innerHTML = "";
@@ -510,7 +522,7 @@ describe("Global Singleton Management", () => {
 		document.body.innerHTML = "";
 
 		// Clear global state
-		(globalThis as any).__formSubmissionProtectionManager = undefined;
+		globalThis.__formSubmissionProtectionManager = undefined;
 	});
 
 	it("returns same instance from getFormSubmissionProtectionManager", () => {
@@ -524,19 +536,17 @@ describe("Global Singleton Management", () => {
 		initializeFormSubmissionProtection();
 
 		expect(
-			(globalThis as any).__formSubmissionProtectionManager,
+			globalThis.__formSubmissionProtectionManager,
 		).toBeInstanceOf(FormSubmissionProtectionManager);
 	});
 
 	it("cleans up global instance", () => {
 		initializeFormSubmissionProtection();
-		expect(
-			(globalThis as any).__formSubmissionProtectionManager,
-		).toBeDefined();
+		expect(globalThis.__formSubmissionProtectionManager).toBeDefined();
 
 		cleanupFormSubmissionProtection();
 		expect(
-			(globalThis as any).__formSubmissionProtectionManager,
+			globalThis.__formSubmissionProtectionManager,
 		).toBeUndefined();
 	});
 });

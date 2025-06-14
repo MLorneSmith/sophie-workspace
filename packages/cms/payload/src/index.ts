@@ -1,24 +1,21 @@
-export { createPayloadClient } from "./create-payload-cms";
-export { PayloadContentRenderer } from "./content-renderer";
-
-// Export API functions
-export { callPayloadAPI } from "./api/payload-api";
-
-// Export survey API functions
-export {
-	getSurvey,
-	getSurveyQuestions,
-	getUserSurveyResponse,
-	createSurveyResponse,
-	updateSurveyResponse,
-	completeSurvey,
-} from "./api/survey";
-
 // Export course API functions
 export {
-	getCourses,
 	getCourseBySlug,
 	getCourseLessons,
+	getCourses,
 	getLessonBySlug,
 	getQuiz,
 } from "./api/course";
+// Export API functions
+export { callPayloadAPI } from "./api/payload-api";
+// Export survey API functions
+export {
+	completeSurvey,
+	createSurveyResponse,
+	getSurvey,
+	getSurveyQuestions,
+	getUserSurveyResponse,
+	updateSurveyResponse,
+} from "./api/survey";
+export { PayloadContentRenderer } from "./content-renderer";
+export { createPayloadClient } from "./create-payload-cms";

@@ -1,7 +1,6 @@
-import Link from "next/link";
-
 import type { Cms } from "@kit/cms";
 import { If } from "@kit/ui/if";
+import Link from "next/link";
 
 import { CoverImage } from "~/(marketing)/blog/_components/cover-image";
 import { DateFormatter } from "~/(marketing)/blog/_components/date-formatter";

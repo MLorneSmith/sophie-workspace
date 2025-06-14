@@ -1,13 +1,11 @@
 "use client";
 
-import { forwardRef, useEffect, useRef, useState } from "react";
-
-import { useSearchParams } from "next/navigation";
-
-import { useQuery } from "@tanstack/react-query";
-
 import { useSupabase } from "@kit/supabase/hooks/use-supabase";
 import { Spinner } from "@kit/ui/spinner";
+
+import { useQuery } from "@tanstack/react-query";
+import { useSearchParams } from "next/navigation";
+import { forwardRef, useEffect, useRef, useState } from "react";
 
 import type { Database } from "~/lib/database.types";
 

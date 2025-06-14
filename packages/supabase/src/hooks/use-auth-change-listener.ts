@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
+import type { AuthChangeEvent, Session } from "@supabase/supabase-js";
 
 import { usePathname } from "next/navigation";
-
-import type { AuthChangeEvent, Session } from "@supabase/supabase-js";
+import { useEffect } from "react";
 
 import { useSupabase } from "./use-supabase";
 

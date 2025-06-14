@@ -1,11 +1,9 @@
 import "server-only";
 
-import { cache } from "react";
-
-import { redirect } from "next/navigation";
-
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
 import { createTeamAccountsApi } from "@kit/team-accounts/api";
+import { redirect } from "next/navigation";
+import { cache } from "react";
 
 import pathsConfig from "~/config/paths.config";
 import { requireUserInServerComponent } from "~/lib/server/require-user-in-server-component";

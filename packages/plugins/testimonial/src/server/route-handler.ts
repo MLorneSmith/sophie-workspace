@@ -1,6 +1,5 @@
-import { type NextRequest, NextResponse } from "next/server";
-
 import { getSupabaseServerAdminClient } from "@kit/supabase/server-admin-client";
+import { type NextRequest, NextResponse } from "next/server";
 
 /**
  * @name minRating

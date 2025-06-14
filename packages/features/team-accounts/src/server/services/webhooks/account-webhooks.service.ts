@@ -1,7 +1,6 @@
-import { z } from "zod";
-
 import { getLogger } from "@kit/shared/logger";
 import type { Database } from "@kit/supabase/database";
+import { z } from "zod";
 
 type Account = Database["public"]["Tables"]["accounts"]["Row"];
 

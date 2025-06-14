@@ -1,9 +1,8 @@
 import { fileURLToPath } from "node:url";
+import config from "@payload-config";
 import { headers as getHeaders } from "next/headers.js";
 import Image from "next/image";
 import { getPayload } from "payload";
-
-import config from "@payload-config";
 import "./styles.css";
 
 export default async function HomePage() {

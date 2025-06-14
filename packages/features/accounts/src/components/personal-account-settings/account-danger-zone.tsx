@@ -1,11 +1,6 @@
 "use client";
 
-import { useFormStatus } from "react-dom";
-
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
-import { useForm, useWatch } from "react-hook-form";
-
 import { ErrorBoundary } from "@kit/monitoring/components";
 import { VerifyOtpForm } from "@kit/otp/components";
 import { useUser } from "@kit/supabase/hooks/use-user";
@@ -22,6 +17,9 @@ import {
 import { Button } from "@kit/ui/button";
 import { Form } from "@kit/ui/form";
 import { Trans } from "@kit/ui/trans";
+import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
+import { useFormStatus } from "react-dom";
+import { useForm, useWatch } from "react-hook-form";
 
 import { DeletePersonalAccountSchema } from "../../schema/delete-personal-account.schema";
 import { deletePersonalAccountAction } from "../../server/personal-accounts-server-actions";

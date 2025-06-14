@@ -1,9 +1,5 @@
 "use client";
 
-import Link from "next/link";
-
-import { LogOut, Menu } from "lucide-react";
-
 import { useSignOut } from "@kit/supabase/hooks/use-sign-out";
 import {
 	DropdownMenu,
@@ -16,6 +12,8 @@ import {
 } from "@kit/ui/dropdown-menu";
 import { If } from "@kit/ui/if";
 import { Trans } from "@kit/ui/trans";
+import { LogOut, Menu } from "lucide-react";
+import Link from "next/link";
 
 import featuresFlagConfig from "~/config/feature-flags.config";
 import { personalAccountNavigationConfig } from "~/config/personal-account-navigation.config";

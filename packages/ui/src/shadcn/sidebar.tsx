@@ -1,13 +1,11 @@
 "use client";
 
-import * as React from "react";
-
+import { Slot } from "@radix-ui/react-slot";
+import { cva, type VariantProps } from "class-variance-authority";
+import { ChevronDown, PanelLeft } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
-import { Slot } from "@radix-ui/react-slot";
-import { type VariantProps, cva } from "class-variance-authority";
-import { ChevronDown, PanelLeft } from "lucide-react";
+import * as React from "react";
 import { useTranslation } from "react-i18next";
 
 import { useIsMobile } from "../hooks/use-mobile";

@@ -1,13 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
-import { createPortal } from "react-dom";
-
-import { X } from "lucide-react";
-
 import { Button } from "@kit/ui/button";
 import { cn } from "@kit/ui/utils";
+
+import { X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 
 interface BookDemoOverlayProps {
 	isOpen: boolean;

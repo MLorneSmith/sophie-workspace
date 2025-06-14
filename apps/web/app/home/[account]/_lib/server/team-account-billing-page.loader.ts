@@ -1,11 +1,9 @@
 import "server-only";
 
-import { cache } from "react";
-
-import { z } from "zod";
-
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
 import { createTeamAccountsApi } from "@kit/team-accounts/api";
+import { cache } from "react";
+import { z } from "zod";
 
 /**
  * The variable BILLING_MODE represents the billing mode for a service. It can

@@ -1,12 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
-
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-
 import { Alert, AlertDescription, AlertTitle } from "@kit/ui/alert";
 import { Button } from "@kit/ui/button";
 import {
@@ -26,6 +20,10 @@ import {
 } from "@kit/ui/input-otp";
 import { Spinner } from "@kit/ui/spinner";
 import { Trans } from "@kit/ui/trans";
+import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
+import { useState, useTransition } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 import { sendOtpEmailAction } from "../server/server-actions";
 

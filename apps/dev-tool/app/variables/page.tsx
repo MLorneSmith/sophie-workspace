@@ -1,12 +1,10 @@
+import { Page, PageBody, PageHeader } from "@kit/ui/page";
 import { use } from "react";
-
 import {
 	processEnvDefinitions,
 	scanMonorepoEnv,
 } from "@/app/variables/lib/env-scanner";
 import type { EnvMode } from "@/app/variables/lib/types";
-
-import { Page, PageBody, PageHeader } from "@kit/ui/page";
 
 import { AppEnvironmentVariablesManager } from "./components/app-environment-variables-manager";
 

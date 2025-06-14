@@ -1,7 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import { cn } from "@kit/ui/utils";
+import Image from "next/image";
 
 import { LAYOUT_POSITIONS } from "../_lib/services/powerpoint/pptx-generator";
 import type { Slide, SlideContent } from "../_lib/types";

@@ -1,8 +1,7 @@
 import "server-only";
 
-import type { SupabaseClient } from "@supabase/supabase-js";
-
 import type { Database } from "@kit/supabase/database";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 type Notification = Database["public"]["Tables"]["notifications"];
 

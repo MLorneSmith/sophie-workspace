@@ -1,12 +1,11 @@
+import type { MonitoringService } from "@kit/monitoring-core";
 import {
-	type Event as SentryEvent,
-	type User as SentryUser,
 	captureEvent,
 	captureException,
+	type Event as SentryEvent,
+	type User as SentryUser,
 	setUser,
 } from "@sentry/nextjs";
-
-import type { MonitoringService } from "@kit/monitoring-core";
 
 /**
  * @class

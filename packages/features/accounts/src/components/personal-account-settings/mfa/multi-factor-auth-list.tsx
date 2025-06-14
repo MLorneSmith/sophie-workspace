@@ -1,15 +1,5 @@
 "use client";
 
-import { useCallback, useState } from "react";
-
-import type { Factor } from "@supabase/supabase-js";
-
-import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ShieldCheck, X } from "lucide-react";
-import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
-
 import { useFetchAuthFactors } from "@kit/supabase/hooks/use-fetch-mfa-factors";
 import { useSupabase } from "@kit/supabase/hooks/use-supabase";
 import { useFactorsMutationKey } from "@kit/supabase/hooks/use-user-factors-mutation-key";
@@ -43,6 +33,13 @@ import {
 	TooltipTrigger,
 } from "@kit/ui/tooltip";
 import { Trans } from "@kit/ui/trans";
+import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
+import type { Factor } from "@supabase/supabase-js";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { ShieldCheck, X } from "lucide-react";
+import { useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 
 import { MultiFactorAuthSetupDialog } from "./multi-factor-auth-setup-dialog";
 

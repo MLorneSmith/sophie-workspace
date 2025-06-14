@@ -1,10 +1,9 @@
-import { cache } from "react";
+import { createCmsClient } from "@kit/cms";
 
 import type { Metadata } from "next";
 
 import { notFound } from "next/navigation";
-
-import { createCmsClient } from "@kit/cms";
+import { cache } from "react";
 
 import { withI18n } from "~/lib/i18n/with-i18n";
 

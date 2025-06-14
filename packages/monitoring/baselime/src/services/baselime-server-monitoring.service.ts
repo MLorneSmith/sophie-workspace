@@ -1,6 +1,5 @@
-import { z } from "zod";
-
 import type { MonitoringService } from "@kit/monitoring-core";
+import { z } from "zod";
 
 const apiKey = z
 	.string({

@@ -1,16 +1,14 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-
-import { Bell, CircleAlert, Info, TriangleAlert, XIcon } from "lucide-react";
-import { useTranslation } from "react-i18next";
-
 import type { Database } from "@kit/supabase/database";
 import { Button } from "@kit/ui/button";
 import { If } from "@kit/ui/if";
 import { Popover, PopoverContent, PopoverTrigger } from "@kit/ui/popover";
 import { Separator } from "@kit/ui/separator";
 import { cn } from "@kit/ui/utils";
+import { Bell, CircleAlert, Info, TriangleAlert, XIcon } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { useDismissNotification, useFetchNotifications } from "../hooks";
 
@@ -60,7 +58,7 @@ export function NotificationsPopover(params: {
 		let time: number;
 
 		const daysAgo = Math.floor(
-			(Date.now()- date.getTime()) / (1000 * 60 * 60 * 24),
+			(Date.now() - date.getTime()) / (1000 * 60 * 60 * 24),
 		);
 
 		const formatter = new Intl.RelativeTimeFormat(i18n.language, {
@@ -68,7 +66,7 @@ export function NotificationsPopover(params: {
 		});
 
 		if (daysAgo < 1) {
-			time = Math.floor((Date.now()- date.getTime()) / (1000 * 60));
+			time = Math.floor((Date.now() - date.getTime()) / (1000 * 60));
 
 			if (time < 5) {
 				return t("common:justNow");
@@ -85,7 +83,7 @@ export function NotificationsPopover(params: {
 
 		const unit = (() => {
 			const minutesAgo = Math.floor(
-				(Date.now()- date.getTime()) / (1000 * 60),
+				(Date.now() - date.getTime()) / (1000 * 60),
 			);
 
 			if (minutesAgo <= 60) {

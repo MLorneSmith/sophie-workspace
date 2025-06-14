@@ -1,20 +1,18 @@
 import "server-only";
 
-import { cache } from "react";
-
-import { cookies, headers } from "next/headers";
-
-import { z } from "zod";
-
 import {
 	initializeServerI18n,
 	parseAcceptLanguageHeader,
 } from "@kit/i18n/server";
 
+import { cookies, headers } from "next/headers";
+import { cache } from "react";
+import { z } from "zod";
+
 import featuresFlagConfig from "~/config/feature-flags.config";
 import {
-	I18N_COOKIE_NAME,
 	getI18nSettings,
+	I18N_COOKIE_NAME,
 	languages,
 } from "~/lib/i18n/i18n.settings";
 
@@ -38,7 +36,7 @@ async function createInstance() {
 	const cookieStore = await cookies();
 	const langCookieValue = cookieStore.get(I18N_COOKIE_NAME)?.value;
 
-	let selectedLanguage: string | undefined ;
+	let selectedLanguage: string | undefined;
 
 	// if the cookie is set, use the language from the cookie
 	if (langCookieValue) {

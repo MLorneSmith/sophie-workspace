@@ -1,8 +1,7 @@
 import "server-only";
 
-import type { z } from "zod";
-
 import type { Mailer, MailerSchema } from "@kit/mailers-shared";
+import type { z } from "zod";
 
 import { getSMTPConfiguration } from "./smtp-configuration";
 

@@ -1,12 +1,10 @@
 "use client";
 
-import { useRef } from "react";
-
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-
 import { SidebarMenuButton, SidebarMenuItem } from "@kit/ui/shadcn-sidebar";
 import { cn, isRouteActive } from "@kit/ui/utils";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useRef } from "react";
 
 export function DocsNavLink({
 	label,

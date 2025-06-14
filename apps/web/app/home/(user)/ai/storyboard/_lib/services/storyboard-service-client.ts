@@ -1,8 +1,7 @@
 "use client";
 
-import type { SupabaseClient } from "@supabase/supabase-js";
-
 import { toast } from "@kit/ui/sonner";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 import {
 	type BuildingBlocksSubmission,

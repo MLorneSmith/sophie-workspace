@@ -1,6 +1,5 @@
-import { headers } from "next/headers";
-
 import { Toaster } from "@kit/ui/sonner";
+import { headers } from "next/headers";
 
 import { RootProviders } from "~/components/root-providers";
 import { getFontsClassName } from "~/lib/fonts";

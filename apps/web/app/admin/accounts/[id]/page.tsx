@@ -1,8 +1,7 @@
-import { cache } from "react";
-
 import { AdminAccountPage } from "@kit/admin/components/admin-account-page";
 import { AdminGuard } from "@kit/admin/components/admin-guard";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
+import { cache } from "react";
 
 interface Params {
 	params: Promise<{

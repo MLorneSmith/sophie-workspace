@@ -1,12 +1,5 @@
 "use client";
 
-import {
-	PolarAngleAxis,
-	PolarGrid,
-	Radar,
-	RadarChart as RechartsRadarChart,
-} from "recharts";
-
 import { Card, CardContent, CardHeader, CardTitle } from "@kit/ui/card";
 import {
 	type ChartConfig,
@@ -14,6 +7,12 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from "@kit/ui/chart";
+import {
+	PolarAngleAxis,
+	PolarGrid,
+	Radar,
+	RadarChart as RechartsRadarChart,
+} from "recharts";
 
 export interface CategoryScores {
 	[key: string]: number;

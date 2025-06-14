@@ -1,8 +1,7 @@
 "use client";
 
-import { AlertCircle, CheckCircle2, XCircle } from "lucide-react";
-
 import { Card, CardContent } from "@kit/ui/card";
+import { AlertCircle, CheckCircle2, XCircle } from "lucide-react";
 
 export const ServiceStatus = {
 	CHECKING: "checking",

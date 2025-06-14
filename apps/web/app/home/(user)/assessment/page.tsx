@@ -1,12 +1,11 @@
-import Link from "next/link";
-import { redirect } from "next/navigation";
-
 import { getSurvey } from "@kit/payload";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
 import { Button } from "@kit/ui/button";
 import { Card } from "@kit/ui/card";
 import { PageBody } from "@kit/ui/page";
 import { Trans } from "@kit/ui/trans";
+import Link from "next/link";
+import { redirect } from "next/navigation";
 
 import { createI18nServerInstance } from "~/lib/i18n/i18n.server";
 import { withI18n } from "~/lib/i18n/with-i18n";

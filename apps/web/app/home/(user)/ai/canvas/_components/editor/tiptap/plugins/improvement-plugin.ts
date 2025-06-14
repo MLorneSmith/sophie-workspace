@@ -1,6 +1,5 @@
-import type { Editor } from "@tiptap/react";
-
 import type { BaseImprovement } from "@kit/ai-gateway/src/prompts/types/improvements";
+import type { Editor } from "@tiptap/react";
 
 /**
  * Inserts an AI-generated improvement into the Tiptap editor

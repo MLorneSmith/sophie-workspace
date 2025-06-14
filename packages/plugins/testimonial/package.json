@@ -40,11 +40,16 @@
 	},
 	"eslintConfig": {
 		"root": true,
-		"extends": ["@kit/eslint-config/base", "@kit/eslint-config/react"]
+		"extends": [
+			"@kit/eslint-config/base",
+			"@kit/eslint-config/react"
+		]
 	},
 	"typesVersions": {
 		"*": {
-			"*": ["src/*"]
+			"*": [
+				"src/*"
+			]
 		}
 	}
 }

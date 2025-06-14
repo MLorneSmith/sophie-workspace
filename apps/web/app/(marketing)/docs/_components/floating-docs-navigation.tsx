@@ -1,14 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
-
-import { usePathname } from "next/navigation";
-
-import { Menu } from "lucide-react";
-
 import { isBrowser } from "@kit/shared/utils";
 import { Button } from "@kit/ui/button";
 import { If } from "@kit/ui/if";
+import { Menu } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 export function FloatingDocumentationNavigation(
 	props: React.PropsWithChildren,

@@ -1,7 +1,6 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
-
 import { getLogger } from "@kit/shared/logger";
 import type { Database } from "@kit/supabase/database";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 export function createAdminDashboardService(client: SupabaseClient<Database>) {
 	return new AdminDashboardService(client);

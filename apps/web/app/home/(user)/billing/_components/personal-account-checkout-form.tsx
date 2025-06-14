@@ -1,11 +1,5 @@
 "use client";
 
-import { useState, useTransition } from "react";
-
-import dynamic from "next/dynamic";
-
-import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
-
 import { PlanPicker } from "@kit/billing-gateway/components";
 import { useAppEvents } from "@kit/shared/events";
 import { Alert, AlertDescription, AlertTitle } from "@kit/ui/alert";
@@ -18,6 +12,9 @@ import {
 } from "@kit/ui/card";
 import { If } from "@kit/ui/if";
 import { Trans } from "@kit/ui/trans";
+import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
+import dynamic from "next/dynamic";
+import { useState, useTransition } from "react";
 
 import billingConfig from "~/config/billing.config";
 

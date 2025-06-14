@@ -1,19 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
-import Image from "next/image";
-import Link from "next/link";
-
-import { useQuery } from "@tanstack/react-query";
-import { CheckCircle, XCircle } from "lucide-react";
-
 import { useSupabase } from "@kit/supabase/hooks/use-supabase";
 import { Badge } from "@kit/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@kit/ui/card";
-import type { Database } from "~/lib/database.types";
 
+import { useQuery } from "@tanstack/react-query";
+import { CheckCircle, XCircle } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 import { REQUIRED_LESSON_NUMBERS } from "~/lib/course/course-config";
+import type { Database } from "~/lib/database.types";
 
 import { CourseProgressBar } from "./CourseProgressBar";
 import { RadialProgress } from "./RadialProgress";

@@ -1,12 +1,11 @@
 import "server-only";
 
-import type { z } from "zod";
-
 import type {
 	BillingProviderSchema,
 	BillingStrategyProviderService,
 } from "@kit/billing";
 import { createRegistry } from "@kit/shared/registry";
+import type { z } from "zod";
 
 // Create a registry for billing strategy providers
 export const billingStrategyRegistry = createRegistry<

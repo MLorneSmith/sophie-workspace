@@ -1,11 +1,10 @@
+import type { CreateBillingCheckoutSchema } from "@kit/billing/schema";
 import {
-	type NewCheckout,
 	createCheckout,
 	getCustomer,
+	type NewCheckout,
 } from "@lemonsqueezy/lemonsqueezy.js";
 import type { z } from "zod";
-
-import type { CreateBillingCheckoutSchema } from "@kit/billing/schema";
 
 import { getLemonSqueezyEnv } from "../schema/lemon-squeezy-server-env.schema";
 import { initializeLemonSqueezyClient } from "./lemon-squeezy-sdk";

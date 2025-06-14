@@ -1,10 +1,9 @@
 import "server-only";
 
-import type { SupabaseClient } from "@supabase/supabase-js";
-
 import { createBillingGatewayService } from "@kit/billing-gateway";
 import { getLogger } from "@kit/shared/logger";
 import type { Database } from "@kit/supabase/database";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 export function createAccountPerSeatBillingService(
 	client: SupabaseClient<Database>,

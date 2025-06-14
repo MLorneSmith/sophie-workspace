@@ -9,8 +9,8 @@ import { nestedDocsPlugin } from "@payloadcms/plugin-nested-docs";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
 import { s3Storage } from "@payloadcms/storage-s3";
 import { en } from "@payloadcms/translations/languages/en";
-import { buildConfig } from "payload";
 import type { Plugin } from "payload";
+import { buildConfig } from "payload";
 
 // Type for Payload plugins
 type PayloadPlugin =

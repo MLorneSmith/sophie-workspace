@@ -1,9 +1,5 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-
-import { Circle, CircleStopIcon, Loader2, Trash } from "lucide-react";
-
 import { Alert, AlertDescription, AlertTitle } from "@kit/ui/alert";
 import { Button } from "@kit/ui/button";
 import {
@@ -13,6 +9,8 @@ import {
 	TooltipTrigger,
 } from "@kit/ui/tooltip";
 import { Trans } from "@kit/ui/trans";
+import { Circle, CircleStopIcon, Loader2, Trash } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface VideoRecorderProps {
 	onVideoRecorded: (blob: Blob | null) => void;

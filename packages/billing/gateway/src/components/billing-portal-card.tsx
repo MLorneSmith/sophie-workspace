@@ -1,7 +1,5 @@
 "use client";
 
-import { ArrowUpRight } from "lucide-react";
-
 import { Button } from "@kit/ui/button";
 import {
 	Card,
@@ -11,6 +9,7 @@ import {
 	CardTitle,
 } from "@kit/ui/card";
 import { Trans } from "@kit/ui/trans";
+import { ArrowUpRight } from "lucide-react";
 
 export function BillingPortalCard() {
 	return (

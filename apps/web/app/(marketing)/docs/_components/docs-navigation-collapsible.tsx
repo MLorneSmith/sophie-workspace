@@ -1,10 +1,9 @@
 "use client";
 
-import { usePathname } from "next/navigation";
-
 import type { Cms } from "@kit/cms";
 import { Collapsible } from "@kit/ui/collapsible";
 import { isRouteActive } from "@kit/ui/utils";
+import { usePathname } from "next/navigation";
 
 export function DocsNavigationCollapsible(
 	props: React.PropsWithChildren<{

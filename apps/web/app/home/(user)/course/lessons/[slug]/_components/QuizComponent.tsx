@@ -1,9 +1,5 @@
 "use client";
 
-import { useState } from "react";
-
-import { ChevronRight } from "lucide-react";
-
 import { Button } from "@kit/ui/button";
 import {
 	Card,
@@ -16,6 +12,8 @@ import { Checkbox } from "@kit/ui/checkbox";
 import { Label } from "@kit/ui/label";
 import { Progress } from "@kit/ui/progress";
 import { RadioGroup, RadioGroupItem } from "@kit/ui/radio-group";
+import { ChevronRight } from "lucide-react";
+import { useState } from "react";
 
 interface QuizOption {
 	text: string;
@@ -420,10 +418,7 @@ export function QuizComponent({
 	// Check if answers exist for the current question
 	const hasCurrentAnswers =
 		selectedAnswers &&
-		Object.hasOwn(
-			selectedAnswers,
-			currentQuestionIndex,
-		) &&
+		Object.hasOwn(selectedAnswers, currentQuestionIndex) &&
 		selectedAnswers[currentQuestionIndex] &&
 		selectedAnswers[currentQuestionIndex].length > 0;
 

@@ -1,8 +1,7 @@
 "use client";
 
-import dynamic from "next/dynamic";
-
 import { LoadingOverlay } from "@kit/ui/loading-overlay";
+import dynamic from "next/dynamic";
 
 export const DashboardDemo = dynamic(() => import("./dashboard-demo-charts"), {
 	ssr: false,

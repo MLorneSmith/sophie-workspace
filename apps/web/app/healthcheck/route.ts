@@ -1,6 +1,5 @@
-import { NextResponse } from "next/server";
-
 import { getSupabaseServerAdminClient } from "@kit/supabase/server-admin-client";
+import { NextResponse } from "next/server";
 
 /**
  * Healthcheck endpoint for the web app. If this endpoint returns a 200, the web app will be considered healthy.

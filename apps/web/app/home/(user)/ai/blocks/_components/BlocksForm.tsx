@@ -1,11 +1,5 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-
-import { useRouter } from "next/navigation";
-
-import debounce from "lodash/debounce";
-
 import { Button } from "@kit/ui/button";
 import {
 	Card,
@@ -18,14 +12,17 @@ import { Input } from "@kit/ui/input";
 import { Progress } from "@kit/ui/progress";
 import { Spinner } from "@kit/ui/spinner";
 import { Textarea } from "@kit/ui/textarea";
+import debounce from "lodash/debounce";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 
 import { getSuggestions } from "../_actions/ai-suggestions-action";
 import { submitBuildingBlocksAction } from "../_actions/submitBuildingBlocksAction";
 import {
-	type QuestionField,
-	type QuestionOption,
 	getQuestion,
 	presentationTypes,
+	type QuestionField,
+	type QuestionOption,
 	questions,
 } from "../_config/formContent";
 import { type FormData, useSetupForm } from "./BlocksFormContext";

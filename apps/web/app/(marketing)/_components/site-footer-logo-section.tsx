@@ -1,12 +1,10 @@
 "use client";
 
-import Link from "next/link";
-
-import { ArrowRight } from "lucide-react";
-
 import { Button } from "@kit/ui/button";
 import { Trans } from "@kit/ui/trans";
 import { cn } from "@kit/ui/utils";
+import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 import { AppLogo } from "~/components/app-logo";
 import pathsConfig from "~/config/paths.config";

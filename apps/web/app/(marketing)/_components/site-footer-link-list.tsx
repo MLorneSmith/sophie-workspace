@@ -1,8 +1,7 @@
 "use client";
 
-import Link from "next/link";
-
 import { cn } from "@kit/ui/utils";
+import Link from "next/link";
 
 interface FooterLinkListProps {
 	title: string;

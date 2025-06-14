@@ -1,11 +1,6 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
-
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, useWatch } from "react-hook-form";
-import { z } from "zod";
-
 import { useSignInWithOtp } from "@kit/supabase/hooks/use-sign-in-with-otp";
 import { useVerifyOtp } from "@kit/supabase/hooks/use-verify-otp";
 import { Button } from "@kit/ui/button";
@@ -26,6 +21,9 @@ import {
 } from "@kit/ui/input-otp";
 import { Spinner } from "@kit/ui/spinner";
 import { Trans } from "@kit/ui/trans";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useForm, useWatch } from "react-hook-form";
+import { z } from "zod";
 
 import { useCaptchaToken } from "../captcha/client";
 import { useLastAuthMethod } from "../hooks/use-last-auth-method";

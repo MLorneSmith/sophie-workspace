@@ -1,11 +1,5 @@
 "use client";
 
-import { Suspense, useCallback, useRef, useState } from "react";
-
-import { useSearchParams } from "next/navigation";
-
-import { useQueryClient } from "@tanstack/react-query";
-
 import type { BaseImprovement } from "@kit/ai-gateway/src/prompts/types/improvements";
 import { useSupabase } from "@kit/supabase/hooks/use-supabase";
 import {
@@ -14,6 +8,9 @@ import {
 	ResizablePanelGroup,
 } from "@kit/ui/resizable";
 import { Spinner } from "@kit/ui/spinner";
+import { useQueryClient } from "@tanstack/react-query";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useCallback, useRef, useState } from "react";
 
 import type { Database } from "~/lib/database.types";
 

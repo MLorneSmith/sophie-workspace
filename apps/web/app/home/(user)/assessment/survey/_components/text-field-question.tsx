@@ -1,11 +1,10 @@
 "use client";
 
-import { useState } from "react";
-
 import { Button } from "@kit/ui/button";
 import { Label } from "@kit/ui/label";
 import { Textarea } from "@kit/ui/textarea";
 import { Trans } from "@kit/ui/trans";
+import { useState, useId } from "react";
 
 import type { SurveyQuestion } from "../../../../../../../apps/payload/payload-types";
 
@@ -21,6 +20,7 @@ export function TextFieldQuestion({
 	isLoading,
 }: TextFieldQuestionProps) {
 	const [answer, setAnswer] = useState<string>("");
+	const answerId = useId();
 
 	const handleSubmit = () => {
 		if (answer.trim()) {
@@ -39,9 +39,9 @@ export function TextFieldQuestion({
 			</div>
 
 			<div className="space-y-2">
-				<Label htmlFor="answer">Your Answer</Label>
+				<Label htmlFor={answerId}>Your Answer</Label>
 				<Textarea
-					id="answer"
+					id={answerId}
 					value={answer}
 					onChange={(e) => setAnswer(e.target.value)}
 					placeholder="Type your answer here..."

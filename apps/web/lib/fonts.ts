@@ -1,6 +1,5 @@
-import { Inter as SansFont } from "next/font/google";
-
 import { cn } from "@kit/ui/utils";
+import { Inter as SansFont } from "next/font/google";
 
 /**
  * @sans

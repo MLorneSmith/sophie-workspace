@@ -1,10 +1,9 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-
 import { NavigationMenuItem } from "@kit/ui/navigation-menu";
 import { cn, isRouteActive } from "@kit/ui/utils";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const getClassName = (path: string, currentPathName: string) => {
 	const isActive = isRouteActive(path, currentPathName);

@@ -3,7 +3,11 @@
 	"version": "0.2.0",
 	"private": true,
 	"type": "module",
-	"files": ["./apps.js", "./base.js", "./nextjs.js"],
+	"files": [
+		"./apps.js",
+		"./base.js",
+		"./nextjs.js"
+	],
 	"scripts": {
 		"clean": "rm -rf .turbo node_modules",
 		"format": "prettier --check \"**/*.{js,json}\""

@@ -1,10 +1,9 @@
 "use client";
 
-import { createContext } from "react";
+import type { Database } from "@kit/supabase/database";
 
 import type { User } from "@supabase/supabase-js";
-
-import type { Database } from "@kit/supabase/database";
+import { createContext } from "react";
 
 interface AccountWorkspace {
 	accounts: Database["public"]["Views"]["user_accounts"]["Row"][];

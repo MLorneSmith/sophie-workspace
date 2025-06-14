@@ -1,11 +1,5 @@
 "use client";
 
-import type React from "react";
-
-import Link from "next/link";
-
-import { ExternalLinkIcon, PlayIcon, StarIcon } from "lucide-react";
-
 import type { Tables } from "@kit/supabase/database";
 import { Avatar, AvatarFallback, AvatarImage } from "@kit/ui/avatar";
 import { Button } from "@kit/ui/button";
@@ -20,6 +14,9 @@ import {
 import { If } from "@kit/ui/if";
 import { Trans } from "@kit/ui/trans";
 import { cn } from "@kit/ui/utils";
+import { ExternalLinkIcon, PlayIcon, StarIcon } from "lucide-react";
+import Link from "next/link";
+import type React from "react";
 
 import { TestimonialsDataProvider } from "./data-provider";
 

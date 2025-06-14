@@ -1,5 +1,5 @@
-import type { EnvMode } from "@/app/variables/lib/types";
 import { z } from "zod";
+import type { EnvMode } from "@/app/variables/lib/types";
 
 type ModelType =
 	| "string"

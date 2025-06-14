@@ -1,12 +1,11 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
-
 import { enhanceAction } from "@kit/next/actions";
 import { createOtpApi } from "@kit/otp";
 import { getLogger } from "@kit/shared/logger";
 import { getSupabaseServerAdminClient } from "@kit/supabase/server-admin-client";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
+import { revalidatePath } from "next/cache";
 
 import { RemoveMemberSchema } from "../../schema/remove-member.schema";
 import { TransferOwnershipConfirmationSchema } from "../../schema/transfer-ownership-confirmation.schema";

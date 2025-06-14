@@ -1,10 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
-
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-
 import { Alert, AlertDescription, AlertTitle } from "@kit/ui/alert";
 import {
 	AlertDialog,
@@ -28,6 +24,8 @@ import {
 } from "@kit/ui/form";
 import { If } from "@kit/ui/if";
 import { Input } from "@kit/ui/input";
+import { useState, useTransition } from "react";
+import { useForm } from "react-hook-form";
 
 import { banUserAction } from "../lib/server/admin-server-actions";
 import { BanUserSchema } from "../lib/server/schema/admin-actions.schema";

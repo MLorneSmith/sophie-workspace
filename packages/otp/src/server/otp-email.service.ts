@@ -1,8 +1,7 @@
-import { z } from "zod";
-
 import { renderOtpEmail } from "@kit/email-templates";
 import { getMailer } from "@kit/mailers";
 import { getLogger } from "@kit/shared/logger";
+import { z } from "zod";
 
 const EMAIL_SENDER = z
 	.string({

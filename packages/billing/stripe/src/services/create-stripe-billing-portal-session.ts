@@ -1,7 +1,6 @@
+import type { CreateBillingPortalSessionSchema } from "@kit/billing/schema";
 import type { Stripe } from "stripe";
 import type { z } from "zod";
-
-import type { CreateBillingPortalSessionSchema } from "@kit/billing/schema";
 
 /**
  * @name createStripeBillingPortalSession

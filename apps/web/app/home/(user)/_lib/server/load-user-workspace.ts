@@ -1,7 +1,6 @@
-import { cache } from "react";
-
 import { createAccountsApi } from "@kit/accounts/api";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
+import { cache } from "react";
 
 import featureFlagsConfig from "~/config/feature-flags.config";
 import { requireUserInServerComponent } from "~/lib/server/require-user-in-server-component";

@@ -1,6 +1,5 @@
-import { CreditCard, LayoutDashboard, Settings, Users } from "lucide-react";
-
 import { NavigationConfigSchema } from "@kit/ui/navigation-schema";
+import { CreditCard, LayoutDashboard, Settings, Users } from "lucide-react";
 
 import featureFlagsConfig from "~/config/feature-flags.config";
 import pathsConfig from "~/config/paths.config";

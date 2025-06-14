@@ -1,10 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
-
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, useWatch } from "react-hook-form";
-
 import { VerifyOtpForm } from "@kit/otp/components";
 import { useUser } from "@kit/supabase/hooks/use-user";
 import { Alert, AlertDescription, AlertTitle } from "@kit/ui/alert";
@@ -21,6 +17,8 @@ import { Button } from "@kit/ui/button";
 import { Form } from "@kit/ui/form";
 import { If } from "@kit/ui/if";
 import { Trans } from "@kit/ui/trans";
+import { useState, useTransition } from "react";
+import { useForm, useWatch } from "react-hook-form";
 
 import { TransferOwnershipConfirmationSchema } from "../../schema/transfer-ownership-confirmation.schema";
 import { transferOwnershipAction } from "../../server/actions/team-members-server-actions";

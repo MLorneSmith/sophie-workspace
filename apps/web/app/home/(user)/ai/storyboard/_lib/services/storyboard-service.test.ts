@@ -66,16 +66,15 @@ vi.mock("@kit/next/actions", () => ({
 // Mock console.error to prevent test output pollution
 const originalConsoleError = console.error;
 
+import { getLogger } from "@kit/shared/logger";
+// Import mocked modules
+import { getSupabaseServerClient } from "@kit/supabase/server-client";
 // Import the functions to test after mocks are set up
 import {
 	getPresentationAction,
 	getPresentationsAction,
 	saveStoryboardAction,
 } from "./storyboard-service";
-
-import { getLogger } from "@kit/shared/logger";
-// Import mocked modules
-import { getSupabaseServerClient } from "@kit/supabase/server-client";
 import { TipTapTransformer } from "./tiptap-transformer";
 
 // Create typed mocks using vi.mocked

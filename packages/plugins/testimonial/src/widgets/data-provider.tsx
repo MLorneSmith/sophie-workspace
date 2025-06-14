@@ -1,7 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
-
 import type { Tables } from "@kit/supabase/database";
 import { Spinner } from "@kit/ui/spinner";
+import { useQuery } from "@tanstack/react-query";
 
 export function TestimonialsDataProvider(props: {
 	children: (data: {

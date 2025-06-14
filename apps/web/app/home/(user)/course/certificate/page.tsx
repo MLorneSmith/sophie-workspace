@@ -1,9 +1,8 @@
-import { redirect } from "next/navigation";
-
 import { requireUser } from "@kit/supabase/require-user";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
 import { PageBody } from "@kit/ui/page";
 import { Trans } from "@kit/ui/trans";
+import { redirect } from "next/navigation";
 
 import type { Database } from "~/lib/database.types";
 import { createI18nServerInstance } from "~/lib/i18n/i18n.server";

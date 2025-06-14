@@ -1,12 +1,10 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
-
-import { ArrowLeft, ArrowRight } from "lucide-react";
-
 import { Button } from "@kit/ui/button";
 import { If } from "@kit/ui/if";
 import { Trans } from "@kit/ui/trans";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
 
 export function BlogPagination(props: {
 	currentPage: number;

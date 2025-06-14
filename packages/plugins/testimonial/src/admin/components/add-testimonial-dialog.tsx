@@ -1,10 +1,6 @@
 "use client";
 
-import { useState } from "react";
-
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-
 import {
 	AlertDialog,
 	AlertDialogCancel,
@@ -41,6 +37,8 @@ import {
 } from "@kit/ui/select";
 import { Stepper } from "@kit/ui/stepper";
 import { Textarea } from "@kit/ui/textarea";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 
 import { StarRating } from "../../components/star-rating";
 import { AddManualTestimonialSchema } from "../../schema/add-manual-testimonial.schema";

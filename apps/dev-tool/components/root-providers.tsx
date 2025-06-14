@@ -1,10 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { Toaster } from "@kit/ui/sonner";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
-import { Toaster } from "@kit/ui/sonner";
+import { useState } from "react";
 
 export function RootProviders({ children }: React.PropsWithChildren) {
 	return <ReactQueryProvider>{children}</ReactQueryProvider>;

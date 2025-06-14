@@ -1,7 +1,6 @@
-import { use } from "react";
-
 import { PersonalAccountSettingsContainer } from "@kit/accounts/personal-account-settings";
 import { PageBody } from "@kit/ui/page";
+import { use } from "react";
 
 import authConfig from "~/config/auth.config";
 import featureFlagsConfig from "~/config/feature-flags.config";

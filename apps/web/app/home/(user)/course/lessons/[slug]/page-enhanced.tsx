@@ -1,7 +1,6 @@
-import { notFound } from "next/navigation";
-
 import { getLessonBySlug } from "@kit/cms/payload";
 import { PageBody } from "@kit/ui/page";
+import { notFound } from "next/navigation";
 
 import { createI18nServerInstance } from "~/lib/i18n/i18n.server";
 import { withI18n } from "~/lib/i18n/with-i18n";

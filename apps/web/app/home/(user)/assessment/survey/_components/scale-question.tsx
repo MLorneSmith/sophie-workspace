@@ -1,11 +1,10 @@
 "use client";
 
-import { useState } from "react";
-
 import { Button } from "@kit/ui/button";
 import { Label } from "@kit/ui/label";
 import { RadioGroup, RadioGroupItem } from "@kit/ui/radio-group";
 import { Trans } from "@kit/ui/trans";
+import { useState } from "react";
 
 interface QuestionOption {
 	id: string;

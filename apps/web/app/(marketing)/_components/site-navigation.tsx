@@ -1,7 +1,3 @@
-import Link from "next/link";
-
-import { Menu } from "lucide-react";
-
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -10,6 +6,8 @@ import {
 } from "@kit/ui/dropdown-menu";
 import { NavigationMenu, NavigationMenuList } from "@kit/ui/navigation-menu";
 import { Trans } from "@kit/ui/trans";
+import { Menu } from "lucide-react";
+import Link from "next/link";
 
 import { SiteNavigationItem } from "./site-navigation-item";
 

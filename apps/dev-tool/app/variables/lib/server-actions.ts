@@ -1,11 +1,10 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
-
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:url";
-import { envVariables } from "@/app/variables/lib/env-variables-model";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { envVariables } from "@/app/variables/lib/env-variables-model";
 
 const Schema = z.object({
 	name: z.string().min(1),

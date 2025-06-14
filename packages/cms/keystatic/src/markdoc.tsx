@@ -1,6 +1,5 @@
-import React from "react";
-
 import type { Node } from "@markdoc/markdoc";
+import React from "react";
 
 import {
 	CustomMarkdocComponents,

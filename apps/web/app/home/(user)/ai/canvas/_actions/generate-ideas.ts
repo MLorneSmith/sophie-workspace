@@ -1,7 +1,5 @@
 "use server";
 
-import { z } from "zod";
-
 import {
 	type ChatCompletionOptions,
 	type ChatMessage,
@@ -16,6 +14,7 @@ import { presentationContext } from "@kit/ai-gateway/src/prompts/partials/presen
 import { parseImprovements } from "@kit/ai-gateway/src/utils/parse-improvements";
 import { enhanceAction } from "@kit/next/actions";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
+import { z } from "zod";
 
 // Define Zod schema for request validation
 const IdeasSchema = z.object({

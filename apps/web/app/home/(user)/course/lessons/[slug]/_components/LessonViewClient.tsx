@@ -1,20 +1,5 @@
 "use client";
 
-import { useCallback, useEffect, useState, useTransition } from "react";
-
-import Link from "next/link";
-
-import {
-	BookOpen,
-	Briefcase,
-	CheckCircle,
-	CheckSquare,
-	ChevronLeft,
-	ChevronRight,
-	Play,
-} from "lucide-react";
-import { toast } from "sonner";
-
 import { PayloadContentRenderer } from "@kit/cms/payload";
 import { Button } from "@kit/ui/button";
 import {
@@ -24,7 +9,20 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@kit/ui/card";
-
+import {
+	BookOpen,
+	Briefcase,
+	CheckCircle,
+	CheckSquare,
+	ChevronLeft,
+	ChevronRight,
+	Play,
+} from "lucide-react";
+import Link from "next/link";
+import { useCallback, useEffect, useState, useTransition } from "react";
+import { toast } from "sonner";
+// Import database types
+import type { Database } from "~/lib/database.types";
 import {
 	submitQuizAttemptAction,
 	updateLessonProgressAction,
@@ -32,9 +30,6 @@ import {
 // Import the QuizComponent and SurveyComponent
 import { QuizComponent } from "./QuizComponent";
 import { SurveyComponent } from "./SurveyComponent";
-
-// Import database types
-import type { Database } from "~/lib/database.types";
 
 // Type aliases for better readability
 type QuizAttempt = Database["public"]["Tables"]["quiz_attempts"]["Row"];

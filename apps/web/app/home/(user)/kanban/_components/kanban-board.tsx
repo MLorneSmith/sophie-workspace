@@ -1,26 +1,17 @@
 "use client";
 
-import { useCallback, useState } from "react";
-
 import {
+	closestCenter,
 	DndContext,
 	type DragEndEvent,
 	DragOverlay,
 	type DragStartEvent,
 	KeyboardSensor,
 	PointerSensor,
-	closestCenter,
 	useSensor,
 	useSensors,
 } from "@dnd-kit/core";
 import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
-import {
-	AlertCircleIcon,
-	PlusIcon,
-	RefreshCcwIcon,
-	RotateCcwIcon,
-} from "lucide-react";
-
 import { Alert, AlertDescription } from "@kit/ui/alert";
 import { Button } from "@kit/ui/button";
 import {
@@ -30,6 +21,13 @@ import {
 	TooltipTrigger,
 } from "@kit/ui/tooltip";
 import { Trans } from "@kit/ui/trans";
+import {
+	AlertCircleIcon,
+	PlusIcon,
+	RefreshCcwIcon,
+	RotateCcwIcon,
+} from "lucide-react";
+import { useCallback, useState } from "react";
 
 import {
 	useResetTasks,

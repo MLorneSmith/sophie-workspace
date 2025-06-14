@@ -1,4 +1,4 @@
-import { type Page, expect } from "@playwright/test";
+import { expect, type Page } from "@playwright/test";
 
 import { AuthPageObject } from "../authentication/auth.po";
 import { OtpPo } from "../utils/otp.po";

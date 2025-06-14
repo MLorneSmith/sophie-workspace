@@ -1,7 +1,6 @@
-import Link from "next/link";
-
 import { If } from "@kit/ui/if";
 import { cn } from "@kit/ui/utils";
+import Link from "next/link";
 
 export function DocsPageLink({
 	page,

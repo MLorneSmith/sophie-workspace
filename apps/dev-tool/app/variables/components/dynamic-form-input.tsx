@@ -1,5 +1,3 @@
-import { useCallback } from "react";
-
 import { Input } from "@kit/ui/input";
 import {
 	Select,
@@ -10,6 +8,7 @@ import {
 } from "@kit/ui/select";
 import { Switch } from "@kit/ui/switch";
 import { Textarea } from "@kit/ui/textarea";
+import { useCallback } from "react";
 
 type ModelType =
 	| "string"

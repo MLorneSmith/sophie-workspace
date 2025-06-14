@@ -1,11 +1,9 @@
-import { use } from "react";
-
-import { ServerDataLoader } from "@makerkit/data-loader-supabase-nextjs";
-import { PlusCircleIcon } from "lucide-react";
-
 import { getSupabaseServerAdminClient } from "@kit/supabase/server-admin-client";
 import { Button } from "@kit/ui/button";
 import { PageBody, PageHeader } from "@kit/ui/page";
+import { ServerDataLoader } from "@makerkit/data-loader-supabase-nextjs";
+import { PlusCircleIcon } from "lucide-react";
+import { use } from "react";
 
 import { AddTestimonialDialog } from "../components/add-testimonial-dialog";
 import { TestimonialsTable } from "../components/testimonials-table";

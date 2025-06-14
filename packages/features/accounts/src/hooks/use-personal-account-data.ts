@@ -1,8 +1,7 @@
-import { useCallback } from "react";
+import { useSupabase } from "@kit/supabase/hooks/use-supabase";
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-
-import { useSupabase } from "@kit/supabase/hooks/use-supabase";
+import { useCallback } from "react";
 
 export function usePersonalAccountData(
 	userId: string,

@@ -1,11 +1,9 @@
-import Link from "next/link";
-
-import type { AuthError } from "@supabase/supabase-js";
-
 import { ResendAuthLinkForm } from "@kit/auth/resend-email-link";
 import { Alert, AlertDescription, AlertTitle } from "@kit/ui/alert";
 import { Button } from "@kit/ui/button";
 import { Trans } from "@kit/ui/trans";
+import type { AuthError } from "@supabase/supabase-js";
+import Link from "next/link";
 
 import pathsConfig from "~/config/paths.config";
 import { withI18n } from "~/lib/i18n/with-i18n";

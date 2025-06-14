@@ -51,7 +51,9 @@
 	"prettier": "@kit/prettier-config",
 	"typesVersions": {
 		"*": {
-			"*": ["src/*"]
+			"*": [
+				"src/*"
+			]
 		}
 	}
 }

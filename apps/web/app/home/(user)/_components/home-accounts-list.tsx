@@ -1,7 +1,3 @@
-import { use } from "react";
-
-import Link from "next/link";
-
 import {
 	CardButton,
 	CardButtonHeader,
@@ -14,6 +10,8 @@ import {
 	EmptyStateText,
 } from "@kit/ui/empty-state";
 import { Trans } from "@kit/ui/trans";
+import Link from "next/link";
+import { use } from "react";
 
 import { loadUserWorkspace } from "../_lib/server/load-user-workspace";
 import { HomeAddAccountButton } from "./home-add-account-button";

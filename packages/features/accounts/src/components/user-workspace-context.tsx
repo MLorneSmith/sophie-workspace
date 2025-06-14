@@ -1,10 +1,9 @@
 "use client";
 
-import { createContext } from "react";
+import type { Tables } from "@kit/supabase/database";
 
 import type { User } from "@supabase/supabase-js";
-
-import type { Tables } from "@kit/supabase/database";
+import { createContext } from "react";
 
 interface UserWorkspace {
 	accounts: Array<{

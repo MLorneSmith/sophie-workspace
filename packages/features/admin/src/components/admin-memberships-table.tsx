@@ -1,11 +1,9 @@
 "use client";
 
-import Link from "next/link";
-
-import type { ColumnDef } from "@tanstack/react-table";
-
 import type { Tables } from "@kit/supabase/database";
 import { DataTable } from "@kit/ui/enhanced-data-table";
+import type { ColumnDef } from "@tanstack/react-table";
+import Link from "next/link";
 
 type Membership = Tables<"accounts_memberships"> & {
 	account: {

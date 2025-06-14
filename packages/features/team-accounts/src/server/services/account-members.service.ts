@@ -1,11 +1,9 @@
 import "server-only";
 
-import type { SupabaseClient } from "@supabase/supabase-js";
-
-import type { z } from "zod";
-
 import { getLogger } from "@kit/shared/logger";
 import type { Database } from "@kit/supabase/database";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { z } from "zod";
 
 import type { RemoveMemberSchema } from "../../schema/remove-member.schema";
 import type { TransferOwnershipConfirmationSchema } from "../../schema/transfer-ownership-confirmation.schema";

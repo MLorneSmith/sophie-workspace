@@ -1,10 +1,8 @@
 "use client";
 
-import { useCallback } from "react";
-
-import type { z } from "zod";
-
 import { useSignInWithEmailPassword } from "@kit/supabase/hooks/use-sign-in-with-email-password";
+import { useCallback } from "react";
+import type { z } from "zod";
 
 import { useCaptchaToken } from "../captcha/client";
 import type { PasswordSignInSchema } from "../schemas/password-sign-in.schema";

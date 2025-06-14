@@ -1,6 +1,5 @@
-import { notFound } from "next/navigation";
-
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
+import { notFound } from "next/navigation";
 
 import { isSuperAdmin } from "../lib/server/utils/is-super-admin";
 

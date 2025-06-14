@@ -1,9 +1,8 @@
 "use server";
 
-import { redirect } from "next/navigation";
-
 import { enhanceAction } from "@kit/next/actions";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
+import { redirect } from "next/navigation";
 
 import featureFlagsConfig from "~/config/feature-flags.config";
 

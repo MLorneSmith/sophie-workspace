@@ -1,10 +1,5 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-
-import { BarChart, LayoutDashboard, Users } from "lucide-react";
-
 import {
 	Sidebar,
 	SidebarContent,
@@ -16,6 +11,9 @@ import {
 	SidebarMenu,
 	SidebarMenuButton,
 } from "@kit/ui/shadcn-sidebar";
+import { BarChart, LayoutDashboard, Users } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import { AppLogo } from "~/components/app-logo";
 import { ProfileAccountDropdownContainer } from "~/components/personal-account-dropdown-container";

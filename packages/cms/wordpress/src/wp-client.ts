@@ -1,11 +1,10 @@
+import { Cms, type CmsClient } from "@kit/cms-types";
 import type {
 	WP_Post_Status_Name,
 	WP_REST_API_Category,
 	WP_REST_API_Post,
 	WP_REST_API_Tag,
 } from "wp-types";
-
-import { Cms, type CmsClient } from "@kit/cms-types";
 
 import GetTagsOptions = Cms.GetTagsOptions;
 

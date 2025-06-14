@@ -1,6 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
-
 import { useSupabase } from "@kit/supabase/hooks/use-supabase";
+import { useQuery } from "@tanstack/react-query";
 
 import { getCanvasTitle } from "../queries/canvas-title";
 

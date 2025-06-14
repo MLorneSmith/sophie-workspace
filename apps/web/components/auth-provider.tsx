@@ -1,12 +1,10 @@
 "use client";
 
-import { useCallback } from "react";
-
-import type { AuthChangeEvent, Session } from "@supabase/supabase-js";
-
 import { useMonitoring } from "@kit/monitoring/hooks";
 import { useAppEvents } from "@kit/shared/events";
 import { useAuthChangeListener } from "@kit/supabase/hooks/use-auth-change-listener";
+import type { AuthChangeEvent, Session } from "@supabase/supabase-js";
+import { useCallback } from "react";
 
 import pathsConfig from "~/config/paths.config";
 

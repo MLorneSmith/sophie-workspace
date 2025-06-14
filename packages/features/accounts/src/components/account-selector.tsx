@@ -1,11 +1,5 @@
 "use client";
 
-import { useMemo, useState } from "react";
-
-import { CaretSortIcon, PersonIcon } from "@radix-ui/react-icons";
-import { CheckCircle, Plus } from "lucide-react";
-import { useTranslation } from "react-i18next";
-
 import { Avatar, AvatarFallback, AvatarImage } from "@kit/ui/avatar";
 import { Button } from "@kit/ui/button";
 import {
@@ -21,6 +15,10 @@ import { Popover, PopoverContent, PopoverTrigger } from "@kit/ui/popover";
 import { Separator } from "@kit/ui/separator";
 import { Trans } from "@kit/ui/trans";
 import { cn } from "@kit/ui/utils";
+import { CaretSortIcon, PersonIcon } from "@radix-ui/react-icons";
+import { CheckCircle, Plus } from "lucide-react";
+import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { CreateTeamAccountDialog } from "../../../team-accounts/src/components/create-team-account-dialog";
 import { usePersonalAccountData } from "../hooks/use-personal-account-data";

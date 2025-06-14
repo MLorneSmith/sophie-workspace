@@ -1,12 +1,11 @@
 "use client";
 
-import type { Provider } from "@supabase/supabase-js";
-
 import { isBrowser } from "@kit/shared/utils";
 import { Alert, AlertDescription, AlertTitle } from "@kit/ui/alert";
 import { If } from "@kit/ui/if";
 import { Separator } from "@kit/ui/separator";
 import { Trans } from "@kit/ui/trans";
+import type { Provider } from "@supabase/supabase-js";
 
 import { MagicLinkAuthContainer } from "./magic-link-auth-container";
 import { OauthProviders } from "./oauth-providers";

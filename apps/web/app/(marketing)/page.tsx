@@ -1,10 +1,9 @@
-import { Suspense } from "react";
-
 import { PricingTable } from "@kit/billing-gateway/marketing";
 import { BackgroundBoxes } from "@kit/ui/background-boxes";
 import { BlogPostCard } from "@kit/ui/blog-post-card";
 import { CardSpotlight } from "@kit/ui/card-spotlight";
 import { Hero, Pill, SecondaryHero } from "@kit/ui/marketing";
+import { Suspense } from "react";
 
 import billingConfig from "~/config/billing.config";
 import { homepageContentConfig } from "~/config/homepage-content.config";

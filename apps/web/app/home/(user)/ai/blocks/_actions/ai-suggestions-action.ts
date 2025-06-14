@@ -1,7 +1,5 @@
 "use server";
 
-import { z } from "zod";
-
 import {
 	type ChatCompletionOptions,
 	type ChatMessage,
@@ -13,6 +11,7 @@ import { createAudienceSuggestionsConfig } from "@kit/ai-gateway/src/configs/use
 import { createTitleSuggestionsConfig } from "@kit/ai-gateway/src/configs/use-cases/title-suggestions/config";
 import { PromptManager } from "@kit/ai-gateway/src/prompts/prompt-manager";
 import { enhanceAction } from "@kit/next/actions";
+import { z } from "zod";
 
 // Define Zod schema for request validation
 const SuggestionsSchema = z

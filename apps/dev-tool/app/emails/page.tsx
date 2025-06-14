@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 import {
 	CardButton,
 	CardButtonHeader,
@@ -7,6 +5,7 @@ import {
 } from "@kit/ui/card-button";
 import { Heading } from "@kit/ui/heading";
 import { Page, PageBody, PageHeader } from "@kit/ui/page";
+import Link from "next/link";
 
 export const metadata = {
 	title: "Emails",
