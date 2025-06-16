@@ -4,13 +4,13 @@ import { pino } from "pino";
  * @description A logger implementation using Pino
  */
 const Logger = pino({
-	browser: {
-		asObject: true,
-	},
-	level: "debug",
-	base: {
-		env: process.env.NODE_ENV,
-	},
-	errorKey: "error",
+    browser: {
+        asObject: true,
+    },
+    level: "debug",
+    base: {
+        env: process.env.NODE_ENV,
+    },
+    errorKey: "error",
 });
 export { Logger };

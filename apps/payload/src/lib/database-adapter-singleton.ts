@@ -1,9 +1,18 @@
 import type { PostgresAdapterArgs } from "@payloadcms/db-postgres";
 import { postgresAdapter } from "@payloadcms/db-postgres";
-import { createServiceLogger, type LogContext } from "@kit/shared/logger";
+
+// import { createServiceLogger, type LogContext } from "@kit/shared/logger";
+type LogContext = Record<string, unknown>;
 
 // Initialize enhanced logger for database adapter
-const { getLogger, getContextLogger } = createServiceLogger("DB-ADAPTER");
+// const { getLogger, getContextLogger } = createServiceLogger("DB-ADAPTER");
+const getLogger = () => ({
+	info: console.log,
+	error: console.error,
+	warn: console.warn,
+	debug: console.debug,
+});
+const getContextLogger = () => getLogger();
 
 // Global variable to survive Next.js hot reloads
 declare global {
@@ -64,7 +73,7 @@ class DatabaseAdapterManager {
 		this.logger = await getLogger();
 		this.logger.info("DatabaseAdapterManager initialized", {
 			environment: this.environment,
-			operation: "db_adapter_init"
+			operation: "db_adapter_init",
 		});
 	}
 
@@ -232,7 +241,7 @@ class DatabaseAdapterManager {
 			poolMin: poolConfig.min,
 			schemaName: config.schemaName,
 			idType: config.idType,
-			operation: "adapter_config"
+			operation: "adapter_config",
 		});
 
 		return config;

@@ -535,9 +535,9 @@ describe("Global Singleton Management", () => {
 	it("initializes global instance correctly", () => {
 		initializeFormSubmissionProtection();
 
-		expect(
-			globalThis.__formSubmissionProtectionManager,
-		).toBeInstanceOf(FormSubmissionProtectionManager);
+		expect(globalThis.__formSubmissionProtectionManager).toBeInstanceOf(
+			FormSubmissionProtectionManager,
+		);
 	});
 
 	it("cleans up global instance", () => {
@@ -545,8 +545,6 @@ describe("Global Singleton Management", () => {
 		expect(globalThis.__formSubmissionProtectionManager).toBeDefined();
 
 		cleanupFormSubmissionProtection();
-		expect(
-			globalThis.__formSubmissionProtectionManager,
-		).toBeUndefined();
+		expect(globalThis.__formSubmissionProtectionManager).toBeUndefined();
 	});
 });
