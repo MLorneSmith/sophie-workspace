@@ -27,7 +27,7 @@ After adopting the role, load relevant context based on the issue type. Use the 
 First, read the inventory to understand available documentation:
 
 ```
-/read .claude/docs/context-docs-inventory.xml
+/read .claude/docs/.context-docs-inventory.xml
 ```
 
 This XML file contains a complete inventory of all context documentation organized by category:

@@ -42,5 +42,29 @@
 			]
 		}
 	},
-	"ignoreDependencies": ["@types/*", "husky", "lint-staged"]
+	"ignoreDependencies": [
+		"@types/*",
+		"husky",
+		"lint-staged",
+		"// MakerKit template dependencies that may be used in future:",
+		"@marsidev/react-turnstile",
+		"@tanstack/react-table",
+		"@makerkit/data-loader-supabase-core",
+		"// Payload CMS features:",
+		"@lexical/list",
+		"@lexical/rich-text",
+		"lexical",
+		"sharp",
+		"@markdoc/markdoc",
+		"@payloadcms/payload-cloud"
+	],
+	"ignore": [
+		"// MakerKit template features to preserve:",
+		"packages/features/auth/src/components/existing-account-hint.tsx",
+		"packages/features/auth/src/components/last-auth-method-hint.tsx",
+		"packages/features/auth/src/components/otp-sign-in-container.tsx",
+		"packages/features/accounts/src/schema/link-email-password.schema.ts",
+		"packages/billing/gateway/src/server/utils/resolve-product-plan.ts",
+		"packages/plugins/testimonial/src/server/index.ts"
+	]
 }

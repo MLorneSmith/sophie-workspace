@@ -5,10 +5,8 @@ import { Card } from "@kit/ui/card";
 import { Progress } from "@kit/ui/progress";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
-import type {
-	Survey,
-	SurveyQuestion,
-} from "../../../../../../../apps/payload/payload-types";
+// @ts-ignore - payload types path issue
+import type { Survey, SurveyQuestion } from "@/../payload/payload-types";
 import {
 	completeSurveyAction,
 	saveResponseAction,

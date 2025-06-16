@@ -48,25 +48,7 @@ jobs:
                     owner: context.repo.owner,
                     repo: context.repo.repo,
                     issue_number: issue.number,
-                    body: `🤖 **Context Staleness Alert**
-
-This story has been inactive for over a week. The development context may be stale and should be refreshed before resuming development.
-
-## Context Refresh Checklist
-- [ ] Review story relevance and acceptance criteria
-- [ ] Verify technical approach is still appropriate
-- [ ] Update file paths and dependencies
-- [ ] Refresh progress notes with current status
-- [ ] Verify development environment is ready
-- [ ] Update story context in \`.claude/contexts/story-${issue.number}/\`
-
-## Next Steps
-1. Load the appropriate Claude role for this story
-2. Review existing context files
-3. Update context with current codebase state
-4. Plan next development session
-
-*This is an automated message from the AAFD v2.0 methodology system.*`
+                    body: `🤖 **Context Staleness Alert**\n\nThis story has been inactive for over a week. The development context may be stale and should be refreshed before resuming development.\n\n## Context Refresh Checklist\n- [ ] Review story relevance and acceptance criteria\n- [ ] Verify technical approach is still appropriate\n- [ ] Update file paths and dependencies\n- [ ] Refresh progress notes with current status\n- [ ] Verify development environment is ready\n- [ ] Update story context in \\\`.claude/contexts/story-${issue.number}/\\\`\n\n## Next Steps\n1. Load the appropriate Claude role for this story\n2. Review existing context files\n3. Update context with current codebase state\n4. Plan next development session\n\n*This is an automated message from the AAFD v2.0 methodology system.*`
                   });
                   
                   console.log(\`Added stale-context label to issue #${issue.number}: ${issue.title}\`);
@@ -95,14 +77,7 @@ This story has been inactive for over a week. The development context may be sta
                     owner: context.repo.owner,
                     repo: context.repo.repo,
                     issue_number: issue.number,
-                    body: `⚠️ **Very Stale Context Alert**
-
-This story has been inactive for over 2 weeks. Consider:
-- Whether this story is still relevant
-- If it should be closed or moved to backlog
-- If it needs major context refresh or re-planning
-
-*This is an automated message from the AAFD v2.0 methodology system.*`
+                    body: `⚠️ **Very Stale Context Alert**\n\nThis story has been inactive for over 2 weeks. Consider:\n- Whether this story is still relevant\n- If it should be closed or moved to backlog\n- If it needs major context refresh or re-planning\n\n*This is an automated message from the AAFD v2.0 methodology system.*`
                   });
                   
                   console.log(\`Added very-stale-context label to issue #${issue.number}: ${issue.title}\`);
