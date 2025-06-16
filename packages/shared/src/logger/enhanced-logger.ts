@@ -136,7 +136,7 @@ export class EnhancedLogger {
 		});
 	}
 
-	private log(message: string, level: LogLevel, context?: LogContext): void {
+	protected log(message: string, level: LogLevel, context?: LogContext): void {
 		if (!this.config.enableLogging) return;
 		if (this.levels[level] < this.levels[this.config.logLevel]) return;
 
@@ -159,7 +159,7 @@ export class EnhancedLogger {
 
 		if (context) {
 			const sanitizedContext = this.config.enableSanitization
-				? this.sanitizeData(context)
+				? this.sanitizeData(context) as LogContext
 				: context;
 
 			return { ...baseEntry, ...sanitizedContext };
