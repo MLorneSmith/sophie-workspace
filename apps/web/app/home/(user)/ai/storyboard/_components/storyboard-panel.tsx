@@ -10,6 +10,11 @@ import { useEffect, useState } from "react";
 import { usePresentationStoryboard } from "../_lib/hooks/use-presentation-storyboard";
 import { SortableSlideList } from "./sortable-slide-list";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("HOME-(USER)");
+
 interface StoryboardPanelProps {
 	presentationId: string;
 	onBack: () => void;
@@ -34,7 +39,9 @@ export function StoryboardPanel({
 			await saveStoryboard(storyboardData);
 			toast.success("Storyboard saved successfully");
 		} catch (error) {
-			console.error("Error saving storyboard:", error);
+			/* TODO: Async logger needed */ logger.error("Error saving storyboard:", {
+				data: error,
+			});
 			toast.error("Failed to save storyboard");
 		}
 	};

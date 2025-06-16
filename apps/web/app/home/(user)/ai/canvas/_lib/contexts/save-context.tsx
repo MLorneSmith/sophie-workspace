@@ -12,6 +12,11 @@ import {
 
 import { toast } from "sonner";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("HOME-(USER)");
+
 type SaveStatus = "idle" | "saving" | "saved" | "error";
 
 interface SaveContextType {
@@ -37,7 +42,7 @@ export function SaveContextProvider({ children }: SaveContextProviderProps) {
 
 	const manualSave = useCallback(async () => {
 		if (!saveCallbackRef.current) {
-			console.warn("No save callback registered");
+			(await getLogger()).warn("No save callback registered");
 			return;
 		}
 

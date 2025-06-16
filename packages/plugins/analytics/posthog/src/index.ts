@@ -1,6 +1,11 @@
 import type { PostHog as ClientPostHog } from "posthog-js";
 import type { PostHog as ServerPostHog } from "posthog-node";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("INDEX");
+
 const isOnServer = typeof document === "undefined";
 
 /**
@@ -150,7 +155,7 @@ class ServerPostHogImpl {
 
 	log(...args: unknown[]) {
 		if (process.env.NODE_ENV === "development") {
-			console.log("[ServerPostHog]", ...args);
+			/* TODO: Async logger needed */ logger.info("[ServerPostHog]", { data: ...args });
 		}
 	}
 
@@ -215,7 +220,7 @@ class ClientPostHogImpl {
 
 	log(...args: unknown[]) {
 		if (process.env.NODE_ENV === "development") {
-			console.log("[ClientPostHog]", ...args);
+			/* TODO: Async logger needed */ logger.info("[ClientPostHog]", { data: ...args });
 		}
 	}
 

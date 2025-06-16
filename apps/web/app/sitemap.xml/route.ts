@@ -3,6 +3,11 @@ import { getServerSideSitemap } from "next-sitemap";
 
 import appConfig from "~/config/app.config";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("SITEMAP.XML");
+
 /**
  * @description The maximum age of the sitemap in seconds.
  * This is used to set the cache-control header for the sitemap. The cache-control header is used to control how long the sitemap is cached.
@@ -69,7 +74,10 @@ async function getContentItems() {
 				})),
 			)
 			.catch((error) => {
-				console.error("Error fetching posts for sitemap:", error);
+				/* TODO: Async logger needed */ logger.error(
+					"Error fetching posts for sitemap:",
+					{ data: error },
+				);
 				return []; // Return empty array on error
 			});
 
@@ -90,7 +98,10 @@ async function getContentItems() {
 				})),
 			)
 			.catch((error) => {
-				console.error("Error fetching docs for sitemap:", error);
+				/* TODO: Async logger needed */ logger.error(
+					"Error fetching docs for sitemap:",
+					{ data: error },
+				);
 				return []; // Return empty array on error
 			});
 
@@ -99,7 +110,10 @@ async function getContentItems() {
 			items.flat(),
 		);
 	} catch (error) {
-		console.error("Error generating content items for sitemap:", error);
+		/* TODO: Async logger needed */ logger.error(
+			"Error generating content items for sitemap:",
+			{ data: error },
+		);
 		return []; // Return empty array if CMS client creation fails
 	}
 }

@@ -9,6 +9,11 @@ import { useState } from "react";
 import { ScaleQuestion } from "./scale-question";
 import { TextFieldQuestion } from "./text-field-question";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("HOME-(USER)");
+
 interface QuestionOption {
 	id: string;
 	text: string;
@@ -64,16 +69,25 @@ export function QuestionCard({
 	const handleSubmit = () => {
 		if (selectedOption) {
 			// Log the selected option and available options for debugging
-			console.log("Selected option:", selectedOption);
-			console.log("Available options:", question.options);
+			/* TODO: Async logger needed */ logger.info("Selected option:", {
+				data: selectedOption,
+			});
+			/* TODO: Async logger needed */ logger.info("Available options:", {
+				data: question.options,
+			});
 
 			const option = question.options?.find((opt) => opt.id === selectedOption);
 
 			if (option) {
 				onAnswer(question.id, option.text, option.score || 0);
 			} else {
-				console.error("Selected option not found:", selectedOption);
-				console.error("Question options:", question.options);
+				/* TODO: Async logger needed */ logger.error(
+					"Selected option not found:",
+					{ data: selectedOption },
+				);
+				/* TODO: Async logger needed */ logger.error("Question options:", {
+					data: question.options,
+				});
 			}
 		}
 	};

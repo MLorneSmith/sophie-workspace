@@ -5,6 +5,11 @@ import Image from "next/image";
 import { getPayload } from "payload";
 import "./styles.css";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("PAGE");
+
 export default async function HomePage() {
 	const headers = await getHeaders();
 
@@ -21,9 +26,9 @@ export default async function HomePage() {
 
 		// Debug logging in development
 		if (process.env.NODE_ENV === "development") {
-			console.log("[PAYLOAD-FRONTEND] Payload initialized successfully");
-			console.log("[PAYLOAD-FRONTEND] Config routes:", payload?.config?.routes);
-			console.log("[PAYLOAD-FRONTEND] Admin route:", adminRoute);
+			/* TODO: Async logger needed */ logger.info("[PAYLOAD-FRONTEND] Payload initialized successfully");
+			/* TODO: Async logger needed */ logger.info("[PAYLOAD-FRONTEND] Config routes:", { data: payload?.config?.routes });
+			/* TODO: Async logger needed */ logger.info("[PAYLOAD-FRONTEND] Admin route:", { data: adminRoute });
 		}
 
 		return (
@@ -68,7 +73,7 @@ export default async function HomePage() {
 			</div>
 		);
 	} catch (error) {
-		console.error("[PAYLOAD-FRONTEND] Error initializing Payload:", error);
+		/* TODO: Async logger needed */ logger.error("[PAYLOAD-FRONTEND] Error initializing Payload:", { data: error });
 
 		const fileURL = `vscode://file/${fileURLToPath(import.meta.url)}`;
 

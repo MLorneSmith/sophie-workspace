@@ -11,6 +11,11 @@ import type { Database } from "~/lib/database.types";
 import { saveResponseAction } from "../../../../assessment/_lib/server/server-actions";
 import { QuestionCard } from "../../../../assessment/survey/_components/question-card";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("HOME-(USER)");
+
 // Define proper types for survey data
 type PayloadSurvey = {
 	id: string;
@@ -70,7 +75,7 @@ export function SurveyComponent({
 	const { data: questionsData, isLoading: isQuestionsLoading } = useQuery({
 		queryKey: ["survey-questions", survey?.id],
 		queryFn: async () => {
-			console.log(`Processing questions for survey ID: ${survey?.id}`);
+			(await getLogger()).info(`Processing questions for survey ID: ${survey?.id}`);
 
 			// First check if questions are already included in the survey object
 			if (
@@ -78,9 +83,7 @@ export function SurveyComponent({
 				Array.isArray(survey.questions) &&
 				survey.questions.length > 0
 			) {
-				console.log(
-					`Survey already contains ${survey.questions.length} questions`,
-				);
+				/* TODO: Async logger needed */ logger.info(`Survey already contains ${survey.questions.length} questions`, { data:  });
 
 				// Check if questions are fully populated with text
 				const hasFullyPopulatedQuestions = survey.questions.some(
@@ -88,25 +91,25 @@ export function SurveyComponent({
 				);
 
 				if (hasFullyPopulatedQuestions) {
-					console.log("Questions are fully populated in survey object");
+					/* TODO: Async logger needed */ logger.info("Questions are fully populated in survey object");
 					return survey.questions;
 				}
-				console.log("Questions are references only, need to fetch full data");
+				/* TODO: Async logger needed */ logger.info("Questions are references only, { data: need to fetch full data" });
 			}
 
 			// If questions aren't already available or are just references, fetch them
 			try {
 				// If we don't have a survey ID, we can't fetch questions
 				if (!survey?.id) {
-					console.warn("No survey ID available to fetch questions");
+					/* TODO: Async logger needed */ logger.warn("No survey ID available to fetch questions");
 					return [];
 				}
 
 				const { getSurveyQuestions } = await import("@kit/cms/payload");
-				console.log(`Fetching questions via API for survey ID: ${survey.id}`);
+				/* TODO: Async logger needed */ logger.info(`Fetching questions via API for survey ID: ${survey.id}`);
 
 				const data = await getSurveyQuestions(survey.id);
-				console.log(`API returned ${data.docs?.length || 0} questions`);
+				/* TODO: Async logger needed */ logger.info(`API returned ${data.docs?.length || 0} questions`);
 
 				// If we got questions, return them
 				if (data.docs?.length > 0) {
@@ -115,19 +118,17 @@ export function SurveyComponent({
 
 				// If we didn't get questions but have references, try to use those
 				if (survey?.questions?.length && !data.docs?.length) {
-					console.log("Using question references from survey as fallback");
+					/* TODO: Async logger needed */ logger.info("Using question references from survey as fallback");
 					return survey.questions;
 				}
 
 				return [];
 			} catch (error) {
-				console.error("Error fetching survey questions:", error);
+				/* TODO: Async logger needed */ logger.error("Error fetching survey questions:", { data: error });
 
 				// If we have any questions in the survey object, use those as fallback
 				if (survey?.questions?.length) {
-					console.log(
-						"Using question references from survey as fallback after error",
-					);
+					/* TODO: Async logger needed */ logger.info("Using question references from survey as fallback after error", { data:  });
 					return survey.questions;
 				}
 
@@ -140,12 +141,12 @@ export function SurveyComponent({
 	// Set questions when data is loaded
 	useEffect(() => {
 		if (questionsData && questionsData.length > 0) {
-			console.log("Processing questionsData:", questionsData);
+			/* TODO: Async logger needed */ logger.info("Processing questionsData:", { data: questionsData });
 
 			// Transform questions to ensure they have the right format
 			const transformedQuestions = questionsData.map(
 				(q: PayloadSurvey["questions"][0]) => {
-					console.log("Processing question:", q);
+					/* TODO: Async logger needed */ logger.info("Processing question:", { data: q });
 
 					// Ensure each question has the required properties
 					const question: Question = {
@@ -201,7 +202,7 @@ export function SurveyComponent({
 						question.options = [];
 					}
 
-					console.log("Transformed question:", question);
+					/* TODO: Async logger needed */ logger.info("Transformed question:", { data: question });
 					return question;
 				},
 			);
@@ -211,26 +212,24 @@ export function SurveyComponent({
 				(a, b) => (a.position || 0) - (b.position || 0),
 			);
 
-			console.log(
+			/* TODO: Async logger needed */ logger.info(
 				`Survey ${survey?.id} (${survey?.title || survey?.slug}): Processed ${sortedQuestions.length} questions`,
 			);
 
 			// Log each question for debugging
 			for (const [index, q] of sortedQuestions.entries()) {
-				console.log(
+				/* TODO: Async logger needed */ logger.info(
 					`Question ${index + 1}: ${q.text} (ID: ${q.id}), Type: ${q.type}, Options: ${q.options.length}`,
 				);
 			}
 
 			setQuestions(sortedQuestions);
 		} else {
-			console.warn(`Survey ${survey?.id}: No questions found in questionsData`);
+			/* TODO: Async logger needed */ logger.warn(`Survey ${survey?.id}: No questions found in questionsData`);
 
 			// Special handling for Three Quick Questions survey
 			if (survey?.id === "6f463bef-d7a0-4e5a-b0fa-a789b5d6f0e0") {
-				console.log(
-					"Applying hardcoded questions for Three Quick Questions survey",
-				);
+				/* TODO: Async logger needed */ logger.info("Applying hardcoded questions for Three Quick Questions survey", { data:  });
 
 				// Create hardcoded questions based on database query
 				const hardcodedQuestions = [
@@ -281,7 +280,7 @@ export function SurveyComponent({
 					},
 				];
 
-				console.log("Setting hardcoded questions:", hardcodedQuestions);
+				/* TODO: Async logger needed */ logger.info("Setting hardcoded questions:", { data: hardcodedQuestions });
 				setQuestions(hardcodedQuestions);
 			}
 		}

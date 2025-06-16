@@ -295,7 +295,7 @@ export class PptxGenerator {
 			// Use an explicit object parameter with outputType to satisfy TypeScript
 			return this.pptx.write({ outputType: "nodebuffer" }) as Promise<Buffer>;
 		} catch (error: unknown) {
-			this.logger.error(error, "Error generating PowerPoint:");
+			this.logger.error(error, { data: "Error generating PowerPoint:" });
 			throw new Error(`Failed to generate PowerPoint file: ${error.message}`);
 		}
 	}
@@ -536,10 +536,7 @@ export class PptxGenerator {
 								break;
 						}
 					} catch (error: unknown) {
-						this.logger.error(
-							{ chartType: content.chartType, error: error.message },
-							"Error adding chart to slide",
-						);
+						this.logger.error({ chartType: content.chartType, { arg1: error: error.message }, arg2: "Error adding chart to slide", arg3:  });
 
 						// Add error text instead of failing completely
 						slide.addText(
@@ -569,10 +566,7 @@ export class PptxGenerator {
 							h: position.h,
 						});
 					} catch (error: unknown) {
-						this.logger.error(
-							{ imageUrl: content.imageUrl, error: error.message },
-							"Error adding image to slide",
-						);
+						this.logger.error({ imageUrl: content.imageUrl, { arg1: error: error.message }, arg2: "Error adding image to slide", arg3:  });
 
 						// Add error text instead of failing completely
 						slide.addText(
@@ -610,7 +604,7 @@ export class PptxGenerator {
 							autoPage: true,
 						});
 					} catch (error: unknown) {
-						this.logger.error(error, "Error adding table to slide:");
+						this.logger.error(error, { data: "Error adding table to slide:" });
 
 						// Add error text instead of failing completely
 						slide.addText(
@@ -807,7 +801,7 @@ export class PptxGenerator {
 				],
 			};
 		} catch (error: unknown) {
-			this.logger.error(error, "Error parsing chart data:");
+			this.logger.error(error, { data: "Error parsing chart data:" });
 
 			// Return default chart data on error
 			return {

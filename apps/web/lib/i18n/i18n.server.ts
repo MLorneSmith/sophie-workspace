@@ -18,6 +18,11 @@ import {
 
 import { i18nResolver } from "./i18n.resolver";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("LIB-I18N");
+
 /**
  * @name priority
  * @description The language priority setting from the feature flag configuration.
@@ -88,9 +93,7 @@ function getLanguageOrFallback(selectedLanguage: string | undefined) {
 		return language.data;
 	}
 
-	console.warn(
-		`The language passed is invalid. Defaulted back to "${languages[0]}"`,
-	);
+	/* TODO: Async logger needed */ logger.warn(`The language passed is invalid. Defaulted back to "${languages[0]}"`, { data:  });
 
 	return languages[0];
 }

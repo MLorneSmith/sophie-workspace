@@ -66,12 +66,8 @@ export class LemonSqueezyWebhookHandlerService
 
 		// if no signature is found, throw an error
 		if (!signature) {
-			logger.error(
-				{
-					eventName,
-				},
-				"Signature header not found",
-			);
+			logger.error({
+					eventName, { arg1: }, arg2: "Signature header not found", arg3:  });
 
 			throw new Error("Signature header not found");
 		}
@@ -80,12 +76,8 @@ export class LemonSqueezyWebhookHandlerService
 
 		// if the signature is invalid, throw an error
 		if (!isValid) {
-			logger.error(
-				{
-					eventName,
-				},
-				"Signing secret is invalid",
-			);
+			logger.error({
+					eventName, { arg1: }, arg2: "Signing secret is invalid", arg3:  });
 
 			throw new Error("Signing secret is invalid");
 		}
@@ -192,13 +184,8 @@ export class LemonSqueezyWebhookHandlerService
 
 				const logger = await getLogger();
 
-				logger.debug(
-					{
-						eventType: eventName,
-						name: this.namespace,
-					},
-					"Unhandled Lemon Squeezy event type",
-				);
+				logger.debug({
+						eventType: eventName, { arg1: name: this.namespace, arg2: }, arg3: "Unhandled Lemon Squeezy event type", arg4:  });
 
 				return;
 			}
@@ -281,15 +268,8 @@ export class LemonSqueezyWebhookHandlerService
 		if (error ?? !order) {
 			const logger = await getLogger();
 
-			logger.warn(
-				{
-					orderId,
-					subscriptionId,
-					error,
-					name: this.namespace,
-				},
-				"Failed to fetch order",
-			);
+			logger.warn({
+					orderId, { arg1: subscriptionId, arg2: error, arg3: name: this.namespace, arg4: }, arg5: "Failed to fetch order", arg6:  });
 
 			throw new Error("Failed to fetch order");
 		}
@@ -375,14 +355,8 @@ export class LemonSqueezyWebhookHandlerService
 		if (!subscription) {
 			const logger = await getLogger();
 
-			logger.error(
-				{
-					subscriptionId,
-					accountId,
-					name: this.namespace,
-				},
-				"Failed to fetch subscription",
-			);
+			logger.error({
+					subscriptionId, { arg1: accountId, arg2: name: this.namespace, arg3: }, arg4: "Failed to fetch subscription", arg5:  });
 
 			return;
 		}
@@ -434,12 +408,8 @@ export class LemonSqueezyWebhookHandlerService
 		const type = this.planTypesMap.get(variantId.toString());
 
 		if (!type) {
-			console.warn(
-				{
-					variantId,
-				},
-				'Line item type not found. Will be defaulted to "flat"',
-			);
+			/* TODO: Async logger needed */ logger.warn({
+					variantId, { arg1: }, arg2: 'Line item type not found. Will be defaulted to "flat"', arg3:  });
 
 			return "flat" as const;
 		}

@@ -1,10 +1,15 @@
 import type { AnalyticsService } from "./types";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("NULL_ANALYTICS_SERVICE");
+
 const noop = (event: string) => {
 	// do nothing - this is to prevent errors when the analytics service is not initialized
 
 	return async (...args: unknown[]) => {
-		console.debug(
+		(await getLogger()).debug(
 			`Noop analytics service called with event: ${event}`,
 			...args.filter(Boolean),
 		);

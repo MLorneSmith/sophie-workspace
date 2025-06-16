@@ -1,12 +1,17 @@
 import type { z } from "zod";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("INDEX");
+
 export const zodParseFactory =
 	<T extends z.ZodTypeAny>(schema: T) =>
 	(data: unknown): z.infer<T> => {
 		try {
 			return schema.parse(data) as unknown;
 		} catch (err) {
-			console.error(err);
+			/* TODO: Async logger needed */ logger.error(err);
 
 			// handle error
 			throw new Error(`Invalid data: ${err as string}`);

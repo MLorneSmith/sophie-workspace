@@ -40,6 +40,11 @@ import { EnvModeSelector } from "@/components/env-mode-selector";
 import type { AppEnvState, EnvVariableState } from "../lib/types";
 import { DynamicFormInput } from "./dynamic-form-input";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("APP_ENVIRONMENT_VARIABLES_MANAGER");
+
 export function AppEnvironmentVariablesManager({
 	state,
 }: React.PropsWithChildren<{
@@ -884,7 +889,9 @@ async function copyToClipboard(text: string) {
 	try {
 		await navigator.clipboard.writeText(text);
 	} catch (err) {
-		console.error("Failed to copy:", err);
+		/* TODO: Async logger needed */ logger.error("Failed to copy:", {
+			data: err,
+		});
 	}
 }
 

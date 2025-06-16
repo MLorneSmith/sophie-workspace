@@ -79,7 +79,7 @@
   <context_loading_checklist>
     <step number="1">
       <action>Load Primary Role</action>
-      <command>/read .claude/build/roles/{PRIMARY_ROLE}.md</command>
+      <command>/read .claude/roles/{PRIMARY_ROLE}.md</command>
       <purpose>Set appropriate mental model for development work</purpose>
     </step>
     

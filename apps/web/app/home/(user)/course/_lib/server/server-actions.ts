@@ -10,6 +10,11 @@ import {
 } from "~/lib/course/course-config";
 import type { Database } from "~/lib/database.types";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("HOME-(USER)");
+
 // Start or update course progress
 const UpdateCourseProgressSchema = z.object({
 	courseId: z.union([z.string(), z.number()]).transform((val) => String(val)),
@@ -73,7 +78,10 @@ export const updateCourseProgressAction = enhanceAction(
 						// Mark the certificate as generated
 						updateData.certificate_generated = true;
 					} catch (error) {
-						console.error("Failed to generate certificate:", error);
+						/* TODO: Async logger needed */ logger.error(
+							"Failed to generate certificate:",
+							{ data: error },
+						);
 						// Continue with the update even if certificate generation fails
 					}
 				}
@@ -178,8 +186,13 @@ export const updateLessonProgressAction = enhanceAction(
 
 			if (lessonsData?.docs && lessonProgress) {
 				// Log the required lesson numbers for debugging
-				console.log("Required lesson numbers:", REQUIRED_LESSON_NUMBERS);
-				console.log("Total required lessons:", TOTAL_REQUIRED_LESSONS);
+				/* TODO: Async logger needed */ logger.info(
+					"Required lesson numbers:",
+					{ data: REQUIRED_LESSON_NUMBERS },
+				);
+				/* TODO: Async logger needed */ logger.info("Total required lessons:", {
+					data: TOTAL_REQUIRED_LESSONS,
+				});
 
 				// Count completed lessons that are in the required list
 				const completedRequiredLessons = lessonProgress.filter((p) => {
@@ -196,7 +209,7 @@ export const updateLessonProgressAction = enhanceAction(
 
 					// Log each completed required lesson for debugging
 					if (isCompleted) {
-						console.log(
+						/* TODO: Async logger needed */ logger.info(
 							`Lesson ${lesson.lesson_number} (${lesson.title}) is completed`,
 						);
 					}
@@ -212,10 +225,12 @@ export const updateLessonProgressAction = enhanceAction(
 				// Course is completed when all required lessons are done
 				const isCompleted = completedRequiredLessons >= TOTAL_REQUIRED_LESSONS;
 
-				console.log(
+				/* TODO: Async logger needed */ logger.info(
 					`Course completion: ${completedRequiredLessons}/${TOTAL_REQUIRED_LESSONS} required lessons (${courseCompletionPercentage}%)`,
 				);
-				console.log(`Course completed: ${isCompleted ? "Yes" : "No"}`);
+				/* TODO: Async logger needed */ logger.info(
+					`Course completed: ${isCompleted ? "Yes" : "No"}`,
+				);
 
 				// Update course progress with completion status
 				await updateCourseProgressAction({

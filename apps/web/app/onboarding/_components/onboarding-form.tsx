@@ -36,6 +36,11 @@ import type { z } from "zod";
 import { FormSchemaShape } from "../_lib/onboarding-form.schema";
 import { submitOnboardingFormAction } from "../_lib/server/server-actions";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("ONBOARDING");
+
 // Create the client-side schema using createStepSchema
 const FormSchema = createStepSchema(FormSchemaShape);
 
@@ -132,7 +137,7 @@ export function OnboardingForm() {
 					throw new Error(result.message || "Failed to submit form");
 				}
 			} catch (error) {
-				console.error("Failed to submit form:", error);
+				/* TODO: Async logger needed */ logger.error("Failed to submit form:", { data: error });
 				analytics.trackEvent("onboarding_error", {
 					error: "Form submission failed",
 				});
@@ -166,7 +171,7 @@ export function OnboardingForm() {
 				const parsedData = JSON.parse(savedData);
 				form.reset(parsedData);
 			} catch (error) {
-				console.error("Error parsing saved form data:", error);
+				/* TODO: Async logger needed */ logger.error("Error parsing saved form data:", { data: error });
 			}
 		}
 	}, [form]);
@@ -725,7 +730,7 @@ function CompleteStep() {
 
 			const isValid = await form.trigger();
 			if (!isValid) {
-				console.error("Form validation failed");
+				/* TODO: Async logger needed */ logger.error("Form validation failed");
 				setIsSubmitting(false);
 				return;
 			}
@@ -734,14 +739,11 @@ function CompleteStep() {
 			if (result.success && result.isComplete === true) {
 				router.push("/home");
 			} else {
-				console.error(
-					"Failed to submit form or mark user as onboarded:",
-					result.message,
-				);
+				/* TODO: Async logger needed */ logger.error("Failed to submit form or mark user as onboarded:", { arg1: result.message, arg2:  });
 				alert(`Failed to complete onboarding: ${result.message}`);
 			}
 		} catch (error) {
-			console.error("Error in handleGetStarted:", error);
+			/* TODO: Async logger needed */ logger.error("Error in handleGetStarted:", { data: error });
 			alert("An error occurred while submitting the form. Please try again.");
 		} finally {
 			setIsSubmitting(false);

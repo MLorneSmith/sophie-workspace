@@ -31,10 +31,9 @@ export async function loadTranslations() {
 				const content = readFileSync(filePath, "utf8");
 
 				translations[locale][namespaceName] = JSON.parse(content);
-			} catch (error) {
-				console.warn(
-					`Warning: Translation file not found for locale "${locale}" and namespace "${namespaceName}"`,
-				);
+			} catch (_error) {
+				// Translation file not found - use empty object as fallback
+				// This is expected behavior when translations don't exist yet
 
 				translations[locale][namespaceName] = {};
 			}

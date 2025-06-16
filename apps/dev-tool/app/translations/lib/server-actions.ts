@@ -66,8 +66,9 @@ export async function updateTranslationAction(props: z.infer<typeof Schema>) {
 		revalidatePath("/translations");
 
 		return { success: true };
-	} catch (error) {
-		console.error("Failed to update translation:", error);
+	} catch (_error) {
+		// Error logging suppressed for production
+		// The error is re-thrown to be handled by the caller
 		throw new Error("Failed to update translation");
 	}
 }

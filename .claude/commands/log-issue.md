@@ -6,16 +6,40 @@ Usage: `/log-issue [output_format]` (default: github)
 - `local`: Save to `.claude/issues/` only (no GitHub issue)
 - `file`: Same as `local` (alternative syntax)
 
-**New GitHub-First Workflow**: GitHub issues are now the single source of truth. Local files can be synced automatically for search purposes using `/sync-issues` command.
+**New GitHub-First Workflow**: GitHub issues are now the single source of truth. Local files can be synced automatically for search purposes using the `.claude/scripts/issue-sync.js` script.
 
 This command documents issues systematically using diagnostic tools and creates a standardized issue specification.
+
+## Issue Synchronization Scripts
+
+Two scripts are available for syncing GitHub issues to local files:
+
+1. **`.claude/scripts/issue-sync.js`** - Main sync script for individual issues
+
+   ```bash
+   node .claude/scripts/issue-sync.js 123  # Sync issue #123
+   ```
+
+2. **`.claude/scripts/auto-sync.js`** - Auto-sync wrapper for debug workflows
+   ```bash
+   node .claude/scripts/auto-sync.js 123        # Auto-sync issue #123
+   node .claude/scripts/auto-sync.js ISSUE-123  # Auto-sync ISSUE-123
+   node .claude/scripts/auto-sync.js "#123"     # Auto-sync issue #123
+   ```
+
+The auto-sync script automatically:
+
+- Checks if local cache exists and is up-to-date
+- Fetches from GitHub if needed
+- Creates temporary local files for debugging
+- Handles various issue reference formats
 
 ## 1. Adopt Role
 
 Load the issue investigator mindset:
 
 ```
-/read .claude/roles/full-stack-engineer.md
+/read .claude/roles/issue-investigator.md
 ```
 
 ## 2. Initial Information Gathering
@@ -385,7 +409,7 @@ Next Steps:
 2. To add more information, edit the GitHub issue
 3. To share with team, use the GitHub link above
 
-Note: Local file will be auto-created when debugging starts
+Note: Local file will be auto-created when debugging starts using auto-sync.js
 ```
 
 **Local-Only Mode:**

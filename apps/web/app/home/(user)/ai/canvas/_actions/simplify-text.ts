@@ -11,6 +11,11 @@ import { textSimplificationTemplate } from "@kit/ai-gateway/src/prompts/template
 import { enhanceAction } from "@kit/next/actions";
 import { z } from "zod";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("HOME-(USER)");
+
 const SimplifyTextSchema = z.object({
 	content: z.string(),
 	userId: z.string(),
@@ -53,7 +58,10 @@ export const simplifyTextAction = enhanceAction(
 				response,
 			};
 		} catch (error) {
-			console.error("Error in simplifyTextAction:", error);
+			/* TODO: Async logger needed */ logger.error(
+				"Error in simplifyTextAction:",
+				{ data: error },
+			);
 			return {
 				success: false,
 				error:

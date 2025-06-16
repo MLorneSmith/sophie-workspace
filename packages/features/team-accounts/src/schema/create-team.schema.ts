@@ -1,5 +1,10 @@
 import { z } from "zod";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("FEATURE-TEAM_ACCOUNTS");
+
 /**
  * @name RESERVED_NAMES_ARRAY
  * @description Array of reserved names for team accounts
@@ -25,7 +30,7 @@ export const TeamNameSchema = z
 	.max(50)
 	.refine(
 		(name) => {
-			console.log(name);
+			/* TODO: Async logger needed */ logger.info(name);
 			return !SPECIAL_CHARACTERS_REGEX.test(name);
 		},
 		{

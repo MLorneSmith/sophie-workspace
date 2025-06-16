@@ -1,5 +1,10 @@
 import "server-only";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("FEATURE-AUTH");
+
 const verifyEndpoint =
 	"https://challenges.cloudflare.com/turnstile/v0/siteverify";
 
@@ -26,7 +31,7 @@ export async function verifyCaptchaToken(token: string) {
 	});
 
 	if (!res.ok) {
-		console.error("Captcha failed:", res.statusText);
+		/* TODO: Async logger needed */ logger.error("Captcha failed:", { data: res.statusText });
 
 		throw new Error("Failed to verify CAPTCHA token");
 	}

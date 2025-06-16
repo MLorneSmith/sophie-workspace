@@ -8,6 +8,11 @@ import { Heading } from "../../shadcn/heading";
 import { Spinner } from "../spinner";
 import { NewsletterSignup } from "./newsletter-signup";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("NEWSLETTER_SIGNUP_CONTAINER");
+
 interface NewsletterSignupContainerProps
 	extends React.HTMLAttributes<HTMLDivElement> {
 	onSignup: (email: string) => Promise<void>;
@@ -39,7 +44,7 @@ export function NewsletterSignupContainer({
 
 				setStatus("success");
 			} catch (error) {
-				console.error("Newsletter signup error:", error);
+				/* TODO: Async logger needed */ logger.error("Newsletter signup error:", { data: error });
 				setStatus("error");
 			}
 		},

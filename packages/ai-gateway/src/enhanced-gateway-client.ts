@@ -1,5 +1,10 @@
 import OpenAI from "openai";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("AI-GATEWAY");
+
 // Define the Portkey Gateway URL
 const PORTKEY_GATEWAY_URL = "https://api.portkey.ai/v1/proxy";
 
@@ -12,14 +17,14 @@ const PORTKEY_GATEWAY_URL = "https://api.portkey.ai/v1/proxy";
 function getProviderForModel(model: string): string {
 	// Add additional model mappings as needed
 	if (model.toLowerCase().startsWith("llama-")) {
-		console.log(`Using provider 'groq' for model: ${model}`);
+		/* TODO: Async logger needed */ logger.info(`Using provider 'groq' for model: ${model}`);
 		return "groq";
 	}
 	if (model.toLowerCase().startsWith("claude-")) {
-		console.log(`Using provider 'anthropic' for model: ${model}`);
+		/* TODO: Async logger needed */ logger.info(`Using provider 'anthropic' for model: ${model}`);
 		return "anthropic";
 	}
-	console.log(`Using provider 'openai' for model: ${model}`);
+	/* TODO: Async logger needed */ logger.info(`Using provider 'openai' for model: ${model}`);
 	return "openai"; // Default for gpt models
 }
 
@@ -49,10 +54,10 @@ function createPortkeyConfigHeaders(options: {
 				typeof config === "string" ? config : JSON.stringify(config);
 
 			// Add debugging information about the configuration
-			console.log("Portkey config structure:", JSON.stringify(config, null, 2));
-			console.log("Portkey config header value:", headers["x-portkey-config"]);
+			/* TODO: Async logger needed */ logger.info("Portkey config structure:", { arg1: JSON.stringify(config, arg2: null, arg3: 2 }));
+			/* TODO: Async logger needed */ logger.info("Portkey config header value:", { data: headers["x-portkey-config"] });
 		} catch (error) {
-			console.error("Error serializing Portkey config:", error);
+			/* TODO: Async logger needed */ logger.error("Error serializing Portkey config:", { data: error });
 			// If serialization fails, provide a minimal valid config
 			headers["x-portkey-config"] = JSON.stringify({
 				strategy: { mode: "single" },
@@ -92,9 +97,7 @@ export function createGatewayClient(options: PortkeyClientOptions = {}) {
 	// Determine the correct provider based on the model
 	const provider = getProviderForModel(model);
 
-	console.log(
-		`Creating gateway client for model: ${model}, provider: ${provider}`,
-	);
+	/* TODO: Async logger needed */ logger.info(`Creating gateway client for model: ${model}, { arg1: provider: ${provider}`, arg2:  });
 
 	// Create headers using our Portkey config headers function
 	const headers = createPortkeyConfigHeaders({
@@ -111,7 +114,7 @@ export function createGatewayClient(options: PortkeyClientOptions = {}) {
 	if (sessionId) headers["x-portkey-trace-id"] = sessionId;
 
 	// Log the complete headers for debugging
-	console.log("Complete Portkey headers:", headers);
+	/* TODO: Async logger needed */ logger.info("Complete Portkey headers:", { data: headers });
 
 	const client = new OpenAI({
 		apiKey: process.env.OPENAI_API_KEY || "", // Can be empty when using virtual keys

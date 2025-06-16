@@ -16,8 +16,8 @@ async function checkLicense() {
 		}
 
 		gitEmail = execSync("git config user.email").toString().trim();
-	} catch (_error) {
-		console.warn(`Error checking git user: ${error.message}`);
+	} catch (error) {
+		process.stderr.write(`Error checking git user: ${error.message}\n`);
 	}
 
 	if (!gitUser && !gitEmail) {
@@ -28,8 +28,8 @@ async function checkLicense() {
 
 	try {
 		gitEmail = execSync("git config user.email").toString().trim();
-	} catch (_error) {
-		console.info("Error getting git config:", error.message);
+	} catch (error) {
+		// Silently continue if git config not found
 
 		if (!gitUser) {
 			throw new Error(
@@ -114,8 +114,8 @@ function checkVisibility() {
 		})
 		.then((data) => {
 			if (data && !data.private) {
-				console.error(
-					"The repository has been LEAKED on GitHub. Please delete the repository. A DMCA Takedown Request will automatically be requested in the coming hours.",
+				process.stderr.write(
+					"\x1b[31mThe repository has been LEAKED on GitHub. Please delete the repository. A DMCA Takedown Request will automatically be requested in the coming hours.\x1b[0m\n",
 				);
 
 				process.exit(1);
@@ -153,11 +153,11 @@ async function main() {
 		await checkVisibility();
 
 		await checkLicense().catch((error) => {
-			console.error(`Check failed with error: ${error.message}`);
+			process.stderr.write(`Check failed with error: ${error.message}\n`);
 			process.exit(1);
 		});
-	} catch (_error) {
-		console.error(`Check failed with error: ${error.message}`);
+	} catch (error) {
+		process.stderr.write(`Check failed with error: ${error.message}\n`);
 
 		process.exit(1);
 	}

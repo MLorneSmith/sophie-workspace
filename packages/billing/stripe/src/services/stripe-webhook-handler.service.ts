@@ -190,13 +190,8 @@ export class StripeWebhookHandlerService
 
 				const logger = await getLogger();
 
-				logger.debug(
-					{
-						eventType: event.type,
-						name: this.namespace,
-					},
-					`Unhandled Stripe event type: ${event.type}`,
-				);
+				logger.debug({
+						eventType: event.type, { arg1: name: this.namespace, arg2: }, arg3: `Unhandled Stripe event type: ${event.type}`, arg4:  });
 
 				return;
 			}
@@ -373,12 +368,8 @@ export class StripeWebhookHandlerService
 		const invoiceId = invoice.id;
 
 		if (!invoiceId) {
-			logger.warn(
-				{
-					invoiceId,
-				},
-				"Invoice not found. Will not handle invoice.paid event.",
-			);
+			logger.warn({
+					invoiceId, { arg1: }, arg2: "Invoice not found. Will not handle invoice.paid event.", arg3:  });
 
 			return;
 		}
@@ -399,13 +390,8 @@ export class StripeWebhookHandlerService
 
 		// handle when a subscription ID is not found
 		if (!subscriptionId) {
-			logger.warn(
-				{
-					subscriptionId,
-					customerId,
-				},
-				"Subscription ID not found for invoice. Will not handle invoice.paid event.",
-			);
+			logger.warn({
+					subscriptionId, { arg1: customerId, arg2: }, arg3: "Subscription ID not found for invoice. Will not handle invoice.paid event.", arg4:  });
 
 			return;
 		}
@@ -414,13 +400,8 @@ export class StripeWebhookHandlerService
 
 		// // handle when a subscription is not found
 		if (!subscription) {
-			logger.warn(
-				{
-					subscriptionId,
-					customerId,
-				},
-				"Subscription not found for invoice. Will not handle invoice.paid event.",
-			);
+			logger.warn({
+					subscriptionId, { arg1: customerId, arg2: }, arg3: "Subscription not found for invoice. Will not handle invoice.paid event.", arg4:  });
 
 			return;
 		}
@@ -458,12 +439,8 @@ export class StripeWebhookHandlerService
 			let type = this.planTypesMap.get(item.price.id);
 
 			if (!type) {
-				console.warn(
-					{
-						lineItemId: item.id,
-					},
-					`Line item is not in the billing configuration, please add it. Defaulting to "flat" type.`,
-				);
+				/* TODO: Async logger needed */ logger.warn({
+						lineItemId: item.id, { arg1: }, arg2: `Line item is not in the billing configuration, arg3: please add it. Defaulting to "flat" type.`, arg4:  });
 
 				type = "flat" as const;
 			}

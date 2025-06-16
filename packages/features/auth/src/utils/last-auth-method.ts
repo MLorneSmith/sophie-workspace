@@ -2,6 +2,11 @@
 
 import { isBrowser } from "@kit/shared/utils";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("FEATURE-AUTH");
+
 // Key for localStorage
 const LAST_AUTH_METHOD_KEY = "auth_last_method";
 
@@ -22,7 +27,7 @@ export function saveLastAuthMethod(authMethod: LastAuthMethod): void {
 	try {
 		localStorage.setItem(LAST_AUTH_METHOD_KEY, JSON.stringify(authMethod));
 	} catch (error) {
-		console.warn("Failed to save last auth method:", error);
+		/* TODO: Async logger needed */ logger.warn("Failed to save last auth method:", { data: error });
 	}
 }
 
@@ -54,7 +59,7 @@ export function getLastAuthMethod() {
 
 		return parsed;
 	} catch (error) {
-		console.warn("Failed to get last auth method:", error);
+		/* TODO: Async logger needed */ logger.warn("Failed to get last auth method:", { data: error });
 		return null;
 	}
 }
@@ -66,6 +71,6 @@ export function clearLastAuthMethod() {
 	try {
 		localStorage.removeItem(LAST_AUTH_METHOD_KEY);
 	} catch (error) {
-		console.warn("Failed to clear last auth method:", error);
+		/* TODO: Async logger needed */ logger.warn("Failed to clear last auth method:", { data: error });
 	}
 }

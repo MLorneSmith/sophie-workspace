@@ -1,6 +1,10 @@
 // Import the SupabaseClient type from our utility module
 import { initializeCostConfiguration } from "./db-init";
 import type { SupabaseClient } from "./supabase-client";
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("AI-USAGE-TRACKING");
 
 // Define available environment variables for feature flags
 const ENV = {
@@ -36,6 +40,7 @@ export async function recordApiUsage(
 	supabase: SupabaseClient,
 	params: UsageTrackingParams,
 ): Promise<boolean> {
+	const logger = await getLogger();
 	const {
 		userId,
 		teamId,
@@ -57,12 +62,12 @@ export async function recordApiUsage(
 	try {
 		// Validate the Supabase client has required methods
 		if (!supabase || typeof supabase.from !== "function") {
-			console.warn("Invalid Supabase client, skipping usage recording");
+			logger.warn("Invalid Supabase client, skipping usage recording");
 			return false;
 		}
 
 		// Log the attempt to record usage
-		console.log("Recording AI API usage:", {
+		logger.info("Recording AI API usage", {
 			requestId,
 			provider,
 			model,
@@ -83,7 +88,7 @@ export async function recordApiUsage(
 				costConfigCheck.error ||
 				(costConfigCheck.data && costConfigCheck.data.length === 0)
 			) {
-				console.log("No cost configuration found, attempting to initialize...");
+				logger.info("No cost configuration found, attempting to initialize");
 				// Try to initialize with admin client if available
 				const adminClient = await import("./supabase-client").then((module) =>
 					module.getSupabaseClient({ admin: true }),
@@ -91,7 +96,7 @@ export async function recordApiUsage(
 				await initializeCostConfiguration(adminClient);
 			}
 		} catch (costConfigError) {
-			console.warn("Error checking cost configuration:", costConfigError);
+			logger.warn("Error checking cost configuration", { error: costConfigError });
 			// Continue anyway as this is just a preflight check
 		}
 
@@ -114,10 +119,7 @@ export async function recordApiUsage(
 			};
 
 			if (ENV.AI_USAGE_DEBUG) {
-				console.log(
-					"Inserting record into ai_request_logs:",
-					JSON.stringify(record),
-				);
+				logger.debug("Inserting record into ai_request_logs", { record });
 			}
 
 			const { data, error: logError } = await supabase
@@ -127,15 +129,14 @@ export async function recordApiUsage(
 				.single();
 
 			if (logError) {
-				console.error("Error recording AI request log:", {
+				logger.error("Error recording AI request log", {
 					error: logError,
 					errorMessage: logError.message,
 					errorDetails: logError.details,
 					errorCode: logError.code,
 					errorHint: logError.hint,
-					query: logError.query, // Include SQL query if available
 					table: "ai_request_logs",
-					record: JSON.stringify(record),
+					record,
 				});
 
 				// If we get a foreign key violation or permission error, try with admin client
@@ -145,7 +146,7 @@ export async function recordApiUsage(
 					logError.message?.includes("permission denied") ||
 					logError.message?.includes("violates foreign key constraint")
 				) {
-					console.log("Attempting retry with admin client...");
+					logger.info("Attempting retry with admin client");
 					try {
 						// Get admin client for privileged operations
 						const adminClient = await import("./supabase-client").then(
@@ -159,44 +160,39 @@ export async function recordApiUsage(
 							.single();
 
 						if (adminError) {
-							console.error("Admin client retry also failed:", {
+							logger.error("Admin client retry also failed", {
 								error: adminError,
 								errorMessage: adminError.message,
 								errorCode: adminError.code,
 							});
 						} else {
-							console.log(
-								"Successfully recorded AI request log with admin client, ID:",
-								adminData?.id,
-							);
+							logger.info("Successfully recorded AI request log with admin client", {
+								id: adminData?.id,
+							});
 							success = true;
 						}
 					} catch (adminRetryError) {
-						console.error("Error during admin client retry:", adminRetryError);
+						logger.error("Error during admin client retry", { error: adminRetryError });
 					}
 				}
 			} else {
-				console.log("Successfully recorded AI request log with ID:", data?.id);
+				logger.info("Successfully recorded AI request log", { id: data?.id });
 				success = true;
 			}
 		} catch (insertError) {
 			// Type assertion for error object
 			const error = insertError as Error;
-			console.error("Exception in AI request log insertion:", {
+			logger.error("Exception in AI request log insertion", {
 				error: insertError,
 				stack: error.stack,
 				message: error.message,
 				name: error.name,
-				// Try to extract additional information
-				...(typeof insertError === "object"
-					? (insertError as Record<string, unknown>)
-					: {}),
 			});
 		}
 
 		// 2. Skip credit deduction if bypassing credits
 		if (bypassCredits) {
-			console.log("Bypassing AI credits system as configured");
+			logger.info("Bypassing AI credits system as configured");
 			return success;
 		}
 
@@ -208,9 +204,12 @@ export async function recordApiUsage(
 				const entityId = userId || teamId;
 
 				if (entityId && typeof supabase.rpc === "function") {
-					console.log(
-						`Deducting ${cost} credits for ${entityType} ${entityId}...`,
-					);
+					logger.info("Deducting AI credits", {
+						entityType,
+						entityId,
+						cost,
+						feature,
+					});
 
 					// Call the stored procedure to deduct credits
 					const { data: creditData, error: deductError } = await supabase.rpc(
@@ -225,7 +224,7 @@ export async function recordApiUsage(
 					);
 
 					if (deductError) {
-						console.error("Error deducting AI credits:", {
+						logger.error("Error deducting AI credits", {
 							error: deductError,
 							errorMessage: deductError.message,
 							errorCode: deductError.code,
@@ -240,7 +239,7 @@ export async function recordApiUsage(
 							deductError.code === "42501" || // Permission denied
 							deductError.message?.includes("permission denied")
 						) {
-							console.log("Attempting credit deduction with admin client...");
+							logger.info("Attempting credit deduction with admin client");
 							try {
 								// Get admin client for privileged operations
 								const adminClient = await import("./supabase-client").then(
@@ -257,29 +256,26 @@ export async function recordApiUsage(
 									});
 
 								if (adminDeductError) {
-									console.error("Admin client credit deduction also failed:", {
+									logger.error("Admin client credit deduction also failed", {
 										error: adminDeductError,
 										errorMessage: adminDeductError.message,
 										errorCode: adminDeductError.code,
 									});
 								} else {
-									console.log(
-										"Successfully deducted AI credits with admin client",
-									);
+									logger.info("Successfully deducted AI credits with admin client");
 								}
 							} catch (adminCreditError) {
-								console.error(
-									"Error during admin client credit deduction:",
-									adminCreditError,
-								);
+								logger.error("Error during admin client credit deduction", {
+									error: adminCreditError,
+								});
 							}
 						}
 					} else {
-						console.log("Successfully deducted AI credits", creditData);
+						logger.info("Successfully deducted AI credits", { creditData });
 					}
 				}
 			} catch (deductError) {
-				console.error("Exception in credit deduction:", {
+				logger.error("Exception in credit deduction", {
 					error: deductError,
 					message:
 						deductError instanceof Error
@@ -292,7 +288,7 @@ export async function recordApiUsage(
 
 		return success;
 	} catch (error) {
-		console.error("Fatal error in recordApiUsage:", {
+		logger.error("Fatal error in recordApiUsage", {
 			error,
 			message: error instanceof Error ? error.message : String(error),
 			stack: error instanceof Error ? error.stack : undefined,
@@ -312,8 +308,10 @@ export async function recordApiUsage(
 export function extractCostFromHeaders(
 	headers: Record<string, string>,
 ): number {
+	const logger = getLogger();
+	
 	if (!headers) {
-		console.warn("No headers provided to extractCostFromHeaders");
+		logger.then(l => l.warn("No headers provided to extractCostFromHeaders"));
 		return 0;
 	}
 
@@ -327,10 +325,9 @@ export function extractCostFromHeaders(
 
 	// Log all available headers in debug mode
 	if (ENV.AI_USAGE_DEBUG) {
-		console.log(
-			"Available headers for cost extraction:",
-			Object.keys(headers).join(", "),
-		);
+		logger.then(l => l.debug("Available headers for cost extraction", {
+			headers: Object.keys(headers),
+		}));
 	}
 
 	// Try each possible header
@@ -340,21 +337,28 @@ export function extractCostFromHeaders(
 			try {
 				const cost = Number.parseFloat(costHeader);
 				if (Number.isNaN(cost) || cost < 0) {
-					console.warn(
-						`Invalid cost value in header ${headerName}: ${costHeader}`,
-					);
+					logger.then(l => l.warn("Invalid cost value in header", {
+						headerName,
+						value: costHeader,
+					}));
 					continue;
 				}
-				console.log(`Extracted cost ${cost} from header ${headerName}`);
+				logger.then(l => l.info("Extracted cost from header", {
+					cost,
+					headerName,
+				}));
 				return cost;
 			} catch (e) {
-				console.error(`Error parsing cost header ${headerName}:`, e);
+				logger.then(l => l.error("Error parsing cost header", {
+					headerName,
+					error: e,
+				}));
 			}
 		}
 	}
 
 	// If we reach here, no valid cost was found
-	console.log("No valid cost found in headers, will use calculated cost");
+	logger.then(l => l.info("No valid cost found in headers, will use calculated cost"));
 	return 0;
 }
 
@@ -376,9 +380,14 @@ export async function calculateCost(
 	promptTokens: number,
 	completionTokens: number,
 ): Promise<number> {
+	const logger = await getLogger();
+	
 	// Validate inputs
 	if (!provider || !model) {
-		console.warn("Missing provider or model in calculateCost");
+		logger.warn("Missing provider or model in calculateCost", {
+			provider,
+			model,
+		});
 		return estimateCost(
 			provider || "openai",
 			model || "gpt-3.5-turbo",
@@ -388,16 +397,17 @@ export async function calculateCost(
 	}
 
 	if (promptTokens < 0 || completionTokens < 0) {
-		console.warn(
-			`Invalid token counts: prompt=${promptTokens}, completion=${completionTokens}`,
-		);
+		logger.warn("Invalid token counts", {
+			promptTokens,
+			completionTokens,
+		});
 		return 0;
 	}
 
 	try {
 		// Validate Supabase client
 		if (!supabase || typeof supabase.rpc !== "function") {
-			console.warn("Invalid Supabase client in calculateCost, using estimate");
+			logger.warn("Invalid Supabase client in calculateCost, using estimate");
 			return estimateCost(provider, model, promptTokens, completionTokens);
 		}
 
@@ -410,20 +420,20 @@ export async function calculateCost(
 		});
 
 		if (error) {
-			console.error("Error calculating AI cost:", error);
+			logger.error("Error calculating AI cost", { error });
 			return estimateCost(provider, model, promptTokens, completionTokens);
 		}
 
 		// Validate the returned cost
 		const cost = data as number;
 		if (typeof cost !== "number" || Number.isNaN(cost) || cost < 0) {
-			console.warn(`Invalid cost returned from database: ${cost}`);
+			logger.warn("Invalid cost returned from database", { cost });
 			return estimateCost(provider, model, promptTokens, completionTokens);
 		}
 
 		return cost;
 	} catch (error) {
-		console.error("Exception in calculateCost:", error);
+		logger.error("Exception in calculateCost", { error });
 		return estimateCost(provider, model, promptTokens, completionTokens);
 	}
 }
@@ -507,6 +517,8 @@ export async function checkUsageLimits(
 	userId?: string,
 	teamId?: string,
 ): Promise<boolean> {
+	const logger = await getLogger();
+	
 	// Validate inputs
 	if (!userId && !teamId) return false;
 
@@ -518,7 +530,7 @@ export async function checkUsageLimits(
 	try {
 		// Validate Supabase client
 		if (!supabase || typeof supabase.rpc !== "function") {
-			console.warn("Invalid Supabase client in checkUsageLimits");
+			logger.warn("Invalid Supabase client in checkUsageLimits");
 			return false;
 		}
 
@@ -531,17 +543,17 @@ export async function checkUsageLimits(
 			});
 
 			if (error) {
-				console.error("Error checking usage limits:", error);
+				logger.error("Error checking usage limits", { error });
 				return false;
 			}
 
 			return data && data.length > 0 && data[0].limit_exceeded;
 		} catch (rpcError) {
-			console.error("Exception in RPC call to check usage limits:", rpcError);
+			logger.error("Exception in RPC call to check usage limits", { error: rpcError });
 			return false;
 		}
 	} catch (error) {
-		console.error("Fatal error in checkUsageLimits:", error);
+		logger.error("Fatal error in checkUsageLimits", { error });
 		return false;
 	}
 }

@@ -16,6 +16,11 @@ import {
 	saveStoryboardAction,
 } from "../services/storyboard-service";
 import type {
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("HOME-(USER)");
+
 	BuildingBlocksSubmission,
 	Slide,
 	StoryboardData,
@@ -108,7 +113,7 @@ export function StoryboardProvider({ children }: StoryboardProviderProps) {
 					});
 				}
 			} catch (err) {
-				console.error("Error fetching presentation:", err);
+				/* TODO: Async logger needed */ logger.error("Error fetching presentation:", { data: err });
 				setError(
 					err instanceof Error
 						? err
@@ -143,7 +148,7 @@ export function StoryboardProvider({ children }: StoryboardProviderProps) {
 				toast.success("Storyboard saved successfully");
 				return true;
 			} catch (err) {
-				console.error("Error saving storyboard:", err);
+				/* TODO: Async logger needed */ logger.error("Error saving storyboard:", { data: err });
 				// Check if the error is an instance of Error and has a message property
 				const errorMessage =
 					err instanceof Error ? err.message : "Failed to save storyboard";

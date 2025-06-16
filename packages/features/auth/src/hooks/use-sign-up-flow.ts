@@ -7,6 +7,11 @@ import { useCallback } from "react";
 
 import { useLastAuthMethod } from "./use-last-auth-method";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("FEATURE-AUTH");
+
 type SignUpCredentials = {
 	email: string;
 	password: string;
@@ -69,7 +74,7 @@ export function usePasswordSignUpFlow({
 					onSignUp(data.user?.id);
 				}
 			} catch (error) {
-				console.error(error);
+				/* TODO: Async logger needed */ logger.error(error);
 				throw error;
 			} finally {
 				resetCaptchaToken?.();

@@ -1,3 +1,8 @@
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("AI-GATEWAY");
+
 /**
  * Utility for parsing AI responses into simplified text sections
  */
@@ -43,7 +48,7 @@ export function parseSimplified(response: string): SimplifiedContent {
 					}
 				}
 			} catch (jsonError) {
-				console.error("Failed to parse JSON content:", jsonError);
+				/* TODO: Async logger needed */ logger.error("Failed to parse JSON content:", { data: jsonError });
 			}
 		}
 
@@ -61,8 +66,8 @@ export function parseSimplified(response: string): SimplifiedContent {
 			],
 		};
 	} catch (error) {
-		console.error("Failed to parse simplified content:", error);
-		console.error("Raw response:", response);
+		/* TODO: Async logger needed */ logger.error("Failed to parse simplified content:", { data: error });
+		/* TODO: Async logger needed */ logger.error("Raw response:", { data: response });
 		throw new Error("Failed to parse AI response");
 	}
 }

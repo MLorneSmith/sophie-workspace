@@ -11,6 +11,11 @@ import { getSupabaseServerClient } from "@kit/supabase/server-client";
 
 import type { UsageStats } from "../_lib/types";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("HOME-(USER)");
+
 const UsageDataQuerySchema = z.object({
 	timeRange: z.enum(["24h", "7d", "30d", "90d"]),
 	userId: z.string().optional(),
@@ -83,7 +88,10 @@ export const fetchUsageDataAction = enhanceAction(
 				data: stats,
 			};
 		} catch (error) {
-			console.error("Error fetching AI usage data:", error);
+			/* TODO: Async logger needed */ logger.error(
+				"Error fetching AI usage data:",
+				{ data: error },
+			);
 			return {
 				success: false,
 				error: error instanceof Error ? error.message : "Unknown error",
@@ -180,7 +188,9 @@ function groupLogsByDay(
 				.toISOString()
 				.split("T")[0] as string; // Get YYYY-MM-DD
 		} catch (_error) {
-			console.error("Invalid timestamp:", log.request_timestamp);
+			/* TODO: Async logger needed */ logger.error("Invalid timestamp:", {
+				data: log.request_timestamp,
+			});
 			continue; // Skip logs with invalid timestamps
 		}
 		if (!dayMap[date]) {

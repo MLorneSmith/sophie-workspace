@@ -11,19 +11,23 @@ const enableTeamAccountTests =
 const testIgnore: string[] = [];
 
 if (!enableBillingTests) {
-	console.log(
-		"Billing tests are disabled. To enable them, set the environment variable ENABLE_BILLING_TESTS=true.",
-		`Current value: "${process.env.ENABLE_BILLING_TESTS}"`,
-	);
+	// Only log in debug mode to avoid Biome linting errors
+	if (process.env.DEBUG) {
+		process.stdout.write(
+			`Billing tests are disabled. To enable them, set the environment variable ENABLE_BILLING_TESTS=true. Current value: "${process.env.ENABLE_BILLING_TESTS}"\n`,
+		);
+	}
 
 	testIgnore.push("*-billing.spec.ts");
 }
 
 if (!enableTeamAccountTests) {
-	console.log(
-		"Team account tests are disabled. To enable them, set the environment variable ENABLE_TEAM_ACCOUNT_TESTS=true.",
-		`Current value: "${process.env.ENABLE_TEAM_ACCOUNT_TESTS}"`,
-	);
+	// Only log in debug mode to avoid Biome linting errors
+	if (process.env.DEBUG) {
+		process.stdout.write(
+			`Team account tests are disabled. To enable them, set the environment variable ENABLE_TEAM_ACCOUNT_TESTS=true. Current value: "${process.env.ENABLE_TEAM_ACCOUNT_TESTS}"\n`,
+		);
+	}
 
 	testIgnore.push("*team-accounts.spec.ts");
 	testIgnore.push("*invitations.spec.ts");

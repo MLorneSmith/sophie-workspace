@@ -1,5 +1,8 @@
 # Logging Standards and Architecture
 
+**Last Updated**: 2025-06-16  
+**Status**: Implementation In Progress
+
 ## Current State Analysis
 
 ### Issue Summary
@@ -77,33 +80,78 @@ interface UnifiedLoggerConfig {
 
 ### 3. Migration Strategy
 
-#### Phase 1: Enhance Main Logger
+#### Phase 1: Enhance Main Logger ✅ COMPLETED
 
-- Merge environment logger features into main logger
-- Add monitoring service integration
-- Implement structured logging support
-- Create service-specific logger factories
+- ✅ Merge environment logger features into main logger
+- ✅ Add monitoring service integration (New Relic)
+- ✅ Implement structured logging support
+- ✅ Create service-specific logger factories
 
-#### Phase 2: Standardize Usage
+#### Phase 2: Standardize Usage 🚧 IN PROGRESS
 
-- Create migration guide for console.log usage
-- Add ESLint rules to prevent direct console usage
-- Implement logger factories for common patterns
-- Add TypeScript types for structured logging
+- ✅ Create migration guide for console.log usage
+- ⏳ Add ESLint rules to prevent direct console usage
+- ✅ Implement logger factories for common patterns
+- ✅ Add TypeScript types for structured logging
 
-#### Phase 3: Replace Implementations
+#### Phase 3: Replace Implementations 📋 PLANNED
 
-- Migrate environment logger users to main logger
-- Replace simple logger in database adapter
-- Integrate monitoring services with main logger
-- Remove duplicate logging implementations
+- ⏳ Migrate environment logger users to main logger (9 files)
+- ⏳ Replace simple logger in database adapter
+- ✅ Integrate monitoring services with main logger
+- ⏳ Remove duplicate logging implementations
 
-#### Phase 4: Advanced Features
+#### Phase 4: Advanced Features 🔮 FUTURE
 
-- Add distributed tracing support
-- Implement log aggregation
-- Add performance monitoring
-- Create logging analytics dashboard
+- ⏳ Add distributed tracing support
+- ⏳ Implement log aggregation
+- ⏳ Add performance monitoring
+- ⏳ Create logging analytics dashboard
+
+## Implementation Status
+
+### Completed Components
+
+1. **Enhanced Logger** (`packages/shared/src/logger/enhanced-logger.ts`)
+
+   - ✅ Environment-aware configuration
+   - ✅ Data sanitization for sensitive fields
+   - ✅ Structured logging support
+   - ✅ Child loggers with context
+   - ✅ Request-scoped logging
+
+2. **New Relic Integration** (`packages/monitoring/newrelic/`)
+
+   - ✅ MonitoringService implementation
+   - ✅ Automatic error forwarding
+   - ✅ Custom event tracking
+   - ✅ User identification
+   - ✅ Performance metrics
+
+3. **Monitored Logger Factory** (`packages/shared/src/logger/create-monitored-logger.ts`)
+
+   - ✅ Server-side logger with monitoring
+   - ✅ Client-side logger (monitoring-ready)
+   - ✅ Async monitoring initialization
+
+4. **Migration Guide** (`.claude/docs/architecture/logging-migration-guide.md`)
+   - ✅ Step-by-step migration examples
+   - ✅ Environment configuration
+   - ✅ Testing strategies
+
+### Files Requiring Migration
+
+**Environment Logger Users (9 files):**
+
+- `packages/cms/payload/src/api/survey.ts`
+- `packages/cms/payload/src/api/payload-api.ts`
+- `apps/payload/src/lib/enhanced-api-wrapper.ts`
+- `apps/payload/src/lib/form-submission-protection.ts`
+- `apps/payload/src/app/(payload)/api/debug/deduplication/route.ts`
+
+**Console.log Users (12 non-test files):**
+
+- Various components and services using direct console statements
 
 ## Implementation Guidelines
 
@@ -375,7 +423,7 @@ try {
 
 ```bash
 # Core logging
-LOGGER=pino                           # Logger provider
+LOGGER=pino                           # Logger provider (pino|console)
 LOG_LEVEL=info                        # Global log level
 DISABLE_LOGGING=false                 # Emergency logging disable
 
@@ -383,9 +431,12 @@ DISABLE_LOGGING=false                 # Emergency logging disable
 ENABLE_STRUCTURED_LOGGING=true        # JSON formatted logs
 ENABLE_DATA_SANITIZATION=true         # Sanitize sensitive data
 
-# Monitoring integration
+# New Relic monitoring integration
+NEXT_PUBLIC_MONITORING_PROVIDER=newrelic  # Use New Relic for monitoring
 ENABLE_MONITORING_LOGS=true           # Send logs to monitoring
 MONITORING_LOG_THRESHOLD=error        # Minimum level for monitoring
+NEW_RELIC_LICENSE_KEY=xxx             # New Relic license key
+NEW_RELIC_APP_NAME=SlideHeroes Web   # Application name in New Relic
 
 # Performance
 ENABLE_PERFORMANCE_LOGS=false         # Performance metrics logging
@@ -463,10 +514,21 @@ describe('Logger monitoring integration', () => {
 ## Benefits of Unified Approach
 
 1. **Consistency**: Single logging interface across all services
-2. **Monitoring Integration**: Automatic error forwarding to monitoring services
+2. **Monitoring Integration**: Automatic error forwarding to New Relic
 3. **Security**: Built-in data sanitization and sensitive field masking
 4. **Performance**: Configurable logging levels and buffering
 5. **Debugging**: Structured logging with request correlation
 6. **Maintenance**: Single point of configuration and updates
 7. **Standards**: Clear conventions prevent logging fragmentation
 8. **Testing**: Mockable logger interface for unit tests
+
+### New Relic Specific Benefits
+
+1. **Distributed Tracing**: Automatic transaction tracking across services
+2. **Custom Events**: Business metrics tracked as New Relic events
+3. **Error Intelligence**: Automatic error grouping and analysis
+4. **User Context**: Track errors and events by user ID
+5. **Performance Insights**: Built-in performance metric collection
+6. **Log Aggregation**: All logs available in New Relic Logs UI
+7. **Alert Integration**: Set up alerts based on log patterns
+8. **APM Integration**: Logs correlated with application performance metrics

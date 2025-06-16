@@ -64,10 +64,7 @@ class AccountInvitationsWebhookService {
 	private async dispatchInvitationEmail(invitation: Invitation) {
 		const logger = await getLogger();
 
-		logger.info(
-			{ invitation, name: this.namespace },
-			"Handling invitation webhook event...",
-		);
+		logger.info({ invitation, { arg1: name: this.namespace }, arg2: "Handling invitation webhook event...", arg3:  });
 
 		const inviter = await this.adminClient
 			.from("accounts")
@@ -76,13 +73,8 @@ class AccountInvitationsWebhookService {
 			.single();
 
 		if (inviter.error) {
-			logger.error(
-				{
-					error: inviter.error,
-					name: this.namespace,
-				},
-				"Failed to fetch inviter details",
-			);
+			logger.error({
+					error: inviter.error, { arg1: name: this.namespace, arg2: }, arg3: "Failed to fetch inviter details", arg4:  });
 
 			throw inviter.error;
 		}
@@ -94,13 +86,8 @@ class AccountInvitationsWebhookService {
 			.single();
 
 		if (team.error) {
-			logger.error(
-				{
-					error: team.error,
-					name: this.namespace,
-				},
-				"Failed to fetch team details",
-			);
+			logger.error({
+					error: team.error, { arg1: name: this.namespace, arg2: }, arg3: "Failed to fetch team details", arg4:  });
 
 			throw team.error;
 		}
@@ -110,7 +97,7 @@ class AccountInvitationsWebhookService {
 			name: this.namespace,
 		};
 
-		logger.info(ctx, "Invite retrieved. Sending invitation email...");
+		logger.info(ctx, { data: "Invite retrieved. Sending invitation email..." });
 
 		try {
 			const { renderInviteEmail } = await import("@kit/email-templates");
@@ -138,20 +125,20 @@ class AccountInvitationsWebhookService {
 					html,
 				})
 				.then(() => {
-					logger.info(ctx, "Invitation email successfully sent!");
+					logger.info(ctx, { data: "Invitation email successfully sent!" });
 				})
 				.catch((error) => {
-					console.error(error);
+					/* TODO: Async logger needed */ logger.error(error);
 
-					logger.error({ error, ...ctx }, "Failed to send invitation email");
+					logger.error({ error, { arg1: ...ctx }, arg2: "Failed to send invitation email" });
 				});
 
 			return {
 				success: true,
 			};
 		} catch (error) {
-			console.error(error);
-			logger.warn({ error, ...ctx }, "Failed to invite user to team");
+			/* TODO: Async logger needed */ logger.error(error);
+			logger.warn({ error, { arg1: ...ctx }, arg2: "Failed to invite user to team" });
 
 			return {
 				error,

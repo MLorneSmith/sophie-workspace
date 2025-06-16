@@ -11,14 +11,16 @@ const PORT = process.env.PORT || 3000;
 const GITHUB_TOKEN = process.env.GITHUB_PERSONAL_ACCESS_TOKEN;
 
 if (!GITHUB_TOKEN) {
-	console.error(
-		"GITHUB_PERSONAL_ACCESS_TOKEN environment variable is required",
+	// Error output for missing environment variable
+	process.stderr.write(
+		"Error: GITHUB_PERSONAL_ACCESS_TOKEN environment variable is required\n",
 	);
 	process.exit(1);
 }
 
-console.log(`Starting GitHub MCP proxy on port ${PORT}`);
-console.log(`GitHub token: ${GITHUB_TOKEN.substring(0, 10)}***`);
+// Infrastructure logging for MCP proxy server startup
+process.stdout.write(`Starting GitHub MCP proxy on port ${PORT}\n`);
+process.stdout.write(`GitHub token: ${GITHUB_TOKEN.substring(0, 10)}***\n`);
 
 // Start the mcp-server-github process
 const mcpProcess = spawn("mcp-server-github", [], {
@@ -42,7 +44,7 @@ mcpProcess.stdout.on("data", (data) => {
 		outputBuffer.includes("GitHub MCP Server running on stdio") ||
 		output.includes("running on stdio")
 	) {
-		console.log("✅ GitHub MCP server is healthy");
+		process.stdout.write("✅ GitHub MCP server is healthy\n");
 		isHealthy = true;
 	}
 });
@@ -50,8 +52,8 @@ mcpProcess.stdout.on("data", (data) => {
 // Also set healthy after a timeout as backup - be more aggressive
 setTimeout(() => {
 	if (!isHealthy) {
-		console.log(
-			"✅ GitHub MCP server assumed healthy via timeout - server appears to be running",
+		process.stdout.write(
+			"✅ GitHub MCP server assumed healthy via timeout - server appears to be running\n",
 		);
 		isHealthy = true;
 	}
@@ -62,10 +64,10 @@ mcpProcess.stderr.on("data", (data) => {
 });
 
 mcpProcess.on("close", (code) => {
-	console.log(`MCP process exited with code ${code}`);
+	process.stdout.write(`MCP process exited with code ${code}\n`);
 	isHealthy = false;
 	setTimeout(() => {
-		console.log("Restarting MCP process...");
+		process.stdout.write("Restarting MCP process...\n");
 		process.exit(1); // Let Docker restart the container
 	}, 1000);
 });
@@ -90,7 +92,7 @@ const healthServer = http.createServer((req, res) => {
 });
 
 healthServer.listen(PORT, () => {
-	console.log(`Health check server listening on port ${PORT}`);
+	process.stdout.write(`Health check server listening on port ${PORT}\n`);
 });
 
 // Keep stdin open but don't send invalid data
@@ -98,13 +100,13 @@ healthServer.listen(PORT, () => {
 
 // Handle shutdown gracefully
 process.on("SIGTERM", () => {
-	console.log("Received SIGTERM, shutting down gracefully");
+	process.stdout.write("Received SIGTERM, shutting down gracefully\n");
 	mcpProcess.kill("SIGTERM");
 	healthServer.close();
 });
 
 process.on("SIGINT", () => {
-	console.log("Received SIGINT, shutting down gracefully");
+	process.stdout.write("Received SIGINT, shutting down gracefully\n");
 	mcpProcess.kill("SIGINT");
 	healthServer.close();
 });

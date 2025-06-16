@@ -1,6 +1,11 @@
 import "server-only";
 
 import type {
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("AUTH_CALLBACK_SERVICE");
+
 	AuthError,
 	EmailOtpType,
 	SupabaseClient,
@@ -181,13 +186,8 @@ class AuthCallbackService {
 					});
 				}
 			} catch (error) {
-				console.error(
-					{
-						error,
-						name: "auth.callback",
-					},
-					"An error occurred while exchanging code for session",
-				);
+				/* TODO: Async logger needed */ logger.error({
+						error, { arg1: name: "auth.callback", arg2: }, arg3: "An error occurred while exchanging code for session", arg4:  });
 
 				const message = error instanceof Error ? error.message : error;
 
@@ -242,7 +242,7 @@ function onError({
 }) {
 	const errorMessage = getAuthErrorMessage({ error, code });
 
-	console.error(
+	/* TODO: Async logger needed */ logger.error(
 		{
 			error: JSON.stringify(error).replace(/["\\]/g, "\\$&"),
 			name: "auth.callback",

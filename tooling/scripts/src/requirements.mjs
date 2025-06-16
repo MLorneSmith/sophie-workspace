@@ -19,18 +19,16 @@ function checkPnpmVersion() {
 	const [major, minor] = currentPnpmVersion.split(".").map(Number);
 
 	if (!currentPnpmVersion) {
-		console.error(
-			"\x1b[31m%s\x1b[0m",
-			`You are running Makerkit from a directory that does not have pnpm installed. Please install pnpm and run "pnpm install" in your project directory.`,
+		process.stderr.write(
+			"\x1b[31mYou are running Makerkit from a directory that does not have pnpm installed. Please install pnpm and run \"pnpm install\" in your project directory.\x1b[0m\n",
 		);
 
 		process.exit(1);
 	}
 
 	if (major < 9) {
-		console.error(
-			"\x1b[31m%s\x1b[0m",
-			`You are running pnpm ${currentPnpmVersion}. Makerkit requires pnpm ${requiredPnpmVersion}.`,
+		process.stderr.write(
+			`\x1b[31mYou are running pnpm ${currentPnpmVersion}. Makerkit requires pnpm ${requiredPnpmVersion}.\x1b[0m\n`,
 		);
 
 		process.exit(1);
@@ -38,14 +36,12 @@ function checkPnpmVersion() {
 
 	// warn if the minor version is less than 12
 	if (major < 9 && minor < 12) {
-		console.warn(
-			"\x1b[33m%s\x1b[0m",
-			`You are running pnpm ${currentPnpmVersion}. Makerkit recommends using pnpm 9.12.0 or higher.`,
+		process.stderr.write(
+			`\x1b[33mYou are running pnpm ${currentPnpmVersion}. Makerkit recommends using pnpm 9.12.0 or higher.\x1b[0m\n`,
 		);
 	} else {
-		console.log(
-			"\x1b[32m%s\x1b[0m",
-			`You are running pnpm ${currentPnpmVersion}.`,
+		process.stdout.write(
+			`\x1b[32mYou are running pnpm ${currentPnpmVersion}.\x1b[0m\n`,
 		);
 	}
 }
@@ -60,16 +56,14 @@ function checkNodeVersion() {
 	const [major, minor] = currentNodeVersion.split(".").map(Number);
 
 	if (major < 18 || (major === 18 && minor < 18)) {
-		console.error(
-			"\x1b[31m%s\x1b[0m",
-			`You are running Node ${currentNodeVersion}. Makerkit requires Node ${requiredNodeVersion}.`,
+		process.stderr.write(
+			`\x1b[31mYou are running Node ${currentNodeVersion}. Makerkit requires Node ${requiredNodeVersion}.\x1b[0m\n`,
 		);
 
 		process.exit(1);
 	} else {
-		console.log(
-			"\x1b[32m%s\x1b[0m",
-			`You are running Node ${currentNodeVersion}.`,
+		process.stdout.write(
+			`\x1b[32mYou are running Node ${currentNodeVersion}.\x1b[0m\n`,
 		);
 	}
 }
@@ -82,9 +76,8 @@ function checkPathNotOneDrive() {
 	const path = process.cwd();
 
 	if (path.includes("OneDrive")) {
-		console.error(
-			"\x1b[31m%s\x1b[0m",
-			"You are running Makerkit from OneDrive. Please move your project to a local folder.",
+		process.stderr.write(
+			"\x1b[31mYou are running Makerkit from OneDrive. Please move your project to a local folder.\x1b[0m\n",
 		);
 
 		process.exit(1);

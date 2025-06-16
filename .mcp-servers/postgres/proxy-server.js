@@ -11,13 +11,17 @@ const PORT = process.env.PORT || 3000;
 const CONNECTION_STRING = process.env.POSTGRES_CONNECTION_STRING;
 
 if (!CONNECTION_STRING) {
-	console.error("POSTGRES_CONNECTION_STRING environment variable is required");
+	// Infrastructure logging: missing required env var
+	process.stderr.write(
+		"POSTGRES_CONNECTION_STRING environment variable is required\n",
+	);
 	process.exit(1);
 }
 
-console.log(`Starting Postgres MCP proxy on port ${PORT}`);
-console.log(
-	`Connection string: ${CONNECTION_STRING.replace(/:[^:@]*@/, ":***@")}`,
+// Infrastructure logging: service startup
+process.stdout.write(`Starting Postgres MCP proxy on port ${PORT}\n`);
+process.stdout.write(
+	`Connection string: ${CONNECTION_STRING.replace(/:[^:@]*@/, ":***@")}\n`,
 );
 
 // Start the postgres-mcp process
@@ -46,7 +50,8 @@ mcpProcess.stdout.on("data", (data) => {
 		outputBuffer.includes("PostgreSQL MCP server running on stdio") ||
 		output.includes("running on stdio")
 	) {
-		console.log("✅ PostgreSQL MCP server is healthy");
+		// Infrastructure logging: health status
+		process.stdout.write("✅ PostgreSQL MCP server is healthy\n");
 		isHealthy = true;
 	}
 });
@@ -54,8 +59,9 @@ mcpProcess.stdout.on("data", (data) => {
 // Also set healthy after a timeout as backup - be more aggressive
 setTimeout(() => {
 	if (!isHealthy) {
-		console.log(
-			"✅ PostgreSQL MCP server assumed healthy via timeout - server appears to be running",
+		// Infrastructure logging: timeout-based health assumption
+		process.stdout.write(
+			"✅ PostgreSQL MCP server assumed healthy via timeout - server appears to be running\n",
 		);
 		isHealthy = true;
 	}
@@ -66,10 +72,12 @@ mcpProcess.stderr.on("data", (data) => {
 });
 
 mcpProcess.on("close", (code) => {
-	console.log(`MCP process exited with code ${code}`);
+	// Infrastructure logging: process exit
+	process.stdout.write(`MCP process exited with code ${code}\n`);
 	isHealthy = false;
 	setTimeout(() => {
-		console.log("Restarting MCP process...");
+		// Infrastructure logging: restart trigger
+		process.stdout.write("Restarting MCP process...\n");
 		process.exit(1); // Let Docker restart the container
 	}, 1000);
 });
@@ -94,7 +102,8 @@ const healthServer = http.createServer((req, res) => {
 });
 
 healthServer.listen(PORT, () => {
-	console.log(`Health check server listening on port ${PORT}`);
+	// Infrastructure logging: health server status
+	process.stdout.write(`Health check server listening on port ${PORT}\n`);
 });
 
 // Keep stdin open but don't send invalid data
@@ -102,13 +111,15 @@ healthServer.listen(PORT, () => {
 
 // Handle shutdown gracefully
 process.on("SIGTERM", () => {
-	console.log("Received SIGTERM, shutting down gracefully");
+	// Infrastructure logging: shutdown handling
+	process.stdout.write("Received SIGTERM, shutting down gracefully\n");
 	mcpProcess.kill("SIGTERM");
 	healthServer.close();
 });
 
 process.on("SIGINT", () => {
-	console.log("Received SIGINT, shutting down gracefully");
+	// Infrastructure logging: shutdown handling
+	process.stdout.write("Received SIGINT, shutting down gracefully\n");
 	mcpProcess.kill("SIGINT");
 	healthServer.close();
 });

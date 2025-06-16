@@ -16,6 +16,11 @@ import { enhanceAction } from "@kit/next/actions";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
 import { z } from "zod";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("HOME-(USER)");
+
 // Define Zod schema for request validation
 const IdeasSchema = z.object({
 	content: z.string().min(1, "Content is required"),
@@ -51,7 +56,7 @@ export const generateIdeasAction = enhanceAction(
 				"No content provided yet. Please suggest some initial ideas.";
 
 			// Debug log the request
-			console.log("Ideas Request:", {
+			/* TODO: Async logger needed */ logger.info("Ideas Request:", {
 				contentLength: contentToUse.length,
 				userId: user.id,
 				submissionId: data.submissionId,
@@ -106,7 +111,7 @@ ${improvementFormat}`,
 			const duration = performance.now() - startTime;
 
 			// Log metrics
-			console.log("AI Request Metrics:", {
+			/* TODO: Async logger needed */ logger.info("AI Request Metrics:", {
 				duration,
 				userId: user.id,
 				status: "success",
@@ -116,7 +121,9 @@ ${improvementFormat}`,
 			const improvements = parseImprovements(response.content, data.type);
 
 			// Debug log the parsed improvements
-			console.log("Parsed Ideas:", improvements);
+			/* TODO: Async logger needed */ logger.info("Parsed Ideas:", {
+				data: improvements,
+			});
 
 			return {
 				success: true,
@@ -126,7 +133,9 @@ ${improvementFormat}`,
 				},
 			};
 		} catch (error) {
-			console.error("Error in ideas action:", error);
+			/* TODO: Async logger needed */ logger.error("Error in ideas action:", {
+				data: error,
+			});
 
 			return {
 				success: false,

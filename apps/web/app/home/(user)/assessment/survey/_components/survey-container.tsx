@@ -15,6 +15,11 @@ import {
 import { QuestionCard } from "./question-card";
 import { SurveySummary } from "./survey-summary";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("HOME-(USER)");
+
 type SurveyContainerProps = {
 	survey: Survey;
 	questions: SurveyQuestion[];
@@ -33,9 +38,9 @@ export function SurveyContainer({
 	const [isPending, startTransition] = useTransition();
 
 	// Log the initial progress for debugging
-	console.log("Initial progress:", initialProgress);
-	console.log("Survey ID:", survey.id);
-	console.log("User ID:", userId);
+	/* TODO: Async logger needed */ logger.info("Initial progress:", { data: initialProgress });
+	/* TODO: Async logger needed */ logger.info("Survey ID:", { data: survey.id });
+	/* TODO: Async logger needed */ logger.info("User ID:", { data: userId });
 
 	const [currentQuestionIndex, setCurrentQuestionIndex] = useState(
 		initialProgress < questions.length ? initialProgress : 0,
@@ -58,16 +63,16 @@ export function SurveyContainer({
 					.maybeSingle();
 
 				if (error) {
-					console.error("Error loading existing category scores:", error);
+					/* TODO: Async logger needed */ logger.error("Error loading existing category scores:", { data: error });
 					return;
 				}
 
 				if (data?.category_scores && typeof data.category_scores === "object") {
-					console.log("Loaded existing category scores:", data.category_scores);
+					/* TODO: Async logger needed */ logger.info("Loaded existing category scores:", { data: data.category_scores });
 					setCategoryScores(data.category_scores as Record<string, number>);
 				}
 			} catch (error) {
-				console.error("Error in loadExistingScores:", error);
+				/* TODO: Async logger needed */ logger.error("Error in loadExistingScores:", { data: error });
 			}
 		}
 
@@ -144,7 +149,7 @@ export function SurveyContainer({
 							.single();
 
 						if (error) {
-							console.error("Error fetching survey response record:", error);
+							/* TODO: Async logger needed */ logger.error("Error fetching survey response record:", { data: error });
 							// Continue to show summary even if there's an error
 						} else if (responseData?.id) {
 							// Get the latest category scores from the database
@@ -155,10 +160,7 @@ export function SurveyContainer({
 								responseData.category_scores &&
 								typeof responseData.category_scores === "object"
 							) {
-								console.log(
-									"Using database category scores for completion:",
-									responseData.category_scores,
-								);
+								/* TODO: Async logger needed */ logger.info("Using database category scores for completion:", { arg1: responseData.category_scores, arg2:  });
 								finalCategoryScores = responseData.category_scores as Record<
 									string,
 									number
@@ -188,17 +190,15 @@ export function SurveyContainer({
 								// Update local state with final scores for the summary view
 								setCategoryScores(finalCategoryScores);
 							} catch (completionError) {
-								console.error("Error completing survey:", completionError);
+								/* TODO: Async logger needed */ logger.error("Error completing survey:", { data: completionError });
 								// Continue to show summary even if there's an error
 							}
 						} else {
-							console.error(
-								"Could not find survey response record for completion",
-							);
+							/* TODO: Async logger needed */ logger.error("Could not find survey response record for completion", { data:  });
 							// Continue to show summary even if there's no record ID
 						}
 					} catch (error) {
-						console.error("Error in final survey step:", error);
+						/* TODO: Async logger needed */ logger.error("Error in final survey step:", { data: error });
 						// Continue to show summary even if there's an error
 					}
 
@@ -208,7 +208,7 @@ export function SurveyContainer({
 					setCurrentQuestionIndex(currentQuestionIndex + 1);
 				}
 			} catch (error) {
-				console.error("Error saving response:", error);
+				/* TODO: Async logger needed */ logger.error("Error saving response:", { data: error });
 			}
 		});
 	};

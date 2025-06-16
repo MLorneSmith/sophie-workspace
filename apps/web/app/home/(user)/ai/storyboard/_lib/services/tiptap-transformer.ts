@@ -2,6 +2,11 @@
 
 import type { Slide, StoryboardData, StoryboardSlide } from "../types/index";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("HOME-(USER)");
+
 /**
  * Helper function to generate UUID since we don't have access to @kit/shared/utils/uuid
  */
@@ -100,7 +105,10 @@ export namespace TipTapTransformer {
 			try {
 				return JSON.parse(document) as TipTapDocument;
 			} catch (error) {
-				console.error("Error parsing TipTap document:", error);
+				/* TODO: Async logger needed */ logger.error(
+					"Error parsing TipTap document:",
+					{ data: error },
+				);
 				// Return empty document if parsing fails
 				return { type: "doc", content: [] };
 			}

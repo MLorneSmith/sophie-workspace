@@ -1,3 +1,8 @@
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("HOME-(USER)");
+
 type ErrorHandler = (error: Error) => Promise<boolean>;
 
 export class ErrorCoordinator {
@@ -35,7 +40,9 @@ export class ErrorCoordinator {
 		}
 
 		// If no handler handled it, log to console
-		console.error("Unhandled error:", error);
+		/* TODO: Async logger needed */ logger.error("Unhandled error:", {
+			data: error,
+		});
 	}
 
 	clear(): void {

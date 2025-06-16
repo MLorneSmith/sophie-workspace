@@ -27,6 +27,11 @@ import {
 } from "../_config/formContent";
 import { type FormData, useSetupForm } from "./BlocksFormContext";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("HOME-(USER)");
+
 interface SetupFormProps {
 	_userId: string; // For cache namespacing
 }
@@ -63,7 +68,7 @@ function useSuggestions(_userId: string) {
 					]);
 				}
 			} catch (error) {
-				console.error("Error in fetchSuggestions:", error);
+				/* TODO: Async logger needed */ logger.error("Error in fetchSuggestions:", { data: error });
 				if (setSuggestions) setSuggestions(["An unexpected error occurred"]);
 			} finally {
 				if (setIsLoadingSuggestions) setIsLoadingSuggestions(false);
@@ -234,7 +239,7 @@ export function SetupForm({ _userId }: SetupFormProps) {
 	const router = useRouter();
 
 	useEffect(() => {
-		console.log("Form data updated:", formData);
+		/* TODO: Async logger needed */ logger.info("Form data updated:", { data: formData });
 	}, [formData]);
 
 	useEffect(() => {
@@ -251,7 +256,7 @@ export function SetupForm({ _userId }: SetupFormProps) {
 		// Only fetch initial suggestions when entering the field
 		// or when presentation type changes
 		if (currentField === "title" && formData.presentation_type) {
-			console.log("Fetching initial title suggestions");
+			/* TODO: Async logger needed */ logger.info("Fetching initial title suggestions");
 			void fetchSuggestions("title", formData.presentation_type);
 		}
 	}, [
@@ -266,7 +271,7 @@ export function SetupForm({ _userId }: SetupFormProps) {
 	useEffect(() => {
 		const currentField = currentPath[currentQuestion];
 		if (currentField === "audience" && formData.title && !isFromSuggestion) {
-			console.log("Fetching audience suggestions for title:", formData.title);
+			/* TODO: Async logger needed */ logger.info("Fetching audience suggestions for title:", { data: formData.title });
 			void fetchSuggestions("audience", undefined, formData.title);
 		}
 	}, [
@@ -297,12 +302,12 @@ export function SetupForm({ _userId }: SetupFormProps) {
 		};
 
 	const handleSelectChange = async (value: string) => {
-		console.log("Selected presentation type:", value);
+		(await getLogger()).info("Selected presentation type:", value);
 		setFormData({ ...formData, presentation_type: value });
 		setTouchedFields(new Set(touchedFields).add("presentation_type"));
 
 		const isValid = validateField("presentation_type");
-		console.log("Is presentation type valid:", isValid);
+		/* TODO: Async logger needed */ logger.info("Is presentation type valid:", { data: isValid });
 
 		if (isValid) {
 			// Small delay to allow path update effect to run
@@ -353,7 +358,7 @@ export function SetupForm({ _userId }: SetupFormProps) {
 			// Navigate back to AI home page
 			router.push("/home/ai");
 		} catch (error) {
-			console.error("Error submitting form:", error);
+			/* TODO: Async logger needed */ logger.error("Error submitting form:", { data: error });
 		} finally {
 			setIsSubmitting(false);
 		}
@@ -364,10 +369,10 @@ export function SetupForm({ _userId }: SetupFormProps) {
 		try {
 			const currentField = currentPath[currentQuestion];
 			if (currentField) {
-				console.log("Validating field:", currentField);
+				(await getLogger()).info("Validating field:", currentField);
 
 				const isValid = validateField(currentField);
-				console.log("Field validation result:", currentField, isValid);
+				(await getLogger()).info("Field validation result:", currentField, isValid);
 
 				if (isValid) {
 					// Add field to touched fields to ensure error state is shown
@@ -376,19 +381,19 @@ export function SetupForm({ _userId }: SetupFormProps) {
 					// Small delay for UX
 					await new Promise((resolve) => setTimeout(resolve, 300));
 
-					console.log("Moving to next question");
+					(await getLogger()).info("Moving to next question");
 					handleNext();
 					setErrors({}); // Clear errors after successful navigation
 				} else {
-					console.log("Validation failed, showing error");
+					/* TODO: Async logger needed */ logger.info("Validation failed, { data: showing error" });
 					// Ensure the field is marked as touched to show the error
 					setTouchedFields(new Set(touchedFields).add(currentField));
 				}
 			} else {
-				console.error("No current field found for index:", currentQuestion);
+				/* TODO: Async logger needed */ logger.error("No current field found for index:", { data: currentQuestion });
 			}
 		} catch (error) {
-			console.error("Error in handleNextClick:", error);
+			/* TODO: Async logger needed */ logger.error("Error in handleNextClick:", { data: error });
 		} finally {
 			setIsValidating(false);
 		}
@@ -551,11 +556,11 @@ export function SetupForm({ _userId }: SetupFormProps) {
 }
 
 const _cleanSuggestions = (rawSuggestions: string): string[] => {
-	console.log("Cleaning suggestions. Raw input:", rawSuggestions);
+	/* TODO: Async logger needed */ logger.info("Cleaning suggestions. Raw input:", { data: rawSuggestions });
 	const lines = rawSuggestions.split("\n");
 	const startIndex = lines.findIndex((line) => /^\d+\./.test(line.trim()));
 	if (startIndex === -1) {
-		console.log("No numbered suggestions found");
+		/* TODO: Async logger needed */ logger.info("No numbered suggestions found");
 		return [];
 	}
 
@@ -564,6 +569,6 @@ const _cleanSuggestions = (rawSuggestions: string): string[] => {
 		.map((line) => line.replace(/^\d+\.\s*/, "").trim())
 		.filter(Boolean);
 
-	console.log("Cleaned suggestions:", cleaned);
+	/* TODO: Async logger needed */ logger.info("Cleaned suggestions:", { data: cleaned });
 	return cleaned;
 };

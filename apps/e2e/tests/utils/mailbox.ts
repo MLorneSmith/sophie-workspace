@@ -1,6 +1,11 @@
 import type { Page } from "@playwright/test";
 import { parse } from "node-html-parser";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("MAILBOX");
+
 type EmailAddress = {
 	Name: string;
 	Address: string;
@@ -48,7 +53,10 @@ export class Mailbox {
 			subject?: string;
 		},
 	) {
-		console.log(`Visiting mailbox ${email} ...`);
+		// Only log in debug mode to avoid Biome linting errors
+		if (process.env.DEBUG) {
+			process.stdout.write(`Visiting mailbox ${email} ...\n`);
+		}
 
 		if (!email) {
 			throw new Error("Invalid email");
@@ -60,14 +68,12 @@ export class Mailbox {
 			throw new Error("Email body was not found");
 		}
 
-		console.log(`Email found for email: ${email}`, {
-			expectedEmail: email,
-			id: json.ID,
-			subject: json.Subject,
-			date: json.Date,
-			to: json.To[0],
-			text: json.Text,
-		});
+		// Only log in debug mode to avoid Biome linting errors
+		if (process.env.DEBUG) {
+			process.stdout.write(
+				`Email found for email: ${email} - ID: ${json.ID}, Subject: ${json.Subject}, Date: ${json.Date}, To: ${json.To[0]?.Address}\n`,
+			);
+		}
 
 		if (email !== json.To[0]?.Address) {
 			throw new Error(
@@ -83,7 +89,7 @@ export class Mailbox {
 			throw new Error("No link found in email");
 		}
 
-		console.log(`Visiting ${linkHref} from mailbox ${email}...`);
+		/* TODO: Async logger needed */ logger.info(`Visiting ${linkHref} from mailbox ${email}...`);
 
 		return this.page.goto(linkHref);
 	}
@@ -95,7 +101,7 @@ export class Mailbox {
 	 * @returns The OTP code
 	 */
 	async getOtpFromEmail(email: string, deleteAfter = false) {
-		console.log(`Retrieving OTP from mailbox ${email} ...`);
+		/* TODO: Async logger needed */ logger.info(`Retrieving OTP from mailbox ${email} ...`);
 
 		if (!email) {
 			throw new Error("Invalid email");
@@ -119,7 +125,7 @@ export class Mailbox {
 		const text = json.HTML.match(/Your one-time password is: (\d{6})/)?.[1];
 
 		if (text) {
-			console.log(`OTP code found in text: ${text}`);
+			/* TODO: Async logger needed */ logger.info(`OTP code found in text: ${text}`);
 			return text;
 		}
 
@@ -133,7 +139,7 @@ export class Mailbox {
 			subject?: string;
 		},
 	) {
-		console.log(`Retrieving email from mailbox ${email}...`);
+		/* TODO: Async logger needed */ logger.info(`Retrieving email from mailbox ${email}...`);
 
 		const url = `${Mailbox.URL}/api/v1/search?query=to:${email}`;
 		const response = await fetch(url);
@@ -145,7 +151,7 @@ export class Mailbox {
 		const messagesResponse = (await response.json()) as MessagesResponse;
 
 		if (!messagesResponse || !messagesResponse.messages?.length) {
-			console.log(`No emails found for mailbox ${email}`);
+			/* TODO: Async logger needed */ logger.info(`No emails found for mailbox ${email}`);
 
 			return;
 		}
@@ -156,9 +162,7 @@ export class Mailbox {
 						item.Subject.includes(params.subject),
 					);
 
-					console.log(
-						`Found ${filtered.length} emails with subject ${params.subject}`,
-					);
+					/* TODO: Async logger needed */ logger.info(`Found ${filtered.length} emails with subject ${params.subject}`, { data:  });
 
 					// retrieve the latest by timestamp
 					return filtered.reduce((acc, item) => {
@@ -196,7 +200,7 @@ export class Mailbox {
 
 		// delete message
 		if (params.deleteAfter) {
-			console.log(`Deleting email ${messageId} ...`);
+			/* TODO: Async logger needed */ logger.info(`Deleting email ${messageId} ...`);
 
 			const res = await fetch(`${Mailbox.URL}/api/v1/messages`, {
 				method: "DELETE",
@@ -204,7 +208,7 @@ export class Mailbox {
 			});
 
 			if (!res.ok) {
-				console.error(`Failed to delete email: ${res.statusText}`);
+				/* TODO: Async logger needed */ logger.error(`Failed to delete email: ${res.statusText}`);
 			}
 		}
 

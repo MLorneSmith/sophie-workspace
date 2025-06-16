@@ -4,6 +4,11 @@ import { cn } from "@kit/ui/utils";
 import Image from "next/image";
 
 import {
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("(MARKETING)");
+
 	getPostPlaceholderImage,
 	transformImageUrl,
 } from "~/lib/utils/image-utils";
@@ -36,7 +41,7 @@ export function CoverImage({ title, src, preloadImage, className }: Props) {
 				// Fallback to placeholder if image fails to load
 				const target = e.target as HTMLImageElement;
 				target.src = getPostPlaceholderImage();
-				console.log(`Image load error for post: ${title}`);
+				/* TODO: Async logger needed */ logger.info(`Image load error for post: ${title}`);
 			}}
 		/>
 	);

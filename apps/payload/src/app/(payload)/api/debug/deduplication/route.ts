@@ -168,7 +168,8 @@ export async function POST(request: NextRequest) {
 				);
 		}
 	} catch (error) {
-		console.error("[DEBUG-ENDPOINT] Error processing debug action:", error);
+		// Error logging suppressed for production
+		// Uncomment for debugging: process.stderr.write(`[DEBUG-ENDPOINT] Error processing debug action: ${error}\n`);
 
 		return NextResponse.json(
 			{

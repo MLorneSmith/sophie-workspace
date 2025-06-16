@@ -1,3 +1,8 @@
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("VERSION");
+
 /**
  * We force it to static because we want to cache for as long as the build is live.
  */
@@ -31,7 +36,7 @@ async function getGitHash() {
 	try {
 		return await getHashFromProcess();
 	} catch (error) {
-		console.warn(
+		/* TODO: Async logger needed */ logger.warn(
 			`[WARN] Could not find git hash: ${JSON.stringify(error)}. You may want to provide a fallback.`,
 		);
 
@@ -43,7 +48,7 @@ async function getHashFromProcess() {
 	// avoid calling a Node.js command in the edge runtime
 	if (process.env.NEXT_RUNTIME === "nodejs") {
 		if (process.env.NODE_ENV !== "development") {
-			console.warn(
+			(await getLogger()).warn(
 				"[WARN] Could not find git hash in environment variables. Falling back to git command. Supply a known git hash environment variable to avoid this warning.",
 			);
 		}
@@ -53,7 +58,5 @@ async function getHashFromProcess() {
 		return execSync('git log --pretty=format:"%h" -n1').toString().trim();
 	}
 
-	console.log(
-		"[INFO] Could not find git hash in environment variables. Falling back to git command. Supply a known git hash environment variable to avoid this warning.",
-	);
+	/* TODO: Async logger needed */ logger.info("[INFO] Could not find git hash in environment variables. Falling back to git command. Supply a known git hash environment variable to avoid this warning.", { data:  });
 }

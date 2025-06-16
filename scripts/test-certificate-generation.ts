@@ -11,6 +11,11 @@ import { createClient } from "@supabase/supabase-js";
 
 import fetch from "node-fetch";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("TEST_CERTIFICATE_GENERATION");
+
 // Import the required lesson numbers directly to avoid ESM import issues
 const REQUIRED_LESSON_NUMBERS = [
 	"101",
@@ -57,10 +62,10 @@ const PDF_CO_API_KEY =
 // Set the PDF.co API key environment variable
 process.env.PDF_CO_API_KEY = PDF_CO_API_KEY;
 
-console.log(`Supabase URL: ${supabaseUrl}`);
-console.log(`Supabase Key: ${supabaseKey ? "********" : "undefined"}`);
-console.log(`Payload URL: ${payloadUrl}`);
-console.log(`PDF.co API Key: ${PDF_CO_API_KEY ? "********" : "undefined"}`);
+/* TODO: Async logger needed */ logger.info(`Supabase URL: ${supabaseUrl}`);
+/* TODO: Async logger needed */ logger.info(`Supabase Key: ${supabaseKey ? "********" : "undefined"}`);
+/* TODO: Async logger needed */ logger.info(`Payload URL: ${payloadUrl}`);
+/* TODO: Async logger needed */ logger.info(`PDF.co API Key: ${PDF_CO_API_KEY ? "********" : "undefined"}`);
 
 // Supabase client setup
 const supabase = createClient(supabaseUrl, supabaseKey);
@@ -75,7 +80,7 @@ const TEST_USER_EMAIL = "test2@slideheroes.com";
  * @returns Array of lesson data
  */
 async function fetchLessonsFromPayload(courseId: string): Promise<unknown[]> {
-	console.log(
+	(await getLogger()).info(
 		`Fetching lessons from Payload CMS for course ID: ${courseId}...`,
 	);
 
@@ -92,16 +97,14 @@ async function fetchLessonsFromPayload(courseId: string): Promise<unknown[]> {
 		const data = (await response.json()) as { docs?: unknown[] };
 		const lessons = data.docs || [];
 
-		console.log(
-			`Successfully fetched ${lessons.length} lessons from Payload CMS`,
-		);
+		/* TODO: Async logger needed */ logger.info(`Successfully fetched ${lessons.length} lessons from Payload CMS`, { data:  });
 
 		return lessons;
 	} catch (error) {
-		console.error("Error fetching lessons from Payload CMS:", error);
+		/* TODO: Async logger needed */ logger.error("Error fetching lessons from Payload CMS:", { data: error });
 
 		// Fallback to fetching from Supabase if Payload API fails
-		console.log("Attempting to fetch lessons from Supabase as fallback...");
+		/* TODO: Async logger needed */ logger.info("Attempting to fetch lessons from Supabase as fallback...");
 
 		try {
 			// Try a direct query with the schema specified
@@ -113,7 +116,7 @@ async function fetchLessonsFromPayload(courseId: string): Promise<unknown[]> {
 
 			if (supabaseError) {
 				// If that fails, try querying without the schema
-				console.log("Query with schema failed, trying without schema...");
+				/* TODO: Async logger needed */ logger.info("Query with schema failed, { data: trying without schema..." });
 				const { data: noSchemaData, error: noSchemaError } = await supabase
 					.from("course_lessons")
 					.select("id, lesson_number, title")
@@ -124,18 +127,14 @@ async function fetchLessonsFromPayload(courseId: string): Promise<unknown[]> {
 					throw noSchemaError;
 				}
 
-				console.log(
-					`Successfully fetched ${noSchemaData?.length || 0} lessons from Supabase without schema`,
-				);
+				/* TODO: Async logger needed */ logger.info(`Successfully fetched ${noSchemaData?.length || 0} lessons from Supabase without schema`, { data:  });
 				return noSchemaData || [];
 			}
 
-			console.log(
-				`Successfully fetched ${data?.length || 0} lessons from Supabase with schema`,
-			);
+			/* TODO: Async logger needed */ logger.info(`Successfully fetched ${data?.length || 0} lessons from Supabase with schema`, { data:  });
 			return data || [];
 		} catch (fallbackError) {
-			console.error("Fallback fetch also failed:", fallbackError);
+			/* TODO: Async logger needed */ logger.error("Fallback fetch also failed:", { data: fallbackError });
 			throw new Error(
 				"Failed to fetch lessons from both Payload CMS and Supabase",
 			);
@@ -147,7 +146,7 @@ async function fetchLessonsFromPayload(courseId: string): Promise<unknown[]> {
  * Generate a certificate for the user
  */
 async function generateCertificate(userId: string, fullName: string) {
-	console.log(`Generating certificate for user ${userId}...`);
+	(await getLogger()).info(`Generating certificate for user ${userId}...`);
 
 	try {
 		// Import the certificate service
@@ -163,23 +162,23 @@ async function generateCertificate(userId: string, fullName: string) {
 			fullName,
 		});
 
-		console.log("Certificate generated successfully!");
-		console.log("Certificate ID:", result.certificateId);
-		console.log("Certificate URL:", result.certificateUrl);
+		/* TODO: Async logger needed */ logger.info("Certificate generated successfully!");
+		/* TODO: Async logger needed */ logger.info("Certificate ID:", { data: result.certificateId });
+		/* TODO: Async logger needed */ logger.info("Certificate URL:", { data: result.certificateUrl });
 
 		return result;
 	} catch (error) {
-		console.error("Failed to generate certificate:", error);
+		/* TODO: Async logger needed */ logger.error("Failed to generate certificate:", { data: error });
 		throw error;
 	}
 }
 
 async function main() {
 	try {
-		console.log("Starting certificate generation test...");
+		(await getLogger()).info("Starting certificate generation test...");
 
 		// 1. Get the user ID for test2@slideheroes.com
-		console.log("Fetching user ID from accounts table...");
+		(await getLogger()).info("Fetching user ID from accounts table...");
 		const { data: accountData, error: accountError } = await supabase
 			.from("accounts")
 			.select("id, name")
@@ -194,27 +193,25 @@ async function main() {
 
 		const userId = accountData.id;
 		const fullName = accountData.name || TEST_USER_EMAIL;
-		console.log(`Found user ID: ${userId}`);
-		console.log(`User name: ${fullName}`);
+		/* TODO: Async logger needed */ logger.info(`Found user ID: ${userId}`);
+		/* TODO: Async logger needed */ logger.info(`User name: ${fullName}`);
 
 		// 2. Get all lessons for the course from Payload CMS
-		console.log("Fetching course lessons from Payload CMS...");
+		/* TODO: Async logger needed */ logger.info("Fetching course lessons from Payload CMS...");
 		const lessonsData = await fetchLessonsFromPayload(COURSE_ID);
 
 		if (!lessonsData || lessonsData.length === 0) {
 			throw new Error("No lessons found for the course");
 		}
 
-		console.log(`Found ${lessonsData.length} lessons`);
+		/* TODO: Async logger needed */ logger.info(`Found ${lessonsData.length} lessons`);
 
 		// 3. Mark all lessons as complete
 		const now = new Date().toISOString();
 		let completedLessonsCount = 0;
 
 		for (const lesson of lessonsData) {
-			console.log(
-				`Marking lesson ${lesson.lesson_number} as complete: ${lesson.title}`,
-			);
+			/* TODO: Async logger needed */ logger.info(`Marking lesson ${lesson.lesson_number} as complete: ${lesson.title}`, { data:  });
 
 			// Check if lesson progress already exists
 			const { data: existingProgress } = await supabase
@@ -235,9 +232,7 @@ async function main() {
 					.eq("id", existingProgress.id);
 
 				if (updateError) {
-					console.error(
-						`Failed to update lesson progress for lesson ${lesson.lesson_number}: ${updateError.message}`,
-					);
+					/* TODO: Async logger needed */ logger.error(`Failed to update lesson progress for lesson ${lesson.lesson_number}: ${updateError.message}`, { data:  });
 					continue;
 				}
 			} else {
@@ -254,9 +249,7 @@ async function main() {
 					});
 
 				if (insertError) {
-					console.error(
-						`Failed to create lesson progress for lesson ${lesson.lesson_number}: ${insertError.message}`,
-					);
+					/* TODO: Async logger needed */ logger.error(`Failed to create lesson progress for lesson ${lesson.lesson_number}: ${insertError.message}`, { data:  });
 					continue;
 				}
 			}
@@ -302,10 +295,10 @@ async function main() {
 		// Check if all required lessons are completed
 		const isCompleted = completedRequiredLessons === TOTAL_REQUIRED_LESSONS;
 
-		console.log(`Total required lessons: ${TOTAL_REQUIRED_LESSONS}`);
-		console.log(`Completed required lessons: ${completedRequiredLessons}`);
-		console.log(`Completion percentage: ${completionPercentage}%`);
-		console.log(`Course completed: ${isCompleted ? "Yes" : "No"}`);
+		/* TODO: Async logger needed */ logger.info(`Total required lessons: ${TOTAL_REQUIRED_LESSONS}`);
+		/* TODO: Async logger needed */ logger.info(`Completed required lessons: ${completedRequiredLessons}`);
+		/* TODO: Async logger needed */ logger.info(`Completion percentage: ${completionPercentage}%`);
+		/* TODO: Async logger needed */ logger.info(`Course completed: ${isCompleted ? "Yes" : "No"}`);
 
 		// Check if course progress already exists
 		const { data: existingCourseProgress } = await supabase
@@ -332,9 +325,7 @@ async function main() {
 				);
 			}
 
-			console.log(
-				"Marked course as completed by setting completed_at timestamp",
-			);
+			/* TODO: Async logger needed */ logger.info("Marked course as completed by setting completed_at timestamp", { data:  });
 		} else {
 			// Create new course progress
 			const { error: insertError } = await supabase
@@ -354,17 +345,15 @@ async function main() {
 				);
 			}
 
-			console.log(
-				"Created new course progress record with completed_at timestamp set",
-			);
+			/* TODO: Async logger needed */ logger.info("Created new course progress record with completed_at timestamp set", { data:  });
 		}
 
 		// 5. Generate certificate
-		console.log("Generating certificate...");
+		/* TODO: Async logger needed */ logger.info("Generating certificate...");
 		await generateCertificate(userId, fullName);
 
 		// 6. Verify certificate was created
-		console.log("Verifying certificate was created...");
+		/* TODO: Async logger needed */ logger.info("Verifying certificate was created...");
 		const { data: certificate, error: certificateError } = await supabase
 			.from("certificates")
 			.select("*")
@@ -373,40 +362,40 @@ async function main() {
 			.single();
 
 		if (certificateError || !certificate) {
-			console.error("Certificate not found in database");
+			/* TODO: Async logger needed */ logger.error("Certificate not found in database");
 		} else {
-			console.log("Certificate found in database:");
-			console.log(certificate);
+			/* TODO: Async logger needed */ logger.info("Certificate found in database:");
+			/* TODO: Async logger needed */ logger.info(certificate);
 		}
 
 		// 7. Check if the certificate file exists in storage
-		console.log("Checking if certificate file exists in storage...");
+		/* TODO: Async logger needed */ logger.info("Checking if certificate file exists in storage...");
 		const { data: storageData, error: storageError } = await supabase.storage
 			.from("certificates")
 			.list(`${userId}/${COURSE_ID}`);
 
 		if (storageError) {
-			console.error("Failed to list certificate files:", storageError.message);
+			/* TODO: Async logger needed */ logger.error("Failed to list certificate files:", { data: storageError.message });
 		} else if (!storageData || storageData.length === 0) {
-			console.error("No certificate files found in storage");
+			/* TODO: Async logger needed */ logger.error("No certificate files found in storage");
 		} else {
-			console.log("Certificate files found in storage:");
-			console.log(storageData);
+			/* TODO: Async logger needed */ logger.info("Certificate files found in storage:");
+			/* TODO: Async logger needed */ logger.info(storageData);
 		}
 
-		console.log(`Successfully updated course progress for ${TEST_USER_EMAIL}`);
-		console.log(
+		/* TODO: Async logger needed */ logger.info(`Successfully updated course progress for ${TEST_USER_EMAIL}`);
+		/* TODO: Async logger needed */ logger.info(
 			`Completed ${completedLessonsCount} lessons (${completionPercentage}%)`,
 		);
-		console.log("Done!");
+		/* TODO: Async logger needed */ logger.info("Done!");
 	} catch (error) {
-		console.error("Error:", error);
+		/* TODO: Async logger needed */ logger.error("Error:", { data: error });
 		process.exit(1);
 	}
 }
 
 // Call main() directly
 main().catch((error) => {
-	console.error("Error in main execution:", error);
+	/* TODO: Async logger needed */ logger.error("Error in main execution:", { data: error });
 	process.exit(1);
 });

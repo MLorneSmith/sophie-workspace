@@ -216,10 +216,11 @@ async function generateMarkdownChecklist(targets: TestTarget[]) {
 
 // Main execution
 async function main() {
-	console.log("Analyzing codebase for test targets...");
+	// Analyzing codebase for test targets
+	process.stdout.write("Analyzing codebase for test targets...\n");
 	const targets = await generateChecklist();
 
-	console.log(`Found ${targets.length} files to test`);
+	process.stdout.write(`Found ${targets.length} files to test\n`);
 
 	// Generate markdown checklist
 	const markdown = await generateMarkdownChecklist(targets);
@@ -228,13 +229,16 @@ async function main() {
 	await fs.mkdir(path.dirname(outputPath), { recursive: true });
 	await fs.writeFile(outputPath, markdown);
 
-	console.log(`Checklist generated at: ${outputPath}`);
+	process.stdout.write(`Checklist generated at: ${outputPath}\n`);
 
 	// Also generate JSON for programmatic use
 	const jsonPath = ".claude/docs/testing/unit-test-checklist.json";
 	await fs.writeFile(jsonPath, JSON.stringify(targets, null, 2));
 
-	console.log(`JSON data generated at: ${jsonPath}`);
+	process.stdout.write(`JSON data generated at: ${jsonPath}\n`);
 }
 
-main().catch(console.error);
+main().catch((error) => {
+	process.stderr.write(`Error: ${error.message}\n`);
+	process.exit(1);
+});

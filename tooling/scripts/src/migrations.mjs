@@ -2,7 +2,7 @@ import { execSync } from "node:child_process";
 
 export function checkPendingMigrations() {
 	try {
-		console.info("\x1b[34m%s\x1b[0m", "Checking for pending migrations...");
+		process.stdout.write("\x1b[34mChecking for pending migrations...\x1b[0m\n");
 
 		const output = execSync("pnpm --filter web supabase migration list", {
 			encoding: "utf-8",
@@ -22,29 +22,27 @@ export function checkPendingMigrations() {
 			.map((line) => (line.split("│")[0] ?? "").trim());
 
 		if (pendingMigrations.length > 0) {
-			console.log(
-				"\x1b[33m%s\x1b[0m",
-				"⚠️  There are pending migrations that need to be applied:",
+			process.stdout.write(
+				"\x1b[33m⚠️  There are pending migrations that need to be applied:\x1b[0m\n",
 			);
 
 			for (const migration of pendingMigrations) {
-				console.log(`  - ${migration}`);
+				process.stdout.write(`  - ${migration}\n`);
 			}
 
-			console.log(
-				"\nSome functionality may not work as expected until these migrations are applied.",
+			process.stdout.write(
+				"\nSome functionality may not work as expected until these migrations are applied.\n",
 			);
 
-			console.log(
-				'\nAfter testing the migrations in your local environment and ideally in a staging environment, please run "pnpm --filter web supabase db push" to apply them to your database. If you have any questions, please open a support ticket.',
+			process.stdout.write(
+				'\nAfter testing the migrations in your local environment and ideally in a staging environment, please run "pnpm --filter web supabase db push" to apply them to your database. If you have any questions, please open a support ticket.\n',
 			);
 		} else {
-			console.log("\x1b[32m%s\x1b[0m", "✅ All migrations are up to date.");
+			process.stdout.write("\x1b[32m✅ All migrations are up to date.\x1b[0m\n");
 		}
 	} catch (_error) {
-		console.log(
-			"\x1b[33m%s\x1b[0m",
-			"💡 Info: Project not yet linked to a remote Supabase project. Migration checks skipped - this is expected for new projects. Link your project when you're ready to sync with Supabase.\n",
+		process.stdout.write(
+			"\x1b[33m💡 Info: Project not yet linked to a remote Supabase project. Migration checks skipped - this is expected for new projects. Link your project when you're ready to sync with Supabase.\x1b[0m\n\n",
 		);
 	}
 }

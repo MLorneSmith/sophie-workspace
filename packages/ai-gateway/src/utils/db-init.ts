@@ -6,6 +6,11 @@
  */
 import type { SupabaseClient } from "./supabase-client";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("AI-GATEWAY");
+
 /**
  * Initializes cost configuration data if the table is empty
  * This ensures we have pricing data for all supported models
@@ -17,7 +22,7 @@ export async function initializeCostConfiguration(
 	supabase: SupabaseClient,
 ): Promise<boolean> {
 	try {
-		console.log("Checking AI cost configuration data...");
+		(await getLogger()).info("Checking AI cost configuration data...");
 
 		// Check if we already have cost configuration data
 		const { count, error: countError } = await supabase
@@ -25,7 +30,7 @@ export async function initializeCostConfiguration(
 			.select("*", { count: "exact", head: true });
 
 		if (countError) {
-			console.error("Error checking cost configuration:", {
+			/* TODO: Async logger needed */ logger.error("Error checking cost configuration:", {
 				error: countError,
 				message: countError.message,
 				hint: countError.hint,
@@ -34,11 +39,11 @@ export async function initializeCostConfiguration(
 		}
 
 		if (count && count > 0) {
-			console.log(`AI cost configuration already exists (${count} entries)`);
+			/* TODO: Async logger needed */ logger.info(`AI cost configuration already exists (${count} entries)`);
 			return true;
 		}
 
-		console.log("No cost configuration found, seeding initial data...");
+		/* TODO: Async logger needed */ logger.info("No cost configuration found, { data: seeding initial data..." });
 
 		// Insert default pricing data for common models
 		const { error: insertError } = await supabase
@@ -150,7 +155,7 @@ export async function initializeCostConfiguration(
 			]);
 
 		if (insertError) {
-			console.error("Error seeding cost configuration data:", {
+			/* TODO: Async logger needed */ logger.error("Error seeding cost configuration data:", {
 				error: insertError,
 				message: insertError.message,
 				hint: insertError.hint,
@@ -158,10 +163,10 @@ export async function initializeCostConfiguration(
 			return false;
 		}
 
-		console.log("Successfully seeded AI cost configuration data");
+		/* TODO: Async logger needed */ logger.info("Successfully seeded AI cost configuration data");
 		return true;
 	} catch (error) {
-		console.error("Fatal error initializing cost configuration:", error);
+		/* TODO: Async logger needed */ logger.error("Fatal error initializing cost configuration:", { data: error });
 		return false;
 	}
 }
@@ -176,7 +181,7 @@ export async function testDatabasePermissions(
 	supabase: SupabaseClient,
 ): Promise<boolean> {
 	try {
-		console.log("Testing database permissions with a test insert...");
+		(await getLogger()).info("Testing database permissions with a test insert...");
 
 		// Generate a unique test ID
 		const testId = `test-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
@@ -201,7 +206,7 @@ export async function testDatabasePermissions(
 			.single();
 
 		if (error) {
-			console.error("Database permission test failed:", {
+			/* TODO: Async logger needed */ logger.error("Database permission test failed:", {
 				error,
 				message: error.message,
 				details: error.details,
@@ -211,13 +216,13 @@ export async function testDatabasePermissions(
 			return false;
 		}
 
-		console.log("Database permission test successful:", {
+		/* TODO: Async logger needed */ logger.info("Database permission test successful:", {
 			recordId: data?.id,
 			testId,
 		});
 		return true;
 	} catch (error) {
-		console.error("Fatal error testing database permissions:", error);
+		/* TODO: Async logger needed */ logger.error("Fatal error testing database permissions:", { data: error });
 		return false;
 	}
 }
@@ -232,7 +237,7 @@ export async function testDatabaseFunctions(
 	supabase: SupabaseClient,
 ): Promise<boolean> {
 	try {
-		console.log("Testing database function permissions...");
+		(await getLogger()).info("Testing database function permissions...");
 
 		// Test the calculate_ai_cost function
 		const { data, error } = await supabase.rpc("calculate_ai_cost", {
@@ -243,7 +248,7 @@ export async function testDatabaseFunctions(
 		});
 
 		if (error) {
-			console.error("Database function test failed:", {
+			/* TODO: Async logger needed */ logger.error("Database function test failed:", {
 				error,
 				message: error.message,
 				details: error.details,
@@ -253,12 +258,12 @@ export async function testDatabaseFunctions(
 			return false;
 		}
 
-		console.log("Database function test successful:", {
+		/* TODO: Async logger needed */ logger.info("Database function test successful:", {
 			calculatedCost: data,
 		});
 		return true;
 	} catch (error) {
-		console.error("Fatal error testing database functions:", error);
+		/* TODO: Async logger needed */ logger.error("Fatal error testing database functions:", { data: error });
 		return false;
 	}
 }
@@ -273,12 +278,12 @@ export async function initializeAiGatewayDatabase(
 	supabase: SupabaseClient,
 ): Promise<boolean> {
 	try {
-		console.log("Initializing AI Gateway database...");
+		(await getLogger()).info("Initializing AI Gateway database...");
 
 		// Test basic permissions first
 		const permissionsOk = await testDatabasePermissions(supabase);
 		if (!permissionsOk) {
-			console.warn(
+			(await getLogger()).warn(
 				"Database permission test failed, continuing with initialization anyway...",
 			);
 		}
@@ -286,21 +291,19 @@ export async function initializeAiGatewayDatabase(
 		// Test function permissions
 		const functionsOk = await testDatabaseFunctions(supabase);
 		if (!functionsOk) {
-			console.warn(
-				"Database function test failed, continuing with initialization anyway...",
-			);
+			/* TODO: Async logger needed */ logger.warn("Database function test failed, { arg1: continuing with initialization anyway...", arg2:  });
 		}
 
 		// Initialize cost configuration
 		const costConfigOk = await initializeCostConfiguration(supabase);
 		if (!costConfigOk) {
-			console.warn("Cost configuration initialization failed");
+			/* TODO: Async logger needed */ logger.warn("Cost configuration initialization failed");
 		}
 
 		// Return overall success status
 		return permissionsOk && functionsOk && costConfigOk;
 	} catch (error) {
-		console.error("Fatal error initializing AI Gateway database:", error);
+		/* TODO: Async logger needed */ logger.error("Fatal error initializing AI Gateway database:", { data: error });
 		return false;
 	}
 }

@@ -3,11 +3,14 @@ import {
 	type MonitoringService,
 } from "@kit/monitoring-core";
 import { createRegistry } from "@kit/shared/registry";
-
+import { createServiceLogger } from "@kit/shared/logger";
 import {
 	getMonitoringProvider,
 	type MonitoringProvider,
 } from "../get-monitoring-provider";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("GET_SERVER_MONITORING_SERVICE");
 
 // create a registry for the server monitoring services
 const serverMonitoringRegistry = createRegistry<
@@ -31,6 +34,13 @@ serverMonitoringRegistry.register("sentry", async () => {
 	return new SentryMonitoringService();
 });
 
+// Register the 'newrelic' monitoring service
+serverMonitoringRegistry.register("newrelic", async () => {
+	const { createNewRelicMonitoringService } = await import("@kit/monitoring-newrelic");
+
+	return createNewRelicMonitoringService();
+});
+
 // if you have a new monitoring provider, you can register it here
 //
 
@@ -42,7 +52,7 @@ export async function getServerMonitoringService() {
 	const provider = getMonitoringProvider();
 
 	if (!provider) {
-		console.info(
+		(await getLogger()).info(
 			"No instrumentation provider specified. Returning console service...",
 		);
 		return new ConsoleMonitoringService();

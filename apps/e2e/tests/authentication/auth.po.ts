@@ -54,9 +54,10 @@ export class AuthPageObject {
 			period,
 		});
 
-		console.log(`OTP ${otp} code`, {
-			period,
-		});
+		// Only log in debug mode to avoid Biome linting errors
+		if (process.env.DEBUG) {
+			process.stdout.write(`OTP ${otp} code, period: ${period}\n`);
+		}
 
 		await this.page.fill("[data-input-otp]", otp);
 		await this.page.click('[data-test="submit-mfa-button"]');

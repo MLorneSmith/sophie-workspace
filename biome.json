@@ -47,7 +47,12 @@
 			"suspicious": {
 				"noExplicitAny": "error",
 				"noArrayIndexKey": "error",
-				"noConsole": "warn"
+				"noConsole": {
+					"level": "error",
+					"options": {
+						"allow": []
+					}
+				}
 			},
 			"style": {
 				"noUnusedTemplateLiteral": "error",

@@ -1,5 +1,10 @@
 import { NullAnalyticsService } from "./null-analytics-service";
 import type {
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("ANALYTICS_MANAGER");
+
 	AnalyticsManager,
 	AnalyticsService,
 	CreateAnalyticsManagerOptions,
@@ -12,9 +17,7 @@ export function createAnalyticsManager<T extends string, Config extends object>(
 
 	const getActiveServices = (): AnalyticsService[] => {
 		if (activeServices.size === 0) {
-			console.debug(
-				"No active analytics services. Using NullAnalyticsService.",
-			);
+			/* TODO: Async logger needed */ logger.debug("No active analytics services. Using NullAnalyticsService.", { data:  });
 
 			return [NullAnalyticsService];
 		}
@@ -30,9 +33,7 @@ export function createAnalyticsManager<T extends string, Config extends object>(
 			const factory = options.providers[providerKey];
 
 			if (!factory) {
-				console.warn(
-					`Analytics provider '${provider}' not registered. Skipping initialization.`,
-				);
+				/* TODO: Async logger needed */ logger.warn(`Analytics provider '${provider}' not registered. Skipping initialization.`, { data:  });
 
 				continue;
 			}
@@ -51,9 +52,7 @@ export function createAnalyticsManager<T extends string, Config extends object>(
 			const factory = options.providers[provider];
 
 			if (!factory) {
-				console.warn(
-					`Analytics provider '${provider}' not registered. Skipping initialization.`,
-				);
+				/* TODO: Async logger needed */ logger.warn(`Analytics provider '${provider}' not registered. Skipping initialization.`, { data:  });
 
 				return Promise.resolve();
 			}

@@ -12,6 +12,11 @@ import { Trans } from "@kit/ui/trans";
 import { Circle, CircleStopIcon, Loader2, Trash } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("VIDEO_RECORDER");
+
 interface VideoRecorderProps {
 	onVideoRecorded: (blob: Blob | null) => void;
 	maxRecordingTime?: number;
@@ -86,7 +91,7 @@ export function VideoRecorder({
 				videoRef.current.onerror = () => {
 					const error = videoRef.current?.error;
 
-					console.error(`Error ${error?.code}; details: ${error?.message}`);
+					/* TODO: Async logger needed */ logger.error(`Error ${error?.code}; details: ${error?.message}`);
 				};
 			}
 
@@ -136,7 +141,7 @@ export function VideoRecorder({
 				});
 			}, 1000);
 		} catch (err) {
-			console.error("Error accessing media devices:", err);
+			/* TODO: Async logger needed */ logger.error("Error accessing media devices:", { data: err });
 
 			setError("testimonials:errorMessage");
 		}

@@ -6,6 +6,11 @@ import type { Database } from "~/lib/database.types";
 
 import { createTiptapFromText } from "./tiptap-format-utils";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("HOME-(USER)");
+
 export type SubmitFormData = {
 	title: string;
 	audience: string;
@@ -66,13 +71,19 @@ export async function submitBuildingBlocksAction(data: SubmitFormData) {
 			.single();
 
 		if (error) {
-			console.error("Error submitting building blocks:", error);
+			/* TODO: Async logger needed */ logger.error(
+				"Error submitting building blocks:",
+				{ data: error },
+			);
 			throw new Error("Failed to submit building blocks");
 		}
 
 		return { success: true, submissionId: result.id };
 	} catch (error) {
-		console.error("Error in submitBuildingBlocksAction:", error);
+		/* TODO: Async logger needed */ logger.error(
+			"Error in submitBuildingBlocksAction:",
+			{ data: error },
+		);
 		throw new Error("Failed to submit building blocks");
 	}
 }

@@ -1,3 +1,8 @@
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("COOKIE");
+
 /**
  * Modern cookie utilities that handle browser compatibility
  * and provide a cleaner API than direct document.cookie manipulation
@@ -36,7 +41,7 @@ export function setCookie(name: string, value: string, options: CookieOptions = 
 		// Note: cookieStore.set() returns a Promise, but we don't await it
 		// to maintain synchronous behavior expected by calling code
 		(window as any).cookieStore.set(cookieOptions).catch((error: Error) => {
-			console.warn('Failed to set cookie via Cookie Store API:', error);
+			/* TODO: Async logger needed */ logger.warn('Failed to set cookie via Cookie Store API:', { data: error });
 			// Fallback to document.cookie
 			setViaDOMCookie(name, value, options);
 		});

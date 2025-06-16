@@ -4,6 +4,11 @@ import { useRef } from "react";
 
 import { useBaselime } from "../hooks/use-baselime";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("PROVIDER");
+
 export function BaselimeProvider({
 	children,
 	apiKey,
@@ -17,10 +22,8 @@ export function BaselimeProvider({
 	const key = apiKey ?? process.env.NEXT_PUBLIC_BASELIME_KEY ?? "";
 
 	if (!key) {
-		console.warn(
-			"You configured Baselime as monitoring provider but did not provide a key. " +
-				"Please provide a key to enable monitoring with Baselime using the variable NEXT_PUBLIC_BASELIME_KEY.",
-		);
+		/* TODO: Async logger needed */ logger.warn("You configured Baselime as monitoring provider but did not provide a key. " +
+				"Please provide a key to enable monitoring with Baselime using the variable NEXT_PUBLIC_BASELIME_KEY.", { data:  });
 
 		return children;
 	}

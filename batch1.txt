@@ -1,0 +1,10 @@
+./apps/dev-tool/app/variables/components/app-environment-variables-manager.tsx
+./apps/e2e/tests/utils/mailbox.ts
+./apps/e2e/tests/utils/otp.po.ts
+./apps/payload/src/app/(frontend)/page.tsx
+./apps/payload/src/lib/database-adapter-singleton.ts
+./apps/payload/src/lib/storage-config.ts
+./apps/payload/src/lib/storage-url-generators.ts
+./apps/payload/src/payload.config.ts
+./apps/web/app/(marketing)/_components/debug-providers.tsx
+./apps/web/app/(marketing)/_components/home-cta-presentation-name.tsx

@@ -2,6 +2,11 @@
  * Utility for parsing AI responses into standardized improvement objects
  */
 import type {
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("AI-GATEWAY");
+
 	BaseImprovement,
 	ImprovementType,
 } from "../prompts/types/improvements";
@@ -37,7 +42,7 @@ function extractJson(text: string): string | null {
 		// Otherwise, return the whole match (direct JSON)
 		return match[0];
 	} catch (error) {
-		console.error("Error extracting JSON:", error);
+		/* TODO: Async logger needed */ logger.error("Error extracting JSON:", { data: error });
 		return null;
 	}
 }
@@ -137,9 +142,7 @@ export function parseImprovements(
 ): BaseImprovement[] {
 	try {
 		// Log the raw response for debugging
-		console.log(
-			"Raw AI response:",
-			response.substring(0, 500) + (response.length > 500 ? "..." : ""),
+		/* TODO: Async logger needed */ logger.info("Raw AI response:", { arg1: response.substring(0, arg2: 500 }) + (response.length > 500 ? "..." : ""),
 		);
 
 		// First try to parse as JSON
@@ -155,7 +158,7 @@ export function parseImprovements(
 					.replace(/'/g, "'")
 					.replace(/\n/g, " "); // Replace newlines with spaces
 
-				console.log("Attempting alternative json parsing strategies...");
+				/* TODO: Async logger needed */ logger.info("Attempting alternative json parsing strategies...");
 
 				// Option 1: Manual regex-based extraction of JSON objects
 				try {
@@ -181,10 +184,7 @@ export function parseImprovements(
 							const improvement = JSON.parse(improvementJson);
 							improvementResults.push(improvement);
 						} catch (_err) {
-							console.log(
-								"Failed to parse individual improvement:",
-								improvementJson,
-							);
+							/* TODO: Async logger needed */ logger.info("Failed to parse individual improvement:", { arg1: improvementJson, arg2:  });
 						}
 						
 						// Get next match
@@ -192,11 +192,11 @@ export function parseImprovements(
 					}
 
 					if (improvementResults.length > 0) {
-						console.log("Successfully extracted improvements using regex");
+						/* TODO: Async logger needed */ logger.info("Successfully extracted improvements using regex");
 						return improvementsFromParsed(improvementResults);
 					}
 				} catch (regexError) {
-					console.error("Regex extraction failed:", regexError);
+					/* TODO: Async logger needed */ logger.error("Regex extraction failed:", { data: regexError });
 				}
 
 				// Option 2: Direct parsing with strict fixes for all problematic characters
@@ -215,16 +215,16 @@ export function parseImprovements(
 						); // Add quotes around unquoted values
 
 					const parsed = JSON.parse(strictlyCleaned);
-					console.log("Successfully parsed with strict character fixes");
+					/* TODO: Async logger needed */ logger.info("Successfully parsed with strict character fixes");
 					return improvementsFromParsed(parsed);
 				} catch (strictError) {
-					console.error("Strict cleaning parse failed:", strictError);
+					/* TODO: Async logger needed */ logger.error("Strict cleaning parse failed:", { data: strictError });
 				}
 
 				// Option 3: Use direct object creation as a last resort
 				try {
 					// Extract data directly with regex patterns for each field
-					console.log("Attempting direct extraction for each field");
+					/* TODO: Async logger needed */ logger.info("Attempting direct extraction for each field");
 					const improvements = [];
 
 					// Match patterns for each improvement block
@@ -290,18 +290,16 @@ export function parseImprovements(
 					}
 
 					if (improvements.length > 0) {
-						console.log(
-							"Successfully created objects through direct extraction",
-						);
+						/* TODO: Async logger needed */ logger.info("Successfully created objects through direct extraction", { data:  });
 						return improvementsFromParsed(improvements);
 					}
 				} catch (directError) {
-					console.error("Direct extraction failed:", directError);
+					/* TODO: Async logger needed */ logger.error("Direct extraction failed:", { data: directError });
 				}
 				// The function is now defined at the top level
 			} catch (jsonError) {
-				console.error("Failed to parse JSON content:", jsonError);
-				console.log("Attempted to parse JSON:", jsonContent);
+				/* TODO: Async logger needed */ logger.error("Failed to parse JSON content:", { data: jsonError });
+				/* TODO: Async logger needed */ logger.info("Attempted to parse JSON:", { data: jsonContent });
 				// Fall through to text parsing
 			}
 		}
@@ -328,8 +326,8 @@ export function parseImprovements(
 			},
 		];
 	} catch (error) {
-		console.error("Failed to parse improvements:", error);
-		console.error("Raw response:", response);
+		/* TODO: Async logger needed */ logger.error("Failed to parse improvements:", { data: error });
+		/* TODO: Async logger needed */ logger.error("Raw response:", { data: response });
 		throw new Error("Failed to parse AI response");
 	}
 }

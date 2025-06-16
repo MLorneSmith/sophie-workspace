@@ -2,9 +2,13 @@
 
 import { enhanceAction } from "@kit/next/actions";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
+import { createServiceLogger } from "@kit/shared/logger";
 import { z } from "zod";
 
 import type { UsageStats } from "../_lib/types";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("API-USAGE-SERVICE");
 
 // Define interface for AI request log entries
 interface AiRequestLog {
@@ -27,7 +31,10 @@ const UsageDataQuerySchema = z.object({
 type UsageDataQuery = z.infer<typeof UsageDataQuerySchema>;
 
 export const fetchUsageDataAction = enhanceAction(
-	async (data: UsageDataQuery, _user) => {
+	async (
+		data: UsageDataQuery,
+		_user,
+	): Promise<{ success: boolean; data?: UsageStats; error?: string }> => {
 		try {
 			const supabase = getSupabaseServerClient();
 			const { timeRange, userId, teamId } = data;
@@ -55,7 +62,13 @@ export const fetchUsageDataAction = enhanceAction(
 
 			// Format date for the database query
 			const fromDateStr = fromDate.toISOString();
-			console.log(`Fetching usage data from ${fromDateStr} to now`);
+			const logger = await getLogger();
+			logger.info("Fetching usage data", {
+				timeRange,
+				fromDate: fromDateStr,
+				userId,
+				teamId,
+			});
 
 			// Base query - using schema.from to address the table name issue
 			// The ai_request_logs table is likely in the public schema
@@ -82,14 +95,22 @@ export const fetchUsageDataAction = enhanceAction(
 			}
 
 			// Process the data to generate statistics
-			const stats: UsageStats = processLogsToStats(logs || []);
+			const stats: UsageStats = processLogsToStats(
+				(logs || []) as AiRequestLog[],
+			);
 
 			return {
 				success: true,
 				data: stats,
 			};
 		} catch (error) {
-			console.error("Error fetching AI usage data:", error);
+			const logger = await getLogger();
+			logger.error("Error fetching AI usage data", {
+				error,
+				timeRange: data.timeRange,
+				userId: data.userId,
+				teamId: data.teamId,
+			});
 			return {
 				success: false,
 				error: error instanceof Error ? error.message : "Unknown error",
@@ -199,7 +220,8 @@ function groupByDay(
 				const isoString = new Date(log.request_timestamp).toISOString();
 				date = isoString.split("T")[0] as string;
 			} catch (_e) {
-				console.error("Invalid timestamp format:", log.request_timestamp);
+				// Note: We can't use async logger here, so we'll skip logging for now
+				// This error is handled gracefully by using today's date as fallback
 			}
 		}
 

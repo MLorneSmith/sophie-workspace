@@ -2,6 +2,11 @@ import type { Database } from "~/lib/database.types";
 // Import the server client using dynamic import to avoid issues with next/headers
 import { updateLessonProgressAction } from "../../../_lib/server/server-actions";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("HOME-(USER)");
+
 // Define proper types for Payload CMS data structures
 type PayloadLesson = Database["payload"]["Tables"]["course_lessons"]["Row"];
 type PayloadQuiz = {
@@ -114,14 +119,12 @@ export async function LessonDataProviderEnhanced({
 				quizIdStr === "null" ||
 				quizIdStr === "undefined"
 			) {
-				console.log(`Skipping invalid quiz ID format: ${quizIdStr}`);
+				/* TODO: Async logger needed */ logger.info(`Skipping invalid quiz ID format: ${quizIdStr}`);
 				// Continue without the quiz data
 			} else {
 				try {
 					// Add debug logging
-					console.log(
-						`Attempting to fetch quiz with enhanced API: ${quizIdStr}`,
-					);
+					/* TODO: Async logger needed */ logger.info(`Attempting to fetch quiz with enhanced API: ${quizIdStr}`, { data:  });
 
 					// Use enhanced quiz loader with depth=2 to ensure questions are included
 					// This explicitly requests a higher depth to include questions in the response
@@ -129,8 +132,8 @@ export async function LessonDataProviderEnhanced({
 
 					// Log results for debugging
 					if (quiz) {
-						console.log(`Successfully loaded quiz: ${quiz.title}`);
-						console.log(`Quiz has ${quiz.questions?.length || 0} questions`);
+						/* TODO: Async logger needed */ logger.info(`Successfully loaded quiz: ${quiz.title}`);
+						/* TODO: Async logger needed */ logger.info(`Quiz has ${quiz.questions?.length || 0} questions`);
 
 						// If we have questions array but it doesn't contain full objects
 						// this means we have IDs but not the full question details
@@ -142,9 +145,7 @@ export async function LessonDataProviderEnhanced({
 								!quiz.questions[0]?.options)
 						) {
 							// We need to fetch the full question details
-							console.log(
-								`Quiz has ${quiz.questions.length} question IDs, fetching details...`,
-							);
+							/* TODO: Async logger needed */ logger.info(`Quiz has ${quiz.questions.length} question IDs, { arg1: fetching details...`, arg2:  });
 
 							const { callPayloadAPI } = await import("@kit/cms/payload");
 
@@ -170,21 +171,17 @@ export async function LessonDataProviderEnhanced({
 								);
 
 								if (questionsResponse?.docs?.length > 0) {
-									console.log(
-										`Found ${questionsResponse.docs.length} questions with details`,
-									);
+									/* TODO: Async logger needed */ logger.info(`Found ${questionsResponse.docs.length} questions with details`, { data:  });
 									quiz.questions = questionsResponse.docs;
 								}
 							}
 						}
 					} else {
-						console.warn(`No quiz found with ID: ${quizIdStr}`);
+						/* TODO: Async logger needed */ logger.warn(`No quiz found with ID: ${quizIdStr}`);
 					}
 				} catch (error) {
 					// Log the error with context but continue without the quiz data
-					console.error(
-						`Error fetching quiz with ID ${quizIdStr}: ${error instanceof Error ? error.message : "Unknown error"}`,
-					);
+					/* TODO: Async logger needed */ logger.error(`Error fetching quiz with ID ${quizIdStr}: ${error instanceof Error ? error.message : "Unknown error"}`, { data:  });
 					// Continue without the quiz data - no placeholder quizzes
 				}
 			}
@@ -209,15 +206,11 @@ export async function LessonDataProviderEnhanced({
 				quizAttempts = attempts || [];
 			} catch (error) {
 				// Continue with empty quiz attempts
-				console.error(
-					`Error fetching quiz attempts: ${error instanceof Error ? error.message : "Unknown error"}`,
-				);
+				/* TODO: Async logger needed */ logger.error(`Error fetching quiz attempts: ${error instanceof Error ? error.message : "Unknown error"}`, { data:  });
 			}
 		} catch (error) {
 			// Continue without quiz data
-			console.error(
-				`Error during quiz handling: ${error instanceof Error ? error.message : "Unknown error"}`,
-			);
+			/* TODO: Async logger needed */ logger.error(`Error during quiz handling: ${error instanceof Error ? error.message : "Unknown error"}`, { data:  });
 		}
 	}
 
@@ -234,10 +227,10 @@ export async function LessonDataProviderEnhanced({
 			const actualSurveyId =
 				typeof surveyId === "object" ? surveyId.id || surveyId.value : surveyId;
 
-			console.log(
+			/* TODO: Async logger needed */ logger.info(
 				`Lesson ${lesson.title} (${lessonId}) has survey ID: ${actualSurveyId}`,
 			);
-			console.log(`Lesson number: ${lesson.lesson_number}`);
+			/* TODO: Async logger needed */ logger.info(`Lesson number: ${lesson.lesson_number}`);
 
 			// Get survey data directly using the ID
 			try {
@@ -247,53 +240,44 @@ export async function LessonDataProviderEnhanced({
 				);
 
 				// First try to get the survey by ID using a direct API call
-				console.log(`Fetching survey with ID: ${actualSurveyId}`);
+				/* TODO: Async logger needed */ logger.info(`Fetching survey with ID: ${actualSurveyId}`);
 
 				// Determine slug based on lesson number as a fallback
 				let surveySlug = "";
 				if (lesson.lesson_number === 103) {
 					surveySlug = "three-quick-questions";
-					console.log(
-						`Lesson 103: Using survey slug '${surveySlug}' as fallback`,
-					);
+					/* TODO: Async logger needed */ logger.info(`Lesson 103: Using survey slug '${surveySlug}' as fallback`, { data:  });
 				} else if (lesson.lesson_number === 802) {
 					surveySlug = "feedback";
-					console.log(
-						`Lesson 802: Using survey slug '${surveySlug}' as fallback`,
-					);
+					/* TODO: Async logger needed */ logger.info(`Lesson 802: Using survey slug '${surveySlug}' as fallback`, { data:  });
 				}
 
 				// Try to get the survey by slug if we have one
 				if (surveySlug) {
-					console.log(`Trying to get survey by slug: ${surveySlug}`);
+					/* TODO: Async logger needed */ logger.info(`Trying to get survey by slug: ${surveySlug}`);
 					const surveyData = await getSurvey(surveySlug);
 
 					if (surveyData?.docs && surveyData.docs.length > 0) {
 						survey = surveyData.docs[0];
-						console.log(`Found survey by slug: ${survey.title} (${survey.id})`);
+						/* TODO: Async logger needed */ logger.info(`Found survey by slug: ${survey.title} (${survey.id})`);
 
 						// Pre-fetch questions to ensure they're available
-						console.log(`Pre-fetching questions for survey ID: ${survey.id}`);
+						/* TODO: Async logger needed */ logger.info(`Pre-fetching questions for survey ID: ${survey.id}`);
 						const questionsData = await getSurveyQuestions(survey.id);
 
 						if (questionsData?.docs && questionsData.docs.length > 0) {
 							// Add questions to the survey object directly
 							survey.questions = questionsData.docs;
-							console.log(
-								`Added ${questionsData.docs.length} questions to survey object`,
-							);
+							/* TODO: Async logger needed */ logger.info(`Added ${questionsData.docs.length} questions to survey object`, { data:  });
 						} else {
-							console.log(`No questions found for survey ID: ${survey.id}`);
+							/* TODO: Async logger needed */ logger.info(`No questions found for survey ID: ${survey.id}`);
 						}
 					} else {
-						console.log(`No survey found with slug: ${surveySlug}`);
+						/* TODO: Async logger needed */ logger.info(`No survey found with slug: ${surveySlug}`);
 					}
 				}
 			} catch (error) {
-				console.error(
-					`Error fetching survey with ID ${actualSurveyId}:`,
-					error,
-				);
+				/* TODO: Async logger needed */ logger.error(`Error fetching survey with ID ${actualSurveyId}:`, { arg1: error, arg2:  });
 				// Continue without the survey data
 			}
 

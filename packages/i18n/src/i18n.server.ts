@@ -2,6 +2,11 @@ import { createInstance, type InitOptions } from "i18next";
 import resourcesToBackend from "i18next-resources-to-backend";
 import { initReactI18next } from "react-i18next/initReactI18next";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("I18N_SERVER");
+
 /**
  * Initialize the i18n instance on the server.
  * This is useful for RSC and SSR.
@@ -25,10 +30,7 @@ export async function initializeServerI18n(
 
 						return callback(null, data);
 					} catch (error) {
-						console.log(
-							`Error loading i18n file: locales/${language}/${namespace}.json`,
-							error,
-						);
+						/* TODO: Async logger needed */ logger.info(`Error loading i18n file: locales/${language}/${namespace}.json`, { arg1: error, arg2:  });
 
 						return callback(null, {});
 					}
@@ -45,7 +47,7 @@ export async function initializeServerI18n(
 						iterations++;
 
 						if (iterations > maxIterations) {
-							console.error(
+							(await getLogger()).error(
 								`i18next is not initialized after ${maxIterations} iterations`,
 							);
 
@@ -95,9 +97,7 @@ export async function initializeServerI18n(
 	const success = await waitForNamespaces();
 
 	if (!success) {
-		console.warn(
-			`Not all namespaces were loaded after ${maxWaitTime}ms. Initialization may be incomplete.`,
-		);
+		/* TODO: Async logger needed */ logger.warn(`Not all namespaces were loaded after ${maxWaitTime}ms. Initialization may be incomplete.`, { data:  });
 	}
 
 	return i18nInstance;
