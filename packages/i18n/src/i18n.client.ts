@@ -3,6 +3,11 @@ import LanguageDetector from "i18next-browser-languagedetector";
 import resourcesToBackend from "i18next-resources-to-backend";
 import { initReactI18next } from "react-i18next";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("I18N_CLIENT");
+
 // Keep track of the number of iterations
 let iteration = 0;
 
@@ -53,7 +58,7 @@ export async function initializeI18nClient(
 			},
 			(err) => {
 				if (err) {
-					console.error("Error initializing i18n client", err);
+					/* TODO: Async logger needed */ logger.error("Error initializing i18n client", { data: err });
 				}
 			},
 		);
@@ -61,7 +66,7 @@ export async function initializeI18nClient(
 	// to avoid infinite loops, we return the i18next instance after a certain number of iterations
 	// even if the languages and namespaces are not loaded
 	if (iteration >= MAX_ITERATIONS) {
-		console.debug(`Max iterations reached: ${MAX_ITERATIONS}`);
+		/* TODO: Async logger needed */ logger.debug(`Max iterations reached: ${MAX_ITERATIONS}`);
 
 		return i18next;
 	}
@@ -70,9 +75,7 @@ export async function initializeI18nClient(
 	if (loadedLanguages.length === 0 || loadedNamespaces.length === 0) {
 		iteration++;
 
-		console.debug(
-			`Keeping component from rendering if no languages or namespaces are loaded. Iteration: ${iteration}. Will stop after ${MAX_ITERATIONS} iterations.`,
-		);
+		/* TODO: Async logger needed */ logger.debug(`Keeping component from rendering if no languages or namespaces are loaded. Iteration: ${iteration}. Will stop after ${MAX_ITERATIONS} iterations.`, { data:  });
 
 		throw new Error("No languages or namespaces loaded");
 	}

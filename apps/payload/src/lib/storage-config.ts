@@ -1,3 +1,8 @@
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("STORAGE_CONFIG");
+
 /**
  * Storage Configuration Utilities for Cloudflare R2 and AWS S3
  *
@@ -174,63 +179,59 @@ export function logStorageConfig(): void {
 	}
 
 	const storageType = getStorageType();
-	console.log(`[STORAGE-CONFIG] Storage type: ${storageType}`);
+	/* TODO: Async logger needed */ logger.info(`[STORAGE-CONFIG] Storage type: ${storageType}`);
 
 	if (storageType === "r2") {
 		const r2Config = getR2Config();
 		const validation = validateR2Config();
 
-		console.log("[STORAGE-CONFIG] Cloudflare R2 Configuration:");
-		console.log(`[STORAGE-CONFIG] - Account ID: ${r2Config.accountId}`);
-		console.log(`[STORAGE-CONFIG] - Media Bucket: ${r2Config.mediaBucket}`);
-		console.log(
-			`[STORAGE-CONFIG] - Downloads Bucket: ${r2Config.downloadsBucket}`,
-		);
-		console.log(
-			`[STORAGE-CONFIG] - Endpoint: ${r2Config.endpoint || "default"}`,
-		);
-		console.log(`[STORAGE-CONFIG] - Region: ${r2Config.region}`);
+		/* TODO: Async logger needed */ logger.info("[STORAGE-CONFIG] Cloudflare R2 Configuration:");
+		/* TODO: Async logger needed */ logger.info(`[STORAGE-CONFIG] - Account ID: ${r2Config.accountId}`);
+		/* TODO: Async logger needed */ logger.info(`[STORAGE-CONFIG] - Media Bucket: ${r2Config.mediaBucket}`);
+		/* TODO: Async logger needed */ logger.info(`[STORAGE-CONFIG] - Downloads Bucket: ${r2Config.downloadsBucket}`, { data:  });
+		/* TODO: Async logger needed */ logger.info(`[STORAGE-CONFIG] - Endpoint: ${r2Config.endpoint || "default"}`, { data:  });
+		/* TODO: Async logger needed */ logger.info(`[STORAGE-CONFIG] - Region: ${r2Config.region}`);
 
 		if (validation.warnings.length > 0) {
-			console.log("[STORAGE-CONFIG] Warnings:");
+			/* TODO: Async logger needed */ logger.info("[STORAGE-CONFIG] Warnings:");
 			for (const warning of validation.warnings) {
-				console.log(`[STORAGE-CONFIG] - ${warning}`);
+				/* TODO: Async logger needed */ logger.info(`[STORAGE-CONFIG] - ${warning}`);
 			}
 		}
 	} else if (storageType === "s3") {
 		const s3Config = getS3Config();
 		const validation = validateS3Config();
 
-		console.log("[STORAGE-CONFIG] AWS S3 Configuration:");
-		console.log(`[STORAGE-CONFIG] - Bucket: ${s3Config.bucket}`);
-		console.log(`[STORAGE-CONFIG] - Region: ${s3Config.region}`);
-		console.log(
+		/* TODO: Async logger needed */ logger.info("[STORAGE-CONFIG] AWS S3 Configuration:");
+		/* TODO: Async logger needed */ logger.info(`[STORAGE-CONFIG] - Bucket: ${s3Config.bucket}`);
+		/* TODO: Async logger needed */ logger.info(`[STORAGE-CONFIG] - Region: ${s3Config.region}`);
+		/* TODO: Async logger needed */ logger.info(
 			`[STORAGE-CONFIG] - Using credentials: ${s3Config.accessKeyId ? "Yes" : "No (IAM role)"}`,
 		);
 
 		if (validation.warnings.length > 0) {
-			console.log("[STORAGE-CONFIG] Warnings:");
+			/* TODO: Async logger needed */ logger.info("[STORAGE-CONFIG] Warnings:");
 			for (const warning of validation.warnings) {
-				console.log(`[STORAGE-CONFIG] - ${warning}`);
+				/* TODO: Async logger needed */ logger.info(`[STORAGE-CONFIG] - ${warning}`);
 			}
 		}
 	} else {
-		console.log("[STORAGE-CONFIG] No valid storage configuration found");
+		/* TODO: Async logger needed */ logger.info("[STORAGE-CONFIG] No valid storage configuration found");
 
 		const r2Validation = validateR2Config();
 		const s3Validation = validateS3Config();
 
 		if (r2Validation.errors.length > 0) {
-			console.log("[STORAGE-CONFIG] R2 configuration errors:");
+			/* TODO: Async logger needed */ logger.info("[STORAGE-CONFIG] R2 configuration errors:");
 			for (const error of r2Validation.errors) {
-				console.log(`[STORAGE-CONFIG] - ${error}`);
+				/* TODO: Async logger needed */ logger.info(`[STORAGE-CONFIG] - ${error}`);
 			}
 		}
 
 		if (s3Validation.errors.length > 0) {
-			console.log("[STORAGE-CONFIG] S3 configuration errors:");
+			/* TODO: Async logger needed */ logger.info("[STORAGE-CONFIG] S3 configuration errors:");
 			for (const error of s3Validation.errors) {
-				console.log(`[STORAGE-CONFIG] - ${error}`);
+				/* TODO: Async logger needed */ logger.info(`[STORAGE-CONFIG] - ${error}`);
 			}
 		}
 	}

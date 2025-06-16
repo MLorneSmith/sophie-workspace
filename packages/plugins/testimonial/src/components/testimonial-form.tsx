@@ -30,6 +30,11 @@ import { createTestimonialAction } from "../server/server-actions";
 import { StarRating } from "./star-rating";
 import { VideoRecorder } from "./video-recorder";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("TESTIMONIAL_FORM");
+
 type TextTestimonialFormData = z.infer<typeof TextTestimonialFormSchema>;
 type VideoTestimonialFormData = z.infer<typeof VideoTestimonialSchema>;
 
@@ -70,7 +75,7 @@ export function TestimonialForm(props: TestimonialFormProps) {
 					props.onSuccess();
 				}
 			} catch (error) {
-				console.error("Error submitting testimonial:", error);
+				/* TODO: Async logger needed */ logger.error("Error submitting testimonial:", { data: error });
 			}
 		});
 	}

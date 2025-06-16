@@ -31,6 +31,11 @@ import {
 import { QuizComponent } from "./QuizComponent";
 import { SurveyComponent } from "./SurveyComponent";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("HOME-(USER)");
+
 // Type aliases for better readability
 type QuizAttempt = Database["public"]["Tables"]["quiz_attempts"]["Row"];
 type LessonProgress = Database["public"]["Tables"]["lesson_progress"]["Row"];
@@ -523,15 +528,12 @@ export function LessonViewClient({
 								{(() => {
 									// Debug logging in development
 									if (process.env.NODE_ENV === "development") {
-										console.log(
-											"Lesson downloads:",
-											lesson.downloads
+										/* TODO: Async logger needed */ logger.info("Lesson downloads:", { arg1: lesson.downloads
 												? `${lesson.downloads.length} items`
-												: "undefined",
-										);
+												: "undefined", arg2:  });
 
 										if (lesson.downloads && lesson.downloads.length > 0) {
-											console.log("First download:", lesson.downloads[0]);
+											/* TODO: Async logger needed */ logger.info("First download:", { data: lesson.downloads[0] });
 										}
 									}
 
@@ -548,17 +550,12 @@ export function LessonViewClient({
 														(download: Download, index: number) => {
 															// Additional validation
 															if (!download) {
-																console.warn(
-																	`Download at index ${index} is null or undefined`,
-																);
+																/* TODO: Async logger needed */ logger.warn(`Download at index ${index} is null or undefined`, { data:  });
 																return null;
 															}
 
 															if (!download.url) {
-																console.warn(
-																	`Download at index ${index} has no URL:`,
-																	download,
-																);
+																/* TODO: Async logger needed */ logger.warn(`Download at index ${index} has no URL:`, { arg1: download, arg2:  });
 
 																// Fallback rendering for downloads without URL
 																if (download.filename || download.description) {
@@ -671,9 +668,7 @@ export function LessonViewClient({
 										lesson.content.includes("{%") &&
 										lesson.content.includes("r2file")
 									) {
-										console.log(
-											"Legacy r2file tags detected in content, using template processor",
-										);
+										/* TODO: Async logger needed */ logger.info("Legacy r2file tags detected in content, { arg1: using template processor", arg2:  });
 
 										// Extract download section from content
 										const downloadSection = lesson.content.match(

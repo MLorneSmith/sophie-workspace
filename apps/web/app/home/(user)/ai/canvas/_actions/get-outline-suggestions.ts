@@ -11,6 +11,11 @@ import { z } from "zod";
 
 import { lexicalToTiptap } from "../_components/editor/tiptap/utils/format-conversion";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("HOME-(USER)");
+
 interface TiptapNode {
 	type: string;
 	content?: TiptapNode[];
@@ -144,7 +149,10 @@ ${improvementFormat}`,
 				data: suggestions,
 			};
 		} catch (error) {
-			console.error("Error in outline suggestions action:", error);
+			/* TODO: Async logger needed */ logger.error(
+				"Error in outline suggestions action:",
+				{ data: error },
+			);
 
 			return {
 				success: false,

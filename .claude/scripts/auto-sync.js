@@ -51,14 +51,20 @@ async function autoSyncForDebug(issueReference) {
 		throw new Error(`Cannot parse issue reference: ${issueReference}`);
 	}
 
-	console.log(`🔧 Debug auto-sync: Processing issue #${issueNumber}`);
+	// Debug output for auto-sync processing
+	process.stdout.write(
+		`🔧 Debug auto-sync: Processing issue #${issueNumber}\n`,
+	);
 
 	try {
 		// Attempt auto-sync
 		const result = await autoSyncIfNeeded(issueNumber);
 
 		if (result.error) {
-			console.log("⚠️ Auto-sync failed, fetching directly from GitHub...");
+			// Fallback notification
+			process.stdout.write(
+				"⚠️ Auto-sync failed, fetching directly from GitHub...\n",
+			);
 			// Fallback: fetch from GitHub without caching
 			const issue = await fetchGitHubIssue(issueNumber);
 			return {
@@ -69,7 +75,8 @@ async function autoSyncForDebug(issueReference) {
 		}
 
 		if (result.alreadyCached) {
-			console.log(`✅ Using cached local file: ${result.path}`);
+			// Cache usage notification
+			process.stdout.write(`✅ Using cached local file: ${result.path}\n`);
 			return {
 				issueData: null,
 				localPath: result.path,
@@ -78,7 +85,8 @@ async function autoSyncForDebug(issueReference) {
 		}
 
 		if (result.filename) {
-			console.log(`✅ Auto-synced to: ${result.filename}`);
+			// Auto-sync success notification
+			process.stdout.write(`✅ Auto-synced to: ${result.filename}\n`);
 			return {
 				issueData: null,
 				localPath: result.filename,
@@ -86,8 +94,10 @@ async function autoSyncForDebug(issueReference) {
 			};
 		}
 	} catch (error) {
-		console.log(`⚠️ Auto-sync error: ${error.message}`);
-		console.log("🔄 Falling back to direct GitHub fetch...");
+		// Error reporting
+		process.stderr.write(`⚠️ Auto-sync error: ${error.message}\n`);
+		// Fallback notification
+		process.stdout.write("🔄 Falling back to direct GitHub fetch...\n");
 
 		// Final fallback: direct fetch
 		try {
@@ -117,7 +127,8 @@ async function createTempLocalFile(issueData) {
 	);
 
 	await writeFile(tempPath, localContent, "utf8");
-	console.log(`📝 Created temporary local file: ${tempPath}`);
+	// File creation notification
+	process.stdout.write(`📝 Created temporary local file: ${tempPath}\n`);
 
 	return tempPath;
 }
@@ -167,7 +178,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 	const args = process.argv.slice(2);
 
 	if (args.length === 0) {
-		console.log(`
+		// Usage instructions output
+		process.stdout.write(`
 Usage: node auto-sync.js <issue_reference>
 
 Examples:
@@ -184,15 +196,20 @@ Examples:
 		const result = await debugIntegration(issueReference);
 
 		if (result.success) {
-			console.log(`✅ ${result.message}`);
-			console.log(`📁 Local file: ${result.localPath}`);
-			console.log(`📊 Source: ${result.source}`);
+			// Success message output
+			process.stdout.write(`✅ ${result.message}\n`);
+			// File path output
+			process.stdout.write(`📁 Local file: ${result.localPath}\n`);
+			// Source information output
+			process.stdout.write(`📊 Source: ${result.source}\n`);
 		} else {
-			console.error(`❌ ${result.message}`);
+			// Error message output
+			process.stderr.write(`❌ ${result.message}\n`);
 			process.exit(1);
 		}
 	} catch (error) {
-		console.error("❌ Integration failed:", error.message);
+		// Integration failure output
+		process.stderr.write(`❌ Integration failed: ${error.message}\n`);
 		process.exit(1);
 	}
 }

@@ -6,6 +6,11 @@ import { enhanceAction } from "@kit/next/actions";
 import { getSupabaseServerAdminClient } from "@kit/supabase/server-admin-client";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("HOME-(USER)");
+
 // Define a type for the createPolicy method
 interface StoragePolicy {
 	name: string;
@@ -119,7 +124,9 @@ export const uploadTaskImageAction = enhanceAction(
 				},
 			};
 		} catch (error) {
-			console.error("Error uploading image:", error);
+			/* TODO: Async logger needed */ logger.error("Error uploading image:", {
+				data: error,
+			});
 			return {
 				success: false,
 				error:
@@ -156,7 +163,9 @@ export const deleteTaskImageAction = enhanceAction(
 				error: null,
 			};
 		} catch (error) {
-			console.error("Error deleting image:", error);
+			/* TODO: Async logger needed */ logger.error("Error deleting image:", {
+				data: error,
+			});
 			return {
 				success: false,
 				error:

@@ -1,5 +1,10 @@
 import { initializeServerI18n } from "@kit/i18n/server";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("I18N");
+
 export function initializeEmailI18n(params: {
 	language: string | undefined;
 	namespace: string;
@@ -18,10 +23,7 @@ export function initializeEmailI18n(params: {
 
 				return data as Record<string, string>;
 			} catch (error) {
-				console.log(
-					`Error loading i18n file: locales/${language}/${namespace}.json`,
-					error,
-				);
+				/* TODO: Async logger needed */ logger.info(`Error loading i18n file: locales/${language}/${namespace}.json`, { arg1: error, arg2:  });
 
 				return {};
 			}

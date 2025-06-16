@@ -10,6 +10,11 @@ import {
 } from "react";
 import { v4 as uuidv4 } from "uuid";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("HOME-(USER)");
+
 // Define the context type
 type CostTrackingContextType = {
 	sessionCost: number;
@@ -48,7 +53,10 @@ export function CostTrackingProvider({ children }: { children: ReactNode }) {
 					setSessionCost(data.cost || 0);
 				}
 			} catch (error) {
-				console.error("Failed to fetch initial costs:", error);
+				/* TODO: Async logger needed */ logger.error(
+					"Failed to fetch initial costs:",
+					{ data: error },
+				);
 			} finally {
 				setIsLoading(false);
 			}

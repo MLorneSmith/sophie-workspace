@@ -6,6 +6,11 @@ import type { Database } from "~/lib/database.types";
 
 import { lexicalToTiptap } from "../_components/editor/tiptap/utils/format-conversion";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("HOME-(USER)");
+
 /**
  * Server action to convert existing records from Lexical format to Tiptap format
  * This is a one-time migration script
@@ -19,7 +24,7 @@ export async function convertExistingRecordsToTiptap() {
 		.select("*");
 
 	if (error || !submissions) {
-		console.error("Error fetching submissions:", error);
+		/* TODO: Async logger needed */ logger.error("Error fetching submissions:", { data: error });
 		return { success: false, error: error?.message };
 	}
 
@@ -56,10 +61,7 @@ export async function convertExistingRecordsToTiptap() {
 				.eq("id", submission.id);
 
 			if (updateError) {
-				console.error(
-					`Error updating submission ${submission.id}:`,
-					updateError,
-				);
+				/* TODO: Async logger needed */ logger.error(`Error updating submission ${submission.id}:`, { arg1: updateError, arg2:  });
 				results.failed++;
 				results.errors.push(`ID ${submission.id}: ${updateError.message}`);
 			} else {
@@ -67,7 +69,7 @@ export async function convertExistingRecordsToTiptap() {
 			}
 		} catch (error) {
 			const message = error instanceof Error ? error.message : String(error);
-			console.error(`Error processing submission ${submission.id}:`, message);
+			/* TODO: Async logger needed */ logger.error(`Error processing submission ${submission.id}:`, { data: message });
 			results.failed++;
 			results.errors.push(`ID ${submission.id}: ${message}`);
 		}

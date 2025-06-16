@@ -15,6 +15,11 @@ import { RadioGroup, RadioGroupItem } from "@kit/ui/radio-group";
 import { ChevronRight } from "lucide-react";
 import { useState } from "react";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("HOME-(USER)");
+
 interface QuizOption {
 	text: string;
 	iscorrect: boolean;
@@ -389,7 +394,10 @@ export function QuizComponent({
 						}
 					}
 				} catch (err) {
-					console.error("Error navigating to next lesson:", err);
+					/* TODO: Async logger needed */ logger.error(
+						"Error navigating to next lesson:",
+						{ data: err },
+					);
 				}
 			}
 

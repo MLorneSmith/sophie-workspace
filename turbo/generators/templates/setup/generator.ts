@@ -2,6 +2,11 @@ import { execSync } from "node:child_process";
 import { writeFileSync } from "node:fs";
 import type { PlopTypes } from "@turbo/gen";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("GENERATOR");
+
 export function createSetupGenerator(plop: PlopTypes.NodePlopAPI) {
 	plop.setGenerator("setup", {
 		description: "Setup your Makerkit project",
@@ -61,7 +66,7 @@ export function createSetupGenerator(plop: PlopTypes.NodePlopAPI) {
 
 					return "Project setup complete. Start developing your project!";
 				} catch (error) {
-					console.error("Project setup failed. Aborting package generation.");
+					/* TODO: Async logger needed */ logger.error("Project setup failed. Aborting package generation.");
 					process.exit(1);
 				}
 			},
@@ -106,7 +111,7 @@ function setupPreCommit(params: { setupHealthCheck: boolean }) {
 			stdio: "inherit",
 		});
 	} catch (error) {
-		console.error("Pre-commit hook setup failed. Aborting package generation.");
+		/* TODO: Async logger needed */ logger.error("Pre-commit hook setup failed. Aborting package generation.");
 		process.exit(1);
 	}
 }
@@ -116,7 +121,7 @@ function setupRemote() {
 		// Setup remote upstream
 		const currentRemote = execSync("git remote get-url origin").toString();
 
-		console.log(`Setting upstream remote to ${currentRemote} ...`);
+		/* TODO: Async logger needed */ logger.info(`Setting upstream remote to ${currentRemote} ...`);
 
 		if (currentRemote?.includes("github.com")) {
 			execSync("git remote remove origin", {
@@ -127,12 +132,12 @@ function setupRemote() {
 				stdio: "inherit",
 			});
 		} else {
-			console.error("Your current remote is not GitHub");
+			/* TODO: Async logger needed */ logger.error("Your current remote is not GitHub");
 		}
 	} catch (error) {
-		console.error(error);
+		/* TODO: Async logger needed */ logger.error(error);
 
-		console.info("No current remote found. Skipping upstream remote setup.");
+		/* TODO: Async logger needed */ logger.info("No current remote found. Skipping upstream remote setup.");
 	}
 
 	// Run license script
@@ -141,9 +146,7 @@ function setupRemote() {
 			stdio: "inherit",
 		});
 	} catch (error) {
-		console.error(
-			`License check failed. Aborting package generation. Error: ${error}`,
-		);
+		/* TODO: Async logger needed */ logger.error(`License check failed. Aborting package generation. Error: ${error}`, { data:  });
 
 		process.exit(1);
 	}

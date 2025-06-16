@@ -1,3 +1,8 @@
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("LIB-DEV_MOCK_MODULES.TS");
+
 /*
 * Mock modules for development.
 
@@ -7,10 +12,8 @@ It allows the development server to load faster by not loading the modules that 
 
 const noop = (name: string) => {
 	return () => {
-		console.debug(
-			`The function "${name}" is mocked for development because your environment variables indicate that it is not needed. 
-    If you think this is a mistake, please open a support ticket.`,
-		);
+		/* TODO: Async logger needed */ logger.debug(`The function "${name}" is mocked for development because your environment variables indicate that it is not needed. 
+    If you think this is a mistake, { arg1: please open a support ticket.`, arg2:  });
 	};
 };
 

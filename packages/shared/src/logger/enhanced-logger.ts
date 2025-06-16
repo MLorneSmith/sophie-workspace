@@ -87,9 +87,9 @@ export function getEnhancedLoggerConfig(
 
 // Enhanced logger implementation
 export class EnhancedLogger {
-	protected config: EnhancedLoggerConfig;
+	public readonly config: EnhancedLoggerConfig;
 	private levels = { debug: 0, info: 1, warn: 2, error: 3, fatal: 4 };
-	protected monitoring?: MonitoringService;
+	public readonly monitoring?: MonitoringService;
 
 	constructor(config: EnhancedLoggerConfig, monitoring?: MonitoringService) {
 		this.config = config;
@@ -263,10 +263,7 @@ export class EnhancedLogger {
 		} catch (monitoringError) {
 			// Don't let monitoring failures break the application
 			// biome-ignore lint/suspicious/noConsole: Error handling for monitoring failures
-			console.error(
-				"Failed to send log to monitoring service:",
-				monitoringError,
-			);
+			console.error("Failed to send log to monitoring service:", monitoringError);
 		}
 	}
 

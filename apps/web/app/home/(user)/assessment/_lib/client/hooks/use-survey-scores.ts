@@ -3,6 +3,11 @@
 import { useSupabase } from "@kit/supabase/hooks/use-supabase";
 import { useEffect, useState } from "react";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("HOME-(USER)");
+
 export type CategoryScores = Record<string, number>;
 
 /**
@@ -31,7 +36,10 @@ export function useSurveyScores(userId: string, surveyId: string) {
 					.single();
 
 				if (error) {
-					console.error("Error fetching survey scores:", error);
+					/* TODO: Async logger needed */ logger.error(
+						"Error fetching survey scores:",
+						{ data: error },
+					);
 					setError(
 						new Error(`Failed to fetch survey scores: ${error.message}`),
 					);
@@ -75,7 +83,10 @@ export function useSurveyScores(userId: string, surveyId: string) {
 					}
 				}
 			} catch (err) {
-				console.error("Error in useSurveyScores:", err);
+				/* TODO: Async logger needed */ logger.error(
+					"Error in useSurveyScores:",
+					{ data: err },
+				);
 				setError(
 					err instanceof Error ? err : new Error("An unknown error occurred"),
 				);

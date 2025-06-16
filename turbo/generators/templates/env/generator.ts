@@ -3,6 +3,11 @@ import type { PlopTypes } from "@turbo/gen";
 
 import { generator } from "../../utils";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("GENERATOR");
+
 const DOCS_URL =
 	"https://makerkit.dev/docs/next-supabase-turbo/environment-variables";
 
@@ -12,7 +17,7 @@ export function createEnvironmentVariablesGenerator(
 	const allVariables = generator.loadAllEnvironmentVariables("apps/web");
 
 	if (allVariables) {
-		console.log(
+		/* TODO: Async logger needed */ logger.info(
 			`Loaded ${Object.values(allVariables).length} default environment variables in your env files. We use these as defaults.`,
 		);
 	}

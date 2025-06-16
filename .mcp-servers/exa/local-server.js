@@ -11,12 +11,14 @@ const PORT = process.env.PORT || 3000;
 const EXA_API_KEY = process.env.EXA_API_KEY;
 
 if (!EXA_API_KEY) {
-	console.error("EXA_API_KEY environment variable is required");
+	// Infrastructure logging: missing required env var
+	process.stderr.write("EXA_API_KEY environment variable is required\n");
 	process.exit(1);
 }
 
-console.log(`Starting Exa MCP local server on port ${PORT}`);
-console.log(`Using EXA_API_KEY: ${EXA_API_KEY.substring(0, 8)}...`);
+// Infrastructure logging: service startup
+process.stdout.write(`Starting Exa MCP local server on port ${PORT}\n`);
+process.stdout.write(`Using EXA_API_KEY: ${EXA_API_KEY.substring(0, 8)}...\n`);
 
 let isHealthy = false;
 let mcpProcess = null;
@@ -26,11 +28,13 @@ let lastSuccessfulStart = null;
 
 function startMcpProcess() {
 	if (restartCount >= MAX_RESTARTS) {
-		console.error(`Max restarts reached (${MAX_RESTARTS}), giving up`);
+		// Infrastructure logging: error condition for restart limit
+		process.stderr.write(`Max restarts reached (${MAX_RESTARTS}), giving up\n`);
 		return;
 	}
 
-	console.log(`Starting MCP process (attempt ${restartCount + 1})`);
+	// Infrastructure logging: process startup
+	process.stdout.write(`Starting MCP process (attempt ${restartCount + 1})\n`);
 	mcpProcess = spawn("exa-mcp", [], {
 		stdio: ["pipe", "pipe", "pipe"],
 		env: { ...process.env, EXA_API_KEY },
@@ -64,18 +68,23 @@ function startMcpProcess() {
 	});
 
 	mcpProcess.on("close", (code) => {
-		console.log(`MCP process exited with code ${code}`);
+		// Infrastructure logging: process exit
+		process.stdout.write(`MCP process exited with code ${code}\n`);
 		isHealthy = false;
 
 		// Restart unless we've hit max restarts
 		if (restartCount < MAX_RESTARTS) {
 			restartCount++;
-			console.log(
-				`Process died, restarting in 5 seconds... (${restartCount}/${MAX_RESTARTS})`,
+			// Infrastructure logging: restart attempt
+			process.stdout.write(
+				`Process died, restarting in 5 seconds... (${restartCount}/${MAX_RESTARTS})\n`,
 			);
 			setTimeout(startMcpProcess, 5000);
 		} else {
-			console.log("Max restart attempts reached. Process may be unstable.");
+			// Infrastructure logging: restart limit reached
+			process.stdout.write(
+				"Max restart attempts reached. Process may be unstable.\n",
+			);
 		}
 	});
 
@@ -84,8 +93,9 @@ function startMcpProcess() {
 		if (!isHealthy && mcpProcess && !mcpProcess.killed) {
 			isHealthy = true;
 			lastSuccessfulStart = new Date();
-			console.log(
-				"MCP process appears to be running silently - marking as healthy",
+			// Infrastructure logging: silent process health detection
+			process.stdout.write(
+				"MCP process appears to be running silently - marking as healthy\n",
 			);
 		}
 	}, 3000);
@@ -123,18 +133,21 @@ const healthServer = http.createServer((req, res) => {
 });
 
 healthServer.listen(PORT, () => {
-	console.log(`Health check server listening on port ${PORT}`);
+	// Infrastructure logging: health server status
+	process.stdout.write(`Health check server listening on port ${PORT}\n`);
 });
 
 // Handle shutdown gracefully
 process.on("SIGTERM", () => {
-	console.log("Received SIGTERM, shutting down gracefully");
+	// Infrastructure logging: shutdown handling
+	process.stdout.write("Received SIGTERM, shutting down gracefully\n");
 	if (mcpProcess) mcpProcess.kill("SIGTERM");
 	healthServer.close();
 });
 
 process.on("SIGINT", () => {
-	console.log("Received SIGINT, shutting down gracefully");
+	// Infrastructure logging: shutdown handling
+	process.stdout.write("Received SIGINT, shutting down gracefully\n");
 	if (mcpProcess) mcpProcess.kill("SIGINT");
 	healthServer.close();
 });

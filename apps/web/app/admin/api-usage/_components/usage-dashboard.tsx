@@ -27,6 +27,11 @@ import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { fetchUsageDataAction } from "../_actions/fetch-usage-data";
 import type { UsageStats } from "../_lib/types";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("ADMIN-API-USAGE");
+
 interface UsageDashboardProps {
 	initialData: UsageStats;
 }
@@ -53,12 +58,21 @@ export function UsageDashboard({ initialData }: UsageDashboardProps) {
 
 			if (result.success && result.data) {
 				setCurrentData(result.data);
-				console.log("Fetched real usage data:", result.data);
+				/* TODO: Async logger needed */ logger.info(
+					"Fetched real usage data:",
+					{ data: result.data },
+				);
 			} else {
-				console.error("Failed to fetch usage data:", result.error);
+				/* TODO: Async logger needed */ logger.error(
+					"Failed to fetch usage data:",
+					{ data: result.error },
+				);
 			}
 		} catch (error) {
-			console.error("Error fetching usage data:", error);
+			/* TODO: Async logger needed */ logger.error(
+				"Error fetching usage data:",
+				{ data: error },
+			);
 		} finally {
 			setIsLoading(false);
 		}

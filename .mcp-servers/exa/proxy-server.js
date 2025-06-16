@@ -14,8 +14,9 @@ const REMOTE_URL = process.env.REMOTE_URL || "https://mcp.exa.ai/mcp";
 // Build the remote URL with API key
 const fullRemoteUrl = `${REMOTE_URL}?exaApiKey=${EXA_API_KEY}`;
 
-console.log(`Starting Exa MCP proxy on port ${PORT}`);
-console.log(`Proxying to: ${fullRemoteUrl}`);
+// Infrastructure logging: service startup
+process.stdout.write(`Starting Exa MCP proxy on port ${PORT}\n`);
+process.stdout.write(`Proxying to: ${fullRemoteUrl}\n`);
 
 let isHealthy = false;
 let mcpProcess = null;
@@ -25,11 +26,13 @@ let lastSuccessfulConnection = null;
 
 function startMcpProcess() {
 	if (restartCount >= MAX_RESTARTS) {
-		console.error(`Max restarts reached (${MAX_RESTARTS}), giving up`);
+		// Infrastructure logging: error condition for restart limit
+		process.stderr.write(`Max restarts reached (${MAX_RESTARTS}), giving up\n`);
 		return;
 	}
 
-	console.log(`Starting MCP process (attempt ${restartCount + 1})`);
+	// Infrastructure logging: process startup
+	process.stdout.write(`Starting MCP process (attempt ${restartCount + 1})\n`);
 	mcpProcess = spawn("mcp-remote", [fullRemoteUrl], {
 		stdio: ["pipe", "pipe", "pipe"],
 		env: { ...process.env },
@@ -55,19 +58,22 @@ function startMcpProcess() {
 	});
 
 	mcpProcess.on("close", (code) => {
-		console.log(`MCP process exited with code ${code}`);
+		// Infrastructure logging: process exit
+		process.stdout.write(`MCP process exited with code ${code}\n`);
 		isHealthy = false;
 
 		// Restart unless we've hit max restarts or process was explicitly terminated
 		if (restartCount < MAX_RESTARTS) {
 			restartCount++;
-			console.log(
-				`Connection dropped, restarting in 5 seconds... (${restartCount}/${MAX_RESTARTS})`,
+			// Infrastructure logging: restart attempt
+			process.stdout.write(
+				`Connection dropped, restarting in 5 seconds... (${restartCount}/${MAX_RESTARTS})\n`,
 			);
 			setTimeout(startMcpProcess, 5000);
 		} else {
-			console.log(
-				"Max restart attempts reached. Remote service may be unavailable.",
+			// Infrastructure logging: restart limit reached
+			process.stdout.write(
+				"Max restart attempts reached. Remote service may be unavailable.\n",
 			);
 		}
 	});
@@ -106,7 +112,8 @@ const healthServer = http.createServer((req, res) => {
 });
 
 healthServer.listen(PORT, () => {
-	console.log(`Health check server listening on port ${PORT}`);
+	// Infrastructure logging: health server status
+	process.stdout.write(`Health check server listening on port ${PORT}\n`);
 });
 
 // Forward stdin to the MCP process
@@ -114,13 +121,15 @@ process.stdin.pipe(mcpProcess.stdin);
 
 // Handle shutdown gracefully
 process.on("SIGTERM", () => {
-	console.log("Received SIGTERM, shutting down gracefully");
+	// Infrastructure logging: shutdown handling
+	process.stdout.write("Received SIGTERM, shutting down gracefully\n");
 	mcpProcess.kill("SIGTERM");
 	healthServer.close();
 });
 
 process.on("SIGINT", () => {
-	console.log("Received SIGINT, shutting down gracefully");
+	// Infrastructure logging: shutdown handling
+	process.stdout.write("Received SIGINT, shutting down gracefully\n");
 	mcpProcess.kill("SIGINT");
 	healthServer.close();
 });

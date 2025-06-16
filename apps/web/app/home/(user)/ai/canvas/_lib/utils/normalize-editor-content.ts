@@ -1,6 +1,11 @@
 "use client";
 
 import type {
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("HOME-(USER)");
+
 	EditorContentTypes,
 	TiptapDocument,
 	TiptapNode,
@@ -43,7 +48,7 @@ export function normalizeEditorContent(
 	try {
 		validateAgainstSchema(parsedContent);
 	} catch (error) {
-		console.error("Schema validation failed:", error);
+		/* TODO: Async logger needed */ logger.error("Schema validation failed:", { data: error });
 		// Use safe fallback content if validation fails
 		return createSafeContent();
 	}
@@ -64,7 +69,7 @@ function parseContent(content: unknown): TiptapDocument {
 		try {
 			return JSON.parse(content);
 		} catch (e) {
-			console.error("Failed to parse content JSON:", e);
+			/* TODO: Async logger needed */ logger.error("Failed to parse content JSON:", { data: e });
 			return createSafeContent();
 		}
 	}

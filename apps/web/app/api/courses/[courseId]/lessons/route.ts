@@ -2,6 +2,11 @@ import { getCourseLessons } from "@kit/cms/payload";
 import { enhanceRouteHandler } from "@kit/next/routes";
 import { NextResponse } from "next/server";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("API-COURSES");
+
 export const GET = enhanceRouteHandler(
 	async ({ params, user: _user }) => {
 		if (!params?.courseId) {
@@ -12,11 +17,13 @@ export const GET = enhanceRouteHandler(
 		}
 
 		try {
-			console.log(`API - Fetching lessons for course ID: ${params.courseId}`);
+			/* TODO: Async logger needed */ logger.info(
+				`API - Fetching lessons for course ID: ${params.courseId}`,
+			);
 			const lessons = await getCourseLessons(params.courseId);
 
 			// Debug lessons data
-			console.log("API - Lessons data:", {
+			/* TODO: Async logger needed */ logger.info("API - Lessons data:", {
 				count: lessons.docs?.length || 0,
 				sampleLesson: lessons.docs?.[0]
 					? {
@@ -31,18 +38,24 @@ export const GET = enhanceRouteHandler(
 			// Log detailed structure of the first lesson to understand relationship structure
 			if (lessons.docs?.[0]) {
 				const sampleLesson = lessons.docs[0];
-				console.log("API - Detailed sample lesson structure:", {
-					featured_image_id: sampleLesson.featured_image_id,
-					// Check if it's an object with nested properties
-					hasNestedUrl: !!sampleLesson.featured_image_id?.url,
-					// Check if it's a direct property
-					directUrl: sampleLesson.url,
-				});
+				/* TODO: Async logger needed */ logger.info(
+					"API - Detailed sample lesson structure:",
+					{
+						featured_image_id: sampleLesson.featured_image_id,
+						// Check if it's an object with nested properties
+						hasNestedUrl: !!sampleLesson.featured_image_id?.url,
+						// Check if it's a direct property
+						directUrl: sampleLesson.url,
+					},
+				);
 			}
 
 			return NextResponse.json(lessons);
 		} catch (error) {
-			console.error("Error fetching course lessons:", error);
+			/* TODO: Async logger needed */ logger.error(
+				"Error fetching course lessons:",
+				{ data: error },
+			);
 			return NextResponse.json(
 				{ error: "Failed to fetch course lessons" },
 				{ status: 500 },

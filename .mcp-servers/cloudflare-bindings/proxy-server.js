@@ -11,8 +11,11 @@ const PORT = process.env.PORT || 3000;
 const REMOTE_URL =
 	process.env.REMOTE_URL || "https://bindings.mcp.cloudflare.com/sse";
 
-console.log(`Starting Cloudflare Bindings MCP proxy on port ${PORT}`);
-console.log(`Proxying to: ${REMOTE_URL}`);
+// Infrastructure logging for MCP proxy server startup
+process.stdout.write(
+	`Starting Cloudflare Bindings MCP proxy on port ${PORT}\n`,
+);
+process.stdout.write(`Proxying to: ${REMOTE_URL}\n`);
 
 // Start the mcp-remote process
 const mcpProcess = spawn("mcp-remote", [REMOTE_URL], {
@@ -29,7 +32,7 @@ mcpProcess.stderr.on("data", (data) => {
 });
 
 mcpProcess.on("close", (code) => {
-	console.log(`MCP process exited with code ${code}`);
+	process.stdout.write(`MCP process exited with code ${code}\n`);
 	process.exit(code);
 });
 
@@ -52,7 +55,7 @@ const healthServer = http.createServer((req, res) => {
 });
 
 healthServer.listen(PORT, () => {
-	console.log(`Health check server listening on port ${PORT}`);
+	process.stdout.write(`Health check server listening on port ${PORT}\n`);
 });
 
 // Forward stdin to the MCP process
@@ -60,13 +63,13 @@ process.stdin.pipe(mcpProcess.stdin);
 
 // Handle shutdown gracefully
 process.on("SIGTERM", () => {
-	console.log("Received SIGTERM, shutting down gracefully");
+	process.stdout.write("Received SIGTERM, shutting down gracefully\n");
 	mcpProcess.kill("SIGTERM");
 	healthServer.close();
 });
 
 process.on("SIGINT", () => {
-	console.log("Received SIGINT, shutting down gracefully");
+	process.stdout.write("Received SIGINT, shutting down gracefully\n");
 	mcpProcess.kill("SIGINT");
 	healthServer.close();
 });

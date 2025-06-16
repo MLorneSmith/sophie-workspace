@@ -9,7 +9,8 @@ const http = require("node:http");
 
 const PORT = process.env.PORT || 3000;
 
-console.log(`Starting Code Reasoning MCP proxy on port ${PORT}`);
+// Infrastructure logging: service startup
+process.stdout.write(`Starting Code Reasoning MCP proxy on port ${PORT}\n`);
 
 // Start the code-reasoning process
 const mcpProcess = spawn("code-reasoning", [], {
@@ -34,7 +35,8 @@ mcpProcess.stdout.on("data", (data) => {
 		output.includes("MCP server") ||
 		outputBuffer.includes("code-reasoning")
 	) {
-		console.log("✅ Code Reasoning MCP server is healthy");
+		// Infrastructure logging: health status
+		process.stdout.write("✅ Code Reasoning MCP server is healthy\n");
 		isHealthy = true;
 	}
 });
@@ -42,7 +44,10 @@ mcpProcess.stdout.on("data", (data) => {
 // Set healthy after timeout as backup
 setTimeout(() => {
 	if (!isHealthy) {
-		console.log("✅ Code Reasoning MCP server assumed healthy via timeout");
+		// Infrastructure logging: timeout-based health assumption
+		process.stdout.write(
+			"✅ Code Reasoning MCP server assumed healthy via timeout\n",
+		);
 		isHealthy = true;
 	}
 }, 5000);
@@ -52,10 +57,12 @@ mcpProcess.stderr.on("data", (data) => {
 });
 
 mcpProcess.on("close", (code) => {
-	console.log(`MCP process exited with code ${code}`);
+	// Infrastructure logging: process exit
+	process.stdout.write(`MCP process exited with code ${code}\n`);
 	isHealthy = false;
 	setTimeout(() => {
-		console.log("Restarting MCP process...");
+		// Infrastructure logging: restart trigger
+		process.stdout.write("Restarting MCP process...\n");
 		process.exit(1); // Let Docker restart the container
 	}, 1000);
 });
@@ -80,18 +87,21 @@ const healthServer = http.createServer((req, res) => {
 });
 
 healthServer.listen(PORT, () => {
-	console.log(`Health check server listening on port ${PORT}`);
+	// Infrastructure logging: health server status
+	process.stdout.write(`Health check server listening on port ${PORT}\n`);
 });
 
 // Handle shutdown gracefully
 process.on("SIGTERM", () => {
-	console.log("Received SIGTERM, shutting down gracefully");
+	// Infrastructure logging: shutdown handling
+	process.stdout.write("Received SIGTERM, shutting down gracefully\n");
 	mcpProcess.kill("SIGTERM");
 	healthServer.close();
 });
 
 process.on("SIGINT", () => {
-	console.log("Received SIGINT, shutting down gracefully");
+	// Infrastructure logging: shutdown handling
+	process.stdout.write("Received SIGINT, shutting down gracefully\n");
 	mcpProcess.kill("SIGINT");
 	healthServer.close();
 });

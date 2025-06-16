@@ -7,6 +7,11 @@ import { useQuery } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 
 import type {
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("HOME-(USER)");
+
 	BuildingBlocksSubmission,
 	Slide,
 	StoryboardData,
@@ -169,7 +174,7 @@ export function usePresentationStoryboard(presentationId: string) {
 
 						return generateStoryboardFromOutline(outline);
 					} catch (err) {
-						console.error("Error generating storyboard:", err);
+						/* TODO: Async logger needed */ logger.error("Error generating storyboard:", { data: err });
 						throw new Error("Failed to generate storyboard from outline");
 					}
 				} else {
@@ -195,11 +200,11 @@ export function usePresentationStoryboard(presentationId: string) {
 
 				return generateStoryboardFromOutline(outline);
 			} catch (err) {
-				console.error("Error generating storyboard:", err);
+				/* TODO: Async logger needed */ logger.error("Error generating storyboard:", { data: err });
 				throw new Error("Failed to generate storyboard from outline");
 			}
 		} catch (error) {
-			console.error("Error in fetchStoryboard:", error);
+			/* TODO: Async logger needed */ logger.error("Error in fetchStoryboard:", { data: error });
 			throw error;
 		}
 	}, [presentationId, supabase]);
@@ -232,7 +237,7 @@ export function usePresentationStoryboard(presentationId: string) {
 						toast.error(
 							"Storyboard feature is not fully set up yet. Database migration needed.",
 						);
-						console.error("Storyboard column does not exist:", result.error);
+						/* TODO: Async logger needed */ logger.error("Storyboard column does not exist:", { data: result.error });
 					} else {
 						throw result.error;
 					}
@@ -242,7 +247,7 @@ export function usePresentationStoryboard(presentationId: string) {
 				await refetch();
 				return true;
 			} catch (error) {
-				console.error("Error saving storyboard:", error);
+				/* TODO: Async logger needed */ logger.error("Error saving storyboard:", { data: error });
 				toast.error("Failed to save storyboard");
 				return false;
 			} finally {

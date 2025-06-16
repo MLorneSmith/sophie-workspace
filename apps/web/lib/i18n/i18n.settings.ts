@@ -1,5 +1,10 @@
 import { createI18nSettings } from "@kit/i18n";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("LIB-I18N");
+
 /**
  * The default language of the application.
  * This is used as a fallback language when the selected language is not supported.
@@ -50,9 +55,7 @@ export function getI18nSettings(
 	let lng = language ?? defaultLanguage;
 
 	if (!languages.includes(lng)) {
-		console.warn(
-			`Language "${lng}" is not supported. Falling back to "${defaultLanguage}"`,
-		);
+		/* TODO: Async logger needed */ logger.warn(`Language "${lng}" is not supported. Falling back to "${defaultLanguage}"`, { data:  });
 
 		lng = defaultLanguage;
 	}

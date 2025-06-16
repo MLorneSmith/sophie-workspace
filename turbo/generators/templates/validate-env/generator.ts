@@ -4,6 +4,11 @@ import type { PlopTypes } from "@turbo/gen";
 import { z } from "../../../../apps/web/node_modules/zod";
 import { generator } from "../../utils";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("GENERATOR");
+
 const BooleanStringEnum = z.enum(["true", "false"]);
 
 const Schema: Record<string, z.ZodType> = {
@@ -185,7 +190,7 @@ export function createEnvironmentVariablesValidatorGenerator(
 								`Encountered a validation error for key ${key}:${value} \n\n${JSON.stringify(error, null, 2)}`,
 							);
 						}
-						console.log(`Key ${key} is valid!`);
+						/* TODO: Async logger needed */ logger.info(`Key ${key} is valid!`);
 					}
 				}
 

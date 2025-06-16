@@ -1,10 +1,15 @@
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("CMS-PAYLOAD");
+
 // Enable detailed logging in development environment
 const DEBUG = process.env.NODE_ENV === "development";
 
 // Helper logging function
 function debugLog(...args: unknown[]) {
 	if (DEBUG) {
-		console.log("[TemplateTagProcessor]", ...args);
+		/* TODO: Async logger needed */ logger.info("[TemplateTagProcessor]", { data: ...args });
 	}
 }
 

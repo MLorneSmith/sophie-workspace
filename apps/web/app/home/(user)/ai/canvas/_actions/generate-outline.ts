@@ -6,6 +6,11 @@ import { z } from "zod";
 
 import { lexicalToTiptap } from "../_components/editor/tiptap/utils/format-conversion";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("HOME-(USER)");
+
 // Server-side normalization functions (no 'use client' directive)
 function normalizeOutlineContent(content: TiptapDocument): TiptapDocument {
 	// Deep clone to avoid mutation issues
@@ -206,7 +211,7 @@ export const generateOutlineAction = enhanceAction(
 			const supabase = getSupabaseServerClient();
 			const { submissionId, forceRegenerate } = data;
 
-			console.log("Generate outline action called with:", {
+			/* TODO: Async logger needed */ logger.info("Generate outline action called with:", {
 				submissionId,
 				forceRegenerate,
 			});
@@ -230,14 +235,12 @@ export const generateOutlineAction = enhanceAction(
 							Array.isArray(parsedOutline.content) &&
 							parsedOutline.content.length > 1
 						) {
-							console.log(
-								"Valid outline exists and force regenerate is false, returning existing outline",
-							);
+							/* TODO: Async logger needed */ logger.info("Valid outline exists and force regenerate is false, { arg1: returning existing outline", arg2:  });
 							return { success: true, data: parsedOutline };
 						}
 					} catch (_e) {
 						// If parsing fails, continue to regeneration
-						console.log("Failed to parse existing outline, will regenerate");
+						/* TODO: Async logger needed */ logger.info("Failed to parse existing outline, { data: will regenerate" });
 					}
 				}
 			}
@@ -253,10 +256,10 @@ export const generateOutlineAction = enhanceAction(
 				throw new Error("Failed to fetch submission data");
 			}
 
-			console.log("Generating outline for submission:", data.submissionId);
-			console.log("Raw data:", {
+			/* TODO: Async logger needed */ logger.info("Generating outline for submission:", { data: data.submissionId });
+			/* TODO: Async logger needed */ logger.info("Raw data:", { arg1: {
 				situation: submission.situation
-					? `${submission.situation.substring(0, 50)}...`
+					? `${submission.situation.substring(0, arg2: 50 })}...`
 					: "null",
 				complication: submission.complication
 					? `${submission.complication.substring(0, 50)}...`
@@ -271,8 +274,8 @@ export const generateOutlineAction = enhanceAction(
 			const complicationDoc = parseTiptapDocument(submission.complication);
 			const answerDoc = parseTiptapDocument(submission.answer);
 
-			console.log("Parsed documents:", {
-				situationHasContent: situationDoc.content.some(hasValidText),
+			/* TODO: Async logger needed */ logger.info("Parsed documents:", { data: {
+				situationHasContent: situationDoc.content.some(hasValidText }),
 				complicationHasContent: complicationDoc.content.some(hasValidText),
 				answerHasContent: answerDoc.content.some(hasValidText),
 			});
@@ -362,7 +365,7 @@ export const generateOutlineAction = enhanceAction(
 				},
 			};
 
-			console.log("Generated outline content with sections:", {
+			/* TODO: Async logger needed */ logger.info("Generated outline content with sections:", {
 				totalNodes: outlineContent.content.length,
 				firstNodeType:
 					outlineContent.content.length > 0 && outlineContent.content[0]
@@ -372,7 +375,7 @@ export const generateOutlineAction = enhanceAction(
 
 			// Update the outline field in the database with stringified Tiptap document
 			const outlineString = JSON.stringify(finalOutlineContent);
-			console.log("Outline JSON length:", outlineString.length);
+			/* TODO: Async logger needed */ logger.info("Outline JSON length:", { data: outlineString.length });
 
 			const { error: updateError } = await supabase
 				.from("building_blocks_submissions")
@@ -380,18 +383,18 @@ export const generateOutlineAction = enhanceAction(
 				.eq("id", data.submissionId);
 
 			if (updateError) {
-				console.error("Failed to update outline:", updateError);
+				/* TODO: Async logger needed */ logger.error("Failed to update outline:", { data: updateError });
 				throw new Error("Failed to update outline");
 			}
 
-			console.log("Successfully updated outline in database");
+			/* TODO: Async logger needed */ logger.info("Successfully updated outline in database");
 
 			return {
 				success: true,
 				data: finalOutlineContent,
 			};
 		} catch (error) {
-			console.error("Error in generate outline action:", error);
+			/* TODO: Async logger needed */ logger.error("Error in generate outline action:", { data: error });
 
 			return {
 				success: false,

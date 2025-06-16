@@ -1,4 +1,9 @@
 import {
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("CMS-PAYLOAD");
+
 	containsTemplateTags,
 	TemplateTagProcessor,
 } from "./template-tag-processor";
@@ -9,7 +14,7 @@ const DEBUG = process.env.NODE_ENV === "development";
 // Helper logging function
 function debugLog(...args: unknown[]) {
 	if (DEBUG) {
-		console.log("[PayloadContentRenderer]", ...args);
+		/* TODO: Async logger needed */ logger.info("[PayloadContentRenderer]", { data: ...args });
 	}
 }
 
@@ -113,15 +118,13 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 									node.fields.blockType === "custom-call-to-action") ||
 								node.blockType === "custom-call-to-action"
 							) {
-								console.log("Found Call To Action block:", node);
+								/* TODO: Async logger needed */ logger.info("Found Call To Action block:", { data: node });
 
 								// Try to extract the HTML content from various locations
 								const htmlContent = findHtmlContent(node);
 
 								if (htmlContent) {
-									console.log(
-										"Using HTML content for Call To Action:",
-										`${htmlContent.substring(0, 100)}...`,
+									/* TODO: Async logger needed */ logger.info("Using HTML content for Call To Action:", { arg1: `${htmlContent.substring(0, arg2: 100 })}...`,
 									);
 									// Note: Content trusted as it comes from Payload CMS admin
 									return (
@@ -162,15 +165,13 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 								(node.fields && node.fields.blockType === "test-block") ||
 								node.blockType === "test-block"
 							) {
-								console.log("Found Test Block:", node);
+								/* TODO: Async logger needed */ logger.info("Found Test Block:", { data: node });
 
 								// Try to extract the HTML content from various locations
 								const htmlContent = findHtmlContent(node);
 
 								if (htmlContent) {
-									console.log(
-										"Using HTML content for Test Block:",
-										`${htmlContent.substring(0, 100)}...`,
+									/* TODO: Async logger needed */ logger.info("Using HTML content for Test Block:", { arg1: `${htmlContent.substring(0, arg2: 100 })}...`,
 									);
 									// Note: Content trusted as it comes from Payload CMS admin
 									return (
@@ -203,15 +204,13 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 								(node.fields && node.fields.blockType === "bunny-video") ||
 								node.blockType === "bunny-video"
 							) {
-								console.log("Found Bunny Video block:", node);
+								/* TODO: Async logger needed */ logger.info("Found Bunny Video block:", { data: node });
 
 								// Try to extract the HTML content from various locations
 								const htmlContent = findHtmlContent(node);
 
 								if (htmlContent) {
-									console.log(
-										"Using HTML content for Bunny Video:",
-										`${htmlContent.substring(0, 100)}...`,
+									/* TODO: Async logger needed */ logger.info("Using HTML content for Bunny Video:", { arg1: `${htmlContent.substring(0, arg2: 100 })}...`,
 									);
 									// Note: Content trusted as it comes from Payload CMS admin
 									return (
@@ -293,15 +292,13 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 								(node.fields && node.fields.blockType === "youtube-video") ||
 								node.blockType === "youtube-video"
 							) {
-								console.log("Found YouTube Video block:", node);
+								/* TODO: Async logger needed */ logger.info("Found YouTube Video block:", { data: node });
 
 								// Try to extract the HTML content from various locations
 								const htmlContent = findHtmlContent(node);
 
 								if (htmlContent) {
-									console.log(
-										"Using HTML content for YouTube Video:",
-										`${htmlContent.substring(0, 100)}...`,
+									/* TODO: Async logger needed */ logger.info("Using HTML content for YouTube Video:", { arg1: `${htmlContent.substring(0, arg2: 100 })}...`,
 									);
 									// Note: Content trusted as it comes from Payload CMS admin
 									return (
@@ -465,14 +462,11 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 
 							// Handle block type nodes
 							if (node.type === "block") {
-								console.log("Found block type node:", node);
+								/* TODO: Async logger needed */ logger.info("Found block type node:", { data: node });
 
 								// Check for Call To Action block in fields
 								if (node.fields && node.fields.blockType === "call-to-action") {
-									console.log(
-										"Found Call To Action block in fields:",
-										node.fields,
-									);
+									/* TODO: Async logger needed */ logger.info("Found Call To Action block in fields:", { arg1: node.fields, arg2:  });
 
 									return (
 										<div
@@ -512,7 +506,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 
 								// Check for Test Block in fields
 								if (node.fields && node.fields.blockType === "test-block") {
-									console.log("Found Test Block in fields:", node.fields);
+									/* TODO: Async logger needed */ logger.info("Found Test Block in fields:", { data: node.fields });
 
 									return (
 										<div
@@ -533,10 +527,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 
 								// Check for Bunny Video block in fields
 								if (node.fields && node.fields.blockType === "bunny-video") {
-									console.log(
-										"Found Bunny Video block in fields:",
-										node.fields,
-									);
+									/* TODO: Async logger needed */ logger.info("Found Bunny Video block in fields:", { arg1: node.fields, arg2:  });
 
 									// Extract video data with defaults
 									const videoId = String(node.fields.videoId || "");
@@ -601,10 +592,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 
 								// Check for YouTube Video block in fields
 								if (node.fields && node.fields.blockType === "youtube-video") {
-									console.log(
-										"Found YouTube Video block in fields:",
-										node.fields,
-									);
+									/* TODO: Async logger needed */ logger.info("Found YouTube Video block in fields:", { arg1: node.fields, arg2:  });
 
 									// Helper function to extract YouTube ID from URL or ID
 									const extractYouTubeId = (input: string): string => {
@@ -688,7 +676,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 							}
 
 							// For any unhandled node types, log them for debugging
-							console.log("Unhandled node type:", node.type, node);
+							/* TODO: Async logger needed */ logger.info("Unhandled node type:", { arg1: node.type, arg2: node });
 							return null;
 						})}
 					</div>
@@ -696,10 +684,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 			}
 
 			// If root exists but children is not an array, try to render the root directly
-			console.log(
-				"Root exists but children is not an array:",
-				lexicalContent.root,
-			);
+			/* TODO: Async logger needed */ logger.info("Root exists but children is not an array:", { arg1: lexicalContent.root, arg2:  });
 			return (
 				<div className="payload-content">
 					<p>
@@ -709,7 +694,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 			);
 		}
 	} catch (error) {
-		console.error("Error rendering Lexical content:", error);
+		/* TODO: Async logger needed */ logger.error("Error rendering Lexical content:", { data: error });
 	}
 
 	// Fallback for non-Lexical content

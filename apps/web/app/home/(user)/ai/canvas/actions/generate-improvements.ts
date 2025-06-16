@@ -17,6 +17,11 @@ import { enhanceAction } from "@kit/next/actions";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
 import { z } from "zod";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("HOME-(USER)");
+
 // Define Zod schema for request validation
 const ImprovementsSchema = z.object({
 	content: z.string().min(1, "Content is required"),
@@ -45,7 +50,7 @@ export const generateImprovementsAction = enhanceAction(
 			}
 
 			// Debug log the request
-			console.log("Improvements Request:", {
+			/* TODO: Async logger needed */ logger.info("Improvements Request:", {
 				contentLength: data.content.length,
 				userId: user.id,
 				submissionId: data.submissionId,
@@ -98,7 +103,7 @@ ${improvementFormat}`,
 			const duration = performance.now() - startTime;
 
 			// Log metrics
-			console.log("AI Request Metrics:", {
+			/* TODO: Async logger needed */ logger.info("AI Request Metrics:", {
 				duration,
 				userId: user.id,
 				status: "success",
@@ -108,14 +113,19 @@ ${improvementFormat}`,
 			const improvements = parseImprovements(response.content, data.type);
 
 			// Debug log the parsed improvements
-			console.log("Parsed Improvements:", improvements);
+			/* TODO: Async logger needed */ logger.info("Parsed Improvements:", {
+				data: improvements,
+			});
 
 			return {
 				success: true,
 				data: { improvements },
 			};
 		} catch (error) {
-			console.error("Error in improvements action:", error);
+			/* TODO: Async logger needed */ logger.error(
+				"Error in improvements action:",
+				{ data: error },
+			);
 
 			return {
 				success: false,

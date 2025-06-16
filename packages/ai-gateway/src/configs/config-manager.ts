@@ -91,3 +91,11 @@ export function normalizeConfig(config: Config): Config {
  * - overrideWithPortkey(config, portkeyConfigId) - Overrides with Portkey config
  * - normalizeConfig(config) - Normalizes configuration with defaults
  */
+
+// Export as ConfigManager namespace for backward compatibility
+export const ConfigManager = {
+	loadTemplate,
+	mergeWithUseCase,
+	overrideWithPortkey,
+	normalizeConfig,
+};

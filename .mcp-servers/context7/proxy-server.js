@@ -9,7 +9,8 @@ const http = require("node:http");
 
 const PORT = process.env.PORT || 3000;
 
-console.log(`Starting Context7 MCP proxy on port ${PORT}`);
+// Infrastructure logging for MCP proxy server startup
+process.stdout.write(`Starting Context7 MCP proxy on port ${PORT}\n`);
 
 // Start the context7-mcp process
 const mcpProcess = spawn("context7-mcp", [], {
@@ -29,7 +30,7 @@ mcpProcess.stdout.on("data", (data) => {
 
 	// Mark as healthy when server starts
 	if (output.includes("running on stdio") || output.includes("Context7")) {
-		console.log("✅ Context7 MCP server is healthy");
+		process.stdout.write("✅ Context7 MCP server is healthy\n");
 		isHealthy = true;
 	}
 });
@@ -37,8 +38,8 @@ mcpProcess.stdout.on("data", (data) => {
 // Set healthy after timeout as backup - be more aggressive
 setTimeout(() => {
 	if (!isHealthy) {
-		console.log(
-			"✅ Context7 MCP server assumed healthy via timeout - server appears to be running",
+		process.stdout.write(
+			"✅ Context7 MCP server assumed healthy via timeout - server appears to be running\n",
 		);
 		isHealthy = true;
 	}
@@ -49,10 +50,10 @@ mcpProcess.stderr.on("data", (data) => {
 });
 
 mcpProcess.on("close", (code) => {
-	console.log(`MCP process exited with code ${code}`);
+	process.stdout.write(`MCP process exited with code ${code}\n`);
 	isHealthy = false;
 	setTimeout(() => {
-		console.log("Restarting MCP process...");
+		process.stdout.write("Restarting MCP process...\n");
 		process.exit(1); // Let Docker restart the container
 	}, 1000);
 });
@@ -77,18 +78,18 @@ const healthServer = http.createServer((req, res) => {
 });
 
 healthServer.listen(PORT, () => {
-	console.log(`Health check server listening on port ${PORT}`);
+	process.stdout.write(`Health check server listening on port ${PORT}\n`);
 });
 
 // Handle shutdown gracefully
 process.on("SIGTERM", () => {
-	console.log("Received SIGTERM, shutting down gracefully");
+	process.stdout.write("Received SIGTERM, shutting down gracefully\n");
 	mcpProcess.kill("SIGTERM");
 	healthServer.close();
 });
 
 process.on("SIGINT", () => {
-	console.log("Received SIGINT, shutting down gracefully");
+	process.stdout.write("Received SIGINT, shutting down gracefully\n");
 	mcpProcess.kill("SIGINT");
 	healthServer.close();
 });

@@ -41,6 +41,11 @@ import {
 } from "./lib/storage-config";
 import { createURLGenerator } from "./lib/storage-url-generators";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("PAYLOAD_CONFIG");
+
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
 
@@ -58,14 +63,10 @@ if (!process.env.DATABASE_URI) {
 
 // Log configuration info (development only)
 if (process.env.NODE_ENV === "development") {
-	console.log(
-		"[PAYLOAD-CONFIG] Initializing Payload CMS with enhanced database connection management",
-	);
-	console.log("[PAYLOAD-CONFIG] Environment:", process.env.NODE_ENV);
-	console.log("[PAYLOAD-CONFIG] Server URL:", serverURL || "Not set");
-	console.log(
-		"[PAYLOAD-CONFIG] Database adapter: Enhanced PostgreSQL with singleton pattern",
-	);
+	/* TODO: Async logger needed */ logger.info("[PAYLOAD-CONFIG] Initializing Payload CMS with enhanced database connection management", { data:  });
+	/* TODO: Async logger needed */ logger.info("[PAYLOAD-CONFIG] Environment:", { data: process.env.NODE_ENV });
+	/* TODO: Async logger needed */ logger.info("[PAYLOAD-CONFIG] Server URL:", { data: serverURL || "Not set" });
+	/* TODO: Async logger needed */ logger.info("[PAYLOAD-CONFIG] Database adapter: Enhanced PostgreSQL with singleton pattern", { data:  });
 
 	// Log storage configuration
 	logStorageConfig();
@@ -196,9 +197,9 @@ const getStoragePlugins = () => {
 	if (storageType === "r2") {
 		const r2Validation = validateR2Config();
 		if (!r2Validation.isValid) {
-			console.error("[PAYLOAD-CONFIG] R2 validation failed:");
+			/* TODO: Async logger needed */ logger.error("[PAYLOAD-CONFIG] R2 validation failed:");
 			for (const error of r2Validation.errors) {
-				console.error(`[PAYLOAD-CONFIG] - ${error}`);
+				/* TODO: Async logger needed */ logger.error(`[PAYLOAD-CONFIG] - ${error}`);
 			}
 			throw new Error(
 				"Invalid R2 configuration. Please check your environment variables.",
@@ -206,9 +207,7 @@ const getStoragePlugins = () => {
 		}
 
 		if (process.env.NODE_ENV === "development") {
-			console.log(
-				"[PAYLOAD-CONFIG] Creating separate R2 storage plugins for media and downloads",
-			);
+			/* TODO: Async logger needed */ logger.info("[PAYLOAD-CONFIG] Creating separate R2 storage plugins for media and downloads", { data:  });
 		}
 
 		plugins.push(createR2MediaStorage());
@@ -216,9 +215,9 @@ const getStoragePlugins = () => {
 	} else if (storageType === "s3") {
 		const s3Validation = validateS3Config();
 		if (!s3Validation.isValid) {
-			console.error("[PAYLOAD-CONFIG] S3 validation failed:");
+			/* TODO: Async logger needed */ logger.error("[PAYLOAD-CONFIG] S3 validation failed:");
 			for (const error of s3Validation.errors) {
-				console.error(`[PAYLOAD-CONFIG] - ${error}`);
+				/* TODO: Async logger needed */ logger.error(`[PAYLOAD-CONFIG] - ${error}`);
 			}
 			throw new Error(
 				"Invalid S3 configuration. Please check your environment variables.",
@@ -226,9 +225,7 @@ const getStoragePlugins = () => {
 		}
 
 		if (process.env.NODE_ENV === "development") {
-			console.log(
-				"[PAYLOAD-CONFIG] Creating separate S3 storage plugins for media and downloads",
-			);
+			/* TODO: Async logger needed */ logger.info("[PAYLOAD-CONFIG] Creating separate S3 storage plugins for media and downloads", { data:  });
 		}
 
 		plugins.push(createS3MediaStorage());
@@ -236,16 +233,10 @@ const getStoragePlugins = () => {
 	} else {
 		// Log warning if no cloud storage is configured in production
 		if (process.env.NODE_ENV === "production") {
-			console.warn(
-				"[PAYLOAD-CONFIG] WARNING: No cloud storage configured for production. This will cause errors in serverless environments.",
-			);
-			console.warn(
-				"[PAYLOAD-CONFIG] Please configure either Cloudflare R2 or AWS S3 environment variables.",
-			);
+			/* TODO: Async logger needed */ logger.warn("[PAYLOAD-CONFIG] WARNING: No cloud storage configured for production. This will cause errors in serverless environments.", { data:  });
+			/* TODO: Async logger needed */ logger.warn("[PAYLOAD-CONFIG] Please configure either Cloudflare R2 or AWS S3 environment variables.", { data:  });
 		} else {
-			console.log(
-				"[PAYLOAD-CONFIG] No cloud storage configured, using local storage for development",
-			);
+			/* TODO: Async logger needed */ logger.info("[PAYLOAD-CONFIG] No cloud storage configured, { arg1: using local storage for development", arg2:  });
 		}
 	}
 

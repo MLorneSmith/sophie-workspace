@@ -13,6 +13,11 @@ import { PromptManager } from "@kit/ai-gateway/src/prompts/prompt-manager";
 import { enhanceAction } from "@kit/next/actions";
 import { z } from "zod";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("HOME-(USER)");
+
 // Define Zod schema for request validation
 const SuggestionsSchema = z
 	.object({
@@ -134,7 +139,7 @@ export const getSuggestions = enhanceAction(
 			const startTime = performance.now();
 
 			// Debug log the request
-			console.log("Suggestions Request:", {
+			(await getLogger()).info("Suggestions Request:", {
 				title: data.title,
 				field: data.field,
 				presentationType: data.presentationType,
@@ -179,7 +184,7 @@ export const getSuggestions = enhanceAction(
 			const duration = performance.now() - startTime;
 
 			// Log metrics
-			console.log("AI Request Metrics:", {
+			/* TODO: Async logger needed */ logger.info("AI Request Metrics:", {
 				field: data.field,
 				duration,
 				userId: user.id,
@@ -202,14 +207,19 @@ export const getSuggestions = enhanceAction(
 				.filter(Boolean);
 
 			// Debug log the suggestions
-			console.log("Parsed Suggestions:", suggestions);
+			/* TODO: Async logger needed */ logger.info("Parsed Suggestions:", {
+				data: suggestions,
+			});
 
 			return {
 				success: true,
 				data: suggestions,
 			};
 		} catch (error) {
-			console.error("Error in suggestions action:", error);
+			/* TODO: Async logger needed */ logger.error(
+				"Error in suggestions action:",
+				{ data: error },
+			);
 
 			return {
 				success: false,

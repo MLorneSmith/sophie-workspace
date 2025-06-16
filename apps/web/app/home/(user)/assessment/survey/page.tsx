@@ -12,6 +12,11 @@ import { HomeLayoutPageHeader } from "../../_components/home-page-header";
 // Import from the current directory
 import { SurveyContainer } from "./_components/survey-container";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("HOME-(USER)");
+
 export const generateMetadata = async () => {
 	const i18n = await createI18nServerInstance();
 	const title = i18n.t("common:routes.assessment");
@@ -91,7 +96,9 @@ async function SurveyPage() {
 			question.type === "multiple_choice" &&
 			(!question.options || question.options.length === 0)
 		) {
-			console.log(`Adding default options for question: ${question.id}`);
+			/* TODO: Async logger needed */ logger.info(
+				`Adding default options for question: ${question.id}`,
+			);
 
 			// Default options for Likert scale
 			const defaultOptions = [

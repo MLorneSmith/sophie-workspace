@@ -1,6 +1,11 @@
 import type { MonitoringService } from "@kit/monitoring-core";
 import { z } from "zod";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("BASELIME_SERVER_MONITORING_SERVICE");
+
 const apiKey = z
 	.string({
 		required_error: "NEXT_PUBLIC_BASELIME_KEY is required",
@@ -50,13 +55,8 @@ export class BaselimeServerMonitoringService implements MonitoringService {
 		});
 
 		if (!response.ok) {
-			console.error(
-				{
-					response,
-					event,
-				},
-				"Failed to send event to Baselime",
-			);
+			/* TODO: Async logger needed */ logger.error({
+					response, { arg1: event, arg2: }, arg3: "Failed to send event to Baselime", arg4:  });
 		}
 	}
 
@@ -86,13 +86,8 @@ export class BaselimeServerMonitoringService implements MonitoringService {
 		});
 
 		if (!response.ok) {
-			console.error(
-				{
-					response,
-					event,
-				},
-				"Failed to send event to Baselime",
-			);
+			/* TODO: Async logger needed */ logger.error({
+					response, { arg1: event, arg2: }, arg3: "Failed to send event to Baselime", arg4:  });
 		}
 	}
 

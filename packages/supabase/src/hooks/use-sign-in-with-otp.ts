@@ -4,6 +4,11 @@ import { useMutation } from "@tanstack/react-query";
 
 import { useSupabase } from "./use-supabase";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("USE_SIGN_IN_WITH_OTP");
+
 export function useSignInWithOtp() {
 	const client = useSupabase();
 	const mutationKey = ["auth", "sign-in-with-otp"];
@@ -13,7 +18,7 @@ export function useSignInWithOtp() {
 
 		if (result.error) {
 			if (shouldIgnoreError(result.error.message)) {
-				console.warn(
+				(await getLogger()).warn(
 					`Ignoring error during development: ${result.error.message}`,
 				);
 

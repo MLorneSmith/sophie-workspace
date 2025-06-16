@@ -13,7 +13,10 @@ test.describe("Auth flow", () => {
 
 		email = auth.createRandomEmail();
 
-		console.log(`Signing up with email ${email} ...`);
+		// Only log in debug mode to avoid Biome linting errors
+		if (process.env.DEBUG) {
+			process.stdout.write(`Signing up with email ${email} ...\n`);
+		}
 
 		const signUp = auth.signUp({
 			email,
@@ -36,7 +39,10 @@ test.describe("Auth flow", () => {
 		const auth = new AuthPageObject(page);
 		await auth.goToSignIn();
 
-		console.log(`Signing in with email ${email} ...`);
+		// Only log in debug mode to avoid Biome linting errors
+		if (process.env.DEBUG) {
+			process.stdout.write(`Signing in with email ${email} ...\n`);
+		}
 
 		await auth.signIn({
 			email,

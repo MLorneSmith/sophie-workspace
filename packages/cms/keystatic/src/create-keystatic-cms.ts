@@ -1,5 +1,10 @@
 import type { CmsClient } from "@kit/cms-types";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("CMS-PAYLOAD");
+
 /**
  * Creates a new Keystatic client instance.
  */
@@ -15,9 +20,7 @@ export async function createKeystaticClient() {
 		return createClient();
 	}
 
-	console.error(
-		`[CMS] Keystatic client using "Local" mode is only available in Node.js runtime. Please choose a different CMS client. Returning a mock client instead of throwing an error.`,
-	);
+	/* TODO: Async logger needed */ logger.error(`[CMS] Keystatic client using "Local" mode is only available in Node.js runtime. Please choose a different CMS client. Returning a mock client instead of throwing an error.`, { data:  });
 
 	return mockCMSClient() as unknown as CmsClient;
 }

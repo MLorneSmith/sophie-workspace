@@ -13,8 +13,11 @@ const REMOTE_URL =
 	"https://slideheroes-playwright-mcp.slideheroes.workers.dev/sse";
 const MCP_AUTH_TOKEN = process.env.MCP_AUTH_TOKEN;
 
-console.log(`Starting Cloudflare Playwright MCP proxy on port ${PORT}`);
-console.log(`Proxying to: ${REMOTE_URL}`);
+// Infrastructure logging: service startup info
+process.stdout.write(
+	`Starting Cloudflare Playwright MCP proxy on port ${PORT}\n`,
+);
+process.stdout.write(`Proxying to: ${REMOTE_URL}\n`);
 
 let isHealthy = false;
 let mcpProcess = null;
@@ -25,11 +28,13 @@ let lastSuccessfulConnection = null;
 
 function startMcpProcess() {
 	if (restartCount >= MAX_RESTARTS) {
-		console.error(`Max restarts reached (${MAX_RESTARTS}), giving up`);
+		// Infrastructure logging: error condition for restart limit
+		process.stderr.write(`Max restarts reached (${MAX_RESTARTS}), giving up\n`);
 		return;
 	}
 
-	console.log(`Starting MCP process (attempt ${restartCount + 1})`);
+	// Infrastructure logging: process startup
+	process.stdout.write(`Starting MCP process (attempt ${restartCount + 1})\n`);
 	mcpProcess = spawn("mcp-remote", [REMOTE_URL], {
 		stdio: ["pipe", "pipe", "pipe"],
 		env: { ...process.env, MCP_AUTH_TOKEN },
@@ -42,8 +47,9 @@ function startMcpProcess() {
 		// Check for errors
 		if (output.includes("HTTP 404")) {
 			has404Error = true;
-			console.log(
-				"Detected HTTP 404 error - endpoint may not exist or require different auth",
+			// Infrastructure logging: error detection
+			process.stdout.write(
+				"Detected HTTP 404 error - endpoint may not exist or require different auth\n",
 			);
 		}
 
@@ -64,13 +70,15 @@ function startMcpProcess() {
 	});
 
 	mcpProcess.on("close", (code) => {
-		console.log(`MCP process exited with code ${code}`);
+		// Infrastructure logging: process exit
+		process.stdout.write(`MCP process exited with code ${code}\n`);
 		isHealthy = false;
 
 		// Don't restart if we have a persistent 404 error
 		if (has404Error) {
-			console.log(
-				"Not restarting due to persistent HTTP 404 error - endpoint configuration issue",
+			// Infrastructure logging: restart prevention
+			process.stdout.write(
+				"Not restarting due to persistent HTTP 404 error - endpoint configuration issue\n",
 			);
 			return;
 		}
@@ -78,13 +86,15 @@ function startMcpProcess() {
 		// Restart unless we've hit max restarts
 		if (restartCount < MAX_RESTARTS) {
 			restartCount++;
-			console.log(
-				`Connection dropped, restarting in 5 seconds... (${restartCount}/${MAX_RESTARTS})`,
+			// Infrastructure logging: restart attempt
+			process.stdout.write(
+				`Connection dropped, restarting in 5 seconds... (${restartCount}/${MAX_RESTARTS})\n`,
 			);
 			setTimeout(startMcpProcess, 5000);
 		} else {
-			console.log(
-				"Max restart attempts reached. Remote service may be unavailable.",
+			// Infrastructure logging: restart limit reached
+			process.stdout.write(
+				"Max restart attempts reached. Remote service may be unavailable.\n",
 			);
 		}
 	});
@@ -125,7 +135,8 @@ const healthServer = http.createServer((req, res) => {
 });
 
 healthServer.listen(PORT, () => {
-	console.log(`Health check server listening on port ${PORT}`);
+	// Infrastructure logging: health server status
+	process.stdout.write(`Health check server listening on port ${PORT}\n`);
 });
 
 // Forward stdin to the MCP process
@@ -133,13 +144,15 @@ process.stdin.pipe(mcpProcess.stdin);
 
 // Handle shutdown gracefully
 process.on("SIGTERM", () => {
-	console.log("Received SIGTERM, shutting down gracefully");
+	// Infrastructure logging: shutdown handling
+	process.stdout.write("Received SIGTERM, shutting down gracefully\n");
 	mcpProcess.kill("SIGTERM");
 	healthServer.close();
 });
 
 process.on("SIGINT", () => {
-	console.log("Received SIGINT, shutting down gracefully");
+	// Infrastructure logging: shutdown handling
+	process.stdout.write("Received SIGINT, shutting down gracefully\n");
 	mcpProcess.kill("SIGINT");
 	healthServer.close();
 });

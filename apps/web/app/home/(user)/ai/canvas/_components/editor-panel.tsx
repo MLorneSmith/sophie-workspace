@@ -24,6 +24,11 @@ import { LoadingAnimation } from "./suggestions/loading-animation";
 import { LOADING_MESSAGES } from "./suggestions/loading-messages";
 import { SuggestionsPane } from "./suggestions/suggestions-pane";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("HOME-(USER)");
+
 interface EditorPanelProps {
 	sectionType: "situation" | "complication" | "answer" | "outline";
 }
@@ -85,9 +90,9 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
 					editorRef.current.insertContent(bulletList);
 				}
 
-				console.log("Successfully inserted improvement:", improvement.id);
+				/* TODO: Async logger needed */ logger.info("Successfully inserted improvement:", { data: improvement.id });
 			} catch (error) {
-				console.error("Error accepting improvement:", error);
+				/* TODO: Async logger needed */ logger.error("Error accepting improvement:", { data: error });
 			}
 		},
 		[],
@@ -98,12 +103,12 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
 
 		try {
 			// TODO: Implement improve structure functionality
-			console.log("Improve structure clicked");
+			(await getLogger()).info("Improve structure clicked");
 
 			// When implemented, this would use the same safety pattern as handleGenerateIdeas
 			// to safely get content from the editor
 		} catch (error) {
-			console.warn("Error improving structure:", error);
+			/* TODO: Async logger needed */ logger.warn("Error improving structure:", { data: error });
 		}
 	}, [submissionId]);
 
@@ -136,12 +141,12 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
 								resolve("");
 							}
 						} catch (error) {
-							console.warn("Error getting editor content:", error);
+							/* TODO: Async logger needed */ logger.warn("Error getting editor content:", { data: error });
 							resolve("");
 						}
 					});
 				} catch (error) {
-					console.warn("Error updating editor:", error);
+					/* TODO: Async logger needed */ logger.warn("Error updating editor:", { data: error });
 					resolve("");
 				}
 			});
@@ -167,7 +172,7 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
 				setSuggestions(result.data.improvements);
 			}
 		} catch (error) {
-			console.error("Failed to generate ideas:", error);
+			/* TODO: Async logger needed */ logger.error("Failed to generate ideas:", { data: error });
 			// Could add toast notification here if needed
 		} finally {
 			setIsGenerating(false);
@@ -219,7 +224,7 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
 													);
 													setIsRegeneratingOutline(true);
 
-													console.log(
+													(await getLogger()).info(
 														"Regenerating outline for submission:",
 														submissionId,
 													);
@@ -236,9 +241,7 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
 
 													// Invalidate the query to force a refetch AND fully remount the component
 													if (result.success) {
-														console.log(
-															"Successfully regenerated outline, invalidating cache",
-														);
+														/* TODO: Async logger needed */ logger.info("Successfully regenerated outline, { arg1: invalidating cache", arg2:  });
 
 														// First, invalidate the query cache
 														await queryClient.invalidateQueries({
@@ -258,7 +261,7 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
 														);
 													}
 												} catch (error) {
-													console.error("Failed to regenerate outline:", error);
+													/* TODO: Async logger needed */ logger.error("Failed to regenerate outline:", { data: error });
 												} finally {
 													// Make sure we reset the loading state even if there's an error
 													setTimeout(() => {

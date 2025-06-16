@@ -5,6 +5,11 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { loadTeamWorkspace } from "~/home/[account]/_lib/server/team-account-workspace.loader";
 import type { Database } from "~/lib/database.types";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("HOME-[ACCOUNT]");
+
 /**
  * Load data for the members page
  * @param client
@@ -50,7 +55,7 @@ async function loadAccountMembers(
 	});
 
 	if (error) {
-		console.error(error);
+		/* TODO: Async logger needed */ logger.error(error);
 		throw error;
 	}
 
@@ -71,7 +76,7 @@ async function loadInvitations(
 	});
 
 	if (error) {
-		console.error(error);
+		/* TODO: Async logger needed */ logger.error(error);
 		throw error;
 	}
 

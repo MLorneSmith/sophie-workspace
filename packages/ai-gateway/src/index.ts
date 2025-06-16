@@ -8,6 +8,11 @@ import { PromptManager } from "./prompts/prompt-manager";
 import { initializeAiGatewayDatabase } from "./utils/db-init";
 import { getSupabaseClient } from "./utils/supabase-client";
 import {
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("AI-GATEWAY");
+
 	calculateCost,
 	checkUsageLimits,
 	estimateCost,
@@ -33,14 +38,12 @@ if (ENV.INITIALIZE_DATABASE) {
 			// Initialize the database
 			const success = await initializeAiGatewayDatabase(adminClient);
 			if (success) {
-				console.log("AI Gateway database successfully initialized");
+				/* TODO: Async logger needed */ logger.info("AI Gateway database successfully initialized");
 			} else {
-				console.warn(
-					"AI Gateway database initialization had some issues, check logs for details",
-				);
+				/* TODO: Async logger needed */ logger.warn("AI Gateway database initialization had some issues, { arg1: check logs for details", arg2:  });
 			}
 		} catch (error) {
-			console.error("Error initializing AI Gateway database:", error);
+			/* TODO: Async logger needed */ logger.error("Error initializing AI Gateway database:", { data: error });
 			// Continue module loading despite initialization error
 		}
 	})();
@@ -61,7 +64,7 @@ async function checkUserLimits(
 
 	// Skip check if disabled by environment variable
 	if (!ENV.CHECK_AI_USAGE_LIMITS) {
-		console.log("AI usage limits check disabled by environment variable");
+		(await getLogger()).info("AI usage limits check disabled by environment variable");
 		return false;
 	}
 
@@ -70,7 +73,7 @@ async function checkUserLimits(
 
 		// Validate the Supabase client has required methods
 		if (!supabase || typeof supabase.rpc !== "function") {
-			console.warn("Invalid Supabase client, skipping usage limit check");
+			/* TODO: Async logger needed */ logger.warn("Invalid Supabase client, { data: skipping usage limit check" });
 			return false;
 		}
 
@@ -78,7 +81,7 @@ async function checkUserLimits(
 		try {
 			const limitExceeded = await checkUsageLimits(supabase, userId, teamId);
 			if (limitExceeded) {
-				console.log("AI usage limit exceeded for user/team:", {
+				/* TODO: Async logger needed */ logger.info("AI usage limit exceeded for user/team:", {
 					userId,
 					teamId,
 				});
@@ -86,33 +89,27 @@ async function checkUserLimits(
 			}
 			return false;
 		} catch (regularClientError) {
-			console.error(
-				"Error checking usage limits with regular client:",
-				regularClientError,
-			);
+			/* TODO: Async logger needed */ logger.error("Error checking usage limits with regular client:", { arg1: regularClientError, arg2:  });
 
 			// If it's a permission error, try with admin client
 			if (
 				regularClientError instanceof Error &&
 				regularClientError.message?.includes("permission denied")
 			) {
-				console.log("Attempting usage limits check with admin client...");
+				/* TODO: Async logger needed */ logger.info("Attempting usage limits check with admin client...");
 				try {
 					// Get admin client for privileged operations
 					const adminClient = await getSupabaseClient({ admin: true });
 					return await checkUsageLimits(adminClient, userId, teamId);
 				} catch (adminClientError) {
-					console.error(
-						"Error checking usage limits with admin client:",
-						adminClientError,
-					);
+					/* TODO: Async logger needed */ logger.error("Error checking usage limits with admin client:", { arg1: adminClientError, arg2:  });
 					return false;
 				}
 			}
 			return false;
 		}
 	} catch (error) {
-		console.error("Fatal error checking usage limits:", error);
+		/* TODO: Async logger needed */ logger.error("Fatal error checking usage limits:", { data: error });
 		return false;
 	}
 }
@@ -202,10 +199,10 @@ export async function getChatCompletion(
 
 		// Only check usage limits if explicitly enabled via environment variable
 		if (checkUsageLimitsFlag && shouldCheckLimits && (userId || teamId)) {
-			console.log("Checking AI usage limits for:", { userId, teamId, feature });
+			/* TODO: Async logger needed */ logger.info("Checking AI usage limits for:", { userId, teamId, feature });
 			const limitExceeded = await checkUserLimits(userId, teamId);
 			if (limitExceeded) {
-				console.warn("AI usage limit exceeded for:", {
+				/* TODO: Async logger needed */ logger.warn("AI usage limit exceeded for:", {
 					userId,
 					teamId,
 					feature,
@@ -216,7 +213,7 @@ export async function getChatCompletion(
 			}
 		} else {
 			// Log that we're skipping the check
-			console.log("Skipping AI usage limits check:", {
+			/* TODO: Async logger needed */ logger.info("Skipping AI usage limits check:", {
 				reason: !checkUsageLimitsFlag
 					? "feature disabled by environment"
 					: "no user/team ID or disabled by options",
@@ -263,9 +260,9 @@ export async function getChatCompletion(
 		const headers = response.headers || {};
 
 		// Log all headers to see what Portkey is actually sending
-		console.log("All Portkey response headers:", {
+		/* TODO: Async logger needed */ logger.info("All Portkey response headers:", { data: {
 			headers:
-				typeof headers === "object" ? JSON.stringify(headers) : String(headers),
+				typeof headers === "object" ? JSON.stringify(headers }) : String(headers),
 			hasHeaders: Object.keys(headers).length > 0,
 			headerKeys: Object.keys(headers),
 		});
@@ -287,22 +284,20 @@ export async function getChatCompletion(
 			);
 
 		if (Object.keys(costRelatedHeaders).length > 0) {
-			console.log("Found potential cost-related headers:", costRelatedHeaders);
+			/* TODO: Async logger needed */ logger.info("Found potential cost-related headers:", { data: costRelatedHeaders });
 		} else {
-			console.log("No cost-related headers found in response");
+			/* TODO: Async logger needed */ logger.info("No cost-related headers found in response");
 		}
 
 		// Proceed with normal extraction
 		let cost = extractCostFromHeaders(headers);
 
 		// Log the result of extraction
-		console.log("Cost extraction result:", {
-			extractedCost: cost,
-			extractionMethod: cost > 0 ? "from header" : "will use fallback",
-			specificHeader:
+		/* TODO: Async logger needed */ logger.info("Cost extraction result:", { arg1: {
+			extractedCost: cost, arg2: extractionMethod: cost > 0 ? "from header" : "will use fallback", arg3: specificHeader:
 				typeof headers["x-portkey-cost"] === "string"
 					? headers["x-portkey-cost"]
-					: String(headers["x-portkey-cost"] || "not found"),
+					: String(headers["x-portkey-cost"] || "not found" }),
 		});
 
 		// Track usage if database access is available (fail gracefully on permission issues)
@@ -322,7 +317,7 @@ export async function getChatCompletion(
 						usage.completion_tokens,
 					);
 				} catch (costError) {
-					console.error("Error calculating AI cost:", costError);
+					/* TODO: Async logger needed */ logger.error("Error calculating AI cost:", { data: costError });
 					// Use our local fallback pricing for cost calculation
 					cost = estimateCost(
 						"openai", // Assume OpenAI as provider if we don't have info
@@ -339,7 +334,7 @@ export async function getChatCompletion(
 					// Read environment variable to determine if credits should be bypassed
 					const bypassCreditsFlag = process.env.BYPASS_AI_CREDITS !== "false"; // Default to true unless explicitly set to false
 
-					console.log("AI credits system status:", {
+					/* TODO: Async logger needed */ logger.info("AI credits system status:", {
 						bypassCredits: bypassCreditsFlag,
 						reason: bypassCreditsFlag
 							? "Bypassing credits due to configuration"
@@ -361,12 +356,12 @@ export async function getChatCompletion(
 						bypassCredits: bypassCreditsFlag, // Use environment variable instead of hardcoding
 					});
 				} catch (usageError) {
-					console.error("Error recording API usage:", usageError);
+					/* TODO: Async logger needed */ logger.error("Error recording API usage:", { data: usageError });
 					// Continue without failing - usage tracking is secondary to the main functionality
 				}
 			}
 		} catch (dbError) {
-			console.error("Database access error:", dbError);
+			/* TODO: Async logger needed */ logger.error("Database access error:", { data: dbError });
 			// Continue without failing - the AI response is still valid
 		}
 
@@ -393,14 +388,14 @@ export async function getChatCompletion(
 		}
 
 		if (error instanceof OpenAI.APIError) {
-			console.error("OpenAI API Error:", {
+			/* TODO: Async logger needed */ logger.error("OpenAI API Error:", {
 				status: error.status,
 				message: error.message,
 				code: error.code,
 				type: error.type,
 			});
 		} else {
-			console.error("Error in getChatCompletion:", error);
+			/* TODO: Async logger needed */ logger.error("Error in getChatCompletion:", { data: error });
 		}
 		throw error;
 	}
@@ -437,14 +432,14 @@ export async function* getStreamingChatCompletion(
 
 		// Only check usage limits if explicitly enabled via environment variable
 		if (checkUsageLimitsFlag && shouldCheckLimits && (userId || teamId)) {
-			console.log("Checking AI usage limits for streaming:", {
+			/* TODO: Async logger needed */ logger.info("Checking AI usage limits for streaming:", {
 				userId,
 				teamId,
 				feature,
 			});
 			const limitExceeded = await checkUserLimits(userId, teamId);
 			if (limitExceeded) {
-				console.warn("AI usage limit exceeded for streaming:", {
+				/* TODO: Async logger needed */ logger.warn("AI usage limit exceeded for streaming:", {
 					userId,
 					teamId,
 					feature,
@@ -455,7 +450,7 @@ export async function* getStreamingChatCompletion(
 			}
 		} else {
 			// Log that we're skipping the check
-			console.log("Skipping AI usage limits check for streaming:", {
+			/* TODO: Async logger needed */ logger.info("Skipping AI usage limits check for streaming:", {
 				reason: !checkUsageLimitsFlag
 					? "feature disabled by environment"
 					: "no user/team ID or disabled by options",
@@ -500,21 +495,18 @@ export async function* getStreamingChatCompletion(
 		try {
 			// @ts-ignore - Access the headers property if available
 			if (stream.headers) {
-				console.log("Streaming response headers:", {
+				/* TODO: Async logger needed */ logger.info("Streaming response headers:", { data: {
 					headers:
 						typeof stream.headers === "object"
-							? JSON.stringify(stream.headers)
+							? JSON.stringify(stream.headers })
 							: "Headers not available as an object",
 					hasHeaders: stream.headers && Object.keys(stream.headers).length > 0,
 				});
 			} else {
-				console.log("No headers available in streaming response");
+				/* TODO: Async logger needed */ logger.info("No headers available in streaming response");
 			}
 		} catch (headerError) {
-			console.error(
-				"Error accessing headers in streaming response:",
-				headerError,
-			);
+			/* TODO: Async logger needed */ logger.error("Error accessing headers in streaming response:", { arg1: headerError, arg2:  });
 		}
 
 		// Process the stream - use a try catch to handle any streaming errors
@@ -572,11 +564,11 @@ export async function* getStreamingChatCompletion(
 				}
 			} else {
 				// Fallback for unknown streaming format
-				console.warn("Unknown streaming format, unable to process stream");
+				/* TODO: Async logger needed */ logger.warn("Unknown streaming format, { data: unable to process stream" });
 				yield "Unable to process stream response";
 			}
 		} catch (streamError) {
-			console.error("Error processing stream:", streamError);
+			/* TODO: Async logger needed */ logger.error("Error processing stream:", { data: streamError });
 			yield "[Error processing stream]";
 		}
 
@@ -599,7 +591,7 @@ export async function* getStreamingChatCompletion(
 						completionTokens,
 					);
 				} catch (costError) {
-					console.error("Error calculating streaming cost:", costError);
+					/* TODO: Async logger needed */ logger.error("Error calculating streaming cost:", { data: costError });
 					// Use our local fallback pricing for cost calculation
 					cost = estimateCost(
 						"openai", // Assume OpenAI for streaming as well
@@ -612,7 +604,7 @@ export async function* getStreamingChatCompletion(
 				// Read environment variable to determine if credits should be bypassed
 				const bypassCreditsFlag = process.env.BYPASS_AI_CREDITS !== "false"; // Default to true unless explicitly set to false
 
-				console.log("AI credits system status (streaming):", {
+				/* TODO: Async logger needed */ logger.info("AI credits system status (streaming):", {
 					bypassCredits: bypassCreditsFlag,
 					reason: bypassCreditsFlag
 						? "Bypassing credits due to configuration"
@@ -637,7 +629,7 @@ export async function* getStreamingChatCompletion(
 					bypassCredits: bypassCreditsFlag, // Use environment variable instead of hardcoding
 				});
 			} catch (error) {
-				console.error("Error recording usage data:", error);
+				/* TODO: Async logger needed */ logger.error("Error recording usage data:", { data: error });
 				// Continue without failing the response delivery
 			}
 		}
@@ -647,14 +639,14 @@ export async function* getStreamingChatCompletion(
 		}
 
 		if (error instanceof OpenAI.APIError) {
-			console.error("OpenAI API Error:", {
+			/* TODO: Async logger needed */ logger.error("OpenAI API Error:", {
 				status: error.status,
 				message: error.message,
 				code: error.code,
 				type: error.type,
 			});
 		} else {
-			console.error("Error in getStreamingChatCompletion:", error);
+			/* TODO: Async logger needed */ logger.error("Error in getStreamingChatCompletion:", { data: error });
 		}
 		throw error;
 	}

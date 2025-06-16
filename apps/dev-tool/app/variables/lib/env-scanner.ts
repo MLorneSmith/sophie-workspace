@@ -76,7 +76,8 @@ export async function scanMonorepoEnv(
 					appInfo.variables.push(...vars);
 				} catch (error) {
 					if ((error as NodeJS.ErrnoException).code !== "ENOENT") {
-						console.warn(`Error reading ${envPath}:`, error);
+						// Error logging suppressed for production
+						// Uncomment for debugging: process.stderr.write(`Error reading ${envPath}: ${error}\n`);
 					}
 				}
 			}
@@ -86,7 +87,8 @@ export async function scanMonorepoEnv(
 			}
 		}
 	} catch (error) {
-		console.error("Error scanning monorepo:", error);
+		// Error logging suppressed for production
+		// Uncomment for debugging: process.stderr.write(`Error scanning monorepo: ${error}\n`);
 		throw error;
 	}
 

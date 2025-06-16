@@ -9,7 +9,8 @@ const http = require("node:http");
 
 const PORT = process.env.PORT || 3000;
 
-console.log(`Starting Browser Tools MCP proxy on port ${PORT}`);
+// Infrastructure logging for MCP proxy server startup
+process.stdout.write(`Starting Browser Tools MCP proxy on port ${PORT}\n`);
 
 // Start the browser-tools-mcp process
 const mcpProcess = spawn("browser-tools-mcp", [], {
@@ -35,7 +36,7 @@ mcpProcess.stdout.on("data", (data) => {
 		outputBuffer.includes("Browser Tools") ||
 		outputBuffer.includes("browser-tools-mcp")
 	) {
-		console.log("✅ Browser Tools MCP server is healthy");
+		process.stdout.write("✅ Browser Tools MCP server is healthy\n");
 		isHealthy = true;
 	}
 });
@@ -43,7 +44,9 @@ mcpProcess.stdout.on("data", (data) => {
 // Set healthy after timeout as backup (browser tools may not output standard message)
 setTimeout(() => {
 	if (!isHealthy) {
-		console.log("✅ Browser Tools MCP server assumed healthy via timeout");
+		process.stdout.write(
+			"✅ Browser Tools MCP server assumed healthy via timeout\n",
+		);
 		isHealthy = true;
 	}
 }, 10000);
@@ -57,18 +60,18 @@ mcpProcess.stderr.on("data", (data) => {
 		output.includes("No server found during discovery") ||
 		output.includes("Initial server discovery failed")
 	) {
-		console.log(
-			"Browser Tools server discovery warnings are expected - marking as healthy",
+		process.stdout.write(
+			"Browser Tools server discovery warnings are expected - marking as healthy\n",
 		);
 		isHealthy = true;
 	}
 });
 
 mcpProcess.on("close", (code) => {
-	console.log(`MCP process exited with code ${code}`);
+	process.stdout.write(`MCP process exited with code ${code}\n`);
 	isHealthy = false;
 	setTimeout(() => {
-		console.log("Restarting MCP process...");
+		process.stdout.write("Restarting MCP process...\n");
 		process.exit(1); // Let Docker restart the container
 	}, 1000);
 });
@@ -93,18 +96,18 @@ const healthServer = http.createServer((req, res) => {
 });
 
 healthServer.listen(PORT, () => {
-	console.log(`Health check server listening on port ${PORT}`);
+	process.stdout.write(`Health check server listening on port ${PORT}\n`);
 });
 
 // Handle shutdown gracefully
 process.on("SIGTERM", () => {
-	console.log("Received SIGTERM, shutting down gracefully");
+	process.stdout.write("Received SIGTERM, shutting down gracefully\n");
 	mcpProcess.kill("SIGTERM");
 	healthServer.close();
 });
 
 process.on("SIGINT", () => {
-	console.log("Received SIGINT, shutting down gracefully");
+	process.stdout.write("Received SIGINT, shutting down gracefully\n");
 	mcpProcess.kill("SIGINT");
 	healthServer.close();
 });

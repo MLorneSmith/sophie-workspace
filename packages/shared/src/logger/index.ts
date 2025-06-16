@@ -59,3 +59,10 @@ export {
 
 // Export enhanced types
 export type { LogLevel as EnhancedLogLevel } from "./enhanced-logger";
+
+// Export monitored logger utilities
+export {
+	createMonitoredLogger,
+	createServerLogger,
+	createClientLogger,
+} from "./create-monitored-logger";

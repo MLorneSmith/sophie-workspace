@@ -28,7 +28,8 @@ async function ensureIssuesDirectory() {
 	} catch (error) {
 		if (error.code === "ENOENT") {
 			await mkdir(ISSUES_DIR, { recursive: true });
-			console.log(`📁 Created issues directory: ${ISSUES_DIR}`);
+			// Inform user that issues directory was created
+			process.stdout.write(`📁 Created issues directory: ${ISSUES_DIR}\n`);
 		} else {
 			throw error;
 		}
@@ -65,7 +66,10 @@ async function fetchGitHubIssue(issueNumber) {
 
 		return await response.json();
 	} catch (error) {
-		console.error(`❌ Failed to fetch issue #${issueNumber}:`, error.message);
+		// Fetch error reporting
+		process.stderr.write(
+			`❌ Failed to fetch issue #${issueNumber}: ${error.message}\n`,
+		);
 		throw error;
 	}
 }
@@ -111,7 +115,8 @@ function getLocalFilename(issue) {
  */
 async function syncIssue(issueNumber) {
 	try {
-		console.log(`🔍 Fetching issue #${issueNumber} from GitHub...`);
+		// Fetch progress notification
+		process.stdout.write(`🔍 Fetching issue #${issueNumber} from GitHub...\n`);
 
 		await ensureIssuesDirectory();
 
@@ -121,7 +126,8 @@ async function syncIssue(issueNumber) {
 
 		await writeFile(filename, localContent, "utf8");
 
-		console.log(`✅ Synced issue #${issueNumber} to ${filename}`);
+		// Sync success notification
+		process.stdout.write(`✅ Synced issue #${issueNumber} to ${filename}\n`);
 
 		return {
 			issueNumber: issue.number,
@@ -130,7 +136,10 @@ async function syncIssue(issueNumber) {
 			synced: new Date().toISOString(),
 		};
 	} catch (error) {
-		console.error(`❌ Failed to sync issue #${issueNumber}:`, error.message);
+		// Sync error reporting
+		process.stderr.write(
+			`❌ Failed to sync issue #${issueNumber}: ${error.message}\n`,
+		);
 		throw error;
 	}
 }
@@ -177,17 +186,21 @@ async function autoSyncIfNeeded(issueNumber) {
 		const cache = await checkLocalCache(issueNumber);
 
 		if (!cache.exists || cache.isStale) {
-			console.log(
-				`🔄 Local cache ${cache.exists ? "stale" : "missing"} for issue #${issueNumber}, syncing...`,
+			// Cache status notification
+			process.stdout.write(
+				`🔄 Local cache ${cache.exists ? "stale" : "missing"} for issue #${issueNumber}, syncing...\n`,
 			);
 			return await syncIssue(issueNumber);
 		}
-		console.log(`✅ Local cache up-to-date for issue #${issueNumber}`);
+		// Cache up-to-date notification
+		process.stdout.write(
+			`✅ Local cache up-to-date for issue #${issueNumber}\n`,
+		);
 		return { alreadyCached: true, path: cache.path };
 	} catch (error) {
-		console.error(
-			`⚠️ Auto-sync failed for issue #${issueNumber}, continuing with GitHub data:`,
-			error.message,
+		// Auto-sync failure warning
+		process.stderr.write(
+			`⚠️ Auto-sync failed for issue #${issueNumber}, continuing with GitHub data: ${error.message}\n`,
 		);
 		return { error: error.message };
 	}
@@ -250,7 +263,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 	const args = process.argv.slice(2);
 
 	if (args.length === 0) {
-		console.log(`
+		// Usage instructions output
+		process.stdout.write(`
 Usage: node issue-sync.js <issue_number>
 
 Examples:
@@ -261,9 +275,10 @@ Examples:
 	}
 
 	if (args[0] === "--help") {
-		console.log("GitHub Issues Auto-Sync Service");
-		console.log(
-			"Syncs GitHub issues to local cache files for search functionality",
+		// Help message output
+		process.stdout.write("GitHub Issues Auto-Sync Service\n");
+		process.stdout.write(
+			"Syncs GitHub issues to local cache files for search functionality\n",
 		);
 		process.exit(0);
 	}
@@ -271,7 +286,8 @@ Examples:
 	const issueNumber = Number.parseInt(args[0]);
 
 	if (Number.isNaN(issueNumber)) {
-		console.error("❌ Issue number must be a valid integer");
+		// Validation error output
+		process.stderr.write("❌ Issue number must be a valid integer\n");
 		process.exit(1);
 	}
 
@@ -280,9 +296,11 @@ Examples:
 		if (result.issueNumber) {
 			await updateSyncMetadata(result);
 		}
-		console.log("🎉 Sync completed successfully!");
+		// Success completion output
+		process.stdout.write("🎉 Sync completed successfully!\n");
 	} catch (error) {
-		console.error("❌ Sync failed:", error.message);
+		// Failure output
+		process.stderr.write(`❌ Sync failed: ${error.message}\n`);
 		process.exit(1);
 	}
 }

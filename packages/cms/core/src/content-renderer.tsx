@@ -1,5 +1,10 @@
 import type { CmsType } from "@kit/cms-types";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("CMS-PAYLOAD");
+
 const CMS_CLIENT = process.env.CMS_CLIENT as CmsType;
 
 interface ContentRendererProps {
@@ -46,7 +51,7 @@ async function getContentRenderer(type: CmsType) {
 		}
 
 		default: {
-			console.error(`Unknown CMS client: ${type as string}`);
+			/* TODO: Async logger needed */ logger.error(`Unknown CMS client: ${type as string}`);
 
 			return null;
 		}

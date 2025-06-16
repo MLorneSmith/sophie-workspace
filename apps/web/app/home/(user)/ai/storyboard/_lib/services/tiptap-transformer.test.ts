@@ -7,6 +7,11 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 // Import the class to test
 import { TipTapTransformer } from "./tiptap-transformer";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("HOME-(USER)");
+
 // Mock console.error to prevent test output pollution
 const originalConsoleError = console.error;
 

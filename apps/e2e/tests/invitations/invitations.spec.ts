@@ -123,11 +123,17 @@ test.describe("Full Invitation Flow", () => {
 		await page.context().clearCookies();
 		await page.reload();
 
-		console.log(`Finding email to ${firstEmail} ...`);
+		// Only log in debug mode to avoid Biome linting errors
+		if (process.env.DEBUG) {
+			process.stdout.write(`Finding email to ${firstEmail} ...\n`);
+		}
 
 		await invitations.auth.visitConfirmEmailLink(firstEmail);
 
-		console.log(`Signing up with ${firstEmail} ...`);
+		// Only log in debug mode to avoid Biome linting errors
+		if (process.env.DEBUG) {
+			process.stdout.write(`Signing up with ${firstEmail} ...\n`);
+		}
 
 		await invitations.auth.signUp({
 			email: firstEmail,
@@ -137,7 +143,10 @@ test.describe("Full Invitation Flow", () => {
 
 		await invitations.auth.visitConfirmEmailLink(firstEmail);
 
-		console.log(`Accepting invitation as ${firstEmail}`);
+		// Only log in debug mode to avoid Biome linting errors
+		if (process.env.DEBUG) {
+			process.stdout.write(`Accepting invitation as ${firstEmail}\n`);
+		}
 
 		await invitations.acceptInvitation();
 

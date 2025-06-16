@@ -10,6 +10,11 @@ import {
 } from "@kit/ui/select";
 import type { Slide } from "../_lib/types";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("HOME-(USER)");
+
 interface ChartTypeSelectorProps {
 	slide: Slide;
 	contentAreaIndex: number;
@@ -30,9 +35,7 @@ export function ChartTypeSelector({
 
 	const handleChartTypeChange = (chartTypeId: string) => {
 		// TODO: Implement logic to update the specific content area's chart type and data
-		console.log(
-			`Chart type changed for slide ${slide.id}, content area ${contentAreaIndex}: ${chartTypeId}`,
-		);
+		/* TODO: Async logger needed */ logger.info(`Chart type changed for slide ${slide.id}, { arg1: content area ${contentAreaIndex}: ${chartTypeId}`, arg2:  });
 		// This will require a more detailed structure for chart data within SlideContent
 		// For now, just logging the change.
 	};

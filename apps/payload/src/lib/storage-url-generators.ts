@@ -7,6 +7,11 @@
 
 import { getR2Config } from "./storage-config";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("STORAGE_URL_GENERATORS");
+
 export interface GenerateFileURLArgs {
 	filename: string;
 	prefix?: string;
@@ -111,24 +116,19 @@ export function createURLGenerator(
 		try {
 			if (!filename) {
 				// Instead of throwing, log warning and return fallback URL
-				console.warn(
-					`[URL-GENERATOR] Warning: Filename is missing for ${collection} URL generation. Returning fallback URL.`,
-				);
+				/* TODO: Async logger needed */ logger.warn(`[URL-GENERATOR] Warning: Filename is missing for ${collection} URL generation. Returning fallback URL.`, { data:  });
 				return `/uploads/placeholder-${collection}.png`;
 			}
 
 			const url = generator({ filename });
 
 			if (process.env.NODE_ENV === "development") {
-				console.log(`[URL-GENERATOR] Generated ${collection} URL: ${url}`);
+				/* TODO: Async logger needed */ logger.info(`[URL-GENERATOR] Generated ${collection} URL: ${url}`);
 			}
 
 			return url;
 		} catch (error) {
-			console.error(
-				`[URL-GENERATOR] Error generating URL for ${collection}/${filename}:`,
-				error,
-			);
+			/* TODO: Async logger needed */ logger.error(`[URL-GENERATOR] Error generating URL for ${collection}/${filename}:`, { arg1: error, arg2:  });
 
 			// Return a fallback URL
 			return `/uploads/${filename || "unknown"}`;

@@ -6,6 +6,11 @@
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("HOME-(USER)");
+
 // Mock the format conversion utility with testable implementation
 const mockLexicalToTiptap = vi.fn();
 

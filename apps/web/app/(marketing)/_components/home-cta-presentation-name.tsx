@@ -2,6 +2,11 @@
 
 import { PlaceholdersAndVanishInput } from "@kit/ui/placeholders-and-vanish-input";
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("(MARKETING)");
+
 export function CtaPresentationName() {
 	return (
 		<div className="w-full px-4">
@@ -15,14 +20,18 @@ export function CtaPresentationName() {
 				]}
 				onChange={(e) => {
 					// Handle search input changes
-					console.log("Search input:", e.target.value);
+					/* TODO: Async logger needed */ logger.info("Search input:", {
+						data: e.target.value,
+					});
 				}}
 				onSubmit={(e) => {
 					e.preventDefault();
 					// Handle search submission
 					const input = e.currentTarget.querySelector("input");
 					if (input) {
-						console.log("Search submitted:", input.value);
+						/* TODO: Async logger needed */ logger.info("Search submitted:", {
+							data: input.value,
+						});
 					}
 				}}
 			/>
