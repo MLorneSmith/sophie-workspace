@@ -65,10 +65,6 @@ export function TranslationsComparison({
 	const [search, setSearch] = useState("");
 	const [isTranslating, setIsTranslating] = useState(false);
 
-	const [selectedNamespace, setSelectedNamespace] = useState(
-		defaultI18nNamespaces[0] as string,
-	);
-
 	// Create RxJS Subject for handling translation updates
 	const subject$ = useMemo(
 		() =>
@@ -83,6 +79,11 @@ export function TranslationsComparison({
 
 	const locales = Object.keys(translations);
 	const baseLocale = locales[0] || "en";
+	const namespaces = Object.keys(translations[baseLocale] || {});
+
+	const [selectedNamespace, setSelectedNamespace] = useState(
+		namespaces[0] || (defaultI18nNamespaces[0] as string),
+	);
 
 	const [selectedLocales, setSelectedLocales] = useState<Set<string>>(
 		new Set(locales),
@@ -252,11 +253,17 @@ export function TranslationsComparison({
 							</SelectTrigger>
 
 							<SelectContent>
-								{defaultI18nNamespaces.map((namespace: string) => (
-									<SelectItem key={namespace} value={namespace}>
-										{namespace}
-									</SelectItem>
-								))}
+								{namespaces.length > 0
+									? namespaces.map((namespace: string) => (
+											<SelectItem key={namespace} value={namespace}>
+												{namespace}
+											</SelectItem>
+										))
+									: defaultI18nNamespaces.map((namespace: string) => (
+											<SelectItem key={namespace} value={namespace}>
+												{namespace}
+											</SelectItem>
+										))}
 							</SelectContent>
 						</Select>
 					</div>

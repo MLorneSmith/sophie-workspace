@@ -9,6 +9,7 @@ import type { Provider } from "@supabase/supabase-js";
 
 import { MagicLinkAuthContainer } from "./magic-link-auth-container";
 import { OauthProviders } from "./oauth-providers";
+import { OtpSignInContainer } from "./otp-sign-in-container";
 import { EmailPasswordSignUpContainer } from "./password-sign-up-container";
 
 export function SignUpMethodsContainer(props: {
@@ -21,6 +22,7 @@ export function SignUpMethodsContainer(props: {
 		password: boolean;
 		magicLink: boolean;
 		oAuth: Provider[];
+		otp?: boolean;
 	};
 
 	displayTermsCheckbox?: boolean;
@@ -50,6 +52,13 @@ export function SignUpMethodsContainer(props: {
 					shouldCreateUser={true}
 					defaultValues={defaultValues}
 					displayTermsCheckbox={props.displayTermsCheckbox}
+				/>
+			</If>
+
+			<If condition={props.providers.otp}>
+				<OtpSignInContainer
+					inviteToken={props.inviteToken}
+					shouldCreateUser={true}
 				/>
 			</If>
 
