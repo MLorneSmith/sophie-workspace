@@ -1,7 +1,10 @@
 import { callPayloadAPI } from "./payload-api";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
-// Placeholder type for any database client
-type DbClient = any;
+// Types for quiz and question relationships
+type QuizId = string | { value: string; relationTo?: string; id?: string };
+type QuizQuestion = string | { id?: string; value?: string; options?: unknown };
+type QuestionRow = { question_id: string; quiz_questions_id: string; order: number };
 
 /**
  * Enhanced getQuiz function with improved unidirectional relationship handling
@@ -17,9 +20,9 @@ type DbClient = any;
  * @returns The quiz with its questions, or null if not found
  */
 export async function getQuizEnhanced(
-	quizId: string | { value: string; relationTo?: string } | any,
+	quizId: QuizId,
 	depth = 1,
-	supabaseClient?: any,
+	supabaseClient?: SupabaseClient,
 ) {
 	if (!quizId) {
 		console.error("getQuizEnhanced called with empty quizId");
@@ -117,7 +120,7 @@ export async function getQuizEnhanced(
 				);
 
 				// Get the question IDs
-				const questionIds = quiz.questions.map((q: any) =>
+				const questionIds = quiz.questions.map((q: QuizQuestion) =>
 					typeof q === "string" ? q : q.id || q.value || q,
 				);
 
@@ -153,7 +156,7 @@ export async function getQuizEnhanced(
 				);
 
 				// Fetch full question details using their IDs
-				const questionIds = dbQuestions.map((q: any) => q.question_id);
+				const questionIds = dbQuestions.map((q: QuestionRow) => q.question_id);
 				const queryParams = questionIds
 					.map((id: string) => `id[]=${id}`)
 					.join("&");
@@ -209,7 +212,7 @@ export async function getQuizEnhanced(
 			);
 
 			// Fetch full question details
-			const questionIds = dbQuestions.map((q: any) => q.question_id);
+			const questionIds = dbQuestions.map((q: QuestionRow) => q.question_id);
 
 			if (questionIds.length > 0) {
 				try {
@@ -267,11 +270,11 @@ export async function getQuizEnhanced(
  * @param quizId The quiz ID
  * @returns Array of question details with order
  */
-async function getQuestionsForQuizFromDatabase(quizId: string): Promise<any[]> {
+async function getQuestionsForQuizFromDatabase(quizId: string): Promise<QuestionRow[]> {
 	try {
 		// Safe dynamic import that will only happen server-side
 		// We need to use any for the dynamic require to avoid TypeScript errors
-		const getPgClient = async (): Promise<{ Client: any } | null> => {
+		const getPgClient = async (): Promise<{ Client: unknown } | null> => {
 			// @ts-ignore - Dynamic require is only supported in server context
 			if (typeof window === "undefined") {
 				try {
@@ -332,6 +335,6 @@ async function getQuestionsForQuizFromDatabase(quizId: string): Promise<any[]> {
 export { getQuiz } from "./course";
 
 // Export a new function that's easier to use and is the preferred option
-export function getQuiz2(quizId: any, _options = {}, supabaseClient?: any) {
+export function getQuiz2(quizId: QuizId, _options = {}, supabaseClient?: SupabaseClient) {
 	return getQuizEnhanced(quizId, 2, supabaseClient);
 }

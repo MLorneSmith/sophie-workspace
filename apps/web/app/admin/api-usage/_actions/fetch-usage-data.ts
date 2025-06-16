@@ -108,10 +108,13 @@ function processLogsToStats(logs: AiRequestLog[]): UsageStats {
 	// Type guards for log objects
 	function isValidLog(log: unknown): log is AiRequestLog {
 		return (
-			log &&
+			log !== null &&
 			typeof log === "object" &&
-			(typeof log.cost === "number" || typeof log.cost === "string") &&
-			typeof log.total_tokens === "number"
+			"cost" in log &&
+			"total_tokens" in log &&
+			(typeof (log as any).cost === "number" ||
+				typeof (log as any).cost === "string") &&
+			typeof (log as any).total_tokens === "number"
 		);
 	}
 
@@ -209,17 +212,20 @@ function groupByDay(
 
 		// Add cost and tokens
 		const cost =
-			log && typeof log === "object"
-				? typeof log.cost === "number"
-					? log.cost
-					: typeof log.cost === "string"
-						? Number.parseFloat(log.cost) || 0
+			log && typeof log === "object" && "cost" in log
+				? typeof (log as AiRequestLog).cost === "number"
+					? (log as AiRequestLog).cost
+					: typeof (log as AiRequestLog).cost === "string"
+						? Number.parseFloat((log as AiRequestLog).cost) || 0
 						: 0
 				: 0;
 
 		const tokens =
-			log && typeof log === "object" && typeof log.total_tokens === "number"
-				? log.total_tokens
+			log &&
+			typeof log === "object" &&
+			"total_tokens" in log &&
+			typeof (log as AiRequestLog).total_tokens === "number"
+				? (log as AiRequestLog).total_tokens
 				: 0;
 
 		entry.cost += cost;

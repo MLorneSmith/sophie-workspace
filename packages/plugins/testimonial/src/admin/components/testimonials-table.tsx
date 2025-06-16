@@ -28,7 +28,9 @@ function getColumns(): ColumnDef<Tables<"testimonials">>[] {
 				return (
 					<div className={"flex items-center space-x-2"}>
 						<Avatar>
-							<AvatarImage src={row.original.customer_avatar_url!} />
+							{row.original.customer_avatar_url && (
+								<AvatarImage src={row.original.customer_avatar_url} />
+							)}
 							<AvatarFallback>
 								{row.original.customer_name[0]}
 								{row.original.customer_name[1]}

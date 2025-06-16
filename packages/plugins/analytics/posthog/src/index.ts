@@ -7,8 +7,8 @@ const isOnServer = typeof document === "undefined";
  * Create a Posthog analytics service.
  */
 export function createPostHogAnalyticsService() {
-	const key = process.env.NEXT_PUBLIC_POSTHOG_KEY!;
-	const host = process.env.NEXT_PUBLIC_POSTHOG_HOST!;
+	const key = process.env.NEXT_PUBLIC_POSTHOG_KEY;
+	const host = process.env.NEXT_PUBLIC_POSTHOG_HOST;
 	const url = process.env.NEXT_PUBLIC_POSTHOG_INGESTION_URL;
 
 	if (!key) {
@@ -115,9 +115,14 @@ class ServerPostHogImpl {
 	}
 
 	async trackPageView(url: string) {
+		if (!this.userId) {
+			this.log("User ID not set, skipping page view tracking");
+			return;
+		}
+		
 		this.getClient().capture({
 			event: "$pageview",
-			distinctId: this.userId!,
+			distinctId: this.userId,
 			properties: { $current_url: url },
 		});
 	}

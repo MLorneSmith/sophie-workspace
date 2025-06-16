@@ -2,7 +2,7 @@
 const DEBUG = process.env.NODE_ENV === "development";
 
 // Helper logging function
-function debugLog(...args: any[]) {
+function debugLog(...args: unknown[]) {
 	if (DEBUG) {
 		console.log("[TemplateTagProcessor]", ...args);
 	}

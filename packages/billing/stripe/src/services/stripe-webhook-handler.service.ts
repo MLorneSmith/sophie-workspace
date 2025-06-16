@@ -48,7 +48,11 @@ export class StripeWebhookHandlerService
 	async verifyWebhookSignature(request: Request) {
 		const body = await request.clone().text();
 		const signatureKey = "stripe-signature";
-		const signature = request.headers.get(signatureKey)!;
+		const signature = request.headers.get(signatureKey);
+		
+		if (!signature) {
+			throw new Error(`Missing ${signatureKey} header`);
+		}
 
 		const { webhooksSecret } = StripeServerEnvSchema.parse({
 			secretKey: process.env.STRIPE_SECRET_KEY,

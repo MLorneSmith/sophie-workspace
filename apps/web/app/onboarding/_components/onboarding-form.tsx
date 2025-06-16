@@ -1,6 +1,5 @@
 "use client";
 
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { analytics } from "@kit/analytics";
 import { Button } from "@kit/ui/button";
@@ -88,30 +87,31 @@ export function OnboardingForm() {
 	});
 
 	// Helper function to flatten form data for analytics
-	const flattenFormData = useCallback((
-		data: z.infer<typeof FormSchema>,
-	): Record<string, string> {
-		const flattenedData: Record<string, string> = {};
+	const flattenFormData = useCallback(
+		(data: z.infer<typeof FormSchema>): Record<string, string> => {
+			const flattenedData: Record<string, string> = {};
 
-		for (const [key, value] of Object.entries(data)) {
-			if (typeof value === "object" && value !== null) {
-				for (const [subKey, subValue] of Object.entries(value)) {
-					if (typeof subValue === "object" && subValue !== null) {
-						for (const [nestedKey, nestedValue] of Object.entries(subValue)) {
-							flattenedData[`${key}_${subKey}_${nestedKey}`] =
-								String(nestedValue);
+			for (const [key, value] of Object.entries(data)) {
+				if (typeof value === "object" && value !== null) {
+					for (const [subKey, subValue] of Object.entries(value)) {
+						if (typeof subValue === "object" && subValue !== null) {
+							for (const [nestedKey, nestedValue] of Object.entries(subValue)) {
+								flattenedData[`${key}_${subKey}_${nestedKey}`] =
+									String(nestedValue);
+							}
+						} else {
+							flattenedData[`${key}_${subKey}`] = String(subValue);
 						}
-					} else {
-						flattenedData[`${key}_${subKey}`] = String(subValue);
 					}
+				} else {
+					flattenedData[key] = String(value);
 				}
-			} else {
-				flattenedData[key] = String(value);
 			}
-		}
 
 			return flattenedData;
-	}
+		},
+		[],
+	);
 
 	// Form submission handler
 	const onSubmit = useCallback(

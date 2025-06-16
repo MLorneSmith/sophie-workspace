@@ -164,14 +164,16 @@ export class PayloadClient {
         return url;
     }
     mapContentItem(item) {
-        var _a, _b;
         // Get the image URL and transform it
         // Check for both image and image_id fields
-        const imageUrl = ((_a = item.image_id) === null || _a === void 0 ? void 0 : _a.url) || // Check for image_id field first (used in Posts collection)
-            ((_b = item.image) === null || _b === void 0 ? void 0 : _b.url) || // Then check for image field (used in other collections)
-            (typeof item.image === "string" ? item.image : null);
+        const imageId = item.image_id;
+        const image = item.image;
+        const imageUrl = (imageId === null || imageId === void 0 ? void 0 : imageId.url) || // Check for image_id field first (used in Posts collection)
+            (typeof image === "object" ? image === null || image === void 0 ? void 0 : image.url : undefined) || // Then check for image field (used in other collections)
+            (typeof image === "string" ? image : null);
         const transformedImageUrl = this.transformImageUrl(imageUrl);
         // Map the item
+        const parent = item.parent;
         const mappedItem = {
             id: item.id,
             title: item.title,
@@ -186,7 +188,8 @@ export class PayloadClient {
             image_id: item.image_id,
             status: item.status,
             categories: (item.categories || []).map((category) => {
-                const categoryValue = (category === null || category === void 0 ? void 0 : category.category) ? category.category : "";
+                const cat = category;
+                const categoryValue = (cat === null || cat === void 0 ? void 0 : cat.category) || "";
                 return {
                     id: categoryValue,
                     name: categoryValue,
@@ -196,14 +199,15 @@ export class PayloadClient {
                 };
             }),
             tags: (item.tags || []).map((tag) => {
-                const tagValue = (tag === null || tag === void 0 ? void 0 : tag.tag) ? tag.tag : "";
+                const t = tag;
+                const tagValue = (t === null || t === void 0 ? void 0 : t.tag) || "";
                 return {
                     id: tagValue,
                     name: tagValue,
                     slug: tagValue ? tagValue.toLowerCase().replace(/\s+/g, "-") : "",
                 };
             }),
-            parentId: item.parent ? item.parent.id : null,
+            parentId: (parent === null || parent === void 0 ? void 0 : parent.id) || null,
             order: item.order || 0,
             children: [],
             breadcrumbs: item.breadcrumbs || [],

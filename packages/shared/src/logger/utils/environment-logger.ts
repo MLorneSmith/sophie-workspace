@@ -45,23 +45,23 @@ export class EnvironmentLogger {
 		this.config = config;
 	}
 
-	debug(message: string, data?: any): void {
+	debug(message: string, data?: unknown): void {
 		this.log(message, "debug", data);
 	}
 
-	info(message: string, data?: any): void {
+	info(message: string, data?: unknown): void {
 		this.log(message, "info", data);
 	}
 
-	warn(message: string, data?: any): void {
+	warn(message: string, data?: unknown): void {
 		this.log(message, "warn", data);
 	}
 
-	error(message: string, data?: any): void {
+	error(message: string, data?: unknown): void {
 		this.log(message, "error", data);
 	}
 
-	private log(message: string, level: LogLevel, data?: any): void {
+	private log(message: string, level: LogLevel, data?: unknown): void {
 		if (!this.config.enableLogging) return;
 
 		if (this.levels[level] < this.levels[this.config.logLevel]) return;
@@ -86,7 +86,7 @@ export class EnvironmentLogger {
 	}
 
 	// Sanitize sensitive data in production
-	private sanitizeData(data: any): any {
+	private sanitizeData(data: unknown): unknown {
 		if (this.config.environment !== "production") return data;
 
 		// Create a deep copy to avoid modifying the original
@@ -101,7 +101,7 @@ export class EnvironmentLogger {
 			"authorization",
 		];
 
-		const sanitizeObject = (obj: any) => {
+		const sanitizeObject = (obj: Record<string, unknown>) => {
 			if (!obj || typeof obj !== "object") return;
 
 			for (const key of Object.keys(obj)) {
@@ -110,8 +110,8 @@ export class EnvironmentLogger {
 				// Mask sensitive fields
 				if (sensitiveFields.some((field) => lowerKey.includes(field))) {
 					obj[key] = "[REDACTED]";
-				} else if (typeof obj[key] === "object") {
-					sanitizeObject(obj[key]);
+				} else if (typeof obj[key] === "object" && obj[key] !== null) {
+					sanitizeObject(obj[key] as Record<string, unknown>);
 				}
 			}
 		};

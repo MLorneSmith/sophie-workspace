@@ -11,6 +11,7 @@
 		"@kit/cms-types": "workspace:*",
 		"@kit/shared": "workspace:*",
 		"@kit/supabase": "workspace:*",
+		"@supabase/supabase-js": "2.50.0",
 		"payload": "3.41.0",
 		"react": "19.1.0"
 	},

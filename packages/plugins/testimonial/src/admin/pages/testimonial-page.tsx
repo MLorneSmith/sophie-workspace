@@ -32,7 +32,9 @@ export async function TestimonialPage(props: {
 			<div className={"flex w-full justify-between p-4"}>
 				<div className={"flex w-full items-center space-x-4"}>
 					<Avatar>
-						<AvatarImage src={testimonial.customer_avatar_url!} />
+						{testimonial.customer_avatar_url && (
+							<AvatarImage src={testimonial.customer_avatar_url} />
+						)}
 						<AvatarFallback>
 							{testimonial.customer_name[0]}
 							{testimonial.customer_name[1]}

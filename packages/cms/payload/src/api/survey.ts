@@ -1,5 +1,6 @@
 import { createEnvironmentLogger } from "@kit/shared/logger";
 import { callPayloadAPI } from "./payload-api";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 const logger = createEnvironmentLogger("SURVEY-API");
 
@@ -9,7 +10,7 @@ const logger = createEnvironmentLogger("SURVEY-API");
  * @param supabaseClient Optional Supabase client (for client-side usage)
  * @returns The survey data
  */
-export async function getSurvey(slug: string, supabaseClient?: any) {
+export async function getSurvey(slug: string, supabaseClient?: SupabaseClient) {
 	logger.debug(`Getting survey with slug: ${slug}`);
 
 	const result = await callPayloadAPI(
@@ -36,7 +37,7 @@ export async function getSurvey(slug: string, supabaseClient?: any) {
  */
 export async function getSurveyQuestions(
 	surveyId: string,
-	supabaseClient?: any,
+	supabaseClient?: SupabaseClient,
 ) {
 	console.log(`Getting survey questions for survey ID: ${surveyId}`);
 
@@ -65,7 +66,7 @@ export async function getSurveyQuestions(
 
 			// Extract question IDs, handling different possible formats
 			const questionIds = survey.questions
-				.map((q: any) => {
+				.map((q: string | { id?: string; value?: string }) => {
 					if (typeof q === "string") return q;
 					if (q.id) return q.id;
 					if (q.value) return q.value;
@@ -128,7 +129,7 @@ export async function getSurveyQuestions(
 					"e0b335b6-dde9-4117-963b-c482b3ae5595",
 				];
 
-				const hardcodedQuestions = allQuestionsResponse.docs.filter((q: any) =>
+				const hardcodedQuestions = allQuestionsResponse.docs.filter((q: { id: string }) =>
 					knownQuestionIds.includes(q.id),
 				);
 
@@ -174,7 +175,7 @@ export async function getSurveyQuestions(
 					"f89404ae-0a14-4c55-b9fc-4eadb59a9dd5",
 				];
 
-				const hardcodedQuestions = allQuestionsResponse.docs.filter((q: any) =>
+				const hardcodedQuestions = allQuestionsResponse.docs.filter((q: { id: string }) =>
 					knownQuestionIds.includes(q.id),
 				);
 
@@ -190,7 +191,7 @@ export async function getSurveyQuestions(
 			}
 
 			// Check for any relationship to the survey
-			const filteredQuestions = allQuestionsResponse.docs.filter((q: any) => {
+			const filteredQuestions = allQuestionsResponse.docs.filter((q: { id: string; surveys_id?: string; surveys_id_id?: string; surveys?: unknown[] | string }) => {
 				// Log the question's relationship fields for debugging
 				console.log(`Checking question ${q.id} relationships:`, {
 					surveys_id: q.surveys_id,
@@ -206,11 +207,14 @@ export async function getSurveyQuestions(
 
 				// Check surveys array if it exists
 				if (Array.isArray(q.surveys)) {
-					const hasRelationship = q.surveys.some((s: any) => {
+					const hasRelationship = q.surveys.some((s: unknown) => {
 						if (s === surveyId) return true;
 						if (
+							s &&
 							typeof s === "object" &&
-							(s.id === surveyId || s.value === surveyId)
+							"id" in s &&
+							"value" in s &&
+							((s as { id?: string; value?: string }).id === surveyId || (s as { id?: string; value?: string }).value === surveyId)
 						)
 							return true;
 						return false;
@@ -242,7 +246,7 @@ export async function getSurveyQuestions(
 			console.log("Trying alternative relationship formats");
 
 			const alternativeFilteredQuestions = allQuestionsResponse.docs.filter(
-				(q: any) => {
+				(q: Record<string, unknown>) => {
 					// Check all properties for any that might contain the survey ID
 					for (const key in q) {
 						if (typeof q[key] === "string" && q[key] === surveyId) {
@@ -252,7 +256,14 @@ export async function getSurveyQuestions(
 
 						if (typeof q[key] === "object" && q[key] !== null) {
 							// Check if the property is an object that contains the survey ID
-							if (q[key].id === surveyId || q[key].value === surveyId) {
+							const obj = q[key] as any;
+							if ("id" in obj && obj.id === surveyId) {
+								console.log(
+									`Question ${q.id} matched by object property ${key}`,
+								);
+								return true;
+							}
+							if ("value" in obj && obj.value === surveyId) {
 								console.log(
 									`Question ${q.id} matched by object property ${key}`,
 								);
@@ -261,12 +272,14 @@ export async function getSurveyQuestions(
 
 							// Check if the property is an array that contains the survey ID
 							if (Array.isArray(q[key])) {
-								const hasMatch = q[key].some((item: any) => {
+								const hasMatch = (q[key] as unknown[]).some((item: unknown) => {
 									if (typeof item === "string" && item === surveyId)
 										return true;
 									if (
+										item &&
 										typeof item === "object" &&
-										(item.id === surveyId || item.value === surveyId)
+										("id" in item && (item as any).id === surveyId ||
+										 "value" in item && (item as any).value === surveyId)
 									)
 										return true;
 									return false;
@@ -327,7 +340,7 @@ export async function getUserSurveyResponse(
 /**
  * @deprecated Use Supabase directly instead
  */
-export async function createSurveyResponse(_data: any) {
+export async function createSurveyResponse(_data: unknown) {
 	console.warn(
 		"createSurveyResponse is deprecated. Use Supabase directly instead.",
 	);
@@ -337,7 +350,7 @@ export async function createSurveyResponse(_data: any) {
 /**
  * @deprecated Use Supabase directly instead
  */
-export async function updateSurveyResponse(id: string, _data: any) {
+export async function updateSurveyResponse(id: string, _data: unknown) {
 	console.warn(
 		"updateSurveyResponse is deprecated. Use Supabase directly instead.",
 	);
@@ -347,7 +360,7 @@ export async function updateSurveyResponse(id: string, _data: any) {
 /**
  * @deprecated Use Supabase directly instead
  */
-export async function completeSurvey(id: string, _data: any) {
+export async function completeSurvey(id: string, _data: unknown) {
 	console.warn("completeSurvey is deprecated. Use Supabase directly instead.");
 	return { id };
 }

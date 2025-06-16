@@ -5,7 +5,6 @@ import {
 	type ChatMessage,
 	getChatCompletion,
 } from "@kit/ai-gateway";
-import { ConfigManager } from "@kit/ai-gateway/src/configs/config-manager";
 import { createBalancedOptimizedConfig } from "@kit/ai-gateway/src/configs/templates/balanced-optimized";
 import { baseInstructions } from "@kit/ai-gateway/src/prompts/partials/base-instructions";
 import { improvementFormat } from "@kit/ai-gateway/src/prompts/partials/improvement-format";

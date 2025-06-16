@@ -290,7 +290,7 @@ function isRadixPopupOpen() {
 function onRadixPopupClose(callback: () => void) {
 	const element = getRadixPopup();
 
-	if (element) {
+	if (element && element.parentElement) {
 		const observer = new MutationObserver(() => {
 			if (!getRadixPopup()) {
 				callback();
@@ -299,7 +299,7 @@ function onRadixPopupClose(callback: () => void) {
 			}
 		});
 
-		observer.observe(element.parentElement!, {
+		observer.observe(element.parentElement, {
 			childList: true,
 			subtree: true,
 		});

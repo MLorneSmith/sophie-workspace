@@ -1,0 +1,338 @@
+apps/web/app/onboarding/_components/onboarding-form.tsx:723:4 lint/suspicious/noDocumentCookie ━━━━━━━━━━
+
+  ! Direct assigning to document.cookie is not recommended.
+  
+    722 │ 			// Set the theme cookie
+  > 723 │ 			document.cookie = `theme=${selectedTheme}; path=/; max-age=31536000`;
+        │ 			^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    724 │ 
+    725 │ 			const isValid = await form.trigger();
+  
+  i Consider using the Cookie Store API.
+  
+
+packages/ai-gateway/src/prompts/prompt-manager.ts:14:8 lint/complexity/noStaticOnlyClass ━━━━━━━━━━━
+
+  ! Avoid classes that contain only static members.
+  
+    12 │ };
+    13 │ 
+  > 14 │ export class PromptManager {
+       │        ^^^^^^^^^^^^^^^^^^^^^
+  > 15 │ 	/**
+        ...
+  > 39 │ 		return [...template]; // Return a copy to prevent modification of the original
+  > 40 │ 	}
+  > 41 │ }
+       │ ^
+    42 │ 
+  
+  i Prefer using simple functions instead of classes with only static members.
+  
+
+packages/ui/src/shadcn/sidebar.tsx:97:4 lint/suspicious/noDocumentCookie ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Direct assigning to document.cookie is not recommended.
+  
+    96 │ 			// This sets the cookie to keep the sidebar state.
+  > 97 │ 			document.cookie = `${SIDEBAR_COOKIE_NAME}=${open}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
+       │ 			^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    98 │ 		},
+    99 │ 		[setOpenProp, open],
+  
+  i Consider using the Cookie Store API.
+  
+
+apps/web/app/home/(user)/course/lessons/[slug]/_components/QuizComponent.test.tsx:121:3 lint/a11y/useKeyWithClickEvents ━━━━━━━━━━
+
+  × Enforce to have the onClick mouse event with the onKeyUp, the onKeyDown, or the onKeyPress keyboard event.
+  
+    119 │ vi.mock("@kit/ui/label", () => ({
+    120 │ 	Label: ({ children, htmlFor, onClick, className, ...props }: LabelProps) => (
+  > 121 │ 		<label htmlFor={htmlFor} onClick={onClick} className={className} {...props}>
+        │ 		^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    122 │ 			{children}
+    123 │ 		</label>
+  
+  i Actions triggered using mouse events should have corresponding keyboard events to account for keyboard-only navigation.
+  
+
+apps/web/app/home/[account]/_components/dashboard-demo-charts.tsx:626:8 lint/nursery/useUniqueElementIds ━━━━━━━━━━
+
+  × id attribute should not be a static string literal. Generate unique IDs using useId().
+  
+    624 │ 					<AreaChart accessibilityLayer data={chartData}>
+    625 │ 						<defs>
+  > 626 │ 							<linearGradient id="fillDesktop" x1="0" y1="0" x2="0" y2="1">
+        │ 							^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    627 │ 								<stop
+    628 │ 									offset="5%"
+  
+  i In React, if you hardcode IDs and use the component multiple times, it can lead to duplicate IDs in the DOM. Instead, generate unique IDs using useId().
+  
+
+apps/web/app/home/[account]/_components/dashboard-demo-charts.tsx:638:8 lint/nursery/useUniqueElementIds ━━━━━━━━━━
+
+  × id attribute should not be a static string literal. Generate unique IDs using useId().
+  
+    636 │ 								/>
+    637 │ 							</linearGradient>
+  > 638 │ 							<linearGradient id="fillMobile" x1="0" y1="0" x2="0" y2="1">
+        │ 							^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    639 │ 								<stop
+    640 │ 									offset="5%"
+  
+  i In React, if you hardcode IDs and use the component multiple times, it can lead to duplicate IDs in the DOM. Instead, generate unique IDs using useId().
+  
+
+apps/web/app/home/[account]/billing/page.tsx:48:8 lint/nursery/noNestedComponentDefinitions ━━━━━━━━━━
+
+  × Components should not be defined inside other components.
+  
+    46 │ 		workspace.account.permissions.includes("billing.manage");
+    47 │ 
+  > 48 │ 	const Checkout = () => {
+       │ 	      ^^^^^^^^
+    49 │ 		if (!canManageBilling) {
+    50 │ 			return <CannotManageBillingAlert />;
+  
+  i Move it outside of the parent component or pass it as a prop.
+  
+    36 │ };
+    37 │ 
+  > 38 │ async function TeamAccountBillingPage({ params }: TeamAccountBillingPageProps) {
+       │                ^^^^^^^^^^^^^^^^^^^^^^
+    39 │ 	const account = (await params).account;
+    40 │ 	const workspace = await loadTeamWorkspace(account);
+  
+  i Component definitions inside other components cause them to be recreated on every render, which can lead to performance issues and unexpected behavior.
+  
+
+apps/web/app/home/[account]/billing/page.tsx:58:8 lint/nursery/noNestedComponentDefinitions ━━━━━━━━━━
+
+  × Components should not be defined inside other components.
+  
+    56 │ 	};
+    57 │ 
+  > 58 │ 	const BillingPortal = () => {
+       │ 	      ^^^^^^^^^^^^^
+    59 │ 		if (!canManageBilling || !customerId) {
+    60 │ 			return null;
+  
+  i Move it outside of the parent component or pass it as a prop.
+  
+    36 │ };
+    37 │ 
+  > 38 │ async function TeamAccountBillingPage({ params }: TeamAccountBillingPageProps) {
+       │                ^^^^^^^^^^^^^^^^^^^^^^
+    39 │ 	const account = (await params).account;
+    40 │ 	const workspace = await loadTeamWorkspace(account);
+  
+  i Component definitions inside other components cause them to be recreated on every render, which can lead to performance issues and unexpected behavior.
+  
+
+apps/web/app/onboarding/_components/onboarding-form.tsx:93:28 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × expected `=>` but instead found `{`
+  
+    91 │ 	const flattenFormData = useCallback((
+    92 │ 		data: z.infer<typeof FormSchema>,
+  > 93 │ 	): Record<string, string> {
+       │ 	                          ^
+    94 │ 		const flattenedData: Record<string, string> = {};
+    95 │ 
+  
+  i Remove {
+  
+
+apps/web/app/onboarding/_components/onboarding-form.tsx:117:2 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × expected `,` but instead found `const`
+  
+    116 │ 	// Form submission handler
+  > 117 │ 	const onSubmit = useCallback(
+        │ 	^^^^^
+    118 │ 		async (data: z.infer<typeof FormSchema>) => {
+    119 │ 			setIsSubmitting(true);
+  
+  i Remove const
+  
+
+apps/web/app/onboarding/_components/onboarding-form.tsx:197:8 lint/a11y/useAriaPropsSupportedByRole ━━━━━━━━━━
+
+  × The ARIA attribute 'aria-label' is not supported by this element.
+  
+    195 │ 					<MultiStepFormContextProvider>
+    196 │ 						{({ currentStepIndex }) => (
+  > 197 │ 							<div
+        │ 							^^^^
+  > 198 │ 								className="text-sm sm:text-base"
+  > 199 │ 								aria-label="Onboarding progress"
+  > 200 │ 							>
+        │ 							^
+    201 │ 								<Stepper
+    202 │ 									variant="numbers"
+  
+  i Ensure that ARIA attributes are valid for the role of the element.
+  
+
+apps/web/app/ui-showcase/page.tsx:197:54 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × ts import type may not have a trailing comma
+  
+    195 │ 	// Mock user workspace for home components
+    196 │ 	const mockUserWorkspace: import(
+  > 197 │ 		"~/app/home/(user)/_lib/server/load-user-workspace",
+        │ 		                                                   ^
+    198 │ 	).UserWorkspace = {
+    199 │ 		workspace: {
+  
+  i Remove the trailing comma here
+  
+    195 │ 	// Mock user workspace for home components
+    196 │ 	const mockUserWorkspace: import(
+  > 197 │ 		"~/app/home/(user)/_lib/server/load-user-workspace",
+        │ 		                                                   ^
+    198 │ 	).UserWorkspace = {
+    199 │ 		workspace: {
+  
+
+apps/web/app/ui-showcase/page.tsx:327:12 lint/nursery/useUniqueElementIds ━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × id attribute should not be a static string literal. Generate unique IDs using useId().
+  
+    325 │ 										<div className="space-y-2">
+    326 │ 											<Label htmlFor="name">Name</Label>
+  > 327 │ 											<Input id="name" placeholder="Enter your name" />
+        │ 											^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    328 │ 										</div>
+    329 │ 										<div className="space-y-2">
+  
+  i In React, if you hardcode IDs and use the component multiple times, it can lead to duplicate IDs in the DOM. Instead, generate unique IDs using useId().
+  
+
+apps/web/app/ui-showcase/page.tsx:331:12 lint/nursery/useUniqueElementIds ━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × id attribute should not be a static string literal. Generate unique IDs using useId().
+  
+    329 │ 										<div className="space-y-2">
+    330 │ 											<Label htmlFor="email">Email</Label>
+  > 331 │ 											<Input
+        │ 											^^^^^^
+  > 332 │ 												id="email"
+  > 333 │ 												type="email"
+  > 334 │ 												placeholder="Enter your email"
+  > 335 │ 											/>
+        │ 											^^
+    336 │ 										</div>
+    337 │ 									</CardContent>
+  
+  i In React, if you hardcode IDs and use the component multiple times, it can lead to duplicate IDs in the DOM. Instead, generate unique IDs using useId().
+  
+
+apps/web/app/ui-showcase/page.tsx:384:11 lint/nursery/useUniqueElementIds ━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × id attribute should not be a static string literal. Generate unique IDs using useId().
+  
+    382 │ 									<div className="space-y-2">
+    383 │ 										<Label htmlFor="input-example">Input</Label>
+  > 384 │ 										<Input
+        │ 										^^^^^^
+  > 385 │ 											id="input-example"
+  > 386 │ 											placeholder="Enter text here..."
+  > 387 │ 										/>
+        │ 										^^
+    388 │ 									</div>
+    389 │ 
+  
+  i In React, if you hardcode IDs and use the component multiple times, it can lead to duplicate IDs in the DOM. Instead, generate unique IDs using useId().
+  
+
+apps/web/app/ui-showcase/page.tsx:392:11 lint/nursery/useUniqueElementIds ━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × id attribute should not be a static string literal. Generate unique IDs using useId().
+  
+    390 │ 									<div className="space-y-2">
+    391 │ 										<Label htmlFor="textarea-example">Textarea</Label>
+  > 392 │ 										<Textarea
+        │ 										^^^^^^^^^
+  > 393 │ 											id="textarea-example"
+  > 394 │ 											placeholder="Enter longer text here..."
+  > 395 │ 										/>
+        │ 										^^
+    396 │ 									</div>
+    397 │ 
+  
+  i In React, if you hardcode IDs and use the component multiple times, it can lead to duplicate IDs in the DOM. Instead, generate unique IDs using useId().
+  
+
+apps/web/app/ui-showcase/page.tsx:401:12 lint/nursery/useUniqueElementIds ━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × id attribute should not be a static string literal. Generate unique IDs using useId().
+  
+    399 │ 										<Label htmlFor="select-example">Select</Label>
+    400 │ 										<Select>
+  > 401 │ 											<SelectTrigger id="select-example">
+        │ 											^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    402 │ 												<SelectValue placeholder="Select an option" />
+    403 │ 											</SelectTrigger>
+  
+  i In React, if you hardcode IDs and use the component multiple times, it can lead to duplicate IDs in the DOM. Instead, generate unique IDs using useId().
+  
+
+apps/web/app/ui-showcase/page.tsx:415:11 lint/nursery/useUniqueElementIds ━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × id attribute should not be a static string literal. Generate unique IDs using useId().
+  
+    413 │ 								<div className="space-y-6">
+    414 │ 									<div className="flex items-center space-x-2">
+  > 415 │ 										<Checkbox id="terms" />
+        │ 										^^^^^^^^^^^^^^^^^^^^^^^
+    416 │ 										<Label htmlFor="terms">Accept terms and conditions</Label>
+    417 │ 									</div>
+  
+  i In React, if you hardcode IDs and use the component multiple times, it can lead to duplicate IDs in the DOM. Instead, generate unique IDs using useId().
+  
+
+apps/web/app/ui-showcase/page.tsx:420:11 lint/nursery/useUniqueElementIds ━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × id attribute should not be a static string literal. Generate unique IDs using useId().
+  
+    419 │ 									<div className="flex items-center space-x-2">
+  > 420 │ 										<Switch id="airplane-mode" />
+        │ 										^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    421 │ 										<Label htmlFor="airplane-mode">Airplane Mode</Label>
+    422 │ 									</div>
+  
+  i In React, if you hardcode IDs and use the component multiple times, it can lead to duplicate IDs in the DOM. Instead, generate unique IDs using useId().
+  
+
+packages/ui/src/shadcn/radio-group.tsx:47:3 lint/a11y/noLabelWithoutControl ━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × A form label must be associated with an input.
+  
+    45 │ ) => {
+    46 │ 	return (
+  > 47 │ 		<label
+       │ 		^^^^^^
+  > 48 │ 			className={cn(
+        ...
+  > 59 │ 			{props.children}
+  > 60 │ 		</label>
+       │ 		^^^^^^^^
+    61 │ 	);
+    62 │ };
+  
+  i Consider adding a `for` or `htmlFor` attribute to the label element or moving the input element to inside the label element.
+  
+
+The number of diagnostics exceeds the limit allowed. Use --max-diagnostics to increase it.
+Diagnostics not shown: 200.
+Checked 1171 files in 229ms. No fixes applied.
+Found 190 errors.
+Found 30 warnings.
+lint ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Some errors were emitted while running checks.
+  
+

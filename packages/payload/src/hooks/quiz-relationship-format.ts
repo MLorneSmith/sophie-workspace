@@ -20,8 +20,8 @@ type QuizQuestion = {
 
 interface QuizDocument {
 	id?: string;
-	questions?: any[] | any;
-	[key: string]: any;
+	questions?: unknown[] | unknown;
+	[key: string]: unknown;
 }
 
 /**
@@ -33,7 +33,7 @@ export const ensureProperQuizQuestionFormat: CollectionAfterReadHook = async ({
 	req,
 }: {
 	doc: QuizDocument;
-	req: any;
+	req: { payload?: { logger?: { warn: (msg: string) => void } } };
 }) => {
 	// Skip if no document or no questions field
 	if (!doc || !doc.questions) {

@@ -7,14 +7,23 @@ import {
 const DEBUG = process.env.NODE_ENV === "development";
 
 // Helper logging function
-function debugLog(...args: any[]) {
+function debugLog(...args: unknown[]) {
 	if (DEBUG) {
 		console.log("[PayloadContentRenderer]", ...args);
 	}
 }
 
+// Type for nodes with various content properties
+type ContentNode = {
+	htmlContent?: string;
+	html?: string;
+	data?: { htmlContent?: string; html?: string };
+	toHTML?: () => string;
+	fields?: { htmlContent?: string; html?: string };
+};
+
 // Helper function to find HTML content in various locations
-function findHtmlContent(node: any): string | null {
+function findHtmlContent(node: ContentNode): string | null {
 	// Check all possible locations where HTML content might be stored
 	if (node.htmlContent) return node.htmlContent;
 	if (node.html) return node.html;
@@ -51,7 +60,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 	// Log content type for debugging
 	if (DEBUG) {
 		if (content && typeof content === "object") {
-			if ((content as any).root) {
+			if ((content as { root?: unknown }).root) {
 				debugLog("Content appears to be Lexical format");
 			} else {
 				debugLog(
@@ -62,9 +71,31 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 		}
 	}
 
+	// Type for Lexical content structure
+	type LexicalNode = {
+		type: string;
+		tag?: string;
+		text?: string;
+		children?: LexicalNode[];
+		fields?: Record<string, unknown>;
+		blockType?: string;
+		videoId?: string;
+		libraryId?: string;
+		title?: string;
+		aspectRatio?: string;
+		headline?: string;
+		subheadline?: string;
+		content?: string;
+		buttonText?: string;
+		leftButtonLabel?: string;
+		leftButtonUrl?: string;
+		rightButtonLabel?: string;
+		rightButtonUrl?: string;
+	};
+
 	// For Lexical content, extract the text and render it
 	try {
-		const lexicalContent = content as any;
+		const lexicalContent = content as { root?: { children?: LexicalNode[]; text?: string } };
 
 		// Check if lexicalContent.root exists
 		if (lexicalContent.root) {
@@ -72,7 +103,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 			if (Array.isArray(lexicalContent.root.children)) {
 				return (
 					<div className="payload-content">
-						{lexicalContent.root.children.map((node: any, i: number) => {
+						{lexicalContent.root.children.map((node: LexicalNode, i: number) => {
 							// Handle custom blocks
 							// Check for Call To Action block
 							if (
@@ -93,7 +124,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 									);
 									return (
 										<div
-											key={i}
+											key={`cta-html-${i}-${node.blockType || 'cta'}`}
 											dangerouslySetInnerHTML={{ __html: htmlContent }}
 										/>
 									);
@@ -102,21 +133,21 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 								// Fallback rendering for Call To Action block
 								return (
 									<div
-										key={i}
+										key={`cta-fallback-${i}-${node.headline || node.text || 'cta'}`}
 										className="my-6 rounded-md border border-blue-200 bg-blue-50 p-4"
 									>
 										<h3 className="text-lg font-bold text-blue-700">
 											Call To Action
 										</h3>
 										<p className="mt-2 text-blue-600">
-											{node.headline ||
+											{String(node.headline ||
 												node.text ||
 												node.content ||
-												"Call to action content"}
+												"Call to action content")}
 										</p>
 										{node.buttonText && (
 											<button className="mt-4 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600">
-												{node.buttonText}
+												{String(node.buttonText)}
 											</button>
 										)}
 									</div>
@@ -141,7 +172,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 									);
 									return (
 										<div
-											key={i}
+											key={`test-fallback-${i}-${node.blockType || 'test'}`}
 											dangerouslySetInnerHTML={{ __html: htmlContent }}
 										/>
 									);
@@ -150,14 +181,14 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 								// Fallback rendering for Test Block
 								return (
 									<div
-										key={i}
+										key={`test-fallback-${i}-${node.blockType || 'test'}`}
 										className="my-6 rounded-md border border-blue-100 bg-blue-50 p-4"
 									>
 										<h3 className="text-lg font-bold text-blue-700">
 											Test Block
 										</h3>
 										<p className="mt-2 text-blue-600">
-											{node.text || node.content || "Test block content"}
+											{String(node.text || node.content || "Test block content")}
 										</p>
 									</div>
 								);
@@ -181,19 +212,21 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 									);
 									return (
 										<div
-											key={i}
+											key={`bunny-video-${i}-${node.videoId || 'video'}`}
 											dangerouslySetInnerHTML={{ __html: htmlContent }}
 										/>
 									);
 								}
 
 								// Extract video data with defaults
-								const videoId = node.videoId || node.fields?.videoId || "";
-								const libraryId =
-									node.libraryId || node.fields?.libraryId || "1234";
-								const title = node.title || node.fields?.title || "Video";
-								const aspectRatio =
-									node.aspectRatio || node.fields?.aspectRatio || "16:9";
+								const videoId = String(node.videoId || node.fields?.videoId || "");
+								const libraryId = String(
+									node.libraryId || node.fields?.libraryId || "1234"
+								);
+								const title = String(node.title || node.fields?.title || "Video");
+								const aspectRatio = String(
+									node.aspectRatio || node.fields?.aspectRatio || "16:9"
+								);
 
 								// Calculate padding based on aspect ratio
 								const getPaddingBottom = () => {
@@ -207,7 +240,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 								if (!videoId) {
 									return (
 										<div
-											key={i}
+											key={`node-${i}-${node.type || 'unknown'}`}
 											className="my-6 rounded-md border border-gray-200 bg-gray-50 p-4"
 										>
 											<h3 className="text-lg font-bold text-gray-700">
@@ -224,7 +257,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 
 								// Render the Bunny.net video player
 								return (
-									<div key={i} className="my-6">
+									<div key={`bunny-video-${i}-${node.videoId || 'video'}`} className="my-6">
 										<h3 className="mb-2 text-lg font-bold">{title}</h3>
 										<div
 											className="relative"
@@ -268,7 +301,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 									);
 									return (
 										<div
-											key={i}
+											key={`youtube-video-${i}-${node.videoId || 'video'}`}
 											dangerouslySetInnerHTML={{ __html: htmlContent }}
 										/>
 									);
@@ -296,10 +329,12 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 								// Extract video data with defaults
 								const rawVideoId = node.videoId || node.fields?.videoId || "";
 								const youtubeId = extractYouTubeId(rawVideoId);
-								const title =
-									node.title || node.fields?.title || "YouTube Video";
-								const aspectRatio =
-									node.aspectRatio || node.fields?.aspectRatio || "16:9";
+								const title = String(
+									node.title || node.fields?.title || "YouTube Video"
+								);
+								const aspectRatio = String(
+									node.aspectRatio || node.fields?.aspectRatio || "16:9"
+								);
 
 								// Calculate padding based on aspect ratio
 								const getPaddingBottom = () => {
@@ -313,7 +348,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 								if (!youtubeId) {
 									return (
 										<div
-											key={i}
+											key={`youtube-video-${i}-${node.videoId || 'video'}`}
 											className="my-6 rounded-md border border-gray-200 bg-gray-50 p-4"
 										>
 											<h3 className="text-lg font-bold text-gray-700">
@@ -330,7 +365,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 
 								// Render the YouTube video player
 								return (
-									<div key={i} className="my-6">
+									<div key={`youtube-video-${i}-${node.videoId || 'video'}`} className="my-6">
 										<h3 className="mb-2 text-lg font-bold">{title}</h3>
 										<div
 											className="relative"
@@ -361,15 +396,15 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 								// Check if node.children exists and is an array
 								if (Array.isArray(node.children)) {
 									return (
-										<p key={i}>
-											{node.children.map((textNode: any, j: number) => (
+										<p key={`p-block-${i}-${node.text?.slice(0, 20) || 'text'}`}>
+											{node.children.map((textNode: LexicalNode, j: number) => (
 												<span key={j}>{textNode.text || ""}</span>
 											))}
 										</p>
 									);
 								}
 								// Fallback for when children is not an array
-								return <p key={i}>{node.text || ""}</p>;
+								return <p key={`p-${i}-${node.text?.slice(0, 20) || 'text'}`}>{node.text || ""}</p>;
 							}
 
 							if (node.type === "heading") {
@@ -382,44 +417,44 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 									// Use switch for the fallback case too
 									switch (tag) {
 										case "h1":
-											return <h1 key={i}>{node.text || ""}</h1>;
+											return <h1 key={`h1-${i}-${node.text?.slice(0, 20) || 'heading'}`}>{node.text || ""}</h1>;
 										case "h2":
-											return <h2 key={i}>{node.text || ""}</h2>;
+											return <h2 key={`h2-${i}-${node.text?.slice(0, 20) || 'heading'}`}>{node.text || ""}</h2>;
 										case "h3":
-											return <h3 key={i}>{node.text || ""}</h3>;
+											return <h3 key={`h3-${i}-${node.text?.slice(0, 20) || 'heading'}`}>{node.text || ""}</h3>;
 										case "h4":
-											return <h4 key={i}>{node.text || ""}</h4>;
+											return <h4 key={`h4-${i}-${node.text?.slice(0, 20) || 'heading'}`}>{node.text || ""}</h4>;
 										case "h5":
-											return <h5 key={i}>{node.text || ""}</h5>;
+											return <h5 key={`h5-${i}-${node.text?.slice(0, 20) || 'heading'}`}>{node.text || ""}</h5>;
 										case "h6":
-											return <h6 key={i}>{node.text || ""}</h6>;
+											return <h6 key={`h6-${i}-${node.text?.slice(0, 20) || 'heading'}`}>{node.text || ""}</h6>;
 										default:
-											return <h2 key={i}>{node.text || ""}</h2>;
+											return <h2 key={`h2-${i}-${node.text?.slice(0, 20) || 'heading'}`}>{node.text || ""}</h2>;
 									}
 								}
 
 								// Render the appropriate heading with children
 								const headingContent = node.children.map(
-									(textNode: any, j: number) => (
+									(textNode: LexicalNode, j: number) => (
 										<span key={j}>{textNode.text || ""}</span>
 									),
 								);
 
 								switch (tag) {
 									case "h1":
-										return <h1 key={i}>{headingContent}</h1>;
+										return <h1 key={`h1-${i}-${node.text?.slice(0, 20) || 'heading'}`}>{headingContent}</h1>;
 									case "h2":
-										return <h2 key={i}>{headingContent}</h2>;
+										return <h2 key={`h2-${i}-${node.text?.slice(0, 20) || 'heading'}`}>{headingContent}</h2>;
 									case "h3":
-										return <h3 key={i}>{headingContent}</h3>;
+										return <h3 key={`h3-${i}-${node.text?.slice(0, 20) || 'heading'}`}>{headingContent}</h3>;
 									case "h4":
-										return <h4 key={i}>{headingContent}</h4>;
+										return <h4 key={`h4-${i}-${node.text?.slice(0, 20) || 'heading'}`}>{headingContent}</h4>;
 									case "h5":
-										return <h5 key={i}>{headingContent}</h5>;
+										return <h5 key={`h5-${i}-${node.text?.slice(0, 20) || 'heading'}`}>{headingContent}</h5>;
 									case "h6":
-										return <h6 key={i}>{headingContent}</h6>;
+										return <h6 key={`h6-${i}-${node.text?.slice(0, 20) || 'heading'}`}>{headingContent}</h6>;
 									default:
-										return <h2 key={i}>{headingContent}</h2>;
+										return <h2 key={`h2-${i}-${node.text?.slice(0, 20) || 'heading'}`}>{headingContent}</h2>;
 								}
 							}
 
@@ -436,33 +471,33 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 
 									return (
 										<div
-											key={i}
+											key={`cta-fallback-${i}-${node.headline || node.text || 'cta'}`}
 											className="my-6 rounded-md border border-blue-200 bg-blue-50 p-4"
 										>
 											<h3 className="text-lg font-bold text-blue-700">
-												{node.fields.headline || "Call To Action"}
+												{String(node.fields.headline || "Call To Action")}
 											</h3>
 											<p className="mt-2 text-blue-600">
-												{node.fields.subheadline ||
+												{String(node.fields.subheadline ||
 													node.fields.text ||
 													node.fields.content ||
-													"Call to action content"}
+													"Call to action content")}
 											</p>
 											<div className="mt-4 flex flex-wrap gap-4">
 												{node.fields.leftButtonLabel && (
 													<a
-														href={node.fields.leftButtonUrl || "#"}
+														href={String(node.fields.leftButtonUrl || "#")}
 														className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
 													>
-														{node.fields.leftButtonLabel}
+														{String(node.fields.leftButtonLabel)}
 													</a>
 												)}
 												{node.fields.rightButtonLabel && (
 													<a
-														href={node.fields.rightButtonUrl || "#"}
+														href={String(node.fields.rightButtonUrl || "#")}
 														className="rounded border border-blue-500 bg-white px-4 py-2 text-blue-500 hover:bg-blue-50"
 													>
-														{node.fields.rightButtonLabel}
+														{String(node.fields.rightButtonLabel)}
 													</a>
 												)}
 											</div>
@@ -476,16 +511,16 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 
 									return (
 										<div
-											key={i}
+											key={`test-fallback-${i}-${node.blockType || 'test'}`}
 											className="my-6 rounded-md border border-blue-100 bg-blue-50 p-4"
 										>
 											<h3 className="text-lg font-bold text-blue-700">
-												{node.fields.headline || "Test Block"}
+												{String(node.fields.headline || "Test Block")}
 											</h3>
 											<p className="mt-2 text-blue-600">
-												{node.fields.text ||
+												{String(node.fields.text ||
 													node.fields.content ||
-													"Test block content"}
+													"Test block content")}
 											</p>
 										</div>
 									);
@@ -499,10 +534,10 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 									);
 
 									// Extract video data with defaults
-									const videoId = node.fields.videoId || "";
-									const libraryId = node.fields.libraryId || "1234";
-									const title = node.fields.title || "Video";
-									const aspectRatio = node.fields.aspectRatio || "16:9";
+									const videoId = String(node.fields.videoId || "");
+									const libraryId = String(node.fields.libraryId || "1234");
+									const title = String(node.fields.title || "Video");
+									const aspectRatio = String(node.fields.aspectRatio || "16:9");
 
 									// Calculate padding based on aspect ratio
 									const getPaddingBottom = () => {
@@ -516,7 +551,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 									if (!videoId) {
 										return (
 											<div
-												key={i}
+												key={`node-${i}-${node.type || 'unknown'}`}
 												className="my-6 rounded-md border border-gray-200 bg-gray-50 p-4"
 											>
 												<h3 className="text-lg font-bold text-gray-700">
@@ -533,7 +568,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 
 									// Render the Bunny.net video player
 									return (
-										<div key={i} className="my-6">
+										<div key={`bunny-video-${i}-${node.videoId || 'video'}`} className="my-6">
 											<h3 className="mb-2 text-lg font-bold">{title}</h3>
 											<div
 												className="relative"
@@ -586,10 +621,10 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 									};
 
 									// Extract video data with defaults
-									const rawVideoId = node.fields.videoId || "";
+									const rawVideoId = String(node.fields.videoId || "");
 									const youtubeId = extractYouTubeId(rawVideoId);
-									const title = node.fields.title || "YouTube Video";
-									const aspectRatio = node.fields.aspectRatio || "16:9";
+									const title = String(node.fields.title || "YouTube Video");
+									const aspectRatio = String(node.fields.aspectRatio || "16:9");
 
 									// Calculate padding based on aspect ratio
 									const getPaddingBottom = () => {
@@ -603,7 +638,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 									if (!youtubeId) {
 										return (
 											<div
-												key={i}
+												key={`youtube-video-${i}-${node.videoId || 'video'}`}
 												className="my-6 rounded-md border border-gray-200 bg-gray-50 p-4"
 											>
 												<h3 className="text-lg font-bold text-gray-700">
@@ -620,7 +655,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 
 									// Render the YouTube video player
 									return (
-										<div key={i} className="my-6">
+										<div key={`youtube-video-${i}-${node.videoId || 'video'}`} className="my-6">
 											<h3 className="mb-2 text-lg font-bold">{title}</h3>
 											<div
 												className="relative"
