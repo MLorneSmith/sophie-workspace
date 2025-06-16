@@ -87,17 +87,17 @@ export function Sidebar(props: {
 
 	return (
 		<SidebarContext.Provider value={ctx}>
-			<div
+			<nav
 				className={containerClassName}
 				onMouseEnter={onMouseEnter}
 				onMouseLeave={onMouseLeave}
 			>
-				<div aria-expanded={!collapsed} className={className}>
+				<section className={className}>
 					{typeof props.children === "function"
 						? props.children(ctx)
 						: props.children}
-				</div>
-			</div>
+				</section>
+			</nav>
 		</SidebarContext.Provider>
 	);
 }
@@ -122,6 +122,78 @@ export function SidebarContent({
 	return <div className={className}>{children}</div>;
 }
 
+function SidebarGroupTitle({
+	children,
+	sidebarCollapsed,
+}: React.PropsWithChildren<{ sidebarCollapsed: boolean }>) {
+	if (sidebarCollapsed) {
+		return null;
+	}
+
+	return (
+		<span className={"text-muted-foreground text-xs font-semibold uppercase"}>
+			{children}
+		</span>
+	);
+}
+
+function SidebarGroupWrapper({
+	sidebarCollapsed,
+	collapsible,
+	isGroupCollapsed,
+	setIsGroupCollapsed,
+	id,
+	label,
+	children: _children,
+}: {
+	sidebarCollapsed: boolean;
+	collapsible: boolean;
+	isGroupCollapsed: boolean;
+	setIsGroupCollapsed: (value: boolean) => void;
+	id: string;
+	label: string | React.ReactNode;
+	children?: React.ReactNode;
+}) {
+	const className = cn(
+		"px-container group flex items-center justify-between space-x-2.5",
+		{
+			"py-2.5": !sidebarCollapsed,
+		},
+	);
+
+	if (collapsible) {
+		return (
+			<button
+				type="button"
+				aria-expanded={!isGroupCollapsed}
+				aria-controls={id}
+				onClick={() => setIsGroupCollapsed(!isGroupCollapsed)}
+				className={className}
+			>
+				<SidebarGroupTitle sidebarCollapsed={sidebarCollapsed}>
+					{label}
+				</SidebarGroupTitle>
+
+				<If condition={collapsible}>
+					<ChevronDown
+						className={cn("h-3 transition duration-300", {
+							"rotate-180": !isGroupCollapsed,
+						})}
+					/>
+				</If>
+			</button>
+		);
+	}
+
+	return (
+		<div className={className}>
+			<SidebarGroupTitle sidebarCollapsed={sidebarCollapsed}>
+				{label}
+			</SidebarGroupTitle>
+		</div>
+	);
+}
+
 export function SidebarGroup({
 	label,
 	collapsed = false,
@@ -136,61 +208,20 @@ export function SidebarGroup({
 	const [isGroupCollapsed, setIsGroupCollapsed] = useState(collapsed);
 	const id = useId();
 
-	const Title = (props: React.PropsWithChildren) => {
-		if (sidebarCollapsed) {
-			return null;
-		}
-
-		return (
-			<span className={"text-muted-foreground text-xs font-semibold uppercase"}>
-				{props.children}
-			</span>
-		);
-	};
-
-	const Wrapper = () => {
-		const className = cn(
-			"px-container group flex items-center justify-between space-x-2.5",
-			{
-				"py-2.5": !sidebarCollapsed,
-			},
-		);
-
-		if (collapsible) {
-			return (
-				<button
-					aria-expanded={!isGroupCollapsed}
-					aria-controls={id}
-					onClick={() => setIsGroupCollapsed(!isGroupCollapsed)}
-					className={className}
-				>
-					<Title>{label}</Title>
-
-					<If condition={collapsible}>
-						<ChevronDown
-							className={cn("h-3 transition duration-300", {
-								"rotate-180": !isGroupCollapsed,
-							})}
-						/>
-					</If>
-				</button>
-			);
-		}
-
-		return (
-			<div className={className}>
-				<Title>{label}</Title>
-			</div>
-		);
-	};
-
 	return (
 		<div
 			className={cn("flex flex-col", {
 				"gap-y-2 py-1": !collapsed,
 			})}
 		>
-			<Wrapper />
+			<SidebarGroupWrapper
+				sidebarCollapsed={sidebarCollapsed}
+				collapsible={collapsible}
+				isGroupCollapsed={isGroupCollapsed}
+				setIsGroupCollapsed={setIsGroupCollapsed}
+				id={id}
+				label={label}
+			/>
 
 			<If condition={collapsible ? !isGroupCollapsed : true}>
 				<div id={id} className={"flex flex-col space-y-1.5"}>
@@ -290,7 +321,7 @@ function isRadixPopupOpen() {
 function onRadixPopupClose(callback: () => void) {
 	const element = getRadixPopup();
 
-	if (element && element.parentElement) {
+	if (element?.parentElement) {
 		const observer = new MutationObserver(() => {
 			if (!getRadixPopup()) {
 				callback();
@@ -315,7 +346,7 @@ export function SidebarNavigation({
 		<>
 			{config.routes.map((item, index) => {
 				if ("divider" in item) {
-					return <SidebarDivider key={`divider-${index}`} />;
+					return <SidebarDivider key={`divider-${JSON.stringify(item)}-${index}`} />;
 				}
 
 				if ("children" in item) {

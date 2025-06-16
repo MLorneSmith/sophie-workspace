@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import Image from "next/image";
 import { useSupabase } from "@kit/supabase/hooks/use-supabase";
 import { useFactorsMutationKey } from "@kit/supabase/hooks/use-user-factors-mutation-key";
 import { Alert, AlertDescription, AlertTitle } from "@kit/ui/alert";
@@ -411,12 +412,12 @@ function FactorNameForm(
 
 function QrImage({ src }: { src: string }) {
 	return (
-		<img
-			alt={"QR Code"}
+		<Image
+			alt="QR Code"
 			src={src}
 			width={160}
 			height={160}
-			className={"bg-white p-2"}
+			className="bg-white p-2"
 		/>
 	);
 }

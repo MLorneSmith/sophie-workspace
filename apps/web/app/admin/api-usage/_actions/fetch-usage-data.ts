@@ -107,14 +107,14 @@ export const fetchUsageDataAction = enhanceAction(
 function processLogsToStats(logs: AiRequestLog[]): UsageStats {
 	// Type guards for log objects
 	function isValidLog(log: unknown): log is AiRequestLog {
+		if (log === null || typeof log !== "object") return false;
+
+		const logObj = log as Record<string, unknown>;
 		return (
-			log !== null &&
-			typeof log === "object" &&
-			"cost" in log &&
-			"total_tokens" in log &&
-			(typeof (log as any).cost === "number" ||
-				typeof (log as any).cost === "string") &&
-			typeof (log as any).total_tokens === "number"
+			"cost" in logObj &&
+			"total_tokens" in logObj &&
+			(typeof logObj.cost === "number" || typeof logObj.cost === "string") &&
+			typeof logObj.total_tokens === "number"
 		);
 	}
 
@@ -210,23 +210,25 @@ function groupByDay(
 			dayMap.set(date, entry);
 		}
 
-		// Add cost and tokens
-		const cost =
-			log && typeof log === "object" && "cost" in log
-				? typeof (log as AiRequestLog).cost === "number"
-					? (log as AiRequestLog).cost
-					: typeof (log as AiRequestLog).cost === "string"
-						? Number.parseFloat((log as AiRequestLog).cost) || 0
-						: 0
-				: 0;
+		// Add cost and tokens with proper type handling
+		let cost = 0;
+		let tokens = 0;
 
-		const tokens =
-			log &&
-			typeof log === "object" &&
-			"total_tokens" in log &&
-			typeof (log as AiRequestLog).total_tokens === "number"
-				? (log as AiRequestLog).total_tokens
-				: 0;
+		if (log && typeof log === "object" && "cost" in log) {
+			const logRecord = log as AiRequestLog;
+			if (typeof logRecord.cost === "number") {
+				cost = logRecord.cost;
+			} else if (typeof logRecord.cost === "string") {
+				cost = Number.parseFloat(logRecord.cost) || 0;
+			}
+		}
+
+		if (log && typeof log === "object" && "total_tokens" in log) {
+			const logRecord = log as AiRequestLog;
+			if (typeof logRecord.total_tokens === "number") {
+				tokens = logRecord.total_tokens;
+			}
+		}
 
 		entry.cost += cost;
 		entry.tokens += tokens;

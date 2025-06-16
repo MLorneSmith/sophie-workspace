@@ -51,8 +51,8 @@ function parseTextFormat(text: string): RawImprovement[] {
 		/Improvement \d+:\s*Headline: (.*?)\s*Rationale: (.*?)\s*Summary Point: (.*?)\s*Supporting Points:(.*?)(?=Improvement|\s*$)/g;
 	const bulletPointRegex = /[-•]\s*(.*?)(?=[-•]|\s*$)/g;
 
-	let match;
-	while ((match = improvementRegex.exec(text)) !== null) {
+	let match: RegExpExecArray | null = improvementRegex.exec(text);
+	while (match !== null) {
 		const [
 			,
 			headline = "",
@@ -62,13 +62,13 @@ function parseTextFormat(text: string): RawImprovement[] {
 		] = match;
 
 		const supportingPoints: string[] = [];
-		let pointMatch;
-		while (
-			(pointMatch = bulletPointRegex.exec(supportingPointsText)) !== null
-		) {
+		let pointMatch: RegExpExecArray | null = bulletPointRegex.exec(supportingPointsText);
+		while (pointMatch !== null) {
 			if (pointMatch[1]) {
 				supportingPoints.push(pointMatch[1].trim());
 			}
+			// Get next match for the inner loop
+			pointMatch = bulletPointRegex.exec(supportingPointsText);
 		}
 
 		improvements.push({
@@ -83,6 +83,9 @@ function parseTextFormat(text: string): RawImprovement[] {
 							.map((line) => line.trim())
 							.filter((line) => line.length > 0),
 		});
+		
+		// Get next match for the outer loop
+		match = improvementRegex.exec(text);
 	}
 
 	return improvements;
@@ -158,10 +161,11 @@ export function parseImprovements(
 				try {
 					const improvementResults = [];
 					const regex = /{[^{}]*"improvementHeadline"[\s\S]*?}/g;
-					let match;
+					let match: RegExpExecArray | null;
 
 					// Extract individual improvement objects
-					while ((match = regex.exec(cleanedJson)) !== null) {
+					match = regex.exec(cleanedJson);
+					while (match !== null) {
 						let improvementJson = match[0];
 
 						// Aggressively clean the JSON before parsing
@@ -182,6 +186,9 @@ export function parseImprovements(
 								improvementJson,
 							);
 						}
+						
+						// Get next match
+						match = regex.exec(cleanedJson);
 					}
 
 					if (improvementResults.length > 0) {

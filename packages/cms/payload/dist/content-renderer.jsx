@@ -86,13 +86,13 @@ export function PayloadContentRenderer({ content }) {
 											Call To Action
 										</h3>
 										<p className="mt-2 text-blue-600">
-											{node.headline ||
+											{String(node.headline ||
                                     node.text ||
                                     node.content ||
-                                    "Call to action content"}
+                                    "Call to action content")}
 										</p>
 										{node.buttonText && (<button className="mt-4 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600">
-												{node.buttonText}
+												{String(node.buttonText)}
 											</button>)}
 									</div>);
                         }
@@ -113,7 +113,7 @@ export function PayloadContentRenderer({ content }) {
 											Test Block
 										</h3>
 										<p className="mt-2 text-blue-600">
-											{node.text || node.content || "Test block content"}
+											{String(node.text || node.content || "Test block content")}
 										</p>
 									</div>);
                         }
@@ -129,10 +129,10 @@ export function PayloadContentRenderer({ content }) {
                                 return (<div key={`bunny-video-${i}-${node.videoId || 'video'}`} dangerouslySetInnerHTML={{ __html: htmlContent }}/>);
                             }
                             // Extract video data with defaults
-                            const videoId = node.videoId || ((_a = node.fields) === null || _a === void 0 ? void 0 : _a.videoId) || "";
-                            const libraryId = node.libraryId || ((_b = node.fields) === null || _b === void 0 ? void 0 : _b.libraryId) || "1234";
-                            const title = node.title || ((_c = node.fields) === null || _c === void 0 ? void 0 : _c.title) || "Video";
-                            const aspectRatio = node.aspectRatio || ((_d = node.fields) === null || _d === void 0 ? void 0 : _d.aspectRatio) || "16:9";
+                            const videoId = String(node.videoId || ((_a = node.fields) === null || _a === void 0 ? void 0 : _a.videoId) || "");
+                            const libraryId = String(node.libraryId || ((_b = node.fields) === null || _b === void 0 ? void 0 : _b.libraryId) || "1234");
+                            const title = String(node.title || ((_c = node.fields) === null || _c === void 0 ? void 0 : _c.title) || "Video");
+                            const aspectRatio = String(node.aspectRatio || ((_d = node.fields) === null || _d === void 0 ? void 0 : _d.aspectRatio) || "16:9");
                             // Calculate padding based on aspect ratio
                             const getPaddingBottom = () => {
                                 if (aspectRatio === "16:9")
@@ -199,9 +199,9 @@ export function PayloadContentRenderer({ content }) {
                             };
                             // Extract video data with defaults
                             const rawVideoId = node.videoId || ((_e = node.fields) === null || _e === void 0 ? void 0 : _e.videoId) || "";
-                            const youtubeId = extractYouTubeId(rawVideoId);
-                            const title = node.title || ((_f = node.fields) === null || _f === void 0 ? void 0 : _f.title) || "YouTube Video";
-                            const aspectRatio = node.aspectRatio || ((_g = node.fields) === null || _g === void 0 ? void 0 : _g.aspectRatio) || "16:9";
+                            const youtubeId = extractYouTubeId(String(rawVideoId));
+                            const title = String(node.title || ((_f = node.fields) === null || _f === void 0 ? void 0 : _f.title) || "YouTube Video");
+                            const aspectRatio = String(node.aspectRatio || ((_g = node.fields) === null || _g === void 0 ? void 0 : _g.aspectRatio) || "16:9");
                             // Calculate padding based on aspect ratio
                             const getPaddingBottom = () => {
                                 if (aspectRatio === "16:9")
@@ -302,20 +302,20 @@ export function PayloadContentRenderer({ content }) {
                                 console.log("Found Call To Action block in fields:", node.fields);
                                 return (<div key={`cta-fallback-${i}-${node.headline || node.text || 'cta'}`} className="my-6 rounded-md border border-blue-200 bg-blue-50 p-4">
 											<h3 className="text-lg font-bold text-blue-700">
-												{node.fields.headline || "Call To Action"}
+												{String(node.fields.headline || "Call To Action")}
 											</h3>
 											<p className="mt-2 text-blue-600">
-												{node.fields.subheadline ||
+												{String(node.fields.subheadline ||
                                         node.fields.text ||
                                         node.fields.content ||
-                                        "Call to action content"}
+                                        "Call to action content")}
 											</p>
 											<div className="mt-4 flex flex-wrap gap-4">
-												{node.fields.leftButtonLabel && (<a href={node.fields.leftButtonUrl || "#"} className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600">
-														{node.fields.leftButtonLabel}
+												{Boolean(node.fields.leftButtonLabel) && (<a href={String(node.fields.leftButtonUrl || "#")} className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600">
+														{String(node.fields.leftButtonLabel)}
 													</a>)}
-												{node.fields.rightButtonLabel && (<a href={node.fields.rightButtonUrl || "#"} className="rounded border border-blue-500 bg-white px-4 py-2 text-blue-500 hover:bg-blue-50">
-														{node.fields.rightButtonLabel}
+												{Boolean(node.fields.rightButtonLabel) && (<a href={String(node.fields.rightButtonUrl || "#")} className="rounded border border-blue-500 bg-white px-4 py-2 text-blue-500 hover:bg-blue-50">
+														{String(node.fields.rightButtonLabel)}
 													</a>)}
 											</div>
 										</div>);
@@ -325,12 +325,12 @@ export function PayloadContentRenderer({ content }) {
                                 console.log("Found Test Block in fields:", node.fields);
                                 return (<div key={`test-fallback-${i}-${node.blockType || 'test'}`} className="my-6 rounded-md border border-blue-100 bg-blue-50 p-4">
 											<h3 className="text-lg font-bold text-blue-700">
-												{node.fields.headline || "Test Block"}
+												{String(node.fields.headline || "Test Block")}
 											</h3>
 											<p className="mt-2 text-blue-600">
-												{node.fields.text ||
+												{String(node.fields.text ||
                                         node.fields.content ||
-                                        "Test block content"}
+                                        "Test block content")}
 											</p>
 										</div>);
                             }
@@ -338,10 +338,10 @@ export function PayloadContentRenderer({ content }) {
                             if (node.fields && node.fields.blockType === "bunny-video") {
                                 console.log("Found Bunny Video block in fields:", node.fields);
                                 // Extract video data with defaults
-                                const videoId = node.fields.videoId || "";
-                                const libraryId = node.fields.libraryId || "1234";
-                                const title = node.fields.title || "Video";
-                                const aspectRatio = node.fields.aspectRatio || "16:9";
+                                const videoId = String(node.fields.videoId || "");
+                                const libraryId = String(node.fields.libraryId || "1234");
+                                const title = String(node.fields.title || "Video");
+                                const aspectRatio = String(node.fields.aspectRatio || "16:9");
                                 // Calculate padding based on aspect ratio
                                 const getPaddingBottom = () => {
                                     if (aspectRatio === "16:9")
@@ -399,10 +399,10 @@ export function PayloadContentRenderer({ content }) {
                                     return input;
                                 };
                                 // Extract video data with defaults
-                                const rawVideoId = node.fields.videoId || "";
+                                const rawVideoId = String(node.fields.videoId || "");
                                 const youtubeId = extractYouTubeId(rawVideoId);
-                                const title = node.fields.title || "YouTube Video";
-                                const aspectRatio = node.fields.aspectRatio || "16:9";
+                                const title = String(node.fields.title || "YouTube Video");
+                                const aspectRatio = String(node.fields.aspectRatio || "16:9");
                                 // Calculate padding based on aspect ratio
                                 const getPaddingBottom = () => {
                                     if (aspectRatio === "16:9")

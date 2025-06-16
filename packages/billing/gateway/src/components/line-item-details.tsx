@@ -11,6 +11,211 @@ import type { z } from "zod";
 
 const className = "flex text-secondary-foreground items-center text-sm";
 
+function SetupFee({
+	item,
+	currencyCode,
+	locale,
+}: {
+	item: z.infer<typeof LineItemSchema>;
+	currencyCode: string;
+	locale: string;
+}) {
+	return (
+		<If condition={item.setupFee}>
+			<div className={className}>
+				<span className={"flex items-center space-x-1"}>
+					<PlusSquare className={"w-3"} />
+
+					<span>
+						<Trans
+							i18nKey={"billing:setupFee"}
+							values={{
+								setupFee: formatCurrency({
+									currencyCode,
+									value: item.setupFee as number,
+									locale,
+								}),
+							}}
+						/>
+					</span>
+				</span>
+			</div>
+		</If>
+	);
+}
+
+function FlatFee({
+	item,
+	currencyCode,
+	locale,
+	selectedInterval,
+	currency,
+}: {
+	item: z.infer<typeof LineItemSchema>;
+	currencyCode: string;
+	locale: string;
+	selectedInterval?: string;
+	currency: string;
+}) {
+	return (
+		<div className={"flex flex-col"}>
+			<div className={cn(className, "space-x-1")}>
+				<span className={"flex items-center space-x-1"}>
+					<span className={"flex items-center space-x-1.5"}>
+						<PlusSquare className={"w-3"} />
+
+						<span>
+							<Trans i18nKey={"billing:basePlan"} />
+						</span>
+					</span>
+
+					<span>
+						<If
+							condition={selectedInterval}
+							fallback={<Trans i18nKey={"billing:lifetime"} />}
+						>
+							(<Trans i18nKey={`billing:billingInterval.${selectedInterval}`} />
+							)
+						</If>
+					</span>
+				</span>
+
+				<span>-</span>
+
+				<span className={"text-xs font-semibold"}>
+					{formatCurrency({
+						currencyCode,
+						value: item.cost,
+						locale,
+					})}
+				</span>
+			</div>
+
+			<SetupFee item={item} currencyCode={currencyCode} locale={locale} />
+
+			<If condition={item.tiers?.length}>
+				<span className={"flex items-center space-x-1.5"}>
+					<PlusSquare className={"w-3"} />
+
+					<span className={"flex gap-x-2 text-sm"}>
+						<span>
+							<Trans
+								i18nKey={"billing:perUnit"}
+								values={{
+									unit: item.unit,
+								}}
+							/>
+						</span>
+					</span>
+				</span>
+
+				<Tiers item={item} currency={currency} />
+			</If>
+		</div>
+	);
+}
+
+function PerSeat({
+	item,
+	index,
+	currencyCode,
+	locale,
+	currency,
+}: {
+	item: z.infer<typeof LineItemSchema>;
+	index: number;
+	currencyCode: string;
+	locale: string;
+	currency: string;
+}) {
+	return (
+		<div key={item.id || `per-seat-${index}`} className={"flex flex-col"}>
+			<div className={className}>
+				<span className={"flex items-center space-x-1.5"}>
+					<PlusSquare className={"w-3"} />
+
+					<span>
+						<Trans i18nKey={"billing:perTeamMember"} />
+					</span>
+
+					<span>-</span>
+
+					<If condition={!item.tiers?.length}>
+						<span className={"font-semibold"}>
+							{formatCurrency({
+								currencyCode,
+								value: item.cost,
+								locale,
+							})}
+						</span>
+					</If>
+				</span>
+			</div>
+
+			<SetupFee item={item} currencyCode={currencyCode} locale={locale} />
+
+			<If condition={item.tiers?.length}>
+				<Tiers item={item} currency={currency} />
+			</If>
+		</div>
+	);
+}
+
+function Metered({
+	item,
+	index,
+	currencyCode,
+	locale,
+	currency,
+}: {
+	item: z.infer<typeof LineItemSchema>;
+	index: number;
+	currencyCode: string;
+	locale: string;
+	currency: string;
+}) {
+	return (
+		<div key={item.id || `metered-${index}`} className={"flex flex-col"}>
+			<div className={className}>
+				<span className={"flex items-center space-x-1"}>
+					<span className={"flex items-center space-x-1.5"}>
+						<PlusSquare className={"w-3"} />
+
+						<span className={"flex space-x-1"}>
+							<span>
+								<Trans
+									i18nKey={"billing:perUnit"}
+									values={{
+										unit: item.unit,
+									}}
+								/>
+							</span>
+						</span>
+					</span>
+				</span>
+
+				{/* If there are no tiers, there is a flat cost for usage */}
+				<If condition={!item.tiers?.length}>
+					<span className={"font-semibold"}>
+						{formatCurrency({
+							currencyCode,
+							value: item.cost,
+							locale,
+						})}
+					</span>
+				</If>
+			</div>
+
+			<SetupFee item={item} currencyCode={currencyCode} locale={locale} />
+
+			{/* If there are tiers, we render them as a list */}
+			<If condition={item.tiers?.length}>
+				<Tiers item={item} currency={currency} />
+			</If>
+		</div>
+	);
+}
+
 export function LineItemDetails(
 	props: React.PropsWithChildren<{
 		lineItems: z.infer<typeof LineItemSchema>[];
@@ -43,171 +248,42 @@ export function LineItemDetails(
 					);
 				}
 
-				const SetupFee = () => (
-					<If condition={item.setupFee}>
-						<div className={className}>
-							<span className={"flex items-center space-x-1"}>
-								<PlusSquare className={"w-3"} />
-
-								<span>
-									<Trans
-										i18nKey={"billing:setupFee"}
-										values={{
-											setupFee: formatCurrency({
-												currencyCode,
-												value: item.setupFee as number,
-												locale,
-											}),
-										}}
-									/>
-								</span>
-							</span>
-						</div>
-					</If>
-				);
-
-				const FlatFee = () => (
-					<div className={"flex flex-col"}>
-						<div className={cn(className, "space-x-1")}>
-							<span className={"flex items-center space-x-1"}>
-								<span className={"flex items-center space-x-1.5"}>
-									<PlusSquare className={"w-3"} />
-
-									<span>
-										<Trans i18nKey={"billing:basePlan"} />
-									</span>
-								</span>
-
-								<span>
-									<If
-										condition={props.selectedInterval}
-										fallback={<Trans i18nKey={"billing:lifetime"} />}
-									>
-										(
-										<Trans
-											i18nKey={`billing:billingInterval.${props.selectedInterval}`}
-										/>
-										)
-									</If>
-								</span>
-							</span>
-
-							<span>-</span>
-
-							<span className={"text-xs font-semibold"}>
-								{formatCurrency({
-									currencyCode,
-									value: item.cost,
-									locale,
-								})}
-							</span>
-						</div>
-
-						<SetupFee />
-
-						<If condition={item.tiers?.length}>
-							<span className={"flex items-center space-x-1.5"}>
-								<PlusSquare className={"w-3"} />
-
-								<span className={"flex gap-x-2 text-sm"}>
-									<span>
-										<Trans
-											i18nKey={"billing:perUnit"}
-											values={{
-												unit: item.unit,
-											}}
-										/>
-									</span>
-								</span>
-							</span>
-
-							<Tiers item={item} currency={props.currency} />
-						</If>
-					</div>
-				);
-
-				const PerSeat = () => (
-					<div key={item.id || `per-seat-${index}`} className={"flex flex-col"}>
-						<div className={className}>
-							<span className={"flex items-center space-x-1.5"}>
-								<PlusSquare className={"w-3"} />
-
-								<span>
-									<Trans i18nKey={"billing:perTeamMember"} />
-								</span>
-
-								<span>-</span>
-
-								<If condition={!item.tiers?.length}>
-									<span className={"font-semibold"}>
-										{formatCurrency({
-											currencyCode,
-											value: item.cost,
-											locale,
-										})}
-									</span>
-								</If>
-							</span>
-						</div>
-
-						<SetupFee />
-
-						<If condition={item.tiers?.length}>
-							<Tiers item={item} currency={props.currency} />
-						</If>
-					</div>
-				);
-
-				const Metered = () => (
-					<div key={item.id || `metered-${index}`} className={"flex flex-col"}>
-						<div className={className}>
-							<span className={"flex items-center space-x-1"}>
-								<span className={"flex items-center space-x-1.5"}>
-									<PlusSquare className={"w-3"} />
-
-									<span className={"flex space-x-1"}>
-										<span>
-											<Trans
-												i18nKey={"billing:perUnit"}
-												values={{
-													unit: item.unit,
-												}}
-											/>
-										</span>
-									</span>
-								</span>
-							</span>
-
-							{/* If there are no tiers, there is a flat cost for usage */}
-							<If condition={!item.tiers?.length}>
-								<span className={"font-semibold"}>
-									{formatCurrency({
-										currencyCode,
-										value: item.cost,
-										locale,
-									})}
-								</span>
-							</If>
-						</div>
-
-						<SetupFee />
-
-						{/* If there are tiers, we render them as a list */}
-						<If condition={item.tiers?.length}>
-							<Tiers item={item} currency={props.currency} />
-						</If>
-					</div>
-				);
-
 				switch (item.type) {
 					case "flat":
-						return <FlatFee key={item.id} />;
+						return (
+							<FlatFee
+								key={item.id}
+								item={item}
+								currencyCode={currencyCode}
+								locale={locale}
+								selectedInterval={props.selectedInterval}
+								currency={props.currency}
+							/>
+						);
 
 					case "per_seat":
-						return <PerSeat key={item.id} />;
+						return (
+							<PerSeat
+								key={item.id}
+								item={item}
+								index={index}
+								currencyCode={currencyCode}
+								locale={locale}
+								currency={props.currency}
+							/>
+						);
 
 					case "metered": {
-						return <Metered key={item.id} />;
+						return (
+							<Metered
+								key={item.id}
+								item={item}
+								index={index}
+								currencyCode={currencyCode}
+								locale={locale}
+								currency={props.currency}
+							/>
+						);
 					}
 				}
 			})}

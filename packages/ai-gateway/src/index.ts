@@ -191,7 +191,7 @@ export async function getChatCompletion(
 			feature,
 			sessionId,
 			checkUsageLimits: shouldCheckLimits = true,
-			bypassCredits = false,
+			bypassCredits: _bypassCredits = false,
 			config,
 		} = options;
 
@@ -426,7 +426,7 @@ export async function* getStreamingChatCompletion(
 			feature,
 			sessionId,
 			checkUsageLimits: shouldCheckLimits = true,
-			bypassCredits = false,
+			bypassCredits: _bypassCredits = false,
 			config,
 		} = options;
 
@@ -587,7 +587,7 @@ export async function* getStreamingChatCompletion(
 				const supabase = await getSupabaseClient();
 
 				// Calculate cost based on token usage with proper parameters
-				let cost;
+				let cost: number;
 				try {
 					cost = await calculateCost(
 						supabase,

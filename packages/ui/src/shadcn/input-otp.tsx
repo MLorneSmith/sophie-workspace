@@ -64,8 +64,9 @@ InputOTPSlot.displayName = "InputOTPSlot";
 const InputOTPSeparator: React.FC<React.ComponentPropsWithoutRef<"div">> = ({
 	...props
 }) => (
-	<div role="separator" {...props}>
-		<DashIcon />
+	<div className="flex items-center justify-center" {...props}>
+		<hr className="w-4 h-px bg-border" />
+		<DashIcon className="sr-only" />
 	</div>
 );
 InputOTPSeparator.displayName = "InputOTPSeparator";

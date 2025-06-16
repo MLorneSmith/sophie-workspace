@@ -115,12 +115,12 @@ export const enhanceRouteHandler = <
 			// so that we can pass it to the handler safely
 			const json = await request.clone().json();
 
-			body = zodParseFactory(params.schema)(json);
+			body = zodParseFactory(params.schema)(json) as Body;
 		}
 
 		return handler({
 			request,
-			body,
+			body: body as Params["schema"] extends z.ZodType<any, z.ZodTypeDef, any> ? z.TypeOf<Params["schema"]> : undefined,
 			user,
 			params: await routeParams.params,
 		});

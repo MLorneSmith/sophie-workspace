@@ -144,7 +144,10 @@ export async function getSurveyQuestions(surveyId, supabaseClient) {
                     const hasRelationship = q.surveys.some((s) => {
                         if (s === surveyId)
                             return true;
-                        if (typeof s === "object" &&
+                        if (s &&
+                            typeof s === "object" &&
+                            "id" in s &&
+                            "value" in s &&
                             (s.id === surveyId || s.value === surveyId))
                             return true;
                         return false;
@@ -172,7 +175,12 @@ export async function getSurveyQuestions(surveyId, supabaseClient) {
                     }
                     if (typeof q[key] === "object" && q[key] !== null) {
                         // Check if the property is an object that contains the survey ID
-                        if (q[key].id === surveyId || q[key].value === surveyId) {
+                        const obj = q[key];
+                        if ("id" in obj && obj.id === surveyId) {
+                            console.log(`Question ${q.id} matched by object property ${key}`);
+                            return true;
+                        }
+                        if ("value" in obj && obj.value === surveyId) {
                             console.log(`Question ${q.id} matched by object property ${key}`);
                             return true;
                         }
@@ -181,8 +189,10 @@ export async function getSurveyQuestions(surveyId, supabaseClient) {
                             const hasMatch = q[key].some((item) => {
                                 if (typeof item === "string" && item === surveyId)
                                     return true;
-                                if (typeof item === "object" &&
-                                    (item.id === surveyId || item.value === surveyId))
+                                if (item &&
+                                    typeof item === "object" &&
+                                    ("id" in item && item.id === surveyId ||
+                                        "value" in item && item.value === surveyId))
                                     return true;
                                 return false;
                             });

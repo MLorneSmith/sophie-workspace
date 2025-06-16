@@ -90,7 +90,7 @@ export class PayloadClient implements CmsClient {
 						if (childrenData && Array.isArray(childrenData.docs)) {
 							// Add children to the main item
 							item.children = childrenData.docs.map((doc: unknown) =>
-								this.mapContentItem(doc),
+								this.mapContentItem(doc as Record<string, unknown>),
 							);
 						} else {
 							console.warn(
@@ -230,7 +230,7 @@ export class PayloadClient implements CmsClient {
 			slug: item.slug as string,
 			description: item.description as string | undefined,
 			content: item.content,
-			publishedAt: item.publishedAt as string | undefined,
+			publishedAt: String(item.publishedAt || ""),
 			image: transformedImageUrl || undefined, // Convert null to undefined
 			// Also include the original image_id for components that might need to access it directly
 			image_id: item.image_id,
@@ -255,10 +255,10 @@ export class PayloadClient implements CmsClient {
 					slug: tagValue ? tagValue.toLowerCase().replace(/\s+/g, "-") : "",
 				};
 			}),
-			parentId: parent?.id || null,
+			parentId: parent?.id || undefined,
 			order: (item.order as number) || 0,
 			children: [],
-			breadcrumbs: (item.breadcrumbs as string[]) || [],
+			breadcrumbs: ((item.breadcrumbs as string[]) || []).map((label: string) => ({ label })),
 		};
 
 		// Map children if they exist
@@ -268,7 +268,7 @@ export class PayloadClient implements CmsClient {
 			item.children.length > 0
 		) {
 			mappedItem.children = (item.children as unknown[]).map((child: unknown) =>
-				this.mapContentItem(child),
+				this.mapContentItem(child as Record<string, unknown>),
 			);
 		}
 

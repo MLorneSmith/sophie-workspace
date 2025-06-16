@@ -73,7 +73,7 @@ import { Trans } from "@kit/ui/trans";
 import { ArrowRightIcon } from "lucide-react";
 import Link from "next/link";
 
-import type { UserWorkspace } from "~/app/home/(user)/_lib/server/load-user-workspace";
+import type { UserWorkspace } from "../home/(user)/_lib/server/load-user-workspace";
 
 /**
  * UI Components Showcase Page

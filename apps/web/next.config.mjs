@@ -80,7 +80,6 @@ const config = {
 	experimental: {
 		mdxRs: true,
 		reactCompiler: ENABLE_REACT_COMPILER,
-		instrumentation: true,
 		optimizePackageImports: [
 			"recharts",
 			"lucide-react",

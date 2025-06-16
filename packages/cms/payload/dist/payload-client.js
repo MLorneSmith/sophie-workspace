@@ -182,7 +182,7 @@ export class PayloadClient {
             slug: item.slug,
             description: item.description,
             content: item.content,
-            publishedAt: item.publishedAt,
+            publishedAt: String(item.publishedAt || ""),
             image: transformedImageUrl || undefined, // Convert null to undefined
             // Also include the original image_id for components that might need to access it directly
             image_id: item.image_id,
@@ -207,10 +207,10 @@ export class PayloadClient {
                     slug: tagValue ? tagValue.toLowerCase().replace(/\s+/g, "-") : "",
                 };
             }),
-            parentId: (parent === null || parent === void 0 ? void 0 : parent.id) || null,
+            parentId: (parent === null || parent === void 0 ? void 0 : parent.id) || undefined,
             order: item.order || 0,
             children: [],
-            breadcrumbs: item.breadcrumbs || [],
+            breadcrumbs: (item.breadcrumbs || []).map((label) => ({ label })),
         };
         // Map children if they exist
         if (item.children &&
