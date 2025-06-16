@@ -395,9 +395,6 @@ importers:
       '@marsidev/react-turnstile':
         specifier: ^1.1.0
         version: 1.1.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
-      '@newrelic/next':
-        specifier: ^0.10.0
-        version: 0.10.0(newrelic@12.21.0)
       '@nosecone/next':
         specifier: 1.0.0-beta.8
         version: 1.0.0-beta.8(next@15.3.3(@opentelemetry/api@1.9.0)(@playwright/test@1.53.0)(babel-plugin-react-compiler@19.1.0-rc.2)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(sass@1.77.4))
@@ -4087,13 +4084,6 @@ packages:
   '@newrelic/native-metrics@11.1.0':
     resolution: {integrity: sha512-V+FRgRgv6R8LAnVsix8d1bL5SMmBONURaT/6F//rOgycvU7PfPoVEocacpSRzPFxMI27e46iAf3W5fGosbQ8yQ==}
     engines: {node: '>=18', npm: '>=6'}
-
-  '@newrelic/next@0.10.0':
-    resolution: {integrity: sha512-66PcrzRDwGGLOrxEokbssoJ6x+HPeBYFoEUmXNISnVt6s+Ot1SvThd3B4WUvD98ZCJoPlncogoMviacoikZPwA==}
-    engines: {node: '>=16.0.0'}
-    deprecated: This instrumentation has been merged into the newrelic package as of 12.0.0 and is no longer maintained as a standalone package.
-    peerDependencies:
-      newrelic: '>=11.12.0'
 
   '@newrelic/security-agent@2.4.2':
     resolution: {integrity: sha512-gfqcM1hO/FF8oEfiyByN+XerctJZ9w3h2EtL6xCU6ccq3YWi6wFtJ6/AaA/6LTN3JEvT9sLf9Vd9MVHWIYj7lQ==}
@@ -15936,11 +15926,6 @@ snapshots:
       node-gyp-build: 4.8.4
       prebuildify: 6.0.1
     optional: true
-
-  '@newrelic/next@0.10.0(newrelic@12.21.0)':
-    dependencies:
-      newrelic: 12.21.0
-      semver: 7.7.2
 
   '@newrelic/security-agent@2.4.2':
     dependencies:

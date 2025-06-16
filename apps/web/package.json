@@ -65,7 +65,6 @@
 		"@makerkit/data-loader-supabase-core": "^0.0.10",
 		"@makerkit/data-loader-supabase-nextjs": "^1.2.5",
 		"@marsidev/react-turnstile": "^1.1.0",
-		"@newrelic/next": "^0.10.0",
 		"@nosecone/next": "1.0.0-beta.8",
 		"@opentelemetry/api": "^1.9.0",
 		"@opentelemetry/resources": "^2.0.1",

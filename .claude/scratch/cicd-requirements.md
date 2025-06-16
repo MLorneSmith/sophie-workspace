@@ -28,9 +28,11 @@ I want to be able to run the following checks:
 ## Lack of clarity in my mind
 
 1. When should we run what tests?
-2. Should all tests be run locally before pushing to github?
-3. How do we / should we be leveraging logging?
-4. I am not sure what these types of checks are and if we should run them:
+2. Do we have a YAML linter? does biome lint YAML?
+3. What is the corect setup for linting and formatting for the repo? we originally used ESLint and Prettier. We migrated to biome. we May still be usiong prettier and ESLint in some places (e.g, the pre-commit hook). I am not sure if we have the correct setup.
+4. Should all tests be run locally before pushing to github?
+5. How do we / should we be leveraging logging?
+6. I am not sure what these types of checks are and if we should run them:
    1. Bundle size tests
    2. Bundle budget tests
    3. Bundle analysis
