@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 
 import { MagicLinkAuthContainer } from "./magic-link-auth-container";
 import { OauthProviders } from "./oauth-providers";
+import { OtpSignInContainer } from "./otp-sign-in-container";
 import { PasswordSignInContainer } from "./password-sign-in-container";
 
 export function SignInMethodsContainer(props: {
@@ -24,6 +25,7 @@ export function SignInMethodsContainer(props: {
 		password: boolean;
 		magicLink: boolean;
 		oAuth: Provider[];
+		otp?: boolean;
 	};
 }) {
 	const router = useRouter();
@@ -60,6 +62,13 @@ export function SignInMethodsContainer(props: {
 				<MagicLinkAuthContainer
 					inviteToken={props.inviteToken}
 					redirectUrl={redirectUrl}
+					shouldCreateUser={false}
+				/>
+			</If>
+
+			<If condition={props.providers.otp}>
+				<OtpSignInContainer
+					inviteToken={props.inviteToken}
 					shouldCreateUser={false}
 				/>
 			</If>
