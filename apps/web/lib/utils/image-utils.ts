@@ -70,16 +70,36 @@ interface PostWithImage {
  * @param post The post object from CMS
  * @returns The best available image URL or null
  */
-export function getBestPostImageUrl(post: PostWithImage): string | null {
+export function getBestPostImageUrl(
+	post: PostWithImage | { image_id?: unknown; image?: unknown },
+): string | null {
+	// Safely access image_id property
+	let imageFromId: string | null = null;
+	if (
+		post.image_id &&
+		typeof post.image_id === "object" &&
+		"url" in post.image_id
+	) {
+		const imageIdObj = post.image_id as { url?: string };
+		imageFromId = imageIdObj.url || null;
+	} else if (typeof post.image_id === "string") {
+		imageFromId = post.image_id;
+	}
+
+	// Safely access image property
+	let imageFromProperty: string | null = null;
+	if (typeof post.image === "string") {
+		imageFromProperty = post.image;
+	}
+
 	// Try all possible image field paths
 	const imageUrl =
 		// From image_id relationship field
-		post.image_id?.url ||
-		(typeof post.image_id === "object" ? post.image_id?.url : null) ||
+		imageFromId ||
 		// From direct image property
-		post.image ||
+		imageFromProperty ||
 		// From mdoc frontmatter path
-		(post.image?.startsWith("/cms/images/") ? post.image : null);
+		(imageFromProperty?.startsWith("/cms/images/") ? imageFromProperty : null);
 
 	return transformImageUrl(imageUrl);
 }

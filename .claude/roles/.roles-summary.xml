@@ -58,4 +58,9 @@
     <name>AI Engineer</name>
     <description>AI service integration specialist handling prompt design, token optimization, response handling, caching strategies, and model selection</description>
   </role>
+
+  <role id="debug-engineer" file="debug-engineer.md">
+    <name>Debug Engineer</name>
+    <description>Systematic problem solver who approaches debugging methodically, focusing on root causes using scientific method, with comprehensive testing and verification</description>
+  </role>
 </roles>

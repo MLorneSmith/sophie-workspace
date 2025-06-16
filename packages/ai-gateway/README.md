@@ -235,13 +235,16 @@ This package provides a secure and type-safe integration with the Portkey AI Gat
 3. **Using Message Templates**
 
    ```typescript
-   import { PromptManager } from '@kit/ai-gateway/prompts/prompt-manager';
+   import {
+     compileTemplate,
+     loadTemplate,
+   } from '@kit/ai-gateway/prompts/prompt-manager';
 
    // Load and compile the template
-   const template = PromptManager.loadTemplate('test-outline');
+   const template = loadTemplate('test-outline');
    const compiledMessages = template.map((message) => ({
      ...message,
-     content: PromptManager.compile(message.content, {
+     content: compileTemplate(message.content, {
        topic: 'AI in Business',
        target_audience: 'Executives',
        duration: '30',

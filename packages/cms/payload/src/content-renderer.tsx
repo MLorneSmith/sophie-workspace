@@ -54,6 +54,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 
 		if (DEBUG)
 			debugLog("Content is string but has no template tags, rendering as HTML");
+		// Note: Content trusted as it comes from Payload CMS admin
 		return <div dangerouslySetInnerHTML={{ __html: content }} />;
 	}
 
@@ -122,6 +123,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 										"Using HTML content for Call To Action:",
 										`${htmlContent.substring(0, 100)}...`,
 									);
+									// Note: Content trusted as it comes from Payload CMS admin
 									return (
 										<div
 											key={`cta-html-${i}-${node.blockType || 'cta'}`}
@@ -146,7 +148,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 												"Call to action content")}
 										</p>
 										{node.buttonText && (
-											<button className="mt-4 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600">
+											<button type="button" className="mt-4 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600">
 												{String(node.buttonText)}
 											</button>
 										)}
@@ -170,6 +172,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 										"Using HTML content for Test Block:",
 										`${htmlContent.substring(0, 100)}...`,
 									);
+									// Note: Content trusted as it comes from Payload CMS admin
 									return (
 										<div
 											key={`test-fallback-${i}-${node.blockType || 'test'}`}
@@ -210,6 +213,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 										"Using HTML content for Bunny Video:",
 										`${htmlContent.substring(0, 100)}...`,
 									);
+									// Note: Content trusted as it comes from Payload CMS admin
 									return (
 										<div
 											key={`bunny-video-${i}-${node.videoId || 'video'}`}
@@ -299,6 +303,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 										"Using HTML content for YouTube Video:",
 										`${htmlContent.substring(0, 100)}...`,
 									);
+									// Note: Content trusted as it comes from Payload CMS admin
 									return (
 										<div
 											key={`youtube-video-${i}-${node.videoId || 'video'}`}
@@ -328,7 +333,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 
 								// Extract video data with defaults
 								const rawVideoId = node.videoId || node.fields?.videoId || "";
-								const youtubeId = extractYouTubeId(rawVideoId);
+								const youtubeId = extractYouTubeId(String(rawVideoId));
 								const title = String(
 									node.title || node.fields?.title || "YouTube Video"
 								);
@@ -398,7 +403,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 									return (
 										<p key={`p-block-${i}-${node.text?.slice(0, 20) || 'text'}`}>
 											{node.children.map((textNode: LexicalNode, j: number) => (
-												<span key={j}>{textNode.text || ""}</span>
+												<span key={`text-${i}-${j}-${textNode.text?.slice(0, 10) || 'empty'}`}>{textNode.text || ""}</span>
 											))}
 										</p>
 									);
@@ -436,7 +441,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 								// Render the appropriate heading with children
 								const headingContent = node.children.map(
 									(textNode: LexicalNode, j: number) => (
-										<span key={j}>{textNode.text || ""}</span>
+										<span key={`heading-${i}-${j}-${textNode.text?.slice(0, 10) || 'empty'}`}>{textNode.text || ""}</span>
 									),
 								);
 
@@ -484,7 +489,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 													"Call to action content")}
 											</p>
 											<div className="mt-4 flex flex-wrap gap-4">
-												{node.fields.leftButtonLabel && (
+												{Boolean(node.fields.leftButtonLabel) && (
 													<a
 														href={String(node.fields.leftButtonUrl || "#")}
 														className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
@@ -492,7 +497,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 														{String(node.fields.leftButtonLabel)}
 													</a>
 												)}
-												{node.fields.rightButtonLabel && (
+												{Boolean(node.fields.rightButtonLabel) && (
 													<a
 														href={String(node.fields.rightButtonUrl || "#")}
 														className="rounded border border-blue-500 bg-white px-4 py-2 text-blue-500 hover:bg-blue-50"
@@ -708,5 +713,6 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 	}
 
 	// Fallback for non-Lexical content
+	// Note: Content trusted as it comes from Payload CMS admin
 	return <div dangerouslySetInnerHTML={{ __html: String(content) }} />;
 }

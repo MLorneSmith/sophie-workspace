@@ -19,7 +19,7 @@ The Build Feature v2.0 command guides you through:
 
 ### 1. Initialization & Detection
 
-When you run `/build-feature-v2`, the command will:
+When you run `/build-feature`, the command will:
 
 ```typescript
 // Detect if we're starting fresh or continuing

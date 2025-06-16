@@ -194,7 +194,7 @@ export function OnboardingForm() {
 				<MultiStepFormHeader>
 					<MultiStepFormContextProvider>
 						{({ currentStepIndex }) => (
-							<div
+							<section
 								className="text-sm sm:text-base"
 								aria-label="Onboarding progress"
 							>
@@ -203,7 +203,7 @@ export function OnboardingForm() {
 									steps={steps}
 									currentStep={currentStepIndex}
 								/>
-							</div>
+							</section>
 						)}
 					</MultiStepFormContextProvider>
 				</MultiStepFormHeader>

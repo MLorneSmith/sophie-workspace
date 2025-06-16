@@ -2,8 +2,11 @@ import { Checkbox } from "@kit/ui/checkbox";
 import { FormControl, FormField, FormItem, FormMessage } from "@kit/ui/form";
 import { Trans } from "@kit/ui/trans";
 import Link from "next/link";
+import { useId } from "react";
 
 export function TermsAndConditionsFormField(props: { name?: string } = {}) {
+	const checkboxId = useId();
+	
 	return (
 		<FormField
 			name={props.name ?? "termsAccepted"}
@@ -11,8 +14,8 @@ export function TermsAndConditionsFormField(props: { name?: string } = {}) {
 				return (
 					<FormItem>
 						<FormControl>
-							<label className={"flex items-start gap-x-3 py-2"}>
-								<Checkbox required name={field.name} />
+							<label htmlFor={checkboxId} className={"flex items-start gap-x-3 py-2"}>
+								<Checkbox id={checkboxId} required name={field.name} />
 
 								<div className={"text-xs"}>
 									<Trans

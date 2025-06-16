@@ -4,7 +4,7 @@ import { Button } from "@kit/ui/button";
 
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRightIcon } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 
 import { cn } from "../lib/utils";
 
@@ -41,6 +41,7 @@ export function PlaceholdersAndVanishInput({
 	onChange,
 	onSubmit,
 }: PlaceholdersAndVanishInputProps) {
+	const inputId = useId();
 	const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
 
 	const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -225,7 +226,7 @@ export function PlaceholdersAndVanishInput({
 
 	return (
 		<div className="mx-auto flex w-full max-w-[1000px] items-center gap-4">
-			<label className="w-28 text-base leading-tight font-medium text-gray-600 dark:text-gray-300">
+			<label htmlFor={inputId} className="w-28 text-base leading-tight font-medium text-gray-600 dark:text-gray-300">
 				Name your presentation
 			</label>
 			<form
@@ -243,6 +244,7 @@ export function PlaceholdersAndVanishInput({
 					ref={canvasRef}
 				/>
 				<input
+					id={inputId}
 					onChange={(e) => {
 						if (!animating) {
 							setValue(e.target.value);

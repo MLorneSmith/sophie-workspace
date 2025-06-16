@@ -45,6 +45,25 @@ interface AccountSelectorProps {
 
 const PERSONAL_ACCOUNT_SLUG = "personal";
 
+function Icon({ item, value }: { item: string; value: string }) {
+	return (
+		<CheckCircle
+			className={cn(
+				"ml-auto h-4 w-4",
+				value === item ? "opacity-100" : "opacity-0",
+			)}
+		/>
+	);
+}
+
+function PersonalAccountAvatar({ pictureUrl }: { pictureUrl?: string }) {
+	return pictureUrl ? (
+		<UserAvatar pictureUrl={pictureUrl} />
+	) : (
+		<PersonIcon className="h-5 w-5" />
+	);
+}
+
 export function AccountSelector({
 	accounts,
 	selectedAccount,
@@ -66,26 +85,8 @@ export function AccountSelector({
 		return selectedAccount ?? PERSONAL_ACCOUNT_SLUG;
 	}, [selectedAccount]);
 
-	const Icon = (props: { item: string }) => {
-		return (
-			<CheckCircle
-				className={cn(
-					"ml-auto h-4 w-4",
-					value === props.item ? "opacity-100" : "opacity-0",
-				)}
-			/>
-		);
-	};
-
 	const selected = accounts.find((account) => account.value === value);
 	const pictureUrl = personalData.data?.picture_url;
-
-	const PersonalAccountAvatar = () =>
-		pictureUrl ? (
-			<UserAvatar pictureUrl={pictureUrl} />
-		) : (
-			<PersonIcon className="h-5 w-5" />
-		);
 
 	return (
 		<>
@@ -115,7 +116,7 @@ export function AccountSelector({
 										"gap-x-2": !collapsed,
 									})}
 								>
-									<PersonalAccountAvatar />
+									<PersonalAccountAvatar pictureUrl={pictureUrl} />
 
 									<span
 										className={cn("truncate", {
@@ -177,13 +178,13 @@ export function AccountSelector({
 									onSelect={() => onAccountChange(undefined)}
 									value={PERSONAL_ACCOUNT_SLUG}
 								>
-									<PersonalAccountAvatar />
+									<PersonalAccountAvatar pictureUrl={pictureUrl} />
 
 									<span className={"ml-2"}>
 										<Trans i18nKey={"teams:personalAccount"} />
 									</span>
 
-									<Icon item={PERSONAL_ACCOUNT_SLUG} />
+									<Icon item={PERSONAL_ACCOUNT_SLUG} value={value} />
 								</CommandItem>
 							</CommandGroup>
 
@@ -239,7 +240,7 @@ export function AccountSelector({
 												</span>
 											</div>
 
-											<Icon item={account.value ?? ""} />
+											<Icon item={account.value ?? ""} value={value} />
 										</CommandItem>
 									))}
 								</CommandGroup>

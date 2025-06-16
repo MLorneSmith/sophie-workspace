@@ -12,7 +12,8 @@ import { z } from "zod";
 import { AddManualTestimonialSchema } from "../../schema/add-manual-testimonial.schema";
 
 export const updateTestimonialStatusAction = enhanceAction(
-	async ({ id, status }) => {
+	async (params: unknown) => {
+		const { id, status } = params as { id: string; status: string };
 		await assertIsSuperAdmin();
 
 		const logger = await getLogger();
@@ -51,7 +52,8 @@ export const updateTestimonialStatusAction = enhanceAction(
 );
 
 export const deleteTestimonialAction = enhanceAction(
-	async ({ id }) => {
+	async (params: unknown) => {
+		const { id } = params as { id: string };
 		await assertIsSuperAdmin();
 
 		const logger = await getLogger();
@@ -85,7 +87,13 @@ export const deleteTestimonialAction = enhanceAction(
 );
 
 export const addManualTestimonialAction = enhanceAction(
-	async (data) => {
+	async (data: unknown) => {
+		// Type the data based on the schema
+		const typedData = data as {
+			content: { text: string; rating: number };
+			source: { source: string; externalLink?: string };
+			customer: { name: string; company?: string; avatarUrl?: string };
+		};
 		await assertIsSuperAdmin();
 
 		const logger = await getLogger();
@@ -94,13 +102,13 @@ export const addManualTestimonialAction = enhanceAction(
 		logger.info("Super Admin is adding manual testimonial...");
 
 		const { error } = await adminClient.from("testimonials").insert({
-			content: data.content.text,
-			rating: data.content.rating,
-			source: data.source.source,
-			customer_name: data.customer.name,
-			customer_company_name: data.customer.company,
-			link: data.source.externalLink,
-			customer_avatar_url: data.customer.avatarUrl,
+			content: typedData.content.text,
+			rating: typedData.content.rating,
+			source: typedData.source.source,
+			customer_name: typedData.customer.name,
+			customer_company_name: typedData.customer.company,
+			link: typedData.source.externalLink,
+			customer_avatar_url: typedData.customer.avatarUrl,
 		});
 
 		if (error) {
@@ -116,7 +124,7 @@ export const addManualTestimonialAction = enhanceAction(
 		};
 	},
 	{
-		schema: AddManualTestimonialSchema,
+		schema: AddManualTestimonialSchema as z.ZodSchema,
 	},
 );
 
