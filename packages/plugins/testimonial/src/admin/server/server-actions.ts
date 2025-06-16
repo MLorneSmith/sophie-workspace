@@ -5,6 +5,7 @@ import { getLogger } from "@kit/shared/logger";
 import { requireUser } from "@kit/supabase/require-user";
 import { getSupabaseServerAdminClient } from "@kit/supabase/server-admin-client";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
+import type { Database } from "@kit/supabase/database.types";
 import { revalidatePath } from "next/cache";
 import { notFound, redirect } from "next/navigation";
 import { z } from "zod";
@@ -13,7 +14,10 @@ import { AddManualTestimonialSchema } from "../../schema/add-manual-testimonial.
 
 export const updateTestimonialStatusAction = enhanceAction(
 	async (params: unknown) => {
-		const { id, status } = params as { id: string; status: string };
+		const { id, status } = params as { 
+			id: string; 
+			status: Database["public"]["Enums"]["testimonial_status"] 
+		};
 		await assertIsSuperAdmin();
 
 		const logger = await getLogger();

@@ -4,7 +4,7 @@ import { Computer, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useMemo } from "react";
 
-import { cn } from "../lib/utils";
+import { cn, setCookie } from "../lib/utils";
 import { Button } from "../shadcn/button";
 import {
 	DropdownMenu,
@@ -35,7 +35,7 @@ export function ModeToggle(props: { className?: string }) {
 					key={mode}
 					onClick={() => {
 						setTheme(mode);
-						setCookeTheme(mode);
+						setCookie('theme', mode, { path: '/', maxAge: 31536000 });
 					}}
 				>
 					<Icon theme={mode} />
@@ -79,7 +79,7 @@ export function SubMenuModeToggle() {
 						key={mode}
 						onClick={() => {
 							setTheme(mode);
-							setCookeTheme(mode);
+							setCookie('theme', mode, { path: '/', maxAge: 31536000 });
 						}}
 					>
 						<Icon theme={mode} />
@@ -124,9 +124,6 @@ export function SubMenuModeToggle() {
 	);
 }
 
-function setCookeTheme(theme: string) {
-	document.cookie = `theme=${theme}; path=/; max-age=31536000`;
-}
 
 function Icon({ theme }: { theme: string | undefined }) {
 	switch (theme) {

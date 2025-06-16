@@ -3,6 +3,7 @@
 import {
 	type ChatCompletionOptions,
 	type ChatMessage,
+	ConfigManager,
 	getChatCompletion,
 } from "@kit/ai-gateway";
 import { createOpenAIOnlyConfig } from "@kit/ai-gateway/src/configs/templates/openai-only";

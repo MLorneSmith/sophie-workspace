@@ -14,6 +14,7 @@ import {
 	FormMessage,
 } from "@kit/ui/form";
 import { Input } from "@kit/ui/input";
+import { setCookie } from "@kit/ui/lib";
 import {
 	createStepSchema,
 	MultiStepForm,
@@ -719,8 +720,8 @@ function CompleteStep() {
 			const selectedTheme = formData.theme.style;
 			setTheme(selectedTheme);
 
-			// Set the theme cookie
-			document.cookie = `theme=${selectedTheme}; path=/; max-age=31536000`;
+			// Set the theme cookie for SSR hydration
+			setCookie("theme", selectedTheme, { path: "/", maxAge: 31536000 });
 
 			const isValid = await form.trigger();
 			if (!isValid) {

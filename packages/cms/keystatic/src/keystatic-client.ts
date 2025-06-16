@@ -92,7 +92,8 @@ class KeystaticClient implements CmsClient {
 
 			const isIndexFile = (slug: string): boolean => {
 				if (indexFileCache.has(slug)) {
-					return indexFileCache.get(slug)!;
+					const cached = indexFileCache.get(slug);
+					return cached ?? false;
 				}
 
 				const parts = slug.split("/");
@@ -110,7 +111,8 @@ class KeystaticClient implements CmsClient {
 				const path = pathParts.join("/");
 
 				if (parentCache.has(path)) {
-					return parentCache.get(path)!;
+					const cached = parentCache.get(path);
+					return cached ?? null;
 				}
 
 				for (let i = pathParts.length - 1; i > 0; i--) {

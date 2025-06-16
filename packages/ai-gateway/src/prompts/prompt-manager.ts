@@ -39,6 +39,14 @@ export function loadTemplate(templateName: string): ChatMessage[] {
 }
 
 /**
+ * Gets the list of available template names
+ * @returns Array of available template names
+ */
+export function getAvailableTemplates(): string[] {
+	return Object.keys(templateRegistry);
+}
+
+/**
  * Prompt Manager class for AI Gateway
  * Provides a unified interface for managing prompt templates
  */
@@ -68,6 +76,6 @@ export class PromptManager {
 	 * @returns Array of available template names
 	 */
 	static getAvailableTemplates(): string[] {
-		return Object.keys(templateRegistry);
+		return getAvailableTemplates();
 	}
 }

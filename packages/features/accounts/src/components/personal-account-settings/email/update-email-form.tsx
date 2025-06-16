@@ -61,8 +61,12 @@ export function UpdateEmailForm({
 
 	const currentEmail = user.email;
 
+	if (!currentEmail) {
+		throw new Error('User email is required for email update form');
+	}
+
 	const form = useForm({
-		resolver: createEmailResolver(currentEmail!, t("emailNotMatching")),
+		resolver: createEmailResolver(currentEmail, t("emailNotMatching")),
 		defaultValues: {
 			email: "",
 			repeatEmail: "",

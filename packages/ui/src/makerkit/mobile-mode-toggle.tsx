@@ -3,7 +3,7 @@
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 
-import { cn } from "../lib/utils";
+import { cn, setCookie } from "../lib/utils";
 import { Button } from "../shadcn/button";
 
 export function MobileModeToggle(props: { className?: string }) {
@@ -12,7 +12,7 @@ export function MobileModeToggle(props: { className?: string }) {
 	const toggleTheme = () => {
 		const next = resolvedTheme === "dark" ? "light" : "dark";
 		setTheme(next);
-		setCookieTheme(next);
+		setCookie('theme', next, { path: '/', maxAge: 31536000 });
 	};
 
 	return (
@@ -30,6 +30,3 @@ export function MobileModeToggle(props: { className?: string }) {
 	);
 }
 
-function setCookieTheme(theme: string) {
-	document.cookie = `theme=${theme}; path=/; max-age=31536000`;
-}

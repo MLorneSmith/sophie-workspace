@@ -214,8 +214,12 @@ export class StripeWebhookHandlerService
 		const session = event.data.object;
 		const isSubscription = session.mode === "subscription";
 
-		const accountId = session.client_reference_id!;
+		const accountId = session.client_reference_id;
 		const customerId = session.customer as string;
+
+		if (!accountId) {
+			throw new Error('Session missing required client_reference_id');
+		}
 
 		// if it's a subscription, we need to retrieve the subscription
 		// and build the payload for the subscription

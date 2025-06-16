@@ -37,7 +37,7 @@ export async function getLogger() {
 // Export the Logger interface
 export type { Logger };
 
-// Export environment logger utilities
+// Export environment logger utilities (legacy compatibility)
 export {
 	createEnvironmentLogger,
 	EnvironmentLogger,
@@ -45,3 +45,17 @@ export {
 	type LoggerConfig,
 	type LogLevel,
 } from "./utils/environment-logger";
+
+// Export enhanced logger (new unified approach)
+export {
+	EnhancedLogger,
+	createEnhancedLogger,
+	createServiceLogger,
+	createTestLogger,
+	getEnhancedLoggerConfig,
+	type EnhancedLoggerConfig,
+	type LogContext,
+} from "./enhanced-logger";
+
+// Export enhanced types
+export type { LogLevel as EnhancedLogLevel } from "./enhanced-logger";

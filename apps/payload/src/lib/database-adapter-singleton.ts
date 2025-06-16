@@ -1,68 +1,9 @@
 import type { PostgresAdapterArgs } from "@payloadcms/db-postgres";
 import { postgresAdapter } from "@payloadcms/db-postgres";
+import { createServiceLogger, type LogContext } from "@kit/shared/logger";
 
-// Type for log data - allows objects, arrays, primitives, but excludes functions
-type LogData =
-	| Record<string, unknown>
-	| string
-	| number
-	| boolean
-	| null
-	| undefined;
-
-// Simple logger interface for database adapter
-interface SimpleLogger {
-	debug(message: string, data?: LogData): void;
-	info(message: string, data?: LogData): void;
-	warn(message: string, data?: LogData): void;
-	error(message: string, data?: LogData): void;
-}
-
-// Create a simple console-based logger
-function createSimpleLogger(serviceName: string): SimpleLogger {
-	const logLevel =
-		process.env.LOG_LEVEL ||
-		(process.env.NODE_ENV === "development" ? "debug" : "info");
-	const levels = { debug: 0, info: 1, warn: 2, error: 3 };
-	const currentLevel = levels[logLevel as keyof typeof levels] ?? 1;
-
-	return {
-		debug(message: string, data?: LogData) {
-			if (currentLevel <= 0) {
-				const timestamp = new Date().toISOString();
-				const prefix = `[${serviceName}-DEBUG] ${timestamp}`;
-				data
-					? console.log(`${prefix} ${message}`, data)
-					: console.log(`${prefix} ${message}`);
-			}
-		},
-		info(message: string, data?: LogData) {
-			if (currentLevel <= 1) {
-				const timestamp = new Date().toISOString();
-				const prefix = `[${serviceName}-INFO] ${timestamp}`;
-				data
-					? console.log(`${prefix} ${message}`, data)
-					: console.log(`${prefix} ${message}`);
-			}
-		},
-		warn(message: string, data?: LogData) {
-			if (currentLevel <= 2) {
-				const timestamp = new Date().toISOString();
-				const prefix = `[${serviceName}-WARN] ${timestamp}`;
-				data
-					? console.warn(`${prefix} ${message}`, data)
-					: console.warn(`${prefix} ${message}`);
-			}
-		},
-		error(message: string, data?: LogData) {
-			const timestamp = new Date().toISOString();
-			const prefix = `[${serviceName}-ERROR] ${timestamp}`;
-			data
-				? console.error(`${prefix} ${message}`, data)
-				: console.error(`${prefix} ${message}`);
-		},
-	};
-}
+// Initialize enhanced logger for database adapter
+const { getLogger, getContextLogger } = createServiceLogger("DB-ADAPTER");
 
 // Global variable to survive Next.js hot reloads
 declare global {
@@ -101,7 +42,7 @@ class DatabaseAdapterManager {
 	private healthCheckInterval: NodeJS.Timeout | null = null;
 	private validationPromise: Promise<void> | null = null;
 	private readonly environment: string;
-	private logger = createSimpleLogger("DB-ADAPTER");
+	private logger: any;
 
 	constructor() {
 		this.environment = process.env.NODE_ENV || "development";
@@ -115,7 +56,16 @@ class DatabaseAdapterManager {
 			consecutiveFailures: 0,
 		};
 
-		this.log("DatabaseAdapterManager initialized", "info");
+		// Initialize logger asynchronously
+		this.initializeLogger();
+	}
+
+	private async initializeLogger() {
+		this.logger = await getLogger();
+		this.logger.info("DatabaseAdapterManager initialized", {
+			environment: this.environment,
+			operation: "db_adapter_init"
+		});
 	}
 
 	/**
@@ -267,7 +217,7 @@ class DatabaseAdapterManager {
 			push: false, // Disable schema push to prevent unwanted migrations
 		};
 
-		this.log("Built adapter configuration", "debug", {
+		void this.log("Built adapter configuration", "debug", {
 			environment: this.environment,
 			sslEnabled: shouldUseSSL,
 			sslReason:
@@ -282,6 +232,7 @@ class DatabaseAdapterManager {
 			poolMin: poolConfig.min,
 			schemaName: config.schemaName,
 			idType: config.idType,
+			operation: "adapter_config"
 		});
 
 		return config;
@@ -437,12 +388,15 @@ class DatabaseAdapterManager {
 	/**
 	 * Centralized logging with configurable levels
 	 */
-	private log(
+	private async log(
 		message: string,
 		level: "debug" | "info" | "warn" | "error" = "info",
-		data?: LogData,
-	): void {
-		this.logger[level](message, data);
+		context?: LogContext,
+	): Promise<void> {
+		if (!this.logger) {
+			this.logger = await getLogger();
+		}
+		this.logger[level](message, context);
 	}
 }
 

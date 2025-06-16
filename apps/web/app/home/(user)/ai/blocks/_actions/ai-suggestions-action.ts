@@ -3,6 +3,7 @@
 import {
 	type ChatCompletionOptions,
 	type ChatMessage,
+	ConfigManager,
 	getChatCompletion,
 } from "@kit/ai-gateway";
 import { createBalancedOptimizedConfig } from "@kit/ai-gateway/src/configs/templates/balanced-optimized";
@@ -54,7 +55,7 @@ function generateMessages(
 		const messages = PromptManager.loadTemplate("title-suggestions");
 		return messages.map((message: ChatMessage) => ({
 			...message,
-			content: PromptManager.compile(message.content, {
+			content: PromptManager.compileTemplate(message.content, {
 				presentation_type: presentationType,
 			}),
 		}));
@@ -69,7 +70,7 @@ function generateMessages(
 		const messages = PromptManager.loadTemplate("audience-suggestions");
 		return messages.map((message: ChatMessage) => ({
 			...message,
-			content: PromptManager.compile(message.content, {
+			content: PromptManager.compileTemplate(message.content, {
 				title,
 			}),
 		}));

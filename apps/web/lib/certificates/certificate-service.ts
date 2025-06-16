@@ -1,4 +1,5 @@
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
+import { createServiceLogger } from "@kit/shared/logger";
 
 interface GenerateCertificateParams {
 	userId: string;
@@ -6,20 +7,41 @@ interface GenerateCertificateParams {
 	fullName: string;
 }
 
+// Initialize service logger for certificate generation
+const { getLogger, getRequestLogger } = createServiceLogger(
+	"CERTIFICATE-SERVICE",
+);
+
 export async function generateCertificate({
 	userId,
 	courseId,
 	fullName,
 }: GenerateCertificateParams) {
+	const logger = await getLogger();
+
+	logger.info("Starting certificate generation", {
+		operation: "generate_certificate",
+		userId,
+		courseId,
+		fullName: fullName.substring(0, 10) + "...", // Partial name for privacy
+	});
+
 	// 1. Get PDF.co API key from environment variables
 	const pdfCoApiKey = process.env.PDF_CO_API_KEY;
 
 	if (!pdfCoApiKey) {
-		throw new Error("PDF_CO_API_KEY is not defined in environment variables");
+		const error = new Error(
+			"PDF_CO_API_KEY is not defined in environment variables",
+		);
+		logger.error("Missing PDF.co API key configuration", {
+			operation: "config_check",
+			error,
+		});
+		throw error;
 	}
 
 	// 2. Get the field names from the certificate form
-	console.log("Getting field names from certificate form");
+	logger.debug("Getting field names from certificate form");
 
 	// Use the correct path to the certificate template
 	const fs = require("node:fs");
@@ -33,14 +55,22 @@ export async function generateCertificate({
 		"ddm_certificate_form.pdf",
 	);
 
-	console.log("Certificate template path:", templatePath);
+	logger.debug("Certificate template path resolved", {
+		operation: "template_path",
+		templatePath,
+	});
 
 	// Check if the file exists
 	if (!fs.existsSync(templatePath)) {
-		console.error("Certificate template file not found at path:", templatePath);
-		throw new Error(
+		const error = new Error(
 			`Certificate template file not found at path: ${templatePath}`,
 		);
+		logger.error("Certificate template file not found", {
+			operation: "template_check",
+			templatePath,
+			error,
+		});
+		throw error;
 	}
 
 	// Read the certificate template

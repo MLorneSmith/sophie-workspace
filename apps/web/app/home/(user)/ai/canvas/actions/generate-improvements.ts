@@ -3,6 +3,7 @@
 import {
 	type ChatCompletionOptions,
 	type ChatMessage,
+	ConfigManager,
 	getChatCompletion,
 } from "@kit/ai-gateway";
 import { createBalancedOptimizedConfig } from "@kit/ai-gateway/src/configs/templates/balanced-optimized";

@@ -82,48 +82,12 @@ export function normalizeConfig(config: Config): Config {
 }
 
 /**
- * Configuration Manager class for AI Gateway
+ * Configuration Manager utilities for AI Gateway
  * Provides a unified interface for managing configurations
+ * 
+ * Usage:
+ * - loadTemplate(name) - Loads a base configuration template
+ * - mergeWithUseCase(base, useCase) - Merges base with use-case specific config
+ * - overrideWithPortkey(config, portkeyConfigId) - Overrides with Portkey config
+ * - normalizeConfig(config) - Normalizes configuration with defaults
  */
-export class ConfigManager {
-	/**
-	 * Loads a base configuration template
-	 * @param name Template name to load
-	 * @returns Base configuration
-	 */
-	static loadTemplate(name: string): Config {
-		return loadTemplate(name);
-	}
-
-	/**
-	 * Merges a base configuration with use-case specific configuration
-	 * @param base Base configuration template
-	 * @param useCase Name of the use case configuration to merge
-	 * @returns Merged configuration
-	 */
-	static mergeWithUseCase(base: Config, useCase: string): Config {
-		return mergeWithUseCase(base, useCase);
-	}
-
-	/**
-	 * Overrides local configuration with Portkey configuration if specified
-	 * @param config Local configuration
-	 * @param portkeyConfigId Optional Portkey config ID to use
-	 * @returns Final configuration
-	 */
-	static async overrideWithPortkey(
-		config: Config,
-		portkeyConfigId?: string,
-	): Promise<Config> {
-		return overrideWithPortkey(config, portkeyConfigId);
-	}
-
-	/**
-	 * Normalizes a configuration object by setting default values
-	 * @param config Configuration to normalize
-	 * @returns Normalized configuration
-	 */
-	static normalizeConfig(config: Config): Config {
-		return normalizeConfig(config);
-	}
-}
