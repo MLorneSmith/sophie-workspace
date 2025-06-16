@@ -58,7 +58,7 @@ export const Footer: React.FC<FooterProps> = ({
 									<FooterSectionHeading>{section.heading}</FooterSectionHeading>
 
 									<FooterSectionList>
-										{section.links.map((link, linkIndex) => (
+										{section.links.map((link) => (
 											<FooterLink key={`footer-link-${link.href}`} href={link.href}>
 												{link.label}
 											</FooterLink>
