@@ -1,6 +1,6 @@
 # Build Feature Command v2.0 (AAFD Methodology)
 
-Usage: `/build-feature-v2 [epic-id|feature-name]`
+Usage: `/build-feature [epic-id|feature-name]`
 
 This command orchestrates the complete AAFD v2.0 feature development workflow, from Epic creation through implementation, using our structured methodology and GitHub Projects integration.
 
@@ -240,7 +240,7 @@ async function startNewFeature(featureName: string) {
 
 Next steps:
 1. Review the PRD in the issue description
-2. Run: /build-feature-v2 ${epic.number} --continue
+2. Run: /build-feature ${epic.number} --continue
    
 This will guide you through:
 - Technical chunking

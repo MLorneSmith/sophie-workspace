@@ -46,7 +46,8 @@
 			},
 			"suspicious": {
 				"noExplicitAny": "error",
-				"noArrayIndexKey": "error"
+				"noArrayIndexKey": "error",
+				"noConsole": "warn"
 			},
 			"style": {
 				"noUnusedTemplateLiteral": "error",

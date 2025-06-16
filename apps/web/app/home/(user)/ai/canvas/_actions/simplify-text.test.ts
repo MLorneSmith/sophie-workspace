@@ -85,7 +85,7 @@ describe("simplifyTextAction", () => {
 			temperature: 0.7,
 		});
 
-		vi.mocked(PromptManager.compile).mockImplementation(
+		vi.mocked(PromptManager.compileTemplate).mockImplementation(
 			(template: string, variables: Record<string, unknown>) => {
 				return template.replace("{{content}}", variables.content);
 			},
@@ -300,7 +300,7 @@ describe("simplifyTextAction", () => {
 			await simplifyTextAction(input);
 
 			// Assert
-			expect(PromptManager.compile).toHaveBeenCalledWith(
+			expect(PromptManager.compileTemplate).toHaveBeenCalledWith(
 				"Simplify this text: {{content}}",
 				{ content },
 			);
@@ -360,7 +360,7 @@ describe("simplifyTextAction", () => {
 
 			// Assert
 			expect(result.success).toBe(true);
-			expect(PromptManager.compile).toHaveBeenCalledWith(
+			expect(PromptManager.compileTemplate).toHaveBeenCalledWith(
 				"Simplify this text: {{content}}",
 				{ content: longContent },
 			);
@@ -393,7 +393,7 @@ describe("simplifyTextAction", () => {
 		it("should handle prompt compilation failures", async () => {
 			// Arrange
 			const compileError = new Error("Template compilation failed");
-			vi.mocked(PromptManager.compile).mockImplementation(() => {
+			vi.mocked(PromptManager.compileTemplate).mockImplementation(() => {
 				throw compileError;
 			});
 
@@ -531,7 +531,7 @@ describe("simplifyTextAction", () => {
 
 			// Assert
 			expect(result.success).toBe(true);
-			expect(PromptManager.compile).toHaveBeenCalledWith(
+			expect(PromptManager.compileTemplate).toHaveBeenCalledWith(
 				"Simplify this text: {{content}}",
 				{ content: multilineContent },
 			);

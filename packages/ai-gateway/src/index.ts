@@ -2,7 +2,9 @@ import { OpenAI } from "openai";
 import { z } from "zod";
 
 import type { Config } from "./configs/types";
+import { ConfigManager, loadTemplate, mergeWithUseCase, overrideWithPortkey, normalizeConfig } from "./configs/config-manager";
 import { createGatewayClient } from "./enhanced-gateway-client";
+import { PromptManager } from "./prompts/prompt-manager";
 import { initializeAiGatewayDatabase } from "./utils/db-init";
 import { getSupabaseClient } from "./utils/supabase-client";
 import {
@@ -657,3 +659,7 @@ export async function* getStreamingChatCompletion(
 		throw error;
 	}
 }
+
+// Export config manager functions and classes for external use
+export { ConfigManager, loadTemplate, mergeWithUseCase, overrideWithPortkey, normalizeConfig };
+export { PromptManager };

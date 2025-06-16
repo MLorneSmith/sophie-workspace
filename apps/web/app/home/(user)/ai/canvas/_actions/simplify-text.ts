@@ -32,7 +32,7 @@ export const simplifyTextAction = enhanceAction(
 			const compiledMessages = textSimplificationTemplate.map(
 				(message: ChatMessage) => ({
 					...message,
-					content: PromptManager.compile(message.content, {
+					content: PromptManager.compileTemplate(message.content, {
 						content: data.content,
 					}),
 				}),

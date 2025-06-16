@@ -9,7 +9,7 @@ import * as React from "react";
 import { useTranslation } from "react-i18next";
 
 import { useIsMobile } from "../hooks/use-mobile";
-import { cn, isRouteActive } from "../lib/utils";
+import { cn, isRouteActive, setCookie } from "../lib/utils";
 import { If } from "../makerkit/if";
 import type { SidebarConfig } from "../makerkit/sidebar";
 import { Trans } from "../makerkit/trans";
@@ -93,8 +93,8 @@ const SidebarProvider: React.FC<
 
 			_setOpen(value);
 
-			// This sets the cookie to keep the sidebar state.
-			document.cookie = `${SIDEBAR_COOKIE_NAME}=${open}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
+			// This sets the cookie to keep the sidebar state for SSR hydration
+			setCookie(SIDEBAR_COOKIE_NAME, String(open), { path: '/', maxAge: SIDEBAR_COOKIE_MAX_AGE });
 		},
 		[setOpenProp, open],
 	);

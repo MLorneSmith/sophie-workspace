@@ -86,7 +86,7 @@ export function AccountSelector({
 	}, [selectedAccount]);
 
 	const selected = accounts.find((account) => account.value === value);
-	const pictureUrl = personalData.data?.picture_url;
+	const pictureUrl = personalData.data?.picture_url ?? undefined;
 
 	return (
 		<>
