@@ -1,5 +1,5 @@
-export { createPayloadClient } from "./create-payload-cms";
-export { PayloadContentRenderer } from "./content-renderer";
+export { getCourseBySlug, getCourseLessons, getCourses, getLessonBySlug, getQuiz, } from "./api/course";
 export { callPayloadAPI } from "./api/payload-api";
-export { getSurvey, getSurveyQuestions, getUserSurveyResponse, createSurveyResponse, updateSurveyResponse, completeSurvey, } from "./api/survey";
-export { getCourses, getCourseBySlug, getCourseLessons, getLessonBySlug, getQuiz, } from "./api/course";
+export { completeSurvey, createSurveyResponse, getSurvey, getSurveyQuestions, getUserSurveyResponse, updateSurveyResponse, } from "./api/survey";
+export { PayloadContentRenderer } from "./content-renderer";
+export { createPayloadClient } from "./create-payload-cms";

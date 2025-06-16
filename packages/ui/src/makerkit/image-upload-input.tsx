@@ -3,7 +3,7 @@
 import { UploadCloud, X } from "lucide-react";
 import Image from "next/image";
 import type { FormEvent, MouseEventHandler } from "react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useId } from "react";
 
 import { cn } from "../lib/utils";
 import { Button } from "../shadcn/button";
@@ -31,6 +31,7 @@ export const ImageUploadInput: React.FC<Props> =
 		...props
 	}) {
 		const localRef = useRef<HTMLInputElement>(null);
+		const uniqueId = useId();
 
 		const [state, setState] = useState({
 			image,
@@ -125,7 +126,7 @@ export const ImageUploadInput: React.FC<Props> =
 				type={"file"}
 				onInput={onInputChange}
 				accept="image/*"
-				aria-labelledby={"image-upload-input"}
+				aria-labelledby={uniqueId}
 			/>
 		);
 
@@ -135,7 +136,7 @@ export const ImageUploadInput: React.FC<Props> =
 
 		return (
 			<label
-				id={"image-upload-input"}
+				id={uniqueId}
 				className={
 					"border-input bg-background ring-primary ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring relative flex h-10 w-full cursor-pointer rounded-md border border-dashed px-3 py-2 text-sm ring-offset-2 outline-hidden transition-all file:border-0 file:bg-transparent file:text-sm file:font-medium focus:ring-2 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-hidden disabled:cursor-not-allowed disabled:opacity-50"
 				}
@@ -148,7 +149,7 @@ export const ImageUploadInput: React.FC<Props> =
 							<UploadCloud className={"text-muted-foreground h-5"} />
 						</If>
 
-						<If condition={state.image}>
+						{state.image && (
 							<Image
 								loading={"lazy"}
 								style={{
@@ -158,10 +159,10 @@ export const ImageUploadInput: React.FC<Props> =
 								className={"object-contain"}
 								width={IMAGE_SIZE}
 								height={IMAGE_SIZE}
-								src={state.image!}
+								src={state.image}
 								alt={props.alt ?? ""}
 							/>
-						</If>
+						)}
 					</div>
 
 					<If condition={!state.image}>

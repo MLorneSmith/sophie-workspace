@@ -20,8 +20,8 @@ interface QuizQuestion {
 
 interface QuizDocument {
 	id?: string;
-	questions?: any[] | any;
-	[key: string]: any;
+	questions?: unknown[] | unknown;
+	[key: string]: unknown;
 }
 
 /**
@@ -39,7 +39,7 @@ export const formatQuizQuestionsOnRead: AfterReadHook = async ({
 	req,
 }: {
 	doc: QuizDocument;
-	req: any;
+	req: { payload?: { logger?: { info: (msg: unknown) => void; warn: (msg: unknown) => void; error: (msg: unknown) => void } } };
 }) => {
 	// Skip if no document or no questions field
 	if (!doc || !doc.questions) {
@@ -61,7 +61,7 @@ export const formatQuizQuestionsOnRead: AfterReadHook = async ({
 
 		// Otherwise, transform the questions array into the proper format
 		if (Array.isArray(doc.questions)) {
-			const formattedQuestions = doc.questions.map((question: any) => {
+			const formattedQuestions = doc.questions.map((question: unknown) => {
 				// Get the ID from various possible formats
 				const questionId =
 					typeof question === "object"
@@ -135,7 +135,7 @@ export const syncQuizQuestionRelationships: BeforeChangeHook = async ({
 	operation,
 }: {
 	data: QuizDocument;
-	req: any;
+	req: { payload?: { logger?: { info: (msg: unknown) => void; warn: (msg: unknown) => void; error: (msg: unknown) => void } } };
 	operation: string;
 }) => {
 	// Skip if no questions data
@@ -158,8 +158,8 @@ export const syncQuizQuestionRelationships: BeforeChangeHook = async ({
 			}
 		} else {
 			// Format each question to ensure it has the proper structure
-			data.questions = data.questions
-				.map((question: any) => {
+			data.questions = (data.questions as unknown[])
+				.map((question: unknown) => {
 					// If already properly formatted, return as is
 					if (
 						question &&

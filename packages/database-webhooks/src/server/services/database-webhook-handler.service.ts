@@ -68,8 +68,7 @@ class DatabaseWebhookHandlerService {
 
 			// if a custom handler is provided, call it
 			if (params?.handleEvent) {
-				/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-				await params.handleEvent(params.body as any);
+				await params.handleEvent(params.body as DatabaseChangePayload<keyof Tables>);
 			}
 
 			logger.info(ctx, "Webhook processed successfully");

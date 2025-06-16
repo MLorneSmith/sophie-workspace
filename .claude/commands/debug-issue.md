@@ -15,12 +15,121 @@ This command reads an issue specification and launches a focused debugging sessi
 Load the debugging mindset:
 
 ```
-/read .claude/roles/full-stack-engineer.md
+/read .claude/roles/debug-engineer.md
 ```
 
-## 2. Load Issue Specification
+## 2. Load Context Documentation
 
-### 2.1 Auto-Sync and Locate Issue
+After adopting the role, load relevant context based on the issue type. Use the context documentation inventory to identify relevant files:
+
+### 2.1 Read Context Documentation Inventory
+
+First, read the inventory to understand available documentation:
+
+```
+/read .claude/docs/context-docs-inventory.xml
+```
+
+This XML file contains a complete inventory of all context documentation organized by category:
+
+- **AI Integration**: Portkey integration, prompt engineering
+- **Architecture**: Performance optimization, service patterns, state management
+- **CMS**: Payload patterns, content migration, database verification
+- **Data**: Database schema, React Query patterns, Supabase patterns
+- **Debugging**: Common patterns, database/performance/integration debugging
+- **Security**: Authentication and authorization patterns
+- **Testing**: Unit testing strategies, test case templates
+- **UI**: Component patterns, accessibility, responsive design
+
+### 2.2 Core Context (Always Load)
+
+```
+# PARALLEL READ these core debugging docs:
+.claude/core/project-overview.md
+.claude/core/code-standards.md
+.claude/docs/debugging/common-patterns.md
+.claude/docs/debugging/debugging-system-overview.md
+```
+
+### 2.3 Conditional Context (Based on Issue Type)
+
+After reading the issue (in section 3.4), identify relevant documentation from the inventory and load it. Here are common patterns:
+
+```typescript
+// Based on issue analysis, select relevant docs from the inventory:
+const contextMap = {
+  // Frontend/UI issues
+  ui: [
+    '.claude/docs/ui/component-patterns.md',
+    '.claude/docs/ui/accessibility.md',
+    '.claude/docs/ui/responsive-design.md',
+    '.claude/docs/architecture/state-management.md',
+  ],
+
+  // Backend/Database issues
+  database: [
+    '.claude/docs/data/database-schema.md',
+    '.claude/docs/data/supabase-patterns.md',
+    '.claude/docs/debugging/database-debugging.md',
+    '.claude/docs/security/authorization-patterns.md', // For RLS issues
+  ],
+
+  // Performance issues
+  performance: [
+    '.claude/docs/debugging/performance-debugging.md',
+    '.claude/docs/architecture/performance-optimization.md',
+    '.claude/docs/data/react-query-patterns.md', // For caching issues
+  ],
+
+  // Integration issues
+  integration: [
+    '.claude/docs/debugging/integration-debugging.md',
+    '.claude/docs/architecture/system-design.md',
+    '.claude/docs/architecture/service-patterns.md',
+    '.claude/docs/ai/portkey-integration.md', // For AI service issues
+  ],
+
+  // Type/Build issues
+  typescript: [
+    '.claude/docs/debugging/error-handling.md',
+    '.claude/docs/testing/unit-testing-patterns.md',
+  ],
+
+  // Authentication issues
+  auth: [
+    '.claude/docs/security/authentication-patterns.md',
+    '.claude/docs/security/authorization-patterns.md',
+    '.claude/docs/data/supabase-patterns.md',
+  ],
+
+  // CMS issues
+  cms: [
+    '.claude/docs/cms/payload-patterns.md',
+    '.claude/docs/cms/database-verification-repair.md',
+    '.claude/docs/cms/content-migration-troubleshooting.md',
+  ],
+
+  // Testing issues
+  testing: [
+    '.claude/docs/testing/unit-testing-prioritization-plan.md',
+    '.claude/docs/testing/context/unit-testing-patterns.md',
+    '.claude/docs/testing/context/mocking-strategies.md',
+  ],
+};
+
+// Note: Use the inventory to discover additional relevant docs not listed here
+```
+
+### 2.4 Loading Strategy
+
+1. **Always check the inventory first** - New documentation may have been added
+2. **Load docs in parallel** when possible for efficiency
+3. **Be selective** - Only load documentation relevant to the specific issue
+4. **Check for test cases** - If debugging a specific component, look for its test case documentation in `testing/test-cases/`
+
+## 3. Load Issue Specification
+
+### 3.1 Auto-Sync and Locate Issue
 
 Use the auto-sync service to fetch/cache issues automatically:
 
@@ -35,7 +144,7 @@ Use the auto-sync service to fetch/cache issues automatically:
 # 4. Handle fallbacks gracefully
 ```
 
-### 2.2 Parse Issue Reference
+### 3.2 Parse Issue Reference
 
 The auto-sync service handles all reference formats:
 
@@ -48,7 +157,7 @@ The auto-sync service handles all reference formats:
 .claude/scripts/sync-issue.sh "2025-06-13-ISSUE-30.md"  # Direct local file (legacy)
 ```
 
-### 2.3 Load Synced Issue
+### 3.3 Load Synced Issue
 
 After auto-sync completes, read the local file:
 
@@ -65,7 +174,7 @@ fi
 echo "📁 Using issue file: $issue_file"
 ```
 
-### 2.2 Read and Parse Issue
+### 3.4 Read and Parse Issue
 
 ```typescript
 // Read the issue specification
@@ -84,28 +193,21 @@ const {
 } = issue;
 ```
 
-### 2.3 Load Context Docs
+### 3.5 Load Additional Context
 
-Based on issue type, load relevant debugging docs:
+After parsing the issue, load specific context based on the issue type:
 
-```typescript
-const contextDocs = {
-  bug: ['.claude/docs/debugging/common-patterns.md'],
-  performance: ['.claude/docs/debugging/performance-debugging.md'],
-  error: ['.claude/docs/debugging/error-handling.md'],
-  database: ['.claude/docs/debugging/database-debugging.md'],
-  integration: ['.claude/docs/debugging/integration-debugging.md'],
-};
-
-// Read relevant context
-for (const doc of contextDocs[issue.type]) {
-  await readFile(doc);
-}
+```bash
+# Based on the parsed issue type, load additional context from section 2.2
+# For example, if issue.type indicates a database problem:
+# PARALLEL READ:
+# .claude/docs/data/supabase-patterns.md
+# .claude/docs/debugging/database-debugging.md
 ```
 
-## 3. Issue Analysis & Planning
+## 4. Issue Analysis & Planning
 
-### 3.1 Review Diagnostic Data
+### 4.1 Review Diagnostic Data
 
 Analyze the pre-collected diagnostic information:
 
@@ -115,7 +217,7 @@ Analyze the pre-collected diagnostic information:
 4. **Network Issues**: Check failed requests
 5. **Console Output**: Review warnings and errors
 
-### 3.2 Create Debug Plan
+### 4.2 Create Debug Plan
 
 Based on issue analysis:
 
@@ -147,7 +249,7 @@ Based on issue analysis:
 - [ ] Update documentation
 ```
 
-### 3.3 Set Up Debug Environment
+### 4.3 Set Up Debug Environment
 
 ```bash
 # Checkout relevant branch if needed
@@ -160,9 +262,9 @@ export NODE_ENV=[reported_environment]
 pnpm dev
 ```
 
-## 4. Reproduction & Investigation
+## 5. Reproduction & Investigation
 
-### 4.1 Reproduce the Issue
+### 5.1 Reproduce the Issue
 
 Follow the documented reproduction steps:
 
@@ -181,7 +283,7 @@ const currentErrors = (await mcp__browser) - tools__getConsoleErrors();
 const currentNetwork = (await mcp__browser) - tools__getNetworkErrors();
 ```
 
-### 4.2 Deep Dive Investigation
+### 5.2 Deep Dive Investigation
 
 Based on issue type, perform targeted investigation:
 
@@ -213,7 +315,7 @@ Based on issue type, perform targeted investigation:
 3. Verify API response shapes
 4. Review type assertions
 
-### 4.3 Compare with Baseline
+### 5.3 Compare with Baseline
 
 ```typescript
 // Compare current state with issue report
@@ -224,9 +326,9 @@ const comparison = {
 };
 ```
 
-## 5. Solution Implementation
+## 6. Solution Implementation
 
-### 5.1 Implement Fix
+### 6.1 Implement Fix
 
 Based on root cause analysis:
 
@@ -256,7 +358,7 @@ switch (issue.type) {
 }
 ```
 
-### 5.2 Add Defensive Measures
+### 6.2 Add Defensive Measures
 
 ```typescript
 // Add logging for future debugging
@@ -280,7 +382,7 @@ performance.mark('issue-fix-start');
 performance.measure('issue-fix', 'issue-fix-start');
 ```
 
-### 5.3 Create Tests
+### 6.3 Create Tests
 
 ```typescript
 // Create regression test
@@ -289,9 +391,9 @@ const testContent = generateRegressionTest(issue);
 await writeFile(testFile, testContent);
 ```
 
-## 6. Verification & Documentation
+## 7. Verification & Documentation
 
-### 6.1 Verify Fix
+### 7.1 Verify Fix
 
 Re-run diagnostic tools to confirm resolution:
 
@@ -315,7 +417,7 @@ const dbVerification = await mcp__postgres__pg_analyze_database({
 });
 ```
 
-### 6.2 Update Issue Documentation
+### 7.2 Update Issue Documentation
 
 Create resolution report:
 
@@ -351,7 +453,7 @@ Create resolution report:
 [Key takeaways for preventing similar issues]
 ```
 
-### 6.3 Update Issue Status
+### 7.3 Update Issue Status
 
 ```typescript
 // Update local issue file
@@ -371,9 +473,9 @@ if (issue.githubNumber) {
 }
 ```
 
-## 7. Post-Debug Actions
+## 8. Post-Debug Actions
 
-### 7.1 Create PR if Needed
+### 8.1 Create PR if Needed
 
 ```bash
 # Create branch for fix
@@ -392,7 +494,7 @@ Fixes #${issue.githubNumber}"
 gh pr create --title "Fix: ${issue.title}" --body "..."
 ```
 
-### 7.2 Knowledge Base Update
+### 8.2 Knowledge Base Update
 
 If the issue revealed a gap:
 
@@ -401,7 +503,7 @@ If the issue revealed a gap:
 3. Create troubleshooting guide
 4. Update team runbook
 
-### 7.3 Summary Output
+### 8.3 Summary Output
 
 ```
 ✅ Issue Resolved Successfully!

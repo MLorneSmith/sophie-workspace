@@ -45,31 +45,6 @@ async function TeamAccountBillingPage({ params }: TeamAccountBillingPageProps) {
 	const canManageBilling =
 		workspace.account.permissions.includes("billing.manage");
 
-	const Checkout = () => {
-		if (!canManageBilling) {
-			return <CannotManageBillingAlert />;
-		}
-
-		return (
-			<TeamAccountCheckoutForm customerId={customerId} accountId={accountId} />
-		);
-	};
-
-	const BillingPortal = () => {
-		if (!canManageBilling || !customerId) {
-			return null;
-		}
-
-		return (
-			<form action={createBillingPortalSession}>
-				<input type="hidden" name={"accountId"} value={accountId} />
-				<input type="hidden" name={"slug"} value={account} />
-
-				<BillingPortalCard />
-			</form>
-		);
-	};
-
 	return (
 		<>
 			<TeamAccountLayoutPageHeader
@@ -88,7 +63,14 @@ async function TeamAccountBillingPage({ params }: TeamAccountBillingPageProps) {
 						condition={data}
 						fallback={
 							<div>
-								<Checkout />
+								{!canManageBilling ? (
+									<CannotManageBillingAlert />
+								) : (
+									<TeamAccountCheckoutForm
+										customerId={customerId}
+										accountId={accountId}
+									/>
+								)}
 							</div>
 						}
 					>
@@ -108,7 +90,14 @@ async function TeamAccountBillingPage({ params }: TeamAccountBillingPageProps) {
 						}}
 					</If>
 
-					<BillingPortal />
+					{canManageBilling && customerId && (
+						<form action={createBillingPortalSession}>
+							<input type="hidden" name={"accountId"} value={accountId} />
+							<input type="hidden" name={"slug"} value={account} />
+
+							<BillingPortalCard />
+						</form>
+					)}
 				</div>
 			</PageBody>
 		</>

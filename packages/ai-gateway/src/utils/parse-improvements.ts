@@ -110,14 +110,15 @@ function normalizeImprovement(
  * Process parsed JSON into improvements
  * Extracted to avoid code duplication
  */
-function improvementsFromParsed(parsed: any): BaseImprovement[] {
-	const improvementsArray = Array.isArray(parsed)
-		? parsed
-		: parsed.improvements || [];
+function improvementsFromParsed(parsed: unknown): BaseImprovement[] {
+	const parsedObj = parsed as { improvements?: unknown[] } | unknown[];
+	const improvementsArray = Array.isArray(parsedObj)
+		? parsedObj
+		: (parsedObj as { improvements?: unknown[] }).improvements || [];
 
 	if (improvementsArray.length > 0) {
-		return improvementsArray.map((imp: RawImprovement, index: number) =>
-			normalizeImprovement(imp, index),
+		return improvementsArray.map((imp: unknown, index: number) =>
+			normalizeImprovement(imp as RawImprovement, index),
 		);
 	}
 

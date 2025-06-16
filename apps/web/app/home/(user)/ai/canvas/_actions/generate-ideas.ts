@@ -5,7 +5,6 @@ import {
 	type ChatMessage,
 	getChatCompletion,
 } from "@kit/ai-gateway";
-import { ConfigManager } from "@kit/ai-gateway/src/configs/config-manager";
 import { createOpenAIOnlyConfig } from "@kit/ai-gateway/src/configs/templates/openai-only";
 import { ideasCreatorSystem } from "@kit/ai-gateway/src/prompts/messages/system/ideas-creator";
 import { baseInstructions } from "@kit/ai-gateway/src/prompts/partials/base-instructions";

@@ -52,7 +52,7 @@ export function AppBreadcrumbs(props: {
 						);
 
 					return (
-						<Fragment key={index}>
+						<Fragment key={`breadcrumb-${path}-${index}`}>
 							<BreadcrumbItem className={"capitalize lg:text-xs"}>
 								<If
 									condition={index < visiblePaths.length - 1}

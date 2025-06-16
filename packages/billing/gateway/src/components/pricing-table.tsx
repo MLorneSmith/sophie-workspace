@@ -48,7 +48,7 @@ export function PricingTable({
 	}>;
 }) {
 	const intervals = getPlanIntervals(config).filter(Boolean) as Interval[];
-	const [interval, setInterval] = useState(intervals[0]!);
+	const [interval, setInterval] = useState(intervals[0] ?? "month" as Interval);
 
 	// Always filter out hidden products
 	const visibleProducts = config.products.filter((product) => !product.hidden);
@@ -152,8 +152,13 @@ function PricingItem(
 	}>,
 ) {
 	const highlighted = props.product.highlighted ?? false;
-	const lineItem = props.primaryLineItem!;
+	const lineItem = props.primaryLineItem;
 	const isCustom = props.plan.custom ?? false;
+	
+	if (!lineItem) {
+		// This should not happen if the component is used correctly
+		return null;
+	}
 
 	// we exclude flat line items from the details since
 	// it doesn't need further explanation

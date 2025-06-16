@@ -564,7 +564,7 @@ export function LessonViewClient({
 																if (download.filename || download.description) {
 																	return (
 																		<div
-																			key={download.url || `download-${index}`}
+																			key={`download-${lesson.id}-${index}-${download.filename || index}`}
 																			className="flex items-center justify-between rounded-lg border border-gray-200 p-3 dark:border-gray-700"
 																		>
 																			<div className="flex-grow">
@@ -611,7 +611,7 @@ export function LessonViewClient({
 
 															return (
 																<div
-																	key={download.url || `download-${index}`}
+																	key={`download-${lesson.id}-${index}-${download.url || download.filename || index}`}
 																	className="flex flex-col rounded-lg border border-gray-200 p-3 dark:border-gray-700"
 																>
 																	<div className="flex items-center justify-between">

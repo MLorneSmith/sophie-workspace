@@ -162,7 +162,13 @@ class KeystaticClient implements CmsClient {
 
 				const pathParts = item.slug.split("/");
 				const parentParts = pathParts.slice(0, -1);
-				const lastPart = parentParts[parentParts.length - 1]!;
+				const lastPart = parentParts[parentParts.length - 1];
+				if (!lastPart) {
+					// No parent parts, set parent to null
+					item.entry.parent = null;
+					results[i] = item;
+					continue;
+				}
 				const possibleIndexParent = parentParts.concat(lastPart).join("/");
 
 				if (slugSet.has(possibleIndexParent)) {

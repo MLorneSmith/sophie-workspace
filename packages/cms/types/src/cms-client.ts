@@ -10,7 +10,7 @@ export namespace Cms {
 		publishedAt: string;
 		image: string | undefined;
 		// Add image_id property to support Payload CMS relationship fields
-		image_id?: any;
+		image_id?: unknown;
 		status: ContentItemStatus;
 		slug: string;
 		categories: Category[];
@@ -26,7 +26,7 @@ export namespace Cms {
 	export interface Breadcrumb {
 		label: string;
 		url?: string;
-		doc?: any;
+		doc?: unknown;
 	}
 
 	export type ContentItemStatus = "draft" | "published" | "review" | "pending";

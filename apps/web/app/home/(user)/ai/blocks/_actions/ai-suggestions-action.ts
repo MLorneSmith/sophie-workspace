@@ -5,7 +5,6 @@ import {
 	type ChatMessage,
 	getChatCompletion,
 } from "@kit/ai-gateway";
-import { ConfigManager } from "@kit/ai-gateway/src/configs/config-manager";
 import { createBalancedOptimizedConfig } from "@kit/ai-gateway/src/configs/templates/balanced-optimized";
 import { createAudienceSuggestionsConfig } from "@kit/ai-gateway/src/configs/use-cases/audience-suggestions/config";
 import { createTitleSuggestionsConfig } from "@kit/ai-gateway/src/configs/use-cases/title-suggestions/config";

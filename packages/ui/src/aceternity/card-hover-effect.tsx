@@ -59,7 +59,7 @@ export function HoverEffect({ items, className }: HoverEffectProps) {
 		>
 			{items.map((item, idx) => (
 				<div
-					key={idx}
+					key={`hover-card-${idx}-${item.title}`}
 					className="group relative block h-full w-full p-2"
 					onMouseEnter={() => setHoveredIndex(idx)}
 					onMouseLeave={() => setHoveredIndex(null)}

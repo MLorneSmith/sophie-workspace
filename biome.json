@@ -55,6 +55,9 @@
 			"correctness": {
 				"noUnusedVariables": "error",
 				"noUnusedImports": "error"
+			},
+			"nursery": {
+				"useUniqueElementIds": "error"
 			}
 		}
 	},

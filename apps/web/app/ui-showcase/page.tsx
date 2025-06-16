@@ -1,6 +1,5 @@
 "use client";
 
-
 // UI Components
 import {
 	Accordion,
@@ -73,6 +72,9 @@ import { Textarea } from "@kit/ui/textarea";
 import { Trans } from "@kit/ui/trans";
 import { ArrowRightIcon } from "lucide-react";
 import Link from "next/link";
+
+import type { UserWorkspace } from "~/app/home/(user)/_lib/server/load-user-workspace";
+
 /**
  * UI Components Showcase Page
  *
@@ -92,7 +94,7 @@ import Link from "next/link";
  * - Colors: Color palette showcase
  * - Typography: Text styles and headings
  */
-import { useEffect, useState } from "react";
+import { useEffect, useState, useId } from "react";
 
 // App Components
 import { AppLogo } from "~/components/app-logo";
@@ -157,6 +159,15 @@ function ClientOnly({ children }: { children: React.ReactNode }) {
  * available in the SaaS kit.
  */
 export default function UIShowcasePage() {
+	// Unique IDs for form elements
+	const nameInputId = useId();
+	const emailInputId = useId();
+	const inputExampleId = useId();
+	const textareaExampleId = useId();
+	const selectExampleId = useId();
+	const termsCheckboxId = useId();
+	const airplaneModeId = useId();
+
 	// State for dialog demonstration
 	const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
@@ -193,9 +204,7 @@ export default function UIShowcasePage() {
 	};
 
 	// Mock user workspace for home components
-	const mockUserWorkspace: import(
-		"~/app/home/(user)/_lib/server/load-user-workspace",
-	).UserWorkspace = {
+	const mockUserWorkspace: UserWorkspace = {
 		workspace: {
 			id: "1",
 			name: "Personal Account",
@@ -323,13 +332,13 @@ export default function UIShowcasePage() {
 									</CardHeader>
 									<CardContent className="space-y-4">
 										<div className="space-y-2">
-											<Label htmlFor="name">Name</Label>
-											<Input id="name" placeholder="Enter your name" />
+											<Label htmlFor={nameInputId}>Name</Label>
+											<Input id={nameInputId} placeholder="Enter your name" />
 										</div>
 										<div className="space-y-2">
-											<Label htmlFor="email">Email</Label>
+											<Label htmlFor={emailInputId}>Email</Label>
 											<Input
-												id="email"
+												id={emailInputId}
 												type="email"
 												placeholder="Enter your email"
 											/>
@@ -380,25 +389,25 @@ export default function UIShowcasePage() {
 							<div className="grid grid-cols-1 gap-8 md:grid-cols-2">
 								<div className="space-y-6">
 									<div className="space-y-2">
-										<Label htmlFor="input-example">Input</Label>
+										<Label htmlFor={inputExampleId}>Input</Label>
 										<Input
-											id="input-example"
+											id={inputExampleId}
 											placeholder="Enter text here..."
 										/>
 									</div>
 
 									<div className="space-y-2">
-										<Label htmlFor="textarea-example">Textarea</Label>
+										<Label htmlFor={textareaExampleId}>Textarea</Label>
 										<Textarea
-											id="textarea-example"
+											id={textareaExampleId}
 											placeholder="Enter longer text here..."
 										/>
 									</div>
 
 									<div className="space-y-2">
-										<Label htmlFor="select-example">Select</Label>
+										<Label htmlFor={selectExampleId}>Select</Label>
 										<Select>
-											<SelectTrigger id="select-example">
+											<SelectTrigger id={selectExampleId}>
 												<SelectValue placeholder="Select an option" />
 											</SelectTrigger>
 											<SelectContent>
@@ -412,13 +421,15 @@ export default function UIShowcasePage() {
 
 								<div className="space-y-6">
 									<div className="flex items-center space-x-2">
-										<Checkbox id="terms" />
-										<Label htmlFor="terms">Accept terms and conditions</Label>
+										<Checkbox id={termsCheckboxId} />
+										<Label htmlFor={termsCheckboxId}>
+											Accept terms and conditions
+										</Label>
 									</div>
 
 									<div className="flex items-center space-x-2">
-										<Switch id="airplane-mode" />
-										<Label htmlFor="airplane-mode">Airplane Mode</Label>
+										<Switch id={airplaneModeId} />
+										<Label htmlFor={airplaneModeId}>Airplane Mode</Label>
 									</div>
 
 									<div className="space-y-2">

@@ -24,7 +24,7 @@ import {
 	TableRow,
 } from "@kit/ui/table";
 import { ArrowDown, ArrowUp, Menu, TrendingUp } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useId } from "react";
 import {
 	Area,
 	AreaChart,
@@ -499,6 +499,8 @@ function Trend(
 }
 
 export function VisitorsChart() {
+	const gradientIdDesktop = useId();
+	const gradientIdMobile = useId();
 	const chartData = useMemo(
 		() => [
 			{ date: "2024-04-01", desktop: 222, mobile: 150 },
@@ -623,7 +625,13 @@ export function VisitorsChart() {
 				<ChartContainer className={"h-64 w-full"} config={chartConfig}>
 					<AreaChart accessibilityLayer data={chartData}>
 						<defs>
-							<linearGradient id="fillDesktop" x1="0" y1="0" x2="0" y2="1">
+							<linearGradient
+								id={gradientIdDesktop}
+								x1="0"
+								y1="0"
+								x2="0"
+								y2="1"
+							>
 								<stop
 									offset="5%"
 									stopColor="var(--color-desktop)"
@@ -635,7 +643,7 @@ export function VisitorsChart() {
 									stopOpacity={0.1}
 								/>
 							</linearGradient>
-							<linearGradient id="fillMobile" x1="0" y1="0" x2="0" y2="1">
+							<linearGradient id={gradientIdMobile} x1="0" y1="0" x2="0" y2="1">
 								<stop
 									offset="5%"
 									stopColor="var(--color-mobile)"
@@ -663,7 +671,7 @@ export function VisitorsChart() {
 						<Area
 							dataKey="mobile"
 							type="natural"
-							fill="url(#fillMobile)"
+							fill={`url(#${gradientIdMobile})`}
 							fillOpacity={0.4}
 							stroke="var(--color-mobile)"
 							stackId="a"
@@ -671,7 +679,7 @@ export function VisitorsChart() {
 						<Area
 							dataKey="desktop"
 							type="natural"
-							fill="url(#fillDesktop)"
+							fill={`url(#${gradientIdDesktop})`}
 							fillOpacity={0.4}
 							stroke="var(--color-desktop)"
 							stackId="a"

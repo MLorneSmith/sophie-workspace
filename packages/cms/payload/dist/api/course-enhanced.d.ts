@@ -1,3 +1,9 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
+type QuizId = string | {
+    value: string;
+    relationTo?: string;
+    id?: string;
+};
 /**
  * Enhanced getQuiz function with improved unidirectional relationship handling
  *
@@ -11,9 +17,6 @@
  * @param supabaseClient Optional Supabase client
  * @returns The quiz with its questions, or null if not found
  */
-export declare function getQuizEnhanced(quizId: string | {
-    value: string;
-    relationTo?: string;
-} | any, depth?: number, supabaseClient?: any): Promise<any>;
+export declare function getQuizEnhanced(quizId: QuizId, depth?: number, supabaseClient?: SupabaseClient): Promise<any>;
 export { getQuiz } from "./course";
-export declare function getQuiz2(quizId: any, _options?: {}, supabaseClient?: any): Promise<any>;
+export declare function getQuiz2(quizId: QuizId, _options?: {}, supabaseClient?: SupabaseClient): Promise<any>;

@@ -102,7 +102,7 @@ export function StickyScrollReveal({
 		return (
 			<ul className="body list-disc space-y-2 pl-5">
 				{description.map((point, index) => (
-					<li key={index}>{point}</li>
+					<li key={`point-${index}-${point.slice(0, 20)}`}>{point}</li>
 				))}
 			</ul>
 		);

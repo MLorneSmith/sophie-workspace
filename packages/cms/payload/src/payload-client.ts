@@ -17,7 +17,7 @@ export class PayloadClient implements CmsClient {
 			const data = await response.json();
 
 			// Map items
-			const items = data.docs.map((doc: any) => this.mapContentItem(doc));
+			const items = data.docs.map((doc: unknown) => this.mapContentItem(doc as Record<string, unknown>));
 
 			// Create a map of items by ID for quick lookup
 			const itemsMap = new Map<string, Cms.ContentItem>();
@@ -89,7 +89,7 @@ export class PayloadClient implements CmsClient {
 						// Check if childrenData.docs exists and is an array before mapping
 						if (childrenData && Array.isArray(childrenData.docs)) {
 							// Add children to the main item
-							item.children = childrenData.docs.map((doc: any) =>
+							item.children = childrenData.docs.map((doc: unknown) =>
 								this.mapContentItem(doc),
 							);
 						} else {
@@ -208,32 +208,36 @@ export class PayloadClient implements CmsClient {
 		return url;
 	}
 
-	private mapContentItem(item: any): Cms.ContentItem {
+	private mapContentItem(item: Record<string, unknown>): Cms.ContentItem {
 		// Get the image URL and transform it
 		// Check for both image and image_id fields
+		const imageId = item.image_id as { url?: string } | undefined;
+		const image = item.image as { url?: string } | string | undefined;
 		const imageUrl =
-			item.image_id?.url || // Check for image_id field first (used in Posts collection)
-			item.image?.url || // Then check for image field (used in other collections)
-			(typeof item.image === "string" ? item.image : null);
+			imageId?.url || // Check for image_id field first (used in Posts collection)
+			(typeof image === "object" ? image?.url : undefined) || // Then check for image field (used in other collections)
+			(typeof image === "string" ? image : null);
 
 		const transformedImageUrl = this.transformImageUrl(imageUrl);
 
 		// Map the item
+		const parent = item.parent as { id?: string } | undefined;
 		const mappedItem: Cms.ContentItem = {
-			id: item.id,
-			title: item.title,
-			label: item.title,
-			url: item.slug,
-			slug: item.slug,
-			description: item.description,
+			id: item.id as string,
+			title: item.title as string,
+			label: item.title as string,
+			url: item.slug as string,
+			slug: item.slug as string,
+			description: item.description as string | undefined,
 			content: item.content,
-			publishedAt: item.publishedAt,
+			publishedAt: item.publishedAt as string | undefined,
 			image: transformedImageUrl || undefined, // Convert null to undefined
 			// Also include the original image_id for components that might need to access it directly
 			image_id: item.image_id,
-			status: item.status,
-			categories: (item.categories || []).map((category: any) => {
-				const categoryValue = category?.category ? category.category : "";
+			status: item.status as Cms.ContentItemStatus,
+			categories: ((item.categories as unknown[]) || []).map((category: unknown) => {
+				const cat = category as { category?: string };
+				const categoryValue = cat?.category || "";
 				return {
 					id: categoryValue,
 					name: categoryValue,
@@ -242,18 +246,19 @@ export class PayloadClient implements CmsClient {
 						: "",
 				};
 			}),
-			tags: (item.tags || []).map((tag: any) => {
-				const tagValue = tag?.tag ? tag.tag : "";
+			tags: ((item.tags as unknown[]) || []).map((tag: unknown) => {
+				const t = tag as { tag?: string };
+				const tagValue = t?.tag || "";
 				return {
 					id: tagValue,
 					name: tagValue,
 					slug: tagValue ? tagValue.toLowerCase().replace(/\s+/g, "-") : "",
 				};
 			}),
-			parentId: item.parent ? item.parent.id : null,
-			order: item.order || 0,
+			parentId: parent?.id || null,
+			order: (item.order as number) || 0,
 			children: [],
-			breadcrumbs: item.breadcrumbs || [],
+			breadcrumbs: (item.breadcrumbs as string[]) || [],
 		};
 
 		// Map children if they exist
@@ -262,7 +267,7 @@ export class PayloadClient implements CmsClient {
 			Array.isArray(item.children) &&
 			item.children.length > 0
 		) {
-			mappedItem.children = item.children.map((child: any) =>
+			mappedItem.children = (item.children as unknown[]).map((child: unknown) =>
 				this.mapContentItem(child),
 			);
 		}

@@ -53,13 +53,13 @@ export const Footer: React.FC<FooterProps> = ({
 
 					<div className="flex w-full flex-col gap-y-4 lg:flex-row lg:justify-end lg:gap-x-6 lg:gap-y-0 xl:gap-x-12">
 						{sections.map((section, index) => (
-							<div key={index}>
+							<div key={`footer-section-${index}-${typeof section.heading === 'string' ? section.heading.slice(0, 20) : index}`}>
 								<div className="flex flex-col gap-y-2.5">
 									<FooterSectionHeading>{section.heading}</FooterSectionHeading>
 
 									<FooterSectionList>
 										{section.links.map((link, linkIndex) => (
-											<FooterLink key={linkIndex} href={link.href}>
+											<FooterLink key={`footer-link-${link.href}`} href={link.href}>
 												{link.label}
 											</FooterLink>
 										))}

@@ -9,10 +9,12 @@ import { createEnvironmentLogger } from "@kit/shared/logger";
  */
 const logger = createEnvironmentLogger("PAYLOAD-API");
 
+import type { SupabaseClient } from "@supabase/supabase-js";
+
 export async function callPayloadAPI(
 	endpoint: string,
 	options: RequestInit = {},
-	supabaseClient?: any,
+	supabaseClient?: SupabaseClient,
 ) {
 	let session = null;
 
@@ -115,7 +117,7 @@ export async function callPayloadAPI(
 		// Catch network errors or other exceptions
 		// Log error with appropriate level of detail based on environment
 		if (process.env.NODE_ENV === "production") {
-			const statusCode = (error as any)?.status;
+			const statusCode = (error as { status?: number })?.status;
 			logger.error(`API Error: ${endpoint}`, { statusCode });
 		} else {
 			logger.error(`API Error: ${endpoint}`, { error });

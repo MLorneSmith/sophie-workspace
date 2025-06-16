@@ -1,4 +1,4 @@
-import { TemplateTagProcessor, containsTemplateTags, } from "./template-tag-processor";
+import { containsTemplateTags, TemplateTagProcessor, } from "./template-tag-processor";
 // Enable detailed logging in development environment
 const DEBUG = process.env.NODE_ENV === "development";
 // Helper logging function
@@ -66,7 +66,7 @@ export function PayloadContentRenderer({ content }) {
             if (Array.isArray(lexicalContent.root.children)) {
                 return (<div className="payload-content">
 						{lexicalContent.root.children.map((node, i) => {
-                        var _a, _b, _c, _d, _e, _f, _g;
+                        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y;
                         // Handle custom blocks
                         // Check for Call To Action block
                         if (node.type === "custom-call-to-action" ||
@@ -78,10 +78,10 @@ export function PayloadContentRenderer({ content }) {
                             const htmlContent = findHtmlContent(node);
                             if (htmlContent) {
                                 console.log("Using HTML content for Call To Action:", `${htmlContent.substring(0, 100)}...`);
-                                return (<div key={i} dangerouslySetInnerHTML={{ __html: htmlContent }}/>);
+                                return (<div key={`cta-html-${i}-${node.blockType || 'cta'}`} dangerouslySetInnerHTML={{ __html: htmlContent }}/>);
                             }
                             // Fallback rendering for Call To Action block
-                            return (<div key={i} className="my-6 rounded-md border border-blue-200 bg-blue-50 p-4">
+                            return (<div key={`cta-fallback-${i}-${node.headline || node.text || 'cta'}`} className="my-6 rounded-md border border-blue-200 bg-blue-50 p-4">
 										<h3 className="text-lg font-bold text-blue-700">
 											Call To Action
 										</h3>
@@ -105,10 +105,10 @@ export function PayloadContentRenderer({ content }) {
                             const htmlContent = findHtmlContent(node);
                             if (htmlContent) {
                                 console.log("Using HTML content for Test Block:", `${htmlContent.substring(0, 100)}...`);
-                                return (<div key={i} dangerouslySetInnerHTML={{ __html: htmlContent }}/>);
+                                return (<div key={`test-fallback-${i}-${node.blockType || 'test'}`} dangerouslySetInnerHTML={{ __html: htmlContent }}/>);
                             }
                             // Fallback rendering for Test Block
-                            return (<div key={i} className="my-6 rounded-md border border-blue-100 bg-blue-50 p-4">
+                            return (<div key={`test-fallback-${i}-${node.blockType || 'test'}`} className="my-6 rounded-md border border-blue-100 bg-blue-50 p-4">
 										<h3 className="text-lg font-bold text-blue-700">
 											Test Block
 										</h3>
@@ -126,7 +126,7 @@ export function PayloadContentRenderer({ content }) {
                             const htmlContent = findHtmlContent(node);
                             if (htmlContent) {
                                 console.log("Using HTML content for Bunny Video:", `${htmlContent.substring(0, 100)}...`);
-                                return (<div key={i} dangerouslySetInnerHTML={{ __html: htmlContent }}/>);
+                                return (<div key={`bunny-video-${i}-${node.videoId || 'video'}`} dangerouslySetInnerHTML={{ __html: htmlContent }}/>);
                             }
                             // Extract video data with defaults
                             const videoId = node.videoId || ((_a = node.fields) === null || _a === void 0 ? void 0 : _a.videoId) || "";
@@ -145,7 +145,7 @@ export function PayloadContentRenderer({ content }) {
                             };
                             // If no videoId is provided, show a placeholder
                             if (!videoId) {
-                                return (<div key={i} className="my-6 rounded-md border border-gray-200 bg-gray-50 p-4">
+                                return (<div key={`node-${i}-${node.type || 'unknown'}`} className="my-6 rounded-md border border-gray-200 bg-gray-50 p-4">
 											<h3 className="text-lg font-bold text-gray-700">
 												{title}
 											</h3>
@@ -157,7 +157,7 @@ export function PayloadContentRenderer({ content }) {
 										</div>);
                             }
                             // Render the Bunny.net video player
-                            return (<div key={i} className="my-6">
+                            return (<div key={`bunny-video-${i}-${node.videoId || 'video'}`} className="my-6">
 										<h3 className="mb-2 text-lg font-bold">{title}</h3>
 										<div className="relative" style={{ paddingBottom: getPaddingBottom() }}>
 											<iframe src={`https://iframe.mediadelivery.net/embed/${libraryId}/${videoId}`} loading="lazy" style={{
@@ -180,7 +180,7 @@ export function PayloadContentRenderer({ content }) {
                             const htmlContent = findHtmlContent(node);
                             if (htmlContent) {
                                 console.log("Using HTML content for YouTube Video:", `${htmlContent.substring(0, 100)}...`);
-                                return (<div key={i} dangerouslySetInnerHTML={{ __html: htmlContent }}/>);
+                                return (<div key={`youtube-video-${i}-${node.videoId || 'video'}`} dangerouslySetInnerHTML={{ __html: htmlContent }}/>);
                             }
                             // Helper function to extract YouTube ID from URL or ID
                             const extractYouTubeId = (input) => {
@@ -188,7 +188,7 @@ export function PayloadContentRenderer({ content }) {
                                 if (!input)
                                     return "";
                                 // Regular expression to match YouTube video ID from various URL formats
-                                const regExp = /^.*(?:(?:youtu\.be\/|v\/|vi\/|u\/\w\/|embed\/|shorts\/)|(?:(?:watch)?\?v(?:i)?=|\&v(?:i)?=))([^#\&\?]*).*/;
+                                const regExp = /^.*(?:(?:youtu\.be\/|v\/|vi\/|u\/\w\/|embed\/|shorts\/)|(?:(?:watch)?\?v(?:i)?=|&v(?:i)?=))([^#&?]*).*/;
                                 const match = input.match(regExp);
                                 if (match === null || match === void 0 ? void 0 : match[1]) {
                                     // If it's a URL, return the extracted ID
@@ -214,7 +214,7 @@ export function PayloadContentRenderer({ content }) {
                             };
                             // If no videoId is provided, show a placeholder
                             if (!youtubeId) {
-                                return (<div key={i} className="my-6 rounded-md border border-gray-200 bg-gray-50 p-4">
+                                return (<div key={`youtube-video-${i}-${node.videoId || 'video'}`} className="my-6 rounded-md border border-gray-200 bg-gray-50 p-4">
 											<h3 className="text-lg font-bold text-gray-700">
 												{title}
 											</h3>
@@ -226,7 +226,7 @@ export function PayloadContentRenderer({ content }) {
 										</div>);
                             }
                             // Render the YouTube video player
-                            return (<div key={i} className="my-6">
+                            return (<div key={`youtube-video-${i}-${node.videoId || 'video'}`} className="my-6">
 										<h3 className="mb-2 text-lg font-bold">{title}</h3>
 										<div className="relative" style={{ paddingBottom: getPaddingBottom() }}>
 											<iframe src={`https://www.youtube.com/embed/${youtubeId}`} loading="lazy" style={{
@@ -244,12 +244,12 @@ export function PayloadContentRenderer({ content }) {
                         if (node.type === "paragraph") {
                             // Check if node.children exists and is an array
                             if (Array.isArray(node.children)) {
-                                return (<p key={i}>
+                                return (<p key={`p-block-${i}-${((_h = node.text) === null || _h === void 0 ? void 0 : _h.slice(0, 20)) || 'text'}`}>
 											{node.children.map((textNode, j) => (<span key={j}>{textNode.text || ""}</span>))}
 										</p>);
                             }
                             // Fallback for when children is not an array
-                            return <p key={i}>{node.text || ""}</p>;
+                            return <p key={`p-${i}-${((_j = node.text) === null || _j === void 0 ? void 0 : _j.slice(0, 20)) || 'text'}`}>{node.text || ""}</p>;
                         }
                         if (node.type === "heading") {
                             // Use a switch statement to handle different heading levels
@@ -260,38 +260,38 @@ export function PayloadContentRenderer({ content }) {
                                 // Use switch for the fallback case too
                                 switch (tag) {
                                     case "h1":
-                                        return <h1 key={i}>{node.text || ""}</h1>;
+                                        return <h1 key={`h1-${i}-${((_k = node.text) === null || _k === void 0 ? void 0 : _k.slice(0, 20)) || 'heading'}`}>{node.text || ""}</h1>;
                                     case "h2":
-                                        return <h2 key={i}>{node.text || ""}</h2>;
+                                        return <h2 key={`h2-${i}-${((_l = node.text) === null || _l === void 0 ? void 0 : _l.slice(0, 20)) || 'heading'}`}>{node.text || ""}</h2>;
                                     case "h3":
-                                        return <h3 key={i}>{node.text || ""}</h3>;
+                                        return <h3 key={`h3-${i}-${((_m = node.text) === null || _m === void 0 ? void 0 : _m.slice(0, 20)) || 'heading'}`}>{node.text || ""}</h3>;
                                     case "h4":
-                                        return <h4 key={i}>{node.text || ""}</h4>;
+                                        return <h4 key={`h4-${i}-${((_o = node.text) === null || _o === void 0 ? void 0 : _o.slice(0, 20)) || 'heading'}`}>{node.text || ""}</h4>;
                                     case "h5":
-                                        return <h5 key={i}>{node.text || ""}</h5>;
+                                        return <h5 key={`h5-${i}-${((_p = node.text) === null || _p === void 0 ? void 0 : _p.slice(0, 20)) || 'heading'}`}>{node.text || ""}</h5>;
                                     case "h6":
-                                        return <h6 key={i}>{node.text || ""}</h6>;
+                                        return <h6 key={`h6-${i}-${((_q = node.text) === null || _q === void 0 ? void 0 : _q.slice(0, 20)) || 'heading'}`}>{node.text || ""}</h6>;
                                     default:
-                                        return <h2 key={i}>{node.text || ""}</h2>;
+                                        return <h2 key={`h2-${i}-${((_r = node.text) === null || _r === void 0 ? void 0 : _r.slice(0, 20)) || 'heading'}`}>{node.text || ""}</h2>;
                                 }
                             }
                             // Render the appropriate heading with children
                             const headingContent = node.children.map((textNode, j) => (<span key={j}>{textNode.text || ""}</span>));
                             switch (tag) {
                                 case "h1":
-                                    return <h1 key={i}>{headingContent}</h1>;
+                                    return <h1 key={`h1-${i}-${((_s = node.text) === null || _s === void 0 ? void 0 : _s.slice(0, 20)) || 'heading'}`}>{headingContent}</h1>;
                                 case "h2":
-                                    return <h2 key={i}>{headingContent}</h2>;
+                                    return <h2 key={`h2-${i}-${((_t = node.text) === null || _t === void 0 ? void 0 : _t.slice(0, 20)) || 'heading'}`}>{headingContent}</h2>;
                                 case "h3":
-                                    return <h3 key={i}>{headingContent}</h3>;
+                                    return <h3 key={`h3-${i}-${((_u = node.text) === null || _u === void 0 ? void 0 : _u.slice(0, 20)) || 'heading'}`}>{headingContent}</h3>;
                                 case "h4":
-                                    return <h4 key={i}>{headingContent}</h4>;
+                                    return <h4 key={`h4-${i}-${((_v = node.text) === null || _v === void 0 ? void 0 : _v.slice(0, 20)) || 'heading'}`}>{headingContent}</h4>;
                                 case "h5":
-                                    return <h5 key={i}>{headingContent}</h5>;
+                                    return <h5 key={`h5-${i}-${((_w = node.text) === null || _w === void 0 ? void 0 : _w.slice(0, 20)) || 'heading'}`}>{headingContent}</h5>;
                                 case "h6":
-                                    return <h6 key={i}>{headingContent}</h6>;
+                                    return <h6 key={`h6-${i}-${((_x = node.text) === null || _x === void 0 ? void 0 : _x.slice(0, 20)) || 'heading'}`}>{headingContent}</h6>;
                                 default:
-                                    return <h2 key={i}>{headingContent}</h2>;
+                                    return <h2 key={`h2-${i}-${((_y = node.text) === null || _y === void 0 ? void 0 : _y.slice(0, 20)) || 'heading'}`}>{headingContent}</h2>;
                             }
                         }
                         // Handle block type nodes
@@ -300,7 +300,7 @@ export function PayloadContentRenderer({ content }) {
                             // Check for Call To Action block in fields
                             if (node.fields && node.fields.blockType === "call-to-action") {
                                 console.log("Found Call To Action block in fields:", node.fields);
-                                return (<div key={i} className="my-6 rounded-md border border-blue-200 bg-blue-50 p-4">
+                                return (<div key={`cta-fallback-${i}-${node.headline || node.text || 'cta'}`} className="my-6 rounded-md border border-blue-200 bg-blue-50 p-4">
 											<h3 className="text-lg font-bold text-blue-700">
 												{node.fields.headline || "Call To Action"}
 											</h3>
@@ -323,7 +323,7 @@ export function PayloadContentRenderer({ content }) {
                             // Check for Test Block in fields
                             if (node.fields && node.fields.blockType === "test-block") {
                                 console.log("Found Test Block in fields:", node.fields);
-                                return (<div key={i} className="my-6 rounded-md border border-blue-100 bg-blue-50 p-4">
+                                return (<div key={`test-fallback-${i}-${node.blockType || 'test'}`} className="my-6 rounded-md border border-blue-100 bg-blue-50 p-4">
 											<h3 className="text-lg font-bold text-blue-700">
 												{node.fields.headline || "Test Block"}
 											</h3>
@@ -354,7 +354,7 @@ export function PayloadContentRenderer({ content }) {
                                 };
                                 // If no videoId is provided, show a placeholder
                                 if (!videoId) {
-                                    return (<div key={i} className="my-6 rounded-md border border-gray-200 bg-gray-50 p-4">
+                                    return (<div key={`node-${i}-${node.type || 'unknown'}`} className="my-6 rounded-md border border-gray-200 bg-gray-50 p-4">
 												<h3 className="text-lg font-bold text-gray-700">
 													{title}
 												</h3>
@@ -366,7 +366,7 @@ export function PayloadContentRenderer({ content }) {
 											</div>);
                                 }
                                 // Render the Bunny.net video player
-                                return (<div key={i} className="my-6">
+                                return (<div key={`bunny-video-${i}-${node.videoId || 'video'}`} className="my-6">
 											<h3 className="mb-2 text-lg font-bold">{title}</h3>
 											<div className="relative" style={{ paddingBottom: getPaddingBottom() }}>
 												<iframe src={`https://iframe.mediadelivery.net/embed/${libraryId}/${videoId}`} loading="lazy" style={{
@@ -389,7 +389,7 @@ export function PayloadContentRenderer({ content }) {
                                     if (!input)
                                         return "";
                                     // Regular expression to match YouTube video ID from various URL formats
-                                    const regExp = /^.*(?:(?:youtu\.be\/|v\/|vi\/|u\/\w\/|embed\/|shorts\/)|(?:(?:watch)?\?v(?:i)?=|\&v(?:i)?=))([^#\&\?]*).*/;
+                                    const regExp = /^.*(?:(?:youtu\.be\/|v\/|vi\/|u\/\w\/|embed\/|shorts\/)|(?:(?:watch)?\?v(?:i)?=|&v(?:i)?=))([^#&?]*).*/;
                                     const match = input.match(regExp);
                                     if (match === null || match === void 0 ? void 0 : match[1]) {
                                         // If it's a URL, return the extracted ID
@@ -415,7 +415,7 @@ export function PayloadContentRenderer({ content }) {
                                 };
                                 // If no videoId is provided, show a placeholder
                                 if (!youtubeId) {
-                                    return (<div key={i} className="my-6 rounded-md border border-gray-200 bg-gray-50 p-4">
+                                    return (<div key={`youtube-video-${i}-${node.videoId || 'video'}`} className="my-6 rounded-md border border-gray-200 bg-gray-50 p-4">
 												<h3 className="text-lg font-bold text-gray-700">
 													{title}
 												</h3>
@@ -427,7 +427,7 @@ export function PayloadContentRenderer({ content }) {
 											</div>);
                                 }
                                 // Render the YouTube video player
-                                return (<div key={i} className="my-6">
+                                return (<div key={`youtube-video-${i}-${node.videoId || 'video'}`} className="my-6">
 											<h3 className="mb-2 text-lg font-bold">{title}</h3>
 											<div className="relative" style={{ paddingBottom: getPaddingBottom() }}>
 												<iframe src={`https://www.youtube.com/embed/${youtubeId}`} loading="lazy" style={{

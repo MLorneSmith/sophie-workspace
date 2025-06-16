@@ -113,7 +113,7 @@ function MasonryWallWidget({
 	return (
 		<div className="grid grid-cols-2 gap-4 md:grid-cols-4">
 			{groups.map((group, index) => (
-				<div key={index} className={"grid gap-4"}>
+				<div key={`testimonial-group-${index}-${group[0]?.id || index}`} className={"grid gap-4"}>
 					{group.map((testimonial) => (
 						<TestimonialCard key={testimonial.id} testimonial={testimonial} />
 					))}
@@ -160,7 +160,7 @@ function TestimonialCard({
 					<Button asChild variant={"link"}>
 						<ExternalLink
 							className={"absolute right-0 top-4 hover:underline"}
-							link={testimonial.link!}
+							link={testimonial.link}
 						>
 							<ExternalLinkIcon className={"h-4"} />
 						</ExternalLink>
@@ -185,7 +185,7 @@ function TestimonialCard({
 					<div className="mt-4 flex items-center">
 						{Array.from({ length: 5 }).map((_, index) => (
 							<StarIcon
-								key={index}
+								key={`star-${testimonial.id}-${index}`}
 								className={`h-5 w-5 ${
 									index < testimonial.rating
 										? "text-yellow-400"

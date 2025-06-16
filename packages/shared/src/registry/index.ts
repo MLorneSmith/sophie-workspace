@@ -51,7 +51,11 @@ export function createRegistry<T, Names extends string = string>(): Registry<
 			await registry.setup();
 
 			if (names.length === 1) {
-				return await getImplementation(names[0]!);
+				const firstName = names[0];
+				if (!firstName) {
+					throw new Error("No implementation name provided");
+				}
+				return await getImplementation(firstName);
 			}
 
 			return await Promise.all(names.map((name) => getImplementation(name)));

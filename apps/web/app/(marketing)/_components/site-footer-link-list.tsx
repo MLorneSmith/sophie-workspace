@@ -15,8 +15,8 @@ export function FooterLinkList({ title, items }: FooterLinkListProps) {
 	return (
 		<ul>
 			<li className={cn("mb-3 text-base font-medium")}>{title}</li>
-			{items.map((item, index) => (
-				<li key={`${item.title}-${index}`} className="mb-2">
+			{items.map((item) => (
+				<li key={`footer-link-${item.href}`} className="mb-2">
 					<Link
 						href={item.href}
 						className={cn(

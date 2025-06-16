@@ -1,4 +1,9 @@
 import { callPayloadAPI } from "./payload-api";
+import type { SupabaseClient } from "@supabase/supabase-js";
+
+// Types for quiz and lesson relationships
+type QuizId = string | { value: string; relationTo?: string; id?: string };
+type QuizQuestion = string | { id?: string; value?: string; options?: unknown };
 
 /**
  * Get all published courses
@@ -6,7 +11,7 @@ import { callPayloadAPI } from "./payload-api";
  * @param supabaseClient Optional Supabase client (for client-side usage)
  * @returns The courses data
  */
-export async function getCourses(_options = {}, supabaseClient?: any) {
+export async function getCourses(_options = {}, supabaseClient?: SupabaseClient) {
 	return callPayloadAPI(
 		"courses?where[status][equals]=published&depth=1",
 		{},
@@ -24,7 +29,7 @@ export async function getCourses(_options = {}, supabaseClient?: any) {
 export async function getCourseBySlug(
 	slug: string,
 	_options = {},
-	supabaseClient?: any,
+	supabaseClient?: SupabaseClient,
 ) {
 	return callPayloadAPI(
 		`courses?where[slug][equals]=${slug}&depth=1`,
@@ -43,7 +48,7 @@ export async function getCourseBySlug(
 export async function getCourseLessons(
 	courseId: string,
 	_options = {},
-	supabaseClient?: any,
+	supabaseClient?: SupabaseClient,
 ) {
 	return callPayloadAPI(
 		`course_lessons?where[course_id][equals]=${courseId}&sort=lesson_number&depth=2&limit=100`,
@@ -62,7 +67,7 @@ export async function getCourseLessons(
 export async function getLessonBySlug(
 	slug: string,
 	_options = {},
-	supabaseClient?: any,
+	supabaseClient?: SupabaseClient,
 ) {
 	return callPayloadAPI(
 		`course_lessons?where[slug][equals]=${slug}&depth=2`,
@@ -79,9 +84,9 @@ export async function getLessonBySlug(
  * @returns The quiz data with questions
  */
 export async function getQuiz(
-	quizId: string | { value: string; relationTo?: string } | any,
+	quizId: QuizId,
 	_options = {},
-	supabaseClient?: any,
+	supabaseClient?: SupabaseClient,
 ) {
 	if (!quizId) {
 		console.error("getQuiz called with empty quizId");
@@ -184,7 +189,7 @@ export async function getQuiz(
 		if (typeof quiz.questions[0] === "string" || !quiz.questions[0].options) {
 			try {
 				// Get the question IDs
-				const questionIds = quiz.questions.map((q: any) =>
+				const questionIds = quiz.questions.map((q: QuizQuestion) =>
 					typeof q === "string" ? q : q.id || q.value || q,
 				);
 

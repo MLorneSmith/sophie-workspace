@@ -484,10 +484,10 @@ export async function* getStreamingChatCompletion(
 		// No longer need to add config to requestOptions
 
 		// Get the streaming response
-		// Using any type to avoid TypeScript errors with streaming
+		// Using unknown type to avoid TypeScript errors with streaming
 		const stream = (await client.chat.completions.create(
 			requestOptions,
-		)) as any;
+		)) as unknown as AsyncIterable<{ choices: Array<{ delta: { content?: string } }>; id?: string; usage?: { prompt_tokens?: number; completion_tokens?: number } }>;
 
 		// We'll collect token counts as they stream to calculate total usage
 		let promptTokens = 0;

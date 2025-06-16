@@ -108,8 +108,7 @@ export const enhanceRouteHandler = <
 			user = auth.data as UserParam;
 		}
 
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		let body: any;
+		let body: Body | undefined;
 
 		if (params?.schema) {
 			// clone the request to read the body
