@@ -91,11 +91,11 @@ export function PersonalAccountDropdown({
         aria-label="Open your profile menu"
         data-test={'account-dropdown-trigger'}
         className={cn(
-          'animate-in group/trigger fade-in focus:outline-primary flex cursor-pointer items-center border border-dashed group-data-[minimized=true]:px-0',
+          'animate-in group/trigger fade-in focus:outline-primary flex cursor-pointer items-center group-data-[minimized=true]:px-0',
           className ?? '',
           {
             ['active:bg-secondary/50 items-center gap-4 rounded-md' +
-            ' hover:bg-secondary p-2 transition-colors']: showProfileName,
+            ' hover:bg-secondary p-2 transition-colors border border-dashed']: showProfileName,
           },
         )}
       >
