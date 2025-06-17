@@ -149,7 +149,8 @@ ${improvementFormat}`,
 				data: suggestions,
 			};
 		} catch (error) {
-			/* TODO: Async logger needed */ logger.error(
+			// TODO: Async logger needed
+		// (await getLogger()).error(
 				"Error in outline suggestions action:",
 				{ data: error },
 			);

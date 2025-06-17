@@ -26,13 +26,13 @@ export default function ConvertEditorDataPage() {
 			const result = await convertExistingRecordsToTiptap();
 			setResults(result);
 		} catch (err) {
-			/* TODO: Async logger needed */ logger.error("Error converting data:", {
+			// TODO: Async logger needed
+		// (await getLogger()).error("Error converting data:", {
 				data: err,
 			});
 			setError(err instanceof Error ? err.message : "Unknown error occurred");
-		} finally {
+		} finally 
 			setIsConverting(false);
-		}
 	};
 
 	return (

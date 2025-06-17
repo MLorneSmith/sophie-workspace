@@ -394,7 +394,8 @@ export function QuizComponent({
 						}
 					}
 				} catch (err) {
-					/* TODO: Async logger needed */ logger.error(
+					// TODO: Async logger needed
+		// (await getLogger()).error(
 						"Error navigating to next lesson:",
 						{ data: err },
 					);

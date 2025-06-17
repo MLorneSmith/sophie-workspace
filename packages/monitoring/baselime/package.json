@@ -18,7 +18,8 @@
 	"dependencies": {
 		"@baselime/node-opentelemetry": "^0.5.8",
 		"@baselime/react-rum": "^0.3.1",
-		"@kit/monitoring-core": "workspace:*"
+		"@kit/monitoring-core": "workspace:*",
+		"@kit/shared": "workspace:*"
 	},
 	"devDependencies": {
 		"@kit/eslint-config": "workspace:*",

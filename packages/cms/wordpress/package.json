@@ -14,6 +14,9 @@
 		".": "./src/index.ts",
 		"./renderer": "./src/content-renderer.tsx"
 	},
+	"dependencies": {
+		"@kit/shared": "workspace:*"
+	},
 	"devDependencies": {
 		"@kit/cms-types": "workspace:*",
 		"@kit/eslint-config": "workspace:*",

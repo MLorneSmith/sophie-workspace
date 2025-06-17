@@ -96,7 +96,8 @@ async function SurveyPage() {
 			question.type === "multiple_choice" &&
 			(!question.options || question.options.length === 0)
 		) {
-			/* TODO: Async logger needed */ logger.info(
+			// TODO: Async logger needed
+		// (await getLogger()).info(
 				`Adding default options for question: ${question.id}`,
 			);
 

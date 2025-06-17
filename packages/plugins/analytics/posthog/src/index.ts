@@ -155,7 +155,8 @@ class ServerPostHogImpl {
 
 	log(...args: unknown[]) {
 		if (process.env.NODE_ENV === "development") {
-			/* TODO: Async logger needed */ logger.info("[ServerPostHog]", { data: ...args });
+			// TODO: Async logger needed
+		// (await getLogger()).info("[ServerPostHog]", { data: ...args });
 		}
 	}
 
@@ -220,7 +221,8 @@ class ClientPostHogImpl {
 
 	log(...args: unknown[]) {
 		if (process.env.NODE_ENV === "development") {
-			/* TODO: Async logger needed */ logger.info("[ClientPostHog]", { data: ...args });
+			// TODO: Async logger needed
+		// (await getLogger()).info("[ClientPostHog]", { data: ...args });
 		}
 	}
 

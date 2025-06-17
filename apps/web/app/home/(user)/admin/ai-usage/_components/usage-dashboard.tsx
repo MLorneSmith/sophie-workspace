@@ -57,14 +57,16 @@ export function UsageDashboard({ initialData }: UsageDashboardProps) {
 
 			// For now, just simulate data refresh
 			setTimeout(() => {
-				/* TODO: Async logger needed */ logger.info(
+				// TODO: Async logger needed
+		// (await getLogger()).info(
 					"Data refreshed for time range:",
 					{ data: selectedTimeRange },
 				);
 				// In a real implementation, this would use actual fetched data
 			}, 500);
 		} catch (error) {
-			/* TODO: Async logger needed */ logger.error(
+			// TODO: Async logger needed
+		// (await getLogger()).error(
 				"Error fetching usage data:",
 				{ data: error },
 			);

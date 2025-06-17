@@ -71,7 +71,8 @@ export async function submitBuildingBlocksAction(data: SubmitFormData) {
 			.single();
 
 		if (error) {
-			/* TODO: Async logger needed */ logger.error(
+			// TODO: Async logger needed
+		// (await getLogger()).error(
 				"Error submitting building blocks:",
 				{ data: error },
 			);
@@ -80,7 +81,8 @@ export async function submitBuildingBlocksAction(data: SubmitFormData) {
 
 		return { success: true, submissionId: result.id };
 	} catch (error) {
-		/* TODO: Async logger needed */ logger.error(
+		// TODO: Async logger needed
+		// (await getLogger()).error(
 			"Error in submitBuildingBlocksAction:",
 			{ data: error },
 		);

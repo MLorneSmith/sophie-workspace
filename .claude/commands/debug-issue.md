@@ -10,6 +10,8 @@ Usage: `/debug-issue [issue_reference]`
 
 This command reads an issue specification and launches a focused debugging session to resolve it.
 
+**CRITICAL**: Always review GitHub issue comments for the most current status and implementation progress, as issue descriptions may be outdated.
+
 ## 1. Adopt Role
 
 Load the debugging mindset:
@@ -193,7 +195,40 @@ const {
 } = issue;
 ```
 
-### 3.5 Load Additional Context
+### 3.5 Review GitHub Issue Comments (Critical Step)
+
+**IMPORTANT**: Always review GitHub issue comments for status updates, implementation progress, and current context:
+
+```bash
+# Review all comments on the GitHub issue for latest status
+gh issue view ${issue_number} --repo MLorneSmith/2025slideheroes --comments
+
+# This will show:
+# - Implementation status updates
+# - Progress reports
+# - Current phase information
+# - Next steps and priorities
+# - Technical decisions made
+# - Blockers and resolutions
+```
+
+**Why This Is Critical**:
+
+- GitHub issue descriptions may be outdated
+- Comments contain the most current status and context
+- Implementation progress is tracked in comments
+- Status updates override initial issue description
+- Comments reveal actual current state vs original problem
+
+**What to Look For**:
+
+- **Status Update Comments**: "IMPLEMENTATION STATUS UPDATE", "Progress Update", etc.
+- **Current Phase Information**: What's completed vs what's pending
+- **Next Steps**: Specific tasks and priorities for current session
+- **Technical Context**: Decisions, approaches, and discoveries
+- **Blockers and Solutions**: Known issues and their resolutions
+
+### 3.6 Load Additional Context
 
 After parsing the issue, load specific context based on the issue type:
 

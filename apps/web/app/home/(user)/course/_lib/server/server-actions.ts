@@ -78,7 +78,8 @@ export const updateCourseProgressAction = enhanceAction(
 						// Mark the certificate as generated
 						updateData.certificate_generated = true;
 					} catch (error) {
-						/* TODO: Async logger needed */ logger.error(
+						// TODO: Async logger needed
+		// (await getLogger()).error(
 							"Failed to generate certificate:",
 							{ data: error },
 						);
@@ -186,11 +187,13 @@ export const updateLessonProgressAction = enhanceAction(
 
 			if (lessonsData?.docs && lessonProgress) {
 				// Log the required lesson numbers for debugging
-				/* TODO: Async logger needed */ logger.info(
+				// TODO: Async logger needed
+		// (await getLogger()).info(
 					"Required lesson numbers:",
 					{ data: REQUIRED_LESSON_NUMBERS },
 				);
-				/* TODO: Async logger needed */ logger.info("Total required lessons:", {
+				// TODO: Async logger needed
+		// (await getLogger()).info("Total required lessons:", {
 					data: TOTAL_REQUIRED_LESSONS,
 				});
 
@@ -209,7 +212,8 @@ export const updateLessonProgressAction = enhanceAction(
 
 					// Log each completed required lesson for debugging
 					if (isCompleted) {
-						/* TODO: Async logger needed */ logger.info(
+						// TODO: Async logger needed
+		// (await getLogger()).info(
 							`Lesson ${lesson.lesson_number} (${lesson.title}) is completed`,
 						);
 					}
@@ -225,10 +229,12 @@ export const updateLessonProgressAction = enhanceAction(
 				// Course is completed when all required lessons are done
 				const isCompleted = completedRequiredLessons >= TOTAL_REQUIRED_LESSONS;
 
-				/* TODO: Async logger needed */ logger.info(
+				// TODO: Async logger needed
+		// (await getLogger()).info(
 					`Course completion: ${completedRequiredLessons}/${TOTAL_REQUIRED_LESSONS} required lessons (${courseCompletionPercentage}%)`,
 				);
-				/* TODO: Async logger needed */ logger.info(
+				// TODO: Async logger needed
+		// (await getLogger()).info(
 					`Course completed: ${isCompleted ? "Yes" : "No"}`,
 				);
 

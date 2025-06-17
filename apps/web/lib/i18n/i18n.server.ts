@@ -93,7 +93,8 @@ function getLanguageOrFallback(selectedLanguage: string | undefined) {
 		return language.data;
 	}
 
-	/* TODO: Async logger needed */ logger.warn(`The language passed is invalid. Defaulted back to "${languages[0]}"`, { data:  });
+	// TODO: Async logger needed
+	// TODO: Fix logger call - was: warn
 
 	return languages[0];
 }

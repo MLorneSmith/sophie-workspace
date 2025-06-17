@@ -58,7 +58,8 @@ export const simplifyTextAction = enhanceAction(
 				response,
 			};
 		} catch (error) {
-			/* TODO: Async logger needed */ logger.error(
+			// TODO: Async logger needed
+		// (await getLogger()).error(
 				"Error in simplifyTextAction:",
 				{ data: error },
 			);

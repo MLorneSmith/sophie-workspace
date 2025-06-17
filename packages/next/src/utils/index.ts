@@ -11,7 +11,8 @@ export const zodParseFactory =
 		try {
 			return schema.parse(data) as unknown;
 		} catch (err) {
-			/* TODO: Async logger needed */ logger.error(err);
+			// TODO: Async logger needed
+		// (await getLogger()).error(err);
 
 			// handle error
 			throw new Error(`Invalid data: ${err as string}`);

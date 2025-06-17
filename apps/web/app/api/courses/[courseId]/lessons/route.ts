@@ -17,28 +17,30 @@ export const GET = enhanceRouteHandler(
 		}
 
 		try {
-			/* TODO: Async logger needed */ logger.info(
+			// TODO: Async logger needed
+		// (await getLogger()).info(
 				`API - Fetching lessons for course ID: ${params.courseId}`,
 			);
 			const lessons = await getCourseLessons(params.courseId);
 
 			// Debug lessons data
-			/* TODO: Async logger needed */ logger.info("API - Lessons data:", {
+			// TODO: Async logger needed
+		// (await getLogger()).info("API - Lessons data:", {
 				count: lessons.docs?.length || 0,
 				sampleLesson: lessons.docs?.[0]
-					? {
+					? 
 							id: lessons.docs[0].id,
 							title: lessons.docs[0].title,
 							lesson_number: lessons.docs[0].lesson_number,
 							quiz_id: lessons.docs[0].quiz_id,
-						}
 					: null,
 			});
 
 			// Log detailed structure of the first lesson to understand relationship structure
 			if (lessons.docs?.[0]) {
 				const sampleLesson = lessons.docs[0];
-				/* TODO: Async logger needed */ logger.info(
+				// TODO: Async logger needed
+		// (await getLogger()).info(
 					"API - Detailed sample lesson structure:",
 					{
 						featured_image_id: sampleLesson.featured_image_id,
@@ -52,7 +54,8 @@ export const GET = enhanceRouteHandler(
 
 			return NextResponse.json(lessons);
 		} catch (error) {
-			/* TODO: Async logger needed */ logger.error(
+			// TODO: Async logger needed
+		// (await getLogger()).error(
 				"Error fetching course lessons:",
 				{ data: error },
 			);

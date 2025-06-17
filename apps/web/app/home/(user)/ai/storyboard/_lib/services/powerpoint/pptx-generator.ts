@@ -1,4 +1,4 @@
-import { getLogger, type Logger } from "@kit/shared/logger";
+import { createServiceLogger, type Logger } from "@kit/shared/logger";
 import pptxgen from "pptxgenjs";
 
 // Import Logger from the root
@@ -151,20 +151,9 @@ export class PptxGenerator {
 		this.pptx = new pptxgen();
 		this.defineSlideTemplates();
 
-		// Initialize with a placeholder logger that satisfies the Logger interface
-		const placeholderLogger: Logger = {
-			info: console.info,
-			error: console.error,
-			warn: console.warn,
-			debug: console.debug,
-			fatal: console.error, // Map fatal to console.error for the placeholder
-		};
-		this.logger = placeholderLogger;
-
-		// Get the actual logger asynchronously and replace the placeholder
-		getLogger().then((loggerInstance) => {
-			this.logger = loggerInstance;
-		});
+		// Initialize logger using createServiceLogger for synchronous access
+		const { getLogger } = createServiceLogger("PPTX-GENERATOR");
+		this.logger = getLogger();
 	}
 
 	/**
@@ -536,7 +525,13 @@ export class PptxGenerator {
 								break;
 						}
 					} catch (error: unknown) {
-						this.logger.error({ chartType: content.chartType, { arg1: error: error.message }, arg2: "Error adding chart to slide", arg3:  });
+						const errorMessage =
+							error instanceof Error ? error.message : String(error);
+						this.logger.error({
+							chartType: content.chartType,
+							error: errorMessage,
+							message: "Error adding chart to slide",
+						});
 
 						// Add error text instead of failing completely
 						slide.addText(
@@ -566,7 +561,13 @@ export class PptxGenerator {
 							h: position.h,
 						});
 					} catch (error: unknown) {
-						this.logger.error({ imageUrl: content.imageUrl, { arg1: error: error.message }, arg2: "Error adding image to slide", arg3:  });
+						const errorMessage =
+							error instanceof Error ? error.message : String(error);
+						this.logger.error({
+							imageUrl: content.imageUrl,
+							error: errorMessage,
+							message: "Error adding image to slide",
+						});
 
 						// Add error text instead of failing completely
 						slide.addText(

@@ -74,7 +74,8 @@ async function getContentItems() {
 				})),
 			)
 			.catch((error) => {
-				/* TODO: Async logger needed */ logger.error(
+				// TODO: Async logger needed
+		// (await getLogger()).error(
 					"Error fetching posts for sitemap:",
 					{ data: error },
 				);
@@ -98,7 +99,8 @@ async function getContentItems() {
 				})),
 			)
 			.catch((error) => {
-				/* TODO: Async logger needed */ logger.error(
+				// TODO: Async logger needed
+		// (await getLogger()).error(
 					"Error fetching docs for sitemap:",
 					{ data: error },
 				);
@@ -110,7 +112,8 @@ async function getContentItems() {
 			items.flat(),
 		);
 	} catch (error) {
-		/* TODO: Async logger needed */ logger.error(
+		// TODO: Async logger needed
+		// (await getLogger()).error(
 			"Error generating content items for sitemap:",
 			{ data: error },
 		);

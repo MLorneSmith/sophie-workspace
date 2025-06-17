@@ -27,7 +27,8 @@ export function saveLastAuthMethod(authMethod: LastAuthMethod): void {
 	try {
 		localStorage.setItem(LAST_AUTH_METHOD_KEY, JSON.stringify(authMethod));
 	} catch (error) {
-		/* TODO: Async logger needed */ logger.warn("Failed to save last auth method:", { data: error });
+		// TODO: Async logger needed
+		// (await getLogger()).warn("Failed to save last auth method:", { data: error });
 	}
 }
 
@@ -59,7 +60,8 @@ export function getLastAuthMethod() {
 
 		return parsed;
 	} catch (error) {
-		/* TODO: Async logger needed */ logger.warn("Failed to get last auth method:", { data: error });
+		// TODO: Async logger needed
+		// (await getLogger()).warn("Failed to get last auth method:", { data: error });
 		return null;
 	}
 }
@@ -71,6 +73,7 @@ export function clearLastAuthMethod() {
 	try {
 		localStorage.removeItem(LAST_AUTH_METHOD_KEY);
 	} catch (error) {
-		/* TODO: Async logger needed */ logger.warn("Failed to clear last auth method:", { data: error });
+		// TODO: Async logger needed
+		// (await getLogger()).warn("Failed to clear last auth method:", { data: error });
 	}
 }

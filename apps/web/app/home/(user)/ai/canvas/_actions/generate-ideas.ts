@@ -56,7 +56,8 @@ export const generateIdeasAction = enhanceAction(
 				"No content provided yet. Please suggest some initial ideas.";
 
 			// Debug log the request
-			/* TODO: Async logger needed */ logger.info("Ideas Request:", {
+			// TODO: Async logger needed
+		// (await getLogger()).info("Ideas Request:", {
 				contentLength: contentToUse.length,
 				userId: user.id,
 				submissionId: data.submissionId,
@@ -111,7 +112,8 @@ ${improvementFormat}`,
 			const duration = performance.now() - startTime;
 
 			// Log metrics
-			/* TODO: Async logger needed */ logger.info("AI Request Metrics:", {
+			// TODO: Async logger needed
+		// (await getLogger()).info("AI Request Metrics:", {
 				duration,
 				userId: user.id,
 				status: "success",
@@ -121,7 +123,8 @@ ${improvementFormat}`,
 			const improvements = parseImprovements(response.content, data.type);
 
 			// Debug log the parsed improvements
-			/* TODO: Async logger needed */ logger.info("Parsed Ideas:", {
+			// TODO: Async logger needed
+		// (await getLogger()).info("Parsed Ideas:", {
 				data: improvements,
 			});
 
@@ -133,7 +136,8 @@ ${improvementFormat}`,
 				},
 			};
 		} catch (error) {
-			/* TODO: Async logger needed */ logger.error("Error in ideas action:", {
+			// TODO: Async logger needed
+		// (await getLogger()).error("Error in ideas action:", {
 				data: error,
 			});
 

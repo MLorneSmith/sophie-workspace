@@ -74,7 +74,8 @@ export function usePasswordSignUpFlow({
 					onSignUp(data.user?.id);
 				}
 			} catch (error) {
-				/* TODO: Async logger needed */ logger.error(error);
+				// TODO: Async logger needed
+		// (await getLogger()).error(error);
 				throw error;
 			} finally {
 				resetCaptchaToken?.();

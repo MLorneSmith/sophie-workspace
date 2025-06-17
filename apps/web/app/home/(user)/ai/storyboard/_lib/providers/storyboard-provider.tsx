@@ -113,7 +113,8 @@ export function StoryboardProvider({ children }: StoryboardProviderProps) {
 					});
 				}
 			} catch (err) {
-				/* TODO: Async logger needed */ logger.error("Error fetching presentation:", { data: err });
+				// TODO: Async logger needed
+		// TODO: Fix logger call - was: error
 				setError(
 					err instanceof Error
 						? err
@@ -148,7 +149,8 @@ export function StoryboardProvider({ children }: StoryboardProviderProps) {
 				toast.success("Storyboard saved successfully");
 				return true;
 			} catch (err) {
-				/* TODO: Async logger needed */ logger.error("Error saving storyboard:", { data: err });
+				// TODO: Async logger needed
+		// TODO: Fix logger call - was: error
 				// Check if the error is an instance of Error and has a message property
 				const errorMessage =
 					err instanceof Error ? err.message : "Failed to save storyboard";

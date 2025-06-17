@@ -50,7 +50,8 @@ export function PresentationSelector({ onSelect }: PresentationSelectorProps) {
 
 				setPresentations(data || []);
 			} catch (err) {
-				/* TODO: Async logger needed */ logger.error(
+				// TODO: Async logger needed
+		// (await getLogger()).error(
 					"Error fetching presentations:",
 					{ data: err },
 				);

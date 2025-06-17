@@ -35,7 +35,8 @@ export function ChartTypeSelector({
 
 	const handleChartTypeChange = (chartTypeId: string) => {
 		// TODO: Implement logic to update the specific content area's chart type and data
-		/* TODO: Async logger needed */ logger.info(`Chart type changed for slide ${slide.id}, { arg1: content area ${contentAreaIndex}: ${chartTypeId}`, arg2:  });
+		// TODO: Async logger needed
+		// TODO: Fix logger call - was: info
 		// This will require a more detailed structure for chart data within SlideContent
 		// For now, just logging the change.
 	};

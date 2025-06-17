@@ -137,7 +137,8 @@ export function OnboardingForm() {
 					throw new Error(result.message || "Failed to submit form");
 				}
 			} catch (error) {
-				/* TODO: Async logger needed */ logger.error("Failed to submit form:", { data: error });
+				// TODO: Async logger needed
+				// TODO: Fix logger call - was: error
 				analytics.trackEvent("onboarding_error", {
 					error: "Form submission failed",
 				});
@@ -171,7 +172,8 @@ export function OnboardingForm() {
 				const parsedData = JSON.parse(savedData);
 				form.reset(parsedData);
 			} catch (error) {
-				/* TODO: Async logger needed */ logger.error("Error parsing saved form data:", { data: error });
+				// TODO: Async logger needed
+				// TODO: Fix logger call - was: error
 			}
 		}
 	}, [form]);
@@ -730,7 +732,8 @@ function CompleteStep() {
 
 			const isValid = await form.trigger();
 			if (!isValid) {
-				/* TODO: Async logger needed */ logger.error("Form validation failed");
+				// TODO: Async logger needed
+				// TODO: Fix logger call - was: error
 				setIsSubmitting(false);
 				return;
 			}
@@ -739,11 +742,13 @@ function CompleteStep() {
 			if (result.success && result.isComplete === true) {
 				router.push("/home");
 			} else {
-				/* TODO: Async logger needed */ logger.error("Failed to submit form or mark user as onboarded:", { arg1: result.message, arg2:  });
+				// TODO: Async logger needed
+				// TODO: Fix logger call - was: error
 				alert(`Failed to complete onboarding: ${result.message}`);
 			}
 		} catch (error) {
-			/* TODO: Async logger needed */ logger.error("Error in handleGetStarted:", { data: error });
+			// TODO: Async logger needed
+			// TODO: Fix logger call - was: error
 			alert("An error occurred while submitting the form. Please try again.");
 		} finally {
 			setIsSubmitting(false);

@@ -69,10 +69,12 @@ export function QuestionCard({
 	const handleSubmit = () => {
 		if (selectedOption) {
 			// Log the selected option and available options for debugging
-			/* TODO: Async logger needed */ logger.info("Selected option:", {
+			// TODO: Async logger needed
+		// (await getLogger()).info("Selected option:", {
 				data: selectedOption,
 			});
-			/* TODO: Async logger needed */ logger.info("Available options:", {
+			// TODO: Async logger needed
+		// (await getLogger()).info("Available options:", {
 				data: question.options,
 			});
 
@@ -81,11 +83,13 @@ export function QuestionCard({
 			if (option) {
 				onAnswer(question.id, option.text, option.score || 0);
 			} else {
-				/* TODO: Async logger needed */ logger.error(
+				// TODO: Async logger needed
+		// (await getLogger()).error(
 					"Selected option not found:",
 					{ data: selectedOption },
 				);
-				/* TODO: Async logger needed */ logger.error("Question options:", {
+				// TODO: Async logger needed
+		// (await getLogger()).error("Question options:", {
 					data: question.options,
 				});
 			}

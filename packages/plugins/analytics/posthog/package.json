@@ -14,6 +14,7 @@
 		"./server": "./src/server.ts"
 	},
 	"dependencies": {
+		"@kit/shared": "workspace:*",
 		"posthog-js": "1.194.2",
 		"posthog-node": "4.3.0"
 	},

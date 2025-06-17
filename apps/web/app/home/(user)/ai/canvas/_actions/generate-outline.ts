@@ -207,11 +207,12 @@ const GenerateOutlineSchema = z.object({
 
 export const generateOutlineAction = enhanceAction(
 	async (data: z.infer<typeof GenerateOutlineSchema>, _user) => {
+		const logger = getLogger();
+
 		try {
 			const supabase = getSupabaseServerClient();
 			const { submissionId, forceRegenerate } = data;
-
-			/* TODO: Async logger needed */ logger.info("Generate outline action called with:", {
+			logger.info("Generate outline action called with:", {
 				submissionId,
 				forceRegenerate,
 			});
@@ -235,12 +236,15 @@ export const generateOutlineAction = enhanceAction(
 							Array.isArray(parsedOutline.content) &&
 							parsedOutline.content.length > 1
 						) {
-							/* TODO: Async logger needed */ logger.info("Valid outline exists and force regenerate is false, { arg1: returning existing outline", arg2:  });
+							logger.info({
+								message:
+									"Valid outline exists and force regenerate is false, returning existing outline",
+							});
 							return { success: true, data: parsedOutline };
 						}
 					} catch (_e) {
 						// If parsing fails, continue to regeneration
-						/* TODO: Async logger needed */ logger.info("Failed to parse existing outline, { data: will regenerate" });
+						logger.info("Failed to parse existing outline, will regenerate");
 					}
 				}
 			}
@@ -256,10 +260,12 @@ export const generateOutlineAction = enhanceAction(
 				throw new Error("Failed to fetch submission data");
 			}
 
-			/* TODO: Async logger needed */ logger.info("Generating outline for submission:", { data: data.submissionId });
-			/* TODO: Async logger needed */ logger.info("Raw data:", { arg1: {
+			logger.info("Generating outline for submission:", {
+				data: data.submissionId,
+			});
+			logger.info("Raw data:", {
 				situation: submission.situation
-					? `${submission.situation.substring(0, arg2: 50 })}...`
+					? `${submission.situation.substring(0, 50)}...`
 					: "null",
 				complication: submission.complication
 					? `${submission.complication.substring(0, 50)}...`
@@ -274,8 +280,8 @@ export const generateOutlineAction = enhanceAction(
 			const complicationDoc = parseTiptapDocument(submission.complication);
 			const answerDoc = parseTiptapDocument(submission.answer);
 
-			/* TODO: Async logger needed */ logger.info("Parsed documents:", { data: {
-				situationHasContent: situationDoc.content.some(hasValidText }),
+			logger.info("Parsed documents:", {
+				situationHasContent: situationDoc.content.some(hasValidText),
 				complicationHasContent: complicationDoc.content.some(hasValidText),
 				answerHasContent: answerDoc.content.some(hasValidText),
 			});
@@ -365,7 +371,7 @@ export const generateOutlineAction = enhanceAction(
 				},
 			};
 
-			/* TODO: Async logger needed */ logger.info("Generated outline content with sections:", {
+			logger.info("Generated outline content with sections:", {
 				totalNodes: outlineContent.content.length,
 				firstNodeType:
 					outlineContent.content.length > 0 && outlineContent.content[0]
@@ -375,7 +381,7 @@ export const generateOutlineAction = enhanceAction(
 
 			// Update the outline field in the database with stringified Tiptap document
 			const outlineString = JSON.stringify(finalOutlineContent);
-			/* TODO: Async logger needed */ logger.info("Outline JSON length:", { data: outlineString.length });
+			logger.info("Outline JSON length:", { data: outlineString.length });
 
 			const { error: updateError } = await supabase
 				.from("building_blocks_submissions")
@@ -383,18 +389,18 @@ export const generateOutlineAction = enhanceAction(
 				.eq("id", data.submissionId);
 
 			if (updateError) {
-				/* TODO: Async logger needed */ logger.error("Failed to update outline:", { data: updateError });
+				logger.error("Failed to update outline:", { data: updateError });
 				throw new Error("Failed to update outline");
 			}
 
-			/* TODO: Async logger needed */ logger.info("Successfully updated outline in database");
+			logger.info("Successfully updated outline in database");
 
 			return {
 				success: true,
 				data: finalOutlineContent,
 			};
 		} catch (error) {
-			/* TODO: Async logger needed */ logger.error("Error in generate outline action:", { data: error });
+			logger.error("Error in generate outline action:", { data: error });
 
 			return {
 				success: false,
@@ -407,9 +413,10 @@ export const generateOutlineAction = enhanceAction(
 		auth: true,
 		typeCheck: (data: unknown): GenerateOutlineParams => {
 			// The typecheck option helps with Zod optional field handling
+			const typedData = data as any;
 			return {
-				submissionId: data.submissionId,
-				forceRegenerate: data.forceRegenerate === true,
+				submissionId: typedData.submissionId,
+				forceRegenerate: typedData.forceRegenerate === true,
 			};
 		},
 	},

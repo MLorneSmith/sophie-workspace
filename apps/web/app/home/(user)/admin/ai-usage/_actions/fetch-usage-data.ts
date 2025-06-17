@@ -88,7 +88,8 @@ export const fetchUsageDataAction = enhanceAction(
 				data: stats,
 			};
 		} catch (error) {
-			/* TODO: Async logger needed */ logger.error(
+			// TODO: Async logger needed
+		// (await getLogger()).error(
 				"Error fetching AI usage data:",
 				{ data: error },
 			);
@@ -188,10 +189,10 @@ function groupLogsByDay(
 				.toISOString()
 				.split("T")[0] as string; // Get YYYY-MM-DD
 		} catch (_error) {
-			/* TODO: Async logger needed */ logger.error("Invalid timestamp:", {
+			// TODO: Async logger needed
+		// (await getLogger()).error("Invalid timestamp:", {
 				data: log.request_timestamp,
 			});
-			continue; // Skip logs with invalid timestamps
 		}
 		if (!dayMap[date]) {
 			dayMap[date] = { cost: 0, tokens: 0 };

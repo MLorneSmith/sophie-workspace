@@ -59,7 +59,8 @@ export const GET = enhanceRouteHandler(
 			const { data, error } = await query;
 
 			if (error) {
-				/* TODO: Async logger needed */ logger.error(
+				// TODO: Async logger needed
+		// (await getLogger()).error(
 					"Error fetching session costs:",
 					{ data: error },
 				);
@@ -85,7 +86,8 @@ export const GET = enhanceRouteHandler(
 				cost: totalCost,
 			});
 		} catch (error) {
-			/* TODO: Async logger needed */ logger.error(
+			// TODO: Async logger needed
+		// (await getLogger()).error(
 				"Error in session-cost API route:",
 				{ data: error },
 			);

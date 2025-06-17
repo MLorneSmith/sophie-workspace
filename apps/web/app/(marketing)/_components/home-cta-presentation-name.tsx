@@ -20,7 +20,8 @@ export function CtaPresentationName() {
 				]}
 				onChange={(e) => {
 					// Handle search input changes
-					/* TODO: Async logger needed */ logger.info("Search input:", {
+					// TODO: Async logger needed
+		// (await getLogger()).info("Search input:", {
 						data: e.target.value,
 					});
 				}}
@@ -29,7 +30,8 @@ export function CtaPresentationName() {
 					// Handle search submission
 					const input = e.currentTarget.querySelector("input");
 					if (input) {
-						/* TODO: Async logger needed */ logger.info("Search submitted:", {
+						// TODO: Async logger needed
+		// (await getLogger()).info("Search submitted:", {
 							data: input.value,
 						});
 					}

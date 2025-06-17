@@ -14,6 +14,7 @@
 
 import * as crypto from "node:crypto";
 import { type NextRequest, NextResponse } from "next/server";
+import { createServiceLogger } from "@kit/shared/logger";
 
 interface CachedResponse {
 	body: string | null;
@@ -47,6 +48,7 @@ class RequestDeduplicationManager {
 	private cache = new Map<string, RequestFingerprint>();
 	private cleanupInterval: NodeJS.Timeout | null = null;
 	private readonly config: DeduplicationConfig;
+	private readonly logger = createServiceLogger("REQUEST-DEDUP").getLogger();
 
 	constructor(config?: Partial<DeduplicationConfig>) {
 		this.config = {
@@ -391,17 +393,9 @@ class RequestDeduplicationManager {
 			return;
 		}
 
-		const timestamp = new Date().toISOString();
-		const prefix = `[REQ-DEDUP-${level.toUpperCase()}] ${timestamp}`;
-
-		if (data) {
-			console[level === "error" ? "error" : "log"](
-				`${prefix} ${message}`,
-				data,
-			);
-		} else {
-			console[level === "error" ? "error" : "log"](`${prefix} ${message}`);
-		}
+		// Use enhanced logger with context data
+		const context = data ? { requestDedup: data } : undefined;
+		this.logger[level](message, context);
 	}
 }
 

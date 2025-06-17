@@ -62,7 +62,8 @@ export class OtpPo {
 	 * @param otpCode The 6-digit OTP code
 	 */
 	async enterOtpCode(otpCode: string) {
-		/* TODO: Async logger needed */ logger.info(
+		// TODO: Async logger needed
+		// (await getLogger()).info(
 			`Entering OTP code: ${otpCode}`,
 		);
 		await this.page.fill("[data-input-otp]", otpCode);

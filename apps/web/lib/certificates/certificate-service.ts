@@ -127,8 +127,10 @@ export async function generateCertificate({
 	}
 
 	// 3. Fill the form with the user's name
-	/* TODO: Async logger needed */ logger.info("Filling form with user name:", { data: fullName });
-	/* TODO: Async logger needed */ logger.info("Using field name:", { data: nameFieldName });
+	// TODO: Async logger needed
+		// TODO: Fix logger call - was: info
+	// TODO: Async logger needed
+		// TODO: Fix logger call - was: info
 
 	const fillFormResponse = await fetch("https://api.pdf.co/v1/pdf/edit/add", {
 		method: "POST",
@@ -163,31 +165,39 @@ export async function generateCertificate({
 	const certificateBuffer = await certificateResponse.arrayBuffer();
 
 	// 5. Store the certificate in Supabase Storage
-	/* TODO: Async logger needed */ logger.info("Starting certificate storage process");
-	/* TODO: Async logger needed */ logger.info("User ID:", { data: userId });
-	/* TODO: Async logger needed */ logger.info("Course ID:", { data: courseId });
+	// TODO: Async logger needed
+		// TODO: Fix logger call - was: info
+	// TODO: Async logger needed
+		// TODO: Fix logger call - was: info
+	// TODO: Async logger needed
+		// TODO: Fix logger call - was: info
 
 	const supabase = getSupabaseServerClient();
 
 	// Check if the certificates bucket exists, create it if it doesn't
-	/* TODO: Async logger needed */ logger.info("Checking if certificates bucket exists");
+	// TODO: Async logger needed
+		// TODO: Fix logger call - was: info
 
 	try {
 		const { data: buckets, error: bucketsError } =
 			await supabase.storage.listBuckets();
 
 		if (bucketsError) {
-			/* TODO: Async logger needed */ logger.error("Failed to list buckets:", { data: bucketsError.message });
+			// TODO: Async logger needed
+		// TODO: Fix logger call - was: error
 			throw new Error(`Failed to list buckets: ${bucketsError.message}`);
 		}
 
-		/* TODO: Async logger needed */ logger.info(`Found ${buckets?.length || 0} buckets`);
+		// TODO: Async logger needed
+		// TODO: Fix logger call - was: info
 
 		// Log all bucket names for debugging
 		if (buckets && buckets.length > 0) {
-			/* TODO: Async logger needed */ logger.info("Existing buckets:");
+			// TODO: Async logger needed
+		// TODO: Fix logger call - was: info
 			for (const bucket of buckets) {
-				/* TODO: Async logger needed */ logger.info(`- ${bucket.name}`);
+				// TODO: Async logger needed
+		// TODO: Fix logger call - was: info
 			}
 		}
 
@@ -196,7 +206,8 @@ export async function generateCertificate({
 		);
 
 		if (!certificatesBucket) {
-			/* TODO: Async logger needed */ logger.info("Certificates bucket does not exist, { data: creating it" });
+			// TODO: Async logger needed
+		// TODO: Fix logger call - was: info
 
 			// Try to create the bucket with multiple attempts if needed
 			let createBucketError = null;
@@ -216,18 +227,21 @@ export async function generateCertificate({
 
 					if (error) {
 						createBucketError = error;
-						/* TODO: Async logger needed */ logger.error(`Attempt ${retryCount + 1}: Failed to create certificates bucket:`, { arg1: error.message, arg2:  });
+						// TODO: Async logger needed
+		// TODO: Fix logger call - was: error
 						retryCount++;
 						// Wait a bit before retrying
 						await new Promise((resolve) => setTimeout(resolve, 1000));
 					} else {
-						/* TODO: Async logger needed */ logger.info("Created certificates bucket successfully");
+						// TODO: Async logger needed
+		// TODO: Fix logger call - was: info
 						createBucketError = null;
 						break;
 					}
 				} catch (error) {
 					createBucketError = error;
-					/* TODO: Async logger needed */ logger.error(`Attempt ${retryCount + 1}: Exception creating certificates bucket:`, { arg1: error, arg2:  });
+					// TODO: Async logger needed
+		// TODO: Fix logger call - was: error
 					retryCount++;
 					// Wait a bit before retrying
 					await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -235,26 +249,31 @@ export async function generateCertificate({
 			}
 
 			if (createBucketError) {
-				/* TODO: Async logger needed */ logger.error("Failed to create certificates bucket after multiple attempts:", { arg1: createBucketError, arg2:  });
+				// TODO: Async logger needed
+		// TODO: Fix logger call - was: error
 				throw new Error(
 					`Failed to create certificates bucket: ${(createBucketError as Error)?.message || String(createBucketError)}`,
 				);
 			}
 		} else {
-			/* TODO: Async logger needed */ logger.info("Certificates bucket already exists");
+			// TODO: Async logger needed
+		// TODO: Fix logger call - was: info
 		}
 	} catch (error) {
-		/* TODO: Async logger needed */ logger.error("Error in bucket creation process:", { data: error });
+		// TODO: Async logger needed
+		// TODO: Fix logger call - was: error
 		throw error;
 	}
 
 	// Create a unique filename for the certificate
 	const timestamp = Date.now();
 	const fileName = `${userId}/${courseId}/${timestamp}.pdf`;
-	/* TODO: Async logger needed */ logger.info("Certificate file path:", { data: fileName });
+	// TODO: Async logger needed
+		// TODO: Fix logger call - was: info
 
 	try {
-		/* TODO: Async logger needed */ logger.info("Uploading certificate to Supabase Storage");
+		// TODO: Async logger needed
+		// TODO: Fix logger call - was: info
 		const { error: uploadError } = await supabase.storage
 			.from("certificates")
 			.upload(fileName, certificateBuffer, {
@@ -263,13 +282,16 @@ export async function generateCertificate({
 			});
 
 		if (uploadError) {
-			/* TODO: Async logger needed */ logger.error("Failed to upload certificate:", { data: uploadError.message });
+			// TODO: Async logger needed
+		// TODO: Fix logger call - was: error
 			throw new Error(`Failed to upload certificate: ${uploadError.message}`);
 		}
 
-		/* TODO: Async logger needed */ logger.info("Certificate uploaded successfully");
+		// TODO: Async logger needed
+		// TODO: Fix logger call - was: info
 	} catch (error) {
-		/* TODO: Async logger needed */ logger.error("Error in certificate upload process:", { data: error });
+		// TODO: Async logger needed
+		// TODO: Fix logger call - was: error
 		throw error;
 	}
 

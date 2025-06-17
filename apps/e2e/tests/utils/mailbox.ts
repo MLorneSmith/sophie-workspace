@@ -89,7 +89,8 @@ export class Mailbox {
 			throw new Error("No link found in email");
 		}
 
-		/* TODO: Async logger needed */ logger.info(`Visiting ${linkHref} from mailbox ${email}...`);
+		// TODO: Async logger needed
+		// (await getLogger()).info(`Visiting ${linkHref} from mailbox ${email}...`);
 
 		return this.page.goto(linkHref);
 	}
@@ -101,7 +102,8 @@ export class Mailbox {
 	 * @returns The OTP code
 	 */
 	async getOtpFromEmail(email: string, deleteAfter = false) {
-		/* TODO: Async logger needed */ logger.info(`Retrieving OTP from mailbox ${email} ...`);
+		// TODO: Async logger needed
+		// (await getLogger()).info(`Retrieving OTP from mailbox ${email} ...`);
 
 		if (!email) {
 			throw new Error("Invalid email");
@@ -125,7 +127,8 @@ export class Mailbox {
 		const text = json.HTML.match(/Your one-time password is: (\d{6})/)?.[1];
 
 		if (text) {
-			/* TODO: Async logger needed */ logger.info(`OTP code found in text: ${text}`);
+			// TODO: Async logger needed
+			// (await getLogger()).info(`OTP code found in text: ${text}`);
 			return text;
 		}
 
@@ -139,7 +142,8 @@ export class Mailbox {
 			subject?: string;
 		},
 	) {
-		/* TODO: Async logger needed */ logger.info(`Retrieving email from mailbox ${email}...`);
+		// TODO: Async logger needed
+		// (await getLogger()).info(`Retrieving email from mailbox ${email}...`);
 
 		const url = `${Mailbox.URL}/api/v1/search?query=to:${email}`;
 		const response = await fetch(url);
@@ -151,7 +155,8 @@ export class Mailbox {
 		const messagesResponse = (await response.json()) as MessagesResponse;
 
 		if (!messagesResponse || !messagesResponse.messages?.length) {
-			/* TODO: Async logger needed */ logger.info(`No emails found for mailbox ${email}`);
+			// TODO: Async logger needed
+			// (await getLogger()).info(`No emails found for mailbox ${email}`);
 
 			return;
 		}
@@ -162,7 +167,8 @@ export class Mailbox {
 						item.Subject.includes(params.subject),
 					);
 
-					/* TODO: Async logger needed */ logger.info(`Found ${filtered.length} emails with subject ${params.subject}`, { data:  });
+					// TODO: Async logger needed
+					// (await getLogger()).info(`Found ${filtered.length} emails with subject ${params.subject}`, { data:  });
 
 					// retrieve the latest by timestamp
 					return filtered.reduce((acc, item) => {
@@ -200,7 +206,8 @@ export class Mailbox {
 
 		// delete message
 		if (params.deleteAfter) {
-			/* TODO: Async logger needed */ logger.info(`Deleting email ${messageId} ...`);
+			// TODO: Async logger needed
+			// (await getLogger()).info(`Deleting email ${messageId} ...`);
 
 			const res = await fetch(`${Mailbox.URL}/api/v1/messages`, {
 				method: "DELETE",
@@ -208,7 +215,8 @@ export class Mailbox {
 			});
 
 			if (!res.ok) {
-				/* TODO: Async logger needed */ logger.error(`Failed to delete email: ${res.statusText}`);
+				// TODO: Async logger needed
+				// (await getLogger()).error(`Failed to delete email: ${res.statusText}`);
 			}
 		}
 

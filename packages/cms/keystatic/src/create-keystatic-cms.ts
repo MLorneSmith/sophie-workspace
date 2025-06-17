@@ -20,7 +20,8 @@ export async function createKeystaticClient() {
 		return createClient();
 	}
 
-	/* TODO: Async logger needed */ logger.error(`[CMS] Keystatic client using "Local" mode is only available in Node.js runtime. Please choose a different CMS client. Returning a mock client instead of throwing an error.`, { data:  });
+	// TODO: Async logger needed
+		// (await getLogger()).error(`[CMS] Keystatic client using "Local" mode is only available in Node.js runtime. Please choose a different CMS client. Returning a mock client instead of throwing an error.`, { data:  });
 
 	return mockCMSClient() as unknown as CmsClient;
 }

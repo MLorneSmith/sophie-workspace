@@ -36,7 +36,8 @@ export function useSurveyScores(userId: string, surveyId: string) {
 					.single();
 
 				if (error) {
-					/* TODO: Async logger needed */ logger.error(
+					// TODO: Async logger needed
+		// (await getLogger()).error(
 						"Error fetching survey scores:",
 						{ data: error },
 					);
@@ -83,7 +84,8 @@ export function useSurveyScores(userId: string, surveyId: string) {
 					}
 				}
 			} catch (err) {
-				/* TODO: Async logger needed */ logger.error(
+				// TODO: Async logger needed
+		// (await getLogger()).error(
 					"Error in useSurveyScores:",
 					{ data: err },
 				);

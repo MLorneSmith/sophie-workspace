@@ -174,7 +174,8 @@ export function usePresentationStoryboard(presentationId: string) {
 
 						return generateStoryboardFromOutline(outline);
 					} catch (err) {
-						/* TODO: Async logger needed */ logger.error("Error generating storyboard:", { data: err });
+						// TODO: Async logger needed
+		// TODO: Fix logger call - was: error
 						throw new Error("Failed to generate storyboard from outline");
 					}
 				} else {
@@ -200,11 +201,13 @@ export function usePresentationStoryboard(presentationId: string) {
 
 				return generateStoryboardFromOutline(outline);
 			} catch (err) {
-				/* TODO: Async logger needed */ logger.error("Error generating storyboard:", { data: err });
+				// TODO: Async logger needed
+		// TODO: Fix logger call - was: error
 				throw new Error("Failed to generate storyboard from outline");
 			}
 		} catch (error) {
-			/* TODO: Async logger needed */ logger.error("Error in fetchStoryboard:", { data: error });
+			// TODO: Async logger needed
+		// TODO: Fix logger call - was: error
 			throw error;
 		}
 	}, [presentationId, supabase]);
@@ -237,7 +240,8 @@ export function usePresentationStoryboard(presentationId: string) {
 						toast.error(
 							"Storyboard feature is not fully set up yet. Database migration needed.",
 						);
-						/* TODO: Async logger needed */ logger.error("Storyboard column does not exist:", { data: result.error });
+						// TODO: Async logger needed
+		// TODO: Fix logger call - was: error
 					} else {
 						throw result.error;
 					}
@@ -247,7 +251,8 @@ export function usePresentationStoryboard(presentationId: string) {
 				await refetch();
 				return true;
 			} catch (error) {
-				/* TODO: Async logger needed */ logger.error("Error saving storyboard:", { data: error });
+				// TODO: Async logger needed
+		// TODO: Fix logger call - was: error
 				toast.error("Failed to save storyboard");
 				return false;
 			} finally {

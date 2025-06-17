@@ -38,18 +38,13 @@ export function createMonitoredLogger(
 /**
  * Server-side helper to create a monitored logger
  * Automatically loads the monitoring service based on environment configuration
+ * 
+ * TODO: This function is temporarily disabled due to circular dependency issues
+ * with @kit/monitoring. It should be re-enabled once the architecture is refactored.
  */
 export async function createServerLogger(serviceName: string) {
-	try {
-		// Dynamically import to avoid client-side issues
-		const { getServerMonitoringService } = await import("@kit/monitoring/server");
-		const monitoring = await getServerMonitoringService();
-		return createServiceLogger(serviceName, monitoring);
-	} catch (error) {
-		// Fallback to logger without monitoring
-		console.warn(`Failed to load monitoring service for ${serviceName}:`, error);
-		return createServiceLogger(serviceName);
-	}
+	// Fallback to regular logger for now
+	return createServiceLogger(serviceName);
 }
 
 /**

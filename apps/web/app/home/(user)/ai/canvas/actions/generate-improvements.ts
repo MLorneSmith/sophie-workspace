@@ -50,7 +50,8 @@ export const generateImprovementsAction = enhanceAction(
 			}
 
 			// Debug log the request
-			/* TODO: Async logger needed */ logger.info("Improvements Request:", {
+			// TODO: Async logger needed
+		// (await getLogger()).info("Improvements Request:", {
 				contentLength: data.content.length,
 				userId: user.id,
 				submissionId: data.submissionId,
@@ -103,7 +104,8 @@ ${improvementFormat}`,
 			const duration = performance.now() - startTime;
 
 			// Log metrics
-			/* TODO: Async logger needed */ logger.info("AI Request Metrics:", {
+			// TODO: Async logger needed
+		// (await getLogger()).info("AI Request Metrics:", {
 				duration,
 				userId: user.id,
 				status: "success",
@@ -113,7 +115,8 @@ ${improvementFormat}`,
 			const improvements = parseImprovements(response.content, data.type);
 
 			// Debug log the parsed improvements
-			/* TODO: Async logger needed */ logger.info("Parsed Improvements:", {
+			// TODO: Async logger needed
+		// (await getLogger()).info("Parsed Improvements:", {
 				data: improvements,
 			});
 
@@ -122,7 +125,8 @@ ${improvementFormat}`,
 				data: { improvements },
 			};
 		} catch (error) {
-			/* TODO: Async logger needed */ logger.error(
+			// TODO: Async logger needed
+		// (await getLogger()).error(
 				"Error in improvements action:",
 				{ data: error },
 			);

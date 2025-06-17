@@ -23,7 +23,8 @@ export function initializeEmailI18n(params: {
 
 				return data as Record<string, string>;
 			} catch (error) {
-				/* TODO: Async logger needed */ logger.info(`Error loading i18n file: locales/${language}/${namespace}.json`, { arg1: error, arg2:  });
+				// TODO: Async logger needed
+		// (await getLogger()).info(`Error loading i18n file: locales/${language}/${namespace}.json`, { arg1: error, arg2:  });
 
 				return {};
 			}

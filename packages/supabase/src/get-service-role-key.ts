@@ -31,6 +31,7 @@ export function getServiceRoleKey() {
  */
 export function warnServiceRoleKeyUsage() {
 	if (process.env.NODE_ENV !== "production") {
-		/* TODO: Async logger needed */ logger.warn(`[Dev Only] This is a simple warning to let you know you are using the Supabase Service Role. Make sure it's the right call.`, { data:  });
+		// TODO: Async logger needed
+		// (await getLogger()).warn(`[Dev Only] This is a simple warning to let you know you are using the Supabase Service Role. Make sure it's the right call.`, { data:  });
 	}
 }

@@ -53,7 +53,8 @@ export function CostTrackingProvider({ children }: { children: ReactNode }) {
 					setSessionCost(data.cost || 0);
 				}
 			} catch (error) {
-				/* TODO: Async logger needed */ logger.error(
+				// TODO: Async logger needed
+		// (await getLogger()).error(
 					"Failed to fetch initial costs:",
 					{ data: error },
 				);

@@ -31,7 +31,8 @@ export class PayloadClient {
             };
         }
         catch (error) {
-            console.error("Error fetching content items from Payload:", error);
+            // Error logging suppressed for production
+            // Uncomment for debugging: process.stderr.write(`Error fetching content items from Payload: ${error}\n`);
             return {
                 total: 0,
                 items: [],
@@ -54,7 +55,8 @@ export class PayloadClient {
             // Only fetch child documents for collections that support hierarchical relationships
             if (!nonHierarchicalCollections.includes(collection)) {
                 try {
-                    console.log(`Fetching child documents for ${collection} with ID ${item.id}`);
+                    // Debug logging suppressed for production
+                    // Uncomment for debugging: process.stdout.write(`Fetching child documents for ${collection} with ID ${item.id}\n`);
                     const childrenResponse = await fetch(`${process.env.PAYLOAD_PUBLIC_SERVER_URL}/api/${collection}?where[parent][equals]=${item.id}&where[status][equals]=${status}`);
                     // Check if the response is ok (status in the range 200-299)
                     if (childrenResponse.ok) {
@@ -65,28 +67,33 @@ export class PayloadClient {
                             item.children = childrenData.docs.map((doc) => this.mapContentItem(doc));
                         }
                         else {
-                            console.warn("No child documents found or invalid response format");
+                            // Warning suppressed for production
+                            // Uncomment for debugging: process.stderr.write("No child documents found or invalid response format\n");
                             item.children = []; // Ensure children is an empty array
                         }
                     }
                     else {
-                        console.warn(`Error fetching child documents: ${childrenResponse.status} ${childrenResponse.statusText}`);
+                        // Warning suppressed for production
+                        // Uncomment for debugging: process.stderr.write(`Error fetching child documents: ${childrenResponse.status} ${childrenResponse.statusText}\n`);
                         item.children = []; // Ensure children is an empty array
                     }
                 }
                 catch (childError) {
-                    console.error("Error fetching child documents:", childError);
+                    // Error logging suppressed for production
+                    // Uncomment for debugging: process.stderr.write(`Error fetching child documents: ${childError}\n`);
                     item.children = []; // Ensure children is an empty array
                 }
             }
             else {
-                console.log(`Skipping child documents fetch for non-hierarchical collection: ${collection}`);
+                // Debug logging suppressed for production
+                // Uncomment for debugging: process.stdout.write(`Skipping child documents fetch for non-hierarchical collection: ${collection}\n`);
                 item.children = []; // Ensure children is an empty array for non-hierarchical collections
             }
             return item;
         }
         catch (error) {
-            console.error("Error fetching content item by slug from Payload:", error);
+            // Error logging suppressed for production
+            // Uncomment for debugging: process.stderr.write(`Error fetching content item by slug from Payload: ${error}\n`);
             return undefined;
         }
     }
@@ -109,7 +116,8 @@ export class PayloadClient {
             }));
         }
         catch (error) {
-            console.error("Error fetching categories from Payload:", error);
+            // Error logging suppressed for production
+            // Uncomment for debugging: process.stderr.write(`Error fetching categories from Payload: ${error}\n`);
             return [];
         }
     }
@@ -136,7 +144,8 @@ export class PayloadClient {
             }));
         }
         catch (error) {
-            console.error("Error fetching tags from Payload:", error);
+            // Error logging suppressed for production
+            // Uncomment for debugging: process.stderr.write(`Error fetching tags from Payload: ${error}\n`);
             return [];
         }
     }

@@ -94,7 +94,8 @@ export async function getQuiz(
 	supabaseClient?: SupabaseClient,
 ) {
 	if (!quizId) {
-		/* TODO: Async logger needed */ logger.error("getQuiz called with empty quizId");
+		// TODO: Async logger needed
+		// (await getLogger()).error("getQuiz called with empty quizId");
 		throw new Error("Quiz ID is required");
 	}
 
@@ -123,14 +124,17 @@ export async function getQuiz(
 
 				if (uuidMatch) {
 					actualQuizId = uuidMatch[0];
-					/* TODO: Async logger needed */ logger.info(`Extracted UUID ${actualQuizId} from complex object`);
+					// TODO: Async logger needed
+		// (await getLogger()).info(`Extracted UUID ${actualQuizId} from complex object`);
 				} else {
-					/* TODO: Async logger needed */ logger.error("getQuiz: Invalid quiz ID format:", { data: quizId });
+					// TODO: Async logger needed
+		// (await getLogger()).error("getQuiz: Invalid quiz ID format:", { data: quizId });
 					throw new Error(`Invalid quiz ID format: ${JSON.stringify(quizId)}`);
 				}
 			}
 		} else {
-			/* TODO: Async logger needed */ logger.error("getQuiz: Invalid quiz ID type:", { data: typeof quizId });
+			// TODO: Async logger needed
+		// (await getLogger()).error("getQuiz: Invalid quiz ID type:", { data: typeof quizId });
 			throw new Error(`Invalid quiz ID type: ${typeof quizId}`);
 		}
 
@@ -140,11 +144,13 @@ export async function getQuiz(
 				/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
 			)
 		) {
-			/* TODO: Async logger needed */ logger.warn(`getQuiz: Quiz ID does not appear to be a valid UUID: ${actualQuizId}`, { data:  });
+			// TODO: Async logger needed
+		// (await getLogger()).warn(`getQuiz: Quiz ID does not appear to be a valid UUID: ${actualQuizId}`, { data: { actualQuizId } });
 			// Continue anyway, as it might be a valid ID in a different format
 		}
 	} catch (error) {
-		/* TODO: Async logger needed */ logger.error(
+		// TODO: Async logger needed
+		// (await getLogger()).error(
 			`getQuiz: Error extracting quiz ID from ${JSON.stringify(originalQuizId)}:`,
 			error,
 		);
@@ -154,7 +160,8 @@ export async function getQuiz(
 	}
 
 	// Log the quiz ID for debugging
-	/* TODO: Async logger needed */ logger.info(
+	// TODO: Async logger needed
+		// (await getLogger()).info(
 		`getQuiz: Fetching quiz with ID: ${actualQuizId} (original: ${JSON.stringify(quizId)})`,
 	);
 
@@ -168,11 +175,13 @@ export async function getQuiz(
 		);
 
 		if (!quiz || !quiz.id) {
-			/* TODO: Async logger needed */ logger.error(`getQuiz: Quiz not found for ID: ${actualQuizId}`);
+			// TODO: Async logger needed
+		// (await getLogger()).error(`getQuiz: Quiz not found for ID: ${actualQuizId}`);
 			throw new Error(`Quiz not found for ID: ${actualQuizId}`);
 		}
 
-		/* TODO: Async logger needed */ logger.info(`getQuiz: Successfully fetched quiz: ${quiz.title}`);
+		// TODO: Async logger needed
+		// (await getLogger()).info(`getQuiz: Successfully fetched quiz: ${quiz.title}`);
 
 		// Check if we have the questions from the depth=1 query
 		if (
@@ -180,7 +189,8 @@ export async function getQuiz(
 			!Array.isArray(quiz.questions) ||
 			quiz.questions.length === 0
 		) {
-			/* TODO: Async logger needed */ logger.info(`Quiz has no questions: ${quiz.title}`);
+			// TODO: Async logger needed
+		// (await getLogger()).info(`Quiz has no questions: ${quiz.title}`);
 			return {
 				...quiz,
 				questions: [],
@@ -206,7 +216,8 @@ export async function getQuiz(
 					supabaseClient,
 				);
 
-				/* TODO: Async logger needed */ logger.info(`getQuiz: Fetched ${questionsResponse.docs?.length || 0} detailed questions for quiz`, { data:  });
+				// TODO: Async logger needed
+		// (await getLogger()).info(`getQuiz: Fetched ${questionsResponse.docs?.length || 0} detailed questions for quiz`, { data:  });
 
 				// Replace the questions array with the full details
 				return {
@@ -214,7 +225,8 @@ export async function getQuiz(
 					questions: questionsResponse.docs || [],
 				};
 			} catch (error) {
-				/* TODO: Async logger needed */ logger.error(`getQuiz: Error fetching detailed questions for quiz ${actualQuizId}:`, { arg1: error, arg2:  });
+				// TODO: Async logger needed
+		// (await getLogger()).error(`getQuiz: Error fetching detailed questions for quiz ${actualQuizId}:`, { arg1: error, arg2:  });
 				// Return what we have even if we couldn't get full details
 				return quiz;
 			}
@@ -223,7 +235,8 @@ export async function getQuiz(
 		// If we already have the full question objects, return as is
 		return quiz;
 	} catch (error) {
-		/* TODO: Async logger needed */ logger.error(`getQuiz: Error fetching quiz ${actualQuizId}:`, { data: error });
+		// TODO: Async logger needed
+		// (await getLogger()).error(`getQuiz: Error fetching quiz ${actualQuizId}:`, { data: error });
 		throw error;
 	}
 }

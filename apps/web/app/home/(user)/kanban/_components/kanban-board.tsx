@@ -94,7 +94,8 @@ export function KanbanBoard() {
 							status: overId as TaskStatus,
 						});
 					} catch (error) {
-						/* TODO: Async logger needed */ logger.error(
+						// TODO: Async logger needed
+		// (await getLogger()).error(
 							"Failed to update task status:",
 							{ data: error },
 						);

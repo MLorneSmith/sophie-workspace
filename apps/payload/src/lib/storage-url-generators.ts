@@ -116,19 +116,22 @@ export function createURLGenerator(
 		try {
 			if (!filename) {
 				// Instead of throwing, log warning and return fallback URL
-				/* TODO: Async logger needed */ logger.warn(`[URL-GENERATOR] Warning: Filename is missing for ${collection} URL generation. Returning fallback URL.`, { data:  });
+				// TODO: Async logger needed
+		// (await getLogger()).warn(`[URL-GENERATOR] Warning: Filename is missing for ${collection} URL generation. Returning fallback URL.`, { data:  });
 				return `/uploads/placeholder-${collection}.png`;
 			}
 
 			const url = generator({ filename });
 
 			if (process.env.NODE_ENV === "development") {
-				/* TODO: Async logger needed */ logger.info(`[URL-GENERATOR] Generated ${collection} URL: ${url}`);
+				// TODO: Async logger needed
+		// (await getLogger()).info(`[URL-GENERATOR] Generated ${collection} URL: ${url}`);
 			}
 
 			return url;
 		} catch (error) {
-			/* TODO: Async logger needed */ logger.error(`[URL-GENERATOR] Error generating URL for ${collection}/${filename}:`, { arg1: error, arg2:  });
+			// TODO: Async logger needed
+		// (await getLogger()).error(`[URL-GENERATOR] Error generating URL for ${collection}/${filename}:`, { arg1: error, arg2:  });
 
 			// Return a fallback URL
 			return `/uploads/${filename || "unknown"}`;

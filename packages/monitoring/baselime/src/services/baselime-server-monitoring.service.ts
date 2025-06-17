@@ -55,8 +55,11 @@ export class BaselimeServerMonitoringService implements MonitoringService {
 		});
 
 		if (!response.ok) {
-			/* TODO: Async logger needed */ logger.error({
-					response, { arg1: event, arg2: }, arg3: "Failed to send event to Baselime", arg4:  });
+			// TODO: Async logger needed
+			// (await getLogger()).error("Failed to send event to Baselime", {
+			//	response,
+			//	event,
+			// });
 		}
 	}
 
@@ -86,8 +89,11 @@ export class BaselimeServerMonitoringService implements MonitoringService {
 		});
 
 		if (!response.ok) {
-			/* TODO: Async logger needed */ logger.error({
-					response, { arg1: event, arg2: }, arg3: "Failed to send event to Baselime", arg4:  });
+			// TODO: Async logger needed
+			// (await getLogger()).error("Failed to send event to Baselime", {
+			//	response,
+			//	event,
+			// });
 		}
 	}
 

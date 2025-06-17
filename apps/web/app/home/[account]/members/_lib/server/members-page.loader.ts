@@ -55,7 +55,8 @@ async function loadAccountMembers(
 	});
 
 	if (error) {
-		/* TODO: Async logger needed */ logger.error(error);
+		// TODO: Async logger needed
+		// TODO: Fix logger call - was: error
 		throw error;
 	}
 
@@ -76,7 +77,8 @@ async function loadInvitations(
 	});
 
 	if (error) {
-		/* TODO: Async logger needed */ logger.error(error);
+		// TODO: Async logger needed
+		// TODO: Fix logger call - was: error
 		throw error;
 	}
 

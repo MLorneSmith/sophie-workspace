@@ -30,7 +30,8 @@ export async function initializeServerI18n(
 
 						return callback(null, data);
 					} catch (error) {
-						/* TODO: Async logger needed */ logger.info(`Error loading i18n file: locales/${language}/${namespace}.json`, { arg1: error, arg2:  });
+						// TODO: Async logger needed
+		// (await getLogger()).info(`Error loading i18n file: locales/${language}/${namespace}.json`, { arg1: error, arg2:  });
 
 						return callback(null, {});
 					}
@@ -97,7 +98,8 @@ export async function initializeServerI18n(
 	const success = await waitForNamespaces();
 
 	if (!success) {
-		/* TODO: Async logger needed */ logger.warn(`Not all namespaces were loaded after ${maxWaitTime}ms. Initialization may be incomplete.`, { data:  });
+		// TODO: Async logger needed
+		// (await getLogger()).warn(`Not all namespaces were loaded after ${maxWaitTime}ms. Initialization may be incomplete.`, { data:  });
 	}
 
 	return i18nInstance;

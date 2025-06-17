@@ -1,15 +1,15 @@
 import "server-only";
 
 import type {
-import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("AUTH_CALLBACK_SERVICE");
-
 	AuthError,
 	EmailOtpType,
 	SupabaseClient,
 } from "@supabase/supabase-js";
+
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("AUTH_CALLBACK_SERVICE");
 
 /**
  * @name createAuthCallbackService
@@ -186,8 +186,11 @@ class AuthCallbackService {
 					});
 				}
 			} catch (error) {
-				/* TODO: Async logger needed */ logger.error({
-						error, { arg1: name: "auth.callback", arg2: }, arg3: "An error occurred while exchanging code for session", arg4:  });
+				// TODO: Async logger needed
+		// (await getLogger()).error("An error occurred while exchanging code for session", {
+		//	error,
+		//	name: "auth.callback",
+		// });
 
 				const message = error instanceof Error ? error.message : error;
 
@@ -242,13 +245,11 @@ function onError({
 }) {
 	const errorMessage = getAuthErrorMessage({ error, code });
 
-	/* TODO: Async logger needed */ logger.error(
-		{
-			error: JSON.stringify(error).replace(/["\\]/g, "\\$&"),
-			name: "auth.callback",
-		},
-		"An error occurred while signing user in",
-	);
+	// TODO: Async logger needed
+	// (await getLogger()).error("An error occurred while signing user in", {
+	//	error: JSON.stringify(error).replace(/["\\]/g, "\\$&"),
+	//	name: "auth.callback",
+	// });
 
 	const searchParams = new URLSearchParams({
 		error: errorMessage,

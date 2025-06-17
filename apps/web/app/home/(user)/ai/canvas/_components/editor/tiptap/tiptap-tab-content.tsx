@@ -73,7 +73,8 @@ export const TiptapTabContent = forwardRef<TiptapEditorRef, TabContentProps>(
 
 				// Special handling for outline section
 				if (sectionType === "outline") {
-					/* TODO: Async logger needed */ logger.info("Handling outline section for submission:", { data: id });
+					// TODO: Async logger needed
+		// TODO: Fix logger call - was: info
 					const rawContent = data.outline;
 
 					// If outline exists and has valid content, parse, normalize and return it
@@ -90,17 +91,20 @@ export const TiptapTabContent = forwardRef<TiptapEditorRef, TabContentProps>(
 								Array.isArray(parsedContent.content)
 							) {
 								// We found existing outline content, normalize it to ensure integrity
-								/* TODO: Async logger needed */ logger.info("Using existing outline content and normalizing it", { data:  });
+								// TODO: Async logger needed
+		// TODO: Fix logger call - was: info
 								return normalizeEditorContent(parsedContent, "outline");
 							}
 						} catch (e) {
-							/* TODO: Async logger needed */ logger.error("Failed to parse outline content as JSON:", { data: e });
+							// TODO: Async logger needed
+		// TODO: Fix logger call - was: error
 							// Continue to outline generation if parsing fails
 						}
 					}
 
 					// If we get here, we need to generate the outline
-					/* TODO: Async logger needed */ logger.info("Generating outline for submission:", { data: id });
+					// TODO: Async logger needed
+		// TODO: Fix logger call - was: info
 					try {
 						const result = (await generateOutlineAction({
 							submissionId: id,
@@ -108,15 +112,18 @@ export const TiptapTabContent = forwardRef<TiptapEditorRef, TabContentProps>(
 						})) as { success: boolean; data?: unknown; error?: string };
 
 						if (result.success && result.data) {
-							/* TODO: Async logger needed */ logger.info("Successfully generated outline");
+							// TODO: Async logger needed
+		// TODO: Fix logger call - was: info
 							return normalizeEditorContent(result.data, "outline");
 						}
-						/* TODO: Async logger needed */ logger.error("Failed to generate outline:", { data: result.error });
+						// TODO: Async logger needed
+		// TODO: Fix logger call - was: error
 						setContentError(
 							"Failed to generate outline. Please try again or reset the outline.",
 						);
 					} catch (err) {
-						/* TODO: Async logger needed */ logger.error("Error during outline generation:", { data: err });
+						// TODO: Async logger needed
+		// TODO: Fix logger call - was: error
 						setContentError("Error generating outline. Please try again.");
 					}
 
@@ -125,7 +132,8 @@ export const TiptapTabContent = forwardRef<TiptapEditorRef, TabContentProps>(
 
 				// Standard handling for other sections
 				const rawContent = (data as Record<string, unknown>)[sectionType];
-				/* TODO: Async logger needed */ logger.debug("Loading content for section:", { sectionType });
+				// TODO: Async logger needed
+		// TODO: Fix logger call - was: debug
 
 				if (!rawContent) return EMPTY_EDITOR_STATE;
 
@@ -167,10 +175,12 @@ export const TiptapTabContent = forwardRef<TiptapEditorRef, TabContentProps>(
 						return normalizeEditorContent(convertedContent, sectionType);
 					}
 
-					/* TODO: Async logger needed */ logger.debug("Invalid Tiptap state format:", { data: parsed });
+					// TODO: Async logger needed
+		// TODO: Fix logger call - was: debug
 					return EMPTY_EDITOR_STATE;
 				} catch (e) {
-					/* TODO: Async logger needed */ logger.debug("Failed to parse content as JSON:", { data: e });
+					// TODO: Async logger needed
+		// TODO: Fix logger call - was: debug
 					return EMPTY_EDITOR_STATE;
 				}
 			},
@@ -206,7 +216,8 @@ export const TiptapTabContent = forwardRef<TiptapEditorRef, TabContentProps>(
 									// Force refetch
 									window.location.reload();
 								} catch (err) {
-									/* TODO: Async logger needed */ logger.error("Error forcing outline regeneration:", { data: err });
+									// TODO: Async logger needed
+		// TODO: Fix logger call - was: error
 								}
 							}
 						}}
@@ -233,13 +244,15 @@ export const TiptapTabContent = forwardRef<TiptapEditorRef, TabContentProps>(
 			} else {
 				editorContent = JSON.stringify(EMPTY_EDITOR_STATE);
 			}
-			/* TODO: Async logger needed */ logger.info("Prepared editor content:", {
+			// TODO: Async logger needed
+		// (await getLogger()).info("Prepared editor content:", {
 				sectionType,
 				contentType: typeof editorContent,
 				contentLength: editorContent.length,
 			});
 		} catch (e) {
-			/* TODO: Async logger needed */ logger.error("Error preparing editor content:", { data: e });
+			// TODO: Async logger needed
+		// TODO: Fix logger call - was: error
 			editorContent = JSON.stringify(EMPTY_EDITOR_STATE);
 		}
 
