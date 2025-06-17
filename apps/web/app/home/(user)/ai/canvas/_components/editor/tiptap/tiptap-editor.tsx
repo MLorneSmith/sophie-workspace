@@ -80,19 +80,19 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 		const _editorRef = useRef(null);
 
 		// Parse and normalize initial content
-		const _initialContent = useMemo(() => {
+		const initialContent = useMemo(() => {
 			// TODO: Async logger needed
-		// (await getLogger()).info("TiptapEditor parsing content:", {
-		// sectionType,
-				contentType: typeof content,
-				contentLength:
-					typeof content === "string" ? content.length : "not a string",
-			});
+			// (await getLogger()).info("TiptapEditor parsing content:", {
+			// 	sectionType,
+			// 	contentType: typeof content,
+			// 	contentLength:
+			// 		typeof content === "string" ? content.length : "not a string",
+			// });
 
 			try {
 				if (typeof content !== "string") {
 					// TODO: Async logger needed
-		// TODO: Fix logger call - was: warn
+					// TODO: Fix logger call - was: warn
 					// Create a default empty document and normalize it
 					return normalizeEditorContent(
 						{
@@ -106,10 +106,10 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 				// Parse the content string into an object
 				const parsed = JSON.parse(content);
 				// TODO: Async logger needed
-		// (await getLogger()).info("Successfully parsed content:", {
-		// type: parsed?.type,
-					contentLength: parsed?.content?.length,
-					firstNodeType: parsed?.content?.[0]?.type,
+				// (await getLogger()).info("Successfully parsed content:", {
+				// 	type: parsed?.type,
+				// 	contentLength: parsed?.content?.length,
+				// 	firstNodeType: parsed?.content?.[0]?.type,
 				// });
 
 				// Normalize the content before passing it to the editor
@@ -117,7 +117,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 				return normalizeEditorContent(parsed, sectionType);
 			} catch (_e) {
 				// TODO: Async logger needed
-		// TODO: Fix logger call - was: error
+				// TODO: Fix logger call - was: error
 				// Return a normalized empty document as fallback
 				return normalizeEditorContent(
 					{
@@ -156,17 +156,17 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 		});
 
 		// Expose methods via ref
-		useImperativeHandle(ref, () => ({
+		useImperativeHandle(_ref, () => ({
 			insertContent: (content: string) => {
 				// TODO: Async logger needed
-		// TODO: Fix logger call - was: info
+				// TODO: Fix logger call - was: info
 				if (editor) {
 					// Make sure the editor is focused before inserting content
 					editor.commands.focus();
 					// Insert the content and return status
 					const result = editor.commands.insertContent(content);
 					// TODO: Async logger needed
-		// TODO: Fix logger call - was: info
+					// TODO: Fix logger call - was: info
 					return result;
 				}
 				return false;
@@ -175,7 +175,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 				if (editor) {
 					// Execute function in Tiptap context
 					// TODO: Async logger needed
-		// TODO: Fix logger call - was: info
+					// TODO: Fix logger call - was: info
 					editor
 						.chain()
 						.focus()
@@ -207,8 +207,11 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 			MutationContext
 		>({
 			mutationFn: async (newContent: unknown) => {
-				(await getLogger()).debug("Saving content:", { sectionType, newContent });
-				const { data, error } = await supabase
+				(await getLogger()).debug("Saving content:", {
+					sectionType,
+					newContent,
+				});
+				const { data, error } = await _supabase
 					.from("building_blocks_submissions")
 					.update({ [sectionType]: JSON.stringify(newContent) })
 					.eq("id", submissionId)
@@ -220,21 +223,21 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 			},
 			onMutate: async (newContent: unknown): Promise<MutationContext> => {
 				// Cancel outgoing refetches
-				await queryClient.cancelQueries({
+				await _queryClient.cancelQueries({
 					queryKey: ["submission", submissionId, sectionType],
 					exact: true,
-				// });
+				});
 
 				// Save previous value
 				const previousContent =
-					queryClient.getQueryData<unknown>([
+					_queryClient.getQueryData<unknown>([
 						"submission",
 						submissionId,
 						sectionType,
 					]) ?? null;
 
 				// Update cache optimistically
-				queryClient.setQueryData(
+				_queryClient.setQueryData(
 					["submission", submissionId, sectionType],
 					newContent,
 				);
@@ -243,31 +246,31 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 			},
 			onError: (_err, _newContent, context: MutationContext | undefined) => {
 				// TODO: Async logger needed
-		// TODO: Fix logger call - was: error
+				// TODO: Fix logger call - was: error
 				setSaveStatus("error");
 				// Rollback on error
 				if (context?.previousContent) {
-					queryClient.setQueryData(
+					_queryClient.setQueryData(
 						["submission", submissionId, sectionType],
 						context.previousContent,
 					);
 				}
 			},
-			onSuccess: (data) => {
+			onSuccess: (_data) => {
 				// TODO: Async logger needed
-		// (await getLogger()).debug("Content saved successfully:", {
-		// sectionType,
-					data: data?.[sectionType],
+				// (await getLogger()).debug("Content saved successfully:", {
+				// 	sectionType,
+				// 	data: data?.[sectionType],
 				// });
 				setSaveStatus("saved");
 				setTimeout(() => setSaveStatus("idle"), 2000);
 			},
 			onSettled: () => {
 				// Always refetch after error or success
-				queryClient.invalidateQueries({
+				_queryClient.invalidateQueries({
 					queryKey: ["submission", submissionId, sectionType],
 					exact: true,
-				// });
+				});
 			},
 		});
 
@@ -284,7 +287,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 					await updateContent(normalizedContent);
 				} catch (_error) {
 					// TODO: Async logger needed
-		// TODO: Fix logger call - was: error
+					// TODO: Fix logger call - was: error
 					setSaveStatus("error");
 					setTimeout(() => setSaveStatus("idle"), 3000);
 				}
@@ -306,7 +309,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 						await saveContent(editor.getJSON());
 					} catch (_error) {
 						// TODO: Async logger needed
-		// TODO: Fix logger call - was: error
+						// TODO: Fix logger call - was: error
 					}
 				}
 			};
@@ -320,10 +323,10 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 			try {
 				// Log the content types for debugging
 				// TODO: Async logger needed
-		// (await getLogger()).info("Editor update effect with content:", {
-		// sectionType,
-					initialContentType: typeof initialContent,
-					editorExists: !!editor,
+				// (await getLogger()).info("Editor update effect with content:", {
+				// 	sectionType,
+				// 	initialContentType: typeof initialContent,
+				// 	editorExists: !!editor,
 				// });
 
 				// Only update if content has changed to avoid loops
@@ -334,7 +337,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 				// If content has changed, reset the editor completely to avoid ProseMirror model version conflicts
 				if (currentContentStr !== initialContentStr) {
 					// TODO: Async logger needed
-		// TODO: Fix logger call - was: info
+					// TODO: Fix logger call - was: info
 
 					// Use a try-catch to handle potential errors
 					try {
@@ -348,7 +351,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 									editor.commands.setContent(initialContent);
 								} catch (_innerError) {
 									// TODO: Async logger needed
-		// TODO: Fix logger call - was: error
+									// TODO: Fix logger call - was: error
 
 									// As a last resort, try recreating a minimal valid document
 									const safeContent = normalizeEditorContent(
@@ -370,12 +373,12 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 						}, 0);
 					} catch (_error) {
 						// TODO: Async logger needed
-		// TODO: Fix logger call - was: error
+						// TODO: Fix logger call - was: error
 					}
 				}
 			} catch (_error) {
 				// TODO: Async logger needed
-		// TODO: Fix logger call - was: error
+				// TODO: Fix logger call - was: error
 			}
 		}, [editor, initialContent, sectionType]);
 

@@ -13,5 +13,5 @@ export function useCanvasTitle(id: string | null) {
 			return getCanvasTitle(supabase, id);
 		},
 		enabled: !!id,
-	// });
+	});
 }

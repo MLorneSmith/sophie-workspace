@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-// biome-ignore lint/suspicious/noConsole: Migration script - console output is required
 
 const fs = require("node:fs");
 const path = require("node:path");
@@ -130,6 +129,7 @@ function replaceConsoleStatements(content, filePath) {
 
 	// First pass: check if any console statements are in async context
 	let match;
+	// biome-ignore lint/suspicious/noAssignInExpressions: migration script needs this pattern
 	while ((match = consolePattern.exec(content)) !== null) {
 		if (isInAsyncContext(content, match.index)) {
 			_needsAsyncLogger = true;

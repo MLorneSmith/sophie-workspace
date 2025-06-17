@@ -195,7 +195,7 @@ describe("StoryboardService", () => {
 				.mockResolvedValueOnce({
 					data: fallbackData,
 					error: null,
-				// });
+				});
 
 			// Mock saveStoryboard call - it should not throw in this case
 			mockSupabase.eq.mockResolvedValue({ error: null });
@@ -262,7 +262,7 @@ describe("StoryboardService", () => {
 			);
 			expect(mockSupabase.update).toHaveBeenCalledWith({
 				storyboard: storyboardData,
-			// });
+			});
 			expect(_mockSupabase._eq).toHaveBeenCalledWith("id", "submission-1");
 		});
 
@@ -336,7 +336,7 @@ describe("StoryboardService", () => {
 			mockSupabase.order.mockResolvedValue({
 				data: mockPresentations,
 				error: null,
-			// });
+			});
 
 			// Act
 			const result = await service.listPresentations();
@@ -349,7 +349,7 @@ describe("StoryboardService", () => {
 			expect(mockSupabase.select).toHaveBeenCalledWith("id, title, created_at");
 			expect(mockSupabase.order).toHaveBeenCalledWith("created_at", {
 				ascending: false,
-			// });
+			});
 		});
 
 		it("should return empty array when no presentations exist", async () => {

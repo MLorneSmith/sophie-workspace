@@ -2,6 +2,18 @@
   <task>
     Prepare a Product Requirements Document (PRD) for processing by a 5-agent team (Product Owner, Scrum Master, 2 Builders, 1 Reviewer) by analyzing structure, identifying cross-cutting concerns, and dividing into logical chunks for parallel processing.
   </task>
+  
+  <context_loading>
+    <instructions>
+      Before proceeding, read the context documentation inventory:
+      - Read: .claude/docs/.context-docs-inventory.xml
+      Based on the PRD's technical requirements, read relevant context:
+      - For system patterns: Read architecture/service-patterns.md
+      - For state management: Read architecture/state-management.md
+      - For performance considerations: Read architecture/performance-optimization.md
+      - For debugging approach: Read debugging/debugging-system-overview.md
+    </instructions>
+  </context_loading>
 
   <tools_available>
     <tool_reference source=".aishell/refs/available-tools.xml">
@@ -13,59 +25,72 @@
 
   <instructions>
     <step number="1">
-      <title>Analyze PRD Structure</title>
-      <description>Identify logical sections (e.g., features, technical requirements) and cross-cutting functionality (e.g., shared middleware, schemas, database dependencies) using Sequential Thinking MCP. Reference codebase files for context.</description>
+      <title>Parse New PRD Structure</title>
+      <description>Analyze the structured PRD content including executive summary, objectives, target users, feature specifications, technical requirements, and scope. Extract core features from feature_specification section and technical impact from technical_requirements section.</description>
     </step>
     <step number="2">
       <title>Identify Cross-Cutting Concerns</title>
-      <description>List shared components that span multiple features, verifying with Context7 MCP Server.</description>
+      <description>From the technical_requirements section, identify shared components, database schemas, APIs, and file dependencies that span multiple features. Use the file_impact analysis to understand code boundaries.</description>
     </step>
     <step number="3">
-      <title>Chunk PRD</title>
-      <description>Divide into 2-3 logical sections for parallel processing by 5 agents, ensuring:
-        - Each chunk is self-contained but references cross-cutting concerns
-        - Chunks are balanced for complexity
-        - Total size per chunk is ~3-5k tokens, adjustable for coherence
-        - Assign unique identifiers
+      <title>Create Logical Chunks</title>
+      <description>Divide PRD into 2-3 logical implementation chunks based on:
+        - Core features from feature_specification
+        - Technical boundaries from file_impact analysis
+        - Acceptance criteria complexity
+        - Parallel development feasibility
+        Each chunk should be 3-5k tokens and implementable by separate teams.
       </description>
     </step>
     <step number="4">
-      <title>Summarize Chunks</title>
-      <description>Provide a 50-100 word summary per chunk, including cross-cutting dependencies, verified with Context7 MCP Server.</description>
+      <title>Extract Chunk Context</title>
+      <description>For each chunk, extract relevant context from PRD sections:
+        - User personas and use cases that apply to this chunk
+        - Specific acceptance criteria from the feature_specification
+        - Technical requirements and file paths from technical_requirements
+        - Scope items and constraints that affect this chunk
+        - Associated risks from risks_and_mitigation
+      </description>
     </step>
     <step number="5">
-      <title>Store Output</title>
-      <description>Format as markdown files in repository path. Update index file with chunk entries (type: chunk, status: backlog, linked to PRD ID). Provide GitHub commit instructions.</description>
+      <title>Define Dependencies</title>
+      <description>Map dependencies between chunks using the technical_requirements and scope_and_constraints sections. Identify which chunks can be developed in parallel vs. sequentially.</description>
     </step>
     <step number="6">
-      <title>Output Format</title>
-      <description>Structured markdown with sections for chunk ID, summary, content, cross-cutting dependencies, index updates, and commit instructions.</description>
+      <title>Create Chunk Summaries</title>
+      <description>Generate 50-100 word summaries for each chunk including purpose, technical scope, user value, and dependencies. Reference the primary persona and use cases affected.</description>
     </step>
     <step number="7">
       <title>Update GitHub Projects</title>
       <description>
         For each chunk:
-        - Create linked issue: gh issue create --repo MLorneSmith/2025slideheroes --title "[CHUNK-{#}] {EPIC_NAME} - {CHUNK_FOCUS}" --body "{CHUNK_CONTENT}"
-        - Link to Epic using "Part of #{EPIC_NUMBER}"
-        - Set fields:
-          - Feature Type: Story
-          - AAFD Stage: Chunks
-          - Inherit Priority from Epic
-          - Document Cross-cutting Dependencies
+        - Create chunk issue using Feature Chunk template: 
+          gh issue create --repo MLorneSmith/2025slideheroes --template feature-chunk.yml
+        - Fill template fields:
+          - Chunk Title: "[CHUNK-{#}] {EPIC_NAME} - {CHUNK_FOCUS}"
+          - Parent Epic: "#{EPIC_NUMBER}"
+          - Chunk Summary: 50-100 word summary from chunk analysis
+          - Technical Scope: Components and file changes from chunk content
+          - Priority: Inherit from Epic (will be refined in Priority Matrix during validation)
+          - Technical Domain Labels: Based on file_impact analysis
+          - Cross-cutting Dependencies: From dependency analysis
+        - Apply labels: ["chunk", "needs-validation"] plus domain labels
         - Move Epic to "Chunks" column in Planning Board
         - Store chunks in: .claude/build/3-output/{epic-name}/2-chunks/
+        - Create context files: .claude/contexts/chunk-{id}/context.md
       </description>
     </step>
   </instructions>
 
   <input>
-    <prd_content>{PRD_CONTENT}</prd_content>
+    <prd_content>{STRUCTURED_PRD_CONTENT}</prd_content>
+    <epic_number>{EPIC_ISSUE_NUMBER}</epic_number>
+    <epic_name>{EPIC_TITLE}</epic_name>
     <codebase_files>{CODEBASE_FILES}</codebase_files>
     <writeable_files>{WRITEABLE_FILES}</writeable_files>
     <repo_path>{REPO_PATH}</repo_path>
     <index_file>{INDEX_FILE}</index_file>
     <branch_name>{BRANCH_NAME}</branch_name>
-    <prd_id>{PRD_ID}</prd_id>
   </input>
 
   <example>

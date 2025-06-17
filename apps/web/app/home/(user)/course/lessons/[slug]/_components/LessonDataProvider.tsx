@@ -5,7 +5,6 @@ import type { Database } from "@kit/supabase/database";
  */
 import { updateLessonProgressAction } from "../../../_lib/server/server-actions";
 
-
 // Type definitions for Payload CMS data structures
 interface PayloadLesson {
 	id: string;
@@ -103,7 +102,7 @@ export async function LessonDataProvider({
 			lessonId,
 			completionPercentage: 0,
 			completed: false,
-		// });
+		});
 	}
 
 	// Get quiz data if lesson has a quiz
@@ -132,19 +131,19 @@ export async function LessonDataProvider({
 				quizIdStr === "undefined"
 			) {
 				// TODO: Async logger needed
-		// TODO: Fix logger call - was: info
+				// TODO: Fix logger call - was: info
 				// Continue without the quiz data
 			} else {
 				try {
 					// Add debug logging
 					// TODO: Async logger needed
-		// TODO: Fix logger call - was: info
+					// TODO: Fix logger call - was: info
 					quiz = await getQuiz(quizId);
 
 					// Verify quiz questions are loaded
 					if (quiz && (!quiz.questions || quiz.questions.length === 0)) {
 						// TODO: Async logger needed
-		// TODO: Fix logger call - was: info
+						// TODO: Fix logger call - was: info
 
 						// If quiz exists but questions aren't loaded, try to fetch questions directly
 						try {
@@ -159,20 +158,20 @@ export async function LessonDataProvider({
 							) {
 								quiz.questions = questionsResponse.docs;
 								// TODO: Async logger needed
-		// TODO: Fix logger call - was: info
+								// TODO: Fix logger call - was: info
 							} else {
 								// TODO: Async logger needed
-		// TODO: Fix logger call - was: warn
+								// TODO: Fix logger call - was: warn
 							}
 						} catch (_questionsError) {
 							// TODO: Async logger needed
-		// TODO: Fix logger call - was: error
+							// TODO: Fix logger call - was: error
 						}
 					}
 				} catch (_error) {
 					// Log the error with context but continue without the quiz data
 					// TODO: Async logger needed
-		// TODO: Fix logger call - was: error
+					// TODO: Fix logger call - was: error
 					// Continue without the quiz data - no placeholder quizzes
 				}
 			}
@@ -217,11 +216,11 @@ export async function LessonDataProvider({
 				typeof surveyId === "object" ? surveyId.id || surveyId.value : surveyId;
 
 			// TODO: Async logger needed
-		// (await getLogger()).info(
-		// `Lesson ${lesson.title} (${lessonId}) has survey ID: ${actualSurveyId}`,
-		// );
+			// (await getLogger()).info(
+			// `Lesson ${lesson.title} (${lessonId}) has survey ID: ${actualSurveyId}`,
+			// );
 			// TODO: Async logger needed
-		// TODO: Fix logger call - was: info
+			// TODO: Fix logger call - was: info
 
 			// Get survey data directly using the ID
 			try {
@@ -232,53 +231,53 @@ export async function LessonDataProvider({
 
 				// First try to get the survey by ID using a direct API call
 				// TODO: Async logger needed
-		// TODO: Fix logger call - was: info
+				// TODO: Fix logger call - was: info
 
 				// Determine slug based on lesson number as a fallback
 				let surveySlug = "";
 				if (lesson.lesson_number === 103) {
 					surveySlug = "three-quick-questions";
 					// TODO: Async logger needed
-		// TODO: Fix logger call - was: info
+					// TODO: Fix logger call - was: info
 				} else if (lesson.lesson_number === 802) {
 					surveySlug = "feedback";
 					// TODO: Async logger needed
-		// TODO: Fix logger call - was: info
+					// TODO: Fix logger call - was: info
 				}
 
 				// Try to get the survey by slug if we have one
 				if (surveySlug) {
 					// TODO: Async logger needed
-		// TODO: Fix logger call - was: info
+					// TODO: Fix logger call - was: info
 					const surveyData = await getSurvey(surveySlug);
 
 					if (surveyData?.docs && surveyData.docs.length > 0) {
 						survey = surveyData.docs[0];
 						// TODO: Async logger needed
-		// (await getLogger()).info(`Found survey by slug: ${survey.title} (${survey.id})`);
+						// (await getLogger()).info(`Found survey by slug: ${survey.title} (${survey.id})`);
 
 						// Pre-fetch questions to ensure they're available
 						// TODO: Async logger needed
-		// TODO: Fix logger call - was: info
+						// TODO: Fix logger call - was: info
 						const questionsData = await getSurveyQuestions(survey.id);
 
 						if (questionsData?.docs && questionsData.docs.length > 0) {
 							// Add questions to the survey object directly
 							survey.questions = questionsData.docs;
 							// TODO: Async logger needed
-		// TODO: Fix logger call - was: info
+							// TODO: Fix logger call - was: info
 						} else {
 							// TODO: Async logger needed
-		// TODO: Fix logger call - was: info
+							// TODO: Fix logger call - was: info
 						}
 					} else {
 						// TODO: Async logger needed
-		// TODO: Fix logger call - was: info
+						// TODO: Fix logger call - was: info
 					}
 				}
 			} catch (_error) {
 				// TODO: Async logger needed
-		// TODO: Fix logger call - was: error
+				// TODO: Fix logger call - was: error
 				// Continue without the survey data
 			}
 

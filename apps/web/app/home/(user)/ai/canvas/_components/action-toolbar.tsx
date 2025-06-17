@@ -16,7 +16,6 @@ import { generateIdeasAction } from "../_actions/generate-ideas";
 import { simplifyTextAction } from "../_actions/simplify-text";
 import type { TiptapEditorRef } from "./editor/tiptap/tiptap-editor";
 
-
 interface ActionToolbarProps {
 	editorRef: React.RefObject<TiptapEditorRef | null>;
 	sectionType: ImprovementType;
@@ -58,11 +57,10 @@ export function ActionToolbar({
 						resolve(content);
 					} catch (_error) {
 						// TODO: Async logger needed
-		// TODO: Async logger needed
-		// (await getLogger()).warn(
-		// 	"Error getting editor content:",
-		// 	{ data: error }
-		// );
+						// (await getLogger()).warn(
+						// 	"Error getting editor content:",
+						// 	{ data: _error }
+						// );
 						resolve("");
 					}
 				});
@@ -105,7 +103,7 @@ export function ActionToolbar({
 												type: "heading",
 												attrs: { level: 2 },
 												content: [{ type: "text", text: section.content }],
-											// });
+											});
 											editor.commands.enter();
 										} else {
 											// Insert bullet point
@@ -121,43 +119,39 @@ export function ActionToolbar({
 								}
 							} catch (_updateError) {
 								// TODO: Async logger needed
-		// TODO: Async logger needed
-		// (await getLogger()).warn(
-		// 	"Error updating editor content:",
-		// 	{ data: updateError }
-		// );
+								// (await getLogger()).warn(
+								// 	"Error updating editor content:",
+								// 	{ data: _updateError }
+								// );
 							}
 						}
 					} catch (_parseError) {
 						// TODO: Async logger needed
-		// TODO: Async logger needed
-		// (await getLogger()).error(
-		// 	"Failed to parse simplified content:",
-		// 	{ data: parseError }
-		// );
+						// (await getLogger()).error(
+						// 	"Failed to parse simplified content:",
+						// 	{ data: _parseError }
+						// );
 						return;
 					}
 				} else {
 					// TODO: Async logger needed
-		// TODO: Async logger needed
-		// (await getLogger()).error(
-		// 	"Failed to simplify text:",
-		// 	{ data: result.error }
-		// );
+					// (await getLogger()).error(
+					// 	"Failed to simplify text:",
+					// 	{ data: result.error }
+					// );
 				}
 			} catch (_contentError) {
 				// TODO: Async logger needed
-		// TODO: Async logger needed
-		// (await getLogger()).warn(
-		// 	"Error getting editor content:",
-		// 	{ data: contentError }
-		// );
+				// (await getLogger()).warn(
+				// 	"Error getting editor content:",
+				// 	{ data: _contentError }
+				// );
 			}
 		} catch (_error) {
 			// TODO: Async logger needed
-		// (await getLogger()).error("Error simplifying text:", {
-		// data: error,
-		// });
+			// (await getLogger()).error("Error simplifying text:", {
+			// 	data: _error,
+			// });
 		} finally {
 			setIsSimplifying(false);
 		}
@@ -182,11 +176,10 @@ export function ActionToolbar({
 						resolve(content);
 					} catch (_error) {
 						// TODO: Async logger needed
-		// TODO: Async logger needed
-		// (await getLogger()).warn(
-		// 	"Error getting editor content:",
-		// 	{ data: error }
-		// );
+						// (await getLogger()).warn(
+						// 	"Error getting editor content:",
+						// 	{ data: _error }
+						// );
 						resolve("");
 					}
 				});
@@ -201,32 +194,31 @@ export function ActionToolbar({
 				const contentToSend =
 					content.trim() || "Please suggest some initial ideas.";
 
-				const _result = await generateIdeasAction({
+				const result = await generateIdeasAction({
 					content: contentToSend,
 					submissionId: canvasId,
 					type: sectionType,
-				// });
+				});
 
 				if (
-					_result._success &&
-					result._data?._improvements &&
+					result.success &&
+					result.data?.improvements &&
 					onGenerateImprovements
 				) {
 					onGenerateImprovements(result.data.improvements);
 				}
-			} catch (contentError) {
+			} catch (_contentError) {
 				// TODO: Async logger needed
-		// TODO: Async logger needed
-		// (await getLogger()).warn(
-		// 	"Error getting editor content:",
-		// 	{ data: contentError }
-		// );
+				// (await getLogger()).warn(
+				// 	"Error getting editor content:",
+				// 	{ data: contentError }
+				// );
 			}
 		} catch (_error) {
 			// TODO: Async logger needed
-		// (await getLogger()).error("Error generating ideas:", {
-		// data: error,
-		// });
+			// (await getLogger()).error("Error generating ideas:", {
+			// 	data: _error,
+			// });
 		}
 	}, [editorRef, canvasId, user, sectionType, onGenerateImprovements]);
 

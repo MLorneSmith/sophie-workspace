@@ -84,7 +84,7 @@ async function withCsrfMiddleware(
 		if (error instanceof CsrfError) {
 			return NextResponse.json("Invalid CSRF token", {
 				status: 401,
-			// });
+			});
 		}
 
 		throw error;

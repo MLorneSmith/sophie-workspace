@@ -219,7 +219,7 @@ async function main() {
 
 		// 3. Mark all lessons as complete
 		const now = new Date().toISOString();
-		let completedLessonsCount = 0;
+		let _completedLessonsCount = 0;
 
 		for (const lesson of lessonsData) {
 			// TODO: Async logger needed
@@ -268,7 +268,7 @@ async function main() {
 				}
 			}
 
-			completedLessonsCount++;
+			_completedLessonsCount++;
 		}
 
 		// Get all lesson progress records for this user and course

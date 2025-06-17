@@ -13,5 +13,5 @@ export function useBuildingBlocksPresentation(id: string | null) {
 			return getBuildingBlocksPresentation(supabase, id);
 		},
 		enabled: !!id,
-	// });
+	});
 }

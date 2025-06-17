@@ -1,6 +1,5 @@
 "use client";
 
-
 import { createServiceLogger } from "@kit/shared/logger";
 import type React from "react";
 import { createContext, useContext, useEffect, useState } from "react";
@@ -47,7 +46,7 @@ export function SetupFormProvider({ children }: { children: React.ReactNode }) {
 		situation: "",
 		complication: "",
 		answer: "",
-	// });
+	});
 
 	const [currentQuestion, setCurrentQuestion] = useState(0);
 	const [currentPath, setCurrentPath] = useState<QuestionField[]>([
@@ -103,11 +102,11 @@ export function SetupFormProvider({ children }: { children: React.ReactNode }) {
 			logger.info({
 				currentQuestion,
 				nextQuestion: currentQuestion + 1,
-			// });
+			});
 			logger.info({
 				currentPath: currentPath.join(", "),
 				message: "Current path",
-			// });
+			});
 			setCurrentQuestion((_prev) => prev + 1);
 		} else {
 			logger.info({ message: "Reached end of questions" });

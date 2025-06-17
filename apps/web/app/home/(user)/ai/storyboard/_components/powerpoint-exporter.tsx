@@ -34,7 +34,7 @@ export function PowerPointExporter() {
 			// Convert Buffer to Blob for download
 			const pptxBlob = new Blob([pptxBuffer], {
 				type: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-			// });
+			});
 
 			// Create a download link and trigger download
 			const url = URL.createObjectURL(pptxBlob);

@@ -7,12 +7,10 @@ import { useQuery } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 
 import type {
-
 	BuildingBlocksSubmission,
 	Slide,
 	StoryboardData,
 	TipTapDocument,
-	TipTapNode,
 } from "../types";
 
 // Basic transformer from TipTap document to storyboard format
@@ -54,7 +52,7 @@ function _generateStoryboardFromOutline(
 						type: "text",
 						text: headingText,
 						columnIndex: 0,
-					// });
+					});
 				}
 			} else if (node.type === "paragraph" && currentSlide) {
 				// Add paragraphs as text content
@@ -62,13 +60,13 @@ function _generateStoryboardFromOutline(
 					type: "text",
 					text: extractTextFromNode(node),
 					columnIndex: 0,
-				// });
+				});
 			} else if (
 				(node.type === "bulletList" || node.type === "orderedList") &&
 				currentSlide
 			) {
 				// Process list items
-				processList(_node, _currentSlide, "bullet");
+				_processList(node, currentSlide, "bullet");
 			}
 		}
 
@@ -84,7 +82,7 @@ function _generateStoryboardFromOutline(
 	};
 }
 
-function extractTitle(outline: TipTapDocument | unknown): string | null {
+function extractTitle(outline: any): string | null {
 	// Try to find the first level 1 heading
 	if (outline?.content) {
 		for (const node of outline.content) {
@@ -96,11 +94,11 @@ function extractTitle(outline: TipTapDocument | unknown): string | null {
 	return null;
 }
 
-function extractTextFromNode(node: TipTapNode | unknown): string {
+function extractTextFromNode(node: any): string {
 	if (!node.content) return "";
 
 	return node.content
-		.map((contentNode: TipTapNode | unknown) => {
+		.map((contentNode: any) => {
 			if (contentNode.type === "text") {
 				return contentNode.text;
 			}
@@ -109,7 +107,7 @@ function extractTextFromNode(node: TipTapNode | unknown): string {
 		.join("");
 }
 
-function _processList(node: TipTapNode | unknown, slide: Slide, type: string) {
+function _processList(node: any, slide: Slide, type: string) {
 	if (!node.content) return;
 
 	for (const item of node.content) {
@@ -120,12 +118,12 @@ function _processList(node: TipTapNode | unknown, slide: Slide, type: string) {
 						type,
 						text: extractTextFromNode(itemContent),
 						columnIndex: 0,
-					// });
+					});
 				} else if (
 					itemContent.type === "bulletList" ||
 					itemContent.type === "orderedList"
 				) {
-					processList(_itemContent, _slide, "subbullet");
+					_processList(itemContent, slide, "subbullet");
 				}
 			}
 		}
@@ -137,76 +135,76 @@ export function _usePresentationStoryboard(presentationId: string) {
 	const [isUpdating, setIsUpdating] = useState(false);
 
 	const fetchStoryboard = useCallback(async () => {
-			// First try fetching with the storyboard column
-			const { data, error } = await supabase
-				.from("building_blocks_submissions")
-				.select("id, outline, storyboard, title")
-				.eq("id", presentationId)
-				.single();
+		// First try fetching with the storyboard column
+		const { data, error } = await supabase
+			.from("building_blocks_submissions")
+			.select("id, outline, storyboard, title")
+			.eq("id", presentationId)
+			.single();
 
-			if (error) {
-				// If there's an error related to the storyboard column not existing,
-				// try without that column
-				if (error.message.includes("column 'storyboard' does not exist")) {
-					const { data: fallbackData, error: fallbackError } = await supabase
-						.from("building_blocks_submissions")
-						.select("id, outline, title")
-						.eq("id", presentationId)
-						.single();
+		if (error) {
+			// If there's an error related to the storyboard column not existing,
+			// try without that column
+			if (error.message.includes("column 'storyboard' does not exist")) {
+				const { data: fallbackData, error: fallbackError } = await supabase
+					.from("building_blocks_submissions")
+					.select("id, outline, title")
+					.eq("id", presentationId)
+					.single();
 
-					if (fallbackError) {
-						throw new Error(
-							`Error fetching presentation: ${fallbackError.message}`,
-						);
-					}
-
-					// Generate a storyboard from the outline since we don't have storyboard data
-					try {
-						const outline =
-							typeof fallbackData.outline === "string"
-								? JSON.parse(fallbackData.outline)
-								: fallbackData.outline;
-
-						return _generateStoryboardFromOutline(outline);
-					} catch (_err) {
-						// TODO: Async logger needed
-		// TODO: Fix logger call - was: error
-						throw new Error("Failed to generate storyboard from outline");
-					}
-				} else {
-					// If it's a different error, throw it
-					throw new Error(`Error fetching presentation: ${error.message}`);
+				if (fallbackError) {
+					throw new Error(
+						`Error fetching presentation: ${fallbackError.message}`,
+					);
 				}
+
+				// Generate a storyboard from the outline since we don't have storyboard data
+				try {
+					const outline =
+						typeof fallbackData.outline === "string"
+							? JSON.parse(fallbackData.outline)
+							: fallbackData.outline;
+
+					return _generateStoryboardFromOutline(outline);
+				} catch (_err) {
+					// TODO: Async logger needed
+					// TODO: Fix logger call - was: error
+					throw new Error("Failed to generate storyboard from outline");
+				}
+			} else {
+				// If it's a different error, throw it
+				throw new Error(`Error fetching presentation: ${error.message}`);
 			}
+		}
 
-			// Cast data to our interface
-			const typedData = data as unknown as BuildingBlocksSubmission;
+		// Cast data to our interface
+		const typedData = data as unknown as BuildingBlocksSubmission;
 
-			// If we have storyboard data, return it
-			if (typedData.storyboard) {
-				return typedData.storyboard;
-			}
+		// If we have storyboard data, return it
+		if (typedData.storyboard) {
+			return typedData.storyboard;
+		}
 
-			// Otherwise, generate a storyboard from the outline
-			try {
-				const outline =
-					typeof typedData.outline === "string"
-						? JSON.parse(typedData.outline)
-						: typedData.outline;
+		// Otherwise, generate a storyboard from the outline
+		try {
+			const outline =
+				typeof typedData.outline === "string"
+					? JSON.parse(typedData.outline)
+					: typedData.outline;
 
-				return _generateStoryboardFromOutline(outline);
-			} catch (_err) {
-				// TODO: Async logger needed
-		// TODO: Fix logger call - was: error
-				throw new Error("Failed to generate storyboard from outline");
-			}
+			return _generateStoryboardFromOutline(outline);
+		} catch (_err) {
+			// TODO: Async logger needed
+			// TODO: Fix logger call - was: error
+			throw new Error("Failed to generate storyboard from outline");
+		}
 	}, [presentationId, supabase]);
 
 	const { data, isLoading, isError, refetch } = useQuery({
 		queryKey: ["presentation-storyboard", presentationId],
 		queryFn: fetchStoryboard,
 		enabled: !!presentationId,
-	// });
+	});
 
 	const saveStoryboard = useCallback(
 		async (storyboardData: StoryboardData) => {
@@ -219,7 +217,7 @@ export function _usePresentationStoryboard(presentationId: string) {
 					.update({
 						// Use a type assertion to tell TypeScript we know what we're doing
 						storyboard: storyboardData as unknown as Json,
-					// })
+					})
 					.eq("id", presentationId);
 
 				if (result.error) {
@@ -231,7 +229,7 @@ export function _usePresentationStoryboard(presentationId: string) {
 							"Storyboard feature is not fully set up yet. Database migration needed.",
 						);
 						// TODO: Async logger needed
-		// TODO: Fix logger call - was: error
+						// TODO: Fix logger call - was: error
 					} else {
 						throw result.error;
 					}
@@ -242,14 +240,14 @@ export function _usePresentationStoryboard(presentationId: string) {
 				return true;
 			} catch (_error) {
 				// TODO: Async logger needed
-		// TODO: Fix logger call - was: error
+				// TODO: Fix logger call - was: error
 				toast.error("Failed to save storyboard");
 				return false;
 			} finally {
 				setIsUpdating(false);
 			}
 		},
-		[presentationId, supabase],
+		[presentationId, supabase, refetch],
 	);
 
 	return {

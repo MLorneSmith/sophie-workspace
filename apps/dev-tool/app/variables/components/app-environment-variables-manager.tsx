@@ -1,6 +1,5 @@
 "use client";
 
-import { createServiceLogger } from "@kit/shared/logger";
 import { Alert, AlertDescription, AlertTitle } from "@kit/ui/alert";
 import { Badge } from "@kit/ui/badge";
 import { Button } from "@kit/ui/button";
@@ -41,7 +40,7 @@ import type { AppEnvState, EnvVariableState } from "../lib/types";
 import { DynamicFormInput } from "./dynamic-form-input";
 
 // Initialize service logger
-const { getLogger } = createServiceLogger("APP_ENVIRONMENT_VARIABLES_MANAGER");
+// const { getLogger } = createServiceLogger("APP_ENVIRONMENT_VARIABLES_MANAGER");
 
 export function AppEnvironmentVariablesManager({
 	state,

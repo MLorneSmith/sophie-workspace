@@ -4,7 +4,6 @@ import { toast } from "@kit/ui/sonner";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import {
-
 	type BuildingBlocksSubmission,
 	type LayoutTemplate,
 	PRESET_LAYOUTS,
@@ -31,91 +30,90 @@ export class StoryboardService {
 	 * @returns Promise resolving to the storyboard data
 	 */
 	async getStoryboard(submissionId: string): Promise<StoryboardData> {
-			// First try fetching with the storyboard column
-			const { data, error } = await this.supabase
-				.from("building_blocks_submissions")
-				.select("id, outline, storyboard, title")
-				.eq("id", submissionId)
-				.single();
+		// First try fetching with the storyboard column
+		const { data, error } = await this.supabase
+			.from("building_blocks_submissions")
+			.select("id, outline, storyboard, title")
+			.eq("id", submissionId)
+			.single();
 
-			if (error) {
-				// If there's an error related to the storyboard column not existing,
-				// try without that column
-				if (error.message.includes("column 'storyboard' does not exist")) {
-					const { data: fallbackData, error: fallbackError } =
-						await this.supabase
-							.from("building_blocks_submissions")
-							.select("id, outline, title")
-							.eq("id", submissionId)
-							.single();
+		if (error) {
+			// If there's an error related to the storyboard column not existing,
+			// try without that column
+			if (error.message.includes("column 'storyboard' does not exist")) {
+				const { data: fallbackData, error: fallbackError } = await this.supabase
+					.from("building_blocks_submissions")
+					.select("id, outline, title")
+					.eq("id", submissionId)
+					.single();
 
-					if (fallbackError) {
-						throw new Error(
-							`Error fetching presentation: ${fallbackError.message}`,
-						);
-					}
-
-					// Generate a storyboard from the outline since we don't have storyboard data
-					try {
-						const outline =
-							typeof fallbackData.outline === "string"
-								? JSON.parse(fallbackData.outline)
-								: fallbackData.outline;
-
-						const storyboard = this.generateStoryboardFromOutline(
-							outline,
-							fallbackData.title || "Untitled Presentation",
-						);
-
-						// Save the generated storyboard if possible (will silently fail if column doesn't exist yet)
-						try {
-							await this.saveStoryboard(submissionId, storyboard);
-						} catch (_saveError) {
-							// TODO: Async logger needed
-		// TODO: Fix logger call - was: warn
-						}
-
-						return storyboard;
-					} catch (_err) {
-						// TODO: Async logger needed
-		// TODO: Fix logger call - was: error
-						throw new Error("Failed to generate storyboard from outline");
-					}
-				} else {
-					// If it's a different error, throw it
-					throw new Error(`Error fetching presentation: ${error.message}`);
+				if (fallbackError) {
+					throw new Error(
+						`Error fetching presentation: ${fallbackError.message}`,
+					);
 				}
+
+				// Generate a storyboard from the outline since we don't have storyboard data
+				try {
+					const outline =
+						typeof fallbackData.outline === "string"
+							? JSON.parse(fallbackData.outline)
+							: fallbackData.outline;
+
+					const storyboard = this.generateStoryboardFromOutline(
+						outline,
+						fallbackData.title || "Untitled Presentation",
+					);
+
+					// Save the generated storyboard if possible (will silently fail if column doesn't exist yet)
+					try {
+						await this.saveStoryboard(submissionId, storyboard);
+					} catch (_saveError) {
+						// TODO: Async logger needed
+						// TODO: Fix logger call - was: warn
+					}
+
+					return storyboard;
+				} catch (_err) {
+					// TODO: Async logger needed
+					// TODO: Fix logger call - was: error
+					throw new Error("Failed to generate storyboard from outline");
+				}
+			} else {
+				// If it's a different error, throw it
+				throw new Error(`Error fetching presentation: ${error.message}`);
 			}
+		}
 
-			// Cast data to our interface
-			const typedData = data as unknown as BuildingBlocksSubmission;
+		// Cast data to our interface
+		const typedData = data as unknown as BuildingBlocksSubmission;
 
-			// If we have storyboard data, return it
-			if (typedData.storyboard) {
-				return typedData.storyboard;
-			}
+		// If we have storyboard data, return it
+		if (typedData.storyboard) {
+			return typedData.storyboard;
+		}
 
-			// Otherwise, generate a storyboard from the outline
-			try {
-				const outline =
-					typeof typedData.outline === "string"
-						? JSON.parse(typedData.outline)
-						: typedData.outline;
+		// Otherwise, generate a storyboard from the outline
+		try {
+			const outline =
+				typeof typedData.outline === "string"
+					? JSON.parse(typedData.outline)
+					: typedData.outline;
 
-				const storyboard = this.generateStoryboardFromOutline(
-					outline,
-					typedData.title || "Untitled Presentation",
-				);
+			const storyboard = this.generateStoryboardFromOutline(
+				outline,
+				typedData.title || "Untitled Presentation",
+			);
 
-				// Save the generated storyboard
-				await this.saveStoryboard(submissionId, storyboard);
+			// Save the generated storyboard
+			await this.saveStoryboard(submissionId, storyboard);
 
-				return storyboard;
-			} catch (_err) {
-				// TODO: Async logger needed
-		// TODO: Fix logger call - was: error
-				throw new Error("Failed to generate storyboard from outline");
-			}
+			return storyboard;
+		} catch (_err) {
+			// TODO: Async logger needed
+			// TODO: Fix logger call - was: error
+			throw new Error("Failed to generate storyboard from outline");
+		}
 	}
 
 	/**
@@ -147,7 +145,7 @@ export class StoryboardService {
 						"Storyboard feature is not fully set up yet. Database migration needed.",
 					);
 					// TODO: Async logger needed
-		// TODO: Fix logger call - was: error
+					// TODO: Fix logger call - was: error
 					return false;
 				}
 				throw result.error;
@@ -156,7 +154,7 @@ export class StoryboardService {
 			return true;
 		} catch (_error) {
 			// TODO: Async logger needed
-		// TODO: Fix logger call - was: error
+			// TODO: Fix logger call - was: error
 			toast.error("Failed to save storyboard");
 			return false;
 		}
@@ -180,7 +178,7 @@ export class StoryboardService {
 			return data as BuildingBlocksSubmission[];
 		} catch (_error) {
 			// TODO: Async logger needed
-		// TODO: Fix logger call - was: error
+			// TODO: Fix logger call - was: error
 			throw new Error("Failed to list presentations");
 		}
 	}
@@ -199,7 +197,7 @@ export class StoryboardService {
 			throw new Error("PowerPoint generation not implemented yet");
 		} catch (_error) {
 			// TODO: Async logger needed
-		// TODO: Fix logger call - was: error
+			// TODO: Fix logger call - was: error
 			throw new Error("Failed to generate PowerPoint");
 		}
 	}
@@ -362,7 +360,7 @@ export class StoryboardService {
 							type,
 							text: this.extractTextFromNode(itemContent),
 							columnIndex: 0,
-						// });
+						});
 					} else if (
 						itemContent.type === "bulletList" ||
 						itemContent.type === "orderedList"

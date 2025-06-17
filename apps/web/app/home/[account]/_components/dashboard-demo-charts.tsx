@@ -163,7 +163,7 @@ function generateDemoData() {
 	const _formatter = new Intl.DateTimeFormat("en-us", {
 		month: "long",
 		year: "2-digit",
-	// });
+	});
 
 	const data: { value: string; name: string }[] = [];
 
@@ -173,7 +173,7 @@ function generateDemoData() {
 		data.push({
 			name: formatter.format(date),
 			value: (Math.random() * 10).toFixed(1),
-		// });
+		});
 	}
 
 	const lastValue = data[data.length - 1]?.value;
@@ -879,7 +879,7 @@ export function PageViewsChart() {
 								return date.toLocaleDateString("en-US", {
 									month: "short",
 									day: "numeric",
-								// });
+								});
 							}}
 						/>
 						<ChartTooltip
@@ -892,7 +892,7 @@ export function PageViewsChart() {
 											_month: "short",
 											_day: "numeric",
 											_year: "numeric",
-										// });
+										});
 									}}
 								/>
 							}

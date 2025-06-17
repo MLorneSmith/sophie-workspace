@@ -110,7 +110,7 @@ export const fetchUsageDataAction = enhanceAction(
 				timeRange: data.timeRange,
 				userId: data.userId,
 				teamId: data.teamId,
-			// });
+			});
 			return {
 				success: false,
 				error: error instanceof Error ? error.message : "Unknown error",

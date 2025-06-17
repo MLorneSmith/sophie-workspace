@@ -16,7 +16,6 @@ import {
 	saveStoryboardAction,
 } from "../services/storyboard-service";
 import type {
-
 	BuildingBlocksSubmission,
 	Slide,
 	StoryboardData,
@@ -85,7 +84,7 @@ export function StoryboardProvider({ children }: StoryboardProviderProps) {
 			try {
 				const presentation = await getPresentationAction({
 					presentationId: currentPresentationId,
-				// });
+				});
 
 				// Type assertion to handle various response formats
 				const typedPresentation =
@@ -106,18 +105,20 @@ export function StoryboardProvider({ children }: StoryboardProviderProps) {
 					setStoryboard({
 						title: typedPresentation.title || "Untitled Presentation",
 						slides: [],
-					// });
+					});
 				}
-			} catch (err) 
+			} catch (err) {
 				// TODO: Async logger needed
-		// TODO: Fix logger call - was: error
+				// TODO: Fix logger call - was: error
 				setError(
 					err instanceof Error
 						? err
 						: new Error("Failed to fetch presentation"),
 				);
-				toast.error("Failed to load presentation");finally 
+				toast.error("Failed to load presentation");
+			} finally {
 				setIsLoading(false);
+			}
 		};
 
 		_fetchPresentation();
@@ -136,7 +137,7 @@ export function StoryboardProvider({ children }: StoryboardProviderProps) {
 				const _result = await saveStoryboardAction({
 					presentationId: currentPresentationId,
 					storyboard: updatedStoryboard,
-				// });
+				});
 
 				// saveStoryboardAction throws an error on failure, it doesn't return { success: false, message: ... }
 				// If we reach here, it means the action was successful.
@@ -144,7 +145,7 @@ export function StoryboardProvider({ children }: StoryboardProviderProps) {
 				return true;
 			} catch (err) {
 				// TODO: Async logger needed
-		// TODO: Fix logger call - was: error
+				// TODO: Fix logger call - was: error
 				// Check if the error is an instance of Error and has a message property
 				const errorMessage =
 					err instanceof Error ? err.message : "Failed to save storyboard";
@@ -170,27 +171,24 @@ export function StoryboardProvider({ children }: StoryboardProviderProps) {
 	}, [debouncedSaveStoryboard]);
 
 	// Update a single slide
-	const updateSlide = useCallback(
-		(updatedSlide: Slide) => {
-			if (!storyboard) return;
+	const updateSlide = useCallback((updatedSlide: Slide) => {
+		if (!storyboard) return;
 
-			const newSlides = storyboard.slides.map((slide) =>
-				slide.id === updatedSlide.id ? updatedSlide : slide,
-			);
+		const newSlides = storyboard.slides.map((slide) =>
+			slide.id === updatedSlide.id ? updatedSlide : slide,
+		);
 
-			const updatedStoryboard = {
-				...storyboard,
-				slides: newSlides,
-			};
+		const updatedStoryboard = {
+			...storyboard,
+			slides: newSlides,
+		};
 
-			startTransition(() => {
-				setStoryboard(updatedStoryboard);
-			});
+		startTransition(() => {
+			setStoryboard(updatedStoryboard);
+		});
 
-			// Auto-save will handle the actual saving
-		},
-		[],
-	);
+		// Auto-save will handle the actual saving
+	}, []);
 
 	// Add a new slide
 	const addSlide = useCallback(() => {
@@ -300,13 +298,7 @@ export function StoryboardProvider({ children }: StoryboardProviderProps) {
 			removeSlide,
 			reorderSlides,
 		}),
-		[
-			updateStoryboard, 
-			updateSlide, 
-			addSlide, 
-			removeSlide, 
-			reorderSlides
-		],
+		[updateStoryboard, updateSlide, addSlide, removeSlide, reorderSlides],
 	);
 
 	return (
@@ -366,7 +358,7 @@ function generateStoryboardFromOutline(
 						type: "text",
 						text: headingText,
 						columnIndex: 0,
-					// });
+					});
 				}
 			} else if (node.type === "paragraph" && currentSlide) {
 				// Add paragraphs as text content
@@ -376,13 +368,13 @@ function generateStoryboardFromOutline(
 					type: "text",
 					text: extractTextFromNode(node),
 					columnIndex: 0,
-				// });
+				});
 			} else if (
 				(node.type === "bulletList" || node.type === "orderedList") &&
 				currentSlide
 			) {
 				// Process list items
-				processList(_node, _currentSlide);
+				_processList(node, currentSlide);
 			}
 		}
 
@@ -409,7 +401,7 @@ function generateStoryboardFromOutline(
 				},
 			],
 			order: 0,
-		// });
+		});
 	}
 
 	return {
@@ -418,7 +410,7 @@ function generateStoryboardFromOutline(
 	};
 }
 
-function _extractTitle(outline: TipTapDocument): string | null {
+function extractTitle(outline: TipTapDocument): string | null {
 	// Try to find the first level 1 heading
 	if (outline?.content) {
 		for (const node of outline.content) {
@@ -460,12 +452,12 @@ function _processList(
 						type,
 						text: extractTextFromNode(itemContent),
 						columnIndex: 0,
-					// });
+					});
 				} else if (
 					itemContent.type === "bulletList" ||
 					itemContent.type === "orderedList"
 				) {
-					processList(_itemContent, _slide, "subbullet");
+					_processList(itemContent, slide, "subbullet");
 				}
 			}
 		}

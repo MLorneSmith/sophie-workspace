@@ -168,12 +168,12 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
 				content: contentToSend,
 				submissionId,
 				type: sectionType,
-			// });
+			});
 
 			if (_result._success && result._data?._improvements) {
 				setSuggestions(result.data.improvements);
 			}
-		} catch (error) {
+		} catch (_error) {
 			// TODO: Async logger needed
 			// TODO: Fix logger call - was: error
 			// Could add toast notification here if needed
@@ -250,7 +250,7 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
 														// First, invalidate the query cache
 														await queryClient.invalidateQueries({
 															queryKey: ["submission", submissionId, "outline"],
-														// });
+														});
 
 														// Increment the reset key to force a complete remount
 														setResetKey((_prev) => prev + 1);

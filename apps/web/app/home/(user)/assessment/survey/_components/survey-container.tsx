@@ -15,7 +15,6 @@ import {
 import { QuestionCard } from "./question-card";
 import { SurveySummary } from "./survey-summary";
 
-
 type SurveyContainerProps = {
 	survey: Survey;
 	questions: SurveyQuestion[];
@@ -115,7 +114,7 @@ export function SurveyContainer({
 					category,
 					score,
 					totalQuestions: questions.length,
-				// });
+				});
 
 				// Move to the next question or complete the survey
 				if (_isLastQuestion) {
@@ -140,7 +139,7 @@ export function SurveyContainer({
 							category,
 							score,
 							totalQuestions: questions.length,
-						// });
+						});
 
 						// Then try to get the response record and latest category scores from Supabase
 						const { data: responseData, error } = await supabase
@@ -189,7 +188,7 @@ export function SurveyContainer({
 									categoryScores: finalCategoryScores,
 									highestScoringCategory: finalHighestCategory,
 									lowestScoringCategory: finalLowestCategory,
-								// });
+								});
 
 								// Update local state with final scores for the summary view
 								setCategoryScores(_finalCategoryScores);
@@ -214,7 +213,7 @@ export function SurveyContainer({
 				} else {
 					setCurrentQuestionIndex(_currentQuestionIndex + 1);
 				}
-			} catch (error) {
+			} catch (_error) {
 				// TODO: Async logger needed
 				// TODO: Fix logger call - was: error
 			}

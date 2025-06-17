@@ -37,7 +37,7 @@ export class ErrorCoordinator {
 		// If no handler handled it, log to console
 		// TODO: Async logger needed
 		// (await getLogger()).error("Unhandled error:", {
-		// data: error,
+		// 	data: error,
 		// });
 	}
 

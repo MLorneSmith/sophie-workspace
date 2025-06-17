@@ -2,6 +2,19 @@
   <task>
     Plan a 2-week sprint for a 5-agent team (Product Owner, Scrum Master, 2 Builders, 1 Reviewer) in a Rolling Kanban model by defining sprint goals, selecting stories, assigning tasks, and determining branch strategy.
   </task>
+  
+  <context_loading>
+    <instructions>
+      Before proceeding, read the context documentation inventory:
+      - Read: .claude/docs/.context-docs-inventory.xml
+      Based on the sprint's technical scope, read relevant context:
+      - For TDD approach: Read testing/context/test-driven-development.md
+      - For testing patterns: Read testing/context/unit-testing-patterns.md
+      - For performance goals: Read architecture/performance-optimization.md
+      - For debugging workflow: Read debugging/debugging-system-overview.md
+      - For common patterns: Read debugging/common-patterns.md
+    </instructions>
+  </context_loading>
 
   <tools_available>
     <tool_reference source=".aishell/refs/available-tools.xml">
@@ -39,14 +52,20 @@
       <title>GitHub Projects Sprint Setup</title>
       <description>
         For selected stories:
-        - Update story issues with sprint assignment
-        - Set fields:
-          - AAFD Stage: Sprint Planning
-          - Sprint: Sprint {SPRINT_NUMBER}
-          - Agent Assignment: {ASSIGNED_AGENT}
-          - Implementation Phase: Analysis
+        - Create Sprint Milestone issue using template: .github/ISSUE_TEMPLATE/sprint-milestone.md
+          - Title: "Sprint {SPRINT_NUMBER}: {SPRINT_NAME}"
+          - Fill in all template sections with sprint details
+          - Link to parent Epic issue
+          - List all selected stories with points and assignments
+        - Update story issues with sprint assignment:
+          - Set fields:
+            - AAFD Stage: Sprint Planning
+            - Sprint: Sprint {SPRINT_NUMBER}
+            - Agent Assignment: {ASSIGNED_AGENT}
+            - Implementation Phase: Analysis
+          - Add sprint milestone reference to each story
         - Move stories to "Ready" column in Planning Board
-        - Create sprint milestone if needed: gh api repos/MLorneSmith/2025slideheroes/milestones --method POST -f title="Sprint {SPRINT_NUMBER}" -f due_on="{DUE_DATE}"
+        - Create GitHub milestone if needed: gh api repos/MLorneSmith/2025slideheroes/milestones --method POST -f title="Sprint {SPRINT_NUMBER}" -f due_on="{DUE_DATE}"
         - Add sprint plan as comment on Epic issue
         - Store sprint plan in: .claude/build/3-output/{epic-name}/5-sprints/sprint-{number}.md
       </description>

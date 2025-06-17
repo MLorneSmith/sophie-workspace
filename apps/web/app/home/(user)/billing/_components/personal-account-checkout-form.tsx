@@ -40,7 +40,7 @@ export function PersonalAccountCheckoutForm(props: {
 	const [error, setError] = useState(false);
 	const appEvents = useAppEvents();
 
-	let [checkoutToken, setCheckoutToken] = useState<string | undefined>(
+	const [checkoutToken, setCheckoutToken] = useState<string | undefined>(
 		undefined,
 	);
 
@@ -87,7 +87,7 @@ export function PersonalAccountCheckoutForm(props: {
 									appEvents.emit({
 										type: "checkout.started",
 										payload: { planId },
-									// });
+									});
 
 									const { checkoutToken } =
 										await createPersonalAccountCheckoutSession({

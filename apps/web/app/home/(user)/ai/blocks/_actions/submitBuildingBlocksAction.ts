@@ -6,7 +6,6 @@ import type { Database } from "~/lib/database.types";
 
 import { createTiptapFromText } from "./tiptap-format-utils";
 
-
 export type SubmitFormData = {
 	title: string;
 	audience: string;
@@ -42,7 +41,7 @@ export async function submitBuildingBlocksAction(data: SubmitFormData) {
 				situation: createTiptapFromText(data.situation),
 				complication: createTiptapFromText(data.complication),
 				answer: createTiptapFromText(data.answer),
-			// })
+			})
 			.maybeSingle();
 
 		// If a submission exists, return it instead of creating a new one
@@ -62,17 +61,17 @@ export async function submitBuildingBlocksAction(data: SubmitFormData) {
 				situation: createTiptapFromText(data.situation),
 				complication: createTiptapFromText(data.complication),
 				answer: createTiptapFromText(data.answer),
-			// })
+			})
 			.select("id")
 			.single();
 
 		if (error) {
 			// TODO: Async logger needed
-		// TODO: Async logger needed
-		// (await getLogger()).error(
-		// 	"Error submitting building blocks:",
-		// 	{ data: error }
-		// );
+			// TODO: Async logger needed
+			// (await getLogger()).error(
+			// 	"Error submitting building blocks:",
+			// 	{ data: error }
+			// );
 			throw new Error("Failed to submit building blocks");
 		}
 
@@ -82,7 +81,7 @@ export async function submitBuildingBlocksAction(data: SubmitFormData) {
 		// TODO: Async logger needed
 		// (await getLogger()).error(
 		// 	"Error in submitBuildingBlocksAction:",
-		// 	{ data: error }
+		// 	{ data: _error }
 		// );
 		throw new Error("Failed to submit building blocks");
 	}

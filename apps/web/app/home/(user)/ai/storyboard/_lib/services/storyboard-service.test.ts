@@ -122,7 +122,7 @@ describe("Storyboard Service", () => {
 			error: vi.fn(),
 			warn: vi.fn(),
 			info: vi.fn(),
-		// });
+		});
 	});
 
 	afterEach(() => {
@@ -163,12 +163,12 @@ describe("Storyboard Service", () => {
 			mockQuery.single.mockResolvedValue({
 				data: mockPresentationData,
 				error: null,
-			// });
+			});
 
 			// Act
 			const result = await getPresentationAction({
 				presentationId: "presentation-123",
-			// });
+			});
 
 			// Assert
 			const supabaseInstance = mockSupabaseClient();
@@ -192,7 +192,7 @@ describe("Storyboard Service", () => {
 			mockQuery.single.mockResolvedValue({
 				data: presentationWithoutStoryboard,
 				error: null,
-			// });
+			});
 
 			const mockGeneratedStoryboard = {
 				title: "Test Presentation",
@@ -212,7 +212,7 @@ describe("Storyboard Service", () => {
 			// Act
 			const result = await getPresentationAction({
 				presentationId: "presentation-123",
-			// });
+			});
 
 			// Assert
 			expect(mockTipTapTransformer.transform).toHaveBeenCalledWith(
@@ -221,11 +221,11 @@ describe("Storyboard Service", () => {
 			);
 			expect(mockQuery.update).toHaveBeenCalledWith({
 				storyboard: mockGeneratedStoryboard,
-			// });
+			});
 			expect(result).toEqual({
 				...presentationWithoutStoryboard,
 				storyboard: mockGeneratedStoryboard,
-			// });
+			});
 		});
 
 		it("should handle missing storyboard column gracefully", async () => {
@@ -244,7 +244,7 @@ describe("Storyboard Service", () => {
 						outline: mockPresentationData.outline,
 					},
 					error: null,
-				// });
+				});
 
 			const mockGeneratedStoryboard = {
 				title: "Test",
@@ -263,7 +263,7 @@ describe("Storyboard Service", () => {
 			// Act
 			const result = await getPresentationAction({
 				presentationId: "presentation-123",
-			// });
+			});
 
 			// Assert
 			const loggerInstance = await mockLogger();
@@ -285,7 +285,7 @@ describe("Storyboard Service", () => {
 			mockQuery.single.mockResolvedValue({
 				data: null,
 				error: notFoundError,
-			// });
+			});
 
 			// Act & Assert
 			await expect(
@@ -305,7 +305,7 @@ describe("Storyboard Service", () => {
 			mockQuery.single.mockResolvedValue({
 				data: presentationWithInvalidOutline,
 				error: null,
-			// });
+			});
 
 			mockTipTapTransformer.transform.mockImplementation(() => {
 				throw new Error("Invalid JSON");
@@ -314,7 +314,7 @@ describe("Storyboard Service", () => {
 			// Act
 			const result = await getPresentationAction({
 				presentationId: "presentation-123",
-			// });
+			});
 
 			// Assert
 			expect(result).toEqual(presentationWithInvalidOutline);
@@ -354,7 +354,7 @@ describe("Storyboard Service", () => {
 			mockQuery.order.mockResolvedValue({
 				data: mockPresentations,
 				error: null,
-			// });
+			});
 
 			// Act
 			const result = await getPresentationsAction({});
@@ -367,7 +367,7 @@ describe("Storyboard Service", () => {
 			expect(mockQuery.select).toHaveBeenCalledWith("id, title, created_at");
 			expect(mockQuery.order).toHaveBeenCalledWith("created_at", {
 				ascending: false,
-			// });
+			});
 			expect(result).toEqual(mockPresentations);
 		});
 
@@ -376,7 +376,7 @@ describe("Storyboard Service", () => {
 			mockQuery.order.mockResolvedValue({
 				data: [],
 				error: null,
-			// });
+			});
 
 			// Act
 			const result = await getPresentationsAction({});
@@ -391,7 +391,7 @@ describe("Storyboard Service", () => {
 			mockQuery.order.mockResolvedValue({
 				data: null,
 				error: dbError,
-			// });
+			});
 
 			// Act & Assert
 			await expect(getPresentationsAction({})).rejects.toThrow(
@@ -442,7 +442,7 @@ describe("Storyboard Service", () => {
 			const result = await saveStoryboardAction({
 				presentationId: "presentation-123",
 				storyboard: mockStoryboardData,
-			// });
+			});
 
 			// Assert
 			const supabaseInstance = mockSupabaseClient();
@@ -451,7 +451,7 @@ describe("Storyboard Service", () => {
 			);
 			expect(mockQuery.update).toHaveBeenCalledWith({
 				storyboard: mockStoryboardData,
-			// });
+			});
 			expect(mockUpdateChain.eq).toHaveBeenCalledWith("id", "presentation-123");
 			expect(result).toEqual({ success: true });
 		});
@@ -552,12 +552,12 @@ describe("Storyboard Service", () => {
 			mockQuery.single.mockResolvedValue({
 				data: presentationWithNullOutline,
 				error: null,
-			// });
+			});
 
 			// Act
 			const result = await getPresentationAction({
 				presentationId: "presentation-123",
-			// });
+			});
 
 			// Assert
 			expect(result).toEqual(presentationWithNullOutline);

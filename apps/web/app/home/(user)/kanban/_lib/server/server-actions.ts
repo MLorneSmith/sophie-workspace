@@ -7,10 +7,7 @@ import { pino } from "pino";
 import { z } from "zod";
 
 import { DEFAULT_TASKS } from "../config/default-tasks";
-import {
-	SubtaskSchema,
-	UpdateTaskStatusSchema,
-} from "../schema/task.schema";
+import { SubtaskSchema, UpdateTaskStatusSchema } from "../schema/task.schema";
 import { deleteTaskImageAction, uploadTaskImageAction } from "./image-actions";
 
 const logger = pino({
@@ -22,6 +19,20 @@ const logger = pino({
 		env: process.env.NODE_ENV,
 	},
 	errorKey: "error",
+});
+
+const CreateTaskSchema = z.object({
+	title: z.string().min(1, "Title is required"),
+	description: z.string().optional(),
+	status: z.enum(["to-do", "in-progress", "done"]),
+	priority: z.enum(["low", "medium", "high"]),
+	image: z.any().optional(),
+	subtasks: z.array(SubtaskSchema).optional(),
+});
+
+const UpdateTaskSchema = CreateTaskSchema.extend({
+	id: z.string().uuid(),
+	image_url: z.string().nullable().optional(),
 });
 
 const createTaskAction = enhanceAction(
@@ -42,8 +53,8 @@ const createTaskAction = enhanceAction(
 			if (image) {
 				const { data: uploadResult, success } = await uploadTaskImageAction({
 					file: image,
-				// });
-				if (_success && uploadResult) {
+				});
+				if (success && uploadResult) {
 					imageUrl = uploadResult.url;
 				}
 			}
@@ -54,7 +65,7 @@ const createTaskAction = enhanceAction(
 					...taskData,
 					image_url: imageUrl,
 					account_id: user.id,
-				// })
+				})
 				.select()
 				.single();
 
@@ -75,12 +86,15 @@ const createTaskAction = enhanceAction(
 			revalidatePath("/home/kanban");
 
 			return { success: true, data: task };
-		} catch (error) 
-			logger.error(ctx, "Failed to create task", error );
+		} catch (error) {
+			logger.error(ctx, "Failed to create task", { error });
 			return { success: false, error: "Failed to create task" };
+		}
 	},
+	{
 		auth: true,
-		schema: CreateTaskSchema,,
+		schema: CreateTaskSchema,
+	},
 );
 
 const updateTaskAction = enhanceAction(
@@ -104,8 +118,8 @@ const updateTaskAction = enhanceAction(
 			if (image) {
 				const { data: uploadResult, success } = await uploadTaskImageAction({
 					file: image,
-				// });
-				if (_success && uploadResult) {
+				});
+				if (success && uploadResult) {
 					imageUrl = uploadResult.url;
 				}
 			}
@@ -128,7 +142,7 @@ const updateTaskAction = enhanceAction(
 				.update({
 					...taskData,
 					image_url: imageUrl,
-				// })
+				})
 				.eq("id", data.id)
 				.eq("account_id", user.id);
 
@@ -155,12 +169,15 @@ const updateTaskAction = enhanceAction(
 			revalidatePath("/home/kanban");
 
 			return { success: true };
-		} catch (error) 
-			logger.error(ctx, "Failed to update task", error );
+		} catch (error) {
+			logger.error(ctx, "Failed to update task", { error });
 			return { success: false, error: "Failed to update task" };
+		}
 	},
+	{
 		auth: true,
-		schema: UpdateTaskSchema,,
+		schema: UpdateTaskSchema,
+	},
 );
 
 const updateTaskStatusAction = enhanceAction(
@@ -358,7 +375,7 @@ const resetTasksAction = enhanceAction(
 						priority: task.priority,
 						image_url: task.image_url,
 						account_id: user.id,
-					// })
+					})
 					.select()
 					.single();
 
@@ -392,9 +409,9 @@ const resetTasksAction = enhanceAction(
 
 export {
 	createTaskAction,
-	type updateTaskAction,
-	type updateTaskStatusAction,
-	type deleteTaskAction,
-	type updateSubtaskAction,
-	type resetTasksAction,
+	updateTaskAction,
+	updateTaskStatusAction,
+	deleteTaskAction,
+	updateSubtaskAction,
+	resetTasksAction,
 };

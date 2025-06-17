@@ -187,8 +187,9 @@ function groupLogsByDay(
 		} catch (_error) {
 			// TODO: Async logger needed
 			// (await getLogger()).error("Invalid timestamp:", {
-			// data: log.request_timestamp,
+			// 	data: log.request_timestamp,
 			// });
+			continue; // Skip invalid timestamps
 		}
 		if (!dayMap[date]) {
 			dayMap[date] = { cost: 0, tokens: 0 };

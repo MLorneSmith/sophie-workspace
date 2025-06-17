@@ -217,7 +217,7 @@ async function main() {
 
 		// 3. Mark all lessons as complete except for excluded ones
 		const now = new Date().toISOString();
-		let completedLessonsCount = 0;
+		let _completedLessonsCount = 0;
 
 		// We're now including lesson 702 as completed to trigger course completion
 		// TODO: Async logger needed
@@ -278,7 +278,7 @@ async function main() {
 				}
 			}
 
-			completedLessonsCount++;
+			_completedLessonsCount++;
 		}
 
 		// Get all lesson progress records for this user and course

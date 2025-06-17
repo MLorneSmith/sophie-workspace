@@ -11,7 +11,6 @@ import { textSimplificationTemplate } from "@kit/ai-gateway/src/prompts/template
 import { enhanceAction } from "@kit/next/actions";
 import { z } from "zod";
 
-
 const SimplifyTextSchema = z.object({
 	content: z.string(),
 	userId: z.string(),
@@ -27,7 +26,7 @@ export const simplifyTextAction = enhanceAction(
 				userId: data.userId,
 				presentationId: data.canvasId,
 				context: `simplify-${data.sectionType}`,
-			// });
+			});
 
 			// Compile the template with variables
 			const compiledMessages = textSimplificationTemplate.map(
@@ -55,11 +54,11 @@ export const simplifyTextAction = enhanceAction(
 			};
 		} catch (error) {
 			// TODO: Async logger needed
-		// TODO: Async logger needed
-		// (await getLogger()).error(
-		// 	"Error in simplifyTextAction:",
-		// 	{ data: error }
-		// );
+			// TODO: Async logger needed
+			// (await getLogger()).error(
+			// 	"Error in simplifyTextAction:",
+			// 	{ data: error }
+			// );
 			return {
 				success: false,
 				error:

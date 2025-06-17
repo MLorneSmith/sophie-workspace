@@ -1,0 +1,593 @@
+<prompt>
+  <task>
+    Execute a complete story implementation workflow from start to finish, orchestrating GitHub tracking, TDD implementation, and quality assurance through integrated prompts and automated workflows.
+  </task>
+  
+  <overview>
+    This master prompt orchestrates the entire story execution process by:
+    1. Setting up GitHub tracking and branch management
+    2. Guiding TDD implementation with project standards
+    3. Ensuring quality through automated checks
+    4. Completing story with PR creation and status updates
+  </overview>
+  
+  <context_loading>
+    <instructions>
+      Load these contexts at the start of execution:
+      - Read: CLAUDE.md - Project standards and conventions
+      - Read: .claude/contexts/story-{story_id}/context.md - Story requirements
+      - Read: .claude/contexts/story-{story_id}/technical-notes.md - Technical approach
+      - Read: .claude/contexts/story-{story_id}/progress.md - Current progress
+      - Read: .claude/docs/.context-docs-inventory.xml - Available documentation
+      
+      Based on story type, load additional context:
+      - For AI features: Read debugging/github-first-issues.md
+      - For UI work: Read ui/component-patterns.md
+      - For data operations: Read data/supabase-patterns.md
+      - For testing: Read testing/context/test-driven-development.md
+    </instructions>
+  </context_loading>
+  
+  <workflow_phases>
+    <phase number="1" name="initialization">
+      <title>Story Setup and GitHub Tracking</title>
+      <description>
+        Initialize story implementation with proper GitHub Projects tracking and branch setup
+      </description>
+      
+      <steps>
+        <step name="update_github_projects">
+          <description>Move story to Sprint Board "In Progress" column and update fields</description>
+          <commands>
+            <![CDATA[
+            # Update GitHub issue fields
+            gh issue edit {STORY_NUMBER} \
+              --add-field "AAFD Stage=Implementation" \
+              --add-field "AI Context Status=Loaded" \
+              --add-field "Implementation Phase=Analysis"
+            
+            # Add implementation start comment
+            gh issue comment {STORY_NUMBER} \
+              --body "🚀 Starting implementation of story #{STORY_NUMBER}
+              
+              **Session Start**: $(date)
+              **Developer**: @me
+              **Branch**: feature/story-{STORY_NUMBER}-{BRIEF_DESCRIPTION}"
+            ]]>
+          </commands>
+        </step>
+        
+        <step name="create_feature_branch">
+          <description>Create and checkout feature branch</description>
+          <commands>
+            <![CDATA[
+            # Create feature branch
+            git checkout -b feature/story-{STORY_NUMBER}-{BRIEF_DESCRIPTION}
+            
+            # Push branch to remote
+            git push -u origin feature/story-{STORY_NUMBER}-{BRIEF_DESCRIPTION}
+            ]]>
+          </commands>
+        </step>
+        
+        <step name="prepare_context">
+          <description>Load all necessary context for implementation</description>
+          <actions>
+            - Review story acceptance criteria
+            - Identify technical tasks to implement
+            - Study similar implementations in codebase
+            - Plan TDD approach
+          </actions>
+        </step>
+      </steps>
+    </phase>
+    
+    <phase number="2" name="test_driven_development">
+      <title>TDD Implementation</title>
+      <description>
+        Implement story using Test-Driven Development with project standards
+      </description>
+      
+      <steps>
+        <step name="write_failing_tests">
+          <description>Create comprehensive test suite before implementation</description>
+          <approach>
+            <![CDATA[
+            1. Unit Tests for Business Logic:
+               - Input validation tests
+               - Core functionality tests
+               - Error handling tests
+               - Edge case coverage
+            
+            2. Integration Tests for Workflows:
+               - User journey tests
+               - API endpoint tests
+               - Component interaction tests
+               - Database operation tests
+            
+            3. Test File Structure:
+               - {feature}.test.ts - Unit tests
+               - {feature}.integration.test.ts - Integration tests
+               - Use test factories and mocks from @/tests/
+            ]]>
+          </approach>
+          
+          <example>
+            <![CDATA[
+            // apps/web/app/home/(user)/editor/_actions/generate-content.test.ts
+            import { describe, it, expect, beforeEach } from 'vitest';
+            import { generateContentAction } from './generate-content.action';
+            import { createMockUser } from '@/tests/factories/user';
+            import { mockPortkeyResponse } from '@/tests/mocks/portkey';
+            
+            describe('generateContentAction', () => {
+              beforeEach(() => {
+                // Reset mocks
+                vi.clearAllMocks();
+              });
+              
+              describe('validation', () => {
+                it('should reject empty prompt', async () => {
+                  const user = createMockUser();
+                  const input = { prompt: '', slideId: 'slide-123' };
+                  
+                  await expect(generateContentAction(input, user))
+                    .rejects.toThrow('Prompt must be at least 3 characters');
+                });
+                
+                it('should reject invalid slideId', async () => {
+                  const user = createMockUser();
+                  const input = { prompt: 'Valid prompt', slideId: '' };
+                  
+                  await expect(generateContentAction(input, user))
+                    .rejects.toThrow('Valid slide ID required');
+                });
+              });
+              
+              describe('content generation', () => {
+                it('should generate content successfully', async () => {
+                  const user = createMockUser();
+                  const input = { 
+                    prompt: 'Create a slide about AI benefits',
+                    slideId: 'slide-123'
+                  };
+                  
+                  mockPortkeyResponse({
+                    content: 'AI Benefits: 1. Automation...',
+                    usage: { tokens: 150 }
+                  });
+                  
+                  const result = await generateContentAction(input, user);
+                  
+                  expect(result.success).toBe(true);
+                  expect(result.content).toContain('AI Benefits');
+                  expect(result.usage.tokens).toBe(150);
+                });
+                
+                it('should complete within 5 seconds', async () => {
+                  const user = createMockUser();
+                  const input = { 
+                    prompt: 'Create a slide about AI',
+                    slideId: 'slide-123'
+                  };
+                  
+                  const start = Date.now();
+                  await generateContentAction(input, user);
+                  const duration = Date.now() - start;
+                  
+                  expect(duration).toBeLessThan(5000);
+                });
+              });
+            });
+            ]]>
+          </example>
+          
+          <validation>
+            <![CDATA[
+            # Run tests to ensure they fail
+            pnpm test {TEST_FILE} --run
+            
+            # All tests should fail initially (Red phase)
+            ]]>
+          </validation>
+        </step>
+        
+        <step name="implement_minimum_code">
+          <description>Write just enough code to make tests pass</description>
+          <guidelines>
+            - Follow existing patterns in codebase
+            - Use enhanceAction for all server actions
+            - Implement proper TypeScript types (no 'any')
+            - Add Zod validation schemas
+            - Respect Row Level Security
+            - Never expose API keys
+          </guidelines>
+          
+          <implementation_checklist>
+            <![CDATA[
+            For Server Actions:
+            ✓ Create Zod schema for input validation
+            ✓ Use enhanceAction wrapper with auth/ratelimit
+            ✓ Implement error handling with user-friendly messages
+            ✓ Add proper TypeScript types for inputs/outputs
+            ✓ Track usage/metrics as needed
+            
+            For React Components:
+            ✓ Start with Server Component (default)
+            ✓ Extract Client Component only for interactivity
+            ✓ Use proper loading and error states
+            ✓ Implement accessibility (WCAG 2.1 AA)
+            ✓ Follow existing component patterns
+            
+            For Database Operations:
+            ✓ Use existing query patterns
+            ✓ Respect RLS policies
+            ✓ Handle errors appropriately
+            ✓ Use transactions where needed
+            ✓ Add proper indexes for performance
+            ]]>
+          </implementation_checklist>
+          
+          <validation>
+            <![CDATA[
+            # Run tests to ensure they pass
+            pnpm test {TEST_FILE} --run
+            
+            # All tests should pass (Green phase)
+            ]]>
+          </validation>
+        </step>
+        
+        <step name="refactor_for_quality">
+          <description>Improve code quality while maintaining test coverage</description>
+          <actions>
+            - Extract reusable utilities
+            - Improve naming and organization
+            - Optimize performance if needed
+            - Add JSDoc documentation
+            - Remove code duplication
+            - Ensure consistent patterns
+          </actions>
+          
+          <validation>
+            <![CDATA[
+            # Ensure tests still pass after refactoring
+            pnpm test {TEST_FILE} --run
+            
+            # Run full quality checks
+            pnpm typecheck
+            pnpm lint:fix
+            ]]>
+          </validation>
+        </step>
+      </steps>
+    </phase>
+    
+    <phase number="3" name="quality_assurance">
+      <title>Quality Validation</title>
+      <description>
+        Ensure implementation meets all quality standards before PR
+      </description>
+      
+      <steps>
+        <step name="run_comprehensive_checks">
+          <description>Execute all quality validation commands</description>
+          <commands>
+            <![CDATA[
+            # Run all tests
+            pnpm test
+            
+            # Check TypeScript types
+            pnpm typecheck
+            
+            # Fix linting issues
+            pnpm lint:fix
+            
+            # Check for console.logs
+            grep -r "console\\.log" --include="*.ts" --include="*.tsx" apps/web/ || echo "✓ No console.logs found"
+            
+            # Check bundle size impact (if applicable)
+            pnpm build --filter=web
+            ]]>
+          </commands>
+        </step>
+        
+        <step name="validate_acceptance_criteria">
+          <description>Ensure all story requirements are met</description>
+          <checklist>
+            - [ ] All acceptance criteria implemented
+            - [ ] All technical tasks completed
+            - [ ] Tests provide adequate coverage
+            - [ ] Error scenarios handled properly
+            - [ ] Performance requirements met
+            - [ ] Accessibility standards followed
+            - [ ] Documentation updated
+          </checklist>
+        </step>
+        
+        <step name="update_progress_documentation">
+          <description>Document implementation progress and decisions</description>
+          <file_update>
+            <![CDATA[
+            # Update .claude/contexts/story-{story_id}/progress.md
+            
+            ## Completed Tasks
+            - [x] {COMPLETED_TASK_1} - {DATE}
+            - [x] {COMPLETED_TASK_2} - {DATE}
+            
+            ## Technical Decisions
+            - {DECISION_1}: {REASONING}
+            - {DECISION_2}: {REASONING}
+            
+            ## Files Modified
+            - {FILE_PATH_1} - {CHANGE_DESCRIPTION}
+            - {FILE_PATH_2} - {CHANGE_DESCRIPTION}
+            ]]>
+          </file_update>
+        </step>
+      </steps>
+    </phase>
+    
+    <phase number="4" name="pull_request_creation">
+      <title>Create and Submit PR</title>
+      <description>
+        Create pull request with comprehensive description and link to story
+      </description>
+      
+      <steps>
+        <step name="commit_changes">
+          <description>Commit all changes with descriptive message</description>
+          <commands>
+            <![CDATA[
+            # Stage all changes
+            git add .
+            
+            # Commit with conventional commit message
+            git commit -m "feat: {STORY_TITLE}
+
+            - {CHANGE_1}
+            - {CHANGE_2}
+            - {CHANGE_3}
+            
+            Closes #{STORY_NUMBER}"
+            ]]>
+          </commands>
+        </step>
+        
+        <step name="create_pull_request">
+          <description>Create PR with detailed description</description>
+          <commands>
+            <![CDATA[
+            # Push changes
+            git push origin feature/story-{STORY_NUMBER}-{BRIEF_DESCRIPTION}
+            
+            # Create PR
+            gh pr create \
+              --title "feat: {STORY_TITLE}" \
+              --body "## Summary
+            
+            Implements #{STORY_NUMBER} - {STORY_DESCRIPTION}
+            
+            ## Changes
+            - {DETAILED_CHANGE_1}
+            - {DETAILED_CHANGE_2}
+            - {DETAILED_CHANGE_3}
+            
+            ## Testing
+            - ✅ All unit tests passing
+            - ✅ Integration tests added
+            - ✅ Manual testing completed
+            
+            ## Checklist
+            - [x] Tests written and passing
+            - [x] TypeScript types complete (no 'any')
+            - [x] Documentation updated
+            - [x] Lint and format checks pass
+            - [x] Security standards followed (RLS, validation)
+            - [x] Performance acceptable
+            - [x] Accessibility standards met (WCAG 2.1 AA)
+            
+            ## Screenshots (if applicable)
+            {ADD_SCREENSHOTS_IF_UI_CHANGES}" \
+              --assignee @me \
+              --label "ready-for-review"
+            ]]>
+          </commands>
+        </step>
+        
+        <step name="update_github_tracking">
+          <description>Update story status in GitHub Projects</description>
+          <commands>
+            <![CDATA[
+            # PR creation auto-moves story to "Review" column
+            # Update implementation phase
+            gh issue edit {STORY_NUMBER} \
+              --add-field "Implementation Phase=Review"
+            
+            # Add completion comment
+            gh issue comment {STORY_NUMBER} \
+              --body "✅ Implementation complete and PR created: #{PR_NUMBER}
+              
+              **Session End**: $(date)
+              **Quality Checks**: All passing
+              **Ready for**: Code review"
+            ]]>
+          </commands>
+        </step>
+      </steps>
+    </phase>
+    
+    <phase number="5" name="completion">
+      <title>Story Completion</title>
+      <description>
+        Final steps after PR approval and merge
+      </description>
+      
+      <steps>
+        <step name="post_merge_updates">
+          <description>Update tracking after PR merge</description>
+          <actions>
+            - Story automatically moves to "Done" column
+            - Update sprint milestone progress
+            - Update epic progress if applicable
+            - Clean up feature branch
+          </actions>
+          
+          <commands>
+            <![CDATA[
+            # Update AI Context Status
+            gh issue edit {STORY_NUMBER} \
+              --add-field "AI Context Status=Fresh"
+            
+            # Update Sprint Milestone
+            gh issue comment {SPRINT_MILESTONE_NUMBER} \
+              --body "✅ Story #{STORY_NUMBER} completed
+              
+              **Story Points**: {POINTS}
+              **Actual Effort**: {HOURS}
+              **Velocity Impact**: +{POINTS} points"
+            
+            # Delete feature branch
+            git checkout main
+            git pull origin main
+            git branch -d feature/story-{STORY_NUMBER}-{BRIEF_DESCRIPTION}
+            ]]>
+          </commands>
+        </step>
+        
+        <step name="retrospective_notes">
+          <description>Capture learnings for future reference</description>
+          <documentation>
+            <![CDATA[
+            # Add to .claude/contexts/story-{story_id}/retrospective.md
+            
+            ## What Went Well
+            - {POSITIVE_1}
+            - {POSITIVE_2}
+            
+            ## Challenges Faced
+            - {CHALLENGE_1}: {HOW_RESOLVED}
+            - {CHALLENGE_2}: {HOW_RESOLVED}
+            
+            ## Learnings
+            - {LEARNING_1}
+            - {LEARNING_2}
+            
+            ## Patterns to Reuse
+            - {PATTERN_1}
+            - {PATTERN_2}
+            ]]>
+          </documentation>
+        </step>
+      </steps>
+    </phase>
+  </workflow_phases>
+  
+  <error_handling>
+    <scenario name="tests_failing">
+      <description>Tests continue to fail after implementation</description>
+      <resolution>
+        1. Review test expectations vs implementation
+        2. Check for environment differences
+        3. Verify mock setup is correct
+        4. Debug with focused test runs
+        5. Update implementation or tests as needed
+      </resolution>
+    </scenario>
+    
+    <scenario name="merge_conflicts">
+      <description>Conflicts when creating PR</description>
+      <resolution>
+        1. Pull latest main branch
+        2. Merge main into feature branch
+        3. Resolve conflicts preserving both changes
+        4. Re-run tests to ensure nothing broke
+        5. Push resolved changes
+      </resolution>
+    </scenario>
+    
+    <scenario name="pr_feedback">
+      <description>Changes requested in code review</description>
+      <resolution>
+        1. Address feedback in feature branch
+        2. Add tests for any new scenarios
+        3. Update PR description with changes
+        4. Request re-review
+      </resolution>
+    </scenario>
+  </error_handling>
+  
+  <input>
+    <story_number>{STORY_NUMBER}</story_number>
+    <story_title>{STORY_TITLE}</story_title>
+    <story_id>{STORY_ID}</story_id>
+    <brief_description>{BRIEF_KEBAB_CASE_DESCRIPTION}</brief_description>
+    <acceptance_criteria>{ACCEPTANCE_CRITERIA_LIST}</acceptance_criteria>
+    <technical_tasks>{TECHNICAL_TASKS_LIST}</technical_tasks>
+    <story_points>{ESTIMATED_POINTS}</story_points>
+    <sprint_milestone_number>{SPRINT_ISSUE_NUMBER}</sprint_milestone_number>
+    <epic_number>{EPIC_ISSUE_NUMBER}</epic_number>
+  </input>
+  
+  <output_format>
+    <execution_summary>
+      <story_id>{STORY_ID}</story_id>
+      <status>{CURRENT_PHASE}</status>
+      
+      <progress>
+        <phase name="initialization" status="{COMPLETE/IN_PROGRESS/PENDING}">
+          <branch_created>{BRANCH_NAME}</branch_created>
+          <github_updated>{YES/NO}</github_updated>
+        </phase>
+        
+        <phase name="implementation" status="{COMPLETE/IN_PROGRESS/PENDING}">
+          <tests_written>{COUNT}</tests_written>
+          <tests_passing>{YES/NO}</tests_passing>
+          <code_complete>{YES/NO}</code_complete>
+        </phase>
+        
+        <phase name="quality" status="{COMPLETE/IN_PROGRESS/PENDING}">
+          <type_check>{PASS/FAIL}</type_check>
+          <lint_check>{PASS/FAIL}</lint_check>
+          <test_coverage>{PERCENTAGE}</test_coverage>
+        </phase>
+        
+        <phase name="pull_request" status="{COMPLETE/IN_PROGRESS/PENDING}">
+          <pr_number>{PR_NUMBER}</pr_number>
+          <pr_url>{PR_URL}</pr_url>
+          <review_status>{PENDING/APPROVED/CHANGES_REQUESTED}</review_status>
+        </phase>
+      </progress>
+      
+      <files_changed>
+        <file path="{PATH}" status="{CREATED/MODIFIED}" lines_added="{COUNT}" lines_removed="{COUNT}"/>
+      </files_changed>
+      
+      <next_action>{SPECIFIC_NEXT_STEP}</next_action>
+      
+      <time_tracking>
+        <estimated_hours>{ORIGINAL_ESTIMATE}</estimated_hours>
+        <actual_hours>{TIME_SPENT}</actual_hours>
+        <session_count>{NUMBER_OF_SESSIONS}</session_count>
+      </time_tracking>
+    </execution_summary>
+  </output_format>
+  
+  <usage_notes>
+    <note priority="high">
+      This master prompt orchestrates the entire story execution workflow. Use it at the start of story implementation and it will guide through all phases.
+    </note>
+    
+    <note priority="medium">
+      The prompt can be re-entered at any phase to continue work. It will detect current status and proceed from there.
+    </note>
+    
+    <note priority="medium">
+      For complex stories, you may need multiple sessions. The progress tracking ensures continuity across sessions.
+    </note>
+    
+    <note priority="low">
+      Customize the input parameters based on your specific story requirements and project conventions.
+    </note>
+  </usage_notes>
+</prompt>

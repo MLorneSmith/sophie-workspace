@@ -92,7 +92,7 @@ export function TeamAccountCheckoutForm(params: {
 								productId,
 								slug,
 								accountId: params.accountId,
-							// });
+							});
 
 							setCheckoutToken(_checkoutToken);
 						});

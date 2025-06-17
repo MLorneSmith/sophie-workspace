@@ -15,7 +15,7 @@ export function AuthProvider(props: React.PropsWithChildren) {
 		(event: AuthChangeEvent, session: Session | null) => {
 			dispatchEvent(event, session?.user.id, {
 				email: session?.user.email ?? "",
-			// });
+			});
 		},
 		[dispatchEvent],
 	);
@@ -44,7 +44,7 @@ function useDispatchAppEventFromAuthEvent() {
 						emit({
 							type: "user.signedIn",
 							payload: { userId, ...traits },
-						// });
+						});
 
 						monitoring.identifyUser({ id: userId, ...traits });
 					}
@@ -56,7 +56,7 @@ function useDispatchAppEventFromAuthEvent() {
 						emit({
 							type: "user.signedIn",
 							payload: { userId, ...traits },
-						// });
+						});
 
 						monitoring.identifyUser({ id: userId, ...traits });
 					}
@@ -67,7 +67,7 @@ function useDispatchAppEventFromAuthEvent() {
 					emit({
 						type: "user.updated",
 						payload: { userId: userId ?? "", ...traits },
-					// });
+					});
 
 					break;
 			}

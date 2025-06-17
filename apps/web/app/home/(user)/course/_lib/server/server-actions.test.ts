@@ -332,12 +332,12 @@ describe("Course Server Actions", () => {
 						chain.single.mockResolvedValue({
 							data: existingProgress,
 							error: null,
-						// });
+						});
 					} else if (table === "accounts") {
 						chain.single.mockResolvedValue({
 							data: { name: "John Doe" },
 							error: null,
-						// });
+						});
 					}
 
 					callCount++;
@@ -358,7 +358,7 @@ describe("Course Server Actions", () => {
 					userId: "user-123",
 					courseId: "course-123",
 					fullName: "John Doe",
-				// });
+				});
 			});
 
 			it("should skip certificate generation if already generated", async () => {
@@ -406,12 +406,12 @@ describe("Course Server Actions", () => {
 						chain.single.mockResolvedValue({
 							data: existingProgress,
 							error: null,
-						// });
+						});
 					} else if (table === "accounts") {
 						chain.single.mockResolvedValue({
 							data: { name: "John Doe" },
 							error: null,
-						// });
+						});
 					}
 
 					callCount++;
@@ -461,11 +461,10 @@ describe("Course Server Actions", () => {
 	describe("updateLessonProgressAction", () => {
 		beforeEach(() => {
 			// Mock CMS data for lesson progress tests
-			mockGetCourseBySlug.mockResolvedValue({
-			// });
+			mockGetCourseBySlug.mockResolvedValue({});
 			mockGetCourseLessons.mockResolvedValue({
 				docs: [{ id: "lesson-456", lesson_number: "101" }],
-			// });
+			});
 		});
 
 		describe("Schema Validation", () => {
@@ -607,8 +606,7 @@ describe("Course Server Actions", () => {
 				};
 
 				// Mock CMS responses
-				mockGetCourseBySlug.mockResolvedValueOnce({
-				// });
+				mockGetCourseBySlug.mockResolvedValueOnce({});
 				mockGetCourseLessons.mockResolvedValueOnce({
 					docs: [
 						{ id: "lesson-456", lesson_number: "101", title: "Test Lesson" },
@@ -625,7 +623,7 @@ describe("Course Server Actions", () => {
 				// Mock CMS returning no course data
 				mockGetCourseBySlug.mockResolvedValueOnce({
 					docs: [],
-				// });
+				});
 
 				const input = {
 					courseId: "nonexistent-course",
@@ -643,11 +641,10 @@ describe("Course Server Actions", () => {
 	describe("submitQuizAttemptAction", () => {
 		beforeEach(() => {
 			// Mock CMS data for the recursive lesson progress call
-			mockGetCourseBySlug.mockResolvedValue({
-			// });
+			mockGetCourseBySlug.mockResolvedValue({});
 			mockGetCourseLessons.mockResolvedValue({
 				docs: [{ id: "lesson-456", lesson_number: "101" }],
-			// });
+			});
 		});
 
 		describe("Schema Validation", () => {
@@ -860,11 +857,10 @@ describe("Course Server Actions", () => {
 			};
 
 			// Mock CMS data
-			mockGetCourseBySlug.mockResolvedValue({
-			// });
+			mockGetCourseBySlug.mockResolvedValue({});
 			mockGetCourseLessons.mockResolvedValue({
 				docs: [{ id: "lesson-456", lesson_number: "101" }],
-			// });
+			});
 
 			const result = await submitQuizAttemptAction(quizInput);
 
