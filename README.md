@@ -12,6 +12,50 @@ SlideHeroes targets small and medium sized consultancies, advisory firms, and te
 
 The SlideHeroes app and website are currently under active development. The app is not yet feature complete, and the website is not yet fully launched. The app is currently in a private beta, and the website is currently in a private preview.
 
+## Development Workflow & Branch Strategy
+
+This repository follows a multi-branch development strategy with automated CI/CD pipelines:
+
+### Branch Structure
+
+- **`main`** → Production environment (slideheroes.com)
+
+  - Requires 2 code reviews before merge
+  - All CI/CD checks must pass
+  - Linear history enforced
+  - Protected from force pushes
+
+- **`staging`** → Staging environment (staging.slideheroes.com)
+
+  - Requires 1 code review before merge
+  - All CI/CD checks must pass
+  - Used for final testing before production
+
+- **`dev`** → Development environment (dev.slideheroes.com)
+
+  - Status checks required (no manual reviews)
+  - Frequent deployments for ongoing development
+  - Integration testing environment
+
+- **`feature/*`** → Feature branches
+  - Create from `dev` branch
+  - Merge back to `dev` via pull request
+  - Preview deployments available
+
+### Deployment Flow
+
+1. **Development**: Feature branches → `dev` → preview/development deployment
+2. **Staging**: `dev` → `staging` → staging deployment for QA
+3. **Production**: `staging` → `main` → production deployment
+
+All branches are protected and require passing CI/CD checks including:
+
+- Code linting and formatting (Biome)
+- TypeScript compilation
+- Unit and integration tests
+- Security scanning (when enabled)
+- Bundle size analysis (when enabled)
+
 ## Technical Overview
 
 ### Technical Stack
