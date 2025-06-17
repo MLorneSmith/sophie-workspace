@@ -56,13 +56,13 @@ export function UpdateEmailForm({
 			success: t("updateEmailSuccess"),
 			loading: t("updateEmailLoading"),
 			error: t("updateEmailError"),
-		// });
+		});
 	};
 
 	const currentEmail = user.email;
 
 	if (!currentEmail) {
-		throw new Error('User email is required for email update form');
+		throw new Error("User email is required for email update form");
 	}
 
 	const form = useForm({

@@ -1,5 +1,6 @@
 "use client";
 
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@kit/ui/button";
 import {
 	Card,
@@ -21,7 +22,6 @@ import {
 	SelectValue,
 } from "@kit/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@kit/ui/tabs";
-import { useEffect, useState } from "react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 import { fetchUsageDataAction } from "../_actions/fetch-usage-data";
@@ -36,14 +36,8 @@ export function UsageDashboard({ initialData }: UsageDashboardProps) {
 	const [currentData, setCurrentData] = useState(initialData);
 	const [isLoading, setIsLoading] = useState(false);
 
-	// Fetch data on component mount
-	useEffect(() => {
-		refreshData();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [refreshData]);
-
 	// Fetch data from the server
-	const refreshData = async () => {
+	const refreshData = useCallback(async () => {
 		try {
 			setIsLoading(true);
 
@@ -76,7 +70,12 @@ export function UsageDashboard({ initialData }: UsageDashboardProps) {
 		} finally {
 			setIsLoading(false);
 		}
-	};
+	}, [selectedTimeRange]);
+
+	// Fetch data on component mount
+	useEffect(() => {
+		refreshData();
+	}, [refreshData]);
 
 	const handleTimeRangeChange = (value: string) => {
 		setSelectedTimeRange(value);

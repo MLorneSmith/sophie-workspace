@@ -33,20 +33,7 @@ export const GET = enhanceRouteHandler(
 			// });
 
 			// Log detailed structure of the first lesson to understand relationship structure
-			if (lessons.docs?.[0]) {
-				const _sampleLesson = lessons.docs[0];
-				// TODO: Async logger needed
-				// (await getLogger()).info(
-				// 	"API - Detailed sample lesson structure:",
-				// 	{
-				// 		featured_image_id: sampleLesson.featured_image_id,
-				// 		// Check if it's an object with nested properties
-				// 		hasNestedUrl: !!sampleLesson.featured_image_id?.url,
-				// 		// Check if it's a direct property
-				// 		directUrl: sampleLesson.url,
-				// }
-				// );
-			}
+			// TODO: Async logger needed - removed unused sampleLesson code
 
 			return NextResponse.json(lessons);
 		} catch (_error) {

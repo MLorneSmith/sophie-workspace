@@ -39,7 +39,7 @@ class OtpEmailService {
 		const { html, subject } = await renderOtpEmail({
 			otp,
 			productName: PRODUCT_NAME,
-		// });
+		});
 
 		try {
 			logger.info({ otp }, "Sending OTP email...");
@@ -49,7 +49,7 @@ class OtpEmailService {
 				subject,
 				html,
 				from: EMAIL_SENDER,
-			// });
+		});
 
 			logger.info({ otp }, "OTP email sent");
 		} catch (error) {

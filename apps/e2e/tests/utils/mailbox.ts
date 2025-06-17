@@ -3,7 +3,7 @@ import type { Page } from "@playwright/test";
 import { parse } from "node-html-parser";
 
 // Initialize service logger
-const { getLogger } = createServiceLogger("MAILBOX");
+const { getLogger: _getLogger } = createServiceLogger("MAILBOX");
 
 type EmailAddress = {
 	Name: string;

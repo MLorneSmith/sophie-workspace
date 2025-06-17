@@ -40,7 +40,7 @@ class AccountMembersService {
 			.match({
 				account_id: params.accountId,
 				user_id: params.userId,
-			// });
+		});
 
 		if (error) {
 			logger.error(
@@ -89,7 +89,7 @@ class AccountMembersService {
 			await this.client.rpc("can_action_account_member", {
 				target_user_id: params.userId,
 				target_team_account_id: params.accountId,
-			// });
+		});
 
 		if (accountError ?? !_canActionAccountMember) {
 			logger.error(
@@ -117,7 +117,7 @@ class AccountMembersService {
 			.match({
 				account_id: params.accountId,
 				user_id: params.userId,
-			// });
+		});
 
 		if (error) {
 			logger.error(

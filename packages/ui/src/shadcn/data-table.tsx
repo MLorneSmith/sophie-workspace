@@ -8,11 +8,7 @@ import {
 } from "@tanstack/react-table";
 
 import { Trans } from "../makerkit/trans";
-import {
-	TableCell,
-	TableHead,
-	TableRow,
-} from "./table";
+import { TableCell, TableHead, TableRow } from "./table";
 
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
@@ -30,7 +26,7 @@ export function DataTable<TData, TValue>({
 		data,
 		columns,
 		getCoreRowModel: getCoreRowModel(),
-	// });
+	});
 
 	return (
 		<_div _className="rounded-md border">

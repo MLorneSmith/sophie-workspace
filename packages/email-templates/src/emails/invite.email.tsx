@@ -47,21 +47,21 @@ export async function renderInviteEmail(props: Props) {
 	const heading = t(`${namespace}:heading`, {
 		teamName: props.teamName,
 		productName: props.productName,
-	// });
+	});
 
 	const hello = t(`${namespace}:hello`, {
 		invitedUserEmail: props.invitedUserEmail,
-	// });
+	});
 
 	const mainText = t(`${namespace}:mainText`, {
 		inviter: props.inviter,
 		teamName: props.teamName,
 		productName: props.productName,
-	// });
+	});
 
 	const joinTeam = t(`${namespace}:joinTeam`, {
 		teamName: props.teamName,
-	// });
+	});
 
 	const html = await render(
 		<Html>

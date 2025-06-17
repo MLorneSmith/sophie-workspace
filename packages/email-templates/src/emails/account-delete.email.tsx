@@ -32,11 +32,11 @@ export async function renderAccountDeleteEmail(props: Props) {
 
 	const previewText = t(`${namespace}:previewText`, {
 		productName: props.productName,
-	// });
+	});
 
 	const subject = t(`${namespace}:subject`, {
 		productName: props.productName,
-	// });
+	});
 
 	const html = await render(
 		<Html>

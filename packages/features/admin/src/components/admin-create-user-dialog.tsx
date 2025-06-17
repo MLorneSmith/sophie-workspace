@@ -48,7 +48,7 @@ export function AdminCreateUserDialog(props: React.PropsWithChildren) {
 			emailConfirm: false,
 		},
 		mode: "onChange",
-	// });
+	});
 
 	const onSubmit = (data: CreateUserSchemaType) => {
 		startTransition(async () => {

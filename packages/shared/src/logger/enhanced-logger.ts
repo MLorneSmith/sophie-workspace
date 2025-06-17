@@ -251,14 +251,14 @@ export class EnhancedLogger {
 					level,
 					message,
 					context: this.sanitizeData(context || {}),
-				// });
+		});
 			} else {
 				// Send warnings and other levels as events
 				this.monitoring.captureEvent(`${level.toUpperCase()}: ${message}`, {
 					service: this.config.serviceName,
 					level,
 					context: this.sanitizeData(context || {}),
-				// });
+		});
 			}
 		} catch (monitoringError) 
 			// Don't let monitoring failures break the application

@@ -32,6 +32,6 @@ class BillingWebhooksService {
 
 		return gateway.cancelSubscription({
 			subscriptionId: subscription.id,
-		// });
+		});
 	}
 }

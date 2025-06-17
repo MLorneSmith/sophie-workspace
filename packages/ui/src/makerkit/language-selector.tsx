@@ -27,7 +27,7 @@ export function LanguageSelector({
 	const languageNames = useMemo(() => {
 		return new Intl.DisplayNames([currentLanguage], {
 			type: "language",
-		// });
+		});
 	}, [currentLanguage]);
 
 	const [value, setValue] = useState(i18n.language);
@@ -45,7 +45,7 @@ export function LanguageSelector({
 			// refresh cached translations
 			window.location.reload();
 		},
-		[onChange],
+		[onChange, i18n.changeLanguage],
 	);
 
 	return (

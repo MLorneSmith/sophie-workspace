@@ -95,7 +95,7 @@ class AdminAuthUserService {
 		const response = await fetch(data.properties?.action_link, {
 			method: "GET",
 			redirect: "manual",
-		// });
+		});
 
 		const location = response.headers.get("Location");
 
@@ -153,7 +153,7 @@ class AdminAuthUserService {
 	private async setBanDuration(userId: string, banDuration: string) {
 		await this.adminClient.auth.admin.updateUserById(userId, {
 			ban_duration: banDuration,
-		// });
+		});
 	}
 
 	/**

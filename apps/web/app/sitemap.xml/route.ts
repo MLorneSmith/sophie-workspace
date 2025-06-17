@@ -74,7 +74,7 @@ async function getContentItems() {
 				// (await getLogger()).error(
 				// 	"Error fetching posts for sitemap:",
 				// 	{ data: error }
-				// );
+				);
 				return []; // Return empty array on error
 			});
 
@@ -100,7 +100,7 @@ async function getContentItems() {
 				// (await getLogger()).error(
 				// 	"Error fetching docs for sitemap:",
 				// 	{ data: error }
-				// );
+				);
 				return []; // Return empty array on error
 			});
 
@@ -114,7 +114,7 @@ async function getContentItems() {
 		// (await getLogger()).error(
 		// 	"Error generating content items for sitemap:",
 		// 	{ data: error }
-		// );
+		);
 		return []; // Return empty array if CMS client creation fails
 	}
 }

@@ -36,7 +36,7 @@ export const ImageUploadInput: React.FC<Props> =
 		const [state, setState] = useState({
 			image,
 			fileName: "",
-		// });
+		});
 
 		const onInputChange = useCallback(
 			(e: FormEvent<HTMLInputElement>) => {
@@ -56,7 +56,7 @@ export const ImageUploadInput: React.FC<Props> =
 					setState({
 						image: data,
 						fileName: file.name,
-					// });
+					});
 
 					if (onValueChange) {
 						onValueChange({
@@ -77,7 +77,7 @@ export const ImageUploadInput: React.FC<Props> =
 			setState({
 				image: "",
 				fileName: "",
-			// });
+			});
 
 			if (localRef.current) {
 				localRef.current.value = "";

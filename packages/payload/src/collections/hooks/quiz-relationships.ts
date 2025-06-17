@@ -85,7 +85,7 @@ export const formatQuizQuestionsOnRead: AfterReadHook = async ({
 					collection: "course_quizzes",
 					before: JSON.stringify(doc.questions.slice(0, 2)),
 					after: JSON.stringify(formattedQuestions.slice(0, 2)),
-				// });
+		});
 			}
 
 			// Return document with formatted questions
@@ -99,7 +99,7 @@ export const formatQuizQuestionsOnRead: AfterReadHook = async ({
 			req.payload.logger.warn({
 				message: `Quiz ${doc.id} has non-array questions: ${typeof doc.questions}`,
 				collection: "course_quizzes",
-			// });
+		});
 		}
 
 		// Return document with empty questions array
@@ -107,7 +107,7 @@ export const formatQuizQuestionsOnRead: AfterReadHook = async ({
 			...doc,
 			questions: [],
 		};
-	} catch (error) 
+	} catch (_error) 
 		// Log error but don't crash the request
 		if (req.payload?.logger) {
 			req.payload.logger.error({
@@ -195,9 +195,9 @@ export const _syncQuizQuestionRelationships: BeforeChangeHook = async ({
 				message: `Quiz questions formatted for ${operation} operation on quiz ${data.id || "new"}`,
 				collection: "course_quizzes",
 				questionCount: data.questions.length,
-			// });
+		});
 		}
-	} catch (error) 
+	} catch (_error) 
 		// Log error but don't crash the request
 		if (req.payload?.logger) {
 			req.payload.logger.error({

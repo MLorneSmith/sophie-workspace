@@ -179,9 +179,9 @@ function groupLogsByDay(
 			continue; // Skip logs without a timestamp
 		}
 
-		let date: string;
+		let _date: string;
 		try {
-			date = new Date(log.request_timestamp)
+			_date = new Date(log.request_timestamp)
 				.toISOString()
 				.split("T")[0] as string; // Get YYYY-MM-DD
 		} catch (_error) {
@@ -189,7 +189,6 @@ function groupLogsByDay(
 			// (await getLogger()).error("Invalid timestamp:", {
 			// 	data: log.request_timestamp,
 			// });
-			continue; // Skip invalid timestamps
 		}
 		if (!dayMap[date]) {
 			dayMap[date] = { cost: 0, tokens: 0 };

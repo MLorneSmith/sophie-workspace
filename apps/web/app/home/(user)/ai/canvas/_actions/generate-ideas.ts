@@ -130,7 +130,7 @@ ${improvementFormat}`,
 					cost: response.metadata.cost, // Include cost in response metadata
 				},
 			};
-		} catch (error) {
+		} catch (_error) {
 			// TODO: Async logger needed
 			// (await getLogger()).error("Error in ideas action:", {
 			// 	data: error,

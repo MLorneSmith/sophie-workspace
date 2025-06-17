@@ -60,7 +60,7 @@ export function ActionToolbar({
 						// (await getLogger()).warn(
 						// 	"Error getting editor content:",
 						// 	{ data: _error }
-						// );
+						);
 						resolve("");
 					}
 				});
@@ -122,7 +122,7 @@ export function ActionToolbar({
 								// (await getLogger()).warn(
 								// 	"Error updating editor content:",
 								// 	{ data: _updateError }
-								// );
+								);
 							}
 						}
 					} catch (_parseError) {
@@ -130,7 +130,7 @@ export function ActionToolbar({
 						// (await getLogger()).error(
 						// 	"Failed to parse simplified content:",
 						// 	{ data: _parseError }
-						// );
+						);
 						return;
 					}
 				} else {
@@ -138,14 +138,14 @@ export function ActionToolbar({
 					// (await getLogger()).error(
 					// 	"Failed to simplify text:",
 					// 	{ data: result.error }
-					// );
+					);
 				}
 			} catch (_contentError) {
 				// TODO: Async logger needed
 				// (await getLogger()).warn(
 				// 	"Error getting editor content:",
 				// 	{ data: _contentError }
-				// );
+				);
 			}
 		} catch (_error) {
 			// TODO: Async logger needed
@@ -179,7 +179,7 @@ export function ActionToolbar({
 						// (await getLogger()).warn(
 						// 	"Error getting editor content:",
 						// 	{ data: _error }
-						// );
+						);
 						resolve("");
 					}
 				});
@@ -212,7 +212,7 @@ export function ActionToolbar({
 				// (await getLogger()).warn(
 				// 	"Error getting editor content:",
 				// 	{ data: contentError }
-				// );
+				);
 			}
 		} catch (_error) {
 			// TODO: Async logger needed

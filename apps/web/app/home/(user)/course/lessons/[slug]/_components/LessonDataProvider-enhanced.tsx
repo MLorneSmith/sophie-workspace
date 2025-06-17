@@ -59,7 +59,7 @@ export async function LessonDataProviderEnhanced({
 	// Dynamically import the server client to avoid issues with next/headers
 	const { getSupabaseServerClient } = await import(
 		"@kit/supabase/server-client"
-	);
+	// );
 	const supabase = getSupabaseServerClient();
 
 	// Get user - should be authenticated by middleware
@@ -155,7 +155,7 @@ export async function LessonDataProviderEnhanced({
 									typeof q === "string"
 										? q
 										: (q.id as string) || (q.value as string) || String(q),
-							);
+							// );
 
 							if (questionIds.length > 0) {
 								// Build query parameters
@@ -168,7 +168,7 @@ export async function LessonDataProviderEnhanced({
 									`quiz_questions?${queryParams}&sort=order`,
 									{},
 									null,
-								);
+								// );
 
 								if (questionsResponse?.docs?.length > 0) {
 									// TODO: Async logger needed
@@ -244,7 +244,7 @@ export async function LessonDataProviderEnhanced({
 				// Import both functions we need
 				const { getSurvey, getSurveyQuestions } = await import(
 					"@kit/cms/payload"
-				);
+				// );
 
 				// First try to get the survey by ID using a direct API call
 				// TODO: Async logger needed

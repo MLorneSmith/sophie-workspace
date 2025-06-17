@@ -19,7 +19,7 @@ export const leaveTeamAccountAction = enhanceAction(
 		await service.leaveTeamAccount({
 			accountId: params.accountId,
 			userId: user.id,
-		// });
+		});
 
 		revalidatePath("/home/[account]", "layout");
 

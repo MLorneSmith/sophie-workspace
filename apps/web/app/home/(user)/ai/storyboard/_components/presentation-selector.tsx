@@ -50,7 +50,7 @@ export function PresentationSelector({ onSelect }: PresentationSelectorProps) {
 				// (await getLogger()).error(
 				// 	"Error fetching presentations:",
 				// 	{ data: err }
-				// );
+				);
 				setError("Failed to load presentations");
 			} finally {
 				setIsLoading(false);

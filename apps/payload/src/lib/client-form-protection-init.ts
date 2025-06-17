@@ -79,7 +79,7 @@ interface HydrationState {
 		confirmationSignals: 0,
 		requiredSignals: 4, // Require 4 confirmation signals
 	};
-	let isInitialized = false;
+	const _isInitialized = false;
 
 	// Logging utility
 	function log(
@@ -180,7 +180,7 @@ interface HydrationState {
 		return minimumTimeElapsed && hasEnoughSignals;
 	}
 
-	function waitForUltraConservativeHydration(callback: () => void): void {
+	function _waitForUltraConservativeHydration(callback: () => void): void {
 		const checkHydration = () => {
 			if (isUltraConservativeHydrationComplete()) {
 				hydrationState.isComplete = true;
@@ -269,7 +269,7 @@ interface HydrationState {
 	}
 
 	// Setup mutation observer for new forms - MEMORY TRACKING ONLY
-	function setupMutationObserver(): void {
+	function _setupMutationObserver(): void {
 		const observer = new MutationObserver((mutations) => {
 			let shouldCheck = false;
 
@@ -299,7 +299,7 @@ interface HydrationState {
 	}
 
 	// Event handlers - MEMORY ONLY PROTECTION
-	function handleButtonClick(event: MouseEvent): void {
+	function _handleButtonClick(event: MouseEvent): void {
 		const target = event.target as Element;
 		if (!target) return;
 
@@ -332,7 +332,7 @@ interface HydrationState {
 		}
 	}
 
-	function handleFormSubmission(event: SubmitEvent): void {
+	function _handleFormSubmission(event: SubmitEvent): void {
 		const form = event.target as HTMLFormElement;
 		if (!form) return;
 

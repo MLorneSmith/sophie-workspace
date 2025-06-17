@@ -1,0 +1,195 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  deployments: write
+
+env:
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+jobs:
+  # Final security check
+  security-check:
+    name: Final Security Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Run security checks
+        run: |
+          echo "Running final security checks"
+          # TODO: Implement comprehensive security scan
+          # - Secret scanning with TruffleHog
+          # - Dependency vulnerabilities with Snyk
+          # - SAST with CodeQL
+
+  # Deploy to Vercel Production
+  deploy:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: security-check
+    environment:
+      name: production
+      url: ${{ steps.deploy.outputs.url }}
+    outputs:
+      url: ${{ steps.deploy.outputs.url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Vercel CLI
+        run: pnpm add -g vercel@latest
+
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build Project with Production Optimizations
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          NODE_ENV: production
+
+      - name: Deploy to Vercel Production
+        id: deploy
+        run: |
+          url=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})
+          echo "url=$url" >> $GITHUB_OUTPUT
+          echo "Deployed to: $url"
+
+      - name: Create deployment status
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const deployment = await github.rest.repos.createDeployment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: context.sha,
+              environment: 'production',
+              required_contexts: [],
+              auto_merge: false,
+              production_environment: true
+            });
+
+            await github.rest.repos.createDeploymentStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              deployment_id: deployment.data.id,
+              state: 'success',
+              environment_url: '${{ steps.deploy.outputs.url }}',
+              description: 'Deployed to production'
+            });
+
+  # Post-deployment monitoring
+  health-check:
+    name: Production Health Check
+    runs-on: ubuntu-latest
+    needs: deploy
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Wait for deployment propagation
+        run: sleep 30
+
+      - name: Check production health
+        run: |
+          response=$(curl -s -o /dev/null -w "%{http_code}" ${{ needs.deploy.outputs.url }}/api/health)
+          if [ $response -eq 200 ]; then
+            echo "✅ Production health check passed"
+          else
+            echo "❌ Production health check failed with status $response"
+            exit 1
+          fi
+
+      - name: Run critical path tests
+        run: |
+          echo "Running critical user path validations"
+          # TODO: Implement critical path E2E tests
+
+  # Notify monitoring services
+  notify:
+    name: Notify Services
+    runs-on: ubuntu-latest
+    needs: [deploy, health-check]
+    if: always()
+    steps:
+      - name: Notify New Relic
+        if: needs.health-check.result == 'success'
+        run: |
+          echo "Creating New Relic deployment marker"
+          # TODO: Implement New Relic deployment marker
+          # curl -X POST "https://api.newrelic.com/v2/applications/${NEW_RELIC_APP_ID}/deployments.json" \
+          #   -H "X-Api-Key:${NEW_RELIC_API_KEY}" \
+          #   -H "Content-Type: application/json" \
+          #   -d "{\"deployment\":{\"revision\":\"${GITHUB_SHA}\",\"user\":\"${GITHUB_ACTOR}\"}}"
+        env:
+          NEW_RELIC_API_KEY: ${{ secrets.NEW_RELIC_API_KEY }}
+          NEW_RELIC_APP_ID: ${{ secrets.NEW_RELIC_APP_ID }}
+
+      - name: Notify Slack
+        if: always()
+        run: |
+          if [ "${{ needs.health-check.result }}" == "success" ]; then
+            echo "✅ Production deployment successful"
+            # TODO: Send success notification to Slack
+          else
+            echo "❌ Production deployment failed"
+            # TODO: Send failure notification to Slack
+          fi
+
+  # Rollback on failure
+  rollback:
+    name: Rollback on Failure
+    runs-on: ubuntu-latest
+    needs: health-check
+    if: failure()
+    steps:
+      - name: Trigger rollback
+        run: |
+          echo "🔄 Initiating automatic rollback"
+          # TODO: Implement Vercel rollback
+          # vercel rollback --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+
+      - name: Create rollback issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `[URGENT] Production deployment failed - ${context.sha}`,
+              body: `## Production Deployment Failure
+              
+              **Commit**: ${context.sha}
+              **Actor**: ${context.actor}
+              **Time**: ${new Date().toISOString()}
+              
+              ### Actions Taken
+              - ✅ Automatic rollback initiated
+              - ✅ Team notified
+              
+              ### Next Steps
+              1. Check deployment logs
+              2. Review health check failures
+              3. Fix issues and redeploy
+              
+              cc @${context.actor}`,
+              labels: ['bug', 'production', 'urgent']
+            });

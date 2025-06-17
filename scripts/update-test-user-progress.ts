@@ -386,7 +386,7 @@ async function main() {
 		// TODO: Async logger needed
 		// (await getLogger()).info(
 		//	`Completed ${completedLessonsCount}/${TOTAL_REQUIRED_LESSONS} lessons (${completionPercentage}%)`,
-		// );
+		);
 		// TODO: Async logger needed
 		// (await getLogger()).info("Done!");
 	} catch (_error) {

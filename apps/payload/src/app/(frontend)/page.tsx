@@ -8,7 +8,7 @@ import "./styles.css";
 import { createServiceLogger } from "@kit/shared/logger";
 
 // Initialize service logger
-const { getLogger } = createServiceLogger("PAGE");
+const { getLogger: _getLogger } = createServiceLogger("PAGE");
 
 export default async function HomePage() {
 	const headers = await getHeaders();

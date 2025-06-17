@@ -70,7 +70,7 @@ export function PlanCostDisplay({
 			currencyCode: currencyCode.toLowerCase(),
 			value: lowestTier?.cost ?? 0,
 			locale: i18n.language,
-		// });
+		});
 
 		return (
 			<_span _className={"text-lg"}>
@@ -89,7 +89,7 @@ export function PlanCostDisplay({
 		currencyCode: currencyCode.toLowerCase(),
 		value: displayCost,
 		locale: i18n.language,
-	// });
+		});
 
 	return <_span _className={className}>{_formattedCost}</_span>;
 }

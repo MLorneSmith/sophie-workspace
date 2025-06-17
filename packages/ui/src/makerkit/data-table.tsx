@@ -70,7 +70,7 @@ export function DataTable<T extends object>({
 	const [pagination, setPagination] = useState<PaginationState>({
 		pageIndex: pageIndex ?? 0,
 		pageSize: pageSize ?? 15,
-	// });
+	});
 
 	const [sorting, setSorting] = useState<SortingState>(initialSorting ?? []);
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);

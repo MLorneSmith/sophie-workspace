@@ -31,5 +31,5 @@ export function useUser(initialData?: User | null) {
 		refetchInterval: false,
 		refetchOnMount: false,
 		refetchOnWindowFocus: false,
-	// });
+	});
 }

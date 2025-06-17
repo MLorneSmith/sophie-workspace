@@ -53,11 +53,11 @@ const imageStyle = {
 
 export function OnboardingForm() {
 	const router = useRouter();
-	const [_isSubmitting, setIsSubmitting] = useState(false);
-	const _formRef = useRef<HTMLDivElement>(null);
+	const [isSubmitting, setIsSubmitting] = useState(false);
+	const formRef = useRef<HTMLDivElement>(null);
 
 	// Initialize form with React Hook Form
-	const _form = useForm<z.infer<typeof FormSchema>>({
+	const form = useForm<z.infer<typeof FormSchema>>({
 		resolver: zodResolver(FormSchema),
 		defaultValues: {
 			welcome: {},
@@ -115,7 +115,7 @@ export function OnboardingForm() {
 	);
 
 	// Form submission handler
-	const _onSubmit = useCallback(
+	const onSubmit = useCallback(
 		async (data: z.infer<typeof FormSchema>) => {
 			setIsSubmitting(true);
 			try {
@@ -124,7 +124,7 @@ export function OnboardingForm() {
 					isFinalSubmission: true,
 				});
 
-				if (_result._success) {
+				if (result.success) {
 					localStorage.removeItem(STORAGE_KEY);
 					analytics.trackEvent("onboarding_completed", flattenFormData(data));
 					router.push("/home");
@@ -307,7 +307,7 @@ function ProfileStep() {
 		analytics.trackEvent("onboarding_profile_completed", {
 			name: form.getValues().profile.name,
 		});
-		nextStep(_e);
+		nextStep(e);
 	};
 
 	return (
@@ -358,7 +358,6 @@ function ProfileStep() {
 function GoalsStep() {
 	const { nextStep, prevStep, form } = useMultiStepFormContext();
 	const primaryGoal = form.watch("goals.primary");
-	const _secondaryGoals = form.watch("goals.secondary");
 
 	// No need to initialize fields when primary goal changes
 	// since we've already initialized all fields in the form's default values
@@ -616,7 +615,7 @@ function ThemeStep() {
 		analytics.trackEvent("onboarding_theme_completed", {
 			theme: form.getValues().theme.style,
 		});
-		nextStep(_e);
+		nextStep(e);
 	};
 
 	return (

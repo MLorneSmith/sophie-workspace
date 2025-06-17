@@ -50,7 +50,7 @@ export function LinkAccountsList(props: { providers: Provider[] }) {
 			loading: <Trans i18nKey={"account:unlinkingAccount"} />,
 			success: <Trans i18nKey={"account:accountUnlinked"} />,
 			error: <Trans i18nKey={"account:unlinkAccountError"} />,
-		// });
+		});
 	};
 
 	const _handleLinkAccount = (provider: Provider) => {
@@ -60,7 +60,7 @@ export function LinkAccountsList(props: { providers: Provider[] }) {
 			loading: <Trans i18nKey={"account:linkingAccount"} />,
 			success: <Trans i18nKey={"account:accountLinked"} />,
 			error: <Trans i18nKey={"account:linkAccountError"} />,
-		// });
+		});
 	};
 
 	if (isLoadingIdentities) {

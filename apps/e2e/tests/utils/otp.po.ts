@@ -3,7 +3,7 @@ import { expect, type Page } from "@playwright/test";
 import { Mailbox } from "./mailbox";
 
 // Initialize service logger
-const { getLogger } = createServiceLogger("OTP_PO");
+const { getLogger: _getLogger } = createServiceLogger("OTP_PO");
 
 export class OtpPo {
 	private readonly page: Page;

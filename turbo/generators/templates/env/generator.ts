@@ -20,7 +20,7 @@ export function createEnvironmentVariablesGenerator(
 		// TODO: Async logger needed
 		// (await getLogger()).info(
 			`Loaded ${Object.values(allVariables).length} default environment variables in your env files. We use these as defaults.`,
-		);
+		// );
 	}
 
 	return plop.setGenerator("env", {

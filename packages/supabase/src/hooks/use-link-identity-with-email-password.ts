@@ -44,7 +44,7 @@ export function useLinkIdentityWithEmailPassword() {
 		onSuccess: () => {
 			return queryClient.invalidateQueries({
 				queryKey: USER_IDENTITIES_QUERY_KEY,
-			// });
+			});
 		},
 	});
 }

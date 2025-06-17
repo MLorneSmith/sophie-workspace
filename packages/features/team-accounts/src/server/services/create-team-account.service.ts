@@ -23,7 +23,7 @@ class CreateTeamAccountService {
 
 		const { error, data } = await this.client.rpc("create_team_account", {
 			account_name: params.name,
-		// });
+		});
 
 		if (error) {
 			logger.error(

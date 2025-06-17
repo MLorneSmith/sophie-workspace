@@ -67,7 +67,7 @@ function CreateOrganizationAccountForm(props: { onClose: () => void }) {
 			name: "",
 		},
 		resolver: zodResolver(CreateTeamSchema),
-	// });
+	});
 
 	return (
 		<Form {...form}>

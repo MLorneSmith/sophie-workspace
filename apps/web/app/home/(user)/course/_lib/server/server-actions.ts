@@ -78,7 +78,7 @@ export const updateCourseProgressAction = enhanceAction(
 						// (await getLogger()).error(
 						// 	"Failed to generate certificate:",
 						// 	{ data: error }
-						// );
+						);
 						// Continue with the update even if certificate generation fails
 					}
 				}
@@ -188,7 +188,7 @@ export const updateLessonProgressAction = enhanceAction(
 				// (await getLogger()).info(
 				// 	"Required lesson numbers:",
 				// 	{ data: REQUIRED_LESSON_NUMBERS }
-				// );
+				);
 				// TODO: Async logger needed
 				// (await getLogger()).info("Total required lessons:", {
 				// 	data: TOTAL_REQUIRED_LESSONS,

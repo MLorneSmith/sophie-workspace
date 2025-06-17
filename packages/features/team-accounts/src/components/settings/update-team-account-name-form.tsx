@@ -54,26 +54,26 @@ export const UpdateTeamAccountNameForm = (props: {
 									slug: props.account.slug,
 									name: data.name,
 									path: props.path,
-								// });
+								});
 
 								if (_result._success) {
 									toast.success(t("updateTeamSuccessMessage"), {
 										id: toastId,
-									// });
+									});
 								} else {
 									toast.error(t("updateTeamErrorMessage"), {
 										id: toastId,
-									// });
+									});
 								}
 							} catch (error) {
 								if (!isRedirectError(error)) {
 									toast.error(t("updateTeamErrorMessage"), {
 										id: toastId,
-									// });
+									});
 								} else {
 									toast.success(t("updateTeamSuccessMessage"), {
 										id: toastId,
-									// });
+									});
 								}
 							}
 						});

@@ -8,11 +8,11 @@ import { useState } from "react";
 import { convertExistingRecordsToTiptap } from "../../_actions/convert-editor-data";
 
 export default function ConvertEditorDataPage() {
-	const [isConverting, setIsConverting] = useState(false);
-	const [results, setResults] = useState<unknown>(null);
-	const [error, setError] = useState<string | null>(null);
+	const [_isConverting, setIsConverting] = useState(false);
+	const [_results, setResults] = useState<unknown>(null);
+	const [_error, setError] = useState<string | null>(null);
 
-	const handleConvert = async () => {
+	const _handleConvert = async () => {
 		try {
 			setIsConverting(true);
 			setError(null);
@@ -20,15 +20,14 @@ export default function ConvertEditorDataPage() {
 
 			const result = await convertExistingRecordsToTiptap();
 			setResults(result);
-		} catch (err) {
+		} catch (_err) {
 			// TODO: Async logger needed
 			// (await getLogger()).error("Error converting data:", {
 			// 	data: err,
-			// });
+		});
 			setError(err instanceof Error ? err.message : "Unknown error occurred");
-		} finally {
+		} finally 
 			setIsConverting(false);
-		}
 	};
 
 	return (

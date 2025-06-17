@@ -148,7 +148,7 @@ export async function getQuiz(
 		// (await getLogger()).error(
 			`getQuiz: Error extracting quiz ID from $JSON.stringify(originalQuizId):`,
 			error,
-		// );
+		);
 		throw new Error(
 			`Failed to extract valid quiz ID: ${error instanceof Error ? error.message : String(error)}`,
 		);

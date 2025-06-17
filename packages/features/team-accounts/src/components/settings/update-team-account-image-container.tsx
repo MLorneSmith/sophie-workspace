@@ -26,7 +26,7 @@ export function UpdateTeamAccountImage(props: {
 				success: t("updateTeamSuccessMessage"),
 				error: t("updateTeamErrorMessage"),
 				loading: t("updateTeamLoadingMessage"),
-			// });
+		});
 		},
 		[t],
 	);
@@ -76,7 +76,7 @@ export function UpdateTeamAccountImage(props: {
 				createToaster(promise);
 			}
 		},
-		[props],
+		[props, client, createToaster],
 	);
 
 	return (

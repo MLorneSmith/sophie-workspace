@@ -9,7 +9,7 @@ import { createServiceLogger } from "@kit/shared/logger";
 import { getR2Config } from "./storage-config";
 
 // Initialize service logger
-const { getLogger } = createServiceLogger("STORAGE_URL_GENERATORS");
+const { getLogger: _getLogger } = createServiceLogger("STORAGE_URL_GENERATORS");
 
 export interface GenerateFileURLArgs {
 	filename: string;

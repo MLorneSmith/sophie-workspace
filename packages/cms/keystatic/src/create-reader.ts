@@ -60,5 +60,5 @@ function getKeystaticGithubConfiguration() {
 			token: process.env.KEYSTATIC_GITHUB_TOKEN,
 			repo,
 			pathPrefix: process.env.KEYSTATIC_PATH_PREFIX,
-		// });
+		});
 }

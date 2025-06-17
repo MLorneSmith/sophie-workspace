@@ -30,7 +30,7 @@ export function useFetchNotifications({
 		onNotifications,
 		accountIds,
 		enabled: realtime,
-	// });
+	});
 
 	useEffect(() => {
 		if (initialNotifications) {
@@ -67,5 +67,5 @@ function useFetchInitialNotifications(props: { accountIds: string[] }) {
 		},
 		refetchOnMount: false,
 		refetchOnWindowFocus: false,
-	// });
+	});
 }

@@ -14,13 +14,13 @@ export function createPostHogAnalyticsService() {
 	if (!key) {
 		throw new Error(
 			"NEXT_PUBLIC_POSTHOG_KEY is not set. Please set the environment variable.",
-		);
+		// );
 	}
 
 	if (!host) {
 		throw new Error(
 			"NEXT_PUBLIC_POSTHOG_HOST is not set. Please set the environment variable.",
-		);
+		// );
 	}
 
 	return new PostHogAnalyticsService(key, host, url);
@@ -101,7 +101,7 @@ class ServerPostHogImpl {
 			host: this.host,
 			flushAt: 1,
 			flushInterval: 0,
-		// });
+		});
 	}
 
 	async identify(userId: string, traits?: Record<string, string>) {
@@ -111,7 +111,7 @@ class ServerPostHogImpl {
 			event: "$identify",
 			distinctId: userId,
 			properties: traits,
-		// });
+		});
 	}
 
 	async trackPageView(url: string) {
@@ -124,7 +124,7 @@ class ServerPostHogImpl {
 			event: "$pageview",
 			distinctId: this.userId,
 			properties: { $current_url: url },
-		// });
+		});
 	}
 
 	async trackEvent(
@@ -136,14 +136,14 @@ class ServerPostHogImpl {
 		if (!this.userId) {
 			throw new Error(
 				"Please identify the user using the identify method before tracking events",
-			);
+			// );
 		}
 
 		client.capture({
 			event: eventName,
 			distinctId: this.userId,
 			properties: eventProperties,
-		// });
+		});
 
 		await client.shutdown();
 	}
@@ -186,7 +186,7 @@ class ClientPostHogImpl {
 			person_profiles: "always",
 			capture_pageview: false,
 			capture_pageleave: true,
-		// });
+		});
 
 		this.ph = posthog;
 	}

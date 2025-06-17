@@ -127,7 +127,7 @@ class AccountPerSeatBillingService {
 					subscriptionId: subscription.id,
 					subscriptionItemId: item.id,
 					quantity: item.quantity + 1,
-				// });
+				});
 
 				logger.info(
 					{
@@ -199,7 +199,7 @@ class AccountPerSeatBillingService {
 					subscriptionId: subscription.id,
 					subscriptionItemId: item.id,
 					quantity: item.quantity - 1,
-				// });
+				});
 
 				logger.info(
 					{

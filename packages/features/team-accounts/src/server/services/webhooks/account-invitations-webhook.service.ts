@@ -74,7 +74,9 @@ class AccountInvitationsWebhookService {
 
 		if (inviter.error) {
 			logger.error({
-					error: inviter.error, { arg1: name: this.namespace, arg2: }, arg3: "Failed to fetch inviter details", arg4:  });
+					error: inviter.error,
+			name: this.namespace
+		}, "Failed to fetch inviter details");
 
 			throw inviter.error;
 		}
@@ -87,7 +89,9 @@ class AccountInvitationsWebhookService {
 
 		if (team.error) {
 			logger.error({
-					error: team.error, { arg1: name: this.namespace, arg2: }, arg3: "Failed to fetch team details", arg4:  });
+					error: team.error,
+			name: this.namespace
+		}, "Failed to fetch team details");
 
 			throw team.error;
 		}
@@ -107,7 +111,7 @@ class AccountInvitationsWebhookService {
 			const link = this.getInvitationLink(
 				invitation.invite_token,
 				invitation.email,
-			);
+			// );
 
 			const { html, subject } = await renderInviteEmail({
 				link,
@@ -115,7 +119,7 @@ class AccountInvitationsWebhookService {
 				inviter: inviter.data.name ?? inviter.data.email ?? "",
 				productName: env.productName,
 				teamName: team.data.name,
-			// });
+		});
 
 			await mailer
 				.sendEmail({
@@ -132,7 +136,7 @@ class AccountInvitationsWebhookService {
 		// (await getLogger()).error(error);
 
 					logger.error({ error, { arg1: ...ctx }, arg2: "Failed to send invitation email" });
-		// });
+		});
 
 			return {
 				success: true,

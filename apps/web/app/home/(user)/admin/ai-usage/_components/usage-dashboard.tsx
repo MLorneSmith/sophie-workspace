@@ -57,7 +57,7 @@ export function UsageDashboard({ initialData }: UsageDashboardProps) {
 				// (await getLogger()).info(
 				// 	"Data refreshed for time range:",
 				// 	{ data: selectedTimeRange }
-				// );
+				);
 				// In a real implementation, this would use actual fetched data
 			}, 500);
 		} catch (_error) {
@@ -66,7 +66,7 @@ export function UsageDashboard({ initialData }: UsageDashboardProps) {
 			// (await getLogger()).error(
 			// 	"Error fetching usage data:",
 			// 	{ data: error }
-			// );
+			);
 		} finally {
 			setIsLoading(false);
 		}

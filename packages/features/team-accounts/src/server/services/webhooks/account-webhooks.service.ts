@@ -58,7 +58,7 @@ class AccountWebhooksService {
 		const { html, subject } = await renderAccountDeleteEmail({
 			userDisplayName: params.userDisplayName,
 			productName: params.productName,
-		// });
+		});
 
 		return mailer.sendEmail({
 			to: params.userEmail,
