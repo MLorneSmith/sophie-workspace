@@ -114,7 +114,7 @@ class AuthCallbackService {
 			const errorMessage = getAuthErrorMessage({
 				error: error.message,
 				code: error.code,
-			// });
+		});
 
 			url.searchParams.set("error", errorMessage);
 		}
@@ -150,7 +150,7 @@ class AuthCallbackService {
 		const inviteToken = searchParams.get("invite_token");
 		const errorPath = params.errorPath ?? "/auth/callback/error";
 
-		const nextUrl = nextUrlPathFromParams ?? params.redirectPath;
+		let _nextUrl = nextUrlPathFromParams ?? params.redirectPath;
 
 		// if we have an invite token, we redirect to the join team page
 		// instead of the default next url. This is because the user is trying
@@ -162,9 +162,9 @@ class AuthCallbackService {
 			const urlParams = new URLSearchParams({
 				invite_token: inviteToken,
 				email: emailParam ?? "",
-			// });
+		});
 
-			nextUrl = `${params.joinTeamPath}?${urlParams.toString()}`;
+			_nextUrl = `${params.joinTeamPath}?${urlParams.toString()}`;
 		}
 
 		if (authCode) {
@@ -178,14 +178,14 @@ class AuthCallbackService {
 						code: error.code,
 						error: error.message,
 						path: errorPath,
-					// });
+		});
 				}
-			} catch (error) {
+			} catch (_error) {
 				// TODO: Async logger needed
 		// (await getLogger()).error("An error occurred while exchanging code for session", {
 		//	error,
 		//	name: "auth.callback",
-		// });
+		});
 
 				const message = error instanceof Error ? error.message : error;
 
@@ -193,7 +193,7 @@ class AuthCallbackService {
 					code: (error as AuthError)?.code,
 					error: message as string,
 					path: errorPath,
-				// });
+		});
 			}
 		}
 
@@ -201,7 +201,7 @@ class AuthCallbackService {
 			return onError({
 				error,
 				path: errorPath,
-			// });
+		});
 		}
 
 		return {
@@ -236,18 +236,18 @@ function onError({
 	path: string;
 	code?: string;
 }) {
-	const errorMessage = getAuthErrorMessage({ error, code });
+	const _errorMessage = getAuthErrorMessage({ error, code });
 
 	// TODO: Async logger needed
 	// (await getLogger()).error("An error occurred while signing user in", {
 	//	error: JSON.stringify(error).replace(/["\\]/g, "\\$&"),
 	//	name: "auth.callback",
-	// });
+		});
 
 	const searchParams = new URLSearchParams({
 		error: errorMessage,
 		code: code ?? "",
-	// });
+		});
 
 	const nextPath = `${path}?${searchParams.toString()}`;
 

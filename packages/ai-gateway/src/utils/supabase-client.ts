@@ -145,7 +145,9 @@ export async function getSupabaseClient(
 					"@kit/supabase/server-admin-client"
 				);
 
-				(await getLogger()).info("Getting Supabase admin client for privileged AI gateway operations");
+				(await getLogger()).info(
+					"Getting Supabase admin client for privileged AI gateway operations",
+				);
 
 				const adminClient = getSupabaseServerAdminClient();
 
@@ -155,7 +157,9 @@ export async function getSupabaseClient(
 					typeof adminClient.from !== "function" ||
 					typeof adminClient.rpc !== "function"
 				) {
-					(await getLogger()).warn("Invalid Supabase admin client received, using mock client instead");
+					(await getLogger()).warn(
+						"Invalid Supabase admin client received, using mock client instead",
+					);
 					return createMockClient();
 				}
 
@@ -167,23 +171,33 @@ export async function getSupabaseClient(
 						.limit(1);
 
 					if (error) {
-						(await getLogger()).error("Supabase admin client connection test failed:", {
-							error,
-							errorMessage: error.message,
-							errorCode: error.code,
-							details: error.details,
-						// });
+						(await getLogger()).error(
+							"Supabase admin client connection test failed:",
+							{
+								error,
+								errorMessage: error.message,
+								errorCode: error.code,
+								details: error.details,
+							},
+						);
 						return createMockClient();
 					}
 
-					(await getLogger()).info("Supabase admin client successfully connected");
+					(await getLogger()).info(
+						"Supabase admin client successfully connected",
+					);
 					return adminClient;
 				} catch (adminConnectionError) {
-					(await getLogger()).error("Error testing Supabase admin connection:", { data: adminConnectionError });
+					(await getLogger()).error(
+						"Error testing Supabase admin connection:",
+						{ data: adminConnectionError },
+					);
 					return createMockClient();
 				}
 			} catch (adminImportError) {
-				(await getLogger()).error("Error importing Supabase admin client:", { data: adminImportError });
+				(await getLogger()).error("Error importing Supabase admin client:", {
+					data: adminImportError,
+				});
 				return createMockClient();
 			}
 		}
@@ -194,7 +208,9 @@ export async function getSupabaseClient(
 		);
 
 		// Log authentication context for debugging
-		(await getLogger()).info("Getting Supabase client for AI gateway usage tracking");
+		(await getLogger()).info(
+			"Getting Supabase client for AI gateway usage tracking",
+		);
 
 		const client = getSupabaseServerClient();
 
@@ -204,7 +220,9 @@ export async function getSupabaseClient(
 			typeof client.from !== "function" ||
 			typeof client.rpc !== "function"
 		) {
-			(await getLogger()).warn("Invalid Supabase client received, using mock client instead");
+			(await getLogger()).warn(
+				"Invalid Supabase client received, using mock client instead",
+			);
 			return createMockClient();
 		}
 
@@ -221,18 +239,22 @@ export async function getSupabaseClient(
 					errorMessage: error.message,
 					errorCode: error.code,
 					details: error.details,
-				// });
+				});
 				return createMockClient();
 			}
 
 			(await getLogger()).info("Supabase client successfully connected");
 			return client;
 		} catch (connectionError) {
-			(await getLogger()).error("Error testing Supabase connection:", { data: connectionError });
+			(await getLogger()).error("Error testing Supabase connection:", {
+				data: connectionError,
+			});
 			return createMockClient();
 		}
 	} catch (error) {
-		(await getLogger()).error("Error getting Supabase client:", { data: error });
+		(await getLogger()).error("Error getting Supabase client:", {
+			data: error,
+		});
 		// Return a more comprehensive mock client for environments where Supabase isn't available
 		return createMockClient();
 	}

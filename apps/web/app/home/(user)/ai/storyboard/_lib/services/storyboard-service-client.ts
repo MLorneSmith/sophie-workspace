@@ -237,7 +237,7 @@ export class StoryboardService {
 						const initialLayoutId = headingLevel === 1 ? "title" : "content";
 						const layoutTemplate = PRESET_LAYOUTS.find(
 							(layout: LayoutTemplate) => layout.id === initialLayoutId,
-						);
+						// );
 
 						// Create a new StoryboardSlide
 						currentStoryboardSlide = {
@@ -280,7 +280,7 @@ export class StoryboardService {
 		if (slides.length === 0) {
 			const titleLayout = PRESET_LAYOUTS.find(
 				(layout: LayoutTemplate) => layout.id === "title",
-			);
+			// );
 			slides.push({
 				id: `slide-${Date.now()}-0`,
 				headline: extractedTitle,

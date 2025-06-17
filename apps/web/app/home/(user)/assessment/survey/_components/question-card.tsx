@@ -36,7 +36,7 @@ export function QuestionCard({
 	isLoading,
 }: QuestionCardProps) {
 	// Always call hooks at the top level, even if not used in all branches
-	const [selectedOption, setSelectedOption] = useState<string | null>(null);
+	const [selectedOption, _setSelectedOption] = useState<string | null>(null);
 
 	// Render different question types based on the question type
 	if (question.type === "text_field") {
@@ -61,17 +61,17 @@ export function QuestionCard({
 
 	// Default to multiple choice question
 
-	const handleSubmit = () => {
+	const _handleSubmit = () => {
 		if (selectedOption) {
 			// Log the selected option and available options for debugging
 			// TODO: Async logger needed
 			// (await getLogger()).info("Selected option:", {
 			// 	data: selectedOption,
-			// });
+		});
 			// TODO: Async logger needed
 			// (await getLogger()).info("Available options:", {
 			// 	data: question.options,
-			// });
+		});
 
 			const option = question.options?.find((opt) => opt.id === selectedOption);
 
@@ -83,11 +83,11 @@ export function QuestionCard({
 				// (await getLogger()).error(
 				// 	"Selected option not found:",
 				// 	{ data: selectedOption }
-				// );
+				);
 				// TODO: Async logger needed
 				// (await getLogger()).error("Question options:", {
 				// 	data: question.options,
-				// });
+		});
 			}
 		}
 	};

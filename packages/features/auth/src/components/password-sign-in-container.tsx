@@ -25,7 +25,7 @@ export function PasswordSignInContainer({
 				const data = await signInMutation.mutateAsync({
 					...credentials,
 					options: { captchaToken },
-				// });
+				});
 
 				if (onSignIn) {
 					const userId = data?.user?.id;
@@ -38,7 +38,7 @@ export function PasswordSignInContainer({
 				resetCaptchaToken();
 			}
 		},
-		[captchaToken, resetCaptchaToken, signInMutation],
+		[captchaToken, resetCaptchaToken, signInMutation, onSignIn],
 	);
 
 	return (

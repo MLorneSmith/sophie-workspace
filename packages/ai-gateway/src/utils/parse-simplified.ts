@@ -36,7 +36,7 @@ export function parseSimplified(response: string): SimplifiedContent {
 							section.type &&
 							(section.type === "heading" || section.type === "bullet") &&
 							typeof section.content === "string",
-					);
+					// );
 
 					if (validSections) {
 						return parsed as SimplifiedContent;

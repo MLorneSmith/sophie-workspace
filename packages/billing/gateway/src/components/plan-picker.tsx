@@ -46,12 +46,12 @@ export function PlanPicker(
 ) {
 	const { t } = useTranslation("billing");
 
-	const intervals = useMemo(
+	const _intervals = useMemo(
 		() => getPlanIntervals(props.config),
 		[props.config],
 	) as string[];
 
-	const form = useForm({
+	const _form = useForm({
 		reValidateMode: "onChange",
 		mode: "onChange",
 		resolver: zodResolver(
@@ -87,7 +87,7 @@ export function PlanPicker(
 	const selectedInterval = useWatch({
 		name: "interval",
 		control: form.control,
-	// });
+		});
 
 	const planId = form.getValues("planId");
 
@@ -160,7 +160,7 @@ export function PlanPicker(
 																		onClick={() => {
 																			form.setValue("interval", interval, {
 																				shouldValidate: true,
-																			// });
+		});
 
 																			if (selectedProduct) {
 																				const plan = selectedProduct.plans.find(
@@ -256,11 +256,11 @@ export function PlanPicker(
 
 															form.setValue("planId", planId, {
 																shouldValidate: true,
-															// });
+		});
 
 															form.setValue("productId", product.id, {
 																shouldValidate: true,
-															// });
+		});
 														}}
 													/>
 

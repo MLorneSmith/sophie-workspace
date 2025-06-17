@@ -31,7 +31,7 @@ import { type FormData, useSetupForm } from "./BlocksFormContext";
 const { getLogger } = createServiceLogger("HOME-(USER)");
 
 interface SetupFormProps {
-	_userId: string; // For cache namespacing
+	userId: string; // For cache namespacing
 }
 
 function useSuggestions(_userId: string) {
@@ -68,6 +68,7 @@ function useSuggestions(_userId: string) {
 			} catch (_error) {
 				// TODO: Async logger needed
 				// TODO: Fix logger call - was: error
+				// console.error("Error getting suggestions:", error);
 				if (setSuggestions) setSuggestions(["An unexpected error occurred"]);
 			} finally {
 				if (setIsLoadingSuggestions) setIsLoadingSuggestions(false);
@@ -207,7 +208,7 @@ const PresentationTypeQuestion = ({
 	</div>
 );
 
-export function SetupForm({ _userId }: SetupFormProps) {
+export function SetupForm({ userId: _userId }: SetupFormProps) {
 	const {
 		formData,
 		setFormData,
@@ -363,6 +364,7 @@ export function SetupForm({ _userId }: SetupFormProps) {
 		} catch (_error) {
 			// TODO: Async logger needed
 			// TODO: Fix logger call - was: error
+			// console.error("Form submission error:", error);
 		} finally {
 			setIsSubmitting(false);
 		}
@@ -393,7 +395,7 @@ export function SetupForm({ _userId }: SetupFormProps) {
 					handleNext();
 					setErrors({}); // Clear errors after successful navigation
 				} else {
-					logger.info({ message: "Validation failed, showing error" });
+					(await getLogger()).info("Validation failed, showing error");
 					// Ensure the field is marked as touched to show the error
 					setTouchedFields(new Set(touchedFields).add(currentField));
 				}
@@ -404,6 +406,7 @@ export function SetupForm({ _userId }: SetupFormProps) {
 		} catch (_error) {
 			// TODO: Async logger needed
 			// TODO: Fix logger call - was: error
+			// console.error("Form submission error:", error);
 		} finally {
 			setIsValidating(false);
 		}
@@ -564,24 +567,3 @@ export function SetupForm({ _userId }: SetupFormProps) {
 		</div>
 	);
 }
-
-const _cleanSuggestions = (rawSuggestions: string): string[] => {
-	// TODO: Async logger needed
-	// TODO: Fix logger call - was: info
-	const lines = rawSuggestions.split("\n");
-	const startIndex = lines.findIndex((line) => /^\d+\./.test(line.trim()));
-	if (startIndex === -1) {
-		// TODO: Async logger needed
-		// TODO: Fix logger call - was: info
-		return [];
-	}
-
-	const cleaned = lines
-		.slice(startIndex)
-		.map((line) => line.replace(/^\d+\.\s*/, "").trim())
-		.filter(Boolean);
-
-	// TODO: Async logger needed
-	// TODO: Fix logger call - was: info
-	return cleaned;
-};

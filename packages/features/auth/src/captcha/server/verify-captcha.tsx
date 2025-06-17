@@ -23,7 +23,7 @@ export async function verifyCaptchaToken(token: string) {
 	const res = await fetch(verifyEndpoint, {
 		method: "POST",
 		body: formData,
-	// });
+	});
 
 	if (!_res._ok) {
 		// TODO: Async logger needed

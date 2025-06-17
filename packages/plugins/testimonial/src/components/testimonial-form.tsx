@@ -58,7 +58,7 @@ export function TestimonialForm(props: TestimonialFormProps) {
 		},
 	});
 
-	function onSubmit(data: TextTestimonialFormData) {
+	function _onSubmit(data: TextTestimonialFormData) {
 		startTransition(async () => {
 			try {
 				await createTestimonialAction(data);
@@ -68,7 +68,7 @@ export function TestimonialForm(props: TestimonialFormProps) {
 				if (props.onSuccess) {
 					props.onSuccess();
 				}
-			} catch (error) {
+			} catch (_error) {
 				// TODO: Async logger needed
 		// (await getLogger()).error("Error submitting testimonial:", { data: error });
 		// }
@@ -78,7 +78,7 @@ export function TestimonialForm(props: TestimonialFormProps) {
 	return (
 		<Form {...form}>
 			<form
-				onSubmit={form.handleSubmit(onSubmit)}
+				onSubmit={form.handleSubmit(_onSubmit)}
 				className={cn(
 					props.className,
 					"animate-in fade-in slide-in-from-bottom-2 flex flex-col space-y-4",
@@ -140,7 +140,7 @@ export function TestimonialForm(props: TestimonialFormProps) {
 									onRatingChange={(value) => {
 										form.setValue(field.name, value, {
 											shouldValidate: true,
-										// });
+		});
 									}}
 								/>
 							</FormControl>
@@ -161,7 +161,7 @@ export function TestimonialForm(props: TestimonialFormProps) {
 	);
 }
 
-export function VideoTestimonialForm(props: VideoTestimonialFormProps) {
+export function _VideoTestimonialForm(props: VideoTestimonialFormProps) {
 	const insertVideoTestimonial = useInsertVideoTestimonialMutation();
 
 	const form = useForm<VideoTestimonialFormData>({
@@ -270,7 +270,7 @@ export function VideoTestimonialForm(props: VideoTestimonialFormProps) {
 									onRatingChange={(value) => {
 										form.setValue(field.name, value, {
 											shouldValidate: true,
-										// });
+		});
 									}}
 								/>
 							</FormControl>
@@ -288,7 +288,7 @@ export function VideoTestimonialForm(props: VideoTestimonialFormProps) {
 										onVideoRecorded={(video) => {
 											form.setValue(field.name, video as unknown as string, {
 												shouldValidate: true,
-											// });
+		});
 										}}
 										maxRecordingTime={props.maxRecordingTime}
 									/>
@@ -328,7 +328,7 @@ function useInsertVideoTestimonialMutation() {
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify(body),
-		// });
+		});
 
 		if (!response.ok) {
 			throw new Error("Failed to submit video testimonial");

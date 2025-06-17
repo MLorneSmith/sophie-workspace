@@ -54,7 +54,7 @@ export class BaselimeServerMonitoringService implements MonitoringService {
 			// (await getLogger()).error("Failed to send event to Baselime", {
 			//	response,
 			//	event,
-			// });
+		});
 		}
 	}
 
@@ -88,7 +88,7 @@ export class BaselimeServerMonitoringService implements MonitoringService {
 			// (await getLogger()).error("Failed to send event to Baselime", {
 			//	response,
 			//	event,
-			// });
+		});
 		}
 	}
 

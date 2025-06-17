@@ -57,7 +57,7 @@ export class StripeWebhookHandlerService
 		const { webhooksSecret } = StripeServerEnvSchema.parse({
 			secretKey: process.env.STRIPE_SECRET_KEY,
 			webhooksSecret: process.env.STRIPE_WEBHOOK_SECRET,
-		// });
+		});
 
 		const stripe = await this.loadStripe();
 
@@ -191,7 +191,9 @@ export class StripeWebhookHandlerService
 				const logger = await getLogger();
 
 				logger.debug({
-						eventType: event.type, { arg1: name: this.namespace, arg2: }, arg3: `Unhandled Stripe event type: ${event.type}`, arg4:  });
+					eventType: event.type,
+					name: this.namespace,
+				}, `Unhandled Stripe event type: ${event.type}`);
 
 				return;
 			}
@@ -245,7 +247,7 @@ export class StripeWebhookHandlerService
 				cancelAtPeriodEnd: subscription.cancel_at_period_end,
 				trialStartsAt: subscription.trial_start,
 				trialEndsAt: subscription.trial_end,
-			// });
+			});
 
 			return onCheckoutCompletedCallback(payload);
 		}
@@ -340,7 +342,7 @@ export class StripeWebhookHandlerService
 			cancelAtPeriodEnd: subscription.cancel_at_period_end,
 			trialStartsAt: subscription.trial_start,
 			trialEndsAt: subscription.trial_end,
-		// });
+		});
 
 		return onSubscriptionUpdatedCallback(payload);
 	}
@@ -369,7 +371,8 @@ export class StripeWebhookHandlerService
 
 		if (!invoiceId) {
 			logger.warn({
-					invoiceId, { arg1: }, arg2: "Invoice not found. Will not handle invoice.paid event.", arg3:  });
+				invoiceId,
+			}, "Invoice not found. Will not handle invoice.paid event.");
 
 			return;
 		}
@@ -391,7 +394,9 @@ export class StripeWebhookHandlerService
 		// handle when a subscription ID is not found
 		if (!subscriptionId) {
 			logger.warn({
-					subscriptionId, { arg1: customerId, arg2: }, arg3: "Subscription ID not found for invoice. Will not handle invoice.paid event.", arg4:  });
+				subscriptionId,
+				customerId,
+			}, "Subscription ID not found for invoice. Will not handle invoice.paid event.");
 
 			return;
 		}
@@ -401,7 +406,9 @@ export class StripeWebhookHandlerService
 		// // handle when a subscription is not found
 		if (!subscription) {
 			logger.warn({
-					subscriptionId, { arg1: customerId, arg2: }, arg3: "Subscription not found for invoice. Will not handle invoice.paid event.", arg4:  });
+				subscriptionId,
+				customerId,
+			}, "Subscription not found for invoice. Will not handle invoice.paid event.");
 
 			return;
 		}
@@ -429,7 +436,7 @@ export class StripeWebhookHandlerService
 			cancelAtPeriodEnd: subscription.cancel_at_period_end,
 			trialStartsAt: subscription.trial_start,
 			trialEndsAt: subscription.trial_end,
-		// });
+		});
 
 		return onInvoicePaid(payload);
 	}

@@ -123,7 +123,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 								if (htmlContent) {
 									// TODO: Async logger needed
 		// (await getLogger()).info("Using HTML content for Call To Action:", { arg1: `${htmlContent.substring(0, arg2: 100 })}...`,
-		// );
+		);
 									// Note: Content trusted as it comes from Payload CMS admin
 									return (
 										<div
@@ -172,7 +172,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 								if (htmlContent) {
 									// TODO: Async logger needed
 		// (await getLogger()).info("Using HTML content for Test Block:", { arg1: `${htmlContent.substring(0, arg2: 100 })}...`,
-		// );
+		);
 									// Note: Content trusted as it comes from Payload CMS admin
 									return (
 										<div
@@ -213,7 +213,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 								if (htmlContent) {
 									// TODO: Async logger needed
 		// (await getLogger()).info("Using HTML content for Bunny Video:", { arg1: `${htmlContent.substring(0, arg2: 100 })}...`,
-		// );
+		);
 									// Note: Content trusted as it comes from Payload CMS admin
 									return (
 										<div
@@ -303,7 +303,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 								if (htmlContent) {
 									// TODO: Async logger needed
 		// (await getLogger()).info("Using HTML content for YouTube Video:", { arg1: `${htmlContent.substring(0, arg2: 100 })}...`,
-		// );
+		);
 									// Note: Content trusted as it comes from Payload CMS admin
 									return (
 										<div
@@ -507,7 +507,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 												)}
 											</div>
 										</div>
-		// );
+		);
 								}
 
 								// Check for Test Block in fields
@@ -529,7 +529,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 													"Test block content")}
 											</p>
 										</div>
-		// );
+		);
 								}
 
 								// Check for Bunny Video block in fields
@@ -567,7 +567,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 													</p>
 												</div>
 											</div>
-		// );
+		);
 									}
 
 									// Render the Bunny.net video player
@@ -690,7 +690,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 							return null;
 						})}
 					</div>
-		// );
+		);
 			}
 
 			// If root exists but children is not an array, try to render the root directly
@@ -702,7 +702,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 						{lexicalContent.root.text || JSON.stringify(lexicalContent.root)}
 					</p>
 				</div>
-		// );
+		);
 		}
 	} catch (error) {
 		// TODO: Async logger needed

@@ -80,14 +80,14 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 		const _editorRef = useRef(null);
 
 		// Parse and normalize initial content
-		const initialContent = useMemo(() => {
+		const _initialContent = useMemo(() => {
 			// TODO: Async logger needed
 			// (await getLogger()).info("TiptapEditor parsing content:", {
 			// 	sectionType,
 			// 	contentType: typeof content,
 			// 	contentLength:
 			// 		typeof content === "string" ? content.length : "not a string",
-			// });
+		});
 
 			try {
 				if (typeof content !== "string") {
@@ -104,13 +104,13 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 				}
 
 				// Parse the content string into an object
-				const parsed = JSON.parse(content);
+				const _parsed = JSON.parse(content);
 				// TODO: Async logger needed
 				// (await getLogger()).info("Successfully parsed content:", {
 				// 	type: parsed?.type,
 				// 	contentLength: parsed?.content?.length,
 				// 	firstNodeType: parsed?.content?.[0]?.type,
-				// });
+		});
 
 				// Normalize the content before passing it to the editor
 				// This helps prevent ProseMirror model version conflicts
@@ -261,7 +261,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 				// (await getLogger()).debug("Content saved successfully:", {
 				// 	sectionType,
 				// 	data: data?.[sectionType],
-				// });
+		});
 				setSaveStatus("saved");
 				setTimeout(() => setSaveStatus("idle"), 2000);
 			},
@@ -327,7 +327,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 				// 	sectionType,
 				// 	initialContentType: typeof initialContent,
 				// 	editorExists: !!editor,
-				// });
+		});
 
 				// Only update if content has changed to avoid loops
 				const currentContent = editor.getJSON();

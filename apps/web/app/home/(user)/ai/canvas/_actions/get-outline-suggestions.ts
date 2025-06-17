@@ -149,7 +149,7 @@ ${improvementFormat}`,
 			// (await getLogger()).error(
 			// 	"Error in outline suggestions action:",
 			// 	{ data: error }
-			// );
+			);
 
 			return {
 				success: false,

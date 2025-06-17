@@ -84,7 +84,7 @@ export async function getSurveyQuestions(
 					`survey_questions?where[id][in]=${questionIds}&sort=position&limit=100`,
 					{},
 					supabaseClient,
-		// );
+		);
 
 				if (questionsResponse?.docs?.length) {
 					// TODO: Async logger needed
@@ -116,7 +116,7 @@ export async function getSurveyQuestions(
 			for (const _q of allQuestionsResponse.docs) {
 				// TODO: Async logger needed
 		// (await getLogger()).info(`Question ID: ${q.id}, { arg1: Text: ${q.text?.substring(0, arg2: 30 })}...`,
-		// );
+		);
 			}
 
 			// Try to directly fetch the questions we know should be associated with this survey
@@ -132,7 +132,7 @@ export async function getSurveyQuestions(
 
 				const hardcodedQuestions = allQuestionsResponse.docs.filter((q: { id: string }) =>
 					knownQuestionIds.includes(q.id),
-		// );
+		);
 
 				if (hardcodedQuestions.length > 0) {
 					// TODO: Async logger needed
@@ -178,7 +178,7 @@ export async function getSurveyQuestions(
 
 				const hardcodedQuestions = allQuestionsResponse.docs.filter((q: { id: string }) =>
 					knownQuestionIds.includes(q.id),
-		// );
+		);
 
 				if (hardcodedQuestions.length > 0) {
 					// TODO: Async logger needed
@@ -191,12 +191,12 @@ export async function getSurveyQuestions(
 			}
 
 			// Check for any relationship to the survey
-			const filteredQuestions = allQuestionsResponse.docs.filter((q: { id: string; surveys_id?: string; surveys_id_id?: string; surveys?: unknown[] | string }) => {
+			const filteredQuestions = allQuestionsResponse.docs.filter((_q: { id: string; surveys_id?: string; surveys_id_id?: string; surveys?: unknown[] | string }) => {
 				// Log the question's relationship fields for debugging
 				// TODO: Async logger needed
 		// (await getLogger()).info(`Checking question ${q.id} relationships:`, { arg1: {
 					// surveys_id: q.surveys_id, arg2: surveys_id_id: q.surveys_id_id, arg3: surveys: Array.isArray(q.surveys }) ? q.surveys.length : "not an array",
-				// });
+		});
 
 				// Direct relationship fields
 				if (q.surveys_id === surveyId || q.surveys_id_id === surveyId) {

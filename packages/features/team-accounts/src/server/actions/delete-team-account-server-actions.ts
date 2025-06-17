@@ -28,7 +28,7 @@ export const deleteTeamAccountAction = enhanceAction(
 			purpose: `delete-team-account-${params.accountId}`,
 			userId: user.id,
 			token: params.otp,
-		// });
+		});
 
 		if (!_otpResult._valid) {
 			throw new Error("Invalid OTP code");
@@ -51,7 +51,7 @@ export const deleteTeamAccountAction = enhanceAction(
 		await deleteTeamAccount({
 			accountId: params.accountId,
 			userId: user.id,
-		// });
+		});
 
 		logger.info(ctx, "Team account request successfully sent");
 

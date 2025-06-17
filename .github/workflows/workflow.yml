@@ -1,12 +1,30 @@
-name: Workflow
+name: Legacy Workflow (To Be Deprecated)
+# This workflow is being replaced by the new CI/CD pipeline
+# See .github/workflows/pr-validation.yml and production-deploy.yml
+
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+
 jobs:
+  legacy-notice:
+    name: 📢 Migration Notice
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notice
+        run: |
+          echo "ℹ️  This workflow is being migrated to the new CI/CD pipeline"
+          echo "New workflows:"
+          echo "  - PR Validation: .github/workflows/pr-validation.yml"
+          echo "  - Dev Deploy: .github/workflows/dev-deploy.yml"
+          echo "  - Staging Deploy: .github/workflows/staging-deploy.yml"
+          echo "  - Production Deploy: .github/workflows/production-deploy.yml"
+
+  # Original jobs kept for compatibility during migration
   typescript:
-    name: ʦ TypeScript
+    name: ʦ TypeScript (Legacy)
     timeout-minutes: 10
     runs-on: ubuntu-latest
     env:
@@ -46,7 +64,7 @@ jobs:
         run: pnpm run lint
 
   test:
-    name: ⚫️ Test
+    name: ⚫️ Test (Legacy)
     timeout-minutes: 15
     runs-on: ubuntu-latest
     if: ${{ vars.ENABLE_E2E_JOB == 'true' }}

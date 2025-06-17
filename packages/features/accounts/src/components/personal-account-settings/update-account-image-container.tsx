@@ -46,7 +46,7 @@ function UploadProfileAvatarForm(props: {
 				success: t("updateProfileSuccess"),
 				error: t("updateProfileError"),
 				loading: t("updateProfileLoading"),
-			// });
+		});
 		},
 		[t],
 	);
@@ -101,7 +101,7 @@ function UploadProfileAvatarForm(props: {
 				createToaster(promise);
 			}
 		},
-		[props],
+		[props, client, createToaster],
 	);
 
 	return (

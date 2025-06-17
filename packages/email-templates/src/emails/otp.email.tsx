@@ -34,17 +34,17 @@ export async function renderOtpEmail(props: Props) {
 
 	const subject = t(`${namespace}:subject`, {
 		productName: props.productName,
-	// });
+	});
 
 	const previewText = subject;
 
 	const heading = t(`${namespace}:heading`, {
 		productName: props.productName,
-	// });
+	});
 
 	const otpText = t(`${namespace}:otpText`, {
 		otp: props.otp,
-	// });
+	});
 
 	const mainText = t(`${namespace}:mainText`);
 	const footerText = t(`${namespace}:footerText`);

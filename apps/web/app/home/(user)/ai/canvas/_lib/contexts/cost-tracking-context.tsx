@@ -53,7 +53,7 @@ export function CostTrackingProvider({ children }: { children: ReactNode }) {
 				// (await getLogger()).error(
 				// 	"Failed to fetch initial costs:",
 				// 	{ data: error }
-				// );
+				);
 			} finally {
 				setIsLoading(false);
 			}

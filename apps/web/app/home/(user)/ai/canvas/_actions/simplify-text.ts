@@ -58,7 +58,7 @@ export const simplifyTextAction = enhanceAction(
 			// (await getLogger()).error(
 			// 	"Error in simplifyTextAction:",
 			// 	{ data: error }
-			// );
+			);
 			return {
 				success: false,
 				error:

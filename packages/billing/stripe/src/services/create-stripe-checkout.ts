@@ -67,7 +67,7 @@ export async function createStripeCheckout(
 
 	const urls = getUrls({
 		returnUrl: params.returnUrl,
-	// });
+	});
 
 	// we use the embedded mode, so the user does not leave the page
 	const uiMode = "embedded";

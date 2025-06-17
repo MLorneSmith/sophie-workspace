@@ -110,7 +110,7 @@ export class LemonSqueezyWebhookHandlerService
 				const result = await this.handleOrderCompleted(
 					event as OrderWebhook,
 					params.onCheckoutSessionCompleted,
-				);
+				// );
 
 				// handle user-supplied handler
 				if (params.onEvent) {
@@ -124,7 +124,7 @@ export class LemonSqueezyWebhookHandlerService
 				const result = await this.handleSubscriptionCreatedEvent(
 					event as SubscriptionWebhook,
 					params.onSubscriptionUpdated,
-				);
+				// );
 
 				// handle user-supplied handler
 				if (params.onEvent) {
@@ -138,7 +138,7 @@ export class LemonSqueezyWebhookHandlerService
 				const result = await this.handleSubscriptionUpdatedEvent(
 					event as SubscriptionWebhook,
 					params.onSubscriptionUpdated,
-				);
+				// );
 
 				// handle user-supplied handler
 				if (params.onEvent) {
@@ -152,7 +152,7 @@ export class LemonSqueezyWebhookHandlerService
 				const result = await this.handleSubscriptionDeletedEvent(
 					event as SubscriptionWebhook,
 					params.onSubscriptionDeleted,
-				);
+				// );
 
 				// handle user-supplied handler
 				if (params.onEvent) {
@@ -166,7 +166,7 @@ export class LemonSqueezyWebhookHandlerService
 				const result = await this.handleInvoicePaid(
 					event as SubscriptionInvoiceWebhook,
 					params.onInvoicePaid,
-				);
+				// );
 
 				// handle user-supplied handler
 				if (params.onEvent) {
@@ -185,7 +185,9 @@ export class LemonSqueezyWebhookHandlerService
 				const logger = await getLogger();
 
 				logger.debug({
-						eventType: eventName, { arg1: name: this.namespace, arg2: }, arg3: "Unhandled Lemon Squeezy event type", arg4:  });
+						eventType: eventName,
+			name: this.namespace
+		}, "Unhandled Lemon Squeezy event type");
 
 				return;
 			}
@@ -307,7 +309,7 @@ export class LemonSqueezyWebhookHandlerService
 			cancelAtPeriodEnd: subscription.cancelled,
 			trialStartsAt: trialEndsAt ? new Date(createdAt).getTime() : null,
 			trialEndsAt: trialEndsAt ? new Date(trialEndsAt).getTime() : null,
-		// });
+		});
 
 		return onSubscriptionCreatedEvent(payload);
 	}
@@ -321,7 +323,7 @@ export class LemonSqueezyWebhookHandlerService
 		return this.handleSubscriptionCreatedEvent(
 			event,
 			onSubscriptionUpdatedCallback,
-		);
+		// );
 	}
 
 	private handleSubscriptionDeletedEvent(
@@ -399,7 +401,7 @@ export class LemonSqueezyWebhookHandlerService
 			cancelAtPeriodEnd: subscription.cancelled,
 			trialStartsAt: trialEndsAt ? new Date(createdAt).getTime() : null,
 			trialEndsAt: trialEndsAt ? new Date(trialEndsAt).getTime() : null,
-		// });
+		});
 
 		return onInvoicePaidCallback(payload);
 	}
@@ -436,7 +438,7 @@ async function isSigningSecretValid(rawBody: string, signatureHeader: string) {
 	const { hex: digest } = await createHmac({
 		key: webhooksSecret,
 		data: rawBody,
-	// });
+		});
 
 	const signature = Buffer.from(signatureHeader, "utf8");
 

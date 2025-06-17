@@ -137,7 +137,7 @@ function _ConfirmUnenrollFactorModal(
 
 					throw t(`auth:errors.${errorCode}`, {
 						defaultValue: t("account:unenrollFactorError"),
-					// });
+					});
 				}
 			});
 
@@ -299,7 +299,7 @@ function useUnenrollFactor(userId: string) {
 		onSuccess: () => {
 			return queryClient.refetchQueries({
 				queryKey: mutationKey,
-			// });
+			});
 		},
 	});
 }

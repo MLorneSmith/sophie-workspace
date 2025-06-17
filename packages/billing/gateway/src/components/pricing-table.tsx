@@ -48,7 +48,9 @@ export function PricingTable({
 	}>;
 }) {
 	const intervals = getPlanIntervals(config).filter(Boolean) as Interval[];
-	const [interval, setInterval] = useState(intervals[0] ?? "month" as Interval);
+	const [interval, setInterval] = useState(
+		intervals[0] ?? ("month" as Interval),
+	);
 
 	// Always filter out hidden products
 	const visibleProducts = config.products.filter((product) => !product.hidden);
@@ -154,7 +156,7 @@ function PricingItem(
 	const highlighted = props.product.highlighted ?? false;
 	const lineItem = props.primaryLineItem;
 	const isCustom = props.plan.custom ?? false;
-	
+
 	if (!lineItem) {
 		// This should not happen if the component is used correctly
 		return null;
@@ -490,7 +492,7 @@ function DefaultCheckoutButton(
 		next: props.paths.return,
 		plan: props.plan.id,
 		redirectToCheckout: props.redirectToCheckout ? "true" : "false",
-	// });
+	});
 
 	const linkHref =
 		props.plan.href ?? `${signUpPath}?${searchParams.toString()}`;

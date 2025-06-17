@@ -1,7 +1,7 @@
 import { createServiceLogger } from "@kit/shared/logger";
 
 // Initialize service logger
-const { getLogger } = createServiceLogger("STORAGE_CONFIG");
+const { getLogger: _getLogger } = createServiceLogger("STORAGE_CONFIG");
 
 /**
  * Storage Configuration Utilities for Cloudflare R2 and AWS S3
@@ -60,26 +60,26 @@ export function validateR2Config(): StorageValidationResult {
 	if (!process.env.R2_DOWNLOADS_BUCKET) {
 		warnings.push(
 			"R2_DOWNLOADS_BUCKET not set, will use R2_MEDIA_BUCKET for downloads collection",
-		);
+		// );
 	}
 
 	// Check for custom endpoints and base URLs
 	if (!process.env.R2_ENDPOINT) {
 		warnings.push(
 			"R2_ENDPOINT not set, will use default Cloudflare R2 endpoint",
-		);
+		// );
 	}
 
 	if (!process.env.PAYLOAD_PUBLIC_MEDIA_BASE_URL) {
 		warnings.push(
 			"PAYLOAD_PUBLIC_MEDIA_BASE_URL not set, will construct from R2 bucket settings",
-		);
+		// );
 	}
 
 	if (!process.env.PAYLOAD_PUBLIC_DOWNLOADS_BASE_URL) {
 		warnings.push(
 			"PAYLOAD_PUBLIC_DOWNLOADS_BASE_URL not set, will construct from R2 bucket settings",
-		);
+		// );
 	}
 
 	return {
@@ -114,7 +114,7 @@ export function validateS3Config(): StorageValidationResult {
 	) {
 		errors.push(
 			"Both AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY must be set if using credential authentication",
-		);
+		// );
 	}
 
 	return {

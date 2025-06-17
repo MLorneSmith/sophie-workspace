@@ -36,7 +36,7 @@ class WordpressClient implements CmsClient {
 	async getContentItems(options: Cms.GetContentItemsOptions) {
 		const queryParams = new URLSearchParams({
 			_embed: "true",
-		// });
+		});
 
 		if (options?.limit && options.limit !== Number.POSITIVE_INFINITY) {
 			queryParams.append("per_page", options.limit.toString());
@@ -387,7 +387,7 @@ class WordpressClient implements CmsClient {
 	}
 }
 
-function mapSortByParam(sortBy: string) {
+function _mapSortByParam(sortBy: string) {
 	switch (sortBy) {
 		case "publishedAt":
 			return "date";
@@ -402,7 +402,7 @@ function mapSortByParam(sortBy: string) {
 	}
 }
 
-function mapToStatus(status: WP_Post_Status_Name): Cms.ContentItemStatus {
+function _mapToStatus(status: WP_Post_Status_Name): Cms.ContentItemStatus {
 	const Draft = "draft" as WP_Post_Status_Name;
 	const Publish = "publish" as WP_Post_Status_Name;
 	const Pending = "pending" as WP_Post_Status_Name;

@@ -14,9 +14,9 @@ import { AddManualTestimonialSchema } from "../../schema/add-manual-testimonial.
 
 export const updateTestimonialStatusAction = enhanceAction(
 	async (params: unknown) => {
-		const { id, status } = params as { 
-			id: string; 
-			status: Database["public"]["Enums"]["testimonial_status"] 
+		const { id, status } = params as {
+			id: string;
+			status: Database["public"]["Enums"]["testimonial_status"];
 		};
 		await assertIsSuperAdmin();
 
@@ -113,7 +113,7 @@ export const addManualTestimonialAction = enhanceAction(
 			customer_company_name: typedData.customer.company,
 			link: typedData.source.externalLink,
 			customer_avatar_url: typedData.customer.avatarUrl,
-		// });
+		});
 
 		if (_error) {
 			logger.error("Failed to add manual testimonial");

@@ -53,7 +53,7 @@ export function OtpSignInContainer(props: OtpSignInContainerProps) {
 	const email = useWatch({
 		control: otpForm.control,
 		name: "email",
-	// });
+		});
 
 	const isEmailStep = !email;
 
@@ -103,7 +103,7 @@ export function OtpSignInContainer(props: OtpSignInContainerProps) {
 				onSendOtp={(email) => {
 					otpForm.setValue("email", email, {
 						shouldValidate: true,
-					// });
+		});
 				}}
 			/>
 		);

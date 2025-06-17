@@ -11,7 +11,7 @@ export function TestimonialsDataProvider(props: {
 }) {
 	const query = useFetchTestimonials({
 		limit: props.limit,
-	// });
+	});
 
 	if (query.isError) {
 		return null;
@@ -34,7 +34,7 @@ function useFetchTestimonials(props: { limit?: number }) {
 	const queryFn = async () => {
 		const searchParams = new URLSearchParams({
 			limit: props.limit?.toString() ?? "",
-		// });
+		});
 
 		const url = `/api/testimonials?${searchParams.toString()}`;
 
@@ -50,5 +50,5 @@ function useFetchTestimonials(props: { limit?: number }) {
 	return useQuery({
 		queryFn,
 		queryKey: ["testimonials"],
-	// });
+	});
 }

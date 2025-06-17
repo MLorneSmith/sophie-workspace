@@ -8,9 +8,7 @@ interface GenerateCertificateParams {
 }
 
 // Initialize service logger for certificate generation
-const { getLogger, getRequestLogger } = createServiceLogger(
-	"CERTIFICATE-SERVICE",
-);
+const { getLogger } = createServiceLogger("CERTIFICATE-SERVICE");
 
 export async function generateCertificate({
 	userId,
@@ -195,6 +193,7 @@ export async function generateCertificate({
 		for (const _bucket of buckets) {
 			// TODO: Async logger needed
 			// TODO: Fix logger call - was: info
+			// console.log("Found bucket:", _bucket.name);
 		}
 	}
 

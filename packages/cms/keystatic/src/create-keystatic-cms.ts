@@ -10,13 +10,13 @@ export async function createKeystaticClient() {
 	) {
 		const { createKeystaticClient: createClient } = await import(
 			"./keystatic-client"
-		);
+		// );
 
 		return createClient();
 	}
 
 	// TODO: Async logger needed
-		// (await getLogger()).error(`[CMS] Keystatic client using "Local" mode is only available in Node.js runtime. Please choose a different CMS client. Returning a mock client instead of throwing an error.`, { data:  });
+	// (await getLogger()).error(`[CMS] Keystatic client using "Local" mode is only available in Node.js runtime. Please choose a different CMS client. Returning a mock client instead of throwing an error.`, { data:  });
 
 	return mockCMSClient() as unknown as CmsClient;
 }
@@ -27,7 +27,7 @@ function mockCMSClient() {
 			return Promise.resolve({
 				items: [],
 				total: 0,
-			// });
+			});
 		},
 		getContentItemBySlug() {
 			return Promise.resolve(undefined);

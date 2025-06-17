@@ -29,7 +29,7 @@ export function StoryboardPanel({
 		}
 	}, [data, isLoading]);
 
-	const handleSave = async () => {
+	const _handleSave = async () => {
 		try {
 			await saveStoryboard(storyboardData);
 			toast.success("Storyboard saved successfully");
@@ -37,7 +37,7 @@ export function StoryboardPanel({
 			// TODO: Async logger needed
 			// (await getLogger()).error("Error saving storyboard:", {
 			// 	data: _error,
-			// });
+		});
 			toast.error("Failed to save storyboard");
 		}
 	};

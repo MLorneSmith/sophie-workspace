@@ -90,7 +90,7 @@ export function createQualityOptimizedConfig(
 		conditions.push({
 			type: "content_change",
 			value: contentVersion,
-		// });
+		});
 	}
 
 	return withForceRefresh(withNamespace, conditions);

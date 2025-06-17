@@ -307,7 +307,7 @@ function getSidebarSizeClassName(collapsed: boolean, isExpanded: boolean) {
 		"dark:shadow-primary/20 lg:w-[17rem]": !collapsed,
 		"lg:w-[4rem]": collapsed,
 		shadow: isExpanded,
-	// });
+	});
 }
 
 function getRadixPopup() {
@@ -346,7 +346,9 @@ export function _SidebarNavigation({
 		<>
 			{config.routes.map((item, index) => {
 				if ("divider" in item) {
-					return <SidebarDivider key={`divider-${JSON.stringify(item)}-${index}`} />;
+					return (
+						<SidebarDivider key={`divider-${JSON.stringify(item)}-${index}`} />
+					);
 				}
 
 				if ("children" in item) {

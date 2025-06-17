@@ -76,7 +76,7 @@ export async function LessonDataProvider({
 	// Dynamically import the server client to avoid issues with next/headers
 	const { getSupabaseServerClient } = await import(
 		"@kit/supabase/server-client"
-	);
+	// );
 	const supabase = getSupabaseServerClient();
 
 	// Get user - should be authenticated by middleware
@@ -150,7 +150,7 @@ export async function LessonDataProvider({
 							const { callPayloadAPI } = await import("@kit/cms/payload");
 							const questionsResponse = await callPayloadAPI(
 								`quiz_questions?where[quiz_id][equals]=${quiz.id}&sort=order&depth=0`,
-							);
+							// );
 
 							if (
 								questionsResponse?.docs &&
@@ -227,7 +227,7 @@ export async function LessonDataProvider({
 				// Import both functions we need
 				const { getSurvey, getSurveyQuestions } = await import(
 					"@kit/cms/payload"
-				);
+				// );
 
 				// First try to get the survey by ID using a direct API call
 				// TODO: Async logger needed

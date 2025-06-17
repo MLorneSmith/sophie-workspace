@@ -85,13 +85,13 @@ export function InviteMembersDialogContainer({
 									const promise = createInvitationsAction({
 										accountSlug,
 										invitations: data.invitations,
-									// });
+									});
 
 									toast.promise(() => promise, {
 										loading: t("invitingMembers"),
 										success: t("inviteMembersSuccessMessage"),
 										error: t("inviteMembersErrorMessage"),
-									// });
+									});
 
 									setIsOpen(false);
 								});
@@ -127,7 +127,7 @@ function InviteMembersForm({
 	const fieldArray = useFieldArray({
 		control: form.control,
 		name: "invitations",
-	// });
+	});
 
 	return (
 		<Form {...form}>

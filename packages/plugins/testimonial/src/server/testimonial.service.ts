@@ -62,7 +62,7 @@ class TestimonialService {
 				content: data.content ?? "",
 				rating: data.rating,
 				video_url: url.data.publicUrl,
-			// });
+			});
 
 			if (error) {
 				throw new Error(error.message);
@@ -72,7 +72,7 @@ class TestimonialService {
 				customer_name: data.customerName,
 				content: data.content,
 				rating: data.rating,
-			// });
+			});
 
 			if (error) {
 				throw new Error(error.message);

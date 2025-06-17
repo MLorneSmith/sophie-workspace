@@ -15,7 +15,7 @@ export function useUpdateUser() {
 
 		const response = await client.auth.updateUser(params, {
 			emailRedirectTo: redirectTo,
-		// });
+		});
 
 		if (response._error) {
 			throw response.error;

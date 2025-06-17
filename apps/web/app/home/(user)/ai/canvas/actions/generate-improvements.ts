@@ -28,7 +28,7 @@ export const generateImprovementsAction = enhanceAction(
 	async (data: z.infer<typeof ImprovementsSchema>, user) => {
 		try {
 			// Start performance tracking
-			const startTime = performance.now();
+			const _startTime = performance.now();
 
 			// Get the submission data from the database
 			const supabase = getSupabaseServerClient();
@@ -51,7 +51,7 @@ export const generateImprovementsAction = enhanceAction(
 			// 	userId: user.id,
 			// 	submissionId: data.submissionId,
 			// 	type: data.type,
-			// });
+		});
 
 			// Create and normalize config
 			const config = createBalancedOptimizedConfig({
@@ -91,7 +91,7 @@ ${improvementFormat}`,
 			];
 
 			// Get completion from AI Gateway
-			const response = await getChatCompletion(messages, {
+			const _response = await getChatCompletion(messages, {
 				config: normalizedConfig,
 			} as ChatCompletionOptions);
 
@@ -104,7 +104,7 @@ ${improvementFormat}`,
 			// 	duration,
 			// 	userId: user.id,
 			// 	status: "success",
-			// });
+		});
 
 			// Parse the response using our utility
 			const improvements = parseImprovements(response.content, data.type);
@@ -113,7 +113,7 @@ ${improvementFormat}`,
 			// TODO: Async logger needed
 			// (await getLogger()).info("Parsed Improvements:", {
 			// 	data: improvements,
-			// });
+		});
 
 			return {
 				success: true,
@@ -124,7 +124,7 @@ ${improvementFormat}`,
 			// (await getLogger()).error(
 			// 	"Error in improvements action:",
 			// 	{ data: error }
-			// );
+			);
 
 			return {
 				success: false,

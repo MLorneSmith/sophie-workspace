@@ -167,7 +167,7 @@ export const createUserAction = adminAction(
 				email,
 				password,
 				email_confirm: emailConfirm,
-			// });
+			});
 
 			if (error) {
 				logger.error({ error }, "Error creating user");

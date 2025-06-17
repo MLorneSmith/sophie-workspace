@@ -83,7 +83,7 @@ function AccountsTableFilters(props: {
 		},
 		mode: "onChange",
 		reValidateMode: "onChange",
-	// });
+	});
 
 	const router = useRouter();
 	const pathName = usePathname();
@@ -92,7 +92,7 @@ function AccountsTableFilters(props: {
 		const params = new URLSearchParams({
 			account_type: type,
 			query: query ?? "",
-		// });
+		});
 
 		const url = `${pathName}?${params.toString()}`;
 

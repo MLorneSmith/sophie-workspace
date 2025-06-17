@@ -80,7 +80,7 @@ export const transferOwnershipAction = enhanceAction(
 		// assert that the user is the owner of the account
 		const { data: isOwner, error } = await client.rpc("is_account_owner", {
 			account_id: data.accountId,
-		// });
+		});
 
 		if (error || !isOwner) {
 			logger.error(ctx, "User is not the owner of this account");
@@ -97,7 +97,7 @@ export const transferOwnershipAction = enhanceAction(
 			token: data.otp,
 			userId: user.id,
 			purpose: `transfer-team-ownership-${data.accountId}`,
-		// });
+		});
 
 		if (!otpResult.valid) {
 			logger.error(ctx, "Invalid OTP provided");

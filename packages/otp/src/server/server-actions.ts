@@ -66,7 +66,7 @@ export const sendOtpEmailAction = enhanceAction(
 			await otpApi.sendOtpEmail({
 				email,
 				otp: tokenResult.token,
-			// });
+			});
 
 			logger.info(
 				{ ...ctx, tokenId: tokenResult.id },

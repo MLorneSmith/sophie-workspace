@@ -134,7 +134,7 @@ export const getSuggestions = enhanceAction(
 	async (data: z.infer<typeof SuggestionsSchema>, user) => {
 		try {
 			// Start performance tracking
-			const startTime = performance.now();
+			const _startTime = performance.now();
 
 			// Debug log the request
 			// (await getLogger()).info("Suggestions Request:", {
@@ -142,7 +142,7 @@ export const getSuggestions = enhanceAction(
 			// 	field: data.field,
 			// 	presentationType: data.presentationType,
 			// 	userId: user.id,
-			// });
+		});
 
 			// Create and normalize config
 			const config =
@@ -174,7 +174,7 @@ export const getSuggestions = enhanceAction(
 			);
 
 			// Get completion from AI Gateway
-			const response = await getChatCompletion(messages, {
+			const _response = await getChatCompletion(messages, {
 				config: normalizedConfig,
 			} as ChatCompletionOptions);
 
@@ -188,7 +188,7 @@ export const getSuggestions = enhanceAction(
 			//		duration,
 			//		userId: user.id,
 			//		status: "success",
-			// });
+		});
 
 			// Parse numbered list response and remove quotes
 			// Access the text content from the response before splitting

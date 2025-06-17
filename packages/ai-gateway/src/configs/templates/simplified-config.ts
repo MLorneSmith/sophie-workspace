@@ -54,7 +54,7 @@ export function createSimplifiedConfig(
 		conditions.push({
 			type: "content_change",
 			value: contentVersion,
-		// });
+		});
 	}
 
 	return withForceRefresh(withNamespace, conditions);

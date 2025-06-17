@@ -27,7 +27,9 @@ export class NewRelicMonitoringService extends MonitoringService {
 					this.newrelic = require("newrelic");
 					this.isReady = true;
 				} catch (_e) {
-					this.logger.warn("New Relic agent not found. Monitoring will be disabled.");
+					this.logger.warn(
+						"New Relic agent not found. Monitoring will be disabled.",
+					);
 				}
 			}
 		} catch (error) {
@@ -49,7 +51,7 @@ export class NewRelicMonitoringService extends MonitoringService {
 			...extra,
 			digest: error.digest,
 			timestamp: new Date().toISOString(),
-		// });
+		});
 	}
 
 	captureEvent<Extra extends object>(event: string, extra?: Extra): void {
@@ -73,11 +75,15 @@ export class NewRelicMonitoringService extends MonitoringService {
 
 		// Set user attributes for all transactions
 		this.newrelic.setUserID(info.id);
-		
+
 		// Add additional user attributes if provided
 		const { id, ...otherInfo } = info;
 		Object.entries(otherInfo).forEach(([key, value]) => {
-			if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+			if (
+				typeof value === "string" ||
+				typeof value === "number" ||
+				typeof value === "boolean"
+			) {
 				this.newrelic.addCustomAttribute(`user.${key}`, value);
 			}
 		});
@@ -91,22 +97,27 @@ export class NewRelicMonitoringService extends MonitoringService {
 	/**
 	 * Additional New Relic specific methods
 	 */
-	
+
 	/**
 	 * Start a custom segment for timing operations
 	 */
-	startSegment<T>(name: string, callback: () => T | Promise<T>): T | Promise<T> {
+	startSegment<T>(
+		name: string,
+		callback: () => T | Promise<T>,
+	): T | Promise<T> {
 		if (!this.isReady || !this.newrelic) {
 			return callback();
 		}
-		
+
 		return this.newrelic.startSegment(name, true, callback);
 	}
 
 	/**
 	 * Add custom attributes to the current transaction
 	 */
-	addCustomAttributes(attributes: Record<string, string | number | boolean>): void {
+	addCustomAttributes(
+		attributes: Record<string, string | number | boolean>,
+	): void {
 		if (!this.isReady || !this.newrelic) {
 			return;
 		}

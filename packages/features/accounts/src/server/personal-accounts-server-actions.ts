@@ -62,7 +62,7 @@ export const deletePersonalAccountAction = enhanceAction(
 			token: otp,
 			userId: user.id,
 			purpose: "delete-personal-account",
-		// });
+		});
 
 		if (!otpResult.valid) {
 			throw new Error("Invalid OTP");
@@ -86,7 +86,7 @@ export const deletePersonalAccountAction = enhanceAction(
 			adminClient: getSupabaseServerAdminClient(),
 			userId: user.id,
 			userEmail: user.email ?? null,
-		// });
+		});
 
 		// sign out the user after deleting their account
 		await client.auth.signOut();

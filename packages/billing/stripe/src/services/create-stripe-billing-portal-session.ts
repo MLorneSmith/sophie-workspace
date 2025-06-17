@@ -13,5 +13,5 @@ export async function createStripeBillingPortalSession(
 	return stripe.billingPortal.sessions.create({
 		customer: params.customerId,
 		return_url: params.returnUrl,
-	// });
+	});
 }

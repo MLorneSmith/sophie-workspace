@@ -85,7 +85,7 @@ export async function callPayloadAPI(
 				// Throw a more detailed error
 				throw new Error(
 					`Failed to call Payload API (${endpoint}): ${response.status} ${response.statusText} - ${errorMessage}`,
-				);
+				// );
 			} catch (_jsonError) {
 				// If error response couldn't be read at all
 				// TODO: Async logger needed
@@ -96,7 +96,7 @@ export async function callPayloadAPI(
 		// );
 				throw new Error(
 					`Failed to call Payload API (${endpoint}): ${response.status} ${response.statusText}`,
-				);
+				// );
 			}
 		}
 

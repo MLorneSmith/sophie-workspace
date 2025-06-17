@@ -165,7 +165,7 @@ export namespace TipTapTransformer {
 							headingLevel,
 							node,
 							document.content.slice(i + 1).filter(Boolean),
-						);
+						// );
 
 						// Save the previous slide if we have one
 						if (currentSlide) {

@@ -12,7 +12,7 @@ const { getLogger } = createServiceLogger("HOME-(USER)");
 /**
  * Schema for saving a survey response
  */
-const SaveResponseSchema = z.object({
+const _SaveResponseSchema = z.object({
 	surveyId: z.string(),
 	questionId: z.string(),
 	questionIndex: z.number(),
@@ -165,7 +165,7 @@ export const saveResponseAction = enhanceAction(
 				// 	message: error.message,
 				// 	stack: error.stack,
 				// 	name: error.name,
-				// });
+		});
 			}
 
 			return {
@@ -235,7 +235,7 @@ export const completeSurveyAction = enhanceAction(
 				// 	message: error.message,
 				// 	stack: error.stack,
 				// 	name: error.name,
-				// });
+		});
 			}
 
 			return {

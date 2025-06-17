@@ -41,7 +41,6 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { z } from "zod";
 
-
 export function MultiFactorAuthSetupDialog(props: { userId: string }) {
 	const { t } = useTranslation();
 	const [isOpen, setIsOpen] = useState(false);
@@ -113,12 +112,12 @@ function MultiFactorAuthSetupForm({
 	const [_state, setState] = useState({
 		loading: false,
 		error: "",
-	// });
+	});
 
 	const factorId = useWatch({
 		name: "factorId",
 		control: verificationCodeForm.control,
-	// });
+	});
 
 	const onSubmit = useCallback(
 		async ({
@@ -131,20 +130,20 @@ function MultiFactorAuthSetupForm({
 			setState({
 				loading: true,
 				error: "",
-			// });
+			});
 
 			try {
 				await verifyCodeMutation.mutateAsync({
 					factorId,
 					code: verificationCode,
-				// });
+				});
 
 				await refreshAuthSession();
 
 				setState({
 					loading: false,
 					error: "",
-				// });
+				});
 
 				onEnrolled();
 			} catch (error) {
@@ -153,7 +152,7 @@ function MultiFactorAuthSetupForm({
 				setState({
 					loading: false,
 					error: message,
-				// });
+				});
 			}
 		},
 		[onEnrolled, verifyCodeMutation],
@@ -430,7 +429,7 @@ function useEnrollFactor(userId: string) {
 		const response = await client.auth.mfa.enroll({
 			friendlyName: factorName,
 			factorType: "totp",
-		// });
+		});
 
 		if (response._error) {
 			return {
@@ -451,7 +450,7 @@ function useEnrollFactor(userId: string) {
 		onSuccess() {
 			return queryClient.refetchQueries({
 				queryKey: mutationKey,
-			// });
+			});
 		},
 	});
 }
@@ -464,7 +463,7 @@ function useVerifyCodeMutation(userId: string) {
 	const mutationFn = async (params: { factorId: string; code: string }) => {
 		const challenge = await client.auth.mfa.challenge({
 			factorId: params.factorId,
-		// });
+		});
 
 		if (challenge._error) {
 			throw challenge.error;

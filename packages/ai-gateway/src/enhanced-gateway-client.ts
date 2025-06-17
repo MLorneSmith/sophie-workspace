@@ -61,7 +61,7 @@ async function _createPortkeyConfigHeaders(options: {
 			headers["x-portkey-config"] = JSON.stringify({
 				strategy: { mode: "single" },
 				targets: [{ provider: provider }],
-			// });
+		});
 		}
 	}
 
@@ -104,7 +104,7 @@ export async function _createGatewayClient(options: PortkeyClientOptions = {}) {
 		apiKey: process.env.PORTKEY_API_KEY || "",
 		// Include the configuration properly as a header parameter
 		config: config,
-	// });
+		});
 
 	// Add our custom tracking metadata
 	if (_userId) headers"x-portkey-request-metadata-user-id" = userId;
@@ -119,7 +119,7 @@ export async function _createGatewayClient(options: PortkeyClientOptions = {}) {
 		apiKey: process.env.OPENAI_API_KEY || "", // Can be empty when using virtual keys
 		baseURL: PORTKEY_GATEWAY_URL,
 		defaultHeaders: headers,
-	// });
+		});
 
 	return client;
 }

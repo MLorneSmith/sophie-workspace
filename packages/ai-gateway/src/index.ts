@@ -1,7 +1,13 @@
 import { createServiceLogger } from "@kit/shared/logger";
 import { OpenAI } from "openai";
 import { z } from "zod";
-import { ConfigManager, loadTemplate, mergeWithUseCase, normalizeConfig, overrideWithPortkey } from "./configs/config-manager";
+import {
+	ConfigManager,
+	loadTemplate,
+	mergeWithUseCase,
+	normalizeConfig,
+	overrideWithPortkey,
+} from "./configs/config-manager";
 import type { Config } from "./configs/types";
 import { createGatewayClient } from "./enhanced-gateway-client";
 import { PromptManager } from "./prompts/prompt-manager";
@@ -36,12 +42,18 @@ if (ENV.INITIALIZE_DATABASE) {
 			// Initialize the database
 			const success = await initializeAiGatewayDatabase(adminClient);
 			if (success) {
-				(await getLogger()).info("AI Gateway database successfully initialized");
+				(await getLogger()).info(
+					"AI Gateway database successfully initialized",
+				);
 			} else {
-				(await getLogger()).warn("AI Gateway database initialization had some issues, check logs for details");
+				(await getLogger()).warn(
+					"AI Gateway database initialization had some issues, check logs for details",
+				);
 			}
 		} catch (error) {
-			(await getLogger()).error("Error initializing AI Gateway database:", { data: error });
+			(await getLogger()).error("Error initializing AI Gateway database:", {
+				data: error,
+			});
 			// Continue module loading despite initialization error
 		}
 	})();
@@ -62,7 +74,9 @@ async function checkUserLimits(
 
 	// Skip check if disabled by environment variable
 	if (!ENV.CHECK_AI_USAGE_LIMITS) {
-		(await getLogger()).info("AI usage limits check disabled by environment variable");
+		(await getLogger()).info(
+			"AI usage limits check disabled by environment variable",
+		);
 		return false;
 	}
 
@@ -71,7 +85,9 @@ async function checkUserLimits(
 
 		// Validate the Supabase client has required methods
 		if (!supabase || typeof supabase.rpc !== "function") {
-			(await getLogger()).warn("Invalid Supabase client, skipping usage limit check");
+			(await getLogger()).warn(
+				"Invalid Supabase client, skipping usage limit check",
+			);
 			return false;
 		}
 
@@ -87,27 +103,37 @@ async function checkUserLimits(
 			}
 			return false;
 		} catch (regularClientError) {
-			(await getLogger()).error("Error checking usage limits with regular client:", { error: regularClientError });
+			(await getLogger()).error(
+				"Error checking usage limits with regular client:",
+				{ error: regularClientError },
+			);
 
 			// If it's a permission error, try with admin client
 			if (
 				regularClientError instanceof Error &&
 				regularClientError.message?.includes("permission denied")
 			) {
-				(await getLogger()).info("Attempting usage limits check with admin client...");
+				(await getLogger()).info(
+					"Attempting usage limits check with admin client...",
+				);
 				try {
 					// Get admin client for privileged operations
 					const adminClient = await getSupabaseClient({ admin: true });
 					return await checkUsageLimits(adminClient, userId, teamId);
 				} catch (adminClientError) {
-					(await getLogger()).error("Error checking usage limits with admin client:", { error: adminClientError });
+					(await getLogger()).error(
+						"Error checking usage limits with admin client:",
+						{ error: adminClientError },
+					);
 					return false;
 				}
 			}
 			return false;
 		}
 	} catch (error) {
-		(await getLogger()).error("Fatal error checking usage limits:", { data: error });
+		(await getLogger()).error("Fatal error checking usage limits:", {
+			data: error,
+		});
 		return false;
 	}
 }
@@ -197,7 +223,11 @@ export async function getChatCompletion(
 
 		// Only check usage limits if explicitly enabled via environment variable
 		if (checkUsageLimitsFlag && shouldCheckLimits && (userId || teamId)) {
-			(await getLogger()).info("Checking AI usage limits for:", { userId, teamId, feature });
+			(await getLogger()).info("Checking AI usage limits for:", {
+				userId,
+				teamId,
+				feature,
+			});
 			const limitExceeded = await checkUserLimits(userId, teamId);
 			if (limitExceeded) {
 				(await getLogger()).warn("AI usage limit exceeded for:", {
@@ -258,12 +288,16 @@ export async function getChatCompletion(
 		const headers = response.headers || {};
 
 		// Log all headers to see what Portkey is actually sending
-		(await getLogger()).info("All Portkey response headers:", { data: {
-			headers:
-				typeof headers === "object" ? JSON.stringify(headers) : String(headers),
-			hasHeaders: Object.keys(headers).length > 0,
-			headerKeys: Object.keys(headers),
-		}});
+		(await getLogger()).info("All Portkey response headers:", {
+			data: {
+				headers:
+					typeof headers === "object"
+						? JSON.stringify(headers)
+						: String(headers),
+				hasHeaders: Object.keys(headers).length > 0,
+				headerKeys: Object.keys(headers),
+			},
+		});
 
 		// Try to find any header related to cost (might have different naming)
 		const costRelatedHeaders = Object.entries(headers)
@@ -282,7 +316,9 @@ export async function getChatCompletion(
 			);
 
 		if (Object.keys(costRelatedHeaders).length > 0) {
-			(await getLogger()).info("Found potential cost-related headers:", { data: costRelatedHeaders });
+			(await getLogger()).info("Found potential cost-related headers:", {
+				data: costRelatedHeaders,
+			});
 		} else {
 			(await getLogger()).info("No cost-related headers found in response");
 		}
@@ -291,14 +327,16 @@ export async function getChatCompletion(
 		let cost = extractCostFromHeaders(headers);
 
 		// Log the result of extraction
-		(await getLogger()).info("Cost extraction result:", { data: {
-			extractedCost: cost,
-			extractionMethod: cost > 0 ? "from header" : "will use fallback",
-			specificHeader:
-				typeof headers["x-portkey-cost"] === "string"
-					? headers["x-portkey-cost"]
-					: String(headers["x-portkey-cost"] || "not found")
-		}});
+		(await getLogger()).info("Cost extraction result:", {
+			data: {
+				extractedCost: cost,
+				extractionMethod: cost > 0 ? "from header" : "will use fallback",
+				specificHeader:
+					typeof headers["x-portkey-cost"] === "string"
+						? headers["x-portkey-cost"]
+						: String(headers["x-portkey-cost"] || "not found"),
+			},
+		});
 
 		// Track usage if database access is available (fail gracefully on permission issues)
 		try {
@@ -317,7 +355,9 @@ export async function getChatCompletion(
 						usage.completion_tokens,
 					);
 				} catch (costError) {
-					(await getLogger()).error("Error calculating AI cost:", { data: costError });
+					(await getLogger()).error("Error calculating AI cost:", {
+						data: costError,
+					});
 					// Use our local fallback pricing for cost calculation
 					cost = estimateCost(
 						"openai", // Assume OpenAI as provider if we don't have info
@@ -354,9 +394,11 @@ export async function getChatCompletion(
 						feature,
 						sessionId,
 						bypassCredits: bypassCreditsFlag, // Use environment variable instead of hardcoding
-					// });
+					});
 				} catch (usageError) {
-					(await _getLogger()).error("Error recording API usage:", { data: usageError });
+					(await _getLogger()).error("Error recording API usage:", {
+						data: usageError,
+					});
 					// Continue without failing - usage tracking is secondary to the main functionality
 				}
 			}
@@ -393,7 +435,7 @@ export async function getChatCompletion(
 				message: error.message,
 				code: error.code,
 				type: error.type,
-			// });
+			});
 		} else {
 			(await getLogger()).error("Error in getChatCompletion:", { data: error });
 		}
@@ -450,14 +492,17 @@ export async function* getStreamingChatCompletion(
 			}
 		} else {
 			// Log that we're skipping the check
-			(await getLogger()).info("Skipping AI usage limits check for streaming:", {
-				reason: !checkUsageLimitsFlag
-					? "feature disabled by environment"
-					: "no user/team ID or disabled by options",
-				hasUserId: !!userId,
-				hasTeamId: !!teamId,
-				feature,
-			});
+			(await getLogger()).info(
+				"Skipping AI usage limits check for streaming:",
+				{
+					reason: !checkUsageLimitsFlag
+						? "feature disabled by environment"
+						: "no user/team ID or disabled by options",
+					hasUserId: !!userId,
+					hasTeamId: !!teamId,
+					feature,
+				},
+			);
 		}
 
 		// Create client with tracking metadata, config, and model info
@@ -484,7 +529,11 @@ export async function* getStreamingChatCompletion(
 		// Using unknown type to avoid TypeScript errors with streaming
 		const stream = (await client.chat.completions.create(
 			requestOptions,
-		)) as unknown as AsyncIterable<{ choices: Array<{ delta: { content?: string } }>; id?: string; usage?: { prompt_tokens?: number; completion_tokens?: number } }>;
+		)) as unknown as AsyncIterable<{
+			choices: Array<{ delta: { content?: string } }>;
+			id?: string;
+			usage?: { prompt_tokens?: number; completion_tokens?: number };
+		}>;
 
 		// We'll collect token counts as they stream to calculate total usage
 		let promptTokens = 0;
@@ -495,18 +544,24 @@ export async function* getStreamingChatCompletion(
 		try {
 			// @ts-ignore - Access the headers property if available
 			if (stream.headers) {
-				(await getLogger()).info("Streaming response headers:", { data: {
-					headers:
-						typeof stream.headers === "object"
-							? JSON.stringify(stream.headers)
-							: "Headers not available as an object",
-					hasHeaders: stream.headers && Object.keys(stream.headers).length > 0,
-				}});
+				(await getLogger()).info("Streaming response headers:", {
+					data: {
+						headers:
+							typeof stream.headers === "object"
+								? JSON.stringify(stream.headers)
+								: "Headers not available as an object",
+						hasHeaders:
+							stream.headers && Object.keys(stream.headers).length > 0,
+					},
+				});
 			} else {
 				(await getLogger()).info("No headers available in streaming response");
 			}
 		} catch (headerError) {
-			(await getLogger()).error("Error accessing headers in streaming response:", { error: headerError });
+			(await getLogger()).error(
+				"Error accessing headers in streaming response:",
+				{ error: headerError },
+			);
 		}
 
 		// Process the stream - use a try catch to handle any streaming errors
@@ -564,11 +619,15 @@ export async function* getStreamingChatCompletion(
 				}
 			} else {
 				// Fallback for unknown streaming format
-				(await getLogger()).warn("Unknown streaming format", { data: "unable to process stream" });
+				(await getLogger()).warn("Unknown streaming format", {
+					data: "unable to process stream",
+				});
 				yield "Unable to process stream response";
 			}
 		} catch (streamError) {
-			(await getLogger()).error("Error processing stream:", { data: streamError });
+			(await getLogger()).error("Error processing stream:", {
+				data: streamError,
+			});
 			yield "[Error processing stream]";
 		}
 
@@ -591,7 +650,9 @@ export async function* getStreamingChatCompletion(
 						completionTokens,
 					);
 				} catch (costError) {
-					(await getLogger()).error("Error calculating streaming cost:", { data: costError });
+					(await getLogger()).error("Error calculating streaming cost:", {
+						data: costError,
+					});
 					// Use our local fallback pricing for cost calculation
 					cost = estimateCost(
 						"openai", // Assume OpenAI for streaming as well
@@ -627,9 +688,11 @@ export async function* getStreamingChatCompletion(
 					feature,
 					sessionId,
 					bypassCredits: bypassCreditsFlag, // Use environment variable instead of hardcoding
-				// });
+				});
 			} catch (error) {
-				(await _getLogger()).error("Error recording usage data:", { data: error });
+				(await _getLogger()).error("Error recording usage data:", {
+					data: error,
+				});
 				// Continue without failing the response delivery
 			}
 		}
@@ -644,14 +707,22 @@ export async function* getStreamingChatCompletion(
 				message: error.message,
 				code: error.code,
 				type: error.type,
-			// });
+			});
 		} else {
-			(await getLogger()).error("Error in getStreamingChatCompletion:", { data: error });
+			(await getLogger()).error("Error in getStreamingChatCompletion:", {
+				data: error,
+			});
 		}
 		throw error;
 	}
 }
 
 // Export config manager functions and classes for external use
-export { ConfigManager, loadTemplate, mergeWithUseCase, overrideWithPortkey, normalizeConfig };
+export {
+	ConfigManager,
+	loadTemplate,
+	mergeWithUseCase,
+	overrideWithPortkey,
+	normalizeConfig,
+};
 export { PromptManager };

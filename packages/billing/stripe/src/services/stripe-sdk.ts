@@ -14,9 +14,9 @@ export async function createStripeClient() {
 	const stripeServerEnv = StripeServerEnvSchema.parse({
 		secretKey: process.env.STRIPE_SECRET_KEY,
 		webhooksSecret: process.env.STRIPE_WEBHOOK_SECRET,
-	// });
+	});
 
 	return new Stripe(stripeServerEnv.secretKey, {
 		apiVersion: STRIPE_API_VERSION,
-	// });
+	});
 }
