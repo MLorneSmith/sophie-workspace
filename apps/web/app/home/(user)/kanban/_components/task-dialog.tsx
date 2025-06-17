@@ -87,7 +87,8 @@ export function TaskDialog({ open, onOpenChange, task }: TaskDialogProps) {
 				setImagePreview(null);
 				onOpenChange(false);
 			} catch (error) {
-				/* TODO: Async logger needed */ logger.error("Failed to save task:", { data: error });
+				// TODO: Async logger needed
+		// TODO: Fix logger call - was: error
 			}
 		},
 		[createTask, updateTask, task, form, onOpenChange],

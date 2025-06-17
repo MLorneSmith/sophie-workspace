@@ -408,7 +408,8 @@ export class LemonSqueezyWebhookHandlerService
 		const type = this.planTypesMap.get(variantId.toString());
 
 		if (!type) {
-			/* TODO: Async logger needed */ logger.warn({
+			// TODO: Async logger needed
+		// (await getLogger()).warn({
 					variantId, { arg1: }, arg2: 'Line item type not found. Will be defaulted to "flat"', arg3:  });
 
 			return "flat" as const;

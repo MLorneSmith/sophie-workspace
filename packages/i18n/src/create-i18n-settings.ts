@@ -32,7 +32,8 @@ export function createI18nSettings({
 		lowerCaseLng: true as const,
 		fallbackNS: ns,
 		missingInterpolationHandler: (text, value, options) => {
-			/* TODO: Async logger needed */ logger.debug(`Missing interpolation value for key: ${text}`, { arg1: value, arg2: options, arg3:  });
+			// TODO: Async logger needed
+		// (await getLogger()).debug(`Missing interpolation value for key: ${text}`, { arg1: value, arg2: options, arg3:  });
 		},
 		ns,
 		react: {

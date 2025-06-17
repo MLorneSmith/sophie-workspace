@@ -39,7 +39,8 @@ export function StoryboardPanel({
 			await saveStoryboard(storyboardData);
 			toast.success("Storyboard saved successfully");
 		} catch (error) {
-			/* TODO: Async logger needed */ logger.error("Error saving storyboard:", {
+			// TODO: Async logger needed
+		// (await getLogger()).error("Error saving storyboard:", {
 				data: error,
 			});
 			toast.error("Failed to save storyboard");

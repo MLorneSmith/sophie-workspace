@@ -24,7 +24,8 @@ export async function convertExistingRecordsToTiptap() {
 		.select("*");
 
 	if (error || !submissions) {
-		/* TODO: Async logger needed */ logger.error("Error fetching submissions:", { data: error });
+		// TODO: Async logger needed
+		// TODO: Fix logger call - was: error
 		return { success: false, error: error?.message };
 	}
 
@@ -61,7 +62,11 @@ export async function convertExistingRecordsToTiptap() {
 				.eq("id", submission.id);
 
 			if (updateError) {
-				/* TODO: Async logger needed */ logger.error(`Error updating submission ${submission.id}:`, { arg1: updateError, arg2:  });
+				logger.error({
+					submissionId: submission.id,
+					error: updateError,
+					message: `Error updating submission ${submission.id}`,
+				});
 				results.failed++;
 				results.errors.push(`ID ${submission.id}: ${updateError.message}`);
 			} else {
@@ -69,7 +74,8 @@ export async function convertExistingRecordsToTiptap() {
 			}
 		} catch (error) {
 			const message = error instanceof Error ? error.message : String(error);
-			/* TODO: Async logger needed */ logger.error(`Error processing submission ${submission.id}:`, { data: message });
+			// TODO: Async logger needed
+			// TODO: Fix logger call - was: error
 			results.failed++;
 			results.errors.push(`ID ${submission.id}: ${message}`);
 		}

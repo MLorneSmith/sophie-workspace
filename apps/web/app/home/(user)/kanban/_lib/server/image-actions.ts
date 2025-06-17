@@ -124,7 +124,8 @@ export const uploadTaskImageAction = enhanceAction(
 				},
 			};
 		} catch (error) {
-			/* TODO: Async logger needed */ logger.error("Error uploading image:", {
+			// TODO: Async logger needed
+		// (await getLogger()).error("Error uploading image:", {
 				data: error,
 			});
 			return {
@@ -163,7 +164,8 @@ export const deleteTaskImageAction = enhanceAction(
 				error: null,
 			};
 		} catch (error) {
-			/* TODO: Async logger needed */ logger.error("Error deleting image:", {
+			// TODO: Async logger needed
+		// (await getLogger()).error("Error deleting image:", {
 				data: error,
 			});
 			return {

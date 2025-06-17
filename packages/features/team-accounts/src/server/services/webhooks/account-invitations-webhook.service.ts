@@ -128,7 +128,8 @@ class AccountInvitationsWebhookService {
 					logger.info(ctx, { data: "Invitation email successfully sent!" });
 				})
 				.catch((error) => {
-					/* TODO: Async logger needed */ logger.error(error);
+					// TODO: Async logger needed
+		// (await getLogger()).error(error);
 
 					logger.error({ error, { arg1: ...ctx }, arg2: "Failed to send invitation email" });
 				});
@@ -137,7 +138,8 @@ class AccountInvitationsWebhookService {
 				success: true,
 			};
 		} catch (error) {
-			/* TODO: Async logger needed */ logger.error(error);
+			// TODO: Async logger needed
+		// (await getLogger()).error(error);
 			logger.warn({ error, { arg1: ...ctx }, arg2: "Failed to invite user to team" });
 
 			return {

@@ -1,4 +1,5 @@
 import { MonitoringService } from "@kit/monitoring-core";
+import { createServiceLogger } from "@kit/shared/logger";
 
 /**
  * New Relic monitoring service implementation
@@ -7,6 +8,7 @@ import { MonitoringService } from "@kit/monitoring-core";
 export class NewRelicMonitoringService extends MonitoringService {
 	private newrelic: any;
 	private isReady = false;
+	private logger = createServiceLogger("NEW-RELIC-MONITORING").getLogger();
 
 	constructor() {
 		super();
@@ -25,11 +27,11 @@ export class NewRelicMonitoringService extends MonitoringService {
 					this.newrelic = require("newrelic");
 					this.isReady = true;
 				} catch (e) {
-					console.warn("New Relic agent not found. Monitoring will be disabled.");
+					this.logger.warn("New Relic agent not found. Monitoring will be disabled.");
 				}
 			}
 		} catch (error) {
-			console.warn("Failed to initialize New Relic monitoring:", error);
+			this.logger.warn("Failed to initialize New Relic monitoring", { error });
 		}
 	}
 
@@ -38,7 +40,7 @@ export class NewRelicMonitoringService extends MonitoringService {
 		extra?: Extra,
 	): void {
 		if (!this.isReady || !this.newrelic) {
-			console.error("New Relic not available:", error);
+			this.logger.error("New Relic not available for error capture", { error });
 			return;
 		}
 
@@ -52,7 +54,7 @@ export class NewRelicMonitoringService extends MonitoringService {
 
 	captureEvent<Extra extends object>(event: string, extra?: Extra): void {
 		if (!this.isReady || !this.newrelic) {
-			console.log("New Relic not available for event:", event);
+			this.logger.debug("New Relic not available for event", { event });
 			return;
 		}
 

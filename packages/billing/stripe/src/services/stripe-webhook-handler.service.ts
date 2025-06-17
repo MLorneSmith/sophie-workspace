@@ -439,7 +439,8 @@ export class StripeWebhookHandlerService
 			let type = this.planTypesMap.get(item.price.id);
 
 			if (!type) {
-				/* TODO: Async logger needed */ logger.warn({
+				// TODO: Async logger needed
+		// (await getLogger()).warn({
 						lineItemId: item.id, { arg1: }, arg2: `Line item is not in the billing configuration, arg3: please add it. Defaulting to "flat" type.`, arg4:  });
 
 				type = "flat" as const;

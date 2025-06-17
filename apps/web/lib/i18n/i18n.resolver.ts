@@ -16,12 +16,21 @@ export async function i18nResolver(language: string, namespace: string) {
 
 		return data as Record<string, string>;
 	} catch (error) {
-		console.group(
+		logger.error(
 			`Error while loading translation file: ${language}/${namespace}`,
+			{
+				error: error instanceof Error ? error.message : error,
+				language,
+				namespace,
+			},
 		);
-		logger.error(error instanceof Error ? error.message : error);
-		logger.warn(`Please create a translation file for this language at "public/locales/${language}/${namespace}.json"`, { data:  });
-		console.groupEnd();
+		logger.warn(
+			`Please create a translation file for this language at "public/locales/${language}/${namespace}.json"`,
+			{
+				language,
+				namespace,
+			},
+		);
 
 		// return an empty object if the file could not be loaded to avoid loops
 		return {};

@@ -71,7 +71,8 @@ class WordpressClient implements CmsClient {
 			if (ids.length) {
 				queryParams.append("categories", ids.join(","));
 			} else {
-				/* TODO: Async logger needed */ logger.warn("No categories found for the provided slugs", { arg1: options.categories, arg2:  });
+				// TODO: Async logger needed
+		// (await getLogger()).warn("No categories found for the provided slugs", { arg1: options.categories, arg2:  });
 			}
 		}
 
@@ -85,7 +86,8 @@ class WordpressClient implements CmsClient {
 			if (ids.length) {
 				queryParams.append("tags", ids.join(","));
 			} else {
-				/* TODO: Async logger needed */ logger.warn("No tags found for the provided slugs", { data: options.tags });
+				// TODO: Async logger needed
+		// (await getLogger()).warn("No tags found for the provided slugs", { data: options.tags });
 			}
 		}
 
@@ -285,7 +287,8 @@ class WordpressClient implements CmsClient {
 		);
 
 		if (!response.ok) {
-			/* TODO: Async logger needed */ logger.error("Failed to fetch categories", { data: await response.json( }));
+			// TODO: Async logger needed
+		// (await getLogger()).error("Failed to fetch categories", { data: await response.json( }));
 
 			throw new Error("Failed to fetch categories");
 		}
@@ -320,7 +323,8 @@ class WordpressClient implements CmsClient {
 		);
 
 		if (!response.ok) {
-			/* TODO: Async logger needed */ logger.error("Failed to fetch tags", { data: await response.json( }));
+			// TODO: Async logger needed
+		// (await getLogger()).error("Failed to fetch tags", { data: await response.json( }));
 
 			throw new Error("Failed to fetch tags");
 		}

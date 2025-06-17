@@ -48,7 +48,8 @@ export function parseSimplified(response: string): SimplifiedContent {
 					}
 				}
 			} catch (jsonError) {
-				/* TODO: Async logger needed */ logger.error("Failed to parse JSON content:", { data: jsonError });
+				// TODO: Async logger needed
+		// (await getLogger()).error("Failed to parse JSON content:", { data: jsonError });
 			}
 		}
 
@@ -66,8 +67,10 @@ export function parseSimplified(response: string): SimplifiedContent {
 			],
 		};
 	} catch (error) {
-		/* TODO: Async logger needed */ logger.error("Failed to parse simplified content:", { data: error });
-		/* TODO: Async logger needed */ logger.error("Raw response:", { data: response });
+		// TODO: Async logger needed
+		// (await getLogger()).error("Failed to parse simplified content:", { data: error });
+		// TODO: Async logger needed
+		// (await getLogger()).error("Raw response:", { data: response });
 		throw new Error("Failed to parse AI response");
 	}
 }

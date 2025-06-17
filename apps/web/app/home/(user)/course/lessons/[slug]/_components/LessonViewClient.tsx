@@ -1,24 +1,18 @@
 "use client";
 
 import { PayloadContentRenderer } from "@kit/cms/payload";
-import { Button } from "@kit/ui/button";
 import {
 	Card,
 	CardContent,
-	CardFooter,
 	CardHeader,
 	CardTitle,
 } from "@kit/ui/card";
 import {
 	BookOpen,
 	Briefcase,
-	CheckCircle,
 	CheckSquare,
-	ChevronLeft,
-	ChevronRight,
 	Play,
 } from "lucide-react";
-import Link from "next/link";
 import { useCallback, useEffect, useState, useTransition } from "react";
 import { toast } from "sonner";
 // Import database types
@@ -528,12 +522,14 @@ export function LessonViewClient({
 								{(() => {
 									// Debug logging in development
 									if (process.env.NODE_ENV === "development") {
-										/* TODO: Async logger needed */ logger.info("Lesson downloads:", { arg1: lesson.downloads
-												? `${lesson.downloads.length} items`
+										// TODO: Async logger needed
+		// (await getLogger()).info("Lesson downloads:", { arg1: lesson.downloads
+												? `$lesson.downloads.lengthitems`
 												: "undefined", arg2:  });
 
 										if (lesson.downloads && lesson.downloads.length > 0) {
-											/* TODO: Async logger needed */ logger.info("First download:", { data: lesson.downloads[0] });
+											// TODO: Async logger needed
+		// TODO: Fix logger call - was: info
 										}
 									}
 
@@ -550,18 +546,20 @@ export function LessonViewClient({
 														(download: Download, index: number) => {
 															// Additional validation
 															if (!download) {
-																/* TODO: Async logger needed */ logger.warn(`Download at index ${index} is null or undefined`, { data:  });
+																// TODO: Async logger needed
+		// TODO: Fix logger call - was: warn
 																return null;
 															}
 
 															if (!download.url) {
-																/* TODO: Async logger needed */ logger.warn(`Download at index ${index} has no URL:`, { arg1: download, arg2:  });
+																// TODO: Async logger needed
+		// TODO: Fix logger call - was: warn
 
 																// Fallback rendering for downloads without URL
 																if (download.filename || download.description) {
 																	return (
 																		<div
-																			key={`download-${lesson.id}-${index}-${download.filename || index}`}
+																			key={`download-$lesson.id-$index-$download.filename || index`}
 																			className="flex items-center justify-between rounded-lg border border-gray-200 p-3 dark:border-gray-700"
 																		>
 																			<div className="flex-grow">
@@ -601,14 +599,14 @@ export function LessonViewClient({
 																const i = Math.floor(
 																	Math.log(bytes) / Math.log(1024),
 																);
-																return `${Math.round(bytes / 1024 ** i)} ${sizes[i]}`;
+																return `$Math.round(bytes / 1024 ** i)$sizes[i]`;
 															};
 
 															const fileSize = getFileSize(download.filesize);
 
 															return (
 																<div
-																	key={`download-${lesson.id}-${index}-${download.url || download.filename || index}`}
+																	key={`download-$lesson.id-$index-$download.url || download.filename || index`}
 																	className="flex flex-col rounded-lg border border-gray-200 p-3 dark:border-gray-700"
 																>
 																	<div className="flex items-center justify-between">
@@ -632,7 +630,7 @@ export function LessonViewClient({
 																			<p className="text-muted-foreground mt-0.5 text-xs">
 																				{isZipFile && "ZIP Archive"}
 																				{isPdfFile && "PDF Document"}
-																				{fileSize && ` • ${fileSize}`}
+																				{fileSize && ` • $fileSize`}
 																			</p>
 																		</div>
 																		<Button
@@ -668,7 +666,8 @@ export function LessonViewClient({
 										lesson.content.includes("{%") &&
 										lesson.content.includes("r2file")
 									) {
-										/* TODO: Async logger needed */ logger.info("Legacy r2file tags detected in content, { arg1: using template processor", arg2:  });
+										// TODO: Async logger needed
+		// TODO: Fix logger call - was: info
 
 										// Extract download section from content
 										const downloadSection = lesson.content.match(
@@ -786,7 +785,7 @@ export function LessonViewClient({
 									>
 										{isMarkingCompleted ? "Marking..." : "Mark as Completed"}
 										<CheckCircle
-											className={`ml-2 h-4 w-4 ${isMarkingCompleted ? "text-green-200" : ""}`}
+											className={`ml-2 h-4 w-4 $isMarkingCompleted ? "text-green-200" : ""`}
 										/>
 									</Button>
 								))}

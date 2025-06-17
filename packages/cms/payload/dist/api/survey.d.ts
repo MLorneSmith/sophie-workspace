@@ -5,7 +5,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
  * @param supabaseClient Optional Supabase client (for client-side usage)
  * @returns The survey data
  */
-export declare function getSurvey(slug: string, supabaseClient?: SupabaseClient): Promise<any>;
+export declare function getSurvey(slug: string, supabaseClient?: SupabaseClient): Promise<void>;
 /**
  * Get questions for a survey
  * @param surveyId The ID of the survey

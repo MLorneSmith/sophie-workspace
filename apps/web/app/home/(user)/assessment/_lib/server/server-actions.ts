@@ -36,8 +36,10 @@ export const saveResponseAction = enhanceAction(
 			const questionsData = await getSurveyQuestions(data.surveyId);
 			const actualTotalQuestions = questionsData.docs?.length || 0;
 
-			/* TODO: Async logger needed */ logger.info(`Actual question count for survey ${data.surveyId}: ${actualTotalQuestions}`, { data:  });
-			/* TODO: Async logger needed */ logger.info(`Client-provided question count: ${data.totalQuestions}`);
+			// TODO: Async logger needed
+		// TODO: Fix logger call - was: info
+			// TODO: Async logger needed
+		// TODO: Fix logger call - was: info
 
 			// Use the actual count instead of the provided one
 			const totalQuestions =
@@ -154,11 +156,13 @@ export const saveResponseAction = enhanceAction(
 
 			return { success: true };
 		} catch (error) {
-			/* TODO: Async logger needed */ logger.error("Error in saveResponseAction:", { data: error });
+			// TODO: Async logger needed
+		// TODO: Fix logger call - was: error
 
 			// Log more detailed information for debugging
 			if (error instanceof Error) {
-				/* TODO: Async logger needed */ logger.error("Error details:", {
+				// TODO: Async logger needed
+		// (await getLogger()).error("Error details:", {
 					message: error.message,
 					stack: error.stack,
 					name: error.name,
@@ -222,11 +226,13 @@ export const completeSurveyAction = enhanceAction(
 
 			return { success: true };
 		} catch (error) {
-			/* TODO: Async logger needed */ logger.error("Error in completeSurveyAction:", { data: error });
+			// TODO: Async logger needed
+		// TODO: Fix logger call - was: error
 
 			// Log more detailed information for debugging
 			if (error instanceof Error) {
-				/* TODO: Async logger needed */ logger.error("Error details:", {
+				// TODO: Async logger needed
+		// (await getLogger()).error("Error details:", {
 					message: error.message,
 					stack: error.stack,
 					name: error.name,

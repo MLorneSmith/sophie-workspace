@@ -66,7 +66,8 @@ export function createSetupGenerator(plop: PlopTypes.NodePlopAPI) {
 
 					return "Project setup complete. Start developing your project!";
 				} catch (error) {
-					/* TODO: Async logger needed */ logger.error("Project setup failed. Aborting package generation.");
+					// TODO: Async logger needed
+		// (await getLogger()).error("Project setup failed. Aborting package generation.");
 					process.exit(1);
 				}
 			},
@@ -111,7 +112,8 @@ function setupPreCommit(params: { setupHealthCheck: boolean }) {
 			stdio: "inherit",
 		});
 	} catch (error) {
-		/* TODO: Async logger needed */ logger.error("Pre-commit hook setup failed. Aborting package generation.");
+		// TODO: Async logger needed
+		// (await getLogger()).error("Pre-commit hook setup failed. Aborting package generation.");
 		process.exit(1);
 	}
 }
@@ -121,7 +123,8 @@ function setupRemote() {
 		// Setup remote upstream
 		const currentRemote = execSync("git remote get-url origin").toString();
 
-		/* TODO: Async logger needed */ logger.info(`Setting upstream remote to ${currentRemote} ...`);
+		// TODO: Async logger needed
+		// (await getLogger()).info(`Setting upstream remote to ${currentRemote} ...`);
 
 		if (currentRemote?.includes("github.com")) {
 			execSync("git remote remove origin", {
@@ -132,12 +135,15 @@ function setupRemote() {
 				stdio: "inherit",
 			});
 		} else {
-			/* TODO: Async logger needed */ logger.error("Your current remote is not GitHub");
+			// TODO: Async logger needed
+		// (await getLogger()).error("Your current remote is not GitHub");
 		}
 	} catch (error) {
-		/* TODO: Async logger needed */ logger.error(error);
+		// TODO: Async logger needed
+		// (await getLogger()).error(error);
 
-		/* TODO: Async logger needed */ logger.info("No current remote found. Skipping upstream remote setup.");
+		// TODO: Async logger needed
+		// (await getLogger()).info("No current remote found. Skipping upstream remote setup.");
 	}
 
 	// Run license script
@@ -146,7 +152,8 @@ function setupRemote() {
 			stdio: "inherit",
 		});
 	} catch (error) {
-		/* TODO: Async logger needed */ logger.error(`License check failed. Aborting package generation. Error: ${error}`, { data:  });
+		// TODO: Async logger needed
+		// (await getLogger()).error(`License check failed. Aborting package generation. Error: ${error}`, { data:  });
 
 		process.exit(1);
 	}

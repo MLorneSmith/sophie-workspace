@@ -1,14 +1,13 @@
 import { NullAnalyticsService } from "./null-analytics-service";
 import type {
-import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("ANALYTICS_MANAGER");
-
 	AnalyticsManager,
 	AnalyticsService,
 	CreateAnalyticsManagerOptions,
 } from "./types";
+import { createServiceLogger } from "@kit/shared/logger";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("ANALYTICS_MANAGER");
 
 export function createAnalyticsManager<T extends string, Config extends object>(
 	options: CreateAnalyticsManagerOptions<T, Config>,
@@ -17,7 +16,8 @@ export function createAnalyticsManager<T extends string, Config extends object>(
 
 	const getActiveServices = (): AnalyticsService[] => {
 		if (activeServices.size === 0) {
-			/* TODO: Async logger needed */ logger.debug("No active analytics services. Using NullAnalyticsService.", { data:  });
+			// TODO: Async logger needed
+		// (await getLogger()).debug("No active analytics services. Using NullAnalyticsService.", { data:  });
 
 			return [NullAnalyticsService];
 		}
@@ -33,7 +33,8 @@ export function createAnalyticsManager<T extends string, Config extends object>(
 			const factory = options.providers[providerKey];
 
 			if (!factory) {
-				/* TODO: Async logger needed */ logger.warn(`Analytics provider '${provider}' not registered. Skipping initialization.`, { data:  });
+				// TODO: Async logger needed
+		// (await getLogger()).warn(`Analytics provider '${provider}' not registered. Skipping initialization.`, { data:  });
 
 				continue;
 			}
@@ -52,7 +53,8 @@ export function createAnalyticsManager<T extends string, Config extends object>(
 			const factory = options.providers[provider];
 
 			if (!factory) {
-				/* TODO: Async logger needed */ logger.warn(`Analytics provider '${provider}' not registered. Skipping initialization.`, { data:  });
+				// TODO: Async logger needed
+		// (await getLogger()).warn(`Analytics provider '${provider}' not registered. Skipping initialization.`, { data:  });
 
 				return Promise.resolve();
 			}

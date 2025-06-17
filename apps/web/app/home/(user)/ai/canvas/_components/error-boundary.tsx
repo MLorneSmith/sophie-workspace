@@ -28,7 +28,8 @@ export class ErrorBoundary extends Component<Props, State> {
 	}
 
 	componentDidCatch(error: Error) {
-		/* TODO: Async logger needed */ logger.error("Error caught by boundary:", {
+		// TODO: Async logger needed
+		// (await getLogger()).error("Error caught by boundary:", {
 			data: error,
 		});
 	}

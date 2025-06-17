@@ -36,7 +36,8 @@ async function getGitHash() {
 	try {
 		return await getHashFromProcess();
 	} catch (error) {
-		/* TODO: Async logger needed */ logger.warn(
+		// TODO: Async logger needed
+		// (await getLogger()).warn(
 			`[WARN] Could not find git hash: ${JSON.stringify(error)}. You may want to provide a fallback.`,
 		);
 
@@ -58,5 +59,6 @@ async function getHashFromProcess() {
 		return execSync('git log --pretty=format:"%h" -n1').toString().trim();
 	}
 
-	/* TODO: Async logger needed */ logger.info("[INFO] Could not find git hash in environment variables. Falling back to git command. Supply a known git hash environment variable to avoid this warning.", { data:  });
+	// TODO: Async logger needed
+		// TODO: Fix logger call - was: info
 }

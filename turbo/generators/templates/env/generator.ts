@@ -17,7 +17,8 @@ export function createEnvironmentVariablesGenerator(
 	const allVariables = generator.loadAllEnvironmentVariables("apps/web");
 
 	if (allVariables) {
-		/* TODO: Async logger needed */ logger.info(
+		// TODO: Async logger needed
+		// (await getLogger()).info(
 			`Loaded ${Object.values(allVariables).length} default environment variables in your env files. We use these as defaults.`,
 		);
 	}

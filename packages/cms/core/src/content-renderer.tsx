@@ -51,7 +51,7 @@ async function getContentRenderer(type: CmsType) {
 		}
 
 		default: {
-			/* TODO: Async logger needed */ logger.error(`Unknown CMS client: ${type as string}`);
+			(await getLogger()).error(`Unknown CMS client: ${type as string}`);
 
 			return null;
 		}

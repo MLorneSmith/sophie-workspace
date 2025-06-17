@@ -48,7 +48,8 @@ export function normalizeEditorContent(
 	try {
 		validateAgainstSchema(parsedContent);
 	} catch (error) {
-		/* TODO: Async logger needed */ logger.error("Schema validation failed:", { data: error });
+		// TODO: Async logger needed
+		// TODO: Fix logger call - was: error
 		// Use safe fallback content if validation fails
 		return createSafeContent();
 	}
@@ -69,7 +70,8 @@ function parseContent(content: unknown): TiptapDocument {
 		try {
 			return JSON.parse(content);
 		} catch (e) {
-			/* TODO: Async logger needed */ logger.error("Failed to parse content JSON:", { data: e });
+			// TODO: Async logger needed
+		// TODO: Fix logger call - was: error
 			return createSafeContent();
 		}
 	}

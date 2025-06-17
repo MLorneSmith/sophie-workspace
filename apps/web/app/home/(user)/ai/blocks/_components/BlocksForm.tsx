@@ -68,7 +68,8 @@ function useSuggestions(_userId: string) {
 					]);
 				}
 			} catch (error) {
-				/* TODO: Async logger needed */ logger.error("Error in fetchSuggestions:", { data: error });
+				// TODO: Async logger needed
+				// TODO: Fix logger call - was: error
 				if (setSuggestions) setSuggestions(["An unexpected error occurred"]);
 			} finally {
 				if (setIsLoadingSuggestions) setIsLoadingSuggestions(false);
@@ -239,7 +240,8 @@ export function SetupForm({ _userId }: SetupFormProps) {
 	const router = useRouter();
 
 	useEffect(() => {
-		/* TODO: Async logger needed */ logger.info("Form data updated:", { data: formData });
+		// TODO: Async logger needed
+		// TODO: Fix logger call - was: info
 	}, [formData]);
 
 	useEffect(() => {
@@ -256,7 +258,8 @@ export function SetupForm({ _userId }: SetupFormProps) {
 		// Only fetch initial suggestions when entering the field
 		// or when presentation type changes
 		if (currentField === "title" && formData.presentation_type) {
-			/* TODO: Async logger needed */ logger.info("Fetching initial title suggestions");
+			// TODO: Async logger needed
+			// TODO: Fix logger call - was: info
 			void fetchSuggestions("title", formData.presentation_type);
 		}
 	}, [
@@ -271,7 +274,8 @@ export function SetupForm({ _userId }: SetupFormProps) {
 	useEffect(() => {
 		const currentField = currentPath[currentQuestion];
 		if (currentField === "audience" && formData.title && !isFromSuggestion) {
-			/* TODO: Async logger needed */ logger.info("Fetching audience suggestions for title:", { data: formData.title });
+			// TODO: Async logger needed
+			// TODO: Fix logger call - was: info
 			void fetchSuggestions("audience", undefined, formData.title);
 		}
 	}, [
@@ -307,7 +311,8 @@ export function SetupForm({ _userId }: SetupFormProps) {
 		setTouchedFields(new Set(touchedFields).add("presentation_type"));
 
 		const isValid = validateField("presentation_type");
-		/* TODO: Async logger needed */ logger.info("Is presentation type valid:", { data: isValid });
+		// TODO: Async logger needed
+		// TODO: Fix logger call - was: info
 
 		if (isValid) {
 			// Small delay to allow path update effect to run
@@ -358,7 +363,8 @@ export function SetupForm({ _userId }: SetupFormProps) {
 			// Navigate back to AI home page
 			router.push("/home/ai");
 		} catch (error) {
-			/* TODO: Async logger needed */ logger.error("Error submitting form:", { data: error });
+			// TODO: Async logger needed
+			// TODO: Fix logger call - was: error
 		} finally {
 			setIsSubmitting(false);
 		}
@@ -372,7 +378,11 @@ export function SetupForm({ _userId }: SetupFormProps) {
 				(await getLogger()).info("Validating field:", currentField);
 
 				const isValid = validateField(currentField);
-				(await getLogger()).info("Field validation result:", currentField, isValid);
+				(await getLogger()).info(
+					"Field validation result:",
+					currentField,
+					isValid,
+				);
 
 				if (isValid) {
 					// Add field to touched fields to ensure error state is shown
@@ -385,15 +395,17 @@ export function SetupForm({ _userId }: SetupFormProps) {
 					handleNext();
 					setErrors({}); // Clear errors after successful navigation
 				} else {
-					/* TODO: Async logger needed */ logger.info("Validation failed, { data: showing error" });
+					logger.info({ message: "Validation failed, showing error" });
 					// Ensure the field is marked as touched to show the error
 					setTouchedFields(new Set(touchedFields).add(currentField));
 				}
 			} else {
-				/* TODO: Async logger needed */ logger.error("No current field found for index:", { data: currentQuestion });
+				// TODO: Async logger needed
+				// TODO: Fix logger call - was: error
 			}
 		} catch (error) {
-			/* TODO: Async logger needed */ logger.error("Error in handleNextClick:", { data: error });
+			// TODO: Async logger needed
+			// TODO: Fix logger call - was: error
 		} finally {
 			setIsValidating(false);
 		}
@@ -556,11 +568,13 @@ export function SetupForm({ _userId }: SetupFormProps) {
 }
 
 const _cleanSuggestions = (rawSuggestions: string): string[] => {
-	/* TODO: Async logger needed */ logger.info("Cleaning suggestions. Raw input:", { data: rawSuggestions });
+	// TODO: Async logger needed
+	// TODO: Fix logger call - was: info
 	const lines = rawSuggestions.split("\n");
 	const startIndex = lines.findIndex((line) => /^\d+\./.test(line.trim()));
 	if (startIndex === -1) {
-		/* TODO: Async logger needed */ logger.info("No numbered suggestions found");
+		// TODO: Async logger needed
+		// TODO: Fix logger call - was: info
 		return [];
 	}
 
@@ -569,6 +583,7 @@ const _cleanSuggestions = (rawSuggestions: string): string[] => {
 		.map((line) => line.replace(/^\d+\.\s*/, "").trim())
 		.filter(Boolean);
 
-	/* TODO: Async logger needed */ logger.info("Cleaned suggestions:", { data: cleaned });
+	// TODO: Async logger needed
+	// TODO: Fix logger call - was: info
 	return cleaned;
 };

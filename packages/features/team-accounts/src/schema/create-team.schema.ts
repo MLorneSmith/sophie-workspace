@@ -30,7 +30,8 @@ export const TeamNameSchema = z
 	.max(50)
 	.refine(
 		(name) => {
-			/* TODO: Async logger needed */ logger.info(name);
+			// TODO: Async logger needed
+		// (await getLogger()).info(name);
 			return !SPECIAL_CHARACTERS_REGEX.test(name);
 		},
 		{

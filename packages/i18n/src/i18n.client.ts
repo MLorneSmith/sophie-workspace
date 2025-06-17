@@ -58,7 +58,8 @@ export async function initializeI18nClient(
 			},
 			(err) => {
 				if (err) {
-					/* TODO: Async logger needed */ logger.error("Error initializing i18n client", { data: err });
+					// TODO: Async logger needed
+		// (await getLogger()).error("Error initializing i18n client", { data: err });
 				}
 			},
 		);
@@ -66,7 +67,8 @@ export async function initializeI18nClient(
 	// to avoid infinite loops, we return the i18next instance after a certain number of iterations
 	// even if the languages and namespaces are not loaded
 	if (iteration >= MAX_ITERATIONS) {
-		/* TODO: Async logger needed */ logger.debug(`Max iterations reached: ${MAX_ITERATIONS}`);
+		// TODO: Async logger needed
+		// (await getLogger()).debug(`Max iterations reached: ${MAX_ITERATIONS}`);
 
 		return i18next;
 	}
@@ -75,7 +77,8 @@ export async function initializeI18nClient(
 	if (loadedLanguages.length === 0 || loadedNamespaces.length === 0) {
 		iteration++;
 
-		/* TODO: Async logger needed */ logger.debug(`Keeping component from rendering if no languages or namespaces are loaded. Iteration: ${iteration}. Will stop after ${MAX_ITERATIONS} iterations.`, { data:  });
+		// TODO: Async logger needed
+		// (await getLogger()).debug(`Keeping component from rendering if no languages or namespaces are loaded. Iteration: ${iteration}. Will stop after ${MAX_ITERATIONS} iterations.`, { data:  });
 
 		throw new Error("No languages or namespaces loaded");
 	}

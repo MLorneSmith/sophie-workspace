@@ -75,7 +75,8 @@ export function TestimonialForm(props: TestimonialFormProps) {
 					props.onSuccess();
 				}
 			} catch (error) {
-				/* TODO: Async logger needed */ logger.error("Error submitting testimonial:", { data: error });
+				// TODO: Async logger needed
+		// (await getLogger()).error("Error submitting testimonial:", { data: error });
 			}
 		});
 	}

@@ -9,7 +9,8 @@ const DEBUG = process.env.NODE_ENV === "development";
 // Helper logging function
 function debugLog(...args: unknown[]) {
 	if (DEBUG) {
-		/* TODO: Async logger needed */ logger.info("[TemplateTagProcessor]", { data: ...args });
+		// TODO: Async logger needed
+		// (await getLogger()).info("[TemplateTagProcessor]", { data: ...args });
 	}
 }
 

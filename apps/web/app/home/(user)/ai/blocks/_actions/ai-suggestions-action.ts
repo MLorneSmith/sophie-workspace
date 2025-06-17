@@ -184,12 +184,13 @@ export const getSuggestions = enhanceAction(
 			const duration = performance.now() - startTime;
 
 			// Log metrics
-			/* TODO: Async logger needed */ logger.info("AI Request Metrics:", {
-				field: data.field,
-				duration,
-				userId: user.id,
-				status: "success",
-			});
+			// TODO: Async logger needed
+			// (await getLogger()).info("AI Request Metrics:", {
+			//		field: data.field,
+			//		duration,
+			//		userId: user.id,
+			//		status: "success",
+			// });
 
 			// Parse numbered list response and remove quotes
 			// Access the text content from the response before splitting
@@ -207,19 +208,21 @@ export const getSuggestions = enhanceAction(
 				.filter(Boolean);
 
 			// Debug log the suggestions
-			/* TODO: Async logger needed */ logger.info("Parsed Suggestions:", {
-				data: suggestions,
-			});
+			// TODO: Async logger needed
+			// (await getLogger()).info("Parsed Suggestions:", {
+			//		data: suggestions,
+			// });
 
 			return {
 				success: true,
 				data: suggestions,
 			};
 		} catch (error) {
-			/* TODO: Async logger needed */ logger.error(
-				"Error in suggestions action:",
-				{ data: error },
-			);
+			// TODO: Async logger needed
+			// (await getLogger()).error(
+			//		"Error in suggestions action:",
+			//		{ data: error },
+			// );
 
 			return {
 				success: false,

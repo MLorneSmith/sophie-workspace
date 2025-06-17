@@ -1,18 +1,10 @@
 import type { PostgresAdapterArgs } from "@payloadcms/db-postgres";
 import { postgresAdapter } from "@payloadcms/db-postgres";
 
-// import { createServiceLogger, type LogContext } from "@kit/shared/logger";
-type LogContext = Record<string, unknown>;
+import { createServiceLogger, type LogContext } from "@kit/shared/logger";
 
 // Initialize enhanced logger for database adapter
-// const { getLogger, getContextLogger } = createServiceLogger("DB-ADAPTER");
-const getLogger = () => ({
-	info: console.log,
-	error: console.error,
-	warn: console.warn,
-	debug: console.debug,
-});
-const getContextLogger = () => getLogger();
+const { getLogger, getContextLogger } = createServiceLogger("DB-ADAPTER");
 
 // Global variable to survive Next.js hot reloads
 declare global {
@@ -65,17 +57,14 @@ class DatabaseAdapterManager {
 			consecutiveFailures: 0,
 		};
 
-		// Initialize logger asynchronously
-		this.initializeLogger();
-	}
-
-	private async initializeLogger() {
-		this.logger = await getLogger();
+		// Initialize logger synchronously
+		this.logger = getLogger();
 		this.logger.info("DatabaseAdapterManager initialized", {
 			environment: this.environment,
 			operation: "db_adapter_init",
 		});
 	}
+
 
 	/**
 	 * Get or create the database adapter synchronously
@@ -397,14 +386,11 @@ class DatabaseAdapterManager {
 	/**
 	 * Centralized logging with configurable levels
 	 */
-	private async log(
+	private log(
 		message: string,
 		level: "debug" | "info" | "warn" | "error" = "info",
 		context?: LogContext,
-	): Promise<void> {
-		if (!this.logger) {
-			this.logger = await getLogger();
-		}
+	): void {
 		this.logger[level](message, context);
 	}
 }

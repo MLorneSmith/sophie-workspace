@@ -12,8 +12,8 @@ It allows the development server to load faster by not loading the modules that 
 
 const noop = (name: string) => {
 	return () => {
-		/* TODO: Async logger needed */ logger.debug(`The function "${name}" is mocked for development because your environment variables indicate that it is not needed. 
-    If you think this is a mistake, { arg1: please open a support ticket.`, arg2:  });
+		// TODO: Async logger needed
+		// TODO: Fix logger call - was: debug
 	};
 };
 

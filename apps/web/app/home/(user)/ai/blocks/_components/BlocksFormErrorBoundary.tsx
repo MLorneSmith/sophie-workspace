@@ -94,7 +94,8 @@ export class SetupFormErrorBoundary extends React.Component<Props, State> {
 
 	componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
 		// Log error
-		/* TODO: Async logger needed */ logger.error(
+		// TODO: Async logger needed
+		// (await getLogger()).error(
 			"SetupFormErrorBoundary caught an error:",
 			{ arg1: error, arg2: errorInfo },
 		);

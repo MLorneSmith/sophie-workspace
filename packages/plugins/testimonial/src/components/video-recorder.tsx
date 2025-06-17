@@ -91,7 +91,8 @@ export function VideoRecorder({
 				videoRef.current.onerror = () => {
 					const error = videoRef.current?.error;
 
-					/* TODO: Async logger needed */ logger.error(`Error ${error?.code}; details: ${error?.message}`);
+					// TODO: Async logger needed
+		// (await getLogger()).error(`Error ${error?.code}; details: ${error?.message}`);
 				};
 			}
 
@@ -141,7 +142,8 @@ export function VideoRecorder({
 				});
 			}, 1000);
 		} catch (err) {
-			/* TODO: Async logger needed */ logger.error("Error accessing media devices:", { data: err });
+			// TODO: Async logger needed
+		// (await getLogger()).error("Error accessing media devices:", { data: err });
 
 			setError("testimonials:errorMessage");
 		}

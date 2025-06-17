@@ -15,7 +15,8 @@
     "format": "prettier --write \"src/**/*.{ts,tsx,md}\""
   },
   "dependencies": {
-    "@kit/monitoring-core": "workspace:*"
+    "@kit/monitoring-core": "workspace:*",
+    "@kit/shared": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.5.5",

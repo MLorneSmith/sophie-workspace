@@ -13,6 +13,7 @@ import { createServiceLogger } from "@kit/shared/logger";
 const { getLogger } = createServiceLogger("HOME-(USER)");
 
 // Mock console.error to prevent test output pollution
+// biome-ignore lint/suspicious/noConsole: Test file needs console.error for mocking
 const originalConsoleError = console.error;
 
 describe("TipTapTransformer", () => {
@@ -85,6 +86,7 @@ describe("TipTapTransformer", () => {
 			expect(result.title).toBe("Fallback Title");
 			expect(result.slides).toHaveLength(1);
 			expect(result.slides[0].headline).toBe("Untitled Presentation"); // Uses document meta or default
+			// biome-ignore lint/suspicious/noConsole: Test assertion for console.error mock
 			expect(console.error).toHaveBeenCalledWith(
 				"Error parsing TipTap document:",
 				expect.any(Error),

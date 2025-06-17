@@ -889,7 +889,8 @@ async function copyToClipboard(text: string) {
 	try {
 		await navigator.clipboard.writeText(text);
 	} catch (err) {
-		/* TODO: Async logger needed */ logger.error("Failed to copy:", {
+		// TODO: Async logger needed
+		// (await getLogger()).error("Failed to copy:", {
 			data: err,
 		});
 	}

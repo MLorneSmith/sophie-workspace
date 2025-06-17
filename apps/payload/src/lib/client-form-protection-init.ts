@@ -87,8 +87,11 @@ interface HydrationState {
 		level: "info" | "debug" | "warn" | "error" = "info",
 	): void {
 		if (!CONFIG.enableLogging && level === "debug") return;
+		// Note: This is client-side code where enhanced logger may not be available
+		// Using console directly with biome-ignore for legitimate client-side logging
 		const timestamp = new Date().toISOString();
 		const prefix = `[ULTRA-CONSERVATIVE-FORM-PROTECTION-${level.toUpperCase()}] ${timestamp}`;
+		// biome-ignore lint/suspicious/noConsole: Client-side logging utility for form protection debugging
 		console[level === "error" ? "error" : "log"](`${prefix} ${message}`);
 	}
 

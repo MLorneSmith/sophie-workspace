@@ -58,18 +58,21 @@ export function UsageDashboard({ initialData }: UsageDashboardProps) {
 
 			if (result.success && result.data) {
 				setCurrentData(result.data);
-				/* TODO: Async logger needed */ logger.info(
+				// TODO: Async logger needed
+		// (await getLogger()).info(
 					"Fetched real usage data:",
 					{ data: result.data },
 				);
 			} else {
-				/* TODO: Async logger needed */ logger.error(
+				// TODO: Async logger needed
+		// (await getLogger()).error(
 					"Failed to fetch usage data:",
 					{ data: result.error },
 				);
 			}
 		} catch (error) {
-			/* TODO: Async logger needed */ logger.error(
+			// TODO: Async logger needed
+		// (await getLogger()).error(
 				"Error fetching usage data:",
 				{ data: error },
 			);

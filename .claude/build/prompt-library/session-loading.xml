@@ -4,8 +4,11 @@
   
   <pre_conditions>
     <context_loading>
+      <load_context_inventory>Read .claude/docs/.context-docs-inventory.xml to identify available documentation</load_context_inventory>
+      <analyze_task_domain>Determine task domain (AI, UI, Data, Architecture, Testing, Security, CMS, Debugging)</analyze_task_domain>
+      <select_relevant_context>Use task domain to select relevant documentation files</select_relevant_context>
       <load_role>{RELEVANT_CLAUDE_ROLE}</load_role>
-      <read_files>{CONTEXT_FILES}</read_files>
+      <read_context_files>{SELECTED_CONTEXT_FILES}</read_context_files>
       <review_standards>Read CLAUDE.md for project standards</review_standards>
       <load_story_context>Read story context from .claude/build/contexts/stories/story-{id}/</load_story_context>
     </context_loading>
@@ -47,7 +50,9 @@
     <story_context>{STORY_DETAILS}</story_context>
     <acceptance_criteria>{CRITERIA_LIST}</acceptance_criteria>
     <technical_tasks>{TASK_LIST}</technical_tasks>
-    <context_files>{FILES_TO_LOAD}</context_files>
+    <task_domain>{TASK_DOMAIN}</task_domain>
+    <technical_areas>{TECHNICAL_AREAS}</technical_areas>
+    <context_files>{SELECTED_CONTEXT_FILES}</context_files>
   </input>
   
   <implementation_standards>
@@ -78,41 +83,167 @@
   
   <context_loading_checklist>
     <step number="1">
-      <action>Load Primary Role</action>
-      <command>/read .claude/roles/{PRIMARY_ROLE}.md</command>
-      <purpose>Set appropriate mental model for development work</purpose>
+      <action>Load Context Inventory</action>
+      <command>/read .claude/docs/.context-docs-inventory.xml</command>
+      <purpose>Identify all available documentation and context files</purpose>
     </step>
     
     <step number="2">
+      <action>Analyze Task Domain</action>
+      <description>Based on story details and technical tasks, determine:</description>
+      <analysis>
+        <primary_domain>AI | UI | Data | Architecture | Testing | Security | CMS | Debugging</primary_domain>
+        <technical_areas>Components | Server Actions | Database | API | Authentication | etc.</technical_areas>
+        <patterns_needed>Performance | Error Handling | State Management | etc.</patterns_needed>
+      </analysis>
+    </step>
+    
+    <step number="3">
+      <action>Select Relevant Context Files</action>
+      <selection_rules>
+        <ai_tasks>ai/portkey-integration.md, ai/prompt-engineering.md</ai_tasks>
+        <ui_tasks>ui/component-patterns.md, ui/tailwind-standards.md, ui/accessibility.md</ui_tasks>
+        <data_tasks>data/supabase-patterns.md, data/react-query-patterns.md, data/database-schema.md</data_tasks>
+        <auth_tasks>security/authentication-patterns.md, security/authorization-patterns.md</auth_tasks>
+        <cms_tasks>cms/payload-patterns.md, cms/content-migration-system-guide.md</cms_tasks>
+        <testing_tasks>testing/unit-testing-patterns.md, testing/unit-testing-best-practices.md</testing_tasks>
+        <performance_tasks>architecture/performance-optimization.md, debugging/performance-debugging.md</performance_tasks>
+        <architecture_tasks>architecture/service-patterns.md, architecture/system-design.md</architecture_tasks>
+        <debugging_tasks>debugging/debugging-system-overview.md, debugging/common-patterns.md</debugging_tasks>
+      </selection_rules>
+    </step>
+    
+    <step number="4">
+      <action>Load Selected Context Files</action>
+      <command>/read [selected files from step 3]</command>
+      <purpose>Load task-relevant documentation and patterns</purpose>
+    </step>
+    
+    <step number="5">
+      <action>Load Primary Role</action>
+      <command>/read .claude/build/contexts/session-templates/{PRIMARY_ROLE}.md</command>
+      <purpose>Set appropriate mental model for development work</purpose>
+    </step>
+    
+    <step number="6">
       <action>Review Project Standards</action>
       <command>/read CLAUDE.md</command>
       <purpose>Understand SlideHeroes-specific patterns and constraints</purpose>
     </step>
     
-    <step number="3">
+    <step number="7">
       <action>Load Story Context</action>
       <command>/read .claude/build/contexts/stories/story-{STORY_ID}/context.md</command>
       <purpose>Understand story requirements and acceptance criteria</purpose>
     </step>
     
-    <step number="4">
+    <step number="8">
       <action>Review Technical Notes</action>
       <command>/read .claude/build/contexts/stories/story-{STORY_ID}/technical-notes.md</command>
       <purpose>Understand previous technical decisions and approaches</purpose>
     </step>
     
-    <step number="5">
+    <step number="9">
       <action>Check Progress</action>
       <command>/read .claude/build/contexts/stories/story-{STORY_ID}/progress.md</command>
       <purpose>Understand current implementation status and next steps</purpose>
     </step>
     
-    <step number="6">
+    <step number="10">
       <action>Load Implementation Context</action>
-      <files>{CONTEXT_FILES_LIST}</files>
+      <command>/read [relevant codebase files based on task]</command>
       <purpose>Understand existing SlideHeroes patterns and implementation approaches</purpose>
     </step>
   </context_loading_checklist>
+  
+  <context_selection_intelligence>
+    <task_domain_analysis>
+      <analyze_story_content>
+        <keywords>
+          <ai_keywords>AI, generate, prompt, LLM, OpenAI, Anthropic, suggestion, completion</ai_keywords>
+          <ui_keywords>component, React, JSX, Tailwind, CSS, responsive, accessibility, form</ui_keywords>
+          <data_keywords>database, Supabase, query, API, endpoint, fetch, mutation, schema</data_keywords>
+          <auth_keywords>authentication, login, signup, session, user, permission, RLS</auth_keywords>
+          <cms_keywords>content, Payload, collection, field, migration, admin</cms_keywords>
+          <testing_keywords>test, unit, integration, mock, coverage, spec, TDD</testing_keywords>
+          <performance_keywords>optimization, performance, cache, bundle, loading, speed</performance_keywords>
+          <debug_keywords>error, bug, debug, troubleshoot, fix, issue, problem</debug_keywords>
+        </keywords>
+      </analyze_story_content>
+      
+      <determine_primary_domain>
+        <rules>
+          <if_contains keywords="ai_keywords">Primary: AI, Secondary: Data (for API integration)</if_contains>
+          <if_contains keywords="ui_keywords">Primary: UI, Secondary: Architecture (for patterns)</if_contains>
+          <if_contains keywords="data_keywords">Primary: Data, Secondary: Security (for RLS)</if_contains>
+          <if_contains keywords="auth_keywords">Primary: Security, Secondary: Data (for user management)</if_contains>
+          <if_contains keywords="cms_keywords">Primary: CMS, Secondary: Data (for content)</if_contains>
+          <if_contains keywords="testing_keywords">Primary: Testing, Secondary: Architecture (for patterns)</if_contains>
+          <if_contains keywords="performance_keywords">Primary: Architecture, Secondary: Debugging</if_contains>
+          <if_contains keywords="debug_keywords">Primary: Debugging, Secondary: Architecture</if_contains>
+        </rules>
+      </determine_primary_domain>
+    </task_domain_analysis>
+    
+    <context_file_mapping>
+      <core_files>Always load these for any task</core_files>
+      <architecture_foundation>
+        <files>architecture/service-patterns.md, architecture/system-design.md</files>
+        <when>All tasks benefit from understanding system architecture</when>
+      </architecture_foundation>
+      
+      <domain_specific_files>
+        <ai_domain>
+          <primary>ai/portkey-integration.md, ai/prompt-engineering.md</primary>
+          <secondary>data/supabase-patterns.md (for API storage), architecture/performance-optimization.md (for AI cost optimization)</secondary>
+        </ai_domain>
+        
+        <ui_domain>
+          <primary>ui/component-patterns.md, ui/tailwind-standards.md</primary>
+          <secondary>ui/accessibility.md, ui/responsive-design.md, testing/context/unit-testing-patterns.md</secondary>
+        </ui_domain>
+        
+        <data_domain>
+          <primary>data/supabase-patterns.md, data/react-query-patterns.md, data/database-schema.md</primary>
+          <secondary>security/authorization-patterns.md, debugging/database-debugging.md</secondary>
+        </data_domain>
+        
+        <security_domain>
+          <primary>security/authentication-patterns.md, security/authorization-patterns.md</primary>
+          <secondary>data/supabase-patterns.md, debugging/integration-debugging.md</secondary>
+        </security_domain>
+        
+        <cms_domain>
+          <primary>cms/payload-patterns.md, cms/content-migration-system-guide.md</primary>
+          <secondary>data/database-schema.md, debugging/database-debugging.md</secondary>
+        </cms_domain>
+        
+        <testing_domain>
+          <primary>testing/unit-testing-patterns.md, testing/unit-testing-best-practices.md</primary>
+          <secondary>testing/context/mocking-strategies.md, testing/context/test-driven-development.md</secondary>
+        </testing_domain>
+        
+        <performance_domain>
+          <primary>architecture/performance-optimization.md</primary>
+          <secondary>debugging/performance-debugging.md, data/react-query-patterns.md</secondary>
+        </performance_domain>
+        
+        <debugging_domain>
+          <primary>debugging/debugging-system-overview.md, debugging/common-patterns.md</primary>
+          <secondary>debugging/error-handling.md, debugging/github-first-issues.md</secondary>
+        </debugging_domain>
+      </domain_specific_files>
+    </context_file_mapping>
+    
+    <selection_algorithm>
+      <step1>Analyze story content for domain keywords</step1>
+      <step2>Determine primary and secondary domains</step2>
+      <step3>Load core architecture files (always)</step3>
+      <step4>Load primary domain files</step4>
+      <step5>Load secondary domain files if relevant</step5>
+      <step6>Limit total files to 8-12 to avoid context overload</step6>
+    </selection_algorithm>
+  </context_selection_intelligence>
   
   <session_readiness_check>
     <understanding>

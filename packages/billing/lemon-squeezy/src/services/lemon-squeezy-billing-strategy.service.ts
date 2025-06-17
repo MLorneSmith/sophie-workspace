@@ -55,10 +55,10 @@ export class LemonSqueezyBillingStrategyService
 		const { data: response, error } = await createLemonSqueezyCheckout(params);
 
 		if (error ?? !response?.data.id) {
-			/* TODO: Async logger needed */ logger.info(error);
+			// TODO: Async logger needed
+		// (await getLogger()).info(error);
 
-			logger.error({
-					...ctx, { arg1: error: error?.message, arg2: }, arg3: "Failed to create checkout session", arg4:  });
+			logger.error({ ...ctx, error: error?.message, message: "Failed to create checkout session" });
 
 			throw new Error("Failed to create checkout session");
 		}
@@ -91,8 +91,7 @@ export class LemonSqueezyBillingStrategyService
 			await createLemonSqueezyBillingPortalSession(params);
 
 		if (error ?? !data) {
-			logger.error({
-					...ctx, { arg1: error: error?.message, arg2: }, arg3: "Failed to create billing portal session", arg4:  });
+			logger.error({ ...ctx, error: error?.message, message: "Failed to create billing portal session" });
 
 			throw new Error("Failed to create billing portal session");
 		}
@@ -123,8 +122,7 @@ export class LemonSqueezyBillingStrategyService
 			const { error } = await cancelSubscription(params.subscriptionId);
 
 			if (error) {
-				logger.error({
-						...ctx, { arg1: error: error.message, arg2: }, arg3: "Failed to cancel subscription", arg4:  });
+				logger.error({ ...ctx, error: error.message, message: "Failed to cancel subscription" });
 
 				throw new Error("Failed to cancel subscription");
 			}
@@ -134,10 +132,10 @@ export class LemonSqueezyBillingStrategyService
 			return { success: true };
 		} catch (error) {
 			logger.info({
-					...ctx, { data: error: (error as Error })?.message,
-				},
-				`Failed to cancel subscription. It may have already been cancelled on the user's end.`,
-			);
+					...ctx,
+					error: (error as Error)?.message,
+				message: "Failed to cancel subscription. It may have already been cancelled on the user's end."
+			});
 
 			return { success: false };
 		}
@@ -163,8 +161,7 @@ export class LemonSqueezyBillingStrategyService
 		const { data: session, error } = await getCheckout(params.sessionId);
 
 		if (error ?? !session?.data) {
-			logger.error({
-					...ctx, { arg1: error: error?.message, arg2: }, arg3: "Failed to retrieve checkout session", arg4:  });
+			logger.error({ ...ctx, error: error?.message, message: "Failed to retrieve checkout session" });
 
 			throw new Error("Failed to retrieve checkout session");
 		}
@@ -205,8 +202,7 @@ export class LemonSqueezyBillingStrategyService
 		});
 
 		if (error) {
-			logger.error({
-					...ctx, { arg1: error, arg2: }, arg3: "Failed to report usage", arg4:  });
+			logger.error({ ...ctx, error, message: "Failed to report usage" });
 
 			throw new Error("Failed to report usage");
 		}
@@ -247,8 +243,7 @@ export class LemonSqueezyBillingStrategyService
 		});
 
 		if (records.error) {
-			logger.error({
-					...ctx, { arg1: error: records.error, arg2: }, arg3: "Failed to query usage", arg4:  });
+			logger.error({ ...ctx, error: records.error, message: "Failed to query usage" });
 
 			throw new Error("Failed to query usage");
 		}
@@ -264,8 +259,7 @@ export class LemonSqueezyBillingStrategyService
 			0,
 		);
 
-		logger.info({
-				...ctx, { arg1: value, arg2: }, arg3: "Usage queried successfully", arg4:  });
+		logger.info({ ...ctx, value, message: "Usage queried successfully" });
 
 		return { value };
 	}
@@ -292,8 +286,7 @@ export class LemonSqueezyBillingStrategyService
 		});
 
 		if (error) {
-			logger.error({
-					...ctx, { arg1: error, arg2: }, arg3: "Failed to update subscription", arg4:  });
+			logger.error({ ...ctx, error, message: "Failed to update subscription" });
 
 			throw new Error("Failed to update subscription");
 		}
@@ -316,15 +309,13 @@ export class LemonSqueezyBillingStrategyService
 		const { error, data } = await getSubscription(subscriptionId);
 
 		if (error) {
-			logger.error({
-					...ctx, { arg1: error, arg2: }, arg3: "Failed to retrieve subscription", arg4:  });
+			logger.error({ ...ctx, error, message: "Failed to retrieve subscription" });
 
 			throw new Error("Failed to retrieve subscription");
 		}
 
 		if (!data) {
-			logger.error({
-					...ctx, { arg1: }, arg2: "Subscription not found", arg3:  });
+			logger.error({ ...ctx, message: "Subscription not found" });
 
 			throw new Error("Subscription not found");
 		}
@@ -399,15 +390,13 @@ export class LemonSqueezyBillingStrategyService
 		const { error, data } = await getVariant(planId);
 
 		if (error) {
-			logger.error({
-					...ctx, { arg1: error, arg2: }, arg3: "Failed to retrieve plan by ID", arg4:  });
+			logger.error({ ...ctx, error, message: "Failed to retrieve plan by ID" });
 
 			throw new Error("Failed to retrieve plan by ID");
 		}
 
 		if (!data) {
-			logger.error({
-					...ctx, { arg1: }, arg2: "Plan not found", arg3:  });
+			logger.error({ ...ctx, message: "Plan not found" });
 
 			throw new Error("Plan not found");
 		}

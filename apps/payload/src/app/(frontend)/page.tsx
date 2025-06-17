@@ -26,9 +26,12 @@ export default async function HomePage() {
 
 		// Debug logging in development
 		if (process.env.NODE_ENV === "development") {
-			/* TODO: Async logger needed */ logger.info("[PAYLOAD-FRONTEND] Payload initialized successfully");
-			/* TODO: Async logger needed */ logger.info("[PAYLOAD-FRONTEND] Config routes:", { data: payload?.config?.routes });
-			/* TODO: Async logger needed */ logger.info("[PAYLOAD-FRONTEND] Admin route:", { data: adminRoute });
+			// TODO: Async logger needed
+		// (await getLogger()).info("[PAYLOAD-FRONTEND] Payload initialized successfully");
+			// TODO: Async logger needed
+		// (await getLogger()).info("[PAYLOAD-FRONTEND] Config routes:", { data: payload?.config?.routes });
+			// TODO: Async logger needed
+		// (await getLogger()).info("[PAYLOAD-FRONTEND] Admin route:", { data: adminRoute });
 		}
 
 		return (
@@ -73,7 +76,8 @@ export default async function HomePage() {
 			</div>
 		);
 	} catch (error) {
-		/* TODO: Async logger needed */ logger.error("[PAYLOAD-FRONTEND] Error initializing Payload:", { data: error });
+		// TODO: Async logger needed
+		// (await getLogger()).error("[PAYLOAD-FRONTEND] Error initializing Payload:", { data: error });
 
 		const fileURL = `vscode://file/${fileURLToPath(import.meta.url)}`;
 

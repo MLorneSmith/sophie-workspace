@@ -1,17 +1,17 @@
 import type { MonitoringService } from "@kit/monitoring-core";
 
 export class ConsoleMonitoringService implements MonitoringService {
-	identifyUser(data: { id: string }) {
+	identifyUser<Info extends { id: string }>(data: Info) {
 		// biome-ignore lint/suspicious/noConsole: Console monitoring service uses console directly
 		console.info("[Console Monitoring] Identified user", data);
 	}
 
-	captureException(error: Error) {
+	captureException<Extra extends object>(error: Error & { digest?: string }, extra?: Extra) {
 		// biome-ignore lint/suspicious/noConsole: Console monitoring service uses console directly
-		console.error("[Console Monitoring] Caught exception:", error);
+		console.error("[Console Monitoring] Caught exception:", error, extra);
 	}
 
-	captureEvent(event: string, extra?: Record<string, unknown>) {
+	captureEvent<Extra extends object>(event: string, extra?: Extra) {
 		// biome-ignore lint/suspicious/noConsole: Console monitoring service uses console directly
 		console.info("[Console Monitoring] Captured event:", event, extra);
 	}

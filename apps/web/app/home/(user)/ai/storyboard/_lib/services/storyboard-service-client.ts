@@ -76,12 +76,14 @@ export class StoryboardService {
 						try {
 							await this.saveStoryboard(submissionId, storyboard);
 						} catch (saveError) {
-							/* TODO: Async logger needed */ logger.warn("Could not save generated storyboard:", { data: saveError });
+							// TODO: Async logger needed
+		// TODO: Fix logger call - was: warn
 						}
 
 						return storyboard;
 					} catch (err) {
-						/* TODO: Async logger needed */ logger.error("Error generating storyboard:", { data: err });
+						// TODO: Async logger needed
+		// TODO: Fix logger call - was: error
 						throw new Error("Failed to generate storyboard from outline");
 					}
 				} else {
@@ -115,11 +117,13 @@ export class StoryboardService {
 
 				return storyboard;
 			} catch (err) {
-				/* TODO: Async logger needed */ logger.error("Error generating storyboard:", { data: err });
+				// TODO: Async logger needed
+		// TODO: Fix logger call - was: error
 				throw new Error("Failed to generate storyboard from outline");
 			}
 		} catch (error) {
-			/* TODO: Async logger needed */ logger.error("Error in fetchStoryboard:", { data: error });
+			// TODO: Async logger needed
+		// TODO: Fix logger call - was: error
 			throw error;
 		}
 	}
@@ -152,7 +156,8 @@ export class StoryboardService {
 					toast.error(
 						"Storyboard feature is not fully set up yet. Database migration needed.",
 					);
-					/* TODO: Async logger needed */ logger.error("Storyboard column does not exist:", { data: result.error });
+					// TODO: Async logger needed
+		// TODO: Fix logger call - was: error
 					return false;
 				}
 				throw result.error;
@@ -160,7 +165,8 @@ export class StoryboardService {
 
 			return true;
 		} catch (error) {
-			/* TODO: Async logger needed */ logger.error("Error saving storyboard:", { data: error });
+			// TODO: Async logger needed
+		// TODO: Fix logger call - was: error
 			toast.error("Failed to save storyboard");
 			return false;
 		}
@@ -183,7 +189,8 @@ export class StoryboardService {
 
 			return data as BuildingBlocksSubmission[];
 		} catch (error) {
-			/* TODO: Async logger needed */ logger.error("Error listing presentations:", { data: error });
+			// TODO: Async logger needed
+		// TODO: Fix logger call - was: error
 			throw new Error("Failed to list presentations");
 		}
 	}
@@ -201,7 +208,8 @@ export class StoryboardService {
 			// For now, we'll return a placeholder implementation
 			throw new Error("PowerPoint generation not implemented yet");
 		} catch (error) {
-			/* TODO: Async logger needed */ logger.error("Error generating PowerPoint:", { data: error });
+			// TODO: Async logger needed
+		// TODO: Fix logger call - was: error
 			throw new Error("Failed to generate PowerPoint");
 		}
 	}

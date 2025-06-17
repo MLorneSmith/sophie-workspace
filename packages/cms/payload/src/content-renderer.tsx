@@ -14,7 +14,8 @@ const DEBUG = process.env.NODE_ENV === "development";
 // Helper logging function
 function debugLog(...args: unknown[]) {
 	if (DEBUG) {
-		/* TODO: Async logger needed */ logger.info("[PayloadContentRenderer]", { data: ...args });
+		// TODO: Async logger needed
+		// (await getLogger()).info("[PayloadContentRenderer]", { data: ...args });
 	}
 }
 
@@ -118,13 +119,15 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 									node.fields.blockType === "custom-call-to-action") ||
 								node.blockType === "custom-call-to-action"
 							) {
-								/* TODO: Async logger needed */ logger.info("Found Call To Action block:", { data: node });
+								// TODO: Async logger needed
+		// (await getLogger()).info("Found Call To Action block:", { data: node });
 
 								// Try to extract the HTML content from various locations
 								const htmlContent = findHtmlContent(node);
 
 								if (htmlContent) {
-									/* TODO: Async logger needed */ logger.info("Using HTML content for Call To Action:", { arg1: `${htmlContent.substring(0, arg2: 100 })}...`,
+									// TODO: Async logger needed
+		// (await getLogger()).info("Using HTML content for Call To Action:", { arg1: `${htmlContent.substring(0, arg2: 100 })}...`,
 									);
 									// Note: Content trusted as it comes from Payload CMS admin
 									return (
@@ -165,13 +168,15 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 								(node.fields && node.fields.blockType === "test-block") ||
 								node.blockType === "test-block"
 							) {
-								/* TODO: Async logger needed */ logger.info("Found Test Block:", { data: node });
+								// TODO: Async logger needed
+		// (await getLogger()).info("Found Test Block:", { data: node });
 
 								// Try to extract the HTML content from various locations
 								const htmlContent = findHtmlContent(node);
 
 								if (htmlContent) {
-									/* TODO: Async logger needed */ logger.info("Using HTML content for Test Block:", { arg1: `${htmlContent.substring(0, arg2: 100 })}...`,
+									// TODO: Async logger needed
+		// (await getLogger()).info("Using HTML content for Test Block:", { arg1: `${htmlContent.substring(0, arg2: 100 })}...`,
 									);
 									// Note: Content trusted as it comes from Payload CMS admin
 									return (
@@ -204,13 +209,15 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 								(node.fields && node.fields.blockType === "bunny-video") ||
 								node.blockType === "bunny-video"
 							) {
-								/* TODO: Async logger needed */ logger.info("Found Bunny Video block:", { data: node });
+								// TODO: Async logger needed
+		// (await getLogger()).info("Found Bunny Video block:", { data: node });
 
 								// Try to extract the HTML content from various locations
 								const htmlContent = findHtmlContent(node);
 
 								if (htmlContent) {
-									/* TODO: Async logger needed */ logger.info("Using HTML content for Bunny Video:", { arg1: `${htmlContent.substring(0, arg2: 100 })}...`,
+									// TODO: Async logger needed
+		// (await getLogger()).info("Using HTML content for Bunny Video:", { arg1: `${htmlContent.substring(0, arg2: 100 })}...`,
 									);
 									// Note: Content trusted as it comes from Payload CMS admin
 									return (
@@ -292,13 +299,15 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 								(node.fields && node.fields.blockType === "youtube-video") ||
 								node.blockType === "youtube-video"
 							) {
-								/* TODO: Async logger needed */ logger.info("Found YouTube Video block:", { data: node });
+								// TODO: Async logger needed
+		// (await getLogger()).info("Found YouTube Video block:", { data: node });
 
 								// Try to extract the HTML content from various locations
 								const htmlContent = findHtmlContent(node);
 
 								if (htmlContent) {
-									/* TODO: Async logger needed */ logger.info("Using HTML content for YouTube Video:", { arg1: `${htmlContent.substring(0, arg2: 100 })}...`,
+									// TODO: Async logger needed
+		// (await getLogger()).info("Using HTML content for YouTube Video:", { arg1: `${htmlContent.substring(0, arg2: 100 })}...`,
 									);
 									// Note: Content trusted as it comes from Payload CMS admin
 									return (
@@ -462,11 +471,13 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 
 							// Handle block type nodes
 							if (node.type === "block") {
-								/* TODO: Async logger needed */ logger.info("Found block type node:", { data: node });
+								// TODO: Async logger needed
+		// (await getLogger()).info("Found block type node:", { data: node });
 
 								// Check for Call To Action block in fields
 								if (node.fields && node.fields.blockType === "call-to-action") {
-									/* TODO: Async logger needed */ logger.info("Found Call To Action block in fields:", { arg1: node.fields, arg2:  });
+									// TODO: Async logger needed
+		// (await getLogger()).info("Found Call To Action block in fields:", { arg1: node.fields, arg2:  });
 
 									return (
 										<div
@@ -506,7 +517,8 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 
 								// Check for Test Block in fields
 								if (node.fields && node.fields.blockType === "test-block") {
-									/* TODO: Async logger needed */ logger.info("Found Test Block in fields:", { data: node.fields });
+									// TODO: Async logger needed
+		// (await getLogger()).info("Found Test Block in fields:", { data: node.fields });
 
 									return (
 										<div
@@ -527,7 +539,8 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 
 								// Check for Bunny Video block in fields
 								if (node.fields && node.fields.blockType === "bunny-video") {
-									/* TODO: Async logger needed */ logger.info("Found Bunny Video block in fields:", { arg1: node.fields, arg2:  });
+									// TODO: Async logger needed
+		// (await getLogger()).info("Found Bunny Video block in fields:", { arg1: node.fields, arg2:  });
 
 									// Extract video data with defaults
 									const videoId = String(node.fields.videoId || "");
@@ -592,7 +605,8 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 
 								// Check for YouTube Video block in fields
 								if (node.fields && node.fields.blockType === "youtube-video") {
-									/* TODO: Async logger needed */ logger.info("Found YouTube Video block in fields:", { arg1: node.fields, arg2:  });
+									// TODO: Async logger needed
+		// (await getLogger()).info("Found YouTube Video block in fields:", { arg1: node.fields, arg2:  });
 
 									// Helper function to extract YouTube ID from URL or ID
 									const extractYouTubeId = (input: string): string => {
@@ -676,7 +690,8 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 							}
 
 							// For any unhandled node types, log them for debugging
-							/* TODO: Async logger needed */ logger.info("Unhandled node type:", { arg1: node.type, arg2: node });
+							// TODO: Async logger needed
+		// (await getLogger()).info("Unhandled node type:", { arg1: node.type, arg2: node });
 							return null;
 						})}
 					</div>
@@ -684,7 +699,8 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 			}
 
 			// If root exists but children is not an array, try to render the root directly
-			/* TODO: Async logger needed */ logger.info("Root exists but children is not an array:", { arg1: lexicalContent.root, arg2:  });
+			// TODO: Async logger needed
+		// (await getLogger()).info("Root exists but children is not an array:", { arg1: lexicalContent.root, arg2:  });
 			return (
 				<div className="payload-content">
 					<p>
@@ -694,7 +710,8 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 			);
 		}
 	} catch (error) {
-		/* TODO: Async logger needed */ logger.error("Error rendering Lexical content:", { data: error });
+		// TODO: Async logger needed
+		// (await getLogger()).error("Error rendering Lexical content:", { data: error });
 	}
 
 	// Fallback for non-Lexical content

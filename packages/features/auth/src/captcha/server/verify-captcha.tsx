@@ -31,7 +31,8 @@ export async function verifyCaptchaToken(token: string) {
 	});
 
 	if (!res.ok) {
-		/* TODO: Async logger needed */ logger.error("Captcha failed:", { data: res.statusText });
+		// TODO: Async logger needed
+		// (await getLogger()).error("Captcha failed:", { data: res.statusText });
 
 		throw new Error("Failed to verify CAPTCHA token");
 	}

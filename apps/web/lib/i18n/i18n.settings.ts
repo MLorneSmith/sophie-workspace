@@ -55,7 +55,8 @@ export function getI18nSettings(
 	let lng = language ?? defaultLanguage;
 
 	if (!languages.includes(lng)) {
-		/* TODO: Async logger needed */ logger.warn(`Language "${lng}" is not supported. Falling back to "${defaultLanguage}"`, { data:  });
+		// TODO: Async logger needed
+		// TODO: Fix logger call - was: warn
 
 		lng = defaultLanguage;
 	}

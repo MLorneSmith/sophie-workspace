@@ -105,7 +105,8 @@ export namespace TipTapTransformer {
 			try {
 				return JSON.parse(document) as TipTapDocument;
 			} catch (error) {
-				/* TODO: Async logger needed */ logger.error(
+				// TODO: Async logger needed
+		// (await getLogger()).error(
 					"Error parsing TipTap document:",
 					{ data: error },
 				);

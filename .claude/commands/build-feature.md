@@ -4,59 +4,171 @@ Usage: `/build-feature [epic-id|feature-name]`
 
 This command orchestrates the complete AAFD v2.0 feature development workflow, from Epic creation through implementation, using our structured methodology and GitHub Projects integration.
 
-## Overview
+## EXECUTABLE IMPLEMENTATION
 
-The Build Feature v2.0 command guides you through:
+This command uses utility functions located in `.claude/build/scripts/` for modular, reusable workflow automation.
 
-1. **Epic Creation & PRD** - Transform ideas into structured PRDs
-2. **Technical Chunking** - Break PRDs into implementation chunks
-3. **Story Creation** - Create actionable user stories
-4. **Sprint Planning** - Organize work into sprints
-5. **Implementation** - Execute with context-aware Claude Code sessions
-6. **Review & Verification** - Ensure quality and completeness
+### STEP 1: Phase Detection & Routing
 
-## Command Flow
+```bash
+# Use phase detection utility
+source .claude/build/scripts/feature-phase-detection.sh
+PHASE_INFO=$(detect_phase "$1")
 
-### 1. Initialization & Detection
+# Parse phase information
+PHASE=$(echo "$PHASE_INFO" | grep "PHASE:" | cut -d' ' -f2)
+AAFD_STAGE=$(echo "$PHASE_INFO" | grep "AAFD_STAGE:" | cut -d' ' -f2)
+ISSUE_ID=$(echo "$PHASE_INFO" | grep "ISSUE_ID:" | cut -d' ' -f2)
+FEATURE_NAME=$(echo "$PHASE_INFO" | grep "FEATURE_NAME:" | cut -d' ' -f2-)
+NEW_FEATURE=$(echo "$PHASE_INFO" | grep "NEW_FEATURE:" | cut -d' ' -f2)
 
-When you run `/build-feature`, the command will:
+echo "🔍 Detected Phase: $PHASE"
+echo "📊 AAFD Stage: $AAFD_STAGE"
 
-```typescript
-// Detect if we're starting fresh or continuing
-if (isGitHubIssueNumber(input)) {
-  const issue = await getGitHubIssue(input);
-  const phase = detectCurrentPhase(issue);
-  return continueFromPhase(phase, issue);
-} else {
-  // Start new feature workflow
-  return startNewFeature(input);
-}
+# Route to appropriate phase handler
+case "$PHASE" in
+  "epic-creation")
+    echo "🚀 Phase: Epic Creation & PRD Generation"
+    ;;
+  "technical-chunking")
+    echo "🔧 Phase: Technical Chunking"
+    ;;
+  "story-creation")
+    echo "📝 Phase: Story Creation"
+    ;;
+  "sprint-planning")
+    echo "📋 Phase: Sprint Planning"
+    ;;
+  "implementation")
+    echo "💻 Phase: Implementation"
+    ;;
+  "unblock-resolution")
+    echo "🚫 Phase: Unblock Resolution"
+    ;;
+esac
 ```
 
-### 2. Phase Detection Logic
+### STEP 2: Phase Execution Using Utility Functions
 
-```typescript
-function detectCurrentPhase(issue) {
-  // Check custom fields in GitHub Projects
-  const aafdStage = issue.customFields['AAFD Stage'];
+**Phase 1: Epic Creation & PRD**
 
-  switch (aafdStage) {
-    case 'Idea':
-      return 'epic-creation';
-    case 'PRD':
-      return 'prd-refinement';
-    case 'Chunks':
-      return 'technical-chunking';
-    case 'Stories':
-      return 'story-creation';
-    case 'Ready':
-      return 'implementation';
-    case 'Blocked':
-      return 'unblock-resolution';
-    default:
-      return 'epic-creation';
-  }
-}
+```bash
+if [[ "$PHASE" == "epic-creation" && "$NEW_FEATURE" == "true" ]]; then
+  echo "📋 Creating Epic and PRD for: $FEATURE_NAME"
+
+  # Use epic creation utility
+  .claude/build/scripts/feature-epic-creation.sh "$FEATURE_NAME"
+
+  echo ""
+  echo "Next Steps:"
+  echo "1. Review and refine the generated PRD"
+  echo "2. Continue with: /build-feature [epic-id]"
+fi
+```
+
+**Phase 2: Technical Chunking**
+
+```bash
+if [[ "$PHASE" == "technical-chunking" ]]; then
+  echo "🔧 Technical Chunking for Epic #$ISSUE_ID"
+
+  # Use chunking utility
+  .claude/build/scripts/feature-chunking.sh "$ISSUE_ID"
+
+  echo ""
+  echo "Next Steps:"
+  echo "1. Review and refine chunk descriptions"
+  echo "2. Continue with: /build-feature $ISSUE_ID"
+fi
+```
+
+**Phase 3: Story Creation**
+
+```bash
+if [[ "$PHASE" == "story-creation" ]]; then
+  echo "📝 Story Creation for Epic #$ISSUE_ID"
+
+  # Use story creation utility
+  .claude/build/scripts/feature-story-creation.sh "$ISSUE_ID"
+
+  echo ""
+  echo "Next Steps:"
+  echo "1. Review and refine story details"
+  echo "2. Add acceptance criteria and technical tasks"
+  echo "3. Continue with: /build-feature $ISSUE_ID"
+fi
+```
+
+**Phase 4: Sprint Planning**
+
+```bash
+if [[ "$PHASE" == "sprint-planning" ]]; then
+  echo "📋 Sprint Planning for Epic #$ISSUE_ID"
+
+  # List all stories for review
+  echo "📊 Available Stories:"
+  .claude/build/scripts/feature-story-creation.sh "$ISSUE_ID" --list
+
+  echo ""
+  echo "Sprint Planning Steps:"
+  echo "1. Review story estimates and priorities"
+  echo "2. Select stories for current sprint"
+  echo "3. Mark Epic as Ready for implementation"
+
+  # Use phase detection utility to update stage
+  source .claude/build/scripts/feature-phase-detection.sh
+  set_aafd_stage "$ISSUE_ID" "Ready"
+
+  echo "✅ Epic #$ISSUE_ID marked as Ready for implementation"
+  echo "Next: /build-feature $ISSUE_ID"
+fi
+```
+
+**Phase 5: Implementation**
+
+```bash
+if [[ "$PHASE" == "implementation" ]]; then
+  echo "💻 Implementation Phase for Epic #$ISSUE_ID"
+
+  # Find next story to implement
+  NEXT_STORY=$(gh issue list --label "epic:$ISSUE_ID" --label "story" --state open --json number --jq '.[0].number')
+
+  if [[ -n "$NEXT_STORY" ]]; then
+    echo "🎯 Next Story: #$NEXT_STORY"
+
+    # Check if context exists
+    CONTEXT_DIR=".claude/build/contexts/stories/story-$NEXT_STORY"
+    if [[ -d "$CONTEXT_DIR" ]]; then
+      echo "📚 Loading story context..."
+      /read "$CONTEXT_DIR/context.md"
+      /read "$CONTEXT_DIR/technical-notes.md"
+      /read "CLAUDE.md"
+
+      # Load appropriate role based on story domain
+      echo "🎭 Loading implementation role..."
+      /read ".claude/build/contexts/session-templates/ai-engineer.md"
+
+      echo ""
+      echo "📋 Story #$NEXT_STORY Ready for Implementation"
+      echo "✅ Context loaded"
+      echo "✅ Role configured"
+      echo "✅ Project standards loaded"
+      echo ""
+      echo "🚀 Begin implementation session!"
+
+    else
+      echo "⚠️  Context missing for Story #$NEXT_STORY"
+      echo "Creating context files..."
+      .claude/build/scripts/feature-story-creation.sh "$ISSUE_ID" --setup-context "$NEXT_STORY"
+    fi
+
+  else
+    echo "✅ All stories completed for Epic #$ISSUE_ID!"
+    echo "🎉 Feature implementation complete!"
+  fi
+fi
+```
+
 ```
 
 ## Workflow Phases
@@ -73,11 +185,13 @@ function detectCurrentPhase(issue) {
 **Actions:**
 
 ```
+
 1. Load prompt: /read .claude/build/prompt-library/feature-planning.xml
 2. Apply prompt with feature description
 3. Create Epic issue with generated PRD
 4. Add to GitHub Projects board
 5. Set AAFD Stage = "PRD"
+
 ```
 
 **Outputs:**
@@ -99,11 +213,13 @@ function detectCurrentPhase(issue) {
 **Actions:**
 
 ```
+
 1. Load prompt: /read .claude/build/prompt-library/implementation-planning.xml
 2. Apply prompt to PRD content
 3. Create 2-4 chunk issues
 4. Link chunks to parent Epic
 5. Set AAFD Stage = "Chunks"
+
 ```
 
 **Outputs:**
@@ -125,6 +241,7 @@ function detectCurrentPhase(issue) {
 **Actions:**
 
 ```
+
 1. For each chunk, create 2-5 user stories
 2. Use GitHub Story template for each
 3. Estimate using Fibonacci sequence
@@ -132,6 +249,7 @@ function detectCurrentPhase(issue) {
    - .claude/build/contexts/stories/story-{id}/
    - Add context.md, technical-notes.md, progress.md
 5. Set AAFD Stage = "Stories"
+
 ```
 
 **Outputs:**
@@ -153,11 +271,13 @@ function detectCurrentPhase(issue) {
 **Actions:**
 
 ```
+
 1. Calculate available capacity
 2. Select stories within capacity
 3. Create sprint milestone
 4. Move stories to "Ready"
 5. Set AAFD Stage = "Ready"
+
 ```
 
 **Outputs:**
@@ -179,18 +299,22 @@ function detectCurrentPhase(issue) {
 **For each story:**
 
 ```
+
 1. Load context:
+
    - /read .claude/build/contexts/session-templates/{role}.md
    - /read .claude/build/contexts/stories/story-{id}/context.md
    - /read CLAUDE.md
 
 2. Implement story:
+
    - Follow acceptance criteria
    - Use project patterns
    - Write tests
    - Update documentation
 
 3. Track progress:
+
    - Update progress.md
    - Move through project board
    - Document decisions
@@ -199,6 +323,7 @@ function detectCurrentPhase(issue) {
    - Run quality checks
    - Create PR
    - Update tracking
+
 ```
 
 ### Phase 6: Review & Verification
@@ -213,13 +338,15 @@ function detectCurrentPhase(issue) {
 **Actions:**
 
 ```
+
 1. Verify all acceptance criteria
 2. Run test suite
 3. Check code quality
 4. Update documentation
 5. Complete feature retrospective
 6. Close Epic and related issues
-```
+
+````
 
 ## Command Implementation
 
@@ -241,7 +368,7 @@ async function startNewFeature(featureName: string) {
 Next steps:
 1. Review the PRD in the issue description
 2. Run: /build-feature ${epic.number} --continue
-   
+
 This will guide you through:
 - Technical chunking
 - Story creation
@@ -249,7 +376,7 @@ This will guide you through:
 - Implementation
 `);
 }
-```
+````
 
 ### Continue Existing Feature
 

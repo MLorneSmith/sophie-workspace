@@ -3,16 +3,15 @@
 import type React from "react";
 import { createContext, useContext, useEffect, useState } from "react";
 
-import {
 import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("HOME-(USER)");
-
+import {
 	getPath,
 	type PresentationPathType,
 	type QuestionField,
 } from "../_config/formContent";
+
+// Initialize service logger
+const { getLogger } = createServiceLogger("HOME-(USER)");
 
 export interface FormData {
 	title: string;
@@ -62,9 +61,11 @@ export function SetupFormProvider({ children }: { children: React.ReactNode }) {
 		const type = formData.presentation_type as PresentationPathType;
 
 		if (type) {
-			/* TODO: Async logger needed */ logger.info("Updating path for presentation type:", { data: type });
+			// TODO: Async logger needed
+			// TODO: Fix logger call - was: info
 			const newPath = getPath(type);
-			/* TODO: Async logger needed */ logger.info("New path:", { data: newPath });
+			// TODO: Async logger needed
+			// TODO: Fix logger call - was: info
 			setCurrentPath(newPath);
 		}
 	}, [formData.presentation_type]);
@@ -77,10 +78,12 @@ export function SetupFormProvider({ children }: { children: React.ReactNode }) {
 		if (!value || value.trim() === "") {
 			newErrors[field] = "This field is required";
 			isValid = false;
-			/* TODO: Async logger needed */ logger.info(`Validation failed for ${field}: Field is required`);
+			// TODO: Async logger needed
+			// TODO: Fix logger call - was: info
 		} else {
 			delete newErrors[field];
-			/* TODO: Async logger needed */ logger.info(`Validation passed for ${field}`);
+			// TODO: Async logger needed
+			// TODO: Fix logger call - was: info
 		}
 
 		setErrors(newErrors);
@@ -90,17 +93,25 @@ export function SetupFormProvider({ children }: { children: React.ReactNode }) {
 	const handleNext = () => {
 		const currentField = currentPath[currentQuestion];
 		if (!currentField) {
-			/* TODO: Async logger needed */ logger.info("No current field found");
+			// TODO: Async logger needed
+			// TODO: Fix logger call - was: info
 			return;
 		}
 
 		// Move to next question if we're not at the end
 		if (currentQuestion < currentPath.length - 1) {
-			/* TODO: Async logger needed */ logger.info(`Moving from question ${currentQuestion} to ${currentQuestion + 1}`, { data:  });
-			/* TODO: Async logger needed */ logger.info(`Current path: ${currentPath.join(", { data: " })}`);
+			logger.info({
+				currentQuestion,
+				nextQuestion: currentQuestion + 1,
+				message: `Moving from question ${currentQuestion} to ${currentQuestion + 1}`,
+			});
+			logger.info({
+				currentPath: currentPath.join(", "),
+				message: "Current path",
+			});
 			setCurrentQuestion((prev) => prev + 1);
 		} else {
-			/* TODO: Async logger needed */ logger.info("Reached end of questions");
+			logger.info({ message: "Reached end of questions" });
 		}
 	};
 
@@ -117,7 +128,8 @@ export function SetupFormProvider({ children }: { children: React.ReactNode }) {
 		if (validations.every((valid) => valid)) {
 			(await getLogger()).info("Form submitted:", formData);
 		} else {
-			/* TODO: Async logger needed */ logger.info("Form validation failed");
+			// TODO: Async logger needed
+			// TODO: Fix logger call - was: info
 			// Find the first invalid field and set it as current
 			const firstInvalidIndex = validations.findIndex((valid) => !valid);
 			if (firstInvalidIndex !== -1) {

@@ -61,7 +61,8 @@ export function ActionToolbar({
 						content = editorRef.current.getText();
 						resolve(content);
 					} catch (error) {
-						/* TODO: Async logger needed */ logger.warn(
+						// TODO: Async logger needed
+		// (await getLogger()).warn(
 							"Error getting editor content:",
 							{ data: error },
 						);
@@ -122,33 +123,38 @@ export function ActionToolbar({
 									}
 								}
 							} catch (updateError) {
-								/* TODO: Async logger needed */ logger.warn(
+								// TODO: Async logger needed
+		// (await getLogger()).warn(
 									"Error updating editor content:",
 									{ data: updateError },
 								);
 							}
 						}
 					} catch (parseError) {
-						/* TODO: Async logger needed */ logger.error(
+						// TODO: Async logger needed
+		// (await getLogger()).error(
 							"Failed to parse simplified content:",
 							{ data: parseError },
 						);
 						return;
 					}
 				} else {
-					/* TODO: Async logger needed */ logger.error(
+					// TODO: Async logger needed
+		// (await getLogger()).error(
 						"Failed to simplify text:",
 						{ data: result.error },
 					);
 				}
 			} catch (contentError) {
-				/* TODO: Async logger needed */ logger.warn(
+				// TODO: Async logger needed
+		// (await getLogger()).warn(
 					"Error getting editor content:",
 					{ data: contentError },
 				);
 			}
 		} catch (error) {
-			/* TODO: Async logger needed */ logger.error("Error simplifying text:", {
+			// TODO: Async logger needed
+		// (await getLogger()).error("Error simplifying text:", {
 				data: error,
 			});
 		} finally {
@@ -174,7 +180,8 @@ export function ActionToolbar({
 						content = editorRef.current.getText();
 						resolve(content);
 					} catch (error) {
-						/* TODO: Async logger needed */ logger.warn(
+						// TODO: Async logger needed
+		// (await getLogger()).warn(
 							"Error getting editor content:",
 							{ data: error },
 						);
@@ -206,13 +213,15 @@ export function ActionToolbar({
 					onGenerateImprovements(result.data.improvements);
 				}
 			} catch (contentError) {
-				/* TODO: Async logger needed */ logger.warn(
+				// TODO: Async logger needed
+		// (await getLogger()).warn(
 					"Error getting editor content:",
 					{ data: contentError },
 				);
 			}
 		} catch (error) {
-			/* TODO: Async logger needed */ logger.error("Error generating ideas:", {
+			// TODO: Async logger needed
+		// (await getLogger()).error("Error generating ideas:", {
 				data: error,
 			});
 		}
