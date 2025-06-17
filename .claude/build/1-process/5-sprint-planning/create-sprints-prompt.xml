@@ -36,6 +36,22 @@
       <description>Format as markdown in repository path. Update index file with sprint entries (type: story, status: in_progress). Provide GitHub commit instructions.</description>
     </step>
     <step number="6">
+      <title>GitHub Projects Sprint Setup</title>
+      <description>
+        For selected stories:
+        - Update story issues with sprint assignment
+        - Set fields:
+          - AAFD Stage: Sprint Planning
+          - Sprint: Sprint {SPRINT_NUMBER}
+          - Agent Assignment: {ASSIGNED_AGENT}
+          - Implementation Phase: Analysis
+        - Move stories to "Ready" column in Planning Board
+        - Create sprint milestone if needed: gh api repos/MLorneSmith/2025slideheroes/milestones --method POST -f title="Sprint {SPRINT_NUMBER}" -f due_on="{DUE_DATE}"
+        - Add sprint plan as comment on Epic issue
+        - Store sprint plan in: .claude/build/3-output/{epic-name}/5-sprints/sprint-{number}.md
+      </description>
+    </step>
+    <step number="7">
       <title>Output Format</title>
       <description>Structured markdown with sections for sprint goal, selected stories, task assignments, libraries, file paths, branch strategy, index updates, and commit instructions.</description>
     </step>

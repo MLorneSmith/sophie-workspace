@@ -12,5 +12,5 @@ export function useBuildingBlocksTitles() {
 		queryKey: ["building-blocks-titles", user.id],
 		queryFn: () => getBuildingBlocksTitles(supabase, user.id),
 		enabled: !!user.id,
-	// });
+	});
 }

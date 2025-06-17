@@ -219,8 +219,8 @@ export function logStorageConfig(): void {
 		// (await getLogger()).info(`[STORAGE-CONFIG] - Region: ${s3Config.region}`);
 		// TODO: Async logger needed
 		// (await getLogger()).info(
-			`[STORAGE-CONFIG] - Using credentials: ${s3Config.accessKeyId ? "Yes" : "No (IAM role)"}`,
-		);
+		//	`[STORAGE-CONFIG] - Using credentials: ${s3Config.accessKeyId ? "Yes" : "No (IAM role)"}`,
+		// );
 
 		if (validation.warnings.length > 0) {
 			// TODO: Async logger needed

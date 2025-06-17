@@ -1,0 +1,56 @@
+<prompt>
+  <task>Update GitHub Projects during sprint execution and track progress</task>
+  
+  <instructions>
+    <step number="1">
+      <title>Start Implementation</title>
+      <description>
+        - Move story to Sprint Board "In Progress" column
+        - Update fields:
+          - AAFD Stage: Implementation
+          - AI Context Status: Loaded
+          - Implementation Phase: {Current Phase}
+        - Create feature branch: git checkout -b feature/{story-id}
+      </description>
+    </step>
+    
+    <step number="2">
+      <title>Create Pull Request</title>
+      <description>
+        - Create PR: gh pr create --title "{STORY_TITLE}" --body "Closes #{STORY_NUMBER}"
+        - PR will auto-move story to "Review" column
+        - Update Implementation Phase: Testing
+      </description>
+    </step>
+    
+    <step number="3">
+      <title>Complete Story</title>
+      <description>
+        - Merge PR (auto-moves to "Done")
+        - Update AI Context Status: Fresh
+        - Add completion notes to story
+        - Update Epic progress
+      </description>
+    </step>
+  </instructions>
+  
+  <input>
+    <story_number>{STORY_NUMBER}</story_number>
+    <story_title>{STORY_TITLE}</story_title>
+    <epic_number>{EPIC_NUMBER}</epic_number>
+    <current_phase>{IMPLEMENTATION_PHASE}</current_phase>
+  </input>
+  
+  <output_format>
+    <execution_tracking>
+      <story_id>{STORY_NUMBER}</story_id>
+      <status>{CURRENT_STATUS}</status>
+      <github_commands>
+        <command>{GH_COMMAND}</command>
+      </github_commands>
+      <next_steps>
+        <step>{NEXT_ACTION}</step>
+      </next_steps>
+    </execution_tracking>
+  </output_format>
+</prompt>

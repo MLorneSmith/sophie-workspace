@@ -8,7 +8,6 @@
  * 4. Checks if the certificate is generated
  */
 
-
 import { createServiceLogger } from "@kit/shared/logger";
 import { createClient } from "@supabase/supabase-js";
 import fetch from "node-fetch";
@@ -63,13 +62,13 @@ const PDF_CO_API_KEY =
 process.env.PDF_CO_API_KEY = PDF_CO_API_KEY;
 
 // TODO: Async logger needed
-		// (await getLogger()).info(`Supabase URL: ${supabaseUrl}`);
+// (await getLogger()).info(`Supabase URL: ${supabaseUrl}`);
 // TODO: Async logger needed
-		// (await getLogger()).info(`Supabase Key: ${supabaseKey ? "********" : "undefined"}`);
+// (await getLogger()).info(`Supabase Key: ${supabaseKey ? "********" : "undefined"}`);
 // TODO: Async logger needed
-		// (await getLogger()).info(`Payload URL: ${payloadUrl}`);
+// (await getLogger()).info(`Payload URL: ${payloadUrl}`);
 // TODO: Async logger needed
-		// (await getLogger()).info(`PDF.co API Key: ${PDF_CO_API_KEY ? "********" : "undefined"}`);
+// (await getLogger()).info(`PDF.co API Key: ${PDF_CO_API_KEY ? "********" : "undefined"}`);
 
 // Supabase client setup
 const supabase = createClient(supabaseUrl, supabaseKey);
@@ -124,7 +123,7 @@ async function fetchLessonsFromPayload(courseId: string): Promise<unknown[]> {
 			if (supabaseError) {
 				// If that fails, try querying without the schema
 				// TODO: Async logger needed
-		// (await getLogger()).info("Query with schema failed, { data: trying without schema..." });
+				// (await getLogger()).info("Query with schema failed, { data: trying without schema..." });
 				const { data: noSchemaData, error: noSchemaError } = await supabase
 					.from("course_lessons")
 					.select("id, lesson_number, title")
@@ -136,16 +135,16 @@ async function fetchLessonsFromPayload(courseId: string): Promise<unknown[]> {
 				}
 
 				// TODO: Async logger needed
-		// (await getLogger()).info(`Successfully fetched ${noSchemaData?.length || 0} lessons from Supabase without schema`, { data:  });
+				// (await getLogger()).info(`Successfully fetched ${noSchemaData?.length || 0} lessons from Supabase without schema`, { data:  });
 				return noSchemaData || [];
 			}
 
 			// TODO: Async logger needed
-		// (await getLogger()).info(`Successfully fetched ${data?.length || 0} lessons from Supabase with schema`, { data:  });
+			// (await getLogger()).info(`Successfully fetched ${data?.length || 0} lessons from Supabase with schema`, { data:  });
 			return data || [];
 		} catch (_fallbackError) {
 			// TODO: Async logger needed
-		// (await getLogger()).error("Fallback fetch also failed:", { data: fallbackError });
+			// (await getLogger()).error("Fallback fetch also failed:", { data: fallbackError });
 			throw new Error(
 				"Failed to fetch lessons from both Payload CMS and Supabase",
 			);
@@ -158,27 +157,27 @@ async function fetchLessonsFromPayload(courseId: string): Promise<unknown[]> {
  */
 async function generateCertificate(userId: string, fullName: string) {
 	(await getLogger()).info(`Generating certificate for user ${userId}...`);
-		// Import the certificate service
-		// Use dynamic import with .js extension for ESM compatibility
-		const { generateCertificate } = await import(
-			"../apps/web/lib/certificates/certificate-service.js"
-		);
+	// Import the certificate service
+	// Use dynamic import with .js extension for ESM compatibility
+	const { generateCertificate } = await import(
+		"../apps/web/lib/certificates/certificate-service.js"
+	);
 
-		// Generate the certificate
-		const result = await generateCertificate({
-			userId,
-			courseId: COURSE_ID,
-			fullName,
-		});
+	// Generate the certificate
+	const result = await generateCertificate({
+		userId,
+		courseId: COURSE_ID,
+		fullName,
+	});
 
-		// TODO: Async logger needed
-		// (await getLogger()).info("Certificate generated successfully!");
-		// TODO: Async logger needed
-		// (await getLogger()).info("Certificate ID:", { data: result.certificateId });
-		// TODO: Async logger needed
-		// (await getLogger()).info("Certificate URL:", { data: result.certificateUrl });
+	// TODO: Async logger needed
+	// (await getLogger()).info("Certificate generated successfully!");
+	// TODO: Async logger needed
+	// (await getLogger()).info("Certificate ID:", { data: result.certificateId });
+	// TODO: Async logger needed
+	// (await getLogger()).info("Certificate URL:", { data: result.certificateUrl });
 
-		return result;
+	return result;
 }
 
 async function main() {
@@ -224,7 +223,7 @@ async function main() {
 
 		for (const lesson of lessonsData) {
 			// TODO: Async logger needed
-		// (await getLogger()).info(`Marking lesson ${lesson.lesson_number} as complete: ${lesson.title}`, { data:  });
+			// (await getLogger()).info(`Marking lesson ${lesson.lesson_number} as complete: ${lesson.title}`, { data:  });
 
 			// Check if lesson progress already exists
 			const { data: existingProgress } = await supabase
@@ -246,7 +245,7 @@ async function main() {
 
 				if (updateError) {
 					// TODO: Async logger needed
-		// (await getLogger()).error(`Failed to update lesson progress for lesson ${lesson.lesson_number}: ${updateError.message}`, { data:  });
+					// (await getLogger()).error(`Failed to update lesson progress for lesson ${lesson.lesson_number}: ${updateError.message}`, { data:  });
 					continue;
 				}
 			} else {
@@ -264,7 +263,7 @@ async function main() {
 
 				if (insertError) {
 					// TODO: Async logger needed
-		// (await getLogger()).error(`Failed to create lesson progress for lesson ${lesson.lesson_number}: ${insertError.message}`, { data:  });
+					// (await getLogger()).error(`Failed to create lesson progress for lesson ${lesson.lesson_number}: ${insertError.message}`, { data:  });
 					continue;
 				}
 			}
@@ -345,7 +344,7 @@ async function main() {
 			}
 
 			// TODO: Async logger needed
-		// (await getLogger()).info("Marked course as completed by setting completed_at timestamp", { data:  });
+			// (await getLogger()).info("Marked course as completed by setting completed_at timestamp", { data:  });
 		} else {
 			// Create new course progress
 			const { error: insertError } = await supabase
@@ -366,7 +365,7 @@ async function main() {
 			}
 
 			// TODO: Async logger needed
-		// (await getLogger()).info("Created new course progress record with completed_at timestamp set", { data:  });
+			// (await getLogger()).info("Created new course progress record with completed_at timestamp set", { data:  });
 		}
 
 		// 5. Generate certificate
@@ -386,12 +385,12 @@ async function main() {
 
 		if (certificateError || !certificate) {
 			// TODO: Async logger needed
-		// (await getLogger()).error("Certificate not found in database");
+			// (await getLogger()).error("Certificate not found in database");
 		} else {
 			// TODO: Async logger needed
-		// (await getLogger()).info("Certificate found in database:");
+			// (await getLogger()).info("Certificate found in database:");
 			// TODO: Async logger needed
-		// (await getLogger()).info(certificate);
+			// (await getLogger()).info(certificate);
 		}
 
 		// 7. Check if the certificate file exists in storage
@@ -403,23 +402,23 @@ async function main() {
 
 		if (storageError) {
 			// TODO: Async logger needed
-		// (await getLogger()).error("Failed to list certificate files:", { data: storageError.message });
+			// (await getLogger()).error("Failed to list certificate files:", { data: storageError.message });
 		} else if (!storageData || storageData.length === 0) {
 			// TODO: Async logger needed
-		// (await getLogger()).error("No certificate files found in storage");
+			// (await getLogger()).error("No certificate files found in storage");
 		} else {
 			// TODO: Async logger needed
-		// (await getLogger()).info("Certificate files found in storage:");
+			// (await getLogger()).info("Certificate files found in storage:");
 			// TODO: Async logger needed
-		// (await getLogger()).info(storageData);
+			// (await getLogger()).info(storageData);
 		}
 
 		// TODO: Async logger needed
 		// (await getLogger()).info(`Successfully updated course progress for ${TEST_USER_EMAIL}`);
 		// TODO: Async logger needed
 		// (await getLogger()).info(
-			`Completed ${completedLessonsCount} lessons (${completionPercentage}%)`,
-		);
+		//	`Completed ${completedLessonsCount} lessons (${completionPercentage}%)`,
+		// );
 		// TODO: Async logger needed
 		// (await getLogger()).info("Done!");
 	} catch (_error) {
@@ -432,6 +431,6 @@ async function main() {
 // Call main() directly
 main().catch((_error) => {
 	// TODO: Async logger needed
-		// (await getLogger()).error("Error in main execution:", { data: error });
+	// (await getLogger()).error("Error in main execution:", { data: error });
 	process.exit(1);
 });

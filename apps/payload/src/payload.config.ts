@@ -43,7 +43,7 @@ import {
 import { createURLGenerator } from "./lib/storage-url-generators";
 
 // Initialize service logger
-const { getLogger } = createServiceLogger("PAYLOAD_CONFIG");
+// const { getLogger } = createServiceLogger("PAYLOAD_CONFIG");
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);

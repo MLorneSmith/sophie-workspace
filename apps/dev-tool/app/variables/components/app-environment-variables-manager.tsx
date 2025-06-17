@@ -1,6 +1,5 @@
 "use client";
 
-
 import { createServiceLogger } from "@kit/shared/logger";
 import { Alert, AlertDescription, AlertTitle } from "@kit/ui/alert";
 import { Badge } from "@kit/ui/badge";
@@ -890,8 +889,8 @@ async function copyToClipboard(text: string) {
 	} catch (_err) {
 		// TODO: Async logger needed
 		// (await getLogger()).error("Failed to copy:", {
-			data: _err,
-		});
+		//	data: _err,
+		// });
 	}
 }
 
