@@ -13,6 +13,7 @@ import { If } from '@kit/ui/if';
 import { Trans } from '@kit/ui/trans';
 
 import { useLastAuthMethod } from '../hooks/use-last-auth-method';
+import { useTranslation } from 'react-i18next';
 
 interface ExistingAccountHintProps {
   signInPath?: string;
@@ -35,6 +36,7 @@ export function ExistingAccountHintImpl({
     useLastAuthMethod();
 
   const params = useSearchParams();
+  const { t } = useTranslation();
 
   const isInvite = params.get('invite_token');
 
@@ -78,7 +80,7 @@ export function ExistingAccountHintImpl({
         <AlertDescription>
           <Trans
             i18nKey="auth:existingAccountHint"
-            values={{ method: methodDescription }}
+            values={{ method: t(methodDescription) }}
             components={{
               method: <span className="font-medium" />,
               signInLink: (

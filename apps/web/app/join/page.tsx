@@ -4,7 +4,7 @@ import { notFound, redirect } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 
 import { AuthLayoutShell } from '@kit/auth/shared';
-import { requireUser } from '@kit/supabase/require-user';
+import { MultiFactorAuthError, requireUser } from '@kit/supabase/require-user';
 import { getSupabaseServerAdminClient } from '@kit/supabase/server-admin-client';
 import { getSupabaseServerClient } from '@kit/supabase/server-client';
 import { createTeamAccountsApi } from '@kit/team-accounts/api';
@@ -49,15 +49,26 @@ async function JoinTeamAccountPage(props: JoinTeamAccountPageProps) {
   // redirect to the sign up page with the invite token
   // so that they will get back to this page after signing up
   if (auth.error ?? !auth.data) {
-    const urlParams = new URLSearchParams({
-      invite_token: token,
-      email: searchParams.email ?? '',
-    });
+    if (auth.error instanceof MultiFactorAuthError) {
+      const urlParams = new URLSearchParams({
+        next: `${pathsConfig.app.joinTeam}?invite_token=${token}&email=${searchParams.email ?? ''}`,
+      })
 
-    const signUpPath = `${pathsConfig.auth.signUp}?${urlParams.toString()}`;
+      const verifyMfaUrl = `${pathsConfig.auth.verifyMfa}?${urlParams.toString()}`;
 
-    // redirect to the sign up page with the invite token
-    redirect(signUpPath);
+      // if the user needs to verify MFA, redirect them to the MFA verification page
+      redirect(verifyMfaUrl);
+    } else {
+      const urlParams = new URLSearchParams({
+        invite_token: token,
+        email: searchParams.email ?? '',
+      });
+
+      const nextUrl = `${pathsConfig.auth.signUp}?${urlParams.toString()}`;
+
+      // redirect to the sign up page with the invite token
+      redirect(nextUrl);
+    }
   }
 
   // get api to interact with team accounts
