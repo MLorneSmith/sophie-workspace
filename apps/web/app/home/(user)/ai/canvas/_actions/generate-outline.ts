@@ -1,12 +1,10 @@
 "use server";
 
 import { enhanceAction } from "@kit/next/actions";
+import { createServiceLogger } from "@kit/shared/logger";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
 import { z } from "zod";
-
 import { lexicalToTiptap } from "../_components/editor/tiptap/utils/format-conversion";
-
-import { createServiceLogger } from "@kit/shared/logger";
 
 // Initialize service logger
 const { getLogger } = createServiceLogger("HOME-(USER)");
@@ -262,7 +260,7 @@ export const generateOutlineAction = enhanceAction(
 
 			logger.info("Generating outline for submission:", {
 				data: data.submissionId,
-			});
+			// });
 			logger.info("Raw data:", {
 				situation: submission.situation
 					? `${submission.situation.substring(0, 50)}...`
@@ -284,7 +282,7 @@ export const generateOutlineAction = enhanceAction(
 				situationHasContent: situationDoc.content.some(hasValidText),
 				complicationHasContent: complicationDoc.content.some(hasValidText),
 				answerHasContent: answerDoc.content.some(hasValidText),
-			});
+			// });
 
 			// Create a combined Tiptap document with a clear title
 			// Create a heading to clearly identify this as an outline

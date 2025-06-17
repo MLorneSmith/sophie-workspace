@@ -3,11 +3,6 @@ import LanguageDetector from "i18next-browser-languagedetector";
 import resourcesToBackend from "i18next-resources-to-backend";
 import { initReactI18next } from "react-i18next";
 
-import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("I18N_CLIENT");
-
 // Keep track of the number of iterations
 let iteration = 0;
 
@@ -60,7 +55,7 @@ export async function initializeI18nClient(
 				if (err) {
 					// TODO: Async logger needed
 		// (await getLogger()).error("Error initializing i18n client", { data: err });
-				}
+		// }
 			},
 		);
 

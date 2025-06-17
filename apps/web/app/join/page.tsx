@@ -50,7 +50,7 @@ async function JoinTeamAccountPage(props: JoinTeamAccountPageProps) {
 		const urlParams = new URLSearchParams({
 			invite_token: token,
 			email: searchParams.email ?? "",
-		});
+		// });
 
 		const signUpPath = `${pathsConfig.auth.signUp}?${urlParams.toString()}`;
 

@@ -1,10 +1,5 @@
 import { z } from "zod";
 
-import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("FEATURE-TEAM_ACCOUNTS");
-
 /**
  * @name RESERVED_NAMES_ARRAY
  * @description Array of reserved names for team accounts
@@ -25,7 +20,7 @@ const SPECIAL_CHARACTERS_REGEX = /[!@#$%^&*()+=[\]{};':"\\|,.<>/?]/;
 export const TeamNameSchema = z
 	.string({
 		description: "The name of the team account",
-	})
+	// })
 	.min(2)
 	.max(50)
 	.refine(
@@ -33,18 +28,15 @@ export const TeamNameSchema = z
 			// TODO: Async logger needed
 		// (await getLogger()).info(name);
 			return !SPECIAL_CHARACTERS_REGEX.test(name);
-		},
-		{
-			message: "teams:specialCharactersError",
-		},
-	)
+			// },
+			// {
+			// message: "teams:specialCharactersError",
+			// },
+			// )
 	.refine(
-		(name) => {
-			return !RESERVED_NAMES_ARRAY.includes(name.toLowerCase());
-		},
-		{
-			message: "teams:reservedNameError",
-		},
+		(name) => 
+			return !RESERVED_NAMES_ARRAY.includes(name.toLowerCase());,
+			message: "teams:reservedNameError",,
 	);
 
 /**

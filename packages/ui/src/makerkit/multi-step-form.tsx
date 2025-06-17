@@ -175,7 +175,7 @@ export function useMultiStepForm<Schema extends z.ZodType>(
 	const [state, setState] = useState({
 		currentStepIndex: 0,
 		direction: undefined as "forward" | "backward" | undefined,
-	});
+	// });
 
 	const isStepValid = useCallback(() => {
 		const currentStepName = stepNames[state.currentStepIndex] as Path<

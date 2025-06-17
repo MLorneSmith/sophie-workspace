@@ -21,7 +21,7 @@ export function insertImprovement(
 			type: "heading",
 			attrs: { level: 2 },
 			content: [{ type: "text", text: improvement.implementedSummaryPoint }],
-		})
+		// })
 		.enter()
 		.run();
 

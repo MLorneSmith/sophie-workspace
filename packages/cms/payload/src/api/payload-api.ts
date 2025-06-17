@@ -30,12 +30,8 @@ export async function callPayloadAPI(
 		// (await getLogger()).info("Server-side context detected, { data: skipping authentication" });
 			// We'll continue without a session, which is fine for most Payload CMS operations
 			// The user will still be authenticated through the Next.js middleware
-		}
-	} catch (error) {
-		// TODO: Async logger needed
-		// (await getLogger()).error("Error getting auth session:", { data: error });
-		// Continue without authentication
-	}
+		// }
+	} catch (error) 
 
 	// Use port 3020 to match the actual Payload CMS server port
 	const payloadUrl =
@@ -81,7 +77,7 @@ export async function callPayloadAPI(
 						response.status,
 						response.statusText,
 						errorText,
-					);
+		// );
 					errorMessage =
 						errorText || `${response.status} ${response.statusText}`;
 				}
@@ -97,7 +93,7 @@ export async function callPayloadAPI(
 					`[${requestId}] Payload API error (unreadable):`,
 					response.status,
 					response.statusText,
-				);
+		// );
 				throw new Error(
 					`Failed to call Payload API (${endpoint}): ${response.status} ${response.statusText}`,
 				);
@@ -118,7 +114,7 @@ export async function callPayloadAPI(
 		// (await getLogger()).error(`[${requestId}] Error parsing JSON response:`, { data: parseError });
 			throw new Error(
 				`Failed to parse Payload API response: ${parseError.message}`,
-			);
+		// );
 		}
 	} catch (error: unknown) {
 		// Catch network errors or other exceptions

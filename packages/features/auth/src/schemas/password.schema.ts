@@ -39,7 +39,7 @@ export function refineRepeatPassword(
 			message: "auth:errors.passwordsDoNotMatch",
 			path: ["repeatPassword"],
 			code: "custom",
-		});
+		// });
 	}
 
 	return true;
@@ -54,7 +54,7 @@ function validatePassword(password: string, ctx: z.RefinementCtx) {
 			ctx.addIssue({
 				message: "auth:errors.minPasswordSpecialChars",
 				code: "custom",
-			});
+			// });
 		}
 	}
 
@@ -65,7 +65,7 @@ function validatePassword(password: string, ctx: z.RefinementCtx) {
 			ctx.addIssue({
 				message: "auth:errors.minPasswordNumbers",
 				code: "custom",
-			});
+			// });
 		}
 	}
 
@@ -74,7 +74,7 @@ function validatePassword(password: string, ctx: z.RefinementCtx) {
 			ctx.addIssue({
 				message: "auth:errors.uppercasePassword",
 				code: "custom",
-			});
+			// });
 		}
 	}
 

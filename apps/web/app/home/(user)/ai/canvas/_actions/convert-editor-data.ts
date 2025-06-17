@@ -6,10 +6,6 @@ import type { Database } from "~/lib/database.types";
 
 import { lexicalToTiptap } from "../_components/editor/tiptap/utils/format-conversion";
 
-import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("HOME-(USER)");
 
 /**
  * Server action to convert existing records from Lexical format to Tiptap format
@@ -66,7 +62,7 @@ export async function convertExistingRecordsToTiptap() {
 					submissionId: submission.id,
 					error: updateError,
 					message: `Error updating submission ${submission.id}`,
-				});
+				// });
 				results.failed++;
 				results.errors.push(`ID ${submission.id}: ${updateError.message}`);
 			} else {

@@ -8,11 +8,6 @@ import type {
 
 import GetTagsOptions = Cms.GetTagsOptions;
 
-import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("CMS-PAYLOAD");
-
 /**
  * Creates a new WordpressClient instance.
  *
@@ -41,7 +36,7 @@ class WordpressClient implements CmsClient {
 	async getContentItems(options: Cms.GetContentItemsOptions) {
 		const queryParams = new URLSearchParams({
 			_embed: "true",
-		});
+		// });
 
 		if (options?.limit && options.limit !== Number.POSITIVE_INFINITY) {
 			queryParams.append("per_page", options.limit.toString());
@@ -73,7 +68,7 @@ class WordpressClient implements CmsClient {
 			} else {
 				// TODO: Async logger needed
 		// (await getLogger()).warn("No categories found for the provided slugs", { arg1: options.categories, arg2:  });
-			}
+		// }
 		}
 
 		if (options?.tags) {
@@ -88,7 +83,7 @@ class WordpressClient implements CmsClient {
 			} else {
 				// TODO: Async logger needed
 		// (await getLogger()).warn("No tags found for the provided slugs", { data: options.tags });
-			}
+		// }
 		}
 
 		if (options?.parentIds && options.parentIds.length > 0) {
@@ -291,7 +286,7 @@ class WordpressClient implements CmsClient {
 		// (await getLogger()).error("Failed to fetch categories", { data: await response.json( }));
 
 			throw new Error("Failed to fetch categories");
-		}
+		// }
 
 		const data = (await response.json()) as WP_REST_API_Category[];
 
@@ -327,7 +322,7 @@ class WordpressClient implements CmsClient {
 		// (await getLogger()).error("Failed to fetch tags", { data: await response.json( }));
 
 			throw new Error("Failed to fetch tags");
-		}
+		// }
 
 		const data = (await response.json()) as WP_REST_API_Tag[];
 

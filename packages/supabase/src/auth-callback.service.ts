@@ -6,11 +6,6 @@ import type {
 	SupabaseClient,
 } from "@supabase/supabase-js";
 
-import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("AUTH_CALLBACK_SERVICE");
-
 /**
  * @name createAuthCallbackService
  * @description Creates an instance of the AuthCallbackService
@@ -119,7 +114,7 @@ class AuthCallbackService {
 			const errorMessage = getAuthErrorMessage({
 				error: error.message,
 				code: error.code,
-			});
+			// });
 
 			url.searchParams.set("error", errorMessage);
 		}
@@ -155,7 +150,7 @@ class AuthCallbackService {
 		const inviteToken = searchParams.get("invite_token");
 		const errorPath = params.errorPath ?? "/auth/callback/error";
 
-		let nextUrl = nextUrlPathFromParams ?? params.redirectPath;
+		const nextUrl = nextUrlPathFromParams ?? params.redirectPath;
 
 		// if we have an invite token, we redirect to the join team page
 		// instead of the default next url. This is because the user is trying
@@ -167,7 +162,7 @@ class AuthCallbackService {
 			const urlParams = new URLSearchParams({
 				invite_token: inviteToken,
 				email: emailParam ?? "",
-			});
+			// });
 
 			nextUrl = `${params.joinTeamPath}?${urlParams.toString()}`;
 		}
@@ -183,7 +178,7 @@ class AuthCallbackService {
 						code: error.code,
 						error: error.message,
 						path: errorPath,
-					});
+					// });
 				}
 			} catch (error) {
 				// TODO: Async logger needed
@@ -198,7 +193,7 @@ class AuthCallbackService {
 					code: (error as AuthError)?.code,
 					error: message as string,
 					path: errorPath,
-				});
+				// });
 			}
 		}
 
@@ -206,7 +201,7 @@ class AuthCallbackService {
 			return onError({
 				error,
 				path: errorPath,
-			});
+			// });
 		}
 
 		return {
@@ -214,14 +209,13 @@ class AuthCallbackService {
 		};
 	}
 
-	private adjustUrlHostForLocalDevelopment(url: URL, host: string | null) {
+	private adjustUrlHostForLocalDevelopment(url: URL, host: string | null) 
 		if (this.isLocalhost(url.host) && !this.isLocalhost(host)) {
 			url.host = host as string;
 			url.port = "";
 		}
-	}
 
-	private isLocalhost(host: string | null) {
+	private isLocalhost(host: string | null) 
 		if (!host) {
 			return false;
 		}
@@ -231,7 +225,6 @@ class AuthCallbackService {
 			host.includes("0.0.0.0:") ||
 			host.includes("127.0.0.1:")
 		);
-	}
 }
 
 function onError({
@@ -254,7 +247,7 @@ function onError({
 	const searchParams = new URLSearchParams({
 		error: errorMessage,
 		code: code ?? "",
-	});
+	// });
 
 	const nextPath = `${path}?${searchParams.toString()}`;
 

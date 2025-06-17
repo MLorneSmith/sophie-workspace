@@ -1,6 +1,7 @@
 "use client";
 
 import type { BaseImprovement } from "@kit/ai-gateway/src/prompts/types/improvements";
+import { createServiceLogger } from "@kit/shared/logger";
 import { useSupabase } from "@kit/supabase/hooks/use-supabase";
 import {
 	ResizableHandle,
@@ -11,9 +12,7 @@ import { Spinner } from "@kit/ui/spinner";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useRef, useState } from "react";
-
 import type { Database } from "~/lib/database.types";
-
 import { generateIdeasAction } from "../_actions/generate-ideas";
 import { generateOutlineAction } from "../_actions/generate-outline";
 import { useActionWithCost } from "../_lib/hooks/use-action-with-cost";
@@ -23,8 +22,6 @@ import { TiptapTabContent } from "./editor/tiptap/tiptap-tab-content";
 import { LoadingAnimation } from "./suggestions/loading-animation";
 import { LOADING_MESSAGES } from "./suggestions/loading-messages";
 import { SuggestionsPane } from "./suggestions/suggestions-pane";
-
-import { createServiceLogger } from "@kit/shared/logger";
 
 // Initialize service logger
 const { getLogger } = createServiceLogger("HOME-(USER)");
@@ -171,7 +168,7 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
 				content: contentToSend,
 				submissionId,
 				type: sectionType,
-			});
+			// });
 
 			if (result.success && result.data?.improvements) {
 				setSuggestions(result.data.improvements);
@@ -253,7 +250,7 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
 														// First, invalidate the query cache
 														await queryClient.invalidateQueries({
 															queryKey: ["submission", submissionId, "outline"],
-														});
+														// });
 
 														// Increment the reset key to force a complete remount
 														setResetKey((prev) => prev + 1);

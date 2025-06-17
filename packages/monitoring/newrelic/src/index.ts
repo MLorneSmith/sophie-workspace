@@ -1,4 +1,4 @@
 export {
-	NewRelicMonitoringService,
 	createNewRelicMonitoringService,
+	NewRelicMonitoringService,
 } from "./services/newrelic-monitoring.service";

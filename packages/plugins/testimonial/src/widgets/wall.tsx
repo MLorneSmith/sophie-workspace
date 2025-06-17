@@ -113,7 +113,10 @@ function MasonryWallWidget({
 	return (
 		<div className="grid grid-cols-2 gap-4 md:grid-cols-4">
 			{groups.map((group, index) => (
-				<div key={`testimonial-group-${index}-${group[0]?.id || index}`} className={"grid gap-4"}>
+				<div
+					key={`testimonial-group-${index}-${group[0]?.id || index}`}
+					className={"grid gap-4"}
+				>
 					{group.map((testimonial) => (
 						<TestimonialCard key={testimonial.id} testimonial={testimonial} />
 					))}

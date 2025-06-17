@@ -54,7 +54,7 @@ export function ResendAuthLinkForm(props: { redirectPath?: string }) {
 					return resendLink.mutate({
 						email: data.email,
 						redirectPath: props.redirectPath,
-					});
+					// });
 				})}
 			>
 				<FormField

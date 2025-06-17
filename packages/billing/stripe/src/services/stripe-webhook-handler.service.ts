@@ -57,7 +57,7 @@ export class StripeWebhookHandlerService
 		const { webhooksSecret } = StripeServerEnvSchema.parse({
 			secretKey: process.env.STRIPE_SECRET_KEY,
 			webhooksSecret: process.env.STRIPE_WEBHOOK_SECRET,
-		});
+		// });
 
 		const stripe = await this.loadStripe();
 
@@ -245,7 +245,7 @@ export class StripeWebhookHandlerService
 				cancelAtPeriodEnd: subscription.cancel_at_period_end,
 				trialStartsAt: subscription.trial_start,
 				trialEndsAt: subscription.trial_end,
-			});
+			// });
 
 			return onCheckoutCompletedCallback(payload);
 		}
@@ -340,7 +340,7 @@ export class StripeWebhookHandlerService
 			cancelAtPeriodEnd: subscription.cancel_at_period_end,
 			trialStartsAt: subscription.trial_start,
 			trialEndsAt: subscription.trial_end,
-		});
+		// });
 
 		return onSubscriptionUpdatedCallback(payload);
 	}
@@ -429,7 +429,7 @@ export class StripeWebhookHandlerService
 			cancelAtPeriodEnd: subscription.cancel_at_period_end,
 			trialStartsAt: subscription.trial_start,
 			trialEndsAt: subscription.trial_end,
-		});
+		// });
 
 		return onInvoicePaid(payload);
 	}
@@ -441,10 +441,10 @@ export class StripeWebhookHandlerService
 			if (!type) {
 				// TODO: Async logger needed
 		// (await getLogger()).warn({
-						lineItemId: item.id, { arg1: }, arg2: `Line item is not in the billing configuration, arg3: please add it. Defaulting to "flat" type.`, arg4:  });
+						// lineItemId: item.id, { arg1: }, arg2: `Line item is not in the billing configuration, arg3: please add it. Defaulting to "flat" type.`, arg4:  });
 
 				type = "flat" as const;
-			}
+		// }
 
 			return { ...item, type };
 		});

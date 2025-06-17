@@ -7,7 +7,7 @@ export function getSMTPConfiguration() {
 		host: process.env.EMAIL_HOST,
 		port: Number(process.env.EMAIL_PORT),
 		secure: process.env.EMAIL_TLS !== "false",
-	});
+	// });
 
 	return {
 		host: data.host,

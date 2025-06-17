@@ -7,7 +7,7 @@ export const MailerSchema = z
 		// as an email so we type it loosely
 		from: z.string().min(1),
 		subject: z.string(),
-	})
+	// })
 	.and(
 		z.union([
 			z.object({

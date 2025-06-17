@@ -2,11 +2,6 @@
 
 import { Component, type ReactNode } from "react";
 
-import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("HOME-(USER)");
-
 interface Props {
 	children: ReactNode;
 	fallback: ReactNode;
@@ -30,8 +25,8 @@ export class ErrorBoundary extends Component<Props, State> {
 	componentDidCatch(error: Error) {
 		// TODO: Async logger needed
 		// (await getLogger()).error("Error caught by boundary:", {
-			data: error,
-		});
+		// data: error,
+		// });
 	}
 
 	render() {

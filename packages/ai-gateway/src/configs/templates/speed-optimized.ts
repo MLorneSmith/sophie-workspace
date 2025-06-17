@@ -85,7 +85,7 @@ export function createSpeedOptimizedConfig(
 		conditions.push({
 			type: "content_change",
 			value: contentVersion,
-		});
+		// });
 	}
 
 	return withForceRefresh(withNamespace, conditions);

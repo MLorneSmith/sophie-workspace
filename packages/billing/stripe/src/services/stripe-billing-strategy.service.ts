@@ -112,7 +112,7 @@ export class StripeBillingStrategyService
 		try {
 			await stripe.subscriptions.cancel(params.subscriptionId, {
 				invoice_now: params.invoiceNow ?? true,
-			});
+			// });
 
 			logger.info(ctx, "Subscription cancelled successfully");
 
@@ -408,7 +408,7 @@ export class StripeBillingStrategyService
 				periodEndsAt: periodEndsAt ?? 0,
 				trialStartsAt: subscription.trial_start,
 				trialEndsAt: subscription.trial_end,
-			});
+			// });
 		} catch (error) {
 			logger.error({ ...ctx, error }, "Failed to retrieve subscription");
 

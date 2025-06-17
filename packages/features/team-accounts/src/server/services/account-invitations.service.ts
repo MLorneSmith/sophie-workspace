@@ -45,7 +45,7 @@ class AccountInvitationsService {
 			.delete()
 			.match({
 				id: params.invitationId,
-			});
+			// });
 
 		if (error) {
 			logger.error(ctx, "Failed to remove invitation");
@@ -77,10 +77,10 @@ class AccountInvitationsService {
 			.from("invitations")
 			.update({
 				role: params.role,
-			})
+			// })
 			.match({
 				id: params.invitationId,
-			});
+			// });
 
 		if (error) {
 			logger.error(
@@ -181,7 +181,7 @@ class AccountInvitationsService {
 		const response = await this.client.rpc("add_invitations_to_account", {
 			invitations,
 			account_slug: accountSlug,
-		});
+		// });
 
 		if (response.error) {
 			logger.error(
@@ -230,7 +230,7 @@ class AccountInvitationsService {
 		const { error, data } = await adminClient.rpc("accept_invitation", {
 			token: params.inviteToken,
 			user_id: params.userId,
-		});
+		// });
 
 		if (error) {
 			logger.error(
@@ -270,10 +270,10 @@ class AccountInvitationsService {
 			.from("invitations")
 			.update({
 				expires_at: sevenDaysFromNow,
-			})
+			// })
 			.match({
 				id: invitationId,
-			});
+			// });
 
 		if (error) {
 			logger.error(

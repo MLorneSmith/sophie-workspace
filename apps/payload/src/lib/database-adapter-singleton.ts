@@ -1,7 +1,6 @@
+import { createServiceLogger, type LogContext } from "@kit/shared/logger";
 import type { PostgresAdapterArgs } from "@payloadcms/db-postgres";
 import { postgresAdapter } from "@payloadcms/db-postgres";
-
-import { createServiceLogger, type LogContext } from "@kit/shared/logger";
 
 // Initialize enhanced logger for database adapter
 const { getLogger, getContextLogger } = createServiceLogger("DB-ADAPTER");
@@ -64,7 +63,6 @@ class DatabaseAdapterManager {
 			operation: "db_adapter_init",
 		});
 	}
-
 
 	/**
 	 * Get or create the database adapter synchronously

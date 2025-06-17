@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// biome-ignore lint/suspicious/noConsole: Migration script - console output is required
 
 const fs = require("fs");
 const path = require("path");
@@ -190,6 +191,7 @@ function replaceConsoleStatements(content, filePath) {
 
 	// Add note about manual review if needed
 	if (modifiedContent.includes("/* TODO: Async logger needed */")) {
+		// biome-ignore lint/suspicious/noConsole: Manual review notification
 		console.log(
 			`${colors.yellow}⚠️  ${filePath} requires manual review for async logger usage${colors.reset}`,
 		);
@@ -206,6 +208,7 @@ async function processFile(filePath) {
 
 		// Skip if no console statements
 		if (!content.includes("console.")) {
+			// biome-ignore lint/suspicious/noConsole: Skip notification
 			console.log(
 				`${colors.blue}ℹ️  ${filePath} - No console statements found${colors.reset}`,
 			);
@@ -227,10 +230,12 @@ async function processFile(filePath) {
 		// Write back to file
 		fs.writeFileSync(filePath, finalContent, "utf8");
 
+		// biome-ignore lint/suspicious/noConsole: Success notification
 		console.log(
 			`${colors.green}✅ ${filePath} - Migrated ${count} console statements (Service: ${serviceName})${colors.reset}`,
 		);
 	} catch (error) {
+		// biome-ignore lint/suspicious/noConsole: Error reporting
 		console.error(
 			`${colors.red}❌ Error processing ${filePath}: ${error.message}${colors.reset}`,
 		);
@@ -242,7 +247,9 @@ async function main() {
 	const args = process.argv.slice(2);
 
 	if (args.length === 0) {
+		// biome-ignore lint/suspicious/noConsole: Usage information
 		console.log("Usage: node migrate-to-logger.js <file1> <file2> ...");
+		// biome-ignore lint/suspicious/noConsole: Usage information
 		console.log("   or: node migrate-to-logger.js --from-file <file-list.txt>");
 		process.exit(1);
 	}
@@ -256,6 +263,7 @@ async function main() {
 			const fileList = fs.readFileSync(fileListPath, "utf8");
 			files = fileList.split("\n").filter((line) => line.trim());
 		} catch (error) {
+			// biome-ignore lint/suspicious/noConsole: File reading error
 			console.error(
 				`${colors.red}Error reading file list: ${error.message}${colors.reset}`,
 			);
@@ -266,6 +274,7 @@ async function main() {
 		files = args;
 	}
 
+	// biome-ignore lint/suspicious/noConsole: Progress information
 	console.log(
 		`${colors.blue}🔄 Starting migration of ${files.length} files...${colors.reset}\n`,
 	);
@@ -275,14 +284,18 @@ async function main() {
 		await processFile(file);
 	}
 
+	// biome-ignore lint/suspicious/noConsole: Completion message
 	console.log(`\n${colors.green}✅ Migration complete!${colors.reset}`);
+	// biome-ignore lint/suspicious/noConsole: Review instructions
 	console.log(
 		`${colors.yellow}⚠️  Please review files marked with TODO comments for async logger usage${colors.reset}`,
 	);
+	// biome-ignore lint/suspicious/noConsole: Verification instructions
 	console.log(
 		`${colors.blue}ℹ️  Run 'pnpm biome check' to verify no console statements remain${colors.reset}`,
 	);
 }
 
 // Run the script
+// biome-ignore lint/suspicious/noConsole: Fatal error handler
 main().catch(console.error);

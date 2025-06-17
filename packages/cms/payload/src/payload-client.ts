@@ -17,7 +17,9 @@ export class PayloadClient implements CmsClient {
 			const data = await response.json();
 
 			// Map items
-			const items = data.docs.map((doc: unknown) => this.mapContentItem(doc as Record<string, unknown>));
+			const items = data.docs.map((doc: unknown) =>
+				this.mapContentItem(doc as Record<string, unknown>),
+			);
 
 			// Create a map of items by ID for quick lookup
 			const itemsMap = new Map<string, Cms.ContentItem>();
@@ -236,17 +238,19 @@ export class PayloadClient implements CmsClient {
 			// Also include the original image_id for components that might need to access it directly
 			image_id: item.image_id,
 			status: item.status as Cms.ContentItemStatus,
-			categories: ((item.categories as unknown[]) || []).map((category: unknown) => {
-				const cat = category as { category?: string };
-				const categoryValue = cat?.category || "";
-				return {
-					id: categoryValue,
-					name: categoryValue,
-					slug: categoryValue
-						? categoryValue.toLowerCase().replace(/\s+/g, "-")
-						: "",
-				};
-			}),
+			categories: ((item.categories as unknown[]) || []).map(
+				(category: unknown) => {
+					const cat = category as { category?: string };
+					const categoryValue = cat?.category || "";
+					return {
+						id: categoryValue,
+						name: categoryValue,
+						slug: categoryValue
+							? categoryValue.toLowerCase().replace(/\s+/g, "-")
+							: "",
+					};
+				},
+			),
 			tags: ((item.tags as unknown[]) || []).map((tag: unknown) => {
 				const t = tag as { tag?: string };
 				const tagValue = t?.tag || "";
@@ -259,7 +263,9 @@ export class PayloadClient implements CmsClient {
 			parentId: parent?.id || undefined,
 			order: (item.order as number) || 0,
 			children: [],
-			breadcrumbs: ((item.breadcrumbs as string[]) || []).map((label: string) => ({ label })),
+			breadcrumbs: ((item.breadcrumbs as string[]) || []).map(
+				(label: string) => ({ label }),
+			),
 		};
 
 		// Map children if they exist

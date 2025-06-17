@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
-import { useQueryClient } from "@tanstack/react-query";
 import { createServiceLogger } from "@kit/shared/logger";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 
 // Initialize service logger
 const { getLogger } = createServiceLogger("MARKETING-DEBUG");

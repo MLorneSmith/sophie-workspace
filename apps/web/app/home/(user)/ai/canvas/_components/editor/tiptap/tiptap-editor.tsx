@@ -28,9 +28,9 @@ import { normalizeEditorContent } from "../../../_lib/utils/normalize-editor-con
 import type { EditorContentTypes } from "../../../_types/editor-types";
 import { LoadingAnimation } from "../../suggestions/loading-animation";
 import "./editor.css";
-import { Toolbar } from "./toolbar";
 
 import { createServiceLogger } from "@kit/shared/logger";
+import { Toolbar } from "./toolbar";
 
 // Initialize service logger
 const { getLogger } = createServiceLogger("HOME-(USER)");
@@ -83,7 +83,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 		const initialContent = useMemo(() => {
 			// TODO: Async logger needed
 		// (await getLogger()).info("TiptapEditor parsing content:", {
-				sectionType,
+		// sectionType,
 				contentType: typeof content,
 				contentLength:
 					typeof content === "string" ? content.length : "not a string",
@@ -107,10 +107,10 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 				const parsed = JSON.parse(content);
 				// TODO: Async logger needed
 		// (await getLogger()).info("Successfully parsed content:", {
-					type: parsed?.type,
+		// type: parsed?.type,
 					contentLength: parsed?.content?.length,
 					firstNodeType: parsed?.content?.[0]?.type,
-				});
+				// });
 
 				// Normalize the content before passing it to the editor
 				// This helps prevent ProseMirror model version conflicts
@@ -223,7 +223,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 				await queryClient.cancelQueries({
 					queryKey: ["submission", submissionId, sectionType],
 					exact: true,
-				});
+				// });
 
 				// Save previous value
 				const previousContent =
@@ -256,9 +256,9 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 			onSuccess: (data) => {
 				// TODO: Async logger needed
 		// (await getLogger()).debug("Content saved successfully:", {
-					sectionType,
+		// sectionType,
 					data: data?.[sectionType],
-				});
+				// });
 				setSaveStatus("saved");
 				setTimeout(() => setSaveStatus("idle"), 2000);
 			},
@@ -267,7 +267,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 				queryClient.invalidateQueries({
 					queryKey: ["submission", submissionId, sectionType],
 					exact: true,
-				});
+				// });
 			},
 		});
 
@@ -321,10 +321,10 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 				// Log the content types for debugging
 				// TODO: Async logger needed
 		// (await getLogger()).info("Editor update effect with content:", {
-					sectionType,
+		// sectionType,
 					initialContentType: typeof initialContent,
 					editorExists: !!editor,
-				});
+				// });
 
 				// Only update if content has changed to avoid loops
 				const currentContent = editor.getJSON();

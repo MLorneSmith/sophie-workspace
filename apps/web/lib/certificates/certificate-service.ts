@@ -1,5 +1,5 @@
-import { getSupabaseServerClient } from "@kit/supabase/server-client";
 import { createServiceLogger } from "@kit/shared/logger";
+import { getSupabaseServerClient } from "@kit/supabase/server-client";
 
 interface GenerateCertificateParams {
 	userId: string;
@@ -21,7 +21,7 @@ export async function generateCertificate({
 
 	logger.info("Starting certificate generation", { arg1: {
 		operation: "generate_certificate", arg2: userId, arg3: courseId, arg4: fullName: fullName.substring(0, arg5: 10 }) + "...", // Partial name for privacy
-	});
+	// });
 
 	// 1. Get PDF.co API key from environment variables
 	const pdfCoApiKey = process.env.PDF_CO_API_KEY;
@@ -279,7 +279,7 @@ export async function generateCertificate({
 			.upload(fileName, certificateBuffer, {
 				contentType: "application/pdf",
 				upsert: true,
-			});
+			// });
 
 		if (uploadError) {
 			// TODO: Async logger needed

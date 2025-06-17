@@ -1,9 +1,4 @@
 import {
-import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("CMS-PAYLOAD");
-
 	containsTemplateTags,
 	TemplateTagProcessor,
 } from "./template-tag-processor";
@@ -16,7 +11,7 @@ function debugLog(...args: unknown[]) {
 	if (DEBUG) {
 		// TODO: Async logger needed
 		// (await getLogger()).info("[PayloadContentRenderer]", { data: ...args });
-	}
+		// }
 }
 
 // Type for nodes with various content properties
@@ -128,7 +123,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 								if (htmlContent) {
 									// TODO: Async logger needed
 		// (await getLogger()).info("Using HTML content for Call To Action:", { arg1: `${htmlContent.substring(0, arg2: 100 })}...`,
-									);
+		// );
 									// Note: Content trusted as it comes from Payload CMS admin
 									return (
 										<div
@@ -177,7 +172,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 								if (htmlContent) {
 									// TODO: Async logger needed
 		// (await getLogger()).info("Using HTML content for Test Block:", { arg1: `${htmlContent.substring(0, arg2: 100 })}...`,
-									);
+		// );
 									// Note: Content trusted as it comes from Payload CMS admin
 									return (
 										<div
@@ -218,7 +213,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 								if (htmlContent) {
 									// TODO: Async logger needed
 		// (await getLogger()).info("Using HTML content for Bunny Video:", { arg1: `${htmlContent.substring(0, arg2: 100 })}...`,
-									);
+		// );
 									// Note: Content trusted as it comes from Payload CMS admin
 									return (
 										<div
@@ -308,7 +303,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 								if (htmlContent) {
 									// TODO: Async logger needed
 		// (await getLogger()).info("Using HTML content for YouTube Video:", { arg1: `${htmlContent.substring(0, arg2: 100 })}...`,
-									);
+		// );
 									// Note: Content trusted as it comes from Payload CMS admin
 									return (
 										<div
@@ -512,7 +507,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 												)}
 											</div>
 										</div>
-									);
+		// );
 								}
 
 								// Check for Test Block in fields
@@ -534,7 +529,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 													"Test block content")}
 											</p>
 										</div>
-									);
+		// );
 								}
 
 								// Check for Bunny Video block in fields
@@ -554,7 +549,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 										if (aspectRatio === "4:3") return "75%"; // 3/4 = 0.75 = 75%
 										if (aspectRatio === "1:1") return "100%"; // Square
 										return "56.25%"; // Default to 16:9
-									};
+			// };
 
 									// If no videoId is provided, show a placeholder
 									if (!videoId) {
@@ -572,7 +567,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 													</p>
 												</div>
 											</div>
-										);
+		// );
 									}
 
 									// Render the Bunny.net video player
@@ -621,7 +616,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 										if (match?.[1]) {
 											// If it's a URL, return the extracted ID
 											return match[1];
-										}
+		// }
 
 										// If it's not a URL, assume it's already an ID
 										return input;
@@ -695,7 +690,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 							return null;
 						})}
 					</div>
-				);
+		// );
 			}
 
 			// If root exists but children is not an array, try to render the root directly
@@ -707,12 +702,12 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 						{lexicalContent.root.text || JSON.stringify(lexicalContent.root)}
 					</p>
 				</div>
-			);
+		// );
 		}
 	} catch (error) {
 		// TODO: Async logger needed
 		// (await getLogger()).error("Error rendering Lexical content:", { data: error });
-	}
+		// }
 
 	// Fallback for non-Lexical content
 	// Note: Content trusted as it comes from Payload CMS admin

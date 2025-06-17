@@ -1,11 +1,6 @@
 import type { PostHog as ClientPostHog } from "posthog-js";
 import type { PostHog as ServerPostHog } from "posthog-node";
 
-import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("INDEX");
-
 const isOnServer = typeof document === "undefined";
 
 /**
@@ -106,7 +101,7 @@ class ServerPostHogImpl {
 			host: this.host,
 			flushAt: 1,
 			flushInterval: 0,
-		});
+		// });
 	}
 
 	async identify(userId: string, traits?: Record<string, string>) {
@@ -116,7 +111,7 @@ class ServerPostHogImpl {
 			event: "$identify",
 			distinctId: userId,
 			properties: traits,
-		});
+		// });
 	}
 
 	async trackPageView(url: string) {
@@ -129,7 +124,7 @@ class ServerPostHogImpl {
 			event: "$pageview",
 			distinctId: this.userId,
 			properties: { $current_url: url },
-		});
+		// });
 	}
 
 	async trackEvent(
@@ -148,7 +143,7 @@ class ServerPostHogImpl {
 			event: eventName,
 			distinctId: this.userId,
 			properties: eventProperties,
-		});
+		// });
 
 		await client.shutdown();
 	}
@@ -157,16 +152,15 @@ class ServerPostHogImpl {
 		if (process.env.NODE_ENV === "development") {
 			// TODO: Async logger needed
 		// (await getLogger()).info("[ServerPostHog]", { data: ...args });
-		}
+		// }
 	}
 
-	private getClient() {
+	private getClient() 
 		if (!this.ph) {
 			throw new Error("PostHog client not initialized");
 		}
 
 		return this.ph;
-	}
 }
 
 /**
@@ -192,7 +186,7 @@ class ClientPostHogImpl {
 			person_profiles: "always",
 			capture_pageview: false,
 			capture_pageleave: true,
-		});
+		// });
 
 		this.ph = posthog;
 	}
@@ -223,14 +217,13 @@ class ClientPostHogImpl {
 		if (process.env.NODE_ENV === "development") {
 			// TODO: Async logger needed
 		// (await getLogger()).info("[ClientPostHog]", { data: ...args });
-		}
+		// }
 	}
 
-	private getClient() {
+	private getClient() 
 		if (!this.ph) {
 			throw new Error("PostHog client not initialized");
 		}
 
 		return this.ph;
-	}
 }

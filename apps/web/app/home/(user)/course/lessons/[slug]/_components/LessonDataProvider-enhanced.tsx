@@ -2,10 +2,6 @@ import type { Database } from "~/lib/database.types";
 // Import the server client using dynamic import to avoid issues with next/headers
 import { updateLessonProgressAction } from "../../../_lib/server/server-actions";
 
-import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("HOME-(USER)");
 
 // Define proper types for Payload CMS data structures
 type PayloadLesson = Database["payload"]["Tables"]["course_lessons"]["Row"];
@@ -90,7 +86,7 @@ export async function LessonDataProviderEnhanced({
 			lessonId,
 			completionPercentage: 0,
 			completed: false,
-		});
+		// });
 	}
 
 	// Get quiz data if lesson has a quiz
@@ -239,8 +235,8 @@ export async function LessonDataProviderEnhanced({
 
 			// TODO: Async logger needed
 		// (await getLogger()).info(
-				`Lesson ${lesson.title} (${lessonId}) has survey ID: ${actualSurveyId}`,
-			);
+		// `Lesson ${lesson.title} (${lessonId}) has survey ID: ${actualSurveyId}`,
+		// );
 			// TODO: Async logger needed
 		// TODO: Fix logger call - was: info
 

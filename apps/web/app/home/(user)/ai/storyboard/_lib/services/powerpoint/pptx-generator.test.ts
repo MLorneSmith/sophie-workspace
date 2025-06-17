@@ -88,7 +88,7 @@ describe("PptxGenerator", () => {
 				expect(mockPptxGen.defineSlideMaster).toHaveBeenCalledWith({
 					title: masterName,
 					background: { color: "FFFFFF" },
-				});
+				// });
 			}
 		});
 
@@ -133,7 +133,7 @@ describe("PptxGenerator", () => {
 			expect(result).toBe(mockBuffer);
 			expect(mockPptxGen.write).toHaveBeenCalledWith({
 				outputType: "nodebuffer",
-			});
+			// });
 		});
 
 		it("should set presentation metadata correctly", async () => {
@@ -244,7 +244,7 @@ describe("PptxGenerator", () => {
 
 				expect(mockPptxGen.addSlide).toHaveBeenCalledWith({
 					masterName: layout.expected,
-				});
+				// });
 				vi.clearAllMocks();
 			}
 		});
@@ -269,7 +269,7 @@ describe("PptxGenerator", () => {
 
 			expect(mockPptxGen.addSlide).toHaveBeenCalledWith({
 				masterName: "MASTER_ONE_COLUMN",
-			});
+			// });
 		});
 	});
 
@@ -301,7 +301,7 @@ describe("PptxGenerator", () => {
 				fontFace: "Arial",
 				bold: true,
 				align: "center",
-			});
+			// });
 		});
 
 		it("should add title with correct positioning for section layout", async () => {
@@ -331,7 +331,7 @@ describe("PptxGenerator", () => {
 				fontFace: "Arial",
 				bold: true,
 				align: "center",
-			});
+			// });
 		});
 
 		it("should add title with correct positioning for content layouts", async () => {
@@ -361,7 +361,7 @@ describe("PptxGenerator", () => {
 				fontFace: "Arial",
 				bold: true,
 				align: "left",
-			});
+			// });
 		});
 	});
 
@@ -410,7 +410,7 @@ describe("PptxGenerator", () => {
 				bold: true,
 				italic: false,
 				underline: true,
-			});
+			// });
 		});
 
 		it("should add bullet content with bullet formatting", async () => {
@@ -691,7 +691,7 @@ describe("PptxGenerator", () => {
 				y: 1.8,
 				w: 9,
 				h: 4,
-			});
+			// });
 		});
 
 		it("should handle image loading errors gracefully", async () => {
@@ -912,7 +912,7 @@ describe("PptxGenerator", () => {
 				title: "Test Chart",
 				labels: ["A", "B", "C"],
 				values: [1, 2, 3],
-			});
+			// });
 
 			const storyboard: StoryboardData = {
 				title: "Test",

@@ -226,7 +226,10 @@ export function PlaceholdersAndVanishInput({
 
 	return (
 		<div className="mx-auto flex w-full max-w-[1000px] items-center gap-4">
-			<label htmlFor={inputId} className="w-28 text-base leading-tight font-medium text-gray-600 dark:text-gray-300">
+			<label
+				htmlFor={inputId}
+				className="w-28 text-base leading-tight font-medium text-gray-600 dark:text-gray-300"
+			>
 				Name your presentation
 			</label>
 			<form

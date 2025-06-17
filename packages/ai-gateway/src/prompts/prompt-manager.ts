@@ -17,7 +17,10 @@ const templateRegistry: Record<string, ChatMessage[]> = {
  * @param variables An object mapping variable names to their values
  * @returns The compiled template with variables replaced
  */
-export function compileTemplate(template: string, variables: Record<string, string>): string {
+export function compileTemplate(
+	template: string,
+	variables: Record<string, string>,
+): string {
 	return Object.entries(variables).reduce((result, [key, value]) => {
 		const pattern = new RegExp(`{{${key}}}`, "g");
 		return result.replace(pattern, value);
@@ -57,7 +60,10 @@ export class PromptManager {
 	 * @param variables An object mapping variable names to their values
 	 * @returns The compiled template with variables replaced
 	 */
-	static compileTemplate(template: string, variables: Record<string, string>): string {
+	static compileTemplate(
+		template: string,
+		variables: Record<string, string>,
+	): string {
 		return compileTemplate(template, variables);
 	}
 

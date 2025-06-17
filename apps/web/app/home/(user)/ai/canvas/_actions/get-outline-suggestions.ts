@@ -11,10 +11,6 @@ import { z } from "zod";
 
 import { lexicalToTiptap } from "../_components/editor/tiptap/utils/format-conversion";
 
-import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("HOME-(USER)");
 
 interface TiptapNode {
 	type: string;
@@ -99,7 +95,7 @@ export const getOutlineSuggestionsAction = enhanceAction(
 			const config = createQualityOptimizedConfig({
 				userId: user.id,
 				context: "outline-suggestions",
-			});
+			// });
 
 			// Parse Tiptap documents and extract text content
 			const situationContent = getTextContent(
@@ -139,7 +135,7 @@ ${improvementFormat}`,
 				userId: user.id,
 				feature: "outline-suggestions",
 				sessionId: data.submissionId,
-			});
+			// });
 
 			// Parse the JSON response
 			const suggestions = JSON.parse(result.content);
@@ -150,10 +146,11 @@ ${improvementFormat}`,
 			};
 		} catch (error) {
 			// TODO: Async logger needed
+		// TODO: Async logger needed
 		// (await getLogger()).error(
-				"Error in outline suggestions action:",
-				{ data: error },
-			);
+		// 	"Error in outline suggestions action:",
+		// 	{ data: error }
+		// );
 
 			return {
 				success: false,

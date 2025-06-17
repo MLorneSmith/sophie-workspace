@@ -16,10 +16,6 @@ import {
 	saveStoryboardAction,
 } from "../services/storyboard-service";
 import type {
-import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("HOME-(USER)");
 
 	BuildingBlocksSubmission,
 	Slide,
@@ -89,7 +85,7 @@ export function StoryboardProvider({ children }: StoryboardProviderProps) {
 			try {
 				const presentation = await getPresentationAction({
 					presentationId: currentPresentationId,
-				});
+				// });
 
 				// Type assertion to handle various response formats
 				const typedPresentation =
@@ -110,9 +106,9 @@ export function StoryboardProvider({ children }: StoryboardProviderProps) {
 					setStoryboard({
 						title: typedPresentation.title || "Untitled Presentation",
 						slides: [],
-					});
+					// });
 				}
-			} catch (err) {
+			} catch (err) 
 				// TODO: Async logger needed
 		// TODO: Fix logger call - was: error
 				setError(
@@ -120,10 +116,8 @@ export function StoryboardProvider({ children }: StoryboardProviderProps) {
 						? err
 						: new Error("Failed to fetch presentation"),
 				);
-				toast.error("Failed to load presentation");
-			} finally {
+				toast.error("Failed to load presentation");finally 
 				setIsLoading(false);
-			}
 		};
 
 		fetchPresentation();
@@ -142,7 +136,7 @@ export function StoryboardProvider({ children }: StoryboardProviderProps) {
 				const _result = await saveStoryboardAction({
 					presentationId: currentPresentationId,
 					storyboard: updatedStoryboard,
-				});
+				// });
 
 				// saveStoryboardAction throws an error on failure, it doesn't return { success: false, message: ... }
 				// If we reach here, it means the action was successful.
@@ -377,7 +371,7 @@ function generateStoryboardFromOutline(
 						type: "text",
 						text: headingText,
 						columnIndex: 0,
-					});
+					// });
 				}
 			} else if (node.type === "paragraph" && currentSlide) {
 				// Add paragraphs as text content
@@ -387,7 +381,7 @@ function generateStoryboardFromOutline(
 					type: "text",
 					text: extractTextFromNode(node),
 					columnIndex: 0,
-				});
+				// });
 			} else if (
 				(node.type === "bulletList" || node.type === "orderedList") &&
 				currentSlide
@@ -420,7 +414,7 @@ function generateStoryboardFromOutline(
 				},
 			],
 			order: 0,
-		});
+		// });
 	}
 
 	return {
@@ -471,7 +465,7 @@ function processList(
 						type,
 						text: extractTextFromNode(itemContent),
 						columnIndex: 0,
-					});
+					// });
 				} else if (
 					itemContent.type === "bulletList" ||
 					itemContent.type === "orderedList"

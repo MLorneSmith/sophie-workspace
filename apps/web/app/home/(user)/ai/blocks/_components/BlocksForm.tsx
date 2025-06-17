@@ -1,5 +1,7 @@
 "use client";
 
+
+import { createServiceLogger } from "@kit/shared/logger";
 import { Button } from "@kit/ui/button";
 import {
 	Card,
@@ -15,7 +17,6 @@ import { Textarea } from "@kit/ui/textarea";
 import debounce from "lodash/debounce";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-
 import { getSuggestions } from "../_actions/ai-suggestions-action";
 import { submitBuildingBlocksAction } from "../_actions/submitBuildingBlocksAction";
 import {
@@ -26,8 +27,6 @@ import {
 	questions,
 } from "../_config/formContent";
 import { type FormData, useSetupForm } from "./BlocksFormContext";
-
-import { createServiceLogger } from "@kit/shared/logger";
 
 // Initialize service logger
 const { getLogger } = createServiceLogger("HOME-(USER)");
@@ -519,14 +518,14 @@ export function SetupForm({ _userId }: SetupFormProps) {
 											setFormData({
 												...formData,
 												title: suggestion,
-											});
+											// });
 											setTouchedFields(new Set(touchedFields).add("title"));
 											validateField("title");
 										} else if (currentField === "audience") {
 											setFormData({
 												...formData,
 												audience: suggestion,
-											});
+											// });
 											setTouchedFields(new Set(touchedFields).add("audience"));
 											validateField("audience");
 										}

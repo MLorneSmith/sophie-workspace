@@ -26,7 +26,7 @@ export function UpdateTeamAccountImage(props: {
 				success: t("updateTeamSuccessMessage"),
 				error: t("updateTeamErrorMessage"),
 				loading: t("updateTeamLoadingMessage"),
-			});
+			// });
 		},
 		[t],
 	);
@@ -53,7 +53,7 @@ export function UpdateTeamAccountImage(props: {
 									.from("accounts")
 									.update({
 										picture_url: pictureUrl,
-									})
+									// })
 									.eq("id", props.account.id)
 									.throwOnError();
 							},
@@ -68,7 +68,7 @@ export function UpdateTeamAccountImage(props: {
 							.from("accounts")
 							.update({
 								picture_url: null,
-							})
+							// })
 							.eq("id", props.account.id)
 							.throwOnError();
 					});

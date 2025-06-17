@@ -16,11 +16,6 @@ import { enhanceAction } from "@kit/next/actions";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
 import { z } from "zod";
 
-import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("HOME-(USER)");
-
 // Define Zod schema for request validation
 const IdeasSchema = z.object({
 	content: z.string().min(1, "Content is required"),
@@ -57,18 +52,18 @@ export const generateIdeasAction = enhanceAction(
 
 			// Debug log the request
 			// TODO: Async logger needed
-		// (await getLogger()).info("Ideas Request:", {
-				contentLength: contentToUse.length,
-				userId: user.id,
-				submissionId: data.submissionId,
-				type: data.type,
-			});
+			// (await getLogger()).info("Ideas Request:", {
+			// 	contentLength: contentToUse.length,
+			// 	userId: user.id,
+			// 	submissionId: data.submissionId,
+			// 	type: data.type,
+			// });
 
 			// Create and normalize config using OpenAI-only config to avoid authentication issues
 			const config = createOpenAIOnlyConfig({
 				userId: user.id,
 				context: `${data.type}-ideas`,
-			});
+			// });
 			const normalizedConfig = ConfigManager.normalizeConfig(config);
 
 			if (!normalizedConfig) {
@@ -113,20 +108,20 @@ ${improvementFormat}`,
 
 			// Log metrics
 			// TODO: Async logger needed
-		// (await getLogger()).info("AI Request Metrics:", {
-				duration,
-				userId: user.id,
-				status: "success",
-			});
+			// (await getLogger()).info("AI Request Metrics:", {
+			// 	duration,
+			// 	userId: user.id,
+			// 	status: "success",
+			// });
 
 			// Parse the response using our utility - extract content from CompletionResult
 			const improvements = parseImprovements(response.content, data.type);
 
 			// Debug log the parsed improvements
 			// TODO: Async logger needed
-		// (await getLogger()).info("Parsed Ideas:", {
-				data: improvements,
-			});
+			// (await getLogger()).info("Parsed Ideas:", {
+			// 	data: improvements,
+			// });
 
 			return {
 				success: true,
@@ -137,9 +132,9 @@ ${improvementFormat}`,
 			};
 		} catch (error) {
 			// TODO: Async logger needed
-		// (await getLogger()).error("Error in ideas action:", {
-				data: error,
-			});
+			// (await getLogger()).error("Error in ideas action:", {
+			// 	data: error,
+			// });
 
 			return {
 				success: false,

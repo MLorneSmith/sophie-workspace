@@ -7,11 +7,11 @@
  * 3. Verifies that the course is marked as completed
  * 4. Checks if the certificate is generated
  */
-import { createClient } from "@supabase/supabase-js";
 
-import fetch from "node-fetch";
 
 import { createServiceLogger } from "@kit/shared/logger";
+import { createClient } from "@supabase/supabase-js";
+import fetch from "node-fetch";
 
 // Initialize service logger
 const { getLogger } = createServiceLogger("TEST_CERTIFICATE_GENERATION");

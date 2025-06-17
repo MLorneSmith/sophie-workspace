@@ -13,10 +13,6 @@ import { generateOutlineAction } from "../../../_actions/generate-outline";
 import { normalizeEditorContent } from "../../../_lib/utils/normalize-editor-content";
 import type { EditorContentTypes } from "../../../_types/editor-types";
 import {
-import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("HOME-(USER)");
 
 	TiptapEditor as TiptapEditorComponent,
 	type TiptapEditorRef,
@@ -185,7 +181,7 @@ export const TiptapTabContent = forwardRef<TiptapEditorRef, TabContentProps>(
 				}
 			},
 			enabled: !!id,
-		});
+		// });
 
 		if (!id) {
 			return <div>No submission ID provided</div>;
@@ -212,7 +208,7 @@ export const TiptapTabContent = forwardRef<TiptapEditorRef, TabContentProps>(
 									await generateOutlineAction({
 										submissionId: id,
 										forceRegenerate: true,
-									});
+									// });
 									// Force refetch
 									window.location.reload();
 								} catch (err) {
@@ -246,10 +242,10 @@ export const TiptapTabContent = forwardRef<TiptapEditorRef, TabContentProps>(
 			}
 			// TODO: Async logger needed
 		// (await getLogger()).info("Prepared editor content:", {
-				sectionType,
+		// sectionType,
 				contentType: typeof editorContent,
 				contentLength: editorContent.length,
-			});
+			// });
 		} catch (e) {
 			// TODO: Async logger needed
 		// TODO: Fix logger call - was: error

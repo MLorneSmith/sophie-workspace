@@ -12,11 +12,6 @@ import { Trans } from "@kit/ui/trans";
 import { Circle, CircleStopIcon, Loader2, Trash } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("VIDEO_RECORDER");
-
 interface VideoRecorderProps {
 	onVideoRecorded: (blob: Blob | null) => void;
 	maxRecordingTime?: number;
@@ -93,8 +88,8 @@ export function VideoRecorder({
 
 					// TODO: Async logger needed
 		// (await getLogger()).error(`Error ${error?.code}; details: ${error?.message}`);
-				};
-			}
+			// };
+		// }
 
 			const isSafari =
 				navigator.userAgent.includes("Safari") &&
@@ -141,13 +136,11 @@ export function VideoRecorder({
 					return prevTimer + 1;
 				});
 			}, 1000);
-		} catch (err) {
+		} catch (err) 
 			// TODO: Async logger needed
 		// (await getLogger()).error("Error accessing media devices:", { data: err });
 
-			setError("testimonials:errorMessage");
-		}
-	}, [maxRecordingTime, onVideoRecorded, settings, stopRecording]);
+			setError("testimonials:errorMessage");, [maxRecordingTime, onVideoRecorded, settings, stopRecording]);
 
 	useEffect(() => {
 		if (videoBlob && videoRef.current) {

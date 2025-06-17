@@ -71,7 +71,7 @@ export function AccountMembersTable({
 		currentUserId,
 		currentAccountId,
 		currentRoleHierarchy: userRoleHierarchy,
-	});
+	// });
 
 	const filteredMembers = members
 		.filter((member) => {

@@ -1,10 +1,5 @@
 import { createI18nSettings } from "@kit/i18n";
 
-import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("LIB-I18N");
-
 /**
  * The default language of the application.
  * This is used as a fallback language when the selected language is not supported.

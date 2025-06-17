@@ -116,7 +116,7 @@ export function extractHeadingsFromJSX(jsx: {
 					level: 1,
 					href: `#${slug}`,
 					children: [],
-				});
+				// });
 			} else if (nodeType === "h2") {
 				const slug = generateSlug(text);
 
@@ -140,14 +140,13 @@ export function extractHeadingsFromJSX(jsx: {
 					level: 3,
 					href: `#${slug}`,
 					children: [],
-				});
+				// });
 			}
 		}
 
 		return headings;
-	} catch {
+	} catch 
 		return [];
-	}
 }
 
 function generateSlug(text: string): string {

@@ -114,7 +114,10 @@ export const CardSpotlight = ({
 				{bulletPoints && bulletPoints.length > 0 && (
 					<ul className="mt-auto space-y-2">
 						{bulletPoints.map((point, index) => (
-							<li key={`bullet-${index}-${point.slice(0, 20)}`} className="text-sm text-zinc-400">
+							<li
+								key={`bullet-${index}-${point.slice(0, 20)}`}
+								className="text-sm text-zinc-400"
+							>
 								• {point}
 							</li>
 						))}

@@ -490,7 +490,7 @@ function DefaultCheckoutButton(
 		next: props.paths.return,
 		plan: props.plan.id,
 		redirectToCheckout: props.redirectToCheckout ? "true" : "false",
-	});
+	// });
 
 	const linkHref =
 		props.plan.href ?? `${signUpPath}?${searchParams.toString()}`;

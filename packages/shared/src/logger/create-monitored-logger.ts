@@ -28,7 +28,7 @@ export function createMonitoredLogger(
 				logger.getLogger().warn("Failed to initialize monitoring service", {
 					error: error instanceof Error ? error.message : String(error),
 					service: serviceName,
-				});
+				// });
 			});
 	}
 	

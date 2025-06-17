@@ -19,7 +19,7 @@ async function docsLoader(language: string | undefined) {
 			language,
 			limit: Number.POSITIVE_INFINITY,
 			content: false,
-		});
+		// });
 
 		return data.items;
 	} catch (error) {

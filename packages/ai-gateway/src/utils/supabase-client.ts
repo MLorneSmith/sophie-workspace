@@ -172,7 +172,7 @@ export async function getSupabaseClient(
 							errorMessage: error.message,
 							errorCode: error.code,
 							details: error.details,
-						});
+						// });
 						return createMockClient();
 					}
 
@@ -221,7 +221,7 @@ export async function getSupabaseClient(
 					errorMessage: error.message,
 					errorCode: error.code,
 					details: error.details,
-				});
+				// });
 				return createMockClient();
 			}
 

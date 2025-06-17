@@ -94,7 +94,10 @@ const SidebarProvider: React.FC<
 			_setOpen(value);
 
 			// This sets the cookie to keep the sidebar state for SSR hydration
-			setCookie(SIDEBAR_COOKIE_NAME, String(open), { path: '/', maxAge: SIDEBAR_COOKIE_MAX_AGE });
+			setCookie(SIDEBAR_COOKIE_NAME, String(open), {
+				path: "/",
+				maxAge: SIDEBAR_COOKIE_MAX_AGE,
+			});
 		},
 		[setOpenProp, open],
 	);

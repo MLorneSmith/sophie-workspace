@@ -25,7 +25,7 @@ export function ImageUploader(
 		},
 		mode: "onChange",
 		reValidateMode: "onChange",
-	});
+	// });
 
 	const control = register("value");
 

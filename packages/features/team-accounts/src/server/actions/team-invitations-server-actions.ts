@@ -112,7 +112,7 @@ export const acceptInvitationAction = enhanceAction(
 		const accountId = await service.acceptInvitationToTeam(adminClient, {
 			inviteToken,
 			userId: user.id,
-		});
+		// });
 
 		// If the account ID is not present, throw an error
 		if (!accountId) {

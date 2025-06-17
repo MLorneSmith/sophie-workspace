@@ -10,11 +10,6 @@ import {
 } from "@kit/ui/select";
 import type { Slide } from "../_lib/types";
 
-import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("HOME-(USER)");
-
 interface ChartTypeSelectorProps {
 	slide: Slide;
 	contentAreaIndex: number;

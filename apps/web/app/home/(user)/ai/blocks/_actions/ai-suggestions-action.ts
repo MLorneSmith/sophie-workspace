@@ -11,9 +11,8 @@ import { createAudienceSuggestionsConfig } from "@kit/ai-gateway/src/configs/use
 import { createTitleSuggestionsConfig } from "@kit/ai-gateway/src/configs/use-cases/title-suggestions/config";
 import { PromptManager } from "@kit/ai-gateway/src/prompts/prompt-manager";
 import { enhanceAction } from "@kit/next/actions";
-import { z } from "zod";
-
 import { createServiceLogger } from "@kit/shared/logger";
+import { z } from "zod";
 
 // Initialize service logger
 const { getLogger } = createServiceLogger("HOME-(USER)");
@@ -30,7 +29,7 @@ const SuggestionsSchema = z
 			},
 		),
 		presentationType: z.string().optional(),
-	})
+	// })
 	.refine(
 		(data) => {
 			// Require title only for non-title fields
@@ -144,7 +143,7 @@ export const getSuggestions = enhanceAction(
 				field: data.field,
 				presentationType: data.presentationType,
 				userId: user.id,
-			});
+			// });
 
 			// Create and normalize config
 			const config =
@@ -152,16 +151,16 @@ export const getSuggestions = enhanceAction(
 					? createTitleSuggestionsConfig({
 							userId: user.id,
 							context: "title-suggestions",
-						})
+						// })
 					: data.field === "audience"
 						? createAudienceSuggestionsConfig({
 								userId: user.id,
 								context: "audience-suggestions",
-							})
+							// })
 						: createBalancedOptimizedConfig({
 								userId: user.id,
 								context: `suggestions-${data.field}`,
-							});
+							// });
 			const normalizedConfig = ConfigManager.normalizeConfig(config);
 
 			if (!normalizedConfig) {

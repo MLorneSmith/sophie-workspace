@@ -8,11 +8,11 @@
  * Note: Lesson 702 is now included as completed to trigger course completion
  * and certificate generation.
  */
-import { createClient } from "@supabase/supabase-js";
 
-import fetch from "node-fetch";
 
 import { createServiceLogger } from "@kit/shared/logger";
+import { createClient } from "@supabase/supabase-js";
+import fetch from "node-fetch";
 
 // Initialize service logger
 const { getLogger } = createServiceLogger("UPDATE_TEST_USER_PROGRESS");

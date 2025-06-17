@@ -1,10 +1,7 @@
-import type { SignInWithPasswordlessCredentials } from "@supabase/supabase-js";
-
-import { useMutation } from "@tanstack/react-query";
-
-import { useSupabase } from "./use-supabase";
-
 import { createServiceLogger } from "@kit/shared/logger";
+import type { SignInWithPasswordlessCredentials } from "@supabase/supabase-js";
+import { useMutation } from "@tanstack/react-query";
+import { useSupabase } from "./use-supabase";
 
 // Initialize service logger
 const { getLogger } = createServiceLogger("USE_SIGN_IN_WITH_OTP");

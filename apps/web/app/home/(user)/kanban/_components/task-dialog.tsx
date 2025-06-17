@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@kit/ui/button";
 import {
@@ -30,17 +29,14 @@ import { Textarea } from "@kit/ui/textarea";
 import { Trans } from "@kit/ui/trans";
 import { cn } from "@kit/ui/utils";
 import { ImageIcon, Loader2Icon, TrashIcon } from "lucide-react";
-import { useCallback, useState, useId } from "react";
+import Image from "next/image";
+import { useCallback, useId, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
 import { useCreateTask, useUpdateTask } from "../_lib/hooks/use-tasks";
 import type { Task } from "../_lib/schema/task.schema";
 import {
-import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("HOME-(USER)");
 
 	CreateTaskSchema,
 	TaskPriorityEnum,
@@ -103,7 +99,7 @@ export function TaskDialog({ open, onOpenChange, task }: TaskDialogProps) {
 			if (file.size > 1024 * 1024) {
 				form.setError("image", {
 					message: "Image must be less than 1MB",
-				});
+				// });
 				return;
 			}
 

@@ -76,11 +76,13 @@ export class EnvironmentLogger {
 				: data;
 
 		if (sanitizedData) {
+			// biome-ignore lint/suspicious/noConsole: Logger implementation requires console output
 			console[level === "error" ? "error" : "log"](
 				`${prefix} ${message}`,
 				sanitizedData,
 			);
 		} else {
+			// biome-ignore lint/suspicious/noConsole: Logger implementation requires console output
 			console[level === "error" ? "error" : "log"](`${prefix} ${message}`);
 		}
 	}

@@ -27,11 +27,11 @@ export default async function HomePage() {
 		// Debug logging in development
 		if (process.env.NODE_ENV === "development") {
 			// TODO: Async logger needed
-		// (await getLogger()).info("[PAYLOAD-FRONTEND] Payload initialized successfully");
+			// (await getLogger()).info("[PAYLOAD-FRONTEND] Payload initialized successfully");
 			// TODO: Async logger needed
-		// (await getLogger()).info("[PAYLOAD-FRONTEND] Config routes:", { data: payload?.config?.routes });
+			// (await getLogger()).info("[PAYLOAD-FRONTEND] Config routes:", { data: payload?.config?.routes });
 			// TODO: Async logger needed
-		// (await getLogger()).info("[PAYLOAD-FRONTEND] Admin route:", { data: adminRoute });
+			// (await getLogger()).info("[PAYLOAD-FRONTEND] Admin route:", { data: adminRoute });
 		}
 
 		return (

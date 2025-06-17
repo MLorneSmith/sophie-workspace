@@ -1,7 +1,6 @@
 import { useSupabase } from "@kit/supabase/hooks/use-supabase";
 
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
 
 import { useNotificationsStream } from "./use-notifications-stream";
 
@@ -31,7 +30,7 @@ export function useFetchNotifications({
 		onNotifications,
 		accountIds,
 		enabled: realtime,
-	});
+	// });
 
 	useEffect(() => {
 		if (initialNotifications) {
@@ -68,5 +67,5 @@ function useFetchInitialNotifications(props: { accountIds: string[] }) {
 		},
 		refetchOnMount: false,
 		refetchOnWindowFocus: false,
-	});
+	// });
 }

@@ -393,7 +393,7 @@ async function getMembers(accountSlug: string) {
 
 	const members = await client.rpc("get_account_members", {
 		account_slug: accountSlug,
-	});
+	// });
 
 	if (members.error) {
 		throw members.error;

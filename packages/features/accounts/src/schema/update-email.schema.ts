@@ -6,7 +6,7 @@ export const UpdateEmailSchema = {
 			.object({
 				email: z.string().email(),
 				repeatEmail: z.string().email(),
-			})
+			// })
 			.refine(
 				(values) => {
 					return values.email === values.repeatEmail;

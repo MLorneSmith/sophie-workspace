@@ -1,10 +1,5 @@
 import type { z } from "zod";
 
-import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("INDEX");
-
 export const zodParseFactory =
 	<T extends z.ZodTypeAny>(schema: T) =>
 	(data: unknown): z.infer<T> => {
@@ -16,5 +11,5 @@ export const zodParseFactory =
 
 			// handle error
 			throw new Error(`Invalid data: ${err as string}`);
-		}
+		// }
 	};

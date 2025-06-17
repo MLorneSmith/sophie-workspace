@@ -60,7 +60,7 @@ class TeamBillingService {
 			userId,
 			accountId,
 			permission: "billing.manage",
-		});
+		// });
 
 		// if the user does not have permission to manage billing for the account
 		// then we should not proceed
@@ -115,7 +115,7 @@ class TeamBillingService {
 				customerId,
 				variantQuantities,
 				enableDiscountField: product.enableDiscountField,
-			});
+			// });
 
 			// return the checkout token to the client
 			// so we can call the payment gateway to complete the checkout
@@ -174,7 +174,7 @@ class TeamBillingService {
 			userId,
 			accountId,
 			permission: "billing.manage",
-		});
+		// });
 
 		// if the user does not have permission to manage billing for the account
 		// then we should not proceed

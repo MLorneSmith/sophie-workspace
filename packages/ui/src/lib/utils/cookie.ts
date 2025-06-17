@@ -1,8 +1,3 @@
-import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("COOKIE");
-
 /**
  * Modern cookie utilities that handle browser compatibility
  * and provide a cleaner API than direct document.cookie manipulation
@@ -45,7 +40,7 @@ export function setCookie(name: string, value: string, options: CookieOptions = 
 		// (await getLogger()).warn('Failed to set cookie via Cookie Store API:', { data: error });
 			// Fallback to document.cookie
 			setViaDOMCookie(name, value, options);
-		});
+		// });
 	} else {
 		// Fallback to document.cookie for older browsers
 		setViaDOMCookie(name, value, options);
@@ -122,5 +117,5 @@ export function deleteCookie(name: string, options: Pick<CookieOptions, 'path' |
 	setCookie(name, '', {
 		...options,
 		expires: new Date(0),
-	});
+	// });
 }

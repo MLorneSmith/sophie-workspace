@@ -21,5 +21,5 @@ export function useFetchAuthFactors(userId: string) {
 		queryKey,
 		queryFn,
 		staleTime: 0,
-	});
+	// });
 }

@@ -12,7 +12,7 @@ export function MobileModeToggle(props: { className?: string }) {
 	const toggleTheme = () => {
 		const next = resolvedTheme === "dark" ? "light" : "dark";
 		setTheme(next);
-		setCookie('theme', next, { path: '/', maxAge: 31536000 });
+		setCookie("theme", next, { path: "/", maxAge: 31536000 });
 	};
 
 	return (
@@ -29,4 +29,3 @@ export function MobileModeToggle(props: { className?: string }) {
 		</Button>
 	);
 }
-

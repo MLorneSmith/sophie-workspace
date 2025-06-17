@@ -59,7 +59,7 @@ describe("useActionWithCost", () => {
 			sessionId: mockSessionId,
 			addCost: mockAddCost,
 			isLoading: false,
-		});
+		// });
 	});
 
 	afterEach(() => {
@@ -73,7 +73,7 @@ describe("useActionWithCost", () => {
 			mockAction.mockResolvedValue({
 				success: true,
 				data: "test response",
-			});
+			// });
 
 			// Act
 			const { result } = renderHook(() => useActionWithCost(mockAction));
@@ -89,7 +89,7 @@ describe("useActionWithCost", () => {
 			mockAction.mockResolvedValue({
 				success: true,
 				data: "test response",
-			});
+			// });
 
 			// Act
 			const { result } = renderHook(() => useActionWithCost(mockAction));
@@ -155,7 +155,7 @@ describe("useActionWithCost", () => {
 				sessionId: mockSessionId,
 				addCost: newMockAddCost,
 				isLoading: false,
-			});
+			// });
 
 			rerender();
 			const secondReference = result.current;
@@ -181,7 +181,7 @@ describe("useActionWithCost", () => {
 				sessionId: "new-session-456",
 				addCost: mockAddCost,
 				isLoading: false,
-			});
+			// });
 
 			rerender();
 			const secondReference = result.current;
@@ -198,7 +198,7 @@ describe("useActionWithCost", () => {
 			mockAction.mockResolvedValue({
 				success: true,
 				data: "test response",
-			});
+			// });
 
 			const requestData: TestRequestData = {
 				message: "test message",
@@ -216,7 +216,7 @@ describe("useActionWithCost", () => {
 			expect(mockAction).toHaveBeenCalledWith({
 				...requestData,
 				sessionId: mockSessionId,
-			});
+			// });
 		});
 
 		it("overwrites existing sessionId in request data", async () => {
@@ -225,7 +225,7 @@ describe("useActionWithCost", () => {
 			mockAction.mockResolvedValue({
 				success: true,
 				data: "test response",
-			});
+			// });
 
 			const requestData: TestRequestData = {
 				message: "test message",
@@ -243,7 +243,7 @@ describe("useActionWithCost", () => {
 			expect(mockAction).toHaveBeenCalledWith({
 				...requestData,
 				sessionId: mockSessionId, // Should override the old one
-			});
+			// });
 		});
 
 		it("handles empty request data", async () => {
@@ -251,7 +251,7 @@ describe("useActionWithCost", () => {
 			const mockAction = createMockAction();
 			mockAction.mockResolvedValue({
 				success: true,
-			});
+			// });
 
 			const requestData = {} as TestRequestData;
 
@@ -265,7 +265,7 @@ describe("useActionWithCost", () => {
 			// Assert
 			expect(mockAction).toHaveBeenCalledWith({
 				sessionId: mockSessionId,
-			});
+			// });
 		});
 
 		it("preserves all original data properties", async () => {
@@ -273,7 +273,7 @@ describe("useActionWithCost", () => {
 			const mockAction = createMockAction();
 			mockAction.mockResolvedValue({
 				success: true,
-			});
+			// });
 
 			const requestData = {
 				message: "test message",
@@ -293,7 +293,7 @@ describe("useActionWithCost", () => {
 			expect(mockAction).toHaveBeenCalledWith({
 				...requestData,
 				sessionId: mockSessionId,
-			});
+			// });
 		});
 
 		it("uses current sessionId from context", async () => {
@@ -314,7 +314,7 @@ describe("useActionWithCost", () => {
 			expect(mockAction).toHaveBeenLastCalledWith({
 				...requestData,
 				sessionId: mockSessionId,
-			});
+			// });
 
 			// Change session ID
 			const newSessionId = "new-session-456";
@@ -323,7 +323,7 @@ describe("useActionWithCost", () => {
 				sessionId: newSessionId,
 				addCost: mockAddCost,
 				isLoading: false,
-			});
+			// });
 
 			rerender();
 
@@ -336,7 +336,7 @@ describe("useActionWithCost", () => {
 			expect(mockAction).toHaveBeenLastCalledWith({
 				...requestData,
 				sessionId: newSessionId,
-			});
+			// });
 		});
 	});
 
@@ -349,7 +349,7 @@ describe("useActionWithCost", () => {
 				success: true,
 				data: "test response",
 				metadata: { cost: costValue },
-			});
+			// });
 
 			const requestData: TestRequestData = { message: "test" };
 			const { result } = renderHook(() => useActionWithCost(mockAction));
@@ -370,7 +370,7 @@ describe("useActionWithCost", () => {
 			mockAction.mockResolvedValue({
 				success: false,
 				metadata: { cost: 1.25 },
-			});
+			// });
 
 			const requestData: TestRequestData = { message: "test" };
 			const { result } = renderHook(() => useActionWithCost(mockAction));
@@ -390,7 +390,7 @@ describe("useActionWithCost", () => {
 			mockAction.mockResolvedValue({
 				success: true,
 				data: "test response",
-			});
+			// });
 
 			const requestData: TestRequestData = { message: "test" };
 			const { result } = renderHook(() => useActionWithCost(mockAction));
@@ -411,7 +411,7 @@ describe("useActionWithCost", () => {
 				success: true,
 				data: "test response",
 				metadata: { tokens: 150 }, // Has metadata but no cost
-			});
+			// });
 
 			const requestData: TestRequestData = { message: "test" };
 			const { result } = renderHook(() => useActionWithCost(mockAction));
@@ -432,7 +432,7 @@ describe("useActionWithCost", () => {
 				success: true,
 				data: "test response",
 				metadata: { cost: 0 },
-			});
+			// });
 
 			const requestData: TestRequestData = { message: "test" };
 			const { result } = renderHook(() => useActionWithCost(mockAction));
@@ -454,7 +454,7 @@ describe("useActionWithCost", () => {
 				success: true,
 				data: "test response",
 				metadata: { cost: costValue },
-			});
+			// });
 
 			const requestData: TestRequestData = { message: "test" };
 			const { result } = renderHook(() => useActionWithCost(mockAction));
@@ -476,7 +476,7 @@ describe("useActionWithCost", () => {
 				success: true,
 				data: "test response",
 				metadata: { cost: costValue },
-			});
+			// });
 
 			const requestData: TestRequestData = { message: "test" };
 			const { result } = renderHook(() => useActionWithCost(mockAction));
@@ -498,7 +498,7 @@ describe("useActionWithCost", () => {
 				success: true,
 				data: "test response",
 				metadata: { cost: costValue },
-			});
+			// });
 
 			const requestData: TestRequestData = { message: "test" };
 			const { result } = renderHook(() => useActionWithCost(mockAction));
@@ -560,7 +560,7 @@ describe("useActionWithCost", () => {
 			const mockAction = vi.fn();
 			mockAction.mockResolvedValue({
 				data: "response without success flag",
-			});
+			// });
 
 			const requestData: TestRequestData = { message: "test" };
 			const { result } = renderHook(() => useActionWithCost(mockAction));
@@ -581,7 +581,7 @@ describe("useActionWithCost", () => {
 			mockAction.mockResolvedValue({
 				success: true,
 				metadata: { cost: 1.25 },
-			});
+			// });
 
 			// Mock addCost to throw an error
 			mockAddCost.mockImplementation(() => {
@@ -693,7 +693,7 @@ describe("useActionWithCost", () => {
 				success: true,
 				data: "AI generated content",
 				metadata: { cost: costValue, tokens: 200 },
-			});
+			// });
 
 			const requestData: TestRequestData = {
 				message: "Generate content",
@@ -711,12 +711,12 @@ describe("useActionWithCost", () => {
 			expect(mockAction).toHaveBeenCalledWith({
 				...requestData,
 				sessionId: mockSessionId,
-			});
+			// });
 			expect(response).toEqual({
 				success: true,
 				data: "AI generated content",
 				metadata: { cost: costValue, tokens: 200 },
-			});
+			// });
 			expect(mockAddCost).toHaveBeenCalledWith(costValue);
 		});
 
@@ -727,7 +727,7 @@ describe("useActionWithCost", () => {
 				success: false,
 				error: "API rate limit exceeded",
 				metadata: { cost: 1.0 }, // Cost present but should not be tracked
-			});
+			// });
 
 			const requestData: TestRequestData = {
 				message: "Generate content",
@@ -745,12 +745,12 @@ describe("useActionWithCost", () => {
 			expect(mockAction).toHaveBeenCalledWith({
 				...requestData,
 				sessionId: mockSessionId,
-			});
+			// });
 			expect(response).toEqual({
 				success: false,
 				error: "API rate limit exceeded",
 				metadata: { cost: 1.0 },
-			});
+			// });
 			expect(mockAddCost).not.toHaveBeenCalled(); // No cost tracking on failure
 		});
 
@@ -762,17 +762,17 @@ describe("useActionWithCost", () => {
 					success: true,
 					data: "first response",
 					metadata: { cost: 1.0 },
-				})
+				// })
 				.mockResolvedValueOnce({
 					success: true,
 					data: "second response",
 					metadata: { cost: 2.0 },
-				})
+				// })
 				.mockResolvedValueOnce({
 					success: false,
 					error: "third failed",
 					metadata: { cost: 3.0 },
-				});
+				// });
 
 			const { result } = renderHook(() => useActionWithCost(mockAction));
 
@@ -807,7 +807,7 @@ describe("useActionWithCost", () => {
 				success: true,
 				data: "test response",
 				metadata: null,
-			});
+			// });
 
 			const requestData: TestRequestData = { message: "test" };
 			const { result } = renderHook(() => useActionWithCost(mockAction));
@@ -851,7 +851,7 @@ describe("useActionWithCost", () => {
 				success: true,
 				data: "test response",
 				metadata: { cost: "invalid" as unknown },
-			});
+			// });
 
 			const requestData: TestRequestData = { message: "test" };
 			const { result } = renderHook(() => useActionWithCost(mockAction));
@@ -873,13 +873,13 @@ describe("useActionWithCost", () => {
 				sessionId: "", // Empty session ID
 				addCost: mockAddCost,
 				isLoading: false,
-			});
+			// });
 
 			const mockAction = createMockAction();
 			mockAction.mockResolvedValue({
 				success: true,
 				metadata: { cost: 1.0 },
-			});
+			// });
 
 			const requestData: TestRequestData = { message: "test" };
 			const { result } = renderHook(() => useActionWithCost(mockAction));
@@ -893,7 +893,7 @@ describe("useActionWithCost", () => {
 			expect(mockAction).toHaveBeenCalledWith({
 				...requestData,
 				sessionId: "", // Should still inject empty string
-			});
+			// });
 			expect(mockAddCost).toHaveBeenCalledWith(1.0);
 		});
 

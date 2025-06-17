@@ -1,6 +1,6 @@
 import { createEnvironmentLogger } from "@kit/shared/logger";
-import { callPayloadAPI } from "./payload-api";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { callPayloadAPI } from "./payload-api";
 
 const logger = createEnvironmentLogger("SURVEY-API");
 
@@ -58,7 +58,7 @@ export async function getSurveyQuestions(
 			// TODO: Async logger needed
 		// (await getLogger()).info(`Found ${survey.questions.length} fully populated questions`);
 			return { docs: survey.questions };
-		}
+		// }
 
 		// If we have question IDs but not full data, fetch them directly
 		if (survey?.questions?.length) {
@@ -84,13 +84,13 @@ export async function getSurveyQuestions(
 					`survey_questions?where[id][in]=${questionIds}&sort=position&limit=100`,
 					{},
 					supabaseClient,
-				);
+		// );
 
 				if (questionsResponse?.docs?.length) {
 					// TODO: Async logger needed
 		// (await getLogger()).info(`Retrieved ${questionsResponse.docs.length} questions by ID`, { data:  });
 					return questionsResponse;
-				}
+		// }
 			}
 		}
 
@@ -116,7 +116,7 @@ export async function getSurveyQuestions(
 			for (const q of allQuestionsResponse.docs) {
 				// TODO: Async logger needed
 		// (await getLogger()).info(`Question ID: ${q.id}, { arg1: Text: ${q.text?.substring(0, arg2: 30 })}...`,
-				);
+		// );
 			}
 
 			// Try to directly fetch the questions we know should be associated with this survey
@@ -132,16 +132,16 @@ export async function getSurveyQuestions(
 
 				const hardcodedQuestions = allQuestionsResponse.docs.filter((q: { id: string }) =>
 					knownQuestionIds.includes(q.id),
-				);
+		// );
 
 				if (hardcodedQuestions.length > 0) {
 					// TODO: Async logger needed
 		// (await getLogger()).info(`Found ${hardcodedQuestions.length} hardcoded questions for Three Quick Questions survey`, { data:  });
 					return {
 						...allQuestionsResponse,
-						docs: hardcodedQuestions,
-					};
-				}
+			// docs: hardcodedQuestions,
+			// };
+		// }
 			}
 			// Special handling for Self-Assessment survey
 			else if (surveyId === "5e352ade-c6a9-4e4a-9ffa-9680a5d5f9e9") {
@@ -178,16 +178,16 @@ export async function getSurveyQuestions(
 
 				const hardcodedQuestions = allQuestionsResponse.docs.filter((q: { id: string }) =>
 					knownQuestionIds.includes(q.id),
-				);
+		// );
 
 				if (hardcodedQuestions.length > 0) {
 					// TODO: Async logger needed
 		// (await getLogger()).info(`Found ${hardcodedQuestions.length} hardcoded questions for Self-Assessment survey`, { data:  });
 					return {
 						...allQuestionsResponse,
-						docs: hardcodedQuestions,
-					};
-				}
+			// docs: hardcodedQuestions,
+			// };
+		// }
 			}
 
 			// Check for any relationship to the survey
@@ -195,15 +195,15 @@ export async function getSurveyQuestions(
 				// Log the question's relationship fields for debugging
 				// TODO: Async logger needed
 		// (await getLogger()).info(`Checking question ${q.id} relationships:`, { arg1: {
-					surveys_id: q.surveys_id, arg2: surveys_id_id: q.surveys_id_id, arg3: surveys: Array.isArray(q.surveys }) ? q.surveys.length : "not an array",
-				});
+					// surveys_id: q.surveys_id, arg2: surveys_id_id: q.surveys_id_id, arg3: surveys: Array.isArray(q.surveys }) ? q.surveys.length : "not an array",
+				// });
 
 				// Direct relationship fields
 				if (q.surveys_id === surveyId || q.surveys_id_id === surveyId) {
 					// TODO: Async logger needed
 		// (await getLogger()).info(`Question ${q.id} matched by direct relationship`);
 					return true;
-				}
+		// }
 
 				// Check surveys array if it exists
 				if (Array.isArray(q.surveys)) {
@@ -223,7 +223,7 @@ export async function getSurveyQuestions(
 					if (hasRelationship) {
 						// TODO: Async logger needed
 		// (await getLogger()).info(`Question ${q.id} matched by surveys array`);
-					}
+		// }
 
 					return hasRelationship;
 				}
@@ -237,9 +237,9 @@ export async function getSurveyQuestions(
 			if (filteredQuestions.length > 0) {
 				return {
 					...allQuestionsResponse,
-					docs: filteredQuestions,
-				};
-			}
+			// docs: filteredQuestions,
+			// };
+		// }
 
 			// If we still couldn't find any questions, try a different approach
 			// Look for questions that might have the survey relationship in a different format
@@ -254,7 +254,7 @@ export async function getSurveyQuestions(
 							// TODO: Async logger needed
 		// (await getLogger()).info(`Question ${q.id} matched by property ${key}`);
 							return true;
-						}
+		// }
 
 						if (typeof q[key] === "object" && q[key] !== null) {
 							// Check if the property is an object that contains the survey ID
@@ -263,12 +263,12 @@ export async function getSurveyQuestions(
 								// TODO: Async logger needed
 		// (await getLogger()).info(`Question ${q.id} matched by object property ${key}`, { data:  });
 								return true;
-							}
+		// }
 							if ("value" in obj && obj.value === surveyId) {
 								// TODO: Async logger needed
 		// (await getLogger()).info(`Question ${q.id} matched by object property ${key}`, { data:  });
 								return true;
-							}
+		// }
 
 							// Check if the property is an array that contains the survey ID
 							if (Array.isArray(q[key])) {
@@ -289,7 +289,7 @@ export async function getSurveyQuestions(
 									// TODO: Async logger needed
 		// (await getLogger()).info(`Question ${q.id} matched by array property ${key}`, { data:  });
 									return true;
-								}
+		// }
 							}
 						}
 					}
@@ -303,20 +303,19 @@ export async function getSurveyQuestions(
 		// (await getLogger()).info(`Found ${alternativeFilteredQuestions.length} questions using alternative filtering`, { data:  });
 				return {
 					...allQuestionsResponse,
-					docs: alternativeFilteredQuestions,
-				};
-			}
+			// docs: alternativeFilteredQuestions,
+			// };
+		// }
 		}
-	} catch (error) {
+	} catch (error) 
 		// TODO: Async logger needed
 		// (await getLogger()).error(`Error getting survey questions for survey ID ${surveyId}:`, { arg1: error, arg2:  });
-	}
+		// }
 
 	// If all attempts fail, return an empty result
 	// TODO: Async logger needed
 		// (await getLogger()).info("No questions found after all attempts");
 	return { docs: [] };
-}
 
 // The following functions are deprecated as we now use Supabase directly
 // They are kept here for backwards compatibility but will be removed in a future version

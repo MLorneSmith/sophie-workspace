@@ -2,11 +2,6 @@
 
 import { PlaceholdersAndVanishInput } from "@kit/ui/placeholders-and-vanish-input";
 
-import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("(MARKETING)");
-
 export function CtaPresentationName() {
 	return (
 		<div className="w-full px-4">
@@ -18,12 +13,12 @@ export function CtaPresentationName() {
 					"Charging More for Less and Making It Seem Like a Bargain!",
 					"Strategic Acquisition of the United States for Global Domination",
 				]}
-				onChange={(e) => {
+				onChange={(_e) => {
 					// Handle search input changes
 					// TODO: Async logger needed
-		// (await getLogger()).info("Search input:", {
-						data: e.target.value,
-					});
+					// (await getLogger()).info("Search input:", {
+					// 	data: e.target.value,
+					// });
 				}}
 				onSubmit={(e) => {
 					e.preventDefault();
@@ -31,9 +26,9 @@ export function CtaPresentationName() {
 					const input = e.currentTarget.querySelector("input");
 					if (input) {
 						// TODO: Async logger needed
-		// (await getLogger()).info("Search submitted:", {
-							data: input.value,
-						});
+						// (await getLogger()).info("Search submitted:", {
+						// 	data: input.value,
+						// });
 					}
 				}}
 			/>

@@ -25,5 +25,5 @@ export async function renderMarkdoc(node: Node) {
 
 	return renderers.react(content, React, {
 		components: CustomMarkdocComponents,
-	});
+	// });
 }

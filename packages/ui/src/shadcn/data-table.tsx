@@ -9,11 +9,8 @@ import {
 
 import { Trans } from "../makerkit/trans";
 import {
-	Table,
-	TableBody,
 	TableCell,
 	TableHead,
-	TableHeader,
 	TableRow,
 } from "./table";
 
@@ -33,7 +30,7 @@ export function DataTable<TData, TValue>({
 		data,
 		columns,
 		getCoreRowModel: getCoreRowModel(),
-	});
+	// });
 
 	return (
 		<div className="rounded-md border">

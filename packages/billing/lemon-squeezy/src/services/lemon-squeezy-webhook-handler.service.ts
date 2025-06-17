@@ -307,7 +307,7 @@ export class LemonSqueezyWebhookHandlerService
 			cancelAtPeriodEnd: subscription.cancelled,
 			trialStartsAt: trialEndsAt ? new Date(createdAt).getTime() : null,
 			trialEndsAt: trialEndsAt ? new Date(trialEndsAt).getTime() : null,
-		});
+		// });
 
 		return onSubscriptionCreatedEvent(payload);
 	}
@@ -399,7 +399,7 @@ export class LemonSqueezyWebhookHandlerService
 			cancelAtPeriodEnd: subscription.cancelled,
 			trialStartsAt: trialEndsAt ? new Date(createdAt).getTime() : null,
 			trialEndsAt: trialEndsAt ? new Date(trialEndsAt).getTime() : null,
-		});
+		// });
 
 		return onInvoicePaidCallback(payload);
 	}
@@ -413,7 +413,7 @@ export class LemonSqueezyWebhookHandlerService
 					variantId, { arg1: }, arg2: 'Line item type not found. Will be defaulted to "flat"', arg3:  });
 
 			return "flat" as const;
-		}
+		// }
 
 		return type;
 	}
@@ -436,7 +436,7 @@ async function isSigningSecretValid(rawBody: string, signatureHeader: string) {
 	const { hex: digest } = await createHmac({
 		key: webhooksSecret,
 		data: rawBody,
-	});
+	// });
 
 	const signature = Buffer.from(signatureHeader, "utf8");
 

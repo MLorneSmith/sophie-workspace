@@ -1,8 +1,8 @@
 "use server";
 
 import { enhanceAction } from "@kit/next/actions";
-import { getSupabaseServerClient } from "@kit/supabase/server-client";
 import { createServiceLogger } from "@kit/shared/logger";
+import { getSupabaseServerClient } from "@kit/supabase/server-client";
 import { z } from "zod";
 
 import type { UsageStats } from "../_lib/types";
@@ -110,7 +110,7 @@ export const fetchUsageDataAction = enhanceAction(
 				timeRange: data.timeRange,
 				userId: data.userId,
 				teamId: data.teamId,
-			});
+			// });
 			return {
 				success: false,
 				error: error instanceof Error ? error.message : "Unknown error",

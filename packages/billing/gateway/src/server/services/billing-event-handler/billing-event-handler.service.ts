@@ -279,6 +279,6 @@ class BillingEventHandlerService {
 				}
 			},
 			onEvent: params.onEvent,
-		});
+		// });
 	}
 }

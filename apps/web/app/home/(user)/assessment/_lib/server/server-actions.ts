@@ -1,11 +1,10 @@
 "use server";
 
 import { enhanceAction } from "@kit/next/actions";
+import { createServiceLogger } from "@kit/shared/logger";
 // We no longer need to import from Payload for survey responses
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
 import { z } from "zod";
-
-import { createServiceLogger } from "@kit/shared/logger";
 
 // Initialize service logger
 const { getLogger } = createServiceLogger("HOME-(USER)");
@@ -106,7 +105,7 @@ export const saveResponseAction = enhanceAction(
 						category_scores: categoryScores,
 						completed: progressPercentage === 100,
 						updated_at: new Date().toISOString(),
-					})
+					// })
 					.eq("id", existingResponseData.id);
 
 				if (updateError) {
@@ -124,7 +123,7 @@ export const saveResponseAction = enhanceAction(
 						responses: [newResponse],
 						category_scores: categoryScores,
 						completed: false,
-					});
+					// });
 
 				if (insertError) {
 					throw new Error(
@@ -155,7 +154,7 @@ export const saveResponseAction = enhanceAction(
 			}
 
 			return { success: true };
-		} catch (error) {
+		} catch (error) 
 			// TODO: Async logger needed
 		// TODO: Fix logger call - was: error
 
@@ -163,10 +162,10 @@ export const saveResponseAction = enhanceAction(
 			if (error instanceof Error) {
 				// TODO: Async logger needed
 		// (await getLogger()).error("Error details:", {
-					message: error.message,
+		// message: error.message,
 					stack: error.stack,
 					name: error.name,
-				});
+				// });
 			}
 
 			return {
@@ -174,12 +173,9 @@ export const saveResponseAction = enhanceAction(
 				error:
 					error instanceof Error ? error.message : "An unknown error occurred",
 			};
-		}
 	},
-	{
 		auth: true,
-		schema: SaveResponseSchema,
-	},
+		schema: SaveResponseSchema,,
 );
 
 /**
@@ -206,7 +202,7 @@ export const completeSurveyAction = enhanceAction(
 				surveyId: data.surveyId,
 				highestCategory: data.highestScoringCategory,
 				lowestCategory: data.lowestScoringCategory,
-			});
+			// });
 
 			// Update the survey response in Supabase
 			const { error: updateError } = await supabase
@@ -217,7 +213,7 @@ export const completeSurveyAction = enhanceAction(
 					highest_scoring_category: data.highestScoringCategory,
 					lowest_scoring_category: data.lowestScoringCategory,
 					updated_at: new Date().toISOString(),
-				})
+				// })
 				.eq("id", data.responseId);
 
 			if (updateError) {
@@ -233,10 +229,10 @@ export const completeSurveyAction = enhanceAction(
 			if (error instanceof Error) {
 				// TODO: Async logger needed
 		// (await getLogger()).error("Error details:", {
-					message: error.message,
+		// message: error.message,
 					stack: error.stack,
 					name: error.name,
-				});
+				// });
 			}
 
 			return {

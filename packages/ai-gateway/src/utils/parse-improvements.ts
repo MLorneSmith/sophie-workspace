@@ -2,11 +2,6 @@
  * Utility for parsing AI responses into standardized improvement objects
  */
 import type {
-import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("AI-GATEWAY");
-
 	BaseImprovement,
 	ImprovementType,
 } from "../prompts/types/improvements";
@@ -145,7 +140,7 @@ export function parseImprovements(
 		// Log the raw response for debugging
 		// TODO: Async logger needed
 		// (await getLogger()).info("Raw AI response:", { arg1: response.substring(0, arg2: 500 }) + (response.length > 500 ? "..." : ""),
-		);
+		// );
 
 		// First try to parse as JSON
 		const jsonContent = extractJson(response);
@@ -189,7 +184,7 @@ export function parseImprovements(
 						} catch (_err) {
 							// TODO: Async logger needed
 		// (await getLogger()).info("Failed to parse individual improvement:", { arg1: improvementJson, arg2:  });
-						}
+		// }
 						
 						// Get next match
 						match = regex.exec(cleanedJson);
@@ -199,11 +194,11 @@ export function parseImprovements(
 						// TODO: Async logger needed
 		// (await getLogger()).info("Successfully extracted improvements using regex");
 						return improvementsFromParsed(improvementResults);
-					}
-				} catch (regexError) {
+		// }
+				} catch (regexError) 
 					// TODO: Async logger needed
 		// (await getLogger()).error("Regex extraction failed:", { data: regexError });
-				}
+		// }
 
 				// Option 2: Direct parsing with strict fixes for all problematic characters
 				try {
@@ -227,7 +222,7 @@ export function parseImprovements(
 				} catch (strictError) {
 					// TODO: Async logger needed
 		// (await getLogger()).error("Strict cleaning parse failed:", { data: strictError });
-				}
+		// }
 
 				// Option 3: Use direct object creation as a last resort
 				try {
@@ -254,7 +249,7 @@ export function parseImprovements(
 						headlines.length,
 						descriptions.length,
 						summaries.length,
-					);
+		// );
 
 					// Process each potential improvement
 					for (let i = 0; i < maxItems; i++) {
@@ -295,27 +290,15 @@ export function parseImprovements(
 							improvementDescription: description,
 							implementedSummaryPoint: summary,
 							implementedSupportingPoints: [],
-						});
+						// });
 					}
 
 					if (improvements.length > 0) {
 						// TODO: Async logger needed
 		// (await getLogger()).info("Successfully created objects through direct extraction", { data:  });
 						return improvementsFromParsed(improvements);
-					}
-				} catch (directError) {
-					// TODO: Async logger needed
-		// (await getLogger()).error("Direct extraction failed:", { data: directError });
-				}
-				// The function is now defined at the top level
-			} catch (jsonError) {
-				// TODO: Async logger needed
-		// (await getLogger()).error("Failed to parse JSON content:", { data: jsonError });
-				// TODO: Async logger needed
-		// (await getLogger()).info("Attempted to parse JSON:", { data: jsonContent });
-				// Fall through to text parsing
-			}
-		}
+		// }
+				} catch (directError) catch (jsonError) 
 
 		// If JSON parsing fails, try text format
 		const textImprovements = parseTextFormat(response);
@@ -338,11 +321,10 @@ export function parseImprovements(
 				],
 			},
 		];
-	} catch (error) {
+	} catch (error) 
 		// TODO: Async logger needed
 		// (await getLogger()).error("Failed to parse improvements:", { data: error });
 		// TODO: Async logger needed
 		// (await getLogger()).error("Raw response:", { data: response });
 		throw new Error("Failed to parse AI response");
-	}
 }

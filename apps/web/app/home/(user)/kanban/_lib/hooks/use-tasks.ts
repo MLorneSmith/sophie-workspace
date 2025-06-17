@@ -108,7 +108,7 @@ export function useTasks() {
 		},
 		staleTime: 60 * 1000,
 		retry: false,
-	});
+	// });
 }
 
 export function useCreateTask() {

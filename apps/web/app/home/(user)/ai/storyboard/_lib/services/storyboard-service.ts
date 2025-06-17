@@ -53,7 +53,7 @@ const StoryboardDataSchema = z.object({
 							italic: z.boolean().optional(),
 							color: z.string().optional(),
 							fontSize: z.number().optional(),
-						})
+						// })
 						.optional(),
 				}),
 			),

@@ -5,10 +5,6 @@ import type { Database } from "@kit/supabase/database";
  */
 import { updateLessonProgressAction } from "../../../_lib/server/server-actions";
 
-import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("HOME-(USER)");
 
 // Type definitions for Payload CMS data structures
 interface PayloadLesson {
@@ -107,7 +103,7 @@ export async function LessonDataProvider({
 			lessonId,
 			completionPercentage: 0,
 			completed: false,
-		});
+		// });
 	}
 
 	// Get quiz data if lesson has a quiz
@@ -222,8 +218,8 @@ export async function LessonDataProvider({
 
 			// TODO: Async logger needed
 		// (await getLogger()).info(
-				`Lesson ${lesson.title} (${lessonId}) has survey ID: ${actualSurveyId}`,
-			);
+		// `Lesson ${lesson.title} (${lessonId}) has survey ID: ${actualSurveyId}`,
+		// );
 			// TODO: Async logger needed
 		// TODO: Fix logger call - was: info
 

@@ -177,7 +177,7 @@ function useSetSession(tokens: { accessToken: string; refreshToken: string }) {
 			await supabase.auth.setSession({
 				refresh_token: tokens.refreshToken,
 				access_token: tokens.accessToken,
-			});
+			// });
 
 			// use a hard refresh to avoid hitting cached pages
 			window.location.replace("/home");

@@ -49,7 +49,7 @@ export class NewRelicMonitoringService extends MonitoringService {
 			...extra,
 			digest: error.digest,
 			timestamp: new Date().toISOString(),
-		});
+		// });
 	}
 
 	captureEvent<Extra extends object>(event: string, extra?: Extra): void {

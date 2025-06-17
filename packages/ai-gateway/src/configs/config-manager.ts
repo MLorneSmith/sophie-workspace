@@ -84,7 +84,7 @@ export function normalizeConfig(config: Config): Config {
 /**
  * Configuration Manager utilities for AI Gateway
  * Provides a unified interface for managing configurations
- * 
+ *
  * Usage:
  * - loadTemplate(name) - Loads a base configuration template
  * - mergeWithUseCase(base, useCase) - Merges base with use-case specific config

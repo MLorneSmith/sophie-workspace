@@ -50,7 +50,7 @@ export function NotificationsPopover(params: {
 		onNotifications,
 		accountIds: params.accountIds,
 		realtime: params.realtime,
-	});
+	// });
 
 	const timeAgo = (createdAt: string) => {
 		const date = new Date(createdAt);
@@ -63,7 +63,7 @@ export function NotificationsPopover(params: {
 
 		const formatter = new Intl.RelativeTimeFormat(i18n.language, {
 			numeric: "auto",
-		});
+		// });
 
 		if (daysAgo < 1) {
 			time = Math.floor((Date.now() - date.getTime()) / (1000 * 60));
@@ -161,9 +161,9 @@ export function NotificationsPopover(params: {
 					{notifications.map((notification) => {
 						const maxChars = 100;
 
-						let body = t(notification.body, {
+						const body = t(notification.body, {
 							defaultValue: notification.body,
-						});
+						// });
 
 						if (body.length > maxChars) {
 							body = `${body.substring(0, maxChars)}...`;

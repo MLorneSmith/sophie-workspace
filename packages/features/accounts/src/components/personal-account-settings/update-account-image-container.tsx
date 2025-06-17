@@ -46,7 +46,7 @@ function UploadProfileAvatarForm(props: {
 				success: t("updateProfileSuccess"),
 				error: t("updateProfileError"),
 				loading: t("updateProfileLoading"),
-			});
+			// });
 		},
 		[t],
 	);
@@ -72,7 +72,7 @@ function UploadProfileAvatarForm(props: {
 									.from("accounts")
 									.update({
 										picture_url: pictureUrl,
-									})
+									// })
 									.eq("id", props.userId)
 									.throwOnError();
 							})
@@ -90,7 +90,7 @@ function UploadProfileAvatarForm(props: {
 								.from("accounts")
 								.update({
 									picture_url: null,
-								})
+								// })
 								.eq("id", props.userId)
 								.throwOnError();
 						})

@@ -7,7 +7,7 @@ import { Trans } from "@kit/ui/trans";
 import { UserCheck } from "lucide-react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams } from "next/navigation";
 import { useMemo } from "react";
 
 import { useLastAuthMethod } from "../hooks/use-last-auth-method";
@@ -34,10 +34,10 @@ export function ExistingAccountHintImpl({
 
 	const params = useSearchParams();
 
-	const isInvite = params.get('invite_token');
+	const isInvite = params.get("invite_token");
 
 	if (isInvite) {
-		signInPath = signInPath + '?invite_token=' + isInvite;
+		signInPath = signInPath + "?invite_token=" + isInvite;
 	}
 
 	// Get the appropriate method description for the hint

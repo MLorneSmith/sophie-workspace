@@ -48,7 +48,7 @@ class LeaveTeamAccountService {
 			.match({
 				account_id: accountId,
 				user_id: userId,
-			});
+			// });
 
 		if (error) {
 			logger.error({ ...ctx, error }, "Failed to leave team account");

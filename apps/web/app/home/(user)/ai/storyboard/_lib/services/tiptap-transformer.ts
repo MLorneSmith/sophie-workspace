@@ -2,10 +2,6 @@
 
 import type { Slide, StoryboardData, StoryboardSlide } from "../types/index";
 
-import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("HOME-(USER)");
 
 /**
  * Helper function to generate UUID since we don't have access to @kit/shared/utils/uuid
@@ -106,10 +102,11 @@ export namespace TipTapTransformer {
 				return JSON.parse(document) as TipTapDocument;
 			} catch (error) {
 				// TODO: Async logger needed
+		// TODO: Async logger needed
 		// (await getLogger()).error(
-					"Error parsing TipTap document:",
-					{ data: error },
-				);
+		// 	"Error parsing TipTap document:",
+		// 	{ data: error }
+		// );
 				// Return empty document if parsing fails
 				return { type: "doc", content: [] };
 			}
@@ -225,7 +222,7 @@ export namespace TipTapTransformer {
 							text: headingText,
 							columnIndex: currentColumnIndex,
 							formatting: { bold: true },
-						});
+						// });
 					}
 				}
 				// Handle paragraph nodes
@@ -236,7 +233,7 @@ export namespace TipTapTransformer {
 							type: "text",
 							text,
 							columnIndex: currentColumnIndex,
-						});
+						// });
 
 						// Check if this paragraph contains data that might be better as a chart
 						if (mightBeChartData(text)) {
@@ -285,7 +282,7 @@ export namespace TipTapTransformer {
 				layoutId: "title",
 				content: [],
 				order: 0,
-			});
+			// });
 		}
 
 		// Ensure all slides have correct subheadlines arrays based on their layouts

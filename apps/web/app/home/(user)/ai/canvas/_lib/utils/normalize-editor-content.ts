@@ -1,11 +1,6 @@
 "use client";
 
 import type {
-import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("HOME-(USER)");
-
 	EditorContentTypes,
 	TiptapDocument,
 	TiptapNode,
@@ -71,7 +66,7 @@ function parseContent(content: unknown): TiptapDocument {
 			return JSON.parse(content);
 		} catch (e) {
 			// TODO: Async logger needed
-		// TODO: Fix logger call - was: error
+			// TODO: Fix logger call - was: error
 			return createSafeContent();
 		}
 	}
