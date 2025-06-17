@@ -60,8 +60,9 @@ We use **ONE GitHub Project** called "Feature Development" for all features. Thi
 
 4. **AAFD Stage** (Single Select)
 
-   - Options: Idea, PRD, Chunking, Validation, Stories, Sprint Planning, Implementation, Review
+   - Options: Idea, PRD, Chunks, Validation, Stories, Sprint Planning, Implementation, Review, Ready, Blocked
    - Usage: Track which phase of AAFD process
+   - Note: Ready and Blocked are special statuses for queue management and impediments
 
 5. **AI Context Status** (Single Select)
 
@@ -88,8 +89,18 @@ We use **ONE GitHub Project** called "Feature Development" for all features. Thi
    - Usage: List related features/components affected
    - Format: "auth-system, user-dashboard, api-gateway"
 
-10. **Sprint** (Iteration)
-    - Usage: Assign to specific sprint iterations
+10. **Sprint** (Single Select)
+
+    - Options: Sprint 1 through Sprint 12
+    - Usage: Assign stories and tasks to specific 1-2 week development iterations
+    - Apply to: Stories, Tasks, Bugs
+    - Note: Add more sprint options as needed via GitHub web interface
+
+11. **Milestone** (GitHub Milestone)
+    - Usage: Group epics and features into major releases or product versions
+    - Apply to: Epics and Features (not individual stories)
+    - Examples: "v2.0 Release", "Q1 2025 Features", "MVP Launch"
+    - Timeline: Typically spans multiple sprints (1-3 months)
 
 ## Phase-Specific Instructions
 
@@ -150,7 +161,7 @@ We use **ONE GitHub Project** called "Feature Development" for all features. Thi
 1. Select stories within capacity
 2. Set fields:
    - AAFD Stage: `Sprint Planning`
-   - Sprint: Current iteration
+   - Sprint: Select current sprint (e.g., `Sprint 1`)
    - Agent Assignment: Assign virtual agent
    - Implementation Phase: `Analysis`
 3. Move to "Ready" column
@@ -230,6 +241,37 @@ mutation {
 }'
 ```
 
+## Sprint and Milestone Strategy
+
+### Using Both Fields Effectively
+
+**Milestone** (Strategic Level):
+
+- Set on Epics when creating features
+- Represents major releases or feature bundles
+- Helps with long-term planning and communication
+- Example: "v2.0 - AI Features" containing multiple AI-related epics
+
+**Sprint** (Tactical Level):
+
+- Set on Stories and Tasks during sprint planning
+- Represents 1-2 week development iterations
+- Helps with day-to-day execution tracking
+- Example: "Sprint 3" containing 3-5 stories from different epics
+
+### Example Hierarchy
+
+```
+Milestone: v2.0 Release (Q1 2025)
+├── Epic: AI Presentation Generator → Milestone: v2.0 Release
+│   ├── Story: Generate outline from topic → Sprint: Sprint 3
+│   ├── Story: AI content suggestions → Sprint: Sprint 3
+│   └── Story: Export AI templates → Sprint: Sprint 4
+└── Epic: Advanced Analytics → Milestone: v2.0 Release
+    ├── Story: Usage dashboard → Sprint: Sprint 4
+    └── Story: Export analytics → Sprint: Sprint 5
+```
+
 ## Best Practices
 
 ### 1. Maintain Traceability
@@ -301,16 +343,16 @@ Solution: Archive completed epics older than 3 months
 
 ## Quick Reference Card
 
-| AAFD Phase   | GitHub Action   | Key Fields to Update        |
-| ------------ | --------------- | --------------------------- |
-| New Idea     | Create Epic     | Feature Type, Priority      |
-| PRD Complete | Update Epic     | AAFD Stage → PRD            |
-| Chunking     | Create Chunks   | Link to Epic, Dependencies  |
-| Validation   | Add Comments    | Priority adjustments        |
-| Stories      | Create Stories  | Story Points, Domain        |
-| Sprint       | Assign Sprint   | Agent, Implementation Phase |
-| Active Dev   | Update Progress | Context Status, Phase       |
-| Complete     | Close Issue     | Move to Done                |
+| AAFD Phase   | GitHub Action   | Key Fields to Update                    |
+| ------------ | --------------- | --------------------------------------- |
+| New Idea     | Create Epic     | Feature Type, Priority, **Milestone**   |
+| PRD Complete | Update Epic     | AAFD Stage → PRD                        |
+| Chunking     | Create Chunks   | Link to Epic, Dependencies              |
+| Validation   | Add Comments    | Priority adjustments                    |
+| Stories      | Create Stories  | Story Points, Domain                    |
+| Sprint       | Assign Sprint   | **Sprint**, Agent, Implementation Phase |
+| Active Dev   | Update Progress | Context Status, Phase                   |
+| Complete     | Close Issue     | Move to Done                            |
 
 ## Integration with Claude Sessions
 

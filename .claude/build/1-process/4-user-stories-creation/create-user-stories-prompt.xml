@@ -41,6 +41,24 @@
       <description>Format as markdown in repository path. Update index file with story entries (type: story, status: ready, linked to chunk ID). Provide GitHub commit instructions.</description>
     </step>
     <step number="7">
+      <title>GitHub Projects Integration</title>
+      <description>
+        For each story:
+        - Create story issue: gh issue create --repo MLorneSmith/2025slideheroes --title "[STORY] As a {USER}, I want {FEATURE}" --body "{STORY_DETAILS}"
+        - Link to parent chunk: "Part of #{CHUNK_NUMBER}"
+        - Set fields:
+          - Feature Type: Story
+          - AAFD Stage: Stories
+          - Story Points: {POINTS}
+          - Priority: {PRIORITY}
+          - Primary Technical Domain: {DOMAIN}
+          - Cross-cutting Dependencies: {DEPENDENCIES}
+        - Move to "Stories" column in Planning Board
+        - Create tasks as checklist items in story issue body
+        - Store stories in: .claude/build/3-output/{epic-name}/4-stories/
+      </description>
+    </step>
+    <step number="8">
       <title>Output Format</title>
       <description>Structured markdown with sections for chunk ID, features, stories, tasks, libraries, file paths, priorities, story points, index updates, and commit instructions.</description>
     </step>

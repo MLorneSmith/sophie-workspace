@@ -48,4 +48,18 @@
       </success_metrics>
     </prd>
   </output_format>
+  <github_projects_integration>
+    <instructions>
+      - Create Epic issue: gh issue create --repo MLorneSmith/2025slideheroes --title "[EPIC] {TITLE}" --body "{PRD_CONTENT}" --label "epic"
+      - Add to project: gh project item-add 1 --owner MLorneSmith --url {ISSUE_URL}
+      - Set custom fields:
+        - Feature Type: Epic
+        - AAFD Stage: PRD (after completion)
+        - Priority: {PRIORITY_LEVEL}
+        - AI Context Status: Fresh
+        - Milestone: Select appropriate release milestone
+      - Move to Planning Board "PRD" column
+      - Store PRD in: .claude/build/3-output/{epic-name}/1-prd/
+    </instructions>
+  </github_projects_integration>
 </prompt>

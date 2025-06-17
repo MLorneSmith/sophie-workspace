@@ -11,11 +11,10 @@ import { createAudienceSuggestionsConfig } from "@kit/ai-gateway/src/configs/use
 import { createTitleSuggestionsConfig } from "@kit/ai-gateway/src/configs/use-cases/title-suggestions/config";
 import { PromptManager } from "@kit/ai-gateway/src/prompts/prompt-manager";
 import { enhanceAction } from "@kit/next/actions";
-import { createServiceLogger } from "@kit/shared/logger";
 import { z } from "zod";
 
 // Initialize service logger
-const { getLogger } = createServiceLogger("HOME-(USER)");
+// const { getLogger } = createServiceLogger("HOME-(USER)");
 
 // Define Zod schema for request validation
 const SuggestionsSchema = z
@@ -29,7 +28,7 @@ const SuggestionsSchema = z
 			},
 		),
 		presentationType: z.string().optional(),
-	// })
+	})
 	.refine(
 		(data) => {
 			// Require title only for non-title fields
@@ -138,11 +137,11 @@ export const getSuggestions = enhanceAction(
 			const startTime = performance.now();
 
 			// Debug log the request
-			(await getLogger()).info("Suggestions Request:", {
-				title: data.title,
-				field: data.field,
-				presentationType: data.presentationType,
-				userId: user.id,
+			// (await getLogger()).info("Suggestions Request:", {
+			// 	title: data.title,
+			// 	field: data.field,
+			// 	presentationType: data.presentationType,
+			// 	userId: user.id,
 			// });
 
 			// Create and normalize config
@@ -151,16 +150,16 @@ export const getSuggestions = enhanceAction(
 					? createTitleSuggestionsConfig({
 							userId: user.id,
 							context: "title-suggestions",
-						// })
+						})
 					: data.field === "audience"
 						? createAudienceSuggestionsConfig({
 								userId: user.id,
 								context: "audience-suggestions",
-							// })
+							})
 						: createBalancedOptimizedConfig({
 								userId: user.id,
 								context: `suggestions-${data.field}`,
-							// });
+							});
 			const normalizedConfig = ConfigManager.normalizeConfig(config);
 
 			if (!normalizedConfig) {

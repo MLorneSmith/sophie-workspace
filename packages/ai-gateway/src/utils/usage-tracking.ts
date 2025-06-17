@@ -276,14 +276,13 @@ export async function recordApiUsage(
 					}
 				}
 			} catch (deductError) 
-				logger.error("Exception in credit deduction", {
+				logger.error("Exception in credit deduction", 
 					error: deductError,
 					message:
 						deductError instanceof Error
 							? deductError.message
 							: String(deductError),
-					stack: deductError instanceof Error ? deductError.stack : undefined,
-				});
+					stack: deductError instanceof Error ? deductError.stack : undefined,);
 
 		return success;
 	} catch (error) {

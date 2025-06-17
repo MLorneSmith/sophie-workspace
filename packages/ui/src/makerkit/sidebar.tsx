@@ -337,7 +337,7 @@ function onRadixPopupClose(callback: () => void) {
 	}
 }
 
-export function SidebarNavigation({
+export function _SidebarNavigation({
 	config,
 }: React.PropsWithChildren<{
 	config: SidebarConfig;

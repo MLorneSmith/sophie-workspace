@@ -36,6 +36,17 @@
       <title>Store Results</title>
       <description>Format validation results and store using GitHub MCP with appropriate status indicators.</description>
     </step>
+    <step number="7">
+      <title>GitHub Projects Update</title>
+      <description>
+        - Update chunk issue with validation results
+        - Add validation notes as issue comment
+        - Update AAFD Stage: Validation
+        - If needs_revision: add "needs-revision" label
+        - If validated: remove "needs-revision" label
+        - Store validation in: .claude/build/3-output/{epic-name}/3-validation/
+      </description>
+    </step>
   </instructions>
 
   <input>

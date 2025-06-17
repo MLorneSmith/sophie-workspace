@@ -29,8 +29,17 @@
       <description>Recommend an agent role to validate this chunk.</description>
     </step>
     <step number="5">
-      <title>Store Output</title>
-      <description>Format as markdown in repository path. Update index file with validation entry (type: validation, status: validated or needs_revision). Provide GitHub commit instructions.</description>
+      <title>Update GitHub Projects</title>
+      <description>
+        - Add stakeholder feedback as issue comments on chunk
+        - Update fields based on validation:
+          - AAFD Stage: Validation
+          - Priority: Adjust if stakeholder feedback indicates change
+          - Add/update Cross-cutting Dependencies if discovered
+        - If scope changes: Update chunk issue description
+        - If rejected: Move to Blocked column with explanation
+        - Store feedback in: .claude/build/3-output/{epic-name}/3-validation/stakeholder-feedback.md
+      </description>
     </step>
     <step number="6">
       <title>Output Format</title>

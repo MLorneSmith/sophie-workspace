@@ -41,6 +41,21 @@
       <title>Output Format</title>
       <description>Structured markdown with sections for chunk ID, summary, content, cross-cutting dependencies, index updates, and commit instructions.</description>
     </step>
+    <step number="7">
+      <title>Update GitHub Projects</title>
+      <description>
+        For each chunk:
+        - Create linked issue: gh issue create --repo MLorneSmith/2025slideheroes --title "[CHUNK-{#}] {EPIC_NAME} - {CHUNK_FOCUS}" --body "{CHUNK_CONTENT}"
+        - Link to Epic using "Part of #{EPIC_NUMBER}"
+        - Set fields:
+          - Feature Type: Story
+          - AAFD Stage: Chunks
+          - Inherit Priority from Epic
+          - Document Cross-cutting Dependencies
+        - Move Epic to "Chunks" column in Planning Board
+        - Store chunks in: .claude/build/3-output/{epic-name}/2-chunks/
+      </description>
+    </step>
   </instructions>
 
   <input>
