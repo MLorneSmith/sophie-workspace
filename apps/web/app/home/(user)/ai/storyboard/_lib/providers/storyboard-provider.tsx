@@ -79,7 +79,7 @@ export function StoryboardProvider({ children }: StoryboardProviderProps) {
 			return;
 		}
 
-		const fetchPresentation = async () => {
+		const _fetchPresentation = async () => {
 			setIsLoading(true);
 			setError(null);
 			try {
@@ -120,7 +120,7 @@ export function StoryboardProvider({ children }: StoryboardProviderProps) {
 				setIsLoading(false);
 		};
 
-		fetchPresentation();
+		_fetchPresentation();
 	}, [currentPresentationId]);
 
 	// Save storyboard to database
@@ -152,7 +152,7 @@ export function StoryboardProvider({ children }: StoryboardProviderProps) {
 				return false;
 			}
 		},
-		[currentPresentationId],
+		[],
 	);
 
 	// Debounced save function
@@ -167,7 +167,7 @@ export function StoryboardProvider({ children }: StoryboardProviderProps) {
 			// Only auto-save if a presentation is loaded
 			debouncedSaveStoryboard(storyboard);
 		}
-	}, [storyboard, currentPresentationId, debouncedSaveStoryboard]);
+	}, [debouncedSaveStoryboard]);
 
 	// Update a single slide
 	const updateSlide = useCallback(
@@ -189,7 +189,7 @@ export function StoryboardProvider({ children }: StoryboardProviderProps) {
 
 			// Auto-save will handle the actual saving
 		},
-		[storyboard],
+		[],
 	);
 
 	// Add a new slide
@@ -223,7 +223,7 @@ export function StoryboardProvider({ children }: StoryboardProviderProps) {
 		});
 
 		updateStoryboard(updatedStoryboard);
-	}, [storyboard, updateStoryboard]);
+	}, [updateStoryboard]);
 
 	// Remove a slide
 	const removeSlide = useCallback(
@@ -248,7 +248,7 @@ export function StoryboardProvider({ children }: StoryboardProviderProps) {
 
 			updateStoryboard(updatedStoryboard);
 		},
-		[storyboard, updateStoryboard],
+		[updateStoryboard],
 	);
 
 	// Reorder slides
@@ -283,7 +283,7 @@ export function StoryboardProvider({ children }: StoryboardProviderProps) {
 
 			updateStoryboard(updatedStoryboard);
 		},
-		[storyboard, updateStoryboard],
+		[updateStoryboard],
 	);
 
 	const value = useMemo(
@@ -301,16 +301,11 @@ export function StoryboardProvider({ children }: StoryboardProviderProps) {
 			reorderSlides,
 		}),
 		[
-			storyboard,
-			currentPresentation,
-			isLoading,
-			isPending,
-			error,
-			updateStoryboard,
-			updateSlide,
-			addSlide,
-			removeSlide,
-			reorderSlides,
+			updateStoryboard, 
+			updateSlide, 
+			addSlide, 
+			removeSlide, 
+			reorderSlides
 		],
 	);
 
@@ -321,7 +316,7 @@ export function StoryboardProvider({ children }: StoryboardProviderProps) {
 	);
 }
 
-export function useStoryboard() {
+export function _useStoryboard() {
 	const context = useContext(StoryboardContext);
 	if (!context) {
 		throw new Error("useStoryboard must be used within a StoryboardProvider");
@@ -387,7 +382,7 @@ function generateStoryboardFromOutline(
 				currentSlide
 			) {
 				// Process list items
-				processList(node, currentSlide);
+				processList(_node, _currentSlide);
 			}
 		}
 
@@ -423,7 +418,7 @@ function generateStoryboardFromOutline(
 	};
 }
 
-function extractTitle(outline: TipTapDocument): string | null {
+function _extractTitle(outline: TipTapDocument): string | null {
 	// Try to find the first level 1 heading
 	if (outline?.content) {
 		for (const node of outline.content) {
@@ -448,7 +443,7 @@ function extractTextFromNode(node: TipTapNode): string {
 		.join("");
 }
 
-function processList(
+function _processList(
 	node: TipTapNode,
 	slide: Slide,
 	type: "bullet" | "subbullet" = "bullet",
@@ -470,7 +465,7 @@ function processList(
 					itemContent.type === "bulletList" ||
 					itemContent.type === "orderedList"
 				) {
-					processList(itemContent, slide, "subbullet");
+					processList(_itemContent, _slide, "subbullet");
 				}
 			}
 		}

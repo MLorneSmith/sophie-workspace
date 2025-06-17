@@ -83,7 +83,7 @@ export function VerifyOtpForm({
 	});
 
 	// Handle sending OTP email
-	const handleSendOtp = () => {
+	const _handleSendOtp = () => {
 		setError(null);
 
 		startTransition(async () => {
@@ -98,7 +98,7 @@ export function VerifyOtpForm({
 				} else {
 					setError(result.error || "Failed to send OTP. Please try again.");
 				}
-			} catch (err) {
+			} catch (_err) {
 				setError("An unexpected error occurred. Please try again.");
 				// TODO: Async logger needed
 		// (await getLogger()).error("Error sending OTP:", { data: err });
@@ -118,7 +118,7 @@ export function VerifyOtpForm({
 				<Form {...emailForm}>
 					<form
 						className="flex flex-col gap-y-8"
-						onSubmit={emailForm.handleSubmit(handleSendOtp)}
+						onSubmit={emailForm.handleSubmit(_handleSendOtp)}
 					>
 						<div className="flex flex-col gap-y-2">
 							<p className="text-muted-foreground text-sm">

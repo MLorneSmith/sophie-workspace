@@ -88,7 +88,7 @@ describe("PptxGenerator", () => {
 				expect(mockPptxGen.defineSlideMaster).toHaveBeenCalledWith({
 					title: masterName,
 					background: { color: "FFFFFF" },
-				// });
+				});
 			}
 		});
 
@@ -244,7 +244,7 @@ describe("PptxGenerator", () => {
 
 				expect(mockPptxGen.addSlide).toHaveBeenCalledWith({
 					masterName: layout.expected,
-				// });
+				});
 				vi.clearAllMocks();
 			}
 		});
@@ -912,7 +912,7 @@ describe("PptxGenerator", () => {
 				title: "Test Chart",
 				labels: ["A", "B", "C"],
 				values: [1, 2, 3],
-			// });
+			});
 
 			const storyboard: StoryboardData = {
 				title: "Test",

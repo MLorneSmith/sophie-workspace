@@ -42,7 +42,7 @@ export function parseSimplified(response: string): SimplifiedContent {
 						return parsed as SimplifiedContent;
 					}
 				}
-			} catch (jsonError) {
+			} catch (_jsonError) {
 				// TODO: Async logger needed
 		// (await getLogger()).error("Failed to parse JSON content:", { data: jsonError });
 		// }

@@ -182,7 +182,7 @@ export async function LessonDataProviderEnhanced({
 						// TODO: Async logger needed
 		// TODO: Fix logger call - was: warn
 					}
-				} catch (error) {
+				} catch (_error) {
 					// Log the error with context but continue without the quiz data
 					// TODO: Async logger needed
 		// TODO: Fix logger call - was: error
@@ -208,12 +208,12 @@ export async function LessonDataProviderEnhanced({
 					.order("completed_at", { ascending: false });
 
 				quizAttempts = attempts || [];
-			} catch (error) {
+			} catch (_error) {
 				// Continue with empty quiz attempts
 				// TODO: Async logger needed
 		// TODO: Fix logger call - was: error
 			}
-		} catch (error) {
+		} catch (_error) {
 			// Continue without quiz data
 			// TODO: Async logger needed
 		// TODO: Fix logger call - was: error
@@ -230,7 +230,7 @@ export async function LessonDataProviderEnhanced({
 	if (surveyId) {
 		try {
 			// Extract the actual survey ID, handling different possible formats
-			const actualSurveyId =
+			const _actualSurveyId =
 				typeof surveyId === "object" ? surveyId.id || surveyId.value : surveyId;
 
 			// TODO: Async logger needed
@@ -293,7 +293,7 @@ export async function LessonDataProviderEnhanced({
 		// TODO: Fix logger call - was: info
 					}
 				}
-			} catch (error) {
+			} catch (_error) {
 				// TODO: Async logger needed
 		// TODO: Fix logger call - was: error
 				// Continue without the survey data

@@ -887,10 +887,10 @@ function useUpdateFilteredVariables() {
 async function copyToClipboard(text: string) {
 	try {
 		await navigator.clipboard.writeText(text);
-	} catch (err) {
+	} catch (_err) {
 		// TODO: Async logger needed
 		// (await getLogger()).error("Failed to copy:", {
-			data: err,
+			data: _err,
 		});
 	}
 }

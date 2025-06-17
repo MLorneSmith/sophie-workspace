@@ -128,7 +128,7 @@ export const formatQuizQuestionsOnRead: AfterReadHook = async ({
  * This is a critical safety net to ensure data consistency when edits
  * are made through the Payload UI or API calls.
  */
-export const syncQuizQuestionRelationships: BeforeChangeHook = async ({
+export const _syncQuizQuestionRelationships: BeforeChangeHook = async ({
 	data,
 	req,
 	operation,

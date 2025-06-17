@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 // biome-ignore lint/suspicious/noConsole: Migration script - console output is required
 
-const fs = require("fs").promises;
-const path = require("path");
+const fs = require("node:fs").promises;
+const _path = require("node:path");
 
 /**
  * Configuration for the migration
@@ -176,7 +176,7 @@ function replaceConsoleStatements(content) {
 			// Handle simple string messages
 			modifiedContent = modifiedContent.replace(
 				patterns[0],
-				(match, message) => {
+				(_match, message) => {
 					replacementCount++;
 					return `logger.${loggerMethod}("${message}")`;
 				},
@@ -185,7 +185,7 @@ function replaceConsoleStatements(content) {
 			// Handle messages with additional data
 			modifiedContent = modifiedContent.replace(
 				patterns[1],
-				(match, message, data) => {
+				(_match, message, data) => {
 					replacementCount++;
 					// Check if data looks like an object or multiple arguments
 					const dataStr = data.trim();

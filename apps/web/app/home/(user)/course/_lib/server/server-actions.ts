@@ -12,7 +12,7 @@ import type { Database } from "~/lib/database.types";
 
 
 // Start or update course progress
-const UpdateCourseProgressSchema = z.object({
+const _UpdateCourseProgressSchema = z.object({
 	courseId: z.union([z.string(), z.number()]).transform((val) => String(val)),
 	currentLessonId: z
 		.union([z.string(), z.number(), z.undefined()])
@@ -73,7 +73,7 @@ export const updateCourseProgressAction = enhanceAction(
 
 						// Mark the certificate as generated
 						updateData.certificate_generated = true;
-					} catch (error) {
+					} catch (_error) {
 						// TODO: Async logger needed
 		// TODO: Async logger needed
 		// (await getLogger()).error(
@@ -109,7 +109,7 @@ export const updateCourseProgressAction = enhanceAction(
 );
 
 // Update lesson progress
-const UpdateLessonProgressSchema = z.object({
+const _UpdateLessonProgressSchema = z.object({
 	courseId: z.union([z.string(), z.number()]).transform((val) => String(val)),
 	lessonId: z.union([z.string(), z.number()]).transform((val) => String(val)),
 	completionPercentage: z.number().min(0).max(100).optional(),
@@ -274,7 +274,7 @@ const SubmitQuizAttemptSchema = z.object({
 	passed: z.boolean(),
 });
 
-export const submitQuizAttemptAction = enhanceAction(
+export const _submitQuizAttemptAction = enhanceAction(
 	async (data, user) => {
 		const supabase = getSupabaseServerClient();
 		const now = new Date().toISOString();
@@ -293,7 +293,7 @@ export const submitQuizAttemptAction = enhanceAction(
 		// });
 
 		// If passed, mark the lesson as completed
-		if (data.passed) {
+		if (data._passed) {
 			await updateLessonProgressAction({
 				courseId: data.courseId,
 				lessonId: data.lessonId,

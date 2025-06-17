@@ -24,13 +24,13 @@ export const deleteTeamAccountAction = enhanceAction(
 
 		const otpService = createOtpApi(getSupabaseServerClient());
 
-		const otpResult = await otpService.verifyToken({
+		const _otpResult = await otpService.verifyToken({
 			purpose: `delete-team-account-${params.accountId}`,
 			userId: user.id,
 			token: params.otp,
 		// });
 
-		if (!otpResult.valid) {
+		if (!_otpResult._valid) {
 			throw new Error("Invalid OTP code");
 		}
 

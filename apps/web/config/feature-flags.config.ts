@@ -40,7 +40,7 @@ const FeatureFlagsSchema = z.object({
 		.enum(["user", "application"], {
 			required_error: "Provide the variable NEXT_PUBLIC_LANGUAGE_PRIORITY",
 			description: `If set to user, use the user's preferred language. If set to application, use the application's default language.`,
-		// })
+		})
 		.default("application"),
 	enableNotifications: z.boolean({
 		description: "Enable notifications functionality",

@@ -54,10 +54,10 @@ const imageStyle = {
 export function OnboardingForm() {
 	const router = useRouter();
 	const [_isSubmitting, setIsSubmitting] = useState(false);
-	const formRef = useRef<HTMLDivElement>(null);
+	const _formRef = useRef<HTMLDivElement>(null);
 
 	// Initialize form with React Hook Form
-	const form = useForm<z.infer<typeof FormSchema>>({
+	const _form = useForm<z.infer<typeof FormSchema>>({
 		resolver: zodResolver(FormSchema),
 		defaultValues: {
 			welcome: {},
@@ -115,7 +115,7 @@ export function OnboardingForm() {
 	);
 
 	// Form submission handler
-	const onSubmit = useCallback(
+	const _onSubmit = useCallback(
 		async (data: z.infer<typeof FormSchema>) => {
 			setIsSubmitting(true);
 			try {
@@ -124,7 +124,7 @@ export function OnboardingForm() {
 					isFinalSubmission: true,
 				// });
 
-				if (result.success) {
+				if (_result._success) {
 					localStorage.removeItem(STORAGE_KEY);
 					analytics.trackEvent("onboarding_completed", flattenFormData(data));
 					router.push("/home");
@@ -166,7 +166,7 @@ export function OnboardingForm() {
 			try {
 				const parsedData = JSON.parse(savedData);
 				form.reset(parsedData);
-			} catch (error) {
+			} catch (_error) {
 				// TODO: Async logger needed
 				// TODO: Fix logger call - was: error
 			}
@@ -307,7 +307,7 @@ function ProfileStep() {
 		analytics.trackEvent("onboarding_profile_completed", {
 			name: form.getValues().profile.name,
 		// });
-		nextStep(e);
+		nextStep(_e);
 	};
 
 	return (
@@ -616,7 +616,7 @@ function ThemeStep() {
 		analytics.trackEvent("onboarding_theme_completed", {
 			theme: form.getValues().theme.style,
 		// });
-		nextStep(e);
+		nextStep(_e);
 	};
 
 	return (
@@ -741,7 +741,7 @@ function CompleteStep() {
 				// TODO: Fix logger call - was: error
 				alert(`Failed to complete onboarding: ${result.message}`);
 			}
-		} catch (error) {
+		} catch (_error) {
 			// TODO: Async logger needed
 			// TODO: Fix logger call - was: error
 			alert("An error occurred while submitting the form. Please try again.");

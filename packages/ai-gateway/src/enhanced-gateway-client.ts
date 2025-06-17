@@ -33,7 +33,7 @@ async function getProviderForModel(model: string): Promise<string> {
  * @param options Portkey configuration options
  * @returns Record<string, string> Headers object
  */
-async function createPortkeyConfigHeaders(options: {
+async function _createPortkeyConfigHeaders(options: {
 	provider: string;
 	apiKey: string;
 	config?: string | Record<string, unknown>;
@@ -83,7 +83,7 @@ interface PortkeyClientOptions {
  * @param options Tracking metadata and config options
  * @returns OpenAI Configured OpenAI client
  */
-export async function createGatewayClient(options: PortkeyClientOptions = {}) {
+export async function _createGatewayClient(options: PortkeyClientOptions = {}) {
 	const {
 		userId,
 		teamId,
@@ -99,7 +99,7 @@ export async function createGatewayClient(options: PortkeyClientOptions = {}) {
 	(await getLogger()).info(`Creating gateway client for model: ${model}`, { provider });
 
 	// Create headers using our Portkey config headers function
-	const headers = await createPortkeyConfigHeaders({
+	const headers = await _createPortkeyConfigHeaders({
 		provider,
 		apiKey: process.env.PORTKEY_API_KEY || "",
 		// Include the configuration properly as a header parameter
@@ -107,7 +107,7 @@ export async function createGatewayClient(options: PortkeyClientOptions = {}) {
 	// });
 
 	// Add our custom tracking metadata
-	if (userId) headers["x-portkey-request-metadata-user-id"] = userId;
+	if (_userId) headers"x-portkey-request-metadata-user-id" = userId;
 	if (teamId) headers["x-portkey-request-metadata-team-id"] = teamId;
 	if (feature) headers["x-portkey-request-metadata-feature"] = feature;
 	if (sessionId) headers["x-portkey-trace-id"] = sessionId;

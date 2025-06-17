@@ -41,7 +41,7 @@ export function UpdateEmailForm({
 	const { t } = useTranslation("account");
 	const updateUserMutation = useUpdateUser();
 
-	const updateEmail = ({ email }: { email: string }) => {
+	const _updateEmail = ({ email }: { email: string }) => {
 		// then, we update the user's email address
 		const promise = async () => {
 			const redirectTo = new URL(
@@ -78,7 +78,7 @@ export function UpdateEmailForm({
 			<form
 				className={"flex flex-col space-y-4"}
 				data-test={"account-email-form"}
-				onSubmit={form.handleSubmit(updateEmail)}
+				onSubmit={form.handleSubmit(_updateEmail)}
 			>
 				<If condition={updateUserMutation.data}>
 					<Alert variant={"success"}>

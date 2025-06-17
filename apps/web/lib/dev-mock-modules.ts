@@ -5,7 +5,7 @@ This file is used to mock the modules that are not needed during development (un
 It allows the development server to load faster by not loading the modules that are not needed.
  */
 
-const noop = (name: string) => {
+const noop = (_name: string) => {
 	return () => {
 		// TODO: Async logger needed
 		// TODO: Fix logger call - was: debug

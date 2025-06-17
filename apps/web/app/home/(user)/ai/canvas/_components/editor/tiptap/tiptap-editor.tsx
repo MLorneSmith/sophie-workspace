@@ -66,7 +66,7 @@ interface MutationContext {
 }
 
 export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
-	function TiptapEditor(props, ref) {
+	function TiptapEditor(props, _ref) {
 		const {
 			content,
 			submissionId,
@@ -74,13 +74,13 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 			// onAcceptImprovement, // Currently unused
 			isLoading,
 		} = props;
-		const supabase = useSupabase();
-		const queryClient = useQueryClient();
+		const _supabase = useSupabase();
+		const _queryClient = useQueryClient();
 		const { setSaveStatus, registerSaveCallback } = useSaveContext();
 		const _editorRef = useRef(null);
 
 		// Parse and normalize initial content
-		const initialContent = useMemo(() => {
+		const _initialContent = useMemo(() => {
 			// TODO: Async logger needed
 		// (await getLogger()).info("TiptapEditor parsing content:", {
 		// sectionType,
@@ -115,7 +115,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 				// Normalize the content before passing it to the editor
 				// This helps prevent ProseMirror model version conflicts
 				return normalizeEditorContent(parsed, sectionType);
-			} catch (e) {
+			} catch (_e) {
 				// TODO: Async logger needed
 		// TODO: Fix logger call - was: error
 				// Return a normalized empty document as fallback
@@ -241,7 +241,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 
 				return { previousContent };
 			},
-			onError: (err, _newContent, context: MutationContext | undefined) => {
+			onError: (_err, _newContent, context: MutationContext | undefined) => {
 				// TODO: Async logger needed
 		// TODO: Fix logger call - was: error
 				setSaveStatus("error");
@@ -282,7 +282,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 						sectionType,
 					);
 					await updateContent(normalizedContent);
-				} catch (error) {
+				} catch (_error) {
 					// TODO: Async logger needed
 		// TODO: Fix logger call - was: error
 					setSaveStatus("error");
@@ -304,7 +304,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 				if (editor) {
 					try {
 						await saveContent(editor.getJSON());
-					} catch (error) {
+					} catch (_error) {
 						// TODO: Async logger needed
 		// TODO: Fix logger call - was: error
 					}
@@ -346,7 +346,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 									editor.commands.clearContent();
 									// Use the normalized content to prevent model conflicts
 									editor.commands.setContent(initialContent);
-								} catch (innerError) {
+								} catch (_innerError) {
 									// TODO: Async logger needed
 		// TODO: Fix logger call - was: error
 
@@ -368,12 +368,12 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 								}
 							}
 						}, 0);
-					} catch (error) {
+					} catch (_error) {
 						// TODO: Async logger needed
 		// TODO: Fix logger call - was: error
 					}
 				}
-			} catch (error) {
+			} catch (_error) {
 				// TODO: Async logger needed
 		// TODO: Fix logger call - was: error
 			}

@@ -899,7 +899,7 @@ describe("QuizComponent", () => {
 				docs: [{ id: "lesson-1", lesson_number: 1, slug: "lesson-1-slug" }],
 			// });
 
-			render(<QuizComponent {...defaultProps} />);
+			render(<_QuizComponent {...defaultProps} />);
 
 			// Pass quiz and click Next Lesson
 			await user.click(screen.getByLabelText("4"));

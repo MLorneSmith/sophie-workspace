@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 // biome-ignore lint/suspicious/noConsole: Migration script - console output is required
 
-import fs from "fs/promises";
+import fs from "node:fs/promises";
+import path from "node:path";
 import { glob } from "glob";
-import path from "path";
 
 // Configuration
 const config = {
@@ -165,7 +165,7 @@ async function processServerConsole(content) {
 			(a, b) => b[1].position - a[1].position,
 		);
 
-		for (const [key, { position, declaration }] of sortedDeclarations) {
+		for (const [_key, { position, declaration }] of sortedDeclarations) {
 			// Find the opening brace of the function
 			const afterDeclaration = processed.substring(
 				position + declaration.length,
@@ -229,7 +229,7 @@ function addLoggerImport(content, hasLogger) {
 				content.slice(insertPosition)
 			);
 		} else {
-			return importStatement + "\n" + content;
+			return `${importStatement}\n${content}`;
 		}
 	}
 }

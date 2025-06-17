@@ -56,7 +56,7 @@ export function ActionToolbar({
 					try {
 						content = editorRef.current.getText();
 						resolve(content);
-					} catch (error) {
+					} catch (_error) {
 						// TODO: Async logger needed
 		// TODO: Async logger needed
 		// (await getLogger()).warn(
@@ -119,7 +119,7 @@ export function ActionToolbar({
 										}
 									}
 								}
-							} catch (updateError) {
+							} catch (_updateError) {
 								// TODO: Async logger needed
 		// TODO: Async logger needed
 		// (await getLogger()).warn(
@@ -128,7 +128,7 @@ export function ActionToolbar({
 		// );
 							}
 						}
-					} catch (parseError) {
+					} catch (_parseError) {
 						// TODO: Async logger needed
 		// TODO: Async logger needed
 		// (await getLogger()).error(
@@ -145,7 +145,7 @@ export function ActionToolbar({
 		// 	{ data: result.error }
 		// );
 				}
-			} catch (contentError) {
+			} catch (_contentError) {
 				// TODO: Async logger needed
 		// TODO: Async logger needed
 		// (await getLogger()).warn(
@@ -153,7 +153,7 @@ export function ActionToolbar({
 		// 	{ data: contentError }
 		// );
 			}
-		} catch (error) {
+		} catch (_error) {
 			// TODO: Async logger needed
 		// (await getLogger()).error("Error simplifying text:", {
 		// data: error,
@@ -180,7 +180,7 @@ export function ActionToolbar({
 					try {
 						content = editorRef.current.getText();
 						resolve(content);
-					} catch (error) {
+					} catch (_error) {
 						// TODO: Async logger needed
 		// TODO: Async logger needed
 		// (await getLogger()).warn(
@@ -201,15 +201,15 @@ export function ActionToolbar({
 				const contentToSend =
 					content.trim() || "Please suggest some initial ideas.";
 
-				const result = await generateIdeasAction({
+				const _result = await generateIdeasAction({
 					content: contentToSend,
 					submissionId: canvasId,
 					type: sectionType,
 				// });
 
 				if (
-					result.success &&
-					result.data?.improvements &&
+					_result._success &&
+					result._data?._improvements &&
 					onGenerateImprovements
 				) {
 					onGenerateImprovements(result.data.improvements);
@@ -222,7 +222,7 @@ export function ActionToolbar({
 		// 	{ data: contentError }
 		// );
 			}
-		} catch (error) {
+		} catch (_error) {
 			// TODO: Async logger needed
 		// (await getLogger()).error("Error generating ideas:", {
 		// data: error,

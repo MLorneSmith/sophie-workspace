@@ -41,7 +41,7 @@ export class PayloadClient implements CmsClient {
 				total: data.totalDocs,
 				items,
 			};
-		} catch (error) {
+		} catch (_error) {
 			// Error logging suppressed for production
 			// Uncomment for debugging: process.stderr.write(`Error fetching content items from Payload: ${error}\n`);
 			return {
@@ -104,7 +104,7 @@ export class PayloadClient implements CmsClient {
 						// Uncomment for debugging: process.stderr.write(`Error fetching child documents: ${childrenResponse.status} ${childrenResponse.statusText}\n`);
 						item.children = []; // Ensure children is an empty array
 					}
-				} catch (childError) {
+				} catch (_childError) {
 					// Error logging suppressed for production
 					// Uncomment for debugging: process.stderr.write(`Error fetching child documents: ${childError}\n`);
 					item.children = []; // Ensure children is an empty array
@@ -116,7 +116,7 @@ export class PayloadClient implements CmsClient {
 			}
 
 			return item;
-		} catch (error) {
+		} catch (_error) {
 			// Error logging suppressed for production
 			// Uncomment for debugging: process.stderr.write(`Error fetching content item by slug from Payload: ${error}\n`);
 			return undefined;
@@ -144,7 +144,7 @@ export class PayloadClient implements CmsClient {
 				name,
 				slug: name.toLowerCase().replace(/\s+/g, "-"),
 			}));
-		} catch (error) {
+		} catch (_error) {
 			// Error logging suppressed for production
 			// Uncomment for debugging: process.stderr.write(`Error fetching categories from Payload: ${error}\n`);
 			return [];
@@ -177,7 +177,7 @@ export class PayloadClient implements CmsClient {
 				name,
 				slug: name.toLowerCase().replace(/\s+/g, "-"),
 			}));
-		} catch (error) {
+		} catch (_error) {
 			// Error logging suppressed for production
 			// Uncomment for debugging: process.stderr.write(`Error fetching tags from Payload: ${error}\n`);
 			return [];

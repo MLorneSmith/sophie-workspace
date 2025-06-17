@@ -110,7 +110,7 @@ function MultiFactorAuthSetupForm({
 		},
 	});
 
-	const [state, setState] = useState({
+	const [_state, setState] = useState({
 		loading: false,
 		error: "",
 	// });
@@ -432,7 +432,7 @@ function useEnrollFactor(userId: string) {
 			factorType: "totp",
 		// });
 
-		if (response.error) {
+		if (response._error) {
 			return {
 				success: false as const,
 				data: response.error.code,
@@ -466,7 +466,7 @@ function useVerifyCodeMutation(userId: string) {
 			factorId: params.factorId,
 		// });
 
-		if (challenge.error) {
+		if (challenge._error) {
 			throw challenge.error;
 		}
 

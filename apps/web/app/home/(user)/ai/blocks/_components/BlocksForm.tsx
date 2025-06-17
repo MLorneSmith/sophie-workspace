@@ -1,6 +1,5 @@
 "use client";
 
-
 import { createServiceLogger } from "@kit/shared/logger";
 import { Button } from "@kit/ui/button";
 import {
@@ -66,7 +65,7 @@ function useSuggestions(_userId: string) {
 						`Error: ${result.error || "Failed to get suggestions"}`,
 					]);
 				}
-			} catch (error) {
+			} catch (_error) {
 				// TODO: Async logger needed
 				// TODO: Fix logger call - was: error
 				if (setSuggestions) setSuggestions(["An unexpected error occurred"]);
@@ -241,7 +240,7 @@ export function SetupForm({ _userId }: SetupFormProps) {
 	useEffect(() => {
 		// TODO: Async logger needed
 		// TODO: Fix logger call - was: info
-	}, [formData]);
+	}, []);
 
 	useEffect(() => {
 		setErrors({});
@@ -361,7 +360,7 @@ export function SetupForm({ _userId }: SetupFormProps) {
 			});
 			// Navigate back to AI home page
 			router.push("/home/ai");
-		} catch (error) {
+		} catch (_error) {
 			// TODO: Async logger needed
 			// TODO: Fix logger call - was: error
 		} finally {
@@ -402,7 +401,7 @@ export function SetupForm({ _userId }: SetupFormProps) {
 				// TODO: Async logger needed
 				// TODO: Fix logger call - was: error
 			}
-		} catch (error) {
+		} catch (_error) {
 			// TODO: Async logger needed
 			// TODO: Fix logger call - was: error
 		} finally {
@@ -518,14 +517,14 @@ export function SetupForm({ _userId }: SetupFormProps) {
 											setFormData({
 												...formData,
 												title: suggestion,
-											// });
+											});
 											setTouchedFields(new Set(touchedFields).add("title"));
 											validateField("title");
 										} else if (currentField === "audience") {
 											setFormData({
 												...formData,
 												audience: suggestion,
-											// });
+											});
 											setTouchedFields(new Set(touchedFields).add("audience"));
 											validateField("audience");
 										}

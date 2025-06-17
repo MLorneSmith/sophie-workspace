@@ -38,7 +38,7 @@ export function PasswordSignInContainer({
 				resetCaptchaToken();
 			}
 		},
-		[captchaToken, onSignIn, resetCaptchaToken, signInMutation],
+		[captchaToken, resetCaptchaToken, signInMutation],
 	);
 
 	return (

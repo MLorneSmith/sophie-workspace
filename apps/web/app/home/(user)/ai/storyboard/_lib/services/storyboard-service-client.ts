@@ -31,7 +31,6 @@ export class StoryboardService {
 	 * @returns Promise resolving to the storyboard data
 	 */
 	async getStoryboard(submissionId: string): Promise<StoryboardData> {
-		try {
 			// First try fetching with the storyboard column
 			const { data, error } = await this.supabase
 				.from("building_blocks_submissions")
@@ -71,13 +70,13 @@ export class StoryboardService {
 						// Save the generated storyboard if possible (will silently fail if column doesn't exist yet)
 						try {
 							await this.saveStoryboard(submissionId, storyboard);
-						} catch (saveError) {
+						} catch (_saveError) {
 							// TODO: Async logger needed
 		// TODO: Fix logger call - was: warn
 						}
 
 						return storyboard;
-					} catch (err) {
+					} catch (_err) {
 						// TODO: Async logger needed
 		// TODO: Fix logger call - was: error
 						throw new Error("Failed to generate storyboard from outline");
@@ -112,16 +111,11 @@ export class StoryboardService {
 				await this.saveStoryboard(submissionId, storyboard);
 
 				return storyboard;
-			} catch (err) {
+			} catch (_err) {
 				// TODO: Async logger needed
 		// TODO: Fix logger call - was: error
 				throw new Error("Failed to generate storyboard from outline");
 			}
-		} catch (error) {
-			// TODO: Async logger needed
-		// TODO: Fix logger call - was: error
-			throw error;
-		}
 	}
 
 	/**
@@ -160,7 +154,7 @@ export class StoryboardService {
 			}
 
 			return true;
-		} catch (error) {
+		} catch (_error) {
 			// TODO: Async logger needed
 		// TODO: Fix logger call - was: error
 			toast.error("Failed to save storyboard");
@@ -184,7 +178,7 @@ export class StoryboardService {
 			}
 
 			return data as BuildingBlocksSubmission[];
-		} catch (error) {
+		} catch (_error) {
 			// TODO: Async logger needed
 		// TODO: Fix logger call - was: error
 			throw new Error("Failed to list presentations");
@@ -203,7 +197,7 @@ export class StoryboardService {
 			// In the real implementation, this would use PptxGenJS
 			// For now, we'll return a placeholder implementation
 			throw new Error("PowerPoint generation not implemented yet");
-		} catch (error) {
+		} catch (_error) {
 			// TODO: Async logger needed
 		// TODO: Fix logger call - was: error
 			throw new Error("Failed to generate PowerPoint");

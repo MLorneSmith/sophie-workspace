@@ -44,52 +44,45 @@ export async function scanMonorepoEnv(
 	const envTypes = ENV_FILE_PRECEDENCE[mode];
 	const appsDir = path.join(rootDir, "apps");
 	const results: EnvFileInfo[] = [];
+	const appDirs = await fs.readdir(appsDir);
 
-	try {
-		const appDirs = await fs.readdir(appsDir);
+	for (const appName of appDirs) {
+		if (apps.length > 0 && !apps.includes(appName)) {
+			continue;
+		}
 
-		for (const appName of appDirs) {
-			if (apps.length > 0 && !apps.includes(appName)) {
-				continue;
-			}
+		const appDir = path.join(appsDir, appName);
+		const stat = await fs.stat(appDir);
 
-			const appDir = path.join(appsDir, appName);
-			const stat = await fs.stat(appDir);
+		if (!stat.isDirectory()) {
+			continue;
+		}
 
-			if (!stat.isDirectory()) {
-				continue;
-			}
+		const appInfo: EnvFileInfo = {
+			appName,
+			filePath: appDir,
+			variables: [],
+		};
 
-			const appInfo: EnvFileInfo = {
-				appName,
-				filePath: appDir,
-				variables: [],
-			};
+		for (const envType of envTypes) {
+			const envPath = path.join(appDir, envType);
 
-			for (const envType of envTypes) {
-				const envPath = path.join(appDir, envType);
+			try {
+				const content = await fs.readFile(envPath, "utf-8");
+				const vars = parseEnvFile(content, envType);
 
-				try {
-					const content = await fs.readFile(envPath, "utf-8");
-					const vars = parseEnvFile(content, envType);
-
-					appInfo.variables.push(...vars);
-				} catch (error) {
-					if ((error as NodeJS.ErrnoException).code !== "ENOENT") {
-						// Error logging suppressed for production
-						// Uncomment for debugging: process.stderr.write(`Error reading ${envPath}: ${error}\n`);
-					}
+				appInfo.variables.push(...vars);
+			} catch (error) {
+				if ((error as NodeJS.ErrnoException).code !== "ENOENT") {
+					// Error logging suppressed for production
+					// Uncomment for debugging: process.stderr.write(`Error reading ${envPath}: ${error}\n`);
 				}
 			}
-
-			if (appInfo.variables.length > 0) {
-				results.push(appInfo);
-			}
 		}
-	} catch (error) {
-		// Error logging suppressed for production
-		// Uncomment for debugging: process.stderr.write(`Error scanning monorepo: ${error}\n`);
-		throw error;
+
+		if (appInfo.variables.length > 0) {
+			results.push(appInfo);
+		}
 	}
 
 	return results;

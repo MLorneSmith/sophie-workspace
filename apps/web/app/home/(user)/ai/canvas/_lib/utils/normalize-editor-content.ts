@@ -42,7 +42,7 @@ export function normalizeEditorContent(
 	// Validate against schema (with safe fallback)
 	try {
 		validateAgainstSchema(parsedContent);
-	} catch (error) {
+	} catch (_error) {
 		// TODO: Async logger needed
 		// TODO: Fix logger call - was: error
 		// Use safe fallback content if validation fails
@@ -64,7 +64,7 @@ function parseContent(content: unknown): TiptapDocument {
 	if (typeof content === "string") {
 		try {
 			return JSON.parse(content);
-		} catch (e) {
+		} catch (_e) {
 			// TODO: Async logger needed
 			// TODO: Fix logger call - was: error
 			return createSafeContent();

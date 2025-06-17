@@ -38,7 +38,7 @@ export const UpdatePasswordForm = ({
 	const updateUserMutation = useUpdateUser();
 	const [needsReauthentication, setNeedsReauthentication] = useState(false);
 
-	const updatePasswordFromCredential = (password: string) => {
+	const _updatePasswordFromCredential = (password: string) => {
 		const redirectTo = [window.location.origin, callbackPath].join("");
 
 		const promise = updateUserMutation
@@ -74,7 +74,7 @@ export const UpdatePasswordForm = ({
 			return Promise.reject(t("cannotUpdatePassword"));
 		}
 
-		updatePasswordFromCredential(newPassword);
+		_updatePasswordFromCredential(newPassword);
 	};
 
 	const form = useForm({

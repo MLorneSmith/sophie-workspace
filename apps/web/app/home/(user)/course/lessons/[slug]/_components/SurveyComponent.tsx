@@ -60,15 +60,15 @@ export function SurveyComponent({
 	_userId,
 	onComplete,
 }: SurveyComponentProps) {
-	const [isPending, startTransition] = useTransition();
+	const [_isPending, startTransition] = useTransition();
 	const _supabase = useSupabase();
 
 	const [questions, setQuestions] = useState<Question[]>([]);
-	const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+	const [currentQuestionIndex, _setCurrentQuestionIndex] = useState(0);
 	const [responses, setResponses] = useState<
 		Record<string, { answer: string; score: number; category: string }>
 	>({});
-	const [showSummary, setShowSummary] = useState(false);
+	const [_showSummary, setShowSummary] = useState(false);
 
 	// Fetch survey questions - with improved handling for pre-fetched questions
 	const { data: questionsData, isLoading: isQuestionsLoading } = useQuery({
@@ -129,7 +129,7 @@ export function SurveyComponent({
 				}
 
 				return [];
-			} catch (error) {
+			} catch (_error) {
 				// TODO: Async logger needed
 		// TODO: Fix logger call - was: error
 
@@ -148,7 +148,7 @@ export function SurveyComponent({
 
 	// Set questions when data is loaded
 	useEffect(() => {
-		if (questionsData && questionsData.length > 0) {
+		if (questionsData && questionsData._length > 0) {
 			// TODO: Async logger needed
 		// TODO: Fix logger call - was: info
 
@@ -229,7 +229,7 @@ export function SurveyComponent({
 		// );
 
 			// Log each question for debugging
-			for (const [index, q] of sortedQuestions.entries()) {
+			for (const [_index, _q] of sortedQuestions.entries()) {
 				// TODO: Async logger needed
 		// (await getLogger()).info(
 		// `Question ${index + 1}: ${q.text} (ID: ${q.id}), Type: ${q.type}, Options: ${q.options.length}`,
@@ -242,7 +242,7 @@ export function SurveyComponent({
 		// TODO: Fix logger call - was: warn
 
 			// Special handling for Three Quick Questions survey
-			if (survey?.id === "6f463bef-d7a0-4e5a-b0fa-a789b5d6f0e0") {
+			if (_survey?._id === "6f463bef-d7a0-4e5a-b0fa-a789b5d6f0e0") {
 				// TODO: Async logger needed
 		// TODO: Fix logger call - was: info
 
@@ -313,13 +313,13 @@ export function SurveyComponent({
 	}, [surveyResponses]);
 
 	// Calculate progress
-	const progress =
+	const _progress =
 		questions.length > 0 ? (currentQuestionIndex / questions.length) * 100 : 0;
-	const isLastQuestion = currentQuestionIndex === questions.length - 1;
+	const _isLastQuestion = currentQuestionIndex === questions.length - 1;
 	const currentQuestion = questions[currentQuestionIndex];
 
 	// Handle answer submission
-	const handleAnswer = (questionId: string, answer: string, score: number) => {
+	const _handleAnswer = (questionId: string, answer: string, score: number) => {
 		// Save the response
 		const category = currentQuestion.category || "general";
 
@@ -343,11 +343,11 @@ export function SurveyComponent({
 				// });
 
 				// Move to the next question or complete the survey
-				if (isLastQuestion) {
+				if (_isLastQuestion) {
 					setShowSummary(true);
 					onComplete();
 				} else {
-					setCurrentQuestionIndex(currentQuestionIndex + 1);
+					setCurrentQuestionIndex(_currentQuestionIndex + 1);
 				}
 			} catch (_error) {
 				toast.error("Failed to save response. Please try again.");

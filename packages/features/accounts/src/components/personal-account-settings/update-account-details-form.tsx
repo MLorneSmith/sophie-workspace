@@ -39,7 +39,7 @@ export function UpdateAccountDetailsForm({
 		},
 	});
 
-	const onSubmit = ({ displayName }: { displayName: string }) => {
+	const _onSubmit = ({ displayName }: { displayName: string }) => {
 		const data = { name: displayName };
 
 		const promise = updateAccountMutation.mutateAsync(data).then(() => {
@@ -59,7 +59,7 @@ export function UpdateAccountDetailsForm({
 				<form
 					data-test={"update-account-name-form"}
 					className={"flex flex-col space-y-4"}
-					onSubmit={form.handleSubmit(onSubmit)}
+					onSubmit={form.handleSubmit(_onSubmit)}
 				>
 					<FormField
 						name={"displayName"}

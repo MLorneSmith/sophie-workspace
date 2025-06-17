@@ -26,7 +26,7 @@ export function ContactForm() {
 	const [state, setState] = useState({
 		success: false,
 		error: false,
-	// });
+	});
 
 	const form = useForm({
 		resolver: zodResolver(ContactEmailSchema),

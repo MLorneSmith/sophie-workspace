@@ -43,7 +43,7 @@ export function LinkAccountsList(props: { providers: Provider[] }) {
 	// Show all connected identities, even if their provider isn't in the allowed providers list
 	const connectedIdentities = identities;
 
-	const handleUnlinkAccount = (identity: UserIdentity) => {
+	const _handleUnlinkAccount = (identity: UserIdentity) => {
 		const promise = unlinkMutation.mutateAsync(identity);
 
 		toast.promise(promise, {
@@ -53,7 +53,7 @@ export function LinkAccountsList(props: { providers: Provider[] }) {
 		// });
 	};
 
-	const handleLinkAccount = (provider: Provider) => {
+	const _handleLinkAccount = (provider: Provider) => {
 		const promise = linkMutation.mutateAsync(provider);
 
 		toast.promise(promise, {
@@ -145,7 +145,7 @@ export function LinkAccountsList(props: { providers: Provider[] }) {
 												</AlertDialogCancel>
 
 												<AlertDialogAction
-													onClick={() => handleUnlinkAccount(identity)}
+													onClick={() => _handleUnlinkAccount(identity)}
 													className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
 												>
 													<Trans i18nKey={"account:unlinkAccount"} />
@@ -180,7 +180,7 @@ export function LinkAccountsList(props: { providers: Provider[] }) {
 							<button
 								key={provider}
 								className="hover:bg-muted/50 flex h-14 items-center justify-between rounded-lg border p-3 transition-colors"
-								onClick={() => handleLinkAccount(provider)}
+								onClick={() => _handleLinkAccount(provider)}
 							>
 								<div className="flex items-center gap-3">
 									<OauthProviderLogoImage providerId={provider} />

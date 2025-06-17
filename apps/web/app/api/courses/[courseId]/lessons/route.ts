@@ -34,7 +34,7 @@ export const GET = enhanceRouteHandler(
 
 			// Log detailed structure of the first lesson to understand relationship structure
 			if (lessons.docs?.[0]) {
-				const sampleLesson = lessons.docs[0];
+				const _sampleLesson = lessons.docs[0];
 				// TODO: Async logger needed
 				// (await getLogger()).info(
 				// 	"API - Detailed sample lesson structure:",
@@ -49,7 +49,7 @@ export const GET = enhanceRouteHandler(
 			}
 
 			return NextResponse.json(lessons);
-		} catch (error) {
+		} catch (_error) {
 			// TODO: Async logger needed
 			// (await getLogger()).error(
 			// 	"Error fetching course lessons:",

@@ -40,7 +40,7 @@ export function PersonalAccountCheckoutForm(props: {
 	const [error, setError] = useState(false);
 	const appEvents = useAppEvents();
 
-	const [checkoutToken, setCheckoutToken] = useState<string | undefined>(
+	let [checkoutToken, setCheckoutToken] = useState<string | undefined>(
 		undefined,
 	);
 

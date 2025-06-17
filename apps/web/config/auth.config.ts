@@ -8,17 +8,17 @@ const AuthConfigSchema = z.object({
 	captchaTokenSiteKey: z
 		.string({
 			description: "The reCAPTCHA site key.",
-		// })
+		})
 		.optional(),
 	displayTermsCheckbox: z
 		.boolean({
 			description: "Whether to display the terms checkbox during sign-up.",
-		// })
+		})
 		.optional(),
 	enableIdentityLinking: z
 		.boolean({
 			description: "Allow linking and unlinking of auth identities.",
-		// })
+		})
 		.optional()
 		.default(false),
 	providers: z.object({

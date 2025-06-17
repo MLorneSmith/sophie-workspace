@@ -37,7 +37,7 @@ export function ExistingAccountHintImpl({
 	const isInvite = params.get("invite_token");
 
 	if (isInvite) {
-		signInPath = signInPath + "?invite_token=" + isInvite;
+		signInPath = `${signInPath}?invite_token=${isInvite}`;
 	}
 
 	// Get the appropriate method description for the hint

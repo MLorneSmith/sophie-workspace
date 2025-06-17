@@ -115,7 +115,7 @@ class ServerPostHogImpl {
 	}
 
 	async trackPageView(url: string) {
-		if (!this.userId) {
+		if (!this._userId) {
 			this.log("User ID not set, skipping page view tracking");
 			return;
 		}
@@ -148,7 +148,7 @@ class ServerPostHogImpl {
 		await client.shutdown();
 	}
 
-	log(...args: unknown[]) {
+	log(..._args: unknown[]) {
 		if (process.env.NODE_ENV === "development") {
 			// TODO: Async logger needed
 		// (await getLogger()).info("[ServerPostHog]", { data: ...args });
@@ -213,7 +213,7 @@ class ClientPostHogImpl {
 		return client.capture(eventName, eventProperties);
 	}
 
-	log(...args: unknown[]) {
+	log(..._args: unknown[]) {
 		if (process.env.NODE_ENV === "development") {
 			// TODO: Async logger needed
 		// (await getLogger()).info("[ClientPostHog]", { data: ...args });

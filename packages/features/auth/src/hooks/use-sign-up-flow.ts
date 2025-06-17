@@ -68,10 +68,6 @@ export function usePasswordSignUpFlow({
 				if (onSignUp) {
 					onSignUp(data.user?.id);
 				}
-			} catch (error) {
-				// TODO: Async logger needed
-		// (await getLogger()).error(error);
-				throw error;
 			} finally {
 				resetCaptchaToken?.();
 		// }

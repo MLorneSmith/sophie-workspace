@@ -104,7 +104,7 @@ ${improvementFormat}`,
 			} as ChatCompletionOptions);
 
 			// Calculate duration for monitoring
-			const duration = performance.now() - startTime;
+			const _duration = performance.now() - startTime;
 
 			// Log metrics
 			// TODO: Async logger needed

@@ -451,7 +451,7 @@ export class StripeWebhookHandlerService
 	}
 
 	private async loadStripe() {
-		if (!this.stripe) {
+		if (!this._stripe) {
 			this.stripe = await createStripeClient();
 		}
 

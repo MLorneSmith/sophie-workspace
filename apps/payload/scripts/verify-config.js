@@ -22,9 +22,7 @@ const colors = {
  * @param {string} color - The color code to use for the message.
  * @param {string} message - The message to log.
  */
-function log(color, message) {
-	console.log(`${color}${message}${colors.reset}`);
-}
+function log(_color, _message) {}
 
 /**
  * Checks if an environment variable is set.
@@ -465,8 +463,6 @@ function main() {
 
 	// Provide troubleshooting guidance
 	provideTroubleshootingGuidance(storageValid);
-
-	console.log(); // Final newline
 	process.exit(allGood ? 0 : 1);
 }
 

@@ -75,7 +75,7 @@ export default async function HomePage() {
 				</div>
 			</div>
 		);
-	} catch (error) {
+	} catch (_error) {
 		// TODO: Async logger needed
 		// (await getLogger()).error("[PAYLOAD-FRONTEND] Error initializing Payload:", { data: error });
 

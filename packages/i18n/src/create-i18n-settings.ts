@@ -26,7 +26,7 @@ export function createI18nSettings({
 		preload: false as const,
 		lowerCaseLng: true as const,
 		fallbackNS: ns,
-		missingInterpolationHandler: (text, value, options) => {
+		missingInterpolationHandler: (_text, _value, _options) => {
 			// TODO: Async logger needed
 		// (await getLogger()).debug(`Missing interpolation value for key: ${text}`, { arg1: value, arg2: options, arg3:  });
 			// },

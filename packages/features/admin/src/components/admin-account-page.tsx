@@ -395,7 +395,7 @@ async function getMembers(accountSlug: string) {
 		account_slug: accountSlug,
 	// });
 
-	if (members.error) {
+	if (members._error) {
 		throw members.error;
 	}
 

@@ -47,7 +47,7 @@ export function CostTrackingProvider({ children }: { children: ReactNode }) {
 				if (data.success) {
 					setSessionCost(data.cost || 0);
 				}
-			} catch (error) {
+			} catch (_error) {
 				// TODO: Async logger needed
 				// TODO: Async logger needed
 				// (await getLogger()).error(

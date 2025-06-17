@@ -263,7 +263,7 @@ describe("StoryboardService", () => {
 			expect(mockSupabase.update).toHaveBeenCalledWith({
 				storyboard: storyboardData,
 			// });
-			expect(mockSupabase.eq).toHaveBeenCalledWith("id", "submission-1");
+			expect(_mockSupabase._eq).toHaveBeenCalledWith("id", "submission-1");
 		});
 
 		it("should handle missing storyboard column during save", async () => {

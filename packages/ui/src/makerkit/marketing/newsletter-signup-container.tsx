@@ -38,7 +38,7 @@ export function NewsletterSignupContainer({
 				await onSignup(data.email);
 
 				setStatus("success");
-			} catch (error) {
+			} catch (_error) {
 				// TODO: Async logger needed
 		// (await getLogger()).error("Newsletter signup error:", { data: error });
 				setStatus("error");
