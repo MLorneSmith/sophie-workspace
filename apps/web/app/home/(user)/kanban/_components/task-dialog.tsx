@@ -37,7 +37,6 @@ import { useTranslation } from "react-i18next";
 import { useCreateTask, useUpdateTask } from "../_lib/hooks/use-tasks";
 import type { Task } from "../_lib/schema/task.schema";
 import {
-
 	CreateTaskSchema,
 	TaskPriorityEnum,
 	TaskStatusEnum,
@@ -84,7 +83,7 @@ export function TaskDialog({ open, onOpenChange, task }: TaskDialogProps) {
 				onOpenChange(false);
 			} catch (_error) {
 				// TODO: Async logger needed
-		// TODO: Fix logger call - was: error
+				// TODO: Fix logger call - was: error
 			}
 		},
 		[createTask, updateTask, task, form, onOpenChange],
@@ -99,7 +98,7 @@ export function TaskDialog({ open, onOpenChange, task }: TaskDialogProps) {
 			if (file.size > 1024 * 1024) {
 				form.setError("image", {
 					message: "Image must be less than 1MB",
-				// });
+				});
 				return;
 			}
 

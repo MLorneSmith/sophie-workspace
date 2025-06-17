@@ -60,5 +60,7 @@ async function getHashFromProcess() {
 	}
 
 	// TODO: Async logger needed
-		// TODO: Fix logger call - was: info
-	// }
+	// TODO: Fix logger call - was: info
+
+	return "";
+}

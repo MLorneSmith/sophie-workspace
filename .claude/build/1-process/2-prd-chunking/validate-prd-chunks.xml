@@ -2,6 +2,18 @@
   <task>
     Validate a PRD chunk by analyzing its completeness, technical feasibility, and clarity for implementation by a development team.
   </task>
+  
+  <context_loading>
+    <instructions>
+      Before proceeding, read the context documentation inventory:
+      - Read: .claude/docs/.context-docs-inventory.xml
+      Based on validation focus, read relevant context:
+      - For technical standards: Read architecture/system-design.md
+      - For security requirements: Read security/authentication-patterns.md, security/authorization-patterns.md
+      - For data validation: Read data/database-schema.md
+      - For UI standards: Read ui/tailwind-standards.md
+    </instructions>
+  </context_loading>
 
   <tools_available>
     <tool_reference source=".aishell/refs/available-tools.xml">
@@ -39,12 +51,16 @@
     <step number="7">
       <title>GitHub Projects Update</title>
       <description>
-        - Update chunk issue with validation results
-        - Add validation notes as issue comment
-        - Update AAFD Stage: Validation
-        - If needs_revision: add "needs-revision" label
-        - If validated: remove "needs-revision" label
+        - Update chunk issue (created with Feature Chunk template) with validation results
+        - Add validation notes as issue comment with structured format
+        - Update labels based on validation status:
+          - If validated: remove "needs-validation" label, add "validated" label
+          - If needs_revision: keep "needs-validation" label, add "needs-revision" label
+          - If rejected: add "rejected" label
+        - Update AAFD Stage custom field: Validation → Validated/Needs Revision
+        - Update Priority if validation reveals scope changes
         - Store validation in: .claude/build/3-output/{epic-name}/3-validation/
+        - Move validated chunks to "Validated" column in Planning Board
       </description>
     </step>
   </instructions>

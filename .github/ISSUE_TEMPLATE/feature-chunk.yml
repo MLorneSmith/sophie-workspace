@@ -1,0 +1,251 @@
+name: Feature Chunk
+description: Technical implementation chunk derived from feature epic
+title: "[CHUNK] "
+labels: ["chunk", "needs-validation"]
+
+body:
+  - type: input
+    id: chunk-title
+    attributes:
+      label: Chunk Title
+      description: Descriptive title for this implementation chunk
+      placeholder: "AI Service Integration - Portkey Gateway Setup"
+    validations:
+      required: true
+      
+  - type: input
+    id: parent-epic
+    attributes:
+      label: Parent Epic
+      description: Link to the parent epic issue (use #{issue-number} format)
+      placeholder: "#123"
+    validations:
+      required: true
+      
+  - type: textarea
+    id: chunk-summary
+    attributes:
+      label: Chunk Summary
+      description: 50-100 word summary of this chunk's purpose and scope
+      placeholder: |
+        This chunk covers the backend AI integration with Portkey Gateway for presentation outline generation. 
+        It handles API client setup, authentication, prompt management, and response processing. 
+        Provides foundation for frontend outline generation features.
+    validations:
+      required: true
+      
+  - type: textarea
+    id: technical-scope
+    attributes:
+      label: Technical Scope
+      description: Specific technical boundaries and components for this chunk
+      placeholder: |
+        **Core Components**:
+        - Portkey AI client configuration
+        - Outline generation service layer
+        - Response validation and processing
+        - Error handling and retry logic
+        
+        **File Changes**:
+        - `packages/ai-gateway/src/outline-generator.ts` (new)
+        - `packages/ai-gateway/src/client.ts` (modify)
+        - `apps/web/app/home/(user)/ai/canvas/_actions/generate-outline.action.ts` (new)
+    validations:
+      required: true
+      
+  - type: dropdown
+    id: chunk-priority
+    attributes:
+      label: Chunk Priority
+      description: Priority level for this chunk implementation
+      options:
+        - Critical
+        - High
+        - Medium
+        - Low
+    validations:
+      required: true
+      
+  - type: dropdown
+    id: parallel-capability
+    attributes:
+      label: Parallel Development
+      description: Can this chunk be developed in parallel with others?
+      options:
+        - "Yes - Independent implementation"
+        - "Partial - Some dependencies exist"
+        - "No - Sequential implementation required"
+    validations:
+      required: true
+      
+  - type: textarea
+    id: technical-domains-note
+    attributes:
+      label: Technical Domains
+      description: "Note: Technical domains will be added as labels after issue creation"
+      value: |
+        **Technical Domain Labels to Add:**
+        
+        Check which domains this chunk touches, and the maintainer will add the appropriate labels:
+        - [ ] `domain:frontend` - React components, UI
+        - [ ] `domain:backend` - Server actions, APIs  
+        - [ ] `domain:database` - Schema changes, queries
+        - [ ] `domain:ai` - AI integration, prompts
+        - [ ] `domain:devops` - Build, deployment
+        - [ ] `domain:testing` - Test implementation
+        
+        *These will be converted to GitHub labels for better filtering and automation.*
+        
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Chunk Acceptance Criteria
+      description: Specific, testable criteria that define when this chunk is complete
+      placeholder: |
+        - [ ] Portkey AI client successfully configured and authenticated
+        - [ ] Outline generation API endpoint responds with valid data structure
+        - [ ] Error handling covers all failure scenarios (network, auth, rate limits)
+        - [ ] Response validation using Zod schemas
+        - [ ] Integration tests pass for all AI service interactions
+        - [ ] Documentation updated for AI service integration patterns
+    validations:
+      required: true
+      
+  - type: textarea
+    id: user-personas
+    attributes:
+      label: Target User Personas
+      description: Which user personas benefit from this chunk?
+      placeholder: |
+        **Primary**: Content Creator - Professional creating business presentations
+        **Secondary**: Educator - Teacher developing course materials
+        **Use Cases**: Quick outline generation, structured content creation
+    validations:
+      required: false
+      
+  - type: textarea
+    id: cross-cutting-dependencies
+    attributes:
+      label: Cross-cutting Dependencies
+      description: Shared components, utilities, or patterns that affect other chunks
+      placeholder: |
+        **Shared with Other Chunks**:
+        - AI usage tracking middleware (affects billing chunk)
+        - Zod schema definitions for outline structure (affects frontend chunk)
+        - Error handling patterns for AI services (affects all AI features)
+        
+        **External Dependencies**:
+        - Portkey AI Gateway service availability
+        - Environment variables for API keys
+    validations:
+      required: false
+      
+  - type: textarea
+    id: technical-dependencies
+    attributes:
+      label: Technical Dependencies
+      description: What other chunks or external dependencies must be completed first?
+      placeholder: |
+        **Blocking Dependencies**:
+        - [ ] None (foundational chunk)
+        
+        **Related Chunks**:
+        - Chunk #124: Frontend Outline Generator (depends on this chunk)
+        - Chunk #125: Canvas Integration (depends on this chunk)
+        
+        **External Dependencies**:
+        - Portkey API account setup
+        - Environment configuration
+    validations:
+      required: false
+      
+  - type: input
+    id: estimated-story-points
+    attributes:
+      label: Estimated Story Points
+      description: Initial estimate using fibonacci sequence (1,2,3,5,8,13)
+      placeholder: "5"
+    validations:
+      required: false
+      
+  - type: textarea
+    id: implementation-notes
+    attributes:
+      label: Implementation Notes
+      description: Technical approach, patterns to follow, and important considerations
+      placeholder: |
+        **Patterns to Follow**:
+        - Use enhanceAction wrapper for all server actions
+        - Follow existing AI integration patterns in `/ai/canvas` directory
+        - Implement proper error boundaries and user-friendly error messages
+        
+        **Technical Considerations**:
+        - Rate limiting for AI API calls
+        - Caching strategy for similar outline requests
+        - Monitoring and logging for AI service usage
+        
+        **Security Requirements**:
+        - Never expose API keys in client-side code
+        - Use server-side actions for all AI API calls
+        - Validate all AI responses before processing
+    validations:
+      required: false
+      
+  - type: textarea
+    id: context-requirements
+    attributes:
+      label: Context Requirements for Implementation
+      description: What context should Claude Code load for implementing this chunk?
+      placeholder: |
+        **Primary Role**: AI Engineer
+        
+        **Files to Read for Context**:
+        - `packages/ai-gateway/src/` - Existing AI integration patterns
+        - `apps/web/app/home/(user)/ai/canvas/` - Canvas AI features
+        - `CLAUDE.md` - Project standards and patterns
+        - Similar server actions in the editor modules
+        
+        **Documentation to Review**:
+        - Portkey AI Gateway integration guide
+        - SlideHeroes AI architecture decisions
+        - Error handling patterns for external services
+    validations:
+      required: false
+      
+  - type: textarea
+    id: risk-assessment
+    attributes:
+      label: Risk Assessment
+      description: Potential risks specific to this chunk and mitigation strategies
+      placeholder: |
+        **Technical Risks**:
+        - AI service downtime | Impact: Medium | Mitigation: Graceful degradation, retry logic
+        - Rate limiting issues | Impact: Low | Mitigation: Implement proper rate limiting and queuing
+        
+        **Implementation Risks**:
+        - Complex error handling | Impact: Medium | Mitigation: Follow existing patterns, comprehensive testing
+        - API changes | Impact: Low | Mitigation: Version pinning, change monitoring
+    validations:
+      required: false
+      
+  - type: textarea
+    id: success-criteria
+    attributes:
+      label: Success Criteria
+      description: How will we measure success for this chunk?
+      placeholder: |
+        **Technical Success**:
+        - All tests pass (unit, integration, end-to-end)
+        - Response time under 10 seconds for outline generation
+        - Zero exposed API keys or security vulnerabilities
+        
+        **Quality Success**:
+        - Code review approved
+        - No linting or type errors
+        - Documentation updated and accurate
+        
+        **User Success**:
+        - AI service integration works seamlessly
+        - Error messages are user-friendly and actionable
+    validations:
+      required: false

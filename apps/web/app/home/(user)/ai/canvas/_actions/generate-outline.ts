@@ -260,7 +260,7 @@ export const generateOutlineAction = enhanceAction(
 
 			logger.info("Generating outline for submission:", {
 				data: data.submissionId,
-			// });
+			});
 			logger.info("Raw data:", {
 				situation: submission.situation
 					? `${submission.situation.substring(0, 50)}...`
@@ -282,7 +282,7 @@ export const generateOutlineAction = enhanceAction(
 				situationHasContent: situationDoc.content.some(hasValidText),
 				complicationHasContent: complicationDoc.content.some(hasValidText),
 				answerHasContent: answerDoc.content.some(hasValidText),
-			// });
+			});
 
 			// Create a combined Tiptap document with a clear title
 			// Create a heading to clearly identify this as an outline

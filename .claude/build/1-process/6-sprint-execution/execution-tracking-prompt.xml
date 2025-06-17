@@ -1,6 +1,18 @@
 <prompt>
   <task>Update GitHub Projects during sprint execution and track progress</task>
   
+  <context_loading>
+    <instructions>
+      Before proceeding, read the context documentation inventory:
+      - Read: .claude/docs/.context-docs-inventory.xml
+      Based on implementation needs, read relevant context:
+      - For debugging issues: Read debugging/github-first-issues.md
+      - For integration testing: Read debugging/integration-debugging.md
+      - For performance analysis: Read debugging/performance-debugging.md
+      - For database issues: Read debugging/database-debugging.md
+    </instructions>
+  </context_loading>
+  
   <instructions>
     <step number="1">
       <title>Start Implementation</title>
@@ -30,6 +42,23 @@
         - Update AI Context Status: Fresh
         - Add completion notes to story
         - Update Epic progress
+        - Update Sprint Milestone issue:
+          - Mark story as completed in the Selected Stories table
+          - Update velocity metrics if all stories complete
+          - Add daily standup notes for progress tracking
+      </description>
+    </step>
+    
+    <step number="4">
+      <title>Sprint Milestone Updates</title>
+      <description>
+        - Daily: Update Sprint Milestone issue (.github/ISSUE_TEMPLATE/sprint-milestone.md):
+          - Add daily standup notes with progress and blockers
+          - Update story status in the tracking table
+        - Sprint End:
+          - Calculate final velocity metrics
+          - Add retrospective notes
+          - Link to next sprint milestone
       </description>
     </step>
   </instructions>
@@ -53,4 +82,130 @@
       </next_steps>
     </execution_tracking>
   </output_format>
+  
+  <implementation_instructions>
+    <step number="5">
+      <title>Load Implementation Context</title>
+      <description>
+        Before implementing, load all necessary context:
+        - Load project standards: Read CLAUDE.md
+        - Load story context: Read .claude/contexts/story-{id}/context.md
+        - Load technical notes: Read .claude/contexts/story-{id}/technical-notes.md
+        - Load progress: Read .claude/contexts/story-{id}/progress.md
+        - Review similar implementations in codebase
+      </description>
+    </step>
+    
+    <step number="6">
+      <title>Implement Story Following TDD</title>
+      <description>
+        Test-Driven Development approach:
+        1. **Write Failing Tests First**:
+           - Unit tests for business logic
+           - Integration tests for user workflows
+           - Follow patterns in testing/context/test-driven-development.md
+        
+        2. **Implement Minimum Code**:
+           - Write just enough code to make tests pass
+           - Follow existing patterns in codebase
+           - Use enhanceAction for all server actions
+           - Validate all inputs with Zod schemas
+           
+        3. **Refactor for Quality**:
+           - Improve code structure while keeping tests green
+           - Extract reusable components/utilities
+           - Add proper TypeScript types (no 'any')
+           - Ensure RLS security is maintained
+      </description>
+    </step>
+    
+    <step number="7">
+      <title>Code Implementation Standards</title>
+      <description>
+        Follow project standards from CLAUDE.md:
+        - **Security**: Always use RLS, never expose API keys
+        - **Validation**: Use Zod schemas for all inputs
+        - **Components**: Prefer Server Components over Client Components
+        - **Server Actions**: Always wrap with enhanceAction
+        - **Error Handling**: Implement user-friendly error messages
+        - **File Organization**: Follow existing patterns
+        - **Testing**: Write tests alongside implementation
+      </description>
+    </step>
+    
+    <step number="8">
+      <title>Implementation Workflow</title>
+      <description>
+        For each technical task in the story:
+        1. **Understand Context**:
+           - Read relevant existing code
+           - Identify patterns to follow
+           - Check for reusable components
+           
+        2. **Write Tests**:
+           - Create test file if needed
+           - Write test cases for expected behavior
+           - Run tests to see them fail
+           
+        3. **Implement Feature**:
+           - Create/modify files as specified
+           - Follow existing code patterns
+           - Implement incrementally
+           
+        4. **Validate Implementation**:
+           - Run tests: pnpm test
+           - Check types: pnpm typecheck
+           - Fix linting: pnpm lint:fix
+           
+        5. **Update Progress**:
+           - Mark task complete in story issue
+           - Update .claude/contexts/story-{id}/progress.md
+           - Document any technical decisions
+      </description>
+    </step>
+    
+    <step number="9">
+      <title>Common Implementation Patterns</title>
+      <description>
+        Reference these common patterns:
+        - **Server Actions**: apps/web/app/home/(user)/**/_actions/*.action.ts
+        - **React Components**: packages/ui/src/*.tsx
+        - **Database Schemas**: packages/supabase/src/schema/*.schema.ts
+        - **API Routes**: apps/web/app/api/**/route.ts
+        - **React Query**: packages/data/react-query-patterns.md
+        - **Error Handling**: packages/errors/src/*.ts
+      </description>
+    </step>
+    
+    <step number="10">
+      <title>Quality Checks Before PR</title>
+      <description>
+        Before creating pull request:
+        1. **All Tests Pass**: pnpm test
+        2. **No Type Errors**: pnpm typecheck
+        3. **Code Formatted**: pnpm lint:fix
+        4. **Acceptance Criteria Met**: Review story requirements
+        5. **Documentation Updated**: Update relevant docs
+        6. **No Console Logs**: Remove debug statements
+        7. **Performance Checked**: No obvious bottlenecks
+        8. **Accessibility Verified**: WCAG compliance
+      </description>
+    </step>
+  </implementation_instructions>
+  
+  <context_requirements>
+    <required_context>
+      <project_standards>CLAUDE.md</project_standards>
+      <story_context>.claude/contexts/story-{id}/context.md</story_context>
+      <technical_notes>.claude/contexts/story-{id}/technical-notes.md</technical_notes>
+      <progress_tracking>.claude/contexts/story-{id}/progress.md</progress_tracking>
+    </required_context>
+    
+    <pattern_references>
+      <server_actions>apps/web/**/_actions/*.action.ts</server_actions>
+      <components>packages/ui/src/*.tsx</components>
+      <schemas>packages/supabase/src/schema/*.schema.ts</schemas>
+      <testing>apps/web/**/*.test.ts</testing>
+    </pattern_references>
+  </context_requirements>
 </prompt>

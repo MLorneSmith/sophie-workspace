@@ -18,7 +18,6 @@ type PayloadPlugin =
 	| ReturnType<typeof s3Storage>
 	| ReturnType<typeof nestedDocsPlugin>;
 
-import { createServiceLogger } from "@kit/shared/logger";
 import { CourseLessons } from "./collections/CourseLessons";
 import { CourseQuizzes } from "./collections/CourseQuizzes";
 import { Courses } from "./collections/Courses";

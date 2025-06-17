@@ -2,6 +2,19 @@
   <task>
     Generate user stories from a validated PRD chunk for a 5-agent team (Product Owner, Scrum Master, 2 Builders, 1 Reviewer) by extracting features, creating stories with acceptance criteria, defining technical tasks, and estimating effort.
   </task>
+  
+  <context_loading>
+    <instructions>
+      Before proceeding, read the context documentation inventory:
+      - Read: .claude/docs/.context-docs-inventory.xml
+      Based on the features being implemented, read relevant context:
+      - For component patterns: Read ui/component-patterns.md
+      - For API patterns: Read architecture/service-patterns.md
+      - For data operations: Read data/react-query-patterns.md, data/supabase-patterns.md
+      - For testing standards: Read testing/test-case-template.md, testing/context/test-driven-development.md
+      - For error handling: Read debugging/error-handling.md
+    </instructions>
+  </context_loading>
 
   <tools_available>
     <tool_reference source=".aishell/refs/available-tools.xml">
@@ -13,60 +26,86 @@
 
   <instructions>
     <step number="1">
-      <title>Extract Features</title>
-      <description>List key features from the chunk, including cross-cutting concerns, using Context7 MCP Server.</description>
+      <title>Parse Chunk Content</title>
+      <description>Extract features, user personas, use cases, and acceptance criteria from the validated chunk. Reference the original PRD structure for context including target_users, feature_specification, and technical_requirements sections.</description>
     </step>
     <step number="2">
-      <title>Create User Stories</title>
-      <description>Write 2-3 stories per feature: "As a [USER_TYPE], I want [FUNCTIONALITY] so that [BENEFIT]." Include 2-3 testable acceptance criteria.</description>
+      <title>Identify User Stories from Use Cases</title>
+      <description>Transform the use cases from the chunk into detailed user stories. Each story should follow "As a [USER_TYPE], I want [FUNCTIONALITY] so that [BENEFIT]" format and be derived from the primary persona and their desired outcomes.</description>
     </step>
     <step number="3">
-      <title>Define Technical Tasks</title>
-      <description>For each story, list:
-        - 3-5 atomic tasks
-        - Libraries/APIs
-        - Read-only and writeable file paths
+      <title>Define Acceptance Criteria</title>
+      <description>For each story, create 2-3 testable acceptance criteria based on:
+        - Functional requirements from feature_specification
+        - User experience requirements
+        - Performance and accessibility requirements
+        - Integration requirements from technical_requirements
       </description>
     </step>
     <step number="4">
-      <title>Prioritize Stories</title>
-      <description>Assign priority (Critical, High, Medium, Low) based on impact and dependencies.</description>
+      <title>Create Technical Tasks</title>
+      <description>Break each story into 3-5 atomic technical tasks using:
+        - File paths from technical_requirements.file_impact
+        - Required technologies and libraries
+        - Architecture changes needed
+        - Testing requirements
+      </description>
     </step>
     <step number="5">
-      <title>Estimate Effort</title>
-      <description>Assign story points (1, 2, 3, 5, 8) using Sequential Thinking MCP.</description>
+      <title>Prioritize Stories</title>
+      <description>Assign priority (Critical, High, Medium, Low) based on:
+        - User impact and primary persona needs
+        - Dependencies identified in chunk analysis
+        - Business objectives from PRD
+        - Technical complexity and risk
+      </description>
     </step>
     <step number="6">
-      <title>Store Output</title>
-      <description>Format as markdown in repository path. Update index file with story entries (type: story, status: ready, linked to chunk ID). Provide GitHub commit instructions.</description>
+      <title>Estimate Story Points</title>
+      <description>Assign story points (1, 2, 3, 5, 8) using Sequential Thinking MCP, considering:
+        - Number and complexity of technical tasks
+        - File modification scope
+        - Integration complexity
+        - Testing requirements
+      </description>
     </step>
     <step number="7">
+      <title>Create Context Requirements</title>
+      <description>For each story, specify what Claude Code needs for implementation:
+        - Primary role (AI Engineer, UI Engineer, Data Engineer)
+        - Read-only files for context loading
+        - Technical patterns to reference
+        - Testing approach and examples
+      </description>
+    </step>
+    <step number="8">
       <title>GitHub Projects Integration</title>
       <description>
         For each story:
-        - Create story issue: gh issue create --repo MLorneSmith/2025slideheroes --title "[STORY] As a {USER}, I want {FEATURE}" --body "{STORY_DETAILS}"
+        - Create story issue using User Story template: gh issue create --repo MLorneSmith/2025slideheroes --title "[STORY] As a {USER}, I want {FEATURE}" --template user-story.yml --body "{STORY_DETAILS}"
         - Link to parent chunk: "Part of #{CHUNK_NUMBER}"
+        - Link to epic: "Related to #{EPIC_NUMBER}"
         - Set fields:
           - Feature Type: Story
           - AAFD Stage: Stories
           - Story Points: {POINTS}
           - Priority: {PRIORITY}
-          - Primary Technical Domain: {DOMAIN}
-          - Cross-cutting Dependencies: {DEPENDENCIES}
-        - Move to "Stories" column in Planning Board
-        - Create tasks as checklist items in story issue body
+          - Technical Domain: Based on file_impact analysis
+          - Cross-cutting Dependencies: From chunk analysis
+          - AI Context Status: Fresh
+        - Move chunk to "Stories" column in Planning Board
+        - Create tasks as checklist items in story description
         - Store stories in: .claude/build/3-output/{epic-name}/4-stories/
+        - Create context files: .claude/contexts/story-{id}/context.md
       </description>
-    </step>
-    <step number="8">
-      <title>Output Format</title>
-      <description>Structured markdown with sections for chunk ID, features, stories, tasks, libraries, file paths, priorities, story points, index updates, and commit instructions.</description>
     </step>
   </instructions>
 
   <input>
-    <prd_chunk_content>{PRD_CHUNK_CONTENT}</prd_chunk_content>
+    <chunk_content>{VALIDATED_CHUNK_CONTENT}</chunk_content>
     <chunk_id>{CHUNK_ID}</chunk_id>
+    <epic_number>{EPIC_ISSUE_NUMBER}</epic_number>
+    <original_prd>{ORIGINAL_PRD_CONTENT}</original_prd>
     <codebase_files>{CODEBASE_FILES}</codebase_files>
     <writeable_files>{WRITEABLE_FILES}</writeable_files>
     <repo_path>{REPO_PATH}</repo_path>
@@ -97,31 +136,51 @@
       <stories>
         <story id="story_1">
           <title>Create Prompt</title>
-          <description>As a VAI user, I want to create a prompt so that I can share it with the community.</description>
+          <description>As a SlideHeroes user, I want to create presentation content prompts so that I can quickly generate slide content.</description>
+          <user_persona>
+            <who>Content creators building presentations</who>
+            <current_pain>Manual content creation takes too long</current_pain>
+            <desired_outcome>Rapid, high-quality slide content generation</desired_outcome>
+          </user_persona>
           <acceptance_criteria>
-            <criterion>Prompt saved with title, content, category, tags, and visibility</criterion>
-            <criterion>User credited as author</criterion>
-            <criterion>Public prompts appear in feed</criterion>
+            <functional>User can input prompt topic and generate content within 5 seconds</functional>
+            <user_experience>Generated content integrates seamlessly with slide editor</user_experience>
+            <performance>Content generation completes within 5 seconds</performance>
+            <accessibility>Prompt interface meets WCAG 2.1 AA standards</accessibility>
+            <security>User prompts are processed securely without data leakage</security>
           </acceptance_criteria>
-          <tasks>
-            <task>Implement `createPrompt` procedure in `prompts.ts`</task>
-            <task>Define `createPromptSchema` with Zod</task>
-            <task>Insert prompt into `prompts` table with Drizzle</task>
-            <task>Update frontend to call `createPrompt`</task>
-          </tasks>
-          <libraries>tRPC, Zod, Drizzle-ORM</libraries>
+          <technical_tasks>
+            <task>Implement `generateSlideContent` server action with enhanceAction wrapper</task>
+            <task>Create `PromptInputDialog` component with Zod validation</task>
+            <task>Integrate with Portkey AI Gateway for content generation</task>
+            <task>Add AI usage tracking to user account schema</task>
+            <task>Write unit tests for prompt processing logic</task>
+          </technical_tasks>
+          <context_requirements>
+            <primary_role>AI Engineer</primary_role>
+            <read_only_files>
+              <file path="apps/web/app/home/(user)/editor/_components/SlideEditor.tsx" reason="Understand editor integration patterns"/>
+              <file path="packages/ai-gateway/src/content-generator.ts" reason="Reference existing AI integration"/>
+              <file path="CLAUDE.md" reason="Project standards and patterns"/>
+            </read_only_files>
+            <technical_patterns>Portkey AI integration, enhanceAction usage, Zod validation</technical_patterns>
+            <testing_approach>Unit tests for AI response parsing, integration tests for editor workflow</testing_approach>
+          </context_requirements>
+          <libraries>Portkey AI Gateway, Zod, React Query, enhanceAction</libraries>
           <file_paths>
             <read_only>
-              <file>apps/api/src/db/schema.ts</file>
-              <file>apps/web/src/app/prompts/page.tsx</file>
+              <file>apps/web/app/home/(user)/editor/_components/SlideEditor.tsx</file>
+              <file>packages/ai-gateway/src/content-generator.ts</file>
             </read_only>
             <writeable>
-              <file>apps/api/src/trpc/routers/prompts.ts</file>
-              <file>apps/web/src/lib/api-client.ts</file>
+              <file>apps/web/app/home/(user)/editor/_actions/generate-content.action.ts</file>
+              <file>apps/web/app/home/(user)/editor/_components/PromptInputDialog.tsx</file>
+              <file>packages/supabase/src/schema/ai-usage.schema.ts</file>
             </writeable>
           </file_paths>
           <priority>Critical</priority>
-          <story_points>3</story_points>
+          <story_points>5</story_points>
+          <dependencies>None - foundational feature</dependencies>
         </story>
 
         <story id="story_2">

@@ -2,6 +2,18 @@
   <task>
     Validate a PRD chunk for a 5-agent team (Product Owner, Scrum Master, 2 Builders, 1 Reviewer) by analyzing requirements, identifying ambiguities, and proposing clarifications.
   </task>
+  
+  <context_loading>
+    <instructions>
+      Before proceeding, read the context documentation inventory:
+      - Read: .claude/docs/.context-docs-inventory.xml
+      Based on the chunk's technical focus, read relevant context:
+      - For security validation: Read security/authentication-patterns.md, security/authorization-patterns.md
+      - For UI requirements: Read ui/accessibility.md, ui/responsive-design.md
+      - For data concerns: Read data/database-schema.md
+      - For testing approach: Read testing/unit-testing-prioritization-plan.md
+    </instructions>
+  </context_loading>
 
   <tools_available>
     <tool_reference source=".aishell/refs/available-tools.xml">
@@ -36,6 +48,10 @@
           - AAFD Stage: Validation
           - Priority: Adjust if stakeholder feedback indicates change
           - Add/update Cross-cutting Dependencies if discovered
+        - Use Priority Matrix view in GitHub Projects to visualize:
+          - Chunk priorities relative to each other
+          - Impact vs effort assessment
+          - Dependencies between chunks
         - If scope changes: Update chunk issue description
         - If rejected: Move to Blocked column with explanation
         - Store feedback in: .claude/build/3-output/{epic-name}/3-validation/stakeholder-feedback.md

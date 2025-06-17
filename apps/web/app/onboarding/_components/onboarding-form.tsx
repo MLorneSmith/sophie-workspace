@@ -85,7 +85,7 @@ export function OnboardingForm() {
 			theme: { style: "light" },
 		},
 		mode: "onChange",
-	// });
+	});
 
 	// Helper function to flatten form data for analytics
 	const flattenFormData = useCallback(
@@ -122,7 +122,7 @@ export function OnboardingForm() {
 				const result = await submitOnboardingFormAction({
 					...data,
 					isFinalSubmission: true,
-				// });
+				});
 
 				if (_result._success) {
 					localStorage.removeItem(STORAGE_KEY);
@@ -131,12 +131,12 @@ export function OnboardingForm() {
 				} else {
 					throw new Error(result.message || "Failed to submit form");
 				}
-			} catch (error) {
+			} catch (_error) {
 				// TODO: Async logger needed
 				// TODO: Fix logger call - was: error
 				analytics.trackEvent("onboarding_error", {
 					error: "Form submission failed",
-				// });
+				});
 			} finally {
 				setIsSubmitting(false);
 			}
@@ -171,14 +171,14 @@ export function OnboardingForm() {
 				// TODO: Fix logger call - was: error
 			}
 		}
-	}, [form]);
+	}, []);
 
 	useEffect(() => {
 		const subscription = form.watch((value) => {
 			localStorage.setItem(STORAGE_KEY, JSON.stringify(value));
 		});
 		return () => subscription.unsubscribe();
-	}, [form]);
+	}, []);
 
 	// Track onboarding start
 	useEffect(() => {
@@ -300,13 +300,13 @@ function ProfileStep() {
 		control: form.control,
 		name: "profile.name",
 		defaultValue: "",
-	// });
+	});
 
 	const handleContinue = (e: React.SyntheticEvent) => {
 		e.preventDefault();
 		analytics.trackEvent("onboarding_profile_completed", {
 			name: form.getValues().profile.name,
-		// });
+		});
 		nextStep(_e);
 	};
 
@@ -615,7 +615,7 @@ function ThemeStep() {
 		e.preventDefault();
 		analytics.trackEvent("onboarding_theme_completed", {
 			theme: form.getValues().theme.style,
-		// });
+		});
 		nextStep(_e);
 	};
 

@@ -66,11 +66,11 @@ export function QuestionCard({
 			// Log the selected option and available options for debugging
 			// TODO: Async logger needed
 			// (await getLogger()).info("Selected option:", {
-			// data: selectedOption,
+			// 	data: selectedOption,
 			// });
 			// TODO: Async logger needed
 			// (await getLogger()).info("Available options:", {
-			// data: question.options,
+			// 	data: question.options,
 			// });
 
 			const option = question.options?.find((opt) => opt.id === selectedOption);
@@ -86,7 +86,7 @@ export function QuestionCard({
 				// );
 				// TODO: Async logger needed
 				// (await getLogger()).error("Question options:", {
-				// data: question.options,
+				// 	data: question.options,
 				// });
 			}
 		}

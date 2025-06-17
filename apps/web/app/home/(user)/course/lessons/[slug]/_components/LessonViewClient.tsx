@@ -1,18 +1,24 @@
 "use client";
 
 import { PayloadContentRenderer } from "@kit/cms/payload";
+import { Button } from "@kit/ui/button";
 import {
 	Card,
 	CardContent,
+	CardFooter,
 	CardHeader,
 	CardTitle,
 } from "@kit/ui/card";
 import {
 	BookOpen,
 	Briefcase,
+	CheckCircle,
 	CheckSquare,
+	ChevronLeft,
+	ChevronRight,
 	Play,
 } from "lucide-react";
+import Link from "next/link";
 import { useCallback, useEffect, useState, useTransition } from "react";
 import { toast } from "sonner";
 // Import database types
@@ -24,7 +30,6 @@ import {
 // Import the QuizComponent and SurveyComponent
 import { QuizComponent } from "./QuizComponent";
 import { SurveyComponent } from "./SurveyComponent";
-
 
 // Type aliases for better readability
 type QuizAttempt = Database["public"]["Tables"]["quiz_attempts"]["Row"];
@@ -218,7 +223,7 @@ export function LessonViewClient({
 						courseId,
 						lessonId: lesson.id,
 						completionPercentage: 50, // Mark as partially completed when viewed
-					// });
+					});
 				} catch (_error) {
 					toast.error("Failed to update lesson progress. Please try again.");
 				}
@@ -245,7 +250,7 @@ export function LessonViewClient({
 					lessonId: lesson.id,
 					completionPercentage: 100,
 					completed: true,
-				// });
+				});
 				// Add back a single toast notification in the bottom right
 				toast.success("Lesson marked as completed!");
 				// Update the state to reflect completion
@@ -286,12 +291,13 @@ export function LessonViewClient({
 						lessonId: lesson.id,
 						completionPercentage: 100,
 						completed: true,
-					// });
+					});
 
 					// Remove automatic navigation - let user click the Next Lesson button in summary
 				}
-			} catch (_error) 
+			} catch (_error) {
 				toast.error("Failed to submit quiz. Please try again.");
+			}
 		});
 	};
 
@@ -518,13 +524,15 @@ export function LessonViewClient({
 									// Debug logging in development
 									if (process.env.NODE_ENV === "development") {
 										// TODO: Async logger needed
-		// (await getLogger()).info("Lesson downloads:", { arg1: lesson.downloads
-												? `$lesson.downloads.lengthitems`
-												: "undefined", arg2:  });
+										// (await getLogger()).info("Lesson downloads:", {
+										// 	data: lesson.downloads
+										// 		? `${lesson.downloads.length} items`
+										// 		: "undefined",
+										// });
 
 										if (lesson.downloads && lesson.downloads.length > 0) {
 											// TODO: Async logger needed
-		// TODO: Fix logger call - was: info
+											// TODO: Fix logger call - was: info
 										}
 									}
 
@@ -542,19 +550,19 @@ export function LessonViewClient({
 															// Additional validation
 															if (!download) {
 																// TODO: Async logger needed
-		// TODO: Fix logger call - was: warn
+																// TODO: Fix logger call - was: warn
 																return null;
 															}
 
 															if (!download.url) {
 																// TODO: Async logger needed
-		// TODO: Fix logger call - was: warn
+																// TODO: Fix logger call - was: warn
 
 																// Fallback rendering for downloads without URL
 																if (download.filename || download.description) {
 																	return (
 																		<div
-																			key={"download-$lesson.id-$index-$download.filename || index"}
+																			key={`download-${lesson.id}-${index}-${download.filename || index}`}
 																			className="flex items-center justify-between rounded-lg border border-gray-200 p-3 dark:border-gray-700"
 																		>
 																			<div className="flex-grow">
@@ -594,14 +602,14 @@ export function LessonViewClient({
 																const i = Math.floor(
 																	Math.log(bytes) / Math.log(1024),
 																);
-																return "$Math.round(bytes / 1024 ** i)$sizes[i]";
+																return `${Math.round(bytes / 1024 ** i)} ${sizes[i]}`;
 															};
 
 															const fileSize = getFileSize(download.filesize);
 
 															return (
 																<div
-																	key={"download-$lesson.id-$index-$download.url || download.filename || index"}
+																	key={`download-${lesson.id}-${index}-${download.url || download.filename || index}`}
 																	className="flex flex-col rounded-lg border border-gray-200 p-3 dark:border-gray-700"
 																>
 																	<div className="flex items-center justify-between">
@@ -625,7 +633,7 @@ export function LessonViewClient({
 																			<p className="text-muted-foreground mt-0.5 text-xs">
 																				{isZipFile && "ZIP Archive"}
 																				{isPdfFile && "PDF Document"}
-																				{fileSize && " • $fileSize"}
+																				{fileSize && ` • ${fileSize}`}
 																			</p>
 																		</div>
 																		<Button
@@ -662,7 +670,7 @@ export function LessonViewClient({
 										lesson.content.includes("r2file")
 									) {
 										// TODO: Async logger needed
-		// TODO: Fix logger call - was: info
+										// TODO: Fix logger call - was: info
 
 										// Extract download section from content
 										const downloadSection = lesson.content.match(
@@ -780,7 +788,7 @@ export function LessonViewClient({
 									>
 										{isMarkingCompleted ? "Marking..." : "Mark as Completed"}
 										<CheckCircle
-											className={`ml-2 h-4 w-4 $isMarkingCompleted ? "text-green-200" : ""`}
+											className={`ml-2 h-4 w-4 ${isMarkingCompleted ? "text-green-200" : ""}`}
 										/>
 									</Button>
 								))}

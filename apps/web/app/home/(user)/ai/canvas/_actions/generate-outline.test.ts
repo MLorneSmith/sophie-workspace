@@ -488,7 +488,7 @@ describe("Generate Outline Business Logic", () => {
 		it("should handle non-TipTap JSON by converting", () => {
 			const nonTiptapJson = JSON.stringify({
 				someOtherFormat: "data",
-			// });
+			});
 
 			mockLexicalToTiptap.mockReturnValue(EMPTY_TIPTAP_DOCUMENT);
 

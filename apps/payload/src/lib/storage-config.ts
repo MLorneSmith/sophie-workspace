@@ -180,7 +180,7 @@ export function logStorageConfig(): void {
 
 	const storageType = getStorageType();
 	// TODO: Async logger needed
-		// (await getLogger()).info(`[STORAGE-CONFIG] Storage type: ${storageType}`);
+	// (await getLogger()).info(`[STORAGE-CONFIG] Storage type: ${storageType}`);
 
 	if (storageType === "r2") {
 		const _r2Config = getR2Config();
@@ -201,14 +201,14 @@ export function logStorageConfig(): void {
 
 		if (validation.warnings.length > 0) {
 			// TODO: Async logger needed
-		// (await getLogger()).info("[STORAGE-CONFIG] Warnings:");
+			// (await getLogger()).info("[STORAGE-CONFIG] Warnings:");
 			for (const _warning of validation.warnings) {
 				// TODO: Async logger needed
-		// (await getLogger()).info(`[STORAGE-CONFIG] - ${warning}`);
+				// (await getLogger()).info(`[STORAGE-CONFIG] - ${warning}`);
 			}
 		}
 	} else if (storageType === "s3") {
-		const s3Config = getS3Config();
+		const _s3Config = getS3Config();
 		const validation = validateS3Config();
 
 		// TODO: Async logger needed
@@ -224,10 +224,10 @@ export function logStorageConfig(): void {
 
 		if (validation.warnings.length > 0) {
 			// TODO: Async logger needed
-		// (await getLogger()).info("[STORAGE-CONFIG] Warnings:");
+			// (await getLogger()).info("[STORAGE-CONFIG] Warnings:");
 			for (const _warning of validation.warnings) {
 				// TODO: Async logger needed
-		// (await getLogger()).info(`[STORAGE-CONFIG] - ${warning}`);
+				// (await getLogger()).info(`[STORAGE-CONFIG] - ${warning}`);
 			}
 		}
 	} else {
@@ -239,19 +239,19 @@ export function logStorageConfig(): void {
 
 		if (r2Validation.errors.length > 0) {
 			// TODO: Async logger needed
-		// (await getLogger()).info("[STORAGE-CONFIG] R2 configuration errors:");
+			// (await getLogger()).info("[STORAGE-CONFIG] R2 configuration errors:");
 			for (const _error of r2Validation.errors) {
 				// TODO: Async logger needed
-		// (await getLogger()).info(`[STORAGE-CONFIG] - ${error}`);
+				// (await getLogger()).info(`[STORAGE-CONFIG] - ${error}`);
 			}
 		}
 
 		if (s3Validation.errors.length > 0) {
 			// TODO: Async logger needed
-		// (await getLogger()).info("[STORAGE-CONFIG] S3 configuration errors:");
+			// (await getLogger()).info("[STORAGE-CONFIG] S3 configuration errors:");
 			for (const _error of s3Validation.errors) {
 				// TODO: Async logger needed
-		// (await getLogger()).info(`[STORAGE-CONFIG] - ${error}`);
+				// (await getLogger()).info(`[STORAGE-CONFIG] - ${error}`);
 			}
 		}
 	}

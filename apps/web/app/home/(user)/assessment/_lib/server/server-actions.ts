@@ -36,9 +36,9 @@ export const saveResponseAction = enhanceAction(
 			const actualTotalQuestions = questionsData.docs?.length || 0;
 
 			// TODO: Async logger needed
-		// TODO: Fix logger call - was: info
+			// TODO: Fix logger call - was: info
 			// TODO: Async logger needed
-		// TODO: Fix logger call - was: info
+			// TODO: Fix logger call - was: info
 
 			// Use the actual count instead of the provided one
 			const totalQuestions =
@@ -156,16 +156,16 @@ export const saveResponseAction = enhanceAction(
 			return { success: true };
 		} catch (error) {
 			// TODO: Async logger needed
-		// TODO: Fix logger call - was: error
+			// TODO: Fix logger call - was: error
 
 			// Log more detailed information for debugging
 			if (error instanceof Error) {
 				// TODO: Async logger needed
-		// (await getLogger()).error("Error details:", {
-		// message: error.message,
-					stack: error.stack,
-					name: error.name,
-				});
+				// (await getLogger()).error("Error details:", {
+				// 	message: error.message,
+				// 	stack: error.stack,
+				// 	name: error.name,
+				// });
 			}
 
 			return {
@@ -173,11 +173,12 @@ export const saveResponseAction = enhanceAction(
 				error:
 					error instanceof Error ? error.message : "An unknown error occurred",
 			};
+		}
 	},
 	{
 		auth: true,
 		schema: SaveResponseSchema,
-	}
+	},
 );
 
 /**
@@ -225,16 +226,16 @@ export const completeSurveyAction = enhanceAction(
 			return { success: true };
 		} catch (error) {
 			// TODO: Async logger needed
-		// TODO: Fix logger call - was: error
+			// TODO: Fix logger call - was: error
 
 			// Log more detailed information for debugging
 			if (error instanceof Error) {
 				// TODO: Async logger needed
-		// (await getLogger()).error("Error details:", {
-		// message: error.message,
-					stack: error.stack,
-					name: error.name,
-				});
+				// (await getLogger()).error("Error details:", {
+				// 	message: error.message,
+				// 	stack: error.stack,
+				// 	name: error.name,
+				// });
 			}
 
 			return {
@@ -246,6 +247,6 @@ export const completeSurveyAction = enhanceAction(
 	},
 	{
 		auth: true,
-		schema: CompleteSurveySchema,
+		schema: _CompleteSurveySchema,
 	},
 );

@@ -1,6 +1,5 @@
 "use client";
 
-
 import { createServiceLogger } from "@kit/shared/logger";
 import { useSupabase } from "@kit/supabase/hooks/use-supabase";
 import { Card } from "@kit/ui/card";
@@ -74,7 +73,9 @@ export function SurveyComponent({
 	const { data: questionsData, isLoading: isQuestionsLoading } = useQuery({
 		queryKey: ["survey-questions", survey?.id],
 		queryFn: async () => {
-			(await getLogger()).info(`Processing questions for survey ID: ${survey?.id}`);
+			(await getLogger()).info(
+				`Processing questions for survey ID: ${survey?.id}`,
+			);
 
 			// First check if questions are already included in the survey object
 			if (
@@ -83,7 +84,7 @@ export function SurveyComponent({
 				survey.questions.length > 0
 			) {
 				// TODO: Async logger needed
-		// TODO: Fix logger call - was: info
+				// TODO: Fix logger call - was: info
 
 				// Check if questions are fully populated with text
 				const hasFullyPopulatedQuestions = survey.questions.some(
@@ -92,11 +93,11 @@ export function SurveyComponent({
 
 				if (hasFullyPopulatedQuestions) {
 					// TODO: Async logger needed
-		// TODO: Fix logger call - was: info
+					// TODO: Fix logger call - was: info
 					return survey.questions;
 				}
 				// TODO: Async logger needed
-		// TODO: Fix logger call - was: info
+				// TODO: Fix logger call - was: info
 			}
 
 			// If questions aren't already available or are just references, fetch them
@@ -104,17 +105,17 @@ export function SurveyComponent({
 				// If we don't have a survey ID, we can't fetch questions
 				if (!survey?.id) {
 					// TODO: Async logger needed
-		// TODO: Fix logger call - was: warn
+					// TODO: Fix logger call - was: warn
 					return [];
 				}
 
 				const { getSurveyQuestions } = await import("@kit/cms/payload");
 				// TODO: Async logger needed
-		// TODO: Fix logger call - was: info
+				// TODO: Fix logger call - was: info
 
 				const data = await getSurveyQuestions(survey.id);
 				// TODO: Async logger needed
-		// TODO: Fix logger call - was: info
+				// TODO: Fix logger call - was: info
 
 				// If we got questions, return them
 				if (data.docs?.length > 0) {
@@ -124,19 +125,19 @@ export function SurveyComponent({
 				// If we didn't get questions but have references, try to use those
 				if (survey?.questions?.length && !data.docs?.length) {
 					// TODO: Async logger needed
-		// TODO: Fix logger call - was: info
+					// TODO: Fix logger call - was: info
 					return survey.questions;
 				}
 
 				return [];
 			} catch (_error) {
 				// TODO: Async logger needed
-		// TODO: Fix logger call - was: error
+				// TODO: Fix logger call - was: error
 
 				// If we have any questions in the survey object, use those as fallback
 				if (survey?.questions?.length) {
 					// TODO: Async logger needed
-		// TODO: Fix logger call - was: info
+					// TODO: Fix logger call - was: info
 					return survey.questions;
 				}
 
@@ -144,19 +145,19 @@ export function SurveyComponent({
 			}
 		},
 		enabled: !!survey,
-	// });
+	});
 
 	// Set questions when data is loaded
 	useEffect(() => {
 		if (questionsData && questionsData._length > 0) {
 			// TODO: Async logger needed
-		// TODO: Fix logger call - was: info
+			// TODO: Fix logger call - was: info
 
 			// Transform questions to ensure they have the right format
 			const transformedQuestions = questionsData.map(
 				(q: PayloadSurvey["questions"][0]) => {
 					// TODO: Async logger needed
-		// TODO: Fix logger call - was: info
+					// TODO: Fix logger call - was: info
 
 					// Ensure each question has the required properties
 					const question: Question = {
@@ -213,7 +214,7 @@ export function SurveyComponent({
 					}
 
 					// TODO: Async logger needed
-		// TODO: Fix logger call - was: info
+					// TODO: Fix logger call - was: info
 					return question;
 				},
 			);
@@ -224,27 +225,27 @@ export function SurveyComponent({
 			);
 
 			// TODO: Async logger needed
-		// (await getLogger()).info(
-		// `Survey ${survey?.id} (${survey?.title || survey?.slug}): Processed ${sortedQuestions.length} questions`,
-		// );
+			// (await getLogger()).info(
+			// `Survey ${survey?.id} (${survey?.title || survey?.slug}): Processed ${sortedQuestions.length} questions`,
+			// );
 
 			// Log each question for debugging
 			for (const [_index, _q] of sortedQuestions.entries()) {
 				// TODO: Async logger needed
-		// (await getLogger()).info(
-		// `Question ${index + 1}: ${q.text} (ID: ${q.id}), Type: ${q.type}, Options: ${q.options.length}`,
-		// );
+				// (await getLogger()).info(
+				// `Question ${index + 1}: ${q.text} (ID: ${q.id}), Type: ${q.type}, Options: ${q.options.length}`,
+				// );
 			}
 
 			setQuestions(sortedQuestions);
 		} else {
 			// TODO: Async logger needed
-		// TODO: Fix logger call - was: warn
+			// TODO: Fix logger call - was: warn
 
 			// Special handling for Three Quick Questions survey
 			if (_survey?._id === "6f463bef-d7a0-4e5a-b0fa-a789b5d6f0e0") {
 				// TODO: Async logger needed
-		// TODO: Fix logger call - was: info
+				// TODO: Fix logger call - was: info
 
 				// Create hardcoded questions based on database query
 				const hardcodedQuestions = [
@@ -296,11 +297,11 @@ export function SurveyComponent({
 				];
 
 				// TODO: Async logger needed
-		// TODO: Fix logger call - was: info
+				// TODO: Fix logger call - was: info
 				setQuestions(hardcodedQuestions);
 			}
 		}
-	}, [questionsData, survey]);
+	}, [questionsData]);
 
 	// Check if user has already completed this survey
 	useEffect(() => {
@@ -340,7 +341,7 @@ export function SurveyComponent({
 					category,
 					score,
 					totalQuestions: questions.length,
-				// });
+				});
 
 				// Move to the next question or complete the survey
 				if (_isLastQuestion) {

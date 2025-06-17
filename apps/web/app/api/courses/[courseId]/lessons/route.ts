@@ -28,7 +28,7 @@ export const GET = enhanceRouteHandler(
 			// 			title: lessons.docs[0].title,
 			// 			lesson_number: lessons.docs[0].lesson_number,
 			// 			quiz_id: lessons.docs[0].quiz_id,
-			// }
+			// 		}
 			// 		: null,
 			// });
 

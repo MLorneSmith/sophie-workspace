@@ -186,7 +186,7 @@ vi.mock("@kit/ui/radio-group", () => {
 						return React.cloneElement(child, {
 							...child.props,
 							checked: child.props.value === value,
-						// });
+						});
 					}
 					return child;
 				})}
@@ -264,7 +264,7 @@ describe("QuizComponent", () => {
 		Object.defineProperty(window, "location", {
 			value: { href: "" },
 			writable: true,
-		// });
+		});
 	});
 
 	describe("Component Initialization & Validation", () => {
@@ -897,7 +897,7 @@ describe("QuizComponent", () => {
 			// Mock course with current lesson as last lesson
 			mockGetCourseLessons.mockResolvedValue({
 				docs: [{ id: "lesson-1", lesson_number: 1, slug: "lesson-1-slug" }],
-			// });
+			});
 
 			render(<_QuizComponent {...defaultProps} />);
 

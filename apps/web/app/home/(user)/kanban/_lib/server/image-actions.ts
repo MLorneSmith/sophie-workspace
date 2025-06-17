@@ -6,7 +6,6 @@ import { enhanceAction } from "@kit/next/actions";
 import { getSupabaseServerAdminClient } from "@kit/supabase/server-admin-client";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
 
-
 // Define a type for the createPolicy method
 interface StoragePolicy {
 	name: string;
@@ -65,7 +64,7 @@ export const uploadTaskImageAction = enhanceAction(
 					name: "Allow users to upload files",
 					allowed_operations: ["INSERT"],
 					definition: `bucket_id = '${BUCKET_NAME}' AND (storage.foldername(name))[1] = auth.uid()::text`,
-				// });
+				});
 
 				// Create read policy
 				await (
@@ -76,7 +75,7 @@ export const uploadTaskImageAction = enhanceAction(
 					name: "Allow users to read files",
 					allowed_operations: ["SELECT"],
 					definition: `bucket_id = '${BUCKET_NAME}'`,
-				// });
+				});
 
 				// Create delete policy
 				await (
@@ -87,7 +86,7 @@ export const uploadTaskImageAction = enhanceAction(
 					name: "Allow users to delete their own files",
 					allowed_operations: ["DELETE"],
 					definition: `bucket_id = '${BUCKET_NAME}' AND (storage.foldername(name))[1] = auth.uid()::text`,
-				// });
+				});
 			}
 
 			// Use regular client for file operations
@@ -100,7 +99,7 @@ export const uploadTaskImageAction = enhanceAction(
 				.upload(fileName, data.file, {
 					upsert: false,
 					contentType: data.file.type,
-				// });
+				});
 
 			if (uploadError) throw uploadError;
 
@@ -119,19 +118,22 @@ export const uploadTaskImageAction = enhanceAction(
 					url: signedData.signedUrl,
 				},
 			};
-		} catch (error) 
+		} catch (error) {
 			// TODO: Async logger needed
-		// (await getLogger()).error("Error uploading image:", {
-		// data: error,
-		// });
+			// (await getLogger()).error("Error uploading image:", {
+			// 	data: error,
+			// });
 			return {
 				success: false,
 				error:
 					error instanceof Error ? error.message : "Failed to upload image",
 				data: null,
 			};
+		}
 	},
-		auth: true,,
+	{
+		auth: true,
+	},
 );
 
 export const deleteTaskImageAction = enhanceAction(
@@ -158,9 +160,9 @@ export const deleteTaskImageAction = enhanceAction(
 			};
 		} catch (error) {
 			// TODO: Async logger needed
-		// (await getLogger()).error("Error deleting image:", {
-		// data: error,
-		// });
+			// (await getLogger()).error("Error deleting image:", {
+			// 	data: error,
+			// });
 			return {
 				success: false,
 				error:

@@ -2,7 +2,6 @@
 
 import type { LineItemSchema } from "@kit/billing";
 import { formatCurrency } from "@kit/shared/utils";
-import { Trans } from "@kit/ui/trans";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import type { z } from "zod";
@@ -67,17 +66,17 @@ export function PlanCostDisplay({
 		}, [primaryLineItem, interval, alwaysDisplayMonthlyPrice]);
 
 	if (shouldDisplayTier) {
-		const formattedCost = formatCurrency({
+		const _formattedCost = formatCurrency({
 			currencyCode: currencyCode.toLowerCase(),
 			value: lowestTier?.cost ?? 0,
 			locale: i18n.language,
 		// });
 
 		return (
-			<span className={"text-lg"}>
-				<Trans
-					i18nKey={tierTranslationKey}
-					values={{
+			<_span _className={"text-lg"}>
+				<_Trans
+					_i18nKey={tierTranslationKey}
+					_values={{
 						price: formattedCost,
 						unit: primaryLineItem.unit,
 					}}
@@ -86,11 +85,11 @@ export function PlanCostDisplay({
 		);
 	}
 
-	const formattedCost = formatCurrency({
+	const _formattedCost = formatCurrency({
 		currencyCode: currencyCode.toLowerCase(),
 		value: displayCost,
 		locale: i18n.language,
 	// });
 
-	return <span className={className}>{formattedCost}</span>;
+	return <_span _className={className}>{_formattedCost}</_span>;
 }

@@ -1,7 +1,4 @@
 import { callPayloadAPI } from "./payload-api";
-import { createServiceLogger } from "@kit/shared/logger";
-// Initialize service logger
-const { getLogger } = createServiceLogger("CMS-PAYLOAD");
 /**
  * Get all published courses
  * @param options Additional options for the API call
@@ -49,9 +46,9 @@ export async function getLessonBySlug(slug, _options = {}, supabaseClient) {
  * @returns The quiz data with questions
  */
 export async function getQuiz(quizId, _options = {}, supabaseClient) {
-    var _a;
     if (!quizId) {
-        /* TODO: Async logger needed */ logger.error("getQuiz called with empty quizId");
+        // TODO: Async logger needed
+        // (await getLogger()).error("getQuiz called with empty quizId");
         throw new Error("Quiz ID is required");
     }
     // Extract the actual ID value
@@ -79,72 +76,103 @@ export async function getQuiz(quizId, _options = {}, supabaseClient) {
                 const uuidMatch = objStr.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i);
                 if (uuidMatch) {
                     actualQuizId = uuidMatch[0];
-                    /* TODO: Async logger needed */ logger.info(`Extracted UUID ${actualQuizId} from complex object`);
+                    // TODO: Async logger needed
+                    // (await getLogger()).info(`Extracted UUID ${actualQuizId} from complex object`);
                 }
                 else {
-                    /* TODO: Async logger needed */ logger.error("getQuiz: Invalid quiz ID format:", { data: quizId });
+                    // TODO: Async logger needed
+                    // (await getLogger()).error("getQuiz: Invalid quiz ID format:", { data: quizId });
                     throw new Error(`Invalid quiz ID format: ${JSON.stringify(quizId)}`);
+                    // }
                 }
             }
-        }
-        else {
-            /* TODO: Async logger needed */ logger.error("getQuiz: Invalid quiz ID type:", { data: typeof quizId });
+            // TODO: Async logger needed
+            // (await getLogger()).error("getQuiz: Invalid quiz ID type:", { data: typeof quizId });
             throw new Error(`Invalid quiz ID type: ${typeof quizId}`);
-        }
-        // Validate the extracted ID looks like a UUID
-        if (!actualQuizId.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
-            /* TODO: Async logger needed */ logger.warn(`getQuiz: Quiz ID does not appear to be a valid UUID: ${actualQuizId}`, { data:  });
-            // Continue anyway, as it might be a valid ID in a different format
-        }
-    }
-    catch (error) {
-        /* TODO: Async logger needed */ logger.error(`getQuiz: Error extracting quiz ID from ${JSON.stringify(originalQuizId)}:`, error);
-        throw new Error(`Failed to extract valid quiz ID: ${error instanceof Error ? error.message : String(error)}`);
-    }
-    // Log the quiz ID for debugging
-    /* TODO: Async logger needed */ logger.info(`getQuiz: Fetching quiz with ID: ${actualQuizId} (original: ${JSON.stringify(quizId)})`);
-    try {
-        // Get the quiz WITH its questions using depth parameter
-        // This utilizes the unidirectional relationship
-        const quiz = await callPayloadAPI(`course_quizzes/${actualQuizId}?depth=1`, {}, supabaseClient);
-        if (!quiz || !quiz.id) {
-            /* TODO: Async logger needed */ logger.error(`getQuiz: Quiz not found for ID: ${actualQuizId}`);
-            throw new Error(`Quiz not found for ID: ${actualQuizId}`);
-        }
-        /* TODO: Async logger needed */ logger.info(`getQuiz: Successfully fetched quiz: ${quiz.title}`);
-        // Check if we have the questions from the depth=1 query
-        if (!quiz.questions ||
-            !Array.isArray(quiz.questions) ||
-            quiz.questions.length === 0) {
-            /* TODO: Async logger needed */ logger.info(`Quiz has no questions: ${quiz.title}`);
-            return Object.assign(Object.assign({}, quiz), { questions: [] });
-        }
-        // If we have question IDs but need the full details, fetch them
-        // This handles the case where questions are just IDs and not full objects
-        if (typeof quiz.questions[0] === "string" || !quiz.questions[0].options) {
-            try {
-                // Get the question IDs
-                const questionIds = quiz.questions.map((q) => typeof q === "string" ? q : q.id || q.value || q);
-                // Get full question details using their IDs
-                const idQueryParams = questionIds
-                    .map((id) => `id[]=${id}`)
-                    .join("&");
-                const questionsResponse = await callPayloadAPI(`quiz_questions?${idQueryParams}&sort=order`, {}, supabaseClient);
-                /* TODO: Async logger needed */ logger.info(`getQuiz: Fetched ${((_a = questionsResponse.docs) === null || _a === void 0 ? void 0 : _a.length) || 0} detailed questions for quiz`, { data:  });
-                // Replace the questions array with the full details
-                return Object.assign(Object.assign({}, quiz), { questions: questionsResponse.docs || [] });
+            // }
+            // Validate the extracted ID looks like a UUID
+            if (!actualQuizId.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
+                // TODO: Async logger needed
+                // (await getLogger()).warn(`getQuiz: Quiz ID does not appear to be a valid UUID: ${actualQuizId}`, { data: { actualQuizId } });
+                // Continue anyway, as it might be a valid ID in a different format
+                // }
             }
+            try { }
             catch (error) {
-                /* TODO: Async logger needed */ logger.error(`getQuiz: Error fetching detailed questions for quiz ${actualQuizId}:`, { arg1: error, arg2:  });
-                // Return what we have even if we couldn't get full details
-                return quiz;
+            }
+            // TODO: Async logger needed
+            // (await getLogger()).error(
+            `getQuiz: Error extracting quiz ID from $JSON.stringify(originalQuizId):`,
+                error,
+            ;
+            // );
+            throw new Error(`Failed to extract valid quiz ID: ${error instanceof Error ? error.message : String(error)}`);
+            // Log the quiz ID for debugging
+            // TODO: Async logger needed
+            // (await getLogger()).info(
+            `getQuiz: Fetching quiz with ID: ${actualQuizId} (original: ${JSON.stringify(quizId)})`,
+            ;
+            ;
+            try {
+                // Get the quiz WITH its questions using depth parameter
+                // This utilizes the unidirectional relationship
+                const quiz = await callPayloadAPI(`course_quizzes/${actualQuizId}?depth=1`, {}, supabaseClient);
+                if (!quiz || !quiz.id) {
+                    // TODO: Async logger needed
+                    // (await getLogger()).error(`getQuiz: Quiz not found for ID: ${actualQuizId}`);
+                    throw new Error(`Quiz not found for ID: ${actualQuizId}`);
+                    // }
+                    // TODO: Async logger needed
+                    // (await getLogger()).info(`getQuiz: Successfully fetched quiz: ${quiz.title}`);
+                    // Check if we have the questions from the depth=1 query
+                    if (!quiz.questions ||
+                        !Array.isArray(quiz.questions) ||
+                        quiz.questions.length === 0) {
+                        // TODO: Async logger needed
+                        // (await getLogger()).info(`Quiz has no questions: ${quiz.title}`);
+                        return Object.assign(Object.assign({}, quiz), { 
+                            // questions: [],
+                            // };
+                            // }
+                            // If we have question IDs but need the full details, fetch them
+                            // This handles the case where questions are just IDs and not full objects
+                            if(, quiz) { }, : .questions[0] === "string" || !quiz.questions[0].options });
+                        {
+                            try {
+                                // Get the question IDs
+                                const questionIds = quiz.questions.map((q) => typeof q === "string" ? q : q.id || q.value || q);
+                                // Get full question details using their IDs
+                                const idQueryParams = questionIds
+                                    .map((id) => `id[]=${id}`)
+                                    .join("&");
+                                const questionsResponse = await callPayloadAPI(`quiz_questions?${idQueryParams}&sort=order`, {}, supabaseClient);
+                                // TODO: Async logger needed
+                                // (await getLogger()).info(`getQuiz: Fetched ${questionsResponse.docs?.length || 0} detailed questions for quiz`, { data:  });
+                                // Replace the questions array with the full details
+                                return Object.assign({}, quiz);
+                                try { }
+                                catch (error) {
+                                }
+                                // TODO: Async logger needed
+                                // (await getLogger()).error(`getQuiz: Error fetching detailed questions for quiz ${actualQuizId}:`, { arg1: error, arg2:  });
+                                // Return what we have even if we couldn't get full details
+                                return quiz;
+                                // If we already have the full question objects, return as is
+                                return quiz;
+                            }
+                            catch (error) {
+                                // TODO: Async logger needed
+                                // (await getLogger()).error(`getQuiz: Error fetching quiz ${actualQuizId}:`, { data: error });
+                                throw error;
+                            }
+                        }
+                    }
+                }
+            }
+            finally {
             }
         }
-        // If we already have the full question objects, return as is
-        return quiz;
     }
-    catch (error) {
-        /* TODO: Async logger needed */ logger.error(`getQuiz: Error fetching quiz ${actualQuizId}:`, { data: error });
-        throw error;
+    finally {
     }
 }

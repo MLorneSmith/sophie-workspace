@@ -62,7 +62,7 @@ export const GET = enhanceRouteHandler(
 				return NextResponse.json({
 					success: false,
 					error: "Failed to fetch costs",
-				// });
+				});
 			}
 
 			// Calculate total cost
@@ -79,8 +79,8 @@ export const GET = enhanceRouteHandler(
 			return NextResponse.json({
 				success: true,
 				cost: totalCost,
-			// });
-		} catch (error) {
+			});
+		} catch (_error) {
 			// TODO: Async logger needed
 			// (await getLogger()).error(
 			// 	"Error in session-cost API route:",
@@ -89,7 +89,7 @@ export const GET = enhanceRouteHandler(
 			return NextResponse.json({
 				success: false,
 				error: "Internal server error",
-			// });
+			});
 		}
 	},
 	{

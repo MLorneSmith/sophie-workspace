@@ -68,7 +68,7 @@ describe("getOutlineSuggestionsAction", () => {
 		vi.mocked(createQualityOptimizedConfig).mockReturnValue({
 			model: "gpt-4",
 			temperature: 0.7,
-		// });
+		});
 
 		vi.mocked(getChatCompletion).mockResolvedValue({
 			content: JSON.stringify({
@@ -201,7 +201,7 @@ describe("getOutlineSuggestionsAction", () => {
 			// Act
 			const result = await getOutlineSuggestionsAction({
 				submissionId: "test-id",
-			// });
+			});
 
 			// Assert
 			expect(_result._success).toBe(true);
@@ -247,7 +247,7 @@ describe("getOutlineSuggestionsAction", () => {
 			// Act
 			const _result = await getOutlineSuggestionsAction({
 				submissionId: "test-id",
-			// });
+			});
 
 			// Assert
 			expect(_result._success).toBe(true);
@@ -299,7 +299,7 @@ describe("getOutlineSuggestionsAction", () => {
 			// Act
 			const _result = await getOutlineSuggestionsAction({
 				submissionId: "test-id",
-			// });
+			});
 
 			// Assert
 			expect(_result._success).toBe(true);
@@ -338,7 +338,7 @@ describe("getOutlineSuggestionsAction", () => {
 			// Act
 			const _result = await getOutlineSuggestionsAction({
 				submissionId: "test-id",
-			// });
+			});
 
 			// Assert
 			expect(_result._success).toBe(true);
@@ -377,7 +377,7 @@ describe("getOutlineSuggestionsAction", () => {
 			// Act
 			const result = await getOutlineSuggestionsAction({
 				submissionId: "test-id",
-			// });
+			});
 
 			// Assert
 			expect(_result._success).toBe(false);
@@ -412,7 +412,7 @@ describe("getOutlineSuggestionsAction", () => {
 			// Act
 			const result = await getOutlineSuggestionsAction({
 				submissionId: "test-id",
-			// });
+			});
 
 			// Assert
 			expect(_result._success).toBe(false);
@@ -459,7 +459,7 @@ describe("getOutlineSuggestionsAction", () => {
 			// Act
 			const result = await getOutlineSuggestionsAction({
 				submissionId: "test-id",
-			// });
+			});
 
 			// Assert
 			expect(_result._success).toBe(false);
@@ -492,7 +492,7 @@ describe("getOutlineSuggestionsAction", () => {
 			// Act
 			const _result = await getOutlineSuggestionsAction({
 				submissionId: "test-id",
-			// });
+			});
 
 			// Assert
 			expect(_result._success).toBe(true);
@@ -543,7 +543,7 @@ describe("getOutlineSuggestionsAction", () => {
 			// Act
 			const _result = await getOutlineSuggestionsAction({
 				submissionId: "test-id",
-			// });
+			});
 
 			// Assert
 			expect(_result._success).toBe(true);

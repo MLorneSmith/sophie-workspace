@@ -124,7 +124,7 @@ export const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
 														task_id: task.id,
 														title: subtask.title,
 														is_completed: !subtask.is_completed,
-													// });
+													});
 												}}
 												onMouseDown={(e) => {
 													// Prevent drag initiation when clicking subtasks
@@ -143,7 +143,7 @@ export const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
 																task_id: task.id,
 																title: subtask.title,
 																is_completed: checked as boolean,
-															// });
+															});
 														}}
 													/>
 												</div>

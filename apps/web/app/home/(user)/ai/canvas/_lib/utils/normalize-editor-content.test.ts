@@ -48,7 +48,7 @@ describe("normalizeEditorContent", () => {
 				sectionType: "situation",
 				timestamp: "2024-01-01T00:00:00.000Z",
 				version: "1.0",
-			// });
+			});
 		});
 
 		it("should normalize JSON string content", () => {
@@ -95,7 +95,7 @@ describe("normalizeEditorContent", () => {
 			expect(result.content?.[0]?.content?.[0]).toEqual({
 				type: "text",
 				text: "Presentation Outline",
-			// });
+			});
 			expect(result.content).toHaveLength(3); // heading + spacer paragraph + original content
 		});
 
@@ -126,7 +126,7 @@ describe("normalizeEditorContent", () => {
 			expect(result.content?.[0]?.content?.[0]).toEqual({
 				type: "text",
 				text: "My Outline",
-			// });
+			});
 		});
 	});
 
@@ -146,7 +146,7 @@ describe("normalizeEditorContent", () => {
 			expect(result.content?.[0]?.content?.[0]).toEqual({
 				type: "text",
 				text: " ",
-			// });
+			});
 		});
 
 		it("should handle undefined input gracefully", () => {
@@ -164,7 +164,7 @@ describe("normalizeEditorContent", () => {
 			expect(result.content?.[0]?.content?.[0]).toEqual({
 				type: "text",
 				text: " ",
-			// });
+			});
 		});
 
 		it("should handle invalid JSON string", () => {
@@ -185,7 +185,7 @@ describe("normalizeEditorContent", () => {
 			expect(result.content?.[0]?.content?.[0]).toEqual({
 				type: "text",
 				text: " ",
-			// });
+			});
 			expect(consoleErrorSpy).toHaveBeenCalledWith(
 				"Failed to parse content JSON:",
 				expect.any(SyntaxError),
@@ -207,7 +207,7 @@ describe("normalizeEditorContent", () => {
 			expect(result.content?.[0]?.content?.[0]).toEqual({
 				type: "text",
 				text: " ",
-			// });
+			});
 		});
 
 		it("should handle non-object, non-string input", () => {
@@ -225,7 +225,7 @@ describe("normalizeEditorContent", () => {
 			expect(result.content?.[0]?.content?.[0]).toEqual({
 				type: "text",
 				text: " ",
-			// });
+			});
 		});
 	});
 
@@ -250,7 +250,7 @@ describe("normalizeEditorContent", () => {
 			expect(result.content?.[0]?.content?.[0]).toEqual({
 				type: "text",
 				text: " ",
-			// });
+			});
 		});
 
 		it("should fix text nodes missing text property", () => {
@@ -273,7 +273,7 @@ describe("normalizeEditorContent", () => {
 			expect(result.content?.[0]?.content?.[0]).toEqual({
 				type: "text",
 				text: " ",
-			// });
+			});
 		});
 
 		it("should fix paragraphs without content", () => {
@@ -379,7 +379,7 @@ describe("normalizeEditorContent", () => {
 			expect(listItem?.content?.[0]?.content?.[0]).toEqual({
 				type: "text",
 				text: "Direct text",
-			// });
+			});
 		});
 
 		it("should fix malformed list items in lists", () => {
@@ -476,7 +476,7 @@ describe("normalizeEditorContent", () => {
 			expect(listItemContent?.[1]).toEqual({
 				type: "text",
 				text: "Valid text",
-			// });
+			});
 		});
 
 		it("should handle deeply nested structures", () => {
@@ -641,7 +641,7 @@ describe("normalizeEditorContent", () => {
 			expect(result.content?.[0]?.content?.[0]).toEqual({
 				type: "text",
 				text: " ",
-			// });
+			});
 			expect(result.meta?.sectionType).toBe("situation");
 		});
 	});
@@ -723,7 +723,7 @@ describe("normalizeEditorContent", () => {
 					sectionType,
 					timestamp: "2024-01-01T00:00:00.000Z",
 					version: "1.0",
-				// });
+				});
 			}
 		});
 
@@ -753,7 +753,7 @@ describe("normalizeEditorContent", () => {
 				sectionType: "situation",
 				timestamp: "2024-01-01T00:00:00.000Z",
 				version: "1.0",
-			// });
+			});
 		});
 	});
 });

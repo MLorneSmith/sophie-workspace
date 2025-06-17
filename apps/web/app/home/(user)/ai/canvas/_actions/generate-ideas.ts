@@ -63,7 +63,7 @@ export const generateIdeasAction = enhanceAction(
 			const config = createOpenAIOnlyConfig({
 				userId: user.id,
 				context: `${data.type}-ideas`,
-			// });
+			});
 			const normalizedConfig = ConfigManager.normalizeConfig(config);
 
 			if (!normalizedConfig) {

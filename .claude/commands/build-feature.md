@@ -1,609 +1,694 @@
-# Build Feature Command v2.0 (AAFD Methodology)
+# Build Feature Command
 
-Usage: `/build-feature [epic-id|feature-name]`
+Usage: `/build-feature [feature-reference]`
 
-This command orchestrates the complete AAFD v2.0 feature development workflow, from Epic creation through implementation, using our structured methodology and GitHub Projects integration.
+- `feature-reference`: Can be a feature name, epic ID, story ID, or chunk ID
 
-## EXECUTABLE IMPLEMENTATION
+This command orchestrates the complete AI-Assisted Feature Development workflow using our structured methodology and prompts.
 
-This command uses utility functions located in `.claude/build/scripts/` for modular, reusable workflow automation.
+## Overview
 
-### STEP 1: Phase Detection & Routing
+The build-feature command guides you through our 6-phase development process:
 
-```bash
-# Use phase detection utility
-source .claude/build/scripts/feature-phase-detection.sh
-PHASE_INFO=$(detect_phase "$1")
+1. **Ideation & PRD Creation** - Transform ideas into structured requirements
+2. **Technical Chunking** - Break down into implementable chunks
+3. **Stakeholder Validation** - Ensure alignment with business goals
+4. **User Story Creation** - Create clear, user-focused stories
+5. **Sprint Planning** - Plan implementation with TDD approach
+6. **Implementation & Review** - Execute and validate the work
 
-# Parse phase information
-PHASE=$(echo "$PHASE_INFO" | grep "PHASE:" | cut -d' ' -f2)
-AAFD_STAGE=$(echo "$PHASE_INFO" | grep "AAFD_STAGE:" | cut -d' ' -f2)
-ISSUE_ID=$(echo "$PHASE_INFO" | grep "ISSUE_ID:" | cut -d' ' -f2)
-FEATURE_NAME=$(echo "$PHASE_INFO" | grep "FEATURE_NAME:" | cut -d' ' -f2-)
-NEW_FEATURE=$(echo "$PHASE_INFO" | grep "NEW_FEATURE:" | cut -d' ' -f2)
+## Phase Detection & Routing
 
-echo "🔍 Detected Phase: $PHASE"
-echo "📊 AAFD Stage: $AAFD_STAGE"
+The command automatically detects which phase you're in based on the reference provided:
 
-# Route to appropriate phase handler
-case "$PHASE" in
-  "epic-creation")
-    echo "🚀 Phase: Epic Creation & PRD Generation"
-    ;;
-  "technical-chunking")
-    echo "🔧 Phase: Technical Chunking"
-    ;;
-  "story-creation")
-    echo "📝 Phase: Story Creation"
-    ;;
-  "sprint-planning")
-    echo "📋 Phase: Sprint Planning"
-    ;;
-  "implementation")
-    echo "💻 Phase: Implementation"
-    ;;
-  "unblock-resolution")
-    echo "🚫 Phase: Unblock Resolution"
-    ;;
-esac
+```typescript
+// Phase detection logic
+function detectPhase(reference: string) {
+  // Check if it's a new feature (text description)
+  if (!reference.match(/^\d+$/) && !reference.match(/^#/)) {
+    return { phase: 'ideation', isNew: true, featureName: reference };
+  }
+
+  // Check existing GitHub issues
+  const issue = await getGitHubIssue(reference);
+  if (!issue) return { phase: 'unknown', error: 'Issue not found' };
+
+  // Determine phase based on issue labels and state
+  if (issue.labels.includes('epic') && !issue.labels.includes('prd-complete')) {
+    return { phase: 'ideation', epicId: issue.number };
+  }
+  if (issue.labels.includes('epic') && !issue.labels.includes('chunks-complete')) {
+    return { phase: 'chunking', epicId: issue.number };
+  }
+  if (issue.labels.includes('chunk') && !issue.labels.includes('validated')) {
+    return { phase: 'validation', chunkId: issue.number };
+  }
+  if (issue.labels.includes('chunk') && !issue.labels.includes('stories-complete')) {
+    return { phase: 'story-creation', chunkId: issue.number };
+  }
+  if (issue.labels.includes('story') && !issue.labels.includes('sprint-planned')) {
+    return { phase: 'sprint-planning', storyId: issue.number };
+  }
+  if (issue.labels.includes('story') && issue.labels.includes('ready')) {
+    return { phase: 'implementation', storyId: issue.number };
+  }
+
+  return { phase: 'review', issueId: issue.number };
+}
 ```
 
-### STEP 2: Phase Execution Using Utility Functions
+## Phase Implementations
 
-**Phase 1: Epic Creation & PRD**
-
-```bash
-if [[ "$PHASE" == "epic-creation" && "$NEW_FEATURE" == "true" ]]; then
-  echo "📋 Creating Epic and PRD for: $FEATURE_NAME"
-
-  # Use epic creation utility
-  .claude/build/scripts/feature-epic-creation.sh "$FEATURE_NAME"
-
-  echo ""
-  echo "Next Steps:"
-  echo "1. Review and refine the generated PRD"
-  echo "2. Continue with: /build-feature [epic-id]"
-fi
-```
-
-**Phase 2: Technical Chunking**
-
-```bash
-if [[ "$PHASE" == "technical-chunking" ]]; then
-  echo "🔧 Technical Chunking for Epic #$ISSUE_ID"
-
-  # Use chunking utility
-  .claude/build/scripts/feature-chunking.sh "$ISSUE_ID"
-
-  echo ""
-  echo "Next Steps:"
-  echo "1. Review and refine chunk descriptions"
-  echo "2. Continue with: /build-feature $ISSUE_ID"
-fi
-```
-
-**Phase 3: Story Creation**
-
-```bash
-if [[ "$PHASE" == "story-creation" ]]; then
-  echo "📝 Story Creation for Epic #$ISSUE_ID"
-
-  # Use story creation utility
-  .claude/build/scripts/feature-story-creation.sh "$ISSUE_ID"
-
-  echo ""
-  echo "Next Steps:"
-  echo "1. Review and refine story details"
-  echo "2. Add acceptance criteria and technical tasks"
-  echo "3. Continue with: /build-feature $ISSUE_ID"
-fi
-```
-
-**Phase 4: Sprint Planning**
-
-```bash
-if [[ "$PHASE" == "sprint-planning" ]]; then
-  echo "📋 Sprint Planning for Epic #$ISSUE_ID"
-
-  # List all stories for review
-  echo "📊 Available Stories:"
-  .claude/build/scripts/feature-story-creation.sh "$ISSUE_ID" --list
-
-  echo ""
-  echo "Sprint Planning Steps:"
-  echo "1. Review story estimates and priorities"
-  echo "2. Select stories for current sprint"
-  echo "3. Mark Epic as Ready for implementation"
-
-  # Use phase detection utility to update stage
-  source .claude/build/scripts/feature-phase-detection.sh
-  set_aafd_stage "$ISSUE_ID" "Ready"
-
-  echo "✅ Epic #$ISSUE_ID marked as Ready for implementation"
-  echo "Next: /build-feature $ISSUE_ID"
-fi
-```
-
-**Phase 5: Implementation**
-
-```bash
-if [[ "$PHASE" == "implementation" ]]; then
-  echo "💻 Implementation Phase for Epic #$ISSUE_ID"
-
-  # Find next story to implement
-  NEXT_STORY=$(gh issue list --label "epic:$ISSUE_ID" --label "story" --state open --json number --jq '.[0].number')
-
-  if [[ -n "$NEXT_STORY" ]]; then
-    echo "🎯 Next Story: #$NEXT_STORY"
-
-    # Check if context exists
-    CONTEXT_DIR=".claude/build/contexts/stories/story-$NEXT_STORY"
-    if [[ -d "$CONTEXT_DIR" ]]; then
-      echo "📚 Loading story context..."
-      /read "$CONTEXT_DIR/context.md"
-      /read "$CONTEXT_DIR/technical-notes.md"
-      /read "CLAUDE.md"
-
-      # Load appropriate role based on story domain
-      echo "🎭 Loading implementation role..."
-      /read ".claude/build/contexts/session-templates/ai-engineer.md"
-
-      echo ""
-      echo "📋 Story #$NEXT_STORY Ready for Implementation"
-      echo "✅ Context loaded"
-      echo "✅ Role configured"
-      echo "✅ Project standards loaded"
-      echo ""
-      echo "🚀 Begin implementation session!"
-
-    else
-      echo "⚠️  Context missing for Story #$NEXT_STORY"
-      echo "Creating context files..."
-      .claude/build/scripts/feature-story-creation.sh "$ISSUE_ID" --setup-context "$NEXT_STORY"
-    fi
-
-  else
-    echo "✅ All stories completed for Epic #$ISSUE_ID!"
-    echo "🎉 Feature implementation complete!"
-  fi
-fi
-```
-
-```
-
-## Workflow Phases
-
-### Phase 1: Epic Creation & PRD
+### Phase 1: Ideation & PRD Creation
 
 **What happens:**
+Transform your feature idea into a comprehensive Product Requirements Document (PRD).
 
-1. Load Feature Planning prompt
-2. Create structured PRD from feature idea
-3. Create GitHub Epic issue
-4. Set up GitHub Projects tracking
+**Process:**
 
-**Actions:**
+```typescript
+async function executeIdeationPhase(featureName: string) {
+  console.log(`📋 Starting PRD creation for: ${featureName}\n`);
 
+  // Load context
+  console.log('Loading context for PRD creation...');
+  await loadFiles([
+    '.claude/build/2-context/project-context.md',
+    '.claude/build/2-context/technical-context.md',
+    '.claude/build/2-context/business-context.md',
+  ]);
+
+  // Load and apply PRD prompt
+  console.log('Applying PRD creation prompt...');
+  const prdPrompt = await readFile(
+    '.claude/build/1-process/1-idea-to-prd/idea-to-prd-prompt.xml',
+  );
+
+  // Guide through PRD creation
+  console.log(`
+I'll help you create a comprehensive PRD for "${featureName}".`);
+  console.log('Please provide the following information:');
+  console.log('1. Problem Statement - What problem does this solve?');
+  console.log('2. Target Users - Who will use this feature?');
+  console.log('3. Key Functionality - Core features needed?');
+  console.log('4. Success Metrics - How will we measure success?');
+
+  // Create GitHub Epic with PRD
+  // Add to GitHub Projects
+  // Set labels: ['epic', 'needs-prd']
+}
 ```
 
-1. Load prompt: /read .claude/build/prompt-library/feature-planning.xml
-2. Apply prompt with feature description
-3. Create Epic issue with generated PRD
-4. Add to GitHub Projects board
-5. Set AAFD Stage = "PRD"
+**Output:**
 
-```
-
-**Outputs:**
-
-- GitHub Epic issue with complete PRD
+- GitHub Epic issue with structured PRD
 - Technical requirements documented
 - Cross-cutting concerns identified
 - Success metrics defined
 
-### Phase 2: Technical Chunking
+### Phase 2: Technical Chunking & Analysis
 
 **What happens:**
+Break down the PRD into logical implementation chunks.
 
-1. Analyze PRD structure
-2. Identify logical implementation chunks
-3. Create chunk issues linked to Epic
-4. Document dependencies
-
-**Actions:**
-
-```
-
-1. Load prompt: /read .claude/build/prompt-library/implementation-planning.xml
-2. Apply prompt to PRD content
-3. Create 2-4 chunk issues
-4. Link chunks to parent Epic
-5. Set AAFD Stage = "Chunks"
-
-```
-
-**Outputs:**
-
-- 2-4 implementation chunks
-- Dependency documentation
-- Parallel work streams identified
-- Risk assessment per chunk
-
-### Phase 3: Story Creation & Estimation
-
-**What happens:**
-
-1. Break chunks into user stories
-2. Create detailed technical tasks
-3. Estimate story points
-4. Set up context files
-
-**Actions:**
-
-```
-
-1. For each chunk, create 2-5 user stories
-2. Use GitHub Story template for each
-3. Estimate using Fibonacci sequence
-4. Create context directories:
-   - .claude/build/contexts/stories/story-{id}/
-   - Add context.md, technical-notes.md, progress.md
-5. Set AAFD Stage = "Stories"
-
-```
-
-**Outputs:**
-
-- Implementable user stories
-- Story point estimates
-- Context files prepared
-- Technical tasks defined
-
-### Phase 4: Sprint Planning
-
-**What happens:**
-
-1. Review capacity and velocity
-2. Select stories for sprint
-3. Order by dependencies
-4. Prepare implementation contexts
-
-**Actions:**
-
-```
-
-1. Calculate available capacity
-2. Select stories within capacity
-3. Create sprint milestone
-4. Move stories to "Ready"
-5. Set AAFD Stage = "Ready"
-
-```
-
-**Outputs:**
-
-- Sprint backlog defined
-- Implementation order set
-- Context loading prepared
-- Session schedule planned
-
-### Phase 5: Implementation Execution
-
-**What happens:**
-
-1. Load story context
-2. Implement with Claude Code
-3. Track progress in real-time
-4. Update GitHub Projects
-
-**For each story:**
-
-```
-
-1. Load context:
-
-   - /read .claude/build/contexts/session-templates/{role}.md
-   - /read .claude/build/contexts/stories/story-{id}/context.md
-   - /read CLAUDE.md
-
-2. Implement story:
-
-   - Follow acceptance criteria
-   - Use project patterns
-   - Write tests
-   - Update documentation
-
-3. Track progress:
-
-   - Update progress.md
-   - Move through project board
-   - Document decisions
-
-4. Complete story:
-   - Run quality checks
-   - Create PR
-   - Update tracking
-
-```
-
-### Phase 6: Review & Verification
-
-**What happens:**
-
-1. Validate implementation
-2. Run quality checks
-3. Update documentation
-4. Complete retrospective
-
-**Actions:**
-
-```
-
-1. Verify all acceptance criteria
-2. Run test suite
-3. Check code quality
-4. Update documentation
-5. Complete feature retrospective
-6. Close Epic and related issues
-
-````
-
-## Command Implementation
-
-### Start New Feature
+**Process:**
 
 ```typescript
-async function startNewFeature(featureName: string) {
-  console.log(`🚀 Starting new feature: ${featureName}`);
+async function executeTechnicalChunking(epicId: number) {
+  console.log(`🔧 Starting Technical Chunking for Epic #${epicId}\n`);
 
-  // Step 1: Create Epic with PRD
-  console.log('\n📋 Phase 1: Creating Epic and PRD...');
-  const prd = await createPRD(featureName);
-  const epic = await createGitHubEpic(prd);
+  // Load Epic PRD
+  const epic = await getGitHubIssue(epicId);
+  console.log('Loading PRD content...');
 
-  // Step 2: Guide through workflow
-  console.log(`
-✅ Epic created: #${epic.number}
+  // Load chunking prompt
+  const chunkingPrompt = await readFile(
+    '.claude/build/1-process/2-prd-chunking/create-prd-chunks-prompt.xml',
+  );
 
-Next steps:
-1. Review the PRD in the issue description
-2. Run: /build-feature ${epic.number} --continue
+  // Apply chunking analysis
+  console.log('Analyzing PRD structure for logical chunks...');
+  console.log('Identifying cross-cutting concerns...');
+  console.log('Creating dependency map...\n');
 
-This will guide you through:
-- Technical chunking
-- Story creation
-- Sprint planning
-- Implementation
-`);
+  // Create chunk issues
+  // Link to parent Epic
+  // Document dependencies
 }
-````
+```
 
-### Continue Existing Feature
+**Output:**
+
+- 2-4 implementation chunks with clear boundaries
+- Dependency documentation
+- Risk assessment per chunk
+- Parallel work streams identified
+
+### Phase 3: Stakeholder Validation
+
+**What happens:**
+Validate technical chunks with stakeholders for alignment.
+
+**Process:**
 
 ```typescript
-async function continueFromPhase(phase: string, issue: Issue) {
-  switch (phase) {
-    case 'prd-refinement':
-      console.log('📋 Continuing: PRD Refinement...');
-      await guidePRDRefinement(issue);
+async function executeStakeholderValidation(chunkIds: number[]) {
+  console.log(`👥 Starting Stakeholder Validation\n`);
+
+  // Load validation prompt
+  const validationPrompt = await readFile(
+    '.claude/build/1-process/3-stakeholder-validation/stakeholder-validation-prompt.xml',
+  );
+
+  // Prepare validation materials
+  console.log('Preparing chunk overview for stakeholders...');
+  console.log('Documenting technical approach...');
+  console.log('Highlighting risks and dependencies...\n');
+
+  // Guide through validation
+  console.log('Validation checklist:');
+  console.log('- [ ] Business value confirmed');
+  console.log('- [ ] Technical approach approved');
+  console.log('- [ ] Resources and timeline acceptable');
+  console.log('- [ ] Risks understood and mitigated');
+
+  // Update chunk issues with feedback
+  // Adjust priorities if needed
+}
+```
+
+**Output:**
+
+- Validated and prioritized chunks
+- Adjusted scope based on feedback
+- Risk mitigation strategies
+- Go/no-go decision for each chunk
+
+### Phase 4: User Story Creation
+
+**What happens:**
+Create user-focused stories from technical chunks.
+
+**Process:**
+
+```typescript
+async function executeStoryCreation(chunkId: number) {
+  console.log(`📝 Creating User Stories for Chunk #${chunkId}\n`);
+
+  // Load story creation prompt
+  const storyPrompt = await readFile(
+    '.claude/build/1-process/4-user-stories-creation/create-user-stories-prompt.xml',
+  );
+
+  // Guide story creation
+  console.log(
+    'Creating stories in format: As a [user], I want [goal], so that [benefit]',
+  );
+  console.log('Each story should be:');
+  console.log('- User-focused (not technical)');
+  console.log('- Independently valuable');
+  console.log('- Testable\n');
+
+  // Create story issues
+  // Add acceptance criteria
+  // Link to parent chunk
+  // Create context files
+}
+```
+
+**Output:**
+
+- User stories with acceptance criteria
+- Story context files created
+- Technical tasks identified
+- Dependencies documented
+
+### Phase 5: Sprint Planning with TDD
+
+**What happens:**
+Plan implementation sprints using Test-Driven Development approach.
+
+**Process:**
+
+```typescript
+async function executeSprintPlanning(storyIds: number[]) {
+  console.log(`📅 Sprint Planning with TDD Approach\n`);
+
+  // Load sprint planning prompt
+  const sprintPrompt = await readFile(
+    '.claude/build/1-process/5-sprint-planning/create-sprints-prompt.xml',
+  );
+
+  // Calculate capacity
+  console.log('Sprint planning considerations:');
+  console.log('- Available capacity: X story points');
+  console.log('- Story priorities and dependencies');
+  console.log('- Test-first implementation approach\n');
+
+  // Plan test specifications
+  console.log('TDD Planning for each story:');
+  console.log('1. Write test specifications first');
+  console.log('2. Define expected behaviors');
+  console.log('3. Plan implementation to pass tests\n');
+
+  // Create sprint milestone
+  // Assign stories to sprint
+  // Update story status to 'ready'
+}
+```
+
+**Output:**
+
+- Sprint backlog with selected stories
+- Test specifications for each story
+- Implementation sequence planned
+- Context requirements documented
+
+### Phase 6: Implementation & Review
+
+**What happens:**
+Execute the implementation with continuous tracking and review.
+
+**Process:**
+
+```typescript
+async function executeImplementation(storyId: number) {
+  console.log(`💻 Starting Implementation for Story #${storyId}\n`);
+
+  // Load implementation prompt
+  const implPrompt = await readFile(
+    '.claude/build/1-process/6-sprint-execution/implementation-prompt.xml',
+  );
+
+  // Load story context
+  console.log('Loading story context...');
+  await loadFiles([
+    `.claude/build/contexts/stories/story-${storyId}/context.md`,
+    `.claude/build/contexts/stories/story-${storyId}/technical-notes.md`,
+    'CLAUDE.md',
+  ]);
+
+  // Execute TDD cycle
+  console.log('TDD Implementation Cycle:');
+  console.log('1. RED - Write failing tests');
+  console.log('2. GREEN - Implement to pass tests');
+  console.log('3. REFACTOR - Improve code quality\n');
+
+  // Track progress
+  // Update GitHub issues
+  // Document decisions
+}
+```
+
+**Output:**
+
+- Working, tested implementation
+- Documentation updated
+- PR created and reviewed
+- Story marked as complete
+
+## Command Entry Point
+
+```typescript
+async function buildFeature(reference: string) {
+  console.log('🚀 Build Feature Command\n');
+
+  // Detect current phase
+  const phaseInfo = await detectPhase(reference);
+
+  if (phaseInfo.error) {
+    console.error(`❌ Error: ${phaseInfo.error}`);
+    return;
+  }
+
+  console.log(`📊 Current Phase: ${phaseInfo.phase}`);
+  console.log(`📍 Reference: ${reference}\n`);
+
+  // Route to appropriate phase handler
+  switch (phaseInfo.phase) {
+    case 'ideation':
+      await executeIdeationPhase(phaseInfo.featureName || reference);
       break;
 
-    case 'technical-chunking':
-      console.log('🔧 Continuing: Technical Chunking...');
-      await guideTechnicalChunking(issue);
+    case 'chunking':
+      await executeTechnicalChunking(phaseInfo.epicId);
+      break;
+
+    case 'validation':
+      await executeStakeholderValidation([phaseInfo.chunkId]);
       break;
 
     case 'story-creation':
-      console.log('📝 Continuing: Story Creation...');
-      await guideStoryCreation(issue);
+      await executeStoryCreation(phaseInfo.chunkId);
+      break;
+
+    case 'sprint-planning':
+      await executeSprintPlanning([phaseInfo.storyId]);
       break;
 
     case 'implementation':
-      console.log('💻 Continuing: Implementation...');
-      await guideImplementation(issue);
+      await executeImplementation(phaseInfo.storyId);
       break;
+
+    case 'review':
+      await executeReview(phaseInfo.issueId);
+      break;
+
+    default:
+      console.log('Unable to determine phase. Please check the issue status.');
+  }
+}
+
+// Helper function to load multiple files
+async function loadFiles(filePaths: string[]) {
+  for (const path of filePaths) {
+    console.log(`Loading: ${path}`);
+    // In actual implementation, this would use /read command
   }
 }
 ```
 
-## Interactive Guidance
+## Usage Examples
 
-### PRD Creation Example
+### Starting a New Feature
+
+```bash
+# Start with a feature idea
+/build-feature "AI-powered slide title suggestions"
+
+# Output:
+🚀 Build Feature Command
+
+📊 Current Phase: ideation
+📍 Reference: AI-powered slide title suggestions
+
+📋 Starting PRD creation for: AI-powered slide title suggestions
+
+Loading context for PRD creation...
+Loading: .claude/build/2-context/project-context.md
+Loading: .claude/build/2-context/technical-context.md
+Loading: .claude/build/2-context/business-context.md
+
+Applying PRD creation prompt...
+
+I'll help you create a comprehensive PRD for "AI-powered slide title suggestions".
+Please provide the following information:
+1. Problem Statement - What problem does this solve?
+2. Target Users - Who will use this feature?
+3. Key Functionality - Core features needed?
+4. Success Metrics - How will we measure success?
+```
+
+### Continuing an Existing Feature
+
+```bash
+# Continue with an epic ID
+/build-feature 123
+
+# Output:
+🚀 Build Feature Command
+
+📊 Current Phase: chunking
+📍 Reference: 123
+
+🔧 Starting Technical Chunking for Epic #123
+
+Loading PRD content...
+Analyzing PRD structure for logical chunks...
+Identifying cross-cutting concerns...
+Creating dependency map...
+
+Suggested chunks:
+1. AI Service Integration - Backend setup with Portkey
+2. Frontend Components - User interface for suggestions
+3. Usage Tracking - Billing and analytics integration
+
+Would you like to proceed with these chunks? (yes/no)
+```
+
+### Implementation Phase
+
+```bash
+# Start implementing a story
+/build-feature 456
+
+# Output:
+🚀 Build Feature Command
+
+📊 Current Phase: implementation
+📍 Reference: 456
+
+💻 Starting Implementation for Story #456
+
+Loading story context...
+Loading: .claude/build/contexts/stories/story-456/context.md
+Loading: .claude/build/contexts/stories/story-456/technical-notes.md
+Loading: CLAUDE.md
+
+TDD Implementation Cycle:
+1. RED - Write failing tests
+2. GREEN - Implement to pass tests
+3. REFACTOR - Improve code quality
+
+Story: As a user, I want AI title suggestions so that I can create better slides faster
+
+Acceptance Criteria:
+✓ User can request title suggestions from slide editor
+✓ System generates 3-5 relevant suggestions
+✓ Suggestions appear within 5 seconds
+✓ User can apply suggestion with one click
+
+Ready to begin implementation? Let's start with the tests!
+```
+
+## Context Management
+
+The command uses a structured context system to maintain continuity across sessions:
+
+### Context Directory Structure
 
 ```
-🚀 Creating PRD for: AI Slide Title Suggestions
-
-I'll help you create a comprehensive PRD. Please provide:
-
-1. **Problem Statement**: What problem does this solve?
-   > Users spend too much time thinking of slide titles
-
-2. **Target Users**: Who will use this feature?
-   > SlideHeroes users creating presentations
-
-3. **Key Functionality**: Core features needed?
-   > Generate 3-5 title suggestions based on slide content
-   > Allow customization of suggestions
-   > Track AI usage for billing
-
-[Generating PRD...]
-
-✅ PRD Created! Review at: https://github.com/MLorneSmith/2025slideheroes/issues/21
-
-Next: Run `/build-feature-v2 21 --continue` to proceed with technical chunking
+.claude/build/
+├── 1-process/           # Process prompts
+│   ├── 1-idea-to-prd/
+│   ├── 2-prd-chunking/
+│   ├── 3-stakeholder-validation/
+│   ├── 4-user-stories-creation/
+│   ├── 5-sprint-planning/
+│   └── 6-sprint-execution/
+├── 2-context/           # Project context files
+│   ├── project-context.md
+│   ├── technical-context.md
+│   └── business-context.md
+└── contexts/            # Feature-specific contexts
+    ├── epics/
+    ├── chunks/
+    └── stories/
 ```
 
-### Story Implementation Example
+### Loading Context
 
-```
-💻 Implementing Story: Generate AI Slide Title Suggestions
+Each phase loads specific context files:
 
-Loading context...
-✅ AI Engineer role loaded
-✅ Story context loaded
-✅ Project standards loaded
-
-Current Task: Create OutlineGeneratorDialog component
-
-Files to modify:
-- apps/web/app/home/(user)/editor/_components/SlideSuggestionsDialog.tsx
-- apps/web/app/home/(user)/editor/_actions/slide-suggestions.action.ts
-
-Would you like me to:
-1. Show the implementation plan
-2. Start implementing the component
-3. Review similar patterns first
-
-Choice: _
+```typescript
+// Phase-specific context loading
+const contextMap = {
+  ideation: [
+    '.claude/build/2-context/project-context.md',
+    '.claude/build/2-context/business-context.md',
+  ],
+  chunking: [
+    '.claude/build/2-context/technical-context.md',
+    'Epic PRD from GitHub issue',
+  ],
+  implementation: [
+    `.claude/build/contexts/stories/story-${id}/context.md`,
+    `.claude/build/contexts/stories/story-${id}/technical-notes.md`,
+    'CLAUDE.md',
+  ],
+};
 ```
 
 ## Progress Tracking
 
-The command maintains progress through:
+### GitHub Integration
 
-1. **GitHub Projects Board**
+The command tracks progress through GitHub:
 
-   - Visual progress tracking
-   - Automated status updates
-   - Dependency visualization
+- **Labels**: Track phase completion (`prd-complete`, `chunks-complete`, etc.)
+- **Milestones**: Group stories into sprints
+- **Projects**: Visual progress on project board
+- **Comments**: Document decisions and progress
 
-2. **Context Files**
+### Local Tracking
 
-   - Story progress in `.claude/build/contexts/stories/`
-   - Decision documentation
-   - Session continuity
+For each story, maintain:
 
-3. **Todo List**
-   - Real-time task tracking
-   - Progress indicators
-   - Next action guidance
+- `context.md` - Story details and requirements
+- `technical-notes.md` - Implementation decisions
+- `progress.md` - Current status and next steps
 
 ## Error Handling
 
-### Missing Prerequisites
+### Common Issues
 
-```
-❌ GitHub Projects not configured!
+```typescript
+// Missing context files
+if (!contextExists(storyId)) {
+  console.log('⚠️  Context files missing for story #' + storyId);
+  console.log('\nOptions:');
+  console.log('1. Create context from GitHub issue');
+  console.log('2. Skip context (not recommended)');
+  console.log('3. Exit and create manually');
+}
 
-Please set up GitHub Projects first:
-1. Go to: https://github.com/MLorneSmith/2025slideheroes/projects
-2. Create project "SlideHeroes AAFD v2.0"
-3. Configure custom fields as documented
-4. Run command again
+// Phase mismatch
+if (expectedPhase !== actualPhase) {
+  console.log('⚠️  Phase mismatch detected');
+  console.log(`Expected: ${expectedPhase}`);
+  console.log(`Actual: ${actualPhase}`);
+  console.log('\nThis might indicate incomplete work from previous phase.');
+}
 
-Need help? See: .claude/build/docs/methodology/getting-started.md
-```
-
-### Incomplete Context
-
-```
-⚠️ Story context incomplete!
-
-Missing required context files:
-- [ ] .claude/build/contexts/stories/story-123/context.md
-- [x] .claude/build/contexts/stories/story-123/progress.md
-- [ ] .claude/build/contexts/stories/story-123/technical-notes.md
-
-Would you like me to:
-1. Create missing files from issue data
-2. Guide you through context creation
-3. Skip and continue anyway
-
-Choice: _
+// Missing dependencies
+if (missingDependencies.length > 0) {
+  console.log('🚫 Missing dependencies:');
+  missingDependencies.forEach((dep) => {
+    console.log(`- ${dep.type}: ${dep.description}`);
+  });
+}
 ```
 
-### Implementation Blocked
+## Advanced Usage
 
-```
-🚫 Implementation blocked!
+### Flags and Options
 
-Blocker: Missing API endpoint specification
-Story: #125 - AI Title Generation
+```bash
+# Force a specific phase
+/build-feature 123 --phase=chunking
 
-Options:
-1. Document blocker and switch stories
-2. Research and resolve blocker
-3. Create spike story for investigation
+# Skip validation checks
+/build-feature 123 --skip-validation
 
-Choice: _
-```
+# Load additional context
+/build-feature 123 --context=ai-integration
 
-## Advanced Features
-
-### Batch Story Implementation
-
-```
-/build-feature-v2 --batch-implement 21
+# Dry run mode
+/build-feature "New Feature" --dry-run
 ```
 
-Implements multiple stories from Epic #21 in sequence.
+### Batch Operations
+
+```bash
+# Process multiple stories
+/build-feature --stories=123,124,125 --phase=sprint-planning
+
+# Validate all chunks for an epic
+/build-feature --epic=100 --validate-all
+```
 
 ### Context Refresh
 
-```
-/build-feature-v2 --refresh-context 125
-```
+```bash
+# Refresh stale context
+/build-feature 123 --refresh-context
 
-Refreshes stale context for story #125.
-
-### Phase Jump
-
-```
-/build-feature-v2 21 --jump-to implementation
+# Force reload all context
+/build-feature 123 --force-reload
 ```
 
-Skips to specific phase (use with caution).
+## Integration Points
 
-### Dry Run
+### With Other Commands
 
-```
-/build-feature-v2 "New Feature" --dry-run
-```
+- **`/log-issue`** - Document bugs found during implementation
+- **`/debug-issue`** - Debug problems that arise
+- **`/write-unit-tests`** - Generate tests during TDD phase
 
-Shows what would happen without creating issues.
+### With GitHub
 
-## Integration with Other Commands
+- Issues track all work items
+- Projects provide visual progress
+- PRs link to implementation stories
+- Actions automate workflow transitions
 
-- **`/write-unit-tests`** - Automatically triggered for test implementation
-- **`/deep-debug`** - Used when implementation issues arise
-- **`/log-issue`** - For bugs discovered during implementation
+### With Context System
+
+- Prompts guide each phase
+- Context files maintain continuity
+- Progress tracking ensures completion
+- Decision documentation preserves knowledge
 
 ## Best Practices
 
-1. **Always start with Epic creation** - Don't skip the PRD phase
-2. **Keep chunks small** - 2-4 chunks maximum per Epic
-3. **Maintain context** - Update progress files after each session
-4. **Follow the workflow** - The methodology is designed for success
-5. **Document decisions** - Use technical-notes.md for important choices
+1. **Complete Each Phase** - Don't skip steps, they build on each other
+2. **Maintain Context** - Update progress files after each session
+3. **Use TDD Approach** - Write tests first for better code quality
+4. **Document Decisions** - Future you will thank present you
+5. **Regular Reviews** - Check progress against original PRD
+
+## Troubleshooting
+
+### Phase Detection Issues
+
+```bash
+# If phase detection fails, specify manually
+/build-feature 123 --phase=implementation
+
+# Check issue labels and status
+gh issue view 123
+```
+
+### Context Loading Problems
+
+```bash
+# Verify context files exist
+ls -la .claude/build/contexts/stories/story-123/
+
+# Recreate missing context
+/build-feature 123 --recreate-context
+```
+
+### Workflow Blockages
+
+```bash
+# Skip to next viable story
+/build-feature --epic=100 --next-available
+
+# Mark story as blocked
+/build-feature 123 --mark-blocked="Waiting for API specs"
+```
 
 ## Quick Reference
 
 ```bash
 # Start new feature
-/build-feature-v2 "AI Slide Suggestions"
+/build-feature "AI-powered slide suggestions"
 
-# Continue existing feature
-/build-feature-v2 21
+# Continue from any reference
+/build-feature 123              # Issue number
+/build-feature epic-123         # Epic reference
+/build-feature story-456        # Story reference
 
-# Continue with specific phase
-/build-feature-v2 21 --continue
+# Phase-specific commands
+/build-feature 123 --phase=chunking
+/build-feature 123 --phase=validation
+/build-feature 123 --phase=implementation
 
-# Refresh stale context
-/build-feature-v2 --refresh-context 125
-
-# Batch implement stories
-/build-feature-v2 --batch-implement 21
+# Utility commands
+/build-feature --list-active    # Show all active features
+/build-feature --show-progress  # Display progress dashboard
+/build-feature --help          # Show detailed help
 ```
 
-## Methodology Benefits
+## Summary
 
-Using this command ensures:
+The build-feature command orchestrates our complete AI-Assisted Feature Development workflow:
 
-- ✅ Structured planning before implementation
-- ✅ Context preserved across sessions
-- ✅ GitHub Projects integration
-- ✅ Quality standards enforcement
-- ✅ Systematic progress tracking
-- ✅ AI-optimized development flow
+1. **Structured Process** - 6 phases from idea to implementation
+2. **Context Preservation** - Maintains continuity across sessions
+3. **GitHub Integration** - Uses issues and projects for tracking
+4. **Quality Focus** - TDD approach and validation steps
+5. **AI Optimization** - Prompts and context designed for Claude Code
 
-The AAFD v2.0 methodology transforms feature development from ad-hoc coding to systematic, high-quality delivery!
+By following this systematic approach, you ensure high-quality, well-documented features that align with business goals and user needs.

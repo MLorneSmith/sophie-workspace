@@ -39,7 +39,6 @@ import { Column } from "./column";
 import { TaskCard } from "./task-card";
 import { TaskDialog } from "./task-dialog";
 
-
 const COLUMNS = [
 	{ id: "do", title: "To Do" },
 	{ id: "doing", title: "In Progress" },
@@ -88,14 +87,14 @@ export function KanbanBoard() {
 						await updateStatus.mutateAsync({
 							id: activeTask.id,
 							status: overId as TaskStatus,
-						// });
-					} catch (error) {
+						});
+					} catch (_error) {
 						// TODO: Async logger needed
-		// TODO: Async logger needed
-		// (await getLogger()).error(
-		// 	"Failed to update task status:",
-		// 	{ data: error }
-		// );
+						// TODO: Async logger needed
+						// (await getLogger()).error(
+						// 	"Failed to update task status:",
+						// 	{ data: error }
+						// );
 					} finally {
 						setUpdatingTaskId(null);
 					}

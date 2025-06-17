@@ -6,7 +6,6 @@ import type { Database } from "~/lib/database.types";
 
 import { lexicalToTiptap } from "../_components/editor/tiptap/utils/format-conversion";
 
-
 /**
  * Server action to convert existing records from Lexical format to Tiptap format
  * This is a one-time migration script
@@ -62,7 +61,7 @@ export async function convertExistingRecordsToTiptap() {
 					submissionId: submission.id,
 					error: updateError,
 					message: `Error updating submission ${submission.id}`,
-				// });
+				});
 				results.failed++;
 				results.errors.push(`ID ${submission.id}: ${updateError.message}`);
 			} else {

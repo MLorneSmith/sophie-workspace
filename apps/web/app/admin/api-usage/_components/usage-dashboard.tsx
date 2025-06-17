@@ -40,40 +40,39 @@ export function UsageDashboard({ initialData }: UsageDashboardProps) {
 	useEffect(() => {
 		refreshData();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+	}, [refreshData]);
 
 	// Fetch data from the server
 	const refreshData = async () => {
 		try {
 			setIsLoading(true);
 
-			const _result = await fetchUsageDataAction({
+			const result = await fetchUsageDataAction({
 				timeRange: selectedTimeRange as "24h" | "7d" | "30d" | "90d",
-			// });
+			});
 
-			if (_result._success && result._data) {
+			if (result.success && result.data) {
 				setCurrentData(result.data);
 				// TODO: Async logger needed
-		// TODO: Async logger needed
-		// (await getLogger()).info(
-		// 	"Fetched real usage data:",
-		// 	{ data: result.data }
-		// );
+				// (await getLogger()).info(
+				// 	"Fetched real usage data:",
+				// 	{ data: result.data }
+				// );
 			} else {
 				// TODO: Async logger needed
-		// TODO: Async logger needed
-		// (await getLogger()).error(
-		// 	"Failed to fetch usage data:",
-		// 	{ data: result.error }
-		// );
+				// TODO: Async logger needed
+				// (await getLogger()).error(
+				// 	"Failed to fetch usage data:",
+				// 	{ data: result.error }
+				// );
 			}
-		} catch (error) {
+		} catch (_error) {
 			// TODO: Async logger needed
-		// TODO: Async logger needed
-		// (await getLogger()).error(
-		// 	"Error fetching usage data:",
-		// 	{ data: error }
-		// );
+			// TODO: Async logger needed
+			// (await getLogger()).error(
+			// 	"Error fetching usage data:",
+			// 	{ data: error }
+			// );
 		} finally {
 			setIsLoading(false);
 		}

@@ -10,7 +10,6 @@ import * as React from "react";
 import { useError } from "../error/ErrorContext";
 import { isAuthError, isConnectionError } from "../lib/error-utils";
 
-
 const ERROR_MESSAGES = {
 	AUTH_ERROR: "Your session has expired. Please refresh and try again.",
 	LOAD_FAILED:
@@ -159,13 +158,13 @@ export class SetupFormErrorBoundary extends React.Component<Props, State> {
 				hasError: false,
 				error: null,
 				isRecovering: false,
-			// });
+			});
 		} catch (error) {
 			this.setState({
 				hasError: true,
 				error: error as Error,
 				isRecovering: false,
-			// });
+			});
 		}
 	};
 
@@ -183,7 +182,7 @@ export class SetupFormErrorBoundary extends React.Component<Props, State> {
 		return this.state.error.message || ERROR_MESSAGES.INVALID_STATE;
 	};
 
-	render() 
+	render() {
 		// Render error handler if there's an error
 		if (this.state.error) {
 			return (
@@ -199,6 +198,7 @@ export class SetupFormErrorBoundary extends React.Component<Props, State> {
 		}
 
 		return this.props.children;
+	}
 
 	private renderErrorContent() {
 		const componentName = this.props._componentName || "setup-form";
