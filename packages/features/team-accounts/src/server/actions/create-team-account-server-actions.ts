@@ -25,7 +25,7 @@ export const createTeamAccountAction = enhanceAction(
 		const { data, error } = await service.createNewOrganizationAccount({
 			name,
 			userId: user.id,
-		});
+		// });
 
 		if (error) {
 			logger.error({ ...ctx, error }, "Failed to create team account");

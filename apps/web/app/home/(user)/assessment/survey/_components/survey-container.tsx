@@ -15,10 +15,6 @@ import {
 import { QuestionCard } from "./question-card";
 import { SurveySummary } from "./survey-summary";
 
-import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("HOME-(USER)");
 
 type SurveyContainerProps = {
 	survey: Survey;
@@ -119,7 +115,7 @@ export function SurveyContainer({
 					category,
 					score,
 					totalQuestions: questions.length,
-				});
+				// });
 
 				// Move to the next question or complete the survey
 				if (isLastQuestion) {
@@ -144,7 +140,7 @@ export function SurveyContainer({
 							category,
 							score,
 							totalQuestions: questions.length,
-						});
+						// });
 
 						// Then try to get the response record and latest category scores from Supabase
 						const { data: responseData, error } = await supabase
@@ -193,7 +189,7 @@ export function SurveyContainer({
 									categoryScores: finalCategoryScores,
 									highestScoringCategory: finalHighestCategory,
 									lowestScoringCategory: finalLowestCategory,
-								});
+								// });
 
 								// Update local state with final scores for the summary view
 								setCategoryScores(finalCategoryScores);

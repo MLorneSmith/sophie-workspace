@@ -9,11 +9,6 @@ import { useState } from "react";
 import { ScaleQuestion } from "./scale-question";
 import { TextFieldQuestion } from "./text-field-question";
 
-import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("HOME-(USER)");
-
 interface QuestionOption {
 	id: string;
 	text: string;
@@ -70,13 +65,13 @@ export function QuestionCard({
 		if (selectedOption) {
 			// Log the selected option and available options for debugging
 			// TODO: Async logger needed
-		// (await getLogger()).info("Selected option:", {
-				data: selectedOption,
-			});
+			// (await getLogger()).info("Selected option:", {
+			// data: selectedOption,
+			// });
 			// TODO: Async logger needed
-		// (await getLogger()).info("Available options:", {
-				data: question.options,
-			});
+			// (await getLogger()).info("Available options:", {
+			// data: question.options,
+			// });
 
 			const option = question.options?.find((opt) => opt.id === selectedOption);
 
@@ -84,14 +79,15 @@ export function QuestionCard({
 				onAnswer(question.id, option.text, option.score || 0);
 			} else {
 				// TODO: Async logger needed
-		// (await getLogger()).error(
-					"Selected option not found:",
-					{ data: selectedOption },
-				);
 				// TODO: Async logger needed
-		// (await getLogger()).error("Question options:", {
-					data: question.options,
-				});
+				// (await getLogger()).error(
+				// 	"Selected option not found:",
+				// 	{ data: selectedOption }
+				// );
+				// TODO: Async logger needed
+				// (await getLogger()).error("Question options:", {
+				// data: question.options,
+				// });
 			}
 		}
 	};

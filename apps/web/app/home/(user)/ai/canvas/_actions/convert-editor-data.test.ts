@@ -6,10 +6,6 @@
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("HOME-(USER)");
 
 // Mock the format conversion utility with testable implementation
 const mockLexicalToTiptap = vi.fn();
@@ -116,7 +112,7 @@ describe("Data Conversion Business Logic", () => {
 		mockLexicalToTiptap.mockReturnValue({
 			type: "doc",
 			content: [{ type: "paragraph", content: [] }],
-		});
+		// });
 	});
 
 	describe("convertSubmissionData", () => {
@@ -152,7 +148,7 @@ describe("Data Conversion Business Logic", () => {
 				complication: JSON.stringify(mockTiptapResult),
 				answer: JSON.stringify(mockTiptapResult),
 				outline: JSON.stringify(mockTiptapResult),
-			});
+			// });
 		});
 
 		it("should handle null content fields", () => {
@@ -179,7 +175,7 @@ describe("Data Conversion Business Logic", () => {
 				complication: null,
 				answer: null,
 				outline: JSON.stringify(mockTiptapResult),
-			});
+			// });
 		});
 
 		it("should handle missing content fields", () => {
@@ -204,7 +200,7 @@ describe("Data Conversion Business Logic", () => {
 				complication: null,
 				answer: null,
 				outline: null,
-			});
+			// });
 		});
 
 		it("should handle lexicalToTiptap conversion errors", () => {

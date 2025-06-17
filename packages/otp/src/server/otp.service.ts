@@ -186,7 +186,7 @@ class OtpService {
 			const { data, error } = await this.client.rpc("revoke_nonce", {
 				p_id: id,
 				p_reason: reason,
-			});
+			// });
 
 			if (error) {
 				logger.error(
@@ -226,7 +226,7 @@ class OtpService {
 		try {
 			const result = await this.client.rpc("get_nonce_status", {
 				p_id: id,
-			});
+			// });
 
 			if (result.error) {
 				logger.error(

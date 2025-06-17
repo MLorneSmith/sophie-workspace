@@ -1,6 +1,5 @@
-import type { AnalyticsService } from "./types";
-
 import { createServiceLogger } from "@kit/shared/logger";
+import type { AnalyticsService } from "./types";
 
 // Initialize service logger
 const { getLogger } = createServiceLogger("NULL_ANALYTICS_SERVICE");

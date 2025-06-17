@@ -4,11 +4,6 @@ import { useRef } from "react";
 
 import { useBaselime } from "../hooks/use-baselime";
 
-import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("PROVIDER");
-
 export function BaselimeProvider({
 	children,
 	apiKey,

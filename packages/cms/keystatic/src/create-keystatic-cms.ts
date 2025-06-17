@@ -1,10 +1,5 @@
 import type { CmsClient } from "@kit/cms-types";
 
-import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("CMS-PAYLOAD");
-
 /**
  * Creates a new Keystatic client instance.
  */
@@ -32,7 +27,7 @@ function mockCMSClient() {
 			return Promise.resolve({
 				items: [],
 				total: 0,
-			});
+			// });
 		},
 		getContentItemBySlug() {
 			return Promise.resolve(undefined);

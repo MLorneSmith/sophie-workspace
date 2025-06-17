@@ -4,10 +4,6 @@ import { toast } from "@kit/ui/sonner";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import {
-import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("HOME-(USER)");
 
 	type BuildingBlocksSubmission,
 	type LayoutTemplate,
@@ -372,7 +368,7 @@ export class StoryboardService {
 							type,
 							text: this.extractTextFromNode(itemContent),
 							columnIndex: 0,
-						});
+						// });
 					} else if (
 						itemContent.type === "bulletList" ||
 						itemContent.type === "orderedList"

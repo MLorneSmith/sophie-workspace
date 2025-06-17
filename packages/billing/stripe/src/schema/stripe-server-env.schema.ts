@@ -5,12 +5,12 @@ export const StripeServerEnvSchema = z
 		secretKey: z
 			.string({
 				required_error: "Please provide the variable STRIPE_SECRET_KEY",
-			})
+			// })
 			.min(1),
 		webhooksSecret: z
 			.string({
 				required_error: "Please provide the variable STRIPE_WEBHOOK_SECRET",
-			})
+			// })
 			.min(1),
 	})
 	.refine(

@@ -16,22 +16,22 @@ const env = z
 		invitePath: z
 			.string({
 				required_error: "The property invitePath is required",
-			})
+			// })
 			.min(1),
 		siteURL: z
 			.string({
 				required_error: "NEXT_PUBLIC_SITE_URL is required",
-			})
+			// })
 			.min(1),
 		productName: z
 			.string({
 				required_error: "NEXT_PUBLIC_PRODUCT_NAME is required",
-			})
+			// })
 			.min(1),
 		emailSender: z
 			.string({
 				required_error: "EMAIL_SENDER is required",
-			})
+			// })
 			.min(1),
 	})
 	.parse({
@@ -115,7 +115,7 @@ class AccountInvitationsWebhookService {
 				inviter: inviter.data.name ?? inviter.data.email ?? "",
 				productName: env.productName,
 				teamName: team.data.name,
-			});
+			// });
 
 			await mailer
 				.sendEmail({
@@ -132,7 +132,7 @@ class AccountInvitationsWebhookService {
 		// (await getLogger()).error(error);
 
 					logger.error({ error, { arg1: ...ctx }, arg2: "Failed to send invitation email" });
-				});
+		// });
 
 			return {
 				success: true,
@@ -144,9 +144,9 @@ class AccountInvitationsWebhookService {
 
 			return {
 				error,
-				success: false,
-			};
-		}
+			// success: false,
+			// };
+		// }
 	}
 
 	private getInvitationLink(token: string, email: string) {

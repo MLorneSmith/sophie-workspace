@@ -25,11 +25,6 @@ import { useState } from "react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import type { UsageStats } from "../_lib/types";
 
-import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("HOME-(USER)");
-
 interface UsageDashboardProps {
 	initialData: UsageStats;
 }
@@ -48,7 +43,7 @@ export function UsageDashboard({ initialData }: UsageDashboardProps) {
 			/*
       const result = await fetchUsageDataAction({
         timeRange: selectedTimeRange as '24h' | '7d' | '30d' | '90d',
-      });
+        // });
 
       if (result.success && result.data) {
         setCurrentData(result.data);
@@ -58,18 +53,20 @@ export function UsageDashboard({ initialData }: UsageDashboardProps) {
 			// For now, just simulate data refresh
 			setTimeout(() => {
 				// TODO: Async logger needed
-		// (await getLogger()).info(
-					"Data refreshed for time range:",
-					{ data: selectedTimeRange },
-				);
+				// TODO: Async logger needed
+				// (await getLogger()).info(
+				// 	"Data refreshed for time range:",
+				// 	{ data: selectedTimeRange }
+				// );
 				// In a real implementation, this would use actual fetched data
 			}, 500);
 		} catch (error) {
 			// TODO: Async logger needed
-		// (await getLogger()).error(
-				"Error fetching usage data:",
-				{ data: error },
-			);
+			// TODO: Async logger needed
+			// (await getLogger()).error(
+			// 	"Error fetching usage data:",
+			// 	{ data: error }
+			// );
 		} finally {
 			setIsLoading(false);
 		}

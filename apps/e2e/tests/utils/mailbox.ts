@@ -1,7 +1,6 @@
+import { createServiceLogger } from "@kit/shared/logger";
 import type { Page } from "@playwright/test";
 import { parse } from "node-html-parser";
-
-import { createServiceLogger } from "@kit/shared/logger";
 
 // Initialize service logger
 const { getLogger } = createServiceLogger("MAILBOX");

@@ -35,7 +35,7 @@ export function SlidePreview({ slide }: SlidePreviewProps) {
 				y: layoutPositions.content1.y,
 				w: layoutPositions.content1.w,
 				h: layoutPositions.content1.h,
-			});
+			// });
 		}
 		if (layoutPositions.content2) {
 			contentAreas.push({
@@ -44,7 +44,7 @@ export function SlidePreview({ slide }: SlidePreviewProps) {
 				y: layoutPositions.content2.y,
 				w: layoutPositions.content2.w,
 				h: layoutPositions.content2.h,
-			});
+			// });
 		}
 		// Add other content areas as defined in LAYOUT_POSITIONS if needed
 		// Note: The current LAYOUT_POSITIONS only defines 'content1' and 'content2'

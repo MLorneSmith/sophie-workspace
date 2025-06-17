@@ -1,8 +1,3 @@
-import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("LIB-DEV_MOCK_MODULES.TS");
-
 /*
 * Mock modules for development.
 

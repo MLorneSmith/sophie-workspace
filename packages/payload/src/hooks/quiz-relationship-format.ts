@@ -9,11 +9,6 @@
  */
 import type { CollectionAfterReadHook } from "@payloadcms/payload/types";
 
-import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("QUIZ_RELATIONSHIP_FORMAT");
-
 // Define the expected structure of quiz questions for type safety
 type QuizQuestion = {
 	id: string;
@@ -79,15 +74,14 @@ export const ensureProperQuizQuestionFormat: CollectionAfterReadHook = async ({
 			// TODO: Async logger needed
 		// (await getLogger()).warn(`Quiz ${doc.id} has non-array questions: ${typeof doc.questions}`, { data:  });
 			doc.questions = [];
-		}
+		// }
 
 		return doc;
-	} catch (error) {
+	} catch (error) 
 		// TODO: Async logger needed
 		// (await getLogger()).error(`Error in ensureProperQuizQuestionFormat hook for quiz ${doc.id}:`, { arg1: error, arg2:  });
 		// Return the document as is to avoid blocking access completely
 		return doc;
-	}
 };
 
 /**

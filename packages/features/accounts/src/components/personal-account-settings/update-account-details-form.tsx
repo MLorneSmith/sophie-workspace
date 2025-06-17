@@ -50,7 +50,7 @@ export function UpdateAccountDetailsForm({
 			success: t("updateProfileSuccess"),
 			error: t("updateProfileError"),
 			loading: t("updateProfileLoading"),
-		});
+		// });
 	};
 
 	return (

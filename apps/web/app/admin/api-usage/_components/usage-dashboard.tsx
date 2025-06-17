@@ -27,11 +27,6 @@ import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { fetchUsageDataAction } from "../_actions/fetch-usage-data";
 import type { UsageStats } from "../_lib/types";
 
-import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("ADMIN-API-USAGE");
-
 interface UsageDashboardProps {
 	initialData: UsageStats;
 }
@@ -54,28 +49,31 @@ export function UsageDashboard({ initialData }: UsageDashboardProps) {
 
 			const result = await fetchUsageDataAction({
 				timeRange: selectedTimeRange as "24h" | "7d" | "30d" | "90d",
-			});
+			// });
 
 			if (result.success && result.data) {
 				setCurrentData(result.data);
 				// TODO: Async logger needed
+		// TODO: Async logger needed
 		// (await getLogger()).info(
-					"Fetched real usage data:",
-					{ data: result.data },
-				);
+		// 	"Fetched real usage data:",
+		// 	{ data: result.data }
+		// );
 			} else {
 				// TODO: Async logger needed
+		// TODO: Async logger needed
 		// (await getLogger()).error(
-					"Failed to fetch usage data:",
-					{ data: result.error },
-				);
+		// 	"Failed to fetch usage data:",
+		// 	{ data: result.error }
+		// );
 			}
 		} catch (error) {
 			// TODO: Async logger needed
+		// TODO: Async logger needed
 		// (await getLogger()).error(
-				"Error fetching usage data:",
-				{ data: error },
-			);
+		// 	"Error fetching usage data:",
+		// 	{ data: error }
+		// );
 		} finally {
 			setIsLoading(false);
 		}

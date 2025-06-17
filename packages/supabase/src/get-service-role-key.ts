@@ -2,11 +2,6 @@ import "server-only";
 
 import { z } from "zod";
 
-import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("GET_SERVICE_ROLE_KEY");
-
 const message =
 	"Invalid Supabase Service Role Key. Please add the environment variable SUPABASE_SERVICE_ROLE_KEY.";
 
@@ -19,10 +14,10 @@ export function getServiceRoleKey() {
 	return z
 		.string({
 			required_error: message,
-		})
+		// })
 		.min(1, {
 			message: message,
-		})
+		// })
 		.parse(process.env.SUPABASE_SERVICE_ROLE_KEY);
 }
 
@@ -33,5 +28,5 @@ export function warnServiceRoleKeyUsage() {
 	if (process.env.NODE_ENV !== "production") {
 		// TODO: Async logger needed
 		// (await getLogger()).warn(`[Dev Only] This is a simple warning to let you know you are using the Supabase Service Role. Make sure it's the right call.`, { data:  });
-	}
+		// }
 }

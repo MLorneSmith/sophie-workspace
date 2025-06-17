@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// biome-ignore lint/suspicious/noConsole: Migration script - console output is required
 
 const fs = require("fs").promises;
 const path = require("path");
@@ -347,20 +348,29 @@ async function main() {
 	const args = process.argv.slice(2);
 
 	if (args.length === 0) {
+		// biome-ignore lint/suspicious/noConsole: Usage information
 		console.error("Advanced Logger Migration Tool");
+		// biome-ignore lint/suspicious/noConsole: Usage information
 		console.error("==============================");
+		// biome-ignore lint/suspicious/noConsole: Usage information
 		console.error("");
+		// biome-ignore lint/suspicious/noConsole: Usage information
 		console.error("Usage:");
+		// biome-ignore lint/suspicious/noConsole: Usage information
 		console.error(
 			"  node migrate-to-logger-advanced.js <file1> [file2] [...fileN]",
 		);
+		// biome-ignore lint/suspicious/noConsole: Usage information
 		console.error(
 			"  node migrate-to-logger-advanced.js --from-file <file-list.txt>",
 		);
+		// biome-ignore lint/suspicious/noConsole: Usage information
 		console.error("");
+		// biome-ignore lint/suspicious/noConsole: Usage information
 		console.error(
 			"Note: This script requires @babel/parser, @babel/traverse, @babel/generator, and @babel/types",
 		);
+		// biome-ignore lint/suspicious/noConsole: Usage information
 		console.error(
 			"Install with: npm install --save-dev @babel/parser @babel/traverse @babel/generator @babel/types",
 		);
@@ -374,8 +384,11 @@ async function main() {
 		require("@babel/generator");
 		require("@babel/types");
 	} catch (error) {
+		// biome-ignore lint/suspicious/noConsole: Setup error information
 		console.error("Error: Required Babel packages not found!");
+		// biome-ignore lint/suspicious/noConsole: Setup error information
 		console.error("Please install them with:");
+		// biome-ignore lint/suspicious/noConsole: Setup error information
 		console.error(
 			"  npm install --save-dev @babel/parser @babel/traverse @babel/generator @babel/types",
 		);
@@ -391,6 +404,7 @@ async function main() {
 			const fileListContent = await fs.readFile(fileListPath, "utf8");
 			files = fileListContent.split("\n").filter((line) => line.trim());
 		} catch (error) {
+			// biome-ignore lint/suspicious/noConsole: File reading error
 			console.error(`Error reading file list: ${error.message}`);
 			process.exit(1);
 		}
@@ -405,15 +419,18 @@ async function main() {
 			await fs.access(file);
 			validFiles.push(file);
 		} catch {
+			// biome-ignore lint/suspicious/noConsole: File validation warning
 			console.warn(`Warning: File not found: ${file}`);
 		}
 	}
 
 	if (validFiles.length === 0) {
+		// biome-ignore lint/suspicious/noConsole: No files error
 		console.error("No valid files to process");
 		process.exit(1);
 	}
 
+	// biome-ignore lint/suspicious/noConsole: Progress information
 	console.log(
 		`Processing ${validFiles.length} files with AST transformation...\n`,
 	);
@@ -427,48 +444,62 @@ async function main() {
 	const errors = results.filter((r) => r.status === "error");
 
 	if (successful.length > 0) {
+		// biome-ignore lint/suspicious/noConsole: Success report
 		console.log("✅ Successfully migrated:");
 		successful.forEach((result) => {
+			// biome-ignore lint/suspicious/noConsole: Success details
 			console.log(
 				`   ${result.filePath} (${result.replacementCount} replacements, service: ${result.serviceName})`,
 			);
 		});
+		// biome-ignore lint/suspicious/noConsole: Formatting
 		console.log("");
 	}
 
 	if (skipped.length > 0) {
+		// biome-ignore lint/suspicious/noConsole: Skip report
 		console.log("⏩ Skipped:");
 		skipped.forEach((result) => {
+			// biome-ignore lint/suspicious/noConsole: Skip details
 			console.log(`   ${result.filePath} - ${result.reason}`);
 		});
+		// biome-ignore lint/suspicious/noConsole: Formatting
 		console.log("");
 	}
 
 	if (errors.length > 0) {
+		// biome-ignore lint/suspicious/noConsole: Error report
 		console.log("❌ Errors:");
 		errors.forEach((result) => {
+			// biome-ignore lint/suspicious/noConsole: Error details
 			console.log(`   ${result.filePath} - ${result.error}`);
 			if (result.suggestion) {
+				// biome-ignore lint/suspicious/noConsole: Error suggestion
 				console.log(`      Suggestion: ${result.suggestion}`);
 			}
 		});
+		// biome-ignore lint/suspicious/noConsole: Formatting
 		console.log("");
 	}
 
+	// biome-ignore lint/suspicious/noConsole: Summary report
 	console.log(
 		`Summary: ${successful.length} migrated, ${skipped.length} skipped, ${errors.length} errors`,
 	);
 
 	if (errors.length > 0) {
+		// biome-ignore lint/suspicious/noConsole: Help information
 		console.log(
 			"\nFor files that failed AST parsing, try the basic migration script:",
 		);
+		// biome-ignore lint/suspicious/noConsole: Help information
 		console.log("  node scripts/migrate-to-logger.js <failed-files>");
 	}
 }
 
 // Run the script
 main().catch((error) => {
+	// biome-ignore lint/suspicious/noConsole: Fatal error reporting
 	console.error("Fatal error:", error);
 	process.exit(1);
 });

@@ -58,7 +58,7 @@ export const UpdatePasswordForm = ({
 			success: t("updatePasswordSuccess"),
 			error: t("updatePasswordError"),
 			loading: t("updatePasswordLoading"),
-		});
+		// });
 	};
 
 	const updatePasswordCallback = async ({

@@ -37,7 +37,7 @@ export function DeleteTestimonialDialog(
 					onSubmit={() =>
 						deleteTestimonialAction({
 							id: props.id,
-						})
+						// })
 					}
 				>
 					<AlertDialogFooter>

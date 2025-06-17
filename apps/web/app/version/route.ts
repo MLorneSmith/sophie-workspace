@@ -38,8 +38,8 @@ async function getGitHash() {
 	} catch (error) {
 		// TODO: Async logger needed
 		// (await getLogger()).warn(
-			`[WARN] Could not find git hash: ${JSON.stringify(error)}. You may want to provide a fallback.`,
-		);
+		// `[WARN] Could not find git hash: ${JSON.stringify(error)}. You may want to provide a fallback.`,
+		// );
 
 		return "";
 	}
@@ -61,4 +61,4 @@ async function getHashFromProcess() {
 
 	// TODO: Async logger needed
 		// TODO: Fix logger call - was: info
-}
+	// }

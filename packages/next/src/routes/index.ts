@@ -123,7 +123,7 @@ export const enhanceRouteHandler = <
 			body: body as Params["schema"] extends z.ZodType<any, z.ZodTypeDef, any> ? z.TypeOf<Params["schema"]> : undefined,
 			user,
 			params: await routeParams.params,
-		});
+		// });
 	};
 };
 

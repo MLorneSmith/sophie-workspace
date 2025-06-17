@@ -7,10 +7,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 
 import type {
-import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("HOME-(USER)");
 
 	BuildingBlocksSubmission,
 	Slide,
@@ -58,7 +54,7 @@ function generateStoryboardFromOutline(
 						type: "text",
 						text: headingText,
 						columnIndex: 0,
-					});
+					// });
 				}
 			} else if (node.type === "paragraph" && currentSlide) {
 				// Add paragraphs as text content
@@ -66,7 +62,7 @@ function generateStoryboardFromOutline(
 					type: "text",
 					text: extractTextFromNode(node),
 					columnIndex: 0,
-				});
+				// });
 			} else if (
 				(node.type === "bulletList" || node.type === "orderedList") &&
 				currentSlide
@@ -124,7 +120,7 @@ function processList(node: TipTapNode | unknown, slide: Slide, type: string) {
 						type,
 						text: extractTextFromNode(itemContent),
 						columnIndex: 0,
-					});
+					// });
 				} else if (
 					itemContent.type === "bulletList" ||
 					itemContent.type === "orderedList"
@@ -216,7 +212,7 @@ export function usePresentationStoryboard(presentationId: string) {
 		queryKey: ["presentation-storyboard", presentationId],
 		queryFn: fetchStoryboard,
 		enabled: !!presentationId,
-	});
+	// });
 
 	const saveStoryboard = useCallback(
 		async (storyboardData: StoryboardData) => {
@@ -229,7 +225,7 @@ export function usePresentationStoryboard(presentationId: string) {
 					.update({
 						// Use a type assertion to tell TypeScript we know what we're doing
 						storyboard: storyboardData as unknown as Json,
-					})
+					// })
 					.eq("id", presentationId);
 
 				if (result.error) {

@@ -25,10 +25,6 @@ import {
 import { QuizComponent } from "./QuizComponent";
 import { SurveyComponent } from "./SurveyComponent";
 
-import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("HOME-(USER)");
 
 // Type aliases for better readability
 type QuizAttempt = Database["public"]["Tables"]["quiz_attempts"]["Row"];
@@ -222,7 +218,7 @@ export function LessonViewClient({
 						courseId,
 						lessonId: lesson.id,
 						completionPercentage: 50, // Mark as partially completed when viewed
-					});
+					// });
 				} catch (_error) {
 					toast.error("Failed to update lesson progress. Please try again.");
 				}
@@ -249,7 +245,7 @@ export function LessonViewClient({
 					lessonId: lesson.id,
 					completionPercentage: 100,
 					completed: true,
-				});
+				// });
 				// Add back a single toast notification in the bottom right
 				toast.success("Lesson marked as completed!");
 				// Update the state to reflect completion
@@ -290,13 +286,12 @@ export function LessonViewClient({
 						lessonId: lesson.id,
 						completionPercentage: 100,
 						completed: true,
-					});
+					// });
 
 					// Remove automatic navigation - let user click the Next Lesson button in summary
 				}
-			} catch (_error) {
+			} catch (_error) 
 				toast.error("Failed to submit quiz. Please try again.");
-			}
 		});
 	};
 
@@ -559,7 +554,7 @@ export function LessonViewClient({
 																if (download.filename || download.description) {
 																	return (
 																		<div
-																			key={`download-$lesson.id-$index-$download.filename || index`}
+																			key={"download-$lesson.id-$index-$download.filename || index"}
 																			className="flex items-center justify-between rounded-lg border border-gray-200 p-3 dark:border-gray-700"
 																		>
 																			<div className="flex-grow">
@@ -599,14 +594,14 @@ export function LessonViewClient({
 																const i = Math.floor(
 																	Math.log(bytes) / Math.log(1024),
 																);
-																return `$Math.round(bytes / 1024 ** i)$sizes[i]`;
+																return "$Math.round(bytes / 1024 ** i)$sizes[i]";
 															};
 
 															const fileSize = getFileSize(download.filesize);
 
 															return (
 																<div
-																	key={`download-$lesson.id-$index-$download.url || download.filename || index`}
+																	key={"download-$lesson.id-$index-$download.url || download.filename || index"}
 																	className="flex flex-col rounded-lg border border-gray-200 p-3 dark:border-gray-700"
 																>
 																	<div className="flex items-center justify-between">
@@ -630,7 +625,7 @@ export function LessonViewClient({
 																			<p className="text-muted-foreground mt-0.5 text-xs">
 																				{isZipFile && "ZIP Archive"}
 																				{isPdfFile && "PDF Document"}
-																				{fileSize && ` • $fileSize`}
+																				{fileSize && " • $fileSize"}
 																			</p>
 																		</div>
 																		<Button

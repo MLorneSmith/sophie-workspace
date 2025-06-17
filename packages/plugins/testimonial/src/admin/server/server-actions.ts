@@ -2,10 +2,10 @@
 
 import { enhanceAction } from "@kit/next/actions";
 import { getLogger } from "@kit/shared/logger";
+import type { Database } from "@kit/supabase/database.types";
 import { requireUser } from "@kit/supabase/require-user";
 import { getSupabaseServerAdminClient } from "@kit/supabase/server-admin-client";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
-import type { Database } from "@kit/supabase/database.types";
 import { revalidatePath } from "next/cache";
 import { notFound, redirect } from "next/navigation";
 import { z } from "zod";
@@ -113,7 +113,7 @@ export const addManualTestimonialAction = enhanceAction(
 			customer_company_name: typedData.customer.company,
 			link: typedData.source.externalLink,
 			customer_avatar_url: typedData.customer.avatarUrl,
-		});
+		// });
 
 		if (error) {
 			logger.error("Failed to add manual testimonial");

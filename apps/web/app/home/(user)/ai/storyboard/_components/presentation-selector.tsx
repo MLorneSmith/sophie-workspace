@@ -13,11 +13,6 @@ import {
 import { Skeleton } from "@kit/ui/skeleton";
 import { useEffect, useState } from "react";
 
-import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("HOME-(USER)");
-
 interface Presentation {
 	id: string;
 	title: string;
@@ -51,10 +46,11 @@ export function PresentationSelector({ onSelect }: PresentationSelectorProps) {
 				setPresentations(data || []);
 			} catch (err) {
 				// TODO: Async logger needed
-		// (await getLogger()).error(
-					"Error fetching presentations:",
-					{ data: err },
-				);
+				// TODO: Async logger needed
+				// (await getLogger()).error(
+				// 	"Error fetching presentations:",
+				// 	{ data: err }
+				// );
 				setError("Failed to load presentations");
 			} finally {
 				setIsLoading(false);

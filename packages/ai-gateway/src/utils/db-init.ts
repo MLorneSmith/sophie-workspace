@@ -4,9 +4,10 @@
  * This module provides functions to initialize and verify database tables
  * and data required for the AI Gateway functionality.
  */
-import type { SupabaseClient } from "./supabase-client";
+
 
 import { createServiceLogger } from "@kit/shared/logger";
+import type { SupabaseClient } from "./supabase-client";
 
 // Initialize service logger
 const { getLogger } = createServiceLogger("AI-GATEWAY");
@@ -34,7 +35,7 @@ export async function initializeCostConfiguration(
 				error: countError,
 				message: countError.message,
 				hint: countError.hint,
-			});
+			// });
 			return false;
 		}
 
@@ -159,7 +160,7 @@ export async function initializeCostConfiguration(
 				error: insertError,
 				message: insertError.message,
 				hint: insertError.hint,
-			});
+			// });
 			return false;
 		}
 
@@ -201,7 +202,7 @@ export async function testDatabasePermissions(
 				cost: 0,
 				feature: "system-test",
 				status: "test",
-			})
+			// })
 			.select("id")
 			.single();
 
@@ -212,7 +213,7 @@ export async function testDatabasePermissions(
 				details: error.details,
 				hint: error.hint,
 				code: error.code,
-			});
+			// });
 			return false;
 		}
 
@@ -245,7 +246,7 @@ export async function testDatabaseFunctions(
 			p_model: "gpt-3.5-turbo",
 			p_prompt_tokens: 100,
 			p_completion_tokens: 50,
-		});
+		// });
 
 		if (error) {
 			(await getLogger()).error("Database function test failed:", {
@@ -254,13 +255,13 @@ export async function testDatabaseFunctions(
 				details: error.details,
 				hint: error.hint,
 				code: error.code,
-			});
+			// });
 			return false;
 		}
 
 		(await getLogger()).info("Database function test successful:", {
 			calculatedCost: data,
-		});
+		// });
 		return true;
 	} catch (error) {
 		(await getLogger()).error("Fatal error testing database functions:", { data: error });

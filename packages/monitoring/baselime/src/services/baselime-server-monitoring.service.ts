@@ -1,16 +1,11 @@
 import type { MonitoringService } from "@kit/monitoring-core";
 import { z } from "zod";
 
-import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("BASELIME_SERVER_MONITORING_SERVICE");
-
 const apiKey = z
 	.string({
 		required_error: "NEXT_PUBLIC_BASELIME_KEY is required",
 		description: "The Baseline API key",
-	})
+	// })
 	.parse(process.env.NEXT_PUBLIC_BASELIME_KEY);
 
 export class BaselimeServerMonitoringService implements MonitoringService {

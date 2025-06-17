@@ -39,7 +39,7 @@ export function SignInMethodsContainer(props: {
 		if (props.inviteToken) {
 			const searchParams = new URLSearchParams({
 				invite_token: props.inviteToken,
-			});
+			// });
 
 			const joinTeamPath = `${props.paths.joinTeam}?${searchParams.toString()}`;
 

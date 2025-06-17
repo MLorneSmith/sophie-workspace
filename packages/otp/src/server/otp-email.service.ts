@@ -6,14 +6,14 @@ import { z } from "zod";
 const EMAIL_SENDER = z
 	.string({
 		required_error: "EMAIL_SENDER is required",
-	})
+	// })
 	.min(1)
 	.parse(process.env.EMAIL_SENDER);
 
 const PRODUCT_NAME = z
 	.string({
 		required_error: "PRODUCT_NAME is required",
-	})
+	// })
 	.min(1)
 	.parse(process.env.NEXT_PUBLIC_PRODUCT_NAME);
 
@@ -39,7 +39,7 @@ class OtpEmailService {
 		const { html, subject } = await renderOtpEmail({
 			otp,
 			productName: PRODUCT_NAME,
-		});
+		// });
 
 		try {
 			logger.info({ otp }, "Sending OTP email...");
@@ -49,7 +49,7 @@ class OtpEmailService {
 				subject,
 				html,
 				from: EMAIL_SENDER,
-			});
+			// });
 
 			logger.info({ otp }, "OTP email sent");
 		} catch (error) {

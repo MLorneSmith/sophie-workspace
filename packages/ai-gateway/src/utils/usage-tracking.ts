@@ -1,7 +1,8 @@
 // Import the SupabaseClient type from our utility module
+
+import { createServiceLogger } from "@kit/shared/logger";
 import { initializeCostConfiguration } from "./db-init";
 import type { SupabaseClient } from "./supabase-client";
-import { createServiceLogger } from "@kit/shared/logger";
 
 // Initialize service logger
 const { getLogger } = createServiceLogger("AI-USAGE-TRACKING");
@@ -164,11 +165,11 @@ export async function recordApiUsage(
 								error: adminError,
 								errorMessage: adminError.message,
 								errorCode: adminError.code,
-							});
+							// });
 						} else {
 							logger.info("Successfully recorded AI request log with admin client", {
 								id: adminData?.id,
-							});
+							// });
 							success = true;
 						}
 					} catch (adminRetryError) {
@@ -187,7 +188,7 @@ export async function recordApiUsage(
 				stack: error.stack,
 				message: error.message,
 				name: error.name,
-			});
+			// });
 		}
 
 		// 2. Skip credit deduction if bypassing credits
@@ -253,21 +254,21 @@ export async function recordApiUsage(
 										p_amount: cost,
 										p_feature: feature || "unknown",
 										p_request_id: requestId,
-									});
+									// });
 
 								if (adminDeductError) {
 									logger.error("Admin client credit deduction also failed", {
 										error: adminDeductError,
 										errorMessage: adminDeductError.message,
 										errorCode: adminDeductError.code,
-									});
+									// });
 								} else {
 									logger.info("Successfully deducted AI credits with admin client");
 								}
 							} catch (adminCreditError) {
 								logger.error("Error during admin client credit deduction", {
 									error: adminCreditError,
-								});
+								// });
 							}
 						}
 					} else {
@@ -284,7 +285,6 @@ export async function recordApiUsage(
 					stack: deductError instanceof Error ? deductError.stack : undefined,
 				});
 			}
-		}
 
 		return success;
 	} catch (error) {
@@ -417,7 +417,7 @@ export async function calculateCost(
 			p_model: model,
 			p_prompt_tokens: promptTokens,
 			p_completion_tokens: completionTokens,
-		});
+		// });
 
 		if (error) {
 			logger.error("Error calculating AI cost", { error });
@@ -540,7 +540,7 @@ export async function checkUsageLimits(
 				p_entity_id: entityId,
 				p_cost: 0, // We're just checking if any limits are already exceeded
 				p_tokens: 0,
-			});
+			// });
 
 			if (error) {
 				logger.error("Error checking usage limits", { error });

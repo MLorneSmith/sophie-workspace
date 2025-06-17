@@ -1,8 +1,8 @@
+import { createServiceLogger } from "@kit/shared/logger";
 import { OpenAI } from "openai";
 import { z } from "zod";
-
+import { ConfigManager, loadTemplate, mergeWithUseCase, normalizeConfig, overrideWithPortkey } from "./configs/config-manager";
 import type { Config } from "./configs/types";
-import { ConfigManager, loadTemplate, mergeWithUseCase, overrideWithPortkey, normalizeConfig } from "./configs/config-manager";
 import { createGatewayClient } from "./enhanced-gateway-client";
 import { PromptManager } from "./prompts/prompt-manager";
 import { initializeAiGatewayDatabase } from "./utils/db-init";
@@ -14,7 +14,6 @@ import {
 	extractCostFromHeaders,
 	recordApiUsage,
 } from "./utils/usage-tracking";
-import { createServiceLogger } from "@kit/shared/logger";
 
 // Initialize service logger
 const { getLogger } = createServiceLogger("AI-GATEWAY");
@@ -355,7 +354,7 @@ export async function getChatCompletion(
 						feature,
 						sessionId,
 						bypassCredits: bypassCreditsFlag, // Use environment variable instead of hardcoding
-					});
+					// });
 				} catch (usageError) {
 					(await getLogger()).error("Error recording API usage:", { data: usageError });
 					// Continue without failing - usage tracking is secondary to the main functionality
@@ -394,7 +393,7 @@ export async function getChatCompletion(
 				message: error.message,
 				code: error.code,
 				type: error.type,
-			});
+			// });
 		} else {
 			(await getLogger()).error("Error in getChatCompletion:", { data: error });
 		}
@@ -628,7 +627,7 @@ export async function* getStreamingChatCompletion(
 					feature,
 					sessionId,
 					bypassCredits: bypassCreditsFlag, // Use environment variable instead of hardcoding
-				});
+				// });
 			} catch (error) {
 				(await getLogger()).error("Error recording usage data:", { data: error });
 				// Continue without failing the response delivery
@@ -645,7 +644,7 @@ export async function* getStreamingChatCompletion(
 				message: error.message,
 				code: error.code,
 				type: error.type,
-			});
+			// });
 		} else {
 			(await getLogger()).error("Error in getStreamingChatCompletion:", { data: error });
 		}

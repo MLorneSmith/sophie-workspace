@@ -92,7 +92,7 @@ export class TeamAccountsApi {
 	async getAccountWorkspace(slug: string) {
 		const accountPromise = this.client.rpc("team_account_workspace", {
 			account_slug: slug,
-		});
+		// });
 
 		const accountsPromise = this.client.from("user_accounts").select("*");
 
@@ -146,7 +146,7 @@ export class TeamAccountsApi {
 			account_id: params.accountId,
 			user_id: params.userId,
 			permission_name: params.permission,
-		});
+		// });
 
 		if (error) {
 			throw error;
@@ -166,7 +166,7 @@ export class TeamAccountsApi {
 			.select("*", {
 				head: true,
 				count: "exact",
-			})
+			// })
 			.eq("account_id", accountId);
 
 		if (error) {

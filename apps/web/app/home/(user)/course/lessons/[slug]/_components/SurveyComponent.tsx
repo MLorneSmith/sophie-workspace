@@ -1,5 +1,7 @@
 "use client";
 
+
+import { createServiceLogger } from "@kit/shared/logger";
 import { useSupabase } from "@kit/supabase/hooks/use-supabase";
 import { Card } from "@kit/ui/card";
 import { Progress } from "@kit/ui/progress";
@@ -7,11 +9,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState, useTransition } from "react";
 import { toast } from "sonner";
 import type { Database } from "~/lib/database.types";
-
 import { saveResponseAction } from "../../../../assessment/_lib/server/server-actions";
 import { QuestionCard } from "../../../../assessment/survey/_components/question-card";
-
-import { createServiceLogger } from "@kit/shared/logger";
 
 // Initialize service logger
 const { getLogger } = createServiceLogger("HOME-(USER)");
@@ -145,7 +144,7 @@ export function SurveyComponent({
 			}
 		},
 		enabled: !!survey,
-	});
+	// });
 
 	// Set questions when data is loaded
 	useEffect(() => {
@@ -226,15 +225,15 @@ export function SurveyComponent({
 
 			// TODO: Async logger needed
 		// (await getLogger()).info(
-				`Survey ${survey?.id} (${survey?.title || survey?.slug}): Processed ${sortedQuestions.length} questions`,
-			);
+		// `Survey ${survey?.id} (${survey?.title || survey?.slug}): Processed ${sortedQuestions.length} questions`,
+		// );
 
 			// Log each question for debugging
 			for (const [index, q] of sortedQuestions.entries()) {
 				// TODO: Async logger needed
 		// (await getLogger()).info(
-					`Question ${index + 1}: ${q.text} (ID: ${q.id}), Type: ${q.type}, Options: ${q.options.length}`,
-				);
+		// `Question ${index + 1}: ${q.text} (ID: ${q.id}), Type: ${q.type}, Options: ${q.options.length}`,
+		// );
 			}
 
 			setQuestions(sortedQuestions);
@@ -341,7 +340,7 @@ export function SurveyComponent({
 					category,
 					score,
 					totalQuestions: questions.length,
-				});
+				// });
 
 				// Move to the next question or complete the survey
 				if (isLastQuestion) {

@@ -24,7 +24,7 @@ export function useUnlinkUserIdentity() {
 			// Invalidate and refetch user identities
 			return queryClient.invalidateQueries({
 				queryKey: USER_IDENTITIES_QUERY_KEY,
-			});
+			// });
 		},
 	});
 }

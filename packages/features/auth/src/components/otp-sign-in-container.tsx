@@ -1,7 +1,6 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useSignInWithOtp } from "@kit/supabase/hooks/use-sign-in-with-otp";
 import { useVerifyOtp } from "@kit/supabase/hooks/use-verify-otp";
 import { Button } from "@kit/ui/button";
 import {
@@ -25,7 +24,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
-import { useCaptchaToken } from "../captcha/client";
 import { useLastAuthMethod } from "../hooks/use-last-auth-method";
 import { AuthErrorAlert } from "./auth-error-alert";
 
@@ -55,7 +53,7 @@ export function OtpSignInContainer(props: OtpSignInContainerProps) {
 	const email = useWatch({
 		control: otpForm.control,
 		name: "email",
-	});
+	// });
 
 	const isEmailStep = !email;
 
@@ -105,7 +103,7 @@ export function OtpSignInContainer(props: OtpSignInContainerProps) {
 				onSendOtp={(email) => {
 					otpForm.setValue("email", email, {
 						shouldValidate: true,
-					});
+					// });
 				}}
 			/>
 		);

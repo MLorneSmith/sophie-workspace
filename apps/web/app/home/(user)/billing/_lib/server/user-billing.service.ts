@@ -90,7 +90,7 @@ class UserBillingService {
 				plan,
 				variantQuantities: [],
 				enableDiscountField: product.enableDiscountField,
-			});
+			// });
 
 			logger.info(
 				{

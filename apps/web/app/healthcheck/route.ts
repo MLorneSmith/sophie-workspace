@@ -27,7 +27,7 @@ async function getSupabaseHealthCheck() {
 
 		const { error } = await client.rpc("is_set", {
 			field_name: "billing_provider",
-		});
+		// });
 
 		return !error;
 	} catch {

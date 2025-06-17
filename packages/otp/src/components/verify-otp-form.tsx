@@ -27,11 +27,6 @@ import { z } from "zod";
 
 import { sendOtpEmailAction } from "../server/server-actions";
 
-import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("VERIFY_OTP_FORM");
-
 // Email form schema
 const SendOtpSchema = z.object({
 	email: z.string().email({ message: "Please enter a valid email address" }),
@@ -107,7 +102,7 @@ export function VerifyOtpForm({
 				setError("An unexpected error occurred. Please try again.");
 				// TODO: Async logger needed
 		// (await getLogger()).error("Error sending OTP:", { data: err });
-			}
+		// }
 		});
 	};
 

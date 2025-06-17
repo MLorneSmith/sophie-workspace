@@ -36,7 +36,7 @@ export async function createTestimonialsRouteHandler(request: NextRequest) {
 		.from("testimonials")
 		.select("*", {
 			count: "estimated",
-		})
+		// })
 		.gte("rating", minRating)
 		.eq("status", "approved")
 		.order("created_at", { ascending: false })

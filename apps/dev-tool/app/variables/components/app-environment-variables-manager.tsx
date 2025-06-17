@@ -1,5 +1,7 @@
 "use client";
 
+
+import { createServiceLogger } from "@kit/shared/logger";
 import { Alert, AlertDescription, AlertTitle } from "@kit/ui/alert";
 import { Badge } from "@kit/ui/badge";
 import { Button } from "@kit/ui/button";
@@ -36,11 +38,8 @@ import { debounceTime, Subject } from "rxjs";
 import { envVariables } from "@/app/variables/lib/env-variables-model";
 import { updateEnvironmentVariableAction } from "@/app/variables/lib/server-actions";
 import { EnvModeSelector } from "@/components/env-mode-selector";
-
 import type { AppEnvState, EnvVariableState } from "../lib/types";
 import { DynamicFormInput } from "./dynamic-form-input";
-
-import { createServiceLogger } from "@kit/shared/logger";
 
 // Initialize service logger
 const { getLogger } = createServiceLogger("APP_ENVIRONMENT_VARIABLES_MANAGER");

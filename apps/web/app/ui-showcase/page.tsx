@@ -72,9 +72,6 @@ import { Textarea } from "@kit/ui/textarea";
 import { Trans } from "@kit/ui/trans";
 import { ArrowRightIcon } from "lucide-react";
 import Link from "next/link";
-
-import type { UserWorkspace } from "../home/(user)/_lib/server/load-user-workspace";
-
 /**
  * UI Components Showcase Page
  *
@@ -94,11 +91,9 @@ import type { UserWorkspace } from "../home/(user)/_lib/server/load-user-workspa
  * - Colors: Color palette showcase
  * - Typography: Text styles and headings
  */
-import { useEffect, useState, useId } from "react";
-
+import { useEffect, useId, useState } from "react";
 // App Components
 import { AppLogo } from "~/components/app-logo";
-
 import { SiteFooter } from "../(marketing)/_components/site-footer";
 // Site Navigation Components
 import { SiteNavigation } from "../(marketing)/_components/site-navigation";
@@ -117,6 +112,7 @@ import { HomeMenuNavigation } from "../home/(user)/_components/home-menu-navigat
 import { HomeLayoutPageHeader } from "../home/(user)/_components/home-page-header";
 // Home Components
 import { HomeSidebar } from "../home/(user)/_components/home-sidebar";
+import type { UserWorkspace } from "../home/(user)/_lib/server/load-user-workspace";
 
 /**
  * Type definitions for navigation items to ensure type safety

@@ -2,13 +2,7 @@ import "server-only";
 
 import type { BillingStrategyProviderService } from "@kit/billing";
 import type {
-	CancelSubscriptionParamsSchema,
 	CreateBillingCheckoutSchema,
-	CreateBillingPortalSessionSchema,
-	QueryBillingUsageSchema,
-	ReportBillingUsageSchema,
-	RetrieveCheckoutSessionSchema,
-	UpdateSubscriptionParamsSchema,
 } from "@kit/billing/schema";
 import { getLogger } from "@kit/shared/logger";
 import {
@@ -61,7 +55,7 @@ export class LemonSqueezyBillingStrategyService
 			logger.error({ ...ctx, error: error?.message, message: "Failed to create checkout session" });
 
 			throw new Error("Failed to create checkout session");
-		}
+		// }
 
 		logger.info(ctx, { data: "Checkout session created successfully" });
 
@@ -135,7 +129,7 @@ export class LemonSqueezyBillingStrategyService
 					...ctx,
 					error: (error as Error)?.message,
 				message: "Failed to cancel subscription. It may have already been cancelled on the user's end."
-			});
+			// });
 
 			return { success: false };
 		}
@@ -199,7 +193,7 @@ export class LemonSqueezyBillingStrategyService
 			quantity: params.usage.quantity,
 			subscriptionItemId: params.id,
 			action: params.usage.action,
-		});
+		// });
 
 		if (error) {
 			logger.error({ ...ctx, error, message: "Failed to report usage" });
@@ -219,7 +213,7 @@ export class LemonSqueezyBillingStrategyService
 	 */
 	async queryUsage(
 		params: z.infer<typeof QueryBillingUsageSchema>,
-	): Promise<{ value: number }> {
+	): Promise<value: number > {
 		const logger = await getLogger();
 
 		const ctx = {
@@ -240,7 +234,7 @@ export class LemonSqueezyBillingStrategyService
 				subscriptionItemId: params.id,
 			},
 			page: params.filter,
-		});
+		// });
 
 		if (records.error) {
 			logger.error({ ...ctx, error: records.error, message: "Failed to query usage" });
@@ -283,7 +277,7 @@ export class LemonSqueezyBillingStrategyService
 
 		const { error } = await updateSubscriptionItem(params.subscriptionItemId, {
 			quantity: params.quantity,
-		});
+		// });
 
 		if (error) {
 			logger.error({ ...ctx, error, message: "Failed to update subscription" });
@@ -369,7 +363,7 @@ export class LemonSqueezyBillingStrategyService
 			cancelAtPeriodEnd: subscription.cancelled,
 			trialStartsAt: trialEndsAt ? new Date(createdAt).getTime() : null,
 			trialEndsAt: trialEndsAt ? new Date(trialEndsAt).getTime() : null,
-		});
+		// });
 	}
 
 	/**

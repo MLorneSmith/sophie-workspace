@@ -28,7 +28,7 @@ export const LineItemSchema = z
 		name: z
 			.string({
 				description: "Name of the line item. Displayed to the user.",
-			})
+			// })
 			.min(1),
 		description: z
 			.string({
@@ -40,7 +40,7 @@ export const LineItemSchema = z
 		cost: z
 			.number({
 				description: "Cost of the line item. Displayed to the user.",
-			})
+			// })
 			.min(0),
 		type: LineItemTypeSchema,
 		unit: z
@@ -94,12 +94,12 @@ export const PlanSchema = z
 		id: z
 			.string({
 				description: "Unique identifier for the plan. Defined by yourself.",
-			})
+			// })
 			.min(1),
 		name: z
 			.string({
 				description: "Name of the plan. Displayed to the user.",
-			})
+			// })
 			.min(1),
 		interval: BillingIntervalSchema.optional(),
 		custom: z.boolean().default(false).optional(),
@@ -131,7 +131,7 @@ export const PlanSchema = z
 			.positive()
 			.optional(),
 		paymentType: PaymentTypeSchema,
-	})
+	// })
 	.refine(
 		(data) => {
 			if (data.custom) {
@@ -217,17 +217,17 @@ const ProductSchema = z
 		name: z
 			.string({
 				description: "Name of the product. Displayed to the user.",
-			})
+			// })
 			.min(1),
 		description: z
 			.string({
 				description: "Description of the product. Displayed to the user.",
-			})
+			// })
 			.min(1),
 		currency: z
 			.string({
 				description: "Currency code for the product. Displayed to the user.",
-			})
+			// })
 			.min(3)
 			.max(3),
 		badge: z
@@ -246,24 +246,24 @@ const ProductSchema = z
 		enableDiscountField: z
 			.boolean({
 				description: "Enable discount field for the product in the checkout.",
-			})
+			// })
 			.optional(),
 		highlighted: z
 			.boolean({
 				description: "Highlight this product. Displayed to the user.",
-			})
+			// })
 			.optional(),
 		hidden: z
 			.boolean({
 				description: "Hide this product from being displayed to users.",
-			})
+			// })
 			.optional(),
 		plans: z.array(PlanSchema),
-	})
+	// })
 	.refine((data) => data.plans.length > 0, {
 		message: "Products must have at least one plan",
 		path: ["plans"],
-	})
+	// })
 	.refine(
 		(item) => {
 			const planIds = item.plans.map((plan) => plan.id);
@@ -280,7 +280,7 @@ const BillingSchema = z
 	.object({
 		provider: BillingProviderSchema,
 		products: z.array(ProductSchema).nonempty(),
-	})
+	// })
 	.refine(
 		(data) => {
 			const ids = data.products.flatMap((product) =>

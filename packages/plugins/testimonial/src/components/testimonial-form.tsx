@@ -17,23 +17,17 @@ import { Input } from "@kit/ui/input";
 import { Textarea } from "@kit/ui/textarea";
 import { Trans } from "@kit/ui/trans";
 import { cn } from "@kit/ui/utils";
-import { useMutation } from "@tanstack/react-query";
 import { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
 
 import {
 	TextTestimonialFormSchema,
-	VideoTestimonialSchema,
+	type VideoTestimonialSchema,
 } from "../schema/create-testimonial.schema";
 import { createTestimonialAction } from "../server/server-actions";
 import { StarRating } from "./star-rating";
 import { VideoRecorder } from "./video-recorder";
-
-import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("TESTIMONIAL_FORM");
 
 type TextTestimonialFormData = z.infer<typeof TextTestimonialFormSchema>;
 type VideoTestimonialFormData = z.infer<typeof VideoTestimonialSchema>;
@@ -77,7 +71,7 @@ export function TestimonialForm(props: TestimonialFormProps) {
 			} catch (error) {
 				// TODO: Async logger needed
 		// (await getLogger()).error("Error submitting testimonial:", { data: error });
-			}
+		// }
 		});
 	}
 
@@ -146,7 +140,7 @@ export function TestimonialForm(props: TestimonialFormProps) {
 									onRatingChange={(value) => {
 										form.setValue(field.name, value, {
 											shouldValidate: true,
-										});
+										// });
 									}}
 								/>
 							</FormControl>
@@ -276,7 +270,7 @@ export function VideoTestimonialForm(props: VideoTestimonialFormProps) {
 									onRatingChange={(value) => {
 										form.setValue(field.name, value, {
 											shouldValidate: true,
-										});
+										// });
 									}}
 								/>
 							</FormControl>
@@ -294,7 +288,7 @@ export function VideoTestimonialForm(props: VideoTestimonialFormProps) {
 										onVideoRecorded={(video) => {
 											form.setValue(field.name, video as unknown as string, {
 												shouldValidate: true,
-											});
+											// });
 										}}
 										maxRecordingTime={props.maxRecordingTime}
 									/>
@@ -334,7 +328,7 @@ function useInsertVideoTestimonialMutation() {
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify(body),
-		});
+		// });
 
 		if (!response.ok) {
 			throw new Error("Failed to submit video testimonial");

@@ -284,8 +284,10 @@ export class PptxGenerator {
 			// Use an explicit object parameter with outputType to satisfy TypeScript
 			return this.pptx.write({ outputType: "nodebuffer" }) as Promise<Buffer>;
 		} catch (error: unknown) {
+			const errorMessage =
+				error instanceof Error ? error.message : String(error);
 			this.logger.error(error, { data: "Error generating PowerPoint:" });
-			throw new Error(`Failed to generate PowerPoint file: ${error.message}`);
+			throw new Error(`Failed to generate PowerPoint file: ${errorMessage}`);
 		}
 	}
 
@@ -535,7 +537,7 @@ export class PptxGenerator {
 
 						// Add error text instead of failing completely
 						slide.addText(
-							`Chart could not be rendered (${content.chartType}). Error: ${error.message}`,
+							`Chart could not be rendered (${content.chartType}). Error: ${errorMessage}`,
 							{
 								x: position.x,
 								y: position.y,
@@ -570,18 +572,15 @@ export class PptxGenerator {
 						});
 
 						// Add error text instead of failing completely
-						slide.addText(
-							`Image could not be loaded. Error: ${error.message}`,
-							{
-								x: position.x,
-								y: position.y,
-								w: position.w,
-								h: position.h,
-								fontSize: 12,
-								fontFace: "Arial",
-								color: "FF0000",
-							},
-						);
+						slide.addText(`Image could not be loaded. Error: ${errorMessage}`, {
+							x: position.x,
+							y: position.y,
+							w: position.w,
+							h: position.h,
+							fontSize: 12,
+							fontFace: "Arial",
+							color: "FF0000",
+						});
 					}
 				}
 				break;
@@ -608,8 +607,10 @@ export class PptxGenerator {
 						this.logger.error(error, { data: "Error adding table to slide:" });
 
 						// Add error text instead of failing completely
+						const errorMessage =
+							error instanceof Error ? error.message : String(error);
 						slide.addText(
-							`Table could not be rendered. Error: ${error.message}`,
+							`Table could not be rendered. Error: ${errorMessage}`,
 							{
 								x: position.x,
 								y: position.y,

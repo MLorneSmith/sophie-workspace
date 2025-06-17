@@ -64,7 +64,7 @@ describe("updateBuildingBlockTitleAction", () => {
 			const result = await updateBuildingBlockTitleAction({
 				id: "",
 				title: "",
-			});
+			// });
 			expect(result).toEqual({ success: true });
 		});
 
@@ -79,7 +79,7 @@ describe("updateBuildingBlockTitleAction", () => {
 			const result = await updateBuildingBlockTitleAction({
 				id: 123 as unknown,
 				title: null as unknown,
-			});
+			// });
 
 			expect(result).toEqual({ error: "Validation failed" });
 		});
@@ -125,7 +125,7 @@ describe("updateBuildingBlockTitleAction", () => {
 			expect(result).toEqual({ success: true });
 			expect(mockUpdate).toHaveBeenCalledWith({
 				title: "Title with émojis 🎉 & symbols!",
-			});
+			// });
 		});
 
 		it("should handle long titles", async () => {

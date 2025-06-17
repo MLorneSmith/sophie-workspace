@@ -50,7 +50,9 @@ function checkMakerkitVersion() {
 		);
 	} else {
 		// Success version status output
-		process.stdout.write("\x1b[32m✅ Your Makerkit version is up to date!\x1b[0m\n");
+		process.stdout.write(
+			"\x1b[32m✅ Your Makerkit version is up to date!\x1b[0m\n",
+		);
 	}
 
 	if (count > 0) {
@@ -70,7 +72,9 @@ function logInstructions(count) {
 	);
 
 	// Update instructions output
-	process.stdout.write("\x1b[36mTo update, run: git pull upstream main\x1b[0m\n");
+	process.stdout.write(
+		"\x1b[36mTo update, run: git pull upstream main\x1b[0m\n",
+	);
 }
 
 function getSeveriyLevel(count) {

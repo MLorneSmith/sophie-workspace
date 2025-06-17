@@ -38,7 +38,9 @@ export function checkPendingMigrations() {
 				'\nAfter testing the migrations in your local environment and ideally in a staging environment, please run "pnpm --filter web supabase db push" to apply them to your database. If you have any questions, please open a support ticket.\n',
 			);
 		} else {
-			process.stdout.write("\x1b[32m✅ All migrations are up to date.\x1b[0m\n");
+			process.stdout.write(
+				"\x1b[32m✅ All migrations are up to date.\x1b[0m\n",
+			);
 		}
 	} catch (_error) {
 		process.stdout.write(

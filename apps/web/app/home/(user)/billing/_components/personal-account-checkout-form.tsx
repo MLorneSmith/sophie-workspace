@@ -87,7 +87,7 @@ export function PersonalAccountCheckoutForm(props: {
 									appEvents.emit({
 										type: "checkout.started",
 										payload: { planId },
-									});
+									// });
 
 									const { checkoutToken } =
 										await createPersonalAccountCheckoutSession({

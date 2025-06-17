@@ -6,7 +6,6 @@ import {
 	getPlanIntervals,
 	getPrimaryLineItem,
 	getProductPlanPair,
-	type LineItemSchema,
 } from "@kit/billing";
 import { Badge } from "@kit/ui/badge";
 import { Button } from "@kit/ui/button";
@@ -61,7 +60,7 @@ export function PlanPicker(
 					planId: z.string(),
 					productId: z.string(),
 					interval: z.string().optional(),
-				})
+				// })
 				.refine(
 					(data) => {
 						try {
@@ -88,7 +87,7 @@ export function PlanPicker(
 	const selectedInterval = useWatch({
 		name: "interval",
 		control: form.control,
-	});
+	// });
 
 	const planId = form.getValues("planId");
 
@@ -161,7 +160,7 @@ export function PlanPicker(
 																		onClick={() => {
 																			form.setValue("interval", interval, {
 																				shouldValidate: true,
-																			});
+																			// });
 
 																			if (selectedProduct) {
 																				const plan = selectedProduct.plans.find(
@@ -257,11 +256,11 @@ export function PlanPicker(
 
 															form.setValue("planId", planId, {
 																shouldValidate: true,
-															});
+															// });
 
 															form.setValue("productId", product.id, {
 																shouldValidate: true,
-															});
+															// });
 														}}
 													/>
 

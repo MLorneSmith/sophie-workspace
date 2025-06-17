@@ -10,10 +10,6 @@ import * as React from "react";
 import { useError } from "../error/ErrorContext";
 import { isAuthError, isConnectionError } from "../lib/error-utils";
 
-import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("HOME-(USER)");
 
 const ERROR_MESSAGES = {
 	AUTH_ERROR: "Your session has expired. Please refresh and try again.",
@@ -95,10 +91,11 @@ export class SetupFormErrorBoundary extends React.Component<Props, State> {
 	componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
 		// Log error
 		// TODO: Async logger needed
+		// TODO: Async logger needed
 		// (await getLogger()).error(
-			"SetupFormErrorBoundary caught an error:",
-			{ arg1: error, arg2: errorInfo },
-		);
+		// 	"SetupFormErrorBoundary caught an error:",
+		// 	{ arg1: error, arg2: errorInfo }
+		// );
 
 		// Call onError prop if provided
 		this.props.onError?.(error, errorInfo);
@@ -162,13 +159,13 @@ export class SetupFormErrorBoundary extends React.Component<Props, State> {
 				hasError: false,
 				error: null,
 				isRecovering: false,
-			});
+			// });
 		} catch (error) {
 			this.setState({
 				hasError: true,
 				error: error as Error,
 				isRecovering: false,
-			});
+			// });
 		}
 	};
 
@@ -186,7 +183,7 @@ export class SetupFormErrorBoundary extends React.Component<Props, State> {
 		return this.state.error.message || ERROR_MESSAGES.INVALID_STATE;
 	};
 
-	render() {
+	render() 
 		// Render error handler if there's an error
 		if (this.state.error) {
 			return (
@@ -202,7 +199,6 @@ export class SetupFormErrorBoundary extends React.Component<Props, State> {
 		}
 
 		return this.props.children;
-	}
 
 	private renderErrorContent() {
 		const componentName = this.props._componentName || "setup-form";

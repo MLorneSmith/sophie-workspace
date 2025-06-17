@@ -56,7 +56,7 @@ export function UpdateEmailForm({
 			success: t("updateEmailSuccess"),
 			loading: t("updateEmailLoading"),
 			error: t("updateEmailError"),
-		});
+		// });
 	};
 
 	const currentEmail = user.email;

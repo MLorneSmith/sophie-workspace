@@ -68,7 +68,9 @@ class DatabaseWebhookHandlerService {
 
 			// if a custom handler is provided, call it
 			if (params?.handleEvent) {
-				await params.handleEvent(params.body as DatabaseChangePayload<keyof Tables>);
+				await params.handleEvent(
+					params.body as DatabaseChangePayload<keyof Tables>,
+				);
 			}
 
 			logger.info(ctx, "Webhook processed successfully");

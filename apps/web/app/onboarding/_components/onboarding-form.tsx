@@ -36,11 +36,6 @@ import type { z } from "zod";
 import { FormSchemaShape } from "../_lib/onboarding-form.schema";
 import { submitOnboardingFormAction } from "../_lib/server/server-actions";
 
-import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("ONBOARDING");
-
 // Create the client-side schema using createStepSchema
 const FormSchema = createStepSchema(FormSchemaShape);
 
@@ -90,7 +85,7 @@ export function OnboardingForm() {
 			theme: { style: "light" },
 		},
 		mode: "onChange",
-	});
+	// });
 
 	// Helper function to flatten form data for analytics
 	const flattenFormData = useCallback(
@@ -127,7 +122,7 @@ export function OnboardingForm() {
 				const result = await submitOnboardingFormAction({
 					...data,
 					isFinalSubmission: true,
-				});
+				// });
 
 				if (result.success) {
 					localStorage.removeItem(STORAGE_KEY);
@@ -141,7 +136,7 @@ export function OnboardingForm() {
 				// TODO: Fix logger call - was: error
 				analytics.trackEvent("onboarding_error", {
 					error: "Form submission failed",
-				});
+				// });
 			} finally {
 				setIsSubmitting(false);
 			}
@@ -305,13 +300,13 @@ function ProfileStep() {
 		control: form.control,
 		name: "profile.name",
 		defaultValue: "",
-	});
+	// });
 
 	const handleContinue = (e: React.SyntheticEvent) => {
 		e.preventDefault();
 		analytics.trackEvent("onboarding_profile_completed", {
 			name: form.getValues().profile.name,
-		});
+		// });
 		nextStep(e);
 	};
 
@@ -620,7 +615,7 @@ function ThemeStep() {
 		e.preventDefault();
 		analytics.trackEvent("onboarding_theme_completed", {
 			theme: form.getValues().theme.style,
-		});
+		// });
 		nextStep(e);
 	};
 

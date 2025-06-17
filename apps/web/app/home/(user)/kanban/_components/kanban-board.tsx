@@ -39,10 +39,6 @@ import { Column } from "./column";
 import { TaskCard } from "./task-card";
 import { TaskDialog } from "./task-dialog";
 
-import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("HOME-(USER)");
 
 const COLUMNS = [
 	{ id: "do", title: "To Do" },
@@ -92,13 +88,14 @@ export function KanbanBoard() {
 						await updateStatus.mutateAsync({
 							id: activeTask.id,
 							status: overId as TaskStatus,
-						});
+						// });
 					} catch (error) {
 						// TODO: Async logger needed
+		// TODO: Async logger needed
 		// (await getLogger()).error(
-							"Failed to update task status:",
-							{ data: error },
-						);
+		// 	"Failed to update task status:",
+		// 	{ data: error }
+		// );
 					} finally {
 						setUpdatingTaskId(null);
 					}

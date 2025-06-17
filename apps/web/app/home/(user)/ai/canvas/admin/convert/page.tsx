@@ -7,10 +7,6 @@ import { useState } from "react";
 
 import { convertExistingRecordsToTiptap } from "../../_actions/convert-editor-data";
 
-import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("HOME-(USER)");
 
 export default function ConvertEditorDataPage() {
 	const [isConverting, setIsConverting] = useState(false);
@@ -28,8 +24,8 @@ export default function ConvertEditorDataPage() {
 		} catch (err) {
 			// TODO: Async logger needed
 		// (await getLogger()).error("Error converting data:", {
-				data: err,
-			});
+		// data: err,
+		// });
 			setError(err instanceof Error ? err.message : "Unknown error occurred");
 		} finally 
 			setIsConverting(false);

@@ -17,10 +17,6 @@ import { enhanceAction } from "@kit/next/actions";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
 import { z } from "zod";
 
-import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("HOME-(USER)");
 
 // Define Zod schema for request validation
 const ImprovementsSchema = z.object({
@@ -52,17 +48,17 @@ export const generateImprovementsAction = enhanceAction(
 			// Debug log the request
 			// TODO: Async logger needed
 		// (await getLogger()).info("Improvements Request:", {
-				contentLength: data.content.length,
+		// contentLength: data.content.length,
 				userId: user.id,
 				submissionId: data.submissionId,
 				type: data.type,
-			});
+			// });
 
 			// Create and normalize config
 			const config = createBalancedOptimizedConfig({
 				userId: user.id,
 				context: `${data.type}-improvements`,
-			});
+			// });
 			const normalizedConfig = ConfigManager.normalizeConfig(config);
 
 			if (!normalizedConfig) {
@@ -106,10 +102,10 @@ ${improvementFormat}`,
 			// Log metrics
 			// TODO: Async logger needed
 		// (await getLogger()).info("AI Request Metrics:", {
-				duration,
+		// duration,
 				userId: user.id,
 				status: "success",
-			});
+			// });
 
 			// Parse the response using our utility
 			const improvements = parseImprovements(response.content, data.type);
@@ -117,8 +113,8 @@ ${improvementFormat}`,
 			// Debug log the parsed improvements
 			// TODO: Async logger needed
 		// (await getLogger()).info("Parsed Improvements:", {
-				data: improvements,
-			});
+		// data: improvements,
+		// });
 
 			return {
 				success: true,
@@ -126,10 +122,11 @@ ${improvementFormat}`,
 			};
 		} catch (error) {
 			// TODO: Async logger needed
+		// TODO: Async logger needed
 		// (await getLogger()).error(
-				"Error in improvements action:",
-				{ data: error },
-			);
+		// 	"Error in improvements action:",
+		// 	{ data: error }
+		// );
 
 			return {
 				success: false,

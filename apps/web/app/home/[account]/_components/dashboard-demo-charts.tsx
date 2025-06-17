@@ -24,7 +24,7 @@ import {
 	TableRow,
 } from "@kit/ui/table";
 import { ArrowDown, ArrowUp, Menu, TrendingUp } from "lucide-react";
-import { useMemo, useState, useId } from "react";
+import { useId, useMemo, useState } from "react";
 import {
 	Area,
 	AreaChart,
@@ -163,7 +163,7 @@ function generateDemoData() {
 	const formatter = new Intl.DateTimeFormat("en-us", {
 		month: "long",
 		year: "2-digit",
-	});
+	// });
 
 	const data: { value: string; name: string }[] = [];
 
@@ -173,7 +173,7 @@ function generateDemoData() {
 		data.push({
 			name: formatter.format(date),
 			value: (Math.random() * 10).toFixed(1),
-		});
+		// });
 	}
 
 	const lastValue = data[data.length - 1]?.value;
@@ -879,7 +879,7 @@ export function PageViewsChart() {
 								return date.toLocaleDateString("en-US", {
 									month: "short",
 									day: "numeric",
-								});
+								// });
 							}}
 						/>
 						<ChartTooltip
@@ -892,7 +892,7 @@ export function PageViewsChart() {
 											month: "short",
 											day: "numeric",
 											year: "numeric",
-										});
+										// });
 									}}
 								/>
 							}

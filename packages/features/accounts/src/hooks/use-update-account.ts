@@ -12,7 +12,7 @@ export function useUpdateAccountData(accountId: string) {
 	const mutationFn = async (data: UpdateData) => {
 		const response = await client.from("accounts").update(data).match({
 			id: accountId,
-		});
+		// });
 
 		if (response.error) {
 			throw response.error;

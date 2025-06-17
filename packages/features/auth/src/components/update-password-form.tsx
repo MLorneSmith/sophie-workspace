@@ -15,7 +15,7 @@ import {
 import { Heading } from "@kit/ui/heading";
 import { Input } from "@kit/ui/input";
 import { Trans } from "@kit/ui/trans";
-import { CheckIcon, ExclamationTriangleIcon } from "@radix-ui/react-icons";
+import { CheckIcon, } from "@radix-ui/react-icons";
 import { ArrowRightIcon } from "lucide-react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
@@ -60,7 +60,7 @@ export function UpdatePasswordForm(params: { redirectTo: string }) {
 						return updateUser.mutateAsync({
 							password,
 							redirectTo: params.redirectTo,
-						});
+						// });
 					})}
 				>
 					<div className={"flex-col space-y-4"}>
@@ -150,7 +150,7 @@ function ErrorState(props: {
 
 	const errorMessage = t(`errors.${props.error.code}`, {
 		defaultValue: t("errors.resetPasswordError"),
-	});
+	// });
 
 	return (
 		<div className={"flex flex-col space-y-4"}>

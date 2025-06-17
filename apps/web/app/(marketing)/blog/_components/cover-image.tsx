@@ -3,14 +3,10 @@
 import { cn } from "@kit/ui/utils";
 import Image from "next/image";
 
-import { createServiceLogger } from "@kit/shared/logger";
 import {
 	getPostPlaceholderImage,
 	transformImageUrl,
 } from "~/lib/utils/image-utils";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("(MARKETING)");
 
 type Props = {
 	title: string;

@@ -18,11 +18,6 @@ import {
 
 import { i18nResolver } from "./i18n.resolver";
 
-import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("LIB-I18N");
-
 /**
  * @name priority
  * @description The language priority setting from the feature flag configuration.

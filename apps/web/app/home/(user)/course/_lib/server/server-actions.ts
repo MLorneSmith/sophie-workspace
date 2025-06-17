@@ -10,10 +10,6 @@ import {
 } from "~/lib/course/course-config";
 import type { Database } from "~/lib/database.types";
 
-import { createServiceLogger } from "@kit/shared/logger";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("HOME-(USER)");
 
 // Start or update course progress
 const UpdateCourseProgressSchema = z.object({
@@ -79,10 +75,11 @@ export const updateCourseProgressAction = enhanceAction(
 						updateData.certificate_generated = true;
 					} catch (error) {
 						// TODO: Async logger needed
+		// TODO: Async logger needed
 		// (await getLogger()).error(
-							"Failed to generate certificate:",
-							{ data: error },
-						);
+		// 	"Failed to generate certificate:",
+		// 	{ data: error }
+		// );
 						// Continue with the update even if certificate generation fails
 					}
 				}
@@ -102,15 +99,13 @@ export const updateCourseProgressAction = enhanceAction(
 				current_lesson_id: data.currentLessonId,
 				completion_percentage: data.completionPercentage || 0,
 				completed_at: data.completed ? now : null,
-			});
+			// });
 		}
 
 		return { success: true };
 	},
-	{
 		auth: true,
-		schema: UpdateCourseProgressSchema,
-	},
+		schema: UpdateCourseProgressSchema,,
 );
 
 // Update lesson progress
@@ -188,14 +183,15 @@ export const updateLessonProgressAction = enhanceAction(
 			if (lessonsData?.docs && lessonProgress) {
 				// Log the required lesson numbers for debugging
 				// TODO: Async logger needed
+		// TODO: Async logger needed
 		// (await getLogger()).info(
-					"Required lesson numbers:",
-					{ data: REQUIRED_LESSON_NUMBERS },
-				);
+		// 	"Required lesson numbers:",
+		// 	{ data: REQUIRED_LESSON_NUMBERS }
+		// );
 				// TODO: Async logger needed
 		// (await getLogger()).info("Total required lessons:", {
-					data: TOTAL_REQUIRED_LESSONS,
-				});
+		// data: TOTAL_REQUIRED_LESSONS,
+		// });
 
 				// Count completed lessons that are in the required list
 				const completedRequiredLessons = lessonProgress.filter((p) => {
@@ -214,8 +210,8 @@ export const updateLessonProgressAction = enhanceAction(
 					if (isCompleted) {
 						// TODO: Async logger needed
 		// (await getLogger()).info(
-							`Lesson ${lesson.lesson_number} (${lesson.title}) is completed`,
-						);
+		// `Lesson ${lesson.lesson_number} (${lesson.title}) is completed`,
+		// );
 					}
 
 					return isCompleted;
@@ -231,28 +227,26 @@ export const updateLessonProgressAction = enhanceAction(
 
 				// TODO: Async logger needed
 		// (await getLogger()).info(
-					`Course completion: ${completedRequiredLessons}/${TOTAL_REQUIRED_LESSONS} required lessons (${courseCompletionPercentage}%)`,
-				);
+		// `Course completion: ${completedRequiredLessons}/${TOTAL_REQUIRED_LESSONS} required lessons (${courseCompletionPercentage}%)`,
+		// );
 				// TODO: Async logger needed
 		// (await getLogger()).info(
-					`Course completed: ${isCompleted ? "Yes" : "No"}`,
-				);
+		// `Course completed: ${isCompleted ? "Yes" : "No"}`,
+		// );
 
 				// Update course progress with completion status
 				await updateCourseProgressAction({
 					courseId: data.courseId,
 					completionPercentage: courseCompletionPercentage,
 					completed: isCompleted,
-				});
+				// });
 			}
 		}
 
 		return { success: true };
 	},
-	{
 		auth: true,
-		schema: UpdateLessonProgressSchema,
-	},
+		schema: UpdateLessonProgressSchema,,
 );
 
 // Submit quiz attempt
@@ -296,7 +290,7 @@ export const submitQuizAttemptAction = enhanceAction(
 			score: data.score,
 			passed: data.passed,
 			answers: data.answers,
-		});
+		// });
 
 		// If passed, mark the lesson as completed
 		if (data.passed) {
@@ -305,7 +299,7 @@ export const submitQuizAttemptAction = enhanceAction(
 				lessonId: data.lessonId,
 				completed: true,
 				completionPercentage: 100,
-			});
+			// });
 		}
 
 		return { success: true };

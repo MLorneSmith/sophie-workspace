@@ -251,20 +251,19 @@ export class EnhancedLogger {
 					level,
 					message,
 					context: this.sanitizeData(context || {}),
-				});
+				// });
 			} else {
 				// Send warnings and other levels as events
 				this.monitoring.captureEvent(`${level.toUpperCase()}: ${message}`, {
 					service: this.config.serviceName,
 					level,
 					context: this.sanitizeData(context || {}),
-				});
+				// });
 			}
-		} catch (monitoringError) {
+		} catch (monitoringError) 
 			// Don't let monitoring failures break the application
 			// biome-ignore lint/suspicious/noConsole: Error handling for monitoring failures
 			console.error("Failed to send log to monitoring service:", monitoringError);
-		}
 	}
 
 	private sanitizeData(data: unknown): unknown {
@@ -277,7 +276,7 @@ export class EnhancedLogger {
 		return sanitized;
 	}
 
-	private sanitizeObject(obj: Record<string, unknown>): void {
+	private sanitizeObject(obj: Record<string, unknown>): void 
 		if (!obj || typeof obj !== "object") return;
 
 		for (const key of Object.keys(obj)) {
@@ -292,7 +291,6 @@ export class EnhancedLogger {
 				this.sanitizeObject(obj[key] as Record<string, unknown>);
 			}
 		}
-	}
 }
 
 // Child logger that inherits parent context

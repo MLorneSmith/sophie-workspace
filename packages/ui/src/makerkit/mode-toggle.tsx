@@ -35,7 +35,7 @@ export function ModeToggle(props: { className?: string }) {
 					key={mode}
 					onClick={() => {
 						setTheme(mode);
-						setCookie('theme', mode, { path: '/', maxAge: 31536000 });
+						setCookie("theme", mode, { path: "/", maxAge: 31536000 });
 					}}
 				>
 					<Icon theme={mode} />
@@ -79,7 +79,7 @@ export function SubMenuModeToggle() {
 						key={mode}
 						onClick={() => {
 							setTheme(mode);
-							setCookie('theme', mode, { path: '/', maxAge: 31536000 });
+							setCookie("theme", mode, { path: "/", maxAge: 31536000 });
 						}}
 					>
 						<Icon theme={mode} />
@@ -123,7 +123,6 @@ export function SubMenuModeToggle() {
 		</>
 	);
 }
-
 
 function Icon({ theme }: { theme: string | undefined }) {
 	switch (theme) {

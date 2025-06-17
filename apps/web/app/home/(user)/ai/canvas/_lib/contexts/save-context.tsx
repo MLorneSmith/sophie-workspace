@@ -1,5 +1,6 @@
 "use client";
 
+import { createServiceLogger } from "@kit/shared/logger";
 import {
 	createContext,
 	type ReactNode,
@@ -9,10 +10,7 @@ import {
 	useRef,
 	useState,
 } from "react";
-
 import { toast } from "sonner";
-
-import { createServiceLogger } from "@kit/shared/logger";
 
 // Initialize service logger
 const { getLogger } = createServiceLogger("HOME-(USER)");

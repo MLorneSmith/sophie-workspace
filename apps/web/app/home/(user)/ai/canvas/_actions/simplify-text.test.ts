@@ -83,7 +83,7 @@ describe("simplifyTextAction", () => {
 		vi.mocked(createReasoningOptimizedConfig).mockReturnValue({
 			model: "gpt-4",
 			temperature: 0.7,
-		});
+		// });
 
 		vi.mocked(PromptManager.compileTemplate).mockImplementation(
 			(template: string, variables: Record<string, unknown>) => {
@@ -204,7 +204,7 @@ describe("simplifyTextAction", () => {
 			expect(result).toEqual({
 				success: true,
 				response: createMockCompletionResult(mockResponse),
-			});
+			// });
 		});
 
 		it("should handle different section types", async () => {
@@ -259,7 +259,7 @@ describe("simplifyTextAction", () => {
 			expect(result).toEqual({
 				success: true,
 				response: createMockCompletionResult(expectedResponse),
-			});
+			// });
 
 			// Verify the AI was called with compiled messages and correct options
 			expect(getChatCompletion).toHaveBeenCalledWith(
@@ -387,7 +387,7 @@ describe("simplifyTextAction", () => {
 			expect(result).toEqual({
 				success: false,
 				error: "AI service unavailable",
-			});
+			// });
 		});
 
 		it("should handle prompt compilation failures", async () => {
@@ -411,7 +411,7 @@ describe("simplifyTextAction", () => {
 			expect(result).toEqual({
 				success: false,
 				error: "Template compilation failed",
-			});
+			// });
 		});
 
 		it("should handle config creation failures", async () => {
@@ -438,7 +438,7 @@ describe("simplifyTextAction", () => {
 			expect(result).toEqual({
 				success: false,
 				error: "Config creation failed",
-			});
+			// });
 		});
 
 		it("should handle unknown errors gracefully", async () => {
@@ -459,7 +459,7 @@ describe("simplifyTextAction", () => {
 			expect(result).toEqual({
 				success: false,
 				error: "An unknown error occurred",
-			});
+			// });
 		});
 	});
 

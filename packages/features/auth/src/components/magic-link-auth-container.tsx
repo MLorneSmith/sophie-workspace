@@ -90,7 +90,7 @@ export function MagicLinkAuthContainer({
 			loading: t("auth:sendingEmailLink"),
 			success: t("auth:sendLinkSuccessToast"),
 			error: t("auth:errors.link"),
-		});
+		// });
 
 		resetCaptchaToken();
 	};

@@ -2,8 +2,8 @@ import {
 	ConsoleMonitoringService,
 	type MonitoringService,
 } from "@kit/monitoring-core";
-import { createRegistry } from "@kit/shared/registry";
 import { createServiceLogger } from "@kit/shared/logger";
+import { createRegistry } from "@kit/shared/registry";
 import {
 	getMonitoringProvider,
 	type MonitoringProvider,
@@ -36,7 +36,9 @@ serverMonitoringRegistry.register("sentry", async () => {
 
 // Register the 'newrelic' monitoring service
 serverMonitoringRegistry.register("newrelic", async () => {
-	const { createNewRelicMonitoringService } = await import("@kit/monitoring-newrelic");
+	const { createNewRelicMonitoringService } = await import(
+		"@kit/monitoring-newrelic"
+	);
 
 	return createNewRelicMonitoringService();
 });

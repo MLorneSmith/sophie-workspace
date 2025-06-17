@@ -145,7 +145,7 @@ describe("CostTrackingContext", () => {
 			mockFetch.mockResolvedValueOnce({
 				ok: true,
 				json: async () => ({ success: true, cost: 0 }),
-			});
+			// });
 
 			// Act
 			render(
@@ -176,7 +176,7 @@ describe("CostTrackingContext", () => {
 			mockFetch.mockResolvedValueOnce({
 				ok: true,
 				json: async () => ({ success: true, cost: 15.75 }),
-			});
+			// });
 
 			// Act
 			render(
@@ -206,7 +206,7 @@ describe("CostTrackingContext", () => {
 			mockFetch.mockResolvedValueOnce({
 				ok: true,
 				json: async () => ({ success: true, cost: 0 }),
-			});
+			// });
 
 			// Act
 			render(
@@ -234,7 +234,7 @@ describe("CostTrackingContext", () => {
 			mockFetch.mockResolvedValueOnce({
 				ok: true,
 				json: async () => ({ success: true, cost: 5.25 }),
-			});
+			// });
 
 			// Act
 			render(
@@ -262,7 +262,7 @@ describe("CostTrackingContext", () => {
 			mockFetch.mockResolvedValueOnce({
 				ok: true,
 				json: async () => ({ success: true }), // No cost property
-			});
+			// });
 
 			// Act
 			render(
@@ -293,7 +293,7 @@ describe("CostTrackingContext", () => {
 			mockFetch.mockResolvedValueOnce({
 				ok: true,
 				json: async () => ({ success: false, error: "Database error" }),
-			});
+			// });
 
 			// Act
 			render(
@@ -396,7 +396,7 @@ describe("CostTrackingContext", () => {
 			mockFetch.mockResolvedValueOnce({
 				ok: true,
 				json: async () => ({ success: true, cost: 10 }),
-			});
+			// });
 
 			const { rerender } = render(
 				<TestWrapper>
@@ -422,7 +422,7 @@ describe("CostTrackingContext", () => {
 			mockFetch.mockResolvedValueOnce({
 				ok: true,
 				json: async () => ({ success: true, cost: 20 }),
-			});
+			// });
 
 			// Re-render with second user (this should trigger useEffect again)
 			rerender(
@@ -451,7 +451,7 @@ describe("CostTrackingContext", () => {
 			mockFetch.mockResolvedValueOnce({
 				ok: true,
 				json: async () => ({ success: true, cost: 10 }),
-			});
+			// });
 		});
 
 		it("increases session cost correctly", async () => {
@@ -481,7 +481,7 @@ describe("CostTrackingContext", () => {
 			mockFetch.mockResolvedValueOnce({
 				ok: true,
 				json: async () => ({ success: true, cost: 0 }),
-			});
+			// });
 
 			function TestComponentDecimal() {
 				const { sessionCost, addCost } = useCostTracking();
@@ -666,7 +666,7 @@ describe("CostTrackingContext", () => {
 			mockFetch.mockResolvedValueOnce({
 				ok: true,
 				json: async () => ({ success: true, cost: 15 }),
-			});
+			// });
 
 			// Act
 			render(
@@ -706,7 +706,7 @@ describe("CostTrackingContext", () => {
 			mockFetch.mockResolvedValueOnce({
 				ok: true,
 				json: async () => ({ success: true, cost: 5 }),
-			});
+			// });
 
 			render(
 				<TestWrapper>
@@ -740,7 +740,7 @@ describe("CostTrackingContext", () => {
 			mockFetch.mockResolvedValueOnce({
 				ok: true,
 				json: async () => ({ success: true, cost: 0 }),
-			});
+			// });
 
 			// Act - Initial render
 			render(
@@ -784,7 +784,7 @@ describe("CostTrackingContext", () => {
 			mockFetch.mockResolvedValueOnce({
 				ok: true,
 				json: async () => ({ success: true, cost: 10 }),
-			});
+			// });
 
 			function ComponentA() {
 				const { sessionCost, addCost } = useCostTracking();
@@ -863,7 +863,7 @@ describe("CostTrackingContext", () => {
 			mockFetch.mockResolvedValueOnce({
 				ok: true,
 				json: async () => ({ success: true, cost: 0 }),
-			});
+			// });
 
 			function TestComponentLarge() {
 				const { sessionCost, addCost } = useCostTracking();

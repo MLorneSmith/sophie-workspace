@@ -27,7 +27,7 @@ export const FormSchemaShape = {
 					learn: z.boolean(),
 					automate: z.boolean(),
 					feedback: z.boolean(),
-				})
+				// })
 				.refine(hasAtLeastOneSecondaryGoal, {
 					message: "Please select at least one goal",
 					path: ["learn"], // This will show the error on the first checkbox

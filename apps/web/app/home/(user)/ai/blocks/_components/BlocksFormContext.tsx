@@ -1,9 +1,9 @@
 "use client";
 
-import type React from "react";
-import { createContext, useContext, useEffect, useState } from "react";
 
 import { createServiceLogger } from "@kit/shared/logger";
+import type React from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import {
 	getPath,
 	type PresentationPathType,
@@ -47,7 +47,7 @@ export function SetupFormProvider({ children }: { children: React.ReactNode }) {
 		situation: "",
 		complication: "",
 		answer: "",
-	});
+	// });
 
 	const [currentQuestion, setCurrentQuestion] = useState(0);
 	const [currentPath, setCurrentPath] = useState<QuestionField[]>([
@@ -104,11 +104,11 @@ export function SetupFormProvider({ children }: { children: React.ReactNode }) {
 				currentQuestion,
 				nextQuestion: currentQuestion + 1,
 				message: `Moving from question ${currentQuestion} to ${currentQuestion + 1}`,
-			});
+			// });
 			logger.info({
 				currentPath: currentPath.join(", "),
 				message: "Current path",
-			});
+			// });
 			setCurrentQuestion((prev) => prev + 1);
 		} else {
 			logger.info({ message: "Reached end of questions" });

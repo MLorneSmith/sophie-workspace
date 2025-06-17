@@ -1,8 +1,6 @@
-import { expect, type Page } from "@playwright/test";
-
-import { Mailbox } from "./mailbox";
-
 import { createServiceLogger } from "@kit/shared/logger";
+import { expect, type Page } from "@playwright/test";
+import { Mailbox } from "./mailbox";
 
 // Initialize service logger
 const { getLogger } = createServiceLogger("OTP_PO");
@@ -63,9 +61,7 @@ export class OtpPo {
 	 */
 	async enterOtpCode(otpCode: string) {
 		// TODO: Async logger needed
-		// (await getLogger()).info(
-			`Entering OTP code: ${otpCode}`,
-		);
+		// (await getLogger()).info(`Entering OTP code: ${otpCode}`);
 		await this.page.fill("[data-input-otp]", otpCode);
 	}
 }

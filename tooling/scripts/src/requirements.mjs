@@ -20,7 +20,7 @@ function checkPnpmVersion() {
 
 	if (!currentPnpmVersion) {
 		process.stderr.write(
-			"\x1b[31mYou are running Makerkit from a directory that does not have pnpm installed. Please install pnpm and run \"pnpm install\" in your project directory.\x1b[0m\n",
+			'\x1b[31mYou are running Makerkit from a directory that does not have pnpm installed. Please install pnpm and run "pnpm install" in your project directory.\x1b[0m\n',
 		);
 
 		process.exit(1);
