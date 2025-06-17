@@ -259,7 +259,7 @@ export async function testDatabaseFunctions(
 			return false;
 		}
 
-		(await getLogger()).info("Database function test successful:", {
+		(await _getLogger()).info("Database function test successful:", {
 			calculatedCost: data,
 		// });
 		return true;

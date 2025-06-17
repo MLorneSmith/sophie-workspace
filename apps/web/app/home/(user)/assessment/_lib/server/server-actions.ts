@@ -105,7 +105,7 @@ export const saveResponseAction = enhanceAction(
 						category_scores: categoryScores,
 						completed: progressPercentage === 100,
 						updated_at: new Date().toISOString(),
-					// })
+					})
 					.eq("id", existingResponseData.id);
 
 				if (updateError) {
@@ -123,7 +123,7 @@ export const saveResponseAction = enhanceAction(
 						responses: [newResponse],
 						category_scores: categoryScores,
 						completed: false,
-					// });
+					});
 
 				if (insertError) {
 					throw new Error(
@@ -154,7 +154,7 @@ export const saveResponseAction = enhanceAction(
 			}
 
 			return { success: true };
-		} catch (error) 
+		} catch (error) {
 			// TODO: Async logger needed
 		// TODO: Fix logger call - was: error
 
@@ -165,7 +165,7 @@ export const saveResponseAction = enhanceAction(
 		// message: error.message,
 					stack: error.stack,
 					name: error.name,
-				// });
+				});
 			}
 
 			return {
@@ -174,14 +174,16 @@ export const saveResponseAction = enhanceAction(
 					error instanceof Error ? error.message : "An unknown error occurred",
 			};
 	},
+	{
 		auth: true,
-		schema: SaveResponseSchema,,
+		schema: SaveResponseSchema,
+	}
 );
 
 /**
  * Schema for completing a survey
  */
-const CompleteSurveySchema = z.object({
+const _CompleteSurveySchema = z.object({
 	surveyId: z.string(),
 	responseId: z.string(),
 	categoryScores: z.record(z.string(), z.number()),
@@ -202,7 +204,7 @@ export const completeSurveyAction = enhanceAction(
 				surveyId: data.surveyId,
 				highestCategory: data.highestScoringCategory,
 				lowestCategory: data.lowestScoringCategory,
-			// });
+			});
 
 			// Update the survey response in Supabase
 			const { error: updateError } = await supabase
@@ -213,7 +215,7 @@ export const completeSurveyAction = enhanceAction(
 					highest_scoring_category: data.highestScoringCategory,
 					lowest_scoring_category: data.lowestScoringCategory,
 					updated_at: new Date().toISOString(),
-				// })
+				})
 				.eq("id", data.responseId);
 
 			if (updateError) {
@@ -232,7 +234,7 @@ export const completeSurveyAction = enhanceAction(
 		// message: error.message,
 					stack: error.stack,
 					name: error.name,
-				// });
+				});
 			}
 
 			return {

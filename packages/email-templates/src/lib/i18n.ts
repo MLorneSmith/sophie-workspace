@@ -17,7 +17,7 @@ export function initializeEmailI18n(params: {
 				const data = await import(`../locales/${language}/${namespace}.json`);
 
 				return data as Record<string, string>;
-			} catch (error) {
+			} catch (_error) {
 				// TODO: Async logger needed
 		// (await getLogger()).info(`Error loading i18n file: locales/${language}/${namespace}.json`, { arg1: error, arg2:  });
 

@@ -145,7 +145,7 @@ class AuthCallbackService {
 		const searchParams = requestUrl.searchParams;
 
 		const authCode = searchParams.get("code");
-		const error = searchParams.get("error");
+		const _error = searchParams.get("error");
 		const nextUrlPathFromParams = searchParams.get("next");
 		const inviteToken = searchParams.get("invite_token");
 		const errorPath = params.errorPath ?? "/auth/callback/error";

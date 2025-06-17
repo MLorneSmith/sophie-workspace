@@ -84,7 +84,7 @@ export function VideoRecorder({
 				await videoRef.current.play();
 
 				videoRef.current.onerror = () => {
-					const error = videoRef.current?.error;
+					const _error = videoRef.current?.error;
 
 					// TODO: Async logger needed
 		// (await getLogger()).error(`Error ${error?.code}; details: ${error?.message}`);
@@ -150,7 +150,7 @@ export function VideoRecorder({
 
 			return () => URL.revokeObjectURL(videoUrl);
 		}
-	}, [videoBlob]);
+	}, []);
 
 	const retryRecording = useCallback(() => {
 		setVideoBlob(null);

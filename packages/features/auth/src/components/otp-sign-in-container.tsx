@@ -110,7 +110,6 @@ export function OtpSignInContainer(props: OtpSignInContainerProps) {
 	}
 
 	return (
-		<>
 			<Form {...otpForm}>
 				<form
 					onSubmit={otpForm.handleSubmit(handleVerifyOtp)}
@@ -173,7 +172,7 @@ export function OtpSignInContainer(props: OtpSignInContainerProps) {
 					<Trans i18nKey="auth:sendEmailCode" />
 				</button>
 			</div>
-		</>
+		
 	);
 }
 

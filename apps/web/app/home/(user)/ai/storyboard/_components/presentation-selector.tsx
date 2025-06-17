@@ -44,7 +44,7 @@ export function PresentationSelector({ onSelect }: PresentationSelectorProps) {
 				}
 
 				setPresentations(data || []);
-			} catch (err) {
+			} catch (_err) {
 				// TODO: Async logger needed
 				// TODO: Async logger needed
 				// (await getLogger()).error(

@@ -49,7 +49,7 @@ function useGoToPage() {
 	return (page: number) => {
 		const searchParams = new URLSearchParams({
 			page: page.toString(),
-		// });
+		});
 
 		router.push(`${path}?${searchParams.toString()}`);
 	};

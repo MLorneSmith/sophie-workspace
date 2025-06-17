@@ -60,7 +60,7 @@ export function UsageDashboard({ initialData }: UsageDashboardProps) {
 				// );
 				// In a real implementation, this would use actual fetched data
 			}, 500);
-		} catch (error) {
+		} catch (_error) {
 			// TODO: Async logger needed
 			// TODO: Async logger needed
 			// (await getLogger()).error(

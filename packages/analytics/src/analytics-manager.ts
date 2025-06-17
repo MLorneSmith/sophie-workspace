@@ -5,11 +5,11 @@ import type {
 	CreateAnalyticsManagerOptions,
 } from "./types";
 export function createAnalyticsManager<T extends string, Config extends object>(
-	options: CreateAnalyticsManagerOptions<T, Config>,
+	_options: CreateAnalyticsManagerOptions<T, Config>,
 ): AnalyticsManager {
 	const activeServices = new Map<T, AnalyticsService>();
 
-	const getActiveServices = (): AnalyticsService[] => {
+	const _getActiveServices = (): AnalyticsService[] => {
 		if (activeServices.size === 0) {
 			// TODO: Async logger needed
 		// (await getLogger()).debug("No active analytics services. Using NullAnalyticsService.", { data:  });
@@ -20,7 +20,7 @@ export function createAnalyticsManager<T extends string, Config extends object>(
 		return Array.from(activeServices.values());
 	};
 
-	const registerActiveServices = (
+	const _registerActiveServices = (
 		options: CreateAnalyticsManagerOptions<T, Config>,
 	) => {
 		for (const provider of Object.keys(options.providers)) {
@@ -41,7 +41,7 @@ export function createAnalyticsManager<T extends string, Config extends object>(
 		}
 	};
 
-	registerActiveServices(options);
+	_registerActiveServices(options);
 
 	return {
 		addProvider: (provider: T, config: Config) => {
@@ -65,12 +65,12 @@ export function createAnalyticsManager<T extends string, Config extends object>(
 
 		identify: (userId: string, traits?: Record<string, string>) => 
 			return Promise.all(
-				getActiveServices().map((service) => service.identify(userId, traits)),
+				_getActiveServices().map((service) => service.identify(userId, traits)),
 			);,
 
 		trackPageView: (path: string) => 
 			return Promise.all(
-				getActiveServices().map((service) => service.trackPageView(path)),
+				_getActiveServices().map((service) => service.trackPageView(path)),
 			);,
 
 		trackEvent: (
@@ -78,7 +78,7 @@ export function createAnalyticsManager<T extends string, Config extends object>(
 			eventProperties?: Record<string, string | string[]>,
 		) => 
 			return Promise.all(
-				getActiveServices().map((service) =>
+				_getActiveServices().map((service) =>
 					service.trackEvent(eventName, eventProperties),
 				),
 			);,

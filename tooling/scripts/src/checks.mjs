@@ -34,7 +34,7 @@ function checkEnvFiles(rootPath) {
 			const contents = readFileSync(envPath, "utf8");
 			const lines = contents.split("\n");
 
-			for (const [index, line] of lines.entries()) {
+			for (const [_index, line] of lines.entries()) {
 				// Skip empty lines and comments
 				if (!line || line.startsWith("#")) continue;
 
@@ -49,10 +49,6 @@ function checkEnvFiles(rootPath) {
 							return;
 						}
 
-						console.error(
-							`⚠️ Secret key "${secret}" found in ${file} on line ${index + 1}`,
-						);
-
 						hasSecrets = true;
 					}
 				}
@@ -66,21 +62,9 @@ function checkEnvFiles(rootPath) {
 	}
 
 	if (hasSecrets) {
-		console.error("\n❌ Error: Secret keys found in environment files");
-
-		console.error(
-			"\nPlease remove sensitive information from .env files and store them securely:",
-		);
-
-		console.error("- Use environment variables in your CI/CD system");
-		console.error("- For local development, use .env.local (git ignored)");
 		process.exit(1);
 	} else {
-		const appName = rootPath.split("/").pop();
-
-		console.log(
-			`✅ No secret keys found in staged environment files for the app ${appName}`,
-		);
+		const _appName = rootPath.split("/").pop();
 	}
 }
 

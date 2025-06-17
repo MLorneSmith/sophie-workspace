@@ -111,7 +111,7 @@ export function useTasks() {
 	// });
 }
 
-export function useCreateTask() {
+export function _useCreateTask() {
 	const queryClient = useQueryClient();
 	const { user } = useUserWorkspace();
 
@@ -135,7 +135,7 @@ export function useCreateTask() {
 	});
 }
 
-export function useUpdateTask() {
+export function _useUpdateTask() {
 	const queryClient = useQueryClient();
 	const { user } = useUserWorkspace();
 
@@ -161,7 +161,7 @@ export function useUpdateTask() {
 	});
 }
 
-export function useUpdateTaskStatus() {
+export function _useUpdateTaskStatus() {
 	const queryClient = useQueryClient();
 	const { user } = useUserWorkspace();
 
@@ -187,7 +187,7 @@ export function useUpdateTaskStatus() {
 	});
 }
 
-export function useDeleteTask() {
+export function _useDeleteTask() {
 	const queryClient = useQueryClient();
 	const { user } = useUserWorkspace();
 
@@ -213,7 +213,7 @@ export function useDeleteTask() {
 	});
 }
 
-export function useUpdateSubtask() {
+export function _useUpdateSubtask() {
 	const queryClient = useQueryClient();
 	const { user } = useUserWorkspace();
 
@@ -255,7 +255,7 @@ export function useUpdateSubtask() {
 	});
 }
 
-export function useResetTasks() {
+export function _useResetTasks() {
 	const queryClient = useQueryClient();
 	const { user } = useUserWorkspace();
 

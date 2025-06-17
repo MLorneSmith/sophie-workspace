@@ -42,7 +42,7 @@ export function createMonitoredLogger(
  * TODO: This function is temporarily disabled due to circular dependency issues
  * with @kit/monitoring. It should be re-enabled once the architecture is refactored.
  */
-export async function createServerLogger(serviceName: string) {
+export async function _createServerLogger(serviceName: string) {
 	// Fallback to regular logger for now
 	return createServiceLogger(serviceName);
 }
@@ -51,7 +51,7 @@ export async function createServerLogger(serviceName: string) {
  * Client-side helper to create a monitored logger
  * Uses a lighter-weight monitoring approach suitable for browsers
  */
-export function createClientLogger(serviceName: string) {
+export function _createClientLogger(serviceName: string) {
 	// For now, return logger without monitoring
 	// In the future, this could integrate with browser-based monitoring
 	return createServiceLogger(serviceName);

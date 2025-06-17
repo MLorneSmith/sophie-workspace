@@ -333,7 +333,7 @@ function onRadixPopupClose(callback: () => void) {
 		observer.observe(element.parentElement, {
 			childList: true,
 			subtree: true,
-		// });
+		});
 	}
 }
 

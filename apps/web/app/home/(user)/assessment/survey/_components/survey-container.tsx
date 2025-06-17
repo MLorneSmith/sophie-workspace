@@ -31,7 +31,7 @@ export function SurveyContainer({
 }: SurveyContainerProps) {
 	const _router = useRouter();
 	const supabase = useSupabase();
-	const [isPending, startTransition] = useTransition();
+	const [_isPending, startTransition] = useTransition();
 
 	// Log the initial progress for debugging
 	// TODO: Async logger needed
@@ -72,7 +72,7 @@ export function SurveyContainer({
 					// TODO: Fix logger call - was: info
 					setCategoryScores(data.category_scores as Record<string, number>);
 				}
-			} catch (error) {
+			} catch (_error) {
 				// TODO: Async logger needed
 				// TODO: Fix logger call - was: error
 			}
@@ -81,12 +81,12 @@ export function SurveyContainer({
 		loadExistingScores();
 	}, [userId, survey.id, supabase]);
 
-	const isLastQuestion = currentQuestionIndex === questions.length - 1;
+	const _isLastQuestion = currentQuestionIndex === questions.length - 1;
 	const currentQuestion = questions[currentQuestionIndex];
 	// Calculate progress based on completed questions (not including current question)
-	const progress = (currentQuestionIndex / questions.length) * 100;
+	const _progress = (currentQuestionIndex / questions.length) * 100;
 
-	const handleAnswer = (questionId: string, answer: string, score: number) => {
+	const _handleAnswer = (questionId: string, answer: string, score: number) => {
 		// Save the response
 		const category = currentQuestion.category || "general";
 
@@ -118,7 +118,7 @@ export function SurveyContainer({
 				// });
 
 				// Move to the next question or complete the survey
-				if (isLastQuestion) {
+				if (_isLastQuestion) {
 					// Calculate highest and lowest scoring categories
 					const sortedCategories = Object.entries(newCategoryScores).sort(
 						([, a], [, b]) => b - a,
@@ -192,8 +192,8 @@ export function SurveyContainer({
 								// });
 
 								// Update local state with final scores for the summary view
-								setCategoryScores(finalCategoryScores);
-							} catch (completionError) {
+								setCategoryScores(_finalCategoryScores);
+							} catch (_completionError) {
 								// TODO: Async logger needed
 								// TODO: Fix logger call - was: error
 								// Continue to show summary even if there's an error
@@ -203,7 +203,7 @@ export function SurveyContainer({
 							// TODO: Fix logger call - was: error
 							// Continue to show summary even if there's no record ID
 						}
-					} catch (error) {
+					} catch (_error) {
 						// TODO: Async logger needed
 						// TODO: Fix logger call - was: error
 						// Continue to show summary even if there's an error
@@ -212,7 +212,7 @@ export function SurveyContainer({
 					// Show summary regardless of whether completeSurveyAction succeeded
 					setCurrentQuestionIndex(questions.length);
 				} else {
-					setCurrentQuestionIndex(currentQuestionIndex + 1);
+					setCurrentQuestionIndex(_currentQuestionIndex + 1);
 				}
 			} catch (error) {
 				// TODO: Async logger needed

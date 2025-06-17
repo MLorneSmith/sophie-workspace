@@ -246,7 +246,7 @@ function getPatterns() {
  * Match URL patterns to specific handlers.
  * @param url
  */
-function matchUrlPattern(url: string) {
+function _matchUrlPattern(url: string) {
 	const patterns = getPatterns();
 	const input = url.split("?")[0];
 
@@ -263,7 +263,7 @@ function matchUrlPattern(url: string) {
  * Set a unique request ID for each request.
  * @param request
  */
-function setRequestId(request: Request) {
+function _setRequestId(request: Request) {
 	request.headers.set("x-correlation-id", crypto.randomUUID());
 }
 
@@ -272,7 +272,7 @@ function setRequestId(request: Request) {
  * @description Create a middleware with enhanced headers applied (if applied).
  * This is disabled by default. To enable set ENABLE_STRICT_CSP=true
  */
-async function createResponseWithSecureHeaders() {
+async function _createResponseWithSecureHeaders() {
 	const enableStrictCsp = process.env.ENABLE_STRICT_CSP ?? "false";
 
 	// we disable ENABLE_STRICT_CSP by default

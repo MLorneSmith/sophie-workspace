@@ -183,7 +183,7 @@ class AccountInvitationsService {
 			account_slug: accountSlug,
 		// });
 
-		if (response.error) {
+		if (response._error) {
 			logger.error(
 				{
 					...ctx,

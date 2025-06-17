@@ -113,7 +113,7 @@ export async function getSurveyQuestions(
 		// (await getLogger()).info(`Retrieved ${allQuestionsResponse.docs.length} total questions`, { data:  });
 
 			// Log all question IDs for debugging
-			for (const q of allQuestionsResponse.docs) {
+			for (const _q of allQuestionsResponse.docs) {
 				// TODO: Async logger needed
 		// (await getLogger()).info(`Question ID: ${q.id}, { arg1: Text: ${q.text?.substring(0, arg2: 30 })}...`,
 		// );
@@ -323,7 +323,7 @@ export async function getSurveyQuestions(
 /**
  * @deprecated Use Supabase directly instead
  */
-export async function getUserSurveyResponse(
+export async function _getUserSurveyResponse(
 	_userId: string,
 	_surveyId: string,
 ) {
@@ -336,7 +336,7 @@ export async function getUserSurveyResponse(
 /**
  * @deprecated Use Supabase directly instead
  */
-export async function createSurveyResponse(_data: unknown) {
+export async function _createSurveyResponse(_data: unknown) {
 	(await getLogger()).warn(
 		"createSurveyResponse is deprecated. Use Supabase directly instead.",
 	);
@@ -346,7 +346,7 @@ export async function createSurveyResponse(_data: unknown) {
 /**
  * @deprecated Use Supabase directly instead
  */
-export async function updateSurveyResponse(id: string, _data: unknown) {
+export async function _updateSurveyResponse(id: string, _data: unknown) {
 	(await getLogger()).warn(
 		"updateSurveyResponse is deprecated. Use Supabase directly instead.",
 	);
@@ -356,7 +356,7 @@ export async function updateSurveyResponse(id: string, _data: unknown) {
 /**
  * @deprecated Use Supabase directly instead
  */
-export async function completeSurvey(id: string, _data: unknown) {
+export async function _completeSurvey(id: string, _data: unknown) {
 	(await getLogger()).warn("completeSurvey is deprecated. Use Supabase directly instead.");
 	return { id };
 }

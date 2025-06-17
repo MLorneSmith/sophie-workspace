@@ -35,7 +35,7 @@ export function setCookie(name: string, value: string, options: CookieOptions = 
 
 		// Note: cookieStore.set() returns a Promise, but we don't await it
 		// to maintain synchronous behavior expected by calling code
-		(window as any).cookieStore.set(cookieOptions).catch((error: Error) => {
+		(window as any).cookieStore.set(cookieOptions).catch((_error: Error) => {
 			// TODO: Async logger needed
 		// (await getLogger()).warn('Failed to set cookie via Cookie Store API:', { data: error });
 			// Fallback to document.cookie

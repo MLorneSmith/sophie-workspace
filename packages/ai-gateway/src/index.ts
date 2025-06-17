@@ -356,7 +356,7 @@ export async function getChatCompletion(
 						bypassCredits: bypassCreditsFlag, // Use environment variable instead of hardcoding
 					// });
 				} catch (usageError) {
-					(await getLogger()).error("Error recording API usage:", { data: usageError });
+					(await _getLogger()).error("Error recording API usage:", { data: usageError });
 					// Continue without failing - usage tracking is secondary to the main functionality
 				}
 			}
@@ -629,7 +629,7 @@ export async function* getStreamingChatCompletion(
 					bypassCredits: bypassCreditsFlag, // Use environment variable instead of hardcoding
 				// });
 			} catch (error) {
-				(await getLogger()).error("Error recording usage data:", { data: error });
+				(await _getLogger()).error("Error recording usage data:", { data: error });
 				// Continue without failing the response delivery
 			}
 		}

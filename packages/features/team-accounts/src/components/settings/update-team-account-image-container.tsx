@@ -76,7 +76,7 @@ export function UpdateTeamAccountImage(props: {
 				createToaster(promise);
 			}
 		},
-		[client, createToaster, props],
+		[props],
 	);
 
 	return (

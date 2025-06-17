@@ -28,7 +28,7 @@ export function ChartTypeSelector({
 }: ChartTypeSelectorProps) {
 	// const { updateSlide } = useStoryboard(); // Currently unused
 
-	const handleChartTypeChange = (chartTypeId: string) => {
+	const handleChartTypeChange = (_chartTypeId: string) => {
 		// TODO: Implement logic to update the specific content area's chart type and data
 		// TODO: Async logger needed
 		// TODO: Fix logger call - was: info

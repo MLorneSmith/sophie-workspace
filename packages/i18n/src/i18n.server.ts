@@ -28,7 +28,7 @@ export async function initializeServerI18n(
 						loadedNamespaces.add(namespace);
 
 						return callback(null, data);
-					} catch (error) {
+					} catch (_error) {
 						// TODO: Async logger needed
 		// (await getLogger()).info(`Error loading i18n file: locales/${language}/${namespace}.json`, { arg1: error, arg2:  });
 
@@ -108,7 +108,7 @@ export async function initializeServerI18n(
  * @param languageHeaderValue
  * @param acceptedLanguages
  */
-export function parseAcceptLanguageHeader(
+export function _parseAcceptLanguageHeader(
 	languageHeaderValue: string | null | undefined,
 	acceptedLanguages: string[],
 ): string[] {

@@ -103,13 +103,12 @@ export function SetupFormProvider({ children }: { children: React.ReactNode }) {
 			logger.info({
 				currentQuestion,
 				nextQuestion: currentQuestion + 1,
-				message: `Moving from question ${currentQuestion} to ${currentQuestion + 1}`,
 			// });
 			logger.info({
 				currentPath: currentPath.join(", "),
 				message: "Current path",
 			// });
-			setCurrentQuestion((prev) => prev + 1);
+			setCurrentQuestion((_prev) => prev + 1);
 		} else {
 			logger.info({ message: "Reached end of questions" });
 		}

@@ -45,7 +45,7 @@ export function refineRepeatPassword(
 	return true;
 }
 
-function validatePassword(password: string, ctx: z.RefinementCtx) {
+function _validatePassword(password: string, ctx: z.RefinementCtx) {
 	if (requirements.specialChars) {
 		const specialCharsCount =
 			password.match(/[!@#$%^&*(),.?":{}|<>]/g)?.length ?? 0;

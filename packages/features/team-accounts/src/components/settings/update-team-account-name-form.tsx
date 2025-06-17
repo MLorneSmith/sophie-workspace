@@ -50,13 +50,13 @@ export const UpdateTeamAccountNameForm = (props: {
 							const toastId = toast.loading(t("updateTeamLoadingMessage"));
 
 							try {
-								const result = await updateTeamAccountName({
+								const _result = await updateTeamAccountName({
 									slug: props.account.slug,
 									name: data.name,
 									path: props.path,
 								// });
 
-								if (result.success) {
+								if (_result._success) {
 									toast.success(t("updateTeamSuccessMessage"), {
 										id: toastId,
 									// });

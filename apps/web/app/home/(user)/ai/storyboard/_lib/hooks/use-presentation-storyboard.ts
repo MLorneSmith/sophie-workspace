@@ -16,7 +16,7 @@ import type {
 } from "../types";
 
 // Basic transformer from TipTap document to storyboard format
-function generateStoryboardFromOutline(
+function _generateStoryboardFromOutline(
 	outline: TipTapDocument | unknown,
 ): StoryboardData {
 	let slideCount = 0;
@@ -68,7 +68,7 @@ function generateStoryboardFromOutline(
 				currentSlide
 			) {
 				// Process list items
-				processList(node, currentSlide, "bullet");
+				processList(_node, _currentSlide, "bullet");
 			}
 		}
 
@@ -109,7 +109,7 @@ function extractTextFromNode(node: TipTapNode | unknown): string {
 		.join("");
 }
 
-function processList(node: TipTapNode | unknown, slide: Slide, type: string) {
+function _processList(node: TipTapNode | unknown, slide: Slide, type: string) {
 	if (!node.content) return;
 
 	for (const item of node.content) {
@@ -125,19 +125,18 @@ function processList(node: TipTapNode | unknown, slide: Slide, type: string) {
 					itemContent.type === "bulletList" ||
 					itemContent.type === "orderedList"
 				) {
-					processList(itemContent, slide, "subbullet");
+					processList(_itemContent, _slide, "subbullet");
 				}
 			}
 		}
 	}
 }
 
-export function usePresentationStoryboard(presentationId: string) {
+export function _usePresentationStoryboard(presentationId: string) {
 	const supabase = useSupabase();
 	const [isUpdating, setIsUpdating] = useState(false);
 
 	const fetchStoryboard = useCallback(async () => {
-		try {
 			// First try fetching with the storyboard column
 			const { data, error } = await supabase
 				.from("building_blocks_submissions")
@@ -168,8 +167,8 @@ export function usePresentationStoryboard(presentationId: string) {
 								? JSON.parse(fallbackData.outline)
 								: fallbackData.outline;
 
-						return generateStoryboardFromOutline(outline);
-					} catch (err) {
+						return _generateStoryboardFromOutline(outline);
+					} catch (_err) {
 						// TODO: Async logger needed
 		// TODO: Fix logger call - was: error
 						throw new Error("Failed to generate storyboard from outline");
@@ -195,17 +194,12 @@ export function usePresentationStoryboard(presentationId: string) {
 						? JSON.parse(typedData.outline)
 						: typedData.outline;
 
-				return generateStoryboardFromOutline(outline);
-			} catch (err) {
+				return _generateStoryboardFromOutline(outline);
+			} catch (_err) {
 				// TODO: Async logger needed
 		// TODO: Fix logger call - was: error
 				throw new Error("Failed to generate storyboard from outline");
 			}
-		} catch (error) {
-			// TODO: Async logger needed
-		// TODO: Fix logger call - was: error
-			throw error;
-		}
 	}, [presentationId, supabase]);
 
 	const { data, isLoading, isError, refetch } = useQuery({
@@ -246,7 +240,7 @@ export function usePresentationStoryboard(presentationId: string) {
 				// Refetch to ensure we have the latest data
 				await refetch();
 				return true;
-			} catch (error) {
+			} catch (_error) {
 				// TODO: Async logger needed
 		// TODO: Fix logger call - was: error
 				toast.error("Failed to save storyboard");
@@ -255,7 +249,7 @@ export function usePresentationStoryboard(presentationId: string) {
 				setIsUpdating(false);
 			}
 		},
-		[presentationId, refetch, supabase],
+		[presentationId, supabase],
 	);
 
 	return {

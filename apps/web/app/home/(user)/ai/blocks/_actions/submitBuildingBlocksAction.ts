@@ -77,7 +77,7 @@ export async function submitBuildingBlocksAction(data: SubmitFormData) {
 		}
 
 		return { success: true, submissionId: result.id };
-	} catch (error) {
+	} catch (_error) {
 		// TODO: Async logger needed
 		// TODO: Async logger needed
 		// (await getLogger()).error(

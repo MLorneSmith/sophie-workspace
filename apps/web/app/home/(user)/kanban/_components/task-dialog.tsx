@@ -82,7 +82,7 @@ export function TaskDialog({ open, onOpenChange, task }: TaskDialogProps) {
 				form.reset();
 				setImagePreview(null);
 				onOpenChange(false);
-			} catch (error) {
+			} catch (_error) {
 				// TODO: Async logger needed
 		// TODO: Fix logger call - was: error
 			}

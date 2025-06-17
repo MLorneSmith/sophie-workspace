@@ -55,7 +55,7 @@ const getContentItems = cache(
 				content: false,
 				sortBy: "publishedAt",
 				sortDirection: "desc",
-			// });
+			});
 		} catch (error) {
 			logger.error({ error }, "Failed to load blog posts");
 

@@ -61,7 +61,7 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
 	const [isGenerating, setIsGenerating] = useState(false);
 	const [messageIndex, setMessageIndex] = useState(0);
 	const [isRegeneratingOutline, setIsRegeneratingOutline] = useState(false);
-	const [resetKey, setResetKey] = useState(0); // Add a key to force component remount
+	const [resetKey, _setResetKey] = useState(0); // Add a key to force component remount
 
 	const handleAcceptImprovement = useCallback(
 		(improvement: BaseImprovement) => {
@@ -89,7 +89,7 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
 
 				// TODO: Async logger needed
 				// TODO: Fix logger call - was: info
-			} catch (error) {
+			} catch (_error) {
 				// TODO: Async logger needed
 				// TODO: Fix logger call - was: error
 			}
@@ -106,7 +106,7 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
 
 			// When implemented, this would use the same safety pattern as handleGenerateIdeas
 			// to safely get content from the editor
-		} catch (error) {
+		} catch (_error) {
 			// TODO: Async logger needed
 			// TODO: Fix logger call - was: warn
 		}
@@ -140,13 +140,13 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
 							} else {
 								resolve("");
 							}
-						} catch (error) {
+						} catch (_error) {
 							// TODO: Async logger needed
 							// TODO: Fix logger call - was: warn
 							resolve("");
 						}
 					});
-				} catch (error) {
+				} catch (_error) {
 					// TODO: Async logger needed
 					// TODO: Fix logger call - was: warn
 					resolve("");
@@ -164,13 +164,13 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
 				content.trim() || "Please suggest some initial ideas.";
 
 			// Use the cost-tracking version of the action with session ID
-			const result = await generateIdeasWithCost({
+			const _result = await generateIdeasWithCost({
 				content: contentToSend,
 				submissionId,
 				type: sectionType,
 			// });
 
-			if (result.success && result.data?.improvements) {
+			if (_result._success && result._data?._improvements) {
 				setSuggestions(result.data.improvements);
 			}
 		} catch (error) {
@@ -253,7 +253,7 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
 														// });
 
 														// Increment the reset key to force a complete remount
-														setResetKey((prev) => prev + 1);
+														setResetKey((_prev) => prev + 1);
 
 														// Set a brief delay to ensure everything is reset properly
 														setTimeout(() => {
@@ -264,7 +264,7 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
 															result.error || "Failed to regenerate outline",
 														);
 													}
-												} catch (error) {
+												} catch (_error) {
 													// TODO: Async logger needed
 													// TODO: Fix logger call - was: error
 												} finally {

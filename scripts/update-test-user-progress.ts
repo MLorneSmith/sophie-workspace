@@ -122,14 +122,14 @@ async function fetchLessonsFromPayload(
 		if (lessons.length > 0) {
 			// TODO: Async logger needed
 		// (await getLogger()).info("Sample lessons:");
-			for (const lesson of lessons.slice(0, 3)) {
+			for (const _lesson of lessons.slice(0, 3)) {
 				// TODO: Async logger needed
 		// (await getLogger()).info(`  - ${lesson.id}: Lesson ${lesson.lesson_number} - ${lesson.title}`, { data:  });
 			}
 		}
 
 		return lessons;
-	} catch (error) {
+	} catch (_error) {
 		// TODO: Async logger needed
 		// (await getLogger()).error("Error fetching lessons from Payload CMS:", { data: error });
 
@@ -167,7 +167,7 @@ async function fetchLessonsFromPayload(
 			// TODO: Async logger needed
 		// (await getLogger()).info(`Successfully fetched ${data?.length || 0} lessons from Supabase with schema`, { data:  });
 			return data || [];
-		} catch (fallbackError) {
+		} catch (_fallbackError) {
 			// TODO: Async logger needed
 		// (await getLogger()).error("Fallback fetch also failed:", { data: fallbackError });
 			throw new Error(
@@ -388,7 +388,7 @@ async function main() {
 		);
 		// TODO: Async logger needed
 		// (await getLogger()).info("Done!");
-	} catch (error) {
+	} catch (_error) {
 		// TODO: Async logger needed
 		// (await getLogger()).error("Error:", { data: error });
 		process.exit(1);
@@ -396,7 +396,7 @@ async function main() {
 }
 
 // Call main() directly
-main().catch((error) => {
+main().catch((_error) => {
 	// TODO: Async logger needed
 		// (await getLogger()).error("Error in main execution:", { data: error });
 	process.exit(1);

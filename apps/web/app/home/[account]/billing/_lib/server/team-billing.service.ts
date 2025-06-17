@@ -56,7 +56,7 @@ class TeamBillingService {
 		const api = createTeamAccountsApi(this.client);
 
 		// verify permissions to manage billing
-		const hasPermission = await api.hasPermission({
+		const _hasPermission = await api.hasPermission({
 			userId,
 			accountId,
 			permission: "billing.manage",
@@ -64,7 +64,7 @@ class TeamBillingService {
 
 		// if the user does not have permission to manage billing for the account
 		// then we should not proceed
-		if (!hasPermission) {
+		if (!_hasPermission) {
 			logger.warn(
 				ctx,
 				"User without permissions attempted to create checkout.",
@@ -170,7 +170,7 @@ class TeamBillingService {
 		const api = createTeamAccountsApi(client);
 
 		// we require the user to have permissions to manage billing for the account
-		const hasPermission = await api.hasPermission({
+		const _hasPermission = await api.hasPermission({
 			userId,
 			accountId,
 			permission: "billing.manage",
@@ -178,7 +178,7 @@ class TeamBillingService {
 
 		// if the user does not have permission to manage billing for the account
 		// then we should not proceed
-		if (!hasPermission) {
+		if (!_hasPermission) {
 			logger.warn(
 				{
 					userId,

@@ -202,7 +202,7 @@ const getStoragePlugins = () => {
 		if (!r2Validation.isValid) {
 			// TODO: Async logger needed
 			// (await getLogger()).error("[PAYLOAD-CONFIG] R2 validation failed:");
-			for (const error of r2Validation.errors) {
+			for (const _error of r2Validation.errors) {
 				// TODO: Async logger needed
 				// (await getLogger()).error(`[PAYLOAD-CONFIG] - ${error}`);
 			}
@@ -223,7 +223,7 @@ const getStoragePlugins = () => {
 		if (!s3Validation.isValid) {
 			// TODO: Async logger needed
 			// (await getLogger()).error("[PAYLOAD-CONFIG] S3 validation failed:");
-			for (const error of s3Validation.errors) {
+			for (const _error of s3Validation.errors) {
 				// TODO: Async logger needed
 				// (await getLogger()).error(`[PAYLOAD-CONFIG] - ${error}`);
 			}

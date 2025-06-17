@@ -22,7 +22,7 @@ export class ErrorBoundary extends Component<Props, State> {
 		return { hasError: true, error };
 	}
 
-	componentDidCatch(error: Error) {
+	componentDidCatch(_error: Error) {
 		// TODO: Async logger needed
 		// (await getLogger()).error("Error caught by boundary:", {
 		// data: error,

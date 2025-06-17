@@ -115,7 +115,7 @@ function FactorsTableContainer(props: { userId: string }) {
 	return <FactorsTable factors={allFactors} userId={props.userId} />;
 }
 
-function ConfirmUnenrollFactorModal(
+function _ConfirmUnenrollFactorModal(
 	props: React.PropsWithChildren<{
 		factorId: string;
 		userId: string;
@@ -259,7 +259,7 @@ function FactorsTable({
 
 			<If condition={unEnrolling}>
 				{(factorId) => (
-					<ConfirmUnenrollFactorModal
+					<_ConfirmUnenrollFactorModal
 						userId={userId}
 						factorId={factorId}
 						setIsModalOpen={() => setUnenrolling(undefined)}

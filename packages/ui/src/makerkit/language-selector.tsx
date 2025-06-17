@@ -45,7 +45,7 @@ export function LanguageSelector({
 			// refresh cached translations
 			window.location.reload();
 		},
-		[i18n, onChange],
+		[onChange],
 	);
 
 	return (

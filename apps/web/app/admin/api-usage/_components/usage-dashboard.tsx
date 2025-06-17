@@ -47,11 +47,11 @@ export function UsageDashboard({ initialData }: UsageDashboardProps) {
 		try {
 			setIsLoading(true);
 
-			const result = await fetchUsageDataAction({
+			const _result = await fetchUsageDataAction({
 				timeRange: selectedTimeRange as "24h" | "7d" | "30d" | "90d",
 			// });
 
-			if (result.success && result.data) {
+			if (_result._success && result._data) {
 				setCurrentData(result.data);
 				// TODO: Async logger needed
 		// TODO: Async logger needed

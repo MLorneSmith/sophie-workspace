@@ -198,7 +198,7 @@ export function useMultiStepForm<Schema extends z.ZodType>(
 		}
 
 		throw new Error(`Unsupported schema type: ${schema.constructor.name}`);
-	}, [schema, form, stepNames, state.currentStepIndex]);
+	}, [schema, form, stepNames]);
 
 	const nextStep = useCallback(
 		<Ev extends React.SyntheticEvent>(e: Ev) => {
@@ -243,7 +243,7 @@ export function useMultiStepForm<Schema extends z.ZodType>(
 				});
 			}
 		},
-		[isStepValid, state.currentStepIndex, stepNames, schema, form],
+		[state.currentStepIndex, stepNames, schema, form],
 	);
 
 	const prevStep = useCallback(
@@ -278,7 +278,7 @@ export function useMultiStepForm<Schema extends z.ZodType>(
 				});
 			}
 		},
-		[isStepValid, stepNames.length],
+		[stepNames.length],
 	);
 
 	const isValid = form.formState.isValid;
@@ -308,17 +308,16 @@ export function useMultiStepForm<Schema extends z.ZodType>(
 			mutation,
 		}),
 		[
-			form,
-			mutation,
-			stepNames,
-			state.currentStepIndex,
-			state.direction,
-			nextStep,
-			prevStep,
-			goToStep,
-			isStepValid,
-			isValid,
-			errors,
+			form, 
+			mutation, 
+			stepNames, 
+			state.currentStepIndex, 
+			state.direction, 
+			nextStep, 
+			prevStep, 
+			goToStep, 
+			isValid, 
+			errors
 		],
 	);
 }

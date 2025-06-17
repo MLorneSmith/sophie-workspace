@@ -100,7 +100,7 @@ export namespace TipTapTransformer {
 		if (typeof document === "string") {
 			try {
 				return JSON.parse(document) as TipTapDocument;
-			} catch (error) {
+			} catch (_error) {
 				// TODO: Async logger needed
 		// TODO: Async logger needed
 		// (await getLogger()).error(
@@ -236,8 +236,8 @@ export namespace TipTapTransformer {
 						// });
 
 						// Check if this paragraph contains data that might be better as a chart
-						if (mightBeChartData(text)) {
-							suggestChartTypeForSlide(currentSlide, text);
+						if (_mightBeChartData(_text)) {
+							suggestChartTypeForSlide(_currentSlide, _text);
 						}
 					}
 				}
@@ -408,7 +408,7 @@ export namespace TipTapTransformer {
 	 * @param text The text to analyze
 	 * @returns Boolean indicating if this might be chart data
 	 */
-	function mightBeChartData(text: string): boolean {
+	function _mightBeChartData(text: string): boolean {
 		// Check for percentage patterns
 		const percentagePattern = /\b\d+(\.\d+)?%\b/;
 		if (percentagePattern.test(text)) return true;
@@ -442,7 +442,7 @@ export namespace TipTapTransformer {
 	 * @param slide The slide to modify
 	 * @param text Text containing potential chart data
 	 */
-	function suggestChartTypeForSlide(slide: Slide, text: string): void {
+	function _suggestChartTypeForSlide(slide: Slide, text: string): void {
 		// Analyze text to determine best chart type
 		let chartType: "bar" | "line" | "pie" | "area" = "bar";
 

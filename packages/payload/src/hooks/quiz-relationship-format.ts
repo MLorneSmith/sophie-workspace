@@ -87,6 +87,6 @@ export const ensureProperQuizQuestionFormat: CollectionAfterReadHook = async ({
 /**
  * Export all quiz relationship hooks for easy import
  */
-export const quizRelationshipHooks = {
+export const _quizRelationshipHooks = {
 	afterRead: [ensureProperQuizQuestionFormat],
 };

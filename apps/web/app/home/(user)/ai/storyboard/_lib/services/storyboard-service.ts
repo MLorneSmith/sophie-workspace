@@ -115,7 +115,7 @@ export const getPresentationAction = enhanceAction(
 							...typedFallbackData,
 							storyboard,
 						};
-					} catch (transformError) {
+					} catch (_transformError) {
 						// TODO: Async logger needed
 		// TODO: Fix logger call - was: error
 						// Return the data without storyboard if transformation fails
@@ -155,7 +155,7 @@ export const getPresentationAction = enhanceAction(
 									storyboard as DatabaseBuildingBlocksUpdate["storyboard"],
 							})
 							.eq("id", data.presentationId);
-					} catch (saveError) {
+					} catch (_saveError) {
 						// Log but continue if saving fails
 						// TODO: Async logger needed
 		// TODO: Fix logger call - was: warn
@@ -166,7 +166,7 @@ export const getPresentationAction = enhanceAction(
 						...typedPresentation,
 						storyboard,
 					};
-				} catch (transformError) {
+				} catch (_transformError) {
 					// TODO: Async logger needed
 		// TODO: Fix logger call - was: error
 					// Return without storyboard if transformation fails

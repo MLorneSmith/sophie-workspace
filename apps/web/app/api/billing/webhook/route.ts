@@ -40,8 +40,10 @@ export const POST = enhanceRouteHandler(
 
 			return new Response("Failed to process billing webhook", {
 				status: 500,
-			// });
+			});
 		}
 	},
-		auth: false,,
+	{
+		auth: false,
+	},
 );

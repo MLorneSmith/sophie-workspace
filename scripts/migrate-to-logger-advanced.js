@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 // biome-ignore lint/suspicious/noConsole: Migration script - console output is required
 
-const fs = require("fs").promises;
-const path = require("path");
+const fs = require("node:fs").promises;
+const _path = require("node:path");
 const { parse } = require("@babel/parser");
 const traverse = require("@babel/traverse").default;
 const generate = require("@babel/generator").default;
@@ -383,7 +383,7 @@ async function main() {
 		require("@babel/traverse");
 		require("@babel/generator");
 		require("@babel/types");
-	} catch (error) {
+	} catch (_error) {
 		// biome-ignore lint/suspicious/noConsole: Setup error information
 		console.error("Error: Required Babel packages not found!");
 		// biome-ignore lint/suspicious/noConsole: Setup error information

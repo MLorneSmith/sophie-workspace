@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 // biome-ignore lint/suspicious/noConsole: Migration script - console output is required
 
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -130,13 +130,13 @@ function replaceConsoleStatements(content, filePath) {
 	const consolePattern = /console\.(log|error|warn|debug|info)\s*\(/g;
 
 	// Track if we need async logger
-	let needsAsyncLogger = false;
+	let _needsAsyncLogger = false;
 
 	// First pass: check if any console statements are in async context
 	let match;
 	while ((match = consolePattern.exec(content)) !== null) {
 		if (isInAsyncContext(content, match.index)) {
-			needsAsyncLogger = true;
+			_needsAsyncLogger = true;
 			break;
 		}
 	}
@@ -145,21 +145,24 @@ function replaceConsoleStatements(content, filePath) {
 	consolePattern.lastIndex = 0;
 
 	// Second pass: replace console statements
-	modifiedContent = content.replace(consolePattern, (match, method, offset) => {
-		replacementCount++;
+	modifiedContent = content.replace(
+		consolePattern,
+		(_match, method, offset) => {
+			replacementCount++;
 
-		const inAsync = isInAsyncContext(content, offset);
-		const loggerMethod = method === "log" ? "info" : method;
+			const inAsync = isInAsyncContext(content, offset);
+			const loggerMethod = method === "log" ? "info" : method;
 
-		if (inAsync) {
-			// For async context, we'll need to handle this specially
-			return `(await getLogger()).${loggerMethod}(`;
-		} else {
-			// For sync context, we need to handle this differently
-			// We'll mark these for manual review
-			return `/* TODO: Async logger needed */ logger.${loggerMethod}(`;
-		}
-	});
+			if (inAsync) {
+				// For async context, we'll need to handle this specially
+				return `(await getLogger()).${loggerMethod}(`;
+			} else {
+				// For sync context, we need to handle this differently
+				// We'll mark these for manual review
+				return `/* TODO: Async logger needed */ logger.${loggerMethod}(`;
+			}
+		},
+	);
 
 	// Handle complex console statements with multiple arguments
 	// Convert console.log("message", data) to logger.info("message", { data })
@@ -178,13 +181,13 @@ function replaceConsoleStatements(content, filePath) {
 			const argsList = args.split(",").map((arg) => arg.trim());
 			if (argsList.length === 1) {
 				// Single additional argument
-				const argName = argsList[0].replace(/['"]/g, "").replace(/\s+/g, "_");
+				const _argName = argsList[0].replace(/['"]/g, "").replace(/\s+/g, "_");
 				return `${logger}.${method}(${message}, { data: ${argsList[0]} })`;
 			} else {
 				// Multiple arguments - create context object
 				const contextProps = argsList
 					.map((arg, index) => {
-						const cleanArg = arg.replace(/['"]/g, "").replace(/\s+/g, "_");
+						const _cleanArg = arg.replace(/['"]/g, "").replace(/\s+/g, "_");
 						return `arg${index + 1}: ${arg}`;
 					})
 					.join(", ");

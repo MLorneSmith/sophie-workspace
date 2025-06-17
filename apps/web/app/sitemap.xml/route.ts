@@ -68,7 +68,7 @@ async function getContentItems() {
 						: new Date().toISOString(),
 				})),
 			)
-			.catch((error) => {
+			.catch((_error) => {
 				// TODO: Async logger needed
 				// TODO: Async logger needed
 				// (await getLogger()).error(
@@ -94,7 +94,7 @@ async function getContentItems() {
 						: new Date().toISOString(),
 				})),
 			)
-			.catch((error) => {
+			.catch((_error) => {
 				// TODO: Async logger needed
 				// TODO: Async logger needed
 				// (await getLogger()).error(
@@ -108,7 +108,7 @@ async function getContentItems() {
 		return Promise.all([postsPromise, docsPromise]).then((items) =>
 			items.flat(),
 		);
-	} catch (error) {
+	} catch (_error) {
 		// TODO: Async logger needed
 		// TODO: Async logger needed
 		// (await getLogger()).error(

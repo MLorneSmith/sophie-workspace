@@ -26,7 +26,7 @@ export class NewRelicMonitoringService extends MonitoringService {
 				try {
 					this.newrelic = require("newrelic");
 					this.isReady = true;
-				} catch (e) {
+				} catch (_e) {
 					this.logger.warn("New Relic agent not found. Monitoring will be disabled.");
 				}
 			}

@@ -42,7 +42,7 @@ export async function recordApiUsage(
 	params: UsageTrackingParams,
 ): Promise<boolean> {
 	const logger = await getLogger();
-	const {
+	let {
 		userId,
 		teamId,
 		requestId,
@@ -275,7 +275,7 @@ export async function recordApiUsage(
 						logger.info("Successfully deducted AI credits", { creditData });
 					}
 				}
-			} catch (deductError) {
+			} catch (deductError) 
 				logger.error("Exception in credit deduction", {
 					error: deductError,
 					message:
@@ -284,7 +284,6 @@ export async function recordApiUsage(
 							: String(deductError),
 					stack: deductError instanceof Error ? deductError.stack : undefined,
 				});
-			}
 
 		return success;
 	} catch (error) {
@@ -305,7 +304,7 @@ export async function recordApiUsage(
  * @param headers Response headers from Portkey
  * @returns number Cost value or 0 if not found
  */
-export function extractCostFromHeaders(
+export function _extractCostFromHeaders(
 	headers: Record<string, string>,
 ): number {
 	const logger = getLogger();
@@ -373,7 +372,7 @@ export function extractCostFromHeaders(
  * @param completionTokens Number of completion tokens
  * @returns Promise<number> Calculated cost
  */
-export async function calculateCost(
+export async function _calculateCost(
 	supabase: SupabaseClient,
 	provider: string,
 	model: string,
@@ -512,7 +511,7 @@ export function estimateCost(
  * @param teamId Team ID
  * @returns Promise<boolean> True if limits exceeded
  */
-export async function checkUsageLimits(
+export async function _checkUsageLimits(
 	supabase: SupabaseClient,
 	userId?: string,
 	teamId?: string,

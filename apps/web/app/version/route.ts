@@ -35,7 +35,7 @@ async function getGitHash() {
 
 	try {
 		return await getHashFromProcess();
-	} catch (error) {
+	} catch (_error) {
 		// TODO: Async logger needed
 		// (await getLogger()).warn(
 		// `[WARN] Could not find git hash: ${JSON.stringify(error)}. You may want to provide a fallback.`,

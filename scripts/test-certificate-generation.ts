@@ -105,7 +105,7 @@ async function fetchLessonsFromPayload(courseId: string): Promise<unknown[]> {
 		// (await getLogger()).info(`Successfully fetched ${lessons.length} lessons from Payload CMS`, { data:  });
 
 		return lessons;
-	} catch (error) {
+	} catch (_error) {
 		// TODO: Async logger needed
 		// (await getLogger()).error("Error fetching lessons from Payload CMS:", { data: error });
 
@@ -143,7 +143,7 @@ async function fetchLessonsFromPayload(courseId: string): Promise<unknown[]> {
 			// TODO: Async logger needed
 		// (await getLogger()).info(`Successfully fetched ${data?.length || 0} lessons from Supabase with schema`, { data:  });
 			return data || [];
-		} catch (fallbackError) {
+		} catch (_fallbackError) {
 			// TODO: Async logger needed
 		// (await getLogger()).error("Fallback fetch also failed:", { data: fallbackError });
 			throw new Error(
@@ -158,8 +158,6 @@ async function fetchLessonsFromPayload(courseId: string): Promise<unknown[]> {
  */
 async function generateCertificate(userId: string, fullName: string) {
 	(await getLogger()).info(`Generating certificate for user ${userId}...`);
-
-	try {
 		// Import the certificate service
 		// Use dynamic import with .js extension for ESM compatibility
 		const { generateCertificate } = await import(
@@ -181,11 +179,6 @@ async function generateCertificate(userId: string, fullName: string) {
 		// (await getLogger()).info("Certificate URL:", { data: result.certificateUrl });
 
 		return result;
-	} catch (error) {
-		// TODO: Async logger needed
-		// (await getLogger()).error("Failed to generate certificate:", { data: error });
-		throw error;
-	}
 }
 
 async function main() {
@@ -315,7 +308,7 @@ async function main() {
 		);
 
 		// Check if all required lessons are completed
-		const isCompleted = completedRequiredLessons === TOTAL_REQUIRED_LESSONS;
+		const _isCompleted = completedRequiredLessons === TOTAL_REQUIRED_LESSONS;
 
 		// TODO: Async logger needed
 		// (await getLogger()).info(`Total required lessons: ${TOTAL_REQUIRED_LESSONS}`);
@@ -429,7 +422,7 @@ async function main() {
 		);
 		// TODO: Async logger needed
 		// (await getLogger()).info("Done!");
-	} catch (error) {
+	} catch (_error) {
 		// TODO: Async logger needed
 		// (await getLogger()).error("Error:", { data: error });
 		process.exit(1);
@@ -437,7 +430,7 @@ async function main() {
 }
 
 // Call main() directly
-main().catch((error) => {
+main().catch((_error) => {
 	// TODO: Async logger needed
 		// (await getLogger()).error("Error in main execution:", { data: error });
 	process.exit(1);

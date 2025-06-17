@@ -2,7 +2,7 @@
 const DEBUG = process.env.NODE_ENV === "development";
 
 // Helper logging function
-function debugLog(...args: unknown[]) {
+function _debugLog(..._args: unknown[]) {
 	if (DEBUG) {
 		// TODO: Async logger needed
 		// (await getLogger()).info("[TemplateTagProcessor]", { data: ...args });
@@ -21,7 +21,7 @@ function processR2FileTags(text: string): string {
 	// Count matches before processing
 	const matches = text.match(/{%\s*r2file.*?\/%}/g) || [];
 	if (DEBUG && matches.length > 0) {
-		debugLog(`Found ${matches.length} r2file tags`);
+		_debugLog(`Found ${matches.length} r2file tags`);
 	}
 
 	// Standard pattern
@@ -33,7 +33,7 @@ function processR2FileTags(text: string): string {
 		r2filePattern,
 		(_match, url, description) => {
 			if (DEBUG) {
-				debugLog(
+				_debugLog(
 					`Processing r2file: URL=${url.substring(0, 30)}..., Description=${description}`,
 				);
 			}
@@ -66,7 +66,7 @@ function processR2FileTags(text: string): string {
 		alternativePattern,
 		(_match, description, url) => {
 			if (DEBUG) {
-				debugLog(
+				_debugLog(
 					`Processing alternative r2file: Description=${description}, URL=${url.substring(0, 30)}...`,
 				);
 			}
@@ -95,8 +95,8 @@ function processR2FileTags(text: string): string {
 	if (DEBUG) {
 		const remainingMatches = processedText.match(/{%\s*r2file.*?\/%}/g) || [];
 		if (remainingMatches.length > 0) {
-			debugLog(`Warning: ${remainingMatches.length} r2file tags not processed`);
-			debugLog(`First unprocessed tag: ${remainingMatches[0]}`);
+			_debugLog(`Warning: ${remainingMatches.length} r2file tags not processed`);
+			_debugLog(`First unprocessed tag: ${remainingMatches[0]}`);
 		}
 	}
 
@@ -111,14 +111,14 @@ function processBunnyVideoTags(text: string): string {
 	// Count matches before processing
 	const matches = text.match(/{%\s*bunny.*?\/%}/g) || [];
 	if (DEBUG && matches.length > 0) {
-		debugLog(`Found ${matches.length} bunny video tags`);
+		_debugLog(`Found ${matches.length} bunny video tags`);
 	}
 
 	const bunnyPattern = /{%\s*bunny\s+bunnyvideoid="([^"]+)"\s*\/%}/g;
 
 	return text.replace(bunnyPattern, (_match, videoId) => {
 		if (DEBUG) {
-			debugLog(`Processing bunny video: ID=${videoId}`);
+			_debugLog(`Processing bunny video: ID=${videoId}`);
 		}
 
 		const libraryId = "264486"; // Default library ID
@@ -150,14 +150,14 @@ function processCustomBulletTags(text: string): string {
 	// Count matches before processing
 	const matches = text.match(/{%\s*custombullet.*?\/%}/g) || [];
 	if (DEBUG && matches.length > 0) {
-		debugLog(`Found ${matches.length} custom bullet tags`);
+		_debugLog(`Found ${matches.length} custom bullet tags`);
 	}
 
 	const bulletPattern = /{%\s*custombullet\s+status="([^"]+)"\s*\/%}/g;
 
 	return text.replace(bulletPattern, (_match, status) => {
 		if (DEBUG) {
-			debugLog(`Processing custom bullet: status=${status}`);
+			_debugLog(`Processing custom bullet: status=${status}`);
 		}
 
 		let bulletHtml = "";
@@ -190,7 +190,7 @@ function processCustomBulletTags(text: string): string {
 function processHeaderTags(text: string): string {
 	return text.replace(/^###\s+(.*)$/gm, (_match, headerText) => {
 		if (DEBUG) {
-			debugLog(`Processing header: "${headerText}"`);
+			_debugLog(`Processing header: "${headerText}"`);
 		}
 		return `<h3 class="text-xl font-bold mt-6 mb-3">${headerText}</h3>`;
 	});
@@ -201,10 +201,10 @@ function processHeaderTags(text: string): string {
  * @param content The content string containing template tags
  * @returns Component with processed content
  */
-export function TemplateTagProcessor({ content }: TemplateTagProcessorProps) {
+export function _TemplateTagProcessor({ content }: TemplateTagProcessorProps) {
 	if (!content || typeof content !== "string") {
 		if (DEBUG) {
-			debugLog("Received empty or non-string content");
+			_debugLog("Received empty or non-string content");
 		}
 		return null;
 	}
@@ -214,23 +214,23 @@ export function TemplateTagProcessor({ content }: TemplateTagProcessorProps) {
 		const contentPreview =
 			content.length > 100 ? `${content.substring(0, 100)}...` : content;
 
-		debugLog(`Processing content (${content.length} chars): ${contentPreview}`);
+		_debugLog(`Processing content (${content.length} chars): ${contentPreview}`);
 
 		// Count tag occurrences
 		const r2fileMatches = content.match(/{%\s*r2file.*?\/%}/g) || [];
 		const bunnyMatches = content.match(/{%\s*bunny.*?\/%}/g) || [];
 		const bulletMatches = content.match(/{%\s*custombullet.*?\/%}/g) || [];
 
-		debugLog(
+		_debugLog(
 			`Found tags: ${r2fileMatches.length} r2file, ${bunnyMatches.length} bunny, ${bulletMatches.length} custombullet`,
 		);
 
 		// Log the first few matches of each type
 		const logFirstMatches = (matches: string[], label: string) => {
 			if (matches.length > 0) {
-				debugLog(`${label} examples:`);
+				_debugLog(`${label} examples:`);
 				for (const [i, match] of matches.slice(0, 2).entries()) {
-					debugLog(`  ${i + 1}. ${match}`);
+					_debugLog(`  ${i + 1}. ${match}`);
 				}
 			}
 		};
@@ -273,7 +273,7 @@ export function TemplateTagProcessor({ content }: TemplateTagProcessorProps) {
 		);
 	} catch (error) {
 		if (DEBUG) {
-			debugLog("Error processing template tags:", error);
+			_debugLog("Error processing template tags:", error);
 		}
 
 		// Fallback to a basic rendering with error indication in development
@@ -301,7 +301,7 @@ export function TemplateTagProcessor({ content }: TemplateTagProcessorProps) {
 /**
  * Check if content contains template tags that need processing
  */
-export function containsTemplateTags(content: unknown): boolean {
+export function _containsTemplateTags(content: unknown): boolean {
 	if (typeof content !== "string") {
 		return false;
 	}

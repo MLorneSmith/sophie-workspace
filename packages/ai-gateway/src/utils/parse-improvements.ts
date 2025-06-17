@@ -36,7 +36,7 @@ function extractJson(text: string): string | null {
 
 		// Otherwise, return the whole match (direct JSON)
 		return match[0];
-	} catch (error) {
+	} catch (_error) {
 		// TODO: Async logger needed
 		// (await getLogger()).error("Error extracting JSON:", { data: error });
 		return null;
@@ -219,7 +219,7 @@ export function parseImprovements(
 					// TODO: Async logger needed
 		// (await getLogger()).info("Successfully parsed with strict character fixes");
 					return improvementsFromParsed(parsed);
-				} catch (strictError) {
+				} catch (_strictError) {
 					// TODO: Async logger needed
 		// (await getLogger()).error("Strict cleaning parse failed:", { data: strictError });
 		// }

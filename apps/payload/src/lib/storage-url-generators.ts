@@ -128,7 +128,7 @@ export function createURLGenerator(
 			}
 
 			return url;
-		} catch (error) {
+		} catch (_error) {
 			// TODO: Async logger needed
 			// (await getLogger()).error(`[URL-GENERATOR] Error generating URL for ${collection}/${filename}:`, { arg1: error, arg2:  });
 

@@ -204,7 +204,7 @@ describe("getOutlineSuggestionsAction", () => {
 			// });
 
 			// Assert
-			expect(result.success).toBe(true);
+			expect(_result._success).toBe(true);
 			expect(result.data).toEqual(expectedSuggestions);
 		});
 
@@ -245,12 +245,12 @@ describe("getOutlineSuggestionsAction", () => {
 			vi.mocked(lexicalToTiptap).mockReturnValue(convertedTiptap);
 
 			// Act
-			const result = await getOutlineSuggestionsAction({
+			const _result = await getOutlineSuggestionsAction({
 				submissionId: "test-id",
 			// });
 
 			// Assert
-			expect(result.success).toBe(true);
+			expect(_result._success).toBe(true);
 			expect(lexicalToTiptap).toHaveBeenCalledWith(lexicalContent);
 			expect(getChatCompletion).toHaveBeenCalledWith(
 				expect.arrayContaining([
@@ -297,12 +297,12 @@ describe("getOutlineSuggestionsAction", () => {
 			);
 
 			// Act
-			const result = await getOutlineSuggestionsAction({
+			const _result = await getOutlineSuggestionsAction({
 				submissionId: "test-id",
 			// });
 
 			// Assert
-			expect(result.success).toBe(true);
+			expect(_result._success).toBe(true);
 			expect(getChatCompletion).toHaveBeenCalledWith(
 				expect.arrayContaining([
 					expect.objectContaining({
@@ -336,12 +336,12 @@ describe("getOutlineSuggestionsAction", () => {
 			);
 
 			// Act
-			const result = await getOutlineSuggestionsAction({
+			const _result = await getOutlineSuggestionsAction({
 				submissionId: "test-id",
 			// });
 
 			// Assert
-			expect(result.success).toBe(true);
+			expect(_result._success).toBe(true);
 			expect(getChatCompletion).toHaveBeenCalledWith(
 				expect.arrayContaining([
 					expect.objectContaining({
@@ -380,7 +380,7 @@ describe("getOutlineSuggestionsAction", () => {
 			// });
 
 			// Assert
-			expect(result.success).toBe(false);
+			expect(_result._success).toBe(false);
 			expect(result.error).toBe("Failed to fetch submission data");
 		});
 
@@ -415,7 +415,7 @@ describe("getOutlineSuggestionsAction", () => {
 			// });
 
 			// Assert
-			expect(result.success).toBe(false);
+			expect(_result._success).toBe(false);
 			expect(result.error).toBe("AI service unavailable");
 		});
 
@@ -462,7 +462,7 @@ describe("getOutlineSuggestionsAction", () => {
 			// });
 
 			// Assert
-			expect(result.success).toBe(false);
+			expect(_result._success).toBe(false);
 			expect(result.error).toContain("Unexpected token");
 		});
 	});
@@ -490,12 +490,12 @@ describe("getOutlineSuggestionsAction", () => {
 			);
 
 			// Act
-			const result = await getOutlineSuggestionsAction({
+			const _result = await getOutlineSuggestionsAction({
 				submissionId: "test-id",
 			// });
 
 			// Assert
-			expect(result.success).toBe(true);
+			expect(_result._success).toBe(true);
 			expect(getChatCompletion).toHaveBeenCalledWith(
 				expect.arrayContaining([
 					expect.objectContaining({
@@ -541,12 +541,12 @@ describe("getOutlineSuggestionsAction", () => {
 			);
 
 			// Act
-			const result = await getOutlineSuggestionsAction({
+			const _result = await getOutlineSuggestionsAction({
 				submissionId: "test-id",
 			// });
 
 			// Assert
-			expect(result.success).toBe(true);
+			expect(_result._success).toBe(true);
 			expect(getChatCompletion).toHaveBeenCalledWith(
 				expect.arrayContaining([
 					expect.objectContaining({

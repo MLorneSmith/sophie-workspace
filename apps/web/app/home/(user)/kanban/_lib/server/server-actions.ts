@@ -43,7 +43,7 @@ const createTaskAction = enhanceAction(
 				const { data: uploadResult, success } = await uploadTaskImageAction({
 					file: image,
 				// });
-				if (success && uploadResult) {
+				if (_success && uploadResult) {
 					imageUrl = uploadResult.url;
 				}
 			}
@@ -105,7 +105,7 @@ const updateTaskAction = enhanceAction(
 				const { data: uploadResult, success } = await uploadTaskImageAction({
 					file: image,
 				// });
-				if (success && uploadResult) {
+				if (_success && uploadResult) {
 					imageUrl = uploadResult.url;
 				}
 			}

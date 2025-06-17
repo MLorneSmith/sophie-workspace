@@ -28,7 +28,7 @@ async function checkLicense() {
 
 	try {
 		gitEmail = execSync("git config user.email").toString().trim();
-	} catch (error) {
+	} catch (_error) {
 		// Silently continue if git config not found
 
 		if (!gitUser) {

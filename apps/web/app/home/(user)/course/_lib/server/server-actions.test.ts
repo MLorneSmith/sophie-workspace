@@ -462,7 +462,6 @@ describe("Course Server Actions", () => {
 		beforeEach(() => {
 			// Mock CMS data for lesson progress tests
 			mockGetCourseBySlug.mockResolvedValue({
-				docs: [{ id: "course-123" }],
 			// });
 			mockGetCourseLessons.mockResolvedValue({
 				docs: [{ id: "lesson-456", lesson_number: "101" }],
@@ -609,7 +608,6 @@ describe("Course Server Actions", () => {
 
 				// Mock CMS responses
 				mockGetCourseBySlug.mockResolvedValueOnce({
-					docs: [{ id: "course-123", title: "Test Course" }],
 				// });
 				mockGetCourseLessons.mockResolvedValueOnce({
 					docs: [
@@ -646,7 +644,6 @@ describe("Course Server Actions", () => {
 		beforeEach(() => {
 			// Mock CMS data for the recursive lesson progress call
 			mockGetCourseBySlug.mockResolvedValue({
-				docs: [{ id: "course-123" }],
 			// });
 			mockGetCourseLessons.mockResolvedValue({
 				docs: [{ id: "lesson-456", lesson_number: "101" }],
@@ -864,7 +861,6 @@ describe("Course Server Actions", () => {
 
 			// Mock CMS data
 			mockGetCourseBySlug.mockResolvedValue({
-				docs: [{ id: "course-123" }],
 			// });
 			mockGetCourseLessons.mockResolvedValue({
 				docs: [{ id: "lesson-456", lesson_number: "101" }],

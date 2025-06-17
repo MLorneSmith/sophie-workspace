@@ -91,7 +91,7 @@ class AccountMembersService {
 				target_team_account_id: params.accountId,
 			// });
 
-		if (accountError ?? !canActionAccountMember) {
+		if (accountError ?? !_canActionAccountMember) {
 			logger.error(
 				{
 					...ctx,
