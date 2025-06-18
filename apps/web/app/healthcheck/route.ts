@@ -26,11 +26,12 @@ async function getSupabaseHealthCheck() {
   try {
     const client = getSupabaseServerAdminClient();
 
-    const { error } = await client.rpc('is_set', {
-      field_name: 'billing_provider',
-    });
+    const { data, error } = await client
+      .from('config')
+      .select('billing_provider')
+      .single();
 
-    return !error;
+    return !error && Boolean(data?.billing_provider);
   } catch {
     return false;
   }
