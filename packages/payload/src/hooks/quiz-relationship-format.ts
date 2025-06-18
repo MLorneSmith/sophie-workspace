@@ -9,15 +9,6 @@
  */
 import type { CollectionAfterReadHook } from "@payloadcms/payload/types";
 
-// Define the expected structure of quiz questions for type safety
-type QuizQuestion = {
-	id: string;
-	relationTo: string;
-	value: {
-		id: string;
-	};
-};
-
 interface QuizDocument {
 	id?: string;
 	questions?: unknown[] | unknown;
@@ -77,7 +68,7 @@ export const ensureProperQuizQuestionFormat: CollectionAfterReadHook = async ({
 		}
 
 		return doc;
-	} catch (error) {
+	} catch (_error) {
 		// TODO: Async logger needed
 		// (await getLogger()).error(`Error in ensureProperQuizQuestionFormat hook for quiz ${doc.id}:`, { error });
 		// Return the document as is to avoid blocking access completely

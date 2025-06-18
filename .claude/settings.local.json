@@ -69,7 +69,8 @@
 			"Bash(.claude/scripts/sync-issue.sh:*)",
 			"Bash(pnpm lint:*)",
 			"mcp__exa__exa_search",
-			"mcp__github__add_issue_comment"
+			"mcp__github__add_issue_comment",
+			"Bash(gh issue view:*)"
 		],
 		"deny": []
 	},

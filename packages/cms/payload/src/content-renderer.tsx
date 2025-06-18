@@ -7,7 +7,7 @@ import {
 const DEBUG = process.env.NODE_ENV === "development";
 
 // Helper logging function
-function debugLog(...args: unknown[]) {
+function debugLog(..._args: unknown[]) {
 	if (DEBUG) {
 		// TODO: Async logger needed
 		// (await getLogger()).info("[PayloadContentRenderer]", { data: ...args });

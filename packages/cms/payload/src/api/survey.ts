@@ -4,6 +4,13 @@ import { callPayloadAPI } from "./payload-api";
 
 const logger = createEnvironmentLogger("SURVEY-API");
 
+// Type for objects that might contain an ID or value property
+type RelationshipObject = {
+	id?: string;
+	value?: string;
+	[key: string]: unknown;
+};
+
 /**
  * Get a survey by slug
  * @param slug The slug of the survey
@@ -265,7 +272,7 @@ export async function getSurveyQuestions(
 
 						if (typeof q[key] === "object" && q[key] !== null) {
 							// Check if the property is an object that contains the survey ID
-							const obj = q[key] as any;
+							const obj = q[key] as RelationshipObject;
 							if ("id" in obj && obj.id === surveyId) {
 								// TODO: Async logger needed
 								// (await getLogger()).info(`Question ${q.id} matched by object property ${key}`);
@@ -285,8 +292,10 @@ export async function getSurveyQuestions(
 									if (
 										item &&
 										typeof item === "object" &&
-										(("id" in item && (item as any).id === surveyId) ||
-											("value" in item && (item as any).value === surveyId))
+										(("id" in item &&
+											(item as RelationshipObject).id === surveyId) ||
+											("value" in item &&
+												(item as RelationshipObject).value === surveyId))
 									)
 										return true;
 									return false;

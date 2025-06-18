@@ -115,7 +115,7 @@ export const addManualTestimonialAction = enhanceAction(
 			customer_avatar_url: typedData.customer.avatarUrl,
 		});
 
-		if (_error) {
+		if (error) {
 			logger.error("Failed to add manual testimonial");
 
 			throw new Error("Failed to add manual testimonial");

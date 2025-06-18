@@ -16,6 +16,7 @@
 		"./config/server": "./src/sentry.client.server.ts"
 	},
 	"dependencies": {
+		"@kit/shared": "workspace:*",
 		"@sentry/nextjs": "^9.27.0",
 		"import-in-the-middle": "1.14.0"
 	},

@@ -47,7 +47,6 @@ This XML file contains a complete inventory of all context documentation organiz
 
 ```
 # PARALLEL READ these core debugging docs:
-.claude/core/project-overview.md
 .claude/core/code-standards.md
 .claude/docs/debugging/common-patterns.md
 .claude/docs/debugging/debugging-system-overview.md
@@ -55,7 +54,7 @@ This XML file contains a complete inventory of all context documentation organiz
 
 ### 2.3 Conditional Context (Based on Issue Type)
 
-After reading the issue (in section 3.4), identify relevant documentation from the inventory and load it. Here are common patterns:
+After reading the issue (in section 3.4), identify relevant documentation from the inventory and load it based on .claude/docs/.context-docs-inventory.xml. Here are common patterns:
 
 ```typescript
 // Based on issue analysis, select relevant docs from the inventory:
