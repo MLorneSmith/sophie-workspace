@@ -97,7 +97,10 @@ export function StoryboardProvider({ children }: StoryboardProviderProps) {
 				} else if (typedPresentation.outline) {
 					// Otherwise generate one from the outline
 					const generatedStoryboard = generateStoryboardFromOutline(
-						typedPresentation.outline || { type: "doc", content: [] },
+						(typedPresentation.outline as TipTapDocument) || {
+							type: "doc",
+							content: [],
+						},
 					);
 					setStoryboard(generatedStoryboard);
 				} else {

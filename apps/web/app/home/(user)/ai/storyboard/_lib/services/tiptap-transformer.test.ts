@@ -46,7 +46,7 @@ describe("TipTapTransformer", () => {
 			expect(result.title).toBe("Main Title");
 			expect(result.slides).toHaveLength(1);
 			expect(result.slides[0]).toBeDefined();
-			expect(result.slides[0]?.headline).toBe("Main Title");
+			expect(result.slides[0]?.title).toBe("Main Title");
 			expect(result.slides[0]?.layoutId).toBe("title");
 		});
 
@@ -81,7 +81,7 @@ describe("TipTapTransformer", () => {
 			// Assert
 			expect(result.title).toBe("Fallback Title");
 			expect(result.slides).toHaveLength(1);
-			expect(result.slides[0]?.headline).toBe("Untitled Presentation"); // Uses document meta or default
+			expect(result.slides[0]?.title).toBe("Untitled Presentation"); // Uses document meta or default
 			// biome-ignore lint/suspicious/noConsole: Test assertion for console.error mock
 			expect(console.error).toHaveBeenCalledWith(
 				"Error parsing TipTap document:",
@@ -137,9 +137,9 @@ describe("TipTapTransformer", () => {
 
 			// Assert
 			expect(result.slides).toHaveLength(3);
-			expect(result.slides[0].headline).toBe("Title Slide");
-			expect(result.slides[1].headline).toBe("Section 1");
-			expect(result.slides[2].headline).toBe("Section 2");
+			expect(result.slides[0]?.title).toBe("Title Slide");
+			expect(result.slides[1]?.title).toBe("Section 1");
+			expect(result.slides[2]?.title).toBe("Section 2");
 		});
 
 		it("should handle empty document", () => {
@@ -152,7 +152,7 @@ describe("TipTapTransformer", () => {
 			// Assert
 			expect(result.title).toBe("Untitled Presentation");
 			expect(result.slides).toHaveLength(1);
-			expect(result.slides[0].storyboard.layoutId).toBe("title");
+			expect(result.slides[0]?.layoutId).toBe("title");
 		});
 	});
 

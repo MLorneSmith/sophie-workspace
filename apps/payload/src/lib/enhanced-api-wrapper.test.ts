@@ -78,7 +78,7 @@ describe("EnhancedAPIManager", () => {
 
 		// Mock logger
 		mockLogger = new MockEnvironmentLogger();
-		vi.mocked(createEnvironmentLogger).mockReturnValue(mockLogger);
+		vi.mocked(createEnvironmentLogger).mockReturnValue(mockLogger as any);
 
 		// Mock Date.now for consistent timing
 		mockDate = new Date("2023-01-01T12:00:00.000Z");
@@ -131,8 +131,8 @@ describe("EnhancedAPIManager", () => {
 			const enhancedHandler = manager.createEnhancedHandler(mockHandler, "GET");
 
 			// Make two requests to test uniqueness
-			const request1 = new Request("https://example.com/api/test1");
-			const request2 = new Request("https://example.com/api/test2");
+			const request1 = new Request("https://example.com/api/test1") as NextRequest;
+			const request2 = new Request("https://example.com/api/test2") as NextRequest;
 
 			const response1 = await enhancedHandler(request1);
 			const response2 = await enhancedHandler(request2);
@@ -453,7 +453,7 @@ describe("EnhancedAPIManager", () => {
 			);
 
 			// Execute requests
-			const request = new Request("https://example.com/api/test");
+			const request = new Request("https://example.com/api/test") as NextRequest;
 			
 			await enhancedHandlers[0](request);
 			let metrics = manager.getMetrics();
@@ -480,7 +480,7 @@ describe("EnhancedAPIManager", () => {
 			const enhancedSuccessHandler = manager.createEnhancedHandler(successHandler, "GET");
 			const enhancedFailHandler = manager.createEnhancedHandler(failHandler, "POST");
 			
-			const request = new Request("https://example.com/api/test");
+			const request = new Request("https://example.com/api/test") as NextRequest;
 			
 			// Make successful requests
 			await enhancedSuccessHandler(request);
@@ -511,7 +511,7 @@ describe("EnhancedAPIManager", () => {
 
 			// Generate more errors than the maximum by making failing requests
 			for (let i = 0; i < maxErrorLogSize + 10; i++) {
-				const request = new Request(`https://example.com/api/test?index=${i}`);
+				const request = new Request(`https://example.com/api/test?index=${i}`) as NextRequest;
 				await enhancedHandler(request);
 			}
 
@@ -530,7 +530,7 @@ describe("EnhancedAPIManager", () => {
 			});
 
 			const enhancedHandler = manager.createEnhancedHandler(failingHandler, "GET");
-			const request = new Request("https://example.com/api/test");
+			const request = new Request("https://example.com/api/test") as NextRequest;
 
 			// Generate errors beyond limit
 			for (let i = 0; i < 105; i++) {
@@ -553,7 +553,7 @@ describe("EnhancedAPIManager", () => {
 			const error = new Error("404 Not Found");
 			const mockHandler = vi.fn().mockRejectedValue(error);
 			const enhancedHandler = manager.createEnhancedHandler(mockHandler, "GET");
-			const request = new Request("https://example.com/api/test");
+			const request = new Request("https://example.com/api/test") as NextRequest;
 
 			const response = await enhancedHandler(request);
 
@@ -567,7 +567,7 @@ describe("EnhancedAPIManager", () => {
 			const error = new Error("401 Unauthorized access");
 			const mockHandler = vi.fn().mockRejectedValue(error);
 			const enhancedHandler = manager.createEnhancedHandler(mockHandler, "GET");
-			const request = new Request("https://example.com/api/test");
+			const request = new Request("https://example.com/api/test") as NextRequest;
 
 			const response = await enhancedHandler(request);
 
@@ -581,7 +581,7 @@ describe("EnhancedAPIManager", () => {
 			const error = new Error("403 Forbidden operation");
 			const mockHandler = vi.fn().mockRejectedValue(error);
 			const enhancedHandler = manager.createEnhancedHandler(mockHandler, "GET");
-			const request = new Request("https://example.com/api/test");
+			const request = new Request("https://example.com/api/test") as NextRequest;
 
 			const response = await enhancedHandler(request);
 
@@ -595,7 +595,7 @@ describe("EnhancedAPIManager", () => {
 			const error = new Error("400 Bad Request format");
 			const mockHandler = vi.fn().mockRejectedValue(error);
 			const enhancedHandler = manager.createEnhancedHandler(mockHandler, "GET");
-			const request = new Request("https://example.com/api/test");
+			const request = new Request("https://example.com/api/test") as NextRequest;
 
 			const response = await enhancedHandler(request);
 
@@ -609,7 +609,7 @@ describe("EnhancedAPIManager", () => {
 			const error = new Error("Some unknown error");
 			const mockHandler = vi.fn().mockRejectedValue(error);
 			const enhancedHandler = manager.createEnhancedHandler(mockHandler, "GET");
-			const request = new Request("https://example.com/api/test");
+			const request = new Request("https://example.com/api/test") as NextRequest;
 
 			const response = await enhancedHandler(request);
 
@@ -626,7 +626,7 @@ describe("EnhancedAPIManager", () => {
 				const error = new Error("Detailed error message");
 				const mockHandler = vi.fn().mockRejectedValue(error);
 				const enhancedHandler = manager.createEnhancedHandler(mockHandler, "GET");
-				const request = new Request("https://example.com/api/test");
+				const request = new Request("https://example.com/api/test") as NextRequest;
 
 				const response = await enhancedHandler(request);
 
@@ -647,7 +647,7 @@ describe("EnhancedAPIManager", () => {
 				const error = new Error("Sensitive error details");
 				const mockHandler = vi.fn().mockRejectedValue(error);
 				const enhancedHandler = manager.createEnhancedHandler(mockHandler, "GET");
-				const request = new Request("https://example.com/api/test");
+				const request = new Request("https://example.com/api/test") as NextRequest;
 
 				const response = await enhancedHandler(request);
 
@@ -672,7 +672,7 @@ describe("EnhancedAPIManager", () => {
 			const enhancedSuccessHandler = manager.createEnhancedHandler(successHandler, "GET");
 			const enhancedFailHandler = manager.createEnhancedHandler(failHandler, "POST");
 			
-			const request = new Request("https://example.com/api/test");
+			const request = new Request("https://example.com/api/test") as NextRequest;
 			
 			// Make one successful and one failed request
 			await enhancedSuccessHandler(request);
@@ -710,7 +710,7 @@ describe("EnhancedAPIManager", () => {
 			});
 
 			const enhancedHandler = manager.createEnhancedHandler(failingHandler, "GET");
-			const request = new Request("https://example.com/api/test");
+			const request = new Request("https://example.com/api/test") as NextRequest;
 
 			// Generate 5 errors
 			for (let i = 0; i < 5; i++) {
@@ -729,7 +729,7 @@ describe("EnhancedAPIManager", () => {
 			// Create a failing handler
 			const failingHandler = vi.fn().mockRejectedValue(new Error("Test error"));
 			const enhancedHandler = manager.createEnhancedHandler(failingHandler, "GET");
-			const request = new Request("https://example.com/api/test");
+			const request = new Request("https://example.com/api/test") as NextRequest;
 
 			// Generate an error
 			await enhancedHandler(request);

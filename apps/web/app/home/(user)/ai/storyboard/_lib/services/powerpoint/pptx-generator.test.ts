@@ -565,7 +565,15 @@ describe("PptxGenerator", () => {
 									id: "1",
 									area: "content1",
 									type: "chart",
-									chartType: chartType as unknown,
+									chartType: chartType as
+										| "bar"
+										| "line"
+										| "pie"
+										| "area"
+										| "scatter"
+										| "bubble"
+										| "radar"
+										| "doughnut",
 									chartData: { title: "Test" },
 									columnIndex: 0,
 								},
@@ -600,7 +608,7 @@ describe("PptxGenerator", () => {
 								id: "1",
 								area: "content1",
 								type: "chart",
-								chartType: "unknown" as unknown,
+								chartType: "unknown" as any,
 								chartData: { title: "Test" },
 								columnIndex: 0,
 							},

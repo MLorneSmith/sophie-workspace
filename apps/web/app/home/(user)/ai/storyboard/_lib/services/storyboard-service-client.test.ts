@@ -631,9 +631,9 @@ describe("StoryboardService", () => {
 
 			// Assert
 			expect(result.slides).toHaveLength(3);
-			expect(result.slides[0].order).toBe(0);
-			expect(result.slides[1].order).toBe(1);
-			expect(result.slides[2].order).toBe(2);
+			expect(result.slides?.[0]?.order).toBe(0);
+			expect(result.slides?.[1]?.order).toBe(1);
+			expect(result.slides?.[2]?.order).toBe(2);
 		});
 
 		it("should handle nodes without text content", async () => {
@@ -664,7 +664,7 @@ describe("StoryboardService", () => {
 
 			// Assert
 			expect(result.slides).toHaveLength(1);
-			expect(result.slides[0].headline).toBe(""); // Empty string from no content
+			expect(result.slides[0]?.title).toBe(""); // Empty string from no content
 		});
 	});
 
@@ -726,9 +726,9 @@ describe("StoryboardService", () => {
 			// Assert
 			expect(result.title).toBe("Main Title");
 			expect(result.slides).toHaveLength(2); // Level 1 and level 2 headings only
-			expect(result.slides[0].headline).toBe("Main Title");
-			expect(result.slides[1].headline).toBe("Section 1");
-			expect(result.slides[1].storyboard.subHeadlines).toEqual(["Subsection"]);
+			expect(result.slides[0]?.title).toBe("Main Title");
+			expect(result.slides[1]?.title).toBe("Section 1");
+			expect(result.slides[1]?.subheadlines).toEqual(["Subsection"]);
 		});
 
 		it("should handle outline as object instead of string", async () => {

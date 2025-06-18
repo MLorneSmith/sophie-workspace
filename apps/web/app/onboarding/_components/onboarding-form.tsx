@@ -16,7 +16,7 @@ import {
 import { Input } from "@kit/ui/input";
 import { setCookie } from "@kit/ui/utils";
 import {
-	createStepSchema,
+	createValidationFunction,
 	MultiStepForm,
 	MultiStepFormContextProvider,
 	MultiStepFormHeader,
@@ -31,13 +31,28 @@ import { useTheme } from "next-themes";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useForm, useWatch } from "react-hook-form";
-import type { z } from "zod";
+import { z } from "zod";
 
-import { FormSchemaShape } from "../_lib/onboarding-form.schema";
+import {
+	FormSchemaShape,
+	validateGoalsStep,
+} from "../_lib/onboarding-form.schema";
 import { submitOnboardingFormAction } from "../_lib/server/server-actions";
 
-// Create the client-side schema using createStepSchema
-const FormSchema = createStepSchema(FormSchemaShape);
+// Create the client-side schema using z.object directly to avoid memory issues
+const FormSchema = z.object(FormSchemaShape);
+
+// Create validation function for each step
+const validation = createValidationFunction({
+	welcome: () => true, // Welcome step has no validation
+	profile: (data) => {
+		return Boolean(data.name && data.name.trim().length >= 2);
+	},
+	goals: (data) => {
+		return validateGoalsStep({ goals: data });
+	},
+	theme: () => true, // Theme step has no validation (has default)
+});
 
 // Dynamically import the Confetti component to avoid SSR issues
 const Confetti = dynamic(() => import("react-confetti"), { ssr: false });
@@ -190,8 +205,8 @@ export function OnboardingForm() {
 			<h1 className="sr-only">SlideHeroes Onboarding Process</h1>
 			<MultiStepForm
 				className="animate-in fade-in-90 zoom-in-95 slide-in-from-bottom-12 mx-auto w-full max-w-3xl space-y-8 rounded-lg border p-4 shadow-sm duration-500 sm:p-6 lg:p-8"
-				schema={FormSchema}
 				form={form}
+				validation={validation}
 				onSubmit={onSubmit}
 			>
 				<MultiStepFormHeader>

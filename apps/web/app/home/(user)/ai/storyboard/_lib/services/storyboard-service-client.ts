@@ -9,8 +9,10 @@ import {
 	PRESET_LAYOUTS,
 	type Slide,
 	type StoryboardData,
+	type StoryboardSlide,
 	type TipTapDocument,
 	type TipTapNode,
+	type TipTapTextNode,
 } from "../types/index";
 
 /**
@@ -217,10 +219,10 @@ export class StoryboardService {
 		const extractedTitle = this.extractTitle(outline) || title;
 
 		// Process the content to extract slides
-		if (outline?.content) {
+		if (outline && (outline as TipTapDocument).content) {
 			let currentStoryboardSlide: StoryboardSlide | null = null;
 
-			for (const node of outline.content) {
+			for (const node of (outline as TipTapDocument).content as TipTapNode[]) {
 				// If it's a heading, create a new slide
 				if (node.type === "heading") {
 					const headingLevel = node.attrs?.level || 1;
@@ -311,8 +313,8 @@ export class StoryboardService {
 	 */
 	private extractTitle(outline: TipTapDocument | unknown): string | null {
 		// Try to find the first level 1 heading
-		if (outline?.content) {
-			for (const node of outline.content) {
+		if (outline && (outline as TipTapDocument).content) {
+			for (const node of (outline as TipTapDocument).content as TipTapNode[]) {
 				if (node.type === "heading" && node.attrs?.level === 1) {
 					return this.extractTextFromNode(node);
 				}
@@ -326,15 +328,15 @@ export class StoryboardService {
 	 * @param node The TipTap node to extract text from
 	 * @returns The extracted text content
 	 */
-	private extractTextFromNode(node: TipTapNode | unknown): string {
+	private extractTextFromNode(node: TipTapNode): string {
 		if (!node.content) return "";
 
-		return node.content
-			.map((contentNode: TipTapNode | unknown) => {
+		return (node.content as (TipTapNode | TipTapTextNode)[])
+			.map((contentNode: TipTapNode | TipTapTextNode) => {
 				if (contentNode.type === "text") {
-					return contentNode.text;
+					return (contentNode as TipTapTextNode).text || "";
 				}
-				return this.extractTextFromNode(contentNode);
+				return this.extractTextFromNode(contentNode as TipTapNode);
 			})
 			.join("");
 	}
@@ -352,13 +354,16 @@ export class StoryboardService {
 	): void {
 		if (!node.content) return;
 
-		for (const item of node.content) {
+		for (const item of node.content as TipTapNode[]) {
 			if (item.type === "listItem" && item.content) {
-				for (const itemContent of item.content) {
+				for (const itemContent of item.content as (
+					| TipTapNode
+					| TipTapTextNode
+				)[]) {
 					if (itemContent.type === "paragraph") {
 						slide.content.push({
 							type,
-							text: this.extractTextFromNode(itemContent),
+							text: this.extractTextFromNode(itemContent as TipTapNode),
 							columnIndex: 0,
 						});
 					} else if (

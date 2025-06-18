@@ -5,6 +5,7 @@
 export interface SimplifiedSection {
 	type: "heading" | "bullet";
 	content: string;
+	[key: string]: unknown; // Add index signature for TypeScript compatibility
 }
 
 export interface SimplifiedContent {
@@ -36,7 +37,7 @@ export function parseSimplified(response: string): SimplifiedContent {
 							section.type &&
 							(section.type === "heading" || section.type === "bullet") &&
 							typeof section.content === "string",
-					);
+					) as boolean;
 
 					if (validSections) {
 						return parsed as SimplifiedContent;
