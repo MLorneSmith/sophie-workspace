@@ -65,7 +65,7 @@ export function NotificationsPopover(params: {
 			numeric: "auto",
 		});
 
-		if (_daysAgo < 1) {
+		if (daysAgo < 1) {
 			time = Math.floor((Date.now() - date.getTime()) / (1000 * 60));
 
 			if (time < 5) {
@@ -165,8 +165,8 @@ export function NotificationsPopover(params: {
 							defaultValue: notification.body,
 						});
 
-						if (body._length > maxChars) {
-							body = `${body.substring(0, maxChars)}...`;
+						if (body.length > _maxChars) {
+							body = `${body.substring(0, _maxChars)}...`;
 						}
 
 						return (

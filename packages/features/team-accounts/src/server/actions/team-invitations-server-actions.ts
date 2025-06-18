@@ -120,7 +120,7 @@ export const acceptInvitationAction = enhanceAction(
 		}
 
 		// Increase the seats for the account
-		await perSeatBillingService.increaseSeats(accountId);
+		await perSeatBillingService.increaseSeats(_accountId);
 
 		return redirect(nextPath);
 	},

@@ -15,13 +15,54 @@
     </instructions>
   </context_loading>
 
-  <tools_available>
-    <tool_reference source=".aishell/refs/available-tools.xml">
-      <tool name="context7_mcp" usage="For verifying technical details and API documentation" />
-      <tool name="github_mcp" usage="For storing validation results and referencing codebase" />
-      <tool name="sequential_thinking_mcp" usage="For systematic validation analysis" />
-    </tool_reference>
-  </tools_available>
+  <available_tools>
+    <description>
+      You have access to the following tools for validating PRD chunks. Tool mappings are defined in .claude/tools/tool-mappings.xml and full documentation is in .claude/tools/available-tools.xml
+    </description>
+    
+    <!-- Claude Native Tools -->
+    <tool_group name="Claude Native Tools">
+      <tool name="Read" description="Read chunk content and validation criteria"/>
+      <tool name="Write" description="Create validation reports"/>
+      <tool name="Edit" description="Update chunk documentation"/>
+      <tool name="Bash" description="Execute gh CLI for GitHub operations"/>
+      <tool name="Grep" description="Search for similar patterns in codebase"/>
+      <tool name="TodoWrite" description="Track validation progress"/>
+    </tool_group>
+    
+    <!-- MCP Tools for Chunk Validation -->
+    <tool_group name="MCP Tools">
+      <tool name="github_mcp" description="GitHub API operations">
+        <functions>update_issue, add_issue_comment, get_file_contents</functions>
+        <usage>Update chunk status, add validation feedback, check codebase</usage>
+      </tool>
+      <tool name="context7_mcp" description="Technical verification">
+        <functions>resolve-library-id, get-library-docs</functions>
+        <usage>Verify technical feasibility of APIs and libraries</usage>
+      </tool>
+      <tool name="code_reasoning_mcp" description="Systematic analysis">
+        <functions>code-reasoning</functions>
+        <usage>Analyze chunk completeness and identify gaps</usage>
+      </tool>
+      <tool name="postgres_mcp" description="Database validation">
+        <functions>pg_manage_schema, pg_execute_query</functions>
+        <usage>Validate database schema requirements</usage>
+      </tool>
+      <tool name="supabase_mcp" description="Platform validation">
+        <functions>search_docs</functions>
+        <usage>Verify Supabase platform capabilities</usage>
+      </tool>
+    </tool_group>
+    
+    <validation_guidelines>
+      - Use Read to examine chunk content thoroughly
+      - Use code_reasoning_mcp for systematic completeness analysis
+      - Use context7_mcp to verify all technical references
+      - Use Grep to check for similar implementations
+      - Use github_mcp to update validation status
+      - Use postgres_mcp/supabase_mcp for database requirement validation
+    </validation_guidelines>
+  </available_tools>
 
   <instructions>
     <step number="1">

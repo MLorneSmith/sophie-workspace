@@ -1,4 +1,41 @@
 <prompt>
+  <metadata>
+    <primary_agent>Planner</primary_agent>
+    <supporting_agents>
+      <agent role="validator">Critic</agent>
+    </supporting_agents>
+    <phase>4-user-story-creation</phase>
+  </metadata>
+  
+  <agent_context>
+    <planner>
+      <role>Primary responsibility for creating INVEST-compliant user stories</role>
+      <context_files>
+        - user-story-templates.md
+        - estimation-guidelines.md
+        - technical-task-patterns.md
+        - INVEST-criteria.md
+      </context_files>
+      <capabilities>
+        - story_decomposition
+        - INVEST_compliance
+        - effort_estimation
+        - task_breakdown
+        - dependency_identification
+      </capabilities>
+    </planner>
+    <critic>
+      <role>Validate story quality and INVEST compliance</role>
+      <validation_focus>
+        - INVEST principles adherence
+        - Clear acceptance criteria
+        - Appropriate story sizing
+        - Complete task breakdown
+        - Accurate effort estimates
+      </validation_focus>
+    </critic>
+  </agent_context>
+  
   <task>
     Generate user stories from a validated PRD chunk for a 5-agent team (Product Owner, Scrum Master, 2 Builders, 1 Reviewer) by extracting features, creating stories with acceptance criteria, defining technical tasks, and estimating effort.
   </task>
@@ -16,13 +53,52 @@
     </instructions>
   </context_loading>
 
-  <tools_available>
-    <tool_reference source=".aishell/refs/available-tools.xml">
-      <tool name="context7_mcp" usage="For verifying APIs/libraries and technical details" />
-      <tool name="github_mcp" usage="For CRUD operations to store outputs and reference codebase files" />
-      <tool name="sequential_thinking_mcp" usage="For creating atomic user stories and estimating effort" />
-    </tool_reference>
-  </tools_available>
+  <available_tools>
+    <description>
+      You have access to the following tools for executing this task. Tool mappings are defined in .claude/tools/tool-mappings.xml and full documentation is in .claude/tools/available-tools.xml
+    </description>
+    
+    <!-- Claude Native Tools -->
+    <tool_group name="Claude Native Tools">
+      <tool name="Read" description="Read chunk validation results and templates"/>
+      <tool name="Write" description="Create user story files"/>
+      <tool name="Edit" description="Update index.yml with new stories"/>
+      <tool name="MultiEdit" description="Create multiple story files efficiently"/>
+      <tool name="Bash" description="Execute gh CLI for GitHub operations"/>
+      <tool name="Grep" description="Find similar story patterns"/>
+      <tool name="TodoWrite" description="Track story creation progress"/>
+    </tool_group>
+    
+    <!-- MCP Tools for User Story Creation -->
+    <tool_group name="MCP Tools">
+      <tool name="github_mcp" description="GitHub API operations">
+        <functions>create_issue, update_issue, list_issues</functions>
+        <usage>Create story issues, link to chunks, check existing stories</usage>
+      </tool>
+      <tool name="code_reasoning_mcp" description="Story decomposition">
+        <functions>code-reasoning</functions>
+        <usage>Break down features into atomic, INVEST-compliant stories</usage>
+      </tool>
+      <tool name="context7_mcp" description="Technical verification">
+        <functions>resolve-library-id, get-library-docs</functions>
+        <usage>Verify technical task feasibility</usage>
+      </tool>
+      <tool name="postgres_mcp" description="Database task analysis">
+        <functions>pg_manage_schema, pg_execute_query</functions>
+        <usage>Analyze database tasks for stories</usage>
+      </tool>
+    </tool_group>
+    
+    <tool_usage_guidelines>
+      - Use Read to examine validated chunks and story templates
+      - Use code_reasoning_mcp to decompose features into stories
+      - Use Grep to find similar existing stories for consistency
+      - Use github_mcp to create story issues in GitHub
+      - Use Write/MultiEdit to create story documentation
+      - Use Edit to update index.yml with story metadata
+      - Use TodoWrite to track progress through story creation
+    </tool_usage_guidelines>
+  </available_tools>
 
   <instructions>
     <step number="1">
@@ -241,4 +317,56 @@ git push origin main
       </commit_instructions>
     </output>
   </example>
+  
+  <agent_workflow>
+    <pattern name="invest_compliant_story_creation">
+      <step order="1">
+        <agent>Planner Agent</agent>
+        <action>Create initial user stories from validated chunks</action>
+        <output>Draft stories with acceptance criteria and tasks</output>
+      </step>
+      <step order="2">
+        <agent>Critic Agent</agent>
+        <action>Validate INVEST compliance and story quality</action>
+        <output>Validation report with INVEST assessment</output>
+      </step>
+      <step order="3">
+        <agent>Planner Agent</agent>
+        <action>Refine stories based on Critic feedback</action>
+        <output>Final INVEST-compliant user stories</output>
+      </step>
+    </pattern>
+  </agent_workflow>
+  
+  <quality_gate>
+    <validator>Critic Agent</validator>
+    <criteria>
+      <invest_compliance>
+        <independent>Story can be developed and tested independently</independent>
+        <negotiable>Flexible in implementation approach</negotiable>
+        <valuable>Clear value to end users</valuable>
+        <estimable>Can be accurately estimated</estimable>
+        <small>Completable within one sprint</small>
+        <testable>Clear acceptance criteria</testable>
+      </invest_compliance>
+      <technical_completeness>All technical tasks identified</technical_completeness>
+      <estimation_accuracy>Realistic effort estimates provided</estimation_accuracy>
+    </criteria>
+    <actions>
+      <on_pass>Stories proceed to Phase 5 (Sprint Planning)</on_pass>
+      <on_fail>Stories returned to Planner for refinement</on_fail>
+    </actions>
+  </quality_gate>
+  
+  <handoff_protocol>
+    <from>Planner Agent</from>
+    <to>Planner Agent + Builder Agent (Phase 5)</to>
+    <context_package>
+      <user_stories>INVEST-compliant stories with full details</user_stories>
+      <technical_breakdown>Complete technical task lists</technical_breakdown>
+      <effort_estimates>Story points and time estimates</effort_estimates>
+      <dependencies>Inter-story and external dependencies</dependencies>
+      <implementation_notes>Technical guidance for builders</implementation_notes>
+    </context_package>
+  </handoff_protocol>
 </prompt>

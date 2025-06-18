@@ -1,0 +1,97 @@
+# Agent Handoff Protocol Template
+# This template defines the standard format for context handoff between agents
+
+handoff_protocol:
+  metadata:
+    from_agent: "{SOURCE_AGENT_NAME}"
+    to_agent: "{TARGET_AGENT_NAME}"
+    phase: "{CURRENT_PHASE}"
+    timestamp: "{ISO_TIMESTAMP}"
+    handoff_id: "{UNIQUE_ID}"
+    
+  context_package:
+    # Primary artifact being handed off
+    primary_artifact:
+      type: "{PRD|CHUNKS|STORIES|CODE|VALIDATION}"
+      content: "{ARTIFACT_CONTENT}"
+      version: "{VERSION_NUMBER}"
+      status: "{DRAFT|REVIEW|APPROVED}"
+      
+    # Enriched context from source agent
+    enriched_context:
+      business_context:
+        - market_analysis: "{IF_APPLICABLE}"
+        - user_research: "{IF_APPLICABLE}"
+        - stakeholder_feedback: "{IF_APPLICABLE}"
+        
+      technical_context:
+        - architecture_impact: "{IF_APPLICABLE}"
+        - dependency_graph: "{IF_APPLICABLE}"
+        - performance_requirements: "{IF_APPLICABLE}"
+        
+      quality_context:
+        - validation_results: "{CRITIC_FEEDBACK}"
+        - identified_risks: "{RISK_LIST}"
+        - improvement_areas: "{SUGGESTIONS}"
+        
+    # Work completed by source agent
+    work_summary:
+      tasks_completed:
+        - task: "{TASK_DESCRIPTION}"
+          outcome: "{RESULT}"
+          
+      decisions_made:
+        - decision: "{WHAT_WAS_DECIDED}"
+          rationale: "{WHY}"
+          impact: "{CONSEQUENCES}"
+          
+      issues_encountered:
+        - issue: "{PROBLEM_DESCRIPTION}"
+          resolution: "{HOW_RESOLVED}"
+          
+    # Instructions for target agent
+    next_steps:
+      required_actions:
+        - action: "{WHAT_NEEDS_TO_BE_DONE}"
+          priority: "{HIGH|MEDIUM|LOW}"
+          deadline: "{IF_APPLICABLE}"
+          
+      context_to_load:
+        - file: "{FILE_PATH}"
+          reason: "{WHY_NEEDED}"
+          
+      quality_criteria:
+        - criterion: "{WHAT_TO_VALIDATE}"
+          standard: "{EXPECTED_QUALITY_LEVEL}"
+          
+  validation:
+    # Checklist for handoff completeness
+    handoff_checklist:
+      - [ ] Primary artifact included and validated
+      - [ ] All relevant context documented
+      - [ ] Quality validation passed
+      - [ ] Next steps clearly defined
+      - [ ] No blocking issues remain
+      
+    # Quality gate status
+    quality_gate:
+      validator: "{AGENT_NAME}"
+      status: "{PASSED|FAILED}"
+      notes: "{VALIDATION_NOTES}"
+      
+  tracking:
+    # GitHub integration
+    github_update:
+      issue_number: "{STORY/EPIC_NUMBER}"
+      fields_to_update:
+        - field: "AAFD Stage"
+          value: "{NEW_STAGE}"
+        - field: "AI Context Status"
+          value: "{CONTEXT_STATE}"
+      comment: "Handoff from {FROM_AGENT} to {TO_AGENT} completed. {SUMMARY}"
+      
+    # Metrics for process improvement
+    metrics:
+      handoff_duration: "{TIME_IN_MINUTES}"
+      rework_required: "{YES|NO}"
+      quality_score: "{1-10}"

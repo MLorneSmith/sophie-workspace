@@ -17,7 +17,7 @@ export function useUpdateUser() {
 			emailRedirectTo: redirectTo,
 		});
 
-		if (response._error) {
+		if (response.error) {
 			throw response.error;
 		}
 

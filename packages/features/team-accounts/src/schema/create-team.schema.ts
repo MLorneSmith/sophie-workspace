@@ -46,6 +46,6 @@ export const TeamNameSchema = z
  * @name CreateTeamSchema
  * @description Schema for creating a team account
  */
-export const _CreateTeamSchema = z.object({
+export const CreateTeamSchema = z.object({
 	name: TeamNameSchema,
 });

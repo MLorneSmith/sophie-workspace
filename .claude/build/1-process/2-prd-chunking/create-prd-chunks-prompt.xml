@@ -1,6 +1,41 @@
 <prompt>
+  <metadata>
+    <primary_agent>Planner</primary_agent>
+    <supporting_agents>
+      <agent role="validator">Critic</agent>
+    </supporting_agents>
+    <phase>2-technical-chunking</phase>
+  </metadata>
+  
+  <agent_context>
+    <planner>
+      <role>Primary responsibility for technical decomposition and chunk creation</role>
+      <context_files>
+        - technical-architecture.md
+        - existing-patterns.md
+        - dependency-map.md
+        - system-boundaries.md
+      </context_files>
+      <capabilities>
+        - technical_decomposition
+        - dependency_analysis
+        - effort_estimation
+        - INVEST_compliance
+      </capabilities>
+    </planner>
+    <critic>
+      <role>Validate chunk independence, completeness, and feasibility</role>
+      <validation_focus>
+        - Chunk independence and clear boundaries
+        - Complete coverage of PRD requirements
+        - Appropriate sizing and complexity
+        - Clear dependency documentation
+      </validation_focus>
+    </critic>
+  </agent_context>
+  
   <task>
-    Prepare a Product Requirements Document (PRD) for processing by a 5-agent team (Product Owner, Scrum Master, 2 Builders, 1 Reviewer) by analyzing structure, identifying cross-cutting concerns, and dividing into logical chunks for parallel processing.
+    Break down a comprehensive Product Requirements Document (PRD) into logical implementation chunks that can be developed independently or in parallel. Analyze the PRD structure to identify natural boundaries, cross-cutting concerns, and dependencies between different parts of the feature. Create 2-4 manageable chunks that each represent a coherent piece of functionality suitable for focused development sessions with Claude Code.
   </task>
   
   <context_loading>
@@ -15,13 +50,54 @@
     </instructions>
   </context_loading>
 
-  <tools_available>
-    <tool_reference source=".aishell/refs/available-tools.xml">
-      <tool name="context7_mcp" usage="For accessing documentation on APIs/libraries and verifying technical details" />
-      <tool name="github_mcp" usage="For CRUD operations to store outputs and reference codebase files" />
-      <tool name="sequential_thinking_mcp" usage="For analyzing PRD structure, identifying cross-cutting functionality, and dividing logically" />
-    </tool_reference>
-  </tools_available>
+  <available_tools>
+    <description>
+      You have access to the following tools for executing this task. Tool mappings are defined in .claude/tools/tool-mappings.xml and full documentation is in .claude/tools/available-tools.xml
+    </description>
+    
+    <!-- Claude Native Tools -->
+    <tool_group name="Claude Native Tools">
+      <tool name="Read" description="Read PRD and context files"/>
+      <tool name="Write" description="Create chunk documentation files"/>
+      <tool name="Edit" description="Update index files and configurations"/>
+      <tool name="MultiEdit" description="Update multiple related files"/>
+      <tool name="Bash" description="Execute gh CLI commands for GitHub operations"/>
+      <tool name="Grep" description="Search for patterns across codebase"/>
+      <tool name="Glob" description="Find files matching patterns"/>
+      <tool name="TodoWrite" description="Track chunking progress"/>
+      <tool name="Task" description="Complex analysis across multiple files"/>
+    </tool_group>
+    
+    <!-- MCP Tools for Technical Chunking -->
+    <tool_group name="MCP Tools">
+      <tool name="github_mcp" description="GitHub API operations">
+        <functions>create_issue, update_issue, get_file_contents</functions>
+        <usage>Create chunk issues, link to epic, examine codebase</usage>
+      </tool>
+      <tool name="context7_mcp" description="Technical documentation">
+        <functions>resolve-library-id, get-library-docs</functions>
+        <usage>Verify technical feasibility of chunk boundaries</usage>
+      </tool>
+      <tool name="postgres_mcp" description="Database analysis">
+        <functions>pg_manage_schema, pg_execute_query</functions>
+        <usage>Analyze database impact for chunk boundaries</usage>
+      </tool>
+      <tool name="code_reasoning_mcp" description="Complex decomposition">
+        <functions>code-reasoning</functions>
+        <usage>Analyze PRD structure and identify logical boundaries</usage>
+      </tool>
+    </tool_group>
+    
+    <tool_usage_guidelines>
+      - Use Read to examine PRD and existing code patterns
+      - Use code_reasoning_mcp for complex PRD decomposition
+      - Use Grep/Glob to understand existing code boundaries
+      - Use github_mcp to create chunk issues and link dependencies
+      - Use postgres_mcp to analyze database schema impact
+      - Use Write to create detailed chunk documentation
+      - Use TodoWrite to track progress through chunking steps
+    </tool_usage_guidelines>
+  </available_tools>
 
   <instructions>
     <step number="1">
@@ -168,4 +244,51 @@ git push origin main
       </chunk>
     </output>
   </example>
+  
+  <agent_workflow>
+    <pattern name="quality_assured_chunking">
+      <step order="1">
+        <agent>Planner Agent</agent>
+        <action>Analyze PRD and create initial chunk breakdown</action>
+        <output>Draft chunks with boundaries and dependencies</output>
+      </step>
+      <step order="2">
+        <agent>Critic Agent</agent>
+        <action>Validate chunk quality and independence</action>
+        <output>Validation report with feedback on chunk design</output>
+      </step>
+      <step order="3">
+        <agent>Planner Agent</agent>
+        <action>Refine chunks based on Critic feedback</action>
+        <output>Final approved chunk breakdown</output>
+      </step>
+    </pattern>
+  </agent_workflow>
+  
+  <quality_gate>
+    <validator>Critic Agent</validator>
+    <criteria>
+      <independence>Chunks can be developed separately with minimal dependencies</independence>
+      <completeness>All PRD requirements are covered by chunks</completeness>
+      <sizing>Each chunk is appropriately sized (3-5k tokens)</sizing>
+      <boundaries>Clear technical boundaries between chunks</boundaries>
+      <dependencies>All inter-chunk dependencies clearly documented</dependencies>
+    </criteria>
+    <actions>
+      <on_pass>Chunks proceed to Phase 3 (Stakeholder Validation)</on_pass>
+      <on_fail>Chunks returned to Planner with specific improvement requirements</on_fail>
+    </actions>
+  </quality_gate>
+  
+  <handoff_protocol>
+    <from>Planner Agent</from>
+    <to>Product Owner Agent (Phase 3)</to>
+    <context_package>
+      <validated_chunks>Approved chunk breakdown with Critic validation</validated_chunks>
+      <technical_analysis>Dependency graph and technical boundaries</technical_analysis>
+      <effort_estimates>Initial sizing estimates per chunk</effort_estimates>
+      <implementation_order>Recommended sequence for chunk development</implementation_order>
+      <validation_notes>Critic Agent feedback and approval</validation_notes>
+    </context_package>
+  </handoff_protocol>
 </prompt>

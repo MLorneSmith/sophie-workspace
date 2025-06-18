@@ -315,13 +315,13 @@ export async function recordApiUsage(
  * @param headers Response headers from Portkey
  * @returns number Cost value or 0 if not found
  */
-export function _extractCostFromHeaders(
+export async function _extractCostFromHeaders(
 	headers: Record<string, string>,
-): number {
-	const logger = getLogger();
+): Promise<number> {
+	const logger = await getLogger();
 
 	if (!headers) {
-		logger.then((l) => l.warn("No headers provided to extractCostFromHeaders"));
+		logger.warn("No headers provided to extractCostFromHeaders");
 		return 0;
 	}
 
@@ -335,11 +335,9 @@ export function _extractCostFromHeaders(
 
 	// Log all available headers in debug mode
 	if (ENV.AI_USAGE_DEBUG) {
-		logger.then((l) =>
-			l.debug("Available headers for cost extraction", {
-				headers: Object.keys(headers),
-			}),
-		);
+		logger.debug("Available headers for cost extraction", {
+			headers: Object.keys(headers),
+		});
 	}
 
 	// Try each possible header
@@ -349,36 +347,28 @@ export function _extractCostFromHeaders(
 			try {
 				const cost = Number.parseFloat(costHeader);
 				if (Number.isNaN(cost) || cost < 0) {
-					logger.then((l) =>
-						l.warn("Invalid cost value in header", {
-							headerName,
-							value: costHeader,
-						}),
-					);
+					logger.warn("Invalid cost value in header", {
+						headerName,
+						value: costHeader,
+					});
 					continue;
 				}
-				logger.then((l) =>
-					l.info("Extracted cost from header", {
-						cost,
-						headerName,
-					}),
-				);
+				logger.info("Extracted cost from header", {
+					cost,
+					headerName,
+				});
 				return cost;
 			} catch (e) {
-				logger.then((l) =>
-					l.error("Error parsing cost header", {
-						headerName,
-						error: e,
-					}),
-				);
+				logger.error("Error parsing cost header", {
+					headerName,
+					error: e,
+				});
 			}
 		}
 	}
 
 	// If we reach here, no valid cost was found
-	logger.then((l) =>
-		l.info("No valid cost found in headers, will use calculated cost"),
-	);
+	logger.info("No valid cost found in headers, will use calculated cost");
 	return 0;
 }
 

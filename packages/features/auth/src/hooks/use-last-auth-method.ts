@@ -4,8 +4,8 @@ import { useCallback, useMemo, useState } from "react";
 
 import type { AuthMethod, LastAuthMethod } from "../utils/last-auth-method";
 import {
-	clearLastAuthMethod,
-	getLastAuthMethod,
+	_clearLastAuthMethod as clearLastAuthMethod,
+	_getLastAuthMethod as getLastAuthMethod,
 	saveLastAuthMethod,
 } from "../utils/last-auth-method";
 

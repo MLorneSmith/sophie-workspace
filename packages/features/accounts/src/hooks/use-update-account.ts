@@ -14,7 +14,7 @@ export function useUpdateAccountData(accountId: string) {
 			id: accountId,
 		});
 
-		if (response._error) {
+		if (response.error) {
 			throw response.error;
 		}
 

@@ -115,7 +115,7 @@ export async function _createGatewayClient(options: PortkeyClientOptions = {}) {
 	});
 
 	// Add our custom tracking metadata
-	if (_userId) headers["x-portkey-request-metadata-user-id"] = userId;
+	if (userId) headers["x-portkey-request-metadata-user-id"] = userId;
 	if (teamId) headers["x-portkey-request-metadata-team-id"] = teamId;
 	if (feature) headers["x-portkey-request-metadata-feature"] = feature;
 	if (sessionId) headers["x-portkey-trace-id"] = sessionId;

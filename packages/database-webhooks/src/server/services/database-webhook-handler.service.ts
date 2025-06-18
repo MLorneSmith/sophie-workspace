@@ -33,10 +33,8 @@ class DatabaseWebhookHandlerService {
 	async handleWebhook(params: {
 		body: RecordChange<keyof Tables>;
 		signature: string;
-		handleEvent?<Table extends keyof Tables>(
-			payload: Table extends keyof Tables
-				? DatabaseChangePayload<Table>
-				: never,
+		handleEvent?(
+			payload: RecordChange<keyof Tables>,
 		): unknown;
 	}) {
 		const logger = await getLogger();
@@ -68,9 +66,7 @@ class DatabaseWebhookHandlerService {
 
 			// if a custom handler is provided, call it
 			if (params?.handleEvent) {
-				await params.handleEvent(
-					params.body as DatabaseChangePayload<keyof Tables>,
-				);
+				await params.handleEvent(params.body);
 			}
 
 			logger.info(ctx, "Webhook processed successfully");

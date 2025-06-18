@@ -2,7 +2,7 @@ import "server-only";
 
 import {
 	initializeServerI18n,
-	parseAcceptLanguageHeader,
+	_parseAcceptLanguageHeader,
 } from "@kit/i18n/server";
 
 import { cookies, headers } from "next/headers";
@@ -71,7 +71,7 @@ async function getPreferredLanguageFromBrowser() {
 		return;
 	}
 
-	return parseAcceptLanguageHeader(acceptLanguage, languages)[0];
+	return _parseAcceptLanguageHeader(acceptLanguage, languages)[0];
 }
 
 /**
