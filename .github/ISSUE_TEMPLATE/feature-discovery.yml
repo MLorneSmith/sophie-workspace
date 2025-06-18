@@ -1,0 +1,63 @@
+name: 🔍 Feature Discovery
+description: Start user discovery for a new feature idea
+title: "[DISCOVERY] "
+labels: ["discovery", "needs-research", "AAFD-stage:discovery"]
+assignees: []
+body:
+  - type: input
+    id: feature_idea
+    attributes:
+      label: Feature Idea
+      description: Brief description of the feature idea (1-2 sentences)
+      placeholder: "AI-powered slide title suggestions that help users create better presentations faster"
+    validations:
+      required: true
+  
+  - type: textarea
+    id: initial_context
+    attributes:
+      label: Initial Context
+      description: Any background information, user feedback, or business constraints you're aware of
+      placeholder: |
+        - User feedback suggests...
+        - Business goal is to...
+        - Technical constraints include...
+        - Timeline considerations...
+    validations:
+      required: false
+
+  - type: dropdown
+    id: urgency
+    attributes:
+      label: Urgency Level
+      description: How urgent is this feature request?
+      options:
+        - Low - Can be planned for future sprints
+        - Medium - Should be prioritized in next quarter
+        - High - Needed for upcoming release/deadline
+        - Critical - Blocking other work or user-impacting issue
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: discovery_checklist
+    attributes:
+      label: Discovery Checklist
+      description: This will be completed during the discovery phase
+      options:
+        - label: User interview conducted
+          required: false
+        - label: Market research completed
+        - label: Competitive analysis performed
+        - label: Business context documented
+        - label: Context files generated
+        - label: Ready for PRD generation
+
+  - type: textarea
+    id: additional_notes
+    attributes:
+      label: Additional Notes
+      description: Any other relevant information or questions
+      placeholder: "Stakeholders involved, related features, dependencies..."
+    validations:
+      required: false
