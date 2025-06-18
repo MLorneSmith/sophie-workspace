@@ -163,7 +163,7 @@ function TestimonialCard({
 					<Button asChild variant={"link"}>
 						<ExternalLink
 							className={"absolute right-0 top-4 hover:underline"}
-							link={testimonial.link}
+							link={testimonial.link || ""}
 						>
 							<ExternalLinkIcon className={"h-4"} />
 						</ExternalLink>

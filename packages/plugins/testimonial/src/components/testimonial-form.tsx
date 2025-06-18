@@ -24,7 +24,7 @@ import type { z } from "zod";
 
 import {
 	TextTestimonialFormSchema,
-	type VideoTestimonialSchema,
+	VideoTestimonialSchema,
 } from "../schema/create-testimonial.schema";
 import { createTestimonialAction } from "../server/server-actions";
 import { StarRating } from "./star-rating";

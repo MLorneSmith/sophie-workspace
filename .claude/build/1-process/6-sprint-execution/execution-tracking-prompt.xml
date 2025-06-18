@@ -129,9 +129,9 @@
       <description>
         Before implementing, load all necessary context:
         - Load project standards: Read CLAUDE.md
-        - Load story context: Read .claude/contexts/story-{id}/context.md
-        - Load technical notes: Read .claude/contexts/story-{id}/technical-notes.md
-        - Load progress: Read .claude/contexts/story-{id}/progress.md
+        - Load story context: Read .claude/build/4-output/contexts/stories/story-{id}/context.md
+        - Load technical notes: Read .claude/build/4-output/contexts/stories/story-{id}/technical-notes.md
+        - Load progress: Read .claude/build/4-output/contexts/stories/story-{id}/progress.md
         - Review similar implementations in codebase
       </description>
     </step>
@@ -199,7 +199,7 @@
            
         5. **Update Progress**:
            - Mark task complete in story issue
-           - Update .claude/contexts/story-{id}/progress.md
+           - Update .claude/build/4-output/contexts/stories/story-{id}/progress.md
            - Document any technical decisions
       </description>
     </step>
@@ -236,9 +236,9 @@
   <context_requirements>
     <required_context>
       <project_standards>CLAUDE.md</project_standards>
-      <story_context>.claude/contexts/story-{id}/context.md</story_context>
-      <technical_notes>.claude/contexts/story-{id}/technical-notes.md</technical_notes>
-      <progress_tracking>.claude/contexts/story-{id}/progress.md</progress_tracking>
+      <story_context>.claude/build/4-output/contexts/stories/story-{id}/context.md</story_context>
+      <technical_notes>.claude/build/4-output/contexts/stories/story-{id}/technical-notes.md</technical_notes>
+      <progress_tracking>.claude/build/4-output/contexts/stories/story-{id}/progress.md</progress_tracking>
     </required_context>
     
     <pattern_references>

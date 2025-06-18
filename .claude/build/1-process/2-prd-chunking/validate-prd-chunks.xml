@@ -100,7 +100,7 @@
           - If rejected: add "rejected" label
         - Update AAFD Stage custom field: Validation → Validated/Needs Revision
         - Update Priority if validation reveals scope changes
-        - Store validation in: .claude/build/3-output/{epic-name}/3-validation/
+        - Store validation in: .claude/build/4-output/{epic-name}/3-validation/
         - Move validated chunks to "Validated" column in Planning Board
       </description>
     </step>

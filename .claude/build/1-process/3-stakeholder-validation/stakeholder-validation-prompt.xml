@@ -125,7 +125,7 @@
           - Dependencies between chunks
         - If scope changes: Update chunk issue description
         - If rejected: Move to Blocked column with explanation
-        - Store feedback in: .claude/build/3-output/{epic-name}/3-validation/stakeholder-feedback.md
+        - Store feedback in: .claude/build/4-output/{epic-name}/3-validation/stakeholder-feedback.md
       </description>
     </step>
     <step number="6">

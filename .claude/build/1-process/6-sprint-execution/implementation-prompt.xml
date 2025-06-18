@@ -123,9 +123,9 @@
   <context_loading>
     <mandatory_reads>
       <read priority="1">CLAUDE.md - Project standards and conventions</read>
-      <read priority="2">.claude/contexts/story-{story_id}/context.md - Story requirements</read>
-      <read priority="3">.claude/contexts/story-{story_id}/technical-notes.md - Technical approach</read>
-      <read priority="4">.claude/contexts/story-{story_id}/progress.md - Current progress</read>
+      <read priority="2">.claude/build/4-output/contexts/stories/story-{story_id}/context.md - Story requirements</read>
+      <read priority="3">.claude/build/4-output/contexts/stories/story-{story_id}/technical-notes.md - Technical approach</read>
+      <read priority="4">.claude/build/4-output/contexts/stories/story-{story_id}/progress.md - Current progress</read>
     </mandatory_reads>
     
     <conditional_reads>
@@ -508,7 +508,7 @@
     <phase name="progress_tracking">
       <step number="13">
         <title>Update Progress Documentation</title>
-        <file_path>.claude/contexts/story-{story_id}/progress.md</file_path>
+        <file_path>.claude/build/4-output/contexts/stories/story-{story_id}/progress.md</file_path>
         <template>
           <![CDATA[
           # Story Progress: {Story Title}

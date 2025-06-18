@@ -9,12 +9,12 @@
   
   <agent_context>
     <product_owner>
-      <role>Primary responsibility for generating comprehensive PRDs from validated ideas</role>
+      <role>Primary responsibility for generating comprehensive PRDs from discovery session results</role>
       <context_files>
-        - business-context.md
-        - user-research.md
-        - competitive-analysis.md
-        - market-trends.md
+        - {DISCOVERY_CONTEXT_PATH}/business-context.md
+        - {DISCOVERY_CONTEXT_PATH}/user-research.md
+        - {DISCOVERY_CONTEXT_PATH}/competitive-analysis.md
+        - {DISCOVERY_CONTEXT_PATH}/market-trends.md
       </context_files>
       <capabilities>
         - prd_generation
@@ -22,6 +22,11 @@
         - requirements_definition
         - stakeholder_communication
       </capabilities>
+      <prerequisites>
+        - User discovery session completed
+        - Context files generated from research
+        - Feature scope and constraints defined
+      </prerequisites>
     </product_owner>
     <critic>
       <role>Quality gate validator ensuring PRD meets all standards before proceeding</role>
@@ -92,58 +97,68 @@
   
   <context_loading>
     <instructions>
-      Before proceeding, read the context documentation inventory to identify relevant files:
-      - Read: .claude/docs/.context-docs-inventory.xml
-      Based on the idea's domain, read relevant context files:
-      - For AI features: Read ai/portkey-integration.md, ai/prompt-engineering.md
-      - For architecture decisions: Read architecture/system-design.md, architecture/service-patterns.md
-      - For UI components: Read ui/component-patterns.md
-      - For data/database: Read data/database-schema.md, data/supabase-patterns.md
-      - For authentication: Read security/authentication-patterns.md
-      - For project standards: Read CLAUDE.md for SlideHeroes-specific patterns
+      Before proceeding, load the discovery session results and generated context files:
+      
+      1. Read discovery session output:
+         - Read: {DISCOVERY_CONTEXT_PATH}/discovery-summary.md
+      
+      2. Read generated context files:
+         - Read: {DISCOVERY_CONTEXT_PATH}/business-context.md
+         - Read: {DISCOVERY_CONTEXT_PATH}/user-research.md
+         - Read: {DISCOVERY_CONTEXT_PATH}/competitive-analysis.md
+         - Read: {DISCOVERY_CONTEXT_PATH}/market-trends.md
+      
+      3. Read relevant project documentation based on feature domain:
+         - For AI features: Read ai/portkey-integration.md, ai/prompt-engineering.md
+         - For architecture decisions: Read architecture/system-design.md, architecture/service-patterns.md
+         - For UI components: Read ui/component-patterns.md
+         - For data/database: Read data/database-schema.md, data/supabase-patterns.md
+         - For authentication: Read security/authentication-patterns.md
+         - For project standards: Read CLAUDE.md for SlideHeroes-specific patterns
     </instructions>
   </context_loading>
   
   <input>
-    <idea>
-      {IDEA_CONTENT}
-    </idea>
-    <business_context>
-      {BUSINESS_CONTEXT}
-    </business_context>
-    <target_users>
-      {TARGET_USERS}
-    </target_users>
+    <discovery_session_results>
+      {DISCOVERY_SUMMARY_CONTENT}
+    </discovery_session_results>
+    <feature_context_path>
+      {DISCOVERY_CONTEXT_PATH}
+    </feature_context_path>
   </input>
   
   <instructions>
     <step number="1">
-      <title>Analyze Problem and Solution</title>
-      <description>Identify the specific user problem, proposed solution, and business impact. Focus on why this matters to SlideHeroes users and business goals.</description>
+      <title>Load and Synthesize Discovery Results</title>
+      <description>Read all context files and discovery summary. Understand the validated user problem, business context, competitive landscape, and market trends.</description>
     </step>
     <step number="2">
-      <title>Define Success Metrics</title>
-      <description>Establish measurable user, business, and technical success criteria. Be specific with targets (e.g., "increase engagement by 15%").</description>
+      <title>Define Problem and Solution</title>
+      <description>Synthesize the discovery findings into a clear problem statement and solution approach. Reference competitive analysis and market trends to position the solution.</description>
     </step>
     <step number="3">
-      <title>Identify Target Users and Use Cases</title>
-      <description>Define primary persona, their current pain points, and key use cases using "As a... I want... so that..." format.</description>
+      <title>Establish Success Metrics</title>
+      <description>Use the business context and user research to define specific, measurable success criteria. Include user adoption, business impact, and technical performance metrics.</description>
     </step>
     <step number="4">
-      <title>Specify Core Features</title>
-      <description>List core features with priorities, descriptions, and user value. Include functional acceptance criteria.</description>
+      <title>Document Target Users and Journey</title>
+      <description>Transform user research into detailed personas and use cases. Map the complete user journey including integration points with existing SlideHeroes features.</description>
     </step>
     <step number="5">
-      <title>Analyze Technical Requirements</title>
-      <description>Identify architecture impact, required technologies, and file changes. Categorize files as read-only (for context) vs. writeable (to modify).</description>
+      <title>Specify Core Features</title>
+      <description>Define feature set based on user journey and competitive analysis. Prioritize features using discovery insights and scope recommendations.</description>
     </step>
     <step number="6">
-      <title>Define Scope and Constraints</title>
-      <description>Clearly separate in-scope vs. out-of-scope features. Identify technical, resource, and external constraints.</description>
+      <title>Analyze Technical Requirements</title>
+      <description>Identify architecture impact, required technologies, and file changes. Consider technical constraints identified during discovery and market trends in technology choices.</description>
     </step>
     <step number="7">
-      <title>Assess Risks</title>
-      <description>Identify technical, business, and UX risks with impact levels and mitigation strategies.</description>
+      <title>Define Scope and Constraints</title>
+      <description>Use discovery scope recommendations and timeline constraints to clearly separate in-scope vs. out-of-scope features.</description>
+    </step>
+    <step number="8">
+      <title>Assess Risks and Dependencies</title>
+      <description>Combine technical feasibility analysis with competitive and market risks. Include mitigation strategies based on research findings.</description>
     </step>
   </instructions>
   
@@ -287,8 +302,8 @@
       4. Move to Planning Board "PRD" column
       
       5. Store PRD context:
-         - Save to: .claude/build/3-output/{epic-name}/1-prd/prd-content.md
-         - Create context file: .claude/contexts/feature-{epic-id}/prd.md
+         - Save to: .claude/build/4-output/{epic-name}/1-prd/prd-content.md
+         - Create context file: .claude/build/4-output/contexts/epics/epic-{epic-id}/prd.md
       
       6. Next phase preparation:
          - Epic ready for technical chunking (Phase 2)

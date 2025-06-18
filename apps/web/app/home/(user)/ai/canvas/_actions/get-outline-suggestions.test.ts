@@ -4,6 +4,9 @@
  */
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+// Type definitions for test results
+type ActionResult = { success: boolean; error?: string; data?: any };
+
 // Mock AI Gateway
 vi.mock("@kit/ai-gateway", () => ({
 	getChatCompletion: vi.fn(),
@@ -113,11 +116,13 @@ describe("getOutlineSuggestionsAction", () => {
 				})),
 			};
 			vi.mocked(getSupabaseServerClient).mockReturnValue(
-				mockSupabase as unknown,
+				mockSupabase as unknown as ReturnType<typeof getSupabaseServerClient>,
 			);
 
 			// Act
-			const result = await getOutlineSuggestionsAction(validData);
+			const result = (await getOutlineSuggestionsAction(
+				validData,
+			)) as ActionResult;
 
 			// Assert
 			expect(result.success).toBe(true);
@@ -172,7 +177,7 @@ describe("getOutlineSuggestionsAction", () => {
 				})),
 			};
 			vi.mocked(getSupabaseServerClient).mockReturnValue(
-				mockSupabase as unknown,
+				mockSupabase as ReturnType<typeof getSupabaseServerClient>,
 			);
 
 			const expectedSuggestions = {
@@ -204,7 +209,7 @@ describe("getOutlineSuggestionsAction", () => {
 			});
 
 			// Assert
-			expect(_result._success).toBe(true);
+			expect(result.success).toBe(true);
 			expect(result.data).toEqual(expectedSuggestions);
 		});
 
@@ -239,18 +244,18 @@ describe("getOutlineSuggestionsAction", () => {
 				})),
 			};
 			vi.mocked(getSupabaseServerClient).mockReturnValue(
-				mockSupabase as unknown,
+				mockSupabase as ReturnType<typeof getSupabaseServerClient>,
 			);
 
 			vi.mocked(lexicalToTiptap).mockReturnValue(convertedTiptap);
 
 			// Act
-			const _result = await getOutlineSuggestionsAction({
+			const result = await getOutlineSuggestionsAction({
 				submissionId: "test-id",
 			});
 
 			// Assert
-			expect(_result._success).toBe(true);
+			expect(result.success).toBe(true);
 			expect(lexicalToTiptap).toHaveBeenCalledWith(lexicalContent);
 			expect(getChatCompletion).toHaveBeenCalledWith(
 				expect.arrayContaining([
@@ -293,16 +298,16 @@ describe("getOutlineSuggestionsAction", () => {
 				})),
 			};
 			vi.mocked(getSupabaseServerClient).mockReturnValue(
-				mockSupabase as unknown,
+				mockSupabase as ReturnType<typeof getSupabaseServerClient>,
 			);
 
 			// Act
-			const _result = await getOutlineSuggestionsAction({
+			const result = await getOutlineSuggestionsAction({
 				submissionId: "test-id",
 			});
 
 			// Assert
-			expect(_result._success).toBe(true);
+			expect(result.success).toBe(true);
 			expect(getChatCompletion).toHaveBeenCalledWith(
 				expect.arrayContaining([
 					expect.objectContaining({
@@ -332,16 +337,16 @@ describe("getOutlineSuggestionsAction", () => {
 				})),
 			};
 			vi.mocked(getSupabaseServerClient).mockReturnValue(
-				mockSupabase as unknown,
+				mockSupabase as ReturnType<typeof getSupabaseServerClient>,
 			);
 
 			// Act
-			const _result = await getOutlineSuggestionsAction({
+			const result = await getOutlineSuggestionsAction({
 				submissionId: "test-id",
 			});
 
 			// Assert
-			expect(_result._success).toBe(true);
+			expect(result.success).toBe(true);
 			expect(getChatCompletion).toHaveBeenCalledWith(
 				expect.arrayContaining([
 					expect.objectContaining({
@@ -371,7 +376,7 @@ describe("getOutlineSuggestionsAction", () => {
 				})),
 			};
 			vi.mocked(getSupabaseServerClient).mockReturnValue(
-				mockSupabase as unknown,
+				mockSupabase as ReturnType<typeof getSupabaseServerClient>,
 			);
 
 			// Act
@@ -380,7 +385,7 @@ describe("getOutlineSuggestionsAction", () => {
 			});
 
 			// Assert
-			expect(_result._success).toBe(false);
+			expect(result.success).toBe(false);
 			expect(result.error).toBe("Failed to fetch submission data");
 		});
 
@@ -402,7 +407,7 @@ describe("getOutlineSuggestionsAction", () => {
 				})),
 			};
 			vi.mocked(getSupabaseServerClient).mockReturnValue(
-				mockSupabase as unknown,
+				mockSupabase as ReturnType<typeof getSupabaseServerClient>,
 			);
 
 			vi.mocked(getChatCompletion).mockRejectedValue(
@@ -415,7 +420,7 @@ describe("getOutlineSuggestionsAction", () => {
 			});
 
 			// Assert
-			expect(_result._success).toBe(false);
+			expect(result.success).toBe(false);
 			expect(result.error).toBe("AI service unavailable");
 		});
 
@@ -437,7 +442,7 @@ describe("getOutlineSuggestionsAction", () => {
 				})),
 			};
 			vi.mocked(getSupabaseServerClient).mockReturnValue(
-				mockSupabase as unknown,
+				mockSupabase as ReturnType<typeof getSupabaseServerClient>,
 			);
 
 			vi.mocked(getChatCompletion).mockResolvedValue({
@@ -462,7 +467,7 @@ describe("getOutlineSuggestionsAction", () => {
 			});
 
 			// Assert
-			expect(_result._success).toBe(false);
+			expect(result.success).toBe(false);
 			expect(result.error).toContain("Unexpected token");
 		});
 	});
@@ -486,16 +491,16 @@ describe("getOutlineSuggestionsAction", () => {
 				})),
 			};
 			vi.mocked(getSupabaseServerClient).mockReturnValue(
-				mockSupabase as unknown,
+				mockSupabase as ReturnType<typeof getSupabaseServerClient>,
 			);
 
 			// Act
-			const _result = await getOutlineSuggestionsAction({
+			const result = await getOutlineSuggestionsAction({
 				submissionId: "test-id",
 			});
 
 			// Assert
-			expect(_result._success).toBe(true);
+			expect(result.success).toBe(true);
 			expect(getChatCompletion).toHaveBeenCalledWith(
 				expect.arrayContaining([
 					expect.objectContaining({
@@ -537,16 +542,16 @@ describe("getOutlineSuggestionsAction", () => {
 				})),
 			};
 			vi.mocked(getSupabaseServerClient).mockReturnValue(
-				mockSupabase as unknown,
+				mockSupabase as ReturnType<typeof getSupabaseServerClient>,
 			);
 
 			// Act
-			const _result = await getOutlineSuggestionsAction({
+			const result = await getOutlineSuggestionsAction({
 				submissionId: "test-id",
 			});
 
 			// Assert
-			expect(_result._success).toBe(true);
+			expect(result.success).toBe(true);
 			expect(getChatCompletion).toHaveBeenCalledWith(
 				expect.arrayContaining([
 					expect.objectContaining({

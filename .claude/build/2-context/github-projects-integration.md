@@ -308,17 +308,28 @@ Milestone: v2.0 Release (Q1 2025)
 
 ## Local Output Sync
 
-The `.claude/build/3-output` directory should mirror project structure:
+The `.claude/build/4-output` directory should mirror project structure:
 
 ```
-3-output/
-├── {epic-name}/
-│   ├── 1-prd/
-│   ├── 2-chunks/
-│   ├── 3-validation/
-│   ├── 4-stories/
-│   ├── 5-sprints/
-│   └── 6-retrospective/
+4-output/
+├── contexts/
+│   ├── discovery/
+│   │   └── {feature-slug}/
+│   │       ├── business-context.md
+│   │       ├── user-research.md
+│   │       ├── competitive-analysis.md
+│   │       ├── market-trends.md
+│   │       └── discovery-summary.md
+│   ├── epics/
+│   ├── chunks/
+│   └── stories/
+└── {epic-name}/
+    ├── 1-prd/
+    ├── 2-chunks/
+    ├── 3-validation/
+    ├── 4-stories/
+    ├── 5-sprints/
+    └── 6-retrospective/
 ```
 
 When updating project items, also update corresponding local files to maintain consistency.
@@ -360,7 +371,7 @@ When starting a new Claude session:
 
 1. Check issue's AI Context Status
 2. If Stale, refresh context from issue description
-3. Load relevant files from `.claude/build/3-output`
+3. Load relevant files from `.claude/build/4-output`
 4. Update AI Context Status to `Loaded`
 5. After session, update to `Fresh` with timestamp
 

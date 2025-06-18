@@ -5,6 +5,7 @@ server that provides seamless integration with GitHub APIs, enabling advanced
 automation and interaction capabilities for developers and tools.
 
 ## Use Cases
+
 - Automating GitHub workflows and processes.
 - Extracting and analyzing data from GitHub repositories.
 - Building AI powered tools and applications that interact with GitHub's ecosystem.
@@ -18,4 +19,5 @@ automation and interaction capabilities for developers and tools.
 The remote GitHub MCP Server is hosted by GitHub and provides the easiest method for getting up and running. If your MCP host does not support remote MCP servers, don't worry! You can use the [local version of the GitHub MCP Server](https://github.com/github/github-mcp-server?tab=readme-ov-file#local-github-mcp-server) instead.
 
 ## Prerequisites
+
 1. An MCP host that supports the latest MCP

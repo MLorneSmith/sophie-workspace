@@ -305,7 +305,8 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 		};
 
 	const handleSelectChange = async (value: string) => {
-		(await getLogger()).info("Selected presentation type:", value);
+		// TODO: Async logger needed
+		// (await getLogger()).info("Selected presentation type:", { data: value });
 		setFormData({ ...formData, presentation_type: value });
 		setTouchedFields(new Set(touchedFields).add("presentation_type"));
 
@@ -375,14 +376,14 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 		try {
 			const currentField = currentPath[currentQuestion];
 			if (currentField) {
-				(await getLogger()).info("Validating field:", currentField);
+				// TODO: Async logger needed
+				// (await getLogger()).info("Validating field:", { data: currentField });
 
 				const isValid = validateField(currentField);
-				(await getLogger()).info(
-					"Field validation result:",
-					currentField,
-					isValid,
-				);
+				// TODO: Async logger needed
+				// (await getLogger()).info("Field validation result:", {
+				// 	data: { field: currentField, isValid }
+				// });
 
 				if (isValid) {
 					// Add field to touched fields to ensure error state is shown
@@ -391,11 +392,13 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 					// Small delay for UX
 					await new Promise((resolve) => setTimeout(resolve, 300));
 
-					(await getLogger()).info("Moving to next question");
+					// TODO: Async logger needed
+					// (await getLogger()).info("Moving to next question");
 					handleNext();
 					setErrors({}); // Clear errors after successful navigation
 				} else {
-					(await getLogger()).info("Validation failed, showing error");
+					// TODO: Async logger needed
+					// (await getLogger()).info("Validation failed, showing error");
 					// Ensure the field is marked as touched to show the error
 					setTouchedFields(new Set(touchedFields).add(currentField));
 				}

@@ -26,7 +26,8 @@ A Model Context Protocol (MCP) server that enhances Claude's ability to solve co
 
 ## Usage
 
-1. Append to chat messages: 
+1. Append to chat messages:
+
    ```
    Use sequential thinking to reason about this.
    ```
@@ -50,6 +51,7 @@ A Model Context Protocol (MCP) server that enhances Claude's ability to solve co
 ## Documentation
 
 Detailed docs in `docs/` directory:
+
 - [Usage Examples](/docs/examples.md)
 - [Configuration Guide](/docs/configuration.md)
 - [Prompts Guide](/docs/prompts.md)
@@ -66,6 +68,7 @@ Detailed docs in `docs/` directory:
 ## Prompt Evaluation
 
 Includes a prompt evaluation system to:
+
 - Test prompt variations
 - Verify parameter formats
 - Score solution quality

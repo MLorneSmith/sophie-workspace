@@ -141,7 +141,7 @@
         - Move stories to "Ready" column in Planning Board
         - Create GitHub milestone if needed: gh api repos/MLorneSmith/2025slideheroes/milestones --method POST -f title="Sprint {SPRINT_NUMBER}" -f due_on="{DUE_DATE}"
         - Add sprint plan as comment on Epic issue
-        - Store sprint plan in: .claude/build/3-output/{epic-name}/5-sprints/sprint-{number}.md
+        - Store sprint plan in: .claude/build/4-output/{epic-name}/5-sprints/sprint-{number}.md
       </description>
     </step>
     <step number="7">

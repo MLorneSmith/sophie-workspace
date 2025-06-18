@@ -61,27 +61,30 @@ describe("updateBuildingBlockTitleAction", () => {
 	describe("Schema Validation", () => {
 		it("should accept empty strings as valid", async () => {
 			// Zod z.string() accepts empty strings by default
-			const _result = await updateBuildingBlockTitleAction({
+			const result = (await updateBuildingBlockTitleAction({
 				id: "",
 				title: "",
-			});
-			expect(_result).toEqual({ success: true });
+			})) as { success: boolean; error?: string };
+			expect(result).toEqual({ success: true });
 		});
 
 		it("should accept valid input", async () => {
 			const input = { id: "valid-id", title: "Valid Title" };
-			const result = await updateBuildingBlockTitleAction(input);
+			const result = (await updateBuildingBlockTitleAction(input)) as {
+				success: boolean;
+				error?: string;
+			};
 
 			expect(result).toEqual({ success: true });
 		});
 
 		it("should reject invalid data types", async () => {
-			const _result = await updateBuildingBlockTitleAction({
+			const result = (await updateBuildingBlockTitleAction({
 				id: 123 as unknown,
 				title: null as unknown,
-			});
+			})) as { success?: boolean; error?: string };
 
-			expect(_result).toEqual({ error: "Validation failed" });
+			expect(result).toEqual({ error: "Validation failed" });
 		});
 
 		it("should reject missing fields", async () => {

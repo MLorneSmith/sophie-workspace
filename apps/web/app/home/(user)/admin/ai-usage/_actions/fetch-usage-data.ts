@@ -179,16 +179,17 @@ function groupLogsByDay(
 			continue; // Skip logs without a timestamp
 		}
 
-		let _date: string;
+		let date: string;
 		try {
-			_date = new Date(log.request_timestamp)
+			date = new Date(log.request_timestamp)
 				.toISOString()
 				.split("T")[0] as string; // Get YYYY-MM-DD
-		} catch (_error) {
+		} catch (error) {
 			// TODO: Async logger needed
 			// (await getLogger()).error("Invalid timestamp:", {
 			// 	data: log.request_timestamp,
 			// });
+			continue; // Skip this log if timestamp is invalid
 		}
 		if (!dayMap[date]) {
 			dayMap[date] = { cost: 0, tokens: 0 };

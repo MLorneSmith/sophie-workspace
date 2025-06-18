@@ -118,7 +118,7 @@ export const uploadTaskImageAction = enhanceAction(
 					url: signedData.signedUrl,
 				},
 			};
-		} catch (_error) {
+		} catch (error) {
 			// TODO: Async logger needed
 			// (await getLogger()).error("Error uploading image:", {
 			// 	data: error,
@@ -158,7 +158,7 @@ export const deleteTaskImageAction = enhanceAction(
 				success: true,
 				error: null,
 			};
-		} catch (_error) {
+		} catch (error) {
 			// TODO: Async logger needed
 			// (await getLogger()).error("Error deleting image:", {
 			// 	data: error,

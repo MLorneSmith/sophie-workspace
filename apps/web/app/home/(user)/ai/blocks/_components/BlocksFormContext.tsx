@@ -99,17 +99,19 @@ export function SetupFormProvider({ children }: { children: React.ReactNode }) {
 
 		// Move to next question if we're not at the end
 		if (currentQuestion < currentPath.length - 1) {
-			logger.info({
-				currentQuestion,
-				nextQuestion: currentQuestion + 1,
-			});
-			logger.info({
-				currentPath: currentPath.join(", "),
-				message: "Current path",
-			});
-			setCurrentQuestion((_prev) => prev + 1);
+			// TODO: Async logger needed
+			// logger.info({
+			// 	currentQuestion,
+			// 	nextQuestion: currentQuestion + 1,
+			// });
+			// logger.info({
+			// 	currentPath: currentPath.join(", "),
+			// 	message: "Current path",
+			// });
+			setCurrentQuestion((prev) => prev + 1);
 		} else {
-			logger.info({ message: "Reached end of questions" });
+			// TODO: Async logger needed
+			// logger.info({ message: "Reached end of questions" });
 		}
 	};
 
@@ -124,7 +126,8 @@ export function SetupFormProvider({ children }: { children: React.ReactNode }) {
 		const validations = currentPath.map((field) => validateField(field));
 
 		if (validations.every((valid) => valid)) {
-			(await getLogger()).info("Form submitted:", formData);
+			// TODO: Async logger needed
+			// (await getLogger()).info("Form submitted:", { data: formData });
 		} else {
 			// TODO: Async logger needed
 			// TODO: Fix logger call - was: info
