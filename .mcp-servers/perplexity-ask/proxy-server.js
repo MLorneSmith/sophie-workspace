@@ -4,8 +4,8 @@
  * Provides HTTP health endpoint for containerized mcp-server-perplexity-ask
  */
 
-const { spawn } = require("node:child_process");
-const http = require("node:http");
+import { spawn } from "node:child_process";
+import http from "node:http";
 
 const PORT = process.env.PORT || 3000;
 const PERPLEXITY_API_KEY = process.env.PERPLEXITY_API_KEY;
@@ -20,8 +20,8 @@ if (!PERPLEXITY_API_KEY) {
 process.stdout.write(`Starting Perplexity MCP proxy on port ${PORT}\n`);
 process.stdout.write(`API key: ${PERPLEXITY_API_KEY.substring(0, 10)}***\n`);
 
-// Start the mcp-server-perplexity-ask process
-const mcpProcess = spawn("mcp-server-perplexity-ask", [], {
+// Start the official perplexity-ask MCP server from built dist
+const mcpProcess = spawn("node", ["dist/index.js"], {
 	stdio: ["pipe", "pipe", "pipe"],
 	env: { ...process.env },
 });
