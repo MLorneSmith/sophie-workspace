@@ -169,26 +169,24 @@ export function NotificationsPopover(params: {
 							body = `${body.substring(0, maxChars)}...`;
 						}
 
-						const Icon = () => {
-							switch (notification.type) {
-								case "warning":
-									return <TriangleAlert className={"h-4 text-yellow-500"} />;
-								case "error":
-									return <CircleAlert className={"text-destructive h-4"} />;
-								default:
-									return <Info className={"h-4 text-blue-500"} />;
-							}
-						};
-
 						return (
-							<div
+							<button
+								type="button"
 								key={notification.id.toString()}
 								className={cn(
-									"min-h-18 flex flex-col items-start justify-center gap-y-1 px-3 py-2",
+									"min-h-18 flex flex-col items-start justify-center gap-y-1 px-3 py-2 w-full text-left hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors",
 								)}
 								onClick={() => {
 									if (params.onClick) {
 										params.onClick(notification);
+									}
+								}}
+								onKeyDown={(e) => {
+									if (e.key === 'Enter' || e.key === ' ') {
+										e.preventDefault();
+										if (params.onClick) {
+											params.onClick(notification);
+										}
 									}
 								}}
 							>
@@ -197,7 +195,7 @@ export function NotificationsPopover(params: {
 										className={"flex items-start justify-start gap-x-3 py-2"}
 									>
 										<div className={"py-0.5"}>
-											<Icon />
+											<NotificationIcon type={notification.type} />
 										</div>
 
 										<div className={"flex flex-col space-y-1"}>
@@ -237,11 +235,23 @@ export function NotificationsPopover(params: {
 										</Button>
 									</div>
 								</div>
-							</div>
+							</button>
 						);
 					})}
 				</div>
 			</PopoverContent>
 		</Popover>
 	);
+}
+
+// Extract Icon component outside to avoid nested component definition
+function NotificationIcon({ type }: { type: string }) {
+	switch (type) {
+		case "warning":
+			return <TriangleAlert className={"h-4 text-yellow-500"} />;
+		case "error":
+			return <CircleAlert className={"text-destructive h-4"} />;
+		default:
+			return <Info className={"h-4 text-blue-500"} />;
+	}
 }

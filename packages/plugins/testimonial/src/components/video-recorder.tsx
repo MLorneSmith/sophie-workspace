@@ -136,7 +136,7 @@ export function VideoRecorder({
 					return prevTimer + 1;
 				});
 			}, 1000);
-		} catch (err) {
+		} catch (_err) {
 			// TODO: Async logger needed
 			// (await getLogger()).error("Error accessing media devices:", { data: err });
 

@@ -317,6 +317,7 @@ export function useMultiStepForm<Schema extends z.ZodType>(
 			prevStep,
 			goToStep,
 			isValid,
+			isStepValid,
 			errors,
 		],
 	);

@@ -1,12 +1,35 @@
 import { MonitoringService } from "@kit/monitoring-core";
 import { createServiceLogger } from "@kit/shared/logger";
 
+// Type definition for New Relic agent methods we use
+interface NewRelicAgent {
+	noticeError(error: Error, customAttributes?: Record<string, unknown>): void;
+	recordCustomEvent(
+		eventType: string,
+		attributes: Record<string, unknown>,
+	): void;
+	setUserID(id: string): void;
+	addCustomAttribute(key: string, value: string | number | boolean): void;
+	startSegment<T>(
+		name: string,
+		record: boolean,
+		callback: () => T | Promise<T>,
+	): T | Promise<T>;
+	recordMetric(name: string, value: number): void;
+}
+
+// Extend global object to include newrelic
+declare global {
+	// biome-ignore lint/correctness/noUnusedVariables: Global declaration
+	var newrelic: NewRelicAgent | undefined;
+}
+
 /**
  * New Relic monitoring service implementation
  * Integrates with the existing New Relic agent for error tracking and custom events
  */
 export class NewRelicMonitoringService extends MonitoringService {
-	private newrelic: any;
+	private newrelic: NewRelicAgent | undefined;
 	private isReady = false;
 	private logger = createServiceLogger("NEW-RELIC-MONITORING").getLogger();
 
@@ -18,13 +41,13 @@ export class NewRelicMonitoringService extends MonitoringService {
 	private initializeNewRelic(): void {
 		try {
 			// Check if New Relic is available (it's loaded via -r flag)
-			if (typeof global !== "undefined" && (global as any).newrelic) {
-				this.newrelic = (global as any).newrelic;
+			if (typeof global !== "undefined" && global.newrelic) {
+				this.newrelic = global.newrelic;
 				this.isReady = true;
 			} else if (typeof window === "undefined") {
 				// Server-side: Try to require New Relic
 				try {
-					this.newrelic = require("newrelic");
+					this.newrelic = require("newrelic") as NewRelicAgent;
 					this.isReady = true;
 				} catch (_e) {
 					this.logger.warn(

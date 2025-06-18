@@ -10,6 +10,7 @@
 		"build": "tsc --noEmit"
 	},
 	"dependencies": {
+		"@kit/shared": "workspace:*",
 		"@kit/supabase": "workspace:*",
 		"openai": "^4.28.0",
 		"portkey-ai": "^0.1.0",

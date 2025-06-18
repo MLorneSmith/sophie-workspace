@@ -6,7 +6,7 @@ export function Spinner(
 	}>,
 ) {
 	return (
-		<div role="status">
+		<output>
 			<svg
 				aria-hidden="true"
 				className={cn(
@@ -25,6 +25,6 @@ export function Spinner(
 					fill="currentFill"
 				/>
 			</svg>
-		</div>
+		</output>
 	);
 }
