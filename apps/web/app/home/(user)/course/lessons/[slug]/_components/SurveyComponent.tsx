@@ -149,7 +149,7 @@ export function SurveyComponent({
 
 	// Set questions when data is loaded
 	useEffect(() => {
-		if (questionsData && questionsData._length > 0) {
+		if (questionsData && questionsData.length > 0) {
 			// TODO: Async logger needed
 			// TODO: Fix logger call - was: info
 
@@ -243,7 +243,7 @@ export function SurveyComponent({
 			// TODO: Fix logger call - was: warn
 
 			// Special handling for Three Quick Questions survey
-			if (_survey?._id === "6f463bef-d7a0-4e5a-b0fa-a789b5d6f0e0") {
+			if (survey?.id === "6f463bef-d7a0-4e5a-b0fa-a789b5d6f0e0") {
 				// TODO: Async logger needed
 				// TODO: Fix logger call - was: info
 
@@ -301,7 +301,7 @@ export function SurveyComponent({
 				setQuestions(hardcodedQuestions);
 			}
 		}
-	}, [questionsData]);
+	}, [questionsData, survey?.id]);
 
 	// Check if user has already completed this survey
 	useEffect(() => {
@@ -314,13 +314,13 @@ export function SurveyComponent({
 	}, [surveyResponses]);
 
 	// Calculate progress
-	const _progress =
+	const progress =
 		questions.length > 0 ? (currentQuestionIndex / questions.length) * 100 : 0;
-	const _isLastQuestion = currentQuestionIndex === questions.length - 1;
+	const isLastQuestion = currentQuestionIndex === questions.length - 1;
 	const currentQuestion = questions[currentQuestionIndex];
 
 	// Handle answer submission
-	const _handleAnswer = (questionId: string, answer: string, score: number) => {
+	const handleAnswer = (questionId: string, answer: string, score: number) => {
 		// Save the response
 		const category = currentQuestion.category || "general";
 
@@ -344,11 +344,11 @@ export function SurveyComponent({
 				});
 
 				// Move to the next question or complete the survey
-				if (_isLastQuestion) {
+				if (isLastQuestion) {
 					setShowSummary(true);
 					onComplete();
 				} else {
-					setCurrentQuestionIndex(_currentQuestionIndex + 1);
+					setCurrentQuestionIndex(currentQuestionIndex + 1);
 				}
 			} catch (_error) {
 				toast.error("Failed to save response. Please try again.");
@@ -367,7 +367,7 @@ export function SurveyComponent({
 	}
 
 	// Show summary
-	if (showSummary) {
+	if (_showSummary) {
 		return (
 			<div className="p-8 text-center">
 				<h2 className="mb-4 text-2xl font-bold">
@@ -401,7 +401,7 @@ export function SurveyComponent({
 							key={currentQuestion.id}
 							question={currentQuestion}
 							onAnswer={handleAnswer}
-							isLoading={isPending}
+							isLoading={_isPending}
 						/>
 					)}
 				</div>

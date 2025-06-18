@@ -101,8 +101,8 @@ export function VerifyOtpForm({
 			} catch (_err) {
 				setError("An unexpected error occurred. Please try again.");
 				// TODO: Async logger needed
-		// (await getLogger()).error("Error sending OTP:", { data: err });
-		// }
+				// (await getLogger()).error("Error sending OTP:", { data: _err });
+			}
 		});
 	};
 

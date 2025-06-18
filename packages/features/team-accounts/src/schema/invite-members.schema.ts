@@ -8,7 +8,7 @@ const InviteSchema = z.object({
 export const InviteMembersSchema = z
 	.object({
 		invitations: InviteSchema.array().min(1).max(5),
-	// })
+	})
 	.refine(
 		(data) => {
 			const emails = data.invitations.map((member) =>

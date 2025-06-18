@@ -394,7 +394,7 @@ export function QuizComponent({
 					// (await getLogger()).error(
 					// 	"Error navigating to next lesson:",
 					// 	{ data: err }
-					);
+					// );
 				}
 			}
 

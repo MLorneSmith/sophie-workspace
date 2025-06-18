@@ -30,13 +30,13 @@ export async function initializeServerI18n(
 						return callback(null, data);
 					} catch (_error) {
 						// TODO: Async logger needed
-		// (await getLogger()).info(`Error loading i18n file: locales/${language}/${namespace}.json`, { arg1: error, arg2:  });
+						// (await getLogger()).info(`Error loading i18n file: locales/${language}/${namespace}.json`, { error: _error });
 
 						return callback(null, {});
-		// }
+					}
 				}),
 			)
-			.use(
+			.use({
 				type: "3rdParty",
 				init: async (i18next: typeof i18nInstance) => {
 					let iterations = 0;
@@ -59,7 +59,8 @@ export async function initializeServerI18n(
 
 					initReactI18next.init(i18next);
 					resolve(i18next);
-				},)
+				},
+			})
 			.init(settings);
 	});
 
@@ -97,8 +98,8 @@ export async function initializeServerI18n(
 
 	if (!success) {
 		// TODO: Async logger needed
-		// (await getLogger()).warn(`Not all namespaces were loaded after ${maxWaitTime}ms. Initialization may be incomplete.`, { data:  });
-		// }
+		// (await getLogger()).warn(`Not all namespaces were loaded after ${maxWaitTime}ms. Initialization may be incomplete.`);
+	}
 
 	return i18nInstance;
 }

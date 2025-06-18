@@ -12,10 +12,10 @@ export function createAnalyticsManager<T extends string, Config extends object>(
 	const _getActiveServices = (): AnalyticsService[] => {
 		if (activeServices.size === 0) {
 			// TODO: Async logger needed
-		// (await getLogger()).debug("No active analytics services. Using NullAnalyticsService.", { data:  });
+			// (await getLogger()).debug("No active analytics services. Using NullAnalyticsService.", { data:  });
 
 			return [NullAnalyticsService];
-		// }
+		}
 
 		return Array.from(activeServices.values());
 	};
@@ -29,10 +29,10 @@ export function createAnalyticsManager<T extends string, Config extends object>(
 
 			if (!factory) {
 				// TODO: Async logger needed
-		// (await getLogger()).warn(`Analytics provider '${provider}' not registered. Skipping initialization.`, { data:  });
+				// (await getLogger()).warn(`Analytics provider '${provider}' not registered. Skipping initialization.`, { data:  });
 
 				continue;
-		// }
+			}
 
 			const service = factory();
 			activeServices.set(provider as T, service);
@@ -49,10 +49,10 @@ export function createAnalyticsManager<T extends string, Config extends object>(
 
 			if (!factory) {
 				// TODO: Async logger needed
-		// (await getLogger()).warn(`Analytics provider '${provider}' not registered. Skipping initialization.`, { data:  });
+				// (await getLogger()).warn(`Analytics provider '${provider}' not registered. Skipping initialization.`, { data:  });
 
 				return Promise.resolve();
-		// }
+			}
 
 			const service = factory(config);
 			activeServices.set(provider, service);
@@ -60,27 +60,31 @@ export function createAnalyticsManager<T extends string, Config extends object>(
 			return service.initialize();
 		},
 
-		removeProvider: (provider: T) => 
-			activeServices.delete(provider);,
+		removeProvider: (provider: T) => {
+			activeServices.delete(provider);
+		},
 
-		identify: (userId: string, traits?: Record<string, string>) => 
+		identify: (userId: string, traits?: Record<string, string>) => {
 			return Promise.all(
 				_getActiveServices().map((service) => service.identify(userId, traits)),
-			);,
+			);
+		},
 
-		trackPageView: (path: string) => 
+		trackPageView: (path: string) => {
 			return Promise.all(
 				_getActiveServices().map((service) => service.trackPageView(path)),
-			);,
+			);
+		},
 
 		trackEvent: (
 			eventName: string,
 			eventProperties?: Record<string, string | string[]>,
-		) => 
+		) => {
 			return Promise.all(
 				_getActiveServices().map((service) =>
 					service.trackEvent(eventName, eventProperties),
 				),
-			);,
+			);
+		},
 	};
 }

@@ -122,7 +122,7 @@ export const uploadTaskImageAction = enhanceAction(
 			// TODO: Async logger needed
 			// (await getLogger()).error("Error uploading image:", {
 			// 	data: error,
-		});
+			// });
 			return {
 				success: false,
 				error:
@@ -162,7 +162,7 @@ export const deleteTaskImageAction = enhanceAction(
 			// TODO: Async logger needed
 			// (await getLogger()).error("Error deleting image:", {
 			// 	data: error,
-		});
+			// });
 			return {
 				success: false,
 				error:

@@ -78,7 +78,7 @@ class AccountWebhooksService {
 				fromEmail: z
 					.string({
 						required_error: "EMAIL_SENDER is required",
-					// })
+					})
 					.min(1),
 			})
 			.parse({

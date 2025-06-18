@@ -78,6 +78,9 @@ export const CardSpotlight = ({
 			onMouseMove={handleMouseMove}
 			onMouseEnter={handleMouseEnter}
 			onMouseLeave={handleMouseLeave}
+			onFocus={handleMouseEnter}
+			onBlur={handleMouseLeave}
+			role="presentation"
 			{...props}
 		>
 			<motion.div

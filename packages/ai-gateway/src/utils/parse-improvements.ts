@@ -141,7 +141,7 @@ export function parseImprovements(
 		// Log the raw response for debugging
 		// TODO: Async logger needed
 		// (await getLogger()).info("Raw AI response:", { arg1: response.substring(0, arg2: 500 }) + (response.length > 500 ? "..." : ""),
-		);
+		// );
 
 		// First try to parse as JSON
 		const jsonContent = extractJson(response);

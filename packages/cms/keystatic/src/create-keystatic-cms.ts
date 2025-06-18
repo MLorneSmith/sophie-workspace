@@ -10,7 +10,7 @@ export async function createKeystaticClient() {
 	) {
 		const { createKeystaticClient: createClient } = await import(
 			"./keystatic-client"
-		// );
+		);
 
 		return createClient();
 	}

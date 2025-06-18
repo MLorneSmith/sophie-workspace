@@ -94,7 +94,7 @@ export function KanbanBoard() {
 						// (await getLogger()).error(
 						// 	"Failed to update task status:",
 						// 	{ data: error }
-						);
+						// );
 					} finally {
 						setUpdatingTaskId(null);
 					}

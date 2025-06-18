@@ -5,7 +5,6 @@
  * and data required for the AI Gateway functionality.
  */
 
-
 import { createServiceLogger } from "@kit/shared/logger";
 import type { SupabaseClient } from "./supabase-client";
 
@@ -35,16 +34,20 @@ export async function initializeCostConfiguration(
 				error: countError,
 				message: countError.message,
 				hint: countError.hint,
-		});
+			});
 			return false;
 		}
 
 		if (count && count > 0) {
-			(await getLogger()).info(`AI cost configuration already exists (${count} entries)`);
+			(await getLogger()).info(
+				`AI cost configuration already exists (${count} entries)`,
+			);
 			return true;
 		}
 
-		(await getLogger()).info("No cost configuration found, seeding initial data...");
+		(await getLogger()).info(
+			"No cost configuration found, seeding initial data...",
+		);
 
 		// Insert default pricing data for common models
 		const { error: insertError } = await supabase
@@ -160,14 +163,16 @@ export async function initializeCostConfiguration(
 				error: insertError,
 				message: insertError.message,
 				hint: insertError.hint,
-		});
+			});
 			return false;
 		}
 
 		(await getLogger()).info("Successfully seeded AI cost configuration data");
 		return true;
 	} catch (error) {
-		(await getLogger()).error("Fatal error initializing cost configuration:", { data: error });
+		(await getLogger()).error("Fatal error initializing cost configuration:", {
+			data: error,
+		});
 		return false;
 	}
 }
@@ -182,7 +187,9 @@ export async function testDatabasePermissions(
 	supabase: SupabaseClient,
 ): Promise<boolean> {
 	try {
-		(await getLogger()).info("Testing database permissions with a test insert...");
+		(await getLogger()).info(
+			"Testing database permissions with a test insert...",
+		);
 
 		// Generate a unique test ID
 		const testId = `test-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
@@ -202,7 +209,7 @@ export async function testDatabasePermissions(
 				cost: 0,
 				feature: "system-test",
 				status: "test",
-			// })
+			})
 			.select("id")
 			.single();
 
@@ -213,7 +220,7 @@ export async function testDatabasePermissions(
 				details: error.details,
 				hint: error.hint,
 				code: error.code,
-		});
+			});
 			return false;
 		}
 
@@ -223,7 +230,9 @@ export async function testDatabasePermissions(
 		});
 		return true;
 	} catch (error) {
-		(await getLogger()).error("Fatal error testing database permissions:", { data: error });
+		(await getLogger()).error("Fatal error testing database permissions:", {
+			data: error,
+		});
 		return false;
 	}
 }
@@ -255,7 +264,7 @@ export async function testDatabaseFunctions(
 				details: error.details,
 				hint: error.hint,
 				code: error.code,
-		});
+			});
 			return false;
 		}
 
@@ -264,7 +273,9 @@ export async function testDatabaseFunctions(
 		});
 		return true;
 	} catch (error) {
-		(await getLogger()).error("Fatal error testing database functions:", { data: error });
+		(await getLogger()).error("Fatal error testing database functions:", {
+			data: error,
+		});
 		return false;
 	}
 }
@@ -292,7 +303,9 @@ export async function initializeAiGatewayDatabase(
 		// Test function permissions
 		const functionsOk = await testDatabaseFunctions(supabase);
 		if (!functionsOk) {
-			(await getLogger()).warn("Database function test failed, continuing with initialization anyway...");
+			(await getLogger()).warn(
+				"Database function test failed, continuing with initialization anyway...",
+			);
 		}
 
 		// Initialize cost configuration
@@ -304,7 +317,9 @@ export async function initializeAiGatewayDatabase(
 		// Return overall success status
 		return permissionsOk && functionsOk && costConfigOk;
 	} catch (error) {
-		(await getLogger()).error("Fatal error initializing AI Gateway database:", { data: error });
+		(await getLogger()).error("Fatal error initializing AI Gateway database:", {
+			data: error,
+		});
 		return false;
 	}
 }

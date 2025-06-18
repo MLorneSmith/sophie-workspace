@@ -70,7 +70,7 @@ export function usePasswordSignUpFlow({
 				}
 			} finally {
 				resetCaptchaToken?.();
-		// }
+			}
 		},
 		[
 			signUpMutation,

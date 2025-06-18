@@ -3,7 +3,8 @@ import type { PostgresAdapterArgs } from "@payloadcms/db-postgres";
 import { postgresAdapter } from "@payloadcms/db-postgres";
 
 // Initialize enhanced logger for database adapter
-const { getLogger: _getLogger, getContextLogger: _getContextLogger } = createServiceLogger("DB-ADAPTER");
+const { getLogger: _getLogger, getContextLogger: _getContextLogger } =
+	createServiceLogger("DB-ADAPTER");
 
 // Global variable to survive Next.js hot reloads
 declare global {

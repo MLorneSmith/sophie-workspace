@@ -94,7 +94,7 @@ export class SetupFormErrorBoundary extends React.Component<Props, State> {
 		// (await getLogger()).error(
 		// 	"SetupFormErrorBoundary caught an error:",
 		// 	{ arg1: error, arg2: errorInfo }
-		);
+		// );
 
 		// Call onError prop if provided
 		this.props.onError?.(error, errorInfo);

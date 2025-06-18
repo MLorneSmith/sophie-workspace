@@ -67,11 +67,11 @@ export function QuestionCard({
 			// TODO: Async logger needed
 			// (await getLogger()).info("Selected option:", {
 			// 	data: selectedOption,
-		});
+			// });
 			// TODO: Async logger needed
 			// (await getLogger()).info("Available options:", {
 			// 	data: question.options,
-		});
+			// });
 
 			const option = question.options?.find((opt) => opt.id === selectedOption);
 
@@ -79,15 +79,14 @@ export function QuestionCard({
 				onAnswer(question.id, option.text, option.score || 0);
 			} else {
 				// TODO: Async logger needed
-				// TODO: Async logger needed
 				// (await getLogger()).error(
 				// 	"Selected option not found:",
 				// 	{ data: selectedOption }
-				);
+				// );
 				// TODO: Async logger needed
 				// (await getLogger()).error("Question options:", {
 				// 	data: question.options,
-		});
+				// });
 			}
 		}
 	};
@@ -103,7 +102,7 @@ export function QuestionCard({
 
 			<RadioGroup
 				value={selectedOption || ""}
-				onValueChange={setSelectedOption}
+				onValueChange={_setSelectedOption}
 				className="space-y-3"
 			>
 				{question.options?.map((option) => (
@@ -111,7 +110,7 @@ export function QuestionCard({
 						key={option.id}
 						type="button"
 						className="hover:bg-accent flex cursor-pointer items-center space-x-2 rounded-md border p-4 text-left w-full"
-						onClick={() => setSelectedOption(option.id)}
+						onClick={() => _setSelectedOption(option.id)}
 						aria-label={`Select option: ${option.text}`}
 					>
 						<RadioGroupItem value={option.id} id={option.id} />
@@ -126,7 +125,7 @@ export function QuestionCard({
 			</RadioGroup>
 
 			<Button
-				onClick={handleSubmit}
+				onClick={_handleSubmit}
 				disabled={!selectedOption || isLoading}
 				className="w-full"
 			>

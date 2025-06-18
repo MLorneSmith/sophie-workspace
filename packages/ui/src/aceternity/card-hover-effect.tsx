@@ -63,6 +63,9 @@ export function HoverEffect({ items, className }: HoverEffectProps) {
 					className="group relative block h-full w-full p-2"
 					onMouseEnter={() => setHoveredIndex(idx)}
 					onMouseLeave={() => setHoveredIndex(null)}
+					onFocus={() => setHoveredIndex(idx)}
+					onBlur={() => setHoveredIndex(null)}
+					role="presentation"
 				>
 					<AnimatePresence>
 						{hoveredIndex === idx && (

@@ -1,6 +1,8 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useCaptchaToken } from "@kit/auth/hooks/use-captcha-token";
+import { useSignInWithOtp } from "@kit/supabase/hooks/use-sign-in-with-otp";
 import { useVerifyOtp } from "@kit/supabase/hooks/use-verify-otp";
 import { Button } from "@kit/ui/button";
 import {
@@ -23,7 +25,6 @@ import { Trans } from "@kit/ui/trans";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
-
 import { useLastAuthMethod } from "../hooks/use-last-auth-method";
 import { AuthErrorAlert } from "./auth-error-alert";
 
@@ -53,12 +54,12 @@ export function OtpSignInContainer(props: OtpSignInContainerProps) {
 	const email = useWatch({
 		control: otpForm.control,
 		name: "email",
-		});
+	});
 
 	const isEmailStep = !email;
 
 	const shouldCreateUser =
-		'shouldCreateUser' in props && props.shouldCreateUser;
+		"shouldCreateUser" in props && props.shouldCreateUser;
 
 	const handleVerifyOtp = async ({
 		token,
@@ -103,13 +104,14 @@ export function OtpSignInContainer(props: OtpSignInContainerProps) {
 				onSendOtp={(email) => {
 					otpForm.setValue("email", email, {
 						shouldValidate: true,
-		});
+					});
 				}}
 			/>
 		);
 	}
 
 	return (
+		<>
 			<Form {...otpForm}>
 				<form
 					onSubmit={otpForm.handleSubmit(handleVerifyOtp)}
@@ -172,7 +174,7 @@ export function OtpSignInContainer(props: OtpSignInContainerProps) {
 					<Trans i18nKey="auth:sendEmailCode" />
 				</button>
 			</div>
-		
+		</>
 	);
 }
 

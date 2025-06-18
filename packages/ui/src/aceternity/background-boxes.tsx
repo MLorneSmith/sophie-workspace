@@ -100,6 +100,7 @@ export const BoxesCore = ({ className, children, ...rest }: BoxesProps) => {
 											viewBox="0 0 24 24"
 											strokeWidth="1"
 											stroke="currentColor"
+											aria-hidden="true"
 											style={{
 												position: "absolute",
 												left: "-12px",

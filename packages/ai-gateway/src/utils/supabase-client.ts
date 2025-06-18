@@ -228,7 +228,7 @@ export async function getSupabaseClient(
 
 		// Test connection with a simple query
 		try {
-			const { data, error } = await client
+			const { error } = await client
 				.from("ai_cost_configuration")
 				.select("id")
 				.limit(1);

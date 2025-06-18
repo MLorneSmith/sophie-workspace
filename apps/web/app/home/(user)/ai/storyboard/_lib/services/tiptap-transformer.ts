@@ -165,7 +165,7 @@ export namespace TipTapTransformer {
 							headingLevel,
 							node,
 							document.content.slice(i + 1).filter(Boolean),
-						// );
+						);
 
 						// Save the previous slide if we have one
 						if (currentSlide) {
@@ -235,8 +235,8 @@ export namespace TipTapTransformer {
 						});
 
 						// Check if this paragraph contains data that might be better as a chart
-						if (_mightBeChartData(_text)) {
-							suggestChartTypeForSlide(_currentSlide, _text);
+						if (mightBeChartData(text)) {
+							suggestChartTypeForSlide(currentSlide, text);
 						}
 					}
 				}
@@ -337,7 +337,7 @@ export namespace TipTapTransformer {
 
 				// Check for numerical content
 				const text = extractTextFromNode(node);
-				if (TipTapTransformer.mightBeChartData(text)) {
+				if (mightBeChartData(text)) {
 					hasNumericalContent = true;
 				}
 			} else if (node.type === "heading" && node.attrs?.level === 3) {
@@ -407,7 +407,7 @@ export namespace TipTapTransformer {
 	 * @param text The text to analyze
 	 * @returns Boolean indicating if this might be chart data
 	 */
-	function _mightBeChartData(text: string): boolean {
+	function mightBeChartData(text: string): boolean {
 		// Check for percentage patterns
 		const percentagePattern = /\b\d+(\.\d+)?%\b/;
 		if (percentagePattern.test(text)) return true;
@@ -441,7 +441,7 @@ export namespace TipTapTransformer {
 	 * @param slide The slide to modify
 	 * @param text Text containing potential chart data
 	 */
-	function _suggestChartTypeForSlide(slide: Slide, text: string): void {
+	function suggestChartTypeForSlide(slide: Slide, text: string): void {
 		// Analyze text to determine best chart type
 		let chartType: "bar" | "line" | "pie" | "area" = "bar";
 

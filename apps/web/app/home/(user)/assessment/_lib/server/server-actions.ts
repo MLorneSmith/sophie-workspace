@@ -165,7 +165,7 @@ export const saveResponseAction = enhanceAction(
 				// 	message: error.message,
 				// 	stack: error.stack,
 				// 	name: error.name,
-		});
+				// });
 			}
 
 			return {
@@ -235,7 +235,7 @@ export const completeSurveyAction = enhanceAction(
 				// 	message: error.message,
 				// 	stack: error.stack,
 				// 	name: error.name,
-		});
+				// });
 			}
 
 			return {
