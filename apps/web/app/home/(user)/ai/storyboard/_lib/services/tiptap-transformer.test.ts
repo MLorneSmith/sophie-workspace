@@ -3,7 +3,7 @@
  * Tests pure transformation functions for converting TipTap documents to storyboard format
  */
 
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 // Import the class to test
 import { TipTapTransformer } from "./tiptap-transformer";
 
@@ -45,8 +45,9 @@ describe("TipTapTransformer", () => {
 			// Assert
 			expect(result.title).toBe("Main Title");
 			expect(result.slides).toHaveLength(1);
-			expect(result.slides[0].headline).toBe("Main Title");
-			expect(result.slides[0].storyboard.layoutId).toBe("title");
+			expect(result.slides[0]).toBeDefined();
+			expect(result.slides[0]?.headline).toBe("Main Title");
+			expect(result.slides[0]?.layoutId).toBe("title");
 		});
 
 		it("should transform a JSON string document", () => {
@@ -80,7 +81,7 @@ describe("TipTapTransformer", () => {
 			// Assert
 			expect(result.title).toBe("Fallback Title");
 			expect(result.slides).toHaveLength(1);
-			expect(result.slides[0].headline).toBe("Untitled Presentation"); // Uses document meta or default
+			expect(result.slides[0]?.headline).toBe("Untitled Presentation"); // Uses document meta or default
 			// biome-ignore lint/suspicious/noConsole: Test assertion for console.error mock
 			expect(console.error).toHaveBeenCalledWith(
 				"Error parsing TipTap document:",

@@ -34,4 +34,4 @@ We have a set of 'agent' roles defined. Read all of them:
 
 # My Questions
 
-1. We have a set of templates .claude/build/1-process/0-user-discovery/templates for stage 0 user discovery phase. Are there
+1. This file .claude/build/7-devops/build-feature-improvements.md lists a set of recommended improvements. I am not sure I understand the Agent Coordination & Multi-Agent Execution section. My understanding is that Claude Code cannot span multiple agents in parallele unless we use worktrees. Is this correct? Can you help me understand how we might implement multi-agents in Pase 6?

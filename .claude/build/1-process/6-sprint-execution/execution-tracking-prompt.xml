@@ -3,7 +3,8 @@
   
   <context_loading>
     <instructions>
-      Before proceeding, read the context documentation inventory:
+      Before proceeding, read the sprint plan and context documentation:
+      - Read: .claude/build/4-output/{epic-name}/5-sprints/sprint-{number}.md - Sprint plan and story priorities
       - Read: .claude/docs/.context-docs-inventory.xml
       Based on implementation needs, read relevant context:
       - For debugging issues: Read debugging/github-first-issues.md
@@ -101,6 +102,31 @@
           - Link to next sprint milestone
       </description>
     </step>
+    
+    <step number="5">
+      <title>Story Context Switching Management</title>
+      <description>
+        Context switching protocols for efficient multi-story work:
+        - Before switching stories: Update .claude/build/4-output/contexts/stories/story-{id}/session-handoff.md
+        - Include current task status, next immediate action, files being modified
+        - Create context checkpoint: Save uncommitted work, document decisions
+        - After switching back: Load session-handoff.md, review progress.md, check for file conflicts
+        - Use template: .claude/templates/session-handoff.md
+      </description>
+    </step>
+
+    <step number="6">
+      <title>Dependency Coordination</title>
+      <description>
+        Multi-story coordination within sprint execution:
+        - Check .claude/build/4-output/contexts/dependencies/sprint-{number}-coordination.md
+        - Verify no other stories are modifying same files
+        - Update shared component status if applicable
+        - Coordinate with parallel story progress
+        - Use template: .claude/templates/sprint-coordination.md
+        - Document file-level conflicts and resolution strategies
+      </description>
+    </step>
   </instructions>
   
   <input>
@@ -128,6 +154,7 @@
       <title>Load Implementation Context</title>
       <description>
         Before implementing, load all necessary context:
+        - Load sprint plan: Read .claude/build/4-output/{epic-name}/5-sprints/sprint-{number}.md
         - Load project standards: Read CLAUDE.md
         - Load story context: Read .claude/build/4-output/contexts/stories/story-{id}/context.md
         - Load technical notes: Read .claude/build/4-output/contexts/stories/story-{id}/technical-notes.md
@@ -235,6 +262,7 @@
   
   <context_requirements>
     <required_context>
+      <sprint_plan>.claude/build/4-output/{epic-name}/5-sprints/sprint-{number}.md</sprint_plan>
       <project_standards>CLAUDE.md</project_standards>
       <story_context>.claude/build/4-output/contexts/stories/story-{id}/context.md</story_context>
       <technical_notes>.claude/build/4-output/contexts/stories/story-{id}/technical-notes.md</technical_notes>

@@ -6,13 +6,6 @@
         <description>Meticulous Code Reviewer AI that performs automated code reviews and quality assessment</description>
         <role>reviewer</role>
         <aider_integration>secondary</aider_integration>
-        <capabilities>
-            <capability>code_review</capability>
-            <capability>security_analysis</capability>
-            <capability>performance_assessment</capability>
-            <capability>test_validation</capability>
-            <capability>best_practices_enforcement</capability>
-        </capabilities>
     </metadata>
 
     <system_prompt>

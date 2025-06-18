@@ -72,7 +72,7 @@ export default function ConvertEditorDataPage() {
 						<div className="rounded-md bg-gray-50 p-4">
 							<h3 className="mb-2 font-medium">Results:</h3>
 							<pre className="overflow-auto rounded-md bg-gray-100 p-2 text-sm">
-								{JSON.stringify(results, null, 2)}
+								{String(JSON.stringify(results, null, 2))}
 							</pre>
 						</div>
 					)}

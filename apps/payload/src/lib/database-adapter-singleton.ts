@@ -365,7 +365,7 @@ class DatabaseAdapterManager {
 			this.environment === "development" ||
 			process.env.ENABLE_DB_METRICS_LOGGING
 		) {
-			this.log("Database metrics", "info", this.metrics);
+			this.log("Database metrics", "info", { ...this.metrics });
 		}
 	}
 

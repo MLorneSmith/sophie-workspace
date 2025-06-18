@@ -4,6 +4,8 @@
  */
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { updateBuildingBlockTitleAction } from "./update-building-block-title.action";
+import type { ActionResult } from "@/test/test-types";
+import { expectError, expectSuccess } from "@/test/test-helpers";
 
 // Mock dependencies
 vi.mock("@kit/next/actions", () => ({
@@ -14,7 +16,7 @@ vi.mock("@kit/next/actions", () => ({
 			if (options?.schema) {
 				const result = options.schema.safeParse(data);
 				if (!result.success) {
-					return { error: "Validation failed" };
+					return { success: false, error: "Validation failed" } as const;
 				}
 				validatedData = result.data;
 			}
@@ -61,38 +63,35 @@ describe("updateBuildingBlockTitleAction", () => {
 	describe("Schema Validation", () => {
 		it("should accept empty strings as valid", async () => {
 			// Zod z.string() accepts empty strings by default
-			const result = (await updateBuildingBlockTitleAction({
+			const result = await updateBuildingBlockTitleAction({
 				id: "",
 				title: "",
-			})) as { success: boolean; error?: string };
+			});
 			expect(result).toEqual({ success: true });
 		});
 
 		it("should accept valid input", async () => {
 			const input = { id: "valid-id", title: "Valid Title" };
-			const result = (await updateBuildingBlockTitleAction(input)) as {
-				success: boolean;
-				error?: string;
-			};
+			const result = await updateBuildingBlockTitleAction(input);
 
 			expect(result).toEqual({ success: true });
 		});
 
 		it("should reject invalid data types", async () => {
-			const result = (await updateBuildingBlockTitleAction({
-				id: 123 as unknown,
-				title: null as unknown,
-			})) as { success?: boolean; error?: string };
+			const result = await updateBuildingBlockTitleAction({
+				id: 123 as any,
+				title: null as any,
+			});
 
-			expect(result).toEqual({ error: "Validation failed" });
+			expect(expectError(result as any)).toBe("Validation failed");
 		});
 
 		it("should reject missing fields", async () => {
 			const result = await updateBuildingBlockTitleAction({
-				id: undefined as unknown,
-			} as unknown);
+				id: undefined as any,
+			} as any);
 
-			expect(result).toEqual({ error: "Validation failed" });
+			expect(expectError(result as any)).toBe("Validation failed");
 		});
 	});
 

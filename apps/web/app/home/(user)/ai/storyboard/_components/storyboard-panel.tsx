@@ -8,6 +8,7 @@ import { ChevronLeft } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { usePresentationStoryboard } from "../_lib/hooks/use-presentation-storyboard";
+import type { StoryboardData } from "../_lib/types";
 import { SortableSlideList } from "./sortable-slide-list";
 
 interface StoryboardPanelProps {
@@ -21,7 +22,9 @@ export function StoryboardPanel({
 }: StoryboardPanelProps) {
 	const { data, isLoading, isError, saveStoryboard } =
 		usePresentationStoryboard(presentationId);
-	const [storyboardData, setStoryboardData] = useState<unknown>(null);
+	const [storyboardData, setStoryboardData] = useState<StoryboardData | null>(
+		null,
+	);
 
 	useEffect(() => {
 		if (data && !isLoading) {
@@ -30,8 +33,13 @@ export function StoryboardPanel({
 	}, [data, isLoading]);
 
 	const _handleSave = async () => {
+		if (!storyboardData) {
+			toast.error("No storyboard data to save");
+			return;
+		}
+
 		try {
-			await saveStoryboard(storyboardData);
+			await saveStoryboard(storyboardData!);
 			toast.success("Storyboard saved successfully");
 		} catch (_error) {
 			// TODO: Async logger needed
@@ -102,13 +110,13 @@ export function StoryboardPanel({
 					<ChevronLeft className="h-4 w-4" />
 					Back to presentation selection
 				</Button>
-				<Button onClick={handleSave}>Save Storyboard</Button>
+				<Button onClick={_handleSave}>Save Storyboard</Button>
 			</div>
 
 			<SortableSlideList
-				slides={storyboardData.slides || []}
+				slides={storyboardData?.slides || []}
 				onSlidesChange={(slides) =>
-					setStoryboardData({ ...storyboardData, slides })
+					setStoryboardData((prev) => (prev ? { ...prev, slides } : null))
 				}
 			/>
 		</div>

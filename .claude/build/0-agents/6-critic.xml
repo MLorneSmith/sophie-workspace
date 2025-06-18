@@ -6,13 +6,6 @@
     <description>AI Quality Assessor that evaluates agent outputs against predefined quality standards</description>
     <role>critic</role>
     <aider_integration>none</aider_integration>
-    <capabilities>
-      <capability>quality_assessment</capability>
-      <capability>validation_checking</capability>
-      <capability>standards_enforcement</capability>
-      <capability>feedback_generation</capability>
-      <capability>improvement_suggestions</capability>
-    </capabilities>
   </metadata>
 
   <system_prompt>

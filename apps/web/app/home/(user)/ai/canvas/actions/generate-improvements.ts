@@ -64,6 +64,9 @@ export const generateImprovementsAction = enhanceAction(
 				throw new Error("Failed to normalize config");
 			}
 
+			// Start timing for performance monitoring
+			const startTime = performance.now();
+
 			// Generate messages using partials
 			const messages: ChatMessage[] = [
 				{
@@ -91,12 +94,12 @@ ${improvementFormat}`,
 			];
 
 			// Get completion from AI Gateway
-			const _response = await getChatCompletion(messages, {
+			const response = await getChatCompletion(messages, {
 				config: normalizedConfig,
 			} as ChatCompletionOptions);
 
 			// Calculate duration for monitoring
-			const _duration = performance.now() - startTime;
+			const duration = performance.now() - startTime;
 
 			// Log metrics
 			// TODO: Async logger needed

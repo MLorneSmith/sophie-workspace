@@ -6,13 +6,6 @@
         <description>AI Pair Programmer that implements user stories using Claude Code code generation</description>
         <role>builder</role>
         <aider_integration>primary</aider_integration>
-        <capabilities>
-            <capability>code_implementation</capability>
-            <capability>test_writing</capability>
-            <capability>git_operations</capability>
-            <capability>aider_orchestration</capability>
-            <capability>context_analysis</capability>
-        </capabilities>
     </metadata>
 
     <system_prompt>
@@ -26,13 +19,13 @@
     - Commit changes with meaningful commit messages
     - Update story status throughout the implementation process
 
-    Aider Workflow:
-    1. /add relevant files for context
-    2. /msg with implementation prompt derived from user story
-    3. /lint to check code style and standards
-    4. /test to run unit and integration tests
-    5. /commit to save changes with AI-generated commit message
-    6. Use /undo for error recovery if needed
+    Claude Code Workflow:
+    1. Use Read tool to examine relevant files for context
+    2. Use Write/Edit tools to implement features from user story
+    3. Use Bash tool to run linting and tests
+    4. Use Bash tool with git commands to commit changes
+    5. Use TodoWrite to track implementation progress
+    6. Use context from previous sessions stored in progress files
 
     Quality Standards:
     - All code must pass linting and formatting checks
@@ -68,18 +61,18 @@
             <outputs>implementation_plan</outputs>
         </step>
         <step name="prepare_context">
-            <description>Gather relevant files and context for Aider</description>
+            <description>Gather relevant files and context for Claude Code</description>
             <inputs>implementation_plan</inputs>
             <outputs>context_files</outputs>
         </step>
-        <step name="configure_aider">
-            <description>Set up Aider with appropriate model and configuration</description>
-            <inputs>story_requirements, context_files</inputs>
-            <outputs>aider_config</outputs>
+        <step name="load_context">
+            <description>Use Read tool to load relevant files and previous progress</description>
+            <inputs>context_files, progress_files</inputs>
+            <outputs>loaded_context</outputs>
         </step>
         <step name="implement_code">
-            <description>Use Aider to implement the feature</description>
-            <inputs>aider_config, implementation_prompt</inputs>
+            <description>Use Claude Code tools to implement the feature</description>
+            <inputs>loaded_context, story_requirements</inputs>
             <outputs>code_changes</outputs>
         </step>
         <step name="run_tests">
@@ -99,15 +92,13 @@
         </step>
     </workflow>
 
-    <aider_configuration>
-        <model>claude-3-5-sonnet</model>
-        <editor_model>claude-3-5-haiku</editor_model>
-        <auto_commits>false</auto_commits>
-        <use_git>true</use_git>
-        <timeout>300000</timeout>
-        <memory_limit>2GB</memory_limit>
-        <cpu_limit>1024</cpu_limit>
-    </aider_configuration>
+    <claude_code_configuration>
+        <primary_model>claude-3-opus-20241022</primary_model>
+        <tools>Read, Write, Edit, MultiEdit, Bash, Grep, Glob, TodoWrite, TodoRead</tools>
+        <mcp_tools>github_mcp, postgres_mcp, supabase_mcp, context7_mcp</mcp_tools>
+        <context_preservation>progress files in .claude/build/4-output/contexts/</context_preservation>
+        <session_management>stateless with context loading</session_management>
+    </claude_code_configuration>
 
     <quality_gates>
         <gate name="code_quality">

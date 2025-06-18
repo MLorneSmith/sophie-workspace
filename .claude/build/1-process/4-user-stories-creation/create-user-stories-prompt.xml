@@ -5,6 +5,8 @@
       <agent role="validator">Critic</agent>
     </supporting_agents>
     <phase>4-user-story-creation</phase>
+    <orchestrator>/build-feature command</orchestrator>
+    <orchestrator_file>.claude/commands/build-feature.md</orchestrator_file>
   </metadata>
   
   <agent_context>
@@ -16,13 +18,6 @@
         - technical-task-patterns.md
         - INVEST-criteria.md
       </context_files>
-      <capabilities>
-        - story_decomposition
-        - INVEST_compliance
-        - effort_estimation
-        - task_breakdown
-        - dependency_identification
-      </capabilities>
     </planner>
     <critic>
       <role>Validate story quality and INVEST compliance</role>
@@ -41,16 +36,35 @@
   </task>
   
   <context_loading>
-    <instructions>
-      Before proceeding, read the context documentation inventory:
-      - Read: .claude/docs/.context-docs-inventory.xml
-      Based on the features being implemented, read relevant context:
-      - For component patterns: Read ui/component-patterns.md
-      - For API patterns: Read architecture/service-patterns.md
-      - For data operations: Read data/react-query-patterns.md, data/supabase-patterns.md
-      - For testing standards: Read testing/test-case-template.md, testing/context/test-driven-development.md
-      - For error handling: Read debugging/error-handling.md
-    </instructions>
+    <from_previous_phases>
+      <!-- Load Phase 3 validation outputs -->
+      <read priority="1">.claude/build/4-output/{epic-name}/3-validation/stakeholder-feedback.md - Validation results</read>
+      <read priority="2">.claude/build/4-output/{epic-name}/2-chunks/chunk-{chunk-id}.md - Validated chunk details</read>
+      <read priority="3">.claude/build/4-output/contexts/chunks/chunk-{chunk-id}/context.md - Chunk context</read>
+      <read priority="4">.claude/build/4-output/{epic-name}/1-prd/prd-content.md - Original PRD for user personas</read>
+    </from_previous_phases>
+    <current_context>
+      <instructions>
+        Before proceeding, read the context documentation inventory:
+        - Read: .claude/docs/.context-docs-inventory.xml
+        Based on the features being implemented, read relevant context:
+        - For component patterns: Read ui/component-patterns.md
+        - For API patterns: Read architecture/service-patterns.md
+        - For data operations: Read data/react-query-patterns.md, data/supabase-patterns.md
+        - For testing standards: Read testing/test-case-template.md, testing/context/test-driven-development.md
+        - For error handling: Read debugging/error-handling.md
+      </instructions>
+    </current_context>
+    <validation>
+      <required_files>
+        <file path=".claude/build/4-output/{epic-name}/3-validation/stakeholder-feedback.md" description="Validation feedback from Phase 3"/>
+        <file path=".claude/build/4-output/{epic-name}/2-chunks/chunk-{chunk-id}.md" description="Chunk details to create stories from"/>
+      </required_files>
+      <actions>
+        <on_missing>Error: Required validation results not found. Ensure Phase 3 (Stakeholder Validation) completed successfully before proceeding.</on_missing>
+        <on_present>Proceed with user story creation</on_present>
+      </actions>
+    </validation>
   </context_loading>
 
   <available_tools>

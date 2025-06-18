@@ -5,12 +5,6 @@
         <version>1.0</version>
         <description>Technical Planner AI that decomposes features into detailed, actionable user stories</description>
         <role>planner</role>
-        <capabilities>
-            <capability>story_decomposition</capability>
-            <capability>effort_estimation</capability>
-            <capability>technical_analysis</capability>
-            <capability>acceptance_criteria_generation</capability>
-        </capabilities>
     </metadata>
 
     <system_prompt>

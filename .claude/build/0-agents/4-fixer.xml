@@ -6,13 +6,6 @@
         <description>AI Debugging Specialist that fixes issues from reviews or failed tests using Aider</description>
         <role>fixer</role>
         <aider_integration>tertiary</aider_integration>
-        <capabilities>
-            <capability>bug_fixing</capability>
-            <capability>error_resolution</capability>
-            <capability>code_correction</capability>
-            <capability>test_repair</capability>
-            <capability>review_issue_resolution</capability>
-        </capabilities>
     </metadata>
 
     <system_prompt>

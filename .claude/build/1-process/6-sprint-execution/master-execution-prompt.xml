@@ -48,6 +48,7 @@
   <context_loading>
     <instructions>
       Load these contexts at the start of execution:
+      - Read: .claude/build/4-output/{epic-name}/5-sprints/sprint-{number}.md - Sprint plan and story priorities
       - Read: CLAUDE.md - Project standards and conventions
       - Read: .claude/build/4-output/contexts/stories/story-{story_id}/context.md - Story requirements
       - Read: .claude/build/4-output/contexts/stories/story-{story_id}/technical-notes.md - Technical approach
@@ -165,6 +166,7 @@
         <step name="prepare_context">
           <description>Load all necessary context for implementation</description>
           <actions>
+            - Review sprint plan for story priorities and dependencies
             - Review story acceptance criteria
             - Identify technical tasks to implement
             - Study similar implementations in codebase
@@ -420,26 +422,206 @@
       </steps>
     </phase>
     
-    <phase number="4" name="pull_request_creation">
-      <title>Create and Submit PR</title>
+    <phase number="4" name="story_completion">
+      <title>Story Completion and Handoff</title>
       <description>
-        Create pull request with comprehensive description and link to story
+        Complete story implementation with comprehensive handoff documentation
       </description>
       
       <steps>
-        <step name="commit_changes">
-          <description>Commit all changes with descriptive message</description>
+        <step name="complete_implementation">
+          <description>Ensure all acceptance criteria met and code ready</description>
+          <checklist>
+            <![CDATA[
+            Implementation Completion:
+            - [ ] All acceptance criteria implemented and tested
+            - [ ] All technical tasks completed
+            - [ ] No console.log statements remaining
+            - [ ] All tests passing (unit + integration)
+            - [ ] TypeScript compilation clean
+            - [ ] Linting passes
+            - [ ] Performance acceptable
+            - [ ] Accessibility standards met
+            
+            Cross-cutting Impact Assessment:
+            - [ ] Shared components documented
+            - [ ] API changes documented
+            - [ ] Database changes applied and tested
+            - [ ] No breaking changes to other stories
+            - [ ] Dependencies coordination updated
+            ]]>
+          </checklist>
+        </step>
+        
+        <step name="create_story_handoff">
+          <description>Document story completion for future reference</description>
+          <file_creation>
+            <![CDATA[
+            # Create .claude/build/4-output/contexts/stories/story-{story_id}/completion-handoff.md
+            
+            # Story Completion Handoff: {Story Title}
+            
+            ## Implementation Summary
+            - **Completed**: {Date}
+            - **Developer**: {Session identifier}
+            - **Total Sessions**: {Number}
+            - **Story Points**: {Original estimate}
+            - **Actual Effort**: {Hours/sessions spent}
+            
+            ## Delivered Features
+            ### User-Facing Functionality
+            - {Feature 1}: {Description of what user can now do}
+            - {Feature 2}: {Description of what user can now do}
+            
+            ### Technical Implementation
+            - {Component 1}: {Purpose and key functionality}
+            - {Component 2}: {Purpose and key functionality}
+            
+            ## Code Changes
+            ### New Files Created
+            - `{path}` - {Purpose and main exports}
+            - `{path}` - {Purpose and main exports}
+            
+            ### Modified Files
+            - `{path}` - {What was changed and why}
+            - `{path}` - {What was changed and why}
+            
+            ### Test Coverage
+            - `{test-file}` - {What scenarios are tested}
+            - Coverage: {X}% lines, {Y}% branches
+            
+            ## Patterns and Reusables
+            ### Established Patterns
+            - **{Pattern Name}**: {Location} - {When to reuse}
+            - **{Utility Name}**: {Location} - {What it does}
+            
+            ### Components for Reuse
+            - **{Component}**: {Props interface, usage example}
+            - **{Hook/Action}**: {Input/output, when to use}
+            
+            ## Integration Points
+            ### Database Impact
+            - **Schema Changes**: {What was added/modified}
+            - **New Queries**: {Query patterns established}
+            - **RLS Policies**: {Security rules added}
+            
+            ### API Impact
+            - **New Endpoints**: {Server actions or API routes}
+            - **Modified Interfaces**: {Type changes that affect other code}
+            - **Breaking Changes**: {None expected, or details if any}
+            
+            ### Component Dependencies
+            - **Uses**: {Shared components this story depends on}
+            - **Provides**: {Shared components this story creates/modifies}
+            - **Affects**: {Components that might need updates}
+            
+            ## For Next Stories
+            ### Ready Dependencies
+            - **{Component/Feature}**: Available for use in stories {list}
+            - **{API/Service}**: Ready for integration
+            
+            ### Coordination Needed
+            - **{Shared File}**: Coordinate changes with story #{id}
+            - **{Database Table}**: Migration sequence important
+            
+            ### Known Limitations
+            - **{Limitation}**: {Description and planned resolution}
+            - **{Technical Debt}**: {What needs improvement later}
+            
+            ## Quality Metrics
+            - **Test Coverage**: {X}% 
+            - **Performance**: {Load time, bundle size impact}
+            - **Accessibility**: {WCAG compliance level}
+            - **Security**: {Validation coverage, RLS compliance}
+            
+            ## Documentation Updates
+            - **Code Comments**: {JSDoc coverage}
+            - **API Documentation**: {Interfaces documented}
+            - **User Documentation**: {If user-facing changes}
+            ]]>
+          </file_creation>
+          <actions>
+            - Use template from .claude/templates/story-completion-handoff.md
+            - Document all implementation details and cross-story impacts
+            - Identify reusable patterns and components for future stories
+            - Note any coordination needs for remaining sprint work
+          </actions>
+        </step>
+        
+        <step name="update_sprint_coordination">
+          <description>Update sprint-level coordination for remaining stories</description>
+          <coordination_update>
+            <![CDATA[
+            # Update .claude/build/4-output/contexts/dependencies/sprint-{sprint_number}-coordination.md
+            
+            ## Story #{story_id} Completion Impact
+            
+            ### Now Available for Other Stories
+            - **{Component/Service}**: Stories #{list} can now use this
+            - **{Pattern/Utility}**: Available for reuse
+            - **{Database Schema}**: Migration applied, safe to use
+            
+            ### Updated Dependencies
+            - Stories #{list}: No longer blocked by this story
+            - Stories #{list}: Can now proceed with integration
+            
+            ### File Coordination Updates
+            - `{shared-file}`: Now stable, safe for other stories to modify
+            - `{component-file}`: Interface established, coordinate changes
+            
+            ### Next Recommended Story
+            Based on dependencies: Story #{id} - {title}
+            Reasoning: {Why this sequence makes sense}
+            ]]>
+          </coordination_update>
+          <actions>
+            - Update sprint coordination file with completion status
+            - Unlock dependent stories for implementation
+            - Document shared component availability
+            - Recommend next story sequence based on dependencies
+          </actions>
+        </step>
+        
+        <step name="commit_and_pr">
+          <description>Create final commit and pull request</description>
+          <commit_template>
+            <![CDATA[
+            feat: {story title}
+            
+            Implements story #{story-number}:
+            - {Key change 1}
+            - {Key change 2}
+            - {Key change 3}
+            
+            Technical details:
+            - Added {X} new components
+            - {Y}% test coverage
+            - No breaking changes
+            
+            Ready for: {Next story dependencies unlocked}
+            
+            Closes #{story-number}
+            ]]>
+          </commit_template>
           <commands>
             <![CDATA[
             # Stage all changes
             git add .
             
-            # Commit with conventional commit message
+            # Commit with detailed message
             git commit -m "feat: {STORY_TITLE}
 
-            - {CHANGE_1}
-            - {CHANGE_2}
-            - {CHANGE_3}
+            Implements story #{STORY_NUMBER}:
+            - {KEY_CHANGE_1}
+            - {KEY_CHANGE_2}
+            - {KEY_CHANGE_3}
+            
+            Technical details:
+            - Added {X} new components
+            - {Y}% test coverage
+            - No breaking changes
+            
+            Ready for: {NEXT_STORY_DEPENDENCIES_UNLOCKED}
             
             Closes #{STORY_NUMBER}"
             ]]>
@@ -465,10 +647,23 @@
             - {DETAILED_CHANGE_2}
             - {DETAILED_CHANGE_3}
             
+            ## Cross-Story Impact
+            - **Components Available**: {New components ready for other stories}
+            - **API Changes**: {New interfaces or breaking changes}
+            - **Dependencies Unlocked**: Stories #{list} can now proceed
+            - **Coordination Notes**: {Any coordination needed with other stories}
+            
             ## Testing
             - ✅ All unit tests passing
             - ✅ Integration tests added
             - ✅ Manual testing completed
+            - ✅ Cross-story integration verified
+            
+            ## Quality Metrics
+            - **Test Coverage**: {X}%
+            - **Performance**: {Impact assessment}
+            - **Bundle Size**: {Impact if applicable}
+            - **Accessibility**: WCAG 2.1 AA compliant
             
             ## Checklist
             - [x] Tests written and passing
@@ -478,6 +673,13 @@
             - [x] Security standards followed (RLS, validation)
             - [x] Performance acceptable
             - [x] Accessibility standards met (WCAG 2.1 AA)
+            - [x] Story completion handoff documented
+            - [x] Sprint coordination updated
+            
+            ## Next Steps
+            - **Ready for Review**: Code review and approval
+            - **Dependent Stories**: {Stories that can now begin implementation}
+            - **Integration Testing**: {Cross-story tests to run after merge}
             
             ## Screenshots (if applicable)
             {ADD_SCREENSHOTS_IF_UI_CHANGES}" \
@@ -610,6 +812,8 @@
   </error_handling>
   
   <input>
+    <epic_name>{EPIC_NAME}</epic_name>
+    <sprint_number>{SPRINT_NUMBER}</sprint_number>
     <story_number>{STORY_NUMBER}</story_number>
     <story_title>{STORY_TITLE}</story_title>
     <story_id>{STORY_ID}</story_id>

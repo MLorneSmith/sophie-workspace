@@ -7,6 +7,8 @@
       <agent role="final_validation">Critic</agent>
     </supporting_agents>
     <phase>6-implementation</phase>
+    <orchestrator>/build-feature command</orchestrator>
+    <orchestrator_file>.claude/commands/build-feature.md</orchestrator_file>
   </metadata>
   
   <agent_context>
@@ -18,13 +20,6 @@
         - code-standards.md
         - test-templates.md
       </context_files>
-      <capabilities>
-        - test_driven_development
-        - pattern_recognition
-        - code_generation
-        - context_preparation
-        - claude_code_orchestration
-      </capabilities>
     </builder>
     <reviewer>
       <role>Continuous code review during implementation</role>
@@ -123,9 +118,10 @@
   <context_loading>
     <mandatory_reads>
       <read priority="1">CLAUDE.md - Project standards and conventions</read>
-      <read priority="2">.claude/build/4-output/contexts/stories/story-{story_id}/context.md - Story requirements</read>
-      <read priority="3">.claude/build/4-output/contexts/stories/story-{story_id}/technical-notes.md - Technical approach</read>
-      <read priority="4">.claude/build/4-output/contexts/stories/story-{story_id}/progress.md - Current progress</read>
+      <read priority="2">.claude/build/4-output/{epic-name}/5-sprints/sprint-{number}.md - Sprint plan and priorities</read>
+      <read priority="3">.claude/build/4-output/contexts/stories/story-{story_id}/context.md - Story requirements</read>
+      <read priority="4">.claude/build/4-output/contexts/stories/story-{story_id}/technical-notes.md - Technical approach</read>
+      <read priority="5">.claude/build/4-output/contexts/stories/story-{story_id}/progress.md - Current progress</read>
     </mandatory_reads>
     
     <conditional_reads>
@@ -560,6 +556,94 @@
           - Add comment with implementation notes
           - Update Implementation Phase field
           - Link to any related PRs or issues
+        </actions>
+      </step>
+    </phase>
+    
+    <phase name="session_handoff">
+      <step number="15">
+        <title>Prepare Session Handoff</title>
+        <description>Document current state for next session or story handoff</description>
+        <file_path>.claude/build/4-output/contexts/stories/story-{story_id}/session-handoff.md</file_path>
+        <template>
+          <![CDATA[
+          # Session Handoff: {Story Title} - {Date}
+          
+          ## Current Implementation State
+          - **Active Task**: {Specific function/component being worked on}
+          - **TDD Phase**: {Red/Green/Refactor}
+          - **Files Modified**: {List of files with uncommitted changes}
+          - **Test Status**: {X passing, Y failing}
+          - **Last Working State**: {Git commit SHA}
+          
+          ## Immediate Next Action
+          - **Task**: {Exact next step to take}
+          - **Context**: {Why this step is needed}
+          - **Files to Continue**: {Specific files to open}
+          - **Expected Outcome**: {What should happen when task is done}
+          
+          ## Technical Context
+          - **Pattern Being Followed**: {Reference to similar implementation}
+          - **Key Decisions**: {Choices made this session}
+          - **Assumptions Made**: {What we're assuming will work}
+          - **Potential Issues**: {Things to watch out for}
+          
+          ## For Story Handoff
+          - **Shared Components**: {Components other stories might need}
+          - **API Changes**: {New interfaces that affect other stories}
+          - **Database Changes**: {Schema modifications}
+          - **Breaking Changes**: {Things that might affect other work}
+          
+          ## Quick Resume Checklist
+          - [ ] Load story context: `/read .claude/contexts/stories/story-{story_id}/context.md`
+          - [ ] Load progress: `/read .claude/contexts/stories/story-{story_id}/progress.md`
+          - [ ] Load handoff: `/read .claude/contexts/stories/story-{story_id}/session-handoff.md`
+          - [ ] Check git status: `git status`
+          - [ ] Run tests: `pnpm test {specific-test-file}`
+          ]]>
+        </template>
+        <actions>
+          - Create/update session handoff document using template from .claude/templates/session-handoff.md
+          - Document exact current state and next action
+          - Include technical context for resuming work
+          - Note any cross-story impacts or coordination needs
+        </actions>
+      </step>
+      
+      <step number="16">
+        <title>Update Coordination Files</title>
+        <description>Update shared coordination files for multi-story work</description>
+        <files_to_update>
+          <file>.claude/build/4-output/contexts/dependencies/sprint-{sprint_number}-coordination.md</file>
+          <file>.claude/build/4-output/contexts/stories/story-{story_id}/shared-impact.md</file>
+        </files_to_update>
+        <coordination_update_template>
+          <![CDATA[
+          ## Story #{story_id} Session Update - {Date}
+          
+          ### Implementation Progress
+          - **Current Phase**: {Implementation phase}
+          - **Components Modified**: {List of shared components}
+          - **Files Changed**: {Files that other stories might need}
+          - **API Changes**: {New or modified interfaces}
+          
+          ### Cross-Story Impact
+          - **Blocks**: {Stories waiting for this work}
+          - **Blocked By**: {Dependencies still needed}
+          - **Safe to Parallel**: {Stories that can work alongside}
+          - **Coordination Needed**: {Stories requiring coordination}
+          
+          ### File Conflict Status
+          - **High Risk**: {Files multiple stories will modify}
+          - **Exclusive Use**: {Files only this story modifies}
+          - **Shared Stable**: {Shared files safe for others to use}
+          ]]>
+        </coordination_update_template>
+        <actions>
+          - Update sprint coordination file with current story status
+          - Document shared component changes
+          - Note file-level conflicts or coordination needs
+          - Update dependency status for other stories
         </actions>
       </step>
     </phase>

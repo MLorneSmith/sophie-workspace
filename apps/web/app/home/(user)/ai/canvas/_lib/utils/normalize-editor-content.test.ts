@@ -7,6 +7,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type {
 	EditorContentTypes,
 	TiptapDocument,
+	TiptapNode,
 } from "../../_types/editor-types";
 import { normalizeEditorContent } from "./normalize-editor-content";
 
@@ -391,7 +392,7 @@ describe("normalizeEditorContent", () => {
 						type: "bulletList",
 						content: [
 							{ type: "text", text: "Invalid item" }, // Should be listItem
-							null as unknown, // Null item
+							null as any as TiptapNode, // Null item
 						],
 					},
 				],
@@ -456,7 +457,7 @@ describe("normalizeEditorContent", () => {
 							{
 								type: "listItem",
 								content: [
-									null as unknown, // Null element
+									null as any as TiptapNode, // Null element
 									{ type: "text", text: "Valid text" },
 								],
 							},
@@ -601,7 +602,7 @@ describe("normalizeEditorContent", () => {
 				type: "doc",
 				content: [
 					{ type: "text", text: "Valid text" },
-					{} as unknown, // Missing type property
+					{} as any as TiptapNode, // Missing type property
 				],
 			};
 			const sectionType: EditorContentTypes = "situation";
@@ -625,7 +626,7 @@ describe("normalizeEditorContent", () => {
 					{
 						type: "paragraph",
 						content: [
-							{ type: "text" } as unknown, // Missing text property - gets normalized before validation
+							{ type: "text" } as any as TiptapNode, // Missing text property - gets normalized before validation
 						],
 					},
 				],

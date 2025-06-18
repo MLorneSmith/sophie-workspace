@@ -4,6 +4,8 @@
 
 AI-Assisted Feature Development is our methodology designed for solo developers working with Claude Code. It consists of 7 main phases that transform ideas into production-ready features, starting with comprehensive user discovery.
 
+**Master Orchestration**: The entire process is orchestrated through the `/build-feature` command, which automatically detects the current phase and guides you through each step. See `.claude/commands/build-feature.md` for the complete orchestration logic.
+
 ---
 
 ## Phase 0: User Discovery & Research
@@ -301,6 +303,24 @@ Each phase integrates with GitHub Projects through:
 
 ---
 
+## How to Use This Process
+
+To start developing a new feature or continue work on an existing one, simply use:
+
+```bash
+/build-feature "Your feature idea"  # Start new feature
+/build-feature 123                  # Continue with issue #123
+/build-feature epic-456            # Continue with epic
+```
+
+The `/build-feature` command will:
+
+- Detect your current phase automatically
+- Load appropriate context and prompts
+- Guide you through the next steps
+- Update GitHub Projects and issues
+- Track progress across sessions
+
 ## Key Success Factors
 
 1. **User-Centric Discovery**: Every feature starts with validated user research and market analysis
@@ -311,3 +331,4 @@ Each phase integrates with GitHub Projects through:
 6. **Stakeholder Alignment**: Regular validation ensures development stays on track
 7. **Automation**: GitHub Projects automation reduces manual overhead
 8. **Continuous Improvement**: Regular retrospectives refine the process
+9. **Master Orchestration**: The `/build-feature` command coordinates all phases and agents

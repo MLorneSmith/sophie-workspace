@@ -360,8 +360,10 @@ import {
 
 /**
  * Create enhanced versions of Payload API handlers
+ * Note: This function is currently not used due to type compatibility issues
+ * with newer Payload versions. The config parameter type has changed.
  */
-export function createEnhancedPayloadHandlers(config: Payload) {
+export function createEnhancedPayloadHandlers(config: unknown) {
 	const manager = getEnhancedAPIManager();
 
 	// Create enhanced handlers
