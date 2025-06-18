@@ -39,7 +39,7 @@ export function useSurveyScores(userId: string, surveyId: string) {
 					// );
 					setError(
 						new Error(`Failed to fetch survey scores: ${error.message}`),
-					// );
+					);
 					return;
 				}
 
@@ -63,7 +63,7 @@ export function useSurveyScores(userId: string, surveyId: string) {
 					if (scores && Object.keys(scores).length > 0) {
 						const sortedCategories = Object.entries(scores).sort(
 							([, a], [, b]) => b - a,
-						// );
+						);
 
 						if (sortedCategories.length > 0) {
 							const highestEntry = sortedCategories[0];
@@ -88,7 +88,7 @@ export function useSurveyScores(userId: string, surveyId: string) {
 				// );
 				setError(
 					err instanceof Error ? err : new Error("An unknown error occurred"),
-				// );
+				);
 			} finally {
 				setIsLoading(false);
 			}

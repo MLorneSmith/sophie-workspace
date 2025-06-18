@@ -118,7 +118,18 @@ interface LabelProps extends React.PropsWithChildren {
 
 vi.mock("@kit/ui/label", () => ({
 	Label: ({ children, htmlFor, onClick, className, ...props }: LabelProps) => (
-		<label htmlFor={htmlFor} onClick={onClick} className={className} {...props}>
+		<label
+			htmlFor={htmlFor}
+			onClick={onClick}
+			onKeyDown={(e) => {
+				if (onClick && (e.key === "Enter" || e.key === " ")) {
+					e.preventDefault();
+					onClick(e as React.MouseEvent<HTMLLabelElement>);
+				}
+			}}
+			className={className}
+			{...props}
+		>
 			{children}
 		</label>
 	),

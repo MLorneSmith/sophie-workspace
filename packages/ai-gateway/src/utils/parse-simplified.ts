@@ -36,7 +36,7 @@ export function parseSimplified(response: string): SimplifiedContent {
 							section.type &&
 							(section.type === "heading" || section.type === "bullet") &&
 							typeof section.content === "string",
-					// );
+					);
 
 					if (validSections) {
 						return parsed as SimplifiedContent;
@@ -44,8 +44,8 @@ export function parseSimplified(response: string): SimplifiedContent {
 				}
 			} catch (_jsonError) {
 				// TODO: Async logger needed
-		// (await getLogger()).error("Failed to parse JSON content:", { data: jsonError });
-		// }
+				// (await getLogger()).error("Failed to parse JSON content:", { data: jsonError });
+			}
 		}
 
 		// If JSON parsing fails or validation fails, return a basic structure
@@ -61,10 +61,11 @@ export function parseSimplified(response: string): SimplifiedContent {
 				},
 			],
 		};
-	} catch (error) 
+	} catch (_error) {
 		// TODO: Async logger needed
 		// (await getLogger()).error("Failed to parse simplified content:", { data: error });
 		// TODO: Async logger needed
 		// (await getLogger()).error("Raw response:", { data: response });
 		throw new Error("Failed to parse AI response");
+	}
 }

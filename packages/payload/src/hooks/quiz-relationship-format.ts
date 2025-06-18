@@ -72,16 +72,17 @@ export const ensureProperQuizQuestionFormat: CollectionAfterReadHook = async ({
 		} else {
 			// If questions is not an array but has a value, convert to array
 			// TODO: Async logger needed
-		// (await getLogger()).warn(`Quiz ${doc.id} has non-array questions: ${typeof doc.questions}`, { data:  });
+			// (await getLogger()).warn(`Quiz ${doc.id} has non-array questions: ${typeof doc.questions}`);
 			doc.questions = [];
-		// }
+		}
 
 		return doc;
-	} catch (error) 
+	} catch (error) {
 		// TODO: Async logger needed
-		// (await getLogger()).error(`Error in ensureProperQuizQuestionFormat hook for quiz ${doc.id}:`, { arg1: error, arg2:  });
+		// (await getLogger()).error(`Error in ensureProperQuizQuestionFormat hook for quiz ${doc.id}:`, { error });
 		// Return the document as is to avoid blocking access completely
 		return doc;
+	}
 };
 
 /**

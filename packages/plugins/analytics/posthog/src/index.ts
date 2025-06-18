@@ -14,13 +14,13 @@ export function createPostHogAnalyticsService() {
 	if (!key) {
 		throw new Error(
 			"NEXT_PUBLIC_POSTHOG_KEY is not set. Please set the environment variable.",
-		// );
+		);
 	}
 
 	if (!host) {
 		throw new Error(
 			"NEXT_PUBLIC_POSTHOG_HOST is not set. Please set the environment variable.",
-		// );
+		);
 	}
 
 	return new PostHogAnalyticsService(key, host, url);
@@ -115,11 +115,11 @@ class ServerPostHogImpl {
 	}
 
 	async trackPageView(url: string) {
-		if (!this._userId) {
+		if (!this.userId) {
 			this.log("User ID not set, skipping page view tracking");
 			return;
 		}
-		
+
 		this.getClient().capture({
 			event: "$pageview",
 			distinctId: this.userId,
@@ -136,7 +136,7 @@ class ServerPostHogImpl {
 		if (!this.userId) {
 			throw new Error(
 				"Please identify the user using the identify method before tracking events",
-			// );
+			);
 		}
 
 		client.capture({
@@ -151,16 +151,17 @@ class ServerPostHogImpl {
 	log(..._args: unknown[]) {
 		if (process.env.NODE_ENV === "development") {
 			// TODO: Async logger needed
-		// (await getLogger()).info("[ServerPostHog]", { data: ...args });
-		// }
+			// (await getLogger()).info("[ServerPostHog]", { data: _args });
+		}
 	}
 
-	private getClient() 
+	private getClient() {
 		if (!this.ph) {
 			throw new Error("PostHog client not initialized");
 		}
 
 		return this.ph;
+	}
 }
 
 /**
@@ -216,14 +217,15 @@ class ClientPostHogImpl {
 	log(..._args: unknown[]) {
 		if (process.env.NODE_ENV === "development") {
 			// TODO: Async logger needed
-		// (await getLogger()).info("[ClientPostHog]", { data: ...args });
-		// }
+			// (await getLogger()).info("[ClientPostHog]", { data: _args });
+		}
 	}
 
-	private getClient() 
+	private getClient() {
 		if (!this.ph) {
 			throw new Error("PostHog client not initialized");
 		}
 
 		return this.ph;
+	}
 }

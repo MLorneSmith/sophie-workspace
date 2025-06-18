@@ -159,7 +159,7 @@ export const getPresentationAction = enhanceAction(
 						await supabase
 							.from("building_blocks_submissions")
 							.update({
-								storyboard: storyboard as any,
+								storyboard: storyboard as unknown,
 							})
 							.eq("id", data.presentationId);
 					} catch (_saveError) {
@@ -237,7 +237,7 @@ export const saveStoryboardAction = enhanceAction(
 			const { error } = await supabase
 				.from("building_blocks_submissions")
 				.update({
-					storyboard: data.storyboard as any,
+					storyboard: data.storyboard as unknown,
 				})
 				.eq("id", data.presentationId);
 

@@ -411,9 +411,9 @@ export const generateOutlineAction = enhanceAction(
 		auth: true,
 		typeCheck: (data: unknown): GenerateOutlineParams => {
 			// The typecheck option helps with Zod optional field handling
-			const typedData = data as any;
+			const typedData = data as Record<string, unknown>;
 			return {
-				submissionId: typedData.submissionId,
+				submissionId: typedData.submissionId as string,
 				forceRegenerate: typedData.forceRegenerate === true,
 			};
 		},

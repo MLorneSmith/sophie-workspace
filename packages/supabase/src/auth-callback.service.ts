@@ -114,7 +114,7 @@ class AuthCallbackService {
 			const errorMessage = getAuthErrorMessage({
 				error: error.message,
 				code: error.code,
-		});
+			});
 
 			url.searchParams.set("error", errorMessage);
 		}
@@ -162,7 +162,7 @@ class AuthCallbackService {
 			const urlParams = new URLSearchParams({
 				invite_token: inviteToken,
 				email: emailParam ?? "",
-		});
+			});
 
 			_nextUrl = `${params.joinTeamPath}?${urlParams.toString()}`;
 		}
@@ -178,44 +178,45 @@ class AuthCallbackService {
 						code: error.code,
 						error: error.message,
 						path: errorPath,
-		});
+					});
 				}
 			} catch (_error) {
 				// TODO: Async logger needed
-		// (await getLogger()).error("An error occurred while exchanging code for session", {
-		//	error,
-		//	name: "auth.callback",
-		});
+				// (await getLogger()).error("An error occurred while exchanging code for session", {
+				//	error: _error,
+				//	name: "auth.callback",
+				// });
 
-				const message = error instanceof Error ? error.message : error;
+				const message = _error instanceof Error ? _error.message : _error;
 
 				return onError({
-					code: (error as AuthError)?.code,
+					code: (_error as AuthError)?.code,
 					error: message as string,
 					path: errorPath,
-		});
+				});
 			}
 		}
 
-		if (error) {
+		if (_error) {
 			return onError({
-				error,
+				error: _error,
 				path: errorPath,
-		});
+			});
 		}
 
 		return {
-			nextPath: nextUrl,
+			nextPath: _nextUrl,
 		};
 	}
 
-	private adjustUrlHostForLocalDevelopment(url: URL, host: string | null) 
+	private adjustUrlHostForLocalDevelopment(url: URL, host: string | null) {
 		if (this.isLocalhost(url.host) && !this.isLocalhost(host)) {
 			url.host = host as string;
 			url.port = "";
 		}
+	}
 
-	private isLocalhost(host: string | null) 
+	private isLocalhost(host: string | null) {
 		if (!host) {
 			return false;
 		}
@@ -225,6 +226,7 @@ class AuthCallbackService {
 			host.includes("0.0.0.0:") ||
 			host.includes("127.0.0.1:")
 		);
+	}
 }
 
 function onError({
@@ -236,18 +238,18 @@ function onError({
 	path: string;
 	code?: string;
 }) {
-	const _errorMessage = getAuthErrorMessage({ error, code });
+	const errorMessage = getAuthErrorMessage({ error, code });
 
 	// TODO: Async logger needed
 	// (await getLogger()).error("An error occurred while signing user in", {
 	//	error: JSON.stringify(error).replace(/["\\]/g, "\\$&"),
 	//	name: "auth.callback",
-		});
+	// });
 
 	const searchParams = new URLSearchParams({
 		error: errorMessage,
 		code: code ?? "",
-		});
+	});
 
 	const nextPath = `${path}?${searchParams.toString()}`;
 

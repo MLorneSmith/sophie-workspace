@@ -67,7 +67,9 @@ export class LemonSqueezyWebhookHandlerService
 		// if no signature is found, throw an error
 		if (!signature) {
 			logger.error({
-					eventName, { arg1: }, arg2: "Signature header not found", arg3:  });
+				eventName,
+				message: "Signature header not found",
+			});
 
 			throw new Error("Signature header not found");
 		}
@@ -77,7 +79,9 @@ export class LemonSqueezyWebhookHandlerService
 		// if the signature is invalid, throw an error
 		if (!isValid) {
 			logger.error({
-					eventName, { arg1: }, arg2: "Signing secret is invalid", arg3:  });
+				eventName,
+				message: "Signing secret is invalid",
+			});
 
 			throw new Error("Signing secret is invalid");
 		}
@@ -110,7 +114,7 @@ export class LemonSqueezyWebhookHandlerService
 				const result = await this.handleOrderCompleted(
 					event as OrderWebhook,
 					params.onCheckoutSessionCompleted,
-				// );
+				);
 
 				// handle user-supplied handler
 				if (params.onEvent) {
@@ -124,7 +128,7 @@ export class LemonSqueezyWebhookHandlerService
 				const result = await this.handleSubscriptionCreatedEvent(
 					event as SubscriptionWebhook,
 					params.onSubscriptionUpdated,
-				// );
+				);
 
 				// handle user-supplied handler
 				if (params.onEvent) {
@@ -138,7 +142,7 @@ export class LemonSqueezyWebhookHandlerService
 				const result = await this.handleSubscriptionUpdatedEvent(
 					event as SubscriptionWebhook,
 					params.onSubscriptionUpdated,
-				// );
+				);
 
 				// handle user-supplied handler
 				if (params.onEvent) {
@@ -152,7 +156,7 @@ export class LemonSqueezyWebhookHandlerService
 				const result = await this.handleSubscriptionDeletedEvent(
 					event as SubscriptionWebhook,
 					params.onSubscriptionDeleted,
-				// );
+				);
 
 				// handle user-supplied handler
 				if (params.onEvent) {
@@ -166,7 +170,7 @@ export class LemonSqueezyWebhookHandlerService
 				const result = await this.handleInvoicePaid(
 					event as SubscriptionInvoiceWebhook,
 					params.onInvoicePaid,
-				// );
+				);
 
 				// handle user-supplied handler
 				if (params.onEvent) {
@@ -184,10 +188,13 @@ export class LemonSqueezyWebhookHandlerService
 
 				const logger = await getLogger();
 
-				logger.debug({
+				logger.debug(
+					{
 						eventType: eventName,
-			name: this.namespace
-		}, "Unhandled Lemon Squeezy event type");
+						name: this.namespace,
+					},
+					"Unhandled Lemon Squeezy event type",
+				);
 
 				return;
 			}
@@ -271,7 +278,12 @@ export class LemonSqueezyWebhookHandlerService
 			const logger = await getLogger();
 
 			logger.warn({
-					orderId, { arg1: subscriptionId, arg2: error, arg3: name: this.namespace, arg4: }, arg5: "Failed to fetch order", arg6:  });
+				orderId,
+				subscriptionId,
+				error,
+				name: this.namespace,
+				message: "Failed to fetch order",
+			});
 
 			throw new Error("Failed to fetch order");
 		}
@@ -323,7 +335,7 @@ export class LemonSqueezyWebhookHandlerService
 		return this.handleSubscriptionCreatedEvent(
 			event,
 			onSubscriptionUpdatedCallback,
-		// );
+		);
 	}
 
 	private handleSubscriptionDeletedEvent(
@@ -358,7 +370,11 @@ export class LemonSqueezyWebhookHandlerService
 			const logger = await getLogger();
 
 			logger.error({
-					subscriptionId, { arg1: accountId, arg2: name: this.namespace, arg3: }, arg4: "Failed to fetch subscription", arg5:  });
+				subscriptionId,
+				accountId,
+				name: this.namespace,
+				message: "Failed to fetch subscription",
+			});
 
 			return;
 		}
@@ -411,11 +427,13 @@ export class LemonSqueezyWebhookHandlerService
 
 		if (!type) {
 			// TODO: Async logger needed
-		// (await getLogger()).warn({
-					variantId, { arg1: }, arg2: 'Line item type not found. Will be defaulted to "flat"', arg3:  });
+			// (await getLogger()).warn({
+			//		variantId,
+			//		message: 'Line item type not found. Will be defaulted to "flat"',
+			//	});
 
 			return "flat" as const;
-		// }
+		}
 
 		return type;
 	}
@@ -438,7 +456,7 @@ async function isSigningSecretValid(rawBody: string, signatureHeader: string) {
 	const { hex: digest } = await createHmac({
 		key: webhooksSecret,
 		data: rawBody,
-		});
+	});
 
 	const signature = Buffer.from(signatureHeader, "utf8");
 

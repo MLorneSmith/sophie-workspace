@@ -77,7 +77,7 @@ export class NewRelicMonitoringService extends MonitoringService {
 		this.newrelic.setUserID(info.id);
 
 		// Add additional user attributes if provided
-		const { id, ...otherInfo } = info;
+		const { id: _id, ...otherInfo } = info;
 		Object.entries(otherInfo).forEach(([key, value]) => {
 			if (
 				typeof value === "string" ||

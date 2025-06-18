@@ -87,9 +87,9 @@ export function VideoRecorder({
 					const _error = videoRef.current?.error;
 
 					// TODO: Async logger needed
-		// (await getLogger()).error(`Error ${error?.code}; details: ${error?.message}`);
-			// };
-		// }
+					// (await getLogger()).error(`Error ${_error?.code}; details: ${_error?.message}`);
+				};
+			}
 
 			const isSafari =
 				navigator.userAgent.includes("Safari") &&
@@ -136,11 +136,13 @@ export function VideoRecorder({
 					return prevTimer + 1;
 				});
 			}, 1000);
-		} catch (err) 
+		} catch (err) {
 			// TODO: Async logger needed
-		// (await getLogger()).error("Error accessing media devices:", { data: err });
+			// (await getLogger()).error("Error accessing media devices:", { data: err });
 
-			setError("testimonials:errorMessage");, [maxRecordingTime, onVideoRecorded, settings, stopRecording]);
+			setError("testimonials:errorMessage");
+		}
+	}, [maxRecordingTime, onVideoRecorded, settings, stopRecording]);
 
 	useEffect(() => {
 		if (videoBlob && videoRef.current) {
@@ -150,7 +152,7 @@ export function VideoRecorder({
 
 			return () => URL.revokeObjectURL(videoUrl);
 		}
-	}, []);
+	}, [videoBlob]);
 
 	const retryRecording = useCallback(() => {
 		setVideoBlob(null);

@@ -153,7 +153,7 @@ export function StoryboardProvider({ children }: StoryboardProviderProps) {
 				return false;
 			}
 		},
-		[],
+		[currentPresentationId],
 	);
 
 	// Debounced save function
@@ -168,27 +168,30 @@ export function StoryboardProvider({ children }: StoryboardProviderProps) {
 			// Only auto-save if a presentation is loaded
 			debouncedSaveStoryboard(storyboard);
 		}
-	}, [debouncedSaveStoryboard]);
+	}, [debouncedSaveStoryboard, storyboard, currentPresentationId]);
 
 	// Update a single slide
-	const updateSlide = useCallback((updatedSlide: Slide) => {
-		if (!storyboard) return;
+	const updateSlide = useCallback(
+		(updatedSlide: Slide) => {
+			if (!storyboard) return;
 
-		const newSlides = storyboard.slides.map((slide) =>
-			slide.id === updatedSlide.id ? updatedSlide : slide,
-		);
+			const newSlides = storyboard.slides.map((slide) =>
+				slide.id === updatedSlide.id ? updatedSlide : slide,
+			);
 
-		const updatedStoryboard = {
-			...storyboard,
-			slides: newSlides,
-		};
+			const updatedStoryboard = {
+				...storyboard,
+				slides: newSlides,
+			};
 
-		startTransition(() => {
-			setStoryboard(updatedStoryboard);
-		});
+			startTransition(() => {
+				setStoryboard(updatedStoryboard);
+			});
 
-		// Auto-save will handle the actual saving
-	}, []);
+			// Auto-save will handle the actual saving
+		},
+		[storyboard],
+	);
 
 	// Add a new slide
 	const addSlide = useCallback(() => {
@@ -221,7 +224,7 @@ export function StoryboardProvider({ children }: StoryboardProviderProps) {
 		});
 
 		updateStoryboard(updatedStoryboard);
-	}, [updateStoryboard]);
+	}, [updateStoryboard, storyboard]);
 
 	// Remove a slide
 	const removeSlide = useCallback(
@@ -246,7 +249,7 @@ export function StoryboardProvider({ children }: StoryboardProviderProps) {
 
 			updateStoryboard(updatedStoryboard);
 		},
-		[updateStoryboard],
+		[updateStoryboard, storyboard],
 	);
 
 	// Reorder slides
@@ -281,7 +284,7 @@ export function StoryboardProvider({ children }: StoryboardProviderProps) {
 
 			updateStoryboard(updatedStoryboard);
 		},
-		[updateStoryboard],
+		[updateStoryboard, storyboard],
 	);
 
 	const value = useMemo(
@@ -298,7 +301,18 @@ export function StoryboardProvider({ children }: StoryboardProviderProps) {
 			removeSlide,
 			reorderSlides,
 		}),
-		[updateStoryboard, updateSlide, addSlide, removeSlide, reorderSlides],
+		[
+			storyboard,
+			currentPresentation,
+			isLoading,
+			isPending,
+			error,
+			updateStoryboard,
+			updateSlide,
+			addSlide,
+			removeSlide,
+			reorderSlides,
+		],
 	);
 
 	return (

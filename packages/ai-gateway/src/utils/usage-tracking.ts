@@ -97,7 +97,9 @@ export async function recordApiUsage(
 				await initializeCostConfiguration(adminClient);
 			}
 		} catch (costConfigError) {
-			logger.warn("Error checking cost configuration", { error: costConfigError });
+			logger.warn("Error checking cost configuration", {
+				error: costConfigError,
+			});
 			// Continue anyway as this is just a preflight check
 		}
 
@@ -165,15 +167,20 @@ export async function recordApiUsage(
 								error: adminError,
 								errorMessage: adminError.message,
 								errorCode: adminError.code,
-		});
+							});
 						} else {
-							logger.info("Successfully recorded AI request log with admin client", {
-								id: adminData?.id,
-		});
+							logger.info(
+								"Successfully recorded AI request log with admin client",
+								{
+									id: adminData?.id,
+								},
+							);
 							success = true;
 						}
 					} catch (adminRetryError) {
-						logger.error("Error during admin client retry", { error: adminRetryError });
+						logger.error("Error during admin client retry", {
+							error: adminRetryError,
+						});
 					}
 				}
 			} else {
@@ -188,7 +195,7 @@ export async function recordApiUsage(
 				stack: error.stack,
 				message: error.message,
 				name: error.name,
-		});
+			});
 		}
 
 		// 2. Skip credit deduction if bypassing credits
@@ -247,51 +254,58 @@ export async function recordApiUsage(
 									(module) => module.getSupabaseClient({ admin: true }),
 								);
 
-								const { data: adminCreditData, error: adminDeductError } =
+								const { data: _adminCreditData, error: adminDeductError } =
 									await adminClient.rpc("deduct_ai_credits", {
 										p_entity_type: entityType,
 										p_entity_id: entityId,
 										p_amount: cost,
 										p_feature: feature || "unknown",
 										p_request_id: requestId,
-		});
+									});
 
 								if (adminDeductError) {
 									logger.error("Admin client credit deduction also failed", {
 										error: adminDeductError,
 										errorMessage: adminDeductError.message,
 										errorCode: adminDeductError.code,
-		});
+									});
 								} else {
-									logger.info("Successfully deducted AI credits with admin client");
+									logger.info(
+										"Successfully deducted AI credits with admin client",
+									);
 								}
 							} catch (adminCreditError) {
 								logger.error("Error during admin client credit deduction", {
 									error: adminCreditError,
-		});
+								});
 							}
 						}
 					} else {
 						logger.info("Successfully deducted AI credits", { creditData });
 					}
 				}
-			} catch (_deductError) 
-				logger.error("Exception in credit deduction", 
+			} catch (deductError) {
+				logger.error("Exception in credit deduction", {
 					error: deductError,
 					message:
 						deductError instanceof Error
 							? deductError.message
 							: String(deductError),
-					stack: deductError instanceof Error ? deductError.stack : undefined,);
+					stack: deductError instanceof Error ? deductError.stack : undefined,
+				});
+			}
+		}
 
 		return success;
-	} catch (error) 
-		logger.error("Fatal error in recordApiUsage", 
+	} catch (error) {
+		logger.error("Fatal error in recordApiUsage", {
 			error,
 			message: error instanceof Error ? error.message : String(error),
-			stack: error instanceof Error ? error.stack : undefined,);
+			stack: error instanceof Error ? error.stack : undefined,
+		});
 		// Continue execution to prevent breaking the main functionality
 		return false;
+	}
 }
 
 /**
@@ -305,9 +319,9 @@ export function _extractCostFromHeaders(
 	headers: Record<string, string>,
 ): number {
 	const logger = getLogger();
-	
+
 	if (!headers) {
-		logger.then(l => l.warn("No headers provided to extractCostFromHeaders"));
+		logger.then((l) => l.warn("No headers provided to extractCostFromHeaders"));
 		return 0;
 	}
 
@@ -321,9 +335,11 @@ export function _extractCostFromHeaders(
 
 	// Log all available headers in debug mode
 	if (ENV.AI_USAGE_DEBUG) {
-		logger.then(l => l.debug("Available headers for cost extraction", {
-			headers: Object.keys(headers),
-		}));
+		logger.then((l) =>
+			l.debug("Available headers for cost extraction", {
+				headers: Object.keys(headers),
+			}),
+		);
 	}
 
 	// Try each possible header
@@ -333,28 +349,36 @@ export function _extractCostFromHeaders(
 			try {
 				const cost = Number.parseFloat(costHeader);
 				if (Number.isNaN(cost) || cost < 0) {
-					logger.then(l => l.warn("Invalid cost value in header", {
-						headerName,
-						value: costHeader,
-					}));
+					logger.then((l) =>
+						l.warn("Invalid cost value in header", {
+							headerName,
+							value: costHeader,
+						}),
+					);
 					continue;
 				}
-				logger.then(l => l.info("Extracted cost from header", {
-					cost,
-					headerName,
-				}));
+				logger.then((l) =>
+					l.info("Extracted cost from header", {
+						cost,
+						headerName,
+					}),
+				);
 				return cost;
 			} catch (e) {
-				logger.then(l => l.error("Error parsing cost header", {
-					headerName,
-					error: e,
-				}));
+				logger.then((l) =>
+					l.error("Error parsing cost header", {
+						headerName,
+						error: e,
+					}),
+				);
 			}
 		}
 	}
 
 	// If we reach here, no valid cost was found
-	logger.then(l => l.info("No valid cost found in headers, will use calculated cost"));
+	logger.then((l) =>
+		l.info("No valid cost found in headers, will use calculated cost"),
+	);
 	return 0;
 }
 
@@ -377,7 +401,7 @@ export async function _calculateCost(
 	completionTokens: number,
 ): Promise<number> {
 	const logger = await getLogger();
-	
+
 	// Validate inputs
 	if (!provider || !model) {
 		logger.warn("Missing provider or model in calculateCost", {
@@ -514,7 +538,7 @@ export async function _checkUsageLimits(
 	teamId?: string,
 ): Promise<boolean> {
 	const logger = await getLogger();
-	
+
 	// Validate inputs
 	if (!userId && !teamId) return false;
 
@@ -536,7 +560,7 @@ export async function _checkUsageLimits(
 				p_entity_id: entityId,
 				p_cost: 0, // We're just checking if any limits are already exceeded
 				p_tokens: 0,
-		});
+			});
 
 			if (error) {
 				logger.error("Error checking usage limits", { error });
@@ -545,7 +569,9 @@ export async function _checkUsageLimits(
 
 			return data && data.length > 0 && data[0].limit_exceeded;
 		} catch (rpcError) {
-			logger.error("Exception in RPC call to check usage limits", { error: rpcError });
+			logger.error("Exception in RPC call to check usage limits", {
+				error: rpcError,
+			});
 			return false;
 		}
 	} catch (error) {

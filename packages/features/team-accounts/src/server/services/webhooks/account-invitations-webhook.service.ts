@@ -16,22 +16,22 @@ const env = z
 		invitePath: z
 			.string({
 				required_error: "The property invitePath is required",
-			// })
+			})
 			.min(1),
 		siteURL: z
 			.string({
 				required_error: "NEXT_PUBLIC_SITE_URL is required",
-			// })
+			})
 			.min(1),
 		productName: z
 			.string({
 				required_error: "NEXT_PUBLIC_PRODUCT_NAME is required",
-			// })
+			})
 			.min(1),
 		emailSender: z
 			.string({
 				required_error: "EMAIL_SENDER is required",
-			// })
+			})
 			.min(1),
 	})
 	.parse({
@@ -64,7 +64,10 @@ class AccountInvitationsWebhookService {
 	private async dispatchInvitationEmail(invitation: Invitation) {
 		const logger = await getLogger();
 
-		logger.info({ invitation, { arg1: name: this.namespace }, arg2: "Handling invitation webhook event...", arg3:  });
+		logger.info(
+			{ invitation, name: this.namespace },
+			"Handling invitation webhook event...",
+		);
 
 		const inviter = await this.adminClient
 			.from("accounts")
@@ -73,10 +76,13 @@ class AccountInvitationsWebhookService {
 			.single();
 
 		if (inviter.error) {
-			logger.error({
+			logger.error(
+				{
 					error: inviter.error,
-			name: this.namespace
-		}, "Failed to fetch inviter details");
+					name: this.namespace,
+				},
+				"Failed to fetch inviter details",
+			);
 
 			throw inviter.error;
 		}
@@ -88,10 +94,13 @@ class AccountInvitationsWebhookService {
 			.single();
 
 		if (team.error) {
-			logger.error({
+			logger.error(
+				{
 					error: team.error,
-			name: this.namespace
-		}, "Failed to fetch team details");
+					name: this.namespace,
+				},
+				"Failed to fetch team details",
+			);
 
 			throw team.error;
 		}
@@ -101,7 +110,7 @@ class AccountInvitationsWebhookService {
 			name: this.namespace,
 		};
 
-		logger.info(ctx, { data: "Invite retrieved. Sending invitation email..." });
+		logger.info(ctx, "Invite retrieved. Sending invitation email...");
 
 		try {
 			const { renderInviteEmail } = await import("@kit/email-templates");
@@ -111,7 +120,7 @@ class AccountInvitationsWebhookService {
 			const link = this.getInvitationLink(
 				invitation.invite_token,
 				invitation.email,
-			// );
+			);
 
 			const { html, subject } = await renderInviteEmail({
 				link,
@@ -119,7 +128,7 @@ class AccountInvitationsWebhookService {
 				inviter: inviter.data.name ?? inviter.data.email ?? "",
 				productName: env.productName,
 				teamName: team.data.name,
-		});
+			});
 
 			await mailer
 				.sendEmail({
@@ -129,28 +138,28 @@ class AccountInvitationsWebhookService {
 					html,
 				})
 				.then(() => {
-					logger.info(ctx, { data: "Invitation email successfully sent!" });
+					logger.info(ctx, "Invitation email successfully sent!");
 				})
 				.catch((error) => {
 					// TODO: Async logger needed
-		// (await getLogger()).error(error);
+					// (await getLogger()).error(error);
 
-					logger.error({ error, { arg1: ...ctx }, arg2: "Failed to send invitation email" });
-		});
+					logger.error({ error, ...ctx }, "Failed to send invitation email");
+				});
 
 			return {
 				success: true,
 			};
 		} catch (error) {
 			// TODO: Async logger needed
-		// (await getLogger()).error(error);
-			logger.warn({ error, { arg1: ...ctx }, arg2: "Failed to invite user to team" });
+			// (await getLogger()).error(error);
+			logger.warn({ error, ...ctx }, "Failed to invite user to team");
 
 			return {
 				error,
-			// success: false,
-			// };
-		// }
+				success: false,
+			};
+		}
 	}
 
 	private getInvitationLink(token: string, email: string) {

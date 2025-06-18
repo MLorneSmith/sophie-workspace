@@ -83,7 +83,7 @@ async function assertUserPermissionsToDeleteTeamAccount(
 	const { data: isOwner, error } = await client
 		.rpc("is_account_owner", {
 			account_id: accountId,
-		// })
+		})
 		.single();
 
 	if (error || !isOwner) {

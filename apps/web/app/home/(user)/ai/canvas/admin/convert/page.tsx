@@ -23,11 +23,12 @@ export default function ConvertEditorDataPage() {
 		} catch (_err) {
 			// TODO: Async logger needed
 			// (await getLogger()).error("Error converting data:", {
-			// 	data: err,
-		});
-			setError(err instanceof Error ? err.message : "Unknown error occurred");
-		} finally 
+			// 	data: _err,
+			// });
+			setError(_err instanceof Error ? _err.message : "Unknown error occurred");
+		} finally {
 			setIsConverting(false);
+		}
 	};
 
 	return (

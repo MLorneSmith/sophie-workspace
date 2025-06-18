@@ -39,7 +39,7 @@ export async function getSurveyQuestions(
 	surveyId: string,
 	supabaseClient?: SupabaseClient,
 ) {
-	(await getLogger()).info(`Getting survey questions for survey ID: ${surveyId}`);
+	logger.info(`Getting survey questions for survey ID: ${surveyId}`);
 
 	try {
 		// First, try to get the survey with its questions using a higher depth
@@ -56,14 +56,14 @@ export async function getSurveyQuestions(
 		// If the survey has questions with full data, return them directly
 		if (survey?.questions?.length && survey.questions[0].text) {
 			// TODO: Async logger needed
-		// (await getLogger()).info(`Found ${survey.questions.length} fully populated questions`);
+			// (await getLogger()).info(`Found ${survey.questions.length} fully populated questions`);
 			return { docs: survey.questions };
-		// }
+		}
 
 		// If we have question IDs but not full data, fetch them directly
 		if (survey?.questions?.length) {
 			// TODO: Async logger needed
-		// (await getLogger()).info(`Found ${survey.questions.length} question references, { arg1: fetching full data`, arg2:  });
+			// (await getLogger()).info(`Found ${survey.questions.length} question references, fetching full data`);
 
 			// Extract question IDs, handling different possible formats
 			const questionIds = survey.questions
@@ -77,26 +77,26 @@ export async function getSurveyQuestions(
 				.join(",");
 
 			// TODO: Async logger needed
-		// (await getLogger()).info(`Question IDs: ${questionIds}`);
+			// (await getLogger()).info(`Question IDs: ${questionIds}`);
 
 			if (questionIds) {
 				const questionsResponse = await callPayloadAPI(
 					`survey_questions?where[id][in]=${questionIds}&sort=position&limit=100`,
 					{},
 					supabaseClient,
-		);
+				);
 
 				if (questionsResponse?.docs?.length) {
 					// TODO: Async logger needed
-		// (await getLogger()).info(`Retrieved ${questionsResponse.docs.length} questions by ID`, { data:  });
+					// (await getLogger()).info(`Retrieved ${questionsResponse.docs.length} questions by ID`);
 					return questionsResponse;
-		// }
+				}
 			}
 		}
 
 		// Skip the relationship tables approach since it's causing 404 errors
 		// TODO: Async logger needed
-		// (await getLogger()).info("Skipping relationship tables approach due to potential API limitations", { data:  });
+		// (await getLogger()).info("Skipping relationship tables approach due to potential API limitations");
 
 		// As a last resort, get all questions and filter by survey ID
 		// TODO: Async logger needed
@@ -110,43 +110,42 @@ export async function getSurveyQuestions(
 
 		if (allQuestionsResponse?.docs?.length) {
 			// TODO: Async logger needed
-		// (await getLogger()).info(`Retrieved ${allQuestionsResponse.docs.length} total questions`, { data:  });
+			// (await getLogger()).info(`Retrieved ${allQuestionsResponse.docs.length} total questions`);
 
 			// Log all question IDs for debugging
 			for (const _q of allQuestionsResponse.docs) {
 				// TODO: Async logger needed
-		// (await getLogger()).info(`Question ID: ${q.id}, { arg1: Text: ${q.text?.substring(0, arg2: 30 })}...`,
-		);
+				// (await getLogger()).info(`Question ID: ${q.id}, Text: ${q.text?.substring(0, 30)}...`);
 			}
 
 			// Try to directly fetch the questions we know should be associated with this survey
 			// This is a workaround based on the database query results
 			if (surveyId === "6f463bef-d7a0-4e5a-b0fa-a789b5d6f0e0") {
 				// TODO: Async logger needed
-		// (await getLogger()).info("Special handling for Three Quick Questions survey");
+				// (await getLogger()).info("Special handling for Three Quick Questions survey");
 				const knownQuestionIds = [
 					"61a8e0b5-c600-49cc-9b18-6ba0f158bed3",
 					"e0a592e6-d96a-4b62-ad11-3d6e16b2175d",
 					"e0b335b6-dde9-4117-963b-c482b3ae5595",
 				];
 
-				const hardcodedQuestions = allQuestionsResponse.docs.filter((q: { id: string }) =>
-					knownQuestionIds.includes(q.id),
-		);
+				const hardcodedQuestions = allQuestionsResponse.docs.filter(
+					(q: { id: string }) => knownQuestionIds.includes(q.id),
+				);
 
 				if (hardcodedQuestions.length > 0) {
 					// TODO: Async logger needed
-		// (await getLogger()).info(`Found ${hardcodedQuestions.length} hardcoded questions for Three Quick Questions survey`, { data:  });
+					// (await getLogger()).info(`Found ${hardcodedQuestions.length} hardcoded questions for Three Quick Questions survey`);
 					return {
 						...allQuestionsResponse,
-			// docs: hardcodedQuestions,
-			// };
-		// }
+						docs: hardcodedQuestions,
+					};
+				}
 			}
 			// Special handling for Self-Assessment survey
 			else if (surveyId === "5e352ade-c6a9-4e4a-9ffa-9680a5d5f9e9") {
 				// TODO: Async logger needed
-		// (await getLogger()).info("Special handling for Self-Assessment survey");
+				// (await getLogger()).info("Special handling for Self-Assessment survey");
 				// These IDs were retrieved from the database query
 				const knownQuestionIds = [
 					"c259ffaf-2851-4e75-b368-286da3fb5e49",
@@ -176,75 +175,83 @@ export async function getSurveyQuestions(
 					"f89404ae-0a14-4c55-b9fc-4eadb59a9dd5",
 				];
 
-				const hardcodedQuestions = allQuestionsResponse.docs.filter((q: { id: string }) =>
-					knownQuestionIds.includes(q.id),
-		);
+				const hardcodedQuestions = allQuestionsResponse.docs.filter(
+					(q: { id: string }) => knownQuestionIds.includes(q.id),
+				);
 
 				if (hardcodedQuestions.length > 0) {
 					// TODO: Async logger needed
-		// (await getLogger()).info(`Found ${hardcodedQuestions.length} hardcoded questions for Self-Assessment survey`, { data:  });
+					// (await getLogger()).info(`Found ${hardcodedQuestions.length} hardcoded questions for Self-Assessment survey`);
 					return {
 						...allQuestionsResponse,
-			// docs: hardcodedQuestions,
-			// };
-		// }
+						docs: hardcodedQuestions,
+					};
+				}
 			}
 
 			// Check for any relationship to the survey
-			const filteredQuestions = allQuestionsResponse.docs.filter((_q: { id: string; surveys_id?: string; surveys_id_id?: string; surveys?: unknown[] | string }) => {
-				// Log the question's relationship fields for debugging
-				// TODO: Async logger needed
-		// (await getLogger()).info(`Checking question ${q.id} relationships:`, { arg1: {
-					// surveys_id: q.surveys_id, arg2: surveys_id_id: q.surveys_id_id, arg3: surveys: Array.isArray(q.surveys }) ? q.surveys.length : "not an array",
-		});
-
-				// Direct relationship fields
-				if (q.surveys_id === surveyId || q.surveys_id_id === surveyId) {
+			const filteredQuestions = allQuestionsResponse.docs.filter(
+				(_q: {
+					id: string;
+					surveys_id?: string;
+					surveys_id_id?: string;
+					surveys?: unknown[] | string;
+				}) => {
+					// Log the question's relationship fields for debugging
 					// TODO: Async logger needed
-		// (await getLogger()).info(`Question ${q.id} matched by direct relationship`);
-					return true;
-		// }
+					// (await getLogger()).info(`Checking question ${q.id} relationships:`, {
+					// 			surveys_id: q.surveys_id, surveys_id_id: q.surveys_id_id, surveys: Array.isArray(q.surveys) ? q.surveys.length : "not an array",
+					// });
 
-				// Check surveys array if it exists
-				if (Array.isArray(q.surveys)) {
-					const hasRelationship = q.surveys.some((s: unknown) => {
-						if (s === surveyId) return true;
-						if (
-							s &&
-							typeof s === "object" &&
-							"id" in s &&
-							"value" in s &&
-							((s as { id?: string; value?: string }).id === surveyId || (s as { id?: string; value?: string }).value === surveyId)
-						)
-							return true;
-						return false;
-					});
-
-					if (hasRelationship) {
+					// Direct relationship fields
+					if (q.surveys_id === surveyId || q.surveys_id_id === surveyId) {
 						// TODO: Async logger needed
-		// (await getLogger()).info(`Question ${q.id} matched by surveys array`);
-		// }
+						// (await getLogger()).info(`Question ${q.id} matched by direct relationship`);
+						return true;
+					}
 
-					return hasRelationship;
-				}
+					// Check surveys array if it exists
+					if (Array.isArray(q.surveys)) {
+						const hasRelationship = q.surveys.some((s: unknown) => {
+							if (s === surveyId) return true;
+							if (
+								s &&
+								typeof s === "object" &&
+								"id" in s &&
+								"value" in s &&
+								((s as { id?: string; value?: string }).id === surveyId ||
+									(s as { id?: string; value?: string }).value === surveyId)
+							)
+								return true;
+							return false;
+						});
 
-				return false;
-			});
+						if (hasRelationship) {
+							// TODO: Async logger needed
+							// (await getLogger()).info(`Question ${q.id} matched by surveys array`);
+						}
+
+						return hasRelationship;
+					}
+
+					return false;
+				},
+			);
 
 			// TODO: Async logger needed
-		// (await getLogger()).info(`Filtered ${filteredQuestions.length} questions for survey ID ${surveyId}`, { data:  });
+			// (await getLogger()).info(`Filtered ${filteredQuestions.length} questions for survey ID ${surveyId}`);
 
 			if (filteredQuestions.length > 0) {
 				return {
 					...allQuestionsResponse,
-			// docs: filteredQuestions,
-			// };
-		// }
+					docs: filteredQuestions,
+				};
+			}
 
 			// If we still couldn't find any questions, try a different approach
 			// Look for questions that might have the survey relationship in a different format
 			// TODO: Async logger needed
-		// (await getLogger()).info("Trying alternative relationship formats");
+			// (await getLogger()).info("Trying alternative relationship formats");
 
 			const alternativeFilteredQuestions = allQuestionsResponse.docs.filter(
 				(q: Record<string, unknown>) => {
@@ -252,23 +259,23 @@ export async function getSurveyQuestions(
 					for (const key in q) {
 						if (typeof q[key] === "string" && q[key] === surveyId) {
 							// TODO: Async logger needed
-		// (await getLogger()).info(`Question ${q.id} matched by property ${key}`);
+							// (await getLogger()).info(`Question ${q.id} matched by property ${key}`);
 							return true;
-		// }
+						}
 
 						if (typeof q[key] === "object" && q[key] !== null) {
 							// Check if the property is an object that contains the survey ID
 							const obj = q[key] as any;
 							if ("id" in obj && obj.id === surveyId) {
 								// TODO: Async logger needed
-		// (await getLogger()).info(`Question ${q.id} matched by object property ${key}`, { data:  });
+								// (await getLogger()).info(`Question ${q.id} matched by object property ${key}`);
 								return true;
-		// }
+							}
 							if ("value" in obj && obj.value === surveyId) {
 								// TODO: Async logger needed
-		// (await getLogger()).info(`Question ${q.id} matched by object property ${key}`, { data:  });
+								// (await getLogger()).info(`Question ${q.id} matched by object property ${key}`);
 								return true;
-		// }
+							}
 
 							// Check if the property is an array that contains the survey ID
 							if (Array.isArray(q[key])) {
@@ -278,8 +285,8 @@ export async function getSurveyQuestions(
 									if (
 										item &&
 										typeof item === "object" &&
-										("id" in item && (item as any).id === surveyId ||
-										 "value" in item && (item as any).value === surveyId)
+										(("id" in item && (item as any).id === surveyId) ||
+											("value" in item && (item as any).value === surveyId))
 									)
 										return true;
 									return false;
@@ -287,9 +294,9 @@ export async function getSurveyQuestions(
 
 								if (hasMatch) {
 									// TODO: Async logger needed
-		// (await getLogger()).info(`Question ${q.id} matched by array property ${key}`, { data:  });
+									// (await getLogger()).info(`Question ${q.id} matched by array property ${key}`);
 									return true;
-		// }
+								}
 							}
 						}
 					}
@@ -300,22 +307,23 @@ export async function getSurveyQuestions(
 
 			if (alternativeFilteredQuestions.length > 0) {
 				// TODO: Async logger needed
-		// (await getLogger()).info(`Found ${alternativeFilteredQuestions.length} questions using alternative filtering`, { data:  });
+				// (await getLogger()).info(`Found ${alternativeFilteredQuestions.length} questions using alternative filtering`);
 				return {
 					...allQuestionsResponse,
-			// docs: alternativeFilteredQuestions,
-			// };
-		// }
+					docs: alternativeFilteredQuestions,
+				};
+			}
 		}
-	} catch (error) 
+	} catch (_error) {
 		// TODO: Async logger needed
-		// (await getLogger()).error(`Error getting survey questions for survey ID ${surveyId}:`, { arg1: error, arg2:  });
-		// }
+		// (await getLogger()).error(`Error getting survey questions for survey ID ${surveyId}:`, _error);
+	}
 
 	// If all attempts fail, return an empty result
 	// TODO: Async logger needed
-		// (await getLogger()).info("No questions found after all attempts");
+	// (await getLogger()).info("No questions found after all attempts");
 	return { docs: [] };
+}
 
 // The following functions are deprecated as we now use Supabase directly
 // They are kept here for backwards compatibility but will be removed in a future version
@@ -327,7 +335,7 @@ export async function _getUserSurveyResponse(
 	_userId: string,
 	_surveyId: string,
 ) {
-	(await getLogger()).warn(
+	logger.warn(
 		"getUserSurveyResponse is deprecated. Use Supabase directly instead.",
 	);
 	return { docs: [] };
@@ -337,7 +345,7 @@ export async function _getUserSurveyResponse(
  * @deprecated Use Supabase directly instead
  */
 export async function _createSurveyResponse(_data: unknown) {
-	(await getLogger()).warn(
+	logger.warn(
 		"createSurveyResponse is deprecated. Use Supabase directly instead.",
 	);
 	return { id: null };
@@ -347,7 +355,7 @@ export async function _createSurveyResponse(_data: unknown) {
  * @deprecated Use Supabase directly instead
  */
 export async function _updateSurveyResponse(id: string, _data: unknown) {
-	(await getLogger()).warn(
+	logger.warn(
 		"updateSurveyResponse is deprecated. Use Supabase directly instead.",
 	);
 	return { id };
@@ -357,6 +365,6 @@ export async function _updateSurveyResponse(id: string, _data: unknown) {
  * @deprecated Use Supabase directly instead
  */
 export async function _completeSurvey(id: string, _data: unknown) {
-	(await getLogger()).warn("completeSurvey is deprecated. Use Supabase directly instead.");
+	logger.warn("completeSurvey is deprecated. Use Supabase directly instead.");
 	return { id };
 }

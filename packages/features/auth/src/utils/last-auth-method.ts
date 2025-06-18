@@ -24,7 +24,7 @@ export function saveLastAuthMethod(authMethod: LastAuthMethod): void {
 	} catch (_error) {
 		// TODO: Async logger needed
 		// (await getLogger()).warn("Failed to save last auth method:", { data: error });
-		// }
+	}
 }
 
 /**
@@ -70,5 +70,5 @@ export function _clearLastAuthMethod() {
 	} catch (_error) {
 		// TODO: Async logger needed
 		// (await getLogger()).warn("Failed to clear last auth method:", { data: error });
-		// }
+	}
 }

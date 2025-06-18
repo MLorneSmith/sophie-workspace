@@ -244,11 +244,11 @@ export const TiptapTabContent = forwardRef<TiptapEditorRef, TabContentProps>(
 			// 	sectionType,
 			// 	contentType: typeof editorContent,
 			// 	contentLength: editorContent.length,
-		});
+			// });
 		} catch (_e) {
 			// TODO: Async logger needed
 			// TODO: Fix logger call - was: error
-			editorContent = JSON.stringify(EMPTY_EDITOR_STATE);
+			_editorContent = JSON.stringify(EMPTY_EDITOR_STATE);
 		}
 
 		return (

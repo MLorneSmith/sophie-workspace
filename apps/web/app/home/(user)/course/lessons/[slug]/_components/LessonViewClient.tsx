@@ -528,7 +528,7 @@ export function LessonViewClient({
 										// 	data: lesson.downloads
 										// 		? `${lesson.downloads.length} items`
 										// 		: "undefined",
-		});
+										// });
 
 										if (lesson.downloads && lesson.downloads.length > 0) {
 											// TODO: Async logger needed

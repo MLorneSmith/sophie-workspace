@@ -10,7 +10,7 @@
 import type { AfterReadHook, BeforeChangeHook } from "payload/types";
 
 // Define the expected structure of quiz questions for type safety
-interface QuizQuestion {
+interface _QuizQuestion {
 	id: string;
 	relationTo: string;
 	value: {
@@ -39,7 +39,15 @@ export const formatQuizQuestionsOnRead: AfterReadHook = async ({
 	req,
 }: {
 	doc: QuizDocument;
-	req: { payload?: { logger?: { info: (msg: unknown) => void; warn: (msg: unknown) => void; error: (msg: unknown) => void } } };
+	req: {
+		payload?: {
+			logger?: {
+				info: (msg: unknown) => void;
+				warn: (msg: unknown) => void;
+				error: (msg: unknown) => void;
+			};
+		};
+	};
 }) => {
 	// Skip if no document or no questions field
 	if (!doc || !doc.questions) {
@@ -85,7 +93,7 @@ export const formatQuizQuestionsOnRead: AfterReadHook = async ({
 					collection: "course_quizzes",
 					before: JSON.stringify(doc.questions.slice(0, 2)),
 					after: JSON.stringify(formattedQuestions.slice(0, 2)),
-		});
+				});
 			}
 
 			// Return document with formatted questions
@@ -99,7 +107,7 @@ export const formatQuizQuestionsOnRead: AfterReadHook = async ({
 			req.payload.logger.warn({
 				message: `Quiz ${doc.id} has non-array questions: ${typeof doc.questions}`,
 				collection: "course_quizzes",
-		});
+			});
 		}
 
 		// Return document with empty questions array
@@ -107,18 +115,19 @@ export const formatQuizQuestionsOnRead: AfterReadHook = async ({
 			...doc,
 			questions: [],
 		};
-	} catch (_error) 
+	} catch (_error) {
 		// Log error but don't crash the request
 		if (req.payload?.logger) {
 			req.payload.logger.error({
 				message: `Error formatting quiz questions for quiz ${doc.id}`,
 				collection: "course_quizzes",
-				error,
+				error: _error,
 			});
 		}
 
 		// Return document unchanged to avoid blocking access
 		return doc;
+	}
 };
 
 /**
@@ -134,7 +143,15 @@ export const _syncQuizQuestionRelationships: BeforeChangeHook = async ({
 	operation,
 }: {
 	data: QuizDocument;
-	req: { payload?: { logger?: { info: (msg: unknown) => void; warn: (msg: unknown) => void; error: (msg: unknown) => void } } };
+	req: {
+		payload?: {
+			logger?: {
+				info: (msg: unknown) => void;
+				warn: (msg: unknown) => void;
+				error: (msg: unknown) => void;
+			};
+		};
+	};
 	operation: string;
 }) => {
 	// Skip if no questions data
@@ -195,17 +212,18 @@ export const _syncQuizQuestionRelationships: BeforeChangeHook = async ({
 				message: `Quiz questions formatted for ${operation} operation on quiz ${data.id || "new"}`,
 				collection: "course_quizzes",
 				questionCount: data.questions.length,
-		});
+			});
 		}
-	} catch (_error) 
+	} catch (_error) {
 		// Log error but don't crash the request
 		if (req.payload?.logger) {
 			req.payload.logger.error({
 				message: `Error formatting quiz questions during ${operation} operation`,
 				collection: "course_quizzes",
-				error,
+				error: _error,
 			});
 		}
+	}
 
 	return data;
 };

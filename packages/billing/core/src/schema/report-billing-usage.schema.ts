@@ -8,7 +8,7 @@ export const ReportBillingUsageSchema = z.object({
 	eventName: z
 		.string({
 			description: "The name of the event that triggered the usage",
-		// })
+		})
 		.optional(),
 	usage: z.object({
 		quantity: z.number(),

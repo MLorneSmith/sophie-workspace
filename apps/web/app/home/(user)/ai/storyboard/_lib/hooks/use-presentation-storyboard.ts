@@ -11,6 +11,7 @@ import type {
 	Slide,
 	StoryboardData,
 	TipTapDocument,
+	TipTapNode,
 } from "../types";
 
 // Basic transformer from TipTap document to storyboard format
@@ -82,7 +83,7 @@ function _generateStoryboardFromOutline(
 	};
 }
 
-function extractTitle(outline: any): string | null {
+function extractTitle(outline: unknown): string | null {
 	// Try to find the first level 1 heading
 	if (outline?.content) {
 		for (const node of outline.content) {
@@ -94,11 +95,11 @@ function extractTitle(outline: any): string | null {
 	return null;
 }
 
-function extractTextFromNode(node: any): string {
+function extractTextFromNode(node: TipTapNode): string {
 	if (!node.content) return "";
 
 	return node.content
-		.map((contentNode: any) => {
+		.map((contentNode: TipTapNode) => {
 			if (contentNode.type === "text") {
 				return contentNode.text;
 			}
@@ -107,7 +108,7 @@ function extractTextFromNode(node: any): string {
 		.join("");
 }
 
-function _processList(node: any, slide: Slide, type: string) {
+function _processList(node: TipTapNode, slide: Slide, type: string) {
 	if (!node.content) return;
 
 	for (const item of node.content) {

@@ -53,7 +53,7 @@ const imageStyle = {
 
 export function OnboardingForm() {
 	const router = useRouter();
-	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [_isSubmitting, setIsSubmitting] = useState(false);
 	const formRef = useRef<HTMLDivElement>(null);
 
 	// Initialize form with React Hook Form
@@ -171,14 +171,14 @@ export function OnboardingForm() {
 				// TODO: Fix logger call - was: error
 			}
 		}
-	}, []);
+	}, [form.reset]);
 
 	useEffect(() => {
 		const subscription = form.watch((value) => {
 			localStorage.setItem(STORAGE_KEY, JSON.stringify(value));
 		});
 		return () => subscription.unsubscribe();
-	}, []);
+	}, [form.watch]);
 
 	// Track onboarding start
 	useEffect(() => {

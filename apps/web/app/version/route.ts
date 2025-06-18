@@ -51,7 +51,7 @@ async function getHashFromProcess() {
 		if (process.env.NODE_ENV !== "development") {
 			(await getLogger()).warn(
 				"[WARN] Could not find git hash in environment variables. Falling back to git command. Supply a known git hash environment variable to avoid this warning.",
-			// );
+			);
 		}
 
 		const { execSync } = await import("node:child_process");
