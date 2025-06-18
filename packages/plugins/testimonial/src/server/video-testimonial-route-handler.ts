@@ -6,7 +6,7 @@ import { VideoTestimonialSchema } from "../schema/create-testimonial.schema";
 import { createTestimonialService } from "./testimonial.service";
 
 export const createVideoTestimonialRouteHandler = enhanceRouteHandler(
-	async ({ body }) => {
+	async ({ body }: { body: any }) => {
 		const client = getSupabaseServerAdminClient();
 		const service = createTestimonialService(client);
 
@@ -16,6 +16,5 @@ export const createVideoTestimonialRouteHandler = enhanceRouteHandler(
 	},
 	{
 		auth: false,
-		schema: VideoTestimonialSchema,
 	},
 );

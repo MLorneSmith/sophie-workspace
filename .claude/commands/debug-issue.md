@@ -113,8 +113,9 @@ const contextMap = {
   // Testing issues
   testing: [
     '.claude/docs/testing/unit-testing-prioritization-plan.md',
-    '.claude/docs/testing/context/unit-testing-patterns.md',
-    '.claude/docs/testing/context/mocking-strategies.md',
+    '.claude/docs/testing/context/testing-fundamentals.md',
+    '.claude/docs/testing/context/mocking-and-typescript.md',
+    '.claude/docs/testing/context/testing-examples.md',
   ],
 };
 

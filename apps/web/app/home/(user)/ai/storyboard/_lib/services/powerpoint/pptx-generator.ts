@@ -16,8 +16,9 @@ import type {
 // PptxGenJS types for better type safety
 interface PptxSlide {
 	addText(text: string, options?: Record<string, unknown>): void;
-	addChart(chartData: Record<string, unknown>): void;
-	addImage(imagePath: string, options?: Record<string, unknown>): void;
+	addChart(type: any, data: any, options?: any): void;
+	addImage(options: Record<string, unknown>): void;
+	addTable(data: any, options?: Record<string, unknown>): void;
 	[key: string]: unknown; // Allow other methods
 }
 
@@ -142,7 +143,7 @@ export const LAYOUT_POSITIONS: Record<string, PositionMap> = {
  */
 export class PptxGenerator {
 	private pptx: pptxgen;
-	private logger: Logger; // Use the imported Logger type
+	private logger: any; // Use any type to avoid interface compatibility issues
 
 	/**
 	 * Initializes a new PptxGenerator instance and defines slide templates
@@ -238,7 +239,11 @@ export class PptxGenerator {
 
 				// Add headline text to specific slide elements based on the master layout
 				// Instead of using placeholder which isn't supported
-				this.addTitleToSlide(pptxSlide, slide.title, slide.layoutId);
+				this.addTitleToSlide(
+					pptxSlide as unknown as PptxSlide,
+					slide.title,
+					slide.layoutId,
+				);
 
 				// Group content by column to handle multi-column layouts properly
 				const contentByColumn = this.groupContentByColumn(slide.content);
@@ -256,7 +261,7 @@ export class PptxGenerator {
 						if (subheadlineContent?.text) {
 							// Add subheadline using coordinates from the layout
 							this.addSubheadlineToSlide(
-								pptxSlide,
+								pptxSlide as unknown as PptxSlide,
 								subheadlineContent.text,
 								slide.layoutId,
 								i + 1, // subheadline index
@@ -271,7 +276,7 @@ export class PptxGenerator {
 				)) {
 					for (const contentItem of contentItems) {
 						this.addContentToSlide(
-							pptxSlide,
+							pptxSlide as unknown as PptxSlide,
 							contentItem,
 							slide.layoutId,
 							Number.parseInt(columnIndex),
@@ -286,7 +291,9 @@ export class PptxGenerator {
 		} catch (error: unknown) {
 			const errorMessage =
 				error instanceof Error ? error.message : String(error);
-			this.logger.error(error, { data: "Error generating PowerPoint:" });
+			this.logger.error("Error generating PowerPoint:", {
+				error: errorMessage,
+			});
 			throw new Error(`Failed to generate PowerPoint file: ${errorMessage}`);
 		}
 	}
@@ -487,43 +494,79 @@ export class PptxGenerator {
 					};
 
 					try {
-						// Create the appropriate chart type
+						// Create the appropriate chart type with correct parameters
 						switch (content.chartType) {
 							case "bar":
-								slide.addChart(this.pptx.ChartType.bar, commonChartProps);
+								(slide as any).addChart(
+									(this.pptx as any).ChartType.bar,
+									chartData,
+									commonChartProps,
+								);
 								break;
 
 							case "line":
-								slide.addChart(this.pptx.ChartType.line, commonChartProps);
+								(slide as any).addChart(
+									(this.pptx as any).ChartType.line,
+									chartData,
+									commonChartProps,
+								);
 								break;
 
 							case "pie":
-								slide.addChart(this.pptx.ChartType.pie, commonChartProps);
+								(slide as any).addChart(
+									(this.pptx as any).ChartType.pie,
+									chartData,
+									commonChartProps,
+								);
 								break;
 
 							case "area":
-								slide.addChart(this.pptx.ChartType.area, commonChartProps);
+								(slide as any).addChart(
+									(this.pptx as any).ChartType.area,
+									chartData,
+									commonChartProps,
+								);
 								break;
 
 							case "scatter":
-								slide.addChart(this.pptx.ChartType.scatter, commonChartProps);
+								(slide as any).addChart(
+									(this.pptx as any).ChartType.scatter,
+									chartData,
+									commonChartProps,
+								);
 								break;
 
 							case "bubble":
-								slide.addChart(this.pptx.ChartType.bubble, commonChartProps);
+								(slide as any).addChart(
+									(this.pptx as any).ChartType.bubble,
+									chartData,
+									commonChartProps,
+								);
 								break;
 
 							case "radar":
-								slide.addChart(this.pptx.ChartType.radar, commonChartProps);
+								(slide as any).addChart(
+									(this.pptx as any).ChartType.radar,
+									chartData,
+									commonChartProps,
+								);
 								break;
 
 							case "doughnut":
-								slide.addChart(this.pptx.ChartType.doughnut, commonChartProps);
+								(slide as any).addChart(
+									(this.pptx as any).ChartType.doughnut,
+									chartData,
+									commonChartProps,
+								);
 								break;
 
 							default:
 								// Default to bar chart if type is unknown
-								slide.addChart(this.pptx.ChartType.bar, commonChartProps);
+								(slide as any).addChart(
+									(this.pptx as any).ChartType.bar,
+									chartData,
+									commonChartProps,
+								);
 								break;
 						}
 					} catch (error: unknown) {
@@ -555,7 +598,7 @@ export class PptxGenerator {
 			case "image":
 				if (content.imageUrl) {
 					try {
-						slide.addImage({
+						(slide as any).addImage({
 							path: content.imageUrl, // Can be URL or base64
 							x: position.x,
 							y: position.y,
@@ -593,7 +636,7 @@ export class PptxGenerator {
 								? JSON.parse(content.tableData)
 								: content.tableData;
 
-						slide.addTable(tableData, {
+						(slide as any).addTable(tableData, {
 							x: position.x,
 							y: position.y,
 							w: position.w,
@@ -604,7 +647,7 @@ export class PptxGenerator {
 							autoPage: true,
 						});
 					} catch (error: unknown) {
-						this.logger.error(error, { data: "Error adding table to slide:" });
+						this.logger.error("Error adding table to slide:", { error });
 
 						// Add error text instead of failing completely
 						const errorMessage =
@@ -755,55 +798,63 @@ export class PptxGenerator {
 			}
 
 			// If it's already in the correct format, return it
-			if (chartData.chartColors || chartData.chartData) {
-				return chartData;
+			if (
+				(chartData as Record<string, unknown>).chartColors ||
+				(chartData as Record<string, unknown>).chartData
+			) {
+				return chartData as Record<string, unknown>;
 			}
 
 			// If it contains series data, format it appropriately
-			if (Array.isArray(chartData.series)) {
+			if (Array.isArray((chartData as Record<string, unknown>).series)) {
+				const chartDataObj = chartData as Record<string, unknown>;
 				return {
-					chartColors: chartData.colors || [
+					chartColors: chartDataObj.colors || [
 						"4472C4",
 						"ED7D31",
 						"FFC000",
 						"5B9BD5",
 						"70AD47",
 					],
-					title: chartData.title || "Chart",
+					title: chartDataObj.title || "Chart",
 					showTitle: true,
 					showLegend: true,
-					legendPos: chartData.legendPosition || "b",
-					dataLabelPosition: chartData.labelPosition || "outEnd",
+					legendPos: chartDataObj.legendPosition || "b",
+					dataLabelPosition: chartDataObj.labelPosition || "outEnd",
 					showDataLabels: true,
-					chartData: chartData.series.map(
-						(series: Record<string, unknown>) => ({
-							name: series.name || "Series",
-							labels: series.labels || [],
-							values: series.values || [],
-						}),
+					chartData: (chartDataObj.series as unknown[]).map(
+						(series: unknown) => {
+							const seriesObj = series as Record<string, unknown>;
+							return {
+								name: seriesObj.name || "Series",
+								labels: seriesObj.labels || [],
+								values: seriesObj.values || [],
+							};
+						},
 					),
 				};
 			}
 
 			// Otherwise, transform it to the required format for single series
+			const chartDataObj = chartData as Record<string, unknown>;
 			return {
-				chartColors: chartData.colors || ["4472C4", "ED7D31", "FFC000"],
-				title: chartData.title || "Chart",
+				chartColors: chartDataObj.colors || ["4472C4", "ED7D31", "FFC000"],
+				title: chartDataObj.title || "Chart",
 				showTitle: true,
 				showLegend: true,
-				legendPos: chartData.legendPosition || "b",
-				dataLabelPosition: chartData.labelPosition || "outEnd",
+				legendPos: chartDataObj.legendPosition || "b",
+				dataLabelPosition: chartDataObj.labelPosition || "outEnd",
 				showDataLabels: true,
 				chartData: [
 					{
-						name: chartData.seriesName || "Series 1",
-						labels: chartData.labels || [],
-						values: chartData.values || [],
+						name: chartDataObj.seriesName || "Series 1",
+						labels: chartDataObj.labels || [],
+						values: chartDataObj.values || [],
 					},
 				],
 			};
 		} catch (error: unknown) {
-			this.logger.error(error, { data: "Error parsing chart data:" });
+			this.logger.error("Error parsing chart data:", { error });
 
 			// Return default chart data on error
 			return {

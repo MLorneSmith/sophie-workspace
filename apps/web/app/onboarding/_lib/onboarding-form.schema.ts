@@ -120,30 +120,30 @@ export const validateGoalsStep = (formData: {
 
 	// Check primary goal specific fields
 	if (formData.goals.primary === "work") {
-		return (
+		return Boolean(
 			hasSecondaryGoal &&
-			formData.goals.workDetails &&
-			typeof formData.goals.workDetails.role === "string" &&
-			formData.goals.workDetails.role.length > 0 &&
-			typeof formData.goals.workDetails.industry === "string" &&
-			formData.goals.workDetails.industry.length > 0
+				formData.goals.workDetails &&
+				typeof formData.goals.workDetails.role === "string" &&
+				formData.goals.workDetails.role.length > 0 &&
+				typeof formData.goals.workDetails.industry === "string" &&
+				formData.goals.workDetails.industry.length > 0,
 		);
 	}
 	if (formData.goals.primary === "personal") {
-		return (
+		return Boolean(
 			hasSecondaryGoal &&
-			formData.goals.personalDetails &&
-			typeof formData.goals.personalDetails.project === "string" &&
-			formData.goals.personalDetails.project.length > 0
+				formData.goals.personalDetails &&
+				typeof formData.goals.personalDetails.project === "string" &&
+				formData.goals.personalDetails.project.length > 0,
 		);
 	}
 	if (formData.goals.primary === "school") {
-		return (
+		return Boolean(
 			hasSecondaryGoal &&
-			formData.goals.schoolDetails &&
-			formData.goals.schoolDetails.level &&
-			typeof formData.goals.schoolDetails.major === "string" &&
-			formData.goals.schoolDetails.major.length > 0
+				formData.goals.schoolDetails &&
+				formData.goals.schoolDetails.level &&
+				typeof formData.goals.schoolDetails.major === "string" &&
+				formData.goals.schoolDetails.major.length > 0,
 		);
 	}
 

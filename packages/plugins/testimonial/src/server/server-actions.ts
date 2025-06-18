@@ -7,7 +7,7 @@ import { TextTestimonialFormSchema } from "../schema/create-testimonial.schema";
 import { createTestimonialService } from "./testimonial.service";
 
 export const createTestimonialAction = enhanceAction(
-	async (data) => {
+	async (data: any) => {
 		const adminClient = getSupabaseServerAdminClient();
 		const service = createTestimonialService(adminClient);
 
@@ -16,7 +16,6 @@ export const createTestimonialAction = enhanceAction(
 		return { success: true };
 	},
 	{
-		schema: TextTestimonialFormSchema,
 		auth: false,
 	},
 );

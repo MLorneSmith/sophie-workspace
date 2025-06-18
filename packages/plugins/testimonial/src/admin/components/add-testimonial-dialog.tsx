@@ -27,6 +27,7 @@ import {
 	MultiStepFormHeader,
 	MultiStepFormStep,
 	useMultiStepFormContext,
+	createValidationFunction,
 } from "@kit/ui/multi-step-form";
 import {
 	Select,
@@ -41,7 +42,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { StarRating } from "../../components/star-rating";
-import { AddManualTestimonialSchema } from "../../schema/add-manual-testimonial.schema";
+import { AddManualTestimonialSchema, type AddManualTestimonialData } from "../../schema/add-manual-testimonial.schema";
 import { addManualTestimonialAction } from "../server/server-actions";
 
 export function AddTestimonialDialog(props: React.PropsWithChildren) {
@@ -70,7 +71,7 @@ export function AddTestimonialDialog(props: React.PropsWithChildren) {
 }
 
 function AddTestimonialForm(props: { onSubmit: () => void }) {
-	const form = useForm({
+	const form = useForm<AddManualTestimonialData>({
 		resolver: zodResolver(AddManualTestimonialSchema),
 		mode: "onBlur",
 		defaultValues: {
@@ -87,13 +88,26 @@ function AddTestimonialForm(props: { onSubmit: () => void }) {
 		},
 	});
 
+	// Create validation function for each step
+	const validation = createValidationFunction({
+		customer: (data) => {
+			return Boolean(data.name && data.name.trim().length > 0);
+		},
+		source: (data) => {
+			return Boolean(data.source && data.source.trim().length > 0);
+		},
+		content: (data) => {
+			return Boolean(data.text && data.text.trim().length >= 30 && data.rating >= 1 && data.rating <= 5);
+		},
+	});
+
 	return (
 		<MultiStepForm
 			className={"space-y-6 p-0.5"}
 			form={form}
-			schema={AddManualTestimonialSchema}
-			onSubmit={async (data: any) => {
-				await addManualTestimonialAction(data);
+			validation={validation}
+			onSubmit={async (data) => {
+				await addManualTestimonialAction(data as AddManualTestimonialData);
 				props.onSubmit();
 			}}
 		>
