@@ -5,6 +5,8 @@
       <agent role="validator">Critic</agent>
     </supporting_agents>
     <phase>2-technical-chunking</phase>
+    <orchestrator>/build-feature command</orchestrator>
+    <orchestrator_file>.claude/commands/build-feature.md</orchestrator_file>
   </metadata>
   
   <agent_context>
@@ -16,12 +18,6 @@
         - dependency-map.md
         - system-boundaries.md
       </context_files>
-      <capabilities>
-        - technical_decomposition
-        - dependency_analysis
-        - effort_estimation
-        - INVEST_compliance
-      </capabilities>
     </planner>
     <critic>
       <role>Validate chunk independence, completeness, and feasibility</role>
@@ -39,15 +35,33 @@
   </task>
   
   <context_loading>
-    <instructions>
-      Before proceeding, read the context documentation inventory:
-      - Read: .claude/docs/.context-docs-inventory.xml
-      Based on the PRD's technical requirements, read relevant context:
-      - For system patterns: Read architecture/service-patterns.md
-      - For state management: Read architecture/state-management.md
-      - For performance considerations: Read architecture/performance-optimization.md
-      - For debugging approach: Read debugging/debugging-system-overview.md
-    </instructions>
+    <from_previous_phase>
+      <!-- Load Phase 1 PRD outputs -->
+      <read priority="1">.claude/build/4-output/{epic-name}/1-prd/prd-content.md - Complete PRD content</read>
+      <read priority="2">.claude/build/4-output/contexts/epics/epic-{epic-id}/prd.md - Epic context</read>
+      <read priority="3">.claude/build/4-output/contexts/discovery/{feature-slug}/discovery-summary.md - Original requirements</read>
+    </from_previous_phase>
+    <current_context>
+      <instructions>
+        Before proceeding, read the context documentation inventory:
+        - Read: .claude/docs/.context-docs-inventory.xml
+        Based on the PRD's technical requirements, read relevant context:
+        - For system patterns: Read architecture/service-patterns.md
+        - For state management: Read architecture/state-management.md
+        - For performance considerations: Read architecture/performance-optimization.md
+        - For debugging approach: Read debugging/debugging-system-overview.md
+      </instructions>
+    </current_context>
+    <validation>
+      <required_files>
+        <file path=".claude/build/4-output/{epic-name}/1-prd/prd-content.md" description="PRD content from Phase 1"/>
+        <file path=".claude/build/4-output/contexts/epics/epic-{epic-id}/prd.md" description="Epic context with PRD details"/>
+      </required_files>
+      <actions>
+        <on_missing>Error: Required PRD content files not found. Ensure Phase 1 (PRD Creation) completed successfully before proceeding.</on_missing>
+        <on_present>Proceed with chunk analysis and decomposition</on_present>
+      </actions>
+    </validation>
   </context_loading>
 
   <available_tools>

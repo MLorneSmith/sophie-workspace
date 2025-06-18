@@ -7,6 +7,7 @@
 			"~/config/*": ["./config/*"],
 			"~/components/*": ["./components/*"],
 			"~/lib/*": ["./lib/*"],
+			"@/test/*": ["./test/*"],
 			"@kit/*": ["../../packages/*/src"],
 			"@kit/supabase/server-client": [
 				"../../packages/supabase/src/clients/server-client.ts"
@@ -49,7 +50,8 @@
 		"./config/**/*.ts",
 		"components/**/*",
 		"lib/**/*.ts",
-		"app"
+		"app",
+		"test/**/*"
 	],
 	"exclude": ["node_modules", ".next"]
 }

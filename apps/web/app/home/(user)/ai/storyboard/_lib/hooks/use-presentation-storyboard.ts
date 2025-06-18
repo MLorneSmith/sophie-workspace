@@ -23,7 +23,12 @@ function _generateStoryboardFromOutline(
 	const title = extractTitle(outline) || "Untitled Presentation";
 
 	// Process the content to extract slides
-	if (outline?.content) {
+	if (
+		outline &&
+		typeof outline === "object" &&
+		"content" in outline &&
+		Array.isArray(outline.content)
+	) {
 		let currentSlide: Slide | null = null;
 
 		for (const node of outline.content) {
@@ -43,6 +48,7 @@ function _generateStoryboardFromOutline(
 					currentSlide = {
 						id: `slide-${Date.now()}-${slideCount++}`,
 						title: headingText,
+						headline: headingText, // Add required headline property
 						layoutId: headingLevel === 1 ? "title" : "content",
 						content: [],
 						order: slides.length,
@@ -50,6 +56,8 @@ function _generateStoryboardFromOutline(
 				} else if (currentSlide) {
 					// Add lower-level headings as content to the current slide
 					currentSlide.content.push({
+						id: `content-${Date.now()}-${Math.random()}`,
+						area: "content1",
 						type: "text",
 						text: headingText,
 						columnIndex: 0,
@@ -58,6 +66,8 @@ function _generateStoryboardFromOutline(
 			} else if (node.type === "paragraph" && currentSlide) {
 				// Add paragraphs as text content
 				currentSlide.content.push({
+					id: `content-${Date.now()}-${Math.random()}`,
+					area: "content1",
 					type: "text",
 					text: extractTextFromNode(node),
 					columnIndex: 0,
@@ -85,10 +95,25 @@ function _generateStoryboardFromOutline(
 
 function extractTitle(outline: unknown): string | null {
 	// Try to find the first level 1 heading
-	if (outline?.content) {
+	if (
+		outline &&
+		typeof outline === "object" &&
+		"content" in outline &&
+		Array.isArray(outline.content)
+	) {
 		for (const node of outline.content) {
-			if (node.type === "heading" && node.attrs?.level === 1) {
-				return extractTextFromNode(node);
+			if (
+				node &&
+				typeof node === "object" &&
+				"type" in node &&
+				node.type === "heading" &&
+				"attrs" in node &&
+				node.attrs &&
+				typeof node.attrs === "object" &&
+				"level" in node.attrs &&
+				node.attrs.level === 1
+			) {
+				return extractTextFromNode(node as TipTapNode);
 			}
 		}
 	}
@@ -116,7 +141,15 @@ function _processList(node: TipTapNode, slide: Slide, type: string) {
 			for (const itemContent of item.content) {
 				if (itemContent.type === "paragraph") {
 					slide.content.push({
-						type,
+						id: `content-${Date.now()}-${Math.random()}`,
+						area: "content1",
+						type: type as
+							| "text"
+							| "bullet"
+							| "subbullet"
+							| "image"
+							| "chart"
+							| "table",
 						text: extractTextFromNode(itemContent),
 						columnIndex: 0,
 					});
@@ -131,7 +164,7 @@ function _processList(node: TipTapNode, slide: Slide, type: string) {
 	}
 }
 
-export function _usePresentationStoryboard(presentationId: string) {
+export function usePresentationStoryboard(presentationId: string) {
 	const supabase = useSupabase();
 	const [isUpdating, setIsUpdating] = useState(false);
 

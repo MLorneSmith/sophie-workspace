@@ -97,7 +97,7 @@ export function StoryboardProvider({ children }: StoryboardProviderProps) {
 				} else if (typedPresentation.outline) {
 					// Otherwise generate one from the outline
 					const generatedStoryboard = generateStoryboardFromOutline(
-						typedPresentation.outline,
+						typedPresentation.outline || { type: "doc", content: [] },
 					);
 					setStoryboard(generatedStoryboard);
 				} else {
@@ -158,7 +158,12 @@ export function StoryboardProvider({ children }: StoryboardProviderProps) {
 
 	// Debounced save function
 	const debouncedSaveStoryboard = useMemo(
-		() => debounce(updateStoryboard, 1000), // Save 1 second after last change
+		() =>
+			debounce(
+				(storyboardData: unknown) =>
+					updateStoryboard(storyboardData as StoryboardData),
+				1000,
+			), // Save 1 second after last change
 		[updateStoryboard],
 	);
 
@@ -322,7 +327,7 @@ export function StoryboardProvider({ children }: StoryboardProviderProps) {
 	);
 }
 
-export function _useStoryboard() {
+export function useStoryboard() {
 	const context = useContext(StoryboardContext);
 	if (!context) {
 		throw new Error("useStoryboard must be used within a StoryboardProvider");
@@ -345,7 +350,8 @@ function generateStoryboardFromOutline(
 		for (const node of outline.content) {
 			// If it's a heading, create a new slide
 			if (node.type === "heading") {
-				const headingLevel = node.attrs?.level || 1;
+				const headingLevel =
+					typeof node.attrs?.level === "number" ? node.attrs.level : 1;
 				const headingText = extractTextFromNode(node);
 
 				// Level 1 and 2 headings become slides

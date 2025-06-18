@@ -87,7 +87,7 @@ export async function recordApiUsage(
 
 			if (
 				costConfigCheck.error ||
-				(costConfigCheck.data && costConfigCheck.data.length === 0)
+				(costConfigCheck.data && (costConfigCheck.data as any[]).length === 0)
 			) {
 				logger.info("No cost configuration found, attempting to initialize");
 				// Try to initialize with admin client if available
@@ -137,7 +137,7 @@ export async function recordApiUsage(
 					errorMessage: logError.message,
 					errorDetails: logError.details,
 					errorCode: logError.code,
-					errorHint: logError.hint,
+					errorHint: (logError as any).hint,
 					table: "ai_request_logs",
 					record,
 				});
@@ -172,7 +172,7 @@ export async function recordApiUsage(
 							logger.info(
 								"Successfully recorded AI request log with admin client",
 								{
-									id: adminData?.id,
+									id: (adminData as any)?.id,
 								},
 							);
 							success = true;
@@ -184,7 +184,7 @@ export async function recordApiUsage(
 					}
 				}
 			} else {
-				logger.info("Successfully recorded AI request log", { id: data?.id });
+				logger.info("Successfully recorded AI request log", { id: (data as any)?.id });
 				success = true;
 			}
 		} catch (insertError) {
@@ -236,7 +236,7 @@ export async function recordApiUsage(
 							error: deductError,
 							errorMessage: deductError.message,
 							errorCode: deductError.code,
-							errorHint: deductError.hint,
+							errorHint: (deductError as any).hint,
 							entityType,
 							entityId,
 							cost,
@@ -557,7 +557,7 @@ export async function _checkUsageLimits(
 				return false;
 			}
 
-			return data && data.length > 0 && data[0].limit_exceeded;
+			return data && (data as any[]).length > 0 && (data as any[])[0].limit_exceeded;
 		} catch (rpcError) {
 			logger.error("Exception in RPC call to check usage limits", {
 				error: rpcError,

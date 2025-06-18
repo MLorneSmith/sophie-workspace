@@ -5,17 +5,13 @@
       <agent role="researcher">Perplexity/Exa MCP</agent>
     </supporting_agents>
     <phase>0-user-discovery</phase>
+    <orchestrator>/build-feature command</orchestrator>
+    <orchestrator_file>.claude/commands/build-feature.md</orchestrator_file>
   </metadata>
   
   <agent_context>
     <product_owner>
       <role>Lead interactive discovery session to collect feature requirements from user</role>
-      <capabilities>
-        - user_interview
-        - requirements_elicitation
-        - context_research
-        - stakeholder_communication
-      </capabilities>
     </product_owner>
   </agent_context>
   

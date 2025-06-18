@@ -13,7 +13,7 @@ import { z } from "zod";
 import { AddManualTestimonialSchema } from "../../schema/add-manual-testimonial.schema";
 
 export const updateTestimonialStatusAction = enhanceAction(
-	async (params: unknown) => {
+	async (params: any) => {
 		const { id, status } = params as {
 			id: string;
 			status: Database["public"]["Enums"]["testimonial_status"];
@@ -56,7 +56,7 @@ export const updateTestimonialStatusAction = enhanceAction(
 );
 
 export const deleteTestimonialAction = enhanceAction(
-	async (params: unknown) => {
+	async (params: any) => {
 		const { id } = params as { id: string };
 		await assertIsSuperAdmin();
 
@@ -91,7 +91,7 @@ export const deleteTestimonialAction = enhanceAction(
 );
 
 export const addManualTestimonialAction = enhanceAction(
-	async (data: unknown) => {
+	async (data: any) => {
 		// Type the data based on the schema
 		const typedData = data as {
 			content: { text: string; rating: number };

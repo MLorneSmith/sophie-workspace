@@ -91,7 +91,7 @@ export async function GET(request: NextRequest) {
 			},
 
 			// Recent errors for debugging
-			recentErrors: recentErrors.map((error: ErrorWithTimestamp) => ({
+			recentErrors: recentErrors.map((error) => ({
 				...error,
 				timeSince: Date.now() - new Date(error.timestamp).getTime(),
 			})),
@@ -143,8 +143,8 @@ export async function POST(request: NextRequest) {
 		switch (action) {
 			case "clear-cache": {
 				const manager = getDeduplicationManager();
-				// Force cleanup by accessing the cache through proper typing
-				(manager as DeduplicationManagerWithCache).cache?.clear();
+				// Force cleanup by accessing the cache through reflection
+				(manager as any).cache?.clear();
 				return NextResponse.json({
 					success: true,
 					message: "Deduplication cache cleared",

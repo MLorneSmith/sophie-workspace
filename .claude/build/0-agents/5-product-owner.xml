@@ -6,13 +6,6 @@
     <description>Product Owner AI that manages and prioritizes the Product Backlog, generates PRDs from ideas</description>
     <role>product_owner</role>
     <aider_integration>none</aider_integration>
-    <capabilities>
-      <capability>prd_generation</capability>
-      <capability>backlog_management</capability>
-      <capability>feature_prioritization</capability>
-      <capability>requirements_clarification</capability>
-      <capability>stakeholder_communication</capability>
-    </capabilities>
   </metadata>
 
   <system_prompt>

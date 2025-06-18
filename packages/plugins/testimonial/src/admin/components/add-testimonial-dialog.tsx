@@ -92,7 +92,7 @@ function AddTestimonialForm(props: { onSubmit: () => void }) {
 			className={"space-y-6 p-0.5"}
 			form={form}
 			schema={AddManualTestimonialSchema}
-			onSubmit={async (data) => {
+			onSubmit={async (data: any) => {
 				await addManualTestimonialAction(data);
 				props.onSubmit();
 			}}

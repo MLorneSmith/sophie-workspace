@@ -1719,6 +1719,18 @@ Before implementing AAFD v2.0, ensure you have:
    - Node.js and package manager (pnpm)
    - Code editor with TypeScript support
 
+### Master Orchestration Command
+
+The entire AAFD process is orchestrated through the `/build-feature` command. This command:
+
+- Automatically detects the current phase based on GitHub issue labels
+- Loads appropriate context and prompts for each phase
+- Guides you through the entire workflow from discovery to implementation
+- Updates GitHub Projects and issues automatically
+- Maintains context across multiple development sessions
+
+See `.claude/commands/build-feature.md` for the complete orchestration logic and implementation details.
+
 ### Setup Checklist
 
 #### Phase 1: Repository Setup (30 minutes)

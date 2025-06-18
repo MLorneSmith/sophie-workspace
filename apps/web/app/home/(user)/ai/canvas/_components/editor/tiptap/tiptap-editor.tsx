@@ -69,21 +69,18 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 	function TiptapEditor(props, _ref) {
 		const {
 			content,
-			submissionId: _submissionId,
+			submissionId,
 			sectionType,
 			// onAcceptImprovement, // Currently unused
 			isLoading,
 		} = props;
 		const _supabase = useSupabase();
 		const _queryClient = useQueryClient();
-		const {
-			setSaveStatus: _setSaveStatus,
-			registerSaveCallback: _registerSaveCallback,
-		} = useSaveContext();
+		const { setSaveStatus, registerSaveCallback } = useSaveContext();
 		const _editorRef = useRef(null);
 
 		// Parse and normalize initial content
-		const _initialContent = useMemo(() => {
+		const initialContent = useMemo(() => {
 			// TODO: Async logger needed
 			// (await getLogger()).info("TiptapEditor parsing content:", {
 			// 	sectionType,
@@ -209,7 +206,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 			unknown,
 			MutationContext
 		>({
-			mutationFn: async (newContent: unknown) => {
+			mutationFn: async (newContent: unknown): Promise<SubmissionData> => {
 				(await getLogger()).debug("Saving content:", {
 					sectionType,
 					newContent,
@@ -222,7 +219,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 					.single();
 
 				if (error) throw error;
-				return data;
+				return data as SubmissionData;
 			},
 			onMutate: async (newContent: unknown): Promise<MutationContext> => {
 				// Cancel outgoing refetches
@@ -317,7 +314,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 				}
 			};
 			registerSaveCallback(callback);
-		}, [saveContent, editor]);
+		}, [saveContent, editor, registerSaveCallback]);
 
 		// Update editor content when it changes, with improved error handling
 		useEffect(() => {

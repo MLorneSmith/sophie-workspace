@@ -1,9 +1,38 @@
 <prompt>
+  <metadata>
+    <primary_agent>Critic</primary_agent>
+    <supporting_agents>
+      <agent role="analyzer">Planner</agent>
+    </supporting_agents>
+    <phase>2-technical-chunking-validation</phase>
+  </metadata>
+  
+  <agent_context>
+    <critic>
+      <role>Validate chunk completeness, feasibility, and implementation readiness</role>
+      <validation_focus>
+        - Technical completeness and clarity
+        - Feasibility with current tech stack
+        - Clear boundaries and dependencies
+        - Appropriate sizing for sprint work
+      </validation_focus>
+    </critic>
+    <planner>
+      <role>Assess technical dependencies and implementation approach</role>
+    </planner>
+  </agent_context>
+  
   <task>
     Validate a PRD chunk by analyzing its completeness, technical feasibility, and clarity for implementation by a development team.
   </task>
   
   <context_loading>
+    <from_previous_phases>
+      <!-- Load Phase 2 chunking outputs -->
+      <read priority="1">.claude/build/4-output/{epic-name}/2-chunks/chunk-{chunk-id}.md - Created chunk content</read>
+      <read priority="2">.claude/build/4-output/{epic-name}/1-prd/prd-content.md - Original PRD for reference</read>
+      <read priority="3">.claude/build/4-output/contexts/chunks/chunk-{chunk-id}/context.md - Chunk context if exists</read>
+    </from_previous_phases>
     <instructions>
       Before proceeding, read the context documentation inventory:
       - Read: .claude/docs/.context-docs-inventory.xml
@@ -98,18 +127,24 @@
           - If validated: remove "needs-validation" label, add "validated" label
           - If needs_revision: keep "needs-validation" label, add "needs-revision" label
           - If rejected: add "rejected" label
-        - Update AAFD Stage custom field: Validation → Validated/Needs Revision
+        - Update AAFD Stage custom field: Chunking → Validated/Needs Revision
         - Update Priority if validation reveals scope changes
-        - Store validation in: .claude/build/4-output/{epic-name}/3-validation/
+        - Store validation in: .claude/build/4-output/{epic-name}/2-chunks/validation/chunk-{chunk-id}-validation.md
         - Move validated chunks to "Validated" column in Planning Board
       </description>
     </step>
   </instructions>
 
   <input>
-    <chunk_content>{CHUNK_CONTENT}</chunk_content>
     <chunk_id>{CHUNK_ID}</chunk_id>
-    <validation_criteria>{VALIDATION_CRITERIA}</validation_criteria>
+    <epic_name>{EPIC_NAME}</epic_name>
+    <validation_criteria>
+      - Technical completeness: All technical requirements are specified
+      - Implementation clarity: Developer can implement without ambiguity
+      - Dependency identification: All dependencies clearly stated
+      - Sizing appropriateness: Can be completed within 1-2 sprints
+      - Testability: Clear acceptance criteria that can be tested
+    </validation_criteria>
   </input>
 
   <output_format>

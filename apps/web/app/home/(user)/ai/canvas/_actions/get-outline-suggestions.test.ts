@@ -3,9 +3,8 @@
  * Tests AI-powered outline suggestion generation with SCQA content processing
  */
 import { beforeEach, describe, expect, it, vi } from "vitest";
-
-// Type definitions for test results
-type ActionResult = { success: boolean; error?: string; data?: any };
+import type { ActionResult } from "@/test/test-types";
+import { createMockSupabaseClient } from "@/test/test-helpers";
 
 // Mock AI Gateway
 vi.mock("@kit/ai-gateway", () => ({
@@ -36,7 +35,7 @@ vi.mock("@kit/next/actions", () => ({
 			if (options?.schema) {
 				const result = options.schema.safeParse(data);
 				if (!result.success) {
-					return { error: "Validation failed" };
+					return { success: false, error: "Validation failed" };
 				}
 			}
 			// Call function with mock user
@@ -101,22 +100,21 @@ describe("getOutlineSuggestionsAction", () => {
 			const validData = { submissionId: "valid-uuid-123" };
 
 			// Setup Supabase mock
-			const mockSupabase = {
-				from: vi.fn(() => ({
-					select: vi.fn().mockReturnThis(),
-					eq: vi.fn().mockReturnThis(),
-					single: vi.fn().mockResolvedValue({
-						data: {
-							situation: '{"type":"doc","content":[]}',
-							complication: '{"type":"doc","content":[]}',
-							answer: '{"type":"doc","content":[]}',
-						},
-						error: null,
-					}),
-				})),
-			};
+			const mockSupabaseClient = createMockSupabaseClient();
+			mockSupabaseClient.from = vi.fn(() => ({
+				select: vi.fn().mockReturnThis(),
+				eq: vi.fn().mockReturnThis(),
+				single: vi.fn().mockResolvedValue({
+					data: {
+						situation: '{"type":"doc","content":[]}',
+						complication: '{"type":"doc","content":[]}',
+						answer: '{"type":"doc","content":[]}',
+					},
+					error: null,
+				}),
+			})) as any;
 			vi.mocked(getSupabaseServerClient).mockReturnValue(
-				mockSupabase as unknown as ReturnType<typeof getSupabaseServerClient>,
+				mockSupabaseClient as any,
 			);
 
 			// Act
@@ -165,19 +163,18 @@ describe("getOutlineSuggestionsAction", () => {
 					'{"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"Our solution"}]}]}',
 			};
 
-			// Setup Supabase mock
-			const mockSupabase = {
-				from: vi.fn(() => ({
-					select: vi.fn().mockReturnThis(),
-					eq: vi.fn().mockReturnThis(),
-					single: vi.fn().mockResolvedValue({
-						data: submissionData,
-						error: null,
-					}),
-				})),
-			};
+			// Setup Supabase mock using the test helper
+			const mockSupabaseClient = createMockSupabaseClient();
+			mockSupabaseClient.from = vi.fn(() => ({
+				select: vi.fn().mockReturnThis(),
+				eq: vi.fn().mockReturnThis(),
+				single: vi.fn().mockResolvedValue({
+					data: submissionData,
+					error: null,
+				}),
+			})) as any;
 			vi.mocked(getSupabaseServerClient).mockReturnValue(
-				mockSupabase as ReturnType<typeof getSupabaseServerClient>,
+				mockSupabaseClient as any,
 			);
 
 			const expectedSuggestions = {
@@ -229,22 +226,21 @@ describe("getOutlineSuggestionsAction", () => {
 			};
 
 			// Setup Supabase mock
-			const mockSupabase = {
-				from: vi.fn(() => ({
-					select: vi.fn().mockReturnThis(),
-					eq: vi.fn().mockReturnThis(),
-					single: vi.fn().mockResolvedValue({
-						data: {
-							situation: lexicalContent,
-							complication: null,
-							answer: null,
-						},
-						error: null,
-					}),
-				})),
-			};
+			const mockSupabaseClient = createMockSupabaseClient();
+			mockSupabaseClient.from = vi.fn(() => ({
+				select: vi.fn().mockReturnThis(),
+				eq: vi.fn().mockReturnThis(),
+				single: vi.fn().mockResolvedValue({
+					data: {
+						situation: lexicalContent,
+						complication: null,
+						answer: null,
+					},
+					error: null,
+				}),
+			})) as any;
 			vi.mocked(getSupabaseServerClient).mockReturnValue(
-				mockSupabase as ReturnType<typeof getSupabaseServerClient>,
+				mockSupabaseClient as any,
 			);
 
 			vi.mocked(lexicalToTiptap).mockReturnValue(convertedTiptap);
@@ -283,22 +279,21 @@ describe("getOutlineSuggestionsAction", () => {
 			};
 
 			// Setup Supabase mock
-			const mockSupabase = {
-				from: vi.fn(() => ({
-					select: vi.fn().mockReturnThis(),
-					eq: vi.fn().mockReturnThis(),
-					single: vi.fn().mockResolvedValue({
-						data: {
-							situation: JSON.stringify(simpleContent),
-							complication: null,
-							answer: null,
-						},
-						error: null,
-					}),
-				})),
-			};
+			const mockSupabaseClient = createMockSupabaseClient();
+			mockSupabaseClient.from = vi.fn(() => ({
+				select: vi.fn().mockReturnThis(),
+				eq: vi.fn().mockReturnThis(),
+				single: vi.fn().mockResolvedValue({
+					data: {
+						situation: JSON.stringify(simpleContent),
+						complication: null,
+						answer: null,
+					},
+					error: null,
+				}),
+			})) as any;
 			vi.mocked(getSupabaseServerClient).mockReturnValue(
-				mockSupabase as ReturnType<typeof getSupabaseServerClient>,
+				mockSupabaseClient as any,
 			);
 
 			// Act
@@ -322,22 +317,21 @@ describe("getOutlineSuggestionsAction", () => {
 		it("should handle empty content gracefully", async () => {
 			// Arrange
 			// Setup Supabase mock
-			const mockSupabase = {
-				from: vi.fn(() => ({
-					select: vi.fn().mockReturnThis(),
-					eq: vi.fn().mockReturnThis(),
-					single: vi.fn().mockResolvedValue({
-						data: {
-							situation: null,
-							complication: "",
-							answer: '{"type":"doc","content":[]}',
-						},
-						error: null,
-					}),
-				})),
-			};
+			const mockSupabaseClient = createMockSupabaseClient();
+			mockSupabaseClient.from = vi.fn(() => ({
+				select: vi.fn().mockReturnThis(),
+				eq: vi.fn().mockReturnThis(),
+				single: vi.fn().mockResolvedValue({
+					data: {
+						situation: null,
+						complication: "",
+						answer: '{"type":"doc","content":[]}',
+					},
+					error: null,
+				}),
+			})) as any;
 			vi.mocked(getSupabaseServerClient).mockReturnValue(
-				mockSupabase as ReturnType<typeof getSupabaseServerClient>,
+				mockSupabaseClient as any,
 			);
 
 			// Act
@@ -365,18 +359,17 @@ describe("getOutlineSuggestionsAction", () => {
 		it("should handle database connection failure", async () => {
 			// Arrange
 			// Setup Supabase mock with error
-			const mockSupabase = {
-				from: vi.fn(() => ({
-					select: vi.fn().mockReturnThis(),
-					eq: vi.fn().mockReturnThis(),
-					single: vi.fn().mockResolvedValue({
-						data: null,
-						error: { message: "Connection timeout" },
-					}),
-				})),
-			};
+			const mockSupabaseClient = createMockSupabaseClient();
+			mockSupabaseClient.from = vi.fn(() => ({
+				select: vi.fn().mockReturnThis(),
+				eq: vi.fn().mockReturnThis(),
+				single: vi.fn().mockResolvedValue({
+					data: null,
+					error: { message: "Connection timeout" },
+				}),
+			})) as any;
 			vi.mocked(getSupabaseServerClient).mockReturnValue(
-				mockSupabase as ReturnType<typeof getSupabaseServerClient>,
+				mockSupabaseClient as any,
 			);
 
 			// Act
@@ -392,22 +385,21 @@ describe("getOutlineSuggestionsAction", () => {
 		it("should handle AI service failure", async () => {
 			// Arrange
 			// Setup Supabase mock for basic data
-			const mockSupabase = {
-				from: vi.fn(() => ({
-					select: vi.fn().mockReturnThis(),
-					eq: vi.fn().mockReturnThis(),
-					single: vi.fn().mockResolvedValue({
-						data: {
-							situation: '{"type":"doc","content":[]}',
-							complication: '{"type":"doc","content":[]}',
-							answer: '{"type":"doc","content":[]}',
-						},
-						error: null,
-					}),
-				})),
-			};
+			const mockSupabaseClient = createMockSupabaseClient();
+			mockSupabaseClient.from = vi.fn(() => ({
+				select: vi.fn().mockReturnThis(),
+				eq: vi.fn().mockReturnThis(),
+				single: vi.fn().mockResolvedValue({
+					data: {
+						situation: '{"type":"doc","content":[]}',
+						complication: '{"type":"doc","content":[]}',
+						answer: '{"type":"doc","content":[]}',
+					},
+					error: null,
+				}),
+			})) as any;
 			vi.mocked(getSupabaseServerClient).mockReturnValue(
-				mockSupabase as ReturnType<typeof getSupabaseServerClient>,
+				mockSupabaseClient as any,
 			);
 
 			vi.mocked(getChatCompletion).mockRejectedValue(
@@ -427,22 +419,21 @@ describe("getOutlineSuggestionsAction", () => {
 		it("should handle malformed JSON in AI response", async () => {
 			// Arrange
 			// Setup Supabase mock for basic data
-			const mockSupabase = {
-				from: vi.fn(() => ({
-					select: vi.fn().mockReturnThis(),
-					eq: vi.fn().mockReturnThis(),
-					single: vi.fn().mockResolvedValue({
-						data: {
-							situation: '{"type":"doc","content":[]}',
-							complication: '{"type":"doc","content":[]}',
-							answer: '{"type":"doc","content":[]}',
-						},
-						error: null,
-					}),
-				})),
-			};
+			const mockSupabaseClient = createMockSupabaseClient();
+			mockSupabaseClient.from = vi.fn(() => ({
+				select: vi.fn().mockReturnThis(),
+				eq: vi.fn().mockReturnThis(),
+				single: vi.fn().mockResolvedValue({
+					data: {
+						situation: '{"type":"doc","content":[]}',
+						complication: '{"type":"doc","content":[]}',
+						answer: '{"type":"doc","content":[]}',
+					},
+					error: null,
+				}),
+			})) as any;
 			vi.mocked(getSupabaseServerClient).mockReturnValue(
-				mockSupabase as ReturnType<typeof getSupabaseServerClient>,
+				mockSupabaseClient as any,
 			);
 
 			vi.mocked(getChatCompletion).mockResolvedValue({
@@ -476,22 +467,21 @@ describe("getOutlineSuggestionsAction", () => {
 		it("should handle null/undefined content fields", async () => {
 			// Arrange
 			// Setup Supabase mock
-			const mockSupabase = {
-				from: vi.fn(() => ({
-					select: vi.fn().mockReturnThis(),
-					eq: vi.fn().mockReturnThis(),
-					single: vi.fn().mockResolvedValue({
-						data: {
-							situation: null,
-							complication: undefined,
-							answer: null,
-						},
-						error: null,
-					}),
-				})),
-			};
+			const mockSupabaseClient = createMockSupabaseClient();
+			mockSupabaseClient.from = vi.fn(() => ({
+				select: vi.fn().mockReturnThis(),
+				eq: vi.fn().mockReturnThis(),
+				single: vi.fn().mockResolvedValue({
+					data: {
+						situation: null,
+						complication: undefined,
+						answer: null,
+					},
+					error: null,
+				}),
+			})) as any;
 			vi.mocked(getSupabaseServerClient).mockReturnValue(
-				mockSupabase as ReturnType<typeof getSupabaseServerClient>,
+				mockSupabaseClient as any,
 			);
 
 			// Act
@@ -527,22 +517,21 @@ describe("getOutlineSuggestionsAction", () => {
 			};
 
 			// Setup Supabase mock
-			const mockSupabase = {
-				from: vi.fn(() => ({
-					select: vi.fn().mockReturnThis(),
-					eq: vi.fn().mockReturnThis(),
-					single: vi.fn().mockResolvedValue({
-						data: {
-							situation: JSON.stringify(unicodeContent),
-							complication: null,
-							answer: null,
-						},
-						error: null,
-					}),
-				})),
-			};
+			const mockSupabaseClient = createMockSupabaseClient();
+			mockSupabaseClient.from = vi.fn(() => ({
+				select: vi.fn().mockReturnThis(),
+				eq: vi.fn().mockReturnThis(),
+				single: vi.fn().mockResolvedValue({
+					data: {
+						situation: JSON.stringify(unicodeContent),
+						complication: null,
+						answer: null,
+					},
+					error: null,
+				}),
+			})) as any;
 			vi.mocked(getSupabaseServerClient).mockReturnValue(
-				mockSupabase as ReturnType<typeof getSupabaseServerClient>,
+				mockSupabaseClient as any,
 			);
 
 			// Act

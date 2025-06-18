@@ -61,7 +61,7 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
 	const [isGenerating, setIsGenerating] = useState(false);
 	const [messageIndex, setMessageIndex] = useState(0);
 	const [isRegeneratingOutline, setIsRegeneratingOutline] = useState(false);
-	const [resetKey, _setResetKey] = useState(0); // Add a key to force component remount
+	const [resetKey, setResetKey] = useState(0); // Add a key to force component remount
 
 	const handleAcceptImprovement = useCallback(
 		(improvement: BaseImprovement) => {
@@ -229,7 +229,7 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
 
 													(await getLogger()).info(
 														"Regenerating outline for submission:",
-														submissionId,
+														{ submissionId },
 													);
 
 													// Call generateOutlineAction with forceRegenerate: true
@@ -253,7 +253,7 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
 														});
 
 														// Increment the reset key to force a complete remount
-														setResetKey((prev) => prev + 1);
+														setResetKey((prev: number) => prev + 1);
 
 														// Set a brief delay to ensure everything is reset properly
 														setTimeout(() => {

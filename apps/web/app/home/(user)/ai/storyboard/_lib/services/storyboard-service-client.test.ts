@@ -74,7 +74,7 @@ describe("StoryboardService", () => {
 			order: vi.fn(),
 		};
 
-		service = new StoryboardService(mockSupabase);
+		service = new StoryboardService(mockSupabase as any);
 	});
 
 	describe("getStoryboard", () => {
@@ -164,8 +164,8 @@ describe("StoryboardService", () => {
 			// Assert
 			expect(result?.title).toBe("Main Title");
 			expect(result?.slides).toHaveLength(2);
-			expect(result?.slides?.[0]?.headline).toBe("Main Title");
-			expect(result?.slides?.[1]?.headline).toBe("Slide 1");
+			expect(result?.slides?.[0]?.title).toBe("Main Title");
+			expect(result?.slides?.[1]?.title).toBe("Slide 1");
 			expect(mockSupabase.update).toHaveBeenCalled(); // Should save generated storyboard
 		});
 
@@ -263,7 +263,7 @@ describe("StoryboardService", () => {
 			expect(mockSupabase.update).toHaveBeenCalledWith({
 				storyboard: storyboardData,
 			});
-			expect(_mockSupabase._eq).toHaveBeenCalledWith("id", "submission-1");
+			expect(mockSupabase.eq).toHaveBeenCalledWith("id", "submission-1");
 		});
 
 		it("should handle missing storyboard column during save", async () => {
@@ -421,8 +421,8 @@ describe("StoryboardService", () => {
 
 			// Assert
 			expect(result.slides).toHaveLength(2);
-			expect(result.slides[0].storyboard.layoutId).toBe("title"); // Level 1 heading
-			expect(result.slides[1].storyboard.layoutId).toBe("content"); // Level 2 heading
+			expect(result.slides[0]?.layoutId).toBe("title"); // Level 1 heading
+			expect(result.slides[1]?.layoutId).toBe("content"); // Level 2 heading
 		});
 
 		it("should handle subheadlines from level 3 headings", async () => {
@@ -463,7 +463,7 @@ describe("StoryboardService", () => {
 
 			// Assert
 			expect(result.slides).toHaveLength(1);
-			expect(result.slides[0].storyboard.subHeadlines).toEqual([
+			expect(result.slides[0]?.subheadlines).toEqual([
 				"Subheading 1",
 				"Subheading 2",
 			]);
@@ -488,8 +488,8 @@ describe("StoryboardService", () => {
 
 			// Assert
 			expect(result.slides).toHaveLength(1);
-			expect(result.slides[0].headline).toBe("Empty Presentation");
-			expect(result.slides[0].storyboard.layoutId).toBe("title");
+			expect(result.slides[0]?.title).toBe("Empty Presentation");
+			expect(result.slides[0]?.layoutId).toBe("title");
 		});
 
 		it("should extract title from first level 1 heading", async () => {
@@ -567,7 +567,7 @@ describe("StoryboardService", () => {
 
 			// Assert
 			expect(result.title).toBe("Start Bold End");
-			expect(result.slides[0].headline).toBe("Start Bold End");
+			expect(result.slides[0]?.title).toBe("Start Bold End");
 		});
 
 		it("should handle outline without content property", async () => {
@@ -589,8 +589,8 @@ describe("StoryboardService", () => {
 
 			// Assert
 			expect(result.slides).toHaveLength(1);
-			expect(result.slides[0].headline).toBe("Fallback Title");
-			expect(result.slides[0].storyboard.layoutId).toBe("title");
+			expect(result.slides[0]?.title).toBe("Fallback Title");
+			expect(result.slides[0]?.layoutId).toBe("title");
 		});
 
 		it("should assign proper order to slides", async () => {

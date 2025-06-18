@@ -12,15 +12,23 @@
 
 import config from "@payload-config";
 import "@payloadcms/next/css";
-import { createEnhancedPayloadHandlers } from "../../../../lib/enhanced-api-wrapper";
+import {
+	REST_DELETE,
+	REST_GET,
+	REST_OPTIONS,
+	REST_PATCH,
+	REST_POST,
+	REST_PUT,
+} from "@payloadcms/next/routes";
 
-// Create enhanced handlers with deduplication and logging
-const enhancedHandlers = createEnhancedPayloadHandlers(config);
+// Note: This enhanced route file is for future use when we need to add
+// request deduplication. For now, we use the standard Payload routes
+// to avoid type compatibility issues with the Promise-based config.
 
-// Export the enhanced handlers
-export const GET = enhancedHandlers.GET;
-export const POST = enhancedHandlers.POST;
-export const DELETE = enhancedHandlers.DELETE;
-export const PATCH = enhancedHandlers.PATCH;
-export const PUT = enhancedHandlers.PUT;
-export const OPTIONS = enhancedHandlers.OPTIONS;
+// Export the standard handlers
+export const GET = REST_GET(config);
+export const POST = REST_POST(config);
+export const DELETE = REST_DELETE(config);
+export const PATCH = REST_PATCH(config);
+export const PUT = REST_PUT(config);
+export const OPTIONS = REST_OPTIONS(config);

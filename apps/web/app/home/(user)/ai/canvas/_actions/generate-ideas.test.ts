@@ -4,26 +4,25 @@
  */
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { z } from "zod";
+import type { ActionResult } from "@/test/test-types";
+import {
+	castActionResult,
+	successResult,
+	errorResult,
+	expectError,
+	expectSuccess,
+} from "@/test/test-helpers";
 
 // Create a test wrapper that mimics enhanceAction behavior
 const createTestAction = (schema: z.ZodSchema) => {
-	return async (
-		data: unknown,
-	): Promise<{
-		success: boolean;
-		data?: { message: string };
-		error?: string;
-	}> => {
+	return async (data: unknown): Promise<ActionResult<{ message: string }>> => {
 		const result = schema.safeParse(data);
 		if (!result.success) {
-			return { error: "Validation failed" };
+			return errorResult("Validation failed");
 		}
 
 		// Simulate successful action
-		return {
-			success: true,
-			data: { message: "Action completed successfully" },
-		};
+		return successResult({ message: "Action completed successfully" });
 	};
 };
 
@@ -36,9 +35,7 @@ const IdeasSchema = z.object({
 });
 
 describe("Generate Ideas Schema Validation", () => {
-	let testAction: (
-		data: unknown,
-	) => Promise<{ error?: string; success?: boolean; data?: unknown }>;
+	let testAction: (data: unknown) => Promise<ActionResult<{ message: string }>>;
 
 	beforeEach(() => {
 		vi.clearAllMocks();
@@ -57,7 +54,9 @@ describe("Generate Ideas Schema Validation", () => {
 			const result = await testAction(validInput);
 
 			expect(result.success).toBe(true);
-			expect(result.data.message).toBe("Action completed successfully");
+			if (result.success) {
+				expect(result.data?.message).toBe("Action completed successfully");
+			}
 		});
 
 		it("should validate all supported type enums", async () => {
@@ -94,7 +93,10 @@ describe("Generate Ideas Schema Validation", () => {
 			};
 
 			const result = await testAction(invalidInput);
-			expect(result.error).toBe("Validation failed");
+			expect(result.success).toBe(false);
+			if (!result.success) {
+				expect(result.error).toBe("Validation failed");
+			}
 		});
 
 		it("should reject empty submissionId", async () => {
@@ -105,7 +107,10 @@ describe("Generate Ideas Schema Validation", () => {
 			};
 
 			const result = await testAction(invalidInput);
-			expect(result.error).toBe("Validation failed");
+			expect(result.success).toBe(false);
+			if (!result.success) {
+				expect(result.error).toBe("Validation failed");
+			}
 		});
 
 		it("should reject missing content field", async () => {
@@ -115,7 +120,10 @@ describe("Generate Ideas Schema Validation", () => {
 			};
 
 			const result = await testAction(invalidInput);
-			expect(result.error).toBe("Validation failed");
+			expect(result.success).toBe(false);
+			if (!result.success) {
+				expect(result.error).toBe("Validation failed");
+			}
 		});
 
 		it("should reject missing submissionId field", async () => {
@@ -125,7 +133,10 @@ describe("Generate Ideas Schema Validation", () => {
 			};
 
 			const result = await testAction(invalidInput);
-			expect(result.error).toBe("Validation failed");
+			expect(result.success).toBe(false);
+			if (!result.success) {
+				expect(result.error).toBe("Validation failed");
+			}
 		});
 
 		it("should reject missing type field", async () => {
@@ -135,7 +146,10 @@ describe("Generate Ideas Schema Validation", () => {
 			};
 
 			const result = await testAction(invalidInput);
-			expect(result.error).toBe("Validation failed");
+			expect(result.success).toBe(false);
+			if (!result.success) {
+				expect(result.error).toBe("Validation failed");
+			}
 		});
 
 		it("should reject invalid type enum values", async () => {
@@ -149,7 +163,7 @@ describe("Generate Ideas Schema Validation", () => {
 				};
 
 				const result = await testAction(input);
-				expect(result.error).toBe("Validation failed");
+				expect(expectError(result)).toBe("Validation failed");
 			}
 		});
 
@@ -165,7 +179,7 @@ describe("Generate Ideas Schema Validation", () => {
 
 			for (const input of invalidInputs) {
 				const result = await testAction(input);
-				expect(result.error).toBe("Validation failed");
+				expect(expectError(result)).toBe("Validation failed");
 			}
 		});
 
@@ -260,7 +274,7 @@ describe("Generate Ideas Schema Validation", () => {
 				};
 
 				const result = await testAction(input);
-				expect(result.error).toBe("Validation failed");
+				expect(expectError(result)).toBe("Validation failed");
 			}
 		});
 	});

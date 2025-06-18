@@ -109,11 +109,11 @@ export function SlidePreview({ slide }: SlidePreviewProps) {
 						className="bg-muted text-muted-foreground flex aspect-video flex-col items-center justify-center p-2 text-xs" // Added flex-col and padding
 					>
 						<div>Chart ({item.chartType || "Unknown Type"})</div>
-						{item.chartData && (
+						{item.chartData ? (
 							<div className="mt-1 text-[10px] opacity-75">
-								Data: {JSON.stringify(item.chartData).substring(0, 50)}...
+								{`Data: ${String(JSON.stringify(item.chartData)).substring(0, 50)}...`}
 							</div>
-						)}
+						) : null}
 					</div>
 				);
 			case "table":
@@ -123,11 +123,11 @@ export function SlidePreview({ slide }: SlidePreviewProps) {
 						className="bg-muted text-muted-foreground flex aspect-video flex-col items-center justify-center p-2 text-xs" // Added flex-col and padding
 					>
 						<div>Table</div>
-						{item.tableData && (
+						{item.tableData ? (
 							<div className="mt-1 text-[10px] opacity-75">
-								Data: {JSON.stringify(item.tableData).substring(0, 50)}...
+								{`Data: ${String(JSON.stringify(item.tableData)).substring(0, 50)}...`}
 							</div>
-						)}
+						) : null}
 					</div>
 				);
 			default:
