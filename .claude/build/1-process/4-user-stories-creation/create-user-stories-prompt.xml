@@ -171,8 +171,8 @@
           - AI Context Status: Fresh
         - Move chunk to "Stories" column in Planning Board
         - Create tasks as checklist items in story description
-        - Store stories in: .claude/build/3-output/{epic-name}/4-stories/
-        - Create context files: .claude/contexts/story-{id}/context.md
+        - Store stories in: .claude/build/4-output/{epic-name}/4-stories/
+        - Create context files: .claude/build/4-output/contexts/stories/story-{id}/context.md
       </description>
     </step>
   </instructions>

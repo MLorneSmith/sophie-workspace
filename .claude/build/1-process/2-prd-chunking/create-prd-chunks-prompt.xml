@@ -152,8 +152,8 @@
           - Cross-cutting Dependencies: From dependency analysis
         - Apply labels: ["chunk", "needs-validation"] plus domain labels
         - Move Epic to "Chunks" column in Planning Board
-        - Store chunks in: .claude/build/3-output/{epic-name}/2-chunks/
-        - Create context files: .claude/contexts/chunk-{id}/context.md
+        - Store chunks in: .claude/build/4-output/{epic-name}/2-chunks/
+        - Create context files: .claude/build/4-output/contexts/chunks/chunk-{id}/context.md
       </description>
     </step>
   </instructions>

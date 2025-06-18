@@ -13,3 +13,27 @@ export declare function getSurvey(slug: string, supabaseClient?: SupabaseClient)
  * @returns The survey questions
  */
 export declare function getSurveyQuestions(surveyId: string, supabaseClient?: SupabaseClient): Promise<any>;
+/**
+ * @deprecated Use Supabase directly instead
+ */
+export declare function _getUserSurveyResponse(_userId: string, _surveyId: string): Promise<{
+    docs: never[];
+}>;
+/**
+ * @deprecated Use Supabase directly instead
+ */
+export declare function _createSurveyResponse(_data: unknown): Promise<{
+    id: null;
+}>;
+/**
+ * @deprecated Use Supabase directly instead
+ */
+export declare function _updateSurveyResponse(id: string, _data: unknown): Promise<{
+    id: string;
+}>;
+/**
+ * @deprecated Use Supabase directly instead
+ */
+export declare function _completeSurvey(id: string, _data: unknown): Promise<{
+    id: string;
+}>;

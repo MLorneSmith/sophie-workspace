@@ -49,9 +49,9 @@
     <instructions>
       Load these contexts at the start of execution:
       - Read: CLAUDE.md - Project standards and conventions
-      - Read: .claude/contexts/story-{story_id}/context.md - Story requirements
-      - Read: .claude/contexts/story-{story_id}/technical-notes.md - Technical approach
-      - Read: .claude/contexts/story-{story_id}/progress.md - Current progress
+      - Read: .claude/build/4-output/contexts/stories/story-{story_id}/context.md - Story requirements
+      - Read: .claude/build/4-output/contexts/stories/story-{story_id}/technical-notes.md - Technical approach
+      - Read: .claude/build/4-output/contexts/stories/story-{story_id}/progress.md - Current progress
       - Read: .claude/docs/.context-docs-inventory.xml - Available documentation
       
       Based on story type, load additional context:
@@ -551,7 +551,7 @@
           <description>Capture learnings for future reference</description>
           <documentation>
             <![CDATA[
-            # Add to .claude/contexts/story-{story_id}/retrospective.md
+            # Add to .claude/build/4-output/contexts/stories/story-{story_id}/retrospective.md
             
             ## What Went Well
             - {POSITIVE_1}

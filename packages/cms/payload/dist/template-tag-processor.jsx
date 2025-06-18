@@ -1,4 +1,3 @@
-"use strict";
 // Enable detailed logging in development environment
 const DEBUG = process.env.NODE_ENV === "development";
 // Helper logging function
@@ -6,26 +5,26 @@ function _debugLog(..._args) {
     if (DEBUG) {
         // TODO: Async logger needed
         // (await getLogger()).info("[TemplateTagProcessor]", { data: ...args });
-        // }
     }
-    /**
-     * Process r2file tags for file downloads
-     * Format: {% r2file awsurl="URL" filedescription="Description" /%}
-     */
-    function processR2FileTags(text) {
-        // Count matches before processing
-        const matches = text.match(/{%\s*r2file.*?\/%}/g) || [];
-        if (DEBUG && matches.length > 0) {
-            _debugLog(`Found ${matches.length} r2file tags`);
+}
+/**
+ * Process r2file tags for file downloads
+ * Format: {% r2file awsurl="URL" filedescription="Description" /%}
+ */
+function processR2FileTags(text) {
+    // Count matches before processing
+    const matches = text.match(/{%\s*r2file.*?\/%}/g) || [];
+    if (DEBUG && matches.length > 0) {
+        _debugLog(`Found ${matches.length} r2file tags`);
+    }
+    // Standard pattern
+    const r2filePattern = /{%\s*r2file\s+awsurl="([^"]+)"\s+filedescription="([^"]+)"\s*\/%}/g;
+    // Process standard format
+    let processedText = text.replace(r2filePattern, (_match, url, description) => {
+        if (DEBUG) {
+            _debugLog(`Processing r2file: URL=${url.substring(0, 30)}..., Description=${description}`);
         }
-        // Standard pattern
-        const r2filePattern = /{%\s*r2file\s+awsurl="([^"]+)"\s+filedescription="([^"]+)"\s*\/%}/g;
-        // Process standard format
-        let processedText = text.replace(r2filePattern, (_match, url, description) => {
-            if (DEBUG) {
-                _debugLog(`Processing r2file: URL=${url.substring(0, 30)}..., Description=${description}`);
-            }
-            return `
+        return `
       <div class="flex items-center justify-between rounded-lg border border-gray-200 p-3 dark:border-gray-700 my-2">
         <div class="flex-grow">
           <p class="font-medium">${description}</p>
@@ -42,14 +41,14 @@ function _debugLog(..._args) {
         </a>
       </div>
     `;
-        });
-        // Alternative format (in case order is different)
-        const alternativePattern = /{%\s*r2file\s+filedescription="([^"]+)"\s+awsurl="([^"]+)"\s*\/%}/g;
-        processedText = processedText.replace(alternativePattern, (_match, description, url) => {
-            if (DEBUG) {
-                _debugLog(`Processing alternative r2file: Description=${description}, URL=${url.substring(0, 30)}...`);
-            }
-            return `
+    });
+    // Alternative format (in case order is different)
+    const alternativePattern = /{%\s*r2file\s+filedescription="([^"]+)"\s+awsurl="([^"]+)"\s*\/%}/g;
+    processedText = processedText.replace(alternativePattern, (_match, description, url) => {
+        if (DEBUG) {
+            _debugLog(`Processing alternative r2file: Description=${description}, URL=${url.substring(0, 30)}...`);
+        }
+        return `
       <div class="flex items-center justify-between rounded-lg border border-gray-200 p-3 dark:border-gray-700 my-2">
         <div class="flex-grow">
           <p class="font-medium">${description}</p>
@@ -66,34 +65,34 @@ function _debugLog(..._args) {
         </a>
       </div>
     `;
-        });
-        // Check for unprocessed r2file tags (for debugging)
-        if (DEBUG) {
-            const remainingMatches = processedText.match(/{%\s*r2file.*?\/%}/g) || [];
-            if (remainingMatches.length > 0) {
-                _debugLog(`Warning: ${remainingMatches.length} r2file tags not processed`);
-                _debugLog(`First unprocessed tag: ${remainingMatches[0]}`);
-            }
+    });
+    // Check for unprocessed r2file tags (for debugging)
+    if (DEBUG) {
+        const remainingMatches = processedText.match(/{%\s*r2file.*?\/%}/g) || [];
+        if (remainingMatches.length > 0) {
+            _debugLog(`Warning: ${remainingMatches.length} r2file tags not processed`);
+            _debugLog(`First unprocessed tag: ${remainingMatches[0]}`);
         }
-        return processedText;
     }
-    /**
-     * Process bunny video tags
-     * Format: {% bunny bunnyvideoid="ID" /%}
-     */
-    function processBunnyVideoTags(text) {
-        // Count matches before processing
-        const matches = text.match(/{%\s*bunny.*?\/%}/g) || [];
-        if (DEBUG && matches.length > 0) {
-            _debugLog(`Found ${matches.length} bunny video tags`);
+    return processedText;
+}
+/**
+ * Process bunny video tags
+ * Format: {% bunny bunnyvideoid="ID" /%}
+ */
+function processBunnyVideoTags(text) {
+    // Count matches before processing
+    const matches = text.match(/{%\s*bunny.*?\/%}/g) || [];
+    if (DEBUG && matches.length > 0) {
+        _debugLog(`Found ${matches.length} bunny video tags`);
+    }
+    const bunnyPattern = /{%\s*bunny\s+bunnyvideoid="([^"]+)"\s*\/%}/g;
+    return text.replace(bunnyPattern, (_match, videoId) => {
+        if (DEBUG) {
+            _debugLog(`Processing bunny video: ID=${videoId}`);
         }
-        const bunnyPattern = /{%\s*bunny\s+bunnyvideoid="([^"]+)"\s*\/%}/g;
-        return text.replace(bunnyPattern, (_match, videoId) => {
-            if (DEBUG) {
-                _debugLog(`Processing bunny video: ID=${videoId}`);
-            }
-            const libraryId = "264486"; // Default library ID
-            return `
+        const libraryId = "264486"; // Default library ID
+        return `
       <div class="my-8">
         <div class="relative" style="padding-bottom: 56.25%;">
           <iframe
@@ -109,118 +108,118 @@ function _debugLog(..._args) {
         </div>
       </div>
     `;
-        });
+    });
+}
+/**
+ * Process custom bullet tags
+ * Format: {% custombullet status="right-arrow" /%}
+ */
+function processCustomBulletTags(text) {
+    // Count matches before processing
+    const matches = text.match(/{%\s*custombullet.*?\/%}/g) || [];
+    if (DEBUG && matches.length > 0) {
+        _debugLog(`Found ${matches.length} custom bullet tags`);
     }
-    /**
-     * Process custom bullet tags
-     * Format: {% custombullet status="right-arrow" /%}
-     */
-    function processCustomBulletTags(text) {
-        // Count matches before processing
-        const matches = text.match(/{%\s*custombullet.*?\/%}/g) || [];
-        if (DEBUG && matches.length > 0) {
-            _debugLog(`Found ${matches.length} custom bullet tags`);
-        }
-        const bulletPattern = /{%\s*custombullet\s+status="([^"]+)"\s*\/%}/g;
-        return text.replace(bulletPattern, (_match, status) => {
-            if (DEBUG) {
-                _debugLog(`Processing custom bullet: status=${status}`);
-            }
-            let bulletHtml = "";
-            switch (status) {
-                case "right-arrow":
-                    bulletHtml =
-                        '<span class="inline-block mr-2" data-bullet-type="right-arrow">→</span>';
-                    break;
-                case "check":
-                    bulletHtml =
-                        '<span class="inline-block mr-2" data-bullet-type="check">✓</span>';
-                    break;
-                case "x":
-                    bulletHtml =
-                        '<span class="inline-block mr-2" data-bullet-type="x">✗</span>';
-                    break;
-                default:
-                    bulletHtml = `<span class="inline-block mr-2" data-bullet-type="default" data-status="${status}">•</span>`;
-            }
-            return bulletHtml;
-        });
-    }
-    /**
-     * Process lesson header tags
-     * Format: ### Lesson Header
-     */
-    function processHeaderTags(text) {
-        return text.replace(/^###\s+(.*)$/gm, (_match, headerText) => {
-            if (DEBUG) {
-                _debugLog(`Processing header: "${headerText}"`);
-            }
-            return `<h3 class="text-xl font-bold mt-6 mb-3">${headerText}</h3>`;
-        });
-    }
-    /**
-     * Process all template tags in content
-     * @param content The content string containing template tags
-     * @returns Component with processed content
-     */
-    export function _TemplateTagProcessor({ content }) {
-        if (!content || typeof content !== "string") {
-            if (DEBUG) {
-                _debugLog("Received empty or non-string content");
-            }
-            return null;
-        }
-        // Log basic stats about the content in development
+    const bulletPattern = /{%\s*custombullet\s+status="([^"]+)"\s*\/%}/g;
+    return text.replace(bulletPattern, (_match, status) => {
         if (DEBUG) {
-            const contentPreview = content.length > 100 ? `${content.substring(0, 100)}...` : content;
-            _debugLog(`Processing content (${content.length} chars): ${contentPreview}`);
-            // Count tag occurrences
-            const r2fileMatches = content.match(/{%\s*r2file.*?\/%}/g) || [];
-            const bunnyMatches = content.match(/{%\s*bunny.*?\/%}/g) || [];
-            const bulletMatches = content.match(/{%\s*custombullet.*?\/%}/g) || [];
-            _debugLog(`Found tags: ${r2fileMatches.length} r2file, ${bunnyMatches.length} bunny, ${bulletMatches.length} custombullet`);
-            // Log the first few matches of each type
-            const logFirstMatches = (matches, label) => {
-                if (matches.length > 0) {
-                    _debugLog(`${label} examples:`);
-                    for (const [i, match] of matches.slice(0, 2).entries()) {
-                        _debugLog(`  ${i + 1}. ${match}`);
-                    }
-                }
-            };
-            if (r2fileMatches.length > 0)
-                logFirstMatches(r2fileMatches, "r2file");
-            if (bunnyMatches.length > 0)
-                logFirstMatches(bunnyMatches, "bunny");
-            if (bulletMatches.length > 0)
-                logFirstMatches(bulletMatches, "custombullet");
+            _debugLog(`Processing custom bullet: status=${status}`);
         }
-        try {
-            // Apply all processors in sequence
-            let processedContent = content;
-            // First process downloads to ensure they're properly handled
-            processedContent = processR2FileTags(processedContent);
-            // Then process other media elements
-            processedContent = processBunnyVideoTags(processedContent);
-            // Then process formatting elements
-            processedContent = processCustomBulletTags(processedContent);
-            // Process headers last to avoid conflicts
-            processedContent = processHeaderTags(processedContent);
-            // Remove any duplicate HTML tags that might have been created during processing
-            processedContent = processedContent.replace(/<\/(div|h3|p)>\s*<\1>/g, " ");
-            // Add wrapper with diagnostic classes in development
-            return (<div className={`template-content ${DEBUG ? "template-processed" : ""}`} data-processed-length={processedContent.length} data-original-length={content.length}>
+        let bulletHtml = "";
+        switch (status) {
+            case "right-arrow":
+                bulletHtml =
+                    '<span class="inline-block mr-2" data-bullet-type="right-arrow">→</span>';
+                break;
+            case "check":
+                bulletHtml =
+                    '<span class="inline-block mr-2" data-bullet-type="check">✓</span>';
+                break;
+            case "x":
+                bulletHtml =
+                    '<span class="inline-block mr-2" data-bullet-type="x">✗</span>';
+                break;
+            default:
+                bulletHtml = `<span class="inline-block mr-2" data-bullet-type="default" data-status="${status}">•</span>`;
+        }
+        return bulletHtml;
+    });
+}
+/**
+ * Process lesson header tags
+ * Format: ### Lesson Header
+ */
+function processHeaderTags(text) {
+    return text.replace(/^###\s+(.*)$/gm, (_match, headerText) => {
+        if (DEBUG) {
+            _debugLog(`Processing header: "${headerText}"`);
+        }
+        return `<h3 class="text-xl font-bold mt-6 mb-3">${headerText}</h3>`;
+    });
+}
+/**
+ * Process all template tags in content
+ * @param content The content string containing template tags
+ * @returns Component with processed content
+ */
+export function TemplateTagProcessor({ content }) {
+    if (!content || typeof content !== "string") {
+        if (DEBUG) {
+            _debugLog("Received empty or non-string content");
+        }
+        return null;
+    }
+    // Log basic stats about the content in development
+    if (DEBUG) {
+        const contentPreview = content.length > 100 ? `${content.substring(0, 100)}...` : content;
+        _debugLog(`Processing content (${content.length} chars): ${contentPreview}`);
+        // Count tag occurrences
+        const r2fileMatches = content.match(/{%\s*r2file.*?\/%}/g) || [];
+        const bunnyMatches = content.match(/{%\s*bunny.*?\/%}/g) || [];
+        const bulletMatches = content.match(/{%\s*custombullet.*?\/%}/g) || [];
+        _debugLog(`Found tags: ${r2fileMatches.length} r2file, ${bunnyMatches.length} bunny, ${bulletMatches.length} custombullet`);
+        // Log the first few matches of each type
+        const logFirstMatches = (matches, label) => {
+            if (matches.length > 0) {
+                _debugLog(`${label} examples:`);
+                for (const [i, match] of matches.slice(0, 2).entries()) {
+                    _debugLog(`  ${i + 1}. ${match}`);
+                }
+            }
+        };
+        if (r2fileMatches.length > 0)
+            logFirstMatches(r2fileMatches, "r2file");
+        if (bunnyMatches.length > 0)
+            logFirstMatches(bunnyMatches, "bunny");
+        if (bulletMatches.length > 0)
+            logFirstMatches(bulletMatches, "custombullet");
+    }
+    try {
+        // Apply all processors in sequence
+        let processedContent = content;
+        // First process downloads to ensure they're properly handled
+        processedContent = processR2FileTags(processedContent);
+        // Then process other media elements
+        processedContent = processBunnyVideoTags(processedContent);
+        // Then process formatting elements
+        processedContent = processCustomBulletTags(processedContent);
+        // Process headers last to avoid conflicts
+        processedContent = processHeaderTags(processedContent);
+        // Remove any duplicate HTML tags that might have been created during processing
+        processedContent = processedContent.replace(/<\/(div|h3|p)>\s*<\1>/g, " ");
+        // Add wrapper with diagnostic classes in development
+        return (<div className={`template-content ${DEBUG ? "template-processed" : ""}`} data-processed-length={processedContent.length} data-original-length={content.length}>
 				{/* biome-ignore lint/security/noDangerouslySetInnerHtml: Processing trusted CMS content with template tags */}
 				<div dangerouslySetInnerHTML={{ __html: processedContent }}/>
 			</div>);
+    }
+    catch (error) {
+        if (DEBUG) {
+            _debugLog("Error processing template tags:", error);
         }
-        catch (error) {
-            if (DEBUG) {
-                _debugLog("Error processing template tags:", error);
-            }
-            // Fallback to a basic rendering with error indication in development
-            if (DEBUG) {
-                return (<div className="template-content template-error">
+        // Fallback to a basic rendering with error indication in development
+        if (DEBUG) {
+            return (<div className="template-content template-error">
 					<div className="rounded border border-red-200 bg-red-50 p-4">
 						<p className="text-red-700">Error processing template tags</p>
 						<pre className="mt-2 max-h-40 overflow-auto text-xs text-red-600">
@@ -230,19 +229,18 @@ function _debugLog(..._args) {
 					{/* biome-ignore lint/security/noDangerouslySetInnerHtml: Fallback rendering of original CMS content when template processing fails */}
 					<div dangerouslySetInnerHTML={{ __html: content }}/>
 				</div>);
-            }
-            // In production, just render the content directly
-            // biome-ignore lint/security/noDangerouslySetInnerHtml: Production fallback for trusted CMS content
-            return <div dangerouslySetInnerHTML={{ __html: content }}/>;
         }
+        // In production, just render the content directly
+        // biome-ignore lint/security/noDangerouslySetInnerHtml: Production fallback for trusted CMS content
+        return <div dangerouslySetInnerHTML={{ __html: content }}/>;
     }
-    /**
-     * Check if content contains template tags that need processing
-     */
-    export function _containsTemplateTags(content) {
-        if (typeof content !== "string") {
-            return false;
-        }
-        return content.includes("{%") && content.includes("%}");
+}
+/**
+ * Check if content contains template tags that need processing
+ */
+export function containsTemplateTags(content) {
+    if (typeof content !== "string") {
+        return false;
     }
+    return content.includes("{%") && content.includes("%}");
 }

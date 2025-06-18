@@ -8,9 +8,10 @@ This command orchestrates the complete AI-Assisted Feature Development workflow 
 
 ## Overview
 
-The build-feature command guides you through our 6-phase development process:
+The build-feature command guides you through our 7-phase development process:
 
-1. **Ideation & PRD Creation** - Transform ideas into structured requirements
+0. **User Discovery** - Interactive interview and market research
+1. **Ideation & PRD Creation** - Transform validated ideas into structured requirements
 2. **Technical Chunking** - Break down into implementable chunks
 3. **Stakeholder Validation** - Ensure alignment with business goals
 4. **User Story Creation** - Create clear, user-focused stories
@@ -26,7 +27,7 @@ The command automatically detects which phase you're in based on the reference p
 function detectPhase(reference: string) {
   // Check if it's a new feature (text description)
   if (!reference.match(/^\d+$/) && !reference.match(/^#/)) {
-    return { phase: 'ideation', isNew: true, featureName: reference };
+    return { phase: 'discovery', isNew: true, featureName: reference };
   }
 
   // Check existing GitHub issues
@@ -34,6 +35,9 @@ function detectPhase(reference: string) {
   if (!issue) return { phase: 'unknown', error: 'Issue not found' };
 
   // Determine phase based on issue labels and state
+  if (issue.labels.includes('discovery') && !issue.labels.includes('discovery-complete')) {
+    return { phase: 'discovery', discoveryId: issue.number };
+  }
   if (issue.labels.includes('epic') && !issue.labels.includes('prd-complete')) {
     return { phase: 'ideation', epicId: issue.number };
   }
@@ -59,23 +63,89 @@ function detectPhase(reference: string) {
 
 ## Phase Implementations
 
-### Phase 1: Ideation & PRD Creation
+### Phase 0: User Discovery & Research
 
 **What happens:**
-Transform your feature idea into a comprehensive Product Requirements Document (PRD).
+Conduct interactive user interview and market research to collect all information needed for PRD generation.
 
 **Process:**
 
 ```typescript
-async function executeIdeationPhase(featureName: string) {
-  console.log(`📋 Starting PRD creation for: ${featureName}\n`);
+async function executeDiscoveryPhase(featureName: string) {
+  console.log(`🔍 Starting User Discovery for: ${featureName}\n`);
 
-  // Load context
-  console.log('Loading context for PRD creation...');
+  // Create feature slug for file organization
+  const featureSlug = featureName.toLowerCase().replace(/\s+/g, '-');
+  const contextPath = `.claude/build/4-output/contexts/discovery/${featureSlug}`;
+
+  // Load discovery prompt
+  console.log('Loading user discovery prompt...');
+  const discoveryPrompt = await readFile(
+    '.claude/build/1-process/0-user-discovery/user-discovery-prompt.xml',
+  );
+
+  // Start interactive interview
+  console.log(`
+🎯 User Discovery Interview
+
+I'll guide you through a series of questions to understand your feature idea and gather all the context needed for PRD generation.
+
+Let's start with the basics:`);
+
+  // Conduct user interview (interactive Q&A)
+  const discoveryResults = await conductUserInterview();
+
+  // Perform market research using MCP tools
+  console.log('\n🔬 Conducting Market Research...');
+  const marketResearch = await performMarketResearch(discoveryResults);
+
+  // Generate context files
+  console.log('\n📄 Generating Context Files...');
+  await generateContextFiles(contextPath, discoveryResults, marketResearch);
+
+  // Create GitHub issue for tracking
+  console.log('\n📝 Creating Discovery Issue...');
+  const issue = await createDiscoveryIssue(featureName, discoveryResults);
+
+  console.log(`\n✅ Discovery Complete!`);
+  console.log(`📁 Context files created in: ${contextPath}`);
+  console.log(`🎫 GitHub issue: #${issue.number}`);
+  console.log(`\n➡️  Ready for PRD generation phase`);
+}
+```
+
+**Output:**
+
+- Discovery summary with validated requirements
+- Generated context files (business-context.md, user-research.md, competitive-analysis.md, market-trends.md)
+- GitHub discovery issue for tracking
+- Ready for PRD generation
+
+### Phase 1: Ideation & PRD Creation
+
+**What happens:**
+Transform discovery session results into a comprehensive Product Requirements Document (PRD).
+
+**Process:**
+
+```typescript
+async function executeIdeationPhase(discoveryId: number) {
+  console.log(`📋 Starting PRD creation from Discovery #${discoveryId}\n`);
+
+  // Load discovery results
+  const discovery = await getGitHubIssue(discoveryId);
+  const featureSlug = discovery.title.toLowerCase().replace(/\s+/g, '-');
+  const contextPath = `.claude/build/4-output/contexts/discovery/${featureSlug}`;
+
+  // Load discovery context
+  console.log('Loading discovery session results...');
   await loadFiles([
-    '.claude/build/2-context/project-context.md',
-    '.claude/build/2-context/technical-context.md',
-    '.claude/build/2-context/business-context.md',
+    `${contextPath}/discovery-summary.md`,
+    `${contextPath}/business-context.md`,
+    `${contextPath}/user-research.md`,
+    `${contextPath}/competitive-analysis.md`,
+    `${contextPath}/market-trends.md`,
+    'CLAUDE.md', // Project standards
   ]);
 
   // Load and apply PRD prompt
@@ -84,18 +154,23 @@ async function executeIdeationPhase(featureName: string) {
     '.claude/build/1-process/1-idea-to-prd/idea-to-prd-prompt.xml',
   );
 
-  // Guide through PRD creation
+  // Generate PRD from discovery results
   console.log(`
-I'll help you create a comprehensive PRD for "${featureName}".`);
-  console.log('Please provide the following information:');
-  console.log('1. Problem Statement - What problem does this solve?');
-  console.log('2. Target Users - Who will use this feature?');
-  console.log('3. Key Functionality - Core features needed?');
-  console.log('4. Success Metrics - How will we measure success?');
+📊 Generating PRD from validated discovery results...
+
+✅ User requirements validated
+✅ Market research completed
+✅ Competitive analysis available
+✅ Business context defined
+
+Creating comprehensive PRD...`);
 
   // Create GitHub Epic with PRD
-  // Add to GitHub Projects
-  // Set labels: ['epic', 'needs-prd']
+  const epic = await createEpicFromDiscovery(discovery, contextPath);
+
+  console.log(`\n✅ PRD Generated!`);
+  console.log(`🎫 Epic issue: #${epic.number}`);
+  console.log(`📄 PRD: ${epic.body}`);
 }
 ```
 
@@ -283,8 +358,8 @@ async function executeImplementation(storyId: number) {
   // Load story context
   console.log('Loading story context...');
   await loadFiles([
-    `.claude/build/contexts/stories/story-${storyId}/context.md`,
-    `.claude/build/contexts/stories/story-${storyId}/technical-notes.md`,
+    `.claude/build/4-output/contexts/stories/story-${storyId}/context.md`,
+    `.claude/build/4-output/contexts/stories/story-${storyId}/technical-notes.md`,
     'CLAUDE.md',
   ]);
 
@@ -326,8 +401,12 @@ async function buildFeature(reference: string) {
 
   // Route to appropriate phase handler
   switch (phaseInfo.phase) {
+    case 'discovery':
+      await executeDiscoveryPhase(phaseInfo.featureName || reference);
+      break;
+
     case 'ideation':
-      await executeIdeationPhase(phaseInfo.featureName || reference);
+      await executeIdeationPhase(phaseInfo.discoveryId || phaseInfo.epicId);
       break;
 
     case 'chunking':
@@ -441,8 +520,8 @@ Would you like to proceed with these chunks? (yes/no)
 💻 Starting Implementation for Story #456
 
 Loading story context...
-Loading: .claude/build/contexts/stories/story-456/context.md
-Loading: .claude/build/contexts/stories/story-456/technical-notes.md
+Loading: .claude/build/4-output/contexts/stories/story-456/context.md
+Loading: .claude/build/4-output/contexts/stories/story-456/technical-notes.md
 Loading: CLAUDE.md
 
 TDD Implementation Cycle:
@@ -480,10 +559,12 @@ The command uses a structured context system to maintain continuity across sessi
 │   ├── project-context.md
 │   ├── technical-context.md
 │   └── business-context.md
-└── contexts/            # Feature-specific contexts
-    ├── epics/
-    ├── chunks/
-    └── stories/
+└── 4-output/            # Generated outputs and contexts
+    └── contexts/        # Feature-specific contexts
+        ├── discovery/
+        ├── epics/
+        ├── chunks/
+        └── stories/
 ```
 
 ### Loading Context
@@ -502,8 +583,8 @@ const contextMap = {
     'Epic PRD from GitHub issue',
   ],
   implementation: [
-    `.claude/build/contexts/stories/story-${id}/context.md`,
-    `.claude/build/contexts/stories/story-${id}/technical-notes.md`,
+    `.claude/build/4-output/contexts/stories/story-${id}/context.md`,
+    `.claude/build/4-output/contexts/stories/story-${id}/technical-notes.md`,
     'CLAUDE.md',
   ],
 };

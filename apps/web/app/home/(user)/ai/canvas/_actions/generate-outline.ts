@@ -234,10 +234,9 @@ export const generateOutlineAction = enhanceAction(
 							Array.isArray(parsedOutline.content) &&
 							parsedOutline.content.length > 1
 						) {
-							logger.info({
-								message:
-									"Valid outline exists and force regenerate is false, returning existing outline",
-							});
+							logger.info(
+								"Valid outline exists and force regenerate is false, returning existing outline",
+							);
 							return { success: true, data: parsedOutline };
 						}
 					} catch (_e) {

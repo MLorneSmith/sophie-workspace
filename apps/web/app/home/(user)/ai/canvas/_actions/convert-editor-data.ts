@@ -1,5 +1,6 @@
 "use server";
 
+import { getLogger } from "@kit/shared/logger";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
 
 import type { Database } from "~/lib/database.types";
@@ -57,7 +58,7 @@ export async function convertExistingRecordsToTiptap() {
 				.eq("id", submission.id);
 
 			if (updateError) {
-				logger.error({
+				(await getLogger()).error({
 					submissionId: submission.id,
 					error: updateError,
 					message: `Error updating submission ${submission.id}`,

@@ -7,7 +7,13 @@ import { z } from "zod";
 
 // Create a test wrapper that mimics enhanceAction behavior
 const createTestAction = (schema: z.ZodSchema) => {
-	return async (data: unknown) => {
+	return async (
+		data: unknown,
+	): Promise<{
+		success: boolean;
+		data?: { message: string };
+		error?: string;
+	}> => {
 		const result = schema.safeParse(data);
 		if (!result.success) {
 			return { error: "Validation failed" };

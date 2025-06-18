@@ -43,6 +43,7 @@ class DatabaseAdapterManager {
 	private healthCheckInterval: NodeJS.Timeout | null = null;
 	private validationPromise: Promise<void> | null = null;
 	private readonly environment: string;
+	private readonly logger = _getLogger();
 
 	constructor() {
 		this.environment = process.env.NODE_ENV || "development";
@@ -56,8 +57,7 @@ class DatabaseAdapterManager {
 			consecutiveFailures: 0,
 		};
 
-		// Initialize logger synchronously
-		this.logger = getLogger();
+		// Logger is already initialized as a class property
 		this.logger.info("DatabaseAdapterManager initialized", {
 			environment: this.environment,
 			operation: "db_adapter_init",
