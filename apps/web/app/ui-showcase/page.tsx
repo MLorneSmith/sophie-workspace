@@ -210,13 +210,12 @@ export default function UIShowcasePage() {
 		user: {
 			id: "123",
 			email: "user@example.com",
-			displayName: "John Doe",
 			role: "user",
 			app_metadata: {
 				role: "user",
 			},
 			factors: [],
-		},
+		} as any,
 		accounts: [
 			{
 				label: "Personal Account",

@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { Button } from "@kit/ui/button";
 import {
 	Dialog,
@@ -34,7 +35,7 @@ import { useCallback, useId, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
-import { useCreateTask, useUpdateTask } from "../_lib/hooks/use-tasks";
+import { _useCreateTask, _useUpdateTask } from "../_lib/hooks/use-tasks";
 import type { Task } from "../_lib/schema/task.schema";
 import {
 	CreateTaskSchema,
@@ -50,8 +51,8 @@ interface TaskDialogProps {
 
 export function TaskDialog({ open, onOpenChange, task }: TaskDialogProps) {
 	const { t } = useTranslation();
-	const createTask = useCreateTask();
-	const updateTask = useUpdateTask();
+	const createTask = _useCreateTask();
+	const updateTask = _useUpdateTask();
 	const [imagePreview, setImagePreview] = useState<string | null>(
 		task?.image_url ?? null,
 	);

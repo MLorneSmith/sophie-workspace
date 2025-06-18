@@ -30,9 +30,9 @@ import {
 import { useCallback, useState } from "react";
 
 import {
-	useResetTasks,
+	_useResetTasks,
 	useTasks,
-	useUpdateTaskStatus,
+	_useUpdateTaskStatus,
 } from "../_lib/hooks/use-tasks";
 import type { Task, TaskStatus } from "../_lib/schema/task.schema";
 import { Column } from "./column";
@@ -47,8 +47,8 @@ const COLUMNS = [
 
 export function KanbanBoard() {
 	const { data: tasks, isLoading, isError, refetch } = useTasks();
-	const updateStatus = useUpdateTaskStatus();
-	const resetTasks = useResetTasks();
+	const updateStatus = _useUpdateTaskStatus();
+	const resetTasks = _useResetTasks();
 	const [activeId, setActiveId] = useState<string | null>(null);
 	const [updatingTaskId, setUpdatingTaskId] = useState<string | null>(null);
 	const [isDialogOpen, setIsDialogOpen] = useState(false);

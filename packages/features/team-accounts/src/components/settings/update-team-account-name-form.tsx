@@ -56,7 +56,7 @@ export const UpdateTeamAccountNameForm = (props: {
 									path: props.path,
 								});
 
-								if (_result._success) {
+								if (_result.success) {
 									toast.success(t("updateTeamSuccessMessage"), {
 										id: toastId,
 									});

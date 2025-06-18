@@ -16,7 +16,7 @@ import { CheckCircle2Icon } from "lucide-react";
 import Image from "next/image";
 import { forwardRef, useState } from "react";
 
-import { useUpdateSubtask } from "../_lib/hooks/use-tasks";
+import { _useUpdateSubtask } from "../_lib/hooks/use-tasks";
 import type { Subtask, Task } from "../_lib/schema/task.schema";
 import { TaskDialog } from "./task-dialog";
 
@@ -27,7 +27,7 @@ interface TaskCardProps {
 export const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
 	({ task }, _ref) => {
 		const [isDialogOpen, setIsDialogOpen] = useState(false);
-		const updateSubtask = useUpdateSubtask();
+		const updateSubtask = _useUpdateSubtask();
 		const {
 			attributes,
 			listeners,

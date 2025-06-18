@@ -12,6 +12,7 @@
       transaction traces, error analysis, and OpenTelemetry trace inspection. Essential for monitoring
       and debugging the SlideHeroes application in production and development environments.
     </description>
+    <readme_file>.claude/tools/newrelic.md</readme_file>
 
     <capabilities>
       <capability>Query application logs using NRQL (New Relic Query Language)</capability>
@@ -79,6 +80,7 @@
       Includes schema operations, query execution, performance analysis, security management, and database administration.
       For production/remote Supabase operations, use the Supabase MCP tool instead.
     </description>
+    <readme_file>.claude/tools/postgresql.md</readme_file>
 
     <capabilities>
       <capability>Execute SQL queries with parameterized statements</capability>
@@ -196,6 +198,7 @@
       including database operations, edge functions deployment, branching workflows, and monitoring.
       For local development database operations, use the PostgreSQL MCP tool instead.
     </description>
+    <readme_file>.claude/tools/supabase.md</readme_file>
 
     <capabilities>
       <capability>Manage Supabase projects (create, pause, restore)</capability>
@@ -300,6 +303,7 @@
       and interaction capabilities. Supports full CRUD operations on repositories, issues, pull requests,
       and comprehensive code management.
     </description>
+    <readme_file>.claude/tools/github.md</readme_file>
 
     <capabilities>
       <capability>Repository management (create, fork, branch operations)</capability>
@@ -391,6 +395,9 @@
       Workers, KV namespaces, R2 buckets, D1 databases, and Hyperdrive configurations. Also includes
       documentation search and observability features.
     </description>
+    <readme_file>.claude/tools/cloudflare-workers-bindings.md</readme_file>
+    <readme_file>.claude/tools/cloudflare-workers-observability.md</readme_file>
+    <readme_file>.claude/tools/cloudflare-playwright.md</readme_file>
 
     <capabilities>
       <capability>Manage Workers (list, get details, get source code)</capability>
@@ -473,6 +480,7 @@
       element interaction, screenshot capture, and comprehensive auditing for accessibility,
       performance, SEO, and best practices.
     </description>
+    <readme_file>.claude/tools/browser-tools.md</readme_file>
 
     <capabilities>
       <capability>Browser navigation and page interaction</capability>
@@ -525,6 +533,7 @@
       Context7 MCP provides up-to-date, version-specific documentation and code examples directly
       from authoritative sources. Eliminates reliance on potentially outdated training data.
     </description>
+    <readme_file>.claude/tools/context7.md</readme_file>
 
     <capabilities>
       <capability>Fetch current documentation for any library or framework</capability>
@@ -566,6 +575,7 @@
       Perplexity MCP enables conversational AI interactions using the Sonar API for enhanced
       information retrieval and question answering capabilities.
     </description>
+    <readme_file>.claude/tools/perplexity.md</readme_file>
 
     <capabilities>
       <capability>Engage in conversational AI interactions</capability>
@@ -589,6 +599,7 @@
       Exa MCP provides sophisticated web search capabilities with both neural (semantic) and
       keyword-based search options, domain filtering, and content categorization.
     </description>
+    <readme_file>.claude/tools/exa-search.md</readme_file>
 
     <capabilities>
       <capability>Neural (semantic) and keyword-based web search</capability>
@@ -619,6 +630,7 @@
       Code reasoning MCP provides structured thinking capabilities for breaking down complex
       problems, revising thoughts, and exploring alternative solution paths.
     </description>
+    <readme_file>.claude/tools/code-reasoning.md</readme_file>
 
     <capabilities>
       <capability>Break down complex problems into manageable steps</capability>

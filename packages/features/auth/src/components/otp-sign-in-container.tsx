@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useCaptchaToken } from "@kit/auth/hooks/use-captcha-token";
+import { useCaptchaToken } from "../captcha/client/use-captcha-token";
 import { useSignInWithOtp } from "@kit/supabase/hooks/use-sign-in-with-otp";
 import { useVerifyOtp } from "@kit/supabase/hooks/use-verify-otp";
 import { Button } from "@kit/ui/button";
@@ -185,7 +185,7 @@ function OtpEmailForm({
 	shouldCreateUser: boolean;
 	onSendOtp: (email: string) => void;
 }) {
-	const getCaptchaToken = useCaptchaToken();
+	const { captchaToken, resetCaptchaToken } = useCaptchaToken();
 	const signInMutation = useSignInWithOtp();
 
 	const emailForm = useForm<z.infer<typeof EmailSchema>>({
@@ -196,7 +196,6 @@ function OtpEmailForm({
 	});
 
 	const handleSendOtp = async ({ email }: { email: string }) => {
-		const captchaToken = await getCaptchaToken();
 
 		await signInMutation.mutateAsync({
 			email,

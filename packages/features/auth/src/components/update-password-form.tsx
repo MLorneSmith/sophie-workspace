@@ -15,7 +15,7 @@ import {
 import { Heading } from "@kit/ui/heading";
 import { Input } from "@kit/ui/input";
 import { Trans } from "@kit/ui/trans";
-import { CheckIcon } from "@radix-ui/react-icons";
+import { CheckIcon, ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import { ArrowRightIcon } from "lucide-react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";

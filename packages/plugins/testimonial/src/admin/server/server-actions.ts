@@ -2,7 +2,7 @@
 
 import { enhanceAction } from "@kit/next/actions";
 import { getLogger } from "@kit/shared/logger";
-import type { Database } from "@kit/supabase/database.types";
+import type { Database } from "@kit/supabase/database";
 import { requireUser } from "@kit/supabase/require-user";
 import { getSupabaseServerAdminClient } from "@kit/supabase/server-admin-client";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
@@ -128,7 +128,7 @@ export const addManualTestimonialAction = enhanceAction(
 		};
 	},
 	{
-		schema: AddManualTestimonialSchema as z.ZodSchema,
+		schema: AddManualTestimonialSchema,
 	},
 );
 

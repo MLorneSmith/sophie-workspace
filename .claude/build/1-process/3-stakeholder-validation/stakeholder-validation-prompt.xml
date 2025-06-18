@@ -1,4 +1,38 @@
 <prompt>
+  <metadata>
+    <primary_agent>Product Owner</primary_agent>
+    <supporting_agents>
+      <agent role="validator">Critic</agent>
+    </supporting_agents>
+    <phase>3-stakeholder-validation</phase>
+  </metadata>
+  
+  <agent_context>
+    <product_owner>
+      <role>Facilitate stakeholder validation and requirement clarification</role>
+      <context_files>
+        - stakeholder-feedback.md
+        - user-validation-results.md
+        - business-priorities.md
+      </context_files>
+      <capabilities>
+        - stakeholder_communication
+        - requirements_clarification
+        - priority_adjustment
+        - acceptance_criteria_refinement
+      </capabilities>
+    </product_owner>
+    <critic>
+      <role>Ensure validation addresses all quality concerns</role>
+      <validation_focus>
+        - Completeness of stakeholder feedback
+        - Clarity of refined requirements
+        - Alignment with original PRD intent
+        - Risk mitigation adequacy
+      </validation_focus>
+    </critic>
+  </agent_context>
+  
   <task>
     Validate a PRD chunk for a 5-agent team (Product Owner, Scrum Master, 2 Builders, 1 Reviewer) by analyzing requirements, identifying ambiguities, and proposing clarifications.
   </task>
@@ -15,13 +49,50 @@
     </instructions>
   </context_loading>
 
-  <tools_available>
-    <tool_reference source=".aishell/refs/available-tools.xml">
-      <tool name="context7_mcp" usage="For verifying APIs/libraries and technical details" />
-      <tool name="github_mcp" usage="For CRUD operations to store outputs and reference codebase files" />
-      <tool name="sequential_thinking_mcp" usage="For identifying ambiguities and simulating stakeholder feedback" />
-    </tool_reference>
-  </tools_available>
+  <available_tools>
+    <description>
+      You have access to the following tools for executing this task. Tool mappings are defined in .claude/tools/tool-mappings.xml and full documentation is in .claude/tools/available-tools.xml
+    </description>
+    
+    <!-- Claude Native Tools -->
+    <tool_group name="Claude Native Tools">
+      <tool name="Read" description="Read chunk documents and validation context"/>
+      <tool name="Write" description="Create validation reports and feedback documents"/>
+      <tool name="Edit" description="Update chunk documentation with clarifications"/>
+      <tool name="Bash" description="Execute gh CLI for GitHub operations"/>
+      <tool name="Grep" description="Search for similar patterns in codebase"/>
+      <tool name="TodoWrite" description="Track validation progress"/>
+    </tool_group>
+    
+    <!-- MCP Tools for Stakeholder Validation -->
+    <tool_group name="MCP Tools">
+      <tool name="github_mcp" description="GitHub API operations">
+        <functions>update_issue, add_issue_comment, get_issue</functions>
+        <usage>Add validation feedback to chunk issues, update priorities</usage>
+      </tool>
+      <tool name="context7_mcp" description="Technical verification">
+        <functions>resolve-library-id, get-library-docs</functions>
+        <usage>Verify technical feasibility and API compatibility</usage>
+      </tool>
+      <tool name="code_reasoning_mcp" description="Ambiguity analysis">
+        <functions>code-reasoning</functions>
+        <usage>Identify unclear requirements and edge cases</usage>
+      </tool>
+      <tool name="perplexity_mcp" description="Best practices research">
+        <functions>perplexity_ask</functions>
+        <usage>Research industry standards for validation</usage>
+      </tool>
+    </tool_group>
+    
+    <tool_usage_guidelines>
+      - Use Read to examine chunk requirements and existing patterns
+      - Use code_reasoning_mcp to identify ambiguities systematically
+      - Use context7_mcp to verify technical assumptions
+      - Use github_mcp to add validation feedback to issues
+      - Use Write to create detailed validation reports
+      - Use perplexity_mcp if industry best practices are needed
+    </tool_usage_guidelines>
+  </available_tools>
 
   <instructions>
     <step number="1">
@@ -117,4 +188,51 @@ git push origin main
       </validation>
     </output>
   </example>
+  
+  <agent_workflow>
+    <pattern name="stakeholder_validation_cycle">
+      <step order="1">
+        <agent>Product Owner Agent</agent>
+        <action>Facilitate stakeholder review sessions</action>
+        <output>Collected feedback and clarification needs</output>
+      </step>
+      <step order="2">
+        <agent>Critic Agent</agent>
+        <action>Validate completeness of stakeholder feedback</action>
+        <output>Assessment of validation thoroughness</output>
+      </step>
+      <step order="3">
+        <agent>Product Owner Agent</agent>
+        <action>Refine requirements based on feedback</action>
+        <output>Updated chunk requirements with clarifications</output>
+      </step>
+    </pattern>
+  </agent_workflow>
+  
+  <quality_gate>
+    <validator>Critic Agent</validator>
+    <criteria>
+      <stakeholder_coverage>All key stakeholders provided feedback</stakeholder_coverage>
+      <ambiguity_resolution>All identified ambiguities addressed</ambiguity_resolution>
+      <requirement_clarity>Requirements refined to implementation-ready state</requirement_clarity>
+      <risk_identification>New risks identified and mitigation planned</risk_identification>
+      <priority_validation>Business priorities confirmed or adjusted</priority_validation>
+    </criteria>
+    <actions>
+      <on_pass>Validated chunks proceed to Phase 4 (User Story Creation)</on_pass>
+      <on_fail>Chunks returned for additional stakeholder clarification</on_fail>
+    </actions>
+  </quality_gate>
+  
+  <handoff_protocol>
+    <from>Product Owner Agent</from>
+    <to>Planner Agent (Phase 4)</to>
+    <context_package>
+      <validated_chunks>Chunks with all stakeholder feedback incorporated</validated_chunks>
+      <clarified_requirements>Refined requirements with ambiguities resolved</clarified_requirements>
+      <priority_updates>Any priority adjustments from stakeholders</priority_updates>
+      <additional_context>New constraints or dependencies identified</additional_context>
+      <validation_summary>Summary of changes made during validation</validation_summary>
+    </context_package>
+  </handoff_protocol>
 </prompt>

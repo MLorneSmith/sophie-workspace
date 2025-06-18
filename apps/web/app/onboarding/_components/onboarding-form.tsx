@@ -14,7 +14,7 @@ import {
 	FormMessage,
 } from "@kit/ui/form";
 import { Input } from "@kit/ui/input";
-import { setCookie } from "@kit/ui/lib";
+import { setCookie } from "@kit/ui/utils";
 import {
 	createStepSchema,
 	MultiStepForm,

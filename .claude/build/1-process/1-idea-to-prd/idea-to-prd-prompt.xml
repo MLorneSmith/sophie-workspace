@@ -1,4 +1,91 @@
 <prompt>
+  <metadata>
+    <primary_agent>Product Owner</primary_agent>
+    <supporting_agents>
+      <agent role="validator">Critic</agent>
+    </supporting_agents>
+    <phase>1-ideation-and-prd</phase>
+  </metadata>
+  
+  <agent_context>
+    <product_owner>
+      <role>Primary responsibility for generating comprehensive PRDs from validated ideas</role>
+      <context_files>
+        - business-context.md
+        - user-research.md
+        - competitive-analysis.md
+        - market-trends.md
+      </context_files>
+      <capabilities>
+        - prd_generation
+        - business_analysis
+        - requirements_definition
+        - stakeholder_communication
+      </capabilities>
+    </product_owner>
+    <critic>
+      <role>Quality gate validator ensuring PRD meets all standards before proceeding</role>
+      <validation_focus>
+        - Completeness of all PRD sections
+        - Clarity of requirements
+        - Testability of acceptance criteria
+        - Technical and business feasibility
+      </validation_focus>
+    </critic>
+  </agent_context>
+  
+  <available_tools>
+    <description>
+      You have access to the following tools for executing this task. Tool mappings are defined in .claude/tools/tool-mappings.xml and full documentation is in .claude/tools/available-tools.xml
+    </description>
+    
+    <!-- Claude Native Tools -->
+    <tool_group name="Claude Native Tools">
+      <tool name="Read" description="Read file contents for context and analysis"/>
+      <tool name="Write" description="Create new files (PRDs, documentation)"/>
+      <tool name="Edit" description="Modify existing files"/>
+      <tool name="MultiEdit" description="Make multiple edits to a single file"/>
+      <tool name="Bash" description="Execute commands (e.g., gh CLI for GitHub operations)"/>
+      <tool name="Grep" description="Search for patterns in files"/>
+      <tool name="Glob" description="Find files by name patterns"/>
+      <tool name="TodoWrite" description="Track tasks and progress"/>
+      <tool name="TodoRead" description="Check current task status"/>
+    </tool_group>
+    
+    <!-- MCP Tools for PRD Generation -->
+    <tool_group name="MCP Tools">
+      <tool name="github_mcp" description="GitHub API operations">
+        <functions>create_issue, update_issue, add_issue_comment</functions>
+        <usage>Create and manage epic issues, add PRDs to GitHub</usage>
+      </tool>
+      <tool name="context7_mcp" description="Documentation lookup">
+        <functions>resolve-library-id, get-library-docs</functions>
+        <usage>Get up-to-date technical documentation for referenced technologies</usage>
+      </tool>
+      <tool name="perplexity_mcp" description="AI-powered research">
+        <functions>perplexity_ask</functions>
+        <usage>Research market trends, competitive analysis, best practices</usage>
+      </tool>
+      <tool name="exa_mcp" description="Web search">
+        <functions>exa_search</functions>
+        <usage>Search for industry standards, similar implementations</usage>
+      </tool>
+      <tool name="code_reasoning_mcp" description="Complex analysis">
+        <functions>code-reasoning</functions>
+        <usage>Break down complex requirements into logical components</usage>
+      </tool>
+    </tool_group>
+    
+    <tool_usage_guidelines>
+      - Use Read to examine existing project files and documentation
+      - Use code_reasoning_mcp for complex requirement analysis
+      - Use github_mcp to create epic issues directly in GitHub
+      - Use context7_mcp to verify technical feasibility with current library versions
+      - Use perplexity_mcp or exa_mcp for market research if needed
+      - Use TodoWrite to track PRD generation progress
+    </tool_usage_guidelines>
+  </available_tools>
+  
   <task>
     Transform the following idea into a comprehensive Product Requirements Document (PRD) using our Feature Epic Issue Template structure. Create content that follows world-class PRD best practices and integrates seamlessly with our AAFD methodology.
   </task>
@@ -209,6 +296,53 @@
     </instructions>
   </github_projects_integration>
   
+  <agent_workflow>
+    <pattern name="quality_assured_prd_generation">
+      <step order="1">
+        <agent>Product Owner Agent</agent>
+        <action>Generate initial PRD from idea</action>
+        <output>Draft PRD following template structure</output>
+      </step>
+      <step order="2">
+        <agent>Critic Agent</agent>
+        <action>Validate PRD quality against standards</action>
+        <output>Validation report with pass/fail and feedback</output>
+      </step>
+      <step order="3">
+        <agent>Product Owner Agent</agent>
+        <action>Refine PRD based on Critic feedback</action>
+        <output>Final approved PRD</output>
+      </step>
+    </pattern>
+  </agent_workflow>
+  
+  <quality_gate>
+    <validator>Critic Agent</validator>
+    <criteria>
+      <completeness>All PRD sections filled with appropriate detail</completeness>
+      <clarity>Unambiguous requirements that developers can implement</clarity>
+      <feasibility>Technical validation of proposed solution</feasibility>
+      <testability>Measurable acceptance criteria for all features</testability>
+      <alignment>Clear connection to business objectives and user needs</alignment>
+    </criteria>
+    <actions>
+      <on_pass>PRD proceeds to Phase 2 (Technical Chunking)</on_pass>
+      <on_fail>PRD returned to Product Owner with specific improvement requirements</on_fail>
+    </actions>
+  </quality_gate>
+  
+  <handoff_protocol>
+    <from>Product Owner Agent</from>
+    <to>Planner Agent (Phase 2)</to>
+    <context_package>
+      <validated_prd>Complete PRD with Critic approval</validated_prd>
+      <business_context>Market analysis and user research insights</business_context>
+      <technical_constraints>Identified limitations and dependencies</technical_constraints>
+      <success_metrics>Measurable objectives and KPIs</success_metrics>
+      <validation_notes>Critic Agent feedback and approval</validation_notes>
+    </context_package>
+  </handoff_protocol>
+  
   <quality_standards>
     <prd_checklist>
       - [ ] Problem clearly articulated with user impact
@@ -220,6 +354,7 @@
       - [ ] Scope is realistic for implementation capacity
       - [ ] Risks have concrete mitigation strategies
       - [ ] All sections completed with sufficient detail
+      - [ ] Critic Agent validation passed
     </prd_checklist>
   </quality_standards>
 </prompt>

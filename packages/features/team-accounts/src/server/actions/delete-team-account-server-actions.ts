@@ -30,7 +30,7 @@ export const deleteTeamAccountAction = enhanceAction(
 			token: params.otp,
 		});
 
-		if (!_otpResult._valid) {
+		if (!_otpResult.valid) {
 			throw new Error("Invalid OTP code");
 		}
 

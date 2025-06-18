@@ -1,4 +1,121 @@
 <prompt>
+  <metadata>
+    <primary_agent>Builder</primary_agent>
+    <supporting_agents>
+      <agent role="continuous_review">Reviewer</agent>
+      <agent role="issue_resolution">Fixer</agent>
+      <agent role="final_validation">Critic</agent>
+    </supporting_agents>
+    <phase>6-implementation</phase>
+  </metadata>
+  
+  <agent_context>
+    <builder>
+      <role>Primary implementer using Claude Code for TDD development</role>
+      <context_files>
+        - story-context.md
+        - technical-patterns.md
+        - code-standards.md
+        - test-templates.md
+      </context_files>
+      <capabilities>
+        - test_driven_development
+        - pattern_recognition
+        - code_generation
+        - context_preparation
+        - claude_code_orchestration
+      </capabilities>
+    </builder>
+    <reviewer>
+      <role>Continuous code review during implementation</role>
+      <review_focus>
+        - Security vulnerabilities
+        - Performance issues
+        - Best practices adherence
+        - Test coverage adequacy
+        - Code maintainability
+      </review_focus>
+    </reviewer>
+    <fixer>
+      <role>Resolve issues identified by Reviewer</role>
+      <fix_capabilities>
+        - Root cause analysis
+        - Targeted remediation
+        - Pattern-based solutions
+        - Performance optimization
+        - Security hardening
+      </fix_capabilities>
+    </fixer>
+    <critic>
+      <role>Final quality validation before story completion</role>
+      <validation_scope>
+        - Story acceptance criteria met
+        - Code quality standards passed
+        - Test coverage adequate
+        - Documentation complete
+        - No outstanding issues
+      </validation_scope>
+    </critic>
+  </agent_context>
+  
+  <available_tools>
+    <description>
+      You have access to the following tools for executing this task. Tool mappings are defined in .claude/tools/tool-mappings.xml and full documentation is in .claude/tools/available-tools.xml
+    </description>
+    
+    <!-- Claude Native Tools -->
+    <tool_group name="Claude Native Tools">
+      <tool name="Read" description="Read story context and existing code"/>
+      <tool name="Write" description="Create new files (tests, components)"/>
+      <tool name="Edit" description="Modify existing files"/>
+      <tool name="MultiEdit" description="Make multiple related changes"/>
+      <tool name="Bash" description="Run tests, linting, type checking"/>
+      <tool name="Grep" description="Find code patterns and usage"/>
+      <tool name="Glob" description="Find files by patterns"/>
+      <tool name="TodoWrite" description="Track implementation tasks"/>
+      <tool name="TodoRead" description="Check task progress"/>
+    </tool_group>
+    
+    <!-- MCP Tools for Implementation -->
+    <tool_group name="MCP Tools">
+      <tool name="github_mcp" description="Version control">
+        <functions>create_branch, push_files, create_pull_request</functions>
+        <usage>Branch management, code commits, PR creation</usage>
+      </tool>
+      <tool name="postgres_mcp" description="Local database operations">
+        <functions>pg_execute_query, pg_manage_schema, pg_manage_rls</functions>
+        <usage>Test database setup, schema changes, RLS policies</usage>
+      </tool>
+      <tool name="supabase_mcp" description="Remote database operations">
+        <functions>apply_migration, generate_typescript_types</functions>
+        <usage>Deploy migrations, update types after schema changes</usage>
+      </tool>
+      <tool name="browser_tools_mcp" description="UI testing">
+        <functions>takeScreenshot, runAccessibilityAudit, getConsoleErrors</functions>
+        <usage>Test UI components, check accessibility, debug errors</usage>
+      </tool>
+      <tool name="newrelic_mcp" description="Performance monitoring">
+        <functions>query_newrelic_logs, get_error_traces</functions>
+        <usage>Check performance impact, debug production issues</usage>
+      </tool>
+      <tool name="context7_mcp" description="Documentation lookup">
+        <functions>resolve-library-id, get-library-docs</functions>
+        <usage>Get current API docs for libraries being used</usage>
+      </tool>
+    </tool_group>
+    
+    <tool_usage_guidelines>
+      - Use Read extensively to understand existing patterns
+      - Write tests FIRST (TDD approach)
+      - Use Bash to run tests frequently during development
+      - Use postgres_mcp for LOCAL database testing
+      - Use browser_tools_mcp for UI component testing
+      - Use github_mcp to create feature branches and commits
+      - Use context7_mcp when implementing new library features
+      - Use TodoWrite to track progress through story tasks
+    </tool_usage_guidelines>
+  </available_tools>
+  
   <task>
     Implement a user story following Test-Driven Development practices and project standards, creating production-ready code with proper testing, error handling, and documentation.
   </task>
@@ -516,4 +633,57 @@
       Measure before optimizing - use React Query for data fetching, avoid waterfalls
     </practice>
   </best_practices>
+  
+  <agent_workflow>
+    <pattern name="continuous_quality_implementation">
+      <step order="1">
+        <agent>Builder Agent</agent>
+        <action>Implement story using TDD with Claude Code</action>
+        <output>Code implementation with tests</output>
+      </step>
+      <step order="2" type="continuous">
+        <agent>Reviewer Agent</agent>
+        <action>Review code as it's written</action>
+        <output>Issues and improvement suggestions</output>
+      </step>
+      <step order="3" type="triggered">
+        <agent>Fixer Agent</agent>
+        <action>Fix issues identified by Reviewer</action>
+        <output>Resolved issues with targeted fixes</output>
+      </step>
+      <step order="4" type="final">
+        <agent>Critic Agent</agent>
+        <action>Final quality validation</action>
+        <output>Story completion approval or rejection</output>
+      </step>
+    </pattern>
+  </agent_workflow>
+  
+  <quality_gate>
+    <validator>Critic Agent</validator>
+    <criteria>
+      <functional_completeness>All acceptance criteria implemented and tested</functional_completeness>
+      <code_quality>Passes all linting, type checking, and security scans</code_quality>
+      <test_coverage>Adequate test coverage for all new code</test_coverage>
+      <documentation>Code is self-documenting with necessary comments</documentation>
+      <performance>Meets performance requirements, no regressions</performance>
+      <security>No vulnerabilities, follows security best practices</security>
+    </criteria>
+    <actions>
+      <on_pass>Story marked as complete, ready for deployment</on_pass>
+      <on_fail>Story returned to Builder with specific fixes required</on_fail>
+    </actions>
+  </quality_gate>
+  
+  <handoff_protocol>
+    <from>Builder + Reviewer + Fixer Agents</from>
+    <to>Deployment Pipeline</to>
+    <context_package>
+      <completed_code>Fully tested and reviewed implementation</completed_code>
+      <quality_report>Final validation report from Critic</quality_report>
+      <deployment_notes>Any special deployment considerations</deployment_notes>
+      <monitoring_requirements>Metrics to track post-deployment</monitoring_requirements>
+      <rollback_plan>How to revert if issues arise</rollback_plan>
+    </context_package>
+  </handoff_protocol>
 </prompt>

@@ -215,7 +215,7 @@ async function TeamAccountPage(props: {
 						<div className={"flex flex-col gap-y-2.5"}>
 							<Heading level={6}>Team Members</Heading>
 
-							<AdminMembersTable members={members} />
+							<AdminMembersTable members={members ?? []} />
 						</div>
 					</div>
 				</div>
@@ -395,7 +395,7 @@ async function getMembers(accountSlug: string) {
 		account_slug: accountSlug,
 	});
 
-	if (members._error) {
+	if (members.error) {
 		throw members.error;
 	}
 

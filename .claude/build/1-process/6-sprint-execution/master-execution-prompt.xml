@@ -1,4 +1,38 @@
 <prompt>
+  <metadata>
+    <orchestrator>Builder Agent</orchestrator>
+    <participating_agents>
+      <agent>Reviewer</agent>
+      <agent>Fixer</agent>
+      <agent>Critic</agent>
+    </participating_agents>
+    <phase>6-sprint-execution-master</phase>
+  </metadata>
+  
+  <agent_orchestration>
+    <builder>
+      <role>Lead orchestrator for story execution</role>
+      <responsibilities>
+        - GitHub tracking and branch management
+        - TDD implementation coordination
+        - Claude Code session management
+        - Progress tracking and reporting
+      </responsibilities>
+    </builder>
+    <reviewer>
+      <role>Continuous quality monitoring</role>
+      <trigger>After each significant code change</trigger>
+    </reviewer>
+    <fixer>
+      <role>Issue resolution</role>
+      <trigger>When Reviewer identifies problems</trigger>
+    </fixer>
+    <critic>
+      <role>Final validation</role>
+      <trigger>Before story completion</trigger>
+    </critic>
+  </agent_orchestration>
+  
   <task>
     Execute a complete story implementation workflow from start to finish, orchestrating GitHub tracking, TDD implementation, and quality assurance through integrated prompts and automated workflows.
   </task>
@@ -27,6 +61,64 @@
       - For testing: Read testing/context/test-driven-development.md
     </instructions>
   </context_loading>
+  
+  <available_tools>
+    <description>
+      You have access to the following tools for orchestrating story execution. Tool mappings are defined in .claude/tools/tool-mappings.xml and full documentation is in .claude/tools/available-tools.xml
+    </description>
+    
+    <!-- Claude Native Tools -->
+    <tool_group name="Claude Native Tools">
+      <tool name="Read" description="Read all story context and code"/>
+      <tool name="Write" description="Create new files following TDD"/>
+      <tool name="Edit" description="Modify existing code"/>
+      <tool name="MultiEdit" description="Batch code changes"/>
+      <tool name="Bash" description="Execute commands (git, tests, gh CLI)"/>
+      <tool name="Grep" description="Search codebase for patterns"/>
+      <tool name="Glob" description="Find files by pattern"/>
+      <tool name="TodoWrite" description="Track execution progress"/>
+      <tool name="TodoRead" description="Check current tasks"/>
+      <tool name="Task" description="Complex multi-file operations"/>
+    </tool_group>
+    
+    <!-- MCP Tools for Orchestration -->
+    <tool_group name="MCP Tools">
+      <tool name="github_mcp" description="GitHub operations">
+        <functions>create_branch, push_files, create_pull_request, update_issue</functions>
+        <usage>Full GitHub workflow management</usage>
+      </tool>
+      <tool name="postgres_mcp" description="Local database">
+        <functions>pg_execute_query, pg_manage_schema, pg_manage_rls, pg_manage_functions</functions>
+        <usage>Complete local database development</usage>
+      </tool>
+      <tool name="supabase_mcp" description="Remote deployment">
+        <functions>apply_migration, deploy_edge_function, get_logs, get_advisors</functions>
+        <usage>Deploy to staging/production</usage>
+      </tool>
+      <tool name="browser_tools_mcp" description="UI testing suite">
+        <functions>All browser automation and audit functions</functions>
+        <usage>Comprehensive UI testing and validation</usage>
+      </tool>
+      <tool name="newrelic_mcp" description="Monitoring">
+        <functions>query_newrelic_logs, get_error_traces, get_transaction_traces</functions>
+        <usage>Performance monitoring and debugging</usage>
+      </tool>
+      <tool name="code_reasoning_mcp" description="Complex problem solving">
+        <functions>code-reasoning</functions>
+        <usage>Break down complex implementation challenges</usage>
+      </tool>
+    </tool_group>
+    
+    <orchestration_guidelines>
+      - Use TodoWrite to create detailed task breakdown at start
+      - Use github_mcp for all version control operations
+      - Run tests with Bash after EVERY code change
+      - Use browser_tools_mcp for UI component validation
+      - Use postgres_mcp for LOCAL testing, supabase_mcp for REMOTE
+      - Use code_reasoning_mcp when facing complex problems
+      - Update GitHub issue status throughout execution
+    </orchestration_guidelines>
+  </available_tools>
   
   <workflow_phases>
     <phase number="1" name="initialization">
@@ -572,6 +664,65 @@
       </time_tracking>
     </execution_summary>
   </output_format>
+  
+  <agent_workflow>
+    <pattern name="orchestrated_story_execution">
+      <phase name="initialization">
+        <agent>Builder Agent</agent>
+        <action>Setup GitHub tracking and branches</action>
+        <output>Story ready for implementation</output>
+      </phase>
+      
+      <phase name="implementation" type="iterative">
+        <step order="1">
+          <agent>Builder Agent</agent>
+          <action>Implement feature with TDD</action>
+          <output>Code and tests</output>
+        </step>
+        <step order="2" type="continuous">
+          <agent>Reviewer Agent</agent>
+          <action>Review implementation</action>
+          <output>Quality assessment</output>
+        </step>
+        <step order="3" type="conditional">
+          <agent>Fixer Agent</agent>
+          <condition>Issues identified by Reviewer</condition>
+          <action>Fix identified issues</action>
+          <output>Resolved problems</output>
+        </step>
+      </phase>
+      
+      <phase name="completion">
+        <step order="1">
+          <agent>Critic Agent</agent>
+          <action>Final quality validation</action>
+          <output>Completion approval</output>
+        </step>
+        <step order="2">
+          <agent>Builder Agent</agent>
+          <action>Create PR and update tracking</action>
+          <output>Story completed</output>
+        </step>
+      </phase>
+    </pattern>
+  </agent_workflow>
+  
+  <quality_gates>
+    <gate phase="initialization">
+      <validator>Builder Agent</validator>
+      <criteria>Context loaded, branch created, tracking updated</criteria>
+    </gate>
+    
+    <gate phase="implementation" type="continuous">
+      <validator>Reviewer Agent</validator>
+      <criteria>No critical issues, follows standards</criteria>
+    </gate>
+    
+    <gate phase="completion">
+      <validator>Critic Agent</validator>
+      <criteria>All acceptance criteria met, quality standards passed</criteria>
+    </gate>
+  </quality_gates>
   
   <usage_notes>
     <note priority="high">

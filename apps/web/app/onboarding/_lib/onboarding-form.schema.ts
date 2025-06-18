@@ -102,9 +102,17 @@ export const validateGoalsStep = (formData: {
 			automate: boolean;
 			feedback: boolean;
 		};
-		workCompany?: string;
-		personalFrequency?: string;
-		schoolProject?: string;
+		workDetails?: {
+			role: string;
+			industry: string;
+		};
+		personalDetails?: {
+			project: string;
+		};
+		schoolDetails?: {
+			level: "highschool" | "undergraduate" | "graduate";
+			major: string;
+		};
 	};
 }): boolean => {
 	// Check if at least one secondary goal is selected
