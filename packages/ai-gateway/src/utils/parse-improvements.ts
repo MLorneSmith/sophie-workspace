@@ -140,8 +140,7 @@ export function parseImprovements(
 	try {
 		// Log the raw response for debugging
 		// TODO: Async logger needed
-		// (await getLogger()).info("Raw AI response:", { arg1: response.substring(0, arg2: 500 }) + (response.length > 500 ? "..." : ""),
-		// );
+		// (await getLogger()).info("Raw AI response:", response.substring(0, 500) + (response.length > 500 ? "..." : ""));
 
 		// First try to parse as JSON
 		const jsonContent = extractJson(response);
@@ -184,7 +183,7 @@ export function parseImprovements(
 							improvementResults.push(improvement);
 						} catch (_err) {
 							// TODO: Async logger needed
-							// (await getLogger()).info("Failed to parse individual improvement:", { arg1: improvementJson, arg2: _err });
+							// (await getLogger()).info("Failed to parse individual improvement:", { improvementJson, error: _err });
 						}
 
 						// Get next match

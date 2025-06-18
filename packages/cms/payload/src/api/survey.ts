@@ -198,7 +198,7 @@ export async function getSurveyQuestions(
 
 			// Check for any relationship to the survey
 			const filteredQuestions = allQuestionsResponse.docs.filter(
-				(_q: {
+				(q: {
 					id: string;
 					surveys_id?: string;
 					surveys_id_id?: string;

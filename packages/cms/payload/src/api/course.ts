@@ -223,7 +223,7 @@ export async function getQuiz(
 				};
 			} catch (_error) {
 				// TODO: Async logger needed
-				// (await getLogger()).error(`getQuiz: Error fetching detailed questions for quiz ${actualQuizId}:`, { arg1: _error, arg2:  });
+				// (await getLogger()).error(`getQuiz: Error fetching detailed questions for quiz ${actualQuizId}:`, _error);
 				// Return what we have even if we couldn't get full details
 				return quiz;
 			}

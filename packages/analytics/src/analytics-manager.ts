@@ -5,7 +5,7 @@ import type {
 	CreateAnalyticsManagerOptions,
 } from "./types";
 export function createAnalyticsManager<T extends string, Config extends object>(
-	_options: CreateAnalyticsManagerOptions<T, Config>,
+	options: CreateAnalyticsManagerOptions<T, Config>,
 ): AnalyticsManager {
 	const activeServices = new Map<T, AnalyticsService>();
 

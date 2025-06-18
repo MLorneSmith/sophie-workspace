@@ -101,13 +101,14 @@ export class NewRelicMonitoringService extends MonitoringService {
 
 		// Add additional user attributes if provided
 		const { id: _id, ...otherInfo } = info;
+		const newrelic = this.newrelic;
 		Object.entries(otherInfo).forEach(([key, value]) => {
 			if (
 				typeof value === "string" ||
 				typeof value === "number" ||
 				typeof value === "boolean"
 			) {
-				this.newrelic.addCustomAttribute(`user.${key}`, value);
+				newrelic.addCustomAttribute(`user.${key}`, value);
 			}
 		});
 	}
@@ -145,8 +146,9 @@ export class NewRelicMonitoringService extends MonitoringService {
 			return;
 		}
 
+		const newrelic = this.newrelic;
 		Object.entries(attributes).forEach(([key, value]) => {
-			this.newrelic.addCustomAttribute(key, value);
+			newrelic.addCustomAttribute(key, value);
 		});
 	}
 
