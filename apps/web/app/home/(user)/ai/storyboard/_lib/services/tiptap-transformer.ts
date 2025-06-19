@@ -65,28 +65,9 @@ export namespace TipTapTransformer {
 		// Identify slide boundaries and create slide structure
 		const slides = identifySlides(document);
 
-		// Convert Slide[] to StoryboardSlide[]
-		const storyboardSlides: StoryboardSlide[] = slides.map((slide) => {
-			return {
-				id: slide.id,
-				headline: slide.title,
-				order: slide.order,
-				storyboard: {
-					layoutId: slide.layoutId,
-					subHeadlines: slide.subheadlines,
-					contentAreas: [],
-					settings: {
-						chartTypes: {},
-						imageSettings: {},
-						tableSettings: {},
-					},
-				},
-			};
-		});
-
 		return {
 			title: presentationTitle,
-			slides: storyboardSlides,
+			slides: slides,
 		};
 	}
 
@@ -217,7 +198,7 @@ export namespace TipTapTransformer {
 					// Level 4+ headings become content items
 					else if (currentSlide) {
 						currentSlide.content.push({
-							type: "text",
+							type: "text" as const,
 							text: headingText,
 							columnIndex: currentColumnIndex,
 							formatting: { bold: true },
@@ -229,7 +210,7 @@ export namespace TipTapTransformer {
 					const text = extractTextFromNode(node);
 					if (text.trim().length > 0) {
 						currentSlide.content.push({
-							type: "text",
+							type: "text" as const,
 							text,
 							columnIndex: currentColumnIndex,
 						});
@@ -387,7 +368,7 @@ export namespace TipTapTransformer {
 					if (!itemContent) continue;
 					if (itemContent.type === "paragraph") {
 						slide.content.push({
-							type,
+							type: type,
 							text: extractTextFromNode(itemContent),
 							columnIndex,
 						});
@@ -475,7 +456,7 @@ export namespace TipTapTransformer {
 		const hasChartContent = slide.content.some((c) => c.type === "chart");
 		if (!hasChartContent) {
 			slide.content.push({
-				type: "chart",
+				type: "chart" as const,
 				columnIndex: 0,
 				chartType,
 				// Create placeholder chart data

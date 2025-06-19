@@ -277,7 +277,7 @@ const SubmitQuizAttemptSchema = z.object({
 	passed: z.boolean(),
 });
 
-export const _submitQuizAttemptAction = enhanceAction(
+export const submitQuizAttemptAction = enhanceAction(
 	async (data, user) => {
 		const supabase = getSupabaseServerClient();
 		const now = new Date().toISOString();

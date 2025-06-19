@@ -300,9 +300,31 @@ export class StoryboardService {
 			});
 		}
 
+		// Transform StoryboardSlide[] to Slide[] to match expected type
+		const transformedSlides: Slide[] = slides.map((slide) => ({
+			id: slide.id,
+			slideType:
+				slide.storyboard.layoutId === "title" ? "title" : ("content" as const),
+			title: slide.headline,
+			subheadlines: slide.storyboard.subHeadlines,
+			layoutId: slide.storyboard.layoutId,
+			content: slide.storyboard.contentAreas.map((area) => ({
+				type: area.type as
+					| "text"
+					| "bullet"
+					| "subbullet"
+					| "chart"
+					| "image"
+					| "table",
+				columnIndex: area.columnIndex,
+				text: "", // ContentArea doesn't have content - this is layout only
+			})),
+			order: slide.order,
+		}));
+
 		return {
 			title: extractedTitle, // The overall presentation title
-			slides, // Array of StoryboardSlide objects
+			slides: transformedSlides, // Array of Slide objects
 		};
 	}
 
@@ -352,9 +374,10 @@ export class StoryboardService {
 		slide: Slide,
 		type: "bullet" | "subbullet",
 	): void {
-		if (!node.content) return;
+		const typedNode = node as TipTapNode;
+		if (!typedNode.content) return;
 
-		for (const item of node.content as TipTapNode[]) {
+		for (const item of typedNode.content as TipTapNode[]) {
 			if (item.type === "listItem" && item.content) {
 				for (const itemContent of item.content as (
 					| TipTapNode

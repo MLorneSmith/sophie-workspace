@@ -479,8 +479,8 @@ describe("Task Schema Validation", () => {
 
 			const result = CreateTaskSchema.parse(task);
 			expect(result.subtasks).toHaveLength(2);
-			expect(result.subtasks?.[0].title).toBe("First subtask");
-			expect(result.subtasks?.[1].is_completed).toBe(false);
+			expect(result.subtasks?.[0]?.title).toBe("First subtask");
+			expect(result.subtasks?.[1]?.is_completed).toBe(false);
 		});
 
 		it("should reject task with invalid subtasks", () => {
@@ -584,6 +584,8 @@ describe("Task Schema Validation", () => {
 			const updateTask: UpdateTaskInput = {
 				id: "f47ac10b-58cc-4372-a567-0e02b2c3d479",
 				title: "Updated type test",
+				status: "do",
+				priority: "medium",
 			};
 
 			const statusUpdate: UpdateTaskStatusInput = {

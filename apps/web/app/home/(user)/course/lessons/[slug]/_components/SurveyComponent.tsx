@@ -37,6 +37,7 @@ type PayloadSurvey = {
 
 type Question = {
 	id: string;
+	title: string;
 	text: string;
 	type: string;
 	category: string;
@@ -56,18 +57,18 @@ type SurveyComponentProps = {
 export function SurveyComponent({
 	survey,
 	surveyResponses = [],
-	_userId,
+	userId,
 	onComplete,
 }: SurveyComponentProps) {
-	const [_isPending, startTransition] = useTransition();
-	const _supabase = useSupabase();
+	const [isPending, startTransition] = useTransition();
+	const supabase = useSupabase();
 
 	const [questions, setQuestions] = useState<Question[]>([]);
-	const [currentQuestionIndex, _setCurrentQuestionIndex] = useState(0);
+	const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 	const [responses, setResponses] = useState<
 		Record<string, { answer: string; score: number; category: string }>
 	>({});
-	const [_showSummary, setShowSummary] = useState(false);
+	const [showSummary, setShowSummary] = useState(false);
 
 	// Fetch survey questions - with improved handling for pre-fetched questions
 	const { data: questionsData, isLoading: isQuestionsLoading } = useQuery({
@@ -88,7 +89,7 @@ export function SurveyComponent({
 
 				// Check if questions are fully populated with text
 				const hasFullyPopulatedQuestions = survey.questions.some(
-					(q: PayloadSurvey["questions"][0]) => q.text || q.question,
+					(q) => q && (q.text || q.question),
 				);
 
 				if (hasFullyPopulatedQuestions) {
@@ -155,13 +156,14 @@ export function SurveyComponent({
 
 			// Transform questions to ensure they have the right format
 			const transformedQuestions = questionsData.map(
-				(q: PayloadSurvey["questions"][0]) => {
+				(q: NonNullable<PayloadSurvey["questions"]>[0]) => {
 					// TODO: Async logger needed
 					// TODO: Fix logger call - was: info
 
 					// Ensure each question has the required properties
 					const question: Question = {
 						id: q.id,
+						title: q.question || q.text || "",
 						text: q.text || q.question || "",
 						type: q.type || "multiple_choice",
 						category: q.category || "general",
@@ -187,7 +189,9 @@ export function SurveyComponent({
 					else if (Array.isArray(q.options)) {
 						question.options = q.options.map(
 							(
-								opt: PayloadSurvey["questions"][0]["options"][0],
+								opt: NonNullable<
+									NonNullable<PayloadSurvey["questions"]>[0]["options"]
+								>[0],
 								index: number,
 							) => {
 								if (typeof opt === "string") {
@@ -307,7 +311,7 @@ export function SurveyComponent({
 	useEffect(() => {
 		if (surveyResponses && surveyResponses.length > 0) {
 			const response = surveyResponses[0];
-			if (response.completed) {
+			if (response && response.completed) {
 				setShowSummary(true);
 			}
 		}
@@ -322,7 +326,7 @@ export function SurveyComponent({
 	// Handle answer submission
 	const handleAnswer = (questionId: string, answer: string, score: number) => {
 		// Save the response
-		const category = currentQuestion.category || "general";
+		const category = currentQuestion?.category || "general";
 
 		// Save the response locally
 		setResponses({
@@ -367,7 +371,7 @@ export function SurveyComponent({
 	}
 
 	// Show summary
-	if (_showSummary) {
+	if (showSummary) {
 		return (
 			<div className="p-8 text-center">
 				<h2 className="mb-4 text-2xl font-bold">
@@ -401,7 +405,7 @@ export function SurveyComponent({
 							key={currentQuestion.id}
 							question={currentQuestion}
 							onAnswer={handleAnswer}
-							isLoading={_isPending}
+							isLoading={isPending}
 						/>
 					)}
 				</div>

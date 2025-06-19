@@ -199,7 +199,9 @@ describe("Storyboard Service", () => {
 				slides: [
 					{
 						id: "generated-slide",
+						slideType: "title" as const,
 						title: "Generated",
+						subheadlines: [],
 						layoutId: "title",
 						content: [],
 						order: 0,
@@ -251,7 +253,9 @@ describe("Storyboard Service", () => {
 				slides: [
 					{
 						id: "generated-slide",
+						slideType: "title" as const,
 						title: "Generated",
+						subheadlines: [],
 						layoutId: "title",
 						content: [],
 						order: 0,

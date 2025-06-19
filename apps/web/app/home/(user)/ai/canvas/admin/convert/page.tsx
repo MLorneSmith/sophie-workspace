@@ -9,7 +9,7 @@ import { convertExistingRecordsToTiptap } from "../../_actions/convert-editor-da
 
 export default function ConvertEditorDataPage() {
 	const [isConverting, setIsConverting] = useState(false);
-	const [results, setResults] = useState<unknown>(null);
+	const [results, setResults] = useState<any>(null);
 	const [error, setError] = useState<string | null>(null);
 
 	const handleConvert = async () => {
@@ -72,7 +72,7 @@ export default function ConvertEditorDataPage() {
 						<div className="rounded-md bg-gray-50 p-4">
 							<h3 className="mb-2 font-medium">Results:</h3>
 							<pre className="overflow-auto rounded-md bg-gray-100 p-2 text-sm">
-								{JSON.stringify(results as Record<string, unknown>, null, 2)}
+								{JSON.stringify(results, null, 2)}
 							</pre>
 						</div>
 					)}

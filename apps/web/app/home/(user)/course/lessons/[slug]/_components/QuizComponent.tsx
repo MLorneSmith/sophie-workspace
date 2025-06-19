@@ -27,6 +27,7 @@ interface QuizQuestion {
 }
 
 interface PayloadQuiz {
+	id: string;
 	questions: QuizQuestion[];
 	passingScore: number;
 }
@@ -129,7 +130,7 @@ export function QuizComponent({
 	previousAttempts = [],
 	courseId,
 	currentLessonId,
-	_currentLessonNumber,
+	currentLessonNumber,
 }: QuizComponentProps) {
 	// Define state for the quiz
 	const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -265,7 +266,7 @@ export function QuizComponent({
 				if (selectedOptionIndices.length > 0) {
 					const options = question?.options || [];
 
-					if (isMultiAnswerQuestion(question)) {
+					if (question && isMultiAnswerQuestion(question)) {
 						// For multi-answer questions, check if all correct options are selected
 						// and no incorrect options are selected
 						let allCorrectSelected = true;
@@ -278,7 +279,7 @@ export function QuizComponent({
 
 							// Check if this is a correct option that wasn't selected
 							if (
-								option.isCorrect === true &&
+								option.iscorrect === true &&
 								!selectedOptionIndices.includes(optIndex)
 							) {
 								allCorrectSelected = false;
@@ -286,7 +287,7 @@ export function QuizComponent({
 
 							// Check if this is an incorrect option that was selected
 							if (
-								option.isCorrect === false &&
+								option.iscorrect === false &&
 								selectedOptionIndices.includes(optIndex)
 							) {
 								noIncorrectSelected = false;
@@ -302,7 +303,7 @@ export function QuizComponent({
 						// Add guard clause to check if selectedIndex is defined
 						if (selectedIndex !== undefined) {
 							const selectedOption = options[selectedIndex];
-							if (selectedOption && selectedOption.isCorrect === true) {
+							if (selectedOption && selectedOption.iscorrect === true) {
 								correctAnswers++;
 							}
 						}
@@ -450,14 +451,14 @@ export function QuizComponent({
 					<CardTitle className="mb-2 text-xl leading-7 font-semibold">
 						{currentQuestion?.question}
 					</CardTitle>
-					{isMultiAnswerQuestion(currentQuestion) && (
+					{currentQuestion && isMultiAnswerQuestion(currentQuestion) && (
 						<div className="text-muted-foreground text-sm">
 							Select all that apply
 						</div>
 					)}
 				</CardHeader>
 				<CardContent>
-					{isMultiAnswerQuestion(currentQuestion) ? (
+					{currentQuestion && isMultiAnswerQuestion(currentQuestion) ? (
 						// Render checkboxes for multi-answer questions
 						<div className="space-y-4">
 							{(currentQuestion?.options || []).map(
@@ -525,7 +526,7 @@ export function QuizComponent({
 							key={`question-${currentQuestionIndex}`}
 							value={
 								selectedAnswers[currentQuestionIndex]?.length > 0
-									? String(selectedAnswers[currentQuestionIndex][0])
+									? String(selectedAnswers[currentQuestionIndex]?.[0])
 									: undefined
 							}
 							onValueChange={(value) =>

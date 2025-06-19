@@ -92,8 +92,8 @@ export async function LessonDataProviderEnhanced({
 	let quiz: PayloadQuiz | null = null;
 	let quizAttempts: QuizAttempt[] = [];
 
-	// Check for quiz relationship using quiz_id or quiz_id_id
-	const quizId = lesson.quiz_id || lesson.quiz_id_id;
+	// Check for quiz relationship using quiz_id_id (correct column name)
+	const quizId = lesson.quiz_id_id;
 
 	if (quizId) {
 		try {
@@ -102,10 +102,13 @@ export async function LessonDataProviderEnhanced({
 			const { getQuiz } = await import("@kit/cms/payload");
 
 			// Extract the actual quiz ID to avoid [object Object] issues in error messages
-			const quizIdStr =
-				typeof quizId === "object"
-					? quizId?.id || quizId?.value || JSON.stringify(quizId)
-					: String(quizId || "");
+			let quizIdStr = "";
+			if (typeof quizId === "object" && quizId !== null) {
+				const quizObj = quizId as unknown as { id?: string; value?: string };
+				quizIdStr = quizObj.id || quizObj.value || JSON.stringify(quizId);
+			} else {
+				quizIdStr = String(quizId || "");
+			}
 
 			// Skip empty or clearly invalid quiz IDs
 			if (
@@ -167,7 +170,7 @@ export async function LessonDataProviderEnhanced({
 								const questionsResponse = await callPayloadAPI(
 									`quiz_questions?${queryParams}&sort=order`,
 									{},
-									null,
+									undefined,
 								);
 
 								if (questionsResponse?.docs?.length > 0) {
@@ -192,12 +195,13 @@ export async function LessonDataProviderEnhanced({
 			// Get user's quiz attempts for this quiz (even if quiz fetch failed)
 			try {
 				// Extract the actual quiz ID for the database query
-				const actualQuizId =
-					typeof quizId === "object" && quizId.value
-						? quizId.value
-						: typeof quizId === "object" && quizId.id
-							? quizId.id
-							: quizId;
+				let actualQuizId = "";
+				if (typeof quizId === "object" && quizId !== null) {
+					const quizObj = quizId as unknown as { id?: string; value?: string };
+					actualQuizId = quizObj.value || quizObj.id || "";
+				} else {
+					actualQuizId = String(quizId || "");
+				}
 
 				const { data: attempts } = await supabase
 					.from("quiz_attempts")
@@ -223,14 +227,22 @@ export async function LessonDataProviderEnhanced({
 	let survey: PayloadSurvey | null = null;
 	let surveyResponses: SurveyResponse[] = [];
 
-	// Check for survey relationship - Payload might use either survey_id or survey_id_id
-	const surveyId = lesson.survey_id || lesson.survey_id_id;
+	// Check for survey relationship - use survey_id_id (correct column name)
+	const surveyId = lesson.survey_id_id;
 
 	if (surveyId) {
 		try {
 			// Extract the actual survey ID, handling different possible formats
-			const _actualSurveyId =
-				typeof surveyId === "object" ? surveyId.id || surveyId.value : surveyId;
+			let _actualSurveyId = "";
+			if (typeof surveyId === "object" && surveyId !== null) {
+				const surveyObj = surveyId as unknown as {
+					id?: string;
+					value?: string;
+				};
+				_actualSurveyId = surveyObj.id || surveyObj.value || "";
+			} else {
+				_actualSurveyId = String(surveyId || "");
+			}
 
 			// TODO: Async logger needed
 			// (await getLogger()).info(
@@ -276,11 +288,11 @@ export async function LessonDataProviderEnhanced({
 						// Pre-fetch questions to ensure they're available
 						// TODO: Async logger needed
 						// TODO: Fix logger call - was: info
-						const questionsData = await getSurveyQuestions(survey.id);
+						const questionsData = await getSurveyQuestions(survey!.id);
 
 						if (questionsData?.docs && questionsData.docs.length > 0) {
 							// Add questions to the survey object directly
-							survey.questions = questionsData.docs;
+							survey!.questions = questionsData.docs;
 							// TODO: Async logger needed
 							// TODO: Fix logger call - was: info
 						} else {
