@@ -19,7 +19,7 @@ export function createEnvironmentVariablesGenerator(
 	if (allVariables) {
 		// TODO: Async logger needed
 		// (await getLogger()).info(
-			`Loaded ${Object.values(allVariables).length} default environment variables in your env files. We use these as defaults.`,
+		//	`Loaded ${Object.values(allVariables).length} default environment variables in your env files. We use these as defaults.`,
 		// );
 	}
 
