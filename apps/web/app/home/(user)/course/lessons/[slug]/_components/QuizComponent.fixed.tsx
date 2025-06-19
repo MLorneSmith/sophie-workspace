@@ -27,6 +27,7 @@ interface QuizQuestion {
 }
 
 interface PayloadQuiz {
+	id: string;
 	questions: QuizQuestion[];
 	passingScore: number;
 }
@@ -208,7 +209,9 @@ export function QuizComponent({
 	const passingScore = quiz.passingScore || 70;
 
 	// Helper function to determine if a question allows multiple answers
-	const isMultiAnswerQuestion = (question: QuizQuestion): boolean => {
+	const isMultiAnswerQuestion = (
+		question: QuizQuestion | undefined,
+	): boolean => {
 		return question?.questiontype === "multi-answer";
 	};
 
@@ -478,7 +481,7 @@ export function QuizComponent({
 							key={`question-${currentQuestionIndex}`}
 							value={
 								selectedAnswers[currentQuestionIndex]?.length > 0
-									? String(selectedAnswers[currentQuestionIndex][0])
+									? String(selectedAnswers[currentQuestionIndex]?.[0])
 									: undefined
 							}
 							onValueChange={(value) =>

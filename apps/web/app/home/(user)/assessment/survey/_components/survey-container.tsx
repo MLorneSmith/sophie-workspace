@@ -5,8 +5,10 @@ import { Card } from "@kit/ui/card";
 import { Progress } from "@kit/ui/progress";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
-// @ts-ignore - payload types path issue
-import type { Survey, SurveyQuestion } from "@/../payload/payload-types";
+import type {
+	Survey,
+	SurveyQuestion,
+} from "../../../../../../../payload/payload-types";
 import {
 	completeSurveyAction,
 	saveResponseAction,
@@ -28,9 +30,9 @@ export function SurveyContainer({
 	userId,
 	initialProgress,
 }: SurveyContainerProps) {
-	const _router = useRouter();
+	const router = useRouter();
 	const supabase = useSupabase();
-	const [_isPending, startTransition] = useTransition();
+	const [isPending, startTransition] = useTransition();
 
 	// Log the initial progress for debugging
 	// TODO: Async logger needed
@@ -80,14 +82,14 @@ export function SurveyContainer({
 		loadExistingScores();
 	}, [userId, survey.id, supabase]);
 
-	const _isLastQuestion = currentQuestionIndex === questions.length - 1;
+	const isLastQuestion = currentQuestionIndex === questions.length - 1;
 	const currentQuestion = questions[currentQuestionIndex];
 	// Calculate progress based on completed questions (not including current question)
-	const _progress = (currentQuestionIndex / questions.length) * 100;
+	const progress = (currentQuestionIndex / questions.length) * 100;
 
-	const _handleAnswer = (questionId: string, answer: string, score: number) => {
+	const handleAnswer = (questionId: string, answer: string, score: number) => {
 		// Save the response
-		const category = currentQuestion.category || "general";
+		const category = currentQuestion?.category || "general";
 
 		// Update category scores
 		const newCategoryScores = { ...categoryScores };
@@ -117,14 +119,14 @@ export function SurveyContainer({
 				});
 
 				// Move to the next question or complete the survey
-				if (_isLastQuestion) {
+				if (isLastQuestion) {
 					// Calculate highest and lowest scoring categories
 					const sortedCategories = Object.entries(newCategoryScores).sort(
 						([, a], [, b]) => b - a,
 					);
 
-					const _highestCategory = sortedCategories[0]?.[0] || "";
-					const _lowestCategory =
+					const highestCategory = sortedCategories[0]?.[0] || "";
+					const lowestCategory =
 						sortedCategories[sortedCategories.length - 1]?.[0] || "";
 
 					// We'll show the summary regardless of whether we can complete the survey in Payload
@@ -191,7 +193,7 @@ export function SurveyContainer({
 								});
 
 								// Update local state with final scores for the summary view
-								setCategoryScores(_finalCategoryScores);
+								setCategoryScores(finalCategoryScores);
 							} catch (_completionError) {
 								// TODO: Async logger needed
 								// TODO: Fix logger call - was: error
@@ -211,7 +213,7 @@ export function SurveyContainer({
 					// Show summary regardless of whether completeSurveyAction succeeded
 					setCurrentQuestionIndex(questions.length);
 				} else {
-					setCurrentQuestionIndex(_currentQuestionIndex + 1);
+					setCurrentQuestionIndex(currentQuestionIndex + 1);
 				}
 			} catch (_error) {
 				// TODO: Async logger needed
@@ -229,6 +231,11 @@ export function SurveyContainer({
 				totalQuestions={questions.length}
 			/>
 		);
+	}
+
+	// Ensure we have a valid current question
+	if (!currentQuestion) {
+		return null;
 	}
 
 	return (

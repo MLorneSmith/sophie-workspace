@@ -373,6 +373,16 @@
         <topic>Real Examples</topic>
       </topics>
     </document>
+    <document path="testing/context/typescript-test-patterns.md">
+      <name>TypeScript Test Patterns</name>
+      <description>Comprehensive TypeScript patterns for fixing test file compilation errors. Covers common error patterns, action result types, mock patterns, component testing, Supabase mocks, error handling, and best practices specific to the SlideHeroes codebase.</description>
+      <topics>
+        <topic>TypeScript Error Patterns</topic>
+        <topic>Action Result Types</topic>
+        <topic>Mock Type Safety</topic>
+        <topic>Test Compilation Fixes</topic>
+      </topics>
+    </document>
   </category>
 
   <category id="ui" name="User Interface">
