@@ -28,7 +28,8 @@ export function BaselimeProvider({
 		<BaselimeRum
 			apiKey={key}
 			enableWebVitals={enableWebVitals}
-			fallback={ErrorPage ?? null}
+			// @ts-expect-error - BaselimeRum expects React 18 types, but we're using React 19
+			fallback={ErrorPage ?? undefined}
 		>
 			<MonitoringProvider>{children}</MonitoringProvider>
 		</BaselimeRum>
@@ -41,6 +42,7 @@ function MonitoringProvider(props: React.PropsWithChildren) {
 
 	return (
 		<MonitoringContext.Provider value={provider.current}>
+			{/* @ts-expect-error - React 18/19 type mismatch with BaselimeRum */}
 			{props.children}
 		</MonitoringContext.Provider>
 	);
