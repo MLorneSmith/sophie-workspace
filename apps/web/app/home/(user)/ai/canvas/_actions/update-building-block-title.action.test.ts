@@ -3,9 +3,9 @@
  * Tests schema validation, database updates, and error handling
  */
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { updateBuildingBlockTitleAction } from "./update-building-block-title.action";
-import type { ActionResult } from "@/test/test-types";
 import { expectError, expectSuccess } from "@/test/test-helpers";
+import type { ActionResult } from "@/test/test-types";
+import { updateBuildingBlockTitleAction } from "./update-building-block-title.action";
 
 // Mock dependencies
 vi.mock("@kit/next/actions", () => ({

@@ -1,7 +1,6 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useCaptchaToken } from "../captcha/client/use-captcha-token";
 import { useSignInWithOtp } from "@kit/supabase/hooks/use-sign-in-with-otp";
 import { useVerifyOtp } from "@kit/supabase/hooks/use-verify-otp";
 import { Button } from "@kit/ui/button";
@@ -25,6 +24,7 @@ import { Trans } from "@kit/ui/trans";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
+import { useCaptchaToken } from "../captcha/client/use-captcha-token";
 import { useLastAuthMethod } from "../hooks/use-last-auth-method";
 import { AuthErrorAlert } from "./auth-error-alert";
 
@@ -196,7 +196,6 @@ function OtpEmailForm({
 	});
 
 	const handleSendOtp = async ({ email }: { email: string }) => {
-
 		await signInMutation.mutateAsync({
 			email,
 			options: {

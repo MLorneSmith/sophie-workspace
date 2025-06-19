@@ -40,8 +40,8 @@ export type { Logger };
 // Export monitored logger utilities
 export {
 	_createClientLogger as createClientLogger,
-	createMonitoredLogger,
 	_createServerLogger as createServerLogger,
+	createMonitoredLogger,
 } from "./create-monitored-logger";
 // Export enhanced types
 export type { LogLevel as EnhancedLogLevel } from "./enhanced-logger";

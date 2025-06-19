@@ -2,7 +2,7 @@
 
 import { Image as ImageIcon } from "lucide-react";
 import Image from "next/image";
-import { useCallback, useEffect, useState, useId } from "react";
+import { useCallback, useEffect, useId, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { Button } from "../shadcn/button";
@@ -71,7 +71,10 @@ export function ImageUploader(
 
 	return (
 		<div className={"flex items-center space-x-4"}>
-			<label htmlFor={inputId} className={"animate-in fade-in zoom-in-50 relative h-20 w-20"}>
+			<label
+				htmlFor={inputId}
+				className={"animate-in fade-in zoom-in-50 relative h-20 w-20"}
+			>
 				<Image
 					className={"h-20 w-20 rounded-full object-cover"}
 					src={image}

@@ -14,7 +14,6 @@ import {
 	FormMessage,
 } from "@kit/ui/form";
 import { Input } from "@kit/ui/input";
-import { setCookie } from "@kit/ui/utils";
 import {
 	createValidationFunction,
 	MultiStepForm,
@@ -24,6 +23,7 @@ import {
 	useMultiStepFormContext,
 } from "@kit/ui/multi-step-form";
 import { Stepper } from "@kit/ui/stepper";
+import { setCookie } from "@kit/ui/utils";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useRouter } from "next/navigation";

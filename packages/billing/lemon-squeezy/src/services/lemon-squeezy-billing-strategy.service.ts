@@ -104,7 +104,10 @@ export class LemonSqueezyBillingStrategyService
 			throw new Error("Failed to create billing portal session");
 		}
 
-		logger.info({ ...ctx, data: "Billing portal session created successfully" });
+		logger.info({
+			...ctx,
+			data: "Billing portal session created successfully",
+		});
 
 		return { url: data };
 	}

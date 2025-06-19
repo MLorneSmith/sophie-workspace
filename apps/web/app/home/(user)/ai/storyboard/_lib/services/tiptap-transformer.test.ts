@@ -4,13 +4,13 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-// Import the class to test
-import { TipTapTransformer } from "./tiptap-transformer";
 import type {
+	TipTapDocument,
 	TipTapNode,
 	TipTapTextNode,
-	TipTapDocument,
 } from "../types/index";
+// Import the class to test
+import { TipTapTransformer } from "./tiptap-transformer";
 
 // Mock console.error to prevent test output pollution
 // biome-ignore lint/suspicious/noConsole: Test file needs console.error for mocking

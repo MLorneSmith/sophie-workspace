@@ -182,7 +182,7 @@ export function NotificationsPopover(params: {
 									}
 								}}
 								onKeyDown={(e) => {
-									if (e.key === 'Enter' || e.key === ' ') {
+									if (e.key === "Enter" || e.key === " ") {
 										e.preventDefault();
 										if (params.onClick) {
 											params.onClick(notification);
