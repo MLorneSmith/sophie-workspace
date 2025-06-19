@@ -54,8 +54,8 @@ vi.mock("@kit/next/actions", () => ({
 import { getChatCompletion } from "@kit/ai-gateway";
 import { createReasoningOptimizedConfig } from "@kit/ai-gateway/src/configs/templates";
 import { PromptManager } from "@kit/ai-gateway/src/prompts/prompt-manager";
-import { simplifyTextAction } from "./simplify-text";
 import { expectError, expectSuccess } from "@/test/test-helpers";
+import { simplifyTextAction } from "./simplify-text";
 
 // Helper function to create proper CompletionResult mock
 function createMockCompletionResult(content: string) {

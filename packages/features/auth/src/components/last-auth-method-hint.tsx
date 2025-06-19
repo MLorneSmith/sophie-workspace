@@ -59,8 +59,7 @@ function LastAuthMethodHintImpl({ className }: LastAuthMethodHintProps) {
 			<Lightbulb className="h-3 w-3" />
 
 			<span>
-				<Trans i18nKey="auth:lastUsedMethodPrefix" />{' '}
-
+				<Trans i18nKey="auth:lastUsedMethodPrefix" />{" "}
 				<If condition={isOAuth && Boolean(providerName)}>
 					<Trans
 						i18nKey="auth:methodOauthWithProvider"
@@ -70,7 +69,6 @@ function LastAuthMethodHintImpl({ className }: LastAuthMethodHintProps) {
 						}}
 					/>
 				</If>
-
 				<If condition={!isOAuth || !providerName}>
 					<span className="text-muted-foreground font-medium">
 						<Trans i18nKey={methodKey} />

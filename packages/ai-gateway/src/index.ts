@@ -16,8 +16,8 @@ import { getSupabaseClient } from "./utils/supabase-client";
 import {
 	_calculateCost,
 	_checkUsageLimits,
-	estimateCost,
 	_extractCostFromHeaders,
+	estimateCost,
 	recordApiUsage,
 } from "./utils/usage-tracking";
 
@@ -541,7 +541,9 @@ export async function* getStreamingChatCompletion(
 		let responseId = "";
 
 		// Note: Headers are not available on AsyncIterable streams
-		(await getLogger()).info("Streaming response initiated - headers not available on AsyncIterable");
+		(await getLogger()).info(
+			"Streaming response initiated - headers not available on AsyncIterable",
+		);
 
 		// Process the stream - use a try catch to handle any streaming errors
 		try {

@@ -33,9 +33,7 @@ class DatabaseWebhookHandlerService {
 	async handleWebhook(params: {
 		body: RecordChange<keyof Tables>;
 		signature: string;
-		handleEvent?(
-			payload: RecordChange<keyof Tables>,
-		): unknown;
+		handleEvent?(payload: RecordChange<keyof Tables>): unknown;
 	}) {
 		const logger = await getLogger();
 		const { table, type } = params.body;

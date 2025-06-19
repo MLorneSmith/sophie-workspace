@@ -9,9 +9,9 @@ import { z } from "zod";
 import { DEFAULT_TASKS } from "../config/default-tasks";
 import {
 	SubtaskSchema,
-	UpdateTaskStatusSchema,
-	TaskStatusEnum,
 	TaskPriorityEnum,
+	TaskStatusEnum,
+	UpdateTaskStatusSchema,
 } from "../schema/task.schema";
 import { deleteTaskImageAction, uploadTaskImageAction } from "./image-actions";
 

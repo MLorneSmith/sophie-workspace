@@ -184,7 +184,9 @@ export async function recordApiUsage(
 					}
 				}
 			} else {
-				logger.info("Successfully recorded AI request log", { id: (data as any)?.id });
+				logger.info("Successfully recorded AI request log", {
+					id: (data as any)?.id,
+				});
 				success = true;
 			}
 		} catch (insertError) {
@@ -557,7 +559,9 @@ export async function _checkUsageLimits(
 				return false;
 			}
 
-			return data && (data as any[]).length > 0 && (data as any[])[0].limit_exceeded;
+			return (
+				data && (data as any[]).length > 0 && (data as any[])[0].limit_exceeded
+			);
 		} catch (rpcError) {
 			logger.error("Exception in RPC call to check usage limits", {
 				error: rpcError,

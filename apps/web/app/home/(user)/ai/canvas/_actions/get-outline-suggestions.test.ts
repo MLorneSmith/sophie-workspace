@@ -3,8 +3,8 @@
  * Tests AI-powered outline suggestion generation with SCQA content processing
  */
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { ActionResult } from "@/test/test-types";
 import { createMockSupabaseClient } from "@/test/test-helpers";
+import type { ActionResult } from "@/test/test-types";
 
 // Mock AI Gateway
 vi.mock("@kit/ai-gateway", () => ({

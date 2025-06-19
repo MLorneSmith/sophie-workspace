@@ -31,8 +31,8 @@ import { useCallback, useState } from "react";
 
 import {
 	_useResetTasks,
-	useTasks,
 	_useUpdateTaskStatus,
+	useTasks,
 } from "../_lib/hooks/use-tasks";
 import type { Task, TaskStatus } from "../_lib/schema/task.schema";
 import { Column } from "./column";

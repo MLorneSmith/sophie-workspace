@@ -1,8 +1,8 @@
 import "server-only";
 
 import {
-	initializeServerI18n,
 	_parseAcceptLanguageHeader,
+	initializeServerI18n,
 } from "@kit/i18n/server";
 
 import { cookies, headers } from "next/headers";

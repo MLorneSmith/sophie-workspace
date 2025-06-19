@@ -22,12 +22,12 @@ import {
 } from "@kit/ui/form";
 import { Input } from "@kit/ui/input";
 import {
+	createValidationFunction,
 	MultiStepForm,
 	MultiStepFormContextProvider,
 	MultiStepFormHeader,
 	MultiStepFormStep,
 	useMultiStepFormContext,
-	createValidationFunction,
 } from "@kit/ui/multi-step-form";
 import {
 	Select,
@@ -42,7 +42,10 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { StarRating } from "../../components/star-rating";
-import { AddManualTestimonialSchema, type AddManualTestimonialData } from "../../schema/add-manual-testimonial.schema";
+import {
+	type AddManualTestimonialData,
+	AddManualTestimonialSchema,
+} from "../../schema/add-manual-testimonial.schema";
 import { addManualTestimonialAction } from "../server/server-actions";
 
 export function AddTestimonialDialog(props: React.PropsWithChildren) {
@@ -97,7 +100,12 @@ function AddTestimonialForm(props: { onSubmit: () => void }) {
 			return Boolean(data.source && data.source.trim().length > 0);
 		},
 		content: (data) => {
-			return Boolean(data.text && data.text.trim().length >= 30 && data.rating >= 1 && data.rating <= 5);
+			return Boolean(
+				data.text &&
+					data.text.trim().length >= 30 &&
+					data.rating >= 1 &&
+					data.rating <= 5,
+			);
 		},
 	});
 

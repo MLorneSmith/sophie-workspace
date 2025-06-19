@@ -64,6 +64,6 @@ class AuthenticationError extends Error {
 
 export class MultiFactorAuthError extends Error {
 	constructor() {
-		super(`Multi-factor authentication required`);
+		super("Multi-factor authentication required");
 	}
 }

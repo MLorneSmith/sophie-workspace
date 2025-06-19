@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useSupabase } from "@kit/supabase/hooks/use-supabase";
 import { useFactorsMutationKey } from "@kit/supabase/hooks/use-user-factors-mutation-key";
 import { Alert, AlertDescription, AlertTitle } from "@kit/ui/alert";
-import { refreshAuthSession } from "../../../server/personal-accounts-server-actions";
 import { Button } from "@kit/ui/button";
 import {
 	Dialog,
@@ -41,6 +40,7 @@ import { useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { z } from "zod";
+import { refreshAuthSession } from "../../../server/personal-accounts-server-actions";
 
 export function MultiFactorAuthSetupDialog(props: { userId: string }) {
 	const { t } = useTranslation();
