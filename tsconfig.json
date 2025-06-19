@@ -23,10 +23,19 @@
 			"@kit/payload/renderer": ["packages/cms/payload/src/renderer"]
 		}
 	},
+	"include": [],
 	"references": [
 		// Order matters: dependencies must come before dependents
 		{ "path": "./packages/shared" },
 		{ "path": "./packages/cms/payload" }
 	],
-	"exclude": ["node_modules", "apps/payload_legacy"]
+	"exclude": [
+		"node_modules",
+		"apps/payload_legacy",
+		"**/dist",
+		"**/.next",
+		"**/coverage",
+		"**/*.config.js",
+		"**/*.config.ts"
+	]
 }

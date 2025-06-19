@@ -44,7 +44,7 @@
 		"@kit/eslint-config": "workspace:*",
 		"@kit/prettier-config": "workspace:*",
 		"@kit/tsconfig": "workspace:*",
-		"@types/react": "19.1.6"
+		"@types/react": "19.1.8"
 	},
 	"dependencies": {
 		"@kit/monitoring-core": "workspace:*",
