@@ -48,6 +48,7 @@ additional_redirect_urls = ["http://localhost:3000", "http://localhost:3000/auth
 jwt_expiry = 3600
 # Allow/disallow new user signups to your project.
 enable_signup = true
+enable_manual_linking = true
 
 # Enable TOTP MFA
 [auth.mfa.totp]
