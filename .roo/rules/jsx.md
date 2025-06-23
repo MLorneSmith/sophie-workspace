@@ -3,6 +3,7 @@ description:
 globs: *.tsx
 alwaysApply: false
 ---
+
 # JSX Best Practices
 
 This guide outlines our conventions for writing clean, maintainable JSX in React applications.
@@ -82,26 +83,29 @@ Consistently use these patterns for list rendering:
 
 ```tsx
 // Empty state handling, avoid ternaries
-{items.length > 0 ? (
-  <ul className="list">
-    {items.map((item) => (
-      <li key={item.id}>{item.name}</li>
-    ))}
-  </ul>
-) : (
-  <EmptyState message="No items found" />
-)}
+{
+  items.length > 0 ? (
+    <ul className="list">
+      {items.map((item) => (
+        <li key={item.id}>{item.name}</li>
+      ))}
+    </ul>
+  ) : (
+    <EmptyState message="No items found" />
+  );
+}
 
 // Even better with If component
-<If condition={items.length > 0} fallback={
-    <EmptyState message="No items found" />
-}>
+<If
+  condition={items.length > 0}
+  fallback={<EmptyState message="No items found" />}
+>
   <ul className="list">
     {items.map((item) => (
       <li key={item.id}>{item.name}</li>
     ))}
   </ul>
-</If>
+</If>;
 ```
 
 ### Using Translations
@@ -115,27 +119,27 @@ import { Trans } from '@kit/ui/trans';
 <Trans i18nKey="common:welcomeMessage" defaults="Welcome!" />
 
 // With variables
-<Trans 
-  i18nKey="user:lastLogin" 
+<Trans
+  i18nKey="user:lastLogin"
   values={{ date: formatDate(lastLogin) }}
-  defaults="Last login: {date}" 
+  defaults="Last login: {date}"
 />
 
 // With HTML elements
-<Trans 
-  i18nKey="terms:agreement" 
+<Trans
+  i18nKey="terms:agreement"
   components={{
     TermsLink: <a href="/terms" className="underline" />,
     PrivacyLink: <a href="/privacy" className="underline" />
   }}
-  defaults="I agree to the <TermsLink>Terms</TermsLink> and <PrivacyLink>Privacy Policy</PrivacyLink>." 
+  defaults="I agree to the <TermsLink>Terms</TermsLink> and <PrivacyLink>Privacy Policy</PrivacyLink>."
 />
 
 // Pluralization
-<Trans 
-  i18nKey="notifications:count" 
+<Trans
+  i18nKey="notifications:count"
   count={notifications.length}
-  defaults="{count, plural, =0 {No notifications} one {# notification} other {# notifications}}" 
+  defaults="{count, plural, =0 {No notifications} one {# notification} other {# notifications}}"
 />
 ```
 

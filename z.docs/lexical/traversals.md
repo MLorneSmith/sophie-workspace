@@ -15,7 +15,7 @@ should be less than 3kB in a production environment.
 
 The NodeCaret API was introduced in lexical v0.25.0.
 
-## Concepts [​](https://lexical.dev/docs/concepts/traversals\#concepts "Direct link to heading")
+## Concepts [​](https://lexical.dev/docs/concepts/traversals#concepts 'Direct link to heading')
 
 The core concept with `NodeCaret` is that you can represent any specific
 point in the document by using an `origin` node, a `direction` that
@@ -52,12 +52,12 @@ The `origin` of a caret is the exact version of the object that it was
 constructed with, all accessor methods on that origin will generally call
 `origin.getLatest()` so the operations will see the latest version.
 
-### NodeCaret [​](https://lexical.dev/docs/concepts/traversals\#nodecaret "Direct link to heading")
+### NodeCaret [​](https://lexical.dev/docs/concepts/traversals#nodecaret 'Direct link to heading')
 
 `NodeCaret` is any `SiblingCaret` or any `ChildCaret`
 
 - Typically constructed with `$getChildCaretOrSelf($getSiblingCaret(origin, direction))`
-which returns a `ChildCaret` when the origin is an `ElementNode`
+  which returns a `ChildCaret` when the origin is an `ElementNode`
 
 tip
 
@@ -65,7 +65,7 @@ This type does not include `TextPointCaret` or `TextPointCaretSlice`,
 so you will not have to consider those edge cases when you see this
 more specific type.
 
-### SiblingCaret [​](https://lexical.dev/docs/concepts/traversals\#siblingcaret "Direct link to heading")
+### SiblingCaret [​](https://lexical.dev/docs/concepts/traversals#siblingcaret 'Direct link to heading')
 
 `SiblingCaret` is a caret that points towards a sibling of the origin
 
@@ -73,13 +73,13 @@ more specific type.
 - The `next` direction points towards the right
 - The `previous` direction points towards the left
 
-|  | → direction: `'next'` | ← direction: `'previous'` |
-| --- | --- | --- |
-| `getParentAtCaret()` | `origin.getParent()` | `origin.getParent()` |
-| `getNodeAtCaret()` | `origin.getNextSibling()` | `origin.getPreviousSibling()` |
-| `insert(node)` | `origin.insertAfter(node)` | `origin.insertBefore(node)` |
+|                      | → direction: `'next'`      | ← direction: `'previous'`     |
+| -------------------- | -------------------------- | ----------------------------- |
+| `getParentAtCaret()` | `origin.getParent()`       | `origin.getParent()`          |
+| `getNodeAtCaret()`   | `origin.getNextSibling()`  | `origin.getPreviousSibling()` |
+| `insert(node)`       | `origin.insertAfter(node)` | `origin.insertBefore(node)`   |
 
-### ChildCaret [​](https://lexical.dev/docs/concepts/traversals\#childcaret "Direct link to heading")
+### ChildCaret [​](https://lexical.dev/docs/concepts/traversals#childcaret 'Direct link to heading')
 
 `ChildCaret` is a caret that points towards the first or last child of the origin
 
@@ -87,18 +87,18 @@ more specific type.
 - The `next` direction points towards the first child
 - The `previous` direction points towards the last child
 
-|  | ↘ direction: `'next'` | ↙ direction: `'previous'` |
-| --- | --- | --- |
-| `getParentAtCaret()` | `origin` | `origin` |
-| `getNodeAtCaret()` | `origin.getFirstChild()` | `origin.getLastChild()` |
-| `insert(node)` | `origin.splice(0, 0, node)` | `origin.append(node)` |
+|                      | ↘ direction: `'next'`      | ↙ direction: `'previous'` |
+| -------------------- | --------------------------- | -------------------------- |
+| `getParentAtCaret()` | `origin`                    | `origin`                   |
+| `getNodeAtCaret()`   | `origin.getFirstChild()`    | `origin.getLastChild()`    |
+| `insert(node)`       | `origin.splice(0, 0, node)` | `origin.append(node)`      |
 
-### PointCaret [​](https://lexical.dev/docs/concepts/traversals\#pointcaret "Direct link to heading")
+### PointCaret [​](https://lexical.dev/docs/concepts/traversals#pointcaret 'Direct link to heading')
 
 `PointCaret` is any `TextPointCaret`, `SiblingCaret` or `ChildCaret`. This
 type can be used to represent any point in the document that `PointType` can represent.
 
-### TextPointCaret [​](https://lexical.dev/docs/concepts/traversals\#textpointcaret "Direct link to heading")
+### TextPointCaret [​](https://lexical.dev/docs/concepts/traversals#textpointcaret 'Direct link to heading')
 
 `TextPointCaret` is basically a `SiblingCaret` with a `TextNode` origin and an `offset` property
 
@@ -108,17 +108,17 @@ type can be used to represent any point in the document that `PointType` can rep
 - The `previous` direction implies all text content before `offset`
 - All methods that are also present on `SiblingCaret` behave in the same way
 
-### TextPointCaretSlice [​](https://lexical.dev/docs/concepts/traversals\#textpointcaretslice "Direct link to heading")
+### TextPointCaretSlice [​](https://lexical.dev/docs/concepts/traversals#textpointcaretslice 'Direct link to heading')
 
 `TextPointCaretSlice` is a wrapper for `TextPointCaret` that provides a signed `distance`.
 
 - Constructed with `$getTextPointCaretSlice(caret, distance)`
 - There are convenience methods like `removeTextSlice()` and `getTextContent()`,
-so it's not generally necessary to know the implementation details here
+  so it's not generally necessary to know the implementation details here
 - `Math.min(caret.offset, caret.offset + distance)` refers to the start offset of the slice
 - `Math.max(caret.offset, caret.offset + distance)` refers to the end offset of the slice
 - The `direction` of the caret is generally ignored when working with a
-`TextPointCaretSlice`, the slice is in absolute string coordinates
+  `TextPointCaretSlice`, the slice is in absolute string coordinates
 
 info
 
@@ -135,7 +135,7 @@ than the `offset` boundary is a negative distance; otherise the distance is\
 non-negative.\
 \
 
-### CaretRange [​](https://lexical.dev/docs/concepts/traversals\#caretrange "Direct link to heading")\
+### CaretRange [​](https://lexical.dev/docs/concepts/traversals#caretrange 'Direct link to heading')\
 
 \
 `CaretRange` contains a pair of `PointCaret` that are in the same direction. It\
@@ -144,32 +144,32 @@ use for depth first traversals.\
 \
 
 - Constructed with `$getCaretRange(anchor, focus)`, `$caretRangeFromSelection(selection)`,\
-or `$extendCaretToRange(anchor)`\
+  or `$extendCaretToRange(anchor)`\
 - The `anchor` is the start of the range, generally where the selection originated,\
-and it is "anchored" in place because when a selection grows or shrinks only the\
-`focus` will be moved\
+  and it is "anchored" in place because when a selection grows or shrinks only the\
+  `focus` will be moved\
 - The `focus` is the end of the range, where the blinking cursor is, it's the current\
-focus of the user\
+  focus of the user\
 - Anchor and focus must point in the same direction. The `anchor` points towards the first\
-node _in the range_ and the focus points towards the first node _not in the range_\
+  node _in the range_ and the focus points towards the first node _not in the range_\
 - The `getTextSlices()` method is essential to handle the literal edge cases where\
-the anchor and/or focus are a `TextPointCaret`. These edges are _not_ included\
-in the default caret iteration of the `CaretRange`.\
-\
-warning\
-\
-If you are iterating a `CaretRange` you must consider the `getTextSlices()`\
-separately, they are not included in the iteration. This is so you don't have\
-to consider `TextPointCaretSlice` at every step. They are literal edge cases\
-that can only be at the start and/or end and typically have special\
-treatment (splitting instead of removing, for example).\
+  the anchor and/or focus are a `TextPointCaret`. These edges are _not_ included\
+  in the default caret iteration of the `CaretRange`.\
+  \
+  warning\
+  \
+  If you are iterating a `CaretRange` you must consider the `getTextSlices()`\
+  separately, they are not included in the iteration. This is so you don't have\
+  to consider `TextPointCaretSlice` at every step. They are literal edge cases\
+  that can only be at the start and/or end and typically have special\
+  treatment (splitting instead of removing, for example).\
+  \
+
+## Traversal Strategies [​](https://lexical.dev/docs/concepts/traversals#traversal-strategies 'Direct link to heading')\
+
 \
 
-## Traversal Strategies [​](https://lexical.dev/docs/concepts/traversals\#traversal-strategies "Direct link to heading")\
-
-\
-
-### Adjacent Caret Traversals [​](https://lexical.dev/docs/concepts/traversals\#adjacent-caret-traversals "Direct link to heading")\
+### Adjacent Caret Traversals [​](https://lexical.dev/docs/concepts/traversals#adjacent-caret-traversals 'Direct link to heading')\
 
 \
 The lowest level building block for traversals with NodeCaret is the adjacent caret\
@@ -192,7 +192,7 @@ a `ChildCaret`\
 For example, iterating all siblings:\
 \
 
-```codeBlockLines_AdAo\
+````codeBlockLines_AdAo\
 // Note that NodeCaret<D> already implements Iterable<NodeCaret<D>> in this\
 // way, so this function is not very useful. You can just use startCaret as\
 // the iterable.\
@@ -535,3 +535,4 @@ non-negative.\
   - [ChildCaret / SiblingCaret](https://lexical.dev/docs/concepts/traversals#childcaret--siblingcaret)\
   - [Direction](https://lexical.dev/docs/concepts/traversals#direction)\
   - [Distance](https://lexical.dev/docs/concepts/traversals#distance)
+````

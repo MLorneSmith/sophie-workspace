@@ -18,7 +18,7 @@ This feature is available on all Portkey [plans](https://portkey.ai/pricing).
 
 This uses the same techniques as [load balancing](https://portkey.ai/docs/product/ai-gateway/load-balancing) but to achieve a different outcome.
 
-### [​](https://portkey.ai/docs/product/ai-gateway/canary-testing\#example-test-llama2-on-5-of-the-traffic)  Example: Test Llama2 on 5% of the traffic
+### [​](https://portkey.ai/docs/product/ai-gateway/canary-testing#example-test-llama2-on-5-of-the-traffic) Example: Test Llama2 on 5% of the traffic
 
 Let’s take an example where we want to introduce llama2 in our systems (through Anyscale) but we’re not sure of the impact. We can create a config specifically for this use case to test llama2 in production.
 

@@ -18,7 +18,7 @@ Portkey has native integrations with OpenAI SDKs for Node.js, Python, and its RE
 
 Provider Slug. `openai`
 
-## [​](https://portkey.ai/docs/integrations/llms/openai\#using-the-portkey-gateway)  Using the Portkey Gateway
+## [​](https://portkey.ai/docs/integrations/llms/openai#using-the-portkey-gateway) Using the Portkey Gateway
 
 To integrate the Portkey gateway with OpenAI,
 
@@ -40,22 +40,23 @@ npm i --save portkey-ai
 
 ```
 
-2. Next, insert the Portkey-specific code as shown in the highlighted lines to your OpenAI completion calls. PORTKEY\_GATEWAY\_URL is portkey’s gateway URL to route your requests and createHeaders is a convenience function that generates the headers object. (All supported params/headers)
+2. Next, insert the Portkey-specific code as shown in the highlighted lines to your OpenAI completion calls. PORTKEY_GATEWAY_URL is portkey’s gateway URL to route your requests and createHeaders is a convenience function that generates the headers object. (All supported params/headers)
 
 Copy
 
 ```js
-import OpenAI from 'openai'; // We're using the v4 SDK
-import { PORTKEY_GATEWAY_URL, createHeaders } from 'portkey-ai'
+import OpenAI from 'openai';
+// We're using the v4 SDK
+import { PORTKEY_GATEWAY_URL, createHeaders } from 'portkey-ai';
 
 const openai = new OpenAI({
   apiKey: 'OPENAI_API_KEY', // defaults to process.env["OPENAI_API_KEY"],
   baseURL: PORTKEY_GATEWAY_URL,
   defaultHeaders: createHeaders({
-    provider: "openai",
-    apiKey: "PORTKEY_API_KEY" // defaults to process.env["PORTKEY_API_KEY"]
+    provider: 'openai',
+    apiKey: 'PORTKEY_API_KEY', // defaults to process.env["PORTKEY_API_KEY"]
     // virtualKey: "VIRTUAL_KEY_VALUE" if you want provider key on gateway instead of client
-  })
+  }),
 });
 
 async function main() {
@@ -68,12 +69,11 @@ async function main() {
 }
 
 main();
-
 ```
 
 This request will be automatically logged by Portkey. You can view this in your logs dashboard. Portkey logs the tokens utilized, execution time, and cost for each request. Additionally, you can delve into the details to review the precise request and response data.
 
-### [​](https://portkey.ai/docs/integrations/llms/openai\#track-end-user-ids)  Track End-User IDs
+### [​](https://portkey.ai/docs/integrations/llms/openai#track-end-user-ids) Track End-User IDs
 
 Portkey allows you to track user IDs passed with the `user` parameter in OpenAI requests, enabling you to monitor user-level costs, requests, and more.
 
@@ -84,11 +84,10 @@ Copy
 
 ```js
 const chatCompletion = await portkey.chat.completions.create({
-  messages: [{ role: "user", content: "Say this is a test" }],
-  model: "gpt-4o",
-  user: "user_12345",
+  messages: [{ role: 'user', content: 'Say this is a test' }],
+  model: 'gpt-4o',
+  user: 'user_12345',
 });
-
 ```
 
 When you include the `user` parameter in your requests, Portkey logs will display the associated user ID, as shown in the image below:
@@ -102,7 +101,7 @@ In addition to the `user` parameter, Portkey allows you to send arbitrary custom
 - The same integration approach applies to APIs for [completions](https://platform.openai.com/docs/guides/text-generation/completions-api), [embeddings](https://platform.openai.com/docs/api-reference/embeddings/create), [vision](https://platform.openai.com/docs/guides/vision/quick-start), [moderation](https://platform.openai.com/docs/api-reference/moderations/create), [transcription](https://platform.openai.com/docs/api-reference/audio/createTranscription), [translation](https://platform.openai.com/docs/api-reference/audio/createTranslation), [speech](https://platform.openai.com/docs/api-reference/audio/createSpeech) and [files](https://platform.openai.com/docs/api-reference/files/create).
 - If you are looking for a way to add your **Org ID** & **Project ID** to the requests, head over to [this section](https://portkey.ai/docs/integrations/llms/openai#managing-openai-projects-and-organizations-in-portkey).
 
-## [​](https://portkey.ai/docs/integrations/llms/openai\#using-the-prompts-api)  Using the Prompts API
+## [​](https://portkey.ai/docs/integrations/llms/openai#using-the-prompts-api) Using the Prompts API
 
 Portkey also supports creating and managing prompt templates in the [prompt library](https://portkey.ai/docs/product/prompt-library). This enables the collaborative development of prompts directly through the user interface.
 
@@ -119,21 +118,20 @@ Portkey also supports creating and managing prompt templates in the [prompt libr
 Copy
 
 ```js
-import Portkey from 'portkey-ai'
+import Portkey from 'portkey-ai';
 
 const portkey = new Portkey({
-    apiKey: "PORTKEY_API_KEY",
-})
+  apiKey: 'PORTKEY_API_KEY',
+});
 
 // Make the prompt creation call with the variables
 
 const promptCompletion = await portkey.prompts.completions.create({
-    promptID: "Your Prompt ID",
-    variables: {
-       // The variables specified in the prompt
-    }
-})
-
+  promptID: 'Your Prompt ID',
+  variables: {
+    // The variables specified in the prompt
+  },
+});
 ```
 
 Copy
@@ -142,27 +140,26 @@ Copy
 // We can also override the hyperparameters
 
 const promptCompletion = await portkey.prompts.completions.create({
-    promptID: "Your Prompt ID",
-    variables: {
-       // The variables specified in the prompt
-    },
-    max_tokens: 250,
-    presence_penalty: 0.2
-})
-
+  promptID: 'Your Prompt ID',
+  variables: {
+    // The variables specified in the prompt
+  },
+  max_tokens: 250,
+  presence_penalty: 0.2,
+});
 ```
 
 Observe how this streamlines your code readability and simplifies prompt updates via the UI without altering the codebase.
 
-## [​](https://portkey.ai/docs/integrations/llms/openai\#advanced-use-cases)  Advanced Use Cases
+## [​](https://portkey.ai/docs/integrations/llms/openai#advanced-use-cases) Advanced Use Cases
 
-### [​](https://portkey.ai/docs/integrations/llms/openai\#realtime-api)  Realtime API
+### [​](https://portkey.ai/docs/integrations/llms/openai#realtime-api) Realtime API
 
 Portkey supports OpenAI’s Realtime API with a seamless integration. This allows you to use Portkey’s logging, cost tracking, and guardrail features while using the Realtime API.
 
 [**Realtime API**](https://portkey.ai/docs/product/ai-gateway/realtime-api)
 
-### [​](https://portkey.ai/docs/integrations/llms/openai\#streaming-responses)  Streaming Responses
+### [​](https://portkey.ai/docs/integrations/llms/openai#streaming-responses) Streaming Responses
 
 Portkey supports streaming responses using Server Sent Events (SSE).
 
@@ -173,14 +170,14 @@ Copy
 
 ```js
 import OpenAI from 'openai';
+import { PORTKEY_GATEWAY_URL, createHeaders } from 'portkey-ai';
 
-import { PORTKEY_GATEWAY_URL, createHeaders } from 'portkey-ai'
 const openai = new OpenAI({
   baseURL: PORTKEY_GATEWAY_URL,
   defaultHeaders: createHeaders({
-    provider: "openai",
-    apiKey: "PORTKEY_API_KEY" // defaults to process.env["PORTKEY_API_KEY"]
-  })
+    provider: 'openai',
+    apiKey: 'PORTKEY_API_KEY', // defaults to process.env["PORTKEY_API_KEY"]
+  }),
 });
 
 async function main() {
@@ -196,26 +193,25 @@ async function main() {
 }
 
 main();
-
 ```
 
-### [​](https://portkey.ai/docs/integrations/llms/openai\#using-vision-models)  Using Vision Models
+### [​](https://portkey.ai/docs/integrations/llms/openai#using-vision-models) Using Vision Models
 
 Portkey’s multimodal Gateway fully supports OpenAI vision models as well. See this guide for more info:
 
 [Vision](https://portkey.ai/docs/product/ai-gateway/multimodal-capabilities/vision)
 
-### [​](https://portkey.ai/docs/integrations/llms/openai\#function-calling)  Function Calling
+### [​](https://portkey.ai/docs/integrations/llms/openai#function-calling) Function Calling
 
 Function calls within your OpenAI or Portkey SDK operations remain standard. These logs will appear in Portkey, highlighting the utilized functions and their outputs.
 
 Additionally, you can define functions within your prompts and invoke the `portkey.prompts.completions.create` method as above.
 
-### [​](https://portkey.ai/docs/integrations/llms/openai\#fine-tuning)  Fine-Tuning
+### [​](https://portkey.ai/docs/integrations/llms/openai#fine-tuning) Fine-Tuning
 
 Please refer to our fine-tuning guides to take advantage of Portkey’s advanced [continuous fine-tuning](https://portkey.ai/docs/product/autonomous-fine-tuning) capabilities.
 
-### [​](https://portkey.ai/docs/integrations/llms/openai\#image-generation)  Image Generation
+### [​](https://portkey.ai/docs/integrations/llms/openai#image-generation) Image Generation
 
 Portkey supports multiple modalities for OpenAI and you can make image generation requests through Portkey’s AI Gateway the same way as making completion calls.
 
@@ -228,11 +224,10 @@ Copy
 // Define the OpenAI client as shown above
 
 const image = await openai.images.generate({
-  model:"dall-e-3",
-  prompt:"Lucy in the sky with diamonds",
-  size:"1024x1024"
-})
-
+  model: 'dall-e-3',
+  prompt: 'Lucy in the sky with diamonds',
+  size: '1024x1024',
+});
 ```
 
 Portkey’s fast AI gateway captures the information about the request on your Portkey Dashboard. On your logs screen, you’d be able to see this request with the request and response.
@@ -243,7 +238,7 @@ Log view for an image generation request on OpenAI
 
 More information on image generation is available in the [API Reference](https://portkey.ai/docs/provider-endpoints/images/create-image#create-image).
 
-### [​](https://portkey.ai/docs/integrations/llms/openai\#audio-transcription-translation-and-text-to-speech)  Audio - Transcription, Translation, and Text-to-Speech
+### [​](https://portkey.ai/docs/integrations/llms/openai#audio-transcription-translation-and-text-to-speech) Audio - Transcription, Translation, and Text-to-Speech
 
 Portkey’s multimodal Gateway also supports the `audio` methods on OpenAI API. Check out the below guides for more info:
 
@@ -253,9 +248,9 @@ Check out the below guides for more info:
 
 [Speech-to-Text](https://portkey.ai/docs/product/ai-gateway/multimodal-capabilities/speech-to-text)
 
-* * *
+---
 
-## [​](https://portkey.ai/docs/integrations/llms/openai\#managing-openai-projects-and-organizations-in-portkey)  Managing OpenAI Projects & Organizations in Portkey
+## [​](https://portkey.ai/docs/integrations/llms/openai#managing-openai-projects-and-organizations-in-portkey) Managing OpenAI Projects & Organizations in Portkey
 
 When integrating OpenAI with Portkey, you can specify your OpenAI organization and project IDs along with your API key. This is particularly useful if you belong to multiple organizations or are accessing projects through a legacy user API key.
 
@@ -269,7 +264,7 @@ In Portkey, you can add your Org & Project details by,
 
 Let’s explore each method in more detail.
 
-### [​](https://portkey.ai/docs/integrations/llms/openai\#using-virtual-keys)  Using Virtual Keys
+### [​](https://portkey.ai/docs/integrations/llms/openai#using-virtual-keys) Using Virtual Keys
 
 When selecting OpenAI from the dropdown menu while creating a virtual key, Portkey automatically displays optional fields for the organization ID and project ID alongside the API key field.
 
@@ -283,7 +278,7 @@ Portkey takes budget management a step further than OpenAI. While OpenAI allows 
 
 [Budget Limits](https://portkey.ai/docs/product/ai-gateway/virtual-keys/budget-limits)
 
-### [​](https://portkey.ai/docs/integrations/llms/openai\#using-the-gateway-config)  Using The Gateway Config
+### [​](https://portkey.ai/docs/integrations/llms/openai#using-the-gateway-config) Using The Gateway Config
 
 You can also specify the organization and project details in the gateway config, either at the root level or within a specific target.
 
@@ -291,15 +286,14 @@ Copy
 
 ```json
 {
- "provider": "openai",
- "api_key": "OPENAI_API_KEY",
- "openai_organization": "org-xxxxxx",
- "openai_project": "proj_xxxxxxxx"
+  "provider": "openai",
+  "api_key": "OPENAI_API_KEY",
+  "openai_organization": "org-xxxxxx",
+  "openai_project": "proj_xxxxxxxx"
 }
-
 ```
 
-### [​](https://portkey.ai/docs/integrations/llms/openai\#while-making-a-request)  While Making a Request
+### [​](https://portkey.ai/docs/integrations/llms/openai#while-making-a-request) While Making a Request
 
 You can also pass your organization and project details directly when making a request using curl, the OpenAI SDK, or the Portkey SDK.
 
@@ -335,9 +329,9 @@ print(chat_complete.choices[0].message.content)
 
 ```
 
-* * *
+---
 
-### [​](https://portkey.ai/docs/integrations/llms/openai\#portkey-features)  Portkey Features
+### [​](https://portkey.ai/docs/integrations/llms/openai#portkey-features) Portkey Features
 
 Portkey supports the complete host of it’s functionality via the OpenAI SDK so you don’t need to migrate away from it.
 

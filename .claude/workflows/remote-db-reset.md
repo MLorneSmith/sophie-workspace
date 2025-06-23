@@ -36,7 +36,7 @@ SSL Certificate: prod-ca-2021.crt
 **MANDATORY** - Create a timestamped backup before proceeding:
 
 ```bash
-# Set database URI with current credentials  
+# Set database URI with current credentials
 export DATABASE_URI="postgresql://postgres.ldebzombxtszzcgnylgq:UcQ5TYC3Hdh0v5G0@aws-0-us-east-2.pooler.supabase.com:6543/postgres?sslmode=require&sslrootcert=prod-ca-2021.crt"
 
 # Create backup with timestamp
@@ -103,7 +103,7 @@ Verify database connectivity before proceeding:
 Remove the existing Payload schema and all its contents:
 
 ```bash
-# Use Supabase MCP: execute_sql  
+# Use Supabase MCP: execute_sql
 # Parameters: { "project_id": "ldebzombxtszzcgnylgq", "query": "DROP SCHEMA IF EXISTS payload CASCADE;" }
 # Expected result: Schema dropped successfully
 ```
@@ -127,7 +127,7 @@ Confirm the Payload schema has been completely removed:
 # Parameters: { "project_id": "ldebzombxtszzcgnylgq", "query": "SELECT schema_name FROM information_schema.schemata WHERE schema_name = 'payload';" }
 # Expected result: Empty list (No matching schemas found)
 
-# Use Supabase MCP: execute_sql  
+# Use Supabase MCP: execute_sql
 # Parameters: { "project_id": "ldebzombxtszzcgnylgq", "query": "SELECT table_name FROM information_schema.tables WHERE table_schema = 'payload';" }
 # Expected result: Empty list (0 tables)
 ```
@@ -369,7 +369,7 @@ If schema cannot be dropped:
 # Use Supabase MCP: execute_sql
 # Parameters: { "project_id": "ldebzombxtszzcgnylgq", "query": "SELECT pid, usename, application_name FROM pg_stat_activity WHERE datname = current_database();" }
 
-# Use Supabase MCP: execute_sql  
+# Use Supabase MCP: execute_sql
 # Parameters: { "project_id": "ldebzombxtszzcgnylgq", "query": "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = current_database() AND pid <> pg_backend_pid();" }
 
 # Try dropping schema again

@@ -2,7 +2,7 @@
 
 On this page
 
-## Why is it necessary? [​](https://lexical.dev/docs/concepts/editor-state\#why-is-it-necessary "Direct link to heading")
+## Why is it necessary? [​](https://lexical.dev/docs/concepts/editor-state#why-is-it-necessary 'Direct link to heading')
 
 With Lexical, the source of truth is not the DOM, but rather an underlying state model
 that Lexical maintains and associates with an editor instance.
@@ -36,16 +36,16 @@ In contrast, Lexical decouples structure from formatting by offsetting this info
 
 ![Flat Lexical state](https://lexical.dev/img/docs/state-formatting-lexical.png)Flat Lexical state structure
 
-## Understanding the Editor State [​](https://lexical.dev/docs/concepts/editor-state\#understanding-the-editor-state "Direct link to heading")
+## Understanding the Editor State [​](https://lexical.dev/docs/concepts/editor-state#understanding-the-editor-state 'Direct link to heading')
 
 You can get the latest editor state from an editor by calling `editor.getEditorState()`.
 
 Editor states have two phases:
 
 - During an update they can be thought of as "mutable". See "Updating state" below to
-mutate an editor state.
+  mutate an editor state.
 - After an update, the editor state is then locked and deemed immutable from there on. This
-editor state can therefore be thought of as a "snapshot".
+  editor state can therefore be thought of as a "snapshot".
 
 Editor states contain two core things:
 
@@ -104,7 +104,7 @@ const editorStateRef = useRef(undefined);
 Note that Lexical uses `initialConfig.editorState` only once (when it's being initialized) and passing different value later
 won't be reflected in editor. See "Update state" below for proper ways of updating editor state.
 
-## Updating state [​](https://lexical.dev/docs/concepts/editor-state\#updating-state "Direct link to heading")
+## Updating state [​](https://lexical.dev/docs/concepts/editor-state#updating-state 'Direct link to heading')
 
 tip
 
@@ -166,7 +166,7 @@ editor.setEditorState(editorState);
 
 ```
 
-## State update listener [​](https://lexical.dev/docs/concepts/editor-state\#state-update-listener "Direct link to heading")
+## State update listener [​](https://lexical.dev/docs/concepts/editor-state#state-update-listener 'Direct link to heading')
 
 If you want to know when the editor updates so you can react to the changes, you can add an update
 listener to the editor, as shown below:
@@ -184,19 +184,19 @@ editor.registerUpdateListener(({editorState}) => {
 
 ```
 
-## When are Listeners, Transforms, and Commands called? [​](https://lexical.dev/docs/concepts/editor-state\#when-are-listeners-transforms-and-commands-called "Direct link to heading")
+## When are Listeners, Transforms, and Commands called? [​](https://lexical.dev/docs/concepts/editor-state#when-are-listeners-transforms-and-commands-called 'Direct link to heading')
 
 There are several types of callbacks that can be registered with the editor that are related to
 updates of the Editor State.
 
-| Callback Type | When It's Called |
-| --- | --- |
-| Update Listener | After reconciliation |
-| Mutation Listener | After reconciliation |
-| Node Transform | During `editor.update()`, after the callback finishes, if any instances of the node type they are registered for were updated |
-| Command | As soon as the command is dispatched to the editor (called from an implicit `editor.update()`) |
+| Callback Type     | When It's Called                                                                                                              |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| Update Listener   | After reconciliation                                                                                                          |
+| Mutation Listener | After reconciliation                                                                                                          |
+| Node Transform    | During `editor.update()`, after the callback finishes, if any instances of the node type they are registered for were updated |
+| Command           | As soon as the command is dispatched to the editor (called from an implicit `editor.update()`)                                |
 
-## Synchronous reconciliation with discrete updates [​](https://lexical.dev/docs/concepts/editor-state\#synchronous-reconciliation-with-discrete-updates "Direct link to heading")
+## Synchronous reconciliation with discrete updates [​](https://lexical.dev/docs/concepts/editor-state#synchronous-reconciliation-with-discrete-updates 'Direct link to heading')
 
 While commit scheduling and batching are normally what we want, they can sometimes get in the way.
 
@@ -225,7 +225,7 @@ saveToDatabase(editor.getEditorState().toJSON());
 
 ```
 
-### Cloning state [​](https://lexical.dev/docs/concepts/editor-state\#cloning-state "Direct link to heading")
+### Cloning state [​](https://lexical.dev/docs/concepts/editor-state#cloning-state 'Direct link to heading')
 
 Lexical state can be cloned, optionally with custom selection. One of the scenarios where you'd want to do it
 is setting editor's state but not forcing any selection:

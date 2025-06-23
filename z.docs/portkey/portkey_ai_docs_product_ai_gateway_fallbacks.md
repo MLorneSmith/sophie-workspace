@@ -20,7 +20,7 @@ With an array of Language Model APIs available on the market, each with its own 
 
 ![](https://mintlify.s3.us-west-1.amazonaws.com/portkey-docs/images/product/ai-gateway/ai-12.avif)
 
-## [​](https://portkey.ai/docs/product/ai-gateway/fallbacks\#enabling-fallback-on-llms)  Enabling Fallback on LLMs
+## [​](https://portkey.ai/docs/product/ai-gateway/fallbacks#enabling-fallback-on-llms) Enabling Fallback on LLMs
 
 To enable fallbacks, you can modify the [config object](https://portkey.ai/docs/api-reference/config-object) to include the `fallback` mode.
 
@@ -55,7 +55,7 @@ In this scenario, if the OpenAI model encounters an error or fails to respond, P
 
 [Using Configs in your Requests](https://portkey.ai/docs/product/ai-gateway/configs#using-configs)
 
-## [​](https://portkey.ai/docs/product/ai-gateway/fallbacks\#triggering-fallback-on-specific-error-codes)  Triggering fallback on specific error codes
+## [​](https://portkey.ai/docs/product/ai-gateway/fallbacks#triggering-fallback-on-specific-error-codes) Triggering fallback on specific error codes
 
 By default, fallback is triggered on any request that returns a **non-2xx** status code.
 
@@ -83,7 +83,7 @@ Copy
 
 Here, fallback from OpenAI to Azure OpenAI will only be triggered when there is a `429` error code from the OpenAI request (i.e. rate limiting error)
 
-## [​](https://portkey.ai/docs/product/ai-gateway/fallbacks\#tracing-fallback-requests-on-portkey)  Tracing Fallback Requests on Portkey
+## [​](https://portkey.ai/docs/product/ai-gateway/fallbacks#tracing-fallback-requests-on-portkey) Tracing Fallback Requests on Portkey
 
 Portkey logs all the requests that are sent as a part of your fallback config. This allows you to easily trace and see which targets failed and see which ones were eventually successful.
 
@@ -94,7 +94,7 @@ To see your fallback trace,
 
 ![](https://mintlify.s3.us-west-1.amazonaws.com/portkey-docs/images/product/ai-gateway/ai-13.avif)
 
-## [​](https://portkey.ai/docs/product/ai-gateway/fallbacks\#caveats-and-considerations)  Caveats and Considerations
+## [​](https://portkey.ai/docs/product/ai-gateway/fallbacks#caveats-and-considerations) Caveats and Considerations
 
 While the Fallback on LLMs feature greatly enhances the reliability and resilience of your application, there are a few things to consider:
 

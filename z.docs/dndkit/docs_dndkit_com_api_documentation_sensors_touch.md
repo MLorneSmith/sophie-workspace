@@ -1,10 +1,10 @@
 The Touch sensor responds to [Touch events](https://developer.mozilla.org/en-US/docs/Web/API/Touch_events). Touch events offer the ability to interpret finger or stylus activity on touch screens or trackpads.
 
-### [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors/touch\#activator)    Activator
+### [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors/touch#activator) Activator
 
 The touch activator is the `onTouchStart` event handler. The Touch sensor is initialized if the there is no more than a single touch on the [`event.touches`](https://developer.mozilla.org/en-US/docs/Web/API/TouchEvent/touches) property.
 
-### [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors/touch\#activation-constraints)    Activation constraints
+### [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors/touch#activation-constraints) Activation constraints
 
 Like the [Pointer](https://docs.dndkit.com/api-documentation/sensors/pointer) sensor, the Touch sensor has two activation constraints:
 
@@ -14,7 +14,7 @@ Like the [Pointer](https://docs.dndkit.com/api-documentation/sensors/pointer) se
 
 These activation constraints are mutually exclusive and may not be used simultaneously.
 
-#### [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors/touch\#distance)    Distance
+#### [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors/touch#distance) Distance
 
 The distance constraint subscribes to the following interface:
 
@@ -28,7 +28,7 @@ interface DistanceConstraint {
 
 The `distance` property represents the distance, in _pixels_, by which the touch input needs to be moved before a drag start event is emitted.
 
-#### [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors/touch\#delay)    Delay
+#### [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors/touch#delay) Delay
 
 The delay constraint subscribe to the following interface:
 
@@ -47,9 +47,9 @@ The `tolerance` property represents the distance, in _pixels_, of motion that is
 
 This property is particularly useful for touch input, where some tolerance should be accounted for when using a delay constraint, as touch input is less precise than mouse input.
 
-### [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors/touch\#recommendations)    Recommendations
+### [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors/touch#recommendations) Recommendations
 
-#### [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors/touch\#touch-action)    `touch-action`
+#### [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors/touch#touch-action) `touch-action`
 
 We highly recommend you specify the `touch-action` CSS property for all of your draggable elements.
 
@@ -63,4 +63,4 @@ Touch events do not suffer the same limitations as Pointer events, and it is pos
 
 Last updated 3 years ago
 
-* * *
+---

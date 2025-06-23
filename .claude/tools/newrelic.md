@@ -56,3 +56,4 @@ uv pip install "mcp[cli]" httpx
 
 ```shell
 # On Unix/macOS
+```

@@ -3,6 +3,7 @@ description: Creating new Pages in the app
 globs: apps/**
 alwaysApply: false
 ---
+
 # Creating Pages
 
 # Makerkit Page & Layout Guidelines
@@ -82,9 +83,7 @@ function MyFeaturePage() {
         description={<Trans i18nKey={'common:myFeatureDescription'} />}
       />
 
-      <PageBody>
-        {/* Main page content */}
-      </PageBody>
+      <PageBody>{/* Main page content */}</PageBody>
     </>
   );
 }
@@ -117,8 +116,8 @@ import { UserWorkspaceContextProvider } from '@kit/accounts/components';
 import { Page, PageNavigation } from '@kit/ui/page';
 
 import { withI18n } from '~/lib/i18n/with-i18n';
-import { loadUserWorkspace } from '../_lib/server/load-user-workspace';
 
+import { loadUserWorkspace } from '../_lib/server/load-user-workspace';
 // Import components from the _components folder
 import { MyFeatureNavigation } from './_components/my-feature-navigation';
 
@@ -152,7 +151,9 @@ import { use } from 'react';
 
 import { UserWorkspaceContextProvider } from '@kit/accounts/components';
 import { Page } from '@kit/ui/page';
+
 import { withI18n } from '~/lib/i18n/with-i18n';
+
 import { loadUserWorkspace } from './_lib/server/load-user-workspace';
 
 function MyLayout({ children }: React.PropsWithChildren) {
@@ -180,7 +181,9 @@ import { use } from 'react';
 
 import { TeamAccountWorkspaceContextProvider } from '@kit/team-accounts/components';
 import { Page } from '@kit/ui/page';
+
 import { withI18n } from '~/lib/i18n/with-i18n';
+
 import { loadTeamWorkspace } from './_lib/server/load-team-workspace';
 
 function TeamLayout({ children, params }: LayoutParams) {
@@ -213,17 +216,12 @@ Break down pages into reusable components:
 
    export function MyFeatureHeader({
      title,
-     description
+     description,
    }: {
-     title: React.ReactNode,
-     description: React.ReactNode
+     title: React.ReactNode;
+     description: React.ReactNode;
    }) {
-     return (
-       <PageHeader
-         title={title}
-         description={description}
-       />
-     );
+     return <PageHeader title={title} description={description} />;
    }
    ```
 
@@ -235,14 +233,12 @@ Break down pages into reusable components:
 
    import { useUserWorkspace } from '@kit/accounts/hooks/use-user-workspace';
 
+   // _components/my-feature-component.tsx
+
    export function MyFeatureComponent() {
      const { user } = useUserWorkspace();
 
-     return (
-       <div>
-         {/* Component content */}
-       </div>
-     );
+     return <div>{/* Component content */}</div>;
    }
    ```
 
@@ -256,16 +252,14 @@ Create navigation components to handle sidebar or header navigation:
 
 import { NavigationMenu } from '@kit/ui/navigation-menu';
 
+// _components/my-feature-navigation.tsx
+
 export function MyFeatureNavigation({
-  workspace
+  workspace,
 }: {
-  workspace: UserWorkspace
+  workspace: UserWorkspace;
 }) {
-  return (
-    <NavigationMenu>
-      {/* Navigation items */}
-    </NavigationMenu>
-  );
+  return <NavigationMenu>{/* Navigation items */}</NavigationMenu>;
 }
 ```
 
@@ -293,29 +287,35 @@ async function getLayoutState() {
 ## Best Practices
 
 1. **Server vs. Client Components**:
+
    - Use Server Components for data fetching and initial rendering
    - Use Client Components ('use client') for interactive elements
 
 2. **Data Loading**:
+
    - Load workspace data in layouts using server functions
    - Pass data down to components that need it
    - Use React Query for client-side data fetching
 
 3. **Component Organization**:
+
    - Place feature-specific components in a `_components` folder
    - Place feature-specific server utilities in a `_lib/server` folder
    - Place feature-specific client utilities in a `_lib/client` folder
 
 4. **i18n Support**:
+
    - Always use `withI18n` HOC for pages and layouts
    - Use `<Trans>` component for translated text
    - Define translation keys in the appropriate namespace in `apps/web/public/locales/<locale>/<namespace>.json`
 
 5. **Metadata**:
+
    - Always include `generateMetadata` for SEO and UX
    - Use translations for page titles and descriptions
 
 6. **Loading States**:
+
    - Always provide a loading state for each route
    - Use the `GlobalLoader` or custom loading components
 

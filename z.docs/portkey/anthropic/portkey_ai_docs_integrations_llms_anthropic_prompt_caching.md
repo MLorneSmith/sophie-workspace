@@ -18,7 +18,7 @@ Prompt caching on Anthropic lets you cache individual messages in your request f
 
 You can use this feature on our OpenAI-compliant universal API as well as with our prompt templates.
 
-## [​](https://portkey.ai/docs/integrations/llms/anthropic/prompt-caching\#api-support)  API Support
+## [​](https://portkey.ai/docs/integrations/llms/anthropic/prompt-caching#api-support) API Support
 
 Just set the `cache_control` param in your respective message body:
 
@@ -63,7 +63,7 @@ console.log(chatCompletion.choices[0].message.content);
 
 ```
 
-## [​](https://portkey.ai/docs/integrations/llms/anthropic/prompt-caching\#prompt-templates-support)  Prompt Templates Support
+## [​](https://portkey.ai/docs/integrations/llms/anthropic/prompt-caching#prompt-templates-support) Prompt Templates Support
 
 Set any message in your prompt template to be cached by just toggling the `Cache Control` setting in the UI:
 
@@ -78,7 +78,7 @@ Anthropic currently has certain restrictions on prompt caching, like:
 
 For more, refer to Anthropic’s prompt caching documentation [here](https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching).
 
-## [​](https://portkey.ai/docs/integrations/llms/anthropic/prompt-caching\#seeing-cache-results-in-portkey)  Seeing Cache Results in Portkey
+## [​](https://portkey.ai/docs/integrations/llms/anthropic/prompt-caching#seeing-cache-results-in-portkey) Seeing Cache Results in Portkey
 
 Portkey automatically calculate the correct pricing for your prompt caching requests & responses based on Anthropic’s calculations here:
 

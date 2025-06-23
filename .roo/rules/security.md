@@ -1,8 +1,9 @@
 ---
 description: Security guidelines for writing secure code
-globs: 
+globs:
 alwaysApply: false
 ---
+
 # Next.js-Specific Security
 
 ### Client Component Data Passing
@@ -50,12 +51,17 @@ Always perform extra checks when writing Super Admin code [super-admin.md](mdc:.
 'use server';
 
 import { enhanceAction } from '@kit/next/actions';
+
 import { MyActionSchema } from '../schema';
 
 export const secureAction = enhanceAction(
-  async function(data, user) {
+  async function (data, user) {
     // Additional permission checks
-    const hasPermission = await checkUserPermission(user.id, data.accountId, 'action.perform');
+    const hasPermission = await checkUserPermission(
+      user.id,
+      data.accountId,
+      'action.perform',
+    );
     if (!hasPermission) throw new Error('Insufficient permissions');
 
     // Validated data available
@@ -63,8 +69,8 @@ export const secureAction = enhanceAction(
   },
   {
     auth: true,
-    schema: MyActionSchema
-  }
+    schema: MyActionSchema,
+  },
 );
 ```
 
@@ -75,22 +81,24 @@ export const secureAction = enhanceAction(
 
 ```typescript
 import { enhanceRouteHandler } from '@kit/next/routes';
+
 import { RouteSchema } from '../schema';
 
 export const POST = enhanceRouteHandler(
-  async function({ body, user, request }) {
+  async function ({ body, user, request }) {
     // Additional authorization checks
     const canAccess = await canAccessResource(user.id, body.resourceId);
 
-    if (!canAccess) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    if (!canAccess)
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
     // Safe to process with validated body
     return NextResponse.json({ success: true });
   },
   {
     auth: true,
-    schema: RouteSchema
-  }
+    schema: RouteSchema,
+  },
 );
 ```
 

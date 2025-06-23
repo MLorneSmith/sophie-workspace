@@ -118,37 +118,37 @@ This project uses Claude's context priming capabilities to provide specialized a
 ### How to Use Roles
 
 1. **Switch to a role** at the beginning of your session:
-   ```
+```
 
-   /read .claude/roles/ui-engineer.md
+/read .claude/roles/ui-engineer.md
 
-   ```
+```
 
 2. **Ask role-specific questions** after loading a role:
-   ```
+```
 
-   Now that you're in UI Engineer role, help me implement a responsive navigation component.
+Now that you're in UI Engineer role, help me implement a responsive navigation component.
 
-   ```
+```
 
 3. **Combine roles** for complex tasks:
-   ```
+```
 
-   /read .claude/roles/ui-engineer.md
-   /read .claude/roles/data-engineer.md
+/read .claude/roles/ui-engineer.md
+/read .claude/roles/data-engineer.md
 
-   I need to create a data table component that fetches and displays user data from Supabase.
+I need to create a data table component that fetches and displays user data from Supabase.
 
-   ```
+```
 
 4. **Use task-specific commands** for common workflows:
-   ```
+```
 
-   /read .claude/tasks/ui/new-component.md
+/read .claude/tasks/ui/new-component.md
 
-   I need a Button component with primary, secondary, and danger variants.
+I need a Button component with primary, secondary, and danger variants.
 
-   ```
+```
 
 ### Best Practices
 

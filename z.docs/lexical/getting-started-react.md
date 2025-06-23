@@ -2,7 +2,7 @@
 
 On this page
 
-## Video Tutorials [​](https://lexical.dev/docs/getting-started/react\#video-tutorials "Direct link to heading")
+## Video Tutorials [​](https://lexical.dev/docs/getting-started/react#video-tutorials 'Direct link to heading')
 
 For a detailed walkthrough of setting up a basic editor with Lexical in React, check out these videos:
 
@@ -13,7 +13,7 @@ For a detailed walkthrough of setting up a basic editor with Lexical in React, c
 
 Keep in mind that some of these videos may be partially outdated as we do not update them as often as textual documentation.
 
-## Creating Basic Rich Text Editor [​](https://lexical.dev/docs/getting-started/react\#creating-basic-rich-text-editor "Direct link to heading")
+## Creating Basic Rich Text Editor [​](https://lexical.dev/docs/getting-started/react#creating-basic-rich-text-editor 'Direct link to heading')
 
 To simplify Lexical integration with React we provide the `@lexical/react` package that wraps Lexical APIs with React components so the editor itself as well as all the plugins now can be easily composed using JSX.
 Furthermore, you can lazy load plugins if desired, so you don't pay the cost for plugins until you actually use them.
@@ -76,7 +76,7 @@ function Editor() {
 
 ```
 
-## Adding UI to control text formatting [​](https://lexical.dev/docs/getting-started/react\#adding-ui-to-control-text-formatting "Direct link to heading")
+## Adding UI to control text formatting [​](https://lexical.dev/docs/getting-started/react#adding-ui-to-control-text-formatting 'Direct link to heading')
 
 Out of the box Lexical doesn't provide any type of UI as it's not a ready to use editor but rather a framework for creation of your own editor.
 Below you can find an example of the integration from the previous chapter that now features 2 new plugins:
@@ -118,7 +118,7 @@ JavaScript](https://stackblitz.com/fork/github/vitejs/vite/tree/main/packages/cr
 \\
 Node.js](https://stackblitz.com/fork/github/stackblitz/webcontainer-api-starter)
 
-## Saving Lexical State [​](https://lexical.dev/docs/getting-started/react\#saving-lexical-state "Direct link to heading")
+## Saving Lexical State [​](https://lexical.dev/docs/getting-started/react#saving-lexical-state 'Direct link to heading')
 
 tip
 

@@ -13,10 +13,11 @@ import { getSupabaseServerClient } from '@kit/supabase/server-client';
 
 export async function getCourseData(courseId: string) {
   const supabase = getSupabaseServerClient();
-  
+
   const { data, error } = await supabase
     .from('courses')
-    .select(`
+    .select(
+      `
       id,
       title,
       slug,
@@ -28,11 +29,12 @@ export async function getCourseData(courseId: string) {
         order_index,
         estimated_duration
       )
-    `)
+    `,
+    )
     .eq('id', courseId)
     .single()
     .throwOnError();
-    
+
   return data;
 }
 ```
@@ -46,14 +48,14 @@ import { useSupabase } from '@kit/supabase/hooks/use-supabase';
 
 export function CourseProgressComponent({ courseId }: { courseId: string }) {
   const supabase = useSupabase();
-  
+
   const fetchProgress = async () => {
     const { data, error } = await supabase
       .from('course_progress')
       .select('*')
       .eq('course_id', courseId)
       .throwOnError();
-      
+
     return data;
   };
 }
@@ -69,10 +71,11 @@ Access MakerKit tables with proper RLS policies:
 // Account-based data access
 async function getAccountData(accountId: string) {
   const supabase = getSupabaseServerClient();
-  
+
   const { data } = await supabase
     .from('accounts')
-    .select(`
+    .select(
+      `
       id,
       name,
       slug,
@@ -82,11 +85,12 @@ async function getAccountData(accountId: string) {
         role,
         user:users(email, display_name)
       )
-    `)
+    `,
+    )
     .eq('id', accountId)
     .single()
     .throwOnError();
-    
+
   return data;
 }
 ```
@@ -99,7 +103,7 @@ Access Payload CMS content through the public schema when needed:
 // Direct access to Payload content (be careful with RLS)
 async function getPayloadCourse(courseId: string) {
   const supabase = getSupabaseServerClient();
-  
+
   // Note: This requires service role or proper RLS policies
   const { data } = await supabase
     .schema('payload')
@@ -108,7 +112,7 @@ async function getPayloadCourse(courseId: string) {
     .eq('id', courseId)
     .single()
     .throwOnError();
-    
+
   return data;
 }
 
@@ -132,7 +136,7 @@ ALTER TABLE public.accounts ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view accounts they belong to" ON public.accounts
   FOR SELECT USING (
     auth.uid() IN (
-      SELECT user_id FROM public.accounts_memberships 
+      SELECT user_id FROM public.accounts_memberships
       WHERE account_id = accounts.id
     )
   );
@@ -165,7 +169,7 @@ ALTER TABLE public.ai_usage_tracking ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view their account's AI usage" ON public.ai_usage_tracking
   FOR SELECT USING (
     auth.uid() IN (
-      SELECT user_id FROM public.accounts_memberships 
+      SELECT user_id FROM public.accounts_memberships
       WHERE account_id = ai_usage_tracking.account_id
     )
   );
@@ -199,24 +203,24 @@ BEGIN
     p_user_id, p_course_id, p_lesson_id, p_completed, NOW()
   )
   ON CONFLICT (user_id, course_id, lesson_id)
-  DO UPDATE SET 
+  DO UPDATE SET
     completed = p_completed,
     updated_at = NOW();
-  
+
   -- Calculate overall course completion
   SELECT COUNT(*) INTO total_lessons
   FROM payload.course_lessons cl
   JOIN payload.courses c ON c.id = p_course_id
   WHERE cl.id = ANY(c.course_lessons);
-  
+
   SELECT COUNT(*) INTO completed_lessons
   FROM public.course_progress cp
-  WHERE cp.user_id = p_user_id 
-    AND cp.course_id = p_course_id 
+  WHERE cp.user_id = p_user_id
+    AND cp.course_id = p_course_id
     AND cp.completed = true;
-  
+
   completion_percentage := (completed_lessons::DECIMAL / total_lessons) * 100;
-  
+
   -- Update overall course progress
   INSERT INTO public.course_progress (
     user_id, course_id, completion_percentage, updated_at
@@ -225,10 +229,10 @@ BEGIN
     p_user_id, p_course_id, completion_percentage, NOW()
   )
   ON CONFLICT (user_id, course_id) WHERE lesson_id IS NULL
-  DO UPDATE SET 
+  DO UPDATE SET
     completion_percentage = completion_percentage,
     updated_at = NOW();
-  
+
   RETURN true;
 END;
 $$;
@@ -256,7 +260,7 @@ BEGIN
     p_user_id, p_course_id, p_file_path, NOW()
   )
   RETURNING id INTO certificate_id;
-  
+
   RETURN certificate_id;
 END;
 $$;
@@ -282,7 +286,7 @@ CREATE TABLE public.course_progress (
   completed_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW(),
-  
+
   -- Ensure unique progress per user/course/lesson
   UNIQUE(user_id, course_id, lesson_id)
 );
@@ -310,7 +314,7 @@ CREATE INDEX idx_course_progress_completed ON public.course_progress(completed);
 
 -- Create view to join Payload courses with progress
 CREATE OR REPLACE VIEW public.course_progress_with_details AS
-SELECT 
+SELECT
   cp.*,
   c.title as course_title,
   c.slug as course_slug,
@@ -341,32 +345,38 @@ type CourseProgress = Database['public']['Tables']['course_progress']['Row'];
 type Certificate = Database['public']['Tables']['certificates']['Row'];
 
 // Course progress with relationships
-type CourseProgressWithDetails = Database['public']['Views']['course_progress_with_details']['Row'];
+type CourseProgressWithDetails =
+  Database['public']['Views']['course_progress_with_details']['Row'];
 
 // Insert types for mutations
-type NewCourseProgress = Database['public']['Tables']['course_progress']['Insert'];
-type UpdateCourseProgress = Database['public']['Tables']['course_progress']['Update'];
+type NewCourseProgress =
+  Database['public']['Tables']['course_progress']['Insert'];
+type UpdateCourseProgress =
+  Database['public']['Tables']['course_progress']['Update'];
 ```
 
 ### Typed Query Functions
 
 ```tsx
 import type { SupabaseClient } from '@supabase/supabase-js';
+
 import type { Database } from '@/lib/database.types';
 
 type TypedSupabaseClient = SupabaseClient<Database>;
 
 export function getCourseProgress(
-  client: TypedSupabaseClient, 
-  userId: string, 
-  courseId: string
+  client: TypedSupabaseClient,
+  userId: string,
+  courseId: string,
 ) {
   return client
     .from('course_progress')
-    .select(`
+    .select(
+      `
       *,
       course:courses(title, slug)
-    `)
+    `,
+    )
     .eq('user_id', userId)
     .eq('course_id', courseId)
     .throwOnError();
@@ -374,12 +384,9 @@ export function getCourseProgress(
 
 export function updateCourseProgress(
   client: TypedSupabaseClient,
-  progress: NewCourseProgress
+  progress: NewCourseProgress,
 ) {
-  return client
-    .from('course_progress')
-    .upsert(progress)
-    .throwOnError();
+  return client.from('course_progress').upsert(progress).throwOnError();
 }
 ```
 
@@ -389,11 +396,12 @@ export function updateCourseProgress(
 
 ```tsx
 import { useEffect } from 'react';
+
 import { useSupabase } from '@kit/supabase/hooks/use-supabase';
 
 function useCourseProgressSubscription(courseId: string, onUpdate: () => void) {
   const supabase = useSupabase();
-  
+
   useEffect(() => {
     const channel = supabase
       .channel(`course-progress-${courseId}`)
@@ -405,10 +413,10 @@ function useCourseProgressSubscription(courseId: string, onUpdate: () => void) {
           table: 'course_progress',
           filter: `course_id=eq.${courseId}`,
         },
-        onUpdate
+        onUpdate,
       )
       .subscribe();
-    
+
     return () => {
       supabase.removeChannel(channel);
     };
@@ -425,7 +433,7 @@ import { PostgrestError } from '@supabase/supabase-js';
 
 export function handleSupabaseError(error: PostgrestError | null) {
   if (!error) return null;
-  
+
   switch (error.code) {
     case 'PGRST116':
       return 'Resource not found';
@@ -444,18 +452,18 @@ export function handleSupabaseError(error: PostgrestError | null) {
 // Usage in queries
 async function safeCourseQuery(courseId: string) {
   const supabase = useSupabase();
-  
+
   try {
     const { data, error } = await supabase
       .from('courses')
       .select('*')
       .eq('id', courseId)
       .single();
-    
+
     if (error) {
       throw new Error(handleSupabaseError(error) || 'Failed to fetch course');
     }
-    
+
     return data;
   } catch (error) {
     console.error('Course query failed:', error);
@@ -473,7 +481,8 @@ async function safeCourseQuery(courseId: string) {
 export function getOptimizedCourseList() {
   return supabase
     .from('courses')
-    .select(`
+    .select(
+      `
       id,
       title,
       slug,
@@ -481,7 +490,8 @@ export function getOptimizedCourseList() {
       featured_image_id,
       difficulty,
       estimated_duration
-    `)
+    `,
+    )
     .eq('status', 'published')
     .order('created_at', { ascending: false })
     .limit(20)
@@ -492,11 +502,7 @@ export function getOptimizedCourseList() {
 export function getPaginatedCourses(page: number, limit: number = 10) {
   const from = page * limit;
   const to = from + limit - 1;
-  
-  return supabase
-    .from('courses')
-    .select('*')
-    .range(from, to)
-    .throwOnError();
+
+  return supabase.from('courses').select('*').range(from, to).throwOnError();
 }
 ```

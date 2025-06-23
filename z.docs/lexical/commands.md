@@ -8,7 +8,7 @@ This pattern is useful for building [`Toolbars`](https://github.com/facebook/lex
 
 When registering a `command` you supply a `priority` and can return `true` to mark it as "handled", which stops other listeners from receiving the event. If a command isn't handled explicitly by you, it's likely handled by default in the [`RichTextPlugin`](https://github.com/facebook/lexical/blob/main/packages/lexical-rich-text/src/index.ts) or the [`PlainTextPlugin`](https://github.com/facebook/lexical/blob/main/packages/lexical-plain-text/src/index.ts).
 
-## `createCommand(...)` [​](https://lexical.dev/docs/concepts/commands\#createcommand "Direct link to heading")
+## `createCommand(...)` [​](https://lexical.dev/docs/concepts/commands#createcommand 'Direct link to heading')
 
 You can view all of the existing commands in [`LexicalCommands.ts`](https://github.com/facebook/lexical/blob/main/packages/lexical/src/LexicalCommands.ts), but if you need a custom command for your own use case check out the typed `createCommand(...)` function.
 
@@ -28,7 +28,7 @@ editor.registerCommand(
 
 ```
 
-## `editor.dispatchCommand(...)` [​](https://lexical.dev/docs/concepts/commands\#editordispatchcommand "Direct link to heading")
+## `editor.dispatchCommand(...)` [​](https://lexical.dev/docs/concepts/commands#editordispatchcommand 'Direct link to heading')
 
 Commands can be dispatched from anywhere you have access to the `editor` such as a Toolbar Button, an event listener, or a Plugin, but most of the core commands are dispatched from [`LexicalEvents.ts`](https://github.com/facebook/lexical/blob/main/packages/lexical/src/LexicalEvents.ts).
 
@@ -73,7 +73,7 @@ editor.registerCommand(
 
 ```
 
-## `editor.registerCommand(...)` [​](https://lexical.dev/docs/concepts/commands\#editorregistercommand "Direct link to heading")
+## `editor.registerCommand(...)` [​](https://lexical.dev/docs/concepts/commands#editorregistercommand 'Direct link to heading')
 
 You can register a command from anywhere you have access to the `editor` object, but it's important that you remember to clean up the listener with its remove listener callback when it's no longer needed.
 

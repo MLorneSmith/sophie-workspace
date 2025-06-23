@@ -361,7 +361,7 @@ export const CreateNoteSchema = z.object({
 });
 
 // 2. Client component with form
-'use client';
+('use client');
 const form = useForm({
   resolver: zodResolver(CreateNoteSchema),
 });

@@ -18,7 +18,7 @@ This feature is available on all Portkey [plans](https://portkey.ai/pricing).
 
 Partials can also serve as a global variable store. You can define common variables that are used across multiple of your prompt template and can reference or update them easily.
 
-## [​](https://portkey.ai/docs/product/prompt-library/prompt-partials\#creating-partials)  Creating Partials
+## [​](https://portkey.ai/docs/product/prompt-library/prompt-partials#creating-partials) Creating Partials
 
 Partials are directly accessible from the Prompts Page:
 
@@ -30,7 +30,7 @@ You can create a new Partial and use it for any purpose in any of your prompt te
 
 Upon saving, each Partial generates a unique ID that you can use inside prompt templates.
 
-### [​](https://portkey.ai/docs/product/prompt-library/prompt-partials\#template-engine)  Template Engine
+### [​](https://portkey.ai/docs/product/prompt-library/prompt-partials#template-engine) Template Engine
 
 Partials also follow the [Mustache template engine](https://mustache.github.io/) and let you easily handle data input at runtime by using tags.
 
@@ -38,15 +38,15 @@ Portkey supports `{{variable}}`, `{{#block}} <string> {{/block}}`, `{{^block}}` 
 
 [**Check out this comprehensive guide on how to use tags**](https://portkey.ai/docs/product/prompt-library/prompt-templates#templating-engine).
 
-### [​](https://portkey.ai/docs/product/prompt-library/prompt-partials\#versioning)  Versioning
+### [​](https://portkey.ai/docs/product/prompt-library/prompt-partials#versioning) Versioning
 
 Portkey follow the same `Update` **&** `Publish` flow as prompt templates. You can keep updating the partial and save new versions, and choose to send any version to prod using the `Publish` feature.
 
 All the version history for any partial is avaiable on the right column and any previous version can be restored to be `latest` or `published` to prod easily.
 
-* * *
+---
 
-## [​](https://portkey.ai/docs/product/prompt-library/prompt-partials\#using-partials)  Using Partials
+## [​](https://portkey.ai/docs/product/prompt-library/prompt-partials#using-partials) Using Partials
 
 You can call Partials by their ID inside any prompt template by just starting to type `{{>`
 
@@ -60,7 +60,7 @@ When a partial is incorporated in a template, all the variables/blocks defined a
 
 When a new Partial version is **Published**, your partial that is in use in any of the prompt templates also gets automatically updated.
 
-### [​](https://portkey.ai/docs/product/prompt-library/prompt-partials\#making-a-prompt-completion-request)  Making a Prompt Completion Request
+### [​](https://portkey.ai/docs/product/prompt-library/prompt-partials#making-a-prompt-completion-request) Making a Prompt Completion Request
 
 All the variables/tags defined inside the partial can now be directly called at the time of making a `prompts.completion` request:
 
@@ -71,19 +71,18 @@ Copy
 
 ```js
 const response = portkey.prompts.completions.create({
-    promptID: "pp-system-pro-34a60b",
-    variables: {
-        "user_query":"",
-        "company":"",
-        "product":"",
-        "benefits":"",
-        "phone number":"",
-        "name":"",
-        "device":"",
-        "query":""
-    }
-})
-
+  promptID: 'pp-system-pro-34a60b',
+  variables: {
+    user_query: '',
+    company: '',
+    product: '',
+    benefits: '',
+    'phone number': '',
+    name: '',
+    device: '',
+    query: '',
+  },
+});
 ```
 
 Was this page helpful?

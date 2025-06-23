@@ -14,7 +14,7 @@ AI Gateway
 
 [Documentation](https://portkey.ai/docs/introduction/what-is-portkey) [Integrations](https://portkey.ai/docs/integrations) [Inference API](https://portkey.ai/docs/api-reference/inference-api/introduction) [Admin API](https://portkey.ai/docs/api-reference/admin-api/control-plane/configs/create-config) [Cookbook](https://portkey.ai/docs/guides/getting-started) [Changelog](https://portkey.ai/docs/changelog/2025/jan)
 
-## [​](https://portkey.ai/docs/product/ai-gateway\#features)  Features
+## [​](https://portkey.ai/docs/product/ai-gateway#features) Features
 
 [**Universal API** \\
 \\
@@ -42,13 +42,13 @@ Set usage limits based on costs incurred or tokens used](https://portkey.ai/docs
 \\
 Set hourly, daily, or per minute rate limits on requests or tokens sent](https://portkey.ai/docs/product/ai-gateway/rate-limits)
 
-## [​](https://portkey.ai/docs/product/ai-gateway\#using-the-gateway)  Using the Gateway
+## [​](https://portkey.ai/docs/product/ai-gateway#using-the-gateway) Using the Gateway
 
 The various gateway strategies are implemented using Gateway configs. You can read more about configs below.
 
 [**Configs**](https://portkey.ai/docs/product/ai-gateway/configs)
 
-## [​](https://portkey.ai/docs/product/ai-gateway\#open-source)  Open Source
+## [​](https://portkey.ai/docs/product/ai-gateway#open-source) Open Source
 
 We’ve open sourced our battle-tested AI gateway to the community. You can run it locally with a single command:
 

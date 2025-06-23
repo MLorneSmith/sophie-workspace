@@ -3,6 +3,7 @@ description: Writing Server Actions for mutating data
 globs: apps/**","packages/**
 alwaysApply: false
 ---
+
 # Server Actions
 
 - For Data Mutations from Client Components, always use Server Actions

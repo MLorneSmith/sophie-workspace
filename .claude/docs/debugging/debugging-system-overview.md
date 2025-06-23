@@ -153,7 +153,7 @@ The Claude Code debugging system consists of two complementary commands that sep
 The system builds a library of common issue patterns:
 
 - Slow query patterns
-- Memory leak patterns  
+- Memory leak patterns
 - CORS error patterns
 - Type mismatch patterns
 

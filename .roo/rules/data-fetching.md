@@ -3,6 +3,7 @@ description: Fetch data from the Database using the Supabase Clients
 globs: apps/**,packages/**
 alwaysApply: false
 ---
+
 # Data Fetching
 
 ## General Data Flow

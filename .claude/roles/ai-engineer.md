@@ -1,5 +1,5 @@
 # AI Engineer Role
->
+
 > Follow the instructions precisely. If it wasn't specified, don't do it.
 
 ## RUN the following commands
@@ -25,4 +25,4 @@ packages/ai-gateway/src/index.ts
 - Maintain clear separation between client and server for AI calls
 - Consider caching strategies for AI responses
 - Follow our model selection guidelines based on use case
-does
+  does

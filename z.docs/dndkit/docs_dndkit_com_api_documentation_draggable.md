@@ -2,11 +2,11 @@
 
 Use the `useDraggable` hook turn DOM nodes into draggable sources that can be picked up, moved and dropped over [droppable](https://docs.dndkit.com/api-documentation/droppable) containers.
 
-## [Direct link to heading](https://docs.dndkit.com/api-documentation/draggable\#usage)    Usage
+## [Direct link to heading](https://docs.dndkit.com/api-documentation/draggable#usage) Usage
 
 The `useDraggable` hook isn't particularly opinionated about how your app should be structured.
 
-### [Direct link to heading](https://docs.dndkit.com/api-documentation/draggable\#node-ref)    Node ref
+### [Direct link to heading](https://docs.dndkit.com/api-documentation/draggable#node-ref) Node ref
 
 At minimum though, you need to pass the `setNodeRef` function that is returned by the `useDraggable` hook to a DOM element so that it can access the underlying DOM node and keep track of it to [detect collisions and intersections](https://docs.dndkit.com/api-documentation/context-provider/collision-detection-algorithms) with other [droppable](https://docs.dndkit.com/api-documentation/droppable) elements.
 
@@ -35,17 +35,17 @@ function Draggable() {
 Always try to use the DOM element that is most [semantic](https://developer.mozilla.org/en-US/docs/Glossary/Semantics) in the context of your app.
 Check out our [Accessibility guide](https://docs.dndkit.com/guides/accessibility) to learn more about how you can help provide a better experience for screen readers.
 
-### [Direct link to heading](https://docs.dndkit.com/api-documentation/draggable\#identifier)    Identifier
+### [Direct link to heading](https://docs.dndkit.com/api-documentation/draggable#identifier) Identifier
 
 The `id` argument is a string that should be a unique identifier, meaning there should be no other **draggable** elements that share that same identifier within a given [`DndContext`](https://docs.dndkit.com/api-documentation/context-provider) provider.
 
-### [Direct link to heading](https://docs.dndkit.com/api-documentation/draggable\#listeners)    Listeners
+### [Direct link to heading](https://docs.dndkit.com/api-documentation/draggable#listeners) Listeners
 
 The `useDraggable` hook requires that you attach `listeners` to the DOM node that you would like to become the activator to start dragging.
 
 While we could have attached these listeners manually to the node provided to `setNodeRef`, there are actually a number of key advantages to forcing the consumer to manually attach the listeners.
 
-#### [Direct link to heading](https://docs.dndkit.com/api-documentation/draggable\#flexibility)    Flexibility
+#### [Direct link to heading](https://docs.dndkit.com/api-documentation/draggable#flexibility) Flexibility
 
 While many drag and drop libraries need to expose the concept of "drag handles", creating a drag handle with the `useDraggable` hook is as simple as manually attaching the listeners to a different DOM element than the one that is set as the draggable source DOM node:
 
@@ -92,13 +92,13 @@ function Draggable() {
 }
 ```
 
-#### [Direct link to heading](https://docs.dndkit.com/api-documentation/draggable\#performance)    Performance
+#### [Direct link to heading](https://docs.dndkit.com/api-documentation/draggable#performance) Performance
 
 This strategy also means that we're able to use [React synthetic events](https://reactjs.org/docs/events.html), which ultimately leads to improved performance over manually attaching event listeners to each individual node.
 
 Why? Because rather than having to attach individual event listeners for each draggable DOM node, React attaches a single event listener for every type of event we listen to on the `document`. Once click on one of the draggable nodes happens, React's listener on the document dispatches a SyntheticEvent back to the original handler.
 
-### [Direct link to heading](https://docs.dndkit.com/api-documentation/draggable\#transforms)    Transforms
+### [Direct link to heading](https://docs.dndkit.com/api-documentation/draggable#transforms) Transforms
 
 In order to actually see your draggable items move on screen, you'll need to move the item using CSS. You can use inline styles, CSS variables, or even CSS-in-JS libraries to pass the `transform` property as CSS to your draggable element.
 
@@ -119,7 +119,7 @@ CSS.Translate.toString(transform) ===
 `translate3d(${translate.x}, ${translate.y}, 0)`
 ```
 
-### [Direct link to heading](https://docs.dndkit.com/api-documentation/draggable\#attributes)    Attributes
+### [Direct link to heading](https://docs.dndkit.com/api-documentation/draggable#attributes) Attributes
 
 The `useDraggable` hookprovides a set of sensible default attributes for draggable items. We recommend you attach these to the HTML element you are attaching the draggable listeners to.
 
@@ -163,9 +163,9 @@ To learn more about the best practices for making draggable interfaces accessibl
 
 [Accessibility](https://docs.dndkit.com/guides/accessibility)
 
-### [Direct link to heading](https://docs.dndkit.com/api-documentation/draggable\#recommendations)    Recommendations
+### [Direct link to heading](https://docs.dndkit.com/api-documentation/draggable#recommendations) Recommendations
 
-#### [Direct link to heading](https://docs.dndkit.com/api-documentation/draggable\#touch-action)    `touch-action`
+#### [Direct link to heading](https://docs.dndkit.com/api-documentation/draggable#touch-action) `touch-action`
 
 We highly recommend you specify the `touch-action` CSS property for all of your draggable elements.
 
@@ -183,7 +183,7 @@ If your draggable item is part of a scrollable list, we recommend you use a drag
 
 Once a `pointerdown` or `touchstart` event has been initiated, any changes to the `touch-action` value will be ignored. Programmatically changing the `touch-action` value for an element from `auto` to `none` after a pointer or touch event has been initiated will not result in the user agent aborting or suppressing any default behavior for that event for as long as that pointer is active (for more details, refer to the [Pointer Events Level 2 Spec](https://www.w3.org/TR/pointerevents2/#determining-supported-touch-behavior)).
 
-## [Direct link to heading](https://docs.dndkit.com/api-documentation/draggable\#drag-overlay)    Drag Overlay
+## [Direct link to heading](https://docs.dndkit.com/api-documentation/draggable#drag-overlay) Drag Overlay
 
 The `<DragOverlay>` component provides a way to render a draggable overlay that is removed from the normal document flow and is positioned relative to the viewport.
 
@@ -195,4 +195,4 @@ To learn more about how to use drag overlays, read the in-depth guide:
 
 Last updated 4 years ago
 
-* * *
+---

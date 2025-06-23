@@ -6,9 +6,9 @@ Make sure the app installs the `@kit/supabase` package before using it.
 
 ```json
 {
-    "name": "my-app",
-    "dependencies": {
-        "@kit/supabase": "*"
-    }
+  "name": "my-app",
+  "dependencies": {
+    "@kit/supabase": "*"
+  }
 }
 ```

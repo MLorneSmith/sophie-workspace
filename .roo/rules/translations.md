@@ -1,8 +1,9 @@
 ---
 description: I18n and Translations
-globs: 
+globs:
 alwaysApply: false
 ---
+
 # i18n System Guide
 
 This document provides a comprehensive overview of the internationalization (i18n) system in our Next.js application.
@@ -42,7 +43,7 @@ import { useTranslation } from 'react-i18next';
 
 export function MyComponent() {
   const { t } = useTranslation('common');
-  
+
   return <h1>{t('homeTabLabel')}</h1>;
 }
 ```
@@ -57,8 +58,8 @@ import { Trans } from '@kit/ui/trans';
 export function MyComponent() {
   return (
     <div>
-      <Trans 
-        i18nKey="teams:inviteAlertBody" 
+      <Trans
+        i18nKey="teams:inviteAlertBody"
         values={{ accountName: 'My Team' }}
       />
     </div>

@@ -1,4 +1,4 @@
-## [Direct link to heading](https://docs.dndkit.com/presets/sortable\#installation)    Installation
+## [Direct link to heading](https://docs.dndkit.com/presets/sortable#installation) Installation
 
 To get started, install the sortable preset via `npm` or `yarn`:
 
@@ -8,7 +8,7 @@ Copy
 npm install @dnd-kit/sortable
 ```
 
-## [Direct link to heading](https://docs.dndkit.com/presets/sortable\#overview)    Overview
+## [Direct link to heading](https://docs.dndkit.com/presets/sortable#overview) Overview
 
 If you're eager to get started right away, here's the code you'll need:
 
@@ -105,7 +105,7 @@ export function SortableItem(props) {
 
 For most sortable lists, we recommend you use a [`DragOverlay`](https://docs.dndkit.com/api-documentation/draggable/drag-overlay) if your sortable list is scrollable or if the contents of the scrollable list are taller than the viewport of the window. Check out the [sortable drag overlay guide](https://docs.dndkit.com/presets/sortable#drag-overlay) below to learn more.
 
-## [Direct link to heading](https://docs.dndkit.com/presets/sortable\#architecture)    Architecture
+## [Direct link to heading](https://docs.dndkit.com/presets/sortable#architecture) Architecture
 
 The sortable preset builds on top of the primitives exposed by `@dnd-kit/core` to help building sortable interfaces.
 
@@ -117,13 +117,13 @@ The sortable preset exposes two main concepts: [`SortableContext`](https://docs.
 
 ![](https://docs.dndkit.com/~gitbook/image?url=https%3A%2F%2F3633755066-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-legacy-files%2Fo%2Fassets%252F-MMujhzqaYbBEEmDxnZO%252F-MPAGLQu4q5MwkPGcMwL%252F-MPAJ4EP6hgc_WyBRvU2%252FuseSortable%2520%281%29.png%3Falt%3Dmedia%26token%3D5258bd82-7443-4c7d-8b27-7d092d04ab03&width=768&dpr=4&quality=100&sign=8781210d&sv=2)
 
-### [Direct link to heading](https://docs.dndkit.com/presets/sortable\#single-container)    Single container
+### [Direct link to heading](https://docs.dndkit.com/presets/sortable#single-container) Single container
 
 At a high level, the application structure to implement a **sortable list with a single container** looks as follows:
 
 ![](https://docs.dndkit.com/~gitbook/image?url=https%3A%2F%2F3633755066-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-legacy-files%2Fo%2Fassets%252F-MMujhzqaYbBEEmDxnZO%252F-MP7kCLhAw6rXlUxFILQ%252F-MPA8JRM90_d98a9Tvzz%252FSortable%2520%281%29.png%3Falt%3Dmedia%26token%3Dfc6b976d-f97e-4a07-90c5-dee05d3e1498&width=768&dpr=4&quality=100&sign=9fb5e799&sv=2)
 
-### [Direct link to heading](https://docs.dndkit.com/presets/sortable\#multiple-containers)    Multiple containers
+### [Direct link to heading](https://docs.dndkit.com/presets/sortable#multiple-containers) Multiple containers
 
 To implement sortable list with items that can be dropped within **multiple containers**, the application structure is the same, but we add as many `SortableContext` providers as we have containers:
 
@@ -135,9 +135,9 @@ If you paid close attention to the illustration above, you may also have noticed
 
 ![](https://docs.dndkit.com/~gitbook/image?url=https%3A%2F%2F3633755066-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-legacy-files%2Fo%2Fassets%252F-MMujhzqaYbBEEmDxnZO%252F-MPF80W-heGKUftClbx3%252F-MPF9MpK_A0AGiZaGSl7%252FSortable%2520Multiple%2520Containers%2520Empty%2520Column%2520%281%29.png%3Falt%3Dmedia%26token%3D51cd76c1-1c07-49dd-bc80-69128e8b6cbf&width=768&dpr=4&quality=100&sign=43114e8c&sv=2)
 
-## [Direct link to heading](https://docs.dndkit.com/presets/sortable\#concepts)    Concepts
+## [Direct link to heading](https://docs.dndkit.com/presets/sortable#concepts) Concepts
 
-### [Direct link to heading](https://docs.dndkit.com/presets/sortable\#sortable-context)    Sortable Context
+### [Direct link to heading](https://docs.dndkit.com/presets/sortable#sortable-context) Sortable Context
 
 In addition to the [`DndContext` provider](https://docs.dndkit.com/introduction/getting-started#context-provider), the Sortable preset requires its own context provider that contains the **sorted** array of the unique identifiers associated to each sortable item:
 
@@ -193,7 +193,7 @@ function App() {
 
 In order for the `SortableContext` component to function properly, make sure it is a descendant of a `DndContext` provider. You may nest multiple `SortableContext` components within the same parent `DndContext`.
 
-### [Direct link to heading](https://docs.dndkit.com/presets/sortable\#usesortable)    useSortable
+### [Direct link to heading](https://docs.dndkit.com/presets/sortable#usesortable) useSortable
 
 As outlined above, the `useSortable` hook combines both the [`useDraggable`](https://docs.dndkit.com/api-documentation/draggable) and [`useDroppable`](https://docs.dndkit.com/api-documentation/droppable) hooks to connect elements as both draggable sources and drop targets:
 
@@ -258,7 +258,7 @@ const {
 
 For more details on the `useSortable` hook, read the full [API documentation](https://docs.dndkit.com/presets/sortable/usesortable).
 
-### [Direct link to heading](https://docs.dndkit.com/presets/sortable\#sensors)    Sensors
+### [Direct link to heading](https://docs.dndkit.com/presets/sortable#sensors) Sensors
 
 Sensors are an abstraction to manage and listen to different input methods. If you're unfamiliar with the concept of sensors, we recommend you read the [introduction to sensors](https://docs.dndkit.com/api-documentation/sensors) first.
 
@@ -357,7 +357,7 @@ To learn more about sensors, read the in-depth documentation on sensors:
 
 [Sensors](https://docs.dndkit.com/api-documentation/sensors)
 
-### [Direct link to heading](https://docs.dndkit.com/presets/sortable\#sorting-strategies)    Sorting strategies
+### [Direct link to heading](https://docs.dndkit.com/presets/sortable#sorting-strategies) Sorting strategies
 
 The supported use cases of the Sortable preset include vertical lists, horizontal lists, grids, and virtualized lists. Because of the wide variety of use cases supported, it would be difficult to write a single strategy to cover all of these different use cases. Instead, the sortable preset exposes a number of different strategies you can use, that are tailored to these various use cases:
 
@@ -371,7 +371,7 @@ The supported use cases of the Sortable preset include vertical lists, horizonta
 
 Make sure to use the sorting strategy that is the most adapted to the use case you are building for.
 
-### [Direct link to heading](https://docs.dndkit.com/presets/sortable\#collision-detection-algorithm)    Collision detection algorithm
+### [Direct link to heading](https://docs.dndkit.com/presets/sortable#collision-detection-algorithm) Collision detection algorithm
 
 The default collision detection algorithm of `DndContext` is the [rectangle intersection](https://docs.dndkit.com/api-documentation/context-provider/collision-detection-algorithms#rectangle-intersection) algorithm. While the rectangle intersection strategy is well suited for many use cases, it can be unforgiving, since it requires both the draggable and droppable bounding rectangles to come into direct contact and intersect.
 
@@ -402,7 +402,7 @@ To learn more about collision detection algorithms and when to use one over the 
 
 [Collision detection algorithms](https://docs.dndkit.com/api-documentation/context-provider/collision-detection-algorithms)
 
-## [Direct link to heading](https://docs.dndkit.com/presets/sortable\#connecting-all-the-pieces)    Connecting all the pieces
+## [Direct link to heading](https://docs.dndkit.com/presets/sortable#connecting-all-the-pieces) Connecting all the pieces
 
 First, let's go ahead and render all of our sortable items:
 
@@ -635,7 +635,7 @@ function App() {
 }
 ```
 
-### [Direct link to heading](https://docs.dndkit.com/presets/sortable\#drag-overlay)    Drag Overlay
+### [Direct link to heading](https://docs.dndkit.com/presets/sortable#drag-overlay) Drag Overlay
 
 For most sortable lists, we recommend you use a [`DragOverlay`](https://docs.dndkit.com/api-documentation/draggable/drag-overlay) if your sortable list is scrollable or if the contents of the scrollable list are taller than the viewport of the window.
 
@@ -769,4 +769,4 @@ export const Item = forwardRef(({id, ...props}, ref) => {
 
 Last updated 2 years ago
 
-* * *
+---

@@ -56,7 +56,7 @@ pnpm supabase:web:stop
 # Stop Payload CMS if running
 pkill -f "payload"
 
-# Stop web app if running  
+# Stop web app if running
 pkill -f "next-server"
 ```
 
@@ -155,19 +155,19 @@ docker exec -i supabase_db_2025slideheroes-db psql -U postgres -d postgres -c "D
 
 # Clean up any orphaned enum types
 docker exec -i supabase_db_2025slideheroes-db psql -U postgres -d postgres -c "
-DO \$\$ 
-DECLARE 
-    enum_record RECORD; 
-BEGIN 
-    FOR enum_record IN 
-        SELECT typname, nspname 
-        FROM pg_type t 
-        JOIN pg_namespace n ON t.typnamespace = n.oid 
-        WHERE t.typtype = 'e' 
-        AND (nspname = 'payload' OR (nspname = 'public' AND typname LIKE 'enum_%')) 
-    LOOP 
-        EXECUTE 'DROP TYPE IF EXISTS ' || quote_ident(enum_record.nspname) || '.' || quote_ident(enum_record.typname) || ' CASCADE'; 
-    END LOOP; 
+DO \$\$
+DECLARE
+    enum_record RECORD;
+BEGIN
+    FOR enum_record IN
+        SELECT typname, nspname
+        FROM pg_type t
+        JOIN pg_namespace n ON t.typnamespace = n.oid
+        WHERE t.typtype = 'e'
+        AND (nspname = 'payload' OR (nspname = 'public' AND typname LIKE 'enum_%'))
+    LOOP
+        EXECUTE 'DROP TYPE IF EXISTS ' || quote_ident(enum_record.nspname) || '.' || quote_ident(enum_record.typname) || ' CASCADE';
+    END LOOP;
 END \$\$;"
 ```
 
