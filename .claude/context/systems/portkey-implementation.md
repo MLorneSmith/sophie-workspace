@@ -1,58 +1,150 @@
 # Portkey AI Gateway Implementation
 
-This document explains our implementation of the Portkey AI Gateway, including configuration management, prompt systems, and best practices.
+This document provides a comprehensive guide to our Portkey AI Gateway implementation, including architecture, configuration management, prompt systems, and best practices.
 
 ## Overview
 
-Our AI Gateway implementation provides:
+Our AI Gateway implementation provides a secure, type-safe abstraction layer for AI service providers with:
 
-- Secure, type-safe integration with multiple AI providers
-- Server-side only access for enhanced security
-- Virtual keys system for secure API key management
-- Flexible configuration management
-- Two distinct prompt management approaches
+1. **Unified API** for multiple AI providers (OpenAI, Anthropic, Groq)
+2. **Automatic provider selection** based on model
+3. **Fallback mechanisms** between providers
+4. **Caching and rate limiting** capabilities
+5. **Usage tracking and cost management**
+6. **Virtual keys system** for secure API key management
+7. **Server-side only access** for enhanced security
+
+## Architecture
 
 ### Key Implementation Choices
 
-1. **Virtual Keys System**
+1. **OpenAI SDK with Portkey Configuration**
+   - Uses OpenAI SDK configured with Portkey's proxy URL
+   - Provides better TypeScript support than Portkey SDK
+   - Maintains familiar OpenAI SDK interface
+   - Custom header-based configuration
 
-   - Uses Portkey's virtual keys for secure API key management
-   - API keys stored in Portkey's vault, not exposed in codebase
+2. **Virtual Keys System**
+   - API keys stored securely in Portkey's vault
+   - No direct API key exposure in codebase
    - Environment variables:
-
      ```env
      PORTKEY_API_KEY=your-portkey-api-key
      PORTKEY_VIRTUAL_KEY=your-virtual-key
+     OPENAI_API_KEY=placeholder-or-empty
      ```
 
-2. **Server-Side Only Access**
-
-   - All AI calls made server-side for security
-   - Uses Next.js 15 Server Actions for handling AI requests
-   - Client components never have direct access to API keys
-
-3. **OpenAI SDK with Portkey Configuration**
-   - Leverages OpenAI's SDK configured to use Portkey's gateway
-   - Maintains familiar OpenAI SDK interface
-   - Supports all OpenAI-compatible providers
-
-## Configuration System
+3. **Server-Side Only Access**
+   - All AI calls made through Next.js 15 Server Actions
+   - Client components never have direct API access
+   - Uses `enhanceAction` wrapper for all server actions
 
 ### Directory Structure
 
 ```
-src/configs/
-├── templates/       # Optimization-focused config templates
-├── use-cases/      # Task-specific configs
-├── utils/          # Cache and force refresh utilities
-├── manager.ts      # Config management utilities
-└── types.ts        # Type definitions
+packages/ai-gateway/
+├── src/
+│   ├── configs/          # Configuration management
+│   │   ├── templates/    # Optimization-focused templates
+│   │   ├── use-cases/    # Task-specific configs
+│   │   ├── utils/        # Cache and utilities
+│   │   ├── manager.ts    # Config management
+│   │   └── types.ts      # Type definitions
+│   ├── prompts/          # Prompt management
+│   │   ├── messages/     # Message components
+│   │   ├── templates/    # Combined templates
+│   │   └── manager.ts    # Prompt utilities
+│   └── utils/            # Core utilities
+│       ├── usage-tracking.ts
+│       ├── db-init.ts
+│       └── supabase-client.ts
 ```
+
+## Basic Usage
+
+### Creating a Gateway Client
+
+```typescript
+import { createGatewayClient } from '@kit/ai-gateway';
+
+// Basic usage with model-based provider selection
+const client = createGatewayClient({
+  model: 'gpt-4-turbo',        // OpenAI provider
+  // model: 'claude-3-opus-20240229',  // Anthropic provider
+  // model: 'llama-3-70b',             // Groq provider
+  userId: user.id,
+  feature: 'content-generation',
+});
+```
+
+### Using getChatCompletion Helper
+
+For simpler use cases:
+
+```typescript
+import { getChatCompletion } from '@kit/ai-gateway';
+
+const result = await getChatCompletion(
+  [
+    { role: 'system', content: 'You are a helpful assistant.' },
+    { role: 'user', content: prompt },
+  ],
+  {
+    model: 'gpt-4-turbo',
+    temperature: 0.7,
+    userId: user.id,
+    teamId: team.id,
+    feature: 'chat-assistant',
+  },
+);
+
+console.log(result.content);
+console.log(result.metadata.cost); // Track costs
+```
+
+### Server Actions Integration
+
+Always use server actions for AI calls:
+
+```typescript
+'use server';
+
+import { z } from 'zod';
+import { createGatewayClient } from '@kit/ai-gateway';
+import { enhanceAction } from '@kit/next/actions';
+
+export const generateContentAction = enhanceAction(
+  async (data: { prompt: string }, user) => {
+    const client = createGatewayClient({
+      userId: user.id,
+      model: 'gpt-4-turbo',
+      feature: 'content-generation',
+    });
+
+    const response = await client.chat.completions.create({
+      messages: [
+        { role: 'system', content: 'You are a helpful assistant.' },
+        { role: 'user', content: data.prompt },
+      ],
+      model: 'gpt-4-turbo',
+      max_tokens: 500,
+    });
+
+    return response.choices[0].message.content;
+  },
+  {
+    schema: z.object({
+      prompt: z.string().min(1).max(1000),
+    }),
+  },
+);
+```
+
+## Configuration System
 
 ### Configuration Types
 
 1. **Strategy Configuration**
-
    ```typescript
    {
      mode: 'single' | 'loadbalance' | 'fallback';
@@ -61,7 +153,6 @@ src/configs/
    ```
 
 2. **Cache Configuration**
-
    ```typescript
    {
      mode: 'simple' | 'semantic';
@@ -70,7 +161,6 @@ src/configs/
    ```
 
 3. **Retry Configuration**
-
    ```typescript
    {
      attempts: number;
@@ -80,30 +170,52 @@ src/configs/
 
 ### Optimization-Focused Templates
 
-1. **Quality Optimized**
+1. **Quality Optimized** (`quality-optimized`)
+   - Models: GPT-4 with Claude-3-Opus fallback
+   - Temperature: 0.3 (low for precision)
+   - Cache: Semantic with 2-hour duration
+   - Best for: Critical content, structured data generation
 
-   - Uses GPT-4 with Claude-3-Opus fallback
-   - Low temperature (0.3) for precision
-   - Semantic caching with 2-hour duration
-   - Best for: Critical content, structured data
-
-2. **Speed Optimized**
-
-   - Uses Groq with llama-3.1-8b-instant
-   - Higher temperature for quick responses
-   - Simple caching with short duration
+2. **Speed Optimized** (`speed-optimized`)
+   - Models: Groq with llama-3.1-8b-instant
+   - Temperature: Higher for quick responses
+   - Cache: Simple with short duration
    - Best for: Quick suggestions, real-time completions
 
-3. **Balanced Optimized**
-   - Uses llama-3.3-70b with Claude-3-Haiku fallback
-   - Moderate settings for general use
-   - Efficient cache strategies
+3. **Balanced Optimized** (`balanced-optimized`)
+   - Models: llama-3.3-70b with Claude-3-Haiku fallback
+   - Temperature: Moderate settings
+   - Cache: Efficient strategies
    - Best for: General-purpose features
+
+### Advanced Configuration
+
+```typescript
+const client = createGatewayClient({
+  model: 'gpt-4-turbo',
+  config: {
+    strategy: {
+      mode: 'fallback',
+    },
+    targets: [
+      { provider: 'openai', model: 'gpt-4-turbo' },
+      { provider: 'anthropic', model: 'claude-3-opus-20240229' },
+    ],
+    cache: {
+      mode: 'semantic',
+      max_age: 7200,
+    },
+    retry: {
+      attempts: 3,
+      on_status_codes: [429, 500, 502, 503, 504],
+    },
+  },
+});
+```
 
 ### Cache Management
 
-1. **Namespacing Options**
-
+1. **Namespace Options**
    ```typescript
    type CacheNamespaceOptions = {
      userId: string;
@@ -121,24 +233,14 @@ src/configs/
 
 ## Prompt Management
 
-Our implementation uses two distinct approaches for prompt management:
+### Two Distinct Approaches
 
-### 1. Standard Template Approach
+#### 1. Standard Template Approach
 
-Used for standalone operations that don't require complex context. Directory structure:
-
-```
-src/prompts/
-├── messages/          # Message components
-│   ├── system/       # System role definitions
-│   └── user/         # User message templates
-├── templates/        # Combined message templates
-└── prompt-manager.ts # Management utilities
-```
-
-Example template:
+Used for standalone operations with simple context requirements:
 
 ```typescript
+// Define templates in src/prompts/templates/
 const testOutlineTemplate: ChatMessage[] = [
   {
     role: 'system',
@@ -149,32 +251,17 @@ const testOutlineTemplate: ChatMessage[] = [
     content: testOutlineRequestUser,
   },
 ];
+
+// Use with PromptManager
+const messages = PromptManager.getTemplate('test-outline');
 ```
 
-### 2. Partial-Based Canvas Approach
+#### 2. Partial-Based Canvas Approach
 
-Used for complex operations requiring SCQA framework integration and rich context. Implements a modular system of prompt partials:
-
-1. **Base Instructions**
-
-   - Core instructions for all improvements
-   - SCQA framework guidelines
-   - Analysis principles
-
-2. **Improvement Format**
-
-   - Structured JSON output format
-   - Specific field requirements
-   - Validation rules
-
-3. **Presentation Context**
-   - Complete SCQA framework context
-   - Audience and goal information
-   - Section-specific focus
-
-Example usage:
+Used for complex operations requiring SCQA framework and rich context:
 
 ```typescript
+// Compose prompts from partials
 const messages: ChatMessage[] = [
   {
     role: 'system',
@@ -190,57 +277,134 @@ const messages: ChatMessage[] = [
 ];
 ```
 
-## Implementation Patterns
-
 ### When to Use Each Approach
 
-1. **Standard Template Approach**
+| Feature | Standard Template | Partial-Based |
+|---------|------------------|---------------|
+| Complexity | Simple, fixed format | Complex, dynamic |
+| Context | Limited | Rich SCQA framework |
+| Use Cases | Title generation, basic outlines | Canvas editor, improvements |
+| Flexibility | Low | High |
 
-   - Simple, standalone operations
-   - Fixed input/output formats
-   - Limited context requirements
-   - Example: Title generation, basic outlines
+## Streaming Responses
 
-2. **Partial-Based Approach**
-   - Complex operations requiring SCQA framework
-   - Rich context requirements
-   - Structured improvement suggestions
-   - Example: Canvas editor operations
+For better user experience with long responses:
 
-### Best Practices
+```typescript
+import { getStreamingChatCompletion } from '@kit/ai-gateway';
 
-1. **Configuration**
+const stream = getStreamingChatCompletion(messages, {
+  model: 'gpt-4-turbo',
+  userId: user.id,
+  feature: 'streaming-chat',
+});
 
-   - Use appropriate optimization template for the task
-   - Implement proper cache namespacing
-   - Configure force refresh conditions
-   - Set appropriate retry attempts
+for await (const chunk of stream) {
+  // Process each chunk
+  process.stdout.write(chunk);
+}
+```
 
-2. **Prompts**
+## Error Handling
 
-   - Keep system messages focused on role/behavior
-   - Use clear, specific user messages
-   - Implement proper variable substitution
-   - Validate all required fields
+```typescript
+import { AiUsageLimitError } from '@kit/ai-gateway';
 
-3. **Error Handling**
+try {
+  const result = await getChatCompletion(messages, {
+    model: 'gpt-4-turbo',
+    userId: user.id,
+  });
+  
+  return result.content;
+} catch (error) {
+  if (error instanceof AiUsageLimitError) {
+    // Handle usage limit exceeded
+    return 'Usage limit exceeded. Please upgrade your plan.';
+  }
+  
+  console.error('AI service error:', error);
+  return 'Sorry, I was unable to generate content at this time.';
+}
+```
 
-   - Implement proper try/catch blocks
-   - Log errors with context
-   - Provide meaningful error messages
-   - Handle rate limits and retries
+## Usage Tracking
 
-4. **Response Parsing**
-   - Validate JSON structure
-   - Parse improvements consistently
-   - Handle malformed responses
-   - Maintain type safety
+The gateway automatically tracks:
+
+- **User Identification**: User ID and Team ID for billing
+- **Feature Attribution**: Feature name for cost allocation
+- **Session Tracking**: Session ID for request grouping
+- **Token Usage**: Prompt, completion, and total tokens
+- **Cost Calculation**: Based on model and token usage
+- **Request Metadata**: Request IDs for debugging
+
+### Tracked Metrics
+
+```typescript
+interface UsageMetadata {
+  promptTokens: number;
+  completionTokens: number;
+  totalTokens: number;
+  cost: number;
+  provider: string;
+  model: string;
+  feature: string;
+  requestId: string;
+}
+```
+
+## Environment Variables
+
+### Required
+- `PORTKEY_API_KEY` - Your Portkey API key
+- `PORTKEY_VIRTUAL_KEY` - Virtual key for provider access
+- `OPENAI_API_KEY` - Can be empty when using virtual keys
+
+### Optional
+- `CHECK_AI_USAGE_LIMITS` - Enable usage limit checking (default: false)
+- `BYPASS_AI_CREDITS` - Bypass credit deduction (default: true)
+- `AI_USAGE_DEBUG` - Enable verbose debug logging (default: false)
+- `INITIALIZE_DATABASE` - Initialize AI gateway database tables (default: true)
+
+## Best Practices
+
+### 1. Configuration
+- Choose the right optimization template for your use case
+- Implement proper cache namespacing for multi-tenant scenarios
+- Configure force refresh conditions based on content volatility
+- Set appropriate retry attempts based on criticality
+
+### 2. Security
+- Always use server actions for AI calls
+- Never expose API keys to client-side code
+- Validate all user inputs with Zod schemas
+- Implement proper authentication checks
+
+### 3. Prompts
+- Keep system messages focused on role and behavior
+- Use clear, specific user message templates
+- Implement proper variable substitution
+- Validate all required fields before API calls
+
+### 4. Error Handling
+- Implement comprehensive try/catch blocks
+- Log errors with sufficient context
+- Provide meaningful user-facing error messages
+- Handle rate limits and implement backoff strategies
+
+### 5. Performance
+- Use streaming for long responses
+- Implement appropriate caching strategies
+- Monitor token usage and costs
+- Consider using speed-optimized models for real-time features
 
 ## Future Improvements
 
-1. Add support for function calling
-2. Implement semantic search capabilities
-3. Add support for additional AI providers
-4. Enhance monitoring and analytics
-5. Add more optimization-focused templates
-6. Implement automatic model selection
+1. **Function Calling Support** - Add support for OpenAI function calling
+2. **Semantic Search** - Implement vector database integration
+3. **Additional Providers** - Support for more AI providers
+4. **Enhanced Monitoring** - Better analytics and observability
+5. **Model Auto-Selection** - Automatic model selection based on task
+6. **Prompt Versioning** - Version control for prompts
+7. **A/B Testing** - Built-in prompt testing capabilities

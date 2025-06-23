@@ -1,0 +1,140 @@
+name: TruffleHog Secret Scan
+
+on:
+  # Run on PR events
+  pull_request:
+    branches: [main, staging, dev]
+    types: [opened, synchronize, reopened]
+  # Run on push to protected branches
+  push:
+    branches: [main, staging, dev]
+  # Allow manual trigger
+  workflow_dispatch:
+  # Run on schedule for full history scan
+  schedule:
+    - cron: '0 2 * * 0' # Weekly on Sunday at 2 AM UTC
+
+permissions:
+  contents: read
+  security-events: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  trufflehog:
+    name: Secret Scanning
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history for initial scan
+
+      - name: TruffleHog OSS Scan
+        uses: trufflesecurity/trufflehog@v3.82.13
+        id: trufflehog
+        with:
+          # Scan the entire repository
+          path: ./
+          # Use the base branch for PR diffs
+          base: ${{ github.event.repository.default_branch }}
+          # Only scan the diff for PRs (faster)
+          head: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          # Extra args for custom regex patterns
+          extra_args: |
+            --config=.trufflehog/config.yaml
+            --only-verified
+            --fail
+            --json
+            --max-depth=5
+        continue-on-error: true
+
+      - name: Upload TruffleHog Results to GitHub Advanced Security
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: trufflehog.sarif
+          category: secret-scanning
+
+      - name: Comment on PR if secrets found
+        uses: actions/github-script@v7
+        if: failure() && github.event_name == 'pull_request'
+        with:
+          script: |
+            const comment = `## 🚨 Security Alert: Potential Secrets Detected!
+            
+            TruffleHog has detected potential secrets in your code. Please review and remove any sensitive information before merging.
+            
+            **What to do:**
+            1. Review the security findings in the checks section
+            2. Remove any real secrets from your code
+            3. If it's a false positive, add it to \`.secretsignore\`
+            4. Never commit real API keys, tokens, or passwords
+            
+            **Best Practices:**
+            - Use environment variables for sensitive data
+            - Store secrets in GitHub Secrets or secure vaults
+            - Use \`.env.example\` files with dummy values
+            - Add sensitive files to \`.gitignore\`
+            
+            For more information, see our [Secret Management Guide](/.claude/docs/security/secret-management.md).`;
+            
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+      - name: Fail if secrets detected
+        if: steps.trufflehog.outcome == 'failure'
+        run: |
+          echo "❌ Secrets detected! Please remove them before proceeding."
+          exit 1
+
+  # Separate job for full history scan
+  full-history-scan:
+    name: Full History Scan
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history
+
+      - name: TruffleHog Full History Scan
+        uses: trufflesecurity/trufflehog@v3.82.13
+        with:
+          path: ./
+          extra_args: |
+            --config=.trufflehog/config.yaml
+            --only-verified
+            --json
+            --include-detectors="all"
+
+      - name: Create Issue if Secrets Found
+        uses: actions/github-script@v7
+        if: failure()
+        with:
+          script: |
+            const date = new Date().toISOString().split('T')[0];
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `🔐 Weekly Secret Scan Alert - ${date}`,
+              body: `## Security Scan Results
+              
+              The weekly full history scan has detected potential secrets in the repository.
+              
+              **Action Required:**
+              - Review the scan results in the workflow logs
+              - Rotate any exposed credentials immediately
+              - Remove secrets from git history if needed
+              - Update .secretsignore for false positives
+              
+              **Resources:**
+              - [Removing sensitive data from a repository](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/removing-sensitive-data-from-a-repository)
+              - [Secret Management Best Practices](/.claude/docs/security/secret-management.md)`,
+              labels: ['security', 'high-priority', 'secret-scan']
+            });

@@ -77,13 +77,13 @@ async function executeDiscoveryPhase(featureName: string) {
   // Create feature slug for file organization
   const featureSlug = featureName.toLowerCase().replace(/\s+/g, '-');
   const epicName = featureSlug; // Will be used as epic-name throughout the process
-  const discoveryPath = `.claude/build/4-output/${epicName}/0-discovery`;
-  const contextPath = `.claude/build/4-output/contexts/discovery/${epicName}`;
+  const discoveryPath = `.claude/instructions/commands/build/4-output/${epicName}/0-discovery`;
+  const contextPath = `.claude/instructions/commands/build/4-output/contexts/discovery/${epicName}`;
 
   // Load discovery prompt
   console.log('Loading user discovery prompt...');
   const discoveryPrompt = await readFile(
-    '.claude/build/1-process/0-user-discovery/user-discovery-prompt.xml',
+    '.claude/instructions/commands/build/1-process/0-user-discovery/user-discovery-prompt.xml',
   );
 
   // Start interactive interview
@@ -142,8 +142,8 @@ async function executeIdeationPhase(discoveryId: number) {
   const discovery = await getGitHubIssue(discoveryId);
   const featureSlug = discovery.title.toLowerCase().replace(/\s+/g, '-');
   const epicName = featureSlug; // Consistent epic-name throughout
-  const discoveryPath = `.claude/build/4-output/${epicName}/0-discovery`;
-  const contextPath = `.claude/build/4-output/contexts/discovery/${epicName}`;
+  const discoveryPath = `.claude/instructions/commands/build/4-output/${epicName}/0-discovery`;
+  const contextPath = `.claude/instructions/commands/build/4-output/contexts/discovery/${epicName}`;
 
   // Load discovery context from both locations
   console.log('Loading discovery session results...');
@@ -159,7 +159,7 @@ async function executeIdeationPhase(discoveryId: number) {
   // Load and apply PRD prompt
   console.log('Applying PRD creation prompt...');
   const prdPrompt = await readFile(
-    '.claude/build/1-process/1-idea-to-prd/idea-to-prd-prompt.xml',
+    '.claude/instructions/commands/build/1-process/1-idea-to-prd/idea-to-prd-prompt.xml',
   );
 
   // Generate PRD from discovery results
@@ -217,7 +217,7 @@ async function executeTechnicalChunking(epicId: number) {
 
   // Load chunking prompt
   const chunkingPrompt = await readFile(
-    '.claude/build/1-process/2-prd-chunking/create-prd-chunks-prompt.xml',
+    '.claude/instructions/commands/build/1-process/2-prd-chunking/create-prd-chunks-prompt.xml',
   );
 
   // Apply chunking analysis
@@ -235,7 +235,7 @@ async function executeTechnicalChunking(epicId: number) {
   // Validate each chunk
   console.log('\n🔍 Validating Chunks...');
   const validationPrompt = await readFile(
-    '.claude/build/1-process/2-prd-chunking/validate-prd-chunks.xml',
+    '.claude/instructions/commands/build/1-process/2-prd-chunking/validate-prd-chunks.xml',
   );
 
   for (const chunkId of chunkIds) {
@@ -287,7 +287,7 @@ async function executeStakeholderValidation(chunkIds: number[]) {
 
   // Load validation prompt
   const validationPrompt = await readFile(
-    '.claude/build/1-process/3-stakeholder-validation/stakeholder-validation-prompt.xml',
+    '.claude/instructions/commands/build/1-process/3-stakeholder-validation/stakeholder-validation-prompt.xml',
   );
 
   // Load chunk data for validation
@@ -348,7 +348,7 @@ async function executeStoryCreation(chunkId: number) {
 
   // Load story creation prompt
   const storyPrompt = await readFile(
-    '.claude/build/1-process/4-user-stories-creation/create-user-stories-prompt.xml',
+    '.claude/instructions/commands/build/1-process/4-user-stories-creation/create-user-stories-prompt.xml',
   );
 
   // Load chunk validation results
@@ -414,7 +414,7 @@ async function executeSprintPlanning(storyIds: number[]) {
 
   // Load sprint planning prompt
   const sprintPrompt = await readFile(
-    '.claude/build/1-process/5-sprint-planning/create-sprints-prompt.xml',
+    '.claude/instructions/commands/build/1-process/5-sprint-planning/create-sprints-prompt.xml',
   );
 
   // Load story contexts for planning
@@ -479,7 +479,7 @@ async function executeImplementation(storyId: number) {
 
   // Load implementation prompt
   const implPrompt = await readFile(
-    '.claude/build/1-process/6-sprint-execution/implementation-prompt.xml',
+    '.claude/instructions/commands/build/1-process/6-sprint-execution/implementation-prompt.xml',
   );
 
   // Load story context and any existing progress
@@ -735,9 +735,9 @@ Each phase loads specific context files:
 // Phase-specific context loading
 const contextMap = {
   discovery: [
-    '.claude/build/2-context/project-context.md',
-    '.claude/build/2-context/business-context.md',
-    '.claude/build/2-context/technical-context.md',
+    '.claude/instructions/commands/build/2-context/project-context.md',
+    '.claude/instructions/commands/build/2-context/business-context.md',
+    '.claude/instructions/commands/build/2-context/technical-context.md',
   ],
   ideation: [
     `.claude/build/4-output/${epicName}/0-discovery/*`,
@@ -746,7 +746,7 @@ const contextMap = {
   ],
   chunking: [
     `.claude/build/4-output/${epicName}/1-prd/prd-content.md`,
-    '.claude/build/2-context/technical-context.md',
+    '.claude/instructions/commands/build/2-context/technical-context.md',
   ],
   validation: [
     `.claude/build/4-output/${epicName}/2-chunks/chunk-${id}.md`,

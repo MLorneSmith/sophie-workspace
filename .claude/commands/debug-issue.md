@@ -4,7 +4,7 @@ Usage: `/debug-issue [issue_reference]`
 
 - GitHub issue number: `123` (preferred format from log-issue command)
 - Issue ID: `ISSUE-123`
-- Local file: `.claude/issues/2025-01-06-ISSUE-123.md`
+- Local file: `.claude/z.archive/issues/2025-01-06-ISSUE-123.md`
 - GitHub URL: `https://github.com/MLorneSmith/2025slideheroes/issues/123`
 - Legacy format: `ISSUE-1234567-abc` (for older local-only issues)
 
@@ -17,7 +17,7 @@ This command reads an issue specification and launches a focused debugging sessi
 Load the debugging mindset:
 
 ```
-/read .claude/roles/debug-engineer.md
+/read .claude/context/roles/debug-engineer.md
 ```
 
 ## 2. Load Context Documentation
@@ -47,7 +47,7 @@ This XML file contains a complete inventory of all context documentation organiz
 
 ```
 # PARALLEL READ these core debugging docs:
-.claude/core/code-standards.md
+.claude/context/standards/code-standards.md
 .claude/docs/debugging/common-patterns.md
 .claude/docs/debugging/debugging-system-overview.md
 ```
@@ -136,14 +136,15 @@ const contextMap = {
 Use the auto-sync service to fetch/cache issues automatically:
 
 ```bash
-# First, run auto-sync to ensure we have the latest issue data
-.claude/scripts/sync-issue.sh ${issue_reference}
+# Run sync to ensure we have the latest issue data
+node .claude/scripts/sync-issue.js ${issue_reference}
 
 # The script will:
 # 1. Detect if it's a GitHub issue (number, ISSUE-123, #123, URL)
-# 2. Auto-fetch from GitHub if needed
-# 3. Create/update local cache file
-# 4. Handle fallbacks gracefully
+# 2. Check local cache (1 hour freshness)
+# 3. Auto-fetch from GitHub if needed
+# 4. Create/update local cache file
+# 5. Handle fallbacks gracefully
 ```
 
 ### 3.2 Parse Issue Reference
@@ -152,11 +153,10 @@ The auto-sync service handles all reference formats:
 
 ```bash
 # Examples of supported formats:
-.claude/scripts/sync-issue.sh 30              # GitHub issue #30
-.claude/scripts/sync-issue.sh ISSUE-30        # ISSUE-30 format
-.claude/scripts/sync-issue.sh "#30"           # Hash format
-.claude/scripts/sync-issue.sh "https://github.com/MLorneSmith/2025slideheroes/issues/30"  # Full URL
-.claude/scripts/sync-issue.sh "2025-06-13-ISSUE-30.md"  # Direct local file (legacy)
+node .claude/scripts/sync-issue.js 30              # GitHub issue #30
+node .claude/scripts/sync-issue.js ISSUE-30        # ISSUE-30 format
+node .claude/scripts/sync-issue.js "#30"           # Hash format
+node .claude/scripts/sync-issue.js "https://github.com/MLorneSmith/2025slideheroes/issues/30"  # Full URL
 ```
 
 ### 3.3 Load Synced Issue
@@ -166,7 +166,7 @@ After auto-sync completes, read the local file:
 ```bash
 # Auto-sync creates files in format: YYYY-MM-DD-ISSUE-{number}.md
 # Find the synced file
-issue_file=$(find .claude/issues -name "*-ISSUE-${issue_number}.md" | head -1)
+issue_file=$(find .claude/z.archive/issues -name "*-ISSUE-${issue_number}.md" | head -1)
 
 if [ -z "$issue_file" ]; then
   echo "❌ Issue file not found after auto-sync"
@@ -586,7 +586,7 @@ Next Steps:
 Build a library of issue patterns:
 
 ```
-.claude/issues/patterns/
+.claude/z.archive/issues/patterns/
 ├── slow-query-pattern.md
 ├── memory-leak-pattern.md
 ├── cors-error-pattern.md

@@ -65,9 +65,7 @@ grep "Status: open" .claude/issues/*.md
 
 Location: `.claude/scripts/`
 
-- **issue-sync.js** - Core sync functionality
-- **auto-sync.js** - Integration wrapper for debug workflows
-- **sync-issue.sh** - Bash interface for command integration
+- **sync-issue.js** - Consolidated sync script for GitHub issues
 
 ### Authentication
 
@@ -138,7 +136,7 @@ Auto-synced files include:
 echo $GITHUB_TOKEN
 
 # Manual sync test
-.claude/scripts/sync-issue.sh 30
+node .claude/scripts/sync-issue.js 30
 
 # Fallback: Use direct local files
 /debug-issue .claude/issues/2025-06-13-ISSUE-30.md
@@ -161,9 +159,7 @@ echo $GITHUB_TOKEN
 ```
 .claude/
 ├── scripts/
-│   ├── issue-sync.js       # Core sync service
-│   ├── auto-sync.js        # Debug integration
-│   ├── sync-issue.sh       # Bash interface
+│   ├── sync-issue.js       # GitHub issue sync service
 │   └── package.json        # Dependencies
 ├── issues/
 │   ├── sync-metadata.json  # Sync tracking
