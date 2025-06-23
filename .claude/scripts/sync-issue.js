@@ -3,9 +3,9 @@
 /**
  * GitHub Issue Sync Service
  * Fetches GitHub issues and caches them locally for debugging workflows
- * 
+ *
  * Usage: node sync-issue.js <issue_reference>
- * 
+ *
  * Supported formats:
  *   - Issue number: 30
  *   - ISSUE format: ISSUE-30
@@ -13,7 +13,7 @@
  *   - GitHub URL: https://github.com/MLorneSmith/2025slideheroes/issues/30
  */
 
-import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
+import { mkdir, stat, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -54,24 +54,24 @@ function parseIssueReference(reference) {
 	if (/^\d+$/.test(reference)) {
 		return parseInt(reference);
 	}
-	
+
 	// ISSUE format: "ISSUE-123"
 	if (reference.startsWith("ISSUE-")) {
 		const match = reference.match(/^ISSUE-(\d+)$/);
 		return match ? parseInt(match[1]) : null;
 	}
-	
+
 	// Hash format: "#123"
 	if (reference.startsWith("#")) {
 		return parseInt(reference.slice(1));
 	}
-	
+
 	// URL format: extract issue number
 	if (reference.includes("github.com")) {
 		const match = reference.match(/\/issues\/(\d+)/);
 		return match ? parseInt(match[1]) : null;
 	}
-	
+
 	return null;
 }
 
@@ -80,32 +80,36 @@ function parseIssueReference(reference) {
  */
 async function fetchGitHubIssue(issueNumber) {
 	const url = `${GITHUB_API_BASE}/repos/${REPO_OWNER}/${REPO_NAME}/issues/${issueNumber}`;
-	
+
 	const headers = {
 		Accept: "application/vnd.github.v3+json",
 		"User-Agent": "Claude-Issue-Sync/2.0",
 	};
-	
+
 	// Add authentication if token is available
 	if (process.env.GITHUB_TOKEN) {
 		headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
 	}
-	
+
 	process.stdout.write(`🔍 Fetching issue #${issueNumber} from GitHub...\n`);
-	
+
 	try {
 		const response = await fetch(url, { headers });
-		
+
 		if (!response.ok) {
 			if (response.status === 404) {
 				throw new Error(`Issue #${issueNumber} not found`);
 			}
-			throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
+			throw new Error(
+				`GitHub API error: ${response.status} ${response.statusText}`,
+			);
 		}
-		
+
 		return await response.json();
 	} catch (error) {
-		process.stderr.write(`❌ Failed to fetch issue #${issueNumber}: ${error.message}\n`);
+		process.stderr.write(
+			`❌ Failed to fetch issue #${issueNumber}: ${error.message}\n`,
+		);
 		throw error;
 	}
 }
@@ -115,7 +119,7 @@ async function fetchGitHubIssue(issueNumber) {
  */
 function convertToLocalFormat(issue) {
 	const labels = issue.labels.map((l) => l.name).join(", ");
-	
+
 	return `# Issue: ${issue.title}
 
 **ID**: ISSUE-${issue.number}
@@ -151,24 +155,24 @@ function getLocalFilePath(issueNumber, createdAt) {
 async function checkLocalCache(issueNumber) {
 	try {
 		// Try to find existing file
-		const files = await require("fs").promises.readdir(ISSUES_DIR);
-		const issueFile = files.find(f => f.includes(`ISSUE-${issueNumber}.md`));
-		
+		const files = await require("node:fs").promises.readdir(ISSUES_DIR);
+		const issueFile = files.find((f) => f.includes(`ISSUE-${issueNumber}.md`));
+
 		if (!issueFile) {
 			return { exists: false };
 		}
-		
+
 		const filePath = join(ISSUES_DIR, issueFile);
 		const stats = await stat(filePath);
 		const age = Date.now() - stats.mtime.getTime();
-		
+
 		return {
 			exists: true,
 			path: filePath,
 			fresh: age < CACHE_DURATION_MS,
-			age: Math.round(age / 1000 / 60) // age in minutes
+			age: Math.round(age / 1000 / 60), // age in minutes
 		};
-	} catch (error) {
+	} catch {
 		return { exists: false };
 	}
 }
@@ -182,54 +186,60 @@ async function syncIssue(issueReference) {
 	if (!issueNumber) {
 		throw new Error(`Cannot parse issue reference: ${issueReference}`);
 	}
-	
+
 	process.stdout.write(`🔧 Processing issue #${issueNumber}\n`);
-	
+
 	// Ensure directory exists
 	await ensureIssuesDirectory();
-	
+
 	// Check local cache
 	const cache = await checkLocalCache(issueNumber);
-	
+
 	if (cache.exists && cache.fresh) {
-		process.stdout.write(`✅ Using cached file (${cache.age} minutes old): ${cache.path}\n`);
+		process.stdout.write(
+			`✅ Using cached file (${cache.age} minutes old): ${cache.path}\n`,
+		);
 		return {
 			success: true,
 			localPath: cache.path,
-			source: 'cache',
-			issueNumber
+			source: "cache",
+			issueNumber,
 		};
 	}
-	
+
 	if (cache.exists && !cache.fresh) {
-		process.stdout.write(`♻️  Cache expired (${cache.age} minutes old), refreshing...\n`);
+		process.stdout.write(
+			`♻️  Cache expired (${cache.age} minutes old), refreshing...\n`,
+		);
 	}
-	
+
 	// Fetch from GitHub
 	try {
 		const issue = await fetchGitHubIssue(issueNumber);
 		const localContent = convertToLocalFormat(issue);
 		const localPath = getLocalFilePath(issueNumber, issue.created_at);
-		
+
 		// Write to local file
-		await writeFile(localPath, localContent, 'utf8');
+		await writeFile(localPath, localContent, "utf8");
 		process.stdout.write(`✅ Synced to local file: ${localPath}\n`);
-		
+
 		return {
 			success: true,
 			localPath,
-			source: 'github',
-			issueNumber
+			source: "github",
+			issueNumber,
 		};
 	} catch (error) {
 		// If fetch fails but we have stale cache, use it
 		if (cache.exists) {
-			process.stdout.write(`⚠️  GitHub fetch failed, using stale cache: ${cache.path}\n`);
+			process.stdout.write(
+				`⚠️  GitHub fetch failed, using stale cache: ${cache.path}\n`,
+			);
 			return {
 				success: true,
 				localPath: cache.path,
-				source: 'stale-cache',
-				issueNumber
+				source: "stale-cache",
+				issueNumber,
 			};
 		}
 		throw error;
@@ -241,8 +251,8 @@ async function syncIssue(issueReference) {
  */
 async function main() {
 	const args = process.argv.slice(2);
-	
-	if (args.length === 0 || args[0] === '--help' || args[0] === '-h') {
+
+	if (args.length === 0 || args[0] === "--help" || args[0] === "-h") {
 		process.stdout.write(`
 GitHub Issue Sync Service v2.0
 
@@ -268,18 +278,18 @@ Output:
 `);
 		process.exit(0);
 	}
-	
+
 	const issueReference = args[0];
-	
+
 	try {
 		const result = await syncIssue(issueReference);
-		
+
 		// Output for script integration
-		process.stdout.write(`\n📊 Summary:\n`);
+		process.stdout.write("\n📊 Summary:\n");
 		process.stdout.write(`  Issue: #${result.issueNumber}\n`);
 		process.stdout.write(`  Source: ${result.source}\n`);
 		process.stdout.write(`  Path: ${result.localPath}\n`);
-		
+
 		// Exit successfully
 		process.exit(0);
 	} catch (error) {
