@@ -3,7 +3,7 @@
 Usage: `/log-issue [output_format]` (default: github)
 
 - `github`: Create GitHub issue only, with optional local sync (default)
-- `local`: Save to `.claude/issues/` only (no GitHub issue)
+- `local`: Save to `.claude/z.archive/issues/` only (no GitHub issue)
 - `file`: Same as `local` (alternative syntax)
 
 **New GitHub-First Workflow**: GitHub issues are now the single source of truth. Local files can be synced automatically for search purposes using the `.claude/scripts/issue-sync.js` script.
@@ -12,23 +12,18 @@ This command documents issues systematically using diagnostic tools and creates 
 
 ## Issue Synchronization Scripts
 
-Two scripts are available for syncing GitHub issues to local files:
+A script is available for syncing GitHub issues to local files:
 
-1. **`.claude/scripts/issue-sync.js`** - Main sync script for individual issues
+**`.claude/scripts/sync-issue.js`** - Sync script for GitHub issues
 
-   ```bash
-   node .claude/scripts/issue-sync.js 123  # Sync issue #123
-   ```
+```bash
+node .claude/scripts/sync-issue.js 123        # Sync issue #123
+node .claude/scripts/sync-issue.js ISSUE-123  # Sync ISSUE-123
+node .claude/scripts/sync-issue.js "#123"     # Sync issue #123
+node .claude/scripts/sync-issue.js "https://github.com/MLorneSmith/2025slideheroes/issues/123"
+```
 
-2. **`.claude/scripts/auto-sync.js`** - Auto-sync wrapper for debug workflows
-
-   ```bash
-   node .claude/scripts/auto-sync.js 123        # Auto-sync issue #123
-   node .claude/scripts/auto-sync.js ISSUE-123  # Auto-sync ISSUE-123
-   node .claude/scripts/auto-sync.js "#123"     # Auto-sync issue #123
-   ```
-
-The auto-sync script automatically:
+The sync script automatically:
 
 - Checks if local cache exists and is up-to-date
 - Fetches from GitHub if needed
@@ -40,7 +35,7 @@ The auto-sync script automatically:
 Load the issue investigator mindset:
 
 ```
-/read .claude/roles/issue-investigator.md
+/read .claude/context/roles/issue-investigator.md
 ```
 
 ## 2. Initial Information Gathering
@@ -345,7 +340,7 @@ if (outputFormat === 'local' || outputFormat === 'file') {
 
   // Save local file immediately
   const datePrefix = new Date().toISOString().split('T')[0];
-  const filename = `.claude/issues/${datePrefix}-${issueId}.md`;
+  const filename = `.claude/z.archive/issues/${datePrefix}-${issueId}.md`;
   await writeFile(filename, issueContent);
 } else {
   // GitHub-first approach (default)
@@ -376,7 +371,7 @@ if (
   process.env.FORCE_LOCAL_BACKUP === 'true'
 ) {
   const datePrefix = new Date().toISOString().split('T')[0];
-  const filename = `.claude/issues/${datePrefix}-ISSUE-${issueNumber}.md`;
+  const filename = `.claude/z.archive/issues/${datePrefix}-ISSUE-${issueNumber}.md`;
 
   // Add sync metadata to local file
   const localContent = `${issueContent}
@@ -410,7 +405,7 @@ Next Steps:
 2. To add more information, edit the GitHub issue
 3. To share with team, use the GitHub link above
 
-Note: Local file will be auto-created when debugging starts using auto-sync.js
+Note: Local file will be auto-created when debugging starts using sync-issue.js
 ```
 
 **Local-Only Mode:**
@@ -418,7 +413,7 @@ Note: Local file will be auto-created when debugging starts using auto-sync.js
 ```
 ✅ Issue logged locally!
 
-📁 Local File: .claude/issues/2025-01-06-ISSUE-1234567-abc.md
+📁 Local File: .claude/z.archive/issues/2025-01-06-ISSUE-1234567-abc.md
 🏷️ Issue ID: ISSUE-1234567-abc
 
 Next Steps:
@@ -430,7 +425,7 @@ Next Steps:
 
 ### 5.2 Index Update
 
-Update `.claude/issues/index.md` with:
+Update `.claude/z.archive/issues/index.md` with:
 
 - Issue ID
 - Title

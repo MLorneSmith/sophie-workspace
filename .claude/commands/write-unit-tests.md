@@ -9,7 +9,7 @@ When the user asks you to write unit tests, follow this sequence:
 First, load the unit test writer role to set the appropriate context:
 
 ```
-/read .claude/roles/unit-test-writer.md
+/read .claude/context/roles/unit-test-writer.md
 ```
 
 ## 2. Read Context Docs

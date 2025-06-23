@@ -52,7 +52,7 @@ The orchestrator follows this decision tree:
 **Actions:**
 
 - Load `.claude/workflows/deep-debug/deep-debug-phase-1.md`
-- Load `.claude/roles/qa-testing-engineer.md`
+- Load `.claude/context/roles/qa-testing-engineer.md`
 - Begin comprehensive investigation
 
 ### Phase 2: Root Cause Analysis & Solution Design
@@ -66,7 +66,7 @@ The orchestrator follows this decision tree:
 **Actions:**
 
 - Load `.claude/workflows/deep-debug/deep-debug-phase-2.md`
-- Load `.claude/roles/systems-architect-engineer.md`
+- Load `.claude/context/roles/systems-architect-engineer.md`
 - Begin solution design process
 
 ### Phase 3: Implementation & Verification
@@ -80,7 +80,7 @@ The orchestrator follows this decision tree:
 **Actions:**
 
 - Load `.claude/workflows/deep-debug/deep-debug-phase-3.md`
-- Load `.claude/roles/remediation-engineer.md`
+- Load `.claude/context/roles/remediation-engineer.md`
 - Begin implementation process
 
 ## Implementation
@@ -111,9 +111,9 @@ When you run `/deep-debug`, I will:
    };
 
    const roles = {
-     1: '.claude/roles/qa-testing-engineer.md',
-     2: '.claude/roles/systems-architect-engineer.md',
-     3: '.claude/roles/remediation-engineer.md',
+     1: '.claude/context/roles/qa-testing-engineer.md',
+     2: '.claude/context/roles/systems-architect-engineer.md',
+     3: '.claude/context/roles/remediation-engineer.md',
    };
    ```
 

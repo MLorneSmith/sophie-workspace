@@ -286,6 +286,65 @@ jobs:
       - name: Markdown Lint
         run: pnpm lint:md
 
+  # Secret scanning with TruffleHog
+  secret-scan:
+    name: Secret Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: TruffleHog Secret Scan
+        uses: trufflesecurity/trufflehog@v3.82.13
+        id: trufflehog
+        with:
+          path: ./
+          base: ${{ github.event.repository.default_branch }}
+          head: ${{ github.event.pull_request.head.sha }}
+          extra_args: |
+            --config=.trufflehog/config.yaml
+            --only-verified
+            --fail
+            --json
+            --max-depth=5
+        continue-on-error: true
+
+      - name: Upload TruffleHog Results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: trufflehog.sarif
+          category: secret-scanning
+
+      - name: Comment on PR if secrets found
+        uses: actions/github-script@v7
+        if: failure() && steps.trufflehog.outcome == 'failure'
+        with:
+          script: |
+            const comment = `## 🚨 Security Alert: Potential Secrets Detected!
+            
+            TruffleHog has detected potential secrets in your code. Please review and remove any sensitive information before merging.
+            
+            **What to do:**
+            1. Review the security findings in the checks section
+            2. Remove any real secrets from your code
+            3. If it's a false positive, add it to \`.secretsignore\`
+            4. Never commit real API keys, tokens, or passwords
+            
+            For more information, see our [Secret Management Guide](/.claude/docs/security/secret-management.md).`;
+            
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+      - name: Fail if secrets detected
+        if: steps.trufflehog.outcome == 'failure'
+        run: exit 1
+
   # Security scan for dependencies
   security-scan:
     name: Security Scan
@@ -446,7 +505,7 @@ jobs:
   pr-status:
     name: PR Status Check
     runs-on: ubuntu-latest
-    needs: [lint, typecheck, test-unit, yaml-lint, markdown-lint, security-scan, accessibility-test]
+    needs: [lint, typecheck, test-unit, yaml-lint, markdown-lint, secret-scan, security-scan, accessibility-test]
     if: always()
     steps:
       - name: Check status
@@ -456,6 +515,7 @@ jobs:
              [[ "${{ needs.test-unit.result }}" == "failure" ]] || \
              [[ "${{ needs.yaml-lint.result }}" == "failure" ]] || \
              [[ "${{ needs.markdown-lint.result }}" == "failure" ]] || \
+             [[ "${{ needs.secret-scan.result }}" == "failure" ]] || \
              [[ "${{ needs.security-scan.result }}" == "failure" ]]; then
             echo "❌ PR validation failed"
             exit 1
