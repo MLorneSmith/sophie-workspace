@@ -1,0 +1,392 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ * Claude Context Documentation Inventory
+ * Complete inventory of all context documentation files in .claude/context
+-->
+<documentation-inventory>
+  <!-- Core Files -->
+  <category id="core" name="Core Documentation">
+    <document path="INDEX.md">
+      <name>Context Index</name>
+      <description>Master index of all context documentation files and their purposes.</description>
+      <topics>
+        <topic>Documentation Navigation</topic>
+        <topic>File Organization</topic>
+      </topics>
+    </document>
+    <document path="architecture.md">
+      <name>Architecture Documentation</name>
+      <description>System architecture overview and design principles.</description>
+      <topics>
+        <topic>Architecture Overview</topic>
+        <topic>Design Principles</topic>
+        <topic>System Design</topic>
+      </topics>
+    </document>
+    <document path="constraints.md">
+      <name>Project Constraints</name>
+      <description>Critical project constraints and requirements that must be followed.</description>
+      <topics>
+        <topic>Technical Constraints</topic>
+        <topic>Business Rules</topic>
+        <topic>Implementation Requirements</topic>
+      </topics>
+    </document>
+    <document path="current-focus.md">
+      <name>Current Focus</name>
+      <description>Current development priorities and focus areas.</description>
+      <topics>
+        <topic>Development Priorities</topic>
+        <topic>Current Tasks</topic>
+        <topic>Focus Areas</topic>
+      </topics>
+    </document>
+    <document path="database-schema.md">
+      <name>Database Schema</name>
+      <description>Complete database schema documentation.</description>
+      <topics>
+        <topic>Schema Structure</topic>
+        <topic>Table Relationships</topic>
+        <topic>Data Types</topic>
+      </topics>
+    </document>
+    <document path="development-flow.md">
+      <name>Development Flow</name>
+      <description>Development workflow and process documentation.</description>
+      <topics>
+        <topic>Development Process</topic>
+        <topic>Workflow Guidelines</topic>
+        <topic>Best Practices</topic>
+      </topics>
+    </document>
+    <document path="project-overview.md">
+      <name>Project Overview</name>
+      <description>High-level project overview and key information.</description>
+      <topics>
+        <topic>Project Summary</topic>
+        <topic>Key Features</topic>
+        <topic>Goals</topic>
+      </topics>
+    </document>
+  </category>
+
+  <!-- Roles -->
+  <category id="roles" name="Role Definitions">
+    <document path="roles/.roles-summary.xml">
+      <name>Roles Summary</name>
+      <description>XML summary of all available role definitions.</description>
+      <topics>
+        <topic>Role Overview</topic>
+        <topic>Role Mappings</topic>
+      </topics>
+    </document>
+    <document path="roles/ai-engineer.md">
+      <name>AI Engineer Role</name>
+      <description>AI engineering role definition and responsibilities.</description>
+      <topics>
+        <topic>AI Development</topic>
+        <topic>Model Integration</topic>
+        <topic>AI Best Practices</topic>
+      </topics>
+    </document>
+    <document path="roles/architecture-engineer.md">
+      <name>Architecture Engineer Role</name>
+      <description>System architecture role definition and responsibilities.</description>
+      <topics>
+        <topic>System Design</topic>
+        <topic>Architecture Planning</topic>
+        <topic>Technical Leadership</topic>
+      </topics>
+    </document>
+    <document path="roles/cms-engineer.md">
+      <name>CMS Engineer Role</name>
+      <description>Content management system engineering role.</description>
+      <topics>
+        <topic>CMS Development</topic>
+        <topic>Content Management</topic>
+        <topic>Payload CMS</topic>
+      </topics>
+    </document>
+    <document path="roles/data-engineer.md">
+      <name>Data Engineer Role</name>
+      <description>Data engineering and database management role.</description>
+      <topics>
+        <topic>Data Management</topic>
+        <topic>Database Design</topic>
+        <topic>Data Pipelines</topic>
+      </topics>
+    </document>
+    <document path="roles/debug-engineer.md">
+      <name>Debug Engineer Role</name>
+      <description>Debugging and troubleshooting specialist role.</description>
+      <topics>
+        <topic>Debugging Strategies</topic>
+        <topic>Issue Resolution</topic>
+        <topic>Problem Analysis</topic>
+      </topics>
+    </document>
+    <document path="roles/full-stack-engineer.md">
+      <name>Full Stack Engineer Role</name>
+      <description>Full stack development role covering frontend and backend.</description>
+      <topics>
+        <topic>Full Stack Development</topic>
+        <topic>Frontend/Backend Integration</topic>
+        <topic>End-to-End Features</topic>
+      </topics>
+    </document>
+    <document path="roles/issue-investigator.md">
+      <name>Issue Investigator Role</name>
+      <description>Issue investigation and analysis specialist role.</description>
+      <topics>
+        <topic>Issue Analysis</topic>
+        <topic>Root Cause Investigation</topic>
+        <topic>Problem Documentation</topic>
+      </topics>
+    </document>
+    <document path="roles/qa-testing-engineer.md">
+      <name>QA Testing Engineer Role</name>
+      <description>Quality assurance and testing specialist role.</description>
+      <topics>
+        <topic>Test Strategy</topic>
+        <topic>Quality Assurance</topic>
+        <topic>Test Automation</topic>
+      </topics>
+    </document>
+    <document path="roles/remediation-engineer.md">
+      <name>Remediation Engineer Role</name>
+      <description>Issue remediation and fix implementation role.</description>
+      <topics>
+        <topic>Issue Remediation</topic>
+        <topic>Fix Implementation</topic>
+        <topic>Problem Resolution</topic>
+      </topics>
+    </document>
+    <document path="roles/security-engineer.md">
+      <name>Security Engineer Role</name>
+      <description>Security implementation and analysis role.</description>
+      <topics>
+        <topic>Security Implementation</topic>
+        <topic>Vulnerability Assessment</topic>
+        <topic>Security Best Practices</topic>
+      </topics>
+    </document>
+    <document path="roles/systems-architect-engineer.md">
+      <name>Systems Architect Engineer Role</name>
+      <description>High-level systems architecture and design role.</description>
+      <topics>
+        <topic>Systems Architecture</topic>
+        <topic>Infrastructure Design</topic>
+        <topic>Scalability Planning</topic>
+      </topics>
+    </document>
+    <document path="roles/ui-engineer.md">
+      <name>UI Engineer Role</name>
+      <description>User interface and frontend development role.</description>
+      <topics>
+        <topic>UI Development</topic>
+        <topic>Frontend Components</topic>
+        <topic>User Experience</topic>
+      </topics>
+    </document>
+    <document path="roles/unit-test-writer.md">
+      <name>Unit Test Writer Role</name>
+      <description>Unit testing and test implementation specialist role.</description>
+      <topics>
+        <topic>Unit Testing</topic>
+        <topic>Test Implementation</topic>
+        <topic>Test Coverage</topic>
+      </topics>
+    </document>
+  </category>
+
+  <!-- Standards -->
+  <category id="standards" name="Standards & Guidelines">
+    <document path="standards/TypographySystem.md">
+      <name>Typography System</name>
+      <description>Typography standards and design system guidelines.</description>
+      <topics>
+        <topic>Typography Guidelines</topic>
+        <topic>Font Standards</topic>
+        <topic>Text Styling</topic>
+      </topics>
+    </document>
+    <document path="standards/code-standards.md">
+      <name>Code Standards</name>
+      <description>Coding standards and conventions for the project.</description>
+      <topics>
+        <topic>Coding Conventions</topic>
+        <topic>Code Quality</topic>
+        <topic>Best Practices</topic>
+      </topics>
+    </document>
+  </category>
+
+  <!-- Systems -->
+  <category id="systems" name="System Documentation">
+    <document path="systems/cicd-pipeline-design.md">
+      <name>CI/CD Pipeline Design</name>
+      <description>Continuous integration and deployment pipeline design documentation.</description>
+      <topics>
+        <topic>Pipeline Architecture</topic>
+        <topic>Deployment Strategy</topic>
+        <topic>CI/CD Best Practices</topic>
+      </topics>
+    </document>
+    <document path="systems/cicd-pipeline.md">
+      <name>CI/CD Pipeline</name>
+      <description>CI/CD pipeline implementation and configuration.</description>
+      <topics>
+        <topic>Pipeline Configuration</topic>
+        <topic>Build Process</topic>
+        <topic>Deployment Process</topic>
+      </topics>
+    </document>
+    <document path="systems/portkey-implementation.md">
+      <name>Portkey Implementation</name>
+      <description>Portkey AI gateway implementation and configuration.</description>
+      <topics>
+        <topic>AI Gateway Setup</topic>
+        <topic>Provider Configuration</topic>
+        <topic>Integration Patterns</topic>
+      </topics>
+    </document>
+    <document path="systems/prompt-engineering.md">
+      <name>Prompt Engineering</name>
+      <description>Prompt engineering guidelines and best practices.</description>
+      <topics>
+        <topic>Prompt Design</topic>
+        <topic>AI Optimization</topic>
+        <topic>Response Quality</topic>
+      </topics>
+    </document>
+  </category>
+
+  <!-- Tools -->
+  <category id="tools" name="Tool Documentation">
+    <document path="tools/available-tools.xml">
+      <name>Available Tools List</name>
+      <description>XML listing of all available development tools and utilities.</description>
+      <topics>
+        <topic>Tool Inventory</topic>
+        <topic>Tool Capabilities</topic>
+      </topics>
+    </document>
+    <document path="tools/browser-tools.md">
+      <name>Browser Tools</name>
+      <description>Browser-based development and testing tools documentation.</description>
+      <topics>
+        <topic>Browser Testing</topic>
+        <topic>Development Tools</topic>
+        <topic>Debugging</topic>
+      </topics>
+    </document>
+    <document path="tools/cloudflare-playwright.md">
+      <name>Cloudflare Playwright</name>
+      <description>Playwright testing with Cloudflare integration.</description>
+      <topics>
+        <topic>End-to-End Testing</topic>
+        <topic>Cloudflare Integration</topic>
+        <topic>Automated Testing</topic>
+      </topics>
+    </document>
+    <document path="tools/cloudflare-workers-bindings.md">
+      <name>Cloudflare Workers Bindings</name>
+      <description>Cloudflare Workers bindings and configuration.</description>
+      <topics>
+        <topic>Worker Bindings</topic>
+        <topic>Edge Computing</topic>
+        <topic>Cloudflare Integration</topic>
+      </topics>
+    </document>
+    <document path="tools/cloudflare-workers-observability.md">
+      <name>Cloudflare Workers Observability</name>
+      <description>Monitoring and observability for Cloudflare Workers.</description>
+      <topics>
+        <topic>Workers Monitoring</topic>
+        <topic>Observability</topic>
+        <topic>Performance Tracking</topic>
+      </topics>
+    </document>
+    <document path="tools/code-reasoning.md">
+      <name>Code Reasoning</name>
+      <description>Code analysis and reasoning tools and techniques.</description>
+      <topics>
+        <topic>Code Analysis</topic>
+        <topic>Automated Reasoning</topic>
+        <topic>Code Quality</topic>
+      </topics>
+    </document>
+    <document path="tools/context7.md">
+      <name>Context7 Tools</name>
+      <description>Context7 documentation and integration tools.</description>
+      <topics>
+        <topic>Documentation Tools</topic>
+        <topic>Context Management</topic>
+        <topic>Integration</topic>
+      </topics>
+    </document>
+    <document path="tools/exa-search.md">
+      <name>Exa Search</name>
+      <description>Exa search engine integration and usage.</description>
+      <topics>
+        <topic>Search Integration</topic>
+        <topic>Content Discovery</topic>
+        <topic>API Usage</topic>
+      </topics>
+    </document>
+    <document path="tools/github.md">
+      <name>GitHub Tools</name>
+      <description>GitHub integration tools and workflows.</description>
+      <topics>
+        <topic>GitHub Integration</topic>
+        <topic>Repository Management</topic>
+        <topic>Workflow Automation</topic>
+      </topics>
+    </document>
+    <document path="tools/newrelic.md">
+      <name>New Relic Tools</name>
+      <description>New Relic monitoring and observability integration.</description>
+      <topics>
+        <topic>Application Monitoring</topic>
+        <topic>Performance Metrics</topic>
+        <topic>Error Tracking</topic>
+      </topics>
+    </document>
+    <document path="tools/perplexity.md">
+      <name>Perplexity Tools</name>
+      <description>Perplexity AI integration and usage documentation.</description>
+      <topics>
+        <topic>AI Search</topic>
+        <topic>Knowledge Retrieval</topic>
+        <topic>API Integration</topic>
+      </topics>
+    </document>
+    <document path="tools/postgresql.md">
+      <name>PostgreSQL Tools</name>
+      <description>PostgreSQL database tools and management utilities.</description>
+      <topics>
+        <topic>Database Management</topic>
+        <topic>PostgreSQL Tools</topic>
+        <topic>Database Operations</topic>
+      </topics>
+    </document>
+    <document path="tools/supabase.md">
+      <name>Supabase Tools</name>
+      <description>Supabase platform tools and integration documentation.</description>
+      <topics>
+        <topic>Supabase Integration</topic>
+        <topic>Backend Services</topic>
+        <topic>Database Operations</topic>
+      </topics>
+    </document>
+    <document path="tools/tool-mappings.xml">
+      <name>Tool Mappings</name>
+      <description>XML mapping of tools to their specific use cases and contexts.</description>
+      <topics>
+        <topic>Tool Relationships</topic>
+        <topic>Use Case Mapping</topic>
+        <topic>Tool Selection</topic>
+      </topics>
+    </document>
+  </category>
+</documentation-inventory>

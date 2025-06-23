@@ -1,0 +1,29 @@
+name: "SlideHeroes CodeQL Config"
+
+disable-default-queries: false
+
+queries:
+  - name: security-extended
+    uses: security-extended
+  - name: security-and-quality
+    uses: security-and-quality
+
+paths-ignore:
+  - node_modules
+  - dist
+  - build
+  - out
+  - .next
+  - coverage
+  - "**/*.min.js"
+  - "**/*.bundle.js"
+  - "**/vendor/**"
+  - "**/third-party/**"
+
+paths:
+  - apps
+  - packages
+  - "*.js"
+  - "*.ts"
+  - "*.jsx"
+  - "*.tsx"

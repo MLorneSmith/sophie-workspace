@@ -78,6 +78,22 @@
 					}
 				}
 			}
+		},
+		{
+			"includes": ["**/tests/**/*.ts", "**/tests/**/*.tsx", "**/*.test.ts", "**/*.test.tsx", "**/*.spec.ts", "**/*.spec.tsx", "**/load-tests/**/*.js"],
+			"linter": {
+				"rules": {
+					"suspicious": {
+						"noConsole": "off"
+					},
+					"complexity": {
+						"useDateNow": "off"
+					},
+					"correctness": {
+						"noUnusedVariables": "off"
+					}
+				}
+			}
 		}
 	]
 }

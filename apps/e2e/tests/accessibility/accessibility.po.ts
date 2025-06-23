@@ -1,5 +1,6 @@
-import { Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import type { AxeResults } from 'axe-core';
 
 /**
  * Accessibility Page Object Model
@@ -131,14 +132,14 @@ export class AccessibilityPO {
   /**
    * Generate detailed accessibility report
    */
-  generateReport(results: any) {
+  generateReport(results: AxeResults) {
     const report = {
       url: this.page.url(),
       violations: results.violations.length,
       passes: results.passes.length,
       incomplete: results.incomplete.length,
       inapplicable: results.inapplicable.length,
-      violationDetails: results.violations.map((violation: any) => ({
+      violationDetails: results.violations.map((violation) => ({
         id: violation.id,
         impact: violation.impact,
         description: violation.description,
@@ -146,7 +147,7 @@ export class AccessibilityPO {
         helpUrl: violation.helpUrl,
         tags: violation.tags,
         nodes: violation.nodes.length,
-        nodeDetails: violation.nodes.map((node: any) => ({
+        nodeDetails: violation.nodes.map((node) => ({
           target: node.target,
           html: node.html,
           impact: node.impact,
@@ -161,7 +162,7 @@ export class AccessibilityPO {
   /**
    * Print accessibility results to console
    */
-  printResults(results: any, testName: string) {
+  printResults(results: AxeResults, testName: string) {
     console.log(`\n=== ${testName} ===`);
     console.log(`URL: ${this.page.url()}`);
     console.log(`Violations: ${results.violations.length}`);
@@ -171,7 +172,7 @@ export class AccessibilityPO {
 
     if (results.violations.length > 0) {
       console.log('\n🚨 VIOLATIONS FOUND:');
-      results.violations.forEach((violation: any, index: number) => {
+      results.violations.forEach((violation, index: number) => {
         console.log(`\n${index + 1}. ${violation.id} (Impact: ${violation.impact})`);
         console.log(`   Description: ${violation.description}`);
         console.log(`   Help: ${violation.help}`);
@@ -179,7 +180,7 @@ export class AccessibilityPO {
         console.log(`   Affected elements: ${violation.nodes.length}`);
         
         // Show first few affected elements
-        violation.nodes.slice(0, 3).forEach((node: any, nodeIndex: number) => {
+        violation.nodes.slice(0, 3).forEach((node, nodeIndex: number) => {
           console.log(`   Element ${nodeIndex + 1}: ${node.target.join(', ')}`);
         });
         
