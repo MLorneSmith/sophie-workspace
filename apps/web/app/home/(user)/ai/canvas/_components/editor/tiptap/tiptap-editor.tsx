@@ -292,7 +292,13 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 					setTimeout(() => setSaveStatus("idle"), 3000);
 				}
 			},
-			[updateContent, sectionType],
+			[
+				updateContent,
+				sectionType, // TODO: Async logger needed
+				// TODO: Fix logger call - was: error
+				setSaveStatus,
+				setSaveStatus,
+			],
 		);
 
 		// Debounced save handler
@@ -380,7 +386,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 				// TODO: Async logger needed
 				// TODO: Fix logger call - was: error
 			}
-		}, [editor, sectionType]);
+		}, [editor, sectionType, initialContent]);
 
 		// Handle editor changes
 		useEffect(() => {

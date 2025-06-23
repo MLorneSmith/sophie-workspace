@@ -288,11 +288,13 @@ export async function LessonDataProviderEnhanced({
 						// Pre-fetch questions to ensure they're available
 						// TODO: Async logger needed
 						// TODO: Fix logger call - was: info
-						const questionsData = await getSurveyQuestions(survey!.id);
+						const questionsData = await getSurveyQuestions(survey?.id);
 
 						if (questionsData?.docs && questionsData.docs.length > 0) {
 							// Add questions to the survey object directly
-							survey!.questions = questionsData.docs;
+							if (survey) {
+								survey.questions = questionsData.docs;
+							}
 							// TODO: Async logger needed
 							// TODO: Fix logger call - was: info
 						} else {

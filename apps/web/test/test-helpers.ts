@@ -70,6 +70,7 @@ export function createMockSupabaseClient(): MockSupabaseClient {
 		maybeSingle: vi.fn().mockReturnThis(),
 		throwOnError: vi.fn().mockReturnThis(),
 		// Default resolved value
+		// biome-ignore lint/suspicious/noThenProperty: This is a mock thenable object for testing
 		then: vi.fn((onResolve) => onResolve({ data: null, error: null })),
 	});
 
@@ -163,15 +164,56 @@ export function expectSuccess<T>(result: ActionResult<T>): T | undefined {
 /**
  * Assert that a result is an error and return the error message
  */
-export function expectError(result: ActionResult<any>): string {
+export function expectError(result: ActionResult<unknown>): string {
 	if (result.success) {
 		throw new Error("Expected error but got success");
 	}
 	return result.error;
 }
 
+/**
+ * Type helper for asserting action results in tests
+ */
+export function assertActionResult<T>(
+	result: unknown,
+): asserts result is ActionResult<T> {
+	if (!result || typeof result !== "object") {
+		throw new Error("Invalid action result");
+	}
+	const r = result as Record<string, unknown>;
+	if (!("success" in r)) {
+		throw new Error("Action result missing success property");
+	}
+}
+
+/**
+ * Type guard for checking if result is successful
+ */
+export function isSuccessResult<T>(
+	result: ActionResult<T>,
+): result is { success: true; data?: T } {
+	return result.success === true;
+}
+
+/**
+ * Type guard for checking if result is an error
+ */
+export function isErrorResult(
+	result: ActionResult<unknown>,
+): result is { success: false; error: string } {
+	return result.success === false;
+}
+
 // Make helpers available globally as defined in test-types.d.ts
-(globalThis as any).TestHelpers = {
+interface TestHelpersGlobal {
+	TestHelpers: {
+		castActionResult: typeof castActionResult;
+		createMockSupabaseClient: typeof createMockSupabaseClient;
+		createMockAction: typeof createMockAction;
+	};
+}
+
+(globalThis as unknown as TestHelpersGlobal).TestHelpers = {
 	castActionResult,
 	createMockSupabaseClient,
 	createMockAction,

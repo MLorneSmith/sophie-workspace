@@ -13,19 +13,46 @@ import type {
 	StoryboardData,
 } from "../../types";
 
-// PptxGenJS types for better type safety
+// Removed unused types - ChartType, ChartData, and ChartOptions were not being used
+
+interface TableRow {
+	[key: string]: string | number | boolean | Record<string, unknown>;
+}
+
 interface PptxSlide {
 	addText(text: string, options?: Record<string, unknown>): void;
-	addChart(type: any, data: any, options?: any): void;
+	addChart(
+		type: string,
+		data: unknown[],
+		options?: Record<string, unknown>,
+	): void;
 	addImage(options: Record<string, unknown>): void;
-	addTable(data: any, options?: Record<string, unknown>): void;
+	addTable(
+		data: TableRow[][] | unknown[][],
+		options?: Record<string, unknown>,
+	): void;
 	[key: string]: unknown; // Allow other methods
 }
 
 // Augment pptxgen types to ensure proper type support
 declare module "pptxgenjs" {
+	// Chart types enum
+	export enum ChartType {
+		bar = "bar",
+		line = "line",
+		pie = "pie",
+		area = "area",
+		scatter = "scatter",
+		bubble = "bubble",
+		radar = "radar",
+		doughnut = "doughnut",
+	}
+
 	// Properly define the write method with output types
 	interface PptxGenJs {
+		// ChartType enum
+		ChartType: typeof ChartType;
+
 		// Define all output types that pptxgenjs supports
 		write(outputType: "arraybuffer"): Promise<ArrayBuffer>;
 		write(outputType: "base64"): Promise<string>;
@@ -52,6 +79,24 @@ declare module "pptxgenjs" {
 			| "nodebuffer"
 			| "uint8array";
 		fileName?: string;
+	}
+
+	// Define Slide interface for pptxgenjs
+	interface Slide {
+		addText(text: string, options?: Record<string, unknown>): void;
+		addChart(
+			type: string,
+			data: unknown[],
+			options?: Record<string, unknown>,
+		): void;
+		addImage(options: Record<string, unknown>): void;
+		addTable(data: unknown[][], options?: Record<string, unknown>): void;
+		[key: string]: unknown;
+	}
+
+	// Extend PptxGenJs to return typed slides
+	interface PptxGenJs {
+		addSlide(options?: string | Record<string, unknown>): Slide;
 	}
 }
 
@@ -143,7 +188,7 @@ export const LAYOUT_POSITIONS: Record<string, PositionMap> = {
  */
 export class PptxGenerator {
 	private pptx: pptxgen;
-	private logger: any; // Use any type to avoid interface compatibility issues
+	private logger: Logger;
 
 	/**
 	 * Initializes a new PptxGenerator instance and defines slide templates
@@ -497,64 +542,64 @@ export class PptxGenerator {
 						// Create the appropriate chart type with correct parameters
 						switch (content.chartType) {
 							case "bar":
-								(slide as any).addChart(
-									(this.pptx as any).ChartType.bar,
+								(slide as unknown as PptxSlide).addChart(
+									(this.pptx as unknown as pptxgen).ChartType.bar,
 									chartData,
 									commonChartProps,
 								);
 								break;
 
 							case "line":
-								(slide as any).addChart(
-									(this.pptx as any).ChartType.line,
+								(slide as unknown as PptxSlide).addChart(
+									(this.pptx as unknown as pptxgen).ChartType.line,
 									chartData,
 									commonChartProps,
 								);
 								break;
 
 							case "pie":
-								(slide as any).addChart(
-									(this.pptx as any).ChartType.pie,
+								(slide as unknown as PptxSlide).addChart(
+									(this.pptx as unknown as pptxgen).ChartType.pie,
 									chartData,
 									commonChartProps,
 								);
 								break;
 
 							case "area":
-								(slide as any).addChart(
-									(this.pptx as any).ChartType.area,
+								(slide as unknown as PptxSlide).addChart(
+									(this.pptx as unknown as pptxgen).ChartType.area,
 									chartData,
 									commonChartProps,
 								);
 								break;
 
 							case "scatter":
-								(slide as any).addChart(
-									(this.pptx as any).ChartType.scatter,
+								(slide as unknown as PptxSlide).addChart(
+									(this.pptx as unknown as pptxgen).ChartType.scatter,
 									chartData,
 									commonChartProps,
 								);
 								break;
 
 							case "bubble":
-								(slide as any).addChart(
-									(this.pptx as any).ChartType.bubble,
+								(slide as unknown as PptxSlide).addChart(
+									(this.pptx as unknown as pptxgen).ChartType.bubble,
 									chartData,
 									commonChartProps,
 								);
 								break;
 
 							case "radar":
-								(slide as any).addChart(
-									(this.pptx as any).ChartType.radar,
+								(slide as unknown as PptxSlide).addChart(
+									(this.pptx as unknown as pptxgen).ChartType.radar,
 									chartData,
 									commonChartProps,
 								);
 								break;
 
 							case "doughnut":
-								(slide as any).addChart(
-									(this.pptx as any).ChartType.doughnut,
+								(slide as unknown as PptxSlide).addChart(
+									(this.pptx as unknown as pptxgen).ChartType.doughnut,
 									chartData,
 									commonChartProps,
 								);
@@ -562,8 +607,8 @@ export class PptxGenerator {
 
 							default:
 								// Default to bar chart if type is unknown
-								(slide as any).addChart(
-									(this.pptx as any).ChartType.bar,
+								(slide as unknown as PptxSlide).addChart(
+									(this.pptx as unknown as pptxgen).ChartType.bar,
 									chartData,
 									commonChartProps,
 								);
@@ -598,7 +643,7 @@ export class PptxGenerator {
 			case "image":
 				if (content.imageUrl) {
 					try {
-						(slide as any).addImage({
+						(slide as unknown as PptxSlide).addImage({
 							path: content.imageUrl, // Can be URL or base64
 							x: position.x,
 							y: position.y,
@@ -636,7 +681,7 @@ export class PptxGenerator {
 								? JSON.parse(content.tableData)
 								: content.tableData;
 
-						(slide as any).addTable(tableData, {
+						(slide as unknown as PptxSlide).addTable(tableData, {
 							x: position.x,
 							y: position.y,
 							w: position.w,

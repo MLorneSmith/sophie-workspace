@@ -61,7 +61,7 @@ export type { SupabaseClient };
  */
 function createMockClient(): SupabaseClient {
 	// Create a recursive mock that satisfies the SupabaseQueryBuilder interface
-	const createQueryBuilder = (): any => ({
+	const createQueryBuilder = (): unknown => ({
 		select: createQueryBuilder,
 		insert: createQueryBuilder,
 		update: createQueryBuilder,
@@ -100,7 +100,9 @@ function createMockClient(): SupabaseClient {
 		explain: createQueryBuilder,
 		rollback: createQueryBuilder,
 		returns: createQueryBuilder,
-		then: (onResolve: any) => onResolve({ data: null, error: null }),
+		// biome-ignore lint/suspicious/noThenProperty: Mock implementation requires then for promise-like behavior
+		then: (onResolve: (value: SupabaseResponse) => void) =>
+			onResolve({ data: null, error: null }),
 		data: null,
 		error: null,
 	});
@@ -123,7 +125,7 @@ function createMockClient(): SupabaseClient {
 			getSession: () =>
 				Promise.resolve({ data: { session: null }, error: null }),
 		},
-	} as any;
+	} as SupabaseClient;
 }
 
 /**
@@ -187,7 +189,7 @@ export async function getSupabaseClient(
 					(await getLogger()).info(
 						"Supabase admin client successfully connected",
 					);
-					return adminClient as any;
+					return adminClient as SupabaseClient;
 				} catch (adminConnectionError) {
 					(await getLogger()).error(
 						"Error testing Supabase admin connection:",
@@ -245,7 +247,7 @@ export async function getSupabaseClient(
 			}
 
 			(await getLogger()).info("Supabase client successfully connected");
-			return client as any;
+			return client as SupabaseClient;
 		} catch (connectionError) {
 			(await getLogger()).error("Error testing Supabase connection:", {
 				data: connectionError,

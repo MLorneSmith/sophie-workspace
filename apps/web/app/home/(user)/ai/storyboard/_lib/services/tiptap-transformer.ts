@@ -1,6 +1,6 @@
 "use client";
 
-import type { Slide, StoryboardData, StoryboardSlide } from "../types/index";
+import type { Slide, StoryboardData } from "../types/index";
 
 /**
  * Helper function to generate UUID since we don't have access to @kit/shared/utils/uuid

@@ -11,6 +11,27 @@ import type { SupabaseClient } from "./supabase-client";
 // Initialize service logger
 const { getLogger } = createServiceLogger("AI-GATEWAY");
 
+// Extended Supabase client type for operations not covered by base type
+type ExtendedSupabaseClient = {
+	from: (table: string) => {
+		select: (
+			columns: string,
+			options?: { count?: string; head?: boolean },
+		) => Promise<{ count?: number; error?: unknown }> & {
+			limit: (count: number) => Promise<{ data?: unknown; error?: unknown }>;
+		};
+		insert: (data: unknown) => Promise<{ error?: unknown; data?: unknown }> & {
+			select: (columns: string) => {
+				single: () => Promise<{ data?: unknown; error?: unknown }>;
+			};
+		};
+	};
+	rpc: (
+		func: string,
+		params?: Record<string, unknown>,
+	) => Promise<{ data?: unknown; error?: unknown }>;
+};
+
 /**
  * Initializes cost configuration data if the table is empty
  * This ensures we have pricing data for all supported models
@@ -25,15 +46,17 @@ export async function initializeCostConfiguration(
 		(await getLogger()).info("Checking AI cost configuration data...");
 
 		// Check if we already have cost configuration data
-		const { count, error: countError } = await (supabase as any)
+		const { count, error: countError } = await (
+			supabase as unknown as ExtendedSupabaseClient
+		)
 			.from("ai_cost_configuration")
 			.select("*", { count: "exact", head: true });
 
 		if (countError) {
 			(await getLogger()).error("Error checking cost configuration:", {
 				error: countError,
-				message: (countError as any).message,
-				hint: (countError as any).hint,
+				message: (countError as { message?: string; hint?: string }).message,
+				hint: (countError as { message?: string; hint?: string }).hint,
 			});
 			return false;
 		}
@@ -50,7 +73,9 @@ export async function initializeCostConfiguration(
 		);
 
 		// Insert default pricing data for common models
-		const { error: insertError } = await (supabase as any)
+		const { error: insertError } = await (
+			supabase as unknown as ExtendedSupabaseClient
+		)
 			.from("ai_cost_configuration")
 			.insert([
 				// OpenAI models
@@ -161,8 +186,8 @@ export async function initializeCostConfiguration(
 		if (insertError) {
 			(await getLogger()).error("Error seeding cost configuration data:", {
 				error: insertError,
-				message: (insertError as any).message,
-				hint: (insertError as any).hint,
+				message: (insertError as { message?: string; hint?: string }).message,
+				hint: (insertError as { message?: string; hint?: string }).hint,
 			});
 			return false;
 		}
@@ -195,7 +220,9 @@ export async function testDatabasePermissions(
 		const testId = `test-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
 		// Attempt to insert a test record
-		const { data, error } = await (supabase as any)
+		const { data, error } = await (
+			supabase as unknown as ExtendedSupabaseClient
+		)
 			.from("ai_request_logs")
 			.insert({
 				user_id: null,
@@ -216,16 +243,16 @@ export async function testDatabasePermissions(
 		if (error) {
 			(await getLogger()).error("Database permission test failed:", {
 				error,
-				message: (error as any).message,
-				details: (error as any).details,
-				hint: (error as any).hint,
-				code: (error as any).code,
+				message: (error as { message?: string }).message,
+				details: (error as { message?: string }).details,
+				hint: (error as { message?: string }).hint,
+				code: (error as { message?: string }).code,
 			});
 			return false;
 		}
 
 		(await getLogger()).info("Database permission test successful:", {
-			recordId: (data as any)?.id,
+			recordId: (data as { id?: string })?.id,
 			testId,
 		});
 		return true;
@@ -250,7 +277,9 @@ export async function testDatabaseFunctions(
 		(await getLogger()).info("Testing database function permissions...");
 
 		// Test the calculate_ai_cost function
-		const { data, error } = await (supabase as any).rpc("calculate_ai_cost", {
+		const { data, error } = await (
+			supabase as unknown as ExtendedSupabaseClient
+		).rpc("calculate_ai_cost", {
 			p_provider: "openai",
 			p_model: "gpt-3.5-turbo",
 			p_prompt_tokens: 100,
@@ -260,10 +289,10 @@ export async function testDatabaseFunctions(
 		if (error) {
 			(await getLogger()).error("Database function test failed:", {
 				error,
-				message: (error as any).message,
-				details: (error as any).details,
-				hint: (error as any).hint,
-				code: (error as any).code,
+				message: (error as { message?: string }).message,
+				details: (error as { message?: string }).details,
+				hint: (error as { message?: string }).hint,
+				code: (error as { message?: string }).code,
 			});
 			return false;
 		}

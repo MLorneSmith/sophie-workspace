@@ -998,7 +998,7 @@ describe("QuizComponent", () => {
 							null,
 							undefined,
 							{ text: "Valid option", iscorrect: true },
-						] as any,
+						] as unknown as Array<{ text: string; iscorrect: boolean }>,
 					},
 				],
 			} as PayloadQuiz;
@@ -1041,7 +1041,7 @@ describe("QuizComponent", () => {
 			const quizWithoutPassingScore = {
 				...sampleQuiz,
 				passingScore: undefined,
-			} as any as PayloadQuiz;
+			} as unknown as PayloadQuiz;
 
 			render(
 				<QuizComponent {...defaultProps} quiz={quizWithoutPassingScore} />,
@@ -1080,7 +1080,7 @@ describe("QuizComponent", () => {
 						question: "Question with undefined options",
 						questiontype: "single-answer" as const,
 						// options property is missing
-					} as any,
+					} as unknown as PayloadQuiz["questions"][number],
 				],
 			} as PayloadQuiz;
 

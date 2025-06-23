@@ -24,7 +24,7 @@
 		"@kit/tsconfig": "workspace:*",
 		"@kit/ui": "workspace:*",
 		"@types/node": "^22.15.30",
-		"@types/react": "19.1.6",
+		"@types/react": "19.1.8",
 		"wp-types": "^4.68.0"
 	},
 	"typesVersions": {

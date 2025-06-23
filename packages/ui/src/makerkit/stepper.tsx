@@ -49,7 +49,12 @@ export function Stepper(props: {
 
 			return (
 				<Fragment key={labelOrKey}>
-					<div aria-selected={selected} className={className}>
+					<div
+						role="tab"
+						aria-selected={selected}
+						tabIndex={0}
+						className={className}
+					>
 						<span className={labelClassName}>
 							{number}
 							<If condition={!isNumberVariant}>. {label}</If>

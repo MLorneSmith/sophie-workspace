@@ -39,7 +39,7 @@ export function StoryboardPanel({
 		}
 
 		try {
-			await saveStoryboard(storyboardData!);
+			await saveStoryboard(storyboardData);
 			toast.success("Storyboard saved successfully");
 		} catch (_error) {
 			// TODO: Async logger needed

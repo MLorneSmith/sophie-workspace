@@ -20,7 +20,7 @@ type SurveySummaryProps = {
 export function SurveySummary({
 	survey,
 	categoryScores: initialCategoryScores,
-	totalQuestions,
+	totalQuestions: _totalQuestions,
 }: SurveySummaryProps) {
 	// Get the current user
 	const { user } = useUserWorkspace();
@@ -30,7 +30,6 @@ export function SurveySummary({
 		categoryScores: dbCategoryScores,
 		highestCategory: dbHighestCategory,
 		lowestCategory: dbLowestCategory,
-		isLoading,
 	} = useSurveyScores(user?.id || "", String(survey.id));
 
 	// Use provided scores or fall back to database scores
@@ -65,7 +64,12 @@ export function SurveySummary({
 				);
 			}
 		}
-	}, [categoryScores, initialCategoryScores]);
+	}, [
+		categoryScores,
+		initialCategoryScores,
+		dbHighestCategory,
+		dbLowestCategory,
+	]);
 
 	// Get category names - using the category key directly since we don't have a mapping
 	const getCategoryName = (categoryKey: string) => {

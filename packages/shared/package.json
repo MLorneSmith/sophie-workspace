@@ -2,8 +2,10 @@
 	"name": "@kit/shared",
 	"private": true,
 	"version": "0.1.0",
+	"type": "module",
 	"scripts": {
-		"clean": "git clean -xdf .turbo node_modules",
+		"build": "tsc && node scripts/fix-esm-imports.js",
+		"clean": "git clean -xdf .turbo node_modules dist",
 		"format": "prettier --check \"**/*.{ts,tsx}\"",
 		"lint": "eslint .",
 		"typecheck": "tsc --noEmit",
@@ -16,28 +18,28 @@
 	"exports": {
 		"./logger": {
 			"types": "./dist/logger/index.d.ts",
-			"import": "./src/logger/index.ts",
-			"default": "./src/logger/index.ts"
+			"import": "./dist/logger/index.js",
+			"default": "./dist/logger/index.js"
 		},
 		"./utils": {
 			"types": "./dist/utils.d.ts",
-			"import": "./src/utils.ts",
-			"default": "./src/utils.ts"
+			"import": "./dist/utils.js",
+			"default": "./dist/utils.js"
 		},
 		"./hooks": {
 			"types": "./dist/hooks/index.d.ts",
-			"import": "./src/hooks/index.ts",
-			"default": "./src/hooks/index.ts"
+			"import": "./dist/hooks/index.js",
+			"default": "./dist/hooks/index.js"
 		},
 		"./events": {
 			"types": "./dist/events/index.d.ts",
-			"import": "./src/events/index.tsx",
-			"default": "./src/events/index.tsx"
+			"import": "./dist/events/index.jsx",
+			"default": "./dist/events/index.jsx"
 		},
 		"./registry": {
 			"types": "./dist/registry/index.d.ts",
-			"import": "./src/registry/index.ts",
-			"default": "./src/registry/index.ts"
+			"import": "./dist/registry/index.js",
+			"default": "./dist/registry/index.js"
 		}
 	},
 	"devDependencies": {

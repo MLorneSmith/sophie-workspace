@@ -3,8 +3,7 @@
  * Tests schema validation, database updates, and error handling
  */
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { expectError, expectSuccess } from "@/test/test-helpers";
-import type { ActionResult } from "@/test/test-types";
+import { expectError } from "@/test/test-helpers";
 import { updateBuildingBlockTitleAction } from "./update-building-block-title.action";
 
 // Mock dependencies
@@ -79,19 +78,19 @@ describe("updateBuildingBlockTitleAction", () => {
 
 		it("should reject invalid data types", async () => {
 			const result = await updateBuildingBlockTitleAction({
-				id: 123 as any,
-				title: null as any,
+				id: 123 as unknown as string,
+				title: null as unknown as string,
 			});
 
-			expect(expectError(result as any)).toBe("Validation failed");
+			expect(expectError(result)).toBe("Validation failed");
 		});
 
 		it("should reject missing fields", async () => {
 			const result = await updateBuildingBlockTitleAction({
-				id: undefined as any,
-			} as any);
+				id: undefined as unknown as string,
+			} as { id: string; title: string });
 
-			expect(expectError(result as any)).toBe("Validation failed");
+			expect(expectError(result)).toBe("Validation failed");
 		});
 	});
 

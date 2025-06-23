@@ -57,11 +57,11 @@ type SurveyComponentProps = {
 export function SurveyComponent({
 	survey,
 	surveyResponses = [],
-	userId,
+	userId: _userId,
 	onComplete,
 }: SurveyComponentProps) {
 	const [isPending, startTransition] = useTransition();
-	const supabase = useSupabase();
+	const _supabase = useSupabase();
 
 	const [questions, setQuestions] = useState<Question[]>([]);
 	const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -311,7 +311,7 @@ export function SurveyComponent({
 	useEffect(() => {
 		if (surveyResponses && surveyResponses.length > 0) {
 			const response = surveyResponses[0];
-			if (response && response.completed) {
+			if (response?.completed) {
 				setShowSummary(true);
 			}
 		}

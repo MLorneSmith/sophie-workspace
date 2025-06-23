@@ -30,6 +30,7 @@ import {
 	InputOTPSeparator,
 	InputOTPSlot,
 } from "@kit/ui/input-otp";
+import { toast } from "@kit/ui/sonner";
 import { Trans } from "@kit/ui/trans";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -38,7 +39,6 @@ import Image from "next/image";
 import { useCallback, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
 import { z } from "zod";
 import { refreshAuthSession } from "../../../server/personal-accounts-server-actions";
 

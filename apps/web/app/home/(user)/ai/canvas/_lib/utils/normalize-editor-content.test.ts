@@ -392,7 +392,7 @@ describe("normalizeEditorContent", () => {
 						type: "bulletList",
 						content: [
 							{ type: "text", text: "Invalid item" }, // Should be listItem
-							null as any as TiptapNode, // Null item
+							null as unknown as TiptapNode, // Null item
 						],
 					},
 				],
@@ -457,7 +457,7 @@ describe("normalizeEditorContent", () => {
 							{
 								type: "listItem",
 								content: [
-									null as any as TiptapNode, // Null element
+									null as unknown as TiptapNode, // Null element
 									{ type: "text", text: "Valid text" },
 								],
 							},
@@ -602,7 +602,7 @@ describe("normalizeEditorContent", () => {
 				type: "doc",
 				content: [
 					{ type: "text", text: "Valid text" },
-					{} as any as TiptapNode, // Missing type property
+					{} as unknown as TiptapNode, // Missing type property
 				],
 			};
 			const sectionType: EditorContentTypes = "situation";
@@ -626,7 +626,7 @@ describe("normalizeEditorContent", () => {
 					{
 						type: "paragraph",
 						content: [
-							{ type: "text" } as any as TiptapNode, // Missing text property - gets normalized before validation
+							{ type: "text" } as unknown as TiptapNode, // Missing text property - gets normalized before validation
 						],
 					},
 				],

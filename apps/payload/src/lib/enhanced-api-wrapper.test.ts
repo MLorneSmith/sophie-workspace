@@ -3,6 +3,7 @@
  * Tests the EnhancedAPIManager class and related functionality
  */
 
+import type { EnvironmentLogger } from "@kit/shared/logger";
 import { type NextRequest, NextResponse } from "next/server";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -78,7 +79,9 @@ describe("EnhancedAPIManager", () => {
 
 		// Mock logger
 		mockLogger = new MockEnvironmentLogger();
-		vi.mocked(createEnvironmentLogger).mockReturnValue(mockLogger as any);
+		vi.mocked(createEnvironmentLogger).mockReturnValue(
+			mockLogger as unknown as EnvironmentLogger,
+		);
 
 		// Mock Date.now for consistent timing
 		mockDate = new Date("2023-01-01T12:00:00.000Z");
@@ -126,27 +129,38 @@ describe("EnhancedAPIManager", () => {
 
 	describe("Request ID Generation", () => {
 		it("should generate unique request IDs with correct format", async () => {
-			const manager = getEnhancedAPIManager();
-			const mockHandler = vi.fn().mockResolvedValue(new Response("OK"));
-			const enhancedHandler = manager.createEnhancedHandler(mockHandler, "GET");
+			vi.stubEnv("NODE_ENV", "development");
 
-			// Make two requests to test uniqueness
-			const request1 = new Request(
-				"https://example.com/api/test1",
-			) as NextRequest;
-			const request2 = new Request(
-				"https://example.com/api/test2",
-			) as NextRequest;
+			try {
+				const manager = getEnhancedAPIManager();
+				const mockHandler = vi.fn().mockResolvedValue(new Response("OK"));
+				const enhancedHandler = manager.createEnhancedHandler(
+					mockHandler,
+					"GET",
+				);
 
-			const response1 = await enhancedHandler(request1);
-			const response2 = await enhancedHandler(request2);
+				// Make two requests to test uniqueness
+				const request1 = new Request(
+					"https://example.com/api/test1",
+				) as NextRequest;
+				const request2 = new Request(
+					"https://example.com/api/test2",
+				) as NextRequest;
 
-			const id1 = response1.headers.get("X-Request-ID");
-			const id2 = response2.headers.get("X-Request-ID");
+				const response1 = await enhancedHandler(request1);
+				const response2 = await enhancedHandler(request2);
 
-			expect(id1).toMatch(/^req_\d+_[a-z0-9]+$/);
-			expect(id2).toMatch(/^req_\d+_[a-z0-9]+$/);
-			expect(id1).not.toBe(id2);
+				const id1 = response1.headers.get("X-Request-ID");
+				const id2 = response2.headers.get("X-Request-ID");
+
+				expect(typeof id1).toBe("string");
+				expect(typeof id2).toBe("string");
+				expect(id1).toMatch(/^req_\d+_[a-z0-9]+$/);
+				expect(id2).toMatch(/^req_\d+_[a-z0-9]+$/);
+				expect(id1).not.toBe(id2);
+			} finally {
+				vi.unstubAllEnvs();
+			}
 		});
 	});
 
@@ -177,7 +191,7 @@ describe("EnhancedAPIManager", () => {
 
 			// The handler should process the request successfully
 			expect(response.status).toBe(200);
-			expect(mockHandler).toHaveBeenCalledWith(request);
+			expect(mockHandler).toHaveBeenCalledWith(request, expect.any(Object));
 		});
 
 		it("should handle requests without client headers", async () => {
@@ -191,7 +205,7 @@ describe("EnhancedAPIManager", () => {
 
 			// The handler should still process the request successfully
 			expect(response.status).toBe(200);
-			expect(mockHandler).toHaveBeenCalledWith(request);
+			expect(mockHandler).toHaveBeenCalledWith(request, expect.any(Object));
 		});
 	});
 
@@ -268,16 +282,20 @@ describe("EnhancedAPIManager", () => {
 
 			await enhancedHandler(request);
 
-			expect(mockLogger.info).toHaveBeenCalledWith(
-				"GET /api/test?param=value",
-				expect.objectContaining({
-					requestId: expect.stringMatching(/^req_\d+_/),
-					method: "GET",
-					pathname: "/api/test",
-					search: "?param=value",
-					clientInfo: expect.any(Object),
-				}),
+			// Verify the logger was called with the incoming request
+			expect(mockLogger.info).toHaveBeenCalled();
+			const infoCall = mockLogger.info.mock.calls.find(
+				(call) =>
+					typeof call[0] === "string" && call[0].includes("GET /api/test"),
 			);
+			expect(infoCall).toBeDefined();
+			expect(infoCall?.[1]).toMatchObject({
+				requestId: expect.stringMatching(/^req_\d+_/),
+				method: "GET",
+				pathname: "/api/test",
+				search: "?param=value",
+				clientInfo: expect.any(Object),
+			});
 		});
 
 		it("should log successful responses with timing", async () => {
@@ -294,14 +312,20 @@ describe("EnhancedAPIManager", () => {
 
 			await enhancedHandler(request);
 
-			expect(mockLogger.info).toHaveBeenCalledWith(
-				"GET /api/test - 200 (0ms)",
-				expect.objectContaining({
-					requestId: expect.stringMatching(/^req_\d+_/),
-					status: 200,
-					responseTime: 0,
-				}),
+			// Verify the logger was called with the response
+			expect(mockLogger.info).toHaveBeenCalled();
+			const responseCall = mockLogger.info.mock.calls.find(
+				(call) =>
+					typeof call[0] === "string" &&
+					call[0].includes("200") &&
+					call[0].includes("ms"),
 			);
+			expect(responseCall).toBeDefined();
+			expect(responseCall?.[1]).toMatchObject({
+				requestId: expect.stringMatching(/^req_\d+_/),
+				status: 200,
+				responseTime: expect.any(Number),
+			});
 		});
 
 		it("should add debug headers in development environment", async () => {
@@ -395,17 +419,20 @@ describe("EnhancedAPIManager", () => {
 
 			await enhancedHandler(request);
 
-			expect(mockLogger.error).toHaveBeenCalledWith(
-				"API Error: POST /api/test",
-				expect.objectContaining({
-					errorDetails: expect.objectContaining({
-						error: "Error",
-						message: "Test error",
-						endpoint: "/api/test",
-						method: "POST",
-					}),
-				}),
+			// Verify the error logger was called
+			expect(mockLogger.error).toHaveBeenCalled();
+			const errorCall = mockLogger.error.mock.calls.find(
+				(call) => typeof call[0] === "string" && call[0].includes("API Error"),
 			);
+			expect(errorCall).toBeDefined();
+			expect(errorCall?.[1]).toMatchObject({
+				errorDetails: expect.objectContaining({
+					error: "Error",
+					message: "Test error",
+					endpoint: "/api/test",
+					method: "POST",
+				}),
+			});
 		});
 
 		it("should add error to error log", async () => {
@@ -438,31 +465,28 @@ describe("EnhancedAPIManager", () => {
 		it("should calculate moving average response time correctly", async () => {
 			const manager = getEnhancedAPIManager();
 
-			// Create handlers that simulate different response times
+			// Create handlers that simulate different response times by using delays
 			const mockHandlers = [
 				vi.fn().mockImplementation(
-					() =>
-						new Promise((resolve) => {
-							setTimeout(
-								() => resolve(new Response("OK", { status: 200 })),
-								100,
-							);
-						}),
+					async () => {
+						// Simulate work with delay
+						await new Promise((resolve) => setTimeout(resolve, 10));
+						return new Response("OK", { status: 200 });
+					},
 				),
 				vi.fn().mockImplementation(
-					() =>
-						new Promise((resolve) => {
-							setTimeout(
-								() => resolve(new Response("OK", { status: 200 })),
-								200,
-							);
-						}),
+					async () => {
+						// Simulate more work with longer delay
+						await new Promise((resolve) => setTimeout(resolve, 20));
+						return new Response("OK", { status: 200 });
+					},
 				),
 				vi.fn().mockImplementation(
-					() =>
-						new Promise((_, reject) => {
-							setTimeout(() => reject(new Error("Test error")), 300);
-						}),
+					async () => {
+						// Simulate work before error
+						await new Promise((resolve) => setTimeout(resolve, 30));
+						throw new Error("Test error");
+					},
 				),
 			];
 

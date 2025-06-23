@@ -105,59 +105,47 @@ export async function getQuiz(quizId, _options = {}, supabaseClient) {
         // );
         throw new Error(`Failed to extract valid quiz ID: ${error instanceof Error ? error.message : String(error)}`);
     }
-    // Log the quiz ID for debugging
+    // Get the quiz WITH its questions using depth parameter
+    // This utilizes the unidirectional relationship
+    const quiz = await callPayloadAPI(`course_quizzes/${actualQuizId}?depth=1`, {}, supabaseClient);
+    if (!quiz || !quiz.id) {
+        // TODO: Async logger needed
+        // (await getLogger()).error(`getQuiz: Quiz not found for ID: ${actualQuizId}`);
+        throw new Error(`Quiz not found for ID: ${actualQuizId}`);
+    }
     // TODO: Async logger needed
-    // (await getLogger()).info(
-    // 	`getQuiz: Fetching quiz with ID: ${actualQuizId} (original: ${JSON.stringify(quizId)})`,
-    // );
-    try {
-        // Get the quiz WITH its questions using depth parameter
-        // This utilizes the unidirectional relationship
-        const quiz = await callPayloadAPI(`course_quizzes/${actualQuizId}?depth=1`, {}, supabaseClient);
-        if (!quiz || !quiz.id) {
-            // TODO: Async logger needed
-            // (await getLogger()).error(`getQuiz: Quiz not found for ID: ${actualQuizId}`);
-            throw new Error(`Quiz not found for ID: ${actualQuizId}`);
-        }
+    // (await getLogger()).info(`getQuiz: Successfully fetched quiz: ${quiz.title}`);
+    // Check if we have the questions from the depth=1 query
+    if (!quiz.questions ||
+        !Array.isArray(quiz.questions) ||
+        quiz.questions.length === 0) {
         // TODO: Async logger needed
-        // (await getLogger()).info(`getQuiz: Successfully fetched quiz: ${quiz.title}`);
-        // Check if we have the questions from the depth=1 query
-        if (!quiz.questions ||
-            !Array.isArray(quiz.questions) ||
-            quiz.questions.length === 0) {
+        // (await getLogger()).info(`Quiz has no questions: ${quiz.title}`);
+        return Object.assign(Object.assign({}, quiz), { questions: [] });
+    }
+    // If we have question IDs but need the full details, fetch them
+    // This handles the case where questions are just IDs and not full objects
+    if (typeof quiz.questions[0] === "string" || !quiz.questions[0].options) {
+        try {
+            // Get the question IDs
+            const questionIds = quiz.questions.map((q) => typeof q === "string" ? q : q.id || q.value || q);
+            // Get full question details using their IDs
+            const idQueryParams = questionIds
+                .map((id) => `id[]=${id}`)
+                .join("&");
+            const questionsResponse = await callPayloadAPI(`quiz_questions?${idQueryParams}&sort=order`, {}, supabaseClient);
             // TODO: Async logger needed
-            // (await getLogger()).info(`Quiz has no questions: ${quiz.title}`);
-            return Object.assign(Object.assign({}, quiz), { questions: [] });
+            // (await getLogger()).info(`getQuiz: Fetched ${questionsResponse.docs?.length || 0} detailed questions for quiz`, { data:  });
+            // Replace the questions array with the full details
+            return Object.assign(Object.assign({}, quiz), { questions: questionsResponse.docs || [] });
         }
-        // If we have question IDs but need the full details, fetch them
-        // This handles the case where questions are just IDs and not full objects
-        if (typeof quiz.questions[0] === "string" || !quiz.questions[0].options) {
-            try {
-                // Get the question IDs
-                const questionIds = quiz.questions.map((q) => typeof q === "string" ? q : q.id || q.value || q);
-                // Get full question details using their IDs
-                const idQueryParams = questionIds
-                    .map((id) => `id[]=${id}`)
-                    .join("&");
-                const questionsResponse = await callPayloadAPI(`quiz_questions?${idQueryParams}&sort=order`, {}, supabaseClient);
-                // TODO: Async logger needed
-                // (await getLogger()).info(`getQuiz: Fetched ${questionsResponse.docs?.length || 0} detailed questions for quiz`, { data:  });
-                // Replace the questions array with the full details
-                return Object.assign(Object.assign({}, quiz), { questions: questionsResponse.docs || [] });
-            }
-            catch (_error) {
-                // TODO: Async logger needed
-                // (await getLogger()).error(`getQuiz: Error fetching detailed questions for quiz ${actualQuizId}:`, _error);
-                // Return what we have even if we couldn't get full details
-                return quiz;
-            }
+        catch (_error) {
+            // TODO: Async logger needed
+            // (await getLogger()).error(`getQuiz: Error fetching detailed questions for quiz ${actualQuizId}:`, _error);
+            // Return what we have even if we couldn't get full details
+            return quiz;
         }
-        // If we already have the full question objects, return as is
-        return quiz;
     }
-    catch (error) {
-        // TODO: Async logger needed
-        // (await getLogger()).error(`getQuiz: Error fetching quiz ${actualQuizId}:`, { data: error });
-        throw error;
-    }
+    // If we already have the full question objects, return as is
+    return quiz;
 }
