@@ -57,10 +57,4 @@ jobs:
       with:
         category: "/language:${{matrix.language}}"
 
-    # Upload results to GitHub Security tab
-    - name: Upload SARIF results
-      uses: github/codeql-action/upload-sarif@v3
-      if: always()
-      with:
-        sarif_file: ../results/javascript.sarif
-      continue-on-error: true
+    # Note: CodeQL analysis results are automatically uploaded by the analyze action above
