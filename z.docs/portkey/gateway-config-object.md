@@ -166,7 +166,7 @@ Copy
 
 ```
 
-## [​](https://portkey.ai/docs/api-reference/inference-api/config-object\#example-configs)  Example Configs
+## [​](https://portkey.ai/docs/api-reference/inference-api/config-object#example-configs) Example Configs
 
 Copy
 
@@ -205,80 +205,80 @@ Copy
 
 You can find more examples of schemas [below](https://portkey.ai/docs/api-reference/inference-api/config-object#examples).
 
-## [​](https://portkey.ai/docs/api-reference/inference-api/config-object\#schema-details)  Schema Details
+## [​](https://portkey.ai/docs/api-reference/inference-api/config-object#schema-details) Schema Details
 
-| Key Name | Description | Type | Required | Enum Values | Additional Info |
-| --- | --- | --- | --- | --- | --- |
-| `strategy` | Operational strategy for the config or any individual target | object | Yes (if no `provider` or `virtual_key`) | - | See Strategy Object Details |
-| `provider` | Name of the service provider | string | Yes (if no `mode` or `virtual_key`) | “openai”, “anthropic”, “azure-openai”, “anyscale”, “cohere” | - |
-| `api_key` | API key for the service provider | string | Yes (if `provider` is specified) | - | - |
-| `virtual_key` | Virtual key identifier | string | Yes (if no `mode` or `provider`) | - | - |
-| `cache` | Caching configuration | object | No | - | See Cache Object Details |
-| `retry` | Retry configuration | object | No | - | See Retry Object Details |
-| `weight` | Weight for load balancing | number | No | - | Used in `loadbalance` mode |
-| `on_status_codes` | Status codes triggering fallback | array of strings | No | - | Used in `fallback` mode |
-| `targets` | List of target configurations | array | Yes (if `mode` is specified) | - | Each item follows the config schema |
-| `request_timeout` | Request timeout configuration | number | No | - | - |
-| `custom_host` | Route to privately hosted model | string | No | - | Used in combination with `provider` \+ `api_key` |
-| `forward_headers` | Forward sensitive headers directly | array of strings | No | - | - |
-| `override_params` | Pass model name and other hyper parameters | object | No | ”model”, “temperature”, “frequency\_penalty”, “logit\_bias”, “logprobs”, “top\_logprobs”, “max\_tokens”, “n”, “presence\_penalty”, “response\_format”, “seed”, “stop”, “top\_p”, etc. | Pass everything that’s typically part of the payload |
+| Key Name          | Description                                                  | Type             | Required                                | Enum Values                                                                                                                                                                    | Additional Info                                      |
+| ----------------- | ------------------------------------------------------------ | ---------------- | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------- |
+| `strategy`        | Operational strategy for the config or any individual target | object           | Yes (if no `provider` or `virtual_key`) | -                                                                                                                                                                              | See Strategy Object Details                          |
+| `provider`        | Name of the service provider                                 | string           | Yes (if no `mode` or `virtual_key`)     | “openai”, “anthropic”, “azure-openai”, “anyscale”, “cohere”                                                                                                                    | -                                                    |
+| `api_key`         | API key for the service provider                             | string           | Yes (if `provider` is specified)        | -                                                                                                                                                                              | -                                                    |
+| `virtual_key`     | Virtual key identifier                                       | string           | Yes (if no `mode` or `provider`)        | -                                                                                                                                                                              | -                                                    |
+| `cache`           | Caching configuration                                        | object           | No                                      | -                                                                                                                                                                              | See Cache Object Details                             |
+| `retry`           | Retry configuration                                          | object           | No                                      | -                                                                                                                                                                              | See Retry Object Details                             |
+| `weight`          | Weight for load balancing                                    | number           | No                                      | -                                                                                                                                                                              | Used in `loadbalance` mode                           |
+| `on_status_codes` | Status codes triggering fallback                             | array of strings | No                                      | -                                                                                                                                                                              | Used in `fallback` mode                              |
+| `targets`         | List of target configurations                                | array            | Yes (if `mode` is specified)            | -                                                                                                                                                                              | Each item follows the config schema                  |
+| `request_timeout` | Request timeout configuration                                | number           | No                                      | -                                                                                                                                                                              | -                                                    |
+| `custom_host`     | Route to privately hosted model                              | string           | No                                      | -                                                                                                                                                                              | Used in combination with `provider` \+ `api_key`     |
+| `forward_headers` | Forward sensitive headers directly                           | array of strings | No                                      | -                                                                                                                                                                              | -                                                    |
+| `override_params` | Pass model name and other hyper parameters                   | object           | No                                      | ”model”, “temperature”, “frequency_penalty”, “logit_bias”, “logprobs”, “top_logprobs”, “max_tokens”, “n”, “presence_penalty”, “response_format”, “seed”, “stop”, “top_p”, etc. | Pass everything that’s typically part of the payload |
 
-### [​](https://portkey.ai/docs/api-reference/inference-api/config-object\#strategy-object-details)  Strategy Object Details
+### [​](https://portkey.ai/docs/api-reference/inference-api/config-object#strategy-object-details) Strategy Object Details
 
-| Key Name | Description | Type | Required | Enum Values | Additional Info |
-| --- | --- | --- | --- | --- | --- |
-| `mode` | strategy mode for the config | string | Yes | ”loadbalance”, “fallback” |  |
-| `on_status_codes` | status codes to apply the strategy. This field is only used when strategy mode is “fallback” | array of numbers | No |  | Optional |
+| Key Name          | Description                                                                                  | Type             | Required | Enum Values               | Additional Info |
+| ----------------- | -------------------------------------------------------------------------------------------- | ---------------- | -------- | ------------------------- | --------------- |
+| `mode`            | strategy mode for the config                                                                 | string           | Yes      | ”loadbalance”, “fallback” |                 |
+| `on_status_codes` | status codes to apply the strategy. This field is only used when strategy mode is “fallback” | array of numbers | No       |                           | Optional        |
 
-### [​](https://portkey.ai/docs/api-reference/inference-api/config-object\#cache-object-details)  Cache Object Details
+### [​](https://portkey.ai/docs/api-reference/inference-api/config-object#cache-object-details) Cache Object Details
 
-| Key Name | Description | Type | Required | Enum Values | Additional Info |
-| --- | --- | --- | --- | --- | --- |
-| `mode` | Cache mode | string | Yes | ”simple”, “semantic” | - |
-| `max_age` | Maximum age for cache entries | integer | No | - | Optional |
+| Key Name  | Description                   | Type    | Required | Enum Values          | Additional Info |
+| --------- | ----------------------------- | ------- | -------- | -------------------- | --------------- |
+| `mode`    | Cache mode                    | string  | Yes      | ”simple”, “semantic” | -               |
+| `max_age` | Maximum age for cache entries | integer | No       | -                    | Optional        |
 
-### [​](https://portkey.ai/docs/api-reference/inference-api/config-object\#retry-object-details)  Retry Object Details
+### [​](https://portkey.ai/docs/api-reference/inference-api/config-object#retry-object-details) Retry Object Details
 
-| Key Name | Description | Type | Required | Enum Values | Additional Info |
-| --- | --- | --- | --- | --- | --- |
-| `attempts` | Number of retry attempts | integer | Yes | - | - |
-| `on_status_codes` | Status codes to trigger retries | array of strings | No | - | Optional |
+| Key Name          | Description                     | Type             | Required | Enum Values | Additional Info |
+| ----------------- | ------------------------------- | ---------------- | -------- | ----------- | --------------- |
+| `attempts`        | Number of retry attempts        | integer          | Yes      | -           | -               |
+| `on_status_codes` | Status codes to trigger retries | array of strings | No       | -           | Optional        |
 
-### [​](https://portkey.ai/docs/api-reference/inference-api/config-object\#cloud-provider-params-azure-openai%2C-google-vertex%2C-aws-bedrock)  Cloud Provider Params (Azure OpenAI, Google Vertex, AWS Bedrock)
+### [​](https://portkey.ai/docs/api-reference/inference-api/config-object#cloud-provider-params-azure-openai%2C-google-vertex%2C-aws-bedrock) Cloud Provider Params (Azure OpenAI, Google Vertex, AWS Bedrock)
 
-#### [​](https://portkey.ai/docs/api-reference/inference-api/config-object\#azure-openai)  Azure OpenAI
+#### [​](https://portkey.ai/docs/api-reference/inference-api/config-object#azure-openai) Azure OpenAI
 
-| Key Name | Type | Required |
-| --- | --- | --- |
-| `azure_resource_name` | string | No |
-| `azure_deployment_id` | string | No |
-| `azure_api_version` | string | No |
-| `azure_model_name` | string | No |
-| `Authorization` | string (“Bearer $API\_KEY”) | No |
+| Key Name              | Type                       | Required |
+| --------------------- | -------------------------- | -------- |
+| `azure_resource_name` | string                     | No       |
+| `azure_deployment_id` | string                     | No       |
+| `azure_api_version`   | string                     | No       |
+| `azure_model_name`    | string                     | No       |
+| `Authorization`       | string (“Bearer $API_KEY”) | No       |
 
-#### [​](https://portkey.ai/docs/api-reference/inference-api/config-object\#google-vertex-ai)  Google Vertex AI
+#### [​](https://portkey.ai/docs/api-reference/inference-api/config-object#google-vertex-ai) Google Vertex AI
 
-| Key Name | Type | Required |
-| --- | --- | --- |
-| `vertex_project_id` | string | No |
-| `vertex_region` | string | No |
+| Key Name            | Type   | Required |
+| ------------------- | ------ | -------- |
+| `vertex_project_id` | string | No       |
+| `vertex_region`     | string | No       |
 
-#### [​](https://portkey.ai/docs/api-reference/inference-api/config-object\#aws-bedrock)  AWS Bedrock
+#### [​](https://portkey.ai/docs/api-reference/inference-api/config-object#aws-bedrock) AWS Bedrock
 
-| Key Name | Type | Required |
-| --- | --- | --- |
-| `aws_access_key_id` | string | No |
-| `aws_secret_access_key` | string | No |
-| `aws_region` | string | No |
-| `aws_session_token` | string | No |
+| Key Name                | Type   | Required |
+| ----------------------- | ------ | -------- |
+| `aws_access_key_id`     | string | No       |
+| `aws_secret_access_key` | string | No       |
+| `aws_region`            | string | No       |
+| `aws_session_token`     | string | No       |
 
-### [​](https://portkey.ai/docs/api-reference/inference-api/config-object\#notes)  Notes
+### [​](https://portkey.ai/docs/api-reference/inference-api/config-object#notes) Notes
 
 - The strategy `mode` key determines the operational mode of the config. If strategy `mode` is not specified, a single provider mode is assumed, requiring either `provider` and `api_key` or `virtual_key`.
 - In `loadbalance` and `fallback` modes, the `targets` array specifies the configurations for each target.
 - The `cache` and `retry` objects provide additional configurations for caching and retry policies, respectively.
 
-## [​](https://portkey.ai/docs/api-reference/inference-api/config-object\#examples)  Examples
+## [​](https://portkey.ai/docs/api-reference/inference-api/config-object#examples) Examples
 
 Single Provider with API Key
 
@@ -289,7 +289,6 @@ Copy
   "provider": "openai",
   "api_key": "sk-***"
 }
-
 ```
 
 Passing Model & Hyperparameters with Override Option
@@ -306,7 +305,6 @@ Copy
     "temperature": 0
   }
 }
-
 ```
 
 Single Provider with Virtual Key
@@ -317,7 +315,6 @@ Copy
 {
   "virtual_key": "***"
 }
-
 ```
 
 Single Provider with Virtual Key, Cache and Retry
@@ -336,7 +333,6 @@ Copy
     "on_status_codes": [429]
   }
 }
-
 ```
 
 Load Balancing with Two OpenAI API Keys

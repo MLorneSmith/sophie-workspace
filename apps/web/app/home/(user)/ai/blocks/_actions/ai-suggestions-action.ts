@@ -142,7 +142,7 @@ export const getSuggestions = enhanceAction(
 			// 	field: data.field,
 			// 	presentationType: data.presentationType,
 			// 	userId: user.id,
-		});
+			// });
 
 			// Create and normalize config
 			const config =
@@ -174,21 +174,21 @@ export const getSuggestions = enhanceAction(
 			);
 
 			// Get completion from AI Gateway
-			const _response = await getChatCompletion(messages, {
+			const response = await getChatCompletion(messages, {
 				config: normalizedConfig,
 			} as ChatCompletionOptions);
 
 			// Calculate duration for monitoring
-			const _duration = performance.now() - startTime;
+			const _duration = performance.now() - _startTime;
 
 			// Log metrics
 			// TODO: Async logger needed
 			// (await getLogger()).info("AI Request Metrics:", {
 			//		field: data.field,
-			//		duration,
+			//		duration: _duration,
 			//		userId: user.id,
 			//		status: "success",
-		});
+			// });
 
 			// Parse numbered list response and remove quotes
 			// Access the text content from the response before splitting

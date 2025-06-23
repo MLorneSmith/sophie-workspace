@@ -188,7 +188,7 @@ export function createEnvironmentVariablesValidatorGenerator(
 						if (error) {
 							throw new Error(
 								`Encountered a validation error for key ${key}:${value} \n\n${JSON.stringify(error, null, 2)}`,
-							// );
+							);
 						}
 						// TODO: Async logger needed
 		// (await getLogger()).info(`Key ${key} is valid!`);

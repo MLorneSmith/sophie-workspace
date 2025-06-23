@@ -46,6 +46,7 @@ Before deleting these files, it's important to verify:
    ```
 
 3. **Delete Files**: Once verified, delete the duplicate files
+
    ```powershell
    # Example deletion commands
    rm packages/content-migrations/src/scripts/repair/quiz-management/direct-quiz-fix.sql

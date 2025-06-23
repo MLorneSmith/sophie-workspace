@@ -1,6 +1,7 @@
 import { useSupabase } from "@kit/supabase/hooks/use-supabase";
 
 import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
 
 import { useNotificationsStream } from "./use-notifications-stream";
 

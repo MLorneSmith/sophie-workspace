@@ -163,7 +163,7 @@ function TestimonialCard({
 					<Button asChild variant={"link"}>
 						<ExternalLink
 							className={"absolute right-0 top-4 hover:underline"}
-							link={testimonial.link}
+							link={testimonial.link || ""}
 						>
 							<ExternalLinkIcon className={"h-4"} />
 						</ExternalLink>
@@ -244,7 +244,10 @@ function VideoTestimonial({
 	return (
 		<Dialog>
 			<DialogTrigger asChild>
-				<button className="group relative aspect-video w-full overflow-hidden rounded-md bg-gray-100">
+				<button
+					type="button"
+					className="group relative aspect-video w-full overflow-hidden rounded-md bg-gray-100"
+				>
 					<div className="absolute inset-0 flex items-center justify-center">
 						<PlayIcon className="text-primary h-6 w-6 opacity-50 transition-opacity group-hover:opacity-100" />
 					</div>
@@ -274,6 +277,7 @@ function VideoTestimonial({
 					controls
 					className="min-h-[350px] w-full rounded-md"
 				>
+					<track kind="captions" />
 					<Trans
 						i18nKey={"testimonials:videoTagNotSupported"}
 						defaults={"Your browser does not support the video tag."}

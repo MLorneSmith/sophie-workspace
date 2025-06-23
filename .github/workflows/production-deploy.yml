@@ -71,6 +71,11 @@ jobs:
           url=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})
           echo "url=$url" >> $GITHUB_OUTPUT
           echo "Deployed to: $url"
+          
+          # Production deployment should automatically use slideheroes.com domain
+          production_url="https://slideheroes.com"
+          echo "production_url=$production_url" >> $GITHUB_OUTPUT
+          echo "🚀 Production deployment complete at: $production_url"
 
       - name: Create deployment status
         uses: actions/github-script@v7

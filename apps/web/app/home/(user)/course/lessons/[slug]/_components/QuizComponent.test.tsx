@@ -4,6 +4,30 @@ import React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { QuizComponent } from "./QuizComponent";
 
+// Type definitions from QuizComponent
+interface PayloadQuiz {
+	id: string;
+	title?: string;
+	questions: Array<{
+		id: string;
+		question: string;
+		questiontype: "single-answer" | "multi-answer";
+		options: Array<{
+			text: string;
+			iscorrect: boolean;
+		}>;
+	}>;
+	passingScore: number;
+}
+
+interface QuizAttempt {
+	id: string;
+	score: number;
+	passed: boolean;
+	answers: Record<string, unknown>;
+	created_at: string;
+}
+
 // Mock dependencies
 const mockGetCourseLessons = vi.fn();
 vi.mock("@kit/cms/payload", () => ({
@@ -118,7 +142,18 @@ interface LabelProps extends React.PropsWithChildren {
 
 vi.mock("@kit/ui/label", () => ({
 	Label: ({ children, htmlFor, onClick, className, ...props }: LabelProps) => (
-		<label htmlFor={htmlFor} onClick={onClick} className={className} {...props}>
+		<label
+			htmlFor={htmlFor}
+			onClick={onClick}
+			onKeyDown={(e) => {
+				if (onClick && (e.key === "Enter" || e.key === " ")) {
+					e.preventDefault();
+					onClick();
+				}
+			}}
+			className={className}
+			{...props}
+		>
 			{children}
 		</label>
 	),
@@ -182,11 +217,14 @@ vi.mock("@kit/ui/radio-group", () => {
 				{...props}
 			>
 				{React.Children.map(children, (child: React.ReactNode) => {
-					if (React.isValidElement(child) && child.props.value !== undefined) {
-						return React.cloneElement(child, {
-							...child.props,
-							checked: child.props.value === value,
-						});
+					if (React.isValidElement(child)) {
+						const childProps = child.props as { value?: string };
+						if (childProps.value !== undefined) {
+							return React.cloneElement(child, {
+								...childProps,
+								checked: childProps.value === value,
+							} as React.ComponentProps<"input">);
+						}
 					}
 					return child;
 				})}
@@ -228,22 +266,22 @@ describe("QuizComponent", () => {
 			{
 				id: "q1",
 				question: "What is 2 + 2?",
-				questiontype: "single-answer",
+				questiontype: "single-answer" as const,
 				options: [
-					{ text: "3", isCorrect: false },
-					{ text: "4", isCorrect: true },
-					{ text: "5", isCorrect: false },
+					{ text: "3", iscorrect: false },
+					{ text: "4", iscorrect: true },
+					{ text: "5", iscorrect: false },
 				],
 			},
 			{
 				id: "q2",
 				question: "Select all even numbers",
-				questiontype: "multi-answer",
+				questiontype: "multi-answer" as const,
 				options: [
-					{ text: "1", isCorrect: false },
-					{ text: "2", isCorrect: true },
-					{ text: "3", isCorrect: false },
-					{ text: "4", isCorrect: true },
+					{ text: "1", iscorrect: false },
+					{ text: "2", iscorrect: true },
+					{ text: "3", iscorrect: false },
+					{ text: "4", iscorrect: true },
 				],
 			},
 		],
@@ -269,21 +307,28 @@ describe("QuizComponent", () => {
 
 	describe("Component Initialization & Validation", () => {
 		it("renders quiz unavailable message when quiz is null", () => {
-			render(<QuizComponent {...defaultProps} quiz={null} />);
+			render(
+				<QuizComponent
+					{...defaultProps}
+					quiz={null as unknown as PayloadQuiz}
+				/>,
+			);
 
 			expect(screen.getByText("Quiz Unavailable")).toBeInTheDocument();
 			expect(screen.getByText(/currently unavailable/)).toBeInTheDocument();
 		});
 
 		it("renders quiz unavailable message when quiz has no ID", () => {
-			const quizWithoutId = { title: "Test Quiz" };
+			const quizWithoutId = { title: "Test Quiz" } as unknown as PayloadQuiz;
 			render(<QuizComponent {...defaultProps} quiz={quizWithoutId} />);
 
 			expect(screen.getByText("Quiz Unavailable")).toBeInTheDocument();
 		});
 
 		it("shows quiz passed message for successful previous attempts", () => {
-			const previousAttempts = [{ passed: true, score: 85 }];
+			const previousAttempts = [
+				{ passed: true, score: 85 },
+			] as unknown as QuizAttempt[];
 			render(
 				<QuizComponent {...defaultProps} previousAttempts={previousAttempts} />,
 			);
@@ -293,7 +338,11 @@ describe("QuizComponent", () => {
 		});
 
 		it("renders questions unavailable when no questions exist", () => {
-			const quizWithoutQuestions = { id: "quiz-1", questions: [] };
+			const quizWithoutQuestions = {
+				id: "quiz-1",
+				questions: [],
+				passingScore: 70,
+			} as PayloadQuiz;
 			render(<QuizComponent {...defaultProps} quiz={quizWithoutQuestions} />);
 
 			expect(
@@ -302,7 +351,7 @@ describe("QuizComponent", () => {
 		});
 
 		it("renders questions unavailable when questions property is missing", () => {
-			const quizWithoutQuestions = { id: "quiz-1" };
+			const quizWithoutQuestions = { id: "quiz-1" } as unknown as PayloadQuiz;
 			render(<QuizComponent {...defaultProps} quiz={quizWithoutQuestions} />);
 
 			expect(
@@ -459,10 +508,10 @@ describe("QuizComponent", () => {
 					{
 						id: "q1",
 						question: "Test question",
-						questiontype: "multi-answer",
+						questiontype: "multi-answer" as const,
 						options: [
-							{ text: "Option 1", isCorrect: true },
-							{ text: "Option 2", isCorrect: false },
+							{ text: "Option 1", iscorrect: true },
+							{ text: "Option 2", iscorrect: false },
 						],
 					},
 				],
@@ -481,9 +530,9 @@ describe("QuizComponent", () => {
 						id: "q1",
 						question: "Test question",
 						options: [
-							{ text: "Option 1", isCorrect: true },
-							{ text: "Option 2", isCorrect: true },
-							{ text: "Option 3", isCorrect: false },
+							{ text: "Option 1", iscorrect: true },
+							{ text: "Option 2", iscorrect: true },
+							{ text: "Option 3", iscorrect: false },
 						],
 					},
 				],
@@ -558,16 +607,16 @@ describe("QuizComponent", () => {
 						id: "q1",
 						question: "What is 2 + 2?",
 						options: [
-							{ text: "3", isCorrect: false },
-							{ text: "4", isCorrect: true },
+							{ text: "3", iscorrect: false },
+							{ text: "4", iscorrect: true },
 						],
 					},
 					{
 						id: "q2",
 						question: "What is 3 + 3?",
 						options: [
-							{ text: "6", isCorrect: true },
-							{ text: "7", isCorrect: false },
+							{ text: "6", iscorrect: true },
+							{ text: "7", iscorrect: false },
 						],
 					},
 				],
@@ -593,16 +642,16 @@ describe("QuizComponent", () => {
 						id: "q1",
 						question: "What is 2 + 2?",
 						options: [
-							{ text: "3", isCorrect: false },
-							{ text: "4", isCorrect: true },
+							{ text: "3", iscorrect: false },
+							{ text: "4", iscorrect: true },
 						],
 					},
 					{
 						id: "q2",
 						question: "What is 3 + 3?",
 						options: [
-							{ text: "6", isCorrect: true },
-							{ text: "7", isCorrect: false },
+							{ text: "6", iscorrect: true },
+							{ text: "7", iscorrect: false },
 						],
 					},
 				],
@@ -628,8 +677,8 @@ describe("QuizComponent", () => {
 						id: "q1",
 						question: "What is 2 + 2?",
 						options: [
-							{ text: "3", isCorrect: false },
-							{ text: "4", isCorrect: true },
+							{ text: "3", iscorrect: false },
+							{ text: "4", iscorrect: true },
 						],
 					},
 				],
@@ -899,7 +948,7 @@ describe("QuizComponent", () => {
 				docs: [{ id: "lesson-1", lesson_number: 1, slug: "lesson-1-slug" }],
 			});
 
-			render(<_QuizComponent {...defaultProps} />);
+			render(<QuizComponent {...defaultProps} />);
 
 			// Pass quiz and click Next Lesson
 			await user.click(screen.getByLabelText("4"));
@@ -944,14 +993,15 @@ describe("QuizComponent", () => {
 					{
 						id: "q1",
 						question: "Test question",
+						questiontype: "single-answer" as const,
 						options: [
 							null,
 							undefined,
-							{ text: "Valid option", isCorrect: true },
-						],
+							{ text: "Valid option", iscorrect: true },
+						] as unknown as Array<{ text: string; iscorrect: boolean }>,
 					},
 				],
-			};
+			} as PayloadQuiz;
 
 			render(<QuizComponent {...defaultProps} quiz={malformedQuiz} />);
 
@@ -968,9 +1018,10 @@ describe("QuizComponent", () => {
 					{
 						id: "q1",
 						question: "Impossible question",
+						questiontype: "single-answer" as const,
 						options: [
-							{ text: "Option 1", isCorrect: false },
-							{ text: "Option 2", isCorrect: false },
+							{ text: "Option 1", iscorrect: false },
+							{ text: "Option 2", iscorrect: false },
 						],
 					},
 				],
@@ -990,7 +1041,7 @@ describe("QuizComponent", () => {
 			const quizWithoutPassingScore = {
 				...sampleQuiz,
 				passingScore: undefined,
-			};
+			} as unknown as PayloadQuiz;
 
 			render(
 				<QuizComponent {...defaultProps} quiz={quizWithoutPassingScore} />,
@@ -1007,6 +1058,7 @@ describe("QuizComponent", () => {
 					{
 						id: "q1",
 						question: "Question with no options",
+						questiontype: "single-answer" as const,
 						options: [],
 					},
 				],
@@ -1026,10 +1078,11 @@ describe("QuizComponent", () => {
 					{
 						id: "q1",
 						question: "Question with undefined options",
+						questiontype: "single-answer" as const,
 						// options property is missing
-					},
+					} as unknown as PayloadQuiz["questions"][number],
 				],
-			};
+			} as PayloadQuiz;
 
 			render(<QuizComponent {...defaultProps} quiz={undefinedOptionsQuiz} />);
 

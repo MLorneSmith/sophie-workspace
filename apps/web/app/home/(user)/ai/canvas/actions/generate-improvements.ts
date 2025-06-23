@@ -51,7 +51,7 @@ export const generateImprovementsAction = enhanceAction(
 			// 	userId: user.id,
 			// 	submissionId: data.submissionId,
 			// 	type: data.type,
-		});
+			// });
 
 			// Create and normalize config
 			const config = createBalancedOptimizedConfig({
@@ -63,6 +63,9 @@ export const generateImprovementsAction = enhanceAction(
 			if (!normalizedConfig) {
 				throw new Error("Failed to normalize config");
 			}
+
+			// Start timing for performance monitoring
+			const startTime = performance.now();
 
 			// Generate messages using partials
 			const messages: ChatMessage[] = [
@@ -91,7 +94,7 @@ ${improvementFormat}`,
 			];
 
 			// Get completion from AI Gateway
-			const _response = await getChatCompletion(messages, {
+			const response = await getChatCompletion(messages, {
 				config: normalizedConfig,
 			} as ChatCompletionOptions);
 
@@ -104,7 +107,7 @@ ${improvementFormat}`,
 			// 	duration,
 			// 	userId: user.id,
 			// 	status: "success",
-		});
+			// });
 
 			// Parse the response using our utility
 			const improvements = parseImprovements(response.content, data.type);
@@ -113,7 +116,7 @@ ${improvementFormat}`,
 			// TODO: Async logger needed
 			// (await getLogger()).info("Parsed Improvements:", {
 			// 	data: improvements,
-		});
+			// });
 
 			return {
 				success: true,
@@ -124,7 +127,7 @@ ${improvementFormat}`,
 			// (await getLogger()).error(
 			// 	"Error in improvements action:",
 			// 	{ data: error }
-			);
+			// );
 
 			return {
 				success: false,

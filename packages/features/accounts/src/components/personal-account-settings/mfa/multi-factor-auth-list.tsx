@@ -17,6 +17,7 @@ import {
 import { Badge } from "@kit/ui/badge";
 import { Button } from "@kit/ui/button";
 import { If } from "@kit/ui/if";
+import { toast } from "@kit/ui/sonner";
 import { Spinner } from "@kit/ui/spinner";
 import {
 	Table,
@@ -39,7 +40,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ShieldCheck, X } from "lucide-react";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
 
 import { MultiFactorAuthSetupDialog } from "./multi-factor-auth-setup-dialog";
 

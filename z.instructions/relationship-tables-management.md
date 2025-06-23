@@ -119,6 +119,7 @@ If you see errors like `column e110b6cc_2a89_4aaa_904c_7691f8f4d349.path does no
 1. Run the diagnostic script to confirm which tables are missing columns
 2. Ensure the master migration has been applied
 3. If problems persist, consider manually adding the column:
+
    ```sql
    ALTER TABLE payload.e110b6cc_2a89_4aaa_904c_7691f8f4d349 ADD COLUMN path TEXT;
    ```
@@ -129,6 +130,7 @@ For UUID type mismatch errors:
 
 1. Check if the migration has converted ID columns to UUID type
 2. If not, you can manually convert columns:
+
    ```sql
    ALTER TABLE payload.table_name ALTER COLUMN id TYPE uuid USING id::uuid;
    ```

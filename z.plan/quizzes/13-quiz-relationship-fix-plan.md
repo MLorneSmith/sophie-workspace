@@ -108,6 +108,7 @@ quiz_id_id: uuid
    ```
 
 3. **Incorrect SQL Queries**: Scripts are using incorrect column references:
+
    ```typescript
    // This query is problematic because qr.question_id doesn't exist
    const questionsResult = await client.query(`
@@ -121,7 +122,7 @@ quiz_id_id: uuid
 
 ### 1. Fix Quiz/Question Relationship Repair Scripts
 
-#### a. Update `fix-question-quiz-relationships-comprehensive.ts`:
+#### a. Update `fix-question-quiz-relationships-comprehensive.ts`
 
 ```typescript
 // BEFORE
@@ -145,7 +146,7 @@ const questionsResult = await client.query(`
 `);
 ```
 
-#### b. Remove or update attempts to add a quiz_id column:
+#### b. Remove or update attempts to add a quiz_id column
 
 ```typescript
 // BEFORE - Tries to add a removed column
@@ -181,7 +182,7 @@ if (!relationshipTableResult.rows[0].exists) {
 }
 ```
 
-#### c. Update relationship verification queries:
+#### c. Update relationship verification queries
 
 ```typescript
 // BEFORE - Uses non-existent columns

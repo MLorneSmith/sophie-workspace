@@ -35,6 +35,7 @@ When you need to modify the database schema (add a collection, modify fields, et
 2. Edit the generated SQL file in `apps/web/supabase/migrations/payload/`.
 
 3. Test your migration:
+
    ```bash
    pnpm run apply:migrations  # This runs supabase:reset on the web package
    ```

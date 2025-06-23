@@ -345,9 +345,11 @@ $$ LANGUAGE plpgsql;
 ### 6.3. Database Verification
 
 1. Execute verification function:
+
    ```sql
    SELECT * FROM payload.verify_quiz_question_relationships();
    ```
+
 2. Confirm all quizzes report `is_consistent = true`
 
 ## 7. Benefits of This Approach

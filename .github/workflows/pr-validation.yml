@@ -2,6 +2,7 @@ name: PR Validation
 
 on:
   pull_request:
+    branches: [main, staging, dev]
     types: [opened, synchronize, reopened]
 
 permissions:
@@ -11,6 +12,8 @@ permissions:
   checks: write
 
 env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '9.12.0'
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ vars.TURBO_TEAM }}
 
@@ -59,11 +62,26 @@ jobs:
           fetch-depth: 2
 
       - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
 
       - uses: actions/setup-node@v4
         with:
-          node-version: lts/*
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -95,11 +113,26 @@ jobs:
           fetch-depth: 2
 
       - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
 
       - uses: actions/setup-node@v4
         with:
-          node-version: lts/*
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -133,11 +166,26 @@ jobs:
           fetch-depth: 2
 
       - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
 
       - uses: actions/setup-node@v4
         with:
-          node-version: lts/*
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -150,42 +198,93 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-turbo-test-
 
-      - name: Run unit tests
-        run: pnpm test
+      - name: Run unit tests with coverage
+        run: pnpm test:coverage
 
-      # TODO: Add coverage reporting when CodeCov is set up
-      # - name: Upload coverage reports
-      #   uses: codecov/codecov-action@v4
-      #   with:
-      #     token: ${{ secrets.CODECOV_TOKEN }}
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          directory: ./coverage
+          files: ./coverage/lcov.info
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
+          verbose: true
 
-  # YAML linting (when implemented)
+  # YAML linting
   yaml-lint:
     name: YAML Lint
     runs-on: ubuntu-latest
     needs: changes
     if: needs.changes.outputs.yaml == 'true'
-    continue-on-error: true # Non-blocking for now
     steps:
       - uses: actions/checkout@v4
-      - name: YAML Lint
-        run: |
-          echo "YAML linting will be implemented in Week 1"
-          # TODO: Implement yamllint
 
-  # Markdown linting (when implemented)
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: YAML Lint
+        run: pnpm lint:yaml
+
+  # Markdown linting
   markdown-lint:
     name: Markdown Lint
     runs-on: ubuntu-latest
     needs: changes
     if: needs.changes.outputs.markdown == 'true'
-    continue-on-error: true # Non-blocking for now
     steps:
       - uses: actions/checkout@v4
-      - name: Markdown Lint
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Get pnpm store directory
+        shell: bash
         run: |
-          echo "Markdown linting will be implemented in Week 1"
-          # TODO: Implement markdownlint
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Markdown Lint
+        run: pnpm lint:md
 
   # Security scan for dependencies
   security-scan:
@@ -219,14 +318,16 @@ jobs:
   pr-status:
     name: PR Status Check
     runs-on: ubuntu-latest
-    needs: [lint, typecheck, test-unit]
+    needs: [lint, typecheck, test-unit, yaml-lint, markdown-lint]
     if: always()
     steps:
       - name: Check status
         run: |
           if [[ "${{ needs.lint.result }}" == "failure" ]] || \
              [[ "${{ needs.typecheck.result }}" == "failure" ]] || \
-             [[ "${{ needs.test-unit.result }}" == "failure" ]]; then
+             [[ "${{ needs.test-unit.result }}" == "failure" ]] || \
+             [[ "${{ needs.yaml-lint.result }}" == "failure" ]] || \
+             [[ "${{ needs.markdown-lint.result }}" == "failure" ]]; then
             echo "❌ PR validation failed"
             exit 1
           else

@@ -2,7 +2,7 @@
 
 Command -> Role -> context docs -> review spec -> status check -> implement
 
-# Example 
+# Example
 
 ## Unit Tests
 

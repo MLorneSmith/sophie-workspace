@@ -6,7 +6,7 @@ import { Trans } from "@kit/ui/trans";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
+import { toast } from "@kit/ui/sonner";
 
 const AVATARS_BUCKET = "account_image";
 
@@ -26,7 +26,7 @@ export function UpdateTeamAccountImage(props: {
 				success: t("updateTeamSuccessMessage"),
 				error: t("updateTeamErrorMessage"),
 				loading: t("updateTeamLoadingMessage"),
-		});
+			});
 		},
 		[t],
 	);
@@ -53,7 +53,7 @@ export function UpdateTeamAccountImage(props: {
 									.from("accounts")
 									.update({
 										picture_url: pictureUrl,
-									// })
+									})
 									.eq("id", props.account.id)
 									.throwOnError();
 							},
@@ -68,7 +68,7 @@ export function UpdateTeamAccountImage(props: {
 							.from("accounts")
 							.update({
 								picture_url: null,
-							// })
+							})
 							.eq("id", props.account.id)
 							.throwOnError();
 					});

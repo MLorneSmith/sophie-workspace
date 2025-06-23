@@ -152,6 +152,7 @@ When requiring a specific role, use the role parameter `public.has_role_on_accou
 ### 2. Account Association
 
 - **Associate Data with Accounts**: Always link data to accounts using a foreign key:
+
   ```sql
   CREATE TABLE if not exists public.my_data (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -163,6 +164,7 @@ When requiring a specific role, use the role parameter `public.has_role_on_accou
 ### 3. Permission System
 
 - **Use the Permission System**: Leverage the built-in permission system for access control:
+
   ```sql
   -- Check if a user has a specific permission
   SELECT public.has_permission(
@@ -185,6 +187,7 @@ When requiring a specific role, use the role parameter `public.has_role_on_accou
   ```
 
 - **Put Internal Functions in 'kit' Schema**: Use the 'kit' schema for internal helper functions
+
   ```sql
   CREATE OR REPLACE FUNCTION kit.my_helper_function()
   RETURNS void AS $$
@@ -205,6 +208,7 @@ When requiring a specific role, use the role parameter `public.has_role_on_accou
   ```
 
 - **Apply Appropriate Constraints**: Use constraints to ensure data integrity:
+
   ```sql
   CREATE TABLE if not exists public.my_table (
     email VARCHAR(255) NOT NULL CHECK (email ~* '^.+@.+\..+$'),
@@ -233,6 +237,7 @@ When requiring a specific role, use the role parameter `public.has_role_on_accou
   ```
 
 - **Set Proper Function Permissions**:
+
   ```sql
   GRANT EXECUTE ON FUNCTION public.my_function() TO authenticated, service_role;
   ```
@@ -240,6 +245,7 @@ When requiring a specific role, use the role parameter `public.has_role_on_accou
 ### 8. Error Handling and Validation
 
 - **Use Custom Error Messages**: Return meaningful errors:
+
   ```sql
   IF NOT validation_passed THEN
     RAISE EXCEPTION 'Validation failed: %', error_message;
@@ -249,6 +255,7 @@ When requiring a specific role, use the role parameter `public.has_role_on_accou
 ### 9. Triggers for Automation
 
 - **Use Triggers for Derived Data**: Automate updates to derived fields:
+
   ```sql
   CREATE TRIGGER update_timestamp
   BEFORE UPDATE ON public.my_table
@@ -258,6 +265,7 @@ When requiring a specific role, use the role parameter `public.has_role_on_accou
 ### 10. View Structure for Commonly Used Queries
 
 - **Create Views for Complex Joins**: As done with `user_account_workspace`
+
   ```sql
   CREATE OR REPLACE VIEW public.my_view
   WITH (security_invoker = true) AS
@@ -305,6 +313,7 @@ You always must use `(security_invoker = true)` for views.
 
 - **Use the `config` Table**: The application has a central configuration table
 - **Check Features with `public.is_set(field_name)`**:
+
   ```sql
   -- Check if team accounts are enabled
   SELECT public.is_set('enable_team_accounts');

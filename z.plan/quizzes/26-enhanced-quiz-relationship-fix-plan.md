@@ -103,6 +103,7 @@
    ```
 
 4. **Normalize questions arrays to match relationships**:
+
    ```sql
    -- Get all question IDs from relationship table for each quiz
    WITH quiz_questions AS (

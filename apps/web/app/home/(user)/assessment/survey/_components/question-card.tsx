@@ -6,26 +6,12 @@ import { RadioGroup, RadioGroupItem } from "@kit/ui/radio-group";
 import { Trans } from "@kit/ui/trans";
 import { useState } from "react";
 
+import type { SurveyQuestion } from "../../../../../../../payload/payload-types";
 import { ScaleQuestion } from "./scale-question";
 import { TextFieldQuestion } from "./text-field-question";
 
-interface QuestionOption {
-	id: string;
-	text: string;
-	score?: number;
-}
-
-interface Question {
-	id: string;
-	type: "text_field" | "scale" | "multiple_choice";
-	title: string;
-	text?: string;
-	description?: string;
-	options?: QuestionOption[];
-}
-
 type QuestionCardProps = {
-	question: Question;
+	question: SurveyQuestion;
 	onAnswer: (questionId: string, answer: string, score: number) => void;
 	isLoading: boolean;
 };
@@ -67,27 +53,26 @@ export function QuestionCard({
 			// TODO: Async logger needed
 			// (await getLogger()).info("Selected option:", {
 			// 	data: selectedOption,
-		});
+			// });
 			// TODO: Async logger needed
 			// (await getLogger()).info("Available options:", {
 			// 	data: question.options,
-		});
+			// });
 
 			const option = question.options?.find((opt) => opt.id === selectedOption);
 
 			if (option) {
-				onAnswer(question.id, option.text, option.score || 0);
+				onAnswer(question.id, option.option, 0);
 			} else {
-				// TODO: Async logger needed
 				// TODO: Async logger needed
 				// (await getLogger()).error(
 				// 	"Selected option not found:",
 				// 	{ data: selectedOption }
-				);
+				// );
 				// TODO: Async logger needed
 				// (await getLogger()).error("Question options:", {
 				// 	data: question.options,
-		});
+				// });
 			}
 		}
 	};
@@ -103,30 +88,33 @@ export function QuestionCard({
 
 			<RadioGroup
 				value={selectedOption || ""}
-				onValueChange={setSelectedOption}
+				onValueChange={_setSelectedOption}
 				className="space-y-3"
 			>
-				{question.options?.map((option) => (
-					<button
-						key={option.id}
-						type="button"
-						className="hover:bg-accent flex cursor-pointer items-center space-x-2 rounded-md border p-4 text-left w-full"
-						onClick={() => setSelectedOption(option.id)}
-						aria-label={`Select option: ${option.text}`}
-					>
-						<RadioGroupItem value={option.id} id={option.id} />
-						<Label
-							htmlFor={option.id}
-							className="flex-1 cursor-pointer font-normal"
+				{question.options?.map((option) => {
+					const optionId = option.id || option.option;
+					return (
+						<button
+							key={optionId}
+							type="button"
+							className="hover:bg-accent flex cursor-pointer items-center space-x-2 rounded-md border p-4 text-left w-full"
+							onClick={() => _setSelectedOption(optionId)}
+							aria-label={`Select option: ${option.option}`}
 						>
-							{option.text}
-						</Label>
-					</button>
-				))}
+							<RadioGroupItem value={optionId} id={optionId} />
+							<Label
+								htmlFor={optionId}
+								className="flex-1 cursor-pointer font-normal"
+							>
+								{option.option}
+							</Label>
+						</button>
+					);
+				})}
 			</RadioGroup>
 
 			<Button
-				onClick={handleSubmit}
+				onClick={_handleSubmit}
 				disabled={!selectedOption || isLoading}
 				className="w-full"
 			>

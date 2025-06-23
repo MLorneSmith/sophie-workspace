@@ -6,23 +6,10 @@ import { RadioGroup, RadioGroupItem } from "@kit/ui/radio-group";
 import { Trans } from "@kit/ui/trans";
 import { useState } from "react";
 
-interface QuestionOption {
-	id: string;
-	text: string;
-	score?: number;
-}
-
-interface Question {
-	id: string;
-	type: "text_field" | "scale" | "multiple_choice";
-	title: string;
-	text?: string;
-	description?: string;
-	options?: QuestionOption[];
-}
+import type { SurveyQuestion } from "../../../../../../../payload/payload-types";
 
 type ScaleQuestionProps = {
-	question: Question;
+	question: SurveyQuestion;
 	onAnswer: (questionId: string, answer: string, score: number) => void;
 	isLoading: boolean;
 };
@@ -36,17 +23,18 @@ export function ScaleQuestion({
 
 	const handleSubmit = () => {
 		if (selectedOption) {
-			const option = question.options?.find(
-				(opt: QuestionOption) => opt.id === selectedOption,
-			);
+			const option = question.options?.find((opt) => opt.id === selectedOption);
 
 			if (option) {
 				// For scale questions, we extract the numeric value from the option
 				// This assumes the option text starts with a number (e.g., "1 - Very inexperienced")
-				const numericValue = Number.parseInt(option.text.split(" ")[0], 10);
+				const numericValue = Number.parseInt(
+					option.option.split(" ")[0] || "0",
+					10,
+				);
 				const score = Number.isNaN(numericValue) ? 0 : numericValue;
 
-				onAnswer(question.id, option.text, score);
+				onAnswer(question.id, option.option, score);
 			}
 		}
 	};
@@ -65,29 +53,32 @@ export function ScaleQuestion({
 				onValueChange={setSelectedOption}
 				className="space-y-3"
 			>
-				{question.options?.map((option: QuestionOption) => (
-					<button
-						key={option.id}
-						type="button"
-						className="hover:bg-accent flex cursor-pointer items-center space-x-2 rounded-md border p-4 text-left w-full"
-						onClick={() => setSelectedOption(option.id)}
-						onKeyDown={(e) => {
-							if (e.key === "Enter" || e.key === " ") {
-								e.preventDefault();
-								setSelectedOption(option.id);
-							}
-						}}
-						aria-label={`Select option: ${option.text}`}
-					>
-						<RadioGroupItem value={option.id} id={option.id} />
-						<Label
-							htmlFor={option.id}
-							className="flex-1 cursor-pointer font-normal"
+				{question.options?.map((option) => {
+					const optionId = option.id || option.option;
+					return (
+						<button
+							key={optionId}
+							type="button"
+							className="hover:bg-accent flex cursor-pointer items-center space-x-2 rounded-md border p-4 text-left w-full"
+							onClick={() => setSelectedOption(optionId)}
+							onKeyDown={(e) => {
+								if (e.key === "Enter" || e.key === " ") {
+									e.preventDefault();
+									setSelectedOption(optionId);
+								}
+							}}
+							aria-label={`Select option: ${option.option}`}
 						>
-							{option.text}
-						</Label>
-					</button>
-				))}
+							<RadioGroupItem value={optionId} id={optionId} />
+							<Label
+								htmlFor={optionId}
+								className="flex-1 cursor-pointer font-normal"
+							>
+								{option.option}
+							</Label>
+						</button>
+					);
+				})}
 			</RadioGroup>
 
 			<Button

@@ -45,7 +45,7 @@ class AccountInvitationsService {
 			.delete()
 			.match({
 				id: params.invitationId,
-		});
+			});
 
 		if (error) {
 			logger.error(ctx, "Failed to remove invitation");
@@ -77,10 +77,10 @@ class AccountInvitationsService {
 			.from("invitations")
 			.update({
 				role: params.role,
-			// })
+			})
 			.match({
 				id: params.invitationId,
-		});
+			});
 
 		if (error) {
 			logger.error(
@@ -183,7 +183,7 @@ class AccountInvitationsService {
 			account_slug: accountSlug,
 		});
 
-		if (response._error) {
+		if (response.error) {
 			logger.error(
 				{
 					...ctx,
@@ -270,10 +270,10 @@ class AccountInvitationsService {
 			.from("invitations")
 			.update({
 				expires_at: sevenDaysFromNow,
-			// })
+			})
 			.match({
 				id: invitationId,
-		});
+			});
 
 		if (error) {
 			logger.error(

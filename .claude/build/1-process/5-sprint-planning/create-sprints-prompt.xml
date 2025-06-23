@@ -1,28 +1,116 @@
 <prompt>
+  <metadata>
+    <primary_agent>Planner</primary_agent>
+    <supporting_agents>
+      <agent role="technical_advisor">Builder</agent>
+    </supporting_agents>
+    <phase>5-sprint-planning</phase>
+    <orchestrator>/build-feature command</orchestrator>
+    <orchestrator_file>.claude/commands/build-feature.md</orchestrator_file>
+  </metadata>
+  
+  <agent_context>
+    <planner>
+      <role>Lead sprint planning with capacity management and story selection</role>
+      <context_files>
+        - team-velocity.md
+        - sprint-capacity-model.md
+        - dependency-tracking.md
+        - priority-matrix.md
+      </context_files>
+    </planner>
+    <builder>
+      <role>Provide technical feasibility input and implementation guidance</role>
+      <advisory_focus>
+        - Technical complexity assessment
+        - Implementation approach validation
+        - Risk identification
+        - Tool and library recommendations
+      </advisory_focus>
+    </builder>
+  </agent_context>
+  
   <task>
     Plan a 2-week sprint for a 5-agent team (Product Owner, Scrum Master, 2 Builders, 1 Reviewer) in a Rolling Kanban model by defining sprint goals, selecting stories, assigning tasks, and determining branch strategy.
   </task>
   
   <context_loading>
-    <instructions>
-      Before proceeding, read the context documentation inventory:
-      - Read: .claude/docs/.context-docs-inventory.xml
-      Based on the sprint's technical scope, read relevant context:
-      - For TDD approach: Read testing/context/test-driven-development.md
-      - For testing patterns: Read testing/context/unit-testing-patterns.md
-      - For performance goals: Read architecture/performance-optimization.md
-      - For debugging workflow: Read debugging/debugging-system-overview.md
-      - For common patterns: Read debugging/common-patterns.md
-    </instructions>
+    <from_previous_phases>
+      <!-- Load Phase 4 story outputs -->
+      <read priority="1">.claude/build/4-output/{epic-name}/4-stories/stories-breakdown.md - Complete story analysis</read>
+      <read priority="2">.claude/build/4-output/contexts/stories/story-{id}/context.md - Individual story contexts</read>
+      <read priority="3">.claude/build/4-output/contexts/stories/story-{id}/technical-notes.md - Technical requirements</read>
+      <read priority="4">.claude/build/4-output/{epic-name}/3-validation/stakeholder-feedback.md - Priority guidance</read>
+    </from_previous_phases>
+    <current_context>
+      <instructions>
+        Before proceeding, read the context documentation inventory:
+        - Read: .claude/docs/.context-docs-inventory.xml
+        Based on the sprint's technical scope, read relevant context:
+        - For TDD approach: Read testing/context/test-driven-development.md
+        - For testing patterns: Read testing/context/unit-testing-patterns.md
+        - For performance goals: Read architecture/performance-optimization.md
+        - For debugging workflow: Read debugging/debugging-system-overview.md
+        - For common patterns: Read debugging/common-patterns.md
+      </instructions>
+    </current_context>
+    <validation>
+      <required_files>
+        <file path=".claude/build/4-output/{epic-name}/4-stories/stories-breakdown.md" description="Story breakdown from Phase 4"/>
+        <file path=".claude/build/4-output/contexts/stories/story-{id}/context.md" description="Story context files"/>
+      </required_files>
+      <actions>
+        <on_missing>Error: Required story breakdown files not found. Ensure Phase 4 (User Story Creation) completed successfully before proceeding.</on_missing>
+        <on_present>Proceed with sprint planning</on_present>
+      </actions>
+    </validation>
   </context_loading>
 
-  <tools_available>
-    <tool_reference source=".aishell/refs/available-tools.xml">
-      <tool name="context7_mcp" usage="For accessing API/library documentation" />
-      <tool name="github_mcp" usage="For CRUD operations to store outputs and reference codebase files" />
-      <tool name="sequential_thinking_mcp" usage="For defining sprint goals and assigning tasks" />
-    </tool_reference>
-  </tools_available>
+  <available_tools>
+    <description>
+      You have access to the following tools for executing this task. Tool mappings are defined in .claude/tools/tool-mappings.xml and full documentation is in .claude/tools/available-tools.xml
+    </description>
+    
+    <!-- Claude Native Tools -->
+    <tool_group name="Claude Native Tools">
+      <tool name="Read" description="Read user stories and velocity data"/>
+      <tool name="Write" description="Create sprint planning documents"/>
+      <tool name="Edit" description="Update index.yml with sprint assignments"/>
+      <tool name="Bash" description="Execute gh CLI for GitHub operations"/>
+      <tool name="Grep" description="Search for dependency patterns"/>
+      <tool name="TodoWrite" description="Track sprint planning progress"/>
+    </tool_group>
+    
+    <!-- MCP Tools for Sprint Planning -->
+    <tool_group name="MCP Tools">
+      <tool name="github_mcp" description="GitHub API operations">
+        <functions>create_issue, update_issue, list_issues, create_branch</functions>
+        <usage>Create sprint milestone, update story assignments, check branches</usage>
+      </tool>
+      <tool name="code_reasoning_mcp" description="Sprint optimization">
+        <functions>code-reasoning</functions>
+        <usage>Optimize story selection and resource allocation</usage>
+      </tool>
+      <tool name="postgres_mcp" description="Database planning">
+        <functions>pg_manage_schema, pg_execute_query</functions>
+        <usage>Analyze database work across sprint stories</usage>
+      </tool>
+      <tool name="newrelic_mcp" description="Performance baseline">
+        <functions>query_newrelic_logs, get_transaction_traces</functions>
+        <usage>Establish performance baselines for sprint goals</usage>
+      </tool>
+    </tool_group>
+    
+    <tool_usage_guidelines>
+      - Use Read to examine user stories and team velocity
+      - Use code_reasoning_mcp to optimize sprint capacity
+      - Use github_mcp to create sprint milestone and update stories
+      - Use postgres_mcp if sprint includes database changes
+      - Use Write to create detailed sprint plan
+      - Use Edit to update index.yml with assignments
+      - Use newrelic_mcp to establish performance baselines
+    </tool_usage_guidelines>
+  </available_tools>
 
   <instructions>
     <step number="1">
@@ -67,7 +155,7 @@
         - Move stories to "Ready" column in Planning Board
         - Create GitHub milestone if needed: gh api repos/MLorneSmith/2025slideheroes/milestones --method POST -f title="Sprint {SPRINT_NUMBER}" -f due_on="{DUE_DATE}"
         - Add sprint plan as comment on Epic issue
-        - Store sprint plan in: .claude/build/3-output/{epic-name}/5-sprints/sprint-{number}.md
+        - Store sprint plan in: .claude/build/4-output/{epic-name}/5-sprints/sprint-{number}.md
       </description>
     </step>
     <step number="7">
@@ -210,4 +298,51 @@ git push origin sprint-indexing
       </sprint_plan>
     </output>
   </example>
+  
+  <agent_workflow>
+    <pattern name="collaborative_sprint_planning">
+      <parallel>
+        <agent>Planner Agent</agent>
+        <action>Analyze capacity and prioritize stories</action>
+        <output>Initial sprint backlog selection</output>
+      </parallel>
+      <parallel>
+        <agent>Builder Agent</agent>
+        <action>Assess technical feasibility and risks</action>
+        <output>Technical assessment report</output>
+      </parallel>
+      <synchronize>
+        <agent>Planner Agent</agent>
+        <action>Finalize sprint plan with technical input</action>
+        <output>Complete sprint plan with assignments</output>
+      </synchronize>
+    </pattern>
+  </agent_workflow>
+  
+  <quality_gate>
+    <validator>Planner Agent (self-validation)</validator>
+    <criteria>
+      <capacity_alignment>Sprint workload matches team capacity</capacity_alignment>
+      <goal_clarity>Sprint goal is specific and achievable</goal_clarity>
+      <story_readiness>All selected stories are ready for development</story_readiness>
+      <dependency_management>Dependencies identified and sequenced</dependency_management>
+      <risk_mitigation>Technical risks have mitigation plans</risk_mitigation>
+    </criteria>
+    <actions>
+      <on_pass>Sprint plan activated, stories move to Phase 6 (Implementation)</on_pass>
+      <on_fail>Sprint plan revised based on capacity or technical constraints</on_fail>
+    </actions>
+  </quality_gate>
+  
+  <handoff_protocol>
+    <from>Planner Agent + Builder Agent</from>
+    <to>Builder Agent (Phase 6)</to>
+    <context_package>
+      <sprint_plan>Complete sprint backlog with assignments</sprint_plan>
+      <implementation_context>Technical approach and patterns to follow</implementation_context>
+      <dependencies>Sequenced order of story implementation</dependencies>
+      <definition_of_done>Clear completion criteria for each story</definition_of_done>
+      <team_agreements>Working agreements and collaboration model</team_agreements>
+    </context_package>
+  </handoff_protocol>
 </prompt>

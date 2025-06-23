@@ -63,15 +63,17 @@ const config = {
         destination: 'https://eu.i.posthog.com/:path*',
       },
     ];
-  }
-}
+  },
+};
 ```
 
 Make sure to disallow the middleware from running against the `ingest` path.
 
 ```tsx title="apps/web/middleware.ts"
 export const config = {
-    matcher: ['/((?!_next/static|_next/image|images|locales|assets|ingest/*|api/*).*)'],
+  matcher: [
+    '/((?!_next/static|_next/image|images|locales|assets|ingest/*|api/*).*)',
+  ],
 };
 ```
 
@@ -97,7 +99,7 @@ Then, you can track events:
 await analytics.identify(userId);
 
 await analytics.trackEvent('buttonClicked', {
-    button: 'login',
+  button: 'login',
 });
 ```
 
@@ -106,18 +108,20 @@ If it's an anonymous user, you can call the `identify` method with any ID.
 Normally, you'd get the ID from the Supabase clients:
 
 ```tsx
-import { getSupabaseServerClient } from "@kit/supabase/server-client";
+import { getSupabaseServerClient } from '@kit/supabase/server-client';
 
 const client = getSupabaseServerClient();
-const { data: { user } } = await client.auth.getUser();
+const {
+  data: { user },
+} = await client.auth.getUser();
 
 if (user) {
-    await analytics.identify(user.id);
+  await analytics.identify(user.id);
 } else {
-    await analytics.identify('anonymous');
+  await analytics.identify('anonymous');
 }
 
 await analytics.trackEvent('buttonClicked', {
-    button: 'login',
+  button: 'login',
 });
 ```

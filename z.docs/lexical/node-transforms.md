@@ -17,18 +17,18 @@ const removeTransform = editor.registerNodeTransform(TextNode, (textNode) => {
 
 ```
 
-## Syntax [​](https://lexical.dev/docs/concepts/transforms\#syntax "Direct link to heading")
+## Syntax [​](https://lexical.dev/docs/concepts/transforms#syntax 'Direct link to heading')
 
 ```codeBlockLines_AdAo
 editor.registerNodeTransform<T: LexicalNode>(Class<T>, T): () => void
 
 ```
 
-## Lifecycle [​](https://lexical.dev/docs/concepts/transforms\#lifecycle "Direct link to heading")
+## Lifecycle [​](https://lexical.dev/docs/concepts/transforms#lifecycle 'Direct link to heading')
 
 Transforms are executed sequentially before changes are propagated to the DOM and multiple transforms still lead to a single DOM reconciliation (the most expensive operation in Lexical's lifecycle).
 
-![Transforms lifecycle](<Base64-Image-Removed>)
+![Transforms lifecycle](Base64-Image-Removed)
 
 Beware!
 
@@ -45,7 +45,7 @@ editor.registerUpdateListener(() => {
 
 ```
 
-### Transform heuristic [​](https://lexical.dev/docs/concepts/transforms\#transform-heuristic "Direct link to heading")
+### Transform heuristic [​](https://lexical.dev/docs/concepts/transforms#transform-heuristic 'Direct link to heading')
 
 1. We transform leaves first. If transforms generate additional dirty nodes we repeat `step 1`. The reasoning behind this is that marking a leaf as dirty marks all its parent elements as dirty too.
 2. We transform elements.
@@ -54,7 +54,7 @@ editor.registerUpdateListener(() => {
 
 Node will be marked as dirty on any (or most) modifications done to it, it's children or siblings in certain cases.
 
-## Preconditions [​](https://lexical.dev/docs/concepts/transforms\#preconditions "Direct link to heading")
+## Preconditions [​](https://lexical.dev/docs/concepts/transforms#preconditions 'Direct link to heading')
 
 Preconditions are fundamental for transforms to prevent them from running multiple times and ultimately causing an infinite loop.
 
@@ -98,7 +98,7 @@ editor.addListener('update', ({editorState}) => {
 
 ```
 
-## Transforms on parent nodes [​](https://lexical.dev/docs/concepts/transforms\#transforms-on-parent-nodes "Direct link to heading")
+## Transforms on parent nodes [​](https://lexical.dev/docs/concepts/transforms#transforms-on-parent-nodes 'Direct link to heading')
 
 Transforms are very specific to a type of node. This applies to both the declaration ( `registerNodeTransform(ImageNode)`) and the times it triggers during an update cycle.
 
@@ -130,7 +130,7 @@ editor.update(() => {
 
 ```
 
-## registerLexicalTextEntity [​](https://lexical.dev/docs/concepts/transforms\#registerlexicaltextentity "Direct link to heading")
+## registerLexicalTextEntity [​](https://lexical.dev/docs/concepts/transforms#registerlexicaltextentity 'Direct link to heading')
 
 It is common to have certain nodes that are created/destroyed based on their text content and siblings. For example, `#lexical` is a valid hashtag whereas `#!lexical` is not.
 
@@ -146,7 +146,7 @@ registerLexicalTextEntity<N: TextNode>(
 
 ```
 
-## Examples [​](https://lexical.dev/docs/concepts/transforms\#examples "Direct link to heading")
+## Examples [​](https://lexical.dev/docs/concepts/transforms#examples 'Direct link to heading')
 
 1. [Emojis](https://github.com/facebook/lexical/blob/main/packages/lexical-playground/src/plugins/EmojisPlugin/index.ts)
 2. [AutoLink](https://github.com/facebook/lexical/blob/main/packages/lexical-playground/src/plugins/AutoLinkPlugin/index.tsx)

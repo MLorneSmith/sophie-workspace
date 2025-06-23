@@ -2,7 +2,7 @@
 
 On this page
 
-## Base Nodes [​](https://lexical.dev/docs/concepts/nodes\#base-nodes "Direct link to heading")
+## Base Nodes [​](https://lexical.dev/docs/concepts/nodes#base-nodes 'Direct link to heading')
 
 Nodes are a core concept in Lexical. Not only do they form the visual editor view, as part of the `EditorState`, but they also represent the
 underlying data model for what is stored in the editor at any given time. Lexical has a single core based node, called `LexicalNode` that
@@ -20,7 +20,7 @@ Of these nodes, three of them are exposed from the `lexical` package, making the
 - `TextNode`
 - `DecoratorNode`
 
-### [`RootNode`](https://github.com/facebook/lexical/blob/main/packages/lexical/src/nodes/LexicalRootNode.ts) [​](https://lexical.dev/docs/concepts/nodes\#rootnode "Direct link to heading")
+### [`RootNode`](https://github.com/facebook/lexical/blob/main/packages/lexical/src/nodes/LexicalRootNode.ts) [​](https://lexical.dev/docs/concepts/nodes#rootnode 'Direct link to heading')
 
 There is only ever a single `RootNode` in an `EditorState` and it is always at the top and it represents the
 `contenteditable` itself. This means that the `RootNode` does not have a parent or siblings.
@@ -28,7 +28,7 @@ There is only ever a single `RootNode` in an `EditorState` and it is always at t
 - To get the text content of the entire editor, you should use `rootNode.getTextContent()`.
 - To avoid selection issues, Lexical forbids insertion of text nodes directly into a `RootNode`.
 
-#### Semantics and Use Cases [​](https://lexical.dev/docs/concepts/nodes\#semantics-and-use-cases "Direct link to heading")
+#### Semantics and Use Cases [​](https://lexical.dev/docs/concepts/nodes#semantics-and-use-cases 'Direct link to heading')
 
 The `RootNode` has specific characteristics and restrictions to maintain editor integrity:
 
@@ -48,20 +48,19 @@ While the `RootNode` is not "part of the document" in the traditional sense, it 
 
 If you are attempting to use the `RootNode` for document-level metadata (e.g., undo/redo support), consider alternative designs. Currently, Lexical does not provide direct facilities for this use case, but solutions like creating a shadow root under the `RootNode` might work.
 
-
 By design, the `RootNode` serves as a container for the editor's content rather than an active part of the document's logical structure. This approach simplifies operations like serialization and keeps the focus on content nodes.
 
-### [`LineBreakNode`](https://github.com/facebook/lexical/blob/main/packages/lexical/src/nodes/LexicalLineBreakNode.ts) [​](https://lexical.dev/docs/concepts/nodes\#linebreaknode "Direct link to heading")
+### [`LineBreakNode`](https://github.com/facebook/lexical/blob/main/packages/lexical/src/nodes/LexicalLineBreakNode.ts) [​](https://lexical.dev/docs/concepts/nodes#linebreaknode 'Direct link to heading')
 
 You should never have `'\n'` in your text nodes, instead you should use the `LineBreakNode` which represents
 `'\n'`, and more importantly, can work consistently between browsers and operating systems.
 
-### [`ElementNode`](https://github.com/facebook/lexical/blob/main/packages/lexical/src/nodes/LexicalElementNode.ts) [​](https://lexical.dev/docs/concepts/nodes\#elementnode "Direct link to heading")
+### [`ElementNode`](https://github.com/facebook/lexical/blob/main/packages/lexical/src/nodes/LexicalElementNode.ts) [​](https://lexical.dev/docs/concepts/nodes#elementnode 'Direct link to heading')
 
 Used as parent for other nodes, can be block level ( `ParagraphNode`, `HeadingNode`) and inline ( `LinkNode`).
 Has various methods which define its behaviour that can be overridden during extension ( `isInline`, `canBeEmpty`, `canInsertTextBefore` and more)
 
-### [`TextNode`](https://github.com/facebook/lexical/blob/main/packages/lexical/src/nodes/LexicalTextNode.ts) [​](https://lexical.dev/docs/concepts/nodes\#textnode "Direct link to heading")
+### [`TextNode`](https://github.com/facebook/lexical/blob/main/packages/lexical/src/nodes/LexicalTextNode.ts) [​](https://lexical.dev/docs/concepts/nodes#textnode 'Direct link to heading')
 
 Leaf type of node that contains text. It also includes few text-specific properties:
 
@@ -71,12 +70,12 @@ Leaf type of node that contains text. It also includes few text-specific propert
   - `segmented` \- its content deleted by segments (one word at a time), it is editable although node becomes non-segmented once its content is updated
 - `style` can be used to apply inline css styles to text
 
-### [`DecoratorNode`](https://github.com/facebook/lexical/blob/main/packages/lexical/src/nodes/LexicalDecoratorNode.ts) [​](https://lexical.dev/docs/concepts/nodes\#decoratornode "Direct link to heading")
+### [`DecoratorNode`](https://github.com/facebook/lexical/blob/main/packages/lexical/src/nodes/LexicalDecoratorNode.ts) [​](https://lexical.dev/docs/concepts/nodes#decoratornode 'Direct link to heading')
 
 Wrapper node to insert arbitrary view (component) inside the editor. Decorator node rendering is framework-agnostic and
 can output components from React, vanilla js or other frameworks.
 
-## Node Properties [​](https://lexical.dev/docs/concepts/nodes\#node-properties "Direct link to heading")
+## Node Properties [​](https://lexical.dev/docs/concepts/nodes#node-properties 'Direct link to heading')
 
 Lexical nodes can have properties. It's important that these properties are JSON serializable too, so you should never
 be assigning a property to a node that is a function, Symbol, Map, Set, or any other object that has a different prototype
@@ -165,13 +164,13 @@ class MyCustomNode extends SomeOtherNode {
 
 ```
 
-## Creating custom nodes [​](https://lexical.dev/docs/concepts/nodes\#creating-custom-nodes "Direct link to heading")
+## Creating custom nodes [​](https://lexical.dev/docs/concepts/nodes#creating-custom-nodes 'Direct link to heading')
 
 As mentioned above, Lexical exposes three base nodes that can be extended.
 
 > Did you know? Nodes such as `ElementNode` are already extended in the core by Lexical, such as `ParagraphNode` and `RootNode`!
 
-### Extending `ElementNode` [​](https://lexical.dev/docs/concepts/nodes\#extending-elementnode "Direct link to heading")
+### Extending `ElementNode` [​](https://lexical.dev/docs/concepts/nodes#extending-elementnode 'Direct link to heading')
 
 Below is an example of how you might extend `ElementNode`:
 
@@ -217,7 +216,7 @@ export function $isCustomParagraphNode(node: LexicalNode | null | undefined): no
 
 ```
 
-### Extending `TextNode` [​](https://lexical.dev/docs/concepts/nodes\#extending-textnode "Direct link to heading")
+### Extending `TextNode` [​](https://lexical.dev/docs/concepts/nodes#extending-textnode 'Direct link to heading')
 
 ```codeBlockLines_AdAo
 export class ColoredNode extends TextNode {
@@ -265,7 +264,7 @@ export function $isColoredNode(node: LexicalNode | null | undefined): node is Co
 
 ```
 
-### Extending `DecoratorNode` [​](https://lexical.dev/docs/concepts/nodes\#extending-decoratornode "Direct link to heading")
+### Extending `DecoratorNode` [​](https://lexical.dev/docs/concepts/nodes#extending-decoratornode 'Direct link to heading')
 
 ```codeBlockLines_AdAo
 export class VideoNode extends DecoratorNode<ReactNode> {

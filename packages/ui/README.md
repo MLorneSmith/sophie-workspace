@@ -9,4 +9,4 @@ This package define two sets of components:
 
 ## Installing a Shadcn UI component
 
- Please refer to the [documentation](https://makerkit.dev/docs/next-supabase-turbo/components/shadcn).
+Please refer to the [documentation](https://makerkit.dev/docs/next-supabase-turbo/components/shadcn).

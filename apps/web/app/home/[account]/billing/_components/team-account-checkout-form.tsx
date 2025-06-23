@@ -94,7 +94,7 @@ export function TeamAccountCheckoutForm(params: {
 								accountId: params.accountId,
 							});
 
-							setCheckoutToken(_checkoutToken);
+							setCheckoutToken(checkoutToken);
 						});
 					}}
 				/>

@@ -29,9 +29,11 @@ After extensive research into Payload CMS limitations with PostgreSQL, we've ide
 
    - Complex operations between tables aren't directly supported through Payload's migration API
    - The minimal quiz migration (`20250425_153000_minimal_quiz_fix.ts`) explicitly avoided data synchronization, noting:
+
      ```
      "This approach avoids type casting issues by not attempting to update or synchronize data"
      ```
+
    - This suggests that type casting problems were encountered during implementation
 
 3. **Type Casting Issues**
@@ -503,6 +505,7 @@ The SQL script runs at a specific point in the content migration process:
 2. **Specific Timing**: After the existing quiz relationship verification steps, but before survey questions handling
 3. **Integration**: Added as a new step in the orchestration pipeline
 4. **Workflow Sequence**:
+
    ```
    Payload Migrations → Blog Posts Migration → Fix UUID Tables → Import Downloads →
    Fix Relationships (including our new JSONB formatting script) → Verification

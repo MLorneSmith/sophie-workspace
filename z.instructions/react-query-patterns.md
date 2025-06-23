@@ -229,6 +229,7 @@ const { data: items } = useQuery<Item[]>({
 
 2. Keep keys consistent across the application
 3. Use prefixes for related queries:
+
    ```typescript
    ['items', 'list'][('items', 'detail', itemId)];
    ```

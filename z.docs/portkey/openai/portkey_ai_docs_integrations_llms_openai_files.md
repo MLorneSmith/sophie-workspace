@@ -22,7 +22,7 @@ This is the most efficient way to
 - Perform A/B testing with different foundation models
 - Perform batch inference with different foundation models
 
-## [​](https://portkey.ai/docs/integrations/llms/openai/files\#uploading-files)  Uploading Files
+## [​](https://portkey.ai/docs/integrations/llms/openai/files#uploading-files) Uploading Files
 
 Copy
 
@@ -34,7 +34,7 @@ curl --location --request POST 'https://api.portkey.ai/v1/files' \
 
 ```
 
-## [​](https://portkey.ai/docs/integrations/llms/openai/files\#list-files)  List Files
+## [​](https://portkey.ai/docs/integrations/llms/openai/files#list-files) List Files
 
 Copy
 
@@ -44,7 +44,7 @@ curl --location 'https://api.portkey.ai/v1/files' \
 
 ```
 
-## [​](https://portkey.ai/docs/integrations/llms/openai/files\#get-file)  Get File
+## [​](https://portkey.ai/docs/integrations/llms/openai/files#get-file) Get File
 
 Copy
 
@@ -54,7 +54,7 @@ curl --location 'https://api.portkey.ai/v1/files/<file_id>' \
 
 ```
 
-## [​](https://portkey.ai/docs/integrations/llms/openai/files\#get-file-content)  Get File Content
+## [​](https://portkey.ai/docs/integrations/llms/openai/files#get-file-content) Get File Content
 
 Copy
 
@@ -64,7 +64,7 @@ curl --location 'https://api.portkey.ai/v1/files/<file_id>/content' \
 
 ```
 
-## [​](https://portkey.ai/docs/integrations/llms/openai/files\#delete-file)  Delete File
+## [​](https://portkey.ai/docs/integrations/llms/openai/files#delete-file) Delete File
 
 Copy
 

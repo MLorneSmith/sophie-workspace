@@ -3,6 +3,7 @@ description:
 globs: *.ts,*.tsx
 alwaysApply: false
 ---
+
 # Typescript
 
 - Write clean, clear, well-designed, explicit Typescript
@@ -20,7 +21,7 @@ class UserService {
 }
 
 export function createUserService() {
-    return new UserService();
+  return new UserService();
 }
 ```
 
@@ -33,4 +34,3 @@ export function createUserService() {
 - Avoid using `any` type as much as possible. If necessary, use `unknown`
 - Use enums only when appropriate. Consider union types of string literals as an alternative.
 - Be aware of performance implications of your code.
-

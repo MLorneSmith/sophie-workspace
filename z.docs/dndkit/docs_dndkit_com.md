@@ -16,7 +16,6 @@
 
 - **Presets:** Need to build a sortable interface? Check out [`@dnd-kit/sortable`](https://docs.dndkit.com/presets/sortable), which is a thin layer built on top of `@dnd-kit/core`. More presets coming in the future.
 
-
 ![](https://3633755066-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F-MMujhzqaYbBEEmDxnZO%2Fuploads%2FrFnN48FwW1TuQlqZmp58%2Fconcepts-illustration-large.svg?alt=media&token=451a9922-8aba-426b-bd91-fa4721a71ef7)
 
 The core library of **dnd kit** exposes two main concepts:
@@ -24,7 +23,6 @@ The core library of **dnd kit** exposes two main concepts:
 - [Draggable elements](https://docs.dndkit.com/api-documentation/draggable)
 
 - [Droppable areas](https://docs.dndkit.com/api-documentation/droppable)
-
 
 Augment your existing components using the [`useDraggable`](https://docs.dndkit.com/api-documentation/draggable/usedraggable) and [`useDroppable`](https://docs.dndkit.com/api-documentation/droppable/usedroppable) hooks, or combine both to create components that can both be dragged and dropped over.
 
@@ -36,7 +34,7 @@ Check out our quick start guide to learn how get started:
 
 [Quick start](https://docs.dndkit.com/introduction/getting-started)
 
-### [Direct link to heading](https://docs.dndkit.com/\#extensibility)    Extensibility
+### [Direct link to heading](https://docs.dndkit.com/#extensibility) Extensibility
 
 Extensibility is at the core of **dnd kit**. It was built to be lean and extensible. It ships with the features we believe most people will want most of the time, and provides extension points to build the rest on top of `@dnd-kit/core`.
 
@@ -50,8 +48,7 @@ The primary extension points are:
 
 - [Custom collision detection algorithms](https://docs.dndkit.com/api-documentation/context-provider/collision-detection-algorithms#custom-collision-detection-strategies)
 
-
-### [Direct link to heading](https://docs.dndkit.com/\#accessibility)    Accessibility
+### [Direct link to heading](https://docs.dndkit.com/#accessibility) Accessibility
 
 Building drag and drop interfaces that are accessible to everyone isn't easy, and requires thoughtful consideration.
 
@@ -65,12 +62,11 @@ The `@dnd-kit/core` library provides a number of starting points to help you mak
 
 - [Sensible defaults for attributes](https://docs.dndkit.com/api-documentation/draggable/usedraggable#attributes) that should be passed to draggable elements
 
-
 Check out our Accessibility guide to learn more about how you can help make your drag and drop interface accessible for everyone:
 
 [Accessibility](https://docs.dndkit.com/guides/accessibility)
 
-### [Direct link to heading](https://docs.dndkit.com/\#architecture)    Architecture
+### [Direct link to heading](https://docs.dndkit.com/#architecture) Architecture
 
 Unlike many drag and drop libraries, **dnd kit** isintentionally **not** built on top of the [HTML5 Drag and drop API](https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API). This was a deliberate architectural decision, that does come with tradeoffs that you should be aware of before deciding to use it. For most web applications, we believe the benefits outweigh the tradeoffs.
 
@@ -78,9 +74,9 @@ The HTML5 Drag and drop API has some severe **limitations**. It does not support
 
 The main **tradeoff** with not using the HTML5 Drag and drop API is that you won't be able to drag from the desktop or between windows. If the drag and drop use-case you have in mind involves this kind of functionality, you'll definitely want to use a library that's built on top of the HTML 5 Drag and drop API. We highly recommend you check out [react-dnd](https://github.com/react-dnd/react-dnd/) for a React library that's has a native HTML 5 Drag and drop backend.
 
-### [Direct link to heading](https://docs.dndkit.com/\#performance)    Performance
+### [Direct link to heading](https://docs.dndkit.com/#performance) Performance
 
-#### [Direct link to heading](https://docs.dndkit.com/\#minimizing-dom-mutations)    **Minimizing DOM mutations**
+#### [Direct link to heading](https://docs.dndkit.com/#minimizing-dom-mutations) **Minimizing DOM mutations**
 
 **dnd kit** lets you build drag and drop interfaces without having to mutate the DOM every time an item needs to shift position.
 
@@ -88,10 +84,10 @@ This is possible because **dnd kit** lazily calculates and stores the initial po
 
 This isn't to say that you can't shift the position of the items in the DOM while dragging, this is something that **is supported** and sometimes inevitable. In some cases, it won't be possible to know in advance what the new position and layout of the item until you move it in the DOM. Just know that these kind of mutations to the DOM while dragging are much more expensive and will cause a repaint, so if possible, prefer computing the new positions using `translate3d` and `scale`.
 
-#### [Direct link to heading](https://docs.dndkit.com/\#synthetic-events)    Synthetic events
+#### [Direct link to heading](https://docs.dndkit.com/#synthetic-events) Synthetic events
 
 Sensors use [SyntheticEvent listeners](https://reactjs.org/docs/events.html) for the activator events of all sensors, which leads to improved performance over manually adding event listeners to each individual draggable node.
 
 Last updated 2 years ago
 
-* * *
+---

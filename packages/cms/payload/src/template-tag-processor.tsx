@@ -6,7 +6,7 @@ function _debugLog(..._args: unknown[]) {
 	if (DEBUG) {
 		// TODO: Async logger needed
 		// (await getLogger()).info("[TemplateTagProcessor]", { data: ...args });
-		// }
+	}
 }
 
 type TemplateTagProcessorProps = {
@@ -95,7 +95,9 @@ function processR2FileTags(text: string): string {
 	if (DEBUG) {
 		const remainingMatches = processedText.match(/{%\s*r2file.*?\/%}/g) || [];
 		if (remainingMatches.length > 0) {
-			_debugLog(`Warning: ${remainingMatches.length} r2file tags not processed`);
+			_debugLog(
+				`Warning: ${remainingMatches.length} r2file tags not processed`,
+			);
 			_debugLog(`First unprocessed tag: ${remainingMatches[0]}`);
 		}
 	}
@@ -201,7 +203,7 @@ function processHeaderTags(text: string): string {
  * @param content The content string containing template tags
  * @returns Component with processed content
  */
-export function _TemplateTagProcessor({ content }: TemplateTagProcessorProps) {
+export function TemplateTagProcessor({ content }: TemplateTagProcessorProps) {
 	if (!content || typeof content !== "string") {
 		if (DEBUG) {
 			_debugLog("Received empty or non-string content");
@@ -214,7 +216,9 @@ export function _TemplateTagProcessor({ content }: TemplateTagProcessorProps) {
 		const contentPreview =
 			content.length > 100 ? `${content.substring(0, 100)}...` : content;
 
-		_debugLog(`Processing content (${content.length} chars): ${contentPreview}`);
+		_debugLog(
+			`Processing content (${content.length} chars): ${contentPreview}`,
+		);
 
 		// Count tag occurrences
 		const r2fileMatches = content.match(/{%\s*r2file.*?\/%}/g) || [];
@@ -301,7 +305,7 @@ export function _TemplateTagProcessor({ content }: TemplateTagProcessorProps) {
 /**
  * Check if content contains template tags that need processing
  */
-export function _containsTemplateTags(content: unknown): boolean {
+export function containsTemplateTags(content: unknown): boolean {
 	if (typeof content !== "string") {
 		return false;
 	}

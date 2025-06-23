@@ -67,8 +67,8 @@ class WordpressClient implements CmsClient {
 				queryParams.append("categories", ids.join(","));
 			} else {
 				// TODO: Async logger needed
-		// (await getLogger()).warn("No categories found for the provided slugs", { arg1: options.categories, arg2:  });
-		// }
+				// (await getLogger()).warn("No categories found for the provided slugs", options.categories);
+			}
 		}
 
 		if (options?.tags) {
@@ -82,8 +82,8 @@ class WordpressClient implements CmsClient {
 				queryParams.append("tags", ids.join(","));
 			} else {
 				// TODO: Async logger needed
-		// (await getLogger()).warn("No tags found for the provided slugs", { data: options.tags });
-		// }
+				// (await getLogger()).warn("No tags found for the provided slugs", options.tags);
+			}
 		}
 
 		if (options?.parentIds && options.parentIds.length > 0) {
@@ -283,10 +283,10 @@ class WordpressClient implements CmsClient {
 
 		if (!response.ok) {
 			// TODO: Async logger needed
-		// (await getLogger()).error("Failed to fetch categories", { data: await response.json( }));
+			// (await getLogger()).error("Failed to fetch categories", await response.json());
 
 			throw new Error("Failed to fetch categories");
-		// }
+		}
 
 		const data = (await response.json()) as WP_REST_API_Category[];
 
@@ -319,10 +319,10 @@ class WordpressClient implements CmsClient {
 
 		if (!response.ok) {
 			// TODO: Async logger needed
-		// (await getLogger()).error("Failed to fetch tags", { data: await response.json( }));
+			// (await getLogger()).error("Failed to fetch tags", await response.json());
 
 			throw new Error("Failed to fetch tags");
-		// }
+		}
 
 		const data = (await response.json()) as WP_REST_API_Tag[];
 
@@ -387,7 +387,7 @@ class WordpressClient implements CmsClient {
 	}
 }
 
-function _mapSortByParam(sortBy: string) {
+function mapSortByParam(sortBy: string) {
 	switch (sortBy) {
 		case "publishedAt":
 			return "date";
@@ -402,7 +402,7 @@ function _mapSortByParam(sortBy: string) {
 	}
 }
 
-function _mapToStatus(status: WP_Post_Status_Name): Cms.ContentItemStatus {
+function mapToStatus(status: WP_Post_Status_Name): Cms.ContentItemStatus {
 	const Draft = "draft" as WP_Post_Status_Name;
 	const Publish = "publish" as WP_Post_Status_Name;
 	const Pending = "pending" as WP_Post_Status_Name;

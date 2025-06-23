@@ -56,7 +56,7 @@ The API layer is implemented in the `@kit/payload` package, which provides funct
    pnpm dev
    ```
 
-3. Access the survey at: http://localhost:3000/home/assessment
+3. Access the survey at: <http://localhost:3000/home/assessment>
 
 ### Seeding Sample Data
 
@@ -70,6 +70,7 @@ To seed the database with a sample assessment survey:
    ```
 
 2. Run the seed script:
+
    ```
    pnpm seed:assessment
    ```

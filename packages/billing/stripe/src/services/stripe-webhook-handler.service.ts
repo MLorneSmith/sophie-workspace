@@ -49,7 +49,7 @@ export class StripeWebhookHandlerService
 		const body = await request.clone().text();
 		const signatureKey = "stripe-signature";
 		const signature = request.headers.get(signatureKey);
-		
+
 		if (!signature) {
 			throw new Error(`Missing ${signatureKey} header`);
 		}
@@ -190,10 +190,13 @@ export class StripeWebhookHandlerService
 
 				const logger = await getLogger();
 
-				logger.debug({
-					eventType: event.type,
-					name: this.namespace,
-				}, `Unhandled Stripe event type: ${event.type}`);
+				logger.debug(
+					{
+						eventType: event.type,
+						name: this.namespace,
+					},
+					`Unhandled Stripe event type: ${event.type}`,
+				);
 
 				return;
 			}
@@ -215,7 +218,7 @@ export class StripeWebhookHandlerService
 		const customerId = session.customer as string;
 
 		if (!accountId) {
-			throw new Error('Session missing required client_reference_id');
+			throw new Error("Session missing required client_reference_id");
 		}
 
 		// if it's a subscription, we need to retrieve the subscription
@@ -370,9 +373,12 @@ export class StripeWebhookHandlerService
 		const invoiceId = invoice.id;
 
 		if (!invoiceId) {
-			logger.warn({
-				invoiceId,
-			}, "Invoice not found. Will not handle invoice.paid event.");
+			logger.warn(
+				{
+					invoiceId,
+				},
+				"Invoice not found. Will not handle invoice.paid event.",
+			);
 
 			return;
 		}
@@ -393,10 +399,13 @@ export class StripeWebhookHandlerService
 
 		// handle when a subscription ID is not found
 		if (!subscriptionId) {
-			logger.warn({
-				subscriptionId,
-				customerId,
-			}, "Subscription ID not found for invoice. Will not handle invoice.paid event.");
+			logger.warn(
+				{
+					subscriptionId,
+					customerId,
+				},
+				"Subscription ID not found for invoice. Will not handle invoice.paid event.",
+			);
 
 			return;
 		}
@@ -405,10 +414,13 @@ export class StripeWebhookHandlerService
 
 		// // handle when a subscription is not found
 		if (!subscription) {
-			logger.warn({
-				subscriptionId,
-				customerId,
-			}, "Subscription not found for invoice. Will not handle invoice.paid event.");
+			logger.warn(
+				{
+					subscriptionId,
+					customerId,
+				},
+				"Subscription not found for invoice. Will not handle invoice.paid event.",
+			);
 
 			return;
 		}
@@ -447,18 +459,20 @@ export class StripeWebhookHandlerService
 
 			if (!type) {
 				// TODO: Async logger needed
-		// (await getLogger()).warn({
-						// lineItemId: item.id, { arg1: }, arg2: `Line item is not in the billing configuration, arg3: please add it. Defaulting to "flat" type.`, arg4:  });
+				// (await getLogger()).warn({
+				//   lineItemId: item.id,
+				//   message: `Line item is not in the billing configuration, please add it. Defaulting to "flat" type.`
+				// });
 
 				type = "flat" as const;
-		// }
+			}
 
 			return { ...item, type };
 		});
 	}
 
 	private async loadStripe() {
-		if (!this._stripe) {
+		if (!this.stripe) {
 			this.stripe = await createStripeClient();
 		}
 

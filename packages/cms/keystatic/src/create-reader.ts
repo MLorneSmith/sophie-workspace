@@ -55,7 +55,7 @@ function getKeystaticGithubConfiguration() {
 			}),
 			repo: z.custom<`${string}/${string}`>(),
 			pathPrefix: z.string().optional(),
-		// })
+		})
 		.parse({
 			token: process.env.KEYSTATIC_GITHUB_TOKEN,
 			repo,

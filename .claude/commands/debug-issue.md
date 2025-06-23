@@ -47,7 +47,6 @@ This XML file contains a complete inventory of all context documentation organiz
 
 ```
 # PARALLEL READ these core debugging docs:
-.claude/core/project-overview.md
 .claude/core/code-standards.md
 .claude/docs/debugging/common-patterns.md
 .claude/docs/debugging/debugging-system-overview.md
@@ -55,7 +54,7 @@ This XML file contains a complete inventory of all context documentation organiz
 
 ### 2.3 Conditional Context (Based on Issue Type)
 
-After reading the issue (in section 3.4), identify relevant documentation from the inventory and load it. Here are common patterns:
+After reading the issue (in section 3.4), identify relevant documentation from the inventory and load it based on .claude/docs/.context-docs-inventory.xml. Here are common patterns:
 
 ```typescript
 // Based on issue analysis, select relevant docs from the inventory:
@@ -114,8 +113,9 @@ const contextMap = {
   // Testing issues
   testing: [
     '.claude/docs/testing/unit-testing-prioritization-plan.md',
-    '.claude/docs/testing/context/unit-testing-patterns.md',
-    '.claude/docs/testing/context/mocking-strategies.md',
+    '.claude/docs/testing/context/testing-fundamentals.md',
+    '.claude/docs/testing/context/mocking-and-typescript.md',
+    '.claude/docs/testing/context/testing-examples.md',
   ],
 };
 
@@ -322,28 +322,28 @@ const currentNetwork = (await mcp__browser) - tools__getNetworkErrors();
 
 Based on issue type, perform targeted investigation:
 
-#### For Runtime Errors:
+#### For Runtime Errors
 
 1. Set breakpoints in suspected functions
 2. Add console.log statements for variable inspection
 3. Check error boundaries and try-catch blocks
 4. Verify async/await handling
 
-#### For Performance Issues:
+#### For Performance Issues
 
 1. Profile the application
 2. Check React DevTools for re-renders
 3. Analyze bundle size
 4. Review database query plans
 
-#### For Database Issues:
+#### For Database Issues
 
 1. Test queries in isolation
 2. Check RLS policies
 3. Verify indexes
 4. Monitor connection pool
 
-#### For Type Errors:
+#### For Type Errors
 
 1. Run targeted type checking
 2. Check interface definitions

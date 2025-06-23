@@ -228,14 +228,14 @@ class OtpService {
 				p_id: id,
 			});
 
-			if (result._error) {
+			if (result.error) {
 				logger.error(
-					{ ...ctx, error: result.error.message },
+					{ ...ctx, error: result.error?.message },
 					"Failed to get one-time token status",
 				);
 
 				throw new Error(
-					`Failed to get one-time token status: ${result.error.message}`,
+					`Failed to get one-time token status: ${result.error?.message}`,
 				);
 			}
 

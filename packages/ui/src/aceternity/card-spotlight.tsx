@@ -78,6 +78,12 @@ export const CardSpotlight = ({
 			onMouseMove={handleMouseMove}
 			onMouseEnter={handleMouseEnter}
 			onMouseLeave={handleMouseLeave}
+			onFocus={handleMouseEnter}
+			onBlur={handleMouseLeave}
+			// biome-ignore lint/a11y/noNoninteractiveTabindex: Card needs keyboard focus for spotlight effect
+			tabIndex={0}
+			// biome-ignore lint/a11y/useSemanticElements: This is an interactive card component
+			role="article"
 			{...props}
 		>
 			<motion.div

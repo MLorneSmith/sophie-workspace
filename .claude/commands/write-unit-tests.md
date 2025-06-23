@@ -14,13 +14,11 @@ First, load the unit test writer role to set the appropriate context:
 
 ## 2. Read Context Docs
 
-After adopting the role, read the testing context documentation:
+After adopting the role, read the consolidated testing documentation:
 
-- `.claude/docs/testing/context/vitest-setup-confirmation.md` - **CONFIRMS VITEST IS READY**
-- `.claude/docs/testing/context/unit-testing-best-practices.md`
-- `.claude/docs/testing/context/unit-testing-patterns.md`
-- `.claude/docs/testing/context/test-driven-development.md`
-- `.claude/docs/testing/context/mocking-strategies.md`
+- `.claude/docs/testing/context/testing-fundamentals.md` - Core principles, AAA pattern, naming conventions
+- `.claude/docs/testing/context/mocking-and-typescript.md` - All mocking patterns and TypeScript-specific guidance
+- `.claude/docs/testing/context/testing-examples.md` - Concrete examples from this project
 
 ## 3. Review Test Strategy
 
@@ -68,94 +66,17 @@ Create the actual test file colocated with the source:
 - Mock all external dependencies
 - Implement comprehensive test cases
 
-#### TypeScript Type Safety Requirements
+#### TypeScript Type Safety Quick Reference
 
-To prevent CI failures, ensure all tests follow these TypeScript patterns:
+Refer to `.claude/docs/testing/context/mocking-and-typescript.md` for comprehensive TypeScript patterns including:
 
-**✅ Complete Type Mocks**
+- Complete type mocks with helper functions
+- React Query mock helpers
+- Correct Vitest generics usage
+- Safe property access patterns
+- Complex type casting solutions
 
-```typescript
-// ❌ Incomplete - will cause TS errors
-const mockUser = { id: '123', email: 'test@example.com' };
-
-// ✅ Complete with helper function
-function createMockUser(overrides: Partial<User> = {}): User {
-  return {
-    id: 'user-123',
-    email: 'test@example.com',
-    aud: 'authenticated',
-    role: 'authenticated',
-    created_at: '2023-01-01T00:00:00.000Z',
-    updated_at: '2023-01-01T00:00:00.000Z',
-    app_metadata: {},
-    user_metadata: {},
-    identities: [],
-    ...overrides,
-  } as User;
-}
-```
-
-**✅ Proper React Query Mocks**
-
-```typescript
-// ❌ Incomplete UseQueryResult
-mockUseUser.mockReturnValue({ data: null });
-
-// ✅ Complete UseQueryResult with helper
-function createMockUseQueryResult<T>(
-  data: T | null,
-  overrides: Partial<UseQueryResult<T, Error>> = {},
-): UseQueryResult<T, Error> {
-  return {
-    data,
-    error: null,
-    isError: false,
-    isPending: false,
-    isLoading: false,
-    isSuccess: data !== null,
-    status: data !== null ? 'success' : 'pending',
-    // ... all other required properties
-    refetch: vi.fn(),
-    ...overrides,
-  } as UseQueryResult<T, Error>;
-}
-```
-
-**✅ Correct Vitest Generics**
-
-```typescript
-// ❌ Too many generics
-const mockFn = vi.fn<[RequestData], Promise<ResponseData>>();
-
-// ✅ Single generic for parameters
-const mockFn = vi.fn<[RequestData]>();
-```
-
-**✅ Safe Property Access**
-
-```typescript
-// ❌ Unsafe array access
-expect(result.content[0].type).toBe('paragraph');
-
-// ✅ Optional chaining
-expect(result.content?.[0]?.type).toBe('paragraph');
-```
-
-**✅ Complex Type Casting**
-
-```typescript
-// ❌ Direct incompatible cast
-storyboard: data as Json;
-
-// ✅ Double cast for incompatible types
-storyboard: data as unknown as Json;
-```
-
-**✅ Dependency Verification**
-
-- Check all imports have corresponding package.json entries
-- Add missing test dependencies: `@testing-library/user-event`, etc.
-- Verify workspace dependencies are properly declared
+**Critical**: Always verify TypeScript compilation before marking tests complete.
 
 ### 5.4 Verify TypeScript Compilation
 

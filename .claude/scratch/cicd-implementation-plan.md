@@ -8,7 +8,7 @@ This document outlines the step-by-step implementation plan for the SlideHeroes 
 
 ### Create New Project: "CI/CD Pipeline Implementation"
 
-1. **Go to**: https://github.com/[your-org]/2025slideheroes/projects
+1. **Go to**: <https://github.com/[your-org]/2025slideheroes/projects>
 2. **Create new project** with:
    - Name: "CI/CD Pipeline Implementation"
    - Description: "Implementation tracking for SlideHeroes CI/CD pipeline upgrade"
@@ -16,7 +16,7 @@ This document outlines the step-by-step implementation plan for the SlideHeroes 
 
 ### Project Configuration
 
-#### Columns:
+#### Columns
 
 1. **📋 Backlog** - All planned work
 2. **🎯 Ready** - Prioritized and ready to start
@@ -25,7 +25,7 @@ This document outlines the step-by-step implementation plan for the SlideHeroes 
 5. **✅ Done** - Completed and merged
 6. **🚫 Blocked** - Waiting on dependencies
 
-#### Custom Fields:
+#### Custom Fields
 
 - **Week**: Week 1, Week 2, Week 3, Week 4
 - **Priority**: High, Medium, Low

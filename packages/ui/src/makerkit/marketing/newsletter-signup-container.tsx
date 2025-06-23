@@ -40,9 +40,9 @@ export function NewsletterSignupContainer({
 				setStatus("success");
 			} catch (_error) {
 				// TODO: Async logger needed
-		// (await getLogger()).error("Newsletter signup error:", { data: error });
+				// (await getLogger()).error("Newsletter signup error:", { data: _error });
 				setStatus("error");
-		// }
+			}
 		},
 		[onSignup],
 	);

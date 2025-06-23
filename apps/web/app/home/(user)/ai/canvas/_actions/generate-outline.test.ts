@@ -13,10 +13,16 @@ vi.mock("../_components/editor/tiptap/utils/format-conversion", () => ({
 
 // Create a test wrapper that mimics enhanceAction behavior
 const createTestAction = (schema: z.ZodSchema) => {
-	return async (data: unknown) => {
+	return async (
+		data: unknown,
+	): Promise<{
+		success: boolean;
+		data?: { message: string };
+		error?: string;
+	}> => {
 		const result = schema.safeParse(data);
 		if (!result.success) {
-			return { error: "Validation failed" };
+			return { success: false, error: "Validation failed" };
 		}
 
 		// Simulate successful action
@@ -210,7 +216,11 @@ describe("Generate Outline Business Logic", () => {
 	});
 
 	describe("Schema Validation", () => {
-		let testAction: (data: unknown) => Promise<unknown>;
+		let testAction: (data: unknown) => Promise<{
+			success: boolean;
+			data?: { message: string };
+			error?: string;
+		}>;
 
 		beforeEach(() => {
 			testAction = createTestAction(GenerateOutlineSchema);
@@ -241,7 +251,10 @@ describe("Generate Outline Business Logic", () => {
 			};
 
 			const result = await testAction(invalidInput);
-			expect(result.error).toBe("Validation failed");
+			expect(result.success).toBe(false);
+			if (!result.success) {
+				expect(result.error).toBe("Validation failed");
+			}
 		});
 
 		it("should reject input with empty submissionId", async () => {
@@ -251,7 +264,10 @@ describe("Generate Outline Business Logic", () => {
 			};
 
 			const result = await testAction(invalidInput);
-			expect(result.error).toBe("Validation failed");
+			expect(result.success).toBe(false);
+			if (!result.success) {
+				expect(result.error).toBe("Validation failed");
+			}
 		});
 
 		it("should accept boolean forceRegenerate values", async () => {

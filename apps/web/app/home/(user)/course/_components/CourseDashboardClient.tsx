@@ -20,7 +20,7 @@ import { RadialProgress } from "./RadialProgress";
  * @param url - Original URL
  * @returns Transformed URL or null if input is null
  */
-function transformImageUrl(url: string | null): string | null {
+function _transformImageUrl(url: string | null): string | null {
 	if (!url) return null;
 
 	// If the URL contains r2.cloudflarestorage.com, transform it to the custom domain
@@ -95,14 +95,14 @@ export function CourseDashboardClient({
 	courseProgress,
 	lessonProgress,
 	quizAttempts,
-	_userId,
+	userId: _userId,
 }: CourseDashboardClientProps) {
 	const _supabase = useSupabase();
 	const [lessons, setLessons] = useState<CourseLesson[]>([]);
 	const [displayedLessons, setDisplayedLessons] = useState<CourseLesson[]>([]);
 	const [isCourseCompleted, setIsCourseCompleted] = useState<boolean>(false);
 	// Cache to remember failed image URLs to prevent repeated errors
-	const [failedImageUrls, setFailedImageUrls] = useState<Set<string>>(
+	const [_failedImageUrls, _setFailedImageUrls] = useState<Set<string>>(
 		new Set(),
 	);
 
@@ -139,8 +139,9 @@ export function CourseDashboardClient({
 			// Count completed required lessons using our enhanced matching function
 			const completedRequiredLessons = lessons.filter(
 				(lesson) =>
-					REQUIRED_LESSON_NUMBERS.includes(String(lesson.lesson_number)) &&
-					getLessonCompletionStatus(lesson.id, lesson.lesson_number),
+					REQUIRED_LESSON_NUMBERS.includes(
+						String(lesson.lesson_number || ""),
+					) && getLessonCompletionStatus(lesson.id, lesson.lesson_number || 0),
 			);
 
 			// Course is completed when all required lessons are completed
@@ -150,13 +151,14 @@ export function CourseDashboardClient({
 					completedRequiredLessons.length >= REQUIRED_LESSON_NUMBERS.length);
 
 			// Update the course completion state
-			setIsCourseCompleted(isCompleted);
+			setIsCourseCompleted(Boolean(isCompleted));
 
 			// If course is completed, show all lessons, otherwise hide 801 and 802
 			const filtered = isCompleted
 				? lessons
 				: lessons.filter(
-						(lesson) => !["801", "802"].includes(String(lesson.lesson_number)),
+						(lesson) =>
+							!["801", "802"].includes(String(lesson.lesson_number || "")),
 					);
 
 			setDisplayedLessons(filtered);
@@ -166,7 +168,7 @@ export function CourseDashboardClient({
 	// Get completion status for a specific lesson
 	const getLessonCompletionStatus = (
 		lessonId: string,
-		lessonNumber: string | number,
+		lessonNumber: string | number | null,
 	) => {
 		// First try to match by lesson ID (exact match)
 		const progressByID = lessonProgress.find((p) => p.lesson_id === lessonId);
@@ -235,7 +237,7 @@ export function CourseDashboardClient({
 				return dateA - dateB;
 			});
 
-		return attempts.length > 0 ? attempts[0].score : null;
+		return attempts.length > 0 && attempts[0] ? attempts[0].score : null;
 	};
 
 	// Loading state is handled by the loading.tsx file with GlobalLoader
@@ -263,8 +265,9 @@ export function CourseDashboardClient({
 					// Count completed required lessons using our enhanced matching function
 					lessons.filter(
 						(lesson) =>
-							REQUIRED_LESSON_NUMBERS.includes(String(lesson.lesson_number)) &&
-							getLessonCompletionStatus(lesson.id, lesson.lesson_number),
+							REQUIRED_LESSON_NUMBERS.includes(
+								String(lesson.lesson_number || ""),
+							) && getLessonCompletionStatus(lesson.id, lesson.lesson_number),
 					).length
 				}
 			/>
@@ -299,27 +302,11 @@ export function CourseDashboardClient({
 											<div className="relative h-[155px] w-[275px] flex-shrink-0">
 												{/* Don't display images for lessons 801 and 802 */}
 												{!["801", "802"].includes(
-													String(lesson.lesson_number),
+													String(lesson.lesson_number || ""),
 												) ? (
 													<Image
 														src={(() => {
-															// Get the R2 URL from the relationship
-															let r2Url =
-																lesson.featured_image_id?.url || // Direct URL property
-																(lesson.featured_image_id &&
-																typeof lesson.featured_image_id === "object"
-																	? lesson.featured_image_id.url // Nested URL in object
-																	: null);
-
-															// Transform the URL to use the custom domain
-															r2Url = transformImageUrl(r2Url);
-
-															// If we have an R2 URL and it hasn't failed before, try it
-															if (r2Url && !failedImageUrls.has(r2Url)) {
-																return r2Url;
-															}
-
-															// Otherwise use our placeholder system
+															// Since featured_image_id doesn't exist, use placeholder
 															return getPlaceholderImage(lesson);
 														})()}
 														alt={`Illustration for ${lesson.title}`}
@@ -330,15 +317,6 @@ export function CourseDashboardClient({
 														onError={(e) => {
 															// Get the original source that failed
 															const target = e.target as HTMLImageElement;
-															const originalSrc = target.src;
-
-															// Add to failed cache to prevent future attempts
-															setFailedImageUrls((prev) => {
-																const updated = new Set(prev);
-																updated.add(originalSrc);
-																return updated;
-															});
-
 															// Set placeholder based on lesson title
 															target.src = getPlaceholderImage(lesson);
 														}}
@@ -365,7 +343,7 @@ export function CourseDashboardClient({
 										)}
 									</div>
 									<div className="text-muted-foreground absolute right-4 bottom-2 text-sm">
-										<p>{lesson.estimatedDuration || 0} minutes</p>
+										<p>{lesson.estimated_duration || 0} minutes</p>
 									</div>
 								</CardContent>
 							</Card>

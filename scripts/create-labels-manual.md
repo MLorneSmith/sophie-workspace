@@ -53,7 +53,7 @@ curl -X POST \
 
 ## Option 2: Manual Creation via GitHub Web Interface
 
-1. Go to: https://github.com/MLorneSmith/2025slideheroes/labels
+1. Go to: <https://github.com/MLorneSmith/2025slideheroes/labels>
 2. Click "New label" for each of these:
 
 | Label Name        | Color              | Description                                  |

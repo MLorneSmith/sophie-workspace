@@ -116,7 +116,7 @@ main();
 
 ```
 
-## [​](https://portkey.ai/docs/integrations/llms/openai/structured-outputs\#difference-between-structured-outputs-json-mode-and-function-calling)  Difference Between Structured Outputs, JSON Mode, and Function Calling
+## [​](https://portkey.ai/docs/integrations/llms/openai/structured-outputs#difference-between-structured-outputs-json-mode-and-function-calling) Difference Between Structured Outputs, JSON Mode, and Function Calling
 
 - If you are connecting the model to tools, functions, data, etc. in your system, then you should use **function calling.**
 - And if you want to structure the model’s output when it responds to the user, then you should use a structured `response_format`.

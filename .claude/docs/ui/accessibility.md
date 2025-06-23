@@ -24,20 +24,20 @@ Provide text alternatives for non-text content:
 
 ```tsx
 // Good: Image with alt text
-<Image 
-  src="/logo.png" 
-  alt="Company Logo" 
-  width={200} 
-  height={50} 
+<Image
+  src="/logo.png"
+  alt="Company Logo"
+  width={200}
+  height={50}
 />
 
 // Good: Decorative image with empty alt
-<Image 
-  src="/decorative-pattern.png" 
-  alt="" 
-  role="presentation" 
-  width={500} 
-  height={300} 
+<Image
+  src="/decorative-pattern.png"
+  alt=""
+  role="presentation"
+  width={500}
+  height={300}
 />
 ```
 
@@ -48,18 +48,18 @@ Provide alternatives for time-based media:
 ```tsx
 <video controls>
   <source src="/video.mp4" type="video/mp4" />
-  <track 
-    kind="captions" 
-    src="/captions.vtt" 
-    srcLang="en" 
-    label="English" 
-    default 
+  <track
+    kind="captions"
+    src="/captions.vtt"
+    srcLang="en"
+    label="English"
+    default
   />
-  <track 
-    kind="descriptions" 
-    src="/descriptions.vtt" 
-    srcLang="en" 
-    label="English Descriptions" 
+  <track
+    kind="descriptions"
+    src="/descriptions.vtt"
+    srcLang="en"
+    label="English Descriptions"
   />
 </video>
 ```
@@ -93,10 +93,10 @@ Make it easier for users to see and hear content:
 
 // Don't rely on color alone
 <div className="
-  border-l-4 
-  border-red-500 
-  pl-4 
-  bg-red-50 
+  border-l-4
+  border-red-500
+  pl-4
+  bg-red-50
   dark:bg-red-900/20
 ">
   <p className="flex items-center">
@@ -117,13 +117,10 @@ Make all functionality available from a keyboard:
 ```tsx
 // Ensure custom components are keyboard accessible
 const CustomButton = React.forwardRef<
-  HTMLButtonElement, 
+  HTMLButtonElement,
   React.ButtonHTMLAttributes<HTMLButtonElement>
 >(({ children, ...props }, ref) => (
-  <button
-    ref={ref}
-    {...props}
-  >
+  <button ref={ref} {...props}>
     {children}
   </button>
 ));
@@ -138,9 +135,9 @@ Provide users enough time to read and use content:
 function TimedContent() {
   const [timeRemaining, setTimeRemaining] = useState(60);
   const [isPaused, setIsPaused] = useState(false);
-  
+
   // Implementation...
-  
+
   return (
     <div>
       <div>Time remaining: {timeRemaining}s</div>
@@ -164,10 +161,7 @@ Do not design content in a way that is known to cause seizures or physical react
 // Avoid rapid flashing content
 // If animation is necessary, ensure it doesn't flash more than 3 times per second
 const SafeAnimation = () => (
-  <div className="
-    animate-pulse 
-    duration-1000  /* Slow animation */
-  ">
+  <div className="/* Slow animation */ animate-pulse duration-1000">
     Content
   </div>
 );
@@ -190,17 +184,17 @@ Provide ways to help users navigate, find content, and determine where they are:
 </main>
 
 // Provide skip links
-<a 
-  href="#main-content" 
+<a
+  href="#main-content"
   className="
-    sr-only 
-    focus:not-sr-only 
-    focus:absolute 
-    focus:top-4 
-    focus:left-4 
-    focus:z-50 
-    focus:p-4 
-    focus:bg-white 
+    sr-only
+    focus:not-sr-only
+    focus:absolute
+    focus:top-4
+    focus:left-4
+    focus:z-50
+    focus:p-4
+    focus:bg-white
     focus:shadow-lg
   "
 >
@@ -258,10 +252,11 @@ Help users avoid and correct mistakes with our form components:
 ```tsx
 'use client';
 
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { Trans } from '@kit/ui/trans';
+
+import { Button } from '@kit/ui/button';
 import {
   Form,
   FormControl,
@@ -272,7 +267,7 @@ import {
   FormMessage,
 } from '@kit/ui/form';
 import { Input } from '@kit/ui/input';
-import { Button } from '@kit/ui/button';
+import { Trans } from '@kit/ui/trans';
 
 const formSchema = z.object({
   email: z.string().email({
@@ -300,16 +295,12 @@ function AccessibleForm() {
                 <Trans i18nKey="form.email.label" defaults="Email" />
               </FormLabel>
               <FormControl>
-                <Input 
-                  {...field} 
-                  type="email"
-                  placeholder="name@example.com"
-                />
+                <Input {...field} type="email" placeholder="name@example.com" />
               </FormControl>
               <FormDescription>
-                <Trans 
-                  i18nKey="form.email.description" 
-                  defaults="We'll never share your email" 
+                <Trans
+                  i18nKey="form.email.description"
+                  defaults="We'll never share your email"
                 />
               </FormDescription>
               <FormMessage />
@@ -317,7 +308,7 @@ function AccessibleForm() {
             </FormItem>
           )}
         />
-        
+
         <Button type="submit" disabled={form.formState.isSubmitting}>
           {form.formState.isSubmitting ? (
             <Trans i18nKey="form.submitting" defaults="Submitting..." />
@@ -332,6 +323,7 @@ function AccessibleForm() {
 ```
 
 The ShadcnUI Form components automatically handle:
+
 - `aria-invalid` when there are errors
 - `aria-describedby` linking error messages
 - Proper label associations
@@ -374,19 +366,7 @@ Maximize compatibility with current and future user agents, including assistive 
   onClick={handleClick}
   disabled={isDisabled}
   aria-busy={isLoading}
-  className="
-    px-4 
-    py-2 
-    bg-primary 
-    text-white 
-    rounded 
-    focus:outline-none 
-    focus:ring-2 
-    focus:ring-primary-500 
-    focus:ring-offset-2
-    disabled:opacity-50
-    disabled:cursor-not-allowed
-  "
+  className="bg-primary focus:ring-primary-500 rounded px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
 >
   {isLoading ? 'Loading...' : 'Click Me'}
 </button>
@@ -396,10 +376,7 @@ Maximize compatibility with current and future user agents, including assistive 
 
 ```tsx
 <div className="space-y-2">
-  <label 
-    htmlFor="name"
-    className="block font-medium text-gray-700"
-  >
+  <label htmlFor="name" className="block font-medium text-gray-700">
     Name
   </label>
   <input
@@ -408,23 +385,12 @@ Maximize compatibility with current and future user agents, including assistive 
     type="text"
     required
     aria-required="true"
-    aria-invalid={errors.name ? "true" : "false"}
-    aria-describedby={errors.name ? "name-error" : undefined}
-    className="
-      w-full 
-      px-3 
-      py-2 
-      border 
-      border-gray-300 
-      rounded-md 
-      shadow-sm 
-      focus:outline-none 
-      focus:ring-primary-500 
-      focus:border-primary-500
-    "
+    aria-invalid={errors.name ? 'true' : 'false'}
+    aria-describedby={errors.name ? 'name-error' : undefined}
+    className="focus:ring-primary-500 focus:border-primary-500 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:outline-none"
   />
   {errors.name && (
-    <p id="name-error" className="text-red-500 text-sm">
+    <p id="name-error" className="text-sm text-red-500">
       {errors.name.message}
     </p>
   )}
@@ -443,22 +409,14 @@ Maximize compatibility with current and future user agents, including assistive 
 >
   <div className="flex min-h-screen items-center justify-center p-4">
     {/* Backdrop */}
-    <div 
-      className="fixed inset-0 bg-black bg-opacity-50 transition-opacity" 
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
       aria-hidden="true"
       onClick={closeModal}
     ></div>
-    
+
     {/* Modal content */}
-    <div className="
-      relative 
-      bg-white 
-      rounded-lg 
-      shadow-xl 
-      max-w-md 
-      w-full 
-      p-6
-    ">
+    <div className="relative w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
       <h2 id="modal-title" className="text-xl font-semibold">
         Modal Title
       </h2>
@@ -469,7 +427,7 @@ Maximize compatibility with current and future user agents, including assistive 
         <button
           type="button"
           onClick={closeModal}
-          className="px-4 py-2 bg-gray-200 rounded"
+          className="rounded bg-gray-200 px-4 py-2"
         >
           Close
         </button>
@@ -493,19 +451,17 @@ Maximize compatibility with current and future user agents, including assistive 
         aria-controls={`panel-${tab.id}`}
         tabIndex={activeTab === tab.id ? 0 : -1}
         onClick={() => setActiveTab(tab.id)}
-        className={`
-          px-4 
-          py-2 
-          ${activeTab === tab.id 
-            ? 'bg-primary text-white' 
-            : 'bg-gray-100 text-gray-700'}
-        `}
+        className={`px-4 py-2 ${
+          activeTab === tab.id
+            ? 'bg-primary text-white'
+            : 'bg-gray-100 text-gray-700'
+        } `}
       >
         {tab.label}
       </button>
     ))}
   </div>
-  
+
   {tabs.map((tab) => (
     <div
       key={tab.id}
@@ -514,7 +470,7 @@ Maximize compatibility with current and future user agents, including assistive 
       aria-labelledby={`tab-${tab.id}`}
       hidden={activeTab !== tab.id}
       tabIndex={0}
-      className="p-4 border rounded-b"
+      className="rounded-b border p-4"
     >
       {tab.content}
     </div>
@@ -535,9 +491,9 @@ import { Trans } from '@kit/ui/trans';
 <Trans i18nKey="welcome.message" defaults="Welcome to our application" />
 
 // With variables
-<Trans 
-  i18nKey="user.greeting" 
-  defaults="Hello, {name}!" 
+<Trans
+  i18nKey="user.greeting"
+  defaults="Hello, {name}!"
   values={{ name: userName }}
 />
 
@@ -591,19 +547,16 @@ import { toast } from '@kit/ui/sonner';
 
 // Success toast
 toast.success(
-  <Trans i18nKey="toast.success" defaults="Operation completed successfully" />
+  <Trans i18nKey="toast.success" defaults="Operation completed successfully" />,
 );
 
 // Error toast with action
-toast.error(
-  <Trans i18nKey="toast.error" defaults="Something went wrong" />,
-  {
-    action: {
-      label: <Trans i18nKey="toast.retry" defaults="Retry" />,
-      onClick: () => handleRetry(),
-    },
-  }
-);
+toast.error(<Trans i18nKey="toast.error" defaults="Something went wrong" />, {
+  action: {
+    label: <Trans i18nKey="toast.retry" defaults="Retry" />,
+    onClick: () => handleRetry(),
+  },
+});
 ```
 
 ### Accessible Data Tables
@@ -616,12 +569,9 @@ import { DataTable } from '@kit/ui/data-table';
   columns={columns}
   data={data}
   caption={
-    <Trans 
-      i18nKey="table.users.caption" 
-      defaults="List of registered users" 
-    />
+    <Trans i18nKey="table.users.caption" defaults="List of registered users" />
   }
-/>
+/>;
 ```
 
 ## Testing Accessibility
@@ -633,25 +583,25 @@ Use Vitest with testing-library for component testing:
 ```tsx
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 describe('AccessibleButton', () => {
   it('should be keyboard accessible', async () => {
     const user = userEvent.setup();
     const handleClick = vi.fn();
-    
+
     render(
       <Button onClick={handleClick}>
         <Trans i18nKey="button.submit" defaults="Submit" />
-      </Button>
+      </Button>,
     );
-    
+
     const button = screen.getByRole('button', { name: /submit/i });
-    
+
     // Tab to button
     await user.tab();
     expect(button).toHaveFocus();
-    
+
     // Activate with Enter
     await user.keyboard('{Enter}');
     expect(handleClick).toHaveBeenCalled();
@@ -661,19 +611,22 @@ describe('AccessibleButton', () => {
 
 ### Manual Testing Checklist
 
-1. **Keyboard Navigation**: 
+1. **Keyboard Navigation**:
+
    - Can navigate with Tab/Shift+Tab
    - Can activate with Enter/Space
    - Focus indicators are visible
    - No keyboard traps
 
-2. **Screen Reader Testing**: 
+2. **Screen Reader Testing**:
+
    - All interactive elements have accessible names
    - Form fields have associated labels
    - Error messages are announced
    - Dynamic content updates are announced
 
 3. **Visual Testing**:
+
    - 200% zoom doesn't break layout
    - Color contrast passes WCAG AA (4.5:1 for normal text, 3:1 for large text)
    - Information isn't conveyed by color alone

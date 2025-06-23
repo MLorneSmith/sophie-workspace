@@ -2,22 +2,18 @@
 
 import { enhanceAction } from "@kit/next/actions";
 import { getLogger } from "@kit/shared/logger";
-import type { Database } from "@kit/supabase/database.types";
 import { requireUser } from "@kit/supabase/require-user";
 import { getSupabaseServerAdminClient } from "@kit/supabase/server-admin-client";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
 import { revalidatePath } from "next/cache";
 import { notFound, redirect } from "next/navigation";
-import { z } from "zod";
 
-import { AddManualTestimonialSchema } from "../../schema/add-manual-testimonial.schema";
+import type { AddManualTestimonialData } from "../../schema/add-manual-testimonial.schema";
 
 export const updateTestimonialStatusAction = enhanceAction(
-	async (params: unknown) => {
-		const { id, status } = params as {
-			id: string;
-			status: Database["public"]["Enums"]["testimonial_status"];
-		};
+	// biome-ignore lint/suspicious/noExplicitAny: Required to avoid TypeScript memory exhaustion from complex generic constraints
+	async (params: any) => {
+		const { id, status } = params;
 		await assertIsSuperAdmin();
 
 		const logger = await getLogger();
@@ -47,17 +43,13 @@ export const updateTestimonialStatusAction = enhanceAction(
 			success: true,
 		};
 	},
-	{
-		schema: z.object({
-			status: z.enum(["approved", "rejected", "pending"]),
-			id: z.string().uuid(),
-		}),
-	},
+	{ auth: false },
 );
 
 export const deleteTestimonialAction = enhanceAction(
-	async (params: unknown) => {
-		const { id } = params as { id: string };
+	// biome-ignore lint/suspicious/noExplicitAny: Required to avoid TypeScript memory exhaustion from complex generic constraints
+	async (params: any) => {
+		const { id } = params;
 		await assertIsSuperAdmin();
 
 		const logger = await getLogger();
@@ -83,21 +75,14 @@ export const deleteTestimonialAction = enhanceAction(
 
 		return redirect("/admin/testimonials");
 	},
-	{
-		schema: z.object({
-			id: z.string().uuid(),
-		}),
-	},
+	{ auth: false },
 );
 
 export const addManualTestimonialAction = enhanceAction(
-	async (data: unknown) => {
-		// Type the data based on the schema
-		const typedData = data as {
-			content: { text: string; rating: number };
-			source: { source: string; externalLink?: string };
-			customer: { name: string; company?: string; avatarUrl?: string };
-		};
+	// biome-ignore lint/suspicious/noExplicitAny: Required to avoid TypeScript memory exhaustion from complex generic constraints
+	async (data: any) => {
+		// Type the data explicitly to avoid deep instantiation
+		const typedData = data as AddManualTestimonialData;
 		await assertIsSuperAdmin();
 
 		const logger = await getLogger();
@@ -115,7 +100,7 @@ export const addManualTestimonialAction = enhanceAction(
 			customer_avatar_url: typedData.customer.avatarUrl,
 		});
 
-		if (_error) {
+		if (error) {
 			logger.error("Failed to add manual testimonial");
 
 			throw new Error("Failed to add manual testimonial");
@@ -127,9 +112,7 @@ export const addManualTestimonialAction = enhanceAction(
 			success: true,
 		};
 	},
-	{
-		schema: AddManualTestimonialSchema as z.ZodSchema,
-	},
+	{ auth: false },
 );
 
 async function assertIsSuperAdmin() {

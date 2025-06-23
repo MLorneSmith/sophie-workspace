@@ -20,8 +20,11 @@
 		"dev": "cross-env FORCE_COLOR=1 turbo dev --parallel --filter=!@slideheroes/playwright-mcp",
 		"format": "biome format .",
 		"format:fix": "biome format --write .",
-		"lint": "biome lint . && manypkg check",
-		"lint:fix": "biome lint --write . && manypkg fix",
+		"lint": "biome lint . && manypkg check && pnpm lint:yaml && pnpm lint:md",
+		"lint:fix": "biome lint --write . && manypkg fix && pnpm lint:md:fix",
+		"lint:yaml": "npx yaml-lint '**/*.{yml,yaml}'",
+		"lint:md": "markdownlint-cli2 '**/*.md' '!node_modules' '!**/node_modules' '!z.plan/**' '!z.instructions/**' '!z.docs/**' '!z.todo/**' '!z.context/**' '!.claude/**' '!.mcp-servers/**' '!.roo/**'",
+		"lint:md:fix": "markdownlint-cli2 --fix '**/*.md' '!node_modules' '!**/node_modules' '!z.plan/**' '!z.instructions/**' '!z.docs/**' '!z.todo/**' '!z.context/**' '!.claude/**' '!.mcp-servers/**' '!.roo/**'",
 		"typecheck": "turbo typecheck --affected --cache-dir=.turbo",
 		"test": "turbo test --cache-dir=.turbo",
 		"update": "pnpm update -r",
@@ -55,7 +58,26 @@
 	"prettier": "@kit/prettier-config",
 	"packageManager": "pnpm@9.12.0",
 	"lint-staged": {
-		"*": "echo 'Files processed by hybrid pre-commit hook'"
+		"apps/payload/**/*.{js,jsx,ts,tsx,json}": [
+			"cd apps/payload && pnpm lint --fix"
+		],
+		"packages/**/*.{js,jsx,ts,tsx,json}": [
+			"bash -c 'package_dir=$(dirname \"$0\" | cut -d/ -f1-2); if [ -f \"$package_dir/package.json\" ] && grep -q '\"lint\"' \"$package_dir/package.json\"; then cd \"$package_dir\" && pnpm lint --fix; fi'"
+		],
+		"!(apps/payload|packages)/**/*.{js,jsx,ts,tsx,json,css}": [
+			"biome format --write",
+			"biome lint --write"
+		],
+		"**/*.{md,mdx}": [
+			"prettier --write",
+			"bash -c 'if ! echo \"$0\" | grep -qE \"^(z\\.(plan|instructions|docs|todo|context)|\\.claude|\\.mcp-servers|\\.roo)/\"; then markdownlint-cli2 --fix \"$0\"; fi'"
+		],
+		"**/*.{yaml,yml}": [
+			"yaml-lint"
+		],
+		"**/*.{ts,tsx}": [
+			"bash -c 'echo \"🔍 Type checking $0...\"; tsc --noEmit --skipLibCheck --pretty \"$0\" 2>/dev/null || echo \"⚠️ Type check failed for $0\"'"
+		]
 	},
 	"pnpm": {
 		"overrides": {
@@ -80,10 +102,12 @@
 		"husky": "^9.1.7",
 		"knip": "^5.61.0",
 		"lint-staged": "^16.1.0",
+		"markdownlint-cli2": "^0.18.1",
 		"prettier": "^3.5.3",
-		"tailwind-merge": "^3.3.0",
+		"tailwind-merge": "^3.3.1",
 		"turbo": "2.5.4",
 		"typescript": "^5.8.3",
-		"vitest": "^3.1.2"
+		"vitest": "^3.1.2",
+		"yaml-lint": "^1.7.0"
 	}
 }

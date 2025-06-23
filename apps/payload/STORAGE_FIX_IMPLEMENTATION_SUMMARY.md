@@ -7,13 +7,15 @@ This document summarizes the comprehensive fix for Payload CMS S3 storage issues
 ## ✅ What Was Fixed
 
 ### 1. **Root Cause Identified**
+
 - **Problem**: Single `s3Storage` plugin instance trying to handle both media and downloads collections
-- **Symptoms**: 
+- **Symptoms**:
   - Media collection displayed blank screen
   - Downloads collection files uploaded but resulted in 404 when clicked
   - Plugin conflicts in bucket handling and URL generation
 
 ### 2. **New Architecture Implemented**
+
 - **Separate Plugin Instances**: Each collection now has its own dedicated `s3Storage` plugin
 - **Independent Configuration**: Media and downloads have separate bucket configurations
 - **Dedicated URL Generators**: Collection-specific URL generation with proper fallback handling
@@ -21,35 +23,42 @@ This document summarizes the comprehensive fix for Payload CMS S3 storage issues
 ## 📁 Files Created/Modified
 
 ### New Configuration Utilities
+
 1. **`src/lib/storage-config.ts`** - Storage validation and configuration utilities
 2. **`src/lib/storage-url-generators.ts`** - Collection-specific URL generation functions
 
 ### Updated Core Files
+
 3. **`src/payload.config.ts`** - Complete rewrite with separate storage plugin architecture
 4. **`src/collections/Media.ts`** - Enhanced with proper upload settings and metadata fields
 5. **`src/collections/Downloads.ts`** - Extended MIME types and collection-specific configuration
 
 ### Enhanced Verification
+
 6. **`scripts/verify-config.js`** - Comprehensive testing and validation script
 
 ## 🏗️ New Architecture Benefits
 
 ### ✅ Separate Storage Plugin Instances
+
 - Media collection: Dedicated R2 plugin instance with media-specific settings
 - Downloads collection: Dedicated R2 plugin instance with downloads-specific settings
 - No more shared plugin configuration causing conflicts
 
 ### ✅ Independent URL Generation
+
 - Collection-specific URL generators with proper error handling
 - Fallback URL generation for missing configurations
 - Support for custom base URLs via environment variables
 
 ### ✅ Enhanced Error Handling
+
 - Comprehensive validation of environment variables
 - Clear error messages for missing configurations
 - Graceful fallbacks for development vs production environments
 
 ### ✅ Better Organization
+
 - Separate buckets support (recommended for production)
 - Proper prefix handling for S3 compatibility
 - Collection-specific MIME type handling
@@ -57,6 +66,7 @@ This document summarizes the comprehensive fix for Payload CMS S3 storage issues
 ## 🔧 Configuration Requirements
 
 ### Required Environment Variables
+
 ```bash
 # Cloudflare R2 Configuration
 R2_ACCOUNT_ID=your-account-id-here
@@ -75,6 +85,7 @@ PAYLOAD_PUBLIC_DOWNLOADS_BASE_URL=https://your-custom-domain.com/downloads
 ```
 
 ### Alternative: AWS S3 Configuration
+
 ```bash
 S3_BUCKET=your-s3-bucket-name
 S3_REGION=us-east-1
@@ -85,12 +96,14 @@ AWS_SECRET_ACCESS_KEY=your-aws-secret-key
 ## 🧪 Verification & Testing
 
 ### 1. **Configuration Verification**
+
 ```bash
 # Run the enhanced verification script
 node scripts/verify-config.js
 ```
 
 Expected output for properly configured R2:
+
 ```
 🎉 All configuration looks good!
    ✅ Separate storage plugin architecture implemented
@@ -101,6 +114,7 @@ Expected output for properly configured R2:
 ### 2. **Manual Testing Steps**
 
 1. **Start the development server**:
+
    ```bash
    pnpm dev
    ```
@@ -108,12 +122,14 @@ Expected output for properly configured R2:
 2. **Navigate to admin panel**: `http://localhost:3020/admin`
 
 3. **Test Media Collection**:
+
    - Go to Media collection
    - Upload an image file
    - Verify it appears in the admin interface
    - Check that the file URL is accessible
 
 4. **Test Downloads Collection**:
+
    - Go to Downloads collection
    - Upload a PDF or document file
    - Verify it appears in the admin interface
@@ -126,18 +142,21 @@ Expected output for properly configured R2:
 ## 🔍 Troubleshooting Guide
 
 ### Media Collection Shows Blank Screen
+
 - ✅ **Fixed**: Separate plugin instances eliminate conflicts
 - Verify `R2_MEDIA_BUCKET` is set correctly
 - Check R2 credentials have proper permissions
 - Review browser console for any remaining CORS errors
 
 ### Downloads Result in 404 Errors
+
 - ✅ **Fixed**: Dedicated downloads plugin with proper URL generation
 - Verify `R2_DOWNLOADS_BUCKET` is configured (or uses media bucket)
 - Check file permissions in R2 dashboard
 - Ensure bucket has public read access
 
 ### Plugin Conflicts
+
 - ✅ **Fixed**: Completely resolved with separate plugin architecture
 - Each collection now has its own `s3Storage` plugin instance
 - No more shared configuration causing conflicts
@@ -146,19 +165,25 @@ Expected output for properly configured R2:
 ## 📊 Architecture Comparison
 
 ### Before (Problematic)
+
 ```typescript
 // Single plugin trying to handle both collections
 s3Storage({
   collections: {
-    media: { /* config */ },
-    downloads: { /* config */ }
+    media: {
+      /* config */
+    },
+    downloads: {
+      /* config */
+    },
   },
-  bucket: "single-bucket", // Conflict source
+  bucket: 'single-bucket', // Conflict source
   // Shared configuration causing issues
 })
 ```
 
 ### After (Fixed)
+
 ```typescript
 // Separate plugins for each collection
 const mediaPlugin = s3Storage({
@@ -180,12 +205,14 @@ plugins: [mediaPlugin, downloadsPlugin, ...]
 ## 🚀 Deployment Considerations
 
 ### Production Environment
+
 - Ensure all required environment variables are set
 - Use separate buckets for better organization
 - Configure custom domain URLs for better performance
 - Set up proper CORS policies if needed
 
 ### Development Environment
+
 - Can use same bucket for both collections (with warnings)
 - Local fallback for missing storage configuration
 - Enhanced logging for debugging
@@ -202,7 +229,7 @@ plugins: [mediaPlugin, downloadsPlugin, ...]
 
 - [ ] Media collection interface displays properly
 - [ ] Media files upload and are accessible via correct URLs
-- [ ] Downloads collection interface displays properly  
+- [ ] Downloads collection interface displays properly
 - [ ] Downloads files upload and are accessible via correct URLs
 - [ ] No more conflicts between collections
 - [ ] Verification script passes with green checkmarks

@@ -21,7 +21,7 @@ This is the most efficient way to
 - Perform A/B testing with different foundation models
 - Perform batch inference with different foundation models
 
-## [​](https://portkey.ai/docs/integrations/llms/openai/batches\#start-batch-inference)  Start Batch Inference
+## [​](https://portkey.ai/docs/integrations/llms/openai/batches#start-batch-inference) Start Batch Inference
 
 Copy
 
@@ -39,7 +39,7 @@ curl --location 'https://api.portkey.ai/v1/batches' \
 
 ```
 
-## [​](https://portkey.ai/docs/integrations/llms/openai/batches\#list-batch-inferences)  List Batch Inferences
+## [​](https://portkey.ai/docs/integrations/llms/openai/batches#list-batch-inferences) List Batch Inferences
 
 Copy
 
@@ -50,7 +50,7 @@ curl --location 'https://api.portkey.ai/v1/batches' \
 
 ```
 
-## [​](https://portkey.ai/docs/integrations/llms/openai/batches\#get-batch-inference)  Get Batch Inference
+## [​](https://portkey.ai/docs/integrations/llms/openai/batches#get-batch-inference) Get Batch Inference
 
 Copy
 
@@ -61,7 +61,7 @@ curl --location 'https://api.portkey.ai/v1/batches/<batch_id>' \
 
 ```
 
-## [​](https://portkey.ai/docs/integrations/llms/openai/batches\#cancel-batch-inference)  Cancel Batch Inference
+## [​](https://portkey.ai/docs/integrations/llms/openai/batches#cancel-batch-inference) Cancel Batch Inference
 
 Copy
 
@@ -72,7 +72,7 @@ curl --location --request POST 'https://api.portkey.ai/v1/batches/<batch_id>/can
 
 ```
 
-## [​](https://portkey.ai/docs/integrations/llms/openai/batches\#get-batch-output)  Get Batch Output
+## [​](https://portkey.ai/docs/integrations/llms/openai/batches#get-batch-output) Get Batch Output
 
 **This is a Gateway only feature**
 

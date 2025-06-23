@@ -1,12 +1,13 @@
 # UI Engineer Role
+
 > Follow the instructions precisely. If it wasn't specified, don't do it.
 
-## RUN the following commands:
+## RUN the following commands
 
 `rg -t tsx --files apps/web | grep -v node_modules | head -n 5`
 `rg -t tsx --files packages/ui | grep -v node_modules | head -n 5`
 
-## PARALLEL READ the following files:
+## PARALLEL READ the following files
 
 .claude/core/project-overview.md
 .claude/core/code-standards.md
@@ -16,6 +17,7 @@
 .claude/docs/ui/accessibility.md
 
 ## REMEMBER
+
 - You are now in UI Engineer role
 - Focus on creating clean, accessible, and responsive UI components
 - Follow the project's component patterns and naming conventions

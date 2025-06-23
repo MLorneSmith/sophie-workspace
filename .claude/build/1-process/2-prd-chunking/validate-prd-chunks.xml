@@ -1,9 +1,38 @@
 <prompt>
+  <metadata>
+    <primary_agent>Critic</primary_agent>
+    <supporting_agents>
+      <agent role="analyzer">Planner</agent>
+    </supporting_agents>
+    <phase>2-technical-chunking-validation</phase>
+  </metadata>
+  
+  <agent_context>
+    <critic>
+      <role>Validate chunk completeness, feasibility, and implementation readiness</role>
+      <validation_focus>
+        - Technical completeness and clarity
+        - Feasibility with current tech stack
+        - Clear boundaries and dependencies
+        - Appropriate sizing for sprint work
+      </validation_focus>
+    </critic>
+    <planner>
+      <role>Assess technical dependencies and implementation approach</role>
+    </planner>
+  </agent_context>
+  
   <task>
     Validate a PRD chunk by analyzing its completeness, technical feasibility, and clarity for implementation by a development team.
   </task>
   
   <context_loading>
+    <from_previous_phases>
+      <!-- Load Phase 2 chunking outputs -->
+      <read priority="1">.claude/build/4-output/{epic-name}/2-chunks/chunk-{chunk-id}.md - Created chunk content</read>
+      <read priority="2">.claude/build/4-output/{epic-name}/1-prd/prd-content.md - Original PRD for reference</read>
+      <read priority="3">.claude/build/4-output/contexts/chunks/chunk-{chunk-id}/context.md - Chunk context if exists</read>
+    </from_previous_phases>
     <instructions>
       Before proceeding, read the context documentation inventory:
       - Read: .claude/docs/.context-docs-inventory.xml
@@ -15,13 +44,54 @@
     </instructions>
   </context_loading>
 
-  <tools_available>
-    <tool_reference source=".aishell/refs/available-tools.xml">
-      <tool name="context7_mcp" usage="For verifying technical details and API documentation" />
-      <tool name="github_mcp" usage="For storing validation results and referencing codebase" />
-      <tool name="sequential_thinking_mcp" usage="For systematic validation analysis" />
-    </tool_reference>
-  </tools_available>
+  <available_tools>
+    <description>
+      You have access to the following tools for validating PRD chunks. Tool mappings are defined in .claude/tools/tool-mappings.xml and full documentation is in .claude/tools/available-tools.xml
+    </description>
+    
+    <!-- Claude Native Tools -->
+    <tool_group name="Claude Native Tools">
+      <tool name="Read" description="Read chunk content and validation criteria"/>
+      <tool name="Write" description="Create validation reports"/>
+      <tool name="Edit" description="Update chunk documentation"/>
+      <tool name="Bash" description="Execute gh CLI for GitHub operations"/>
+      <tool name="Grep" description="Search for similar patterns in codebase"/>
+      <tool name="TodoWrite" description="Track validation progress"/>
+    </tool_group>
+    
+    <!-- MCP Tools for Chunk Validation -->
+    <tool_group name="MCP Tools">
+      <tool name="github_mcp" description="GitHub API operations">
+        <functions>update_issue, add_issue_comment, get_file_contents</functions>
+        <usage>Update chunk status, add validation feedback, check codebase</usage>
+      </tool>
+      <tool name="context7_mcp" description="Technical verification">
+        <functions>resolve-library-id, get-library-docs</functions>
+        <usage>Verify technical feasibility of APIs and libraries</usage>
+      </tool>
+      <tool name="code_reasoning_mcp" description="Systematic analysis">
+        <functions>code-reasoning</functions>
+        <usage>Analyze chunk completeness and identify gaps</usage>
+      </tool>
+      <tool name="postgres_mcp" description="Database validation">
+        <functions>pg_manage_schema, pg_execute_query</functions>
+        <usage>Validate database schema requirements</usage>
+      </tool>
+      <tool name="supabase_mcp" description="Platform validation">
+        <functions>search_docs</functions>
+        <usage>Verify Supabase platform capabilities</usage>
+      </tool>
+    </tool_group>
+    
+    <validation_guidelines>
+      - Use Read to examine chunk content thoroughly
+      - Use code_reasoning_mcp for systematic completeness analysis
+      - Use context7_mcp to verify all technical references
+      - Use Grep to check for similar implementations
+      - Use github_mcp to update validation status
+      - Use postgres_mcp/supabase_mcp for database requirement validation
+    </validation_guidelines>
+  </available_tools>
 
   <instructions>
     <step number="1">
@@ -57,18 +127,24 @@
           - If validated: remove "needs-validation" label, add "validated" label
           - If needs_revision: keep "needs-validation" label, add "needs-revision" label
           - If rejected: add "rejected" label
-        - Update AAFD Stage custom field: Validation → Validated/Needs Revision
+        - Update AAFD Stage custom field: Chunking → Validated/Needs Revision
         - Update Priority if validation reveals scope changes
-        - Store validation in: .claude/build/3-output/{epic-name}/3-validation/
+        - Store validation in: .claude/build/4-output/{epic-name}/2-chunks/validation/chunk-{chunk-id}-validation.md
         - Move validated chunks to "Validated" column in Planning Board
       </description>
     </step>
   </instructions>
 
   <input>
-    <chunk_content>{CHUNK_CONTENT}</chunk_content>
     <chunk_id>{CHUNK_ID}</chunk_id>
-    <validation_criteria>{VALIDATION_CRITERIA}</validation_criteria>
+    <epic_name>{EPIC_NAME}</epic_name>
+    <validation_criteria>
+      - Technical completeness: All technical requirements are specified
+      - Implementation clarity: Developer can implement without ambiguity
+      - Dependency identification: All dependencies clearly stated
+      - Sizing appropriateness: Can be completed within 1-2 sprints
+      - Testability: Clear acceptance criteria that can be tested
+    </validation_criteria>
   </input>
 
   <output_format>

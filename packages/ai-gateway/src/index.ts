@@ -9,15 +9,15 @@ import {
 	overrideWithPortkey,
 } from "./configs/config-manager";
 import type { Config } from "./configs/types";
-import { createGatewayClient } from "./enhanced-gateway-client";
+import { _createGatewayClient } from "./enhanced-gateway-client";
 import { PromptManager } from "./prompts/prompt-manager";
 import { initializeAiGatewayDatabase } from "./utils/db-init";
 import { getSupabaseClient } from "./utils/supabase-client";
 import {
-	calculateCost,
-	checkUsageLimits,
+	_calculateCost,
+	_checkUsageLimits,
+	_extractCostFromHeaders,
 	estimateCost,
-	extractCostFromHeaders,
 	recordApiUsage,
 } from "./utils/usage-tracking";
 
@@ -93,7 +93,7 @@ async function checkUserLimits(
 
 		// Try with regular client first
 		try {
-			const limitExceeded = await checkUsageLimits(supabase, userId, teamId);
+			const limitExceeded = await _checkUsageLimits(supabase, userId, teamId);
 			if (limitExceeded) {
 				(await getLogger()).info("AI usage limit exceeded for user/team:", {
 					userId,
@@ -119,7 +119,7 @@ async function checkUserLimits(
 				try {
 					// Get admin client for privileged operations
 					const adminClient = await getSupabaseClient({ admin: true });
-					return await checkUsageLimits(adminClient, userId, teamId);
+					return await _checkUsageLimits(adminClient, userId, teamId);
 				} catch (adminClientError) {
 					(await getLogger()).error(
 						"Error checking usage limits with admin client:",
@@ -252,7 +252,7 @@ export async function getChatCompletion(
 		}
 
 		// Create client with tracking metadata, config, and model info
-		const client = createGatewayClient({
+		const client = await _createGatewayClient({
 			userId,
 			teamId,
 			feature,
@@ -324,7 +324,7 @@ export async function getChatCompletion(
 		}
 
 		// Proceed with normal extraction
-		let cost = extractCostFromHeaders(headers);
+		let cost = await _extractCostFromHeaders(headers);
 
 		// Log the result of extraction
 		(await getLogger()).info("Cost extraction result:", {
@@ -347,7 +347,7 @@ export async function getChatCompletion(
 			if (cost === 0) {
 				try {
 					// Calculate cost based on token usage and model pricing
-					cost = await calculateCost(
+					cost = await _calculateCost(
 						supabase,
 						"openai", // For now, assume OpenAI. Could be extracted from headers in future
 						model,
@@ -396,7 +396,7 @@ export async function getChatCompletion(
 						bypassCredits: bypassCreditsFlag, // Use environment variable instead of hardcoding
 					});
 				} catch (usageError) {
-					(await _getLogger()).error("Error recording API usage:", {
+					(await getLogger()).error("Error recording API usage:", {
 						data: usageError,
 					});
 					// Continue without failing - usage tracking is secondary to the main functionality
@@ -506,7 +506,7 @@ export async function* getStreamingChatCompletion(
 		}
 
 		// Create client with tracking metadata, config, and model info
-		const client = createGatewayClient({
+		const client = await _createGatewayClient({
 			userId,
 			teamId,
 			feature,
@@ -540,89 +540,32 @@ export async function* getStreamingChatCompletion(
 		let completionTokens = 0;
 		let responseId = "";
 
-		// Try to extract and log any headers from the streaming response
-		try {
-			// @ts-ignore - Access the headers property if available
-			if (stream.headers) {
-				(await getLogger()).info("Streaming response headers:", {
-					data: {
-						headers:
-							typeof stream.headers === "object"
-								? JSON.stringify(stream.headers)
-								: "Headers not available as an object",
-						hasHeaders:
-							stream.headers && Object.keys(stream.headers).length > 0,
-					},
-				});
-			} else {
-				(await getLogger()).info("No headers available in streaming response");
-			}
-		} catch (headerError) {
-			(await getLogger()).error(
-				"Error accessing headers in streaming response:",
-				{ error: headerError },
-			);
-		}
+		// Note: Headers are not available on AsyncIterable streams
+		(await getLogger()).info(
+			"Streaming response initiated - headers not available on AsyncIterable",
+		);
 
 		// Process the stream - use a try catch to handle any streaming errors
 		try {
 			// Handle both types of streaming responses from OpenAI
-			if (typeof stream[Symbol.asyncIterator] === "function") {
-				// Standard async iterator
-				for await (const chunk of stream) {
-					// Extract usage information when available
-					if (chunk.usage) {
-						promptTokens = chunk.usage.prompt_tokens;
-						completionTokens = chunk.usage.completion_tokens;
-					}
-
-					// Try to get request ID
-					if (!responseId && chunk.id) {
-						responseId = chunk.id;
-					}
-
-					// Yield the delta content
-					const content = chunk.choices?.[0]?.delta?.content;
-					if (content) {
-						yield content;
-					}
+			// Process the async iterable stream
+			for await (const chunk of stream) {
+				// Extract usage information when available
+				if (chunk.usage) {
+					promptTokens = chunk.usage.prompt_tokens ?? 0;
+					completionTokens = chunk.usage.completion_tokens ?? 0;
 				}
-			} else if (stream.toReadableStream) {
-				// Legacy streaming with ReadableStream
-				const reader = stream.toReadableStream().getReader();
-				try {
-					while (true) {
-						const { done, value } = await reader.read();
-						if (done) break;
 
-						const chunk = JSON.parse(new TextDecoder().decode(value));
-
-						// Extract usage information when available
-						if (chunk.usage) {
-							promptTokens = chunk.usage.prompt_tokens;
-							completionTokens = chunk.usage.completion_tokens;
-						}
-
-						// Try to get request ID
-						if (!responseId && chunk.id) {
-							responseId = chunk.id;
-						}
-
-						// Yield the delta content
-						const content = chunk.choices?.[0]?.delta?.content;
-						if (content) {
-							yield content;
-						}
-					}
-				} finally {
-					reader.releaseLock();
+				// Try to get request ID
+				if (!responseId && chunk.id) {
+					responseId = chunk.id;
 				}
-			} else {
-				// Fallback for unknown streaming format
-				(await getLogger()).warn("Unknown streaming format", {
-					data: "unable to process stream",
-				});
-				yield "Unable to process stream response";
+
+				// Yield the delta content
+				const content = chunk.choices?.[0]?.delta?.content;
+				if (content) {
+					yield content;
+				}
 			}
 		} catch (streamError) {
 			(await getLogger()).error("Error processing stream:", {
@@ -642,7 +585,7 @@ export async function* getStreamingChatCompletion(
 				// Calculate cost based on token usage with proper parameters
 				let cost: number;
 				try {
-					cost = await calculateCost(
+					cost = await _calculateCost(
 						supabase,
 						"openai",
 						model,
@@ -690,7 +633,7 @@ export async function* getStreamingChatCompletion(
 					bypassCredits: bypassCreditsFlag, // Use environment variable instead of hardcoding
 				});
 			} catch (error) {
-				(await _getLogger()).error("Error recording usage data:", {
+				(await getLogger()).error("Error recording usage data:", {
 					data: error,
 				});
 				// Continue without failing the response delivery

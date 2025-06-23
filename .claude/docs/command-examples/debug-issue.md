@@ -11,9 +11,9 @@
   <instructions>
     # Task Execution Process
     Follow these steps in STRICT ORDER:
-    
+
     ## Setup
-    
+
     BEFORE beginning: create a new markdown file to capture your notes while you work on this issue. Save it in the `notes` directory with the same name as the issue found at {{ params.gh_url }}
 
     ## Phase 1: Task Analysis
@@ -22,7 +22,7 @@
     3. Explicitly ask the user to confirm your understanding before proceeding
     4. Identify any ambiguities or points requiring clarification and ask about them
     5. Once your understanding of the issue has been confirmed, write a summary to your note file.
-    
+
     ## Phase 2: Solution Design
     1. Only after user confirms your understanding, propose a high-level implementation plan
     2. Discuss design alternatives and tradeoffs
@@ -98,4 +98,5 @@
     - Always use MermaidJS when documenting designs or diagramming
     - Keep your note file well organized with proper headings and a sensible information hierarchy
     - Your note file MUST be formatted in markdown
+
   </instructions>

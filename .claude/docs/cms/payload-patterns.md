@@ -157,10 +157,10 @@ export const Users: CollectionConfig = {
               displayName: data.email.split('@')[0],
             },
           });
-          
+
           return data;
         }
-        
+
         return data;
       },
     ],
@@ -190,6 +190,7 @@ Implement granular access control:
 
 ```tsx
 import { CollectionConfig } from 'payload/types';
+
 import { checkRole } from '../access/checkRole';
 
 export const Products: CollectionConfig = {
@@ -227,7 +228,7 @@ export const Pages: CollectionConfig = {
   access: {
     read: ({ req: { user } }) => {
       if (user) return true;
-      
+
       // Public can only see published
       return {
         _status: {

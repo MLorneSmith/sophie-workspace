@@ -16,7 +16,7 @@ import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
+import { toast } from "@kit/ui/sonner";
 
 import { TeamNameFormSchema } from "../../schema/update-team-name.schema";
 import { updateTeamAccountName } from "../../server/actions/team-details-server-actions";
@@ -56,7 +56,7 @@ export const UpdateTeamAccountNameForm = (props: {
 									path: props.path,
 								});
 
-								if (_result._success) {
+								if (_result.success) {
 									toast.success(t("updateTeamSuccessMessage"), {
 										id: toastId,
 									});

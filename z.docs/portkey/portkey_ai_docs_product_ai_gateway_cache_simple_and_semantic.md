@@ -25,11 +25,11 @@ Speed up and save money on your LLM requests by storing past responses in the Po
 
 Portkey cache serves requests upto **20x times faster** and **cheaper**.
 
-## [​](https://portkey.ai/docs/product/ai-gateway/cache-simple-and-semantic\#enable-cache-in-the-config)  Enable Cache in the Config
+## [​](https://portkey.ai/docs/product/ai-gateway/cache-simple-and-semantic#enable-cache-in-the-config) Enable Cache in the Config
 
 To enable Portkey cache, just add the `cache` params to your [config object](https://portkey.ai/docs/api-reference/config-object#cache-object-details).
 
-## [​](https://portkey.ai/docs/product/ai-gateway/cache-simple-and-semantic\#simple-cache)  Simple Cache
+## [​](https://portkey.ai/docs/product/ai-gateway/cache-simple-and-semantic#simple-cache) Simple Cache
 
 Copy
 
@@ -38,13 +38,13 @@ Copy
 
 ```
 
-### [​](https://portkey.ai/docs/product/ai-gateway/cache-simple-and-semantic\#how-it-works)  How it Works
+### [​](https://portkey.ai/docs/product/ai-gateway/cache-simple-and-semantic#how-it-works) How it Works
 
 Simple cache performs an exact match on the input prompts. If the exact same request is received again, Portkey retrieves the response directly from the cache, bypassing the model execution.
 
-* * *
+---
 
-## [​](https://portkey.ai/docs/product/ai-gateway/cache-simple-and-semantic\#semantic-cache)  Semantic Cache
+## [​](https://portkey.ai/docs/product/ai-gateway/cache-simple-and-semantic#semantic-cache) Semantic Cache
 
 Copy
 
@@ -53,7 +53,7 @@ Copy
 
 ```
 
-### [​](https://portkey.ai/docs/product/ai-gateway/cache-simple-and-semantic\#how-it-works-2)  How it Works
+### [​](https://portkey.ai/docs/product/ai-gateway/cache-simple-and-semantic#how-it-works-2) How it Works
 
 Semantic cache considers the contextual similarity between input requests. It uses cosine similarity to ascertain if the similarity between the input and a cached request exceeds a specific threshold. If the similarity threshold is met, Portkey retrieves the response from the cache, saving model execution time. Check out this [blog](https://portkey.ai/blog/reducing-llm-costs-and-latency-semantic-cache/) for more details on how we do this.
 
@@ -61,7 +61,7 @@ Semantic cache is a “superset” of both caches. Setting cache mode to “sema
 
 To optimise for accurate cache hit rates, Semantic cache only works with requests with less than 8,191 input tokens, and with number of messages (human, assistant, system combined) less than or equal to 4.
 
-### [​](https://portkey.ai/docs/product/ai-gateway/cache-simple-and-semantic\#ignoring-the-first-message-in-semantic-cache)  Ignoring the First Message in Semantic Cache
+### [​](https://portkey.ai/docs/product/ai-gateway/cache-simple-and-semantic#ignoring-the-first-message-in-semantic-cache) Ignoring the First Message in Semantic Cache
 
 When using the `/chat/completions` endpoint, Portkey requires at least **two** message objects in the `messages` array. The first message object, typically used for the `system` message, is not considered when determining semantic similarity for caching purposes.
 
@@ -83,11 +83,11 @@ This means that even if you change the `system` message while keeping the `user`
 
 This allows you to modify the behavior or context of the assistant without affecting the cache hits for similar user queries.
 
-### [​](https://portkey.ai/docs/product/ai-gateway/cache-simple-and-semantic\#read-more-how-to-set-cache-in-configs)  [Read more how to set cache in Configs](https://portkey.ai/docs/product/ai-gateway/cache-simple-and-semantic\#how-cache-works-with-configs).
+### [​](https://portkey.ai/docs/product/ai-gateway/cache-simple-and-semantic#read-more-how-to-set-cache-in-configs) [Read more how to set cache in Configs](https://portkey.ai/docs/product/ai-gateway/cache-simple-and-semantic#how-cache-works-with-configs)
 
-* * *
+---
 
-## [​](https://portkey.ai/docs/product/ai-gateway/cache-simple-and-semantic\#setting-cache-age)  Setting Cache Age
+## [​](https://portkey.ai/docs/product/ai-gateway/cache-simple-and-semantic#setting-cache-age) Setting Cache Age
 
 You can set the age (or “ttl”) of your cached response with this setting. Cache age is also set in your Config object:
 
@@ -107,9 +107,9 @@ In this example, your cache will automatically expire after 60 seconds. Cache ag
 - **Maximum** cache age is **90 days** (i.e. **7776000** seconds)
 - **Default** cache age is **7 days** (i.e. **604800** seconds)
 
-* * *
+---
 
-## [​](https://portkey.ai/docs/product/ai-gateway/cache-simple-and-semantic\#force-refresh-cache)  Force Refresh Cache
+## [​](https://portkey.ai/docs/product/ai-gateway/cache-simple-and-semantic#force-refresh-cache) Force Refresh Cache
 
 Ensure that a new response is fetched and stored in the cache even when there is an existing cached response for your request. Cache force refresh can only be done **at the time of making a request**, and it is **not a part of your Config**.
 
@@ -144,15 +144,15 @@ curl https://api.portkey.ai/v1/chat/completions \
 - Cache force refresh is only activated if a cache config is **also passed** along with your request. (setting `cacheForceRefresh` as `true` without passing the relevant cache config will not have any effect)
 - For requests that have previous semantic hits, force refresh is performed on ALL the semantic matches of your request.
 
-* * *
+---
 
-## [​](https://portkey.ai/docs/product/ai-gateway/cache-simple-and-semantic\#cache-namespace-simplified-cache-partitioning)  Cache Namespace: Simplified Cache Partitioning
+## [​](https://portkey.ai/docs/product/ai-gateway/cache-simple-and-semantic#cache-namespace-simplified-cache-partitioning) Cache Namespace: Simplified Cache Partitioning
 
 Portkey generally partitions the cache along all the values passed in your request header. With a custom cache namespace, you can now ignore metadata and other headers, and only partition the cache based on the custom strings that you send.
 
 This allows you to have finer control over your cached data and optimize your cache hit ratio.
 
-### [​](https://portkey.ai/docs/product/ai-gateway/cache-simple-and-semantic\#how-it-works-3)  How It Works
+### [​](https://portkey.ai/docs/product/ai-gateway/cache-simple-and-semantic#how-it-works-3) How It Works
 
 To use Cache Namespaces, simply include the `x-portkey-cache-namespace` header in your API requests, followed by any custom string value. Portkey will then use this namespace string as the sole basis for partitioning the cache, disregarding all other headers, including metadata.
 
@@ -197,9 +197,9 @@ main()
 
 In this example, the response will be cached under the namespace `user-123`, ignoring any other headers or metadata.
 
-* * *
+---
 
-## [​](https://portkey.ai/docs/product/ai-gateway/cache-simple-and-semantic\#cache-in-analytics)  Cache in Analytics
+## [​](https://portkey.ai/docs/product/ai-gateway/cache-simple-and-semantic#cache-in-analytics) Cache in Analytics
 
 Portkey shows you powerful stats on cache usage on the Analytics page. Just head over to the Cache tab, and you will see:
 
@@ -207,7 +207,7 @@ Portkey shows you powerful stats on cache usage on the Analytics page. Just head
 - Your average latency for delivering results from cache and how much time it saves you
 - How much money the cache saves you
 
-## [​](https://portkey.ai/docs/product/ai-gateway/cache-simple-and-semantic\#cache-in-logs)  Cache in Logs
+## [​](https://portkey.ai/docs/product/ai-gateway/cache-simple-and-semantic#cache-in-logs) Cache in Logs
 
 On the Logs page, the cache status is updated on the Status column. You will see `Cache Disabled` when you are not using the cache, and any of `Cache Miss`, `Cache Refreshed`, `Cache Hit`, `Cache Semantic Hit` based on the cache hit status. Read more [here](https://portkey.ai/docs/product/observability/logs).
 
@@ -215,9 +215,9 @@ On the Logs page, the cache status is updated on the Status column. You will see
 
 For each request we also calculate and show the cache response time and how much money you saved with each hit.
 
-* * *
+---
 
-## [​](https://portkey.ai/docs/product/ai-gateway/cache-simple-and-semantic\#how-cache-works-with-configs)  How Cache works with Configs
+## [​](https://portkey.ai/docs/product/ai-gateway/cache-simple-and-semantic#how-cache-works-with-configs) How Cache works with Configs
 
 You can set cache at two levels:
 

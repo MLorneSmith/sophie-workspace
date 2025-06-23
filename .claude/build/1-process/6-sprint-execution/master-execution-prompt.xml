@@ -1,4 +1,38 @@
 <prompt>
+  <metadata>
+    <orchestrator>Builder Agent</orchestrator>
+    <participating_agents>
+      <agent>Reviewer</agent>
+      <agent>Fixer</agent>
+      <agent>Critic</agent>
+    </participating_agents>
+    <phase>6-sprint-execution-master</phase>
+  </metadata>
+  
+  <agent_orchestration>
+    <builder>
+      <role>Lead orchestrator for story execution</role>
+      <responsibilities>
+        - GitHub tracking and branch management
+        - TDD implementation coordination
+        - Claude Code session management
+        - Progress tracking and reporting
+      </responsibilities>
+    </builder>
+    <reviewer>
+      <role>Continuous quality monitoring</role>
+      <trigger>After each significant code change</trigger>
+    </reviewer>
+    <fixer>
+      <role>Issue resolution</role>
+      <trigger>When Reviewer identifies problems</trigger>
+    </fixer>
+    <critic>
+      <role>Final validation</role>
+      <trigger>Before story completion</trigger>
+    </critic>
+  </agent_orchestration>
+  
   <task>
     Execute a complete story implementation workflow from start to finish, orchestrating GitHub tracking, TDD implementation, and quality assurance through integrated prompts and automated workflows.
   </task>
@@ -14,10 +48,11 @@
   <context_loading>
     <instructions>
       Load these contexts at the start of execution:
+      - Read: .claude/build/4-output/{epic-name}/5-sprints/sprint-{number}.md - Sprint plan and story priorities
       - Read: CLAUDE.md - Project standards and conventions
-      - Read: .claude/contexts/story-{story_id}/context.md - Story requirements
-      - Read: .claude/contexts/story-{story_id}/technical-notes.md - Technical approach
-      - Read: .claude/contexts/story-{story_id}/progress.md - Current progress
+      - Read: .claude/build/4-output/contexts/stories/story-{story_id}/context.md - Story requirements
+      - Read: .claude/build/4-output/contexts/stories/story-{story_id}/technical-notes.md - Technical approach
+      - Read: .claude/build/4-output/contexts/stories/story-{story_id}/progress.md - Current progress
       - Read: .claude/docs/.context-docs-inventory.xml - Available documentation
       
       Based on story type, load additional context:
@@ -27,6 +62,64 @@
       - For testing: Read testing/context/test-driven-development.md
     </instructions>
   </context_loading>
+  
+  <available_tools>
+    <description>
+      You have access to the following tools for orchestrating story execution. Tool mappings are defined in .claude/tools/tool-mappings.xml and full documentation is in .claude/tools/available-tools.xml
+    </description>
+    
+    <!-- Claude Native Tools -->
+    <tool_group name="Claude Native Tools">
+      <tool name="Read" description="Read all story context and code"/>
+      <tool name="Write" description="Create new files following TDD"/>
+      <tool name="Edit" description="Modify existing code"/>
+      <tool name="MultiEdit" description="Batch code changes"/>
+      <tool name="Bash" description="Execute commands (git, tests, gh CLI)"/>
+      <tool name="Grep" description="Search codebase for patterns"/>
+      <tool name="Glob" description="Find files by pattern"/>
+      <tool name="TodoWrite" description="Track execution progress"/>
+      <tool name="TodoRead" description="Check current tasks"/>
+      <tool name="Task" description="Complex multi-file operations"/>
+    </tool_group>
+    
+    <!-- MCP Tools for Orchestration -->
+    <tool_group name="MCP Tools">
+      <tool name="github_mcp" description="GitHub operations">
+        <functions>create_branch, push_files, create_pull_request, update_issue</functions>
+        <usage>Full GitHub workflow management</usage>
+      </tool>
+      <tool name="postgres_mcp" description="Local database">
+        <functions>pg_execute_query, pg_manage_schema, pg_manage_rls, pg_manage_functions</functions>
+        <usage>Complete local database development</usage>
+      </tool>
+      <tool name="supabase_mcp" description="Remote deployment">
+        <functions>apply_migration, deploy_edge_function, get_logs, get_advisors</functions>
+        <usage>Deploy to staging/production</usage>
+      </tool>
+      <tool name="browser_tools_mcp" description="UI testing suite">
+        <functions>All browser automation and audit functions</functions>
+        <usage>Comprehensive UI testing and validation</usage>
+      </tool>
+      <tool name="newrelic_mcp" description="Monitoring">
+        <functions>query_newrelic_logs, get_error_traces, get_transaction_traces</functions>
+        <usage>Performance monitoring and debugging</usage>
+      </tool>
+      <tool name="code_reasoning_mcp" description="Complex problem solving">
+        <functions>code-reasoning</functions>
+        <usage>Break down complex implementation challenges</usage>
+      </tool>
+    </tool_group>
+    
+    <orchestration_guidelines>
+      - Use TodoWrite to create detailed task breakdown at start
+      - Use github_mcp for all version control operations
+      - Run tests with Bash after EVERY code change
+      - Use browser_tools_mcp for UI component validation
+      - Use postgres_mcp for LOCAL testing, supabase_mcp for REMOTE
+      - Use code_reasoning_mcp when facing complex problems
+      - Update GitHub issue status throughout execution
+    </orchestration_guidelines>
+  </available_tools>
   
   <workflow_phases>
     <phase number="1" name="initialization">
@@ -73,6 +166,7 @@
         <step name="prepare_context">
           <description>Load all necessary context for implementation</description>
           <actions>
+            - Review sprint plan for story priorities and dependencies
             - Review story acceptance criteria
             - Identify technical tasks to implement
             - Study similar implementations in codebase
@@ -328,26 +422,206 @@
       </steps>
     </phase>
     
-    <phase number="4" name="pull_request_creation">
-      <title>Create and Submit PR</title>
+    <phase number="4" name="story_completion">
+      <title>Story Completion and Handoff</title>
       <description>
-        Create pull request with comprehensive description and link to story
+        Complete story implementation with comprehensive handoff documentation
       </description>
       
       <steps>
-        <step name="commit_changes">
-          <description>Commit all changes with descriptive message</description>
+        <step name="complete_implementation">
+          <description>Ensure all acceptance criteria met and code ready</description>
+          <checklist>
+            <![CDATA[
+            Implementation Completion:
+            - [ ] All acceptance criteria implemented and tested
+            - [ ] All technical tasks completed
+            - [ ] No console.log statements remaining
+            - [ ] All tests passing (unit + integration)
+            - [ ] TypeScript compilation clean
+            - [ ] Linting passes
+            - [ ] Performance acceptable
+            - [ ] Accessibility standards met
+            
+            Cross-cutting Impact Assessment:
+            - [ ] Shared components documented
+            - [ ] API changes documented
+            - [ ] Database changes applied and tested
+            - [ ] No breaking changes to other stories
+            - [ ] Dependencies coordination updated
+            ]]>
+          </checklist>
+        </step>
+        
+        <step name="create_story_handoff">
+          <description>Document story completion for future reference</description>
+          <file_creation>
+            <![CDATA[
+            # Create .claude/build/4-output/contexts/stories/story-{story_id}/completion-handoff.md
+            
+            # Story Completion Handoff: {Story Title}
+            
+            ## Implementation Summary
+            - **Completed**: {Date}
+            - **Developer**: {Session identifier}
+            - **Total Sessions**: {Number}
+            - **Story Points**: {Original estimate}
+            - **Actual Effort**: {Hours/sessions spent}
+            
+            ## Delivered Features
+            ### User-Facing Functionality
+            - {Feature 1}: {Description of what user can now do}
+            - {Feature 2}: {Description of what user can now do}
+            
+            ### Technical Implementation
+            - {Component 1}: {Purpose and key functionality}
+            - {Component 2}: {Purpose and key functionality}
+            
+            ## Code Changes
+            ### New Files Created
+            - `{path}` - {Purpose and main exports}
+            - `{path}` - {Purpose and main exports}
+            
+            ### Modified Files
+            - `{path}` - {What was changed and why}
+            - `{path}` - {What was changed and why}
+            
+            ### Test Coverage
+            - `{test-file}` - {What scenarios are tested}
+            - Coverage: {X}% lines, {Y}% branches
+            
+            ## Patterns and Reusables
+            ### Established Patterns
+            - **{Pattern Name}**: {Location} - {When to reuse}
+            - **{Utility Name}**: {Location} - {What it does}
+            
+            ### Components for Reuse
+            - **{Component}**: {Props interface, usage example}
+            - **{Hook/Action}**: {Input/output, when to use}
+            
+            ## Integration Points
+            ### Database Impact
+            - **Schema Changes**: {What was added/modified}
+            - **New Queries**: {Query patterns established}
+            - **RLS Policies**: {Security rules added}
+            
+            ### API Impact
+            - **New Endpoints**: {Server actions or API routes}
+            - **Modified Interfaces**: {Type changes that affect other code}
+            - **Breaking Changes**: {None expected, or details if any}
+            
+            ### Component Dependencies
+            - **Uses**: {Shared components this story depends on}
+            - **Provides**: {Shared components this story creates/modifies}
+            - **Affects**: {Components that might need updates}
+            
+            ## For Next Stories
+            ### Ready Dependencies
+            - **{Component/Feature}**: Available for use in stories {list}
+            - **{API/Service}**: Ready for integration
+            
+            ### Coordination Needed
+            - **{Shared File}**: Coordinate changes with story #{id}
+            - **{Database Table}**: Migration sequence important
+            
+            ### Known Limitations
+            - **{Limitation}**: {Description and planned resolution}
+            - **{Technical Debt}**: {What needs improvement later}
+            
+            ## Quality Metrics
+            - **Test Coverage**: {X}% 
+            - **Performance**: {Load time, bundle size impact}
+            - **Accessibility**: {WCAG compliance level}
+            - **Security**: {Validation coverage, RLS compliance}
+            
+            ## Documentation Updates
+            - **Code Comments**: {JSDoc coverage}
+            - **API Documentation**: {Interfaces documented}
+            - **User Documentation**: {If user-facing changes}
+            ]]>
+          </file_creation>
+          <actions>
+            - Use template from .claude/templates/story-completion-handoff.md
+            - Document all implementation details and cross-story impacts
+            - Identify reusable patterns and components for future stories
+            - Note any coordination needs for remaining sprint work
+          </actions>
+        </step>
+        
+        <step name="update_sprint_coordination">
+          <description>Update sprint-level coordination for remaining stories</description>
+          <coordination_update>
+            <![CDATA[
+            # Update .claude/build/4-output/contexts/dependencies/sprint-{sprint_number}-coordination.md
+            
+            ## Story #{story_id} Completion Impact
+            
+            ### Now Available for Other Stories
+            - **{Component/Service}**: Stories #{list} can now use this
+            - **{Pattern/Utility}**: Available for reuse
+            - **{Database Schema}**: Migration applied, safe to use
+            
+            ### Updated Dependencies
+            - Stories #{list}: No longer blocked by this story
+            - Stories #{list}: Can now proceed with integration
+            
+            ### File Coordination Updates
+            - `{shared-file}`: Now stable, safe for other stories to modify
+            - `{component-file}`: Interface established, coordinate changes
+            
+            ### Next Recommended Story
+            Based on dependencies: Story #{id} - {title}
+            Reasoning: {Why this sequence makes sense}
+            ]]>
+          </coordination_update>
+          <actions>
+            - Update sprint coordination file with completion status
+            - Unlock dependent stories for implementation
+            - Document shared component availability
+            - Recommend next story sequence based on dependencies
+          </actions>
+        </step>
+        
+        <step name="commit_and_pr">
+          <description>Create final commit and pull request</description>
+          <commit_template>
+            <![CDATA[
+            feat: {story title}
+            
+            Implements story #{story-number}:
+            - {Key change 1}
+            - {Key change 2}
+            - {Key change 3}
+            
+            Technical details:
+            - Added {X} new components
+            - {Y}% test coverage
+            - No breaking changes
+            
+            Ready for: {Next story dependencies unlocked}
+            
+            Closes #{story-number}
+            ]]>
+          </commit_template>
           <commands>
             <![CDATA[
             # Stage all changes
             git add .
             
-            # Commit with conventional commit message
+            # Commit with detailed message
             git commit -m "feat: {STORY_TITLE}
 
-            - {CHANGE_1}
-            - {CHANGE_2}
-            - {CHANGE_3}
+            Implements story #{STORY_NUMBER}:
+            - {KEY_CHANGE_1}
+            - {KEY_CHANGE_2}
+            - {KEY_CHANGE_3}
+            
+            Technical details:
+            - Added {X} new components
+            - {Y}% test coverage
+            - No breaking changes
+            
+            Ready for: {NEXT_STORY_DEPENDENCIES_UNLOCKED}
             
             Closes #{STORY_NUMBER}"
             ]]>
@@ -373,10 +647,23 @@
             - {DETAILED_CHANGE_2}
             - {DETAILED_CHANGE_3}
             
+            ## Cross-Story Impact
+            - **Components Available**: {New components ready for other stories}
+            - **API Changes**: {New interfaces or breaking changes}
+            - **Dependencies Unlocked**: Stories #{list} can now proceed
+            - **Coordination Notes**: {Any coordination needed with other stories}
+            
             ## Testing
             - ✅ All unit tests passing
             - ✅ Integration tests added
             - ✅ Manual testing completed
+            - ✅ Cross-story integration verified
+            
+            ## Quality Metrics
+            - **Test Coverage**: {X}%
+            - **Performance**: {Impact assessment}
+            - **Bundle Size**: {Impact if applicable}
+            - **Accessibility**: WCAG 2.1 AA compliant
             
             ## Checklist
             - [x] Tests written and passing
@@ -386,6 +673,13 @@
             - [x] Security standards followed (RLS, validation)
             - [x] Performance acceptable
             - [x] Accessibility standards met (WCAG 2.1 AA)
+            - [x] Story completion handoff documented
+            - [x] Sprint coordination updated
+            
+            ## Next Steps
+            - **Ready for Review**: Code review and approval
+            - **Dependent Stories**: {Stories that can now begin implementation}
+            - **Integration Testing**: {Cross-story tests to run after merge}
             
             ## Screenshots (if applicable)
             {ADD_SCREENSHOTS_IF_UI_CHANGES}" \
@@ -459,7 +753,7 @@
           <description>Capture learnings for future reference</description>
           <documentation>
             <![CDATA[
-            # Add to .claude/contexts/story-{story_id}/retrospective.md
+            # Add to .claude/build/4-output/contexts/stories/story-{story_id}/retrospective.md
             
             ## What Went Well
             - {POSITIVE_1}
@@ -518,6 +812,8 @@
   </error_handling>
   
   <input>
+    <epic_name>{EPIC_NAME}</epic_name>
+    <sprint_number>{SPRINT_NUMBER}</sprint_number>
     <story_number>{STORY_NUMBER}</story_number>
     <story_title>{STORY_TITLE}</story_title>
     <story_id>{STORY_ID}</story_id>
@@ -572,6 +868,65 @@
       </time_tracking>
     </execution_summary>
   </output_format>
+  
+  <agent_workflow>
+    <pattern name="orchestrated_story_execution">
+      <phase name="initialization">
+        <agent>Builder Agent</agent>
+        <action>Setup GitHub tracking and branches</action>
+        <output>Story ready for implementation</output>
+      </phase>
+      
+      <phase name="implementation" type="iterative">
+        <step order="1">
+          <agent>Builder Agent</agent>
+          <action>Implement feature with TDD</action>
+          <output>Code and tests</output>
+        </step>
+        <step order="2" type="continuous">
+          <agent>Reviewer Agent</agent>
+          <action>Review implementation</action>
+          <output>Quality assessment</output>
+        </step>
+        <step order="3" type="conditional">
+          <agent>Fixer Agent</agent>
+          <condition>Issues identified by Reviewer</condition>
+          <action>Fix identified issues</action>
+          <output>Resolved problems</output>
+        </step>
+      </phase>
+      
+      <phase name="completion">
+        <step order="1">
+          <agent>Critic Agent</agent>
+          <action>Final quality validation</action>
+          <output>Completion approval</output>
+        </step>
+        <step order="2">
+          <agent>Builder Agent</agent>
+          <action>Create PR and update tracking</action>
+          <output>Story completed</output>
+        </step>
+      </phase>
+    </pattern>
+  </agent_workflow>
+  
+  <quality_gates>
+    <gate phase="initialization">
+      <validator>Builder Agent</validator>
+      <criteria>Context loaded, branch created, tracking updated</criteria>
+    </gate>
+    
+    <gate phase="implementation" type="continuous">
+      <validator>Reviewer Agent</validator>
+      <criteria>No critical issues, follows standards</criteria>
+    </gate>
+    
+    <gate phase="completion">
+      <validator>Critic Agent</validator>
+      <criteria>All acceptance criteria met, quality standards passed</criteria>
+    </gate>
+  </quality_gates>
   
   <usage_notes>
     <note priority="high">

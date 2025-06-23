@@ -4,8 +4,25 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { StoryboardData } from "../../types";
-import { LAYOUT_POSITIONS, PptxGenerator } from "./pptx-generator";
+
+// Mock Logger - must be before other imports
+const mockLoggerInstance = {
+	info: vi.fn(),
+	error: vi.fn(),
+	warn: vi.fn(),
+	debug: vi.fn(),
+	fatal: vi.fn(),
+};
+
+vi.mock("@kit/shared/logger", () => ({
+	getLogger: vi.fn(() => Promise.resolve(mockLoggerInstance)),
+	createServiceLogger: vi.fn(() => ({
+		getLogger: vi.fn(() => mockLoggerInstance),
+	})),
+	createEnhancedLogger: vi.fn(() => mockLoggerInstance),
+	createEnvironmentLogger: vi.fn(() => mockLoggerInstance),
+	Logger: vi.fn(),
+}));
 
 // Mock PptxGenJS library
 const mockSlide = {
@@ -38,18 +55,8 @@ vi.mock("pptxgenjs", () => ({
 	default: vi.fn(() => mockPptxGen),
 }));
 
-// Mock Logger
-const mockLoggerInstance = {
-	info: vi.fn(),
-	error: vi.fn(),
-	warn: vi.fn(),
-	debug: vi.fn(),
-	fatal: vi.fn(),
-};
-
-vi.mock("@kit/shared/logger", () => ({
-	getLogger: vi.fn(() => Promise.resolve(mockLoggerInstance)),
-}));
+import type { StoryboardData } from "../../types";
+import { LAYOUT_POSITIONS, PptxGenerator } from "./pptx-generator";
 
 describe("PptxGenerator", () => {
 	let generator: PptxGenerator;
@@ -565,7 +572,15 @@ describe("PptxGenerator", () => {
 									id: "1",
 									area: "content1",
 									type: "chart",
-									chartType: chartType as unknown,
+									chartType: chartType as
+										| "bar"
+										| "line"
+										| "pie"
+										| "area"
+										| "scatter"
+										| "bubble"
+										| "radar"
+										| "doughnut",
 									chartData: { title: "Test" },
 									columnIndex: 0,
 								},
@@ -600,7 +615,7 @@ describe("PptxGenerator", () => {
 								id: "1",
 								area: "content1",
 								type: "chart",
-								chartType: "unknown" as unknown,
+								chartType: "bar" as const,
 								chartData: { title: "Test" },
 								columnIndex: 0,
 							},

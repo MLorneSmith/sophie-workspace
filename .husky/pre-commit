@@ -1,72 +1,10 @@
 #!/bin/bash
-# Husky pre-commit hook for SlideHeroes
+# Optimized Husky pre-commit hook for SlideHeroes
 
-echo "🔍 Starting pre-commit checks..."
+echo "🚀 Starting optimized pre-commit checks..."
 
-# Get staged files
-staged_files=$(git diff --cached --name-only)
-
-# Process files based on location
-has_biome_files=false
-has_payload_files=false
-has_package_files=false
-has_md_files=false
-
-# Check each staged file and process accordingly
-for file in $staged_files; do
-  # Skip deleted files
-  if [ ! -f "$file" ]; then
-    continue
-  fi
-  
-  # Determine which linter to use based on file location and type
-  if echo "$file" | grep -qE '\.(js|jsx|ts|tsx|json|css|yaml|yml)$'; then
-    if echo "$file" | grep -qE '^apps/payload/'; then
-      # Payload CMS files - use ESLint
-      if ! $has_payload_files; then
-        echo "🔧 Processing Payload CMS files with ESLint..."
-        has_payload_files=true
-      fi
-      (cd apps/payload && pnpm lint --fix "$file" 2>/dev/null || true)
-    elif echo "$file" | grep -qE '^packages/'; then
-      # Package files - use ESLint selectively
-      if ! $has_package_files; then
-        echo "📦 Processing package files with ESLint..."
-        has_package_files=true
-      fi
-      package_dir=$(echo "$file" | cut -d/ -f1-2)
-      if [ -f "$package_dir/package.json" ] && grep -q '"lint"' "$package_dir/package.json"; then
-        (cd "$package_dir" && pnpm lint --fix || true) 2>/dev/null
-      fi
-    else
-      # Main app and root files - use Biome
-      if ! $has_biome_files; then
-        echo "🎨 Processing main app files with Biome..."
-        has_biome_files=true
-      fi
-      biome format --write "$file" 2>/dev/null || true
-      biome lint --write "$file" 2>/dev/null || true
-    fi
-  elif echo "$file" | grep -qE '\.(md|mdx)$'; then
-    # Markdown files - use Prettier
-    if ! $has_md_files; then
-      echo "📝 Processing markdown files with Prettier..."
-      has_md_files=true
-    fi
-    prettier --write "$file" 2>/dev/null || true
-  fi
-done
-
-# Quick type check only if TypeScript files are staged
-if echo "$staged_files" | grep -qE '\.(ts|tsx)$'; then
-  echo "🔍 TypeScript files detected, running quick typecheck..."
-  timeout 30s pnpm typecheck || echo "⚠️  Typecheck timed out or failed - please run 'pnpm typecheck' manually"
-fi
-
-# Re-stage all modified files
-if $has_biome_files || $has_payload_files || $has_package_files || $has_md_files; then
-  echo "📥 Re-staging formatted files..."
-  git add . 2>/dev/null || true
-fi
+# Use lint-staged for parallel processing of files
+echo "🔄 Running lint-staged for parallel file processing..."
+npx lint-staged
 
 echo "✅ Pre-commit checks completed!"

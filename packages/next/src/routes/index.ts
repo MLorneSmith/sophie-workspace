@@ -120,6 +120,7 @@ export const enhanceRouteHandler = <
 
 		return handler({
 			request,
+			// biome-ignore lint/suspicious/noExplicitAny: ZodType requires three type parameters, any is appropriate here
 			body: body as Params["schema"] extends z.ZodType<any, z.ZodTypeDef, any>
 				? z.TypeOf<Params["schema"]>
 				: undefined,

@@ -4,7 +4,7 @@ The `useSortable` hook is an abstraction that composes the [`useDroppable`](http
 
 To function properly, the `useSortable` hook needs to be used within a descendant of a [`SortableContext`](https://docs.dndkit.com/presets/sortable/sortable-context) provider higher up in the tree.
 
-## [Direct link to heading](https://docs.dndkit.com/presets/sortable/usesortable\#usage)    Usage
+## [Direct link to heading](https://docs.dndkit.com/presets/sortable/usesortable#usage) Usage
 
 If you're already familiar with the [`useDraggable`](https://docs.dndkit.com/api-documentation/draggable) hook, the `useSortable` hook should look very familiar, since, it is an abstraction on top of it.
 
@@ -39,9 +39,9 @@ function SortableItem(props) {
 }
 ```
 
-## [Direct link to heading](https://docs.dndkit.com/presets/sortable/usesortable\#properties)    Properties
+## [Direct link to heading](https://docs.dndkit.com/presets/sortable/usesortable#properties) Properties
 
-### [Direct link to heading](https://docs.dndkit.com/presets/sortable/usesortable\#listeners)    Listeners
+### [Direct link to heading](https://docs.dndkit.com/presets/sortable/usesortable#listeners) Listeners
 
 The `listeners` property contains the [activator event handlers](https://docs.dndkit.com/api-documentation/sensors#activators) for each [Sensor](https://docs.dndkit.com/api-documentation/sensors) that is defined on the parent [`DndContext`](https://docs.dndkit.com/api-documentation/context-provider#props) provider.
 
@@ -49,19 +49,19 @@ It should be attached to the node(s) that you wish to use as the activator to be
 
 For additional details on the [`listeners`](https://docs.dndkit.com/api-documentation/draggable#listeners) property, refer to the [`useDraggable`](https://docs.dndkit.com/api-documentation/draggable) documentation.
 
-### [Direct link to heading](https://docs.dndkit.com/presets/sortable/usesortable\#attributes)    Attributes
+### [Direct link to heading](https://docs.dndkit.com/presets/sortable/usesortable#attributes) Attributes
 
 The `useSortable` hook provides a set of sensible default attributes for draggable items. We recommend you attach these to your draggable elements, though nothing will break if you don't.
 
 For additional details on the [`attributes`](https://docs.dndkit.com/api-documentation/draggable#attributes) property, refer to the [`useDraggable`](https://docs.dndkit.com/api-documentation/draggable) documentation.
 
-### [Direct link to heading](https://docs.dndkit.com/presets/sortable/usesortable\#transform)    Transform
+### [Direct link to heading](https://docs.dndkit.com/presets/sortable/usesortable#transform) Transform
 
 The `transform` property represents the displacement and change of scale transformation that a sortable item needs to apply to transition to its new position without needing to update the DOM order.
 
 The `transform` property for the `useSortable` hook behaves similarly to the [`transform`](https://docs.dndkit.com/api-documentation/draggable#transforms) property of the [`useDraggable`](https://docs.dndkit.com/api-documentation/draggable) hook for the active sortable item, when there is no [`DragOverlay`](https://docs.dndkit.com/api-documentation/draggable/drag-overlay) being used.
 
-### [Direct link to heading](https://docs.dndkit.com/presets/sortable/usesortable\#node-ref)    Node ref
+### [Direct link to heading](https://docs.dndkit.com/presets/sortable/usesortable#node-ref) Node ref
 
 In order for the `useSortable` hook to function properly, it needs the `setNodeRef` property to be attached to the HTML element you intend on turning into a sortable element:
 
@@ -119,7 +119,7 @@ function SortableItem(props) {
 }
 ```
 
-### [Direct link to heading](https://docs.dndkit.com/presets/sortable/usesortable\#activator)    Activator
+### [Direct link to heading](https://docs.dndkit.com/presets/sortable/usesortable#activator) Activator
 
 `setActivatorNodeRef`
 
@@ -169,13 +169,13 @@ Focus management is automatically handled by [@dnd-kit](https://github.com/dnd-k
 
 If no activator node is set via `setActivatorNodeRef`, focus will automatically be restored on the first focusable node of the draggable node registered via `setNodeRef.`
 
-### [Direct link to heading](https://docs.dndkit.com/presets/sortable/usesortable\#transition)    Transition
+### [Direct link to heading](https://docs.dndkit.com/presets/sortable/usesortable#transition) Transition
 
 Refer to the [`transition` argument](https://docs.dndkit.com/presets/sortable/usesortable#transition-1) documentation below.
 
-## [Direct link to heading](https://docs.dndkit.com/presets/sortable/usesortable\#arguments)    Arguments
+## [Direct link to heading](https://docs.dndkit.com/presets/sortable/usesortable#arguments) Arguments
 
-### [Direct link to heading](https://docs.dndkit.com/presets/sortable/usesortable\#identifier)    Identifier
+### [Direct link to heading](https://docs.dndkit.com/presets/sortable/usesortable#identifier) Identifier
 
 The `id` argument is a `string` or `number` that should be unique.
 
@@ -183,11 +183,11 @@ Since the `useSortable` is an abstraction on top of the `useDroppable` and `useD
 
 The argument passed to the `id` argument of `useSortable` should match the `id` passed in the `items` array of the parent [`SortableContext`](https://docs.dndkit.com/presets/sortable/sortable-context) provider.
 
-### [Direct link to heading](https://docs.dndkit.com/presets/sortable/usesortable\#disabled)    Disabled
+### [Direct link to heading](https://docs.dndkit.com/presets/sortable/usesortable#disabled) Disabled
 
 If you'd like to temporarily disable a sortable item from being interactive, set the `disabled` argument to `true`.
 
-### [Direct link to heading](https://docs.dndkit.com/presets/sortable/usesortable\#transition-1)    Transition
+### [Direct link to heading](https://docs.dndkit.com/presets/sortable/usesortable#transition-1) Transition
 
 The transition argument controls the value of the `transition` property for you. It conveniently disables transform transitions while not dragging, but ensures that items transition back to their final positions when the drag operation is ended or cancelled.
 
@@ -279,10 +279,10 @@ const {
 
 If you prefer to manage transitions yourself, you may also choose to do so, but this isn't something we recommend.
 
-### [Direct link to heading](https://docs.dndkit.com/presets/sortable/usesortable\#sorting-strategy)    Sorting strategy
+### [Direct link to heading](https://docs.dndkit.com/presets/sortable/usesortable#sorting-strategy) Sorting strategy
 
 Optionally, you can pass a local sorting strategy that differs from the [global sorting strategy](https://docs.dndkit.com/presets/sortable/sortable-context#strategy) passed to the parent `SortableContext` provider.
 
 Last updated 2 years ago
 
-* * *
+---

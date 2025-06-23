@@ -16,7 +16,7 @@
 		"./widgets": "./src/widgets.ts"
 	},
 	"devDependencies": {
-		"@hookform/resolvers": "^5.0.1",
+		"@hookform/resolvers": "^5.1.1",
 		"@kit/eslint-config": "workspace:*",
 		"@kit/next": "workspace:*",
 		"@kit/prettier-config": "workspace:*",
@@ -26,17 +26,17 @@
 		"@kit/ui": "workspace:*",
 		"@makerkit/data-loader-supabase-nextjs": "^1.2.5",
 		"@supabase/supabase-js": "2.50.0",
-		"@tanstack/react-query": "5.80.6",
+		"@tanstack/react-query": "5.80.7",
 		"@tanstack/react-table": "^8.21.3",
-		"@types/react": "19.1.4",
-		"@types/react-dom": "19.1.5",
-		"lucide-react": "^0.511.0",
-		"next": "15.3.2",
+		"@types/react": "19.1.8",
+		"@types/react-dom": "19.1.6",
+		"lucide-react": "^0.516.0",
+		"next": "15.3.3",
 		"react": "19.1.0",
 		"react-confetti": "^6.1.0",
 		"react-dom": "19.1.0",
-		"react-hook-form": "^7.56.4",
-		"zod": "^3.25.7"
+		"react-hook-form": "^7.58.0",
+		"zod": "^3.25.67"
 	},
 	"eslintConfig": {
 		"root": true,

@@ -234,10 +234,9 @@ export const generateOutlineAction = enhanceAction(
 							Array.isArray(parsedOutline.content) &&
 							parsedOutline.content.length > 1
 						) {
-							logger.info({
-								message:
-									"Valid outline exists and force regenerate is false, returning existing outline",
-							});
+							logger.info(
+								"Valid outline exists and force regenerate is false, returning existing outline",
+							);
 							return { success: true, data: parsedOutline };
 						}
 					} catch (_e) {
@@ -411,9 +410,9 @@ export const generateOutlineAction = enhanceAction(
 		auth: true,
 		typeCheck: (data: unknown): GenerateOutlineParams => {
 			// The typecheck option helps with Zod optional field handling
-			const typedData = data as any;
+			const typedData = data as Record<string, unknown>;
 			return {
-				submissionId: typedData.submissionId,
+				submissionId: typedData.submissionId as string,
 				forceRegenerate: typedData.forceRegenerate === true,
 			};
 		},

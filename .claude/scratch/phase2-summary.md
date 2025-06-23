@@ -41,13 +41,13 @@ This is especially important for a MakerKit-based project where many features co
 
 ## What's Next
 
-### Immediate Actions Needed:
+### Immediate Actions Needed
 
 1. **Team Review**: Go through the dependency categorization together
 2. **Document Decisions**: Add comments to package.json explaining kept dependencies
 3. **Create a "Template Features" doc**: List all MakerKit features available for future use
 
-### Future Process:
+### Future Process
 
 1. Run Knip quarterly for maintenance
 2. Add to CI as informational (not blocking)

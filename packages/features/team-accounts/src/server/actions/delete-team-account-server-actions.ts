@@ -30,7 +30,7 @@ export const deleteTeamAccountAction = enhanceAction(
 			token: params.otp,
 		});
 
-		if (!_otpResult._valid) {
+		if (!_otpResult.valid) {
 			throw new Error("Invalid OTP code");
 		}
 
@@ -83,7 +83,7 @@ async function assertUserPermissionsToDeleteTeamAccount(
 	const { data: isOwner, error } = await client
 		.rpc("is_account_owner", {
 			account_id: accountId,
-		// })
+		})
 		.single();
 
 	if (error || !isOwner) {

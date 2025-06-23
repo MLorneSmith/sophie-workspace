@@ -48,7 +48,7 @@ const cloud = z.object({
 	project: z
 		.string({
 			description: `The Keystatic Cloud project. Please provide the value through the "KEYSTATIC_STORAGE_PROJECT" environment variable.`,
-		// })
+		})
 		.min(1),
 	branchPrefix: z.string().optional(),
 	pathPrefix: z.string().optional(),

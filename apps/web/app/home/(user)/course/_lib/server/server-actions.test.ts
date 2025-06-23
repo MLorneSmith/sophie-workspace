@@ -11,6 +11,14 @@ import {
 	updateLessonProgressAction,
 } from "./server-actions";
 
+// Type aliases for action inputs
+type UpdateCourseProgressInput = Parameters<
+	typeof updateCourseProgressAction
+>[0];
+type UpdateLessonProgressInput = Parameters<
+	typeof updateLessonProgressAction
+>[0];
+
 // Mock enhanceAction to preserve schema validation
 vi.mock("@kit/next/actions", () => ({
 	enhanceAction: vi.fn((fn, options) => {
@@ -20,7 +28,7 @@ vi.mock("@kit/next/actions", () => ({
 			if (options?.schema) {
 				const result = options.schema.safeParse(data);
 				if (!result.success) {
-					return { error: "Validation failed", details: result.error };
+					return { success: false, error: "Validation failed" } as const;
 				}
 				validatedData = result.data;
 			}
@@ -116,7 +124,9 @@ describe("Course Server Actions", () => {
 				};
 
 				// Should not throw validation error
-				const result = await updateCourseProgressAction(input);
+				const result = await updateCourseProgressAction(
+					input as unknown as UpdateCourseProgressInput,
+				);
 				expect(result).toEqual({ success: true });
 
 				// Verify the insert was called with string courseId
@@ -139,9 +149,15 @@ describe("Course Server Actions", () => {
 					completionPercentage: 150,
 				};
 
-				const result = await updateCourseProgressAction(input);
-				expect(result.error).toBeDefined();
-				expect(result.error).toBe("Validation failed");
+				const result = (await updateCourseProgressAction(input)) as {
+					success: boolean;
+					error?: string;
+				};
+				expect(result.success).toBe(false);
+				if (!result.success) {
+					expect(result.error).toBeDefined();
+					expect(result.error).toBe("Validation failed");
+				}
 			});
 
 			it("should reject negative completion percentage", async () => {
@@ -150,9 +166,15 @@ describe("Course Server Actions", () => {
 					completionPercentage: -10,
 				};
 
-				const result = await updateCourseProgressAction(input);
-				expect(result.error).toBeDefined();
-				expect(result.error).toBe("Validation failed");
+				const result = (await updateCourseProgressAction(input)) as {
+					success: boolean;
+					error?: string;
+				};
+				expect(result.success).toBe(false);
+				if (!result.success) {
+					expect(result.error).toBeDefined();
+					expect(result.error).toBe("Validation failed");
+				}
 			});
 		});
 
@@ -200,7 +222,7 @@ describe("Course Server Actions", () => {
 				await updateCourseProgressAction(input);
 				const afterCall = new Date().toISOString();
 
-				const insertCall = chain.insert.mock.calls[0][0];
+				const insertCall = chain.insert.mock.calls[0]?.[0];
 				expect(
 					new Date(insertCall.started_at).getTime(),
 				).toBeGreaterThanOrEqual(new Date(beforeCall).getTime());
@@ -221,7 +243,7 @@ describe("Course Server Actions", () => {
 
 				await updateCourseProgressAction(input);
 
-				const insertCall = chain.insert.mock.calls[0][0];
+				const insertCall = chain.insert.mock.calls[0]?.[0];
 				expect(insertCall.completion_percentage).toBe(0);
 				expect(insertCall.current_lesson_id).toBeUndefined();
 				expect(insertCall.completed_at).toBeNull();
@@ -281,7 +303,7 @@ describe("Course Server Actions", () => {
 				await updateCourseProgressAction(input);
 				const afterCall = new Date().toISOString();
 
-				const updateCall = chain.update.mock.calls[0][0];
+				const updateCall = chain.update.mock.calls[0]?.[0];
 				expect(
 					new Date(updateCall.last_accessed_at).getTime(),
 				).toBeGreaterThanOrEqual(new Date(beforeCall).getTime());
@@ -307,7 +329,7 @@ describe("Course Server Actions", () => {
 
 				await updateCourseProgressAction(input);
 
-				const updateCall = chain.update.mock.calls[0][0];
+				const updateCall = chain.update.mock.calls[0]?.[0];
 				expect(updateCall.completion_percentage).toBe(90);
 				expect(updateCall.current_lesson_id).toBeUndefined();
 				expect(updateCall.last_accessed_at).toBeDefined();
@@ -325,7 +347,9 @@ describe("Course Server Actions", () => {
 
 				// Mock multiple from() calls for different tables
 				let callCount = 0;
-				mockSupabaseClient.from.mockImplementation((table: string) => {
+				(
+					mockSupabaseClient.from as ReturnType<typeof vi.fn>
+				).mockImplementation((table: string) => {
 					const chain = createMockSupabaseChain();
 
 					if (table === "course_progress" && callCount === 0) {
@@ -399,7 +423,9 @@ describe("Course Server Actions", () => {
 				};
 
 				let callCount = 0;
-				mockSupabaseClient.from.mockImplementation((table: string) => {
+				(
+					mockSupabaseClient.from as ReturnType<typeof vi.fn>
+				).mockImplementation((table: string) => {
 					const chain = createMockSupabaseChain();
 
 					if (table === "course_progress" && callCount === 0) {
@@ -476,7 +502,9 @@ describe("Course Server Actions", () => {
 					completed: true,
 				};
 
-				const result = await updateLessonProgressAction(input);
+				const result = await updateLessonProgressAction(
+					input as unknown as UpdateLessonProgressInput,
+				);
 				expect(result).toEqual({ success: true });
 			});
 
@@ -486,7 +514,9 @@ describe("Course Server Actions", () => {
 					lessonId: 456,
 				};
 
-				const result = await updateLessonProgressAction(input);
+				const result = await updateLessonProgressAction(
+					input as unknown as UpdateLessonProgressInput,
+				);
 				expect(result).toEqual({ success: true });
 			});
 		});
@@ -533,7 +563,7 @@ describe("Course Server Actions", () => {
 				await updateLessonProgressAction(input);
 				const afterCall = new Date().toISOString();
 
-				const insertCall = chain.insert.mock.calls[0][0];
+				const insertCall = chain.insert.mock.calls[0]?.[0];
 				expect(
 					new Date(insertCall.started_at).getTime(),
 				).toBeGreaterThanOrEqual(new Date(beforeCall).getTime());
@@ -592,7 +622,7 @@ describe("Course Server Actions", () => {
 
 				await updateLessonProgressAction(input);
 
-				const updateCall = chain.update.mock.calls[0][0];
+				const updateCall = chain.update.mock.calls[0]?.[0];
 				expect(updateCall.course_id).toBe("course-123");
 			});
 		});
@@ -632,7 +662,9 @@ describe("Course Server Actions", () => {
 				};
 
 				// Should not throw error
-				const result = await updateLessonProgressAction(input);
+				const result = await updateLessonProgressAction(
+					input as unknown as UpdateLessonProgressInput,
+				);
 				expect(result).toEqual({ success: true });
 			});
 		});
@@ -666,7 +698,7 @@ describe("Course Server Actions", () => {
 				const input = {
 					courseId: "course-123",
 					lessonId: "lesson-456",
-					quizId: { value: "quiz-123" },
+					quizId: { value: "quiz-123" } as unknown as string,
 					answers: {},
 					score: 85,
 					passed: true,
@@ -680,7 +712,7 @@ describe("Course Server Actions", () => {
 				const input = {
 					courseId: "course-123",
 					lessonId: "lesson-456",
-					quizId: { id: "quiz-456" },
+					quizId: { id: "quiz-456" } as unknown as string,
 					answers: {},
 					score: 85,
 					passed: true,
@@ -700,9 +732,15 @@ describe("Course Server Actions", () => {
 					passed: true,
 				};
 
-				const result = await submitQuizAttemptAction(input);
-				expect(result.error).toBeDefined();
-				expect(result.error).toBe("Validation failed");
+				const result = (await submitQuizAttemptAction(input)) as {
+					success: boolean;
+					error?: string;
+				};
+				expect(result.success).toBe(false);
+				if (!result.success) {
+					expect(result.error).toBeDefined();
+					expect(result.error).toBe("Validation failed");
+				}
 			});
 
 			it("should reject negative score", async () => {
@@ -715,9 +753,15 @@ describe("Course Server Actions", () => {
 					passed: true,
 				};
 
-				const result = await submitQuizAttemptAction(input);
-				expect(result.error).toBeDefined();
-				expect(result.error).toBe("Validation failed");
+				const result = (await submitQuizAttemptAction(input)) as {
+					success: boolean;
+					error?: string;
+				};
+				expect(result.success).toBe(false);
+				if (!result.success) {
+					expect(result.error).toBeDefined();
+					expect(result.error).toBe("Validation failed");
+				}
 			});
 		});
 
@@ -769,7 +813,7 @@ describe("Course Server Actions", () => {
 				await submitQuizAttemptAction(input);
 				const afterCall = new Date().toISOString();
 
-				const insertCall = chain.insert.mock.calls[0][0];
+				const insertCall = chain.insert.mock.calls[0]?.[0];
 				expect(
 					new Date(insertCall.started_at).getTime(),
 				).toBeGreaterThanOrEqual(new Date(beforeCall).getTime());
@@ -811,8 +855,10 @@ describe("Course Server Actions", () => {
 				await submitQuizAttemptAction(input);
 
 				// Should only insert quiz attempt, not trigger lesson completion
-				const insertCalls = mockSupabaseClient.from.mock.calls.filter(
-					(call) => call[0] === "quiz_attempts",
+				const insertCalls = (
+					mockSupabaseClient.from as ReturnType<typeof vi.fn>
+				).mock.calls.filter(
+					(call) => call && call.length > 0 && call[0] === "quiz_attempts",
 				);
 				expect(insertCalls).toHaveLength(1);
 			});
@@ -869,3 +915,4 @@ describe("Course Server Actions", () => {
 		});
 	});
 });
+// Test comment

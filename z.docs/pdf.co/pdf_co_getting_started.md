@@ -1,7 +1,6 @@
 [Skip to main content](https://developer.pdf.co/api/introduction/index.html#main-content)
 
- Back to top
-
+Back to top
 
 `Ctrl` + `K`
 
@@ -11,11 +10,11 @@
 
 [Add More](https://app.pdf.co/subscriptions)
 
-# Getting Started [\#](https://developer.pdf.co/api/introduction/index.html\#getting-started "Permalink to this heading")
+# Getting Started [\#](https://developer.pdf.co/api/introduction/index.html#getting-started 'Permalink to this heading')
 
 Introducing the general concepts for using the PDF.co API, authentication methods, response codes and sample code.
 
-## API Reference [\#](https://developer.pdf.co/api/introduction/index.html\#api-reference "Permalink to this heading")
+## API Reference [\#](https://developer.pdf.co/api/introduction/index.html#api-reference 'Permalink to this heading')
 
 The PDF.co Web API is REST-based, making it intuitive and easy to use. To prioritize your data’s security and privacy, all requests are securely transmitted using HTTPS. Kindly note, unsecured HTTP connections are not supported.
 
@@ -23,7 +22,7 @@ All requests contain the following **base URL**:
 
 `https://api.pdf.co/v1`
 
-## Authenticating Your API Request [\#](https://developer.pdf.co/api/introduction/index.html\#authenticating-your-api-request "Permalink to this heading")
+## Authenticating Your API Request [\#](https://developer.pdf.co/api/introduction/index.html#authenticating-your-api-request 'Permalink to this heading')
 
 To authenticate you need to add a header named `x-api-key` using your API Key as the value.
 
@@ -38,11 +37,11 @@ Note
 
 The key provided above is just a sample and won’t work for actual API calls. Don’t forget to replace it with your real API Key, which you can find in your [PDF.co Dashboard](https://app.pdf.co/), when making requests.
 
-## Response codes [\#](https://developer.pdf.co/api/introduction/index.html\#response-codes "Permalink to this heading")
+## Response codes [\#](https://developer.pdf.co/api/introduction/index.html#response-codes 'Permalink to this heading')
 
 After making a request you will receive a response from the **PDF.co** API. A code `200` means the request was successfull, a `400` means there was an error. However there could be other codes - see [the complete list of available response codes](https://developer.pdf.co/api/response-codes/index.html#response-codes).
 
-## Sample Code [\#](https://developer.pdf.co/api/introduction/index.html\#sample-code "Permalink to this heading")
+## Sample Code [\#](https://developer.pdf.co/api/introduction/index.html#sample-code 'Permalink to this heading')
 
 Here is some sample code which would convert a **PDF** to a **CSV** file.
 
@@ -102,19 +101,16 @@ What is 7 + 9?
 
 Close
 
-* * *
+---
 
 This website uses cookies for functional and analytical purposes. By continuing, you agree
 to our cookie use. Please read our
 [privacy policy](https://pdf.co/resources/legal/privacy)
 for more information.
 
-
 I Agree
 
-
 On this page
-
 
 [iframe](https://td.doubleclick.net/td/rul/936954131?random=1744037944149&cv=11&fst=1744037944149&fmt=3&bg=ffffff&guid=ON&async=1&gtm=45be5421v9178924140z872476096za200zb72476096&gcd=13r3r3r3r5l1&dma=0&tag_exp=102509682~102788824~102803279~102813109~102887799~102926062~102975949~103016951~103021830~103027016&u_w=1280&u_h=720&url=https%3A%2F%2Fdeveloper.pdf.co%2Fapi%2Fintroduction%2Findex.html&hn=www.googleadservices.com&frm=0&tiba=Getting%20Started%20%E2%80%94%20pdf.co%20documentation&npa=0&pscdl=noapi&auid=1335395896.1744037944&uaa=x86&uab=64&uafvl=Chromium%3B131.0.6778.33%7CNot_A%2520Brand%3B24.0.0.0&uamb=0&uam=&uap=Windows&uapv=10.0&uaw=0&fledge=1&data=event%3Dgtag.config)[iframe](https://td.doubleclick.net/td/ga/rul?tid=G-FJJWDFCD9X&gacid=502565858.1744037944&gtm=45je5421v9104111730z872476096za200zb72476096&dma=0&gcs=G111&gcd=13r3r3r3r5l1&npa=0&pscdl=noapi&aip=1&fledge=1&frm=0&tag_exp=102509683~102788824~102803279~102813109~102887799~102926062~102975949~103016951~103021830~103027016&z=1538586287)
 

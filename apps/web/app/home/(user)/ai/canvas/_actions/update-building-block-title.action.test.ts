@@ -3,6 +3,7 @@
  * Tests schema validation, database updates, and error handling
  */
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { expectError } from "@/test/test-helpers";
 import { updateBuildingBlockTitleAction } from "./update-building-block-title.action";
 
 // Mock dependencies
@@ -14,7 +15,7 @@ vi.mock("@kit/next/actions", () => ({
 			if (options?.schema) {
 				const result = options.schema.safeParse(data);
 				if (!result.success) {
-					return { error: "Validation failed" };
+					return { success: false, error: "Validation failed" } as const;
 				}
 				validatedData = result.data;
 			}
@@ -61,11 +62,11 @@ describe("updateBuildingBlockTitleAction", () => {
 	describe("Schema Validation", () => {
 		it("should accept empty strings as valid", async () => {
 			// Zod z.string() accepts empty strings by default
-			const _result = await updateBuildingBlockTitleAction({
+			const result = await updateBuildingBlockTitleAction({
 				id: "",
 				title: "",
 			});
-			expect(_result).toEqual({ success: true });
+			expect(result).toEqual({ success: true });
 		});
 
 		it("should accept valid input", async () => {
@@ -76,20 +77,20 @@ describe("updateBuildingBlockTitleAction", () => {
 		});
 
 		it("should reject invalid data types", async () => {
-			const _result = await updateBuildingBlockTitleAction({
-				id: 123 as unknown,
-				title: null as unknown,
+			const result = await updateBuildingBlockTitleAction({
+				id: 123 as unknown as string,
+				title: null as unknown as string,
 			});
 
-			expect(_result).toEqual({ error: "Validation failed" });
+			expect(expectError(result)).toBe("Validation failed");
 		});
 
 		it("should reject missing fields", async () => {
 			const result = await updateBuildingBlockTitleAction({
-				id: undefined as unknown,
-			} as unknown);
+				id: undefined as unknown as string,
+			} as { id: string; title: string });
 
-			expect(result).toEqual({ error: "Validation failed" });
+			expect(expectError(result)).toBe("Validation failed");
 		});
 	});
 

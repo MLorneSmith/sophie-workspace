@@ -20,11 +20,11 @@ With Portkey, you can take advantage of features like fast AI gateway access, ob
 
 Provider Slug. `groq`
 
-## [​](https://portkey.ai/docs/integrations/llms/groq\#portkey-sdk-integration-with-groq-models)  Portkey SDK Integration with Groq Models
+## [​](https://portkey.ai/docs/integrations/llms/groq#portkey-sdk-integration-with-groq-models) Portkey SDK Integration with Groq Models
 
 Portkey provides a consistent API to interact with models from various providers. To integrate Groq with Portkey:
 
-### [​](https://portkey.ai/docs/integrations/llms/groq\#1-install-the-portkey-sdk)  1\. Install the Portkey SDK
+### [​](https://portkey.ai/docs/integrations/llms/groq#1-install-the-portkey-sdk) 1\. Install the Portkey SDK
 
 Add the Portkey SDK to your application to interact with Groq AI’s API through Portkey’s gateway.
 
@@ -38,7 +38,7 @@ npm install --save portkey-ai
 
 ```
 
-### [​](https://portkey.ai/docs/integrations/llms/groq\#2-initialize-portkey-with-the-virtual-key)  2\. Initialize Portkey with the Virtual Key
+### [​](https://portkey.ai/docs/integrations/llms/groq#2-initialize-portkey-with-the-virtual-key) 2\. Initialize Portkey with the Virtual Key
 
 To use Groq with Portkey, [get your API key from here](https://console.groq.com/keys), then add it to Portkey to create the virtual key.
 
@@ -48,16 +48,15 @@ To use Groq with Portkey, [get your API key from here](https://console.groq.com/
 Copy
 
 ```js
-import Portkey from 'portkey-ai'
+import Portkey from 'portkey-ai';
 
 const portkey = new Portkey({
-    apiKey: "PORTKEY_API_KEY", // defaults to process.env["PORTKEY_API_KEY"]
-    virtualKey: "VIRTUAL_KEY" // Your Groq Virtual Key
-})
-
+  apiKey: 'PORTKEY_API_KEY', // defaults to process.env["PORTKEY_API_KEY"]
+  virtualKey: 'VIRTUAL_KEY', // Your Groq Virtual Key
+});
 ```
 
-### [​](https://portkey.ai/docs/integrations/llms/groq\#3-invoke-chat-completions-with-groq)  **3\. Invoke Chat Completions with** Groq
+### [​](https://portkey.ai/docs/integrations/llms/groq#3-invoke-chat-completions-with-groq) **3\. Invoke Chat Completions with** Groq
 
 Use the Portkey instance to send requests to Groq. You can also override the virtual key directly in the API call if needed.
 
@@ -68,21 +67,20 @@ Copy
 
 ```js
 const chatCompletion = await portkey.chat.completions.create({
-    messages: [{ role: 'user', content: 'Say this is a test' }],
-    model: 'mixtral-8x7b-32768',
+  messages: [{ role: 'user', content: 'Say this is a test' }],
+  model: 'mixtral-8x7b-32768',
 });
 
 console.log(chatCompletion.choices);
-
 ```
 
-## [​](https://portkey.ai/docs/integrations/llms/groq\#managing-groq-prompts)  Managing Groq Prompts
+## [​](https://portkey.ai/docs/integrations/llms/groq#managing-groq-prompts) Managing Groq Prompts
 
 You can manage all prompts to Groq in the [Prompt Library](https://portkey.ai/docs/product/prompt-library). All the current models of Groq are supported and you can easily start testing different prompts.
 
 Once you’re ready with your prompt, you can use the `portkey.prompts.completions.create` interface to use the prompt in your application.
 
-* * *
+---
 
 You’ll find more information in the relevant sections:
 

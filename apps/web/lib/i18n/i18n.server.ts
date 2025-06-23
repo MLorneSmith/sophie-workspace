@@ -1,8 +1,8 @@
 import "server-only";
 
 import {
+	_parseAcceptLanguageHeader,
 	initializeServerI18n,
-	parseAcceptLanguageHeader,
 } from "@kit/i18n/server";
 
 import { cookies, headers } from "next/headers";
@@ -71,7 +71,7 @@ async function getPreferredLanguageFromBrowser() {
 		return;
 	}
 
-	return parseAcceptLanguageHeader(acceptLanguage, languages)[0];
+	return _parseAcceptLanguageHeader(acceptLanguage, languages)[0];
 }
 
 /**

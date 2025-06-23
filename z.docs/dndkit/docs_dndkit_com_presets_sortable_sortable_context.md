@@ -1,8 +1,8 @@
 The `SortableContext` provides information via context that is consumed by the [`useSortable`](https://docs.dndkit.com/presets/sortable/usesortable) hook.
 
-## [Direct link to heading](https://docs.dndkit.com/presets/sortable/sortable-context\#props)    Props
+## [Direct link to heading](https://docs.dndkit.com/presets/sortable/sortable-context#props) Props
 
-### [Direct link to heading](https://docs.dndkit.com/presets/sortable/sortable-context\#items)    Items
+### [Direct link to heading](https://docs.dndkit.com/presets/sortable/sortable-context#items) Items
 
 It requires that you pass it a sorted array of the unique identifiers associated with the elements that use the `useSortable` hook within it.
 
@@ -28,7 +28,7 @@ function App() {
 
 It's important that the `items` prop passed to `SortableContext` be sorted in the same order in which the items are rendered, otherwise you may see unexpected results.
 
-### [Direct link to heading](https://docs.dndkit.com/presets/sortable/sortable-context\#strategy)    Strategy
+### [Direct link to heading](https://docs.dndkit.com/presets/sortable/sortable-context#strategy) Strategy
 
 The `SortableContext` component also accepts different [sorting strategies](https://docs.dndkit.com/presets/sortable#sorting-strategies) to compute transforms for the `useSortable` hook. The built in strategies include:
 
@@ -40,16 +40,15 @@ The `SortableContext` component also accepts different [sorting strategies](http
 
 - `rectSwappingStrategy`: Use this strategy to achieve swappable functionality.
 
-
 Make sure to use the sorting strategy that is the most adapted to the use case you are building for.
 
 For advanced use cases, you may also build custom sorting strategies. To do so, make sure that the custom strategy you are building accepts the arguments that are passed to a sorting strategy and adheres to the return values that are expected. For more details on this, refer to the implementation of the built-in sorting strategies.
 
-### [Direct link to heading](https://docs.dndkit.com/presets/sortable/sortable-context\#identifier)    Identifier
+### [Direct link to heading](https://docs.dndkit.com/presets/sortable/sortable-context#identifier) Identifier
 
 The `SortableContext` component also optionally accepts an `id` prop. If an `id` is not provided, one will be auto-generated for you. The `id` prop is for advanced use cases. If you're building custom sensors, you'll have access to each sortable element's `data` prop, which will contain the `containerId` associated to that sortable context.
 
-## [Direct link to heading](https://docs.dndkit.com/presets/sortable/sortable-context\#usage)    Usage
+## [Direct link to heading](https://docs.dndkit.com/presets/sortable/sortable-context#usage) Usage
 
 In order for the `SortableContext` component to function properly, make sure it is a descendant of a `DndContext` provider.
 
@@ -113,8 +112,8 @@ Copy
 
 ```
 
-## [Direct link to heading](https://docs.dndkit.com/presets/sortable/sortable-context\#undefined)
+## [Direct link to heading](https://docs.dndkit.com/presets/sortable/sortable-context#undefined)
 
 Last updated 2 years ago
 
-* * *
+---

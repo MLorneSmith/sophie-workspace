@@ -27,9 +27,11 @@ Even though this is local development, it is recommended to backup your data bef
 1. **Supabase Backup:**
    - Use `pg_dump` or Supabase CLI export commands to export your local database.
    - Example:
+
      ```bash
      pg_dump -h localhost -p 54322 -U postgres -Fc -f backups/supabase_local_backup.dump postgres
      ```
+
    - Adjust host, port, user, and database name as per your local setup.
 
 2. **Payload Backup:**
@@ -45,14 +47,17 @@ Even though this is local development, it is recommended to backup your data bef
 - This command resets the local Supabase database to the current migration state.
 
 Example command:
+
 ```bash
 pnpm --filter web run supabase:web:reset
 ```
 
 Alternatively, directly use:
+
 ```bash
 supabase db reset
 ```
+
 Ensure you run this in the `apps/web/supabase/` directory or configure the CLI accordingly.
 
 ### 2. Reset Payload CMS Local Database
@@ -62,15 +67,18 @@ Ensure you run this in the `apps/web/supabase/` directory or configure the CLI a
 - This will apply migrations and reset the Payload CMS schema as needed.
 
 Example command:
+
 ```bash
 pnpm --filter payload run payload:migrate:ssl
 ```
 
 Alternatively, directly use:
+
 ```bash
 payload migrate reset
 payload migrate up
 ```
+
 Run these commands in the `apps/payload/` directory.
 
 ### 3. Additional Turborepo Considerations
@@ -104,6 +112,7 @@ Run these commands in the `apps/payload/` directory.
 ---
 
 This guide aims to provide a safe, practical, and comprehensive approach to resetting local development databases in this project. Always backup before resetting and verify after completion.
+
 ## Surgical Environment Variable Cleanup for Payload Reset
 
 When resetting the Payload CMS local database and migrations, it is important to avoid conflicts caused by duplicated environment variables across `.env`, `.env.development`, and `.env.production` files.

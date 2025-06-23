@@ -31,7 +31,7 @@ import { Plus, X } from "lucide-react";
 import { useState, useTransition } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
+import { toast } from "@kit/ui/sonner";
 
 import { InviteMembersSchema } from "../../schema/invite-members.schema";
 import { createInvitationsAction } from "../../server/actions/team-invitations-server-actions";

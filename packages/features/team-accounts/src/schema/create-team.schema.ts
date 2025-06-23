@@ -20,29 +20,32 @@ const SPECIAL_CHARACTERS_REGEX = /[!@#$%^&*()+=[\]{};':"\\|,.<>/?]/;
 export const TeamNameSchema = z
 	.string({
 		description: "The name of the team account",
-	// })
+	})
 	.min(2)
 	.max(50)
 	.refine(
 		(name) => {
 			// TODO: Async logger needed
-		// (await getLogger()).info(name);
+			// (await getLogger()).info(name);
 			return !SPECIAL_CHARACTERS_REGEX.test(name);
-			// },
-			// {
-			// message: "teams:specialCharactersError",
-			// },
-			// )
+		},
+		{
+			message: "teams:specialCharactersError",
+		},
+	)
 	.refine(
-		(name) => 
-			return !RESERVED_NAMES_ARRAY.includes(name.toLowerCase());,
-			message: "teams:reservedNameError",,
+		(name) => {
+			return !RESERVED_NAMES_ARRAY.includes(name.toLowerCase());
+		},
+		{
+			message: "teams:reservedNameError",
+		},
 	);
 
 /**
  * @name CreateTeamSchema
  * @description Schema for creating a team account
  */
-export const _CreateTeamSchema = z.object({
+export const CreateTeamSchema = z.object({
 	name: TeamNameSchema,
 });

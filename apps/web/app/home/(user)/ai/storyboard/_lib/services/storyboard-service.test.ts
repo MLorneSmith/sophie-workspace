@@ -118,11 +118,11 @@ describe("Storyboard Service", () => {
 		} as unknown as ReturnType<typeof getSupabaseServerClient>);
 
 		// Set up logger mock
-		mockLogger.mockResolvedValue({
+		mockLogger.mockReturnValue({
 			error: vi.fn(),
 			warn: vi.fn(),
 			info: vi.fn(),
-		});
+		} as unknown as ReturnType<typeof getLogger>);
 	});
 
 	afterEach(() => {
@@ -199,7 +199,9 @@ describe("Storyboard Service", () => {
 				slides: [
 					{
 						id: "generated-slide",
+						slideType: "title" as const,
 						title: "Generated",
+						subheadlines: [],
 						layoutId: "title",
 						content: [],
 						order: 0,
@@ -251,7 +253,9 @@ describe("Storyboard Service", () => {
 				slides: [
 					{
 						id: "generated-slide",
+						slideType: "title" as const,
 						title: "Generated",
+						subheadlines: [],
 						layoutId: "title",
 						content: [],
 						order: 0,

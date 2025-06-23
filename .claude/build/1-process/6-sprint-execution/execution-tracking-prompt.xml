@@ -3,7 +3,8 @@
   
   <context_loading>
     <instructions>
-      Before proceeding, read the context documentation inventory:
+      Before proceeding, read the sprint plan and context documentation:
+      - Read: .claude/build/4-output/{epic-name}/5-sprints/sprint-{number}.md - Sprint plan and story priorities
       - Read: .claude/docs/.context-docs-inventory.xml
       Based on implementation needs, read relevant context:
       - For debugging issues: Read debugging/github-first-issues.md
@@ -12,6 +13,46 @@
       - For database issues: Read debugging/database-debugging.md
     </instructions>
   </context_loading>
+  
+  <available_tools>
+    <description>
+      You have access to the following tools for tracking and updating execution status. Tool mappings are defined in .claude/tools/tool-mappings.xml and full documentation is in .claude/tools/available-tools.xml
+    </description>
+    
+    <!-- Claude Native Tools -->
+    <tool_group name="Claude Native Tools">
+      <tool name="Read" description="Read story context and progress"/>
+      <tool name="Write" description="Create progress reports"/>
+      <tool name="Edit" description="Update tracking documents"/>
+      <tool name="Bash" description="Execute gh CLI commands"/>
+      <tool name="TodoWrite" description="Track execution progress"/>
+      <tool name="TodoRead" description="Check current status"/>
+    </tool_group>
+    
+    <!-- MCP Tools for Execution Tracking -->
+    <tool_group name="MCP Tools">
+      <tool name="github_mcp" description="GitHub API operations">
+        <functions>update_issue, add_issue_comment, create_pull_request, list_pull_requests</functions>
+        <usage>Update story status, manage PRs, track progress in GitHub</usage>
+      </tool>
+      <tool name="newrelic_mcp" description="Performance monitoring">
+        <functions>query_newrelic_logs, get_error_traces</functions>
+        <usage>Monitor implementation impact, track performance</usage>
+      </tool>
+      <tool name="browser_tools_mcp" description="UI validation">
+        <functions>takeScreenshot, runAccessibilityAudit, getConsoleErrors</functions>
+        <usage>Validate completed features, check for regressions</usage>
+      </tool>
+    </tool_group>
+    
+    <tracking_guidelines>
+      - Use github_mcp to update GitHub issue status automatically
+      - Use TodoWrite to maintain detailed progress tracking
+      - Use newrelic_mcp to monitor for performance regressions
+      - Use browser_tools_mcp to validate UI changes
+      - Update GitHub Projects fields throughout execution
+    </tracking_guidelines>
+  </available_tools>
   
   <instructions>
     <step number="1">
@@ -61,6 +102,31 @@
           - Link to next sprint milestone
       </description>
     </step>
+    
+    <step number="5">
+      <title>Story Context Switching Management</title>
+      <description>
+        Context switching protocols for efficient multi-story work:
+        - Before switching stories: Update .claude/build/4-output/contexts/stories/story-{id}/session-handoff.md
+        - Include current task status, next immediate action, files being modified
+        - Create context checkpoint: Save uncommitted work, document decisions
+        - After switching back: Load session-handoff.md, review progress.md, check for file conflicts
+        - Use template: .claude/templates/session-handoff.md
+      </description>
+    </step>
+
+    <step number="6">
+      <title>Dependency Coordination</title>
+      <description>
+        Multi-story coordination within sprint execution:
+        - Check .claude/build/4-output/contexts/dependencies/sprint-{number}-coordination.md
+        - Verify no other stories are modifying same files
+        - Update shared component status if applicable
+        - Coordinate with parallel story progress
+        - Use template: .claude/templates/sprint-coordination.md
+        - Document file-level conflicts and resolution strategies
+      </description>
+    </step>
   </instructions>
   
   <input>
@@ -88,10 +154,11 @@
       <title>Load Implementation Context</title>
       <description>
         Before implementing, load all necessary context:
+        - Load sprint plan: Read .claude/build/4-output/{epic-name}/5-sprints/sprint-{number}.md
         - Load project standards: Read CLAUDE.md
-        - Load story context: Read .claude/contexts/story-{id}/context.md
-        - Load technical notes: Read .claude/contexts/story-{id}/technical-notes.md
-        - Load progress: Read .claude/contexts/story-{id}/progress.md
+        - Load story context: Read .claude/build/4-output/contexts/stories/story-{id}/context.md
+        - Load technical notes: Read .claude/build/4-output/contexts/stories/story-{id}/technical-notes.md
+        - Load progress: Read .claude/build/4-output/contexts/stories/story-{id}/progress.md
         - Review similar implementations in codebase
       </description>
     </step>
@@ -159,7 +226,7 @@
            
         5. **Update Progress**:
            - Mark task complete in story issue
-           - Update .claude/contexts/story-{id}/progress.md
+           - Update .claude/build/4-output/contexts/stories/story-{id}/progress.md
            - Document any technical decisions
       </description>
     </step>
@@ -195,10 +262,11 @@
   
   <context_requirements>
     <required_context>
+      <sprint_plan>.claude/build/4-output/{epic-name}/5-sprints/sprint-{number}.md</sprint_plan>
       <project_standards>CLAUDE.md</project_standards>
-      <story_context>.claude/contexts/story-{id}/context.md</story_context>
-      <technical_notes>.claude/contexts/story-{id}/technical-notes.md</technical_notes>
-      <progress_tracking>.claude/contexts/story-{id}/progress.md</progress_tracking>
+      <story_context>.claude/build/4-output/contexts/stories/story-{id}/context.md</story_context>
+      <technical_notes>.claude/build/4-output/contexts/stories/story-{id}/technical-notes.md</technical_notes>
+      <progress_tracking>.claude/build/4-output/contexts/stories/story-{id}/progress.md</progress_tracking>
     </required_context>
     
     <pattern_references>

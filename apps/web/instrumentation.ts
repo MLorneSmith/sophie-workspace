@@ -11,7 +11,6 @@ export async function register() {
 
 		registerOTel({
 			serviceName: process.env.OTEL_SERVICE_NAME || "slideheroes-web",
-			serviceVersion: process.env.OTEL_SERVICE_VERSION || "1.0.0",
 		});
 	}
 

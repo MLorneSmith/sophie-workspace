@@ -2,13 +2,13 @@
 
 > Follow the instructions precisely. If it wasn't specified, don't do it.
 
-## RUN the following commands:
+## RUN the following commands
 
 `rg -g "*.test.*" --files . | head -n 5`
 `rg -t ts -t tsx "describe|test|it\(" --files apps | head -n 5`
 `git status --porcelain | head -n 10`
 
-## PARALLEL READ the following files:
+## PARALLEL READ the following files
 
 .claude/core/project-overview.md
 .claude/core/code-standards.md
@@ -37,7 +37,7 @@ vitest.config.ts
 
 ## IMPLEMENTATION METHODOLOGY
 
-### Test-Driven Implementation:
+### Test-Driven Implementation
 
 - Create or update tests before implementing fixes
 - Verify failing tests reproduce the original issue
@@ -45,14 +45,14 @@ vitest.config.ts
 - Run full test suite after each change
 - Add regression tests to prevent future issues
 
-### Phased Implementation Approach:
+### Phased Implementation Approach
 
 - **Phase 1**: Emergency Response (stop the bleeding)
 - **Phase 2**: Tactical Solution (comprehensive fix)
 - **Phase 3**: Strategic Improvement (long-term prevention)
 - Verify each phase completely before proceeding
 
-### Continuous Verification:
+### Continuous Verification
 
 - Test functionality after each significant change
 - Monitor performance and error rates
@@ -62,7 +62,7 @@ vitest.config.ts
 
 ## IMPLEMENTATION PRIORITIES
 
-### Code Quality Standards:
+### Code Quality Standards
 
 - Follow existing code patterns and conventions
 - Maintain consistent naming and structure
@@ -70,7 +70,7 @@ vitest.config.ts
 - Include appropriate comments and documentation
 - Ensure type safety and proper validation
 
-### Testing Strategy:
+### Testing Strategy
 
 - **Unit Tests**: Test individual functions and components
 - **Integration Tests**: Test system interactions
@@ -78,7 +78,7 @@ vitest.config.ts
 - **Performance Tests**: Verify performance improvements
 - **Security Tests**: Validate security measures
 
-### Monitoring & Observability:
+### Monitoring & Observability
 
 - Add logging for debugging future issues
 - Implement metrics for performance tracking
@@ -88,7 +88,7 @@ vitest.config.ts
 
 ## VERIFICATION REQUIREMENTS
 
-### Functional Verification:
+### Functional Verification
 
 - Original issue no longer reproducible
 - All related functionality still works
@@ -96,7 +96,7 @@ vitest.config.ts
 - Error handling works as expected
 - Edge cases handled appropriately
 
-### Performance Verification:
+### Performance Verification
 
 - Response times meet or exceed targets
 - Memory usage is appropriate
@@ -104,7 +104,7 @@ vitest.config.ts
 - No performance regressions introduced
 - Scalability requirements met
 
-### Security Verification:
+### Security Verification
 
 - No new security vulnerabilities introduced
 - Authentication and authorization work correctly
@@ -112,7 +112,7 @@ vitest.config.ts
 - Sensitive data properly protected
 - Security best practices followed
 
-### Integration Verification:
+### Integration Verification
 
 - External APIs and services work correctly
 - Database operations complete successfully
@@ -122,7 +122,7 @@ vitest.config.ts
 
 ## ROLLBACK & RECOVERY PLANNING
 
-### Preparation:
+### Preparation
 
 - Create backups before making changes
 - Document current system state
@@ -130,7 +130,7 @@ vitest.config.ts
 - Test rollback procedures in safe environment
 - Plan for data migration rollback if needed
 
-### Monitoring During Implementation:
+### Monitoring During Implementation
 
 - Watch error rates and performance metrics
 - Monitor user feedback and reports
@@ -138,7 +138,7 @@ vitest.config.ts
 - Verify business metrics remain stable
 - Be prepared to halt implementation if issues arise
 
-### Recovery Procedures:
+### Recovery Procedures
 
 - Quick rollback for critical issues
 - Data recovery procedures if needed
@@ -148,7 +148,7 @@ vitest.config.ts
 
 ## DOCUMENTATION REQUIREMENTS
 
-### Implementation Documentation:
+### Implementation Documentation
 
 - Detailed changelog of all modifications
 - Reasoning behind implementation decisions
@@ -156,7 +156,7 @@ vitest.config.ts
 - Performance impact measurements
 - Security considerations and validations
 
-### Knowledge Transfer:
+### Knowledge Transfer
 
 - Update team documentation and runbooks
 - Create troubleshooting guides
@@ -164,7 +164,7 @@ vitest.config.ts
 - Update deployment and maintenance procedures
 - Share lessons learned with team
 
-### Future Maintenance:
+### Future Maintenance
 
 - Document ongoing monitoring requirements
 - Create maintenance schedules if needed
@@ -174,7 +174,7 @@ vitest.config.ts
 
 ## QUALITY GATES
 
-### Before Starting Implementation:
+### Before Starting Implementation
 
 - [ ] Solution architecture approved and understood
 - [ ] Implementation environment prepared
@@ -182,7 +182,7 @@ vitest.config.ts
 - [ ] Test environment available and configured
 - [ ] Success criteria clearly defined
 
-### During Implementation:
+### During Implementation
 
 - [ ] Each change tested before proceeding
 - [ ] No breaking changes introduced
@@ -190,7 +190,7 @@ vitest.config.ts
 - [ ] Security standards upheld
 - [ ] Documentation updated continuously
 
-### Before Completion:
+### Before Completion
 
 - [ ] All tests passing (unit, integration, e2e)
 - [ ] Original issue verified as resolved
@@ -201,7 +201,7 @@ vitest.config.ts
 
 ## TOOLS AND BEST PRACTICES
 
-### Development Tools:
+### Development Tools
 
 - Use proper IDE debugging capabilities
 - Leverage testing frameworks effectively
@@ -209,7 +209,7 @@ vitest.config.ts
 - Follow git best practices for commits
 - Use feature branches for implementation
 
-### Monitoring Tools:
+### Monitoring Tools
 
 - New Relic for production monitoring
 - Browser dev tools for frontend debugging
@@ -217,7 +217,7 @@ vitest.config.ts
 - Performance profiling tools
 - Log aggregation and analysis
 
-### Communication:
+### Communication
 
 - Regular progress updates
 - Clear documentation of issues encountered
@@ -227,7 +227,7 @@ vitest.config.ts
 
 ## POST-IMPLEMENTATION RESPONSIBILITIES
 
-### Immediate (24 hours):
+### Immediate (24 hours)
 
 - Monitor system stability and performance
 - Watch for any regression issues
@@ -235,7 +235,7 @@ vitest.config.ts
 - Gather initial user feedback
 - Verify monitoring and alerting work
 
-### Short-term (1 week):
+### Short-term (1 week)
 
 - Analyze performance trends
 - Review user feedback and satisfaction
@@ -243,7 +243,7 @@ vitest.config.ts
 - Plan any necessary adjustments
 - Document lessons learned
 
-### Long-term (1 month):
+### Long-term (1 month)
 
 - Evaluate long-term effectiveness
 - Plan strategic improvements
