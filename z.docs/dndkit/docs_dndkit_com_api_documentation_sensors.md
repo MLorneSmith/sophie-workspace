@@ -20,7 +20,6 @@ The built-in sensors are:
 
 - [Keyboard](https://docs.dndkit.com/api-documentation/sensors/keyboard)
 
-
 ### [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors\#custom-sensors)    Custom sensors
 
 If necessary, you may also implement custom sensors to respond to other inputs or if the built-in sensors do not suit your needs. If you build a custom sensor and you think others could benefit, don't hesitate to open an RFC pull request.
@@ -40,7 +39,6 @@ The lifecycle of a sensor is as follows:
 - Sensor dispatches drag end or drag cancel event.
 
 - Sensor is torn down and cleans up manually attached event listeners.
-
 
 From an implementation perspective, Sensors are [classes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes).
 

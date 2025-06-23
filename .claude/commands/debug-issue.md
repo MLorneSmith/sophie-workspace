@@ -322,28 +322,28 @@ const currentNetwork = (await mcp__browser) - tools__getNetworkErrors();
 
 Based on issue type, perform targeted investigation:
 
-#### For Runtime Errors:
+#### For Runtime Errors
 
 1. Set breakpoints in suspected functions
 2. Add console.log statements for variable inspection
 3. Check error boundaries and try-catch blocks
 4. Verify async/await handling
 
-#### For Performance Issues:
+#### For Performance Issues
 
 1. Profile the application
 2. Check React DevTools for re-renders
 3. Analyze bundle size
 4. Review database query plans
 
-#### For Database Issues:
+#### For Database Issues
 
 1. Test queries in isolation
 2. Check RLS policies
 3. Verify indexes
 4. Monitor connection pool
 
-#### For Type Errors:
+#### For Type Errors
 
 1. Run targeted type checking
 2. Check interface definitions

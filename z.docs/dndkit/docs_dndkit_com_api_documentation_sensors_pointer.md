@@ -20,7 +20,6 @@ The Pointer sensor has two activation constraints:
 
 - Delay constraint
 
-
 These activation constraints are mutually exclusive and may not be used simultaneously.
 
 #### [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors/pointer\#distance)    Distance

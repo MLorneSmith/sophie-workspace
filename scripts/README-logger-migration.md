@@ -156,6 +156,7 @@ The scripts automatically determine service names based on file paths:
    ```
 
 6. **Or migrate all at once:**
+
    ```bash
    node scripts/migrate-to-logger.js --from-file console-files.txt
    ```

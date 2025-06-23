@@ -10,12 +10,14 @@ This rule provides guidance for implementing access control, permissions, and su
 ## Role-Based Access Control
 
 ### Account Roles
+
 - Roles are defined in the `roles` table with hierarchy levels (lower number = higher privilege)
 - Default roles include `owner` (hierarchy_level=1) and `member` with specific permissions
 - Primary account owner has special privileges that cannot be revoked
 - Role hierarchy controls what actions users can perform on other members
 
 ### Role Permissions
+
 - Permissions are stored in `role_permissions` table mapping roles to specific permissions
 - Core permissions:
   - `roles.manage`: Manage roles of users with lower hierarchy
@@ -25,6 +27,7 @@ This rule provides guidance for implementing access control, permissions, and su
   - `invites.manage`: Create/update/delete invitations
 
 ### Permission Checking
+
 - Use `has_permission(user_id, account_id, permission_name)` to check specific permissions
 - Use `can_action_account_member(target_team_account_id, target_user_id)` to verify if a user can act on another
 - Use `is_account_owner(account_id)` to check if user is primary owner
@@ -33,11 +36,13 @@ This rule provides guidance for implementing access control, permissions, and su
 ## Team Account Access
 
 ### Team Membership
+
 - Use `has_role_on_account(account_id, account_role)` to check if user is a member with specific role
 - Use `is_team_member(account_id, user_id)` to check if a specific user is a member
 - Use the authenticated user's `TeamAccountWorkspaceContext` to access current permissions array
 
 ### Invitations
+
 - Only users with `invites.manage` permission can create/manage invitations
 - Users can only invite others with the same or lower role hierarchy than they have
 - Invitations have expiry dates (default: 7 days)
@@ -46,11 +51,13 @@ This rule provides guidance for implementing access control, permissions, and su
 ## Subscription Access
 
 ### Subscription Status Checking
+
 - Check active subscriptions with `has_active_subscription(account_id)`
 - Active status includes both `active` and `trialing` subscriptions
 - Guard premium features with subscription checks in both frontend and backend
 
 ### Billing Access
+
 - Only users with `billing.manage` permission can access billing functions
 - All billing operations should be guarded with permission checks
 - Per-seat billing automatically updates when members are added/removed
@@ -58,11 +65,13 @@ This rule provides guidance for implementing access control, permissions, and su
 ## Row Level Security
 
 ### Table RLS
+
 - Most tables have RLS policies restricting access based on team membership
 - Personal account data is only accessible by the account owner
 - Team account data is accessible by all team members based on their roles
 
 ### Actions on Members
+
 - Higher roles can update/remove lower roles but not equal or higher roles
 - Primary owner cannot be removed from their account
 - Ownership transfer requires OTP verification and is limited to primary owners

@@ -24,7 +24,7 @@ _Credits: DeepWiki powered by Devin_
 
 ## Configuration
 
-### Step 1:
+### Step 1
 
 Clone this repository:
 

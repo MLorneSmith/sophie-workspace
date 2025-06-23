@@ -464,27 +464,31 @@ describe("EnhancedAPIManager", () => {
 	describe("Metrics Management", () => {
 		it("should calculate moving average response time correctly", async () => {
 			const manager = getEnhancedAPIManager();
+			
+			// Mock Date.now() to control timing
+			let currentTime = 1000;
+			vi.spyOn(Date, 'now').mockImplementation(() => currentTime);
 
-			// Create handlers that simulate different response times by using delays
+			// Create handlers that simulate different response times
 			const mockHandlers = [
 				vi.fn().mockImplementation(
 					async () => {
-						// Simulate work with delay
-						await new Promise((resolve) => setTimeout(resolve, 10));
+						// Simulate 10ms response time
+						currentTime += 10;
 						return new Response("OK", { status: 200 });
 					},
 				),
 				vi.fn().mockImplementation(
 					async () => {
-						// Simulate more work with longer delay
-						await new Promise((resolve) => setTimeout(resolve, 20));
+						// Simulate 20ms response time
+						currentTime += 20;
 						return new Response("OK", { status: 200 });
 					},
 				),
 				vi.fn().mockImplementation(
 					async () => {
-						// Simulate work before error
-						await new Promise((resolve) => setTimeout(resolve, 30));
+						// Simulate 30ms response time before error
+						currentTime += 30;
 						throw new Error("Test error");
 					},
 				),
@@ -503,16 +507,21 @@ describe("EnhancedAPIManager", () => {
 			await enhancedHandlers[0](request);
 			let metrics = manager.getMetrics();
 			expect(metrics.successfulRequests).toBe(1);
-			expect(metrics.averageResponseTime).toBeGreaterThan(0);
+			expect(metrics.averageResponseTime).toBe(10); // First request: 10ms
 
 			await enhancedHandlers[1](request);
 			metrics = manager.getMetrics();
 			expect(metrics.successfulRequests).toBe(2);
+			expect(metrics.averageResponseTime).toBe(15); // Average of 10 and 20
 
 			await enhancedHandlers[2](request);
 			metrics = manager.getMetrics();
 			expect(metrics.failedRequests).toBe(1);
 			expect(metrics.totalRequests).toBe(3);
+			expect(metrics.averageResponseTime).toBe(20); // Average of 10, 20, and 30
+			
+			// Restore Date.now
+			vi.restoreAllMocks();
 		});
 
 		it("should handle success and failure counts accurately", async () => {

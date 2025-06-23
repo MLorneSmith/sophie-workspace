@@ -13,7 +13,8 @@ alwaysApply: false
 2. Server Actions:
    - Use the `adminAction` wrapper for all server actions in the admin section
    - This checks if the current user is a super admin before executing the action
-   - Example: 
+   - Example:
+
      ```typescript
      export const yourAdminAction = adminAction(
        enhanceAction(
@@ -30,7 +31,8 @@ alwaysApply: false
 3. Authorization Functions:
    - Import and use `isSuperAdmin` from '@kit/admin' to check if the current user is a super admin [is-super-admin.ts](mdc:packages/features/admin/src/lib/server/utils/is-super-admin.ts)
    - This function returns a boolean indicating whether the user has the super-admin role and MFA enabled
-   - Example: 
+   - Example:
+
      ```typescript
      const isAdmin = await isSuperAdmin(getSupabaseServerClient());
      if (!isAdmin) {
@@ -44,14 +46,16 @@ alwaysApply: false
    - Include appropriate validation for all fields
 
 5. Data Fetching
-  - Do not use `ServerDataLoader` unless the query is very simple
-  - Use the authed Supabase Server Client such as [admin-dashboard.loader.ts](mdc:packages/features/admin/src/lib/server/loaders/admin-dashboard.loader.ts)
+
+- Do not use `ServerDataLoader` unless the query is very simple
+- Use the authed Supabase Server Client such as [admin-dashboard.loader.ts](mdc:packages/features/admin/src/lib/server/loaders/admin-dashboard.loader.ts)
 
 The Super Admin section requires strict access control as it provides elevated privileges. Always ensure the current user cannot perform destructive actions on their own account and properly validate input data."
 
 ## Writing Pages in the Admin Sections
 
 1. Basic Page Structure:
+
    ```typescript
    import { AdminGuard } from '@kit/admin/components/admin-guard';
    import { PageBody, PageHeader } from '@kit/ui/page';
@@ -84,6 +88,7 @@ The Super Admin section requires strict access control as it provides elevated p
    - Create a cached loader function in a server directory
    - Use the Supabase client for database operations
    - Example:
+
      ```typescript
      // in _lib/server/loaders/your-loader.ts
      import { cache } from 'react';
@@ -102,6 +107,7 @@ The Super Admin section requires strict access control as it provides elevated p
 3. Dynamic Routes:
    - For pages that need parameters (like `[id]`), handle them appropriately
    - For example:
+
      ```typescript
      interface Params {
        params: Promise<{
@@ -118,14 +124,16 @@ The Super Admin section requires strict access control as it provides elevated p
 
 4. Updating Sidebar navigation at [admin-sidebar.tsx](mdc:apps/web/app/admin/_components/admin-sidebar.tsx) to include new pages
 
-### Security Considerations:
-   - Validate that the target is not the current super admin
-   - Implement confirmation steps for destructive actions
-   - Never expose sensitive error details to the client
+### Security Considerations
+
+- Validate that the target is not the current super admin
+- Implement confirmation steps for destructive actions
+- Never expose sensitive error details to the client
 
 ### Services
 
 1. Basic Service Structure:
+
    ```typescript
    import 'server-only';
    import { SupabaseClient } from '@supabase/supabase-js';
@@ -173,6 +181,7 @@ The Super Admin section requires strict access control as it provides elevated p
 3. Security Checks:
    - Implement methods to verify the current user is not taking action on their own account
    - Example:
+
      ```typescript
      private async assertUserIsNotCurrentSuperAdmin(targetId: string) {
        const { data } = await this.client.auth.getUser();
@@ -195,6 +204,7 @@ The Super Admin section requires strict access control as it provides elevated p
    - For admin-only operations, use the admin client
    - For regular operations, use the standard client
    - Example:
+
      ```typescript
      constructor(
        private readonly client: SupabaseClient<Database>,

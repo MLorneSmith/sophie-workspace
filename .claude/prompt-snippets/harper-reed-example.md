@@ -44,7 +44,7 @@ Whenever you build out a new project and specifically start a new Claude.md - yo
 - If the logs are supposed to contain errors, capture and test it.
 - NO EXCEPTIONS POLICY: Under no circumstances should you mark any test type as "not applicable". Every project, regardless of size or complexity, MUST have unit tests, integration tests, AND end-to-end tests. If you believe a test type doesn't apply, you need the human to say exactly "I AUTHORIZE YOU TO SKIP WRITING TESTS THIS TIME"
 
-## We practice TDD. That means:
+## We practice TDD. That means
 
 - Write tests before writing the implementation code
 - Only write enough code to make the failing test pass

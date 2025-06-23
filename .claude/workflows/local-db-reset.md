@@ -1,10 +1,13 @@
 # Local Database Reset Workflow
 
 ## Overview
+
 This workflow provides step-by-step instructions for completely resetting both the Supabase (web) and Payload CMS schemas in the local development environment. This is a destructive operation that rebuilds both schemas from scratch when schema corruption occurs or a fresh start is needed.
 
 ## ⚠️ Critical Warning
+
 **This procedure completely destroys and rebuilds both the Supabase and Payload schemas locally.** Use only when:
+
 - Local database corruption prevents normal development
 - "Column does not exist" errors during migration
 - Inconsistent schema state after failed migrations
@@ -12,6 +15,7 @@ This workflow provides step-by-step instructions for completely resetting both t
 - Testing schema changes before remote deployment
 
 ## Prerequisites
+
 - [ ] Docker installed and running (required for Supabase local services)
 - [ ] Local Supabase CLI installed and configured
 - [ ] Local Payload CMS configured for local development
@@ -20,6 +24,7 @@ This workflow provides step-by-step instructions for completely resetting both t
 - [ ] Use TodoWrite tool to track progress through the workflow steps
 
 ## Local Environment Configuration
+
 ```
 Local Supabase URL: http://localhost:54321
 Local Database URL: postgresql://postgres:postgres@localhost:54322/postgres
@@ -29,6 +34,7 @@ Local Payload URL: http://localhost:3001
 ## Step 1: Pre-Reset Preparation
 
 ### 1.1 Create Local Database Backup (Optional)
+
 Create a backup of current local data if needed:
 
 ```bash
@@ -40,6 +46,7 @@ pg_restore --list local_backup_*.sql | head -10
 ```
 
 ### 1.2 Stop All Running Services
+
 Stop all development services to ensure clean state:
 
 ```bash
@@ -54,6 +61,7 @@ pkill -f "next-server"
 ```
 
 ### 1.3 Verify Environment Variables
+
 Confirm local development environment variables:
 
 ```bash
@@ -67,6 +75,7 @@ echo "NODE_ENV: $NODE_ENV"
 ## Step 2: Reset Supabase Schema (Web App)
 
 ### 2.1 Reset Local Supabase Database
+
 Reset the entire local Supabase instance (⏱️ ~2-3 minutes):
 
 ```bash
@@ -83,6 +92,7 @@ sleep 10
 **Note**: Supabase must be running before you can reset it. The start command will handle this automatically.
 
 ### 2.2 Apply Supabase Migrations
+
 Run all Supabase migrations for the web app:
 
 ```bash
@@ -94,6 +104,7 @@ pnpm --filter web supabase:typegen
 ```
 
 ### 2.3 Verify Supabase Schema
+
 Confirm Supabase schema was properly created:
 
 ```bash
@@ -108,6 +119,7 @@ docker exec -i supabase_db_2025slideheroes-db psql -U postgres -d postgres -c "S
 ```
 
 ### 2.4 Seed Initial Data (Optional)
+
 Apply seed data for development:
 
 ```bash
@@ -118,6 +130,7 @@ pnpm --filter web supabase db seed
 ## Step 3: Reset Payload Schema
 
 ### 3.1 Clean Payload Migration Files
+
 Remove existing Payload migration files:
 
 ```bash
@@ -133,6 +146,7 @@ pnpm --filter payload exec sh -c "echo 'export const migrations = [];' > src/mig
 ```
 
 ### 3.2 Drop Existing Payload Schema
+
 ⚠️ **CRITICAL STEP**: Remove the Payload schema from local database (⏱️ ~30 seconds):
 
 ```bash
@@ -160,6 +174,7 @@ END \$\$;"
 **⚠️ WARNING**: This step is CRITICAL. Payload migrations will fail with foreign key constraint errors if existing tables have incompatible data types. Always drop the schema completely before regenerating migrations.
 
 ### 3.3 Verify Payload Schema Removal
+
 Confirm the Payload schema has been completely removed:
 
 ```bash
@@ -175,6 +190,7 @@ docker exec -i supabase_db_2025slideheroes-db psql -U postgres -d postgres -c "S
 ## Step 4: Generate Fresh Payload Migration
 
 ### 4.1 Configure Local Environment Variables
+
 Environment variables for Payload local development:
 
 ```bash
@@ -189,6 +205,7 @@ PAYLOAD_PUBLIC_SERVER_URL="http://localhost:3001"
 **Note**: These variables are set inline for each command to ensure they're available in the correct context.
 
 ### 4.2 Generate New Migration
+
 Create a comprehensive migration for the entire Payload schema:
 
 ```bash
@@ -200,6 +217,7 @@ pnpm --filter payload exec ls -la src/migrations/
 ```
 
 ### 4.3 Verify Migration Generation
+
 Confirm the new migration is properly generated:
 
 ```bash
@@ -217,6 +235,7 @@ pnpm --filter payload exec sh -c 'wc -l src/migrations/20*.ts'
 ## Step 5: Execute Payload Migration
 
 ### 5.1 Create Payload Schema
+
 Create the Payload schema before running migration:
 
 ```bash
@@ -225,6 +244,7 @@ docker exec -i supabase_db_2025slideheroes-db psql -U postgres -d postgres -c "C
 ```
 
 ### 5.2 Run Fresh Migration
+
 Execute the newly generated migration:
 
 ```bash
@@ -235,6 +255,7 @@ pnpm --filter payload payload migrate
 ```
 
 ### 5.3 Expected Migration Output
+
 Look for these success indicators:
 
 ```
@@ -250,6 +271,7 @@ Look for these success indicators:
 ## Step 6: Comprehensive Verification
 
 ### 6.1 Verify Supabase Schema
+
 Check that Supabase web schema is working:
 
 ```bash
@@ -261,6 +283,7 @@ docker exec -i supabase_db_2025slideheroes-db psql -U postgres -d postgres -c "S
 ```
 
 ### 6.2 Verify Payload Schema
+
 Check that Payload schema is working:
 
 ```bash
@@ -275,6 +298,7 @@ docker exec -i supabase_db_2025slideheroes-db psql -U postgres -d postgres -c "S
 ```
 
 ### 6.3 Test Application Connectivity
+
 Verify both applications can connect to the database:
 
 ```bash
@@ -305,6 +329,7 @@ kill $WEB_PID $PAYLOAD_PID 2>/dev/null || true
 ## Step 7: Final Validation
 
 ### 7.1 Run Database Tests
+
 Execute local database tests to ensure everything works:
 
 ```bash
@@ -316,6 +341,7 @@ pnpm --filter payload test
 ```
 
 ### 7.2 Generate TypeScript Types
+
 Ensure all TypeScript types are up to date:
 
 ```bash
@@ -329,6 +355,7 @@ pnpm --filter payload payload generate:types
 ## Troubleshooting
 
 ### Supabase Reset Issues
+
 If Supabase reset fails:
 
 ```bash
@@ -343,6 +370,7 @@ pnpm supabase:web:reset
 ```
 
 ### Payload Migration Issues
+
 If Payload migration fails:
 
 ```bash
@@ -357,6 +385,7 @@ PAYLOAD_DATABASE_URL="postgresql://postgres:postgres@localhost:54322/postgres" P
 ```
 
 ### Foreign Key Constraint Errors
+
 If you see errors like `foreign key constraint "course_quizzes_course_id_id_courses_id_fk" cannot be implemented`:
 
 ```bash
@@ -376,6 +405,7 @@ PAYLOAD_DATABASE_URL="postgresql://postgres:postgres@localhost:54322/postgres" P
 **Root Cause**: Existing tables in the database have different data types (e.g., `text` vs `uuid`) than what the new migration expects. This commonly occurs when migrating between different Payload schema versions.
 
 ### Port Conflicts
+
 If ports are in use:
 
 ```bash
@@ -391,6 +421,7 @@ pkill -f "port 3001"
 ```
 
 ### Environment Variable Issues
+
 If environment variables are not set:
 
 ```bash
@@ -406,6 +437,7 @@ source apps/payload/.env.local
 ## Rollback Procedures
 
 ### Option 1: Restore from Local Backup
+
 ```bash
 # Stop all services
 pnpm supabase:web:stop
@@ -418,6 +450,7 @@ pnpm supabase:web:start
 ```
 
 ### Option 2: Re-run Reset (If Partial Failure)
+
 ```bash
 # Stop services
 pnpm supabase:web:stop
@@ -428,6 +461,7 @@ pnpm supabase:web:reset
 ```
 
 ## Success Metrics
+
 - **Auth Schema**: 16 tables ✅
 - **Public Schema**: 31 tables ✅
 - **Payload Schema**: 58 tables ✅
@@ -437,6 +471,7 @@ pnpm supabase:web:reset
 - **Database Tests**: All tests pass ✅
 
 ## Completion Checklist
+
 - [ ] Local backup created (if needed)
 - [ ] All services stopped cleanly
 - [ ] Supabase database reset successfully
@@ -454,30 +489,36 @@ pnpm supabase:web:reset
 ## Claude Code Execution Commands
 
 ### Execute This Workflow
+
 ```bash
 /run-workflow local-db-reset
 ```
 
 ### Quick Test Command
+
 ```bash
 # Test both database connections
 docker exec -i supabase_db_2025slideheroes-db psql -U postgres -d postgres -c "SELECT 'Supabase: ' || COUNT(*) || ' public tables, Payload: ' || (SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'payload') || ' payload tables' FROM information_schema.tables WHERE table_schema = 'public';"
 ```
 
 ### Verify Both Schemas Command
+
 ```bash
 # Check both schemas exist and have tables
 docker exec -i supabase_db_2025slideheroes-db psql -U postgres -d postgres -c "SELECT table_schema, COUNT(*) as table_count FROM information_schema.tables WHERE table_schema IN ('public', 'payload', 'auth') GROUP BY table_schema ORDER BY table_schema;"
 ```
 
 ## Related Documentation
+
 - **Remote Reset Guide**: `.claude/workflows/remote-db-reset.md`
 - **Supabase Local Setup**: `apps/web/supabase/config.toml`
 - **Payload Config**: `apps/payload/src/payload.config.ts`
 - **Environment Setup**: `CLAUDE.md` development section
 
 ## Support
+
 If local reset procedure fails:
+
 1. **FIRST**: Verify Docker is running (required for all local database operations)
 2. **SECOND**: Check that Supabase CLI is properly installed and updated
 3. **THIRD**: For Payload migration failures, ALWAYS drop the payload schema completely first
@@ -488,7 +529,9 @@ If local reset procedure fails:
 8. Document specific error messages for investigation
 
 ## Tested and Validated ✅
+
 This workflow has been tested end-to-end with the following results:
+
 - **Duration**: ~5-8 minutes total
 - **Success Rate**: 100% when following all steps
 - **Common Issues**: Schema cleanup prevents 90% of migration failures

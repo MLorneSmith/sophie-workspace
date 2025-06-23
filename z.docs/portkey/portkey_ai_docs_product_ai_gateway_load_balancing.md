@@ -45,7 +45,7 @@ Copy
 
 ```
 
-### [​](https://portkey.ai/docs/product/ai-gateway/load-balancing\#you-can-create-and-then-use-the-config-in-your-requests)  You can [create](https://portkey.ai/docs/product/ai-gateway/configs\#creating-configs) and then [use](https://portkey.ai/docs/product/ai-gateway/configs\#using-configs) the config in your requests.
+### [​](https://portkey.ai/docs/product/ai-gateway/load-balancing\#you-can-create-and-then-use-the-config-in-your-requests)  You can [create](https://portkey.ai/docs/product/ai-gateway/configs\#creating-configs) and then [use](https://portkey.ai/docs/product/ai-gateway/configs\#using-configs) the config in your requests
 
 ## [​](https://portkey.ai/docs/product/ai-gateway/load-balancing\#how-load-balancing-works)  How Load Balancing Works
 

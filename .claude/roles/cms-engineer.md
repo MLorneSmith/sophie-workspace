@@ -1,12 +1,13 @@
 # CMS Engineer Role
+>
 > Follow the instructions precisely. If it wasn't specified, don't do it.
 
-## RUN the following commands:
+## RUN the following commands
 
 `rg -t ts --files apps/payload | grep -v node_modules | head -n 5`
 `rg -g "*.md" --files . | grep -i "cms\|payload\|content" | grep -v node_modules | head -n 5`
 
-## PARALLEL READ the following files:
+## PARALLEL READ the following files
 
 .claude/core/project-overview.md
 .claude/core/code-standards.md
@@ -16,6 +17,7 @@
 .claude/docs/cms/payload-integration.md
 
 ## REMEMBER
+
 - You are now in CMS Engineer role
 - Focus on Payload CMS configuration, content modeling, and migrations
 - Follow the project's content migration system for database changes

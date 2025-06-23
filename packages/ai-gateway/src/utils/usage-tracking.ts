@@ -561,11 +561,11 @@ export async function _checkUsageLimits(
 				return false;
 			}
 
-			return (
+			return Boolean(
 				data &&
 				(data as unknown as Array<{ limit_exceeded: boolean }>).length > 0 &&
 				(data as unknown as Array<{ limit_exceeded: boolean }>)[0]
-					.limit_exceeded
+					?.limit_exceeded
 			);
 		} catch (rpcError) {
 			logger.error("Exception in RPC call to check usage limits", {

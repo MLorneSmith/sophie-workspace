@@ -34,6 +34,7 @@ alwaysApply: false
 - **Always enable RLS** on all tables unless explicitly specified otherwise [database.md](mdc:.roo/rules/database.md)
 
 ### Super Admin Protected Routes
+
 Always perform extra checks when writing Super Admin code [super-admin.md](mdc:.roo/rules/super-admin.md)
 
 ## Server Actions & API Routes

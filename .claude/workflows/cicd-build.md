@@ -1,5 +1,5 @@
 We are implemeting a CI/CD pipeline. Read: z.context/cicd-pipeline-design.md and .claude/scratch/cicd-implementation-plan.md. We have setup a github project called 'CI/CD Pipeline Implementation'.
 
-The next issue to implement is issue #40.
+The next issue to implement is issue #46.
 
 Continue with the implementation

@@ -2,7 +2,6 @@
 
  Back to top
 
-
 `Ctrl` + `K`
 
 [Login](https://app.pdf.co/login) [Sign Up](https://app.pdf.co/signup) [**Dashboard**](https://app.pdf.co/)
@@ -23,7 +22,6 @@ For one-time check of **PDF** file information and find form fields please use [
 
 - [/pdf/info/fields](https://developer.pdf.co/api/pdf-forms-info-reader/index.html#post-tag-pdf-info-fields)
 
-
 ## /pdf/info/fields [\#](https://developer.pdf.co/api/pdf-forms-info-reader/index.html\#post-tag-pdf-info-fields "Permalink to this heading")
 
 Extracts information about fillable **PDF** fields (fillable edit boxes, fillable check-boxes, radio buttons, combo-boxes) from input **PDF** file along with general information about the input **PDF** document. The purpose of this endpoint is to get information about fillable **PDFs** for use with **PDF.co** [PDF Add](https://developer.pdf.co/api/pdf-add/index.html#pdf-edit-add) method.
@@ -31,7 +29,6 @@ Extracts information about fillable **PDF** fields (fillable edit boxes, fillabl
 - **Method:** POST
 
 - **Endpoint:** /v1/pdf/info/fields
-
 
 ### Attributes [\#](https://developer.pdf.co/api/pdf-forms-info-reader/index.html\#attributes "Permalink to this heading")
 
@@ -375,7 +372,6 @@ Copy to clipboard
 
 - [cURL samples](https://github.com/bytescout/pdf-co-api-samples/tree/master/PDF%20Forms%20Info%20Reader/cURL/Read%20PDF%20Form%20Information)
 
-
 Footnotes
 
 [1](https://developer.pdf.co/api/pdf-forms-info-reader/index.html#id2)
@@ -418,8 +414,6 @@ to our cookie use. Please read our
 [privacy policy](https://pdf.co/resources/legal/privacy)
 for more information.
 
-
 I Agree
-
 
 On this page

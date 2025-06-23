@@ -2,7 +2,6 @@
 
  Back to top
 
-
 `Ctrl` + `K`
 
 [Login](https://app.pdf.co/login) [Sign Up](https://app.pdf.co/signup) [**Dashboard**](https://app.pdf.co/)
@@ -29,7 +28,6 @@ In **Sync** mode, your API request is processed immediately, and the result is r
 
 - **Higher Costs**: Credits are calculated as:
 
-
 ```
 Total Credits Used = Endpoint Credits × Number of Pages
 
@@ -55,7 +53,6 @@ For precise credit calculations, please refer to the [Credits per Function](http
 
 - **Lower Cost**: Credits are calculated as:
 
-
 ```
 Total Credits Used = Endpoint Credits + ("Job/Check" Credits × Number of "Job/Check" Calls until status is "working")
 
@@ -76,7 +73,6 @@ For precise credit calculations, please refer to the [Credits per Function](http
 4. **Fewer Timeouts and Failures**: Extended time limits decrease the likelihood of failures.
 
 5. **Automates Workflow with Webhooks**: [Webhooks](https://developer.pdf.co/api/webhooks/index.html#api-web-hooks) notify you automatically when your job is complete, reducing the need for manual checks and further saving on [job/check](https://developer.pdf.co/api/background-job-check/index.html#job-check) credits.
-
 
 ## How to Switch to Async Mode [\#](https://developer.pdf.co/api/async-and-sync-mode/index.html\#how-to-switch-to-async-mode "Permalink to this heading")
 
@@ -127,8 +123,6 @@ to our cookie use. Please read our
 [privacy policy](https://pdf.co/resources/legal/privacy)
 for more information.
 
-
 I Agree
-
 
 On this page

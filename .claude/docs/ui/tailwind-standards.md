@@ -73,6 +73,7 @@ Order Tailwind classes in the following groups:
 6. Responsive variants
 
 Example:
+
 ```tsx
 <div className="
   flex items-center justify-between  /* Layout */
@@ -114,6 +115,7 @@ Our application uses CSS variables for theming, which automatically adapt to lig
 - **Destructive**: `destructive` / `destructive-foreground` - Error/danger states
 
 Example:
+
 ```tsx
 <button className="bg-primary text-primary-foreground hover:bg-primary/90">
   Button
@@ -217,6 +219,7 @@ The `tailwindcss-animate` plugin is configured via the `@plugin` directive in `g
 ```
 
 Available animation utilities:
+
 - `animate-in` / `animate-out` - Entry and exit animations
 - `fade-in` / `fade-out` - Opacity animations
 - `zoom-in` / `zoom-out` - Scale animations
@@ -296,6 +299,7 @@ Tailwind CSS v4 supports container queries for component-responsive design:
 ```
 
 Container query breakpoints:
+
 - `@sm`: 384px
 - `@md`: 448px
 - `@lg`: 512px
@@ -315,7 +319,8 @@ Tailwind CSS v4 automatically removes unused styles in production builds. The `@
 
 ### Best Practices for Performance
 
-1. **Avoid dynamic class names**: 
+1. **Avoid dynamic class names**:
+
    ```tsx
    // ❌ Bad - Tailwind can't detect these
    <div className={`text-${color}-500`} />
@@ -325,6 +330,7 @@ Tailwind CSS v4 automatically removes unused styles in production builds. The `@
    ```
 
 2. **Use CSS variables for dynamic values**:
+
    ```tsx
    // For truly dynamic values, use CSS variables
    <div 

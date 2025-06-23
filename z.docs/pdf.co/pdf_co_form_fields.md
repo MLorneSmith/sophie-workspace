@@ -2,7 +2,6 @@
 
  Back to top
 
-
 `Ctrl` + `K`
 
 [Login](https://app.pdf.co/login) [Sign Up](https://app.pdf.co/signup) [**Dashboard**](https://app.pdf.co/)
@@ -908,7 +907,6 @@ Copy to clipboard
 
 - [VB.NET](https://github.com/bytescout/pdf-co-api-samples/tree/master/PDF%20Fill%20PDF%20Forms/VB.NET)
 
-
 Footnotes
 
 1
@@ -951,8 +949,6 @@ to our cookie use. Please read our
 [privacy policy](https://pdf.co/resources/legal/privacy)
 for more information.
 
-
 I Agree
-
 
 On this page

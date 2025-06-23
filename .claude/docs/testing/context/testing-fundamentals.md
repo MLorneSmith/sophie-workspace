@@ -4,7 +4,7 @@ This document contains the essential testing principles and patterns for the Sli
 
 ## Core Testing Principles
 
-### Tests Should Be:
+### Tests Should Be
 
 - **Fast** - Run in milliseconds, not seconds
 - **Isolated** - No dependencies on external services or other tests

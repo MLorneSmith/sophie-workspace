@@ -16,7 +16,6 @@ Depending on your use-case, you may want to use a drag overlay rather than trans
 
 - If you want **smooth drop animations** without the effort of building them yourself.
 
-
 ## [Direct link to heading](https://docs.dndkit.com/api-documentation/draggable/drag-overlay\#usage)    Usage
 
 You may render any valid JSX within the children of the `<DragOverlay>`.
@@ -283,7 +282,7 @@ interface DropAnimation {
 }
 ```
 
-The `duration` option should be a number, in `milliseconds`. The default value is `250 ` milliseconds. The `easing` option should be a string that represents a valid [CSS easing function](https://developer.mozilla.org/en-US/docs/Web/CSS/easing-function). The default easing is `ease`.
+The `duration` option should be a number, in `milliseconds`. The default value is `250` milliseconds. The `easing` option should be a string that represents a valid [CSS easing function](https://developer.mozilla.org/en-US/docs/Web/CSS/easing-function). The default easing is `ease`.
 
 Copy
 

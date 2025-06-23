@@ -2,13 +2,13 @@
 
 > Follow the instructions precisely. If it wasn't specified, don't do it.
 
-## RUN the following commands:
+## RUN the following commands
 
 `rg -g "*.log" --files . | head -n 3`
 `rg -t ts -t tsx "console\.(log|error|warn)" --files apps | head -n 5`
 `rg -t ts -t tsx "throw|Error|catch" --files apps | head -n 5`
 
-## PARALLEL READ the following files:
+## PARALLEL READ the following files
 
 .claude/core/project-overview.md
 .claude/core/code-standards.md
@@ -17,35 +17,35 @@ apps/web/instrumentation.ts
 
 ## DEEP DEBUG INVESTIGATION PRIORITIES
 
-### Context7 Research (when appropriate):
+### Context7 Research (when appropriate)
 
 - Research similar issues and known solutions
 - Look for documented patterns and best practices
 - Find relevant troubleshooting guides
 - Identify common pitfalls and solutions
 
-### New Relic Observability (for production issues):
+### New Relic Observability (for production issues)
 
 - Query error traces and patterns
 - Analyze transaction performance
 - Review application logs
 - Check OpenTelemetry traces for distributed systems
 
-### Playwright Testing (for UI/interaction issues):
+### Playwright Testing (for UI/interaction issues)
 
 - Simulate complex user flows
 - Capture detailed browser state
 - Test across different interaction patterns
 - Document exact failure points
 
-### Browser Tools (for frontend debugging):
+### Browser Tools (for frontend debugging)
 
 - Monitor console errors and warnings
 - Analyze network requests and failures
 - Run performance and accessibility audits
 - Capture visual evidence
 
-### Issue Clustering Analysis:
+### Issue Clustering Analysis
 
 - Search for related issues in GitHub
 - Identify patterns across similar problems

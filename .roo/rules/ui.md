@@ -9,10 +9,12 @@ alwaysApply: false
 - By exporting the component from the "exports" field, we can import it using the "@kit/ui/{component-name}" format.
 
 ## Styling
+
 - Styling is done using Tailwind CSS. We use the "cn" function from the "@kit/ui/utils" package to generate class names.
 - Avoid fixes classes such as "bg-gray-500". Instead, use Shadcn classes such as "bg-background", "text-secondary-foreground", "text-muted-foreground", etc.
 
 Makerkit leverages two sets of UI components:
+
 1. **Shadcn UI Components**: Base components from the Shadcn UI library
 2. **Makerkit-specific Components**: Custom components built on top of Shadcn UI
 
@@ -88,6 +90,7 @@ import { ProfileAvatar } from '@kit/ui/profile-avatar';
 ## Marketing Components
 
 Import all marketing components with:
+
 ```tsx
 import {
   Hero,
@@ -98,6 +101,7 @@ import {
 ```
 
 Key marketing components:
+
 - `Hero` - Hero sections [hero.tsx](mdc:packages/ui/src/makerkit/marketing/hero.tsx)
 - `SecondaryHero` [secondary-hero.tsx](mdc:packages/ui/src/makerkit/marketing/secondary-hero.tsx)
 - `FeatureCard`, `FeatureGrid` - Feature showcases [feature-card.tsx](mdc:packages/ui/src/makerkit/marketing/feature-card.tsx)

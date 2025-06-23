@@ -6,6 +6,7 @@ alwaysApply: false
 # Data Fetching
 
 ## General Data Flow
+
 - In a Server Component context, please use the Supabase Client directly for data fetching
 - In a Client Component context, please use the `useQuery` hook from the "@tanstack/react-query" package
 
@@ -43,6 +44,7 @@ export default function ServerComponent() {
 ```
 
 ## Supabase Clients
+
 - In a Server Component context, use the `getSupabaseServerClient` function from the "@kit/supabase/server-client" package [server-client.ts](mdc:packages/supabase/src/clients/server-client.ts)
 - In a Client Component context, use the `useSupabase` hook from the "@kit/supabase/hooks/use-supabase" package.
 

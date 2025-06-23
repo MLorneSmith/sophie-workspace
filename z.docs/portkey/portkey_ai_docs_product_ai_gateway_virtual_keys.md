@@ -22,7 +22,7 @@ This feature also provides the following benefits:
 
 These can be managed within your account under the “Virtual Keys” tab.
 
-## [​](https://portkey.ai/docs/product/ai-gateway/virtual-keys\#creating-virtual-keys)  Creating Virtual Keys:
+## [​](https://portkey.ai/docs/product/ai-gateway/virtual-keys\#creating-virtual-keys)  Creating Virtual Keys
 
 1. Navigate to the “Virtual Keys” page and click the “Add Key” button in the top right corner.
 2. Select your AI provider, name your key uniquely, and note any usage specifics if needed.
@@ -113,7 +113,7 @@ const chatCompletion = await portkey.chat.completions.create({
 
 ```
 
-### [​](https://portkey.ai/docs/product/ai-gateway/virtual-keys\#using-alias-with-azure-virtual-keys)  Using alias with Azure virtual keys:
+### [​](https://portkey.ai/docs/product/ai-gateway/virtual-keys\#using-alias-with-azure-virtual-keys)  Using alias with Azure virtual keys
 
 ```js
 const chatCompletion = await portkey.chat.completions.create({

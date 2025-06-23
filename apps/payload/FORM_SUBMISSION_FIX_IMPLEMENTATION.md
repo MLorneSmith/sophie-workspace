@@ -5,6 +5,7 @@ This document provides step-by-step instructions to fix the frontend form submis
 ## Problem Summary
 
 The Payload CMS admin interface is experiencing:
+
 - Multiple rapid POST requests to `/admin/create-first-user`
 - Form submission loops causing duplicate entries
 - Race conditions due to React state updates
@@ -25,12 +26,14 @@ The fix consists of three main components:
 #### Option A: Replace the Auto-generated Route (Recommended)
 
 1. **Backup the original file:**
+
    ```bash
    cd apps/payload/src/app/(payload)/api/[...slug]/
    cp route.ts route.ts.backup
    ```
 
 2. **Replace with enhanced version:**
+
    ```bash
    cp route.enhanced.ts route.ts
    ```
@@ -89,6 +92,7 @@ export default function PayloadLayout({ children }: { children: React.ReactNode 
 #### Method 2: Copy Script to Public Directory
 
 1. **Copy the protection script:**
+
    ```bash
    cp apps/payload/src/lib/client-form-protection-init.js apps/payload/public/admin/form-protection.js
    ```
@@ -182,17 +186,20 @@ ENABLE_DB_METRICS_LOGGING=true
 ### Step 4: Verify Installation
 
 1. **Start your Payload application:**
+
    ```bash
    cd apps/payload
    npm run dev
    ```
 
 2. **Check the debug endpoint:**
+
    ```bash
    curl http://localhost:3000/api/debug/deduplication
    ```
 
 3. **Monitor the logs** for these messages:
+
    ```
    [REQ-DEDUP-INFO] Request deduplication manager initialized
    [ENHANCED-API-INFO] Enhanced API Manager initialized
@@ -204,6 +211,7 @@ ENABLE_DB_METRICS_LOGGING=true
 1. **Navigate to the admin interface** (usually `/admin`)
 
 2. **Open browser DevTools** and check for:
+
    ```
    [FORM-PROTECTION] Initializing...
    [FORM-PROTECTION] Protected form: [form-id]
@@ -224,6 +232,7 @@ ENABLE_DB_METRICS_LOGGING=true
 ### Debug Endpoint
 
 Access real-time deduplication status:
+
 ```bash
 # Get status
 curl http://localhost:3000/api/debug/deduplication
@@ -257,6 +266,7 @@ console.log(window.formProtection?.formStates)
 Look for these key log messages:
 
 **Success indicators:**
+
 ```
 [REQ-DEDUP-INFO] Returning cached response
 [FORM-PROTECTION] Prevented duplicate submission
@@ -264,12 +274,14 @@ Look for these key log messages:
 ```
 
 **Warning indicators:**
+
 ```
 [REQ-DEDUP-INFO] Duplicate request detected
 [FORM-PROTECTION] Prevented double-click
 ```
 
 **Error indicators:**
+
 ```
 [REQ-DEDUP-ERROR] Request failed
 [ENHANCED-API-ERROR] API Error
@@ -280,6 +292,7 @@ Look for these key log messages:
 If you need to rollback the changes:
 
 1. **Restore original API route:**
+
    ```bash
    cd apps/payload/src/app/(payload)/api/[...slug]/
    cp route.ts.backup route.ts

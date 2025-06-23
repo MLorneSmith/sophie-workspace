@@ -44,18 +44,21 @@ Start with these essential shared documents:
 For each meta role, create specialized context documents:
 
 ### UI Engineer
+
 - `ui/component-patterns.md`
 - `ui/tailwind-standards.md`
 - `ui/accessibility-requirements.md`
 - `ui/responsive-design.md`
 
 ### Data Engineer
+
 - `data/supabase-patterns.md`
 - `data/react-query-patterns.md`
 - `data/database-schema.md`
 - `data/migration-patterns.md`
 
 ### AI Engineer
+
 - `ai/portkey-integration.md`
 - `ai/prompt-engineering.md`
 - `ai/model-selection.md`
@@ -64,6 +67,7 @@ For each meta role, create specialized context documents:
 ## 4. Create Role Command Files
 
 For each meta role, create a command file that:
+
 1. Loads relevant context documents
 2. Sets the appropriate mental model
 3. Provides role-specific examples from the codebase
@@ -89,6 +93,7 @@ For common tasks within each role, create specialized commands:
 ## 6. Document Usage in README
 
 Add a section to README.md explaining:
+
 - Available meta roles and when to use each
 - How to switch between roles
 - How to combine roles for complex tasks
@@ -114,27 +119,35 @@ This project uses Claude's context priming capabilities to provide specialized a
 
 1. **Switch to a role** at the beginning of your session:
    ```
+
    /read .claude/roles/ui-engineer.md
+
    ```
 
 2. **Ask role-specific questions** after loading a role:
    ```
+
    Now that you're in UI Engineer role, help me implement a responsive navigation component.
+
    ```
 
 3. **Combine roles** for complex tasks:
    ```
+
    /read .claude/roles/ui-engineer.md
    /read .claude/roles/data-engineer.md
-   
+
    I need to create a data table component that fetches and displays user data from Supabase.
+
    ```
 
 4. **Use task-specific commands** for common workflows:
    ```
+
    /read .claude/tasks/ui/new-component.md
-   
+
    I need a Button component with primary, secondary, and danger variants.
+
    ```
 
 ### Best Practices
@@ -146,6 +159,7 @@ This project uses Claude's context priming capabilities to provide specialized a
 ```
 
 This documentation provides clear instructions on:
+
 1. What roles are available and their purposes
 2. How to activate a specific role
 3. How to ask questions after loading a role

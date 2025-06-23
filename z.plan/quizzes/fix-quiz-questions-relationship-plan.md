@@ -27,11 +27,13 @@ After examining the codebase and logs, we've determined:
 
 - When a quiz is found, it has an empty `questions` array
 - The fallback mechanism in `LessonDataProvider.tsx` tries to fetch questions using:
+
   ```typescript
   const questionsResponse = await callPayloadAPI(
     `quiz_questions?where[quiz_id][equals]=${quiz.id}&sort=order&depth=0`,
   );
   ```
+
 - This fails because `quiz_questions` no longer have a `quiz_id` field due to the unidirectional relationship model
 
 ## Implementation Plan
@@ -40,7 +42,7 @@ We'll address this issue in two parts:
 
 ### 1. Fix Content Migration System
 
-#### a. Update or verify the unidirectional quiz question repair script:
+#### a. Update or verify the unidirectional quiz question repair script
 
 1. Locate and review the existing `fix:unidirectional-quiz-questions` script
 2. Ensure it correctly:
@@ -48,13 +50,13 @@ We'll address this issue in two parts:
    - Creates entries in the relationship tables that connect quizzes to their questions
    - Validates that each quiz has the appropriate questions linked
 
-#### b. Run the updated migration script:
+#### b. Run the updated migration script
 
 ```powershell
 pnpm --filter @kit/content-migrations run fix:unidirectional-quiz-questions
 ```
 
-#### c. Verify the relationship structure:
+#### c. Verify the relationship structure
 
 - Query the database to confirm the relationship tables are properly populated
 - Perform a test fetch through Payload to confirm quizzes return with their questions
@@ -63,7 +65,7 @@ pnpm --filter @kit/content-migrations run fix:unidirectional-quiz-questions
 
 Update the `LessonDataProvider.tsx` to work with the unidirectional relationship model:
 
-#### a. Remove/replace the invalid fallback query:
+#### a. Remove/replace the invalid fallback query
 
 Current problematic code:
 
@@ -74,7 +76,7 @@ const questionsResponse = await callPayloadAPI(
 );
 ```
 
-#### b. Update Quiz Fetching with proper depth:
+#### b. Update Quiz Fetching with proper depth
 
 Modify the quiz fetching code to ensure we retrieve the questions:
 
@@ -83,7 +85,7 @@ Modify the quiz fetching code to ensure we retrieve the questions:
 const quiz = await getQuiz(quizId, 2); // Ensure depth is sufficient to populate relationships
 ```
 
-#### c. Implement a corrected fallback mechanism:
+#### c. Implement a corrected fallback mechanism
 
 If questions are still empty, use an endpoint that respects the unidirectional relationship:
 
@@ -94,7 +96,7 @@ const questionsResponse = await callPayloadAPI(
 );
 ```
 
-#### d. Add direct database query as a last resort:
+#### d. Add direct database query as a last resort
 
 For maximum resilience, add a direct database query similar to the `findCourseForQuiz` helper:
 

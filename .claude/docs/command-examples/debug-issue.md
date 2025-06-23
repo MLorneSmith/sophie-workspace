@@ -11,7 +11,7 @@
   <instructions>
     # Task Execution Process
     Follow these steps in STRICT ORDER:
-    
+
     ## Setup
     
     BEFORE beginning: create a new markdown file to capture your notes while you work on this issue. Save it in the `notes` directory with the same name as the issue found at {{ params.gh_url }}

@@ -94,6 +94,7 @@ To verify the fix:
    - You can view and edit quiz questions within quizzes
 
 4. Run a verification query to check all quizzes:
+
    ```sql
    SELECT * FROM payload.verify_quiz_questions_jsonb_format();
    ```

@@ -5,6 +5,7 @@ This guide provides systematic approaches for AI coding assistants to debug erro
 ## Error Debugging Methodology
 
 ### 1. Error Classification
+
 ```typescript
 interface ErrorContext {
   type: 'runtime' | 'network' | 'validation' | 'business' | 'system';
@@ -18,6 +19,7 @@ interface ErrorContext {
 ```
 
 ### 2. Error Investigation Process
+
 1. **Capture complete error information**: Stack trace, context, user actions
 2. **Reproduce consistently**: Create reliable reproduction steps
 3. **Trace error propagation**: Follow how errors bubble up
@@ -29,11 +31,13 @@ interface ErrorContext {
 ### Pattern 1: Unhandled Promise Rejections
 
 **Symptoms:**
+
 - `UnhandledPromiseRejectionWarning` in Node.js
 - Silent failures in async operations
 - Inconsistent application state
 
 **Investigation Steps:**
+
 ```typescript
 // Add global handlers to catch unhandled rejections
 process.on('unhandledRejection', (reason, promise) => {
@@ -51,6 +55,7 @@ window.addEventListener('unhandledrejection', (event) => {
 ```
 
 **Common Fixes:**
+
 ```typescript
 // Always handle promise rejections
 const fetchUserData = async (userId: string) => {
@@ -89,17 +94,20 @@ class ErrorBoundary extends Component {
 ### Pattern 2: Network Error Handling
 
 **Symptoms:**
+
 - Failed API calls without user feedback
 - Inconsistent retry behavior
 - Poor offline experience
 
 **Investigation Steps:**
+
 1. **Check network conditions**: Test with slow/unreliable connections
 2. **Examine retry logic**: Verify exponential backoff implementation
 3. **Review timeout handling**: Ensure appropriate timeout values
 4. **Test offline scenarios**: Verify offline/online state handling
 
 **Robust Network Error Handling:**
+
 ```typescript
 class ApiClient {
   private async makeRequest<T>(
@@ -157,17 +165,20 @@ class ApiClient {
 ### Pattern 3: Validation Error Handling
 
 **Symptoms:**
+
 - Poor user experience with validation errors
 - Inconsistent validation between client and server
 - Security vulnerabilities from insufficient validation
 
 **Investigation Steps:**
+
 1. **Review validation logic**: Check both client and server validation
 2. **Test edge cases**: Invalid inputs, boundary conditions
 3. **Examine error messages**: Ensure they're helpful and secure
 4. **Check error display**: Verify errors are shown to users appropriately
 
 **Comprehensive Validation:**
+
 ```typescript
 // Schema-based validation with detailed errors
 import { z } from 'zod';
@@ -224,17 +235,20 @@ const useFormWithValidation = (schema: z.ZodSchema) => {
 ### Pattern 4: Error Boundary and Fallback Handling
 
 **Symptoms:**
+
 - White screen of death
 - Entire app crashes from component errors
 - Poor error recovery experience
 
 **Investigation Steps:**
+
 1. **Identify error boundaries**: Check if components are properly wrapped
 2. **Test error scenarios**: Trigger errors in different components
 3. **Review fallback UI**: Ensure fallbacks are helpful and actionable
 4. **Check error reporting**: Verify errors are being tracked
 
 **Comprehensive Error Boundaries:**
+
 ```typescript
 // Granular error boundaries
 const withErrorBoundary = <P extends object>(
@@ -273,6 +287,7 @@ const ChunkErrorFallback = ({ error, retry }: ErrorFallbackProps) => (
 ## Error Tracking and Monitoring
 
 ### 1. Structured Error Logging
+
 ```typescript
 interface ErrorLog {
   id: string;
@@ -318,6 +333,7 @@ class ErrorLogger {
 ```
 
 ### 2. Error Metrics and Alerting
+
 ```typescript
 // Error rate monitoring
 class ErrorMetrics {
@@ -348,6 +364,7 @@ class ErrorMetrics {
 ## Error Recovery Strategies
 
 ### 1. Graceful Degradation
+
 ```typescript
 // Feature flags for graceful degradation
 const useFeatureWithFallback = (featureKey: string, fallback: () => JSX.Element) => {
@@ -383,6 +400,7 @@ const EnhancedComponent = () => {
 ```
 
 ### 2. Retry Mechanisms
+
 ```typescript
 // Exponential backoff with jitter
 const retryWithBackoff = async <T>(
@@ -451,24 +469,28 @@ const useRetryableOperation = <T>(
 ## Best Practices for AI Assistants
 
 ### 1. Error Prevention
+
 - Implement comprehensive input validation
 - Use TypeScript for compile-time error detection
 - Add proper error boundaries at component boundaries
 - Test error scenarios systematically
 
 ### 2. Error Detection
+
 - Monitor error rates and patterns
 - Set up alerting for critical errors
 - Use structured logging for better debugging
 - Implement health checks for system components
 
 ### 3. Error Recovery
+
 - Provide meaningful error messages to users
 - Implement retry mechanisms for transient failures
 - Design fallback experiences for critical features
 - Enable graceful degradation when possible
 
 ### 4. Error Learning
+
 - Analyze error patterns to prevent similar issues
 - Update error handling based on production incidents
 - Document common error scenarios and solutions

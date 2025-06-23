@@ -6,23 +6,25 @@ import { updateLessonProgressAction } from "../../../_lib/server/server-actions"
 type PayloadLesson = Database["payload"]["Tables"]["course_lessons"]["Row"];
 type PayloadQuiz = {
 	id: string;
-	title: string;
 	questions: Array<{
-		id: string;
-		text: string;
-		options?: Array<{ id: string; text: string; isCorrect?: boolean }>;
-		[key: string]: unknown;
+		question: string;
+		questiontype: "single-answer" | "multi-answer";
+		options: Array<{
+			text: string;
+			iscorrect: boolean;
+		}>;
 	}>;
-	[key: string]: unknown;
+	passingScore: number;
 };
 type PayloadSurvey = {
 	id: string;
 	title: string;
-	questions?: Array<{
-		id: string;
-		text: string;
+	questions: Array<{
+		question: string;
 		type: string;
-		[key: string]: unknown;
+		options?: Array<{
+			text: string;
+		}>;
 	}>;
 	[key: string]: unknown;
 };
@@ -38,7 +40,7 @@ type SurveyResponse = Database["public"]["Tables"]["survey_responses"]["Row"];
  */
 export async function LessonDataProviderEnhanced({
 	children,
-	_slug,
+	slug,
 	lessonId,
 	courseId,
 	lesson,
@@ -51,7 +53,7 @@ export async function LessonDataProviderEnhanced({
 		survey: PayloadSurvey | null;
 		surveyResponses: SurveyResponse[];
 	}) => React.ReactNode;
-	_slug: string;
+	slug: string;
 	lessonId: string;
 	courseId: string;
 	lesson: PayloadLesson;
@@ -233,15 +235,15 @@ export async function LessonDataProviderEnhanced({
 	if (surveyId) {
 		try {
 			// Extract the actual survey ID, handling different possible formats
-			let _actualSurveyId = "";
+			let actualSurveyId = "";
 			if (typeof surveyId === "object" && surveyId !== null) {
 				const surveyObj = surveyId as unknown as {
 					id?: string;
 					value?: string;
 				};
-				_actualSurveyId = surveyObj.id || surveyObj.value || "";
+				actualSurveyId = surveyObj.id || surveyObj.value || "";
 			} else {
-				_actualSurveyId = String(surveyId || "");
+				actualSurveyId = String(surveyId || "");
 			}
 
 			// TODO: Async logger needed

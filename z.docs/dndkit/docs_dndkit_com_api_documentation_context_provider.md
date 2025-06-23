@@ -178,7 +178,6 @@ The built-in collision detection algorithms are:
 
 - [Closest corners](https://docs.dndkit.com/api-documentation/context-provider/collision-detection-algorithms#closest-corners)
 
-
 You may also build custom collision detection algorithms or compose existing ones.
 
 To learn more, read the collision detection guide:
@@ -207,7 +206,6 @@ Modifiers let you dynamically modify the movement coordinates that are detected 
 
 - Applying resistance or clamping the motion
 
-
 To learn more about how to use Modifiers, read the Modifiers guide:
 
 [Modifiers](https://docs.dndkit.com/api-documentation/modifiers)
@@ -222,12 +220,9 @@ Specify one of the following strategies:
 
 - `LayoutMeasuringStrategy.WhileDragging`: Default behavior, only measure droppable elements right after dragging has begun.
 
-
-
 `LayoutMeasuringStrategy.BeforeDragging`: Measure droppable elements before dragging begins and right after it ends.
 
 - `LayoutMeasuringStrategy.Always`: Measure droppable elements before dragging begins, right after dragging has begun, and after it ends.
-
 
 Example usage:
 

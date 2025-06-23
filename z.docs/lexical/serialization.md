@@ -468,7 +468,7 @@ export function $createExtendedTextNode(text: string = ''): ExtendedTextNode {
 }
 
 export function $isExtendedTextNode(node: LexicalNode | null | undefined): node is ExtendedTextNode {
-	return node instanceof ExtendedTextNode;
+ return node instanceof ExtendedTextNode;
 }
 
 function patchStyleConversion(
@@ -527,7 +527,6 @@ The `html` property in `CreateEditorArgs` provides an alternate way to configure
 - `import` \- Similar to `importDOM`, it controls how HTML elements are transformed into `LexicalNodes`. However, instead of defining conversions directly on each `LexicalNode`, `html.import` provides a configuration that can be overridden easily in the editor setup.
 
 - `export` \- Similar to `exportDOM`, this property customizes how `LexicalNodes` are serialized into HTML. With `html.export`, users can specify transformations for various nodes collectively, offering a flexible override mechanism that can adapt without needing to extend or replace specific `LexicalNodes`.
-
 
 #### Key Differences from `importDOM` and `exportDOM` [​](https://lexical.dev/docs/concepts/serialization\#key-differences-from-importdom-and-exportdom "Direct link to heading")
 

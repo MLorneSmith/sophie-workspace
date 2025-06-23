@@ -25,7 +25,7 @@ The web application fails to start due to a module resolution error when importi
 ## Reproduction Steps
 
 1. Run `pnpm run dev` from the project root
-2. Navigate to http://localhost:3000 in a browser
+2. Navigate to <http://localhost:3000> in a browser
 3. The application fails to load with module resolution error
 
 ## Expected Behavior

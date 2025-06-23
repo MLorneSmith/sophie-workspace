@@ -21,6 +21,7 @@ Two scripts are available for syncing GitHub issues to local files:
    ```
 
 2. **`.claude/scripts/auto-sync.js`** - Auto-sync wrapper for debug workflows
+
    ```bash
    node .claude/scripts/auto-sync.js 123        # Auto-sync issue #123
    node .claude/scripts/auto-sync.js ISSUE-123  # Auto-sync ISSUE-123
@@ -442,7 +443,7 @@ Update `.claude/issues/index.md` with:
 
 ### Choosing the Right Tools
 
-#### Use Playwright MCP when:
+#### Use Playwright MCP when
 
 - **UI Interaction Issues**: Forms not submitting, buttons not working, navigation problems
 - **Multi-step Reproduction**: Issues that require clicking through multiple pages/steps
@@ -451,20 +452,20 @@ Update `.claude/issues/index.md` with:
 - **Cross-browser Testing**: Need to verify behavior across different browser states
 - **Authentication Flows**: Login/logout issues, session management problems
 
-#### Use Local Browser Tools when:
+#### Use Local Browser Tools when
 
 - **Simple Console Errors**: Just need to see error messages
 - **Static Performance Issues**: Page load performance that doesn't require interaction
 - **Basic Screenshots**: Visual documentation of current state
 
-#### Use Database Tools when:
+#### Use Database Tools when
 
 - **Slow Queries**: Performance issues in database operations
 - **Data Integrity**: Missing or incorrect data
 - **Connection Issues**: Database connectivity problems
 - **Migration Problems**: Schema or data migration failures
 
-#### Use Cloudflare Observability when:
+#### Use Cloudflare Observability when
 
 - **Worker Errors**: Issues with serverless functions
 - **API Rate Limiting**: Performance or quota issues

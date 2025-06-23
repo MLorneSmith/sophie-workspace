@@ -26,18 +26,13 @@ In order to keep the core of the library small, `@dnd-kit/core` only ships with 
 
 - Hooks for:
 
-
-
 - [Draggable](https://docs.dndkit.com/api-documentation/draggable)
 
 - [Droppable](https://docs.dndkit.com/api-documentation/droppable)
 
-
 - [Drag Overlay](https://docs.dndkit.com/api-documentation/draggable/drag-overlay)
 
 - Sensors for:
-
-
 
 - [Pointer](https://docs.dndkit.com/api-documentation/sensors/pointer)
 
@@ -47,9 +42,7 @@ In order to keep the core of the library small, `@dnd-kit/core` only ships with 
 
 - [Keyboard](https://docs.dndkit.com/api-documentation/sensors/keyboard)
 
-
 - [Accessibility features](https://docs.dndkit.com/guides/accessibility)
-
 
 ### [Direct link to heading](https://docs.dndkit.com/introduction/installation\#modifiers)    Modifiers
 
@@ -62,7 +55,6 @@ Modifiers let you dynamically modify the movement coordinates that are detected 
 - Restricting motion to the draggable node's scroll container bounding rectangle
 
 - Applying resistance or clamping the motion
-
 
 The modifiers repository contains a number of useful modifiers that can be applied on [`DndContext`](https://docs.dndkit.com/api-documentation/context-provider) as well as [`DraggableClone`](https://docs.dndkit.com/api-documentation/draggable/drag-overlay).
 

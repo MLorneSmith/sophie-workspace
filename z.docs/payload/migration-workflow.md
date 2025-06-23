@@ -81,6 +81,7 @@ Migrations will run automatically during deployment because:
    ```
 
 3. The Payload CMS app's `migrate` script is defined in `apps/payload/package.json`:
+
    ```json
    "migrate": "cross-env NODE_OPTIONS=--no-deprecation payload migrate"
    ```

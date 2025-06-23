@@ -134,12 +134,15 @@ In SDF terms, the subset of the space is `[offset, ∞)`. Any coordinate less\
 than the `offset` boundary is a negative distance; otherise the distance is\
 non-negative.\
 \
+
 ### CaretRange [​](https://lexical.dev/docs/concepts/traversals\#caretrange "Direct link to heading")\
+
 \
 `CaretRange` contains a pair of `PointCaret` that are in the same direction. It\
 is equivalent in purpose to a `RangeSelection`, and is what you would generally\
 use for depth first traversals.\
 \
+
 - Constructed with `$getCaretRange(anchor, focus)`, `$caretRangeFromSelection(selection)`,\
 or `$extendCaretToRange(anchor)`\
 - The `anchor` is the start of the range, generally where the selection originated,\
@@ -161,9 +164,13 @@ to consider `TextPointCaretSlice` at every step. They are literal edge cases\
 that can only be at the start and/or end and typically have special\
 treatment (splitting instead of removing, for example).\
 \
+
 ## Traversal Strategies [​](https://lexical.dev/docs/concepts/traversals\#traversal-strategies "Direct link to heading")\
+
 \
+
 ### Adjacent Caret Traversals [​](https://lexical.dev/docs/concepts/traversals\#adjacent-caret-traversals "Direct link to heading")\
+
 \
 The lowest level building block for traversals with NodeCaret is the adjacent caret\
 traversal, which is supported directly by methods of NodeCaret.\
@@ -184,6 +191,7 @@ a `ChildCaret`\
 \
 For example, iterating all siblings:\
 \
+
 ```codeBlockLines_AdAo\
 // Note that NodeCaret<D> already implements Iterable<NodeCaret<D>> in this\
 // way, so this function is not very useful. You can just use startCaret as\

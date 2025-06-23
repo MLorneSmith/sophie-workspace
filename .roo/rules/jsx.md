@@ -39,6 +39,7 @@ import { cn } from '@kit/ui/utils';
 ```
 
 Why use `cn`:
+
 - Handles merging tailwind classes correctly
 - Automatically removes duplicate classes
 - Resolves conflicting classes by keeping the last one
@@ -70,6 +71,7 @@ import { If } from '@kit/ui/if';
 ```
 
 Benefits:
+
 - Improves readability compared to ternary operators
 - Type-safe with TypeScript
 - Reduces nesting and complexity in JSX
@@ -138,6 +140,7 @@ import { Trans } from '@kit/ui/trans';
 ```
 
 Important rules:
+
 - Always provide a `defaults` prop with the English text as fallback
 - Ensure the key exists in the appropriate translation file
 - Keep HTML elements minimal in translations

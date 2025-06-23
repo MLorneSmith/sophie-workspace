@@ -577,16 +577,19 @@ function Track-RepairProgress {
 If relationship verification fails:
 
 1. Run the comprehensive relationship repair script:
+
    ```powershell
    ./scripts/orchestration/phases/relationship-repair.ps1
    ```
 
 2. If issues persist, run the quiz-specific repair:
+
    ```powershell
    ./scripts/orchestration/phases/quiz-system-repair.ps1
    ```
 
 3. Check for orphaned relationships:
+
    ```sql
    SELECT * FROM payload.find_orphaned_relationships();
    ```
@@ -596,11 +599,13 @@ If relationship verification fails:
 If UUID table verification fails:
 
 1. Run the UUID table fix script:
+
    ```powershell
    pnpm --filter @kit/content-migrations run fix:uuid-tables
    ```
 
 2. Verify UUID columns:
+
    ```powershell
    pnpm --filter @kit/content-migrations run uuid:verify:fixed
    ```
@@ -610,11 +615,13 @@ If UUID table verification fails:
 If content verification fails:
 
 1. Fix Lexical format issues:
+
    ```powershell
    pnpm --filter @kit/content-migrations run fix:all-lexical-fields
    ```
 
 2. Fix post-specific issues:
+
    ```powershell
    pnpm --filter @kit/content-migrations run fix:post-lexical-format
    ```
@@ -624,16 +631,19 @@ If content verification fails:
 If S3 storage verification fails:
 
 1. Create fallback files:
+
    ```powershell
    pnpm --filter @kit/content-migrations run create:fallback-files
    ```
 
 2. Set up fallback middleware:
+
    ```powershell
    pnpm --filter @kit/content-migrations run setup:s3-fallback-middleware
    ```
 
 3. Fix S3 references:
+
    ```powershell
    pnpm --filter @kit/content-migrations run fix:s3-references
    ```

@@ -12,7 +12,6 @@ Like the [Pointer](https://docs.dndkit.com/api-documentation/sensors/pointer) se
 
 - Delay constraint
 
-
 These activation constraints are mutually exclusive and may not be used simultaneously.
 
 #### [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors/touch\#distance)    Distance

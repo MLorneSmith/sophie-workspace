@@ -5,20 +5,27 @@
 ### Relationship Inconsistencies
 
 **Symptoms:**
+
 - API errors when fetching related content
 - Missing relationships in admin UI
 - Inconsistent query results
 
 **Solutions:**
+
 1. Run the relationship repair script:
+
    ```powershell
    pnpm --filter @kit/content-migrations run repair:relationships
    ```
+
 2. Verify relationship consistency:
+
    ```powershell
    pnpm --filter @kit/content-migrations run verify:relationships
    ```
+
 3. For persistent issues, use the consolidated fix:
+
    ```powershell
    pnpm --filter @kit/content-migrations run repair:relationships:consolidated
    ```
@@ -26,16 +33,21 @@
 ### UUID Table Issues
 
 **Symptoms:**
+
 - Database errors about missing UUID columns
 - Inconsistent UUID generation
 - Foreign key constraint failures
 
 **Solutions:**
+
 1. Run the UUID table fix script:
+
    ```powershell
    pnpm --filter @kit/content-migrations run fix:uuid-tables
    ```
+
 2. For remote environments:
+
    ```powershell
    ./scripts/remote-migration/content/migrate-content-progressive.ps1 -SkipCore -SkipPosts -SkipDocumentation -SkipCourses -SkipQuizzes -SkipSurveys -SkipDownloads
    ```
@@ -43,17 +55,22 @@
 ### Migration Failures
 
 **Symptoms:**
+
 - Script errors during migration
 - Incomplete data migration
 - Database constraint violations
 
 **Solutions:**
+
 1. Check logs for specific error messages
 2. Run with verbose output:
+
    ```powershell
    ./scripts/reset-and-migrate.ps1 -Verbose
    ```
+
 3. Try running specific phases:
+
    ```powershell
    # Run only setup phase
    ./scripts/orchestration/phases/setup.ps1
@@ -61,7 +78,9 @@
    # Run only processing phase
    ./scripts/orchestration/phases/processing.ps1
    ```
+
 4. For persistent issues, use the clean migration approach:
+
    ```powershell
    pnpm --filter @kit/content-migrations cleanup:and:migrate:remote
    ```
@@ -69,17 +88,22 @@
 ### Payload Schema Issues
 
 **Symptoms:**
+
 - Payload admin UI errors
 - Missing fields or collections
 - Schema validation errors
 
 **Solutions:**
+
 1. Reset Payload schema:
+
    ```powershell
    ./scripts/database-reset/apply-payload-migrations.sh
    ```
+
 2. Check Payload migration files for errors
 3. Verify schema consistency:
+
    ```powershell
    pnpm --filter @kit/content-migrations run verify:schema
    ```
@@ -183,22 +207,27 @@ WHERE
 ### Relationship Data Integrity Issues
 
 **Symptoms:**
+
 - Inconsistent relationship data between JSONB fields and _rels tables
 - API errors with "Cannot read properties of undefined" when fetching related content
 - Missing or duplicate relationships
 
 **Solutions:**
+
 1. Run the comprehensive relationship integrity check:
+
    ```powershell
    pnpm --filter @kit/content-migrations run verify:relationships:comprehensive
    ```
 
 2. Apply the consolidated relationship fix:
+
    ```powershell
    pnpm --filter @kit/content-migrations run repair:relationships:consolidated
    ```
 
 3. For collection-specific issues:
+
    ```powershell
    # Fix quiz-question relationships
    pnpm --filter @kit/content-migrations run repair:quiz-relationships
@@ -210,12 +239,15 @@ WHERE
 ### Database Constraint Violations
 
 **Symptoms:**
+
 - SQL errors about foreign key constraints
 - Unique constraint violations
 - NOT NULL constraint failures
 
 **Solutions:**
+
 1. Identify constraint violations:
+
    ```sql
    -- Check for foreign key violations
    SELECT 
@@ -228,11 +260,13 @@ WHERE
    ```
 
 2. Fix constraint violations:
+
    ```powershell
    pnpm --filter @kit/content-migrations run fix:constraints
    ```
 
 3. For persistent issues, reset and rebuild the affected tables:
+
    ```powershell
    ./scripts/database-reset/reset-specific-tables.ps1 -Tables "posts,posts_rels"
    ```
@@ -240,17 +274,21 @@ WHERE
 ### Performance Issues During Migration
 
 **Symptoms:**
+
 - Extremely slow migration process
 - Timeouts during migration
 - High CPU/memory usage
 
 **Solutions:**
+
 1. Use batch processing for large collections:
+
    ```powershell
    pnpm --filter @kit/content-migrations run migrate:batch-size=100
    ```
 
 2. Disable triggers temporarily during bulk operations:
+
    ```sql
    -- Disable triggers
    ALTER TABLE payload.posts DISABLE TRIGGER ALL;
@@ -262,6 +300,7 @@ WHERE
    ```
 
 3. Use the optimized migration script for large datasets:
+
    ```powershell
    ./scripts/remote-migration/content/migrate-content-optimized.ps1
    ```
@@ -269,22 +308,27 @@ WHERE
 ### Version Control and Migration History
 
 **Symptoms:**
+
 - Confusion about which migrations have been applied
 - Inconsistent database state between environments
 - Migration conflicts
 
 **Solutions:**
+
 1. Check migration history:
+
    ```sql
    SELECT * FROM payload._migrations ORDER BY timestamp;
    ```
 
 2. Reset migration history (use with caution):
+
    ```powershell
    pnpm --filter @kit/content-migrations run reset:migration-history
    ```
 
 3. Generate migration report:
+
    ```powershell
    pnpm --filter @kit/content-migrations run report:migrations
    ```

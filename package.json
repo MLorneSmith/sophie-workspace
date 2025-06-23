@@ -20,8 +20,11 @@
 		"dev": "cross-env FORCE_COLOR=1 turbo dev --parallel --filter=!@slideheroes/playwright-mcp",
 		"format": "biome format .",
 		"format:fix": "biome format --write .",
-		"lint": "biome lint . && manypkg check",
-		"lint:fix": "biome lint --write . && manypkg fix",
+		"lint": "biome lint . && manypkg check && pnpm lint:yaml && pnpm lint:md",
+		"lint:fix": "biome lint --write . && manypkg fix && pnpm lint:md:fix",
+		"lint:yaml": "npx yaml-lint '**/*.{yml,yaml}'",
+		"lint:md": "markdownlint-cli2 '**/*.md' '!node_modules' '!**/node_modules' '!z.plan/**' '!z.instructions/**' '!z.docs/**' '!z.todo/**' '!z.context/**' '!.claude/**' '!.mcp-servers/**' '!.roo/**'",
+		"lint:md:fix": "markdownlint-cli2 --fix '**/*.md' '!node_modules' '!**/node_modules' '!z.plan/**' '!z.instructions/**' '!z.docs/**' '!z.todo/**' '!z.context/**' '!.claude/**' '!.mcp-servers/**' '!.roo/**'",
 		"typecheck": "turbo typecheck --affected --cache-dir=.turbo",
 		"test": "turbo test --cache-dir=.turbo",
 		"update": "pnpm update -r",
@@ -80,10 +83,12 @@
 		"husky": "^9.1.7",
 		"knip": "^5.61.0",
 		"lint-staged": "^16.1.0",
+		"markdownlint-cli2": "^0.18.1",
 		"prettier": "^3.5.3",
-		"tailwind-merge": "^3.3.0",
+		"tailwind-merge": "^3.3.1",
 		"turbo": "2.5.4",
 		"typescript": "^5.8.3",
-		"vitest": "^3.1.2"
+		"vitest": "^3.1.2",
+		"yaml-lint": "^1.7.0"
 	}
 }

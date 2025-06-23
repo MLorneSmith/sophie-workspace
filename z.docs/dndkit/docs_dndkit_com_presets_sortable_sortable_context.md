@@ -40,7 +40,6 @@ The `SortableContext` component also accepts different [sorting strategies](http
 
 - `rectSwappingStrategy`: Use this strategy to achieve swappable functionality.
 
-
 Make sure to use the sorting strategy that is the most adapted to the use case you are building for.
 
 For advanced use cases, you may also build custom sorting strategies. To do so, make sure that the custom strategy you are building accepts the arguments that are passed to a sorting strategy and adheres to the return values that are expected. For more details on this, refer to the implementation of the built-in sorting strategies.

@@ -6,7 +6,7 @@ import { Trans } from "@kit/ui/trans";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
+import { toast } from "@kit/ui/sonner";
 
 const AVATARS_BUCKET = "account_image";
 

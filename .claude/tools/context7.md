@@ -5,6 +5,7 @@
 ## ❌ Without Context7
 
 LLMs rely on outdated or generic information about the libraries you use. You get:
+
 - ❌ Code examples are outdated and based on year-old training data
 - ❌ Hallucinated APIs don't even exist
 - ❌ Generic answers for old package versions
@@ -14,6 +15,7 @@ LLMs rely on outdated or generic information about the libraries you use. You ge
 Context7 MCP pulls up-to-date, version-specific documentation and code examples straight from the source — and places them directly into your prompt.
 
 Add `use context7` to your prompt in Cursor:
+
 ```
 Create a basic Next.js project with app router. use context7
 ```
@@ -33,6 +35,7 @@ Check out our [project addition guide](docs/adding-projects.md) to learn how to 
 ## 🛠️ Installation
 
 ### Requirements
+
 - Node.js >= v18.0.0
 - Cursor, Windsurf, Claude Desktop or another MCP Client
 
@@ -41,6 +44,7 @@ Check out our [project addition guide](docs/adding-projects.md) to learn how to 
 ## 🔨 Available Tools
 
 Context7 MCP provides the following tools that LLMs can use:
+
 - `resolve-library-id`: Resolves a general library name into a Context7-compatible library ID
 - `get-library-docs`: Fetches documentation for a library using a Context7-compatible library ID
 

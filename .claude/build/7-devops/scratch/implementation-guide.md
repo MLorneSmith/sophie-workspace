@@ -38,6 +38,7 @@ Before starting any implementation:
    - Understand project conventions
 
 3. **Set Up Feature Branch**
+
    ```bash
    git checkout -b feature/story-{id}-{brief-description}
    ```
@@ -64,6 +65,7 @@ Before starting any implementation:
    ```
 
 2. **Integration Tests** for workflows:
+
    ```typescript
    // Example: apps/web/app/home/(user)/editor/editor.integration.test.ts
    describe('Editor Content Generation', () => {
@@ -122,6 +124,7 @@ Before starting any implementation:
    ```
 
 3. **Database Operations** with RLS:
+
    ```typescript
    // packages/supabase/src/queries/ai-usage.queries.ts
    export async function trackAIUsage(

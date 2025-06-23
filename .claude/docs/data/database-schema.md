@@ -11,6 +11,7 @@ Our SlideHeroes application uses PostgreSQL on Supabase with three primary schem
 ## Auth Schema (Managed by Supabase)
 
 Standard Supabase authentication tables:
+
 - `auth.users` - User accounts and authentication
 - `auth.identities` - OAuth and identity providers
 - `auth.sessions` - Active user sessions

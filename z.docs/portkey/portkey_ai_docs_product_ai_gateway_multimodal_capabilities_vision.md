@@ -85,9 +85,9 @@ Portkey supports all vision models from its integrated providers as they become 
 
 | Provider | Models | Functions |
 | --- | --- | --- |
-| [OpenAI](https://portkey.ai/docs/integrations/llms/openai) | `gpt-4-vision-preview`, `gpt-4o`, `gpt-4o-mini ` | Create Chat Completion |
-| [Azure OpenAI](https://portkey.ai/docs/integrations/llms/azure-openai) | `gpt-4-vision-preview`, `gpt-4o`, `gpt-4o-mini ` | Create Chat Completion |
-| [Gemini](https://portkey.ai/docs/integrations/llms/gemini) | `gemini-1.0-pro-vision `, `gemini-1.5-flash`, `gemini-1.5-flash-8b`, `gemini-1.5-pro` | Create Chat Completion |
+| [OpenAI](https://portkey.ai/docs/integrations/llms/openai) | `gpt-4-vision-preview`, `gpt-4o`, `gpt-4o-mini` | Create Chat Completion |
+| [Azure OpenAI](https://portkey.ai/docs/integrations/llms/azure-openai) | `gpt-4-vision-preview`, `gpt-4o`, `gpt-4o-mini` | Create Chat Completion |
+| [Gemini](https://portkey.ai/docs/integrations/llms/gemini) | `gemini-1.0-pro-vision`, `gemini-1.5-flash`, `gemini-1.5-flash-8b`, `gemini-1.5-pro` | Create Chat Completion |
 | [Anthropic](https://portkey.ai/docs/integrations/llms/anthropic) | `claude-3-sonnet`, `claude-3-haiku`, `claude-3-opus`, `claude-3.5-sonnet`, `claude-3.5-haiku` | Create Chat Completion |
 | [AWS Bedrock](https://portkey.ai/docs/integrations/llms/aws-bedrock) | `anthropic.claude-3-5-sonnet anthropic.claude-3-5-haiku anthropic.claude-3-5-sonnet-20240620-v1:0` | Create Chat Completion |
 

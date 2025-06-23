@@ -13,7 +13,9 @@ This guide provides step-by-step instructions for running Payload CMS migrations
 ## 🔐 SSL Certificate Setup
 
 ### 1. Obtain SSL Certificate
+
 Download the Supabase SSL certificate:
+
 ```bash
 cd apps/payload
 curl -o supabase-ca-cert.crt https://supabase.com/docs/guides/database/ssl
@@ -21,6 +23,7 @@ curl -o supabase-ca-cert.crt https://supabase.com/docs/guides/database/ssl
 ```
 
 ### 2. Verify Certificate Location
+
 ```bash
 # Certificate should be in apps/payload directory
 ls -la supabase-ca-cert.crt
@@ -54,6 +57,7 @@ export $(cat .env.production | xargs)
 ```
 
 ### 3. Verify SSL Connection
+
 ```bash
 # Test database connectivity with SSL
 psql "$DATABASE_URI" -c "SELECT version();"
@@ -62,6 +66,7 @@ psql "$DATABASE_URI" -c "SELECT version();"
 ## 🚀 Migration Execution
 
 ### Step 1: Verify Connection and Schema State
+
 ```bash
 # Test database connectivity
 npm run payload migrate -- --status
@@ -72,18 +77,21 @@ psql "$DATABASE_URI" -c "\dt payload.*;"
 ```
 
 ### Step 2: Preview Migration
+
 ```bash
 # Check what migrations will run
 npm run payload migrate -- --dry-run
 ```
 
 ### Step 3: Execute Migration
+
 ```bash
 # Run the migration
 npm run payload migrate
 ```
 
-### Expected Output:
+### Expected Output
+
 ```
 [PAYLOAD-INFO] Database adapter created successfully
 [PAYLOAD-INFO] Running migration: 20250527_161647
@@ -93,12 +101,14 @@ npm run payload migrate
 ## 🔍 Schema Verification Steps
 
 ### 1. Check Migration Status
+
 ```bash
 # Verify migration was recorded
 npm run payload migrate -- --status
 ```
 
 ### 2. Database Schema Verification
+
 ```bash
 # Connect to database
 psql "$DATABASE_URI"
@@ -122,6 +132,7 @@ ORDER BY created_at DESC LIMIT 5;
 ```
 
 ### 3. Application Health Check
+
 ```bash
 # Test Payload admin access
 curl -f https://payload.slideheroes.com/admin || echo "Admin not accessible"
@@ -133,17 +144,20 @@ curl -f https://payload.slideheroes.com/api/health || echo "API not accessible"
 ## 🚨 Safety Measures
 
 ### Database Backup (CRITICAL)
+
 ```bash
 # Create backup before migration
 pg_dump "$DATABASE_URI" > "backup_$(date +%Y%m%d_%H%M%S).sql"
 ```
 
 ### Schema Isolation
+
 - ✅ Migration affects `payload` schema only
 - ✅ No changes to `public` schema
 - ✅ Foreign key constraints preserved
 
 ### Connection Pool Settings
+
 - Production: max 15 connections
 - SSL: enabled automatically
 - Timeout: 10 seconds
@@ -151,12 +165,14 @@ pg_dump "$DATABASE_URI" > "backup_$(date +%Y%m%d_%H%M%S).sql"
 ## 🔄 Rollback Procedures
 
 ### Option 1: Database Restore (Recommended)
+
 ```bash
 # Restore from backup
 psql "$DATABASE_URI" < backup_20250528_120000.sql
 ```
 
 ### Option 2: Migration Rollback
+
 ```bash
 # Run down migration (if available)
 npm run payload migrate -- --down
@@ -166,6 +182,7 @@ npm run payload migrate -- --down 20250527_161647
 ```
 
 ### Option 3: Complete Reset (See Reset Guide)
+
 For complete schema reset, refer to: `PAYLOAD_RESET_GUIDE.md`
 
 ## 🐛 Troubleshooting
@@ -173,6 +190,7 @@ For complete schema reset, refer to: `PAYLOAD_RESET_GUIDE.md`
 ### Common Issues
 
 **SSL Certificate Issues:**
+
 ```bash
 # Verify certificate file exists
 ls -la supabase-ca-cert.crt
@@ -185,6 +203,7 @@ curl -o supabase-ca-cert.crt https://supabase.com/docs/guides/database/ssl
 ```
 
 **"Column does not exist" Errors:**
+
 ```bash
 # Check if schema is corrupted
 psql "$DATABASE_URI" -c "SELECT table_name FROM information_schema.tables WHERE table_schema = 'payload';"
@@ -193,6 +212,7 @@ psql "$DATABASE_URI" -c "SELECT table_name FROM information_schema.tables WHERE 
 ```
 
 **Connection Timeout:**
+
 ```bash
 # Increase timeout
 export PAYLOAD_DB_TIMEOUT=30000
@@ -200,12 +220,14 @@ npm run payload migrate
 ```
 
 **Migration Already Exists:**
+
 ```bash
 # Force re-run migration
 npm run payload migrate -- --force
 ```
 
 ### Debug Mode
+
 ```bash
 # Enable debug logging
 export PAYLOAD_DEBUG=true
@@ -216,6 +238,7 @@ npm run payload migrate
 ## 📊 Post-Migration Validation
 
 ### 1. Data Integrity Checks
+
 ```sql
 -- Check table counts
 SELECT 
@@ -239,6 +262,7 @@ AND tc.constraint_type = 'FOREIGN KEY';
 ```
 
 ### 2. Application Testing
+
 ```bash
 # Test core collections
 curl -H "Authorization: Bearer $TOKEN" \
@@ -274,6 +298,7 @@ curl -H "Authorization: Bearer $TOKEN" \
 ## 📞 Support
 
 If you encounter issues:
+
 1. Check the troubleshooting section above
 2. Review debug logs with `PAYLOAD_DEBUG=true`
 3. Verify SSL certificate and environment variables

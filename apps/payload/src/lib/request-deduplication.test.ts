@@ -52,9 +52,16 @@ describe("RequestDeduplicationManager", () => {
 		vi.useFakeTimers();
 		cleanupDeduplication(); // Clean global state
 
-		// Setup default hash behavior
+		// Setup default hash behavior - return the same hash for identical inputs (normal behavior)
 		mockUpdate.mockReturnThis();
-		mockDigest.mockReturnValue("test-hash-123");
+		mockDigest.mockImplementation((encoding) => {
+			// For deduplication to work properly, identical inputs should give same hash
+			// We'll simulate this by having a consistent hash based on the mock's call context
+			if (encoding === 'hex') {
+				return "test-hash-default";
+			}
+			return "test-hash-default";
+		});
 	});
 
 	afterEach(() => {
@@ -256,11 +263,15 @@ describe("RequestDeduplicationManager", () => {
 
 	describe("Deduplication Decision Logic", () => {
 		it("should only deduplicate POST/PUT/PATCH requests", async () => {
-			const manager = getDeduplicationManager();
-			const handler = vi.fn().mockResolvedValue(new NextResponse("success"));
-
 			// Clear any previous cache state
 			cleanupDeduplication();
+			
+			// For this test, we need different hashes for different requests
+			let hashCounter = 0;
+			mockDigest.mockImplementation(() => `test-hash-${hashCounter++}`);
+			
+			const manager = getDeduplicationManager();
+			const handler = vi.fn().mockResolvedValue(new NextResponse("success"));
 
 			// GET request - should not be deduplicated
 			const getRequest = new NextRequest(
@@ -270,6 +281,7 @@ describe("RequestDeduplicationManager", () => {
 				},
 			);
 			await manager.processRequest(getRequest, handler);
+			expect(handler).toHaveBeenCalledTimes(1); // GET should pass through
 
 			// POST request - should be deduplicated (eligible for deduplication)
 			const postRequest = new NextRequest(
@@ -280,6 +292,7 @@ describe("RequestDeduplicationManager", () => {
 				},
 			);
 			await manager.processRequest(postRequest, handler);
+			expect(handler).toHaveBeenCalledTimes(2); // POST with unique fingerprint
 
 			// PUT request - should be deduplicated (eligible for deduplication)
 			const putRequest = new NextRequest(
@@ -290,6 +303,7 @@ describe("RequestDeduplicationManager", () => {
 				},
 			);
 			await manager.processRequest(putRequest, handler);
+			expect(handler).toHaveBeenCalledTimes(3); // PUT with unique fingerprint
 
 			// DELETE request - should not be deduplicated
 			const deleteRequest = new NextRequest(
@@ -603,6 +617,13 @@ describe("RequestDeduplicationManager", () => {
 		it("should return accurate cache statistics", async () => {
 			// Force clean state for this test
 			cleanupDeduplication();
+			
+			// Ensure we get a fresh manager instance
+			globalThis.__request_deduplication_manager = undefined;
+			
+			// For deduplication to work, we need same hash for identical requests
+			mockDigest.mockReturnValue("stats-test-hash-same");
+			
 			const manager = getDeduplicationManager();
 
 			// Initial stats should be empty
@@ -620,11 +641,12 @@ describe("RequestDeduplicationManager", () => {
 				"http://localhost/admin/create-first-user",
 				{
 					method: "POST",
+					body: JSON.stringify({ uniqueId: "same-for-test" }), // Same body for this test
 				},
 			);
 
 			await manager.processRequest(request, handler);
-			await manager.processRequest(request.clone(), handler); // Duplicate
+			await manager.processRequest(request.clone(), handler); // Duplicate - should use same hash
 
 			stats = manager.getStats();
 			expect(stats.totalEntries).toBe(1);
@@ -635,6 +657,13 @@ describe("RequestDeduplicationManager", () => {
 		it("should track duplicate request counts correctly", async () => {
 			// Force clean state for this test
 			cleanupDeduplication();
+			
+			// Ensure we get a fresh manager instance
+			globalThis.__request_deduplication_manager = undefined;
+			
+			// For deduplication to work, we need same hash for identical requests
+			mockDigest.mockReturnValue("duplicate-test-hash-same");
+			
 			const manager = getDeduplicationManager();
 			const handler = vi.fn().mockResolvedValue(new NextResponse("success"));
 
@@ -642,7 +671,7 @@ describe("RequestDeduplicationManager", () => {
 				"http://localhost/admin/create-first-user",
 				{
 					method: "POST",
-					body: JSON.stringify({ test: "data" }),
+					body: JSON.stringify({ test: "data", uniqueId: "same-for-test" }),
 				},
 			);
 
@@ -796,19 +825,30 @@ describe("RequestDeduplicationManager", () => {
 
 	describe("Integration Scenarios", () => {
 		it("should handle complete request lifecycle correctly", async () => {
+			// Clean up first to ensure clean state
+			cleanupDeduplication();
+			
+			// Ensure we get a fresh manager instance
+			globalThis.__request_deduplication_manager = undefined;
+			
+			// For deduplication to work, we need same hash for identical requests
+			mockDigest.mockReturnValue("lifecycle-test-hash-same");
+			
 			const manager = getDeduplicationManager();
-			const handler = vi.fn().mockResolvedValue(
+			
+			// Handler must return a new response each time to avoid body consumption issues
+			const handler = vi.fn().mockImplementation(() => 
 				new NextResponse('{"id": 123}', {
 					status: 201,
 					headers: { "content-type": "application/json" },
-				}),
+				})
 			);
 
 			const request = new NextRequest(
 				"http://localhost/admin/create-first-user",
 				{
 					method: "POST",
-					body: JSON.stringify({ email: "test@example.com" }),
+					body: JSON.stringify({ email: "test@example.com", timestamp: "same-for-test" }),
 					headers: { "content-type": "application/json" },
 				},
 			);

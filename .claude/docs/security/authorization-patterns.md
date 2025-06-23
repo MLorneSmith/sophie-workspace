@@ -590,16 +590,19 @@ GRANT EXECUTE ON FUNCTION public.generate_certificate(TEXT, TEXT) TO authenticat
 ## Security Best Practices
 
 ### 1. Principle of Least Privilege
+
 - Grant minimal necessary permissions
 - Use restrictive RLS policies for sensitive operations
 - Regularly audit and remove unused permissions
 
 ### 2. Defense in Depth
+
 - Multiple layers of authorization checks
 - Server-side validation for all operations
 - Client-side checks for UI/UX only
 
 ### 3. Audit Trail
+
 ```sql
 -- Audit log for authorization events
 CREATE TABLE public.auth_audit_log (
@@ -640,6 +643,7 @@ $$;
 ```
 
 ### 4. Error Handling
+
 - Never expose sensitive information in error messages
 - Log authorization failures for security monitoring
 - Provide user-friendly error messages

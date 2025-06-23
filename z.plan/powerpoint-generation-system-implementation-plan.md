@@ -621,6 +621,7 @@ Future implementation will need to detect potential chart data in Lexical JSON:
 1. **Table-based charts**: Recognize tables in Lexical JSON that contain numeric data suitable for charts
 2. **Chart node types**: Support for custom chart node types if we extend Lexical
 3. **Data markers**: Look for special markers that indicate chart data, such as:
+
    ```
    [CHART:BAR]
    Category A, 10

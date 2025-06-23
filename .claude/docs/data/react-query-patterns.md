@@ -70,6 +70,7 @@ function useCourses() {
 Follow consistent patterns for query keys based on our content structure:
 
 ### Course System
+
 - `['courses']` - All courses
 - `['courses', courseId]` - Single course
 - `['courses', courseId, 'lessons']` - Course lessons
@@ -78,11 +79,13 @@ Follow consistent patterns for query keys based on our content structure:
 - `['quizzes', quizId]` - Single quiz
 
 ### User Progress
+
 - `['course-progress', userId]` - User's course progress
 - `['course-progress', userId, courseId]` - Progress for specific course
 - `['certificates', userId]` - User's certificates
 
 ### Account Management
+
 - `['accounts', accountId]` - Account details
 - `['accounts', accountId, 'memberships']` - Account memberships
 - `['accounts', accountId, 'subscriptions']` - Account subscriptions

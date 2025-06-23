@@ -107,7 +107,6 @@ As you can see from the example above, it really only takes just a few lines to 
 
 - If your item needs to move from one container to another, we recommend you use the [`<DragOverlay>`](https://docs.dndkit.com/api-documentation/draggable/drag-overlay) component.
 
-
 Converting the `transform` object to a string can feel tedious. Fear not, you can avoid having to do this by hand by importing the `CSS` utility from the `@dnd-kit/utilities` package:
 
 Copy

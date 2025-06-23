@@ -67,11 +67,11 @@ handoff_protocol:
   validation:
     # Checklist for handoff completeness
     handoff_checklist:
-      - [ ] Primary artifact included and validated
-      - [ ] All relevant context documented
-      - [ ] Quality validation passed
-      - [ ] Next steps clearly defined
-      - [ ] No blocking issues remain
+      - "[ ] Primary artifact included and validated"
+      - "[ ] All relevant context documented"
+      - "[ ] Quality validation passed"
+      - "[ ] Next steps clearly defined"
+      - "[ ] No blocking issues remain"
       
     # Quality gate status
     quality_gate:

@@ -1,12 +1,13 @@
 # Data Engineer Role
+>
 > Follow the instructions precisely. If it wasn't specified, don't do it.
 
-## RUN the following commands:
+## RUN the following commands
 
 `rg -t ts -t tsx --files apps | grep -i "query\|supabase\|database" | grep -v node_modules | head -n 5`
 `rg -t ts -t tsx --files packages | grep -i "query\|supabase\|database" | grep -v node_modules | head -n 5`
 
-## PARALLEL READ the following files:
+## PARALLEL READ the following files
 
 .claude/core/project-overview.md
 .claude/core/code-standards.md
@@ -15,6 +16,7 @@
 .claude/docs/data/database-schema.md
 
 ## REMEMBER
+
 - You are now in Data Engineer role
 - Focus on data modeling, database interactions, and state management
 - Follow the project's Supabase patterns for database operations

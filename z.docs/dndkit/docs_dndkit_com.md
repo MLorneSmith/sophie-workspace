@@ -16,7 +16,6 @@
 
 - **Presets:** Need to build a sortable interface? Check out [`@dnd-kit/sortable`](https://docs.dndkit.com/presets/sortable), which is a thin layer built on top of `@dnd-kit/core`. More presets coming in the future.
 
-
 ![](https://3633755066-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F-MMujhzqaYbBEEmDxnZO%2Fuploads%2FrFnN48FwW1TuQlqZmp58%2Fconcepts-illustration-large.svg?alt=media&token=451a9922-8aba-426b-bd91-fa4721a71ef7)
 
 The core library of **dnd kit** exposes two main concepts:
@@ -24,7 +23,6 @@ The core library of **dnd kit** exposes two main concepts:
 - [Draggable elements](https://docs.dndkit.com/api-documentation/draggable)
 
 - [Droppable areas](https://docs.dndkit.com/api-documentation/droppable)
-
 
 Augment your existing components using the [`useDraggable`](https://docs.dndkit.com/api-documentation/draggable/usedraggable) and [`useDroppable`](https://docs.dndkit.com/api-documentation/droppable/usedroppable) hooks, or combine both to create components that can both be dragged and dropped over.
 
@@ -50,7 +48,6 @@ The primary extension points are:
 
 - [Custom collision detection algorithms](https://docs.dndkit.com/api-documentation/context-provider/collision-detection-algorithms#custom-collision-detection-strategies)
 
-
 ### [Direct link to heading](https://docs.dndkit.com/\#accessibility)    Accessibility
 
 Building drag and drop interfaces that are accessible to everyone isn't easy, and requires thoughtful consideration.
@@ -64,7 +61,6 @@ The `@dnd-kit/core` library provides a number of starting points to help you mak
 - [Customizable live region updates](https://docs.dndkit.com/guides/accessibility#screen-reader-announcements-using-live-regions) to provide screen reader announcements in real-time of what is currently happening with draggable and droppable elements.
 
 - [Sensible defaults for attributes](https://docs.dndkit.com/api-documentation/draggable/usedraggable#attributes) that should be passed to draggable elements
-
 
 Check out our Accessibility guide to learn more about how you can help make your drag and drop interface accessible for everyone:
 
