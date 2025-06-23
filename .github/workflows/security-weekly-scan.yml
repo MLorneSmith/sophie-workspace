@@ -1,0 +1,199 @@
+name: Weekly Security Scan
+
+on:
+  schedule:
+    # Run every Monday at 9:00 AM UTC
+    - cron: '0 9 * * 1'
+  workflow_dispatch: # Allow manual triggers
+
+permissions:
+  contents: read
+  security-events: write
+  issues: write
+
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '9.12.0'
+
+jobs:
+  security-audit:
+    name: Weekly Security Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run comprehensive Snyk scan
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --all-projects --detection-depth=6 --skip-unresolved
+
+      - name: Generate Snyk HTML report
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --all-projects --detection-depth=6 --skip-unresolved --format=json --json-file-output=snyk-report.json
+        continue-on-error: true
+
+      - name: Run Snyk Code analysis
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          command: code test
+          args: --format=json --json-file-output=snyk-code-report.json
+        continue-on-error: true
+
+      - name: Run Snyk Infrastructure as Code scan
+        uses: snyk/actions/iac@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --format=json --json-file-output=snyk-iac-report.json
+        continue-on-error: true
+
+      - name: Upload SARIF reports to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: snyk.sarif
+        continue-on-error: true
+
+      - name: Process and create issue if vulnerabilities found
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            
+            let vulnerabilities = [];
+            let hasHighCritical = false;
+            
+            // Process dependency vulnerabilities
+            try {
+              if (fs.existsSync('snyk-report.json')) {
+                const report = JSON.parse(fs.readFileSync('snyk-report.json', 'utf8'));
+                const depVulns = report.vulnerabilities || [];
+                vulnerabilities.push({
+                  type: 'Dependencies',
+                  count: depVulns.length,
+                  high: depVulns.filter(v => v.severity === 'high').length,
+                  critical: depVulns.filter(v => v.severity === 'critical').length
+                });
+                hasHighCritical = hasHighCritical || depVulns.some(v => ['high', 'critical'].includes(v.severity));
+              }
+            } catch (e) {
+              console.log('Could not process dependency scan results');
+            }
+            
+            // Process code vulnerabilities
+            try {
+              if (fs.existsSync('snyk-code-report.json')) {
+                const report = JSON.parse(fs.readFileSync('snyk-code-report.json', 'utf8'));
+                const codeVulns = report.runs?.[0]?.results || [];
+                vulnerabilities.push({
+                  type: 'Code',
+                  count: codeVulns.length,
+                  high: codeVulns.filter(v => v.level === 'error').length,
+                  critical: 0 // Snyk Code uses different severity levels
+                });
+                hasHighCritical = hasHighCritical || codeVulns.some(v => v.level === 'error');
+              }
+            } catch (e) {
+              console.log('Could not process code scan results');
+            }
+            
+            // Process IaC vulnerabilities
+            try {
+              if (fs.existsSync('snyk-iac-report.json')) {
+                const report = JSON.parse(fs.readFileSync('snyk-iac-report.json', 'utf8'));
+                const iacVulns = report.vulnerabilities || [];
+                vulnerabilities.push({
+                  type: 'Infrastructure',
+                  count: iacVulns.length,
+                  high: iacVulns.filter(v => v.severity === 'high').length,
+                  critical: iacVulns.filter(v => v.severity === 'critical').length
+                });
+                hasHighCritical = hasHighCritical || iacVulns.some(v => ['high', 'critical'].includes(v.severity));
+              }
+            } catch (e) {
+              console.log('Could not process IaC scan results');
+            }
+            
+            // Create issue if vulnerabilities found
+            const totalVulns = vulnerabilities.reduce((sum, v) => sum + v.count, 0);
+            
+            if (totalVulns > 0) {
+              const priority = hasHighCritical ? 'high-priority' : 'medium-priority';
+              const urgency = hasHighCritical ? '🚨 URGENT' : '⚠️ Review Required';
+              
+              let body = `# ${urgency}: Weekly Security Scan Results\n\n`;
+              body += `## Summary\n`;
+              body += `**Total vulnerabilities found:** ${totalVulns}\n\n`;
+              
+              vulnerabilities.forEach(v => {
+                if (v.count > 0) {
+                  body += `### ${v.type} Vulnerabilities\n`;
+                  body += `- **Total:** ${v.count}\n`;
+                  body += `- **High:** ${v.high}\n`;
+                  body += `- **Critical:** ${v.critical}\n\n`;
+                }
+              });
+              
+              body += `## Action Required\n`;
+              if (hasHighCritical) {
+                body += `⚠️ **High/Critical vulnerabilities detected** - immediate action required.\n`;
+                body += `1. Review the detailed Snyk reports\n`;
+                body += `2. Update vulnerable dependencies where possible\n`;
+                body += `3. Apply security patches or workarounds\n`;
+                body += `4. Test thoroughly after updates\n\n`;
+              } else {
+                body += `✅ No high/critical vulnerabilities, but review recommended.\n`;
+                body += `1. Review the detailed Snyk reports when convenient\n`;
+                body += `2. Consider updates during next maintenance window\n\n`;
+              }
+              
+              body += `## Resources\n`;
+              body += `- [Snyk Dashboard](https://app.snyk.io/)\n`;
+              body += `- [SlideHeroes Security Policy](https://github.com/MLorneSmith/2025slideheroes/blob/main/docs/SECURITY.md)\n`;
+              body += `- [GitHub Security Advisories](https://github.com/MLorneSmith/2025slideheroes/security/advisories)\n\n`;
+              body += `---\n`;
+              body += `*Generated by automated weekly security scan on ${new Date().toISOString()}*`;
+              
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `Weekly Security Scan: ${totalVulns} vulnerabilities found`,
+                body: body,
+                labels: ['security', priority, 'automated']
+              });
+              
+              console.log(`Created security issue for ${totalVulns} vulnerabilities`);
+            } else {
+              console.log('No vulnerabilities found in weekly scan');
+            }
+
+      - name: Upload scan reports as artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: security-scan-reports
+          path: |
+            snyk-report.json
+            snyk-code-report.json
+            snyk-iac-report.json
+            snyk.sarif
+          retention-days: 90
