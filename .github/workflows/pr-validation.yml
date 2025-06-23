@@ -198,14 +198,19 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-turbo-test-
 
-      - name: Run unit tests
-        run: pnpm test
+      - name: Run unit tests with coverage
+        run: pnpm test:coverage
 
-      # TODO: Add coverage reporting when CodeCov is set up
-      # - name: Upload coverage reports
-      #   uses: codecov/codecov-action@v4
-      #   with:
-      #     token: ${{ secrets.CODECOV_TOKEN }}
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          directory: ./coverage
+          files: ./coverage/lcov.info
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
+          verbose: true
 
   # YAML linting
   yaml-lint:
