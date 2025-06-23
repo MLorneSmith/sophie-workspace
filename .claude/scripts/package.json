@@ -3,10 +3,9 @@
 	"version": "1.0.0",
 	"type": "module",
 	"description": "Auto-sync service for GitHub issues to local cache",
-	"main": "issue-sync.js",
+	"main": "sync-issue.js",
 	"scripts": {
-		"sync": "node issue-sync.js",
-		"test": "node test-sync.js"
+		"sync": "node sync-issue.js"
 	},
 	"dependencies": {},
 	"engines": {
