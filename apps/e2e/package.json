@@ -6,12 +6,24 @@
 	"scripts": {
 		"report": "playwright show-report",
 		"test": "playwright test --max-failures=1",
-		"test:ui": "playwright test --ui"
+		"test:ui": "playwright test --ui",
+		"test:matrix": "playwright test --max-failures=3",
+		"test:desktop": "playwright test --project=chromium --project=firefox --project=webkit",
+		"test:mobile": "playwright test --project=\"Mobile Chrome\" --project=\"Mobile Safari\" --project=\"Mobile Firefox\"",
+		"test:tablet": "playwright test --project=\"Tablet Chrome\" --project=\"Tablet Safari\"",
+		"test:chrome": "playwright test --project=chromium",
+		"test:firefox": "playwright test --project=firefox", 
+		"test:safari": "playwright test --project=webkit",
+		"a11y:test": "playwright test tests/accessibility --reporter=html --output-dir=accessibility-report",
+		"a11y:report": "playwright show-report accessibility-report",
+		"merge-reports": "playwright merge-reports --reporter html",
+		"doctor": "playwright doctor"
 	},
 	"keywords": [],
 	"author": "",
 	"license": "ISC",
 	"devDependencies": {
+		"@axe-core/playwright": "^4.10.2",
 		"@playwright/test": "^1.52.0",
 		"@types/node": "^24.0.1",
 		"dotenv": "16.5.0",
