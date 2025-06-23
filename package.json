@@ -73,7 +73,7 @@
 			"bash -c 'if ! echo \"$0\" | grep -qE \"^(z\\.(plan|instructions|docs|todo|context)|\\.claude|\\.mcp-servers|\\.roo)/\"; then markdownlint-cli2 --fix \"$0\"; fi'"
 		],
 		"**/*.{yaml,yml}": [
-			"yaml-lint"
+			"bash -c 'if [[ \"$0\" != *\"pnpm-lock.yaml\"* ]]; then yaml-lint \"$0\"; fi'"
 		],
 		"**/*.{ts,tsx}": [
 			"bash -c 'echo \"🔍 Type checking $0...\"; tsc --noEmit --skipLibCheck --pretty \"$0\" 2>/dev/null || echo \"⚠️ Type check failed for $0\"'"
