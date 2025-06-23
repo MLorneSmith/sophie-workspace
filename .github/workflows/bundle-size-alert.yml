@@ -1,0 +1,238 @@
+name: Bundle Size Alert
+
+on:
+  pull_request:
+    branches: [main, staging, dev]
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '9.12.0'
+
+jobs:
+  bundle-size-alert:
+    name: Bundle Size Alert
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    env:
+      BUNDLEWATCH_GITHUB_TOKEN: ${{ secrets.BUNDLEWATCH_GITHUB_TOKEN }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      SUPABASE_DB_WEBHOOK_SECRET: ${{ secrets.SUPABASE_DB_WEBHOOK_SECRET }}
+      STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+      STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+      DO_NOT_TRACK: 1
+    steps:
+      - name: Checkout PR
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Checkout base branch
+        run: |
+          git fetch origin ${{ github.event.pull_request.base.ref }}
+          git checkout origin/${{ github.event.pull_request.base.ref }}
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies (base)
+        run: pnpm install --frozen-lockfile
+
+      - name: Build base branch
+        run: pnpm --filter web build
+        env:
+          NEXT_PUBLIC_MONITORING_PROVIDER: ""
+          NEXT_PUBLIC_ANALYTICS_PROVIDER: ""
+
+      - name: Analyze base bundle sizes
+        run: |
+          mkdir -p /tmp/base-analysis
+          # Get base bundle sizes
+          du -sh apps/web/.next/static/chunks/pages/_app-*.js | cut -f1 > /tmp/base-analysis/app-size.txt
+          du -sh apps/web/.next/static/chunks/pages/index-*.js | cut -f1 > /tmp/base-analysis/index-size.txt
+          du -sh apps/web/.next/static/chunks/framework-*.js | cut -f1 > /tmp/base-analysis/framework-size.txt
+          du -sh apps/web/.next/static/chunks/main-*.js | cut -f1 > /tmp/base-analysis/main-size.txt
+          du -sh apps/web/.next/static/chunks/webpack-*.js | cut -f1 > /tmp/base-analysis/webpack-size.txt
+          # Calculate total bundle size
+          find apps/web/.next/static/chunks -name "*.js" -exec du -ch {} + | tail -1 | cut -f1 > /tmp/base-analysis/total-size.txt
+
+      - name: Checkout PR branch
+        run: |
+          git checkout ${{ github.event.pull_request.head.sha }}
+
+      - name: Install dependencies (PR)
+        run: pnpm install --frozen-lockfile
+
+      - name: Build PR branch
+        run: pnpm --filter web build
+        env:
+          NEXT_PUBLIC_MONITORING_PROVIDER: ""
+          NEXT_PUBLIC_ANALYTICS_PROVIDER: ""
+
+      - name: Analyze PR bundle sizes and compare
+        id: bundle-analysis
+        run: |
+          mkdir -p /tmp/pr-analysis
+          
+          # Get PR bundle sizes
+          du -sh apps/web/.next/static/chunks/pages/_app-*.js | cut -f1 > /tmp/pr-analysis/app-size.txt
+          du -sh apps/web/.next/static/chunks/pages/index-*.js | cut -f1 > /tmp/pr-analysis/index-size.txt
+          du -sh apps/web/.next/static/chunks/framework-*.js | cut -f1 > /tmp/pr-analysis/framework-size.txt
+          du -sh apps/web/.next/static/chunks/main-*.js | cut -f1 > /tmp/pr-analysis/main-size.txt
+          du -sh apps/web/.next/static/chunks/webpack-*.js | cut -f1 > /tmp/pr-analysis/webpack-size.txt
+          find apps/web/.next/static/chunks -name "*.js" -exec du -ch {} + | tail -1 | cut -f1 > /tmp/pr-analysis/total-size.txt
+          
+          # Function to convert size to bytes for comparison
+          convert_to_bytes() {
+            local size=$1
+            if [[ $size == *"K" ]]; then
+              echo $((${size%K} * 1024))
+            elif [[ $size == *"M" ]]; then
+              echo $((${size%M} * 1024 * 1024))
+            elif [[ $size == *"G" ]]; then
+              echo $((${size%G} * 1024 * 1024 * 1024))
+            else
+              echo ${size%B}
+            fi
+          }
+          
+          # Function to calculate percentage change
+          calculate_change() {
+            local base=$1
+            local current=$2
+            local base_bytes=$(convert_to_bytes "$base")
+            local current_bytes=$(convert_to_bytes "$current")
+            local change=$(( (current_bytes - base_bytes) * 100 / base_bytes ))
+            echo $change
+          }
+          
+          # Compare sizes and generate report
+          echo "# Bundle Size Analysis" > /tmp/bundle-report.md
+          echo "" >> /tmp/bundle-report.md
+          echo "| Bundle | Base Size | PR Size | Change | Status |" >> /tmp/bundle-report.md
+          echo "|--------|-----------|---------|--------|--------|" >> /tmp/bundle-report.md
+          
+          ALERT_NEEDED=false
+          CRITICAL_ALERT=false
+          
+          # Check each bundle
+          for bundle in app index framework main webpack total; do
+            if [ -f "/tmp/base-analysis/${bundle}-size.txt" ] && [ -f "/tmp/pr-analysis/${bundle}-size.txt" ]; then
+              base_size=$(cat /tmp/base-analysis/${bundle}-size.txt)
+              pr_size=$(cat /tmp/pr-analysis/${bundle}-size.txt)
+              change=$(calculate_change "$base_size" "$pr_size")
+              
+              if [ $change -gt 10 ]; then
+                status="🚨 Critical (+${change}%)"
+                CRITICAL_ALERT=true
+                ALERT_NEEDED=true
+              elif [ $change -gt 5 ]; then
+                status="⚠️ Warning (+${change}%)"
+                ALERT_NEEDED=true
+              elif [ $change -gt 0 ]; then
+                status="📈 Increased (+${change}%)"
+              elif [ $change -lt 0 ]; then
+                status="📉 Decreased (${change}%)"
+              else
+                status="✅ No change"
+              fi
+              
+              echo "| ${bundle^} | $base_size | $pr_size | ${change}% | $status |" >> /tmp/bundle-report.md
+            fi
+          done
+          
+          echo "ALERT_NEEDED=$ALERT_NEEDED" >> $GITHUB_OUTPUT
+          echo "CRITICAL_ALERT=$CRITICAL_ALERT" >> $GITHUB_OUTPUT
+
+      - name: Create PR comment for significant changes
+        if: steps.bundle-analysis.outputs.ALERT_NEEDED == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('/tmp/bundle-report.md', 'utf8');
+            
+            const isCritical = '${{ steps.bundle-analysis.outputs.CRITICAL_ALERT }}' === 'true';
+            const header = isCritical 
+              ? '🚨 **Critical Bundle Size Alert**' 
+              : '⚠️ **Bundle Size Alert**';
+            
+            const body = `${header}
+            
+            This PR introduces significant bundle size changes:
+            
+            ${report}
+            
+            ${isCritical 
+              ? '**Action Required**: Bundle size increased by more than 10%. Please review and optimize before merging.' 
+              : '**Review Recommended**: Bundle size increased by more than 5%. Consider optimization if possible.'
+            }
+            
+            ### Optimization Tips:
+            - Check for new large dependencies
+            - Use dynamic imports for heavy components
+            - Review tree-shaking opportunities
+            - See [Bundle Optimization Guidelines](./docs/bundle-optimization.md)
+            
+            ---
+            Generated by Bundle Size Alert workflow`;
+            
+            // Find existing comment
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            
+            const existingComment = comments.find(comment => 
+              comment.body.includes('Bundle Size Alert')
+            );
+            
+            if (existingComment) {
+              // Update existing comment
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existingComment.id,
+                body: body
+              });
+            } else {
+              // Create new comment
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: body
+              });
+            }
+
+      - name: Fail build for critical size increases
+        if: steps.bundle-analysis.outputs.CRITICAL_ALERT == 'true'
+        run: |
+          echo "❌ Critical bundle size increase detected (>10%)"
+          echo "Bundle size increase is too significant and requires optimization before merging."
+          exit 1
+
+      - name: Bundle size summary
+        if: always()
+        run: |
+          echo "## Bundle Size Analysis Complete"
+          if [ "${{ steps.bundle-analysis.outputs.CRITICAL_ALERT }}" == "true" ]; then
+            echo "🚨 Critical alert: Bundle size increased by more than 10%"
+          elif [ "${{ steps.bundle-analysis.outputs.ALERT_NEEDED }}" == "true" ]; then
+            echo "⚠️ Warning: Bundle size increased by more than 5%"
+          else
+            echo "✅ Bundle size changes are within acceptable limits"
+          fi
