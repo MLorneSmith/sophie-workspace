@@ -5,6 +5,7 @@ SlideHeroes is a SaaS platform for learning how to write board-level business pr
 ## Build Status
 
 [![PR Validation](https://github.com/MLorneSmith/2025slideheroes/actions/workflows/pr-validation.yml/badge.svg)](https://github.com/MLorneSmith/2025slideheroes/actions/workflows/pr-validation.yml)
+[![codecov](https://codecov.io/gh/MLorneSmith/2025slideheroes/branch/main/graph/badge.svg)](https://codecov.io/gh/MLorneSmith/2025slideheroes)
 [![Deploy to Dev](https://github.com/MLorneSmith/2025slideheroes/actions/workflows/dev-deploy.yml/badge.svg?branch=dev)](https://github.com/MLorneSmith/2025slideheroes/actions/workflows/dev-deploy.yml)
 [![Deploy to Staging](https://github.com/MLorneSmith/2025slideheroes/actions/workflows/staging-deploy.yml/badge.svg?branch=staging)](https://github.com/MLorneSmith/2025slideheroes/actions/workflows/staging-deploy.yml)
 [![Deploy to Production](https://github.com/MLorneSmith/2025slideheroes/actions/workflows/production-deploy.yml/badge.svg?branch=main)](https://github.com/MLorneSmith/2025slideheroes/actions/workflows/production-deploy.yml)

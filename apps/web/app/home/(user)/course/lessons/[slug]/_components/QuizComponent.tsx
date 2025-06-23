@@ -525,7 +525,7 @@ export function QuizComponent({
 						<RadioGroup
 							key={`question-${currentQuestionIndex}`}
 							value={
-								selectedAnswers[currentQuestionIndex]?.length > 0
+								(selectedAnswers[currentQuestionIndex]?.length ?? 0) > 0
 									? String(selectedAnswers[currentQuestionIndex]?.[0])
 									: undefined
 							}

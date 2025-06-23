@@ -184,7 +184,7 @@ export async function LessonDataProvider({
 						? quizId.value
 						: typeof quizId === "object" && quizId.id
 							? quizId.id
-							: quizId;
+							: String(quizId || "");
 
 				const { data: attempts } = await supabase
 					.from("quiz_attempts")
@@ -259,11 +259,15 @@ export async function LessonDataProvider({
 						// Pre-fetch questions to ensure they're available
 						// TODO: Async logger needed
 						// TODO: Fix logger call - was: info
-						const questionsData = await getSurveyQuestions(survey.id);
+						const questionsData = survey?.id
+							? await getSurveyQuestions(survey.id)
+							: null;
 
 						if (questionsData?.docs && questionsData.docs.length > 0) {
 							// Add questions to the survey object directly
-							survey.questions = questionsData.docs;
+							if (survey) {
+								survey.questions = questionsData.docs;
+							}
 							// TODO: Async logger needed
 							// TODO: Fix logger call - was: info
 						} else {
