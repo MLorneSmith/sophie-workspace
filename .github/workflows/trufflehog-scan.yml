@@ -43,7 +43,6 @@ jobs:
           # Extra args for custom regex patterns
           extra_args: |
             --only-verified
-            --fail
             --json
             --max-depth=5
         continue-on-error: true

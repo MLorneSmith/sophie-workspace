@@ -304,7 +304,6 @@ jobs:
           head: ${{ github.event.pull_request.head.sha }}
           extra_args: |
             --only-verified
-            --fail
             --json
             --max-depth=5
         continue-on-error: true
