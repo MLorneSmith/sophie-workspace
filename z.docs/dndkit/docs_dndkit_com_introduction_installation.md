@@ -14,11 +14,11 @@ Copy
 npm install react react-dom
 ```
 
-## [Direct link to heading](https://docs.dndkit.com/introduction/installation\#packages)    Packages
+## [Direct link to heading](https://docs.dndkit.com/introduction/installation#packages) Packages
 
 **@dnd-kit** is a [monorepo](https://en.wikipedia.org/wiki/Monorepo). Depending on your needs, you may also want to install other sub-packages that are available under the `@dnd-kit` namespace.
 
-### [Direct link to heading](https://docs.dndkit.com/introduction/installation\#core-library)    Core library
+### [Direct link to heading](https://docs.dndkit.com/introduction/installation#core-library) Core library
 
 In order to keep the core of the library small, `@dnd-kit/core` only ships with the main building blocks that the majority of users will need most of the time for building drag and drop experiences:
 
@@ -44,7 +44,7 @@ In order to keep the core of the library small, `@dnd-kit/core` only ships with 
 
 - [Accessibility features](https://docs.dndkit.com/guides/accessibility)
 
-### [Direct link to heading](https://docs.dndkit.com/introduction/installation\#modifiers)    Modifiers
+### [Direct link to heading](https://docs.dndkit.com/introduction/installation#modifiers) Modifiers
 
 Modifiers let you dynamically modify the movement coordinates that are detected by sensors. They can be used for a wide range of use cases, for example:
 
@@ -66,9 +66,9 @@ Copy
 npm install @dnd-kit/modifiers
 ```
 
-### [Direct link to heading](https://docs.dndkit.com/introduction/installation\#presets)    Presets
+### [Direct link to heading](https://docs.dndkit.com/introduction/installation#presets) Presets
 
-#### [Direct link to heading](https://docs.dndkit.com/introduction/installation\#sortable)    [Sortable](https://docs.dndkit.com/presets/sortable)
+#### [Direct link to heading](https://docs.dndkit.com/introduction/installation#sortable) [Sortable](https://docs.dndkit.com/presets/sortable)
 
 The `@dnd-kit/core` package provides all the building blocks you would need to build a sortable interface from scratch should you choose to, but thankfully you don't need to.
 
@@ -80,7 +80,7 @@ Copy
 npm install @dnd-kit/sortable
 ```
 
-## [Direct link to heading](https://docs.dndkit.com/introduction/installation\#development-releases)    Development releases
+## [Direct link to heading](https://docs.dndkit.com/introduction/installation#development-releases) Development releases
 
 Each commit merged into the @dnd-kit main branch will trigger a development build to be released to npm under the `next` tag.
 
@@ -96,4 +96,4 @@ Development releases can be unstable, we recommend you lock to a specific develo
 
 Last updated 2 years ago
 
-* * *
+---

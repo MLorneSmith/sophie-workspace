@@ -13,15 +13,15 @@ Schema verification ensures that all required tables, columns, and constraints e
 ```sql
 -- Verify table existence
 SELECT EXISTS (
-  SELECT FROM information_schema.tables 
-  WHERE table_schema = 'payload' 
+  SELECT FROM information_schema.tables
+  WHERE table_schema = 'payload'
   AND table_name = 'posts'
 );
 
 -- Verify column existence
-SELECT column_name, data_type 
-FROM information_schema.columns 
-WHERE table_schema = 'payload' 
+SELECT column_name, data_type
+FROM information_schema.columns
+WHERE table_schema = 'payload'
 AND table_name = 'posts';
 ```
 
@@ -29,7 +29,7 @@ AND table_name = 'posts';
 
 ```sql
 -- Verify primary key constraints
-SELECT 
+SELECT
   conname AS constraint_name,
   pg_get_constraintdef(oid) AS constraint_definition
 FROM pg_constraint
@@ -37,7 +37,7 @@ WHERE conrelid = 'payload.posts'::regclass
 AND contype = 'p';
 
 -- Verify foreign key constraints
-SELECT 
+SELECT
   conname AS constraint_name,
   pg_get_constraintdef(oid) AS constraint_definition
 FROM pg_constraint
@@ -49,7 +49,7 @@ AND contype = 'f';
 
 ```sql
 -- Verify indexes
-SELECT 
+SELECT
   indexname AS index_name,
   indexdef AS index_definition
 FROM pg_indexes
@@ -65,7 +65,7 @@ Relationship verification ensures that all relationships are consistent between 
 
 ```sql
 -- Find orphaned relationships in posts_rels
-SELECT r.* 
+SELECT r.*
 FROM payload.posts_rels r
 LEFT JOIN payload.posts p ON r.parent_id = p.id
 WHERE p.id IS NULL;
@@ -75,16 +75,16 @@ WHERE p.id IS NULL;
 
 ```sql
 -- Find missing relationships for categories
-SELECT 
+SELECT
   p.id,
   p.title,
   p.category->>'id' AS category_id
 FROM payload.posts p
-LEFT JOIN payload.posts_rels r 
-  ON r.parent_id = p.id 
+LEFT JOIN payload.posts_rels r
+  ON r.parent_id = p.id
   AND r.path = 'category'
-WHERE 
-  p.category IS NOT NULL 
+WHERE
+  p.category IS NOT NULL
   AND r.id IS NULL;
 ```
 
@@ -92,14 +92,14 @@ WHERE
 
 ```sql
 -- Find inconsistent relationships
-SELECT 
+SELECT
   p.id,
   p.title,
   p.category->>'id' AS jsonb_category_id,
   r.value AS rel_category_id
 FROM payload.posts p
-JOIN payload.posts_rels r 
-  ON r.parent_id = p.id 
+JOIN payload.posts_rels r
+  ON r.parent_id = p.id
   AND r.path = 'category'
 WHERE p.category->>'id' != r.value;
 ```
@@ -123,7 +123,7 @@ WHERE title IS NULL OR title = '';
 -- Check for invalid JSON in JSONB fields
 SELECT id, title
 FROM payload.posts
-WHERE 
+WHERE
   (content IS NOT NULL AND jsonb_typeof(content) != 'object')
   OR (metadata IS NOT NULL AND jsonb_typeof(metadata) != 'object');
 ```
@@ -144,11 +144,11 @@ UUID table verification ensures that all UUID tables have the required columns a
 
 ```sql
 -- Check UUID columns in posts table
-SELECT 
-  column_name, 
+SELECT
+  column_name,
   data_type
-FROM information_schema.columns 
-WHERE table_schema = 'payload' 
+FROM information_schema.columns
+WHERE table_schema = 'payload'
 AND table_name = 'posts'
 AND column_name = 'id';
 ```
@@ -211,7 +211,7 @@ WHERE NOT EXISTS (
 ```sql
 -- Add missing relationships
 INSERT INTO payload.posts_rels (id, parent_id, path, order, value, collection)
-SELECT 
+SELECT
   uuid_generate_v4(),
   p.id,
   'category',
@@ -219,11 +219,11 @@ SELECT
   p.category->>'id',
   'categories'
 FROM payload.posts p
-LEFT JOIN payload.posts_rels r 
-  ON r.parent_id = p.id 
+LEFT JOIN payload.posts_rels r
+  ON r.parent_id = p.id
   AND r.path = 'category'
-WHERE 
-  p.category IS NOT NULL 
+WHERE
+  p.category IS NOT NULL
   AND r.id IS NULL;
 ```
 
@@ -234,8 +234,8 @@ WHERE
 UPDATE payload.posts_rels r
 SET value = p.category->>'id'
 FROM payload.posts p
-WHERE 
-  r.parent_id = p.id 
+WHERE
+  r.parent_id = p.id
   AND r.path = 'category'
   AND r.value != p.category->>'id';
 ```
@@ -423,9 +423,9 @@ BEGIN
       collection.table_name,
       replace(collection.table_name, '_rels', '')
     );
-    
+
     GET DIAGNOSTICS fixed = ROW_COUNT;
-    
+
     collection_name := collection.table_name;
     fixed_count := fixed;
     RETURN NEXT;
@@ -475,9 +475,9 @@ BEGIN
         field.column_name,
         field.column_name
       );
-      
+
       GET DIAGNOSTICS fixed = ROW_COUNT;
-      
+
       collection_name := collection.table_name;
       field_name := field.column_name;
       fixed_count := fixed;
@@ -533,10 +533,10 @@ function Log-RepairAction {
         [string]$Action,
         [int]$Count
     )
-    
+
     $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
     $logEntry = "$timestamp - $Collection - $Action - $Count items"
-    
+
     Add-Content -Path "repair-log.txt" -Value $logEntry
 }
 ```
@@ -551,7 +551,7 @@ function Track-RepairProgress {
         [int]$Current,
         [int]$Total
     )
-    
+
     $percentage = [math]::Round(($Current / $Total) * 100)
     Write-Progress -Activity "Repairing $Phase" -Status "$percentage% Complete" -PercentComplete $percentage
 }

@@ -11,20 +11,27 @@ SlideHeroes uses MakerKit's authentication system built on Supabase Auth, provid
 Use the Supabase client from MakerKit for authentication operations:
 
 ```tsx
-import { useSupabase } from '@kit/supabase/hooks/use-supabase';
 import { useMutation } from '@tanstack/react-query';
+
+import { useSupabase } from '@kit/supabase/hooks/use-supabase';
 
 // Sign in with email and password
 function useSignIn() {
   const supabase = useSupabase();
-  
+
   return useMutation({
-    mutationFn: async ({ email, password }: { email: string; password: string }) => {
+    mutationFn: async ({
+      email,
+      password,
+    }: {
+      email: string;
+      password: string;
+    }) => {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
-      
+
       if (error) throw error;
       return data;
     },
@@ -34,9 +41,15 @@ function useSignIn() {
 // Sign up with email and password
 function useSignUp() {
   const supabase = useSupabase();
-  
+
   return useMutation({
-    mutationFn: async ({ email, password }: { email: string; password: string }) => {
+    mutationFn: async ({
+      email,
+      password,
+    }: {
+      email: string;
+      password: string;
+    }) => {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -44,7 +57,7 @@ function useSignUp() {
           emailRedirectTo: `${window.location.origin}/auth/callback`,
         },
       });
-      
+
       if (error) throw error;
       return data;
     },
@@ -57,39 +70,40 @@ function useSignUp() {
 Use the server client and `requireUser` for protected server components and actions:
 
 ```tsx
-import { getSupabaseServerClient } from '@kit/supabase/server-client';
-import { requireUser } from '@kit/supabase/require-user';
 import { redirect } from 'next/navigation';
+
+import { z } from 'zod';
+
+// Protected server action with enhanceAction
+import { enhanceAction } from '@kit/next/actions';
+import { requireUser } from '@kit/supabase/require-user';
+import { getSupabaseServerClient } from '@kit/supabase/server-client';
 
 // Protected server component
 export async function ProtectedPage() {
   const client = getSupabaseServerClient();
   const auth = await requireUser(client);
-  
+
   if (!auth.data) {
     redirect(auth.redirectTo);
   }
-  
+
   const user = auth.data;
-  
+
   // User is authenticated, continue with page logic
   return <div>Welcome {user.email}</div>;
 }
-
-// Protected server action with enhanceAction
-import { enhanceAction } from '@kit/next/actions';
-import { z } from 'zod';
 
 export const updateProfileAction = enhanceAction(
   async (data, user) => {
     // user is automatically injected and verified
     const client = getSupabaseServerClient();
-    
+
     const { error } = await client
       .from('profiles')
       .update(data)
       .eq('id', user.id);
-      
+
     if (error) throw error;
     return { success: true };
   },
@@ -99,7 +113,7 @@ export const updateProfileAction = enhanceAction(
       bio: z.string().max(500).optional(),
     }),
     auth: true, // Requires authentication (default)
-  }
+  },
 );
 ```
 
@@ -112,11 +126,16 @@ The AuthProvider component manages authentication state and monitoring integrati
 'use client';
 
 import { useCallback } from 'react';
+
 import type { AuthChangeEvent, Session } from '@supabase/supabase-js';
+
 import { useMonitoring } from '@kit/monitoring/hooks';
 import { useAppEvents } from '@kit/shared/events';
 import { useAuthChangeListener } from '@kit/supabase/hooks/use-auth-change-listener';
+
 import pathsConfig from '~/config/paths.config';
+
+// apps/web/components/auth-provider.tsx
 
 export function AuthProvider(props: React.PropsWithChildren) {
   const { emit } = useAppEvents();
@@ -161,19 +180,22 @@ The middleware handles authentication, CSRF protection, and route-specific logic
 // apps/web/middleware.ts
 import type { NextRequest } from 'next/server';
 import { NextResponse, URLPattern } from 'next/server';
+
 import { CsrfError, createCsrfProtect } from '@edge-csrf/nextjs';
+
 import { isSuperAdmin } from '@kit/admin';
 import { checkRequiresMultiFactorAuthentication } from '@kit/supabase/check-requires-mfa';
 import { createMiddlewareClient } from '@kit/supabase/middleware-client';
+
 import appConfig from '~/config/app.config';
 import pathsConfig from '~/config/paths.config';
 
 export async function middleware(request: NextRequest) {
   const response = NextResponse.next();
-  
+
   // Apply CSRF protection
   const csrfResponse = await withCsrfMiddleware(request, response);
-  
+
   // Handle route-specific patterns
   const patterns = [
     {
@@ -189,7 +211,7 @@ export async function middleware(request: NextRequest) {
       handler: authRouteMiddleware,
     },
   ];
-  
+
   // Apply pattern handlers
   for (const { pattern, handler } of patterns) {
     if (pattern.exec(request.url)) {
@@ -197,31 +219,38 @@ export async function middleware(request: NextRequest) {
       if (result) return result;
     }
   }
-  
+
   return csrfResponse;
 }
 
-async function protectedRouteMiddleware(request: NextRequest, response: NextResponse) {
+async function protectedRouteMiddleware(
+  request: NextRequest,
+  response: NextResponse,
+) {
   const supabase = createMiddlewareClient(request, response);
-  const { data: { user } } = await supabase.auth.getUser();
-  
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   if (!user) {
     const signInUrl = new URL(pathsConfig.auth.signIn, request.url);
     signInUrl.searchParams.set('next', request.nextUrl.pathname);
     return NextResponse.redirect(signInUrl);
   }
-  
+
   // Check MFA requirements
   const requiresMfa = await checkRequiresMultiFactorAuthentication(supabase);
   if (requiresMfa) {
-    return NextResponse.redirect(new URL(pathsConfig.auth.verifyMfa, request.url));
+    return NextResponse.redirect(
+      new URL(pathsConfig.auth.verifyMfa, request.url),
+    );
   }
-  
+
   // Check onboarding status
   if (!user.user_metadata.onboarded) {
     return NextResponse.redirect(new URL('/onboarding', request.url));
   }
-  
+
   return response;
 }
 ```
@@ -246,7 +275,7 @@ export default {
 function OAuthSignIn() {
   const supabase = useSupabase();
   const [isPending, startTransition] = useTransition();
-  
+
   const signInWithGoogle = () => {
     startTransition(async () => {
       const { error } = await supabase.auth.signInWithOAuth({
@@ -259,13 +288,13 @@ function OAuthSignIn() {
           },
         },
       });
-      
+
       if (error) {
         console.error('OAuth error:', error);
       }
     });
   };
-  
+
   return (
     <Button onClick={signInWithGoogle} disabled={isPending}>
       <GoogleIcon className="mr-2" />
@@ -283,15 +312,15 @@ SlideHeroes supports TOTP-based MFA with automatic verification flow:
 // MFA enrollment
 async function enrollMFA() {
   const supabase = useSupabase();
-  
+
   // Enroll TOTP factor
   const { data: factor, error } = await supabase.auth.mfa.enroll({
     factorType: 'totp',
     friendlyName: 'Authenticator App',
   });
-  
+
   if (error) throw error;
-  
+
   // Display QR code for user to scan
   return {
     qrCode: factor.totp.qr_code,
@@ -304,31 +333,27 @@ async function enrollMFA() {
 function MFAVerificationForm({ factorId }: { factorId: string }) {
   const supabase = useSupabase();
   const [code, setCode] = useState('');
-  
+
   const verifyMFA = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const { data, error } = await supabase.auth.mfa.challengeAndVerify({
       factorId,
       code,
     });
-    
+
     if (error) {
       console.error('MFA verification failed:', error);
       return;
     }
-    
+
     // Redirect to app after successful verification
     window.location.href = pathsConfig.app.home;
   };
-  
+
   return (
     <form onSubmit={verifyMFA}>
-      <VerificationCodeInput
-        value={code}
-        onChange={setCode}
-        length={6}
-      />
+      <VerificationCodeInput value={code} onChange={setCode} length={6} />
       <Button type="submit">Verify</Button>
     </form>
   );
@@ -341,35 +366,37 @@ Handle session persistence and refresh:
 
 ```tsx
 import { useEffect } from 'react';
-import { useSupabase } from '@kit/supabase/hooks/use-supabase';
+
 import { useRouter } from 'next/navigation';
+
+import { useSupabase } from '@kit/supabase/hooks/use-supabase';
 
 export function useSessionManager() {
   const supabase = useSupabase();
   const router = useRouter();
-  
+
   useEffect(() => {
     // Handle session refresh
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (event === 'TOKEN_REFRESHED') {
-          console.log('Token refreshed successfully');
-        }
-        
-        if (event === 'SIGNED_OUT') {
-          // Clear any local state
-          router.push('/');
-        }
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'TOKEN_REFRESHED') {
+        console.log('Token refreshed successfully');
       }
-    );
-    
+
+      if (event === 'SIGNED_OUT') {
+        // Clear any local state
+        router.push('/');
+      }
+    });
+
     // Check session on mount
     supabase.auth.getSession().then(({ data: { session }, error }) => {
       if (error || !session) {
         console.error('Session error:', error);
       }
     });
-    
+
     return () => {
       subscription.unsubscribe();
     };
@@ -386,13 +413,13 @@ Implement secure password reset with email verification:
 export const requestPasswordResetAction = enhanceAction(
   async ({ email }) => {
     const supabase = getSupabaseServerClient();
-    
+
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/update-password`,
     });
-    
+
     if (error) throw error;
-    
+
     return { success: true };
   },
   {
@@ -400,30 +427,33 @@ export const requestPasswordResetAction = enhanceAction(
       email: z.string().email(),
     }),
     auth: false, // Allow unauthenticated access
-  }
+  },
 );
 
 // Update password after email verification
 export const updatePasswordAction = enhanceAction(
   async ({ password }, user) => {
     const supabase = getSupabaseServerClient();
-    
+
     const { error } = await supabase.auth.updateUser({
       password,
     });
-    
+
     if (error) throw error;
-    
+
     return { success: true };
   },
   {
     schema: z.object({
-      password: z.string().min(8).regex(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-        'Password must contain uppercase, lowercase, and number'
-      ),
+      password: z
+        .string()
+        .min(8)
+        .regex(
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+          'Password must contain uppercase, lowercase, and number',
+        ),
     }),
-  }
+  },
 );
 ```
 
@@ -439,7 +469,9 @@ const csrfProtect = createCsrfProtect({
     secure: appConfig.production,
     name: 'csrfSecret',
   },
-  ignoreMethods: isServerAction(request) ? ['POST'] : ['GET', 'HEAD', 'OPTIONS'],
+  ignoreMethods: isServerAction(request)
+    ? ['POST']
+    : ['GET', 'HEAD', 'OPTIONS'],
 });
 ```
 
@@ -492,7 +524,7 @@ export async function logAuthEvent(event: {
   userAgent?: string;
 }) {
   const supabase = getSupabaseServerClient();
-  
+
   await supabase.from('auth_logs').insert({
     event_type: event.type,
     user_id: event.userId,
@@ -515,15 +547,17 @@ const signInSchema = z.object({
   captchaToken: z.string().optional(),
 });
 
-const signUpSchema = signInSchema.extend({
-  confirmPassword: z.string(),
-  acceptTerms: z.boolean().refine((val) => val === true, {
-    message: 'You must accept the terms and conditions',
-  }),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: 'Passwords do not match',
-  path: ['confirmPassword'],
-});
+const signUpSchema = signInSchema
+  .extend({
+    confirmPassword: z.string(),
+    acceptTerms: z.boolean().refine((val) => val === true, {
+      message: 'You must accept the terms and conditions',
+    }),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'Passwords do not match',
+    path: ['confirmPassword'],
+  });
 ```
 
 ## Error Handling

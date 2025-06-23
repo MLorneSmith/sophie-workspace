@@ -62,10 +62,10 @@ Event notification rules determine the [event types](https://developers.cloudfla
 
 ## Event types
 
-| Event type | Description | Trigger actions |
-| --- | --- | --- |
+| Event type      | Description                                                                    | Trigger actions                                                |
+| --------------- | ------------------------------------------------------------------------------ | -------------------------------------------------------------- |
 | `object-create` | Triggered when new objects are created or existing objects are<br>overwritten. | - `PutObject`<br>- `CopyObject`<br>- `CompleteMultipartUpload` |
-| `object-delete` | Triggered when an object is explicitly removed from the bucket. | - `DeleteObject`<br>- `LifecycleDeletion` |
+| `object-delete` | Triggered when an object is explicitly removed from the bucket.                | - `DeleteObject`<br>- `LifecycleDeletion`                      |
 
 ## Message format
 
@@ -106,19 +106,19 @@ Queue consumers receive notifications as [Messages](https://developers.cloudflar
 
 ### Properties
 
-| Property | Type | Description |
-| --- | --- | --- |
-| `account` | String | The Cloudflare account ID that the event is associated with. |
-| `action` | String | The type of action that triggered the event notification. Example<br>actions include: `PutObject`, `CopyObject`, <br>`CompleteMultipartUpload`, `DeleteObject`. |
-| `bucket` | String | The name of the bucket where the event occurred. |
-| `object` | Object | A nested object containing details about the object involved in the<br>event. |
-| `object.key` | String | The key (or name) of the object within the bucket. |
-| `object.size` | Number | The size of the object in bytes. Note: not present for object-delete<br>events. |
-| `object.eTag` | String | The entity tag (eTag) of the object. Note: not present for object-delete<br>events. |
-| `eventTime` | String | The time when the action that triggered the event occurred. |
-| `copySource` | Object | A nested object containing details about the source of a copied object.<br>Note: only present for events triggered by `CopyObject`. |
-| `copySource.bucket` | String | The bucket that contained the source object. |
-| `copySource.object` | String | The name of the source object. |
+| Property            | Type   | Description                                                                                                                                                     |
+| ------------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `account`           | String | The Cloudflare account ID that the event is associated with.                                                                                                    |
+| `action`            | String | The type of action that triggered the event notification. Example<br>actions include: `PutObject`, `CopyObject`, <br>`CompleteMultipartUpload`, `DeleteObject`. |
+| `bucket`            | String | The name of the bucket where the event occurred.                                                                                                                |
+| `object`            | Object | A nested object containing details about the object involved in the<br>event.                                                                                   |
+| `object.key`        | String | The key (or name) of the object within the bucket.                                                                                                              |
+| `object.size`       | Number | The size of the object in bytes. Note: not present for object-delete<br>events.                                                                                 |
+| `object.eTag`       | String | The entity tag (eTag) of the object. Note: not present for object-delete<br>events.                                                                             |
+| `eventTime`         | String | The time when the action that triggered the event occurred.                                                                                                     |
+| `copySource`        | Object | A nested object containing details about the source of a copied object.<br>Note: only present for events triggered by `CopyObject`.                             |
+| `copySource.bucket` | String | The bucket that contained the source object.                                                                                                                    |
+| `copySource.object` | String | The name of the source object.                                                                                                                                  |
 
 ## Notes
 

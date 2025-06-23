@@ -362,7 +362,7 @@ Schedule regular migrations:
 name: Scheduled Migration
 on:
   schedule:
-    - cron: '0 0 * * 0'  # Weekly on Sunday at midnight
+    - cron: '0 0 * * 0' # Weekly on Sunday at midnight
 jobs:
   migrate:
     runs-on: ubuntu-latest
@@ -435,12 +435,12 @@ reset-and-migrate.ps1
 
 ### Common Error Codes
 
-| Error Code | Description | Resolution |
-|------------|-------------|------------|
-| E001 | Database connection failed | Check database credentials and connection |
-| E002 | Schema creation failed | Check database permissions |
-| E003 | Data processing failed | Check raw data format |
-| E004 | SQL generation failed | Check SQL templates |
-| E005 | Content migration failed | Check migration scripts |
-| E006 | Relationship fix failed | Run relationship repair script |
-| E007 | Verification failed | Check verification logs |
+| Error Code | Description                | Resolution                                |
+| ---------- | -------------------------- | ----------------------------------------- |
+| E001       | Database connection failed | Check database credentials and connection |
+| E002       | Schema creation failed     | Check database permissions                |
+| E003       | Data processing failed     | Check raw data format                     |
+| E004       | SQL generation failed      | Check SQL templates                       |
+| E005       | Content migration failed   | Check migration scripts                   |
+| E006       | Relationship fix failed    | Run relationship repair script            |
+| E007       | Verification failed        | Check verification logs                   |

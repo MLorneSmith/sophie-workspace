@@ -6,15 +6,15 @@ This document describes the required environment variables for enabling serverle
 
 ## Required Environment Variables
 
-| Variable                       | Description                                                      | Example Value / Notes                  |
-|---------------------------------|------------------------------------------------------------------|----------------------------------------|
-| `NODE_ENV`                      | Set to `production` in production environments                   | `production`                           |
-| `PAYLOAD_PUBLIC_SERVER_URL`     | Public URL for Payload CMS                                       | `https://yourdomain.com`               |
-| `PAYLOAD_SECRET`                | Payload CMS secret                                               | (secure random string)                 |
-| `DATABASE_URI`                  | Database connection string                                       | `postgres://user:pass@host:5432/db`    |
-| `SHARP_PLATFORM`                | Platform override for sharp optimization                         | `serverless`, `aws-lambda`, `vercel`, `cloudflare` (see below) |
-| `SHARP_CACHE_PATH`              | (Optional) Path for sharp cache (if persistent storage needed)   | `/tmp/sharp-cache`                     |
-| `SHARP_CONCURRENCY`             | (Optional) Max concurrency for sharp                             | `2` (recommended for serverless)       |
+| Variable                    | Description                                                    | Example Value / Notes                                          |
+| --------------------------- | -------------------------------------------------------------- | -------------------------------------------------------------- |
+| `NODE_ENV`                  | Set to `production` in production environments                 | `production`                                                   |
+| `PAYLOAD_PUBLIC_SERVER_URL` | Public URL for Payload CMS                                     | `https://yourdomain.com`                                       |
+| `PAYLOAD_SECRET`            | Payload CMS secret                                             | (secure random string)                                         |
+| `DATABASE_URI`              | Database connection string                                     | `postgres://user:pass@host:5432/db`                            |
+| `SHARP_PLATFORM`            | Platform override for sharp optimization                       | `serverless`, `aws-lambda`, `vercel`, `cloudflare` (see below) |
+| `SHARP_CACHE_PATH`          | (Optional) Path for sharp cache (if persistent storage needed) | `/tmp/sharp-cache`                                             |
+| `SHARP_CONCURRENCY`         | (Optional) Max concurrency for sharp                           | `2` (recommended for serverless)                               |
 
 ---
 

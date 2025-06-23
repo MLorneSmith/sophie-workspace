@@ -6,15 +6,15 @@ export default defineConfig({
 	plugins: [
 		// Enable React support with automatic JSX transform
 		react({
-			jsxImportSource: 'react',
+			jsxImportSource: "react",
 		}),
 		// Synchronize TypeScript paths with Vitest/Vite module resolution
 		tsconfigPaths(),
 	],
 	esbuild: {
 		// Configure JSX transformation
-		jsx: 'automatic',
-		jsxImportSource: 'react',
+		jsx: "automatic",
+		jsxImportSource: "react",
 	},
 	test: {
 		// Environment setup

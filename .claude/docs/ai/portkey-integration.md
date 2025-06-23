@@ -35,12 +35,12 @@ async function generateContent(prompt: string) {
   const response = await client.chat.completions.create({
     messages: [
       { role: 'system', content: 'You are a helpful assistant.' },
-      { role: 'user', content: prompt }
+      { role: 'user', content: prompt },
     ],
     model: 'gpt-4-turbo',
     max_tokens: 500,
   });
-  
+
   return response.choices[0].message.content;
 }
 ```
@@ -52,9 +52,10 @@ Always use server actions for AI calls:
 ```tsx
 'use server';
 
+import { z } from 'zod';
+
 import { createGatewayClient } from '@kit/ai-gateway';
 import { enhanceAction } from '@kit/next/actions';
-import { z } from 'zod';
 
 export const generateContentAction = enhanceAction(
   async (data: { prompt: string }, user) => {
@@ -67,19 +68,19 @@ export const generateContentAction = enhanceAction(
     const response = await client.chat.completions.create({
       messages: [
         { role: 'system', content: 'You are a helpful assistant.' },
-        { role: 'user', content: data.prompt }
+        { role: 'user', content: data.prompt },
       ],
       model: 'gpt-4-turbo',
       max_tokens: 500,
     });
-    
+
     return response.choices[0].message.content;
   },
   {
     schema: z.object({
       prompt: z.string().min(1).max(1000),
     }),
-  }
+  },
 );
 ```
 
@@ -93,7 +94,7 @@ import { getChatCompletion } from '@kit/ai-gateway';
 const result = await getChatCompletion(
   [
     { role: 'system', content: 'You are a helpful assistant.' },
-    { role: 'user', content: prompt }
+    { role: 'user', content: prompt },
   ],
   {
     model: 'gpt-4-turbo',
@@ -101,7 +102,7 @@ const result = await getChatCompletion(
     userId: user.id,
     teamId: team.id,
     feature: 'chat-assistant',
-  }
+  },
 );
 
 console.log(result.content);
@@ -113,7 +114,7 @@ console.log(result.metadata.cost); // Track costs
 The gateway automatically selects the correct provider based on model name:
 
 - `gpt-*` models → OpenAI
-- `claude-*` models → Anthropic  
+- `claude-*` models → Anthropic
 - `llama-*` models → Groq
 
 ## Configuration & Fallbacks
@@ -129,9 +130,9 @@ const client = createGatewayClient({
     },
     targets: [
       { provider: 'openai', model: 'gpt-4-turbo' },
-      { provider: 'anthropic', model: 'claude-3-opus-20240229' }
-    ]
-  }
+      { provider: 'anthropic', model: 'claude-3-opus-20240229' },
+    ],
+  },
 });
 ```
 
@@ -145,14 +146,14 @@ try {
     model: 'gpt-4-turbo',
     userId: user.id,
   });
-  
+
   return result.content;
 } catch (error) {
   if (error instanceof AiUsageLimitError) {
     // Handle usage limit exceeded
     return 'Usage limit exceeded. Please upgrade your plan.';
   }
-  
+
   console.error('AI service error:', error);
   return 'Sorry, I was unable to generate content at this time.';
 }
@@ -165,14 +166,11 @@ Use streaming for better user experience:
 ```tsx
 import { getStreamingChatCompletion } from '@kit/ai-gateway';
 
-const stream = getStreamingChatCompletion(
-  messages,
-  { 
-    model: 'gpt-4-turbo', 
-    userId: user.id,
-    feature: 'streaming-chat'
-  }
-);
+const stream = getStreamingChatCompletion(messages, {
+  model: 'gpt-4-turbo',
+  userId: user.id,
+  feature: 'streaming-chat',
+});
 
 for await (const chunk of stream) {
   // Process each chunk

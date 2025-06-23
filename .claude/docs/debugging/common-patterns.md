@@ -88,15 +88,15 @@ if (!data || !Array.isArray(data)) {
 useEffect(() => {
   const handler = () => {
     // Use current state
-    setCount(prevCount => prevCount + 1);
+    setCount((prevCount) => prevCount + 1);
   };
   // Add proper dependencies
 }, [dependency]);
 
 // Immutable updates
-setState(prevState => ({
+setState((prevState) => ({
   ...prevState,
-  updatedField: newValue
+  updatedField: newValue,
 }));
 ```
 
@@ -130,9 +130,9 @@ try {
 // Cleanup async operations
 useEffect(() => {
   const controller = new AbortController();
-  
+
   fetchData(controller.signal);
-  
+
   return () => controller.abort();
 }, []);
 ```
@@ -160,21 +160,20 @@ function validateUser(data: unknown): User {
   if (!data || typeof data !== 'object') {
     throw new Error('Invalid user data');
   }
-  
+
   const user = data as Record<string, unknown>;
   if (typeof user.id !== 'string' || typeof user.name !== 'string') {
     throw new Error('User missing required fields');
   }
-  
+
   return user as User;
 }
 
 // Use type guards
 function isUser(data: unknown): data is User {
-  return data !== null && 
-         typeof data === 'object' && 
-         'id' in data && 
-         'name' in data;
+  return (
+    data !== null && typeof data === 'object' && 'id' in data && 'name' in data
+  );
 }
 ```
 

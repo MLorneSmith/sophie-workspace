@@ -2,7 +2,7 @@
 
 On this page
 
-## Types of selection [​](https://lexical.dev/docs/concepts/selection\#types-of-selection "Direct link to heading")
+## Types of selection [​](https://lexical.dev/docs/concepts/selection#types-of-selection 'Direct link to heading')
 
 Lexical's selection is part of the `EditorState`. This means that for every update, or change to the editor, the
 selection always remains consistent with that of the `EditorState`'s node tree.
@@ -16,7 +16,7 @@ In Lexical, there are four types of selection possible:
 
 It is possible, but not generally recommended, to implement your own selection types that implement `BaseSelection`.
 
-### `RangeSelection` [​](https://lexical.dev/docs/concepts/selection\#rangeselection "Direct link to heading")
+### `RangeSelection` [​](https://lexical.dev/docs/concepts/selection#rangeselection 'Direct link to heading')
 
 This is the most common type of selection, and is a normalization of the browser's DOM Selection and Range APIs.
 `RangeSelection` consists of three main properties:
@@ -31,13 +31,13 @@ Both the `anchor` and `focus` points refer to an object that represents a specif
 - `offset` representing the position from within its selected Lexical node. For the `text` type this is the character, and for the `element` type this is the child index from within the `ElementNode`
 - `type` representing either `element` or `text`.
 
-### `NodeSelection` [​](https://lexical.dev/docs/concepts/selection\#nodeselection "Direct link to heading")
+### `NodeSelection` [​](https://lexical.dev/docs/concepts/selection#nodeselection 'Direct link to heading')
 
 NodeSelection represents a selection of multiple arbitrary nodes. For example, three images selected at the same time.
 
 - `getNodes()` returns an array containing the selected LexicalNodes
 
-### `TableSelection` [​](https://lexical.dev/docs/concepts/selection\#tableselection "Direct link to heading")
+### `TableSelection` [​](https://lexical.dev/docs/concepts/selection#tableselection 'Direct link to heading')
 
 TableSelection represents a grid-like selection like tables. It stores the key of the parent node where the selection takes place and the start and end points.
 `TableSelection` consists of three main properties:
@@ -54,12 +54,12 @@ For example, a table where you select row = 1 col = 1 to row 2 col = 2 could be 
 
 Note that `anchor` and `focus` points work the same way as `RangeSelection`.
 
-### `null` [​](https://lexical.dev/docs/concepts/selection\#null "Direct link to heading")
+### `null` [​](https://lexical.dev/docs/concepts/selection#null 'Direct link to heading')
 
 This is for when the editor doesn't have any active selection. This is common for when the editor has been blurred or when selection
 has moved to another editor on the page. This can also happen when trying to select non-editable components within the editor space.
 
-## Working with selection [​](https://lexical.dev/docs/concepts/selection\#working-with-selection "Direct link to heading")
+## Working with selection [​](https://lexical.dev/docs/concepts/selection#working-with-selection 'Direct link to heading')
 
 Selection can be found using the `$getSelection()` helper, exported from the `lexical` package. This function can be used within
 an update, a read, or a command listener.
@@ -121,7 +121,7 @@ editor.update(() => {
 
 ```
 
-## Focus [​](https://lexical.dev/docs/concepts/selection\#focus "Direct link to heading")
+## Focus [​](https://lexical.dev/docs/concepts/selection#focus 'Direct link to heading')
 
 You may notice that when you issue an `editor.update` or
 `editor.dispatchCommand` then the editor can "steal focus" if there is

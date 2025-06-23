@@ -44,7 +44,7 @@ const initialConfig = {
 
 ```
 
-### `LexicalPlainTextPlugin` [​](https://lexical.dev/docs/react/plugins\#lexicalplaintextplugin "Direct link to heading")
+### `LexicalPlainTextPlugin` [​](https://lexical.dev/docs/react/plugins#lexicalplaintextplugin 'Direct link to heading')
 
 React wrapper for `@lexical/plain-text` that adds major features for plain text editing, including typing, deletion and copy/pasting.
 
@@ -61,7 +61,7 @@ React wrapper for `@lexical/plain-text` that adds major features for plain text 
 
 ```
 
-### `LexicalRichTextPlugin` [​](https://lexical.dev/docs/react/plugins\#lexicalrichtextplugin "Direct link to heading")
+### `LexicalRichTextPlugin` [​](https://lexical.dev/docs/react/plugins#lexicalrichtextplugin 'Direct link to heading')
 
 React wrapper for `@lexical/rich-text` that adds major features for rich text editing, including typing, deletion, copy/pasting, indent/outdent and bold/italic/underline/strikethrough text formatting.
 
@@ -78,7 +78,7 @@ React wrapper for `@lexical/rich-text` that adds major features for rich text ed
 
 ```
 
-### `LexicalOnChangePlugin` [​](https://lexical.dev/docs/react/plugins\#lexicalonchangeplugin "Direct link to heading")
+### `LexicalOnChangePlugin` [​](https://lexical.dev/docs/react/plugins#lexicalonchangeplugin 'Direct link to heading')
 
 Plugin that calls `onChange` whenever Lexical state is updated. Using `ignoreHistoryMergeTagChange` ( `true` by default) and `ignoreSelectionChange` ( `false` by default) can give more granular control over changes that are causing `onChange` call.
 
@@ -87,7 +87,7 @@ Plugin that calls `onChange` whenever Lexical state is updated. Using `ignoreHis
 
 ```
 
-### `LexicalHistoryPlugin` [​](https://lexical.dev/docs/react/plugins\#lexicalhistoryplugin "Direct link to heading")
+### `LexicalHistoryPlugin` [​](https://lexical.dev/docs/react/plugins#lexicalhistoryplugin 'Direct link to heading')
 
 React wrapper for `@lexical/history` that adds support for history stack management and `undo` / `redo` commands.
 
@@ -96,7 +96,7 @@ React wrapper for `@lexical/history` that adds support for history stack managem
 
 ```
 
-### `LexicalLinkPlugin` [​](https://lexical.dev/docs/react/plugins\#lexicallinkplugin "Direct link to heading")
+### `LexicalLinkPlugin` [​](https://lexical.dev/docs/react/plugins#lexicallinkplugin 'Direct link to heading')
 
 React wrapper for `@lexical/link` that adds support for links, including `$toggleLink` command support that toggles link for selected text.
 
@@ -105,7 +105,7 @@ React wrapper for `@lexical/link` that adds support for links, including `$toggl
 
 ```
 
-### `LexicalListPlugin` [​](https://lexical.dev/docs/react/plugins\#lexicallistplugin "Direct link to heading")
+### `LexicalListPlugin` [​](https://lexical.dev/docs/react/plugins#lexicallistplugin 'Direct link to heading')
 
 React wrapper for `@lexical/list` that adds support for lists (ordered and unordered)
 
@@ -114,7 +114,7 @@ React wrapper for `@lexical/list` that adds support for lists (ordered and unord
 
 ```
 
-### `LexicalCheckListPlugin` [​](https://lexical.dev/docs/react/plugins\#lexicalchecklistplugin "Direct link to heading")
+### `LexicalCheckListPlugin` [​](https://lexical.dev/docs/react/plugins#lexicalchecklistplugin 'Direct link to heading')
 
 React wrapper for `@lexical/list` that adds support for check lists. Note that it requires some css to render check/uncheck marks. See PlaygroundEditorTheme.css for details.
 
@@ -123,9 +123,9 @@ React wrapper for `@lexical/list` that adds support for check lists. Note that i
 
 ```
 
-### `LexicalTablePlugin` [​](https://lexical.dev/docs/react/plugins\#lexicaltableplugin "Direct link to heading")
+### `LexicalTablePlugin` [​](https://lexical.dev/docs/react/plugins#lexicaltableplugin 'Direct link to heading')
 
-[![See API Documentation](<Base64-Image-Removed>)](https://lexical.dev/docs/api/modules/lexical_react_LexicalTablePlugin)
+[![See API Documentation](Base64-Image-Removed)](https://lexical.dev/docs/api/modules/lexical_react_LexicalTablePlugin)
 
 React wrapper for `@lexical/table` that adds support for tables.
 
@@ -134,7 +134,7 @@ React wrapper for `@lexical/table` that adds support for tables.
 
 ```
 
-### `LexicalTabIndentationPlugin` [​](https://lexical.dev/docs/react/plugins\#lexicaltabindentationplugin "Direct link to heading")
+### `LexicalTabIndentationPlugin` [​](https://lexical.dev/docs/react/plugins#lexicaltabindentationplugin 'Direct link to heading')
 
 Plugin that allows tab indentation in combination with `@lexical/rich-text`.
 
@@ -143,7 +143,7 @@ Plugin that allows tab indentation in combination with `@lexical/rich-text`.
 
 ```
 
-### `LexicalAutoLinkPlugin` [​](https://lexical.dev/docs/react/plugins\#lexicalautolinkplugin "Direct link to heading")
+### `LexicalAutoLinkPlugin` [​](https://lexical.dev/docs/react/plugins#lexicalautolinkplugin 'Direct link to heading')
 
 Plugin will convert text into links based on passed matchers list. In example below whenever user types url-like string it will automaticaly convert it into a link node
 
@@ -174,7 +174,7 @@ const MATCHERS = [\
 
 ```
 
-### `LexicalClearEditorPlugin` [​](https://lexical.dev/docs/react/plugins\#lexicalcleareditorplugin "Direct link to heading")
+### `LexicalClearEditorPlugin` [​](https://lexical.dev/docs/react/plugins#lexicalcleareditorplugin 'Direct link to heading')
 
 Adds `clearEditor` command support to clear editor's content.
 
@@ -183,7 +183,7 @@ Adds `clearEditor` command support to clear editor's content.
 
 ```
 
-### `LexicalMarkdownShortcutPlugin` [​](https://lexical.dev/docs/react/plugins\#lexicalmarkdownshortcutplugin "Direct link to heading")
+### `LexicalMarkdownShortcutPlugin` [​](https://lexical.dev/docs/react/plugins#lexicalmarkdownshortcutplugin 'Direct link to heading')
 
 Adds markdown shortcut support: headings, lists, code blocks, quotes, links and inline styles (bold, italic, strikethrough).
 
@@ -192,7 +192,7 @@ Adds markdown shortcut support: headings, lists, code blocks, quotes, links and 
 
 ```
 
-### `LexicalTableOfContentsPlugin` [​](https://lexical.dev/docs/react/plugins\#lexicaltableofcontentsplugin "Direct link to heading")
+### `LexicalTableOfContentsPlugin` [​](https://lexical.dev/docs/react/plugins#lexicaltableofcontentsplugin 'Direct link to heading')
 
 This plugin allows you to render a table of contents for a page from the headings from the editor. It listens to any deletions or modifications to those headings and updates the table of contents. Additionally, it's able to track any newly added headings and inserts them in the table of contents once they are created. This plugin also supports lazy loading - so you can defer adding the plugin until when the user needs it.
 
@@ -213,7 +213,7 @@ In order to use `TableOfContentsPlugin`, you need to pass a callback function in
 
 ```
 
-### `LexicalEditorRefPlugin` [​](https://lexical.dev/docs/react/plugins\#lexicaleditorrefplugin "Direct link to heading")
+### `LexicalEditorRefPlugin` [​](https://lexical.dev/docs/react/plugins#lexicaleditorrefplugin 'Direct link to heading')
 
 Allows you to get a ref to the underlying editor instance outside of LexicalComposer, which is convenient when you want to interact with the editor
 from a separate part of your application.
@@ -224,7 +224,7 @@ const editorRef = useRef(null);
 
 ```
 
-### `LexicalSelectionAlwaysOnDisplay` [​](https://lexical.dev/docs/react/plugins\#lexicalselectionalwaysondisplay "Direct link to heading")
+### `LexicalSelectionAlwaysOnDisplay` [​](https://lexical.dev/docs/react/plugins#lexicalselectionalwaysondisplay 'Direct link to heading')
 
 By default, browser text selection becomes invisible when clicking away from the editor. This plugin ensures the selection remains visible.
 

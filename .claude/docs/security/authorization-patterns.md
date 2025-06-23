@@ -47,7 +47,7 @@ ALTER TABLE public.accounts ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view accounts they belong to" ON public.accounts
   FOR SELECT USING (
     auth.uid() IN (
-      SELECT user_id FROM public.accounts_memberships 
+      SELECT user_id FROM public.accounts_memberships
       WHERE account_id = accounts.id
     )
   );
@@ -57,8 +57,8 @@ CREATE POLICY "Account owners can update account" ON public.accounts
   FOR UPDATE USING (
     auth.uid() = primary_owner_user_id OR
     auth.uid() IN (
-      SELECT user_id FROM public.accounts_memberships 
-      WHERE account_id = accounts.id 
+      SELECT user_id FROM public.accounts_memberships
+      WHERE account_id = accounts.id
       AND role IN ('owner', 'admin')
     )
   );
@@ -66,7 +66,7 @@ CREATE POLICY "Account owners can update account" ON public.accounts
 -- Users can create personal accounts
 CREATE POLICY "Users can create personal accounts" ON public.accounts
   FOR INSERT WITH CHECK (
-    type = 'personal' AND 
+    type = 'personal' AND
     auth.uid() = primary_owner_user_id
   );
 ```
@@ -107,8 +107,8 @@ CREATE POLICY "Users can update their own course progress" ON public.course_prog
 CREATE POLICY "Account admins can view team progress" ON public.course_progress
   FOR SELECT USING (
     account_id IN (
-      SELECT account_id FROM public.accounts_memberships 
-      WHERE user_id = auth.uid() 
+      SELECT account_id FROM public.accounts_memberships
+      WHERE user_id = auth.uid()
       AND role IN ('owner', 'admin')
     )
   );
@@ -142,7 +142,7 @@ ALTER TABLE public.ai_request_logs ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view their account's AI usage" ON public.ai_request_logs
   FOR SELECT USING (
     account_id IN (
-      SELECT account_id FROM public.accounts_memberships 
+      SELECT account_id FROM public.accounts_memberships
       WHERE user_id = auth.uid()
     )
   );
@@ -197,19 +197,21 @@ import { isSuperAdmin } from '@kit/admin';
 import { createMiddlewareClient } from '@kit/supabase/middleware-client';
 
 async function adminMiddleware(request: NextRequest, response: NextResponse) {
-  const { data: { user } } = await getUser(request, response);
-  
+  const {
+    data: { user },
+  } = await getUser(request, response);
+
   if (!user) {
     return NextResponse.redirect(new URL('/auth/signin', request.url));
   }
-  
+
   const client = createMiddlewareClient(request, response);
   const userIsSuperAdmin = await isSuperAdmin(client);
-  
+
   if (!userIsSuperAdmin) {
     return NextResponse.redirect(new URL('/404', request.url));
   }
-  
+
   return response;
 }
 
@@ -224,10 +226,10 @@ export function AdminOnly({ children }: { children: React.ReactNode }) {
     },
     enabled: !!user,
   });
-  
+
   if (isLoading) return <LoadingSpinner />;
   if (!isAdmin) return <AccessDenied />;
-  
+
   return children;
 }
 ```
@@ -241,7 +243,7 @@ Access to Payload CMS content through the public schema:
 ```sql
 -- Cross-schema view for course data
 CREATE OR REPLACE VIEW public.course_details AS
-SELECT 
+SELECT
   c.id,
   c.title,
   c.slug,
@@ -281,8 +283,8 @@ LANGUAGE SQL
 SECURITY DEFINER
 AS $$
   SELECT EXISTS (
-    SELECT 1 FROM auth.mfa_factors 
-    WHERE user_id = auth.uid() 
+    SELECT 1 FROM auth.mfa_factors
+    WHERE user_id = auth.uid()
     AND status = 'verified'
   );
 $$;
@@ -291,7 +293,7 @@ $$;
 CREATE POLICY "Sensitive operations require MFA" ON public.sensitive_table
   AS RESTRICTIVE FOR ALL TO authenticated
   USING (
-    CASE 
+    CASE
       WHEN public.user_has_mfa() THEN (auth.jwt()->>'aal') = 'aal2'
       ELSE true
     END
@@ -305,24 +307,28 @@ CREATE POLICY "Sensitive operations require MFA" ON public.sensitive_table
 Use MakerKit's `enhanceAction` for server-side authorization:
 
 ```tsx
-import { enhanceAction } from '@kit/next/actions';
 import { requireAccountOwnership } from '@/lib/auth';
+
+import { enhanceAction } from '@kit/next/actions';
 
 // Account ownership check
 export const updateAccountAction = enhanceAction(
   async ({ accountId, data }, user) => {
     // Verify user owns or administers the account
-    const hasAccess = await checkAccountAccess(user.id, accountId, ['owner', 'admin']);
+    const hasAccess = await checkAccountAccess(user.id, accountId, [
+      'owner',
+      'admin',
+    ]);
     if (!hasAccess) {
       throw new Error('Insufficient permissions');
     }
-    
+
     const supabase = getSupabaseServerClient();
     const { error } = await supabase
       .from('accounts')
       .update(data)
       .eq('id', accountId);
-      
+
     if (error) throw error;
     return { success: true };
   },
@@ -334,35 +340,33 @@ export const updateAccountAction = enhanceAction(
         picture_url: z.string().url().optional(),
       }),
     }),
-  }
+  },
 );
 
 // Course progress update
 export const updateCourseProgressAction = enhanceAction(
   async ({ courseId, lessonId, completed }, user) => {
     const supabase = getSupabaseServerClient();
-    
+
     // Get user's default account
     const { data: membership } = await supabase
       .from('accounts_memberships')
       .select('account_id')
       .eq('user_id', user.id)
       .single();
-      
+
     if (!membership) throw new Error('No account found');
-    
+
     // Update progress (RLS automatically restricts to user's data)
-    const { error } = await supabase
-      .from('course_progress')
-      .upsert({
-        user_id: user.id,
-        account_id: membership.account_id,
-        course_id: courseId,
-        lesson_id: lessonId,
-        completed,
-        updated_at: new Date().toISOString(),
-      });
-      
+    const { error } = await supabase.from('course_progress').upsert({
+      user_id: user.id,
+      account_id: membership.account_id,
+      course_id: courseId,
+      lesson_id: lessonId,
+      completed,
+      updated_at: new Date().toISOString(),
+    });
+
     if (error) throw error;
     return { success: true };
   },
@@ -372,7 +376,7 @@ export const updateCourseProgressAction = enhanceAction(
       lessonId: z.string().optional(),
       completed: z.boolean(),
     }),
-  }
+  },
 );
 ```
 
@@ -383,29 +387,30 @@ export const updateCourseProgressAction = enhanceAction(
 ```tsx
 // Check if user has access to account with specific roles
 export async function checkAccountAccess(
-  userId: string, 
-  accountId: string, 
-  requiredRoles: string[] = ['member']
+  userId: string,
+  accountId: string,
+  requiredRoles: string[] = ['member'],
 ): Promise<boolean> {
   const supabase = getSupabaseServerClient();
-  
+
   const { data } = await supabase
     .from('accounts_memberships')
     .select('role')
     .eq('user_id', userId)
     .eq('account_id', accountId)
     .single();
-    
+
   return data ? requiredRoles.includes(data.role) : false;
 }
 
 // Get user's accounts with roles
 export async function getUserAccounts(userId: string) {
   const supabase = getSupabaseServerClient();
-  
+
   const { data } = await supabase
     .from('accounts_memberships')
-    .select(`
+    .select(
+      `
       account_id,
       role,
       account:accounts(
@@ -415,22 +420,26 @@ export async function getUserAccounts(userId: string) {
         type,
         picture_url
       )
-    `)
+    `,
+    )
     .eq('user_id', userId);
-    
+
   return data || [];
 }
 
 // Check if user is account owner
-export async function isAccountOwner(userId: string, accountId: string): Promise<boolean> {
+export async function isAccountOwner(
+  userId: string,
+  accountId: string,
+): Promise<boolean> {
   const supabase = getSupabaseServerClient();
-  
+
   const { data } = await supabase
     .from('accounts')
     .select('primary_owner_user_id')
     .eq('id', accountId)
     .single();
-    
+
   return data?.primary_owner_user_id === userId;
 }
 ```
@@ -443,25 +452,25 @@ export async function isAccountOwner(userId: string, accountId: string): Promise
 import { useAccountRole } from '@/hooks/use-account-role';
 
 // Component that checks account role
-export function AccountAdminOnly({ 
-  accountId, 
-  children 
-}: { 
-  accountId: string; 
-  children: React.ReactNode; 
+export function AccountAdminOnly({
+  accountId,
+  children
+}: {
+  accountId: string;
+  children: React.ReactNode;
 }) {
   const { role, isLoading } = useAccountRole(accountId);
-  
+
   if (isLoading) return <LoadingSkeleton />;
   if (!['owner', 'admin'].includes(role)) return null;
-  
+
   return children;
 }
 
 // Hook for checking account role
 function useAccountRole(accountId: string) {
   const user = useUser();
-  
+
   return useQuery({
     queryKey: ['account-role', accountId],
     queryFn: async () => {
@@ -474,10 +483,10 @@ function useAccountRole(accountId: string) {
 }
 
 // Conditional rendering based on permissions
-export function ConditionalRender({ 
-  condition, 
+export function ConditionalRender({
+  condition,
   fallback = null,
-  children 
+  children
 }: {
   condition: boolean;
   fallback?: React.ReactNode;
@@ -489,19 +498,19 @@ export function ConditionalRender({
 // Usage example
 function AccountSettings({ accountId }: { accountId: string }) {
   const { role } = useAccountRole(accountId);
-  
+
   return (
     <div>
       <h1>Account Settings</h1>
-      
+
       <ConditionalRender condition={role === 'owner'}>
         <DangerZone accountId={accountId} />
       </ConditionalRender>
-      
+
       <ConditionalRender condition={['owner', 'admin'].includes(role)}>
         <MemberManagement accountId={accountId} />
       </ConditionalRender>
-      
+
       <ConditionalRender condition={['owner', 'admin', 'member'].includes(role)}>
         <AccountProfile accountId={accountId} />
       </ConditionalRender>
@@ -533,7 +542,7 @@ BEGIN
     WHERE am.user_id = auth.uid()
     AND cp.course_id = course_id
   ) INTO user_has_access;
-  
+
   RETURN user_has_access;
 END;
 $$;
@@ -557,18 +566,18 @@ BEGIN
   FROM public.accounts_memberships
   WHERE user_id = auth.uid()
   LIMIT 1;
-  
+
   -- Check if course is completed
   SELECT (completion_percentage >= 100) INTO course_completed
   FROM public.course_progress
   WHERE user_id = auth.uid()
   AND course_id = p_course_id
   AND lesson_id IS NULL;
-  
+
   IF NOT course_completed THEN
     RAISE EXCEPTION 'Course not completed';
   END IF;
-  
+
   -- Generate certificate
   INSERT INTO public.certificates (
     user_id, account_id, course_id, file_path, issued_at
@@ -577,7 +586,7 @@ BEGIN
     auth.uid(), user_account_id, p_course_id, p_file_path, NOW()
   )
   RETURNING id INTO certificate_id;
-  
+
   RETURN certificate_id;
 END;
 $$;
@@ -660,11 +669,11 @@ export function handleAuthorizationError(error: unknown) {
   if (error instanceof AuthorizationError) {
     // Log for security monitoring
     console.error('Authorization denied:', error.message);
-    
+
     // Return generic message to user
     return 'You do not have permission to perform this action';
   }
-  
+
   return 'An unexpected error occurred';
 }
 ```

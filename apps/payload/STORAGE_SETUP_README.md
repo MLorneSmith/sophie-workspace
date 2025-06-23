@@ -15,7 +15,7 @@ The error occurs because:
 We've implemented a comprehensive fix that includes:
 
 1. **Updated Payload Configuration** - Enhanced `payload.config.ts` with proper R2 support
-2. **Environment Variable Setup** - Clear documentation for all required variables  
+2. **Environment Variable Setup** - Clear documentation for all required variables
 3. **Verification Tools** - Scripts to test your configuration
 4. **Step-by-step Guides** - Detailed R2 setup instructions
 
@@ -24,10 +24,12 @@ We've implemented a comprehensive fix that includes:
 ### Step 1: Set Up Cloudflare R2 (5 minutes)
 
 1. **Create R2 Bucket**
+
    - Go to [Cloudflare Dashboard](https://dash.cloudflare.com) → R2 Object Storage
    - Create a new bucket (e.g., `slideheroes-media`)
 
 2. **Generate API Tokens**
+
    - Click "Manage R2 API tokens" → "Create API token"
    - Permissions: Object Read, Write, Delete
    - Save your Access Key ID and Secret Access Key
@@ -41,7 +43,7 @@ Add these to your Vercel environment variables:
 
 ```bash
 CLOUDFLARE_R2_ACCOUNT_ID=your-account-id-here
-CLOUDFLARE_R2_BUCKET=your-bucket-name-here  
+CLOUDFLARE_R2_BUCKET=your-bucket-name-here
 CLOUDFLARE_R2_ACCESS_KEY_ID=your-access-key-here
 CLOUDFLARE_R2_SECRET_ACCESS_KEY=your-secret-key-here
 ```
@@ -79,7 +81,7 @@ node scripts/verify-config.js
 if (process.env.S3_BUCKET && process.env.S3_REGION) {
   // Basic S3 config
 }
-return undefined; // Falls back to local storage = ERROR
+return undefined // Falls back to local storage = ERROR
 ```
 
 **After:** Proper R2 support with fallbacks and warnings
@@ -148,6 +150,7 @@ config: {
    ```
 
 2. **Verify R2 credentials:**
+
    - Test in Cloudflare dashboard
    - Regenerate API tokens if needed
 
@@ -161,7 +164,7 @@ config: {
 
 - Regenerate R2 API tokens with proper permissions
 
-**"SignatureDoesNotMatch"**  
+**"SignatureDoesNotMatch"**
 
 - Double-check Account ID and secret key
 

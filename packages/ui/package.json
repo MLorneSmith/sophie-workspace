@@ -134,7 +134,17 @@
 		"./app-breadcrumbs": "./src/makerkit/app-breadcrumbs.tsx",
 		"./empty-state": "./src/makerkit/empty-state.tsx",
 		"./marketing": "./src/makerkit/marketing/index.tsx",
-		"./oauth-provider-logo-image": "./src/makerkit/oauth-provider-logo-image.tsx"
+		"./oauth-provider-logo-image": "./src/makerkit/oauth-provider-logo-image.tsx",
+		"./resizable": "./src/shadcn/resizable.tsx",
+		"./background-boxes": "./src/aceternity/background-boxes.tsx",
+		"./blog-post-card": "./src/aceternity/blog-post-card.tsx",
+		"./card-hover-effect": "./src/aceternity/card-hover-effect.tsx",
+		"./card-spotlight": "./src/aceternity/card-spotlight.tsx",
+		"./container-scroll-animation": "./src/aceternity/container-scroll-animation.tsx",
+		"./logo-marquee": "./src/aceternity/logo-marquee.tsx",
+		"./placeholders-and-vanish-input": "./src/aceternity/placeholders-and-vanish-input.tsx",
+		"./sticky-scroll-reveal": "./src/aceternity/sticky-scroll-reveal.tsx",
+		"./testimonial-masonary-grid": "./src/aceternity/testimonial-masonary-grid.tsx"
 	},
 	"typesVersions": {
 		"*": {

@@ -74,7 +74,7 @@
    ```powershell
    # Run only setup phase
    ./scripts/orchestration/phases/setup.ps1
-   
+
    # Run only processing phase
    ./scripts/orchestration/phases/processing.ps1
    ```
@@ -116,16 +116,16 @@ Check database tables and relationships:
 
 ```sql
 -- List all tables in payload schema
-SELECT table_name 
-FROM information_schema.tables 
-WHERE table_schema = 'payload' 
+SELECT table_name
+FROM information_schema.tables
+WHERE table_schema = 'payload'
 ORDER BY table_name;
 
 -- Check relationship tables
 SELECT * FROM payload.posts_rels LIMIT 10;
 
 -- Check for orphaned relationships
-SELECT r.* 
+SELECT r.*
 FROM payload.posts_rels r
 LEFT JOIN payload.posts p ON r.parent_id = p.id
 WHERE p.id IS NULL;
@@ -178,18 +178,18 @@ For specific issues, use direct database fixes:
 ```sql
 -- Fix missing relationship entries
 INSERT INTO payload.posts_rels (id, parent_id, path, order, value, collection)
-SELECT 
-  uuid_generate_v4(), 
-  p.id, 
-  'category', 
-  0, 
-  p.category->>'id', 
+SELECT
+  uuid_generate_v4(),
+  p.id,
+  'category',
+  0,
+  p.category->>'id',
   'categories'
-FROM 
+FROM
   payload.posts p
-LEFT JOIN 
+LEFT JOIN
   payload.posts_rels r ON r.parent_id = p.id AND r.path = 'category'
-WHERE 
+WHERE
   r.id IS NULL AND p.category IS NOT NULL;
 ```
 
@@ -208,7 +208,7 @@ WHERE
 
 **Symptoms:**
 
-- Inconsistent relationship data between JSONB fields and _rels tables
+- Inconsistent relationship data between JSONB fields and \_rels tables
 - API errors with "Cannot read properties of undefined" when fetching related content
 - Missing or duplicate relationships
 
@@ -231,7 +231,7 @@ WHERE
    ```powershell
    # Fix quiz-question relationships
    pnpm --filter @kit/content-migrations run repair:quiz-relationships
-   
+
    # Fix course-module relationships
    pnpm --filter @kit/content-migrations run repair:course-relationships
    ```
@@ -250,7 +250,7 @@ WHERE
 
    ```sql
    -- Check for foreign key violations
-   SELECT 
+   SELECT
      conrelid::regclass AS table_name,
      conname AS constraint_name,
      pg_get_constraintdef(oid) AS constraint_definition
@@ -292,9 +292,9 @@ WHERE
    ```sql
    -- Disable triggers
    ALTER TABLE payload.posts DISABLE TRIGGER ALL;
-   
+
    -- Run operations
-   
+
    -- Re-enable triggers
    ALTER TABLE payload.posts ENABLE TRIGGER ALL;
    ```

@@ -2,7 +2,7 @@
 
 Use the `useDroppable` hook to set up DOM nodes as droppable areas that [draggable](https://docs.dndkit.com/api-documentation/draggable) elements can be dropped over.
 
-## [Direct link to heading](https://docs.dndkit.com/api-documentation/droppable\#usage)    Usage
+## [Direct link to heading](https://docs.dndkit.com/api-documentation/droppable#usage) Usage
 
 The `useDroppable` hook isn't opinionated about how you should structure your application.
 
@@ -94,4 +94,4 @@ For more details usage of the `useDroppable` hook, refer to the API documentatio
 
 Last updated 4 years ago
 
-* * *
+---

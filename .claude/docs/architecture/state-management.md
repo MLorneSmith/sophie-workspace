@@ -18,7 +18,7 @@ Use Server Components for data that doesn't need client-side interactivity:
 // app/users/page.tsx
 export default async function UsersPage() {
   const users = await getUsers();
-  
+
   return (
     <div>
       <h1>Users</h1>
@@ -38,6 +38,8 @@ Use React Context for shared state that needs to be accessed by multiple compone
 
 import { createContext, useContext, useState } from 'react';
 
+// context/theme-context.tsx
+
 type Theme = 'light' | 'dark';
 
 interface ThemeContextType {
@@ -49,7 +51,7 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>('light');
-  
+
   return (
     <ThemeContext.Provider value={{ theme, setTheme }}>
       {children}
@@ -73,7 +75,7 @@ Use React Query for server state management:
 ```tsx
 'use client';
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 export function useUsers() {
   return useQuery({
@@ -88,7 +90,7 @@ export function useUsers() {
 
 export function useCreateUser() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async (userData: UserCreateData) => {
       const response = await fetch('/api/users', {
@@ -96,7 +98,7 @@ export function useCreateUser() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(userData),
       });
-      
+
       if (!response.ok) throw new Error('Failed to create user');
       return response.json();
     },
@@ -118,7 +120,7 @@ import { useState } from 'react';
 
 export function Counter() {
   const [count, setCount] = useState(0);
-  
+
   return (
     <div>
       <p>Count: {count}</p>
@@ -140,15 +142,15 @@ import { useRouter, useSearchParams } from 'next/navigation';
 export function FilterableList() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  
+
   const filter = searchParams.get('filter') || 'all';
-  
+
   const setFilter = (newFilter: string) => {
     const params = new URLSearchParams(searchParams);
     params.set('filter', newFilter);
     router.push(`?${params.toString()}`);
   };
-  
+
   return (
     <div>
       <div>
@@ -167,17 +169,21 @@ export function FilterableList() {
 Choose the appropriate state management approach based on these criteria:
 
 1. **Is the data static or can it be generated at build time?**
+
    - Yes → Use Server Components
 
 2. **Does the state need to be shared across multiple components?**
+
    - Yes → Use React Context or React Query
    - No → Use local component state
 
 3. **Is the state derived from server data?**
+
    - Yes → Use React Query
    - No → Use React Context or local state
 
 4. **Should the state be shareable via URL?**
+
    - Yes → Use URL state
    - No → Use other approaches
 

@@ -4,11 +4,11 @@ On this page
 
 Internally, Lexical maintains the state of a given editor in memory, updating it in response to user inputs. Sometimes, it's useful to convert this state into a serialized format in order to transfer it between editors or store it for retrieval at some later time. In order to make this process easier, Lexical provides some APIs that allow Nodes to specify how they should be represented in common serialized formats.
 
-## HTML [​](https://lexical.dev/docs/concepts/serialization\#html "Direct link to heading")
+## HTML [​](https://lexical.dev/docs/concepts/serialization#html 'Direct link to heading')
 
 Currently, HTML serialization is primarily used to transfer data between Lexical and non-Lexical editors (such as Google Docs or Quip) via the copy & paste functionality in [`@lexical/clipboard`](https://github.com/facebook/lexical/blob/main/packages/lexical-clipboard/README.md), but we also offer generic utilities for converting `Lexical` -\> `HTML` and `HTML` -\> `Lexical` in our [`@lexical/html`](https://github.com/facebook/lexical/blob/main/packages/lexical-html/README.md) package.
 
-### Lexical -> HTML [​](https://lexical.dev/docs/concepts/serialization\#lexical---html "Direct link to heading")
+### Lexical -> HTML [​](https://lexical.dev/docs/concepts/serialization#lexical---html 'Direct link to heading')
 
 When generating HTML from an editor you can pass in a selection object to narrow it down to a certain section or pass in null to convert the whole editor.
 
@@ -19,7 +19,7 @@ const htmlString = $generateHtmlFromNodes(editor, selection | null);
 
 ```
 
-#### `LexicalNode.exportDOM()` [​](https://lexical.dev/docs/concepts/serialization\#lexicalnodeexportdom "Direct link to heading")
+#### `LexicalNode.exportDOM()` [​](https://lexical.dev/docs/concepts/serialization#lexicalnodeexportdom 'Direct link to heading')
 
 You can control how a `LexicalNode` is represented as HTML by adding an `exportDOM()` method.
 
@@ -42,7 +42,7 @@ export type DOMExportOutput = {
 
 If the element property is null in the return value of exportDOM, that Node will not be represented in the serialized output.
 
-### HTML -> Lexical [​](https://lexical.dev/docs/concepts/serialization\#html---lexical "Direct link to heading")
+### HTML -> Lexical [​](https://lexical.dev/docs/concepts/serialization#html---lexical 'Direct link to heading')
 
 ```codeBlockLines_AdAo
 import {$generateNodesFromDOM} from '@lexical/html';
@@ -95,7 +95,7 @@ tip
 
 Remember that state updates are asynchronous, so executing `editor.getEditorState()` immediately afterwards might not return the expected content. To avoid it, [pass `discrete: true` in the `editor.update` method](https://dio.la/article/lexical-state-updates#discrete-updates).
 
-#### `LexicalNode.importDOM()` [​](https://lexical.dev/docs/concepts/serialization\#lexicalnodeimportdom "Direct link to heading")
+#### `LexicalNode.importDOM()` [​](https://lexical.dev/docs/concepts/serialization#lexicalnodeimportdom 'Direct link to heading')
 
 You can control how an `HTMLElement` is represented in `Lexical` by adding an `importDOM()` method to your `LexicalNode`.
 
@@ -161,9 +161,9 @@ If the imported `<table>` doesn't align with the expected GitHub code HTML, then
 
 Much like `exportDOM`, `importDOM` exposes APIs to allow for post-processing of converted Nodes. The conversion function returns a `DOMConversionOutput` which can specify a function to run for each converted child (forChild) or on all the child nodes after the conversion is complete (after). The key difference here is that `forChild` runs for every deeply nested child node of the current node, whereas `after` will run only once after the transformation of the node and all its children is complete.
 
-## JSON [​](https://lexical.dev/docs/concepts/serialization\#json "Direct link to heading")
+## JSON [​](https://lexical.dev/docs/concepts/serialization#json 'Direct link to heading')
 
-### Lexical -> JSON [​](https://lexical.dev/docs/concepts/serialization\#lexical---json "Direct link to heading")
+### Lexical -> JSON [​](https://lexical.dev/docs/concepts/serialization#lexical---json 'Direct link to heading')
 
 To generate a JSON snapshot from an `EditorState`, you can call the `toJSON()` method on the `EditorState` object.
 
@@ -181,7 +181,7 @@ const jsonString = JSON.stringify(editorState);
 
 ```
 
-#### `LexicalNode.exportJSON()` [​](https://lexical.dev/docs/concepts/serialization\#lexicalnodeexportjson "Direct link to heading")
+#### `LexicalNode.exportJSON()` [​](https://lexical.dev/docs/concepts/serialization#lexicalnodeexportjson 'Direct link to heading')
 
 You can control how a `LexicalNode` is represented as JSON by adding an `exportJSON()` method. It's important that you extend the serialization of the superclass by invoking `super`: e.g. `{ ...super.exportJSON(), /* your other properties */ }`.
 
@@ -216,7 +216,7 @@ exportJSON(): SerializedHeadingNode {
 
 ```
 
-#### `LexicalNode.importJSON()` [​](https://lexical.dev/docs/concepts/serialization\#lexicalnodeimportjson "Direct link to heading")
+#### `LexicalNode.importJSON()` [​](https://lexical.dev/docs/concepts/serialization#lexicalnodeimportjson 'Direct link to heading')
 
 You can control how a `LexicalNode` is deserialized back into a node from JSON by adding an `importJSON()` method.
 
@@ -249,7 +249,7 @@ updateFromJSON(
 
 ```
 
-#### `LexicalNode.updateFromJSON()` [​](https://lexical.dev/docs/concepts/serialization\#lexicalnodeupdatefromjson "Direct link to heading")
+#### `LexicalNode.updateFromJSON()` [​](https://lexical.dev/docs/concepts/serialization#lexicalnodeupdatefromjson 'Direct link to heading')
 
 `updateFromJSON` is a method introduced in Lexical 0.23 to simplify the implementation of `importJSON`, so that a base class can expose the code that it is using to set all of the node's properties based on the JSON to any subclass.
 
@@ -285,7 +285,7 @@ newNode.updateFromJSON(serializedNode);
 
 ```
 
-### Versioning & Breaking Changes [​](https://lexical.dev/docs/concepts/serialization\#versioning--breaking-changes "Direct link to heading")
+### Versioning & Breaking Changes [​](https://lexical.dev/docs/concepts/serialization#versioning--breaking-changes 'Direct link to heading')
 
 It's important to note that you should avoid making breaking changes to existing fields in your JSON object, especially if backwards compatibility is an important part of your editor. That's why we recommend using a version field to separate the different changes in your node as you add or change functionality of custom nodes. Here's the serialized type definition for Lexical's base `TextNode` class:
 
@@ -325,7 +325,7 @@ export type SerializedTextNode = Spread<
 
 ```
 
-### Dangers of a flat version property [​](https://lexical.dev/docs/concepts/serialization\#dangers-of-a-flat-version-property "Direct link to heading")
+### Dangers of a flat version property [​](https://lexical.dev/docs/concepts/serialization#dangers-of-a-flat-version-property 'Direct link to heading')
 
 The `updateFromJSON` method should ignore `type` and `version`, to support subclassing and code re-use. Ideally, you should only evolve your types in a backwards compatible way (new fields are optional), and/or have a uniquely named property to store the version in your class. Generally speaking, it's best if nearly all properties are optional and the node provides defaults for each property. This allows you to write less boilerplate code and produce smaller JSON.
 
@@ -368,7 +368,7 @@ If you do have incompatible representations, it's probably best to choose a new 
 
 There are other schemes that would allow for composable versions, such as nesting the superclass data, or choosing a different name for a version property in each subclass. In practice, explicit versioning is generally redundant if the serialization is properly parsed, so it is recommended that you use the simpler approach with a flat representation with mostly optional properties.
 
-### Handling extended HTML styling [​](https://lexical.dev/docs/concepts/serialization\#handling-extended-html-styling "Direct link to heading")
+### Handling extended HTML styling [​](https://lexical.dev/docs/concepts/serialization#handling-extended-html-styling 'Direct link to heading')
 
 Since the TextNode is foundational to all Lexical packages, including the plain text use case. Handling any rich text logic is undesirable. This creates the need to override the TextNode to handle serialization and deserialization of HTML/CSS styling properties to achieve full fidelity between JSON <-> HTML. Since this is a very popular use case, below we are proving a recipe to handle the most common use cases.
 
@@ -520,7 +520,7 @@ function patchStyleConversion(
 
 ```
 
-### `html` Property for Import and Export Configuration [​](https://lexical.dev/docs/concepts/serialization\#html-property-for-import-and-export-configuration "Direct link to heading")
+### `html` Property for Import and Export Configuration [​](https://lexical.dev/docs/concepts/serialization#html-property-for-import-and-export-configuration 'Direct link to heading')
 
 The `html` property in `CreateEditorArgs` provides an alternate way to configure HTML import and export behavior in Lexical without subclassing or node replacement. It includes two properties:
 
@@ -528,14 +528,14 @@ The `html` property in `CreateEditorArgs` provides an alternate way to configure
 
 - `export` \- Similar to `exportDOM`, this property customizes how `LexicalNodes` are serialized into HTML. With `html.export`, users can specify transformations for various nodes collectively, offering a flexible override mechanism that can adapt without needing to extend or replace specific `LexicalNodes`.
 
-#### Key Differences from `importDOM` and `exportDOM` [​](https://lexical.dev/docs/concepts/serialization\#key-differences-from-importdom-and-exportdom "Direct link to heading")
+#### Key Differences from `importDOM` and `exportDOM` [​](https://lexical.dev/docs/concepts/serialization#key-differences-from-importdom-and-exportdom 'Direct link to heading')
 
 While `importDOM` and `exportDOM` allow for highly customized, node-specific conversions by defining them directly within the `LexicalNode` class, the `html` property enables broader, editor-wide configurations. This setup benefits situations where:
 
 - **Consistent Transformations**: You want uniform import/export behavior across different nodes without adjusting each node individually.
 - **No Subclassing Required**: Overrides to import and export logic are applied at the editor configuration level, simplifying customization and reducing the need for extensive subclassing.
 
-#### Type Definitions [​](https://lexical.dev/docs/concepts/serialization\#type-definitions "Direct link to heading")
+#### Type Definitions [​](https://lexical.dev/docs/concepts/serialization#type-definitions 'Direct link to heading')
 
 ```codeBlockLines_AdAo
 type HTMLConfig = {
@@ -545,7 +545,7 @@ type HTMLConfig = {
 
 ```
 
-#### Example of a use case for the `html` Property for Import and Export Configuration: [​](https://lexical.dev/docs/concepts/serialization\#example-of-a-use-case-for-the-html-property-for-import-and-export-configuration "Direct link to heading")
+#### Example of a use case for the `html` Property for Import and Export Configuration: [​](https://lexical.dev/docs/concepts/serialization#example-of-a-use-case-for-the-html-property-for-import-and-export-configuration 'Direct link to heading')
 
 [Rich text sandbox](https://stackblitz.com/github/facebook/lexical/tree/main/examples/react-rich?embed=1&file=src%2FApp.tsx&terminalHeight=0&ctl=1&showSidebar=0&devtoolsheight=0&view=preview)
 

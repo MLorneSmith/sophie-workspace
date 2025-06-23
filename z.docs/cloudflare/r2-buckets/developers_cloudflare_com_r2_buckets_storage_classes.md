@@ -12,10 +12,10 @@ All storage classes share the following characteristics:
 
 ## Available storage classes
 
-| Storage class | Minimum storage duration | Data retrieval fees (processing) | Egress fees (data transfer to Internet) |
-| --- | --- | --- | --- |
-| Standard | None | None | None |
-| Infrequent Access | 30 days | Yes | None |
+| Storage class     | Minimum storage duration | Data retrieval fees (processing) | Egress fees (data transfer to Internet) |
+| ----------------- | ------------------------ | -------------------------------- | --------------------------------------- |
+| Standard          | None                     | None                             | None                                    |
+| Infrequent Access | 30 days                  | Yes                              | None                                    |
 
 For more information on how storage classes impact pricing, refer to [Pricing](https://developers.cloudflare.com/r2/pricing/).
 

@@ -14,7 +14,7 @@ Portkey Features
 
 [Documentation](https://portkey.ai/docs/introduction/what-is-portkey) [Integrations](https://portkey.ai/docs/integrations) [Inference API](https://portkey.ai/docs/api-reference/inference-api/introduction) [Admin API](https://portkey.ai/docs/api-reference/admin-api/control-plane/configs/create-config) [Cookbook](https://portkey.ai/docs/guides/getting-started) [Changelog](https://portkey.ai/docs/changelog/2025/jan)
 
-## [​](https://portkey.ai/docs/introduction/feature-overview\#ai-gateway)  AI Gateway
+## [​](https://portkey.ai/docs/introduction/feature-overview#ai-gateway) AI Gateway
 
 Connect to 250+ AI models using a single consistent API. Set up load balancers, automated fallbacks, caching, conditional routing, and more, seamlessly.
 
@@ -42,7 +42,7 @@ Route requests based on specific conditions](https://portkey.ai/docs/product/ai-
 \\
 Set and manage budget limits](https://portkey.ai/docs/product/ai-gateway/virtual-keys/budget-limits)
 
-## [​](https://portkey.ai/docs/introduction/feature-overview\#observability-and-logs)  Observability & Logs
+## [​](https://portkey.ai/docs/introduction/feature-overview#observability-and-logs) Observability & Logs
 
 Gain real-time insights, track key metrics, and streamline debugging with our OpenTelemetry-compliant system.
 
@@ -60,7 +60,7 @@ Manage and utilize metadata effectively](https://portkey.ai/docs/product/observa
 \\
 Collect and analyze user feedback](https://portkey.ai/docs/product/observability/feedback)
 
-## [​](https://portkey.ai/docs/introduction/feature-overview\#prompt-library)  Prompt Library
+## [​](https://portkey.ai/docs/introduction/feature-overview#prompt-library) Prompt Library
 
 Collaborate with team members to create, templatize, and version prompt templates easily. Experiment across 250+ LLMs with a strong Publish/Release flow to deploy the prompts.
 
@@ -72,7 +72,7 @@ Utilize modular prompt components](https://portkey.ai/docs/product/prompt-librar
 \\
 Advanced prompting with JSON mode](https://portkey.ai/docs/product/prompt-library/advanced-prompting-with-json-mode)
 
-## [​](https://portkey.ai/docs/introduction/feature-overview\#guardrails)  Guardrails
+## [​](https://portkey.ai/docs/introduction/feature-overview#guardrails) Guardrails
 
 Enforce Real-Time LLM Behavior with 50+ state-of-the-art AI guardrails, so that you can synchronously run Guardrails on your requests and route them with precision.
 
@@ -86,13 +86,13 @@ Integrate third-party safety solutions](https://portkey.ai/docs/product/guardrai
 \\
 Customize guardrails to your needs](https://portkey.ai/docs/product/guardrails/list-of-guardrail-checks/bring-your-own-guardrails)
 
-## [​](https://portkey.ai/docs/introduction/feature-overview\#agents)  Agents
+## [​](https://portkey.ai/docs/introduction/feature-overview#agents) Agents
 
 Natively integrate Portkey’s gateway, guardrails, and observability suite with leading agent frameworks and take them to production.
 
 [**🤖 Autogen**](https://portkey.ai/docs/integrations/agents/autogen) [**👥 CrewAI**](https://portkey.ai/docs/integrations/agents/crewai) [**🔗 Langchain Agents**](https://portkey.ai/docs/integrations/agents/langchain-agents) [**🦙 Llama Agents**](https://portkey.ai/docs/integrations/agents/llama-agents) [**φ PhiData**](https://portkey.ai/docs/integrations/agents/phidata) [**🔀 ControlFlow**](https://portkey.ai/docs/integrations/agents/control-flow) [**🕸️ LangGraph**](https://portkey.ai/docs/integrations/agents/langgraph)
 
-## [​](https://portkey.ai/docs/introduction/feature-overview\#more-resources)  More Resources
+## [​](https://portkey.ai/docs/introduction/feature-overview#more-resources) More Resources
 
 [**📋 Portkey Plans** \\
 \\

@@ -3,6 +3,7 @@ description: Detailed Project Structure of the app
 globs: apps/**
 alwaysApply: false
 ---
+
 # Project Structure
 
 ```
@@ -204,27 +205,33 @@ apps/web/app/                          # Root directory (apps/web/app)
 ## Key Organization Patterns
 
 1. **Route Groups**
+
    - `(marketing)` - Groups all marketing/public pages
    - `(auth)` - Groups all authentication related pages
    - `(user)` - Groups all personal user dashboard pages
 
 2. **Component Organization**
+
    - `_components/` - Route-specific components
    - Global components are in the root `/components` directory (not shown)
 
 3. **Utilities & Data**
+
    - `_lib/` - Route-specific utilities, types, and helpers
    - `_lib/server/` - Server-side utilities including data loaders
    - `/lib/` - Global utilities (not shown)
 
 4. **Data Fetching**
+
    - Use of React's `cache()` function for request deduplication
 
 5. **Server Actions**
+
    - `server-actions.ts` - Server-side actions for mutating data
    - Follows 'use server' directive pattern
 
 6. **Special Files**
+
    - `layout.tsx` - Define layouts for routes
    - `loading.tsx` - Loading UI for routes
    - `error.tsx` - Error handling for routes
@@ -232,5 +239,5 @@ apps/web/app/                          # Root directory (apps/web/app)
    - `route.ts` - API route handlers
 
 7. **Dynamic Routes**
-   - `[account]` -  Dynamic route for team accounts. The [account] property is the account slug in the table `public.accounts`.
+   - `[account]` - Dynamic route for team accounts. The [account] property is the account slug in the table `public.accounts`.
    - `[slug]` - Dynamic route for blog posts and documentation
