@@ -1,10 +1,10 @@
 The Mouse sensor responds to [Mouse events](https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent). Mouse events represent events that occur due to the user interacting with a pointing device (such as a mouse).
 
-### [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors/mouse\#activator)    Activator
+### [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors/mouse#activator) Activator
 
 The mouse activator is the `onMouseDown` event handler. The Mouse sensor is initialized if the mouse down event was triggered by the left mouse button.
 
-### [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors/mouse\#activation-constraints)    Activation constraints
+### [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors/mouse#activation-constraints) Activation constraints
 
 Like the [Pointer](https://docs.dndkit.com/api-documentation/sensors/pointer) sensor, the Mouse sensor has two activation constraints:
 
@@ -14,7 +14,7 @@ Like the [Pointer](https://docs.dndkit.com/api-documentation/sensors/pointer) se
 
 These activation constraints are mutually exclusive and may not be used simultaneously.
 
-#### [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors/mouse\#distance)    Distance
+#### [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors/mouse#distance) Distance
 
 The distance constraint subscribes to the following interface:
 
@@ -28,7 +28,7 @@ interface DistanceConstraint {
 
 The `distance` property represents the distance, in _pixels_, by which the mouse needs to be moved before a drag start event is emitted.
 
-#### [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors/mouse\#delay)    Delay
+#### [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors/mouse#delay) Delay
 
 The delay constraint subscribe to the following interface:
 
@@ -47,4 +47,4 @@ The `tolerance` property represents the distance, in _pixels_, of motion that is
 
 Last updated 4 years ago
 
-* * *
+---

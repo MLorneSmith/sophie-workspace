@@ -71,18 +71,12 @@ import Script from 'next/script'
 export default function PayloadLayout({ children }: { children: React.ReactNode }) {
   return (
     <html>
-      <head>
-        {/* Existing head content */}
-      </head>
+      <head>{/* Existing head content */}</head>
       <body>
         {children}
-        
+
         {/* Form protection script */}
-        <Script
-          src="/admin/form-protection.js"
-          strategy="afterInteractive"
-          id="form-protection"
-        />
+        <Script src="/admin/form-protection.js" strategy="afterInteractive" id="form-protection" />
       </body>
     </html>
   )
@@ -100,73 +94,73 @@ export default function PayloadLayout({ children }: { children: React.ReactNode 
 2. **Or create a simplified version** in `apps/payload/public/admin/form-protection.js`:
 
 ```javascript
-(function() {
-  'use strict';
-  
-  console.log('[FORM-PROTECTION] Initializing...');
-  
-  const formStates = new Map();
-  const TIMEOUT_MS = 30000; // 30 seconds
-  
+;(function () {
+  'use strict'
+
+  console.log('[FORM-PROTECTION] Initializing...')
+
+  const formStates = new Map()
+  const TIMEOUT_MS = 30000 // 30 seconds
+
   function protectForm(form) {
-    if (form.hasAttribute('data-protected')) return;
-    
-    const formId = form.action || Math.random().toString(36);
-    form.setAttribute('data-protected', 'true');
-    form.setAttribute('data-form-id', formId);
-    
-    formStates.set(formId, { submitting: false });
-    
-    form.addEventListener('submit', function(e) {
-      const state = formStates.get(formId);
-      
+    if (form.hasAttribute('data-protected')) return
+
+    const formId = form.action || Math.random().toString(36)
+    form.setAttribute('data-protected', 'true')
+    form.setAttribute('data-form-id', formId)
+
+    formStates.set(formId, { submitting: false })
+
+    form.addEventListener('submit', function (e) {
+      const state = formStates.get(formId)
+
       if (state.submitting) {
-        e.preventDefault();
-        e.stopPropagation();
-        console.log('[FORM-PROTECTION] Prevented duplicate submission');
-        return false;
+        e.preventDefault()
+        e.stopPropagation()
+        console.log('[FORM-PROTECTION] Prevented duplicate submission')
+        return false
       }
-      
-      state.submitting = true;
-      
+
+      state.submitting = true
+
       // Disable submit buttons
-      const buttons = form.querySelectorAll('button[type="submit"], input[type="submit"]');
-      buttons.forEach(btn => {
-        btn.disabled = true;
-        btn.textContent = btn.textContent.includes('Processing') ? btn.textContent : 'Processing...';
-      });
-      
+      const buttons = form.querySelectorAll('button[type="submit"], input[type="submit"]')
+      buttons.forEach((btn) => {
+        btn.disabled = true
+        btn.textContent = btn.textContent.includes('Processing') ? btn.textContent : 'Processing...'
+      })
+
       // Reset after timeout
       setTimeout(() => {
-        state.submitting = false;
-        buttons.forEach(btn => {
-          btn.disabled = false;
-          btn.textContent = btn.textContent.replace('Processing...', '').trim() || 'Submit';
-        });
-      }, TIMEOUT_MS);
-    });
-    
-    console.log('[FORM-PROTECTION] Protected form:', formId);
+        state.submitting = false
+        buttons.forEach((btn) => {
+          btn.disabled = false
+          btn.textContent = btn.textContent.replace('Processing...', '').trim() || 'Submit'
+        })
+      }, TIMEOUT_MS)
+    })
+
+    console.log('[FORM-PROTECTION] Protected form:', formId)
   }
-  
+
   function scanForForms() {
-    const forms = document.querySelectorAll('form');
-    forms.forEach(protectForm);
+    const forms = document.querySelectorAll('form')
+    forms.forEach(protectForm)
   }
-  
+
   // Initialize
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', scanForForms);
+    document.addEventListener('DOMContentLoaded', scanForForms)
   } else {
-    scanForForms();
+    scanForForms()
   }
-  
+
   // Re-scan periodically for dynamic content
-  setInterval(scanForForms, 2000);
-  
+  setInterval(scanForForms, 2000)
+
   // Expose for debugging
-  window.formProtection = { scanForForms, formStates };
-})();
+  window.formProtection = { scanForForms, formStates }
+})()
 ```
 
 ### Step 3: Configure Environment Variables
@@ -218,6 +212,7 @@ ENABLE_DB_METRICS_LOGGING=true
    ```
 
 3. **Try submitting a form** and verify:
+
    - Only one request is sent to the server
    - Submit button shows "Processing..." state
    - No duplicate requests in Network tab

@@ -1,8 +1,9 @@
 ---
 description: The OTP API provides the ability to perform additional checks before executing sensitive operations
-globs: 
+globs:
 alwaysApply: false
 ---
+
 The OTP API allows the user to:
 
 1. protect sensitive operations behind an additional layer of verification
@@ -18,9 +19,7 @@ We can se the [verify-otp-form.tsx](mdc:packages/otp/src/components/verify-otp-f
 ```tsx
 import { VerifyOtpForm } from '@kit/otp/components';
 
-function MyVerificationPage(props: {
-    userEmail: string;
-}) {
+function MyVerificationPage(props: { userEmail: string }) {
   return (
     <VerifyOtpForm
       purpose="password-reset"
@@ -47,7 +46,7 @@ And here is the server action that verifies the OTP:
 // Verify the token
 const result = await api.verifyToken({
   token: submittedToken,
-  purpose: 'email-verification'
+  purpose: 'email-verification',
 });
 
 if (result.valid) {

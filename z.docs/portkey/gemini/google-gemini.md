@@ -20,11 +20,11 @@ With Portkey, you can take advantage of features like fast AI gateway access, ob
 
 Provider Slug. `google`
 
-## [​](https://portkey.ai/docs/integrations/llms/gemini\#portkey-sdk-integration-with-google-gemini-models)  Portkey SDK Integration with Google Gemini Models
+## [​](https://portkey.ai/docs/integrations/llms/gemini#portkey-sdk-integration-with-google-gemini-models) Portkey SDK Integration with Google Gemini Models
 
 Portkey provides a consistent API to interact with models from various providers. To integrate Google Gemini with Portkey:
 
-### [​](https://portkey.ai/docs/integrations/llms/gemini\#1-install-the-portkey-sdk)  1\. Install the Portkey SDK
+### [​](https://portkey.ai/docs/integrations/llms/gemini#1-install-the-portkey-sdk) 1\. Install the Portkey SDK
 
 Add the Portkey SDK to your application to interact with Google Gemini’s API through Portkey’s gateway.
 
@@ -38,7 +38,7 @@ npm install --save portkey-ai
 
 ```
 
-### [​](https://portkey.ai/docs/integrations/llms/gemini\#2-initialize-portkey-with-the-virtual-key)  2\. Initialize Portkey with the Virtual Key
+### [​](https://portkey.ai/docs/integrations/llms/gemini#2-initialize-portkey-with-the-virtual-key) 2\. Initialize Portkey with the Virtual Key
 
 To use Gemini with Portkey, [get your API key from here](https://aistudio.google.com/app/apikey), then add it to Portkey to create the virtual key.
 
@@ -48,16 +48,15 @@ To use Gemini with Portkey, [get your API key from here](https://aistudio.google
 Copy
 
 ```js
-import Portkey from 'portkey-ai'
+import Portkey from 'portkey-ai';
 
 const portkey = new Portkey({
-    apiKey: "PORTKEY_API_KEY", // defaults to process.env["PORTKEY_API_KEY"]
-    virtualKey: "VIRTUAL_KEY" // Your Google Virtual Key
-})
-
+  apiKey: 'PORTKEY_API_KEY', // defaults to process.env["PORTKEY_API_KEY"]
+  virtualKey: 'VIRTUAL_KEY', // Your Google Virtual Key
+});
 ```
 
-### [​](https://portkey.ai/docs/integrations/llms/gemini\#3-invoke-chat-completions-with-google-gemini)  **3\. Invoke Chat Completions with** Google Gemini
+### [​](https://portkey.ai/docs/integrations/llms/gemini#3-invoke-chat-completions-with-google-gemini) **3\. Invoke Chat Completions with** Google Gemini
 
 Use the Portkey instance to send requests to Google Gemini. You can also override the virtual key directly in the API call if needed.
 
@@ -83,13 +82,13 @@ Portkey supports the `system_instructions` parameter for Google Gemini 1.5 - all
 
 Simply include your Gemini system prompt as part of the `{"role":"system"}` message within the `messages` array of your request body. Portkey Gateway will automatically transform your message to ensure seamless compatibility with the Google Gemini API.
 
-## [​](https://portkey.ai/docs/integrations/llms/gemini\#function-calling)  Function Calling
+## [​](https://portkey.ai/docs/integrations/llms/gemini#function-calling) Function Calling
 
-Portkey supports function calling mode on Google’s Gemini Models. Explore this  Cookbook for a deep dive and examples:
+Portkey supports function calling mode on Google’s Gemini Models. Explore this Cookbook for a deep dive and examples:
 
 [Function Calling](https://portkey.ai/docs/guides/getting-started/function-calling)
 
-## [​](https://portkey.ai/docs/integrations/llms/gemini\#document-video-audio-processing-with-gemini)  Document, Video, Audio Processing with Gemini
+## [​](https://portkey.ai/docs/integrations/llms/gemini#document-video-audio-processing-with-gemini) Document, Video, Audio Processing with Gemini
 
 Gemini supports attaching `mp4`, `pdf`, `jpg`, `mp3`, `wav`, etc. file types to your messages.
 
@@ -136,7 +135,7 @@ This same message format also works for all other media types — just send your
 
 Your URL should have the file extension, this is used for inferring `MIME_TYPE` which is a required parameter for prompting Gemini models with files.
 
-### [​](https://portkey.ai/docs/integrations/llms/gemini\#sending-base64-image)  Sending base64 Image
+### [​](https://portkey.ai/docs/integrations/llms/gemini#sending-base64-image) Sending base64 Image
 
 Here, you can send the `base64` image data along with the `url` field too:
 
@@ -147,7 +146,7 @@ Copy
 
 ```
 
-## [​](https://portkey.ai/docs/integrations/llms/gemini\#grounding-with-google-search)  Grounding with Google Search
+## [​](https://portkey.ai/docs/integrations/llms/gemini#grounding-with-google-search) Grounding with Google Search
 
 Vertex AI supports grounding with Google Search. This is a feature that allows you to ground your LLM responses with real-time search results.
 Grounding is invoked by passing the `google_search` tool (for newer models like gemini-2.0-flash-001), and `google_search_retrieval` (for older models like gemini-1.5-flash) in the `tools` array.
@@ -167,7 +166,7 @@ Copy
 
 If you mix regular tools with grounding tools, vertex might throw an error saying only one tool can be used at a time.
 
-## [​](https://portkey.ai/docs/integrations/llms/gemini\#gemini-2-0-flash-thinking-exp-and-other-thinking-models)  gemini-2.0-flash-thinking-exp and other thinking models
+## [​](https://portkey.ai/docs/integrations/llms/gemini#gemini-2-0-flash-thinking-exp-and-other-thinking-models) gemini-2.0-flash-thinking-exp and other thinking models
 
 `gemini-2.0-flash-thinking-exp` models return a Chain of Thought response along with the actual inference text,
 this is not openai compatible, however, Portkey supports this by adding a `\r\n\r\n` and appending the two responses together.
@@ -177,7 +176,7 @@ If you require the Chain of Thought response along with the actual inference tex
 
 If you want to get the inference text only, pass the [strict open ai compliance flag](https://portkey.ai/docs/product/ai-gateway/strict-open-ai-compliance) as `true` in the request.
 
-## [​](https://portkey.ai/docs/integrations/llms/gemini\#managing-google-gemini-prompts)  Managing Google Gemini Prompts
+## [​](https://portkey.ai/docs/integrations/llms/gemini#managing-google-gemini-prompts) Managing Google Gemini Prompts
 
 You can manage all prompts to Google Gemini in the [Prompt Library](https://portkey.ai/docs/product/prompt-library). All the current models of Google Gemini are supported and you can easily start testing different prompts.
 
@@ -185,7 +184,7 @@ Once you’re ready with your prompt, you can use the `portkey.prompts.completio
 
 Gemini grounding mode may not work via Portkey SDK. Contact [support@portkey.ai](mailto:support@portkey.ai) for assistance.
 
-## [​](https://portkey.ai/docs/integrations/llms/gemini\#next-steps)  Next Steps
+## [​](https://portkey.ai/docs/integrations/llms/gemini#next-steps) Next Steps
 
 The complete list of features supported in the SDK are available on the link below.
 

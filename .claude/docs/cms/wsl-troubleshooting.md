@@ -88,7 +88,7 @@ When running content migrations in Windows Subsystem for Linux (WSL), you may en
      param (
        [string]$WindowsPath
      )
-     
+
      $wslPath = (wsl wslpath -a $WindowsPath).Trim()
      return $wslPath
    }

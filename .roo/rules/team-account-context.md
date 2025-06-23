@@ -3,6 +3,7 @@ description: Team Accounts context and functionality
 globs: apps/*/app/home/[account],packages/features/team-accounts/**
 alwaysApply: false
 ---
+
 ## Team Accounts
 
 The team account context in the application lives under the path `app/home/[account]`. The `[account]` segment is the slug of the team account, from which we can identify the team.
@@ -13,6 +14,7 @@ The data fetched from the account workspace API is available in the team context
 
 ```tsx
 'use client';
+
 import { useTeamAccountWorkspace } from '@kit/team-accounts/hooks/use-team-account-workspace';
 
 export default function SomeComponent() {

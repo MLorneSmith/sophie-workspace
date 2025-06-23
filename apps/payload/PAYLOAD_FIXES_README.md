@@ -9,7 +9,7 @@ This document describes the critical fixes and enhancements applied to the Paylo
 **What:**  
 A form protection script is now automatically loaded in the Payload admin interface to enhance security and prevent automated attacks or abuse.
 
-**How it works:**  
+**How it works:**
 
 - The script is located at:  
   `apps/payload/public/admin/form-protection.js`
@@ -31,7 +31,7 @@ A form protection script is now automatically loaded in the Payload admin interf
 **What:**  
 A simple health check endpoint is available for monitoring the status of the Payload CMS instance and its database connection.
 
-**Endpoint:**  
+**Endpoint:**
 
 ```
 /api/health
@@ -62,7 +62,7 @@ A simple health check endpoint is available for monitoring the status of the Pay
 - `database.lastCheck`: Last time a DB health check was performed
 - `version`: Payload CMS version
 
-**Usage:**  
+**Usage:**
 
 - Use this endpoint with monitoring tools (e.g., UptimeRobot, Prometheus, custom scripts) to verify service and database health.
 - **Security Note:** This endpoint is accessible by default; restrict access in production if sensitive.

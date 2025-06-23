@@ -37,12 +37,12 @@ This guide provides step-by-step instructions for testing the Sharp optimization
 
 ## 3. Troubleshooting Common Issues
 
-| Issue                        | Steps to Diagnose / Fix                                      |
-|------------------------------|--------------------------------------------------------------|
-| **522/504 Timeout**          | - Check platform logs for sharp errors<br>- Reduce SHARP_CONCURRENCY<br>- Ensure SHARP_PLATFORM is set correctly |
-| **Missing Images/Thumbnails**| - Check storage config (R2/S3)<br>- Verify env vars<br>- Check sharp/serverless-sharp logs |
-| **Sharp Initialization Error**| - Ensure platform adapter is imported<br>- Check SHARP_PLATFORM value |
-| **Slow Performance**         | - Lower SHARP_CONCURRENCY<br>- Use smaller test images<br>- Monitor cold start times |
+| Issue                          | Steps to Diagnose / Fix                                                                                          |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------------- |
+| **522/504 Timeout**            | - Check platform logs for sharp errors<br>- Reduce SHARP_CONCURRENCY<br>- Ensure SHARP_PLATFORM is set correctly |
+| **Missing Images/Thumbnails**  | - Check storage config (R2/S3)<br>- Verify env vars<br>- Check sharp/serverless-sharp logs                       |
+| **Sharp Initialization Error** | - Ensure platform adapter is imported<br>- Check SHARP_PLATFORM value                                            |
+| **Slow Performance**           | - Lower SHARP_CONCURRENCY<br>- Use smaller test images<br>- Monitor cold start times                             |
 
 ---
 

@@ -4,16 +4,16 @@
 
 ## Document Metadata
 
-| Field | Value |
-|-------|-------|
-| **Feature Name** | `[Feature Name]` |
-| **Document Version** | `[1.0]` |
-| **Status** | `[Draft/Review/Approved/In Development/Complete]` |
-| **Author(s)** | `[Name(s)]` |
-| **Reviewer(s)** | `[Name(s)]` |
-| **Created Date** | `[YYYY-MM-DD]` |
-| **Last Updated** | `[YYYY-MM-DD]` |
-| **Target Release** | `[Version/Sprint/Date]` |
+| Field                | Value                                             |
+| -------------------- | ------------------------------------------------- |
+| **Feature Name**     | `[Feature Name]`                                  |
+| **Document Version** | `[1.0]`                                           |
+| **Status**           | `[Draft/Review/Approved/In Development/Complete]` |
+| **Author(s)**        | `[Name(s)]`                                       |
+| **Reviewer(s)**      | `[Name(s)]`                                       |
+| **Created Date**     | `[YYYY-MM-DD]`                                    |
+| **Last Updated**     | `[YYYY-MM-DD]`                                    |
+| **Target Release**   | `[Version/Sprint/Date]`                           |
 
 ## Executive Summary
 
@@ -142,7 +142,7 @@ const featureSchema = z.object({
 - **Timeline:** `[Duration]`
 - **Dependencies:** `[Other features, external factors]`
 
-### Phase 3: `[Optimization/Polish]` *(Optional)*
+### Phase 3: `[Optimization/Polish]` _(Optional)_
 
 - [ ] `[Specific deliverable]`
 - [ ] `[Specific deliverable]`
@@ -205,20 +205,20 @@ const featureSchema = z.object({
 
 ### Technical Risks
 
-| Risk | Probability | Impact | Mitigation |
-|------|-------------|---------|------------|
+| Risk                 | Probability         | Impact              | Mitigation              |
+| -------------------- | ------------------- | ------------------- | ----------------------- |
 | `[Risk description]` | `[High/Medium/Low]` | `[High/Medium/Low]` | `[Mitigation strategy]` |
 
 ### User Experience Risks
 
-| Risk | Probability | Impact | Mitigation |
-|------|-------------|---------|------------|
+| Risk                 | Probability         | Impact              | Mitigation              |
+| -------------------- | ------------------- | ------------------- | ----------------------- |
 | `[Risk description]` | `[High/Medium/Low]` | `[High/Medium/Low]` | `[Mitigation strategy]` |
 
 ### Business Risks
 
-| Risk | Probability | Impact | Mitigation |
-|------|-------------|---------|------------|
+| Risk                 | Probability         | Impact              | Mitigation              |
+| -------------------- | ------------------- | ------------------- | ----------------------- |
 | `[Risk description]` | `[High/Medium/Low]` | `[High/Medium/Low]` | `[Mitigation strategy]` |
 
 ## Dependencies & Assumptions
@@ -263,9 +263,9 @@ const featureSchema = z.object({
 
 ### Review History
 
-| Version | Date | Changes | Reviewer |
-|---------|------|---------|----------|
-| 1.0 | `[Date]` | Initial draft | `[Name]` |
+| Version | Date     | Changes       | Reviewer |
+| ------- | -------- | ------------- | -------- |
+| 1.0     | `[Date]` | Initial draft | `[Name]` |
 
 ---
 

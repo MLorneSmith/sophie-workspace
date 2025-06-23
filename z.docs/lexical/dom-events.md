@@ -4,7 +4,7 @@ On this page
 
 Sometimes, when working with Lexical, it might be necessary or useful for you to attach a DOM Event Listener to the underlying DOM nodes that Lexical controls. For instance, you might want to show a popover when a user mouses over a specific node or open a modal when they click on a node. Either of these use cases (and many others) can be accomplished via native DOM Event Listeners. There are 3 main ways that you can listen for DOM Events on nodes controlled by Lexical:
 
-## 1\. Event Delegation [​](https://lexical.dev/docs/concepts/dom-events\#1-event-delegation "Direct link to heading")
+## 1\. Event Delegation [​](https://lexical.dev/docs/concepts/dom-events#1-event-delegation 'Direct link to heading')
 
 One way to handle events inside the editor is to set a listener on the editor root element (the contentEditable Lexical attaches to). You can do this using a [Root Listener](https://lexical.dev/docs/concepts/listeners).
 
@@ -30,7 +30,7 @@ removeRootListener();
 
 This can be a simple, efficient way to handle some use cases, since it's not necessary to attach a listener to each DOM node individually.
 
-## 2\. Directly Attach Handlers [​](https://lexical.dev/docs/concepts/dom-events\#2-directly-attach-handlers "Direct link to heading")
+## 2\. Directly Attach Handlers [​](https://lexical.dev/docs/concepts/dom-events#2-directly-attach-handlers 'Direct link to heading')
 
 In some cases, it may be better to attach an event handler directly to the underlying DOM node of each specific node. With this approach, you generally don't need to filter the event target in the handler, which can make it a bit simpler. It will also guarantee that your handler isn't running for events that you don't care about. This approach is implemented via a [Mutation Listener](https://lexical.dev/docs/concepts/listeners).
 
@@ -63,7 +63,7 @@ removeMutationListener();
 
 Notice that here we don't worry about cleaning up, as Lexical will dereference the underlying DOM nodes and allow the JavaScript runtime garbage collector to clean up their listeners.
 
-## 3\. Use NodeEventPlugin [​](https://lexical.dev/docs/concepts/dom-events\#3-use-nodeeventplugin "Direct link to heading")
+## 3\. Use NodeEventPlugin [​](https://lexical.dev/docs/concepts/dom-events#3-use-nodeeventplugin 'Direct link to heading')
 
 If you're using React, we've wrapped approach #2 up into a simple LexicalComposer plugin that you can use to achieve the same effect, without worrying about the details:
 

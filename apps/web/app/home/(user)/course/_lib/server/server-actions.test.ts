@@ -28,7 +28,7 @@ vi.mock("@kit/next/actions", () => ({
 			if (options?.schema) {
 				const result = options.schema.safeParse(data);
 				if (!result.success) {
-					return { error: "Validation failed", details: result.error };
+					return { success: false, error: "Validation failed" } as const;
 				}
 				validatedData = result.data;
 			}
@@ -915,3 +915,4 @@ describe("Course Server Actions", () => {
 		});
 	});
 });
+// Test comment

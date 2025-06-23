@@ -3,6 +3,7 @@ description:
 globs: *.ts,*.tsx
 alwaysApply: false
 ---
+
 # Typescript
 
 - Write clean, clear, well-designed, explicit Typescript
@@ -20,7 +21,7 @@ class UserService {
 }
 
 export function createUserService() {
-    return new UserService();
+  return new UserService();
 }
 ```
 

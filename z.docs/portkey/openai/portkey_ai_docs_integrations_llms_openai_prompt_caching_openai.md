@@ -76,19 +76,19 @@ print(json.dumps(response.model_dump(), indent=2))
 
 ```
 
-### [​](https://portkey.ai/docs/integrations/llms/openai/prompt-caching-openai\#what-can-be-cached)  What can be cached
+### [​](https://portkey.ai/docs/integrations/llms/openai/prompt-caching-openai#what-can-be-cached) What can be cached
 
 - **Messages:** The complete messages array, encompassing system, user, and assistant interactions.
 - **Images:** Images included in user messages, either as links or as base64-encoded data, as well as multiple images can be sent. Ensure the detail parameter is set identically, as it impacts image tokenization.
 - **Tool use:** Both the messages array and the list of available `tools` can be cached, contributing to the minimum 1024 token requirement.
 - **Structured outputs:** The structured output schema serves as a prefix to the system message and can be cached.
 
-### [​](https://portkey.ai/docs/integrations/llms/openai/prompt-caching-openai\#whats-not-supported)  What’s Not Supported
+### [​](https://portkey.ai/docs/integrations/llms/openai/prompt-caching-openai#whats-not-supported) What’s Not Supported
 
 - Completions API (only Chat Completions API is supported)
 - Streaming responses (caching works, but streaming itself is not affected)
 
-### [​](https://portkey.ai/docs/integrations/llms/openai/prompt-caching-openai\#monitoring-cache-performance)  Monitoring Cache Performance
+### [​](https://portkey.ai/docs/integrations/llms/openai/prompt-caching-openai#monitoring-cache-performance) Monitoring Cache Performance
 
 Prompt caching requests & responses based on OpenAI’s calculations here:
 

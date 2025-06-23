@@ -16,7 +16,7 @@ vi.mock("@kit/ai-gateway/src/configs/templates", () => ({
 
 vi.mock("@kit/ai-gateway/src/prompts/prompt-manager", () => ({
 	PromptManager: {
-		compile: vi.fn(),
+		compileTemplate: vi.fn(),
 	},
 }));
 
@@ -54,7 +54,7 @@ vi.mock("@kit/next/actions", () => ({
 import { getChatCompletion } from "@kit/ai-gateway";
 import { createReasoningOptimizedConfig } from "@kit/ai-gateway/src/configs/templates";
 import { PromptManager } from "@kit/ai-gateway/src/prompts/prompt-manager";
-import { expectError } from "@/test/test-helpers";
+import { expectError } from "../../../../../../test/test-helpers";
 import { simplifyTextAction } from "./simplify-text";
 
 // Helper function to create proper CompletionResult mock
@@ -135,7 +135,7 @@ describe("simplifyTextAction", () => {
 			);
 
 			// Assert
-			expect(expectError(result)).toBe("Validation failed");
+			expect(expectError(result as any)).toBe("Validation failed");
 		});
 
 		it("should reject missing userId field", async () => {
@@ -152,7 +152,7 @@ describe("simplifyTextAction", () => {
 			);
 
 			// Assert
-			expect(expectError(result)).toBe("Validation failed");
+			expect(expectError(result as any)).toBe("Validation failed");
 		});
 
 		it("should reject missing canvasId field", async () => {
@@ -169,7 +169,7 @@ describe("simplifyTextAction", () => {
 			);
 
 			// Assert
-			expect(expectError(result)).toBe("Validation failed");
+			expect(expectError(result as any)).toBe("Validation failed");
 		});
 
 		it("should reject missing sectionType field", async () => {
@@ -186,7 +186,7 @@ describe("simplifyTextAction", () => {
 			);
 
 			// Assert
-			expect(expectError(result)).toBe("Validation failed");
+			expect(expectError(result as any)).toBe("Validation failed");
 		});
 	});
 
@@ -491,7 +491,7 @@ describe("simplifyTextAction", () => {
 
 			// Assert - Empty content is valid according to the schema, so it should succeed
 			expect(result.success).toBe(true);
-			expect(result.response).toBe("");
+			expect(result.response).toEqual(createMockCompletionResult(""));
 		});
 
 		it("should handle special characters in content", async () => {
@@ -514,7 +514,9 @@ describe("simplifyTextAction", () => {
 
 			// Assert
 			expect(result.success).toBe(true);
-			expect(result.response).toBe("Simplified special content");
+			expect(result.response).toEqual(
+				createMockCompletionResult("Simplified special content"),
+			);
 		});
 
 		it("should handle multiline content", async () => {

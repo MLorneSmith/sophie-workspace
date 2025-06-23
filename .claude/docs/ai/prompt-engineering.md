@@ -29,7 +29,7 @@ Follow this structure for complex prompts:
 const messages = [
   {
     role: 'system',
-    content: systemMessage
+    content: systemMessage,
   },
   {
     role: 'user',
@@ -45,8 +45,8 @@ ${userInput}
 
 # Output Format
 ${outputFormat}
-    `
-  }
+    `,
+  },
 ];
 ```
 
@@ -61,7 +61,7 @@ const messages = [
   { role: 'assistant', content: 'Example output 1' },
   { role: 'user', content: 'Example input 2' },
   { role: 'assistant', content: 'Example output 2' },
-  { role: 'user', content: actualUserInput }
+  { role: 'user', content: actualUserInput },
 ];
 ```
 
@@ -90,14 +90,14 @@ import { getChatCompletion } from '@kit/ai-gateway';
 const result = await getChatCompletion(
   [
     { role: 'system', content: systemMessage },
-    { role: 'user', content: userInput }
+    { role: 'user', content: userInput },
   ],
   {
     model: 'gpt-3.5-turbo', // Use cheaper models when possible
     temperature: 0.7,
     userId: user.id,
     feature: 'chat-assistant',
-  }
+  },
 );
 
 console.log(result.content);
@@ -109,10 +109,10 @@ console.log(result.metadata.cost); // Track costs
 ```tsx
 import { getStreamingChatCompletion } from '@kit/ai-gateway';
 
-const stream = getStreamingChatCompletion(
-  messages,
-  { model: 'gpt-4-turbo', userId: user.id }
-);
+const stream = getStreamingChatCompletion(messages, {
+  model: 'gpt-4-turbo',
+  userId: user.id,
+});
 
 for await (const chunk of stream) {
   // Process each chunk
@@ -126,13 +126,17 @@ Use consistent template patterns for reusable prompts:
 
 ```tsx
 // Create a reusable template function
-function createContentTemplate(topic: string, context: string, instructions: string) {
+function createContentTemplate(
+  topic: string,
+  context: string,
+  instructions: string,
+) {
   return [
     {
       role: 'system',
       content: `You are a professional content creator with expertise in ${topic}.
 Your task is to create engaging, accurate content that is well-structured and easy to understand.
-Format your response using Markdown.`
+Format your response using Markdown.`,
     },
     {
       role: 'user',
@@ -147,8 +151,8 @@ ${instructions}
 - Use clear headings and subheadings
 - Include actionable insights
 - Keep paragraphs concise and scannable
-      `
-    }
+      `,
+    },
   ];
 }
 
@@ -156,7 +160,7 @@ ${instructions}
 const messages = createContentTemplate(
   'digital marketing',
   'Blog post for a SaaS company',
-  'Write a 500-word blog post about content marketing'
+  'Write a 500-word blog post about content marketing',
 );
 
 const result = await getChatCompletion(messages, {
@@ -171,11 +175,13 @@ const result = await getChatCompletion(messages, {
 ### Model Selection by Use Case
 
 1. **Simple tasks**: `gpt-3.5-turbo` (~$0.0005/1K tokens)
+
    - Basic text generation
    - Simple Q&A
    - Content summarization
 
 2. **Complex reasoning**: `gpt-4-turbo` (~$0.01/1K tokens)
+
    - Complex analysis
    - Multi-step reasoning
    - Code generation
@@ -206,6 +212,7 @@ for (const feature of features) {
     userId: user.id,
     feature, // This will be tracked separately
   });
-  
+
   console.log(`${feature} cost: $${result.metadata.cost}`);
 }
+```

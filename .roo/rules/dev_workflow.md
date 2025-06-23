@@ -13,19 +13,20 @@ This guide outlines the typical process for using Task Master to manage software
 Task Master offers two primary ways to interact:
 
 1. **MCP Server (Recommended for Integrated Tools)**:
-    - For AI agents and integrated development environments (like Roo Code), interacting via the **MCP server is the preferred method**.
-    - The MCP server exposes Task Master functionality through a set of tools (e.g., `get_tasks`, `add_subtask`).
-    - This method offers better performance, structured data exchange, and richer error handling compared to CLI parsing.
-    - Refer to [`mcp.md`](mdc:.roo/rules/mcp.md) for details on the MCP architecture and available tools.
-    - A comprehensive list and description of MCP tools and their corresponding CLI commands can be found in [`taskmaster.md`](mdc:.roo/rules/taskmaster.md).
-    - **Restart the MCP server** if core logic in `scripts/modules` or MCP tool/direct function definitions change.
+
+   - For AI agents and integrated development environments (like Roo Code), interacting via the **MCP server is the preferred method**.
+   - The MCP server exposes Task Master functionality through a set of tools (e.g., `get_tasks`, `add_subtask`).
+   - This method offers better performance, structured data exchange, and richer error handling compared to CLI parsing.
+   - Refer to [`mcp.md`](mdc:.roo/rules/mcp.md) for details on the MCP architecture and available tools.
+   - A comprehensive list and description of MCP tools and their corresponding CLI commands can be found in [`taskmaster.md`](mdc:.roo/rules/taskmaster.md).
+   - **Restart the MCP server** if core logic in `scripts/modules` or MCP tool/direct function definitions change.
 
 2. **`task-master` CLI (For Users & Fallback)**:
-    - The global `task-master` command provides a user-friendly interface for direct terminal interaction.
-    - It can also serve as a fallback if the MCP server is inaccessible or a specific function isn't exposed via MCP.
-    - Install globally with `npm install -g task-master-ai` or use locally via `npx task-master-ai ...`.
-    - The CLI commands often mirror the MCP tools (e.g., `task-master list` corresponds to `get_tasks`).
-    - Refer to [`taskmaster.md`](mdc:.roo/rules/taskmaster.md) for a detailed command reference.
+   - The global `task-master` command provides a user-friendly interface for direct terminal interaction.
+   - It can also serve as a fallback if the MCP server is inaccessible or a specific function isn't exposed via MCP.
+   - Install globally with `npm install -g task-master-ai` or use locally via `npx task-master-ai ...`.
+   - The CLI commands often mirror the MCP tools (e.g., `task-master list` corresponds to `get_tasks`).
+   - Refer to [`taskmaster.md`](mdc:.roo/rules/taskmaster.md) for a detailed command reference.
 
 ## Standard Development Workflow Process
 
@@ -155,50 +156,59 @@ Task Master offers two primary ways to interact:
 Once a task has been broken down into subtasks using `expand_task` or similar methods, follow this iterative process for implementation:
 
 1. **Understand the Goal (Preparation):**
-    - Use `get_task` / `task-master show <subtaskId>` (see [`taskmaster.md`](mdc:.roo/rules/taskmaster.md)) to thoroughly understand the specific goals and requirements of the subtask.
+
+   - Use `get_task` / `task-master show <subtaskId>` (see [`taskmaster.md`](mdc:.roo/rules/taskmaster.md)) to thoroughly understand the specific goals and requirements of the subtask.
 
 2. **Initial Exploration & Planning (Iteration 1):**
-    - This is the first attempt at creating a concrete implementation plan.
-    - Explore the codebase to identify the precise files, functions, and even specific lines of code that will need modification.
-    - Determine the intended code changes (diffs) and their locations.
-    - Gather *all* relevant details from this exploration phase.
+
+   - This is the first attempt at creating a concrete implementation plan.
+   - Explore the codebase to identify the precise files, functions, and even specific lines of code that will need modification.
+   - Determine the intended code changes (diffs) and their locations.
+   - Gather _all_ relevant details from this exploration phase.
 
 3. **Log the Plan:**
-    - Run `update_subtask` / `task-master update-subtask --id=<subtaskId> --prompt='<detailed plan>'` (see [`taskmaster.md`](mdc:.roo/rules/taskmaster.md)).
-    - Provide the *complete and detailed* findings from the exploration phase in the prompt. Include file paths, line numbers, proposed diffs, reasoning, and any potential challenges identified. Do not omit details. The goal is to create a rich, timestamped log within the subtask's `details`.
+
+   - Run `update_subtask` / `task-master update-subtask --id=<subtaskId> --prompt='<detailed plan>'` (see [`taskmaster.md`](mdc:.roo/rules/taskmaster.md)).
+   - Provide the _complete and detailed_ findings from the exploration phase in the prompt. Include file paths, line numbers, proposed diffs, reasoning, and any potential challenges identified. Do not omit details. The goal is to create a rich, timestamped log within the subtask's `details`.
 
 4. **Verify the Plan:**
-    - Run `get_task` / `task-master show <subtaskId>` again to confirm that the detailed implementation plan has been successfully appended to the subtask's details.
+
+   - Run `get_task` / `task-master show <subtaskId>` again to confirm that the detailed implementation plan has been successfully appended to the subtask's details.
 
 5. **Begin Implementation:**
-    - Set the subtask status using `set_task_status` / `task-master set-status --id=<subtaskId> --status=in-progress` (see [`taskmaster.md`](mdc:.roo/rules/taskmaster.md)).
-    - Start coding based on the logged plan.
+
+   - Set the subtask status using `set_task_status` / `task-master set-status --id=<subtaskId> --status=in-progress` (see [`taskmaster.md`](mdc:.roo/rules/taskmaster.md)).
+   - Start coding based on the logged plan.
 
 6. **Refine and Log Progress (Iteration 2+):**
-    - As implementation progresses, you will encounter challenges, discover nuances, or confirm successful approaches.
-    - **Before appending new information**: Briefly review the *existing* details logged in the subtask (using `get_task` or recalling from context) to ensure the update adds fresh insights and avoids redundancy.
-    - **Regularly** use `update_subtask` / `task-master update-subtask --id=<subtaskId> --prompt='<update details>\n- What worked...\n- What didn't work...'` to append new findings.
-    - **Crucially, log:**
-        - What worked ("fundamental truths" discovered).
-        - What didn't work and why (to avoid repeating mistakes).
-        - Specific code snippets or configurations that were successful.
-        - Decisions made, especially if confirmed with user input.
-        - Any deviations from the initial plan and the reasoning.
-    - The objective is to continuously enrich the subtask's details, creating a log of the implementation journey that helps the AI (and human developers) learn, adapt, and avoid repeating errors.
+
+   - As implementation progresses, you will encounter challenges, discover nuances, or confirm successful approaches.
+   - **Before appending new information**: Briefly review the _existing_ details logged in the subtask (using `get_task` or recalling from context) to ensure the update adds fresh insights and avoids redundancy.
+   - **Regularly** use `update_subtask` / `task-master update-subtask --id=<subtaskId> --prompt='<update details>\n- What worked...\n- What didn't work...'` to append new findings.
+   - **Crucially, log:**
+     - What worked ("fundamental truths" discovered).
+     - What didn't work and why (to avoid repeating mistakes).
+     - Specific code snippets or configurations that were successful.
+     - Decisions made, especially if confirmed with user input.
+     - Any deviations from the initial plan and the reasoning.
+   - The objective is to continuously enrich the subtask's details, creating a log of the implementation journey that helps the AI (and human developers) learn, adapt, and avoid repeating errors.
 
 7. **Review & Update Rules (Post-Implementation):**
-    - Once the implementation for the subtask is functionally complete, review all code changes and the relevant chat history.
-    - Identify any new or modified code patterns, conventions, or best practices established during the implementation.
-    - Create new or update existing Roo Code rules in the `.roo/rules/` directory to capture these patterns, following the guidelines in [`cursor_rules.md`](mdc:.roo/rules/cursor_rules.md) and [`self_improve.md`](mdc:.roo/rules/self_improve.md).
+
+   - Once the implementation for the subtask is functionally complete, review all code changes and the relevant chat history.
+   - Identify any new or modified code patterns, conventions, or best practices established during the implementation.
+   - Create new or update existing Roo Code rules in the `.roo/rules/` directory to capture these patterns, following the guidelines in [`cursor_rules.md`](mdc:.roo/rules/cursor_rules.md) and [`self_improve.md`](mdc:.roo/rules/self_improve.md).
 
 8. **Mark Task Complete:**
-    - After verifying the implementation and updating any necessary rules, mark the subtask as completed: `set_task_status` / `task-master set-status --id=<subtaskId> --status=done`.
+
+   - After verifying the implementation and updating any necessary rules, mark the subtask as completed: `set_task_status` / `task-master set-status --id=<subtaskId> --status=done`.
 
 9. **Commit Changes (If using Git):**
-    - Stage the relevant code changes and any updated/new rule files (`git add .`).
-    - Craft a comprehensive Git commit message summarizing the work done for the subtask, including both code implementation and any rule adjustments.
-    - Execute the commit command directly in the terminal (e.g., `git commit -m 'feat(module): Implement feature X for subtask <subtaskId>\n\n- Details about changes...\n- Updated rule Y for pattern Z'`).
-    - Consider if a Changeset is needed according to [`changeset.md`](mdc:.roo/rules/changeset.md). If so, run `npm run changeset`, stage the generated file, and amend the commit or create a new one.
+
+   - Stage the relevant code changes and any updated/new rule files (`git add .`).
+   - Craft a comprehensive Git commit message summarizing the work done for the subtask, including both code implementation and any rule adjustments.
+   - Execute the commit command directly in the terminal (e.g., `git commit -m 'feat(module): Implement feature X for subtask <subtaskId>\n\n- Details about changes...\n- Updated rule Y for pattern Z'`).
+   - Consider if a Changeset is needed according to [`changeset.md`](mdc:.roo/rules/changeset.md). If so, run `npm run changeset`, stage the generated file, and amend the commit or create a new one.
 
 10. **Proceed to Next Subtask:**
     - Identify the next subtask in the dependency chain (e.g., using `next_task` / `task-master next`) and repeat this iterative process starting from step 1.
@@ -208,8 +218,9 @@ Once a task has been broken down into subtasks using `expand_task` or similar me
 - **Top-Level Function Search**:
   - Useful for understanding module structure or planning refactors.
   - Use grep/ripgrep to find exported functions/constants:
-      `rg "export (async function|function|const) \w+"` or similar patterns.
+    `rg "export (async function|function|const) \w+"` or similar patterns.
   - Can help compare functions between files during migrations or identify potential naming conflicts.
 
 ---
-*This workflow provides a general guideline. Adapt it based on your specific project needs and team practices.*
+
+_This workflow provides a general guideline. Adapt it based on your specific project needs and team practices._

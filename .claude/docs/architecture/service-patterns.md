@@ -31,7 +31,7 @@ export async function createTeamAccount(params: {
   userId: string;
 }) {
   const supabase = getSupabaseServerClient();
-  
+
   const { data, error } = await supabase
     .from('accounts')
     .insert({
@@ -57,8 +57,11 @@ Server actions handle form submissions and user interactions:
 'use server';
 
 import { enhanceAction } from '@kit/next/actions';
+
 import { createTeamSchema } from '../schema/create-team.schema';
 import { createTeamAccount } from '../services/create-team-account.service';
+
+// packages/features/team-accounts/server/actions/create-team-account-server-actions.ts
 
 export const createTeamAccountAction = enhanceAction(
   async (data, user) => {
@@ -69,7 +72,7 @@ export const createTeamAccountAction = enhanceAction(
   },
   {
     schema: createTeamSchema,
-  }
+  },
 );
 ```
 
@@ -85,7 +88,7 @@ export async function generateCertificate(params: {
   fullName: string;
 }) {
   const pdfCoApiKey = process.env.PDF_CO_API_KEY;
-  
+
   // External API integration
   const response = await fetch('https://api.pdf.co/v1/pdf/edit/add', {
     method: 'POST',
@@ -95,7 +98,7 @@ export async function generateCertificate(params: {
     },
     body: JSON.stringify(formData),
   });
-  
+
   // Store result in Supabase
   const supabase = getSupabaseServerClient();
   // ... implementation
@@ -112,12 +115,14 @@ import { getSupabaseServerClient } from '@kit/supabase/server-client';
 
 export async function getTeamAccounts(userId: string) {
   const supabase = getSupabaseServerClient();
-  
+
   return supabase
     .from('accounts_memberships')
-    .select(`
+    .select(
+      `
       account:accounts(*)
-    `)
+    `,
+    )
     .eq('user_id', userId)
     .throwOnError();
 }
@@ -137,13 +142,13 @@ export async function completeTeamSetup(params: {
 }) {
   // Create team account
   const team = await createTeamAccount(params.teamData, params.userId);
-  
+
   // Send welcome email
   await sendTeamWelcomeEmail(team.id, params.userId);
-  
+
   // Initialize billing
   await initializeTeamBilling(team.id);
-  
+
   return team;
 }
 ```
@@ -157,11 +162,11 @@ import { redirect } from 'next/navigation';
 
 export async function requireTeamAccess(teamId: string, userId: string) {
   const { data, error } = await getTeamMembership(teamId, userId);
-  
+
   if (error || !data) {
     redirect('/teams');
   }
-  
+
   return data;
 }
 ```
@@ -198,12 +203,12 @@ import { getSupabaseServerClient } from '@kit/supabase/server-client';
 
 export default async function TeamsPage() {
   const supabase = getSupabaseServerClient();
-  
+
   const { data: teams } = await supabase
     .from('accounts')
     .select('*')
     .eq('type', 'team');
-  
+
   return <TeamsList teams={teams} />;
 }
 ```
@@ -217,22 +222,21 @@ Use React Query for client-side data fetching:
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
+
 import { getTeamAccounts } from '../server/api';
+
+// components/teams-list.tsx
 
 export function TeamsList() {
   const { data: teams, isLoading } = useQuery({
     queryKey: ['teams'],
     queryFn: () => getTeamAccounts(),
   });
-  
+
   if (isLoading) return <LoadingSpinner />;
-  
+
   return (
-    <div>
-      {teams?.map(team => (
-        <TeamCard key={team.id} team={team} />
-      ))}
-    </div>
+    <div>{teams?.map((team) => <TeamCard key={team.id} team={team} />)}</div>
   );
 }
 ```
@@ -246,6 +250,7 @@ Test service functions with mocked dependencies:
 ```tsx
 // __tests__/create-team-account.test.ts
 import { vi } from 'vitest';
+
 import { createTeamAccount } from '../services/create-team-account.service';
 
 vi.mock('@kit/supabase/server-client', () => ({
@@ -261,14 +266,14 @@ describe('createTeamAccount', () => {
         }),
       }),
     });
-    
+
     mockSupabaseClient.from.mockReturnValue({ insert: mockInsert });
-    
+
     const result = await createTeamAccount({
       name: 'Test Team',
       userId: 'user-123',
     });
-    
+
     expect(result).toEqual(mockTeam);
   });
 });
@@ -286,9 +291,9 @@ describe('createTeamAccountAction', () => {
   it('should handle team creation', async () => {
     const mockUser = { id: 'user-123' };
     const teamData = { name: 'Test Team' };
-    
+
     const result = await createTeamAccountAction(teamData, mockUser);
-    
+
     expect(result).toBeDefined();
   });
 });

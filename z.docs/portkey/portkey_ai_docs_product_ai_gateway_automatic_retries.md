@@ -20,11 +20,11 @@ This feature is available on all Portkey [plans](https://portkey.ai/pricing).
 - Retries can also be triggered only on **specific error codes**
 - And each subsequent retry attempt follows **exponential backoff strategy** to prevent network overload
 
-## [​](https://portkey.ai/docs/product/ai-gateway/automatic-retries\#enabling-retries)  Enabling Retries
+## [​](https://portkey.ai/docs/product/ai-gateway/automatic-retries#enabling-retries) Enabling Retries
 
 To enable retry, just add the `retry` param to your [config object](https://portkey.ai/docs/api-reference/config-object).
 
-### [​](https://portkey.ai/docs/product/ai-gateway/automatic-retries\#retry-with-5-attempts)  Retry with 5 attempts
+### [​](https://portkey.ai/docs/product/ai-gateway/automatic-retries#retry-with-5-attempts) Retry with 5 attempts
 
 Copy
 
@@ -38,7 +38,7 @@ Copy
 
 ```
 
-### [​](https://portkey.ai/docs/product/ai-gateway/automatic-retries\#retry-only-on-specific-error-codes)  Retry only on specific error codes
+### [​](https://portkey.ai/docs/product/ai-gateway/automatic-retries#retry-only-on-specific-error-codes) Retry only on specific error codes
 
 By default, Portkey triggers retries on the following error codes: **\[429, 500, 502, 503, 504\]**
 
@@ -59,18 +59,18 @@ Copy
 
 If the `on_status_codes` param is present, retries will be triggered **only** on the error codes specified in that Config and not on Portkey’s default error codes for retries (i.e. \[429, 500, 502, 503, 504\])
 
-### [​](https://portkey.ai/docs/product/ai-gateway/automatic-retries\#exponential-backoff-strategy)  Exponential backoff strategy
+### [​](https://portkey.ai/docs/product/ai-gateway/automatic-retries#exponential-backoff-strategy) Exponential backoff strategy
 
 Here’s how Portkey triggers retries following exponential backoff:
 
-| Attempt | Time out between requests |
-| --- | --- |
-| Initial Call | Immediately |
-| Retry 1st attempt | 1 second |
-| Retry 2nd attempt | 2 seconds |
-| Retry 3rd attempt | 4 seconds |
-| Retry 4th attempt | 8 seconds |
-| Retry 5th attempt | 16 seconds |
+| Attempt           | Time out between requests |
+| ----------------- | ------------------------- |
+| Initial Call      | Immediately               |
+| Retry 1st attempt | 1 second                  |
+| Retry 2nd attempt | 2 seconds                 |
+| Retry 3rd attempt | 4 seconds                 |
+| Retry 4th attempt | 8 seconds                 |
+| Retry 5th attempt | 16 seconds                |
 
 Was this page helpful?
 

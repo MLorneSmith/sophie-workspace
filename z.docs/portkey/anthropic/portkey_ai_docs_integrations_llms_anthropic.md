@@ -20,11 +20,11 @@ With Portkey, you can take advantage of features like fast AI gateway access, ob
 
 Provider Slug. `anthropic`
 
-## [​](https://portkey.ai/docs/integrations/llms/anthropic\#portkey-sdk-integration-with-anthropic)  Portkey SDK Integration with Anthropic
+## [​](https://portkey.ai/docs/integrations/llms/anthropic#portkey-sdk-integration-with-anthropic) Portkey SDK Integration with Anthropic
 
 Portkey provides a consistent API to interact with models from various providers. To integrate Anthropic with Portkey:
 
-### [​](https://portkey.ai/docs/integrations/llms/anthropic\#1-install-the-portkey-sdk)  1\. Install the Portkey SDK
+### [​](https://portkey.ai/docs/integrations/llms/anthropic#1-install-the-portkey-sdk) 1\. Install the Portkey SDK
 
 Add the Portkey SDK to your application to interact with Anthropic’s API through Portkey’s gateway.
 
@@ -38,7 +38,7 @@ npm install --save portkey-ai
 
 ```
 
-### [​](https://portkey.ai/docs/integrations/llms/anthropic\#2-initialize-portkey-with-the-virtual-key)  2\. Initialize Portkey with the Virtual Key
+### [​](https://portkey.ai/docs/integrations/llms/anthropic#2-initialize-portkey-with-the-virtual-key) 2\. Initialize Portkey with the Virtual Key
 
 To use Anthropic with Portkey, [get your Anthropic API key from here](https://console.anthropic.com/settings/keys), then add it to Portkey to create your Anthropic virtual key.
 
@@ -50,16 +50,15 @@ To use Anthropic with Portkey, [get your Anthropic API key from here](https://co
 Copy
 
 ```js
-import Portkey from 'portkey-ai'
+import Portkey from 'portkey-ai';
 
 const portkey = new Portkey({
-    apiKey: "PORTKEY_API_KEY", // defaults to process.env["PORTKEY_API_KEY"]
-    virtualKey: "VIRTUAL_KEY" // Your Anthropic Virtual Key
-})
-
+  apiKey: 'PORTKEY_API_KEY', // defaults to process.env["PORTKEY_API_KEY"]
+  virtualKey: 'VIRTUAL_KEY', // Your Anthropic Virtual Key
+});
 ```
 
-### [​](https://portkey.ai/docs/integrations/llms/anthropic\#3-invoke-chat-completions-with-anthropic)  3\. Invoke Chat Completions with Anthropic
+### [​](https://portkey.ai/docs/integrations/llms/anthropic#3-invoke-chat-completions-with-anthropic) 3\. Invoke Chat Completions with Anthropic
 
 Use the Portkey instance to send requests to Anthropic. You can also override the virtual key directly in the API call if needed.
 
@@ -72,16 +71,15 @@ Copy
 
 ```js
 const chatCompletion = await portkey.chat.completions.create({
-    messages: [{ role: 'user', content: 'Say this is a test' }],
-    model: 'claude-3-opus-20240229',
-    max_tokens: 250 // Required field for Anthropic
+  messages: [{ role: 'user', content: 'Say this is a test' }],
+  model: 'claude-3-opus-20240229',
+  max_tokens: 250, // Required field for Anthropic
 });
 
 console.log(chatCompletion.choices[0].message.content);
-
 ```
 
-## [​](https://portkey.ai/docs/integrations/llms/anthropic\#how-to-use-anthropic-system-prompt)  How to Use Anthropic System Prompt
+## [​](https://portkey.ai/docs/integrations/llms/anthropic#how-to-use-anthropic-system-prompt) How to Use Anthropic System Prompt
 
 With Portkey, we make Anthropic models interoperable with the OpenAI schema and SDK methods. So, instead of passing the `system` prompt separately, you can pass it as part of the `messages` body, similar to OpenAI:
 
@@ -104,7 +102,7 @@ console.log(chatCompletion.choices);
 
 ```
 
-## [​](https://portkey.ai/docs/integrations/llms/anthropic\#vision-chat-completion-usage)  Vision Chat Completion Usage
+## [​](https://portkey.ai/docs/integrations/llms/anthropic#vision-chat-completion-usage) Vision Chat Completion Usage
 
 Portkey’s multimodal Gateway fully supports Anthropic’s vision models `claude-3-sonnet`, `claude-3-haiku`, `claude-3-opus`, and the latest `claude-3.5-sonnet`.
 Portkey follows the OpenAI schema, which means you can send your image data to Anthropic in the same format as OpenAI.
@@ -163,9 +161,9 @@ print(response)
 
 ```
 
-To prompt with pdfs, simply update the “url” field inside the “image\_url” object to this pattern: `data:application/pdf;base64,BASE64_PDF_DATA`
+To prompt with pdfs, simply update the “url” field inside the “image_url” object to this pattern: `data:application/pdf;base64,BASE64_PDF_DATA`
 
-#### [​](https://portkey.ai/docs/integrations/llms/anthropic\#api-reference)  [API Reference](https://portkey.ai/docs/integrations/llms/anthropic\#vision-chat-completion-usage)
+#### [​](https://portkey.ai/docs/integrations/llms/anthropic#api-reference) [API Reference](https://portkey.ai/docs/integrations/llms/anthropic#vision-chat-completion-usage)
 
 On completion, the request will get logged in Portkey where any image inputs or outputs can be viewed. Portkey will automatically render the base64 images to help you debug any issues quickly.
 
@@ -175,19 +173,19 @@ On completion, the request will get logged in Portkey where any image inputs or 
 \\
 Learn more about Vision capabilities](https://portkey.ai/docs/product/ai-gateway/multimodal-capabilities/vision)
 
-## [​](https://portkey.ai/docs/integrations/llms/anthropic\#prompt-caching)  Prompt Caching
+## [​](https://portkey.ai/docs/integrations/llms/anthropic#prompt-caching) Prompt Caching
 
 Portkey also works with Anthropic’s new prompt caching feature and helps you save time & money for all your Anthropic requests. Refer to this guide to learn how to enable it:
 
 [**Prompt Caching**](https://portkey.ai/docs/integrations/llms/anthropic/prompt-caching)
 
-## [​](https://portkey.ai/docs/integrations/llms/anthropic\#managing-anthropic-prompts)  Managing Anthropic Prompts
+## [​](https://portkey.ai/docs/integrations/llms/anthropic#managing-anthropic-prompts) Managing Anthropic Prompts
 
 You can manage all prompts to Anthropic in the [Prompt Library](https://portkey.ai/docs/product/prompt-library). All the current models of Anthropic are supported and you can easily start testing different prompts.
 
 Once you’re ready with your prompt, you can use the `portkey.prompts.completions.create` interface to use the prompt in your application.
 
-## [​](https://portkey.ai/docs/integrations/llms/anthropic\#next-steps)  Next Steps
+## [​](https://portkey.ai/docs/integrations/llms/anthropic#next-steps) Next Steps
 
 The complete list of features supported in the SDK are available on the link below.
 

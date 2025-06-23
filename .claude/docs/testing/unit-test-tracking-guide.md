@@ -69,7 +69,7 @@ Change the checkbox from `[ ]` to `[~]` to indicate work in progress:
   - **Priority**: Critical
   - **Test Coverage**: 0%
   - **Test File**: `_actions/generate-ideas.test.ts`
-  - **Test Cases**: [Detailed plan](test-cases/apps/web/app/home/(user)/ai/canvas/_actions/generate-ideas.test-cases.md)
+  - **Test Cases**: [Detailed plan](<test-cases/apps/web/app/home/(user)/ai/canvas/_actions/generate-ideas.test-cases.md>)
   - **Dependencies to Mock**: AI Gateway Client, Cost Tracking
   - **Estimated Effort**: 2-3 hours
 ```
@@ -108,6 +108,7 @@ Each test case file should include:
 # Test Cases: generate-ideas.ts
 
 ## Status Summary
+
 - **Created**: 2025-01-06
 - **Last Updated**: 2025-01-06
 - **Test Implementation Status**: In Progress
@@ -118,10 +119,10 @@ Each test case file should include:
 ## Test Cases Checklist
 
 ### Core Functionality
+
 - [x] **Test Case**: Valid prompt generates ideas array
   - **Status**: ✅ Complete
   - **Actual Effort**: 30 min
-  
 - [~] **Test Case**: Handles multiple idea generation
   - **Status**: 🟡 In Progress
   - **Notes**: Complex mock setup required
@@ -136,7 +137,7 @@ Each test case file should include:
   - **Priority**: Critical (Pure Functions)
   - **Test Coverage**: 95%
   - **Test File**: `_lib/utils/normalize-editor-content.test.ts`
-  - **Test Cases**: [Detailed plan](test-cases/apps/web/app/home/(user)/ai/canvas/_lib/utils/normalize-editor-content.test-cases.md)
+  - **Test Cases**: [Detailed plan](<test-cases/apps/web/app/home/(user)/ai/canvas/_lib/utils/normalize-editor-content.test-cases.md>)
   - **Dependencies to Mock**: None
   - **Estimated Effort**: 2 hours
   - **Actual Effort**: 2.5 hours ⏱️
@@ -158,6 +159,7 @@ Mark all test cases complete and add final notes.
 
 ```markdown
 ## Progress Overview
+
 - Total Files: 127
 - Files with Tests: 15
 - Coverage: 11.8%
@@ -178,6 +180,7 @@ When you discover new cases during implementation:
 
 ```markdown
 ### Core Functionality
+
 - [x] **Test Case**: Original test case
 - [x] **Test Case**: **Added**: Unicode character handling
   - **Discovered**: During implementation
@@ -252,7 +255,7 @@ create_test_case() {
   source_file=$1
   test_case_dir=".claude/docs/testing/test-cases/$(dirname $source_file)"
   test_case_file="$test_case_dir/$(basename $source_file .ts).test-cases.md"
-  
+
   mkdir -p "$test_case_dir"
   cp .claude/docs/testing/test-case-template.md "$test_case_file"
   echo "Created: $test_case_file"

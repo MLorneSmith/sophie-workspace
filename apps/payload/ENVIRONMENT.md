@@ -278,19 +278,23 @@ The Payload configuration includes serverless-optimized settings:
 ## Security Best Practices
 
 1. **Never commit secrets to version control**
+
    - Use `.env.local` for development
    - Set environment variables in hosting platform dashboard for production
 
 2. **Use strong PAYLOAD_SECRET**
+
    - Minimum 32 characters
    - Randomly generated
    - Different for development and production
 
 3. **Enable SSL in production**
+
    - Always use `sslmode=require` for hosted databases
    - Verify SSL certificate settings with your provider
 
 4. **Secure storage credentials**
+
    - Use separate R2/S3 credentials for development and production
    - Regularly rotate API tokens
    - Apply principle of least privilege for storage permissions
@@ -315,11 +319,13 @@ To verify your environment configuration:
    ```
 
 2. **Test database connection:**
+
    - Start your application
    - Check console logs for connection success/failure
    - Access Payload admin panel at `/admin`
 
 3. **Test storage configuration:**
+
    - Go to `/admin` and navigate to Media collection
    - Try uploading a test file
    - Verify file appears in your R2 bucket

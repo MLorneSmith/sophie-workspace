@@ -27,4 +27,4 @@ function Component() {
 
 Last updated 3 years ago
 
-* * *
+---

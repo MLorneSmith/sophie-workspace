@@ -37,6 +37,7 @@ describe('[Function/Module Name]', () => {
 #### Edge Cases
 
 - [ ] **Test Case**: Handles null/undefined input
+
   - **Input**: `null` or `undefined`
   - **Expected Output**: Graceful error or default value
   - **Status**: ❌ Not Started
@@ -82,12 +83,16 @@ describe('[Function/Module Name]', () => {
 ```typescript
 it('should [behavior description]', async () => {
   // Arrange
-  const input = { /* test data */ };
-  const expected = { /* expected result */ };
-  
+  const input = {
+    /* test data */
+  };
+  const expected = {
+    /* expected result */
+  };
+
   // Act
   const result = await functionName(input);
-  
+
   // Assert
   expect(result).toEqual(expected);
 });

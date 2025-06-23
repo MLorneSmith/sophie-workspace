@@ -20,8 +20,9 @@ This document outlines a strategic approach to implementing unit tests for the S
 **High Priority Test Targets**:
 
 - **Server Actions**:
+
   - `_actions/generate-ideas.ts` - AI content generation logic
-  - `_actions/generate-outline.ts` - Outline generation algorithms  
+  - `_actions/generate-outline.ts` - Outline generation algorithms
   - `_actions/convert-editor-data.ts` - Data transformation between formats
   - `_actions/simplify-text.ts` - Text processing and simplification
   - `_actions/update-building-block-title.action.ts` - Title management logic

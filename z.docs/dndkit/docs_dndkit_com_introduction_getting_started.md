@@ -1,6 +1,6 @@
 Before getting started, make sure you have followed the installation steps outlined in the [Installation guide](https://docs.dndkit.com/introduction/installation).
 
-### [Direct link to heading](https://docs.dndkit.com/introduction/getting-started\#context-provider)    Context provider
+### [Direct link to heading](https://docs.dndkit.com/introduction/getting-started#context-provider) Context provider
 
 First, we'll set up the general structure of the app. In order for the `useDraggable` and `useDroppable` hooks to function correctly, you'll need to ensure that the components where they are used are wrapped within a [`<DndContext />`](https://docs.dndkit.com/api-documentation/context-provider) component:
 
@@ -25,7 +25,7 @@ function App() {
 }
 ```
 
-### [Direct link to heading](https://docs.dndkit.com/introduction/getting-started\#droppable)    Droppable
+### [Direct link to heading](https://docs.dndkit.com/introduction/getting-started#droppable) Droppable
 
 ![](https://3633755066-files.gitbook.io/~/files/v0/b/gitbook-legacy-files/o/assets%2F-MMujhzqaYbBEEmDxnZO%2F-MNQc_e_FVewH2dAwjx9%2F-MNQdykNUAckcRaS-rWa%2Fdroppable-large.svg?alt=media&token=18af3a4e-b911-4149-82af-5d67c7198eea)
 
@@ -60,7 +60,7 @@ function Droppable(props) {
 }
 ```
 
-### [Direct link to heading](https://docs.dndkit.com/introduction/getting-started\#draggable)    Draggable
+### [Direct link to heading](https://docs.dndkit.com/introduction/getting-started#draggable) Draggable
 
 ![](https://3633755066-files.gitbook.io/~/files/v0/b/gitbook-legacy-files/o/assets%2F-MMujhzqaYbBEEmDxnZO%2F-MN0Kqdqp2CU1CxUV_hg%2F-MN0LCrhtymDDEQ6kaJj%2Fdraggable-large.svg?alt=media&token=16954bf4-1357-4890-9e99-a74ca336ddf1)
 
@@ -120,7 +120,7 @@ const style = {
 }
 ```
 
-### [Direct link to heading](https://docs.dndkit.com/introduction/getting-started\#assembling-all-the-pieces)    Assembling all the pieces
+### [Direct link to heading](https://docs.dndkit.com/introduction/getting-started#assembling-all-the-pieces) Assembling all the pieces
 
 Once you've set up your **Droppable** and **Draggable** components, you'll want to come back to where you set up your [`<DndContext>`](https://docs.dndkit.com/api-documentation/context-provider) component so you can add event listeners to be able to respond to the different events that are fired.
 
@@ -212,7 +212,7 @@ export function Draggable(props) {
 
 That's it! You've set up your first [**Droppable**](https://docs.dndkit.com/api-documentation/droppable) and [**Draggable**](https://docs.dndkit.com/api-documentation/draggable) components.
 
-### [Direct link to heading](https://docs.dndkit.com/introduction/getting-started\#pushing-things-a-bit-further)    Pushing things a bit further
+### [Direct link to heading](https://docs.dndkit.com/introduction/getting-started#pushing-things-a-bit-further) Pushing things a bit further
 
 The example we've set up above is a bit simplistic. In a real world example, you may have multiple droppable containers, and you may also want to be able to drag your items back out of the droppable containers once they've been dragged within them.
 
@@ -310,4 +310,4 @@ We hope this quick start guide has given you a glimpse of the simplicity and pow
 
 Last updated 2 years ago
 
-* * *
+---
