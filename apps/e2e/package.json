@@ -12,7 +12,7 @@
 		"test:mobile": "playwright test --project=\"Mobile Chrome\" --project=\"Mobile Safari\" --project=\"Mobile Firefox\"",
 		"test:tablet": "playwright test --project=\"Tablet Chrome\" --project=\"Tablet Safari\"",
 		"test:chrome": "playwright test --project=chromium",
-		"test:firefox": "playwright test --project=firefox", 
+		"test:firefox": "playwright test --project=firefox",
 		"test:safari": "playwright test --project=webkit",
 		"a11y:test": "playwright test tests/accessibility --reporter=html --output-dir=accessibility-report",
 		"a11y:report": "playwright show-report accessibility-report",
@@ -25,6 +25,7 @@
 	"devDependencies": {
 		"@axe-core/playwright": "^4.10.2",
 		"@playwright/test": "^1.52.0",
+		"@types/axe-core": "^3.0.6",
 		"@types/node": "^24.0.1",
 		"dotenv": "16.5.0",
 		"node-html-parser": "^7.0.1",

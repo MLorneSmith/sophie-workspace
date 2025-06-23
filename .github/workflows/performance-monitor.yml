@@ -1,0 +1,251 @@
+name: Performance Monitoring
+
+on:
+  workflow_run:
+    workflows: ["Deploy to Staging", "Deploy to Production"]
+    types:
+      - completed
+  schedule:
+    # Run daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to monitor'
+        required: true
+        type: choice
+        options:
+          - staging
+          - production
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  monitor-performance:
+    name: Monitor Performance Metrics
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Determine environment
+        id: env
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            ENV="${{ github.event.inputs.environment }}"
+          elif [[ "${{ github.event.workflow_run.name }}" == "Deploy to Production" ]]; then
+            ENV="production"
+          else
+            ENV="staging"
+          fi
+          
+          if [[ "$ENV" == "production" ]]; then
+            URL="https://slideheroes.com"
+          else
+            URL="https://staging.slideheroes.com"
+          fi
+          
+          echo "environment=$ENV" >> $GITHUB_OUTPUT
+          echo "url=$URL" >> $GITHUB_OUTPUT
+
+      - name: Run Lighthouse CI
+        uses: ./.github/workflows/lighthouse-ci.yml
+        id: lighthouse
+        with:
+          target_url: ${{ steps.env.outputs.url }}
+          environment: ${{ steps.env.outputs.environment }}
+
+      - name: Check for performance regression
+        id: regression
+        run: |
+          SCORE=${{ steps.lighthouse.outputs.performance-score }}
+          ENV=${{ steps.env.outputs.environment }}
+          
+          # Set thresholds based on environment
+          if [[ "$ENV" == "production" ]]; then
+            THRESHOLD=95
+            CRITICAL_THRESHOLD=90
+          else
+            THRESHOLD=90
+            CRITICAL_THRESHOLD=85
+          fi
+          
+          REGRESSION="none"
+          if (( $(echo "$SCORE < $CRITICAL_THRESHOLD" | bc -l) )); then
+            REGRESSION="critical"
+          elif (( $(echo "$SCORE < $THRESHOLD" | bc -l) )); then
+            REGRESSION="warning"
+          fi
+          
+          echo "regression=$REGRESSION" >> $GITHUB_OUTPUT
+          echo "threshold=$THRESHOLD" >> $GITHUB_OUTPUT
+          echo "critical_threshold=$CRITICAL_THRESHOLD" >> $GITHUB_OUTPUT
+
+      - name: Create performance issue if critical
+        if: steps.regression.outputs.regression == 'critical'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const score = ${{ steps.lighthouse.outputs.performance-score }};
+            const env = '${{ steps.env.outputs.environment }}';
+            const url = '${{ steps.env.outputs.url }}';
+            const threshold = ${{ steps.regression.outputs.critical_threshold }};
+            const reportUrl = '${{ steps.lighthouse.outputs.report-url }}';
+            
+            // Check if similar issue already exists
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: 'performance,ci/cd',
+              state: 'open'
+            });
+            
+            const existingIssue = issues.data.find(issue => 
+              issue.title.includes(`[${env.toUpperCase()}]`) && 
+              issue.title.includes('Performance Regression')
+            );
+            
+            if (!existingIssue) {
+              const issueBody = [
+                '## Performance Regression Alert',
+                '',
+                `Environment: ${env}`,
+                `URL: ${url}`,
+                `Current Score: ${score}/100`,
+                `Critical Threshold: ${threshold}/100`,
+                '',
+                '### Impact',
+                'The performance score has dropped below the critical threshold. This may impact:',
+                '- User experience and engagement',
+                '- SEO rankings',
+                '- Core Web Vitals compliance',
+                '',
+                '### Recommended Actions',
+                '1. Review recent deployments for performance impacts',
+                '2. Run local performance profiling',
+                '3. Check bundle sizes and asset optimization',
+                '4. Review third-party scripts and dependencies',
+                '',
+                '### Lighthouse Report',
+                `[View Full Report](${reportUrl})`,
+                '',
+                '### Automated Check Details',
+                `- Time: ${new Date().toISOString()}`,
+                `- Workflow Run: ${context.runId}`
+              ].join('\n');
+              
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `🚨 [${env.toUpperCase()}] Critical Performance Regression Detected`,
+                labels: ['performance', 'ci/cd', 'high-priority'],
+                body: issueBody
+              });
+            }
+
+      - name: Send Slack notification for regressions
+        if: steps.regression.outputs.regression != 'none' && env.SLACK_WEBHOOK_URL != ''
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          SCORE=${{ steps.lighthouse.outputs.performance-score }}
+          ENV=${{ steps.env.outputs.environment }}
+          URL=${{ steps.env.outputs.url }}
+          REGRESSION=${{ steps.regression.outputs.regression }}
+          
+          if [[ "$REGRESSION" == "critical" ]]; then
+            COLOR="danger"
+            EMOJI="🚨"
+            TEXT="Critical performance regression detected!"
+          else
+            COLOR="warning"
+            EMOJI="⚠️"
+            TEXT="Performance warning detected"
+          fi
+          
+          curl -X POST $SLACK_WEBHOOK_URL \
+            -H 'Content-Type: application/json' \
+            -d @- << EOF
+          {
+            "attachments": [{
+              "color": "$COLOR",
+              "title": "$EMOJI SlideHeroes Performance Alert - ${ENV^^}",
+              "text": "$TEXT",
+              "fields": [
+                {
+                  "title": "Environment",
+                  "value": "$ENV",
+                  "short": true
+                },
+                {
+                  "title": "Performance Score",
+                  "value": "$SCORE/100",
+                  "short": true
+                },
+                {
+                  "title": "URL",
+                  "value": "$URL",
+                  "short": false
+                }
+              ],
+              "footer": "Lighthouse CI",
+              "ts": $(date +%s)
+            }]
+          }
+          EOF
+
+  # Generate weekly performance report
+  weekly-report:
+    name: Generate Weekly Performance Report
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' && github.event.schedule == '0 2 * * 1'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate performance trend report
+        run: |
+          echo "## Weekly Performance Report - $(date +%Y-%m-%d)"
+          echo ""
+          echo "### Summary"
+          echo "This report tracks performance metrics across staging and production environments."
+          echo ""
+          echo "### Metrics Tracked"
+          echo "- Performance Score (target: >90%)"
+          echo "- Largest Contentful Paint (target: <2.5s)"
+          echo "- First Input Delay (target: <100ms)"
+          echo "- Cumulative Layout Shift (target: <0.1)"
+          echo ""
+          echo "### Action Items"
+          echo "Review performance trends and address any regressions."
+          
+          # TODO: Integrate with monitoring service to pull historical data
+
+      - name: Create weekly report issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const date = new Date().toISOString().split('T')[0];
+            
+            const reportBody = [
+              '## Weekly Performance Report',
+              '',
+              `This automated report summarizes performance metrics for the week ending ${date}.`,
+              '',
+              '### Next Steps',
+              '1. Review performance trends in Lighthouse CI dashboard',
+              '2. Address any identified regressions',
+              '3. Update performance budgets if needed',
+              '',
+              '*This is an automated report generated by the performance monitoring workflow.*'
+            ].join('\n');
+            
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `📊 Weekly Performance Report - ${date}`,
+              labels: ['performance', 'report'],
+              body: reportBody
+            });

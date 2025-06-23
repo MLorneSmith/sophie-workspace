@@ -169,6 +169,9 @@ importers:
       '@playwright/test':
         specifier: ^1.52.0
         version: 1.53.0
+      '@types/axe-core':
+        specifier: ^3.0.6
+        version: 3.0.6
       '@types/node':
         specifier: ^24.0.1
         version: 24.0.3
@@ -6854,6 +6857,10 @@ packages:
 
   '@types/aws-lambda@8.10.148':
     resolution: {integrity: sha512-JL+2cfkY9ODQeE06hOxSFNkafjNk4JRBgY837kpoq1GHDttq2U3BA9IzKOWxS4DLjKoymGB4i9uBrlCkjUl1yg==}
+
+  '@types/axe-core@3.0.6':
+    resolution: {integrity: sha512-ylZS0Xj8zg8zhYDEdetfU3/M4LUN93lY31G9OA5PiCBkIudggiisq+CCYNwc05ghlYs+vGSTNEHmgDoPZk1Wuw==}
+    deprecated: This is a stub types definition. axe-core provides its own type definitions, so you do not need this installed.
 
   '@types/babel__core@7.20.5':
     resolution: {integrity: sha512-qoQprZvz5wQFJwMDqeseRXWv3rqMvhgpbXFfVyWhbx9X47POIA6i/+dXefEmZKoAgOaTdaIgNSMqMIU61yRyzA==}
@@ -19658,6 +19665,10 @@ snapshots:
   '@types/aria-query@5.0.4': {}
 
   '@types/aws-lambda@8.10.148': {}
+
+  '@types/axe-core@3.0.6':
+    dependencies:
+      axe-core: 4.10.3
 
   '@types/babel__core@7.20.5':
     dependencies:
