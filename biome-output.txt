@@ -1,0 +1,437 @@
+apps/payload/src/lib/enhanced-api-wrapper.test.ts:6:1 assist/source/organizeImports  FIXABLE  ━━━━━━━━━━
+
+  × The imports and exports are not sorted.
+  
+    4 │  */
+    5 │ 
+  > 6 │ import { type NextRequest, NextResponse } from "next/server";
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    7 │ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+    8 │ import type { EnvironmentLogger } from "@kit/shared/logger";
+  
+  i Safe fix: Organize Imports (Biome)
+  
+      4   4 │    */
+      5   5 │   
+      6     │ - import·{·type·NextRequest,·NextResponse·}·from·"next/server";
+      7     │ - import·{·afterEach,·beforeEach,·describe,·expect,·it,·vi·}·from·"vitest";
+      8     │ - import·type·{·EnvironmentLogger·}·from·"@kit/shared/logger";
+          6 │ + import·type·{·EnvironmentLogger·}·from·"@kit/shared/logger";
+          7 │ + import·{·type·NextRequest,·NextResponse·}·from·"next/server";
+          8 │ + import·{·afterEach,·beforeEach,·describe,·expect,·it,·vi·}·from·"vitest";
+      9   9 │   
+     10  10 │   // Mock dependencies
+  
+
+apps/payload/src/lib/enhanced-api-wrapper.test.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Formatter would have printed the following content:
+  
+     80  80 │   		// Mock logger
+     81  81 │   		mockLogger = new MockEnvironmentLogger();
+     82     │ - → → vi.mocked(createEnvironmentLogger).mockReturnValue(mockLogger·as·unknown·as·EnvironmentLogger);
+         82 │ + → → vi.mocked(createEnvironmentLogger).mockReturnValue(
+         83 │ + → → → mockLogger·as·unknown·as·EnvironmentLogger,
+         84 │ + → → );
+     83  85 │   
+     84  86 │   		// Mock Date.now for consistent timing
+  
+
+apps/web/app/home/(user)/ai/blocks/_components/BlocksForm.tsx:3:8 lint/correctness/noUnusedImports  FIXABLE  ━━━━━━━━━━
+
+  × This import is unused.
+  
+    1 │ "use client";
+    2 │ 
+  > 3 │ import { createServiceLogger } from "@kit/shared/logger";
+      │        ^^^^^^^^^^^^^^^^^^^^^^^
+    4 │ import { Button } from "@kit/ui/button";
+    5 │ import {
+  
+  i Unused imports might be the result of an incomplete refactoring.
+  
+  i Unsafe fix: Remove the unused imports.
+  
+      1   1 │   "use client";
+      2     │ - 
+      3     │ - import·{·createServiceLogger·}·from·"@kit/shared/logger";
+          2 │ + 
+      4   3 │   import { Button } from "@kit/ui/button";
+      5   4 │   import {
+  
+
+apps/web/app/home/(user)/ai/blocks/_components/BlocksFormContext.tsx:3:8 lint/correctness/noUnusedImports  FIXABLE  ━━━━━━━━━━
+
+  × This import is unused.
+  
+    1 │ "use client";
+    2 │ 
+  > 3 │ import { createServiceLogger } from "@kit/shared/logger";
+      │        ^^^^^^^^^^^^^^^^^^^^^^^
+    4 │ import type React from "react";
+    5 │ import { createContext, useContext, useEffect, useState } from "react";
+  
+  i Unused imports might be the result of an incomplete refactoring.
+  
+  i Unsafe fix: Remove the unused imports.
+  
+      1   1 │   "use client";
+      2     │ - 
+      3     │ - import·{·createServiceLogger·}·from·"@kit/shared/logger";
+          2 │ + 
+      4   3 │   import type React from "react";
+      5   4 │   import { createContext, useContext, useEffect, useState } from "react";
+  
+
+apps/web/app/home/(user)/ai/canvas/_actions/generate-ideas.test.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Formatter would have printed the following content:
+  
+      5   5 │   import { beforeEach, describe, expect, it, vi } from "vitest";
+      6   6 │   import { z } from "zod";
+      7     │ - import·{
+      8     │ - → expectError,
+      9     │ - → successResult,
+     10     │ - }·from·"@/test/test-helpers";
+          7 │ + import·{·expectError,·successResult·}·from·"@/test/test-helpers";
+     11   8 │   import type { ActionResult } from "@/test/test-types";
+     12   9 │   
+  
+
+apps/web/app/home/(user)/ai/canvas/_actions/get-outline-suggestions.test.ts:115:11 lint/suspicious/noExplicitAny ━━━━━━━━━━
+
+  × Unexpected any. Specify a different type.
+  
+    113 │ 					error: null,
+    114 │ 				}),
+  > 115 │ 			})) as any;
+        │ 			       ^^^
+    116 │ 			vi.mocked(getSupabaseServerClient).mockReturnValue(
+    117 │ 				mockSupabaseClient as any,
+  
+  i any disables many type checking rules. Its use should be avoided.
+  
+
+apps/web/app/home/(user)/ai/canvas/_actions/get-outline-suggestions.test.ts:117:27 lint/suspicious/noExplicitAny ━━━━━━━━━━
+
+  × Unexpected any. Specify a different type.
+  
+    115 │ 			})) as any;
+    116 │ 			vi.mocked(getSupabaseServerClient).mockReturnValue(
+  > 117 │ 				mockSupabaseClient as any,
+        │ 				                      ^^^
+    118 │ 			);
+    119 │ 
+  
+  i any disables many type checking rules. Its use should be avoided.
+  
+
+apps/web/app/home/(user)/ai/canvas/_actions/get-outline-suggestions.test.ts:175:11 lint/suspicious/noExplicitAny ━━━━━━━━━━
+
+  × Unexpected any. Specify a different type.
+  
+    173 │ 					error: null,
+    174 │ 				}),
+  > 175 │ 			})) as any;
+        │ 			       ^^^
+    176 │ 			vi.mocked(getSupabaseServerClient).mockReturnValue(
+    177 │ 				mockSupabaseClient as any,
+  
+  i any disables many type checking rules. Its use should be avoided.
+  
+
+apps/web/app/home/(user)/ai/canvas/_actions/get-outline-suggestions.test.ts:177:27 lint/suspicious/noExplicitAny ━━━━━━━━━━
+
+  × Unexpected any. Specify a different type.
+  
+    175 │ 			})) as any;
+    176 │ 			vi.mocked(getSupabaseServerClient).mockReturnValue(
+  > 177 │ 				mockSupabaseClient as any,
+        │ 				                      ^^^
+    178 │ 			);
+    179 │ 
+  
+  i any disables many type checking rules. Its use should be avoided.
+  
+
+apps/web/app/home/(user)/ai/canvas/_actions/get-outline-suggestions.test.ts:241:11 lint/suspicious/noExplicitAny ━━━━━━━━━━
+
+  × Unexpected any. Specify a different type.
+  
+    239 │ 					error: null,
+    240 │ 				}),
+  > 241 │ 			})) as any;
+        │ 			       ^^^
+    242 │ 			vi.mocked(getSupabaseServerClient).mockReturnValue(
+    243 │ 				mockSupabaseClient as any,
+  
+  i any disables many type checking rules. Its use should be avoided.
+  
+
+apps/web/app/home/(user)/ai/canvas/_actions/get-outline-suggestions.test.ts:243:27 lint/suspicious/noExplicitAny ━━━━━━━━━━
+
+  × Unexpected any. Specify a different type.
+  
+    241 │ 			})) as any;
+    242 │ 			vi.mocked(getSupabaseServerClient).mockReturnValue(
+  > 243 │ 				mockSupabaseClient as any,
+        │ 				                      ^^^
+    244 │ 			);
+    245 │ 
+  
+  i any disables many type checking rules. Its use should be avoided.
+  
+
+apps/web/app/home/(user)/ai/canvas/_actions/get-outline-suggestions.test.ts:294:11 lint/suspicious/noExplicitAny ━━━━━━━━━━
+
+  × Unexpected any. Specify a different type.
+  
+    292 │ 					error: null,
+    293 │ 				}),
+  > 294 │ 			})) as any;
+        │ 			       ^^^
+    295 │ 			vi.mocked(getSupabaseServerClient).mockReturnValue(
+    296 │ 				mockSupabaseClient as any,
+  
+  i any disables many type checking rules. Its use should be avoided.
+  
+
+apps/web/app/home/(user)/ai/canvas/_components/editor-panel.tsx:92:13 lint/correctness/noUnusedVariables  FIXABLE  ━━━━━━━━━━
+
+  × This variable error is unused.
+  
+    90 │ 				// TODO: Async logger needed
+    91 │ 				// TODO: Fix logger call - was: info
+  > 92 │ 			} catch (error) {
+       │ 			         ^^^^^
+    93 │ 				// TODO: Async logger needed
+    94 │ 				// TODO: Fix logger call - was: error
+  
+  i Unused variables are often the result of an incomplete refactoring, typos, or other sources of bugs.
+  
+  i Unsafe fix: If this is intentional, prepend error with an underscore.
+  
+     90  90 │   				// TODO: Async logger needed
+     91  91 │   				// TODO: Fix logger call - was: info
+     92     │ - → → → }·catch·(error)·{
+         92 │ + → → → }·catch·(_error)·{
+     93  93 │   				// TODO: Async logger needed
+     94  94 │   				// TODO: Fix logger call - was: error
+  
+
+apps/web/app/home/(user)/ai/canvas/_components/editor-panel.tsx:109:12 lint/correctness/noUnusedVariables  FIXABLE  ━━━━━━━━━━
+
+  × This variable error is unused.
+  
+    107 │ 			// When implemented, this would use the same safety pattern as handleGenerateIdeas
+    108 │ 			// to safely get content from the editor
+  > 109 │ 		} catch (error) {
+        │ 		         ^^^^^
+    110 │ 			// TODO: Async logger needed
+    111 │ 			// TODO: Fix logger call - was: warn
+  
+  i Unused variables are often the result of an incomplete refactoring, typos, or other sources of bugs.
+  
+  i Unsafe fix: If this is intentional, prepend error with an underscore.
+  
+    107 107 │   			// When implemented, this would use the same safety pattern as handleGenerateIdeas
+    108 108 │   			// to safely get content from the editor
+    109     │ - → → }·catch·(error)·{
+        109 │ + → → }·catch·(_error)·{
+    110 110 │   			// TODO: Async logger needed
+    111 111 │   			// TODO: Fix logger call - was: warn
+  
+
+apps/web/app/home/(user)/ai/canvas/_components/editor-panel.tsx:143:16 lint/correctness/noUnusedVariables  FIXABLE  ━━━━━━━━━━
+
+  × This variable error is unused.
+  
+    141 │ 								resolve("");
+    142 │ 							}
+  > 143 │ 						} catch (error) {
+        │ 						         ^^^^^
+    144 │ 							// TODO: Async logger needed
+    145 │ 							// TODO: Fix logger call - was: warn
+  
+  i Unused variables are often the result of an incomplete refactoring, typos, or other sources of bugs.
+  
+  i Unsafe fix: If this is intentional, prepend error with an underscore.
+  
+    141 141 │   								resolve("");
+    142 142 │   							}
+    143     │ - → → → → → → }·catch·(error)·{
+        143 │ + → → → → → → }·catch·(_error)·{
+    144 144 │   							// TODO: Async logger needed
+    145 145 │   							// TODO: Fix logger call - was: warn
+  
+
+apps/web/app/home/(user)/ai/canvas/_components/editor-panel.tsx:149:14 lint/correctness/noUnusedVariables  FIXABLE  ━━━━━━━━━━
+
+  × This variable error is unused.
+  
+    147 │ 						}
+    148 │ 					});
+  > 149 │ 				} catch (error) {
+        │ 				         ^^^^^
+    150 │ 					// TODO: Async logger needed
+    151 │ 					// TODO: Fix logger call - was: warn
+  
+  i Unused variables are often the result of an incomplete refactoring, typos, or other sources of bugs.
+  
+  i Unsafe fix: If this is intentional, prepend error with an underscore.
+  
+    147 147 │   						}
+    148 148 │   					});
+    149     │ - → → → → }·catch·(error)·{
+        149 │ + → → → → }·catch·(_error)·{
+    150 150 │   					// TODO: Async logger needed
+    151 151 │   					// TODO: Fix logger call - was: warn
+  
+
+apps/web/app/home/(user)/ai/canvas/_components/editor-panel.tsx:176:12 lint/correctness/noUnusedVariables  FIXABLE  ━━━━━━━━━━
+
+  × This variable error is unused.
+  
+    174 │ 				setSuggestions(result.data.improvements);
+    175 │ 			}
+  > 176 │ 		} catch (error) {
+        │ 		         ^^^^^
+    177 │ 			// TODO: Async logger needed
+    178 │ 			// TODO: Fix logger call - was: error
+  
+  i Unused variables are often the result of an incomplete refactoring, typos, or other sources of bugs.
+  
+  i Unsafe fix: If this is intentional, prepend error with an underscore.
+  
+    174 174 │   				setSuggestions(result.data.improvements);
+    175 175 │   			}
+    176     │ - → → }·catch·(error)·{
+        176 │ + → → }·catch·(_error)·{
+    177 177 │   			// TODO: Async logger needed
+    178 178 │   			// TODO: Fix logger call - was: error
+  
+
+apps/web/app/home/(user)/ai/canvas/_components/editor-panel.tsx:267:22 lint/correctness/noUnusedVariables  FIXABLE  ━━━━━━━━━━
+
+  × This variable error is unused.
+  
+    265 │ 														);
+    266 │ 													}
+  > 267 │ 												} catch (error) {
+        │ 												         ^^^^^
+    268 │ 													// TODO: Async logger needed
+    269 │ 													// TODO: Fix logger call - was: error
+  
+  i Unused variables are often the result of an incomplete refactoring, typos, or other sources of bugs.
+  
+  i Unsafe fix: If this is intentional, prepend error with an underscore.
+  
+    265 265 │   														);
+    266 266 │   													}
+    267     │ - → → → → → → → → → → → → }·catch·(error)·{
+        267 │ + → → → → → → → → → → → → }·catch·(_error)·{
+    268 268 │   													// TODO: Async logger needed
+    269 269 │   													// TODO: Fix logger call - was: error
+  
+
+apps/web/app/home/(user)/ai/canvas/_components/editor/tiptap/tiptap-editor.tsx:278:23 lint/correctness/useExhaustiveDependencies  FIXABLE  ━━━━━━━━━━
+
+  × This hook does not specify all of its dependencies: setSaveStatus
+  
+    277 │ 		// Save content function with normalization
+  > 278 │ 		const saveContent = useCallback(
+        │ 		                    ^^^^^^^^^^^
+    279 │ 			async (editorContent: unknown) => {
+    280 │ 				try {
+  
+  i This dependency is not specified in the hook dependency list.
+  
+    289 │ 					// TODO: Async logger needed
+    290 │ 					// TODO: Fix logger call - was: error
+  > 291 │ 					setSaveStatus("error");
+        │ 					^^^^^^^^^^^^^
+    292 │ 					setTimeout(() => setSaveStatus("idle"), 3000);
+    293 │ 				}
+  
+  i This dependency is not specified in the hook dependency list.
+  
+    279 │ 			async (editorContent: unknown) => {
+    280 │ 				try {
+  > 281 │ 					setSaveStatus("saving");
+        │ 					^^^^^^^^^^^^^
+    282 │ 					// Normalize the content before saving to ensure it's valid
+    283 │ 					const normalizedContent = normalizeEditorContent(
+  
+  i This dependency is not specified in the hook dependency list.
+  
+    290 │ 					// TODO: Fix logger call - was: error
+    291 │ 					setSaveStatus("error");
+  > 292 │ 					setTimeout(() => setSaveStatus("idle"), 3000);
+        │ 					                 ^^^^^^^^^^^^^
+    293 │ 				}
+    294 │ 			},
+  
+  i Unsafe fix: Add the missing dependencies to the list.
+  
+    293 293 │   				}
+    294 294 │   			},
+    295     │ - → → → [updateContent,·sectionType],
+        295 │ + → → → [updateContent,·sectionType,·//·TODO:·Async·logger·needed
+        296 │ + → → → → → //·TODO:·Fix·logger·call·-·was:·error
+        297 │ + → → → → → setSaveStatus,·setSaveStatus,·setSaveStatus],
+    296 298 │   		);
+    297 299 │   
+  
+
+apps/web/app/home/(user)/ai/canvas/_components/editor/tiptap/tiptap-editor.tsx:320:3 lint/correctness/useExhaustiveDependencies  FIXABLE  ━━━━━━━━━━
+
+  × This hook does not specify all of its dependencies: initialContent
+  
+    319 │ 		// Update editor content when it changes, with improved error handling
+  > 320 │ 		useEffect(() => {
+        │ 		^^^^^^^^^
+    321 │ 			if (!editor || !initialContent) return;
+    322 │ 
+  
+  i This dependency is not specified in the hook dependency list.
+  
+    319 │ 		// Update editor content when it changes, with improved error handling
+    320 │ 		useEffect(() => {
+  > 321 │ 			if (!editor || !initialContent) return;
+        │ 			                ^^^^^^^^^^^^^^
+    322 │ 
+    323 │ 			try {
+  
+  i This dependency is not specified in the hook dependency list.
+  
+    333 │ 				const currentContent = editor.getJSON();
+    334 │ 				const currentContentStr = JSON.stringify(currentContent);
+  > 335 │ 				const initialContentStr = JSON.stringify(initialContent);
+        │ 				                                         ^^^^^^^^^^^^^^
+    336 │ 
+    337 │ 				// If content has changed, reset the editor completely to avoid ProseMirror model version conflicts
+  
+  i This dependency is not specified in the hook dependency list.
+  
+    349 │ 									editor.commands.clearContent();
+    350 │ 									// Use the normalized content to prevent model conflicts
+  > 351 │ 									editor.commands.setContent(initialContent);
+        │ 									                           ^^^^^^^^^^^^^^
+    352 │ 								} catch (_innerError) {
+    353 │ 									// TODO: Async logger needed
+  
+  i Unsafe fix: Add the missing dependencies to the list.
+  
+    383 │ → → },·[editor,·sectionType,·initialContent,·initialContent,·initialContent]);
+        │                            ++++++++++++++++++++++++++++++++++++++++++++++++   
+
+The number of diagnostics exceeds the limit allowed. Use --max-diagnostics to increase it.
+Diagnostics not shown: 192.
+Checked 1152 files in 269ms. No fixes applied.
+Found 187 errors.
+Found 17 warnings.
+check ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Some errors were emitted while running checks.
+  
+

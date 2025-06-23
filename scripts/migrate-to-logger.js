@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-// biome-ignore lint/suspicious/noConsole: Migration script - console output is required
 
 const fs = require("node:fs").promises;
 const _path = require("node:path");

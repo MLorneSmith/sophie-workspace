@@ -10,12 +10,6 @@ import type { SurveyQuestion } from "../../../../../../../payload/payload-types"
 import { ScaleQuestion } from "./scale-question";
 import { TextFieldQuestion } from "./text-field-question";
 
-interface QuestionOption {
-	id: string;
-	text: string;
-	score?: number;
-}
-
 type QuestionCardProps = {
 	question: SurveyQuestion;
 	onAnswer: (questionId: string, answer: string, score: number) => void;

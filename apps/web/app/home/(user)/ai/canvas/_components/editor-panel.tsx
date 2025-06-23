@@ -89,7 +89,7 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
 
 				// TODO: Async logger needed
 				// TODO: Fix logger call - was: info
-			} catch (error) {
+			} catch {
 				// TODO: Async logger needed
 				// TODO: Fix logger call - was: error
 			}
@@ -106,7 +106,7 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
 
 			// When implemented, this would use the same safety pattern as handleGenerateIdeas
 			// to safely get content from the editor
-		} catch (error) {
+		} catch {
 			// TODO: Async logger needed
 			// TODO: Fix logger call - was: warn
 		}
@@ -140,13 +140,13 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
 							} else {
 								resolve("");
 							}
-						} catch (error) {
+						} catch {
 							// TODO: Async logger needed
 							// TODO: Fix logger call - was: warn
 							resolve("");
 						}
 					});
-				} catch (error) {
+				} catch {
 					// TODO: Async logger needed
 					// TODO: Fix logger call - was: warn
 					resolve("");
@@ -173,7 +173,7 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
 			if (result.success && result.data?.improvements) {
 				setSuggestions(result.data.improvements);
 			}
-		} catch (error) {
+		} catch {
 			// TODO: Async logger needed
 			// TODO: Fix logger call - was: error
 			// Could add toast notification here if needed
@@ -264,7 +264,7 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
 															result.error || "Failed to regenerate outline",
 														);
 													}
-												} catch (error) {
+												} catch {
 													// TODO: Async logger needed
 													// TODO: Fix logger call - was: error
 												} finally {

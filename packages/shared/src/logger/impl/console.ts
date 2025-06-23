@@ -1,4 +1,3 @@
-// biome-ignore lint/suspicious/noConsole: This is the console logger implementation
 const Logger = {
 	// biome-ignore lint/suspicious/noConsole: Console logger implementation
 	info: console.info,

@@ -184,7 +184,7 @@ function groupLogsByDay(
 			date = new Date(log.request_timestamp)
 				.toISOString()
 				.split("T")[0] as string; // Get YYYY-MM-DD
-		} catch (error) {
+		} catch {
 			// TODO: Async logger needed
 			// (await getLogger()).error("Invalid timestamp:", {
 			// 	data: log.request_timestamp,

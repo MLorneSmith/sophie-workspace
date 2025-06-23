@@ -52,7 +52,10 @@ export function AppBreadcrumbs(props: {
 						);
 
 					return (
-						<Fragment key={`breadcrumb-${path}-${index}`}>
+						<Fragment
+							// biome-ignore lint/suspicious/noArrayIndexKey: Breadcrumb paths are stable and won't reorder
+							key={`breadcrumb-${path}-${index}`}
+						>
 							<BreadcrumbItem className={"capitalize lg:text-xs"}>
 								<If
 									condition={index < visiblePaths.length - 1}

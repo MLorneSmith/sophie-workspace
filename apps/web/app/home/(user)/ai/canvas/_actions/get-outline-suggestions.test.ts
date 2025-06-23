@@ -112,9 +112,11 @@ describe("getOutlineSuggestionsAction", () => {
 					},
 					error: null,
 				}),
-			})) as any;
+			})) as unknown;
 			vi.mocked(getSupabaseServerClient).mockReturnValue(
-				mockSupabaseClient as any,
+				mockSupabaseClient as unknown as ReturnType<
+					typeof getSupabaseServerClient
+				>,
 			);
 
 			// Act
@@ -172,9 +174,11 @@ describe("getOutlineSuggestionsAction", () => {
 					data: submissionData,
 					error: null,
 				}),
-			})) as any;
+			})) as unknown;
 			vi.mocked(getSupabaseServerClient).mockReturnValue(
-				mockSupabaseClient as any,
+				mockSupabaseClient as unknown as ReturnType<
+					typeof getSupabaseServerClient
+				>,
 			);
 
 			const expectedSuggestions = {
@@ -238,9 +242,11 @@ describe("getOutlineSuggestionsAction", () => {
 					},
 					error: null,
 				}),
-			})) as any;
+			})) as unknown;
 			vi.mocked(getSupabaseServerClient).mockReturnValue(
-				mockSupabaseClient as any,
+				mockSupabaseClient as unknown as ReturnType<
+					typeof getSupabaseServerClient
+				>,
 			);
 
 			vi.mocked(lexicalToTiptap).mockReturnValue(convertedTiptap);
@@ -291,9 +297,11 @@ describe("getOutlineSuggestionsAction", () => {
 					},
 					error: null,
 				}),
-			})) as any;
+			})) as unknown;
 			vi.mocked(getSupabaseServerClient).mockReturnValue(
-				mockSupabaseClient as any,
+				mockSupabaseClient as unknown as ReturnType<
+					typeof getSupabaseServerClient
+				>,
 			);
 
 			// Act
@@ -329,9 +337,11 @@ describe("getOutlineSuggestionsAction", () => {
 					},
 					error: null,
 				}),
-			})) as any;
+			})) as unknown;
 			vi.mocked(getSupabaseServerClient).mockReturnValue(
-				mockSupabaseClient as any,
+				mockSupabaseClient as unknown as ReturnType<
+					typeof getSupabaseServerClient
+				>,
 			);
 
 			// Act
@@ -367,9 +377,11 @@ describe("getOutlineSuggestionsAction", () => {
 					data: null,
 					error: { message: "Connection timeout" },
 				}),
-			})) as any;
+			})) as unknown;
 			vi.mocked(getSupabaseServerClient).mockReturnValue(
-				mockSupabaseClient as any,
+				mockSupabaseClient as unknown as ReturnType<
+					typeof getSupabaseServerClient
+				>,
 			);
 
 			// Act
@@ -397,9 +409,11 @@ describe("getOutlineSuggestionsAction", () => {
 					},
 					error: null,
 				}),
-			})) as any;
+			})) as unknown;
 			vi.mocked(getSupabaseServerClient).mockReturnValue(
-				mockSupabaseClient as any,
+				mockSupabaseClient as unknown as ReturnType<
+					typeof getSupabaseServerClient
+				>,
 			);
 
 			vi.mocked(getChatCompletion).mockRejectedValue(
@@ -431,9 +445,11 @@ describe("getOutlineSuggestionsAction", () => {
 					},
 					error: null,
 				}),
-			})) as any;
+			})) as unknown;
 			vi.mocked(getSupabaseServerClient).mockReturnValue(
-				mockSupabaseClient as any,
+				mockSupabaseClient as unknown as ReturnType<
+					typeof getSupabaseServerClient
+				>,
 			);
 
 			vi.mocked(getChatCompletion).mockResolvedValue({
@@ -479,9 +495,11 @@ describe("getOutlineSuggestionsAction", () => {
 					},
 					error: null,
 				}),
-			})) as any;
+			})) as unknown;
 			vi.mocked(getSupabaseServerClient).mockReturnValue(
-				mockSupabaseClient as any,
+				mockSupabaseClient as unknown as ReturnType<
+					typeof getSupabaseServerClient
+				>,
 			);
 
 			// Act
@@ -529,9 +547,11 @@ describe("getOutlineSuggestionsAction", () => {
 					},
 					error: null,
 				}),
-			})) as any;
+			})) as unknown;
 			vi.mocked(getSupabaseServerClient).mockReturnValue(
-				mockSupabaseClient as any,
+				mockSupabaseClient as unknown as ReturnType<
+					typeof getSupabaseServerClient
+				>,
 			);
 
 			// Act

@@ -44,6 +44,7 @@ const RadioGroupItemLabel = (
 	}>,
 ) => {
 	return (
+		// biome-ignore lint/a11y/noLabelWithoutControl: This is a wrapper component that contains RadioGroupItem as a child
 		<label
 			className={cn(
 				props.className,

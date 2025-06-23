@@ -1,6 +1,5 @@
 "use client";
 
-import { createServiceLogger } from "@kit/shared/logger";
 import { Button } from "@kit/ui/button";
 import {
 	Card,
@@ -28,7 +27,7 @@ import {
 import { type FormData, useSetupForm } from "./BlocksFormContext";
 
 // Initialize service logger
-const { getLogger } = createServiceLogger("HOME-(USER)");
+// const { getLogger } = createServiceLogger("HOME-(USER)");
 
 interface SetupFormProps {
 	userId: string; // For cache namespacing

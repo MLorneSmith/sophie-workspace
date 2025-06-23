@@ -215,7 +215,7 @@ export default function UIShowcasePage() {
 				role: "user",
 			},
 			factors: [],
-		} as any,
+		} as unknown as UserWorkspace["user"],
 		accounts: [
 			{
 				label: "Personal Account",

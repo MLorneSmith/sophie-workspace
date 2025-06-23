@@ -20,6 +20,7 @@ permissions:
   contents: write
   pull-requests: write
   issues: write
+  actions: write  # Required for artifact management
 
 jobs:
   # Check for dependency updates
@@ -40,8 +41,8 @@ jobs:
       - name: Check for updates
         id: updates
         run: |
-          pnpm update --dry-run > updates.txt
-          if [ -s updates.txt ]; then
+          pnpm outdated --format json > updates.json 2>/dev/null || true
+          if [ -s updates.json ] && [ "$(cat updates.json)" != "[]" ]; then
             echo "has-updates=true" >> $GITHUB_OUTPUT
           else
             echo "has-updates=false" >> $GITHUB_OUTPUT
@@ -77,9 +78,24 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run audit
+        id: audit
         run: |
-          pnpm audit --production
-          # TODO: Add Snyk scanning when configured
+          # Run audit and capture output and exit code
+          set +e
+          pnpm audit --production --json > audit-results.json 2>&1
+          AUDIT_EXIT_CODE=$?
+          set -e
+          
+          # Check if there are vulnerabilities
+          if [ $AUDIT_EXIT_CODE -ne 0 ]; then
+            echo "has-vulnerabilities=true" >> $GITHUB_OUTPUT
+            echo "❌ Security vulnerabilities found"
+            # Extract summary for the issue body
+            pnpm audit --production 2>&1 | head -200 > audit-summary.txt
+          else
+            echo "has-vulnerabilities=false" >> $GITHUB_OUTPUT
+            echo "✅ No security vulnerabilities found"
+          fi
 
       - name: Check for secrets
         run: |
@@ -87,15 +103,28 @@ jobs:
           # TODO: Add TruffleHog scanning
 
       - name: Create security report
-        if: failure()
+        if: steps.audit.outputs.has-vulnerabilities == 'true'
         uses: actions/github-script@v7
         with:
           script: |
+            const fs = require('fs');
+            let auditSummary = 'Security vulnerabilities were found during the weekly audit.\n\n';
+            
+            try {
+              // Read the audit summary if it exists
+              const summary = fs.readFileSync('audit-summary.txt', 'utf8');
+              auditSummary += '## Vulnerability Summary\n\n';
+              auditSummary += '```\n' + summary.substring(0, 3000) + '\n```\n\n';
+              auditSummary += 'Please review the full workflow logs for complete details.';
+            } catch (e) {
+              auditSummary += 'Please review the workflow logs for vulnerability details.';
+            }
+            
             await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
               title: `[Security] Weekly audit findings - ${new Date().toISOString().split('T')[0]}`,
-              body: 'Security vulnerabilities were found during the weekly audit. Please review the workflow logs.',
+              body: auditSummary,
               labels: ['security', 'maintenance']
             });
 
@@ -113,22 +142,34 @@ jobs:
             const cutoffDate = new Date();
             cutoffDate.setDate(cutoffDate.getDate() - daysToKeep);
 
-            const artifacts = await github.rest.actions.listArtifactsForRepo({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              per_page: 100
-            });
+            try {
+              const artifacts = await github.rest.actions.listArtifactsForRepo({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                per_page: 100
+              });
 
-            for (const artifact of artifacts.data.artifacts) {
-              const createdAt = new Date(artifact.created_at);
-              if (createdAt < cutoffDate) {
-                await github.rest.actions.deleteArtifact({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  artifact_id: artifact.id
-                });
-                console.log(`Deleted artifact: ${artifact.name}`);
+              let deletedCount = 0;
+              for (const artifact of artifacts.data.artifacts) {
+                const createdAt = new Date(artifact.created_at);
+                if (createdAt < cutoffDate) {
+                  try {
+                    await github.rest.actions.deleteArtifact({
+                      owner: context.repo.owner,
+                      repo: context.repo.repo,
+                      artifact_id: artifact.id
+                    });
+                    console.log(`✅ Deleted artifact: ${artifact.name}`);
+                    deletedCount++;
+                  } catch (deleteError) {
+                    console.error(`❌ Failed to delete artifact ${artifact.name}: ${deleteError.message}`);
+                  }
+                }
               }
+              console.log(`Cleanup complete. Deleted ${deletedCount} artifacts.`);
+            } catch (error) {
+              console.error(`❌ Failed to list artifacts: ${error.message}`);
+              console.log('This may be due to insufficient permissions. Continuing...');
             }
 
       - name: Report cleanup results
@@ -140,7 +181,7 @@ jobs:
     name: Maintenance Report
     runs-on: ubuntu-latest
     needs: [dependency-updates, security-audit, cleanup]
-    if: always()
+    if: always() && github.event_name == 'schedule'
     steps:
       - name: Generate report
         uses: actions/github-script@v7
@@ -158,11 +199,33 @@ jobs:
             body += `- Dependencies Check: ${results.dependencies === 'success' ? '✅' : '❌'} ${results.dependencies}\n`;
             body += `- Security Audit: ${results.security === 'success' ? '✅' : '❌'} ${results.security}\n`;
             body += `- Cleanup: ${results.cleanup === 'success' ? '✅' : '❌'} ${results.cleanup}\n`;
+            
+            // Add context about what each status means
+            body += '\n## Summary\n';
+            if (results.dependencies === 'success') {
+              body += '- ✅ Dependencies are up to date or updates are available (check for PRs)\n';
+            } else {
+              body += '- ❌ Dependencies check encountered an issue\n';
+            }
+            
+            if (results.security === 'success') {
+              body += '- ✅ Security audit completed (vulnerabilities may have been found - check for security issues)\n';
+            } else {
+              body += '- ❌ Security audit could not complete\n';
+            }
+            
+            if (results.cleanup === 'success') {
+              body += '- ✅ Cleanup tasks completed\n';
+            } else {
+              body += '- ❌ Cleanup tasks encountered issues (may be permissions related)\n';
+            }
+            
             body += '\n## Next Steps\n';
             body += '- Review any created PRs or issues\n';
             body += '- Address any security findings\n';
             body += '- Update dependencies as needed\n';
 
+            // Only create report for scheduled runs, not manual triggers
             await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,

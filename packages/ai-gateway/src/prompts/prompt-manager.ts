@@ -50,42 +50,20 @@ export function getAvailableTemplates(): string[] {
 }
 
 /**
- * @deprecated Use the standalone functions instead of PromptManager class
- * Prompt Manager class for AI Gateway
- * Provides a unified interface for managing prompt templates
+ * @deprecated Use the standalone functions instead of PromptManager
+ * Backward compatibility export for PromptManager
  */
-export class PromptManager {
+export const PromptManager = {
 	/**
 	 * @deprecated Use compileTemplate function directly
-	 * Compiles a template string by replacing variables with their values
-	 * @param template The template string with variables in the format {{variable_name}}
-	 * @param variables An object mapping variable names to their values
-	 * @returns The compiled template with variables replaced
 	 */
-	static compileTemplate(
-		template: string,
-		variables: Record<string, string>,
-	): string {
-		return compileTemplate(template, variables);
-	}
-
+	compileTemplate,
 	/**
 	 * @deprecated Use loadTemplate function directly
-	 * Loads a template by name
-	 * @param templateName The name of the template to load
-	 * @returns An array of chat messages for the template
-	 * @throws Error if the template is not found
 	 */
-	static loadTemplate(templateName: string): ChatMessage[] {
-		return loadTemplate(templateName);
-	}
-
+	loadTemplate,
 	/**
 	 * @deprecated Use getAvailableTemplates function directly
-	 * Gets the list of available template names
-	 * @returns Array of available template names
 	 */
-	static getAvailableTemplates(): string[] {
-		return getAvailableTemplates();
-	}
-}
+	getAvailableTemplates,
+};

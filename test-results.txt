@@ -1,0 +1,1474 @@
+
+> SlideHeroes@2.11.0 test /home/msmith/projects/2025slideheroes
+> turbo test --cache-dir=.turbo
+
+turbo 2.5.4
+
+• Packages in scope: @kit/accounts, @kit/admin, @kit/ai-gateway, @kit/analytics, @kit/auth, @kit/baselime, @kit/billing, @kit/billing-gateway, @kit/cms, @kit/cms-types, @kit/database-webhooks, @kit/email-templates, @kit/eslint-config, @kit/i18n, @kit/keystatic, @kit/lemon-squeezy, @kit/mailers, @kit/mailers-shared, @kit/monitoring, @kit/monitoring-core, @kit/monitoring-newrelic, @kit/next, @kit/nodemailer, @kit/notifications, @kit/otp, @kit/payload, @kit/posthog, @kit/prettier-config, @kit/resend, @kit/sentry, @kit/shared, @kit/stripe, @kit/supabase, @kit/team-accounts, @kit/testimonial, @kit/tsconfig, @kit/ui, @kit/wordpress, @slideheroes/playwright-mcp, dev-tool, payload, scripts, web, web-e2e
+• Running test in 44 packages
+• Remote caching disabled
+web-e2e:test: cache miss, executing e7ad9128848b26c8
+@kit/shared:test: cache hit, replaying logs aec8181eb5349fad
+@kit/shared:test: 
+@kit/shared:test: > @kit/shared@0.1.0 test /home/msmith/projects/2025slideheroes/packages/shared
+@kit/shared:test: > vitest
+@kit/shared:test: 
+@kit/shared:test: 
+@kit/shared:test:  RUN  v3.2.3 /home/msmith/projects/2025slideheroes/packages/shared
+@kit/shared:test: 
+@kit/shared:test:  ✓ tests/storyboardTypes.test.ts > Storyboard Type Definitions > TipTapDocument structure 1ms
+@kit/shared:test:  ✓ tests/storyboardTypes.test.ts > Storyboard Type Definitions > PresentationStructure validation 0ms
+@kit/shared:test:  ✓ tests/storyboardTypes.test.ts > Storyboard Type Definitions > SlideContentItem type guards 0ms
+@kit/shared:test: 
+@kit/shared:test:  Test Files  1 passed (1)
+@kit/shared:test:       Tests  3 passed (3)
+@kit/shared:test:    Start at  10:04:51
+@kit/shared:test:    Duration  463ms (transform 66ms, setup 0ms, collect 48ms, tests 4ms, environment 0ms, prepare 192ms)
+@kit/shared:test: 
+@kit/monitoring-newrelic:test: cache hit, replaying logs aa986bc73b808158
+@kit/monitoring-newrelic:test: 
+@kit/monitoring-newrelic:test: > @kit/monitoring-newrelic@0.1.0 test /home/msmith/projects/2025slideheroes/packages/monitoring/newrelic
+@kit/monitoring-newrelic:test: > vitest run
+@kit/monitoring-newrelic:test: 
+@kit/monitoring-newrelic:test: 
+@kit/monitoring-newrelic:test:  RUN  v2.1.9 /home/msmith/projects/2025slideheroes/packages/monitoring/newrelic
+@kit/monitoring-newrelic:test: 
+@kit/monitoring-newrelic:test:  ✓ src/index.test.ts (5 tests | 4 skipped) 1ms
+@kit/monitoring-newrelic:test: 
+@kit/monitoring-newrelic:test:  Test Files  1 passed (1)
+@kit/monitoring-newrelic:test:       Tests  1 passed | 4 todo (5)
+@kit/monitoring-newrelic:test:    Start at  10:16:13
+@kit/monitoring-newrelic:test:    Duration  276ms (transform 33ms, setup 0ms, collect 14ms, tests 1ms, environment 0ms, prepare 103ms)
+@kit/monitoring-newrelic:test: 
+payload:test: cache miss, executing 472e6fbbf039b9dc
+web:test: cache miss, executing 15983ae209d2cf13
+web-e2e:test: 
+web-e2e:test: > web-e2e@1.0.0 test /home/msmith/projects/2025slideheroes/apps/e2e
+web-e2e:test: > playwright test --max-failures=1
+web-e2e:test: 
+payload:test: 
+payload:test: > payload@3.43.0 test /home/msmith/projects/2025slideheroes/apps/payload
+payload:test: > vitest
+payload:test: 
+web:test: 
+web:test: > web@0.1.0 test /home/msmith/projects/2025slideheroes/apps/web
+web:test: > vitest
+web:test: 
+payload:test: 
+payload:test:  RUN  v3.2.3 /home/msmith/projects/2025slideheroes/apps/payload
+payload:test: 
+web:test: 
+web:test:  RUN  v3.2.3 /home/msmith/projects/2025slideheroes/apps/web
+web:test: 
+web-e2e:test: 
+web-e2e:test: Running 37 tests using 12 workers
+web-e2e:test: 
+payload:test:  ✓ src/lib/enhanced-api-wrapper.test.ts > EnhancedAPIManager > Constructor and Initialization > should initialize metrics correctly 2ms
+payload:test:  ✓ src/lib/enhanced-api-wrapper.test.ts > EnhancedAPIManager > Constructor and Initialization > should create environment logger with correct namespace 1ms
+payload:test:  ✓ src/lib/enhanced-api-wrapper.test.ts > EnhancedAPIManager > Request ID Generation > should generate unique request IDs with correct format 4ms
+payload:test:  ✓ src/lib/enhanced-api-wrapper.test.ts > EnhancedAPIManager > Client Information Handling > should handle requests with various client headers 2ms
+payload:test:  ✓ src/lib/enhanced-api-wrapper.test.ts > EnhancedAPIManager > Client Information Handling > should handle requests without client headers 1ms
+payload:test:  ✓ src/lib/enhanced-api-wrapper.test.ts > EnhancedAPIManager > Enhanced Handler Creation - Successful Flow > should wrap original handler successfully 1ms
+payload:test:  ✓ src/lib/enhanced-api-wrapper.test.ts > EnhancedAPIManager > Enhanced Handler Creation - Successful Flow > should update metrics for successful requests 0ms
+payload:test:  ✓ src/lib/enhanced-api-wrapper.test.ts > EnhancedAPIManager > Enhanced Handler Creation - Successful Flow > should log incoming requests 1ms
+payload:test:  ✓ src/lib/enhanced-api-wrapper.test.ts > EnhancedAPIManager > Enhanced Handler Creation - Successful Flow > should log successful responses with timing 1ms
+payload:test:  ✓ src/lib/enhanced-api-wrapper.test.ts > EnhancedAPIManager > Enhanced Handler Creation - Successful Flow > should add debug headers in development environment 1ms
+payload:test:  ✓ src/lib/enhanced-api-wrapper.test.ts > EnhancedAPIManager > Enhanced Handler Creation - Error Handling > should handle thrown errors and return appropriate response 5ms
+payload:test:  ✓ src/lib/enhanced-api-wrapper.test.ts > EnhancedAPIManager > Enhanced Handler Creation - Error Handling > should update metrics for failed requests 1ms
+payload:test:  ✓ src/lib/enhanced-api-wrapper.test.ts > EnhancedAPIManager > Enhanced Handler Creation - Error Handling > should log errors with context 1ms
+payload:test:  ✓ src/lib/enhanced-api-wrapper.test.ts > EnhancedAPIManager > Enhanced Handler Creation - Error Handling > should add error to error log 1ms
+payload:test:  × src/lib/enhanced-api-wrapper.test.ts > EnhancedAPIManager > Metrics Management > should calculate moving average response time correctly 101ms
+payload:test:    → expected 0 to be greater than 0
+payload:test:  ✓ src/lib/enhanced-api-wrapper.test.ts > EnhancedAPIManager > Metrics Management > should handle success and failure counts accurately 2ms
+payload:test:  ✓ src/lib/enhanced-api-wrapper.test.ts > EnhancedAPIManager > Error Log Management > should maintain maximum error log size 34ms
+payload:test:  ✓ src/lib/enhanced-api-wrapper.test.ts > EnhancedAPIManager > Error Log Management > should preserve most recent errors when exceeding limit 33ms
+payload:test:  ✓ src/lib/enhanced-api-wrapper.test.ts > EnhancedAPIManager > Error Response Creation > should detect 404 errors correctly 1ms
+payload:test:  ✓ src/lib/enhanced-api-wrapper.test.ts > EnhancedAPIManager > Error Response Creation > should detect 401 errors correctly 1ms
+payload:test:  ✓ src/lib/enhanced-api-wrapper.test.ts > EnhancedAPIManager > Error Response Creation > should detect 403 errors correctly 1ms
+payload:test:  ✓ src/lib/enhanced-api-wrapper.test.ts > EnhancedAPIManager > Error Response Creation > should detect 400 errors correctly 15ms
+payload:test:  ✓ src/lib/enhanced-api-wrapper.test.ts > EnhancedAPIManager > Error Response Creation > should default to 500 for unknown errors 2ms
+payload:test:  ✓ src/lib/enhanced-api-wrapper.test.ts > EnhancedAPIManager > Error Response Creation > should include detailed messages in development 1ms
+payload:test:  ✓ src/lib/enhanced-api-wrapper.test.ts > EnhancedAPIManager > Error Response Creation > should mask error details in production 1ms
+payload:test:  ✓ src/lib/enhanced-api-wrapper.test.ts > EnhancedAPIManager > Public API Methods > should return complete metrics object 1ms
+payload:test:  ✓ src/lib/enhanced-api-wrapper.test.ts > EnhancedAPIManager > Public API Methods > should return limited error list with getRecentErrors 2ms
+payload:test:  ✓ src/lib/enhanced-api-wrapper.test.ts > EnhancedAPIManager > Public API Methods > should clear error log 1ms
+payload:test:  ✓ src/lib/enhanced-api-wrapper.test.ts > EnhancedAPIManager > Module-Level Functions > should return singleton instance 0ms
+payload:test:  ✓ src/lib/enhanced-api-wrapper.test.ts > EnhancedAPIManager > Module-Level Functions > should create enhanced Payload handlers 1ms
+payload:test:  ✓ src/lib/enhanced-api-wrapper.test.ts > EnhancedAPIManager > Module-Level Functions > should export getAPIMetrics function 0ms
+payload:test:  ✓ src/lib/enhanced-api-wrapper.test.ts > EnhancedAPIManager > Module-Level Functions > should export getRecentAPIErrors function 0ms
+payload:test:  ✓ src/lib/enhanced-api-wrapper.test.ts > EnhancedAPIManager > Module-Level Functions > should export clearAPIErrorLog function 0ms
+payload:test:  ✓ src/lib/enhanced-api-wrapper.test.ts > EnhancedAPIManager > Edge Cases > should handle requests with malformed URLs gracefully 1ms
+payload:test:  ✓ src/lib/enhanced-api-wrapper.test.ts > EnhancedAPIManager > Edge Cases > should handle non-Error thrown objects 1ms
+payload:test:  ✓ src/lib/request-deduplication.test.ts > RequestDeduplicationManager > Constructor and Configuration > should initialize with default configuration 5ms
+payload:test:  ✓ src/lib/request-deduplication.test.ts > RequestDeduplicationManager > Constructor and Configuration > should accept custom configuration 1ms
+payload:test:  ✓ src/lib/request-deduplication.test.ts > RequestDeduplicationManager > Constructor and Configuration > should start cleanup interval on initialization 1ms
+payload:test:  ✓ src/lib/request-deduplication.test.ts > RequestDeduplicationManager > Request Fingerprinting > should generate consistent fingerprints for identical requests 6ms
+payload:test:  ✓ src/lib/request-deduplication.test.ts > RequestDeduplicationManager > Request Fingerprinting > should generate different fingerprints for different requests 3ms
+payload:test:  ✓ src/lib/request-deduplication.test.ts > RequestDeduplicationManager > Request Fingerprinting > should include relevant headers in fingerprint 3ms
+payload:test:  ✓ src/lib/request-deduplication.test.ts > RequestDeduplicationManager > Request Fingerprinting > should include query parameters in fingerprint 3ms
+payload:test:  ✓ src/lib/request-deduplication.test.ts > RequestDeduplicationManager > Request Fingerprinting > should handle empty/missing body gracefully 2ms
+payload:test:  × src/lib/request-deduplication.test.ts > RequestDeduplicationManager > Deduplication Decision Logic > should only deduplicate POST/PUT/PATCH requests 4ms
+payload:test:    → expected "spy" to be called 4 times, but got 3 times
+payload:test:  ✓ src/lib/request-deduplication.test.ts > RequestDeduplicationManager > Deduplication Decision Logic > should only deduplicate protected endpoints 2ms
+payload:test:  ✓ src/lib/request-deduplication.test.ts > RequestDeduplicationManager > Deduplication Decision Logic > should handle endpoint matching with includes/endsWith logic 1ms
+payload:test:  ✓ src/lib/request-deduplication.test.ts > RequestDeduplicationManager > Cache Management > should cache successful responses with correct structure 2ms
+payload:test:  ✓ src/lib/request-deduplication.test.ts > RequestDeduplicationManager > Cache Management > should return cached response when within cache duration 2ms
+payload:test:  ✓ src/lib/request-deduplication.test.ts > RequestDeduplicationManager > Cache Management > should expire cached responses after cache duration 2ms
+payload:test:  ✓ src/lib/request-deduplication.test.ts > RequestDeduplicationManager > Cache Management > should remove cache entry on handler error 3ms
+payload:test:  ✓ src/lib/request-deduplication.test.ts > RequestDeduplicationManager > Cache Management > should increment request count for cache hits 2ms
+payload:test:  ✓ src/lib/request-deduplication.test.ts > RequestDeduplicationManager > Concurrent Request Handling > should handle concurrent identical requests 103ms
+payload:test:  ✓ src/lib/request-deduplication.test.ts > RequestDeduplicationManager > Concurrent Request Handling > should time out waiting for ongoing request 2ms
+payload:test:  ✓ src/lib/request-deduplication.test.ts > RequestDeduplicationManager > Cleanup and Maintenance > should automatically clean up expired entries 2ms
+payload:test:  ✓ src/lib/request-deduplication.test.ts > RequestDeduplicationManager > Cleanup and Maintenance > should limit cache size by removing oldest entries 2ms
+payload:test:  × src/lib/request-deduplication.test.ts > RequestDeduplicationManager > Statistics and Monitoring > should return accurate cache statistics 5ms
+payload:test:    → expected 2 to be 1 // Object.is equality
+payload:test:  × src/lib/request-deduplication.test.ts > RequestDeduplicationManager > Statistics and Monitoring > should track duplicate request counts correctly 2ms
+payload:test:    → expected +0 to be 3 // Object.is equality
+payload:test:  × src/lib/request-deduplication.test.ts > RequestDeduplicationManager > Logging System > should log initialization message 7ms
+payload:test:    → expected "spy" to be called with arguments: [ StringContaining "[REQ-DEDUP-INFO]" ][90m
+payload:test: 
+payload:test: Number of calls: [1m0[22m
+payload:test: [39m
+payload:test:  × src/lib/request-deduplication.test.ts > RequestDeduplicationManager > Logging System > should log cache hits with appropriate level 3ms
+payload:test:    → expected "spy" to be called with arguments: [ StringContaining{…} ][90m
+payload:test: 
+payload:test: Number of calls: [1m0[22m
+payload:test: [39m
+payload:test:  ✓ src/lib/request-deduplication.test.ts > RequestDeduplicationManager > Singleton Pattern and Global State > should return same instance from getDeduplicationManager 1ms
+payload:test:  ✓ src/lib/request-deduplication.test.ts > RequestDeduplicationManager > Singleton Pattern and Global State > should cleanup global state correctly 5ms
+payload:test:  ✓ src/lib/request-deduplication.test.ts > RequestDeduplicationManager > Wrapper Functions > should create functional wrapper with withRequestDeduplication 2ms
+payload:test:  ✓ src/lib/request-deduplication.test.ts > RequestDeduplicationManager > Wrapper Functions > should work as middleware with requestDeduplicationMiddleware 3ms
+payload:test:  ✓ src/lib/request-deduplication.test.ts > RequestDeduplicationManager > Error Handling and Edge Cases > should handle request body read failures gracefully 2ms
+payload:test:  ✓ src/lib/request-deduplication.test.ts > RequestDeduplicationManager > Error Handling and Edge Cases > should propagate handler errors correctly 1ms
+payload:test:  × src/lib/request-deduplication.test.ts > RequestDeduplicationManager > Integration Scenarios > should handle complete request lifecycle correctly 6ms
+payload:test:    → Response.clone: Body has already been consumed.
+payload:test:  ✓ src/lib/request-deduplication.test.ts > RequestDeduplicationManager > Integration Scenarios > should shutdown correctly 5ms
+payload:test:  ✓ src/lib/request-deduplication.test.ts > Module-level functions > should export getDeduplicationStats function 1ms
+payload:test:  ✓ src/lib/request-deduplication.test.ts > Module-level functions > should export cleanupDeduplication function 0ms
+payload:test:  ✓ src/lib/storage-url-generators.test.ts > Storage URL Generators > generateMediaURL (R2) > should generate R2 media URL with custom base URL 1ms
+payload:test:  ✓ src/lib/storage-url-generators.test.ts > Storage URL Generators > generateMediaURL (R2) > should generate R2 media URL from bucket settings when no custom base URL 1ms
+payload:test:  ✓ src/lib/storage-url-generators.test.ts > Storage URL Generators > generateMediaURL (R2) > should handle empty filename 0ms
+payload:test:  ✓ src/lib/storage-url-generators.test.ts > Storage URL Generators > generateMediaURL (R2) > should handle special characters in filename 0ms
+payload:test:  ✓ src/lib/storage-url-generators.test.ts > Storage URL Generators > generateDownloadsURL (R2) > should generate R2 downloads URL with custom base URL 0ms
+payload:test:  ✓ src/lib/storage-url-generators.test.ts > Storage URL Generators > generateDownloadsURL (R2) > should generate R2 downloads URL from bucket settings when no custom base URL 0ms
+payload:test:  ✓ src/lib/storage-url-generators.test.ts > Storage URL Generators > generateS3MediaURL > should generate S3 media URL with custom base URL 0ms
+payload:test:  ✓ src/lib/storage-url-generators.test.ts > Storage URL Generators > generateS3MediaURL > should generate S3 media URL from bucket settings when no custom base URL 0ms
+payload:test:  ✓ src/lib/storage-url-generators.test.ts > Storage URL Generators > generateS3MediaURL > should handle missing S3 environment variables gracefully 0ms
+payload:test:  ✓ src/lib/storage-url-generators.test.ts > Storage URL Generators > generateS3DownloadsURL > should generate S3 downloads URL with custom base URL 0ms
+payload:test:  ✓ src/lib/storage-url-generators.test.ts > Storage URL Generators > generateS3DownloadsURL > should generate S3 downloads URL with downloads prefix when no custom base URL 0ms
+payload:test:  ✓ src/lib/storage-url-generators.test.ts > Storage URL Generators > getURLGenerator (Factory Function) > should return R2 media generator for r2/media combination 0ms
+payload:test:  ✓ src/lib/storage-url-generators.test.ts > Storage URL Generators > getURLGenerator (Factory Function) > should return R2 downloads generator for r2/downloads combination 0ms
+payload:test:  ✓ src/lib/storage-url-generators.test.ts > Storage URL Generators > getURLGenerator (Factory Function) > should return S3 media generator for s3/media combination 0ms
+payload:test:  ✓ src/lib/storage-url-generators.test.ts > Storage URL Generators > getURLGenerator (Factory Function) > should return S3 downloads generator for s3/downloads combination 0ms
+payload:test:  ✓ src/lib/storage-url-generators.test.ts > Storage URL Generators > getURLGenerator (Factory Function) > should return fallback generator for unknown storage type 0ms
+payload:test:  ✓ src/lib/storage-url-generators.test.ts > Storage URL Generators > getURLGenerator (Factory Function) > should return fallback generator for unhandled storage type combination 0ms
+payload:test:  × src/lib/storage-url-generators.test.ts > Storage URL Generators > createURLGenerator (Enhanced Generator) > should handle missing filename with warning log and placeholder URL 2ms
+payload:test:    → expected "spy" to be called with arguments: [ Array(1) ][90m
+payload:test: 
+payload:test: Number of calls: [1m0[22m
+payload:test: [39m
+payload:test:  × src/lib/storage-url-generators.test.ts > Storage URL Generators > createURLGenerator (Enhanced Generator) > should handle undefined filename with warning log and placeholder URL 1ms
+payload:test:    → expected "spy" to be called with arguments: [ Array(1) ][90m
+payload:test: 
+payload:test: Number of calls: [1m0[22m
+payload:test: [39m
+payload:test:  × src/lib/storage-url-generators.test.ts > Storage URL Generators > createURLGenerator (Enhanced Generator) > should log generated URL in development mode 1ms
+payload:test:    → expected "spy" to be called with arguments: [ Array(1) ][90m
+payload:test: 
+payload:test: Number of calls: [1m0[22m
+payload:test: [39m
+payload:test:  ✓ src/lib/storage-url-generators.test.ts > Storage URL Generators > createURLGenerator (Enhanced Generator) > should not log in production mode 1ms
+payload:test:  × src/lib/storage-url-generators.test.ts > Storage URL Generators > createURLGenerator (Enhanced Generator) > should handle generator function errors with error log and fallback URL 2ms
+payload:test:    → expected "spy" to be called with arguments: [ …(2) ][90m
+payload:test: 
+payload:test: Number of calls: [1m0[22m
+payload:test: [39m
+payload:test:  × src/lib/storage-url-generators.test.ts > Storage URL Generators > createURLGenerator (Enhanced Generator) > should handle error with undefined filename (missing filename branch) 2ms
+payload:test:    → expected "spy" to be called at least once
+payload:test:  × src/lib/storage-url-generators.test.ts > Storage URL Generators > createURLGenerator (Enhanced Generator) > should handle error with valid filename (error fallback branch) 1ms
+payload:test:    → expected "spy" to be called at least once
+payload:test:  ✓ src/lib/storage-url-generators.test.ts > Storage URL Generators > Edge Cases > should handle Unicode filenames correctly 0ms
+payload:test:  ✓ src/lib/storage-url-generators.test.ts > Storage URL Generators > Edge Cases > should handle very long filenames 0ms
+payload:test:  × src/lib/storage-url-generators.test.ts > Storage URL Generators > Edge Cases > should handle null filename in enhanced generator 1ms
+payload:test:    → expected "spy" to be called at least once
+payload:test:  ✓ src/lib/storage-url-generators.test.ts > Storage URL Generators > Error Scenarios > should propagate R2 config errors in basic generators 1ms
+payload:test:  ✓ src/lib/storage-url-generators.test.ts > Storage URL Generators > Error Scenarios > should handle environment variable access gracefully in S3 generators 0ms
+payload:test:  ✓ src/lib/storage-url-generators.test.ts > Storage URL Generators > Integration Scenarios > should handle complete R2 workflow with mixed configurations 1ms
+payload:test:  ✓ src/lib/storage-url-generators.test.ts > Storage URL Generators > Integration Scenarios > should handle complete S3 workflow with environment variables 0ms
+payload:test:  × src/lib/storage-url-generators.test.ts > Storage URL Generators > Integration Scenarios > should work end-to-end with factory and enhanced generator 1ms
+payload:test:    → expected "spy" to be called with arguments: [ Array(1) ][90m
+payload:test: 
+payload:test: Number of calls: [1m0[22m
+payload:test: [39m
+web-e2e:test: [1A[2K[1/37] [chromium] › tests/admin/admin.spec.ts:26:6 › Admin Auth flow without MFA › will redirect to 404 for admin users without MFA
+web-e2e:test: [1A[2K[2/37] [chromium] › tests/account/account.spec.ts:37:6 › Account Settings › user can update their password
+web-e2e:test: [1A[2K[3/37] [chromium] › tests/authentication/auth.spec.ts:80:6 › Protected routes › when logged out, redirects to the correct page after sign in
+web-e2e:test: [1A[2K[4/37] [chromium] › tests/authentication/auth.spec.ts:10:6 › Auth flow › will sign-up and redirect to the home page
+web-e2e:test: [1A[2K[5/37] [chromium] › tests/authentication/auth.spec.ts:148:6 › Last auth method tracking › should show existing account hint on sign-up page after previous sign-in
+web-e2e:test: [1A[2K[6/37] [chromium] › tests/admin/admin.spec.ts:9:6 › Admin Auth flow without MFA › will return a 404 for non-admin users
+web-e2e:test: [1A[2K[7/37] [chromium] › tests/admin/admin.spec.ts:49:7 › Admin › Admin Dashboard › displays all stat cards
+web-e2e:test: [1A[2K[8/37] [chromium] › tests/authentication/auth.spec.ts:131:6 › Last auth method tracking › should show last used method hint on sign-in page after password sign-in
+web-e2e:test: [1A[2K[9/37] [chromium] › tests/authentication/auth.spec.ts:38:6 › Auth flow › will sign-in with the correct credentials
+web-e2e:test: [1A[2K[10/37] [chromium] › tests/authentication/auth.spec.ts:61:6 › Auth flow › will sign out using the dropdown
+web-e2e:test: [1A[2K[11/37] [chromium] › tests/account/account.spec.ts:17:6 › Account Settings › user can update their profile name
+web-e2e:test: [1A[2K[12/37] [chromium] › tests/admin/admin.spec.ts:98:7 › Admin › Personal Account Management › displays personal account details
+web-e2e:test: [1A[2K[13/37] [chromium] › tests/admin/admin.spec.ts:107:7 › Admin › Personal Account Management › ban user flow
+web-e2e:test: [1A[2K[14/37] [chromium] › tests/admin/admin.spec.ts:143:7 › Admin › Personal Account Management › reactivate user flow
+web-e2e:test: [1A[2K[15/37] [chromium] › tests/admin/admin.spec.ts:180:7 › Admin › Personal Account Management › impersonate user flow
+web-e2e:test: [1A[2K[16/37] [chromium] › tests/admin/admin.spec.ts:193:7 › Admin › Personal Account Management › delete user flow
+web-e2e:test: [1A[2K[17/37] [chromium] › tests/admin/admin.spec.ts:271:7 › Admin › Team Account Management › displays team account details
+web-e2e:test: [1A[2K[18/37] [chromium] › tests/admin/admin.spec.ts:278:7 › Admin › Team Account Management › delete team account flow
+web-e2e:test: [1A[2K[19/37] [chromium] › tests/account/account.spec.ts:55:6 › Account Deletion › user can delete their own account
+web-e2e:test: [1A[2K[20/37] [chromium] › tests/account/account.spec.ts:31:6 › Account Settings › user can update their email
+web-e2e:test: [1A[2K[21/37] [chromium] › tests/authentication/auth.spec.ts:97:6 › Protected routes › will redirect to the sign-in page if not authenticated
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/powerpoint/pptx-generator.test.ts > PptxGenerator > Constructor & Initialization > should initialize PptxGenJS instance correctly 7ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/powerpoint/pptx-generator.test.ts > PptxGenerator > Constructor & Initialization > should set up logger correctly with placeholder 0ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/powerpoint/pptx-generator.test.ts > PptxGenerator > Core PowerPoint Generation > should generate valid PowerPoint from complete storyboard 1ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/powerpoint/pptx-generator.test.ts > PptxGenerator > Core PowerPoint Generation > should set presentation metadata correctly 0ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/powerpoint/pptx-generator.test.ts > PptxGenerator > Core PowerPoint Generation > should process slides in correct order 0ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/powerpoint/pptx-generator.test.ts > PptxGenerator > Core PowerPoint Generation > should handle empty storyboard gracefully 0ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/powerpoint/pptx-generator.test.ts > PptxGenerator > Core PowerPoint Generation > should handle missing storyboard title gracefully 0ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/powerpoint/pptx-generator.test.ts > PptxGenerator > Layout Handling > should map layout IDs to correct master names 1ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/powerpoint/pptx-generator.test.ts > PptxGenerator > Layout Handling > should use default master for unknown layout 0ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/powerpoint/pptx-generator.test.ts > PptxGenerator > Title Addition > should add title with correct positioning for title layout 0ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/powerpoint/pptx-generator.test.ts > PptxGenerator > Title Addition > should add title with correct positioning for section layout 0ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/powerpoint/pptx-generator.test.ts > PptxGenerator > Title Addition > should add title with correct positioning for content layouts 0ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/powerpoint/pptx-generator.test.ts > PptxGenerator > Content Addition - Text > should add text content with correct formatting 0ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/powerpoint/pptx-generator.test.ts > PptxGenerator > Content Addition - Text > should add bullet content with bullet formatting 1ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/powerpoint/pptx-generator.test.ts > PptxGenerator > Content Addition - Text > should add subbullet content with indentation 0ms
+web:test:  × app/home/(user)/ai/storyboard/_lib/services/powerpoint/pptx-generator.test.ts > PptxGenerator > Content Addition - Charts > should add bar chart with correct data 11ms
+web:test:    → expected "spy" to be called with arguments: [ 'bar', ObjectContaining{…} ][90m
+web:test: 
+web:test: Received: 
+web:test: 
+web:test: [1m  1st spy call:
+web:test: 
+web:test: [22m[33m@@ -1,11 +1,48 @@[90m
+web:test: [2m  [[22m
+web:test: [2m    "bar",[22m
+web:test: [32m-   ObjectContaining {[90m
+web:test: [31m+   {[90m
+web:test: [31m+     "chartColors": [[90m
+web:test: [31m+       "4472C4",[90m
+web:test: [31m+       "ED7D31",[90m
+web:test: [31m+     ],[90m
+web:test: [31m+     "chartData": [[90m
+web:test: [31m+       {[90m
+web:test: [31m+         "labels": [[90m
+web:test: [31m+           "A",[90m
+web:test: [31m+           "B",[90m
+web:test: [31m+           "C",[90m
+web:test: [31m+         ],[90m
+web:test: [31m+         "name": "Series 1",[90m
+web:test: [31m+         "values": [[90m
+web:test: [31m+           1,[90m
+web:test: [31m+           2,[90m
+web:test: [31m+           3,[90m
+web:test: [31m+         ],[90m
+web:test: [31m+       },[90m
+web:test: [31m+     ],[90m
+web:test: [31m+     "title": "Test Chart",[90m
+web:test: [31m+   },[90m
+web:test: [31m+   {[90m
+web:test: [2m      "chartColors": [[22m
+web:test: [2m        "4472C4",[22m
+web:test: [2m        "ED7D31",[22m
+web:test: [31m+     ],[90m
+web:test: [31m+     "chartData": [[90m
+web:test: [31m+       {[90m
+web:test: [31m+         "labels": [[90m
+web:test: [31m+           "A",[90m
+web:test: [31m+           "B",[90m
+web:test: [31m+           "C",[90m
+web:test: [31m+         ],[90m
+web:test: [31m+         "name": "Series 1",[90m
+web:test: [31m+         "values": [[90m
+web:test: [31m+           1,[90m
+web:test: [31m+           2,[90m
+web:test: [31m+           3,[90m
+web:test: [31m+         ],[90m
+web:test: [31m+       },[90m
+web:test: [2m      ],[22m
+web:test: [2m      "h": 4,[22m
+web:test: [2m      "title": "Test Chart",[22m
+web:test: [2m      "w": 8,[22m
+web:test: [2m      "x": 1,[22m
+web:test: [39m[90m
+web:test: 
+web:test: Number of calls: [1m1[22m
+web:test: [39m
+web:test:  × app/home/(user)/ai/storyboard/_lib/services/powerpoint/pptx-generator.test.ts > PptxGenerator > Content Addition - Charts > should handle all supported chart types 2ms
+web:test:    → expected "spy" to be called with arguments: [ 'bar', Any<Object> ][90m
+web:test: 
+web:test: Received: 
+web:test: 
+web:test: [1m  1st spy call:
+web:test: 
+web:test: [22m[2m  [[22m
+web:test: [2m    "bar",[22m
+web:test: [32m-   Any<Object>,[90m
+web:test: [31m+   {[90m
+web:test: [31m+     "chartColors": [[90m
+web:test: [31m+       "4472C4",[90m
+web:test: [31m+       "ED7D31",[90m
+web:test: [31m+       "FFC000",[90m
+web:test: [31m+     ],[90m
+web:test: [31m+     "chartData": [[90m
+web:test: [31m+       {[90m
+web:test: [31m+         "labels": [],[90m
+web:test: [31m+         "name": "Series 1",[90m
+web:test: [31m+         "values": [],[90m
+web:test: [31m+       },[90m
+web:test: [31m+     ],[90m
+web:test: [31m+     "dataLabelPosition": "outEnd",[90m
+web:test: [31m+     "legendPos": "b",[90m
+web:test: [31m+     "showDataLabels": true,[90m
+web:test: [31m+     "showLegend": true,[90m
+web:test: [31m+     "showTitle": true,[90m
+web:test: [31m+     "title": "Test",[90m
+web:test: [31m+   },[90m
+web:test: [31m+   {[90m
+web:test: [31m+     "chartColors": [[90m
+web:test: [31m+       "4472C4",[90m
+web:test: [31m+       "ED7D31",[90m
+web:test: [31m+       "FFC000",[90m
+web:test: [31m+     ],[90m
+web:test: [31m+     "chartData": [[90m
+web:test: [31m+       {[90m
+web:test: [31m+         "labels": [],[90m
+web:test: [31m+         "name": "Series 1",[90m
+web:test: [31m+         "values": [],[90m
+web:test: [31m+       },[90m
+web:test: [31m+     ],[90m
+web:test: [31m+     "dataLabelPosition": "outEnd",[90m
+web:test: [31m+     "h": 4,[90m
+web:test: [31m+     "legendPos": "b",[90m
+web:test: [31m+     "showDataLabels": true,[90m
+web:test: [31m+     "showLegend": true,[90m
+web:test: [31m+     "showTitle": true,[90m
+web:test: [31m+     "title": "Test",[90m
+web:test: [31m+     "w": 8,[90m
+web:test: [31m+     "x": 1,[90m
+web:test: [31m+     "y": 1.8,[90m
+web:test: [31m+   },[90m
+web:test: [2m  ][22m
+web:test: [39m[90m
+web:test: 
+web:test: Number of calls: [1m1[22m
+web:test: [39m
+web:test:  × app/home/(user)/ai/storyboard/_lib/services/powerpoint/pptx-generator.test.ts > PptxGenerator > Content Addition - Charts > should fall back to bar chart for unknown chart type 2ms
+web:test:    → expected "spy" to be called with arguments: [ 'bar', Any<Object> ][90m
+web:test: 
+web:test: Received: 
+web:test: 
+web:test: [1m  1st spy call:
+web:test: 
+web:test: [22m[2m  [[22m
+web:test: [2m    "bar",[22m
+web:test: [32m-   Any<Object>,[90m
+web:test: [31m+   {[90m
+web:test: [31m+     "chartColors": [[90m
+web:test: [31m+       "4472C4",[90m
+web:test: [31m+       "ED7D31",[90m
+web:test: [31m+       "FFC000",[90m
+web:test: [31m+     ],[90m
+web:test: [31m+     "chartData": [[90m
+web:test: [31m+       {[90m
+web:test: [31m+         "labels": [],[90m
+web:test: [31m+         "name": "Series 1",[90m
+web:test: [31m+         "values": [],[90m
+web:test: [31m+       },[90m
+web:test: [31m+     ],[90m
+web:test: [31m+     "dataLabelPosition": "outEnd",[90m
+web:test: [31m+     "legendPos": "b",[90m
+web:test: [31m+     "showDataLabels": true,[90m
+web:test: [31m+     "showLegend": true,[90m
+web:test: [31m+     "showTitle": true,[90m
+web:test: [31m+     "title": "Test",[90m
+web:test: [31m+   },[90m
+web:test: [31m+   {[90m
+web:test: [31m+     "chartColors": [[90m
+web:test: [31m+       "4472C4",[90m
+web:test: [31m+       "ED7D31",[90m
+web:test: [31m+       "FFC000",[90m
+web:test: [31m+     ],[90m
+web:test: [31m+     "chartData": [[90m
+web:test: [31m+       {[90m
+web:test: [31m+         "labels": [],[90m
+web:test: [31m+         "name": "Series 1",[90m
+web:test: [31m+         "values": [],[90m
+web:test: [31m+       },[90m
+web:test: [31m+     ],[90m
+web:test: [31m+     "dataLabelPosition": "outEnd",[90m
+web:test: [31m+     "h": 4,[90m
+web:test: [31m+     "legendPos": "b",[90m
+web:test: [31m+     "showDataLabels": true,[90m
+web:test: [31m+     "showLegend": true,[90m
+web:test: [31m+     "showTitle": true,[90m
+web:test: [31m+     "title": "Test",[90m
+web:test: [31m+     "w": 8,[90m
+web:test: [31m+     "x": 1,[90m
+web:test: [31m+     "y": 1.8,[90m
+web:test: [31m+   },[90m
+web:test: [2m  ][22m
+web:test: [39m[90m
+web:test: 
+web:test: Number of calls: [1m1[22m
+web:test: [39m
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/powerpoint/pptx-generator.test.ts > PptxGenerator > Content Addition - Charts > should handle chart errors gracefully 1ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/powerpoint/pptx-generator.test.ts > PptxGenerator > Content Addition - Images > should add image with correct URL and positioning 1ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/powerpoint/pptx-generator.test.ts > PptxGenerator > Content Addition - Images > should handle image loading errors gracefully 1ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/powerpoint/pptx-generator.test.ts > PptxGenerator > Content Addition - Tables > should add table with parsed JSON data 1ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/powerpoint/pptx-generator.test.ts > PptxGenerator > Content Addition - Tables > should add table with object data 0ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/powerpoint/pptx-generator.test.ts > PptxGenerator > Content Addition - Tables > should handle table errors gracefully 1ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/powerpoint/pptx-generator.test.ts > PptxGenerator > Position Calculation > should calculate correct positions for two-column layouts 1ms
+web:test:  × app/home/(user)/ai/storyboard/_lib/services/powerpoint/pptx-generator.test.ts > PptxGenerator > Chart Data Parsing > should parse chart data from string format 2ms
+web:test:    → expected "spy" to be called with arguments: [ 'bar', ObjectContaining{…} ][90m
+web:test: 
+web:test: Received: 
+web:test: 
+web:test: [1m  1st spy call:
+web:test: 
+web:test: [22m[2m  [[22m
+web:test: [2m    "bar",[22m
+web:test: [32m-   ObjectContaining {[90m
+web:test: [32m-     "chartData": ArrayContaining [[90m
+web:test: [32m-       ObjectContaining {[90m
+web:test: [31m+   {[90m
+web:test: [31m+     "chartColors": [[90m
+web:test: [31m+       "4472C4",[90m
+web:test: [31m+       "ED7D31",[90m
+web:test: [31m+       "FFC000",[90m
+web:test: [31m+     ],[90m
+web:test: [31m+     "chartData": [[90m
+web:test: [31m+       {[90m
+web:test: [31m+         "labels": [[90m
+web:test: [31m+           "A",[90m
+web:test: [31m+           "B",[90m
+web:test: [31m+           "C",[90m
+web:test: [31m+         ],[90m
+web:test: [31m+         "name": "Series 1",[90m
+web:test: [31m+         "values": [[90m
+web:test: [31m+           1,[90m
+web:test: [31m+           2,[90m
+web:test: [31m+           3,[90m
+web:test: [31m+         ],[90m
+web:test: [31m+       },[90m
+web:test: [31m+     ],[90m
+web:test: [31m+     "dataLabelPosition": "outEnd",[90m
+web:test: [31m+     "legendPos": "b",[90m
+web:test: [31m+     "showDataLabels": true,[90m
+web:test: [31m+     "showLegend": true,[90m
+web:test: [31m+     "showTitle": true,[90m
+web:test: [31m+     "title": "Test Chart",[90m
+web:test: [31m+   },[90m
+web:test: [31m+   {[90m
+web:test: [31m+     "chartColors": [[90m
+web:test: [31m+       "4472C4",[90m
+web:test: [31m+       "ED7D31",[90m
+web:test: [31m+       "FFC000",[90m
+web:test: [31m+     ],[90m
+web:test: [31m+     "chartData": [[90m
+web:test: [31m+       {[90m
+web:test: [2m          "labels": [[22m
+web:test: [2m            "A",[22m
+web:test: [2m            "B",[22m
+web:test: [2m            "C",[22m
+web:test: [2m          ],[22m
+web:test: [31m+         "name": "Series 1",[90m
+web:test: [2m          "values": [[22m
+web:test: [2m            1,[22m
+web:test: [2m            2,[22m
+web:test: [2m            3,[22m
+web:test: [2m          ],[22m
+web:test: [2m        },[22m
+web:test: [2m      ],[22m
+web:test: [31m+     "dataLabelPosition": "outEnd",[90m
+web:test: [31m+     "h": 4,[90m
+web:test: [31m+     "legendPos": "b",[90m
+web:test: [31m+     "showDataLabels": true,[90m
+web:test: [31m+     "showLegend": true,[90m
+web:test: [31m+     "showTitle": true,[90m
+web:test: [2m      "title": "Test Chart",[22m
+web:test: [31m+     "w": 8,[90m
+web:test: [31m+     "x": 1,[90m
+web:test: [31m+     "y": 1.8,[90m
+web:test: [2m    },[22m
+web:test: [2m  ][22m
+web:test: [39m[90m
+web:test: 
+web:test: Number of calls: [1m1[22m
+web:test: [39m
+web:test:  × app/home/(user)/ai/storyboard/_lib/services/powerpoint/pptx-generator.test.ts > PptxGenerator > Chart Data Parsing > should return default chart data when missing 2ms
+web:test:    → expected "spy" to be called with arguments: [ 'bar', ObjectContaining{…} ][90m
+web:test: 
+web:test: Received: 
+web:test: 
+web:test: [1m  1st spy call:
+web:test: 
+web:test: [22m[2m  [[22m
+web:test: [2m    "bar",[22m
+web:test: [32m-   ObjectContaining {[90m
+web:test: [32m-     "chartData": ArrayContaining [[90m
+web:test: [32m-       ObjectContaining {[90m
+web:test: [31m+   {[90m
+web:test: [31m+     "chartColors": [[90m
+web:test: [31m+       "4472C4",[90m
+web:test: [31m+       "ED7D31",[90m
+web:test: [31m+       "FFC000",[90m
+web:test: [31m+     ],[90m
+web:test: [31m+     "chartData": [[90m
+web:test: [31m+       {[90m
+web:test: [31m+         "labels": [],[90m
+web:test: [31m+         "name": "Series 1",[90m
+web:test: [31m+         "values": [],[90m
+web:test: [31m+       },[90m
+web:test: [31m+     ],[90m
+web:test: [31m+     "dataLabelPosition": "outEnd",[90m
+web:test: [31m+     "legendPos": "b",[90m
+web:test: [31m+     "showDataLabels": true,[90m
+web:test: [31m+     "showLegend": true,[90m
+web:test: [31m+     "showTitle": true,[90m
+web:test: [31m+     "title": "Chart",[90m
+web:test: [31m+   },[90m
+web:test: [31m+   {[90m
+web:test: [31m+     "chartColors": [[90m
+web:test: [31m+       "4472C4",[90m
+web:test: [31m+       "ED7D31",[90m
+web:test: [31m+       "FFC000",[90m
+web:test: [31m+     ],[90m
+web:test: [31m+     "chartData": [[90m
+web:test: [31m+       {[90m
+web:test: [2m          "labels": [],[22m
+web:test: [2m          "name": "Series 1",[22m
+web:test: [2m          "values": [],[22m
+web:test: [2m        },[22m
+web:test: [2m      ],[22m
+web:test: [31m+     "dataLabelPosition": "outEnd",[90m
+web:test: [31m+     "h": 4,[90m
+web:test: [31m+     "legendPos": "b",[90m
+web:test: [31m+     "showDataLabels": true,[90m
+web:test: [31m+     "showLegend": true,[90m
+web:test: [31m+     "showTitle": true,[90m
+web:test: [2m      "title": "Chart",[22m
+web:test: [31m+     "w": 8,[90m
+web:test: [31m+     "x": 1,[90m
+web:test: [31m+     "y": 1.8,[90m
+web:test: [2m    },[22m
+web:test: [2m  ][22m
+web:test: [39m[90m
+web:test: 
+web:test: Number of calls: [1m1[22m
+web:test: [39m
+web:test:  × app/home/(user)/ai/storyboard/_lib/services/powerpoint/pptx-generator.test.ts > PptxGenerator > Chart Data Parsing > should handle invalid chart data gracefully 1ms
+web:test:    → expected "spy" to be called with arguments: [ 'bar', ObjectContaining{…} ][90m
+web:test: 
+web:test: Received: 
+web:test: 
+web:test: [1m  1st spy call:
+web:test: 
+web:test: [22m[33m@@ -1,10 +1,40 @@[90m
+web:test: [2m  [[22m
+web:test: [2m    "bar",[22m
+web:test: [32m-   ObjectContaining {[90m
+web:test: [32m-     "chartData": ArrayContaining [[90m
+web:test: [32m-       ObjectContaining {[90m
+web:test: [31m+   {[90m
+web:test: [31m+     "chartColors": [[90m
+web:test: [31m+       "4472C4",[90m
+web:test: [31m+       "ED7D31",[90m
+web:test: [31m+       "FFC000",[90m
+web:test: [31m+     ],[90m
+web:test: [31m+     "chartData": [[90m
+web:test: [31m+       {[90m
+web:test: [31m+         "labels": [[90m
+web:test: [31m+           "Please check",[90m
+web:test: [31m+           "chart data",[90m
+web:test: [31m+           "format",[90m
+web:test: [31m+         ],[90m
+web:test: [31m+         "name": "Error",[90m
+web:test: [31m+         "values": [[90m
+web:test: [31m+           1,[90m
+web:test: [31m+           1,[90m
+web:test: [31m+           1,[90m
+web:test: [31m+         ],[90m
+web:test: [31m+       },[90m
+web:test: [31m+     ],[90m
+web:test: [31m+     "showLegend": true,[90m
+web:test: [31m+     "showTitle": true,[90m
+web:test: [31m+     "title": "Error in Chart Data",[90m
+web:test: [31m+   },[90m
+web:test: [31m+   {[90m
+web:test: [31m+     "chartColors": [[90m
+web:test: [31m+       "4472C4",[90m
+web:test: [31m+       "ED7D31",[90m
+web:test: [31m+       "FFC000",[90m
+web:test: [31m+     ],[90m
+web:test: [31m+     "chartData": [[90m
+web:test: [31m+       {[90m
+web:test: [2m          "labels": [[22m
+web:test: [2m            "Please check",[22m
+web:test: [2m            "chart data",[22m
+web:test: [2m            "format",[22m
+web:test: [2m          ],[22m
+web:test: [33m@@ -14,8 +44,14 @@[90m
+web:test: [2m            1,[22m
+web:test: [2m            1,[22m
+web:test: [2m          ],[22m
+web:test: [2m        },[22m
+web:test: [2m      ],[22m
+web:test: [31m+     "h": 4,[90m
+web:test: [31m+     "showLegend": true,[90m
+web:test: [31m+     "showTitle": true,[90m
+web:test: [2m      "title": "Error in Chart Data",[22m
+web:test: [31m+     "w": 8,[90m
+web:test: [31m+     "x": 1,[90m
+web:test: [31m+     "y": 1.8,[90m
+web:test: [2m    },[22m
+web:test: [2m  ][22m
+web:test: [39m[90m
+web:test: 
+web:test: Number of calls: [1m1[22m
+web:test: [39m
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/powerpoint/pptx-generator.test.ts > PptxGenerator > Error Scenarios > should handle PptxGenJS write method failure 2ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/powerpoint/pptx-generator.test.ts > PptxGenerator > Error Scenarios > should handle slide with no content 0ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/powerpoint/pptx-generator.test.ts > PptxGenerator > LAYOUT_POSITIONS constant > should export LAYOUT_POSITIONS with all required layouts 1ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/powerpoint/pptx-generator.test.ts > PptxGenerator > LAYOUT_POSITIONS constant > should have different positioning for different layouts 1ms
+web:test:  ✓ app/home/(user)/course/_lib/server/server-actions.test.ts > Course Server Actions > updateCourseProgressAction > Schema Validation > should accept valid input data 4ms
+web:test:  ✓ app/home/(user)/course/_lib/server/server-actions.test.ts > Course Server Actions > updateCourseProgressAction > Schema Validation > should transform courseId from number to string 2ms
+web:test:  ✓ app/home/(user)/course/_lib/server/server-actions.test.ts > Course Server Actions > updateCourseProgressAction > Schema Validation > should handle undefined currentLessonId 1ms
+web:test:  × app/home/(user)/course/_lib/server/server-actions.test.ts > Course Server Actions > updateCourseProgressAction > Schema Validation > should reject completion percentage above 100 8ms
+web:test:    → expected undefined to be false // Object.is equality
+web:test:  × app/home/(user)/course/_lib/server/server-actions.test.ts > Course Server Actions > updateCourseProgressAction > Schema Validation > should reject negative completion percentage 1ms
+web:test:    → expected undefined to be false // Object.is equality
+web:test:  ✓ app/home/(user)/course/_lib/server/server-actions.test.ts > Course Server Actions > updateCourseProgressAction > Core Functionality - New Progress Record > should create new course progress record 2ms
+web:test:  ✓ app/home/(user)/course/_lib/server/server-actions.test.ts > Course Server Actions > updateCourseProgressAction > Core Functionality - New Progress Record > should set started_at and last_accessed_at timestamps 1ms
+web:test:  ✓ app/home/(user)/course/_lib/server/server-actions.test.ts > Course Server Actions > updateCourseProgressAction > Core Functionality - New Progress Record > should handle optional fields with defaults 1ms
+web:test:  ✓ app/home/(user)/course/_lib/server/server-actions.test.ts > Course Server Actions > updateCourseProgressAction > Core Functionality - Update Existing Record > should update existing course progress record 1ms
+web:test:  ✓ app/home/(user)/course/_lib/server/server-actions.test.ts > Course Server Actions > updateCourseProgressAction > Core Functionality - Update Existing Record > should always update last_accessed_at timestamp 0ms
+web:test:  ✓ app/home/(user)/course/_lib/server/server-actions.test.ts > Course Server Actions > updateCourseProgressAction > Core Functionality - Update Existing Record > should conditionally update fields based on input 1ms
+web:test:  ✓ app/home/(user)/course/_lib/server/server-actions.test.ts > Course Server Actions > updateCourseProgressAction > Certificate Generation > should generate certificate when course completed and not already generated 1ms
+web:test:  ✓ app/home/(user)/course/_lib/server/server-actions.test.ts > Course Server Actions > updateCourseProgressAction > Certificate Generation > should skip certificate generation if already generated 1ms
+web:test:  × app/home/(user)/course/_lib/server/server-actions.test.ts > Course Server Actions > updateCourseProgressAction > Certificate Generation > should continue update even if certificate generation fails 3ms
+web:test:    → expected "error" to be called with arguments: [ …(2) ][90m
+web:test: 
+web:test: Number of calls: [1m0[22m
+web:test: [39m
+web:test:  ✓ app/home/(user)/course/_lib/server/server-actions.test.ts > Course Server Actions > updateCourseProgressAction > Error Handling > should handle database errors gracefully 1ms
+web:test:  ✓ app/home/(user)/course/_lib/server/server-actions.test.ts > Course Server Actions > updateLessonProgressAction > Schema Validation > should accept valid lesson progress input 1ms
+web:test:  ✓ app/home/(user)/course/_lib/server/server-actions.test.ts > Course Server Actions > updateLessonProgressAction > Schema Validation > should transform IDs from number to string 1ms
+web:test:  ✓ app/home/(user)/course/_lib/server/server-actions.test.ts > Course Server Actions > updateLessonProgressAction > Core Functionality - New Lesson Progress > should create new lesson progress record 1ms
+web:test:  ✓ app/home/(user)/course/_lib/server/server-actions.test.ts > Course Server Actions > updateLessonProgressAction > Core Functionality - New Lesson Progress > should set started_at timestamp for new record 1ms
+web:test:  ✓ app/home/(user)/course/_lib/server/server-actions.test.ts > Course Server Actions > updateLessonProgressAction > Core Functionality - Update Existing Progress > should update existing lesson progress 1ms
+web:test:  ✓ app/home/(user)/course/_lib/server/server-actions.test.ts > Course Server Actions > updateLessonProgressAction > Core Functionality - Update Existing Progress > should always update course_id for data integrity 1ms
+web:test:  × app/home/(user)/course/_lib/server/server-actions.test.ts > Course Server Actions > updateLessonProgressAction > Integration Points > should integrate with CMS for course/lesson data 2ms
+web:test:    → expected "spy" to be called with arguments: [ 'course-123' ][90m
+web:test: 
+web:test: Number of calls: [1m0[22m
+web:test: [39m
+web:test:  ✓ app/home/(user)/course/_lib/server/server-actions.test.ts > Course Server Actions > updateLessonProgressAction > Integration Points > should handle missing course data gracefully 1ms
+web:test:  ✓ app/home/(user)/course/_lib/server/server-actions.test.ts > Course Server Actions > submitQuizAttemptAction > Schema Validation > should accept valid quiz submission data 1ms
+web:test:  ✓ app/home/(user)/course/_lib/server/server-actions.test.ts > Course Server Actions > submitQuizAttemptAction > Schema Validation > should handle quizId transformation from object format 1ms
+web:test:  ✓ app/home/(user)/course/_lib/server/server-actions.test.ts > Course Server Actions > submitQuizAttemptAction > Schema Validation > should handle quizId transformation from relationship object 1ms
+web:test:  × app/home/(user)/course/_lib/server/server-actions.test.ts > Course Server Actions > submitQuizAttemptAction > Schema Validation > should reject score above 100 1ms
+web:test:    → expected undefined to be false // Object.is equality
+web:test:  × app/home/(user)/course/_lib/server/server-actions.test.ts > Course Server Actions > submitQuizAttemptAction > Schema Validation > should reject negative score 1ms
+web:test:    → expected undefined to be false // Object.is equality
+web:test:  ✓ app/home/(user)/course/_lib/server/server-actions.test.ts > Course Server Actions > submitQuizAttemptAction > Core Functionality > should insert quiz attempt record 3ms
+web:test:  ✓ app/home/(user)/course/_lib/server/server-actions.test.ts > Course Server Actions > submitQuizAttemptAction > Core Functionality > should set started_at and completed_at timestamps 1ms
+web:test:  ✓ app/home/(user)/course/_lib/server/server-actions.test.ts > Course Server Actions > submitQuizAttemptAction > Lesson Completion Logic > should mark lesson as completed when quiz passed 1ms
+web:test:  ✓ app/home/(user)/course/_lib/server/server-actions.test.ts > Course Server Actions > submitQuizAttemptAction > Lesson Completion Logic > should not mark lesson completed when quiz failed 1ms
+web:test:  ✓ app/home/(user)/course/_lib/server/server-actions.test.ts > Course Server Actions > submitQuizAttemptAction > Error Handling > should handle database insertion errors 1ms
+web:test:  ✓ app/home/(user)/course/_lib/server/server-actions.test.ts > Course Server Actions > Integration Tests > should handle complete quiz → lesson progress → course progress flow 1ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/hooks/use-action-with-cost.test.ts > useActionWithCost > Action Wrapping > wraps action function correctly 22ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/hooks/use-action-with-cost.test.ts > useActionWithCost > Action Wrapping > preserves action function type signature 3ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/hooks/use-action-with-cost.test.ts > useActionWithCost > Action Wrapping > returns stable reference when dependencies unchanged 9ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/hooks/use-action-with-cost.test.ts > useActionWithCost > Action Wrapping > creates new reference when action changes 6ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/hooks/use-action-with-cost.test.ts > useActionWithCost > Action Wrapping > creates new reference when addCost changes 3ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/hooks/use-action-with-cost.test.ts > useActionWithCost > Action Wrapping > creates new reference when sessionId changes 6ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/hooks/use-action-with-cost.test.ts > useActionWithCost > Session ID Injection > adds sessionId to request data 7ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/hooks/use-action-with-cost.test.ts > useActionWithCost > Session ID Injection > overwrites existing sessionId in request data 3ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/hooks/use-action-with-cost.test.ts > useActionWithCost > Session ID Injection > handles empty request data 4ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/hooks/use-action-with-cost.test.ts > useActionWithCost > Session ID Injection > preserves all original data properties 2ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/hooks/use-action-with-cost.test.ts > useActionWithCost > Session ID Injection > uses current sessionId from context 3ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/hooks/use-action-with-cost.test.ts > useActionWithCost > Cost Tracking Integration > calls addCost when action succeeds with cost metadata 4ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/hooks/use-action-with-cost.test.ts > useActionWithCost > Cost Tracking Integration > does not call addCost when action fails 2ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/hooks/use-action-with-cost.test.ts > useActionWithCost > Cost Tracking Integration > does not call addCost when action succeeds but no cost metadata 2ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/hooks/use-action-with-cost.test.ts > useActionWithCost > Cost Tracking Integration > does not call addCost when metadata exists but no cost property 1ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/hooks/use-action-with-cost.test.ts > useActionWithCost > Cost Tracking Integration > handles zero cost correctly 1ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/hooks/use-action-with-cost.test.ts > useActionWithCost > Cost Tracking Integration > handles decimal cost values correctly 1ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/hooks/use-action-with-cost.test.ts > useActionWithCost > Cost Tracking Integration > handles very small cost values correctly 1ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/hooks/use-action-with-cost.test.ts > useActionWithCost > Cost Tracking Integration > handles large cost values correctly 2ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/hooks/use-action-with-cost.test.ts > useActionWithCost > Error Handling > preserves action errors without modification 3ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/hooks/use-action-with-cost.test.ts > useActionWithCost > Error Handling > does not call addCost when action throws error 1ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/hooks/use-action-with-cost.test.ts > useActionWithCost > Error Handling > preserves action behavior for non-conforming response 3ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/hooks/use-action-with-cost.test.ts > useActionWithCost > Error Handling > handles addCost function errors gracefully 2ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/hooks/use-action-with-cost.test.ts > useActionWithCost > Response Preservation > returns original action response unchanged 1ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/hooks/use-action-with-cost.test.ts > useActionWithCost > Response Preservation > returns original error response unchanged 1ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/hooks/use-action-with-cost.test.ts > useActionWithCost > Response Preservation > preserves complex response objects 1ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/hooks/use-action-with-cost.test.ts > useActionWithCost > Integration Tests > complete successful flow with cost tracking 2ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/hooks/use-action-with-cost.test.ts > useActionWithCost > Integration Tests > complete failure flow without cost tracking 6ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/hooks/use-action-with-cost.test.ts > useActionWithCost > Integration Tests > handles multiple sequential calls correctly 3ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/hooks/use-action-with-cost.test.ts > useActionWithCost > Edge Cases > handles null metadata gracefully 4ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/hooks/use-action-with-cost.test.ts > useActionWithCost > Edge Cases > handles undefined metadata gracefully 2ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/hooks/use-action-with-cost.test.ts > useActionWithCost > Edge Cases > handles non-numeric cost values gracefully 2ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/hooks/use-action-with-cost.test.ts > useActionWithCost > Edge Cases > handles empty session ID gracefully 2ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/hooks/use-action-with-cost.test.ts > useActionWithCost > Edge Cases > handles missing useCostTracking context gracefully 7ms
+payload:test:  ✓ src/lib/form-submission-protection.test.ts > FormSubmissionProtectionManager > Constructor & Configuration > creates instance with default configuration 7ms
+payload:test:  ✓ src/lib/form-submission-protection.test.ts > FormSubmissionProtectionManager > Constructor & Configuration > creates instance with custom configuration 3ms
+payload:test:  ✓ src/lib/form-submission-protection.test.ts > FormSubmissionProtectionManager > Constructor & Configuration > initializes hydration state correctly 2ms
+payload:test:  ✓ src/lib/form-submission-protection.test.ts > FormSubmissionProtectionManager > Initialization & Hydration Detection > prevents double initialization 17ms
+web-e2e:test: [1A[2K[22/37] [chromium] › tests/authentication/auth.spec.ts:80:6 › Protected routes › when logged out, redirects to the correct page after sign in (retry #1)
+web-e2e:test: [1A[2K[23/37] [chromium] › tests/account/account.spec.ts:37:6 › Account Settings › user can update their password (retry #1)
+web-e2e:test: [1A[2K[24/37] [chromium] › tests/admin/admin.spec.ts:9:6 › Admin Auth flow without MFA › will return a 404 for non-admin users (retry #1)
+web-e2e:test: [1A[2K[25/37] [chromium] › tests/authentication/auth.spec.ts:148:6 › Last auth method tracking › should show existing account hint on sign-up page after previous sign-in (retry #1)
+web-e2e:test: [1A[2K[26/37] [chromium] › tests/authentication/auth.spec.ts:131:6 › Last auth method tracking › should show last used method hint on sign-in page after password sign-in (retry #1)
+web-e2e:test: [1A[2K  1) [chromium] › tests/authentication/auth.spec.ts:80:6 › Protected routes › when logged out, redirects to the correct page after sign in 
+web-e2e:test: 
+web-e2e:test:     Error: browserType.launch: Executable doesn't exist at /home/msmith/.cache/ms-playwright/chromium_headless_shell-1178/chrome-linux/headless_shell
+web-e2e:test:     ╔═════════════════════════════════════════════════════════════════════════╗
+web-e2e:test:     ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+web-e2e:test:     ║ Please run the following command to download new browsers:              ║
+web-e2e:test:     ║                                                                         ║
+web-e2e:test:     ║     pnpm exec playwright install                                        ║
+web-e2e:test:     ║                                                                         ║
+web-e2e:test:     ║ <3 Playwright Team                                                      ║
+web-e2e:test:     ╚═════════════════════════════════════════════════════════════════════════╝
+web-e2e:test: 
+web-e2e:test:     Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+web-e2e:test: 
+web-e2e:test:     Error: browserType.launch: Executable doesn't exist at /home/msmith/.cache/ms-playwright/chromium_headless_shell-1178/chrome-linux/headless_shell
+web-e2e:test:     ╔═════════════════════════════════════════════════════════════════════════╗
+web-e2e:test:     ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+web-e2e:test:     ║ Please run the following command to download new browsers:              ║
+web-e2e:test:     ║                                                                         ║
+web-e2e:test:     ║     pnpm exec playwright install                                        ║
+web-e2e:test:     ║                                                                         ║
+web-e2e:test:     ║ <3 Playwright Team                                                      ║
+web-e2e:test:     ╚═════════════════════════════════════════════════════════════════════════╝
+web-e2e:test: 
+web-e2e:test:     attachment #1: trace (application/zip) ─────────────────────────────────────────────────────────
+web-e2e:test:     test-results/authentication-auth-Protec-5ecb3--correct-page-after-sign-in-chromium-retry1/trace.zip
+web-e2e:test:     Usage:
+web-e2e:test: 
+web-e2e:test:         pnpm exec playwright show-trace test-results/authentication-auth-Protec-5ecb3--correct-page-after-sign-in-chromium-retry1/trace.zip
+web-e2e:test: 
+web-e2e:test:     ────────────────────────────────────────────────────────────────────────────────────────────────
+web-e2e:test: 
+web-e2e:test: 
+web-e2e:test: [1A[2K[31mTesting stopped early after 1 maximum allowed failures.[39m
+web-e2e:test: 
+web-e2e:test: [1A[2K[27/37] [chromium] › tests/account/account.spec.ts:17:6 › Account Settings › user can update their profile name (retry #1)
+payload:test:  ✓ src/lib/form-submission-protection.test.ts > FormSubmissionProtectionManager > Initialization & Hydration Detection > detects complete hydration with sufficient signals 155ms
+web-e2e:test: [1A[2K  2) [chromium] › tests/account/account.spec.ts:37:6 › Account Settings › user can update their password 
+web-e2e:test: 
+web-e2e:test:     Error: browserType.launch: Executable doesn't exist at /home/msmith/.cache/ms-playwright/chromium_headless_shell-1178/chrome-linux/headless_shell
+web-e2e:test:     ╔═════════════════════════════════════════════════════════════════════════╗
+web-e2e:test:     ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+web-e2e:test:     ║ Please run the following command to download new browsers:              ║
+web-e2e:test:     ║                                                                         ║
+web-e2e:test:     ║     pnpm exec playwright install                                        ║
+web-e2e:test:     ║                                                                         ║
+web-e2e:test:     ║ <3 Playwright Team                                                      ║
+web-e2e:test:     ╚═════════════════════════════════════════════════════════════════════════╝
+web-e2e:test: 
+web-e2e:test:     Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+web-e2e:test: 
+web-e2e:test:     Test was interrupted.
+web-e2e:test: 
+web-e2e:test:     attachment #1: trace (application/zip) ─────────────────────────────────────────────────────────
+web-e2e:test:     test-results/account-account-Account-Se-91ea2-r-can-update-their-password-chromium-retry1/trace.zip
+web-e2e:test:     Usage:
+web-e2e:test: 
+web-e2e:test:         pnpm exec playwright show-trace test-results/account-account-Account-Se-91ea2-r-can-update-their-password-chromium-retry1/trace.zip
+web-e2e:test: 
+web-e2e:test:     ────────────────────────────────────────────────────────────────────────────────────────────────
+web-e2e:test: 
+web-e2e:test: 
+web-e2e:test: [1A[2K  3) [chromium] › tests/admin/admin.spec.ts:9:6 › Admin Auth flow without MFA › will return a 404 for non-admin users 
+web-e2e:test: 
+web-e2e:test:     Error: browserType.launch: Executable doesn't exist at /home/msmith/.cache/ms-playwright/chromium_headless_shell-1178/chrome-linux/headless_shell
+web-e2e:test:     ╔═════════════════════════════════════════════════════════════════════════╗
+web-e2e:test:     ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+web-e2e:test:     ║ Please run the following command to download new browsers:              ║
+web-e2e:test:     ║                                                                         ║
+web-e2e:test:     ║     pnpm exec playwright install                                        ║
+web-e2e:test:     ║                                                                         ║
+web-e2e:test:     ║ <3 Playwright Team                                                      ║
+web-e2e:test:     ╚═════════════════════════════════════════════════════════════════════════╝
+web-e2e:test: 
+web-e2e:test:     Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+web-e2e:test: 
+web-e2e:test:     Test was interrupted.
+web-e2e:test: 
+web-e2e:test:     attachment #1: trace (application/zip) ─────────────────────────────────────────────────────────
+web-e2e:test:     test-results/admin-admin-Admin-Auth-flo-c0534-n-a-404-for-non-admin-users-chromium-retry1/trace.zip
+web-e2e:test:     Usage:
+web-e2e:test: 
+web-e2e:test:         pnpm exec playwright show-trace test-results/admin-admin-Admin-Auth-flo-c0534-n-a-404-for-non-admin-users-chromium-retry1/trace.zip
+web-e2e:test: 
+web-e2e:test:     ────────────────────────────────────────────────────────────────────────────────────────────────
+web-e2e:test: 
+web-e2e:test: 
+web-e2e:test: [1A[2K[28/37] [chromium] › tests/authentication/auth.spec.ts:10:6 › Auth flow › will sign-up and redirect to the home page (retry #1)
+web-e2e:test: [1A[2K[29/37] [chromium] › tests/admin/admin.spec.ts:49:7 › Admin › Admin Dashboard › displays all stat cards (retry #1)
+web-e2e:test: [1A[2K[30/37] [chromium] › tests/admin/admin.spec.ts:26:6 › Admin Auth flow without MFA › will redirect to 404 for admin users without MFA (retry #1)
+web-e2e:test: [1A[2K  4) [chromium] › tests/authentication/auth.spec.ts:131:6 › Last auth method tracking › should show last used method hint on sign-in page after password sign-in 
+web-e2e:test: 
+web-e2e:test:     Error: browserType.launch: Executable doesn't exist at /home/msmith/.cache/ms-playwright/chromium_headless_shell-1178/chrome-linux/headless_shell
+web-e2e:test:     ╔═════════════════════════════════════════════════════════════════════════╗
+web-e2e:test:     ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+web-e2e:test:     ║ Please run the following command to download new browsers:              ║
+web-e2e:test:     ║                                                                         ║
+web-e2e:test:     ║     pnpm exec playwright install                                        ║
+web-e2e:test:     ║                                                                         ║
+web-e2e:test:     ║ <3 Playwright Team                                                      ║
+web-e2e:test:     ╚═════════════════════════════════════════════════════════════════════════╝
+web-e2e:test: 
+web-e2e:test:     Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+web-e2e:test: 
+web-e2e:test:     Test was interrupted.
+web-e2e:test: 
+web-e2e:test:     attachment #1: trace (application/zip) ─────────────────────────────────────────────────────────
+web-e2e:test:     test-results/authentication-auth-Last-a-2c735-page-after-password-sign-in-chromium-retry1/trace.zip
+web-e2e:test:     Usage:
+web-e2e:test: 
+web-e2e:test:         pnpm exec playwright show-trace test-results/authentication-auth-Last-a-2c735-page-after-password-sign-in-chromium-retry1/trace.zip
+web-e2e:test: 
+web-e2e:test:     ────────────────────────────────────────────────────────────────────────────────────────────────
+web-e2e:test: 
+web-e2e:test: 
+web-e2e:test: [1A[2K  5) [chromium] › tests/authentication/auth.spec.ts:148:6 › Last auth method tracking › should show existing account hint on sign-up page after previous sign-in 
+web-e2e:test: 
+web-e2e:test:     Error: browserType.launch: Executable doesn't exist at /home/msmith/.cache/ms-playwright/chromium_headless_shell-1178/chrome-linux/headless_shell
+web-e2e:test:     ╔═════════════════════════════════════════════════════════════════════════╗
+web-e2e:test:     ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+web-e2e:test:     ║ Please run the following command to download new browsers:              ║
+web-e2e:test:     ║                                                                         ║
+web-e2e:test:     ║     pnpm exec playwright install                                        ║
+web-e2e:test:     ║                                                                         ║
+web-e2e:test:     ║ <3 Playwright Team                                                      ║
+web-e2e:test:     ╚═════════════════════════════════════════════════════════════════════════╝
+web-e2e:test: 
+web-e2e:test:     Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+web-e2e:test: 
+web-e2e:test:     Test was interrupted.
+web-e2e:test: 
+web-e2e:test:     attachment #1: trace (application/zip) ─────────────────────────────────────────────────────────
+web-e2e:test:     test-results/authentication-auth-Last-a-ca906-page-after-previous-sign-in-chromium-retry1/trace.zip
+web-e2e:test:     Usage:
+web-e2e:test: 
+web-e2e:test:         pnpm exec playwright show-trace test-results/authentication-auth-Last-a-ca906-page-after-previous-sign-in-chromium-retry1/trace.zip
+web-e2e:test: 
+web-e2e:test:     ────────────────────────────────────────────────────────────────────────────────────────────────
+web-e2e:test: 
+web-e2e:test: 
+web-e2e:test: [1A[2K  6) [chromium] › tests/account/account.spec.ts:17:6 › Account Settings › user can update their profile name 
+web-e2e:test: 
+web-e2e:test:     Error: browserType.launch: Executable doesn't exist at /home/msmith/.cache/ms-playwright/chromium_headless_shell-1178/chrome-linux/headless_shell
+web-e2e:test:     ╔═════════════════════════════════════════════════════════════════════════╗
+web-e2e:test:     ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+web-e2e:test:     ║ Please run the following command to download new browsers:              ║
+web-e2e:test:     ║                                                                         ║
+web-e2e:test:     ║     pnpm exec playwright install                                        ║
+web-e2e:test:     ║                                                                         ║
+web-e2e:test:     ║ <3 Playwright Team                                                      ║
+web-e2e:test:     ╚═════════════════════════════════════════════════════════════════════════╝
+web-e2e:test: 
+web-e2e:test:     Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+web-e2e:test: 
+web-e2e:test:     Test was interrupted.
+web-e2e:test: 
+web-e2e:test:     attachment #1: trace (application/zip) ─────────────────────────────────────────────────────────
+web-e2e:test:     test-results/account-account-Account-Se-97096-n-update-their-profile-name-chromium-retry1/trace.zip
+web-e2e:test:     Usage:
+web-e2e:test: 
+web-e2e:test:         pnpm exec playwright show-trace test-results/account-account-Account-Se-97096-n-update-their-profile-name-chromium-retry1/trace.zip
+web-e2e:test: 
+web-e2e:test:     ────────────────────────────────────────────────────────────────────────────────────────────────
+web-e2e:test: 
+web-e2e:test: 
+web-e2e:test: [1A[2K[31/37] [chromium] › tests/account/account.spec.ts:31:6 › Account Settings › user can update their email (retry #1)
+web-e2e:test: [1A[2K[32/37] [chromium] › tests/authentication/auth.spec.ts:97:6 › Protected routes › will redirect to the sign-in page if not authenticated (retry #1)
+web-e2e:test: [1A[2K  7) [chromium] › tests/authentication/auth.spec.ts:10:6 › Auth flow › will sign-up and redirect to the home page 
+web-e2e:test: 
+web-e2e:test:     Error: browserType.launch: Executable doesn't exist at /home/msmith/.cache/ms-playwright/chromium_headless_shell-1178/chrome-linux/headless_shell
+web-e2e:test:     ╔═════════════════════════════════════════════════════════════════════════╗
+web-e2e:test:     ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+web-e2e:test:     ║ Please run the following command to download new browsers:              ║
+web-e2e:test:     ║                                                                         ║
+web-e2e:test:     ║     pnpm exec playwright install                                        ║
+web-e2e:test:     ║                                                                         ║
+web-e2e:test:     ║ <3 Playwright Team                                                      ║
+web-e2e:test:     ╚═════════════════════════════════════════════════════════════════════════╝
+web-e2e:test: 
+web-e2e:test:     Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+web-e2e:test: 
+web-e2e:test:     Test was interrupted.
+web-e2e:test: 
+web-e2e:test:     attachment #1: trace (application/zip) ─────────────────────────────────────────────────────────
+web-e2e:test:     test-results/authentication-auth-Auth-f-f6239-d-redirect-to-the-home-page-chromium-retry1/trace.zip
+web-e2e:test:     Usage:
+web-e2e:test: 
+web-e2e:test:         pnpm exec playwright show-trace test-results/authentication-auth-Auth-f-f6239-d-redirect-to-the-home-page-chromium-retry1/trace.zip
+web-e2e:test: 
+web-e2e:test:     ────────────────────────────────────────────────────────────────────────────────────────────────
+web-e2e:test: 
+web-e2e:test: 
+web-e2e:test: [1A[2K  8) [chromium] › tests/admin/admin.spec.ts:26:6 › Admin Auth flow without MFA › will redirect to 404 for admin users without MFA 
+web-e2e:test: 
+web-e2e:test:     Error: browserType.launch: Executable doesn't exist at /home/msmith/.cache/ms-playwright/chromium_headless_shell-1178/chrome-linux/headless_shell
+web-e2e:test:     ╔═════════════════════════════════════════════════════════════════════════╗
+web-e2e:test:     ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+web-e2e:test:     ║ Please run the following command to download new browsers:              ║
+web-e2e:test:     ║                                                                         ║
+web-e2e:test:     ║     pnpm exec playwright install                                        ║
+web-e2e:test:     ║                                                                         ║
+web-e2e:test:     ║ <3 Playwright Team                                                      ║
+web-e2e:test:     ╚═════════════════════════════════════════════════════════════════════════╝
+web-e2e:test: 
+web-e2e:test:     Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+web-e2e:test: 
+web-e2e:test:     Test was interrupted.
+web-e2e:test: 
+web-e2e:test:     attachment #1: trace (application/zip) ─────────────────────────────────────────────────────────
+web-e2e:test:     test-results/admin-admin-Admin-Auth-flo-94c94-for-admin-users-without-MFA-chromium-retry1/trace.zip
+web-e2e:test:     Usage:
+web-e2e:test: 
+web-e2e:test:         pnpm exec playwright show-trace test-results/admin-admin-Admin-Auth-flo-94c94-for-admin-users-without-MFA-chromium-retry1/trace.zip
+web-e2e:test: 
+web-e2e:test:     ────────────────────────────────────────────────────────────────────────────────────────────────
+web-e2e:test: 
+web-e2e:test: 
+web-e2e:test: [1A[2K  9) [chromium] › tests/admin/admin.spec.ts:49:7 › Admin › Admin Dashboard › displays all stat cards 
+web-e2e:test: 
+web-e2e:test:     Error: browserType.launch: Executable doesn't exist at /home/msmith/.cache/ms-playwright/chromium_headless_shell-1178/chrome-linux/headless_shell
+web-e2e:test:     ╔═════════════════════════════════════════════════════════════════════════╗
+web-e2e:test:     ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+web-e2e:test:     ║ Please run the following command to download new browsers:              ║
+web-e2e:test:     ║                                                                         ║
+web-e2e:test:     ║     pnpm exec playwright install                                        ║
+web-e2e:test:     ║                                                                         ║
+web-e2e:test:     ║ <3 Playwright Team                                                      ║
+web-e2e:test:     ╚═════════════════════════════════════════════════════════════════════════╝
+web-e2e:test: 
+web-e2e:test:     Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+web-e2e:test: 
+web-e2e:test:     Test was interrupted.
+web-e2e:test: 
+web-e2e:test:     attachment #1: trace (application/zip) ─────────────────────────────────────────────────────────
+web-e2e:test:     test-results/admin-admin-Admin-Admin-Dashboard-displays-all-stat-cards-chromium-retry1/trace.zip
+web-e2e:test:     Usage:
+web-e2e:test: 
+web-e2e:test:         pnpm exec playwright show-trace test-results/admin-admin-Admin-Admin-Dashboard-displays-all-stat-cards-chromium-retry1/trace.zip
+web-e2e:test: 
+web-e2e:test:     ────────────────────────────────────────────────────────────────────────────────────────────────
+web-e2e:test: 
+web-e2e:test: 
+web-e2e:test: [1A[2K  10) [chromium] › tests/account/account.spec.ts:31:6 › Account Settings › user can update their email 
+web-e2e:test: 
+web-e2e:test:     Error: browserType.launch: Executable doesn't exist at /home/msmith/.cache/ms-playwright/chromium_headless_shell-1178/chrome-linux/headless_shell
+web-e2e:test:     ╔═════════════════════════════════════════════════════════════════════════╗
+web-e2e:test:     ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+web-e2e:test:     ║ Please run the following command to download new browsers:              ║
+web-e2e:test:     ║                                                                         ║
+web-e2e:test:     ║     pnpm exec playwright install                                        ║
+web-e2e:test:     ║                                                                         ║
+web-e2e:test:     ║ <3 Playwright Team                                                      ║
+web-e2e:test:     ╚═════════════════════════════════════════════════════════════════════════╝
+web-e2e:test: 
+web-e2e:test:     Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+web-e2e:test: 
+web-e2e:test:     Test was interrupted.
+web-e2e:test: 
+web-e2e:test:     attachment #1: trace (application/zip) ─────────────────────────────────────────────────────────
+web-e2e:test:     test-results/account-account-Account-Settings-user-can-update-their-email-chromium-retry1/trace.zip
+web-e2e:test:     Usage:
+web-e2e:test: 
+web-e2e:test:         pnpm exec playwright show-trace test-results/account-account-Account-Settings-user-can-update-their-email-chromium-retry1/trace.zip
+web-e2e:test: 
+web-e2e:test:     ────────────────────────────────────────────────────────────────────────────────────────────────
+web-e2e:test: 
+web-e2e:test: 
+web-e2e:test: [1A[2K[33/37] [chromium] › tests/account/account.spec.ts:55:6 › Account Deletion › user can delete their own account (retry #1)
+web-e2e:test: [1A[2K  11) [chromium] › tests/authentication/auth.spec.ts:97:6 › Protected routes › will redirect to the sign-in page if not authenticated 
+web-e2e:test: 
+web-e2e:test:     Error: browserType.launch: Executable doesn't exist at /home/msmith/.cache/ms-playwright/chromium_headless_shell-1178/chrome-linux/headless_shell
+web-e2e:test:     ╔═════════════════════════════════════════════════════════════════════════╗
+web-e2e:test:     ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+web-e2e:test:     ║ Please run the following command to download new browsers:              ║
+web-e2e:test:     ║                                                                         ║
+web-e2e:test:     ║     pnpm exec playwright install                                        ║
+web-e2e:test:     ║                                                                         ║
+web-e2e:test:     ║ <3 Playwright Team                                                      ║
+web-e2e:test:     ╚═════════════════════════════════════════════════════════════════════════╝
+web-e2e:test: 
+web-e2e:test:     Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+web-e2e:test: 
+web-e2e:test:     Test was interrupted.
+web-e2e:test: 
+web-e2e:test:     attachment #1: trace (application/zip) ─────────────────────────────────────────────────────────
+web-e2e:test:     test-results/authentication-auth-Protec-08183-n-page-if-not-authenticated-chromium-retry1/trace.zip
+web-e2e:test:     Usage:
+web-e2e:test: 
+web-e2e:test:         pnpm exec playwright show-trace test-results/authentication-auth-Protec-08183-n-page-if-not-authenticated-chromium-retry1/trace.zip
+web-e2e:test: 
+web-e2e:test:     ────────────────────────────────────────────────────────────────────────────────────────────────
+web-e2e:test: 
+web-e2e:test: 
+web-e2e:test: [1A[2K  12) [chromium] › tests/account/account.spec.ts:55:6 › Account Deletion › user can delete their own account 
+web-e2e:test: 
+web-e2e:test:     Error: browserType.launch: Executable doesn't exist at /home/msmith/.cache/ms-playwright/chromium_headless_shell-1178/chrome-linux/headless_shell
+web-e2e:test:     ╔═════════════════════════════════════════════════════════════════════════╗
+web-e2e:test:     ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+web-e2e:test:     ║ Please run the following command to download new browsers:              ║
+web-e2e:test:     ║                                                                         ║
+web-e2e:test:     ║     pnpm exec playwright install                                        ║
+web-e2e:test:     ║                                                                         ║
+web-e2e:test:     ║ <3 Playwright Team                                                      ║
+web-e2e:test:     ╚═════════════════════════════════════════════════════════════════════════╝
+web-e2e:test: 
+web-e2e:test:     Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+web-e2e:test: 
+web-e2e:test:     Test was interrupted.
+web-e2e:test: 
+web-e2e:test:     attachment #1: trace (application/zip) ─────────────────────────────────────────────────────────
+web-e2e:test:     test-results/account-account-Account-De-0ff46-an-delete-their-own-account-chromium-retry1/trace.zip
+web-e2e:test:     Usage:
+web-e2e:test: 
+web-e2e:test:         pnpm exec playwright show-trace test-results/account-account-Account-De-0ff46-an-delete-their-own-account-chromium-retry1/trace.zip
+web-e2e:test: 
+web-e2e:test:     ────────────────────────────────────────────────────────────────────────────────────────────────
+web-e2e:test: 
+web-e2e:test: 
+web-e2e:test: [1A[2K  12 failed
+web-e2e:test:     [chromium] › tests/account/account.spec.ts:17:6 › Account Settings › user can update their profile name 
+web-e2e:test:     [chromium] › tests/account/account.spec.ts:31:6 › Account Settings › user can update their email 
+web-e2e:test:     [chromium] › tests/account/account.spec.ts:37:6 › Account Settings › user can update their password 
+web-e2e:test:     [chromium] › tests/account/account.spec.ts:55:6 › Account Deletion › user can delete their own account 
+web-e2e:test:     [chromium] › tests/admin/admin.spec.ts:9:6 › Admin Auth flow without MFA › will return a 404 for non-admin users 
+web-e2e:test:     [chromium] › tests/admin/admin.spec.ts:26:6 › Admin Auth flow without MFA › will redirect to 404 for admin users without MFA 
+web-e2e:test:     [chromium] › tests/admin/admin.spec.ts:49:7 › Admin › Admin Dashboard › displays all stat cards 
+web-e2e:test:     [chromium] › tests/authentication/auth.spec.ts:10:6 › Auth flow › will sign-up and redirect to the home page 
+web-e2e:test:     [chromium] › tests/authentication/auth.spec.ts:80:6 › Protected routes › when logged out, redirects to the correct page after sign in 
+web-e2e:test:     [chromium] › tests/authentication/auth.spec.ts:97:6 › Protected routes › will redirect to the sign-in page if not authenticated 
+web-e2e:test:     [chromium] › tests/authentication/auth.spec.ts:131:6 › Last auth method tracking › should show last used method hint on sign-in page after password sign-in 
+web-e2e:test:     [chromium] › tests/authentication/auth.spec.ts:148:6 › Last auth method tracking › should show existing account hint on sign-up page after previous sign-in 
+web-e2e:test:   25 did not run
+web-e2e:test:   1 error was not a part of any test, see above for details
+web-e2e:test: 
+web-e2e:test: [36m  Serving HTML report at http://localhost:34373. Press Ctrl+C to quit.[39m
+payload:test:  ✓ src/lib/form-submission-protection.test.ts > FormSubmissionProtectionManager > Initialization & Hydration Detection > handles hydration timeout gracefully 102ms
+payload:test:  ✓ src/lib/form-submission-protection.test.ts > FormSubmissionProtectionManager > Initialization & Hydration Detection > counts hydration signals correctly 2ms
+payload:test:  ✓ src/lib/form-submission-protection.test.ts > FormSubmissionProtectionManager > Form Tracking & Detection > scans and tracks forms with correct selectors 4ms
+payload:test:  ✓ src/lib/form-submission-protection.test.ts > FormSubmissionProtectionManager > Form Tracking & Detection > determines form type ultra-conservatively 2ms
+payload:test:  ✓ src/lib/form-submission-protection.test.ts > FormSubmissionProtectionManager > Form Tracking & Detection > tracks forms in memory without DOM modifications 1ms
+payload:test:  ✓ src/lib/form-submission-protection.test.ts > FormSubmissionProtectionManager > Form Tracking & Detection > handles duplicate form tracking gracefully 2ms
+payload:test:  ✓ src/lib/form-submission-protection.test.ts > FormSubmissionProtectionManager > Form Submission Protection > prevents duplicate form submissions 5ms
+payload:test:  ✓ src/lib/form-submission-protection.test.ts > FormSubmissionProtectionManager > Form Submission Protection > creates tracker for untracked forms on submission 2ms
+payload:test:  ✓ src/lib/form-submission-protection.test.ts > FormSubmissionProtectionManager > Form Submission Protection > sets submission state correctly 2ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/tiptap-transformer.test.ts > TipTapTransformer > transform > should transform a simple TipTap document with title 2ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/tiptap-transformer.test.ts > TipTapTransformer > transform > should transform a JSON string document 0ms
+web:test:  × app/home/(user)/ai/storyboard/_lib/services/tiptap-transformer.test.ts > TipTapTransformer > transform > should handle invalid JSON string gracefully 5ms
+web:test:    → expected "spy" to be called with arguments: [ …(2) ][90m
+web:test: 
+web:test: Number of calls: [1m0[22m
+web:test: [39m
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/tiptap-transformer.test.ts > TipTapTransformer > transform > should use fallback title when no level 1 heading exists 0ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/tiptap-transformer.test.ts > TipTapTransformer > transform > should create multiple slides from multiple headings 0ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/tiptap-transformer.test.ts > TipTapTransformer > transform > should handle empty document 0ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/tiptap-transformer.test.ts > TipTapTransformer > Layout Detection > should detect two-column layout from level 3 headings 1ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/tiptap-transformer.test.ts > TipTapTransformer > Layout Detection > should detect three-column layout from three level 3 headings 0ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/tiptap-transformer.test.ts > TipTapTransformer > Layout Detection > should detect bullet-list layout from bullet content 0ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/tiptap-transformer.test.ts > TipTapTransformer > Layout Detection > should detect chart layout from numerical content 0ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/tiptap-transformer.test.ts > TipTapTransformer > Chart Data Detection > should detect percentage patterns 0ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/tiptap-transformer.test.ts > TipTapTransformer > Chart Data Detection > should detect multiple numbers as potential data 0ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/tiptap-transformer.test.ts > TipTapTransformer > Chart Data Detection > should detect trend keywords 0ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/tiptap-transformer.test.ts > TipTapTransformer > Content Processing > should process bullet lists correctly 0ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/tiptap-transformer.test.ts > TipTapTransformer > Content Processing > should process nested lists correctly 0ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/tiptap-transformer.test.ts > TipTapTransformer > Content Processing > should handle ordered lists 0ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/tiptap-transformer.test.ts > TipTapTransformer > Content Processing > should extract text from complex nested structures 0ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/tiptap-transformer.test.ts > TipTapTransformer > Title Extraction > should extract title from first level 1 heading 0ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/tiptap-transformer.test.ts > TipTapTransformer > Title Extraction > should return null when no level 1 heading exists 0ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/tiptap-transformer.test.ts > TipTapTransformer > Title Extraction > should handle empty heading 0ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/tiptap-transformer.test.ts > TipTapTransformer > Edge Cases > should handle document with only whitespace 0ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/tiptap-transformer.test.ts > TipTapTransformer > Edge Cases > should handle nodes without content property 0ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/tiptap-transformer.test.ts > TipTapTransformer > Edge Cases > should handle very deep nesting without stack overflow 0ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/tiptap-transformer.test.ts > TipTapTransformer > Edge Cases > should handle null/undefined values gracefully 0ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/tiptap-transformer.test.ts > TipTapTransformer > Edge Cases > should handle special characters and Unicode 0ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/tiptap-transformer.test.ts > TipTapTransformer > Edge Cases > should handle level 4+ headings as content 0ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/tiptap-transformer.test.ts > TipTapTransformer > Document Metadata > should use document meta sectionType as fallback title 0ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/tiptap-transformer.test.ts > TipTapTransformer > Document Metadata > should prioritize parameter title over meta sectionType 0ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/tiptap-transformer.test.ts > TipTapTransformer > Subheadline Normalization > should normalize subheadlines for two-column layout 0ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/tiptap-transformer.test.ts > TipTapTransformer > Subheadline Normalization > should truncate excess subheadlines 0ms
+payload:test:  ✓ src/lib/form-submission-protection.test.ts > FormSubmissionProtectionManager > Timeout Handling > handles submission timeout correctly 103ms
+payload:test:  ✓ src/lib/form-submission-protection.test.ts > FormSubmissionProtectionManager > Success/Error Handling > marks submission success correctly 2ms
+payload:test:  ✓ src/lib/form-submission-protection.test.ts > FormSubmissionProtectionManager > Success/Error Handling > marks submission error correctly 2ms
+payload:test:  ✓ src/lib/form-submission-protection.test.ts > FormSubmissionProtectionManager > Status Reporting > reports accurate status for tracked forms 1ms
+payload:test:  ✓ src/lib/form-submission-protection.test.ts > FormSubmissionProtectionManager > Status Reporting > includes hydration status in report 1ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/storyboard-service-client.test.ts > StoryboardService > getStoryboard > should return existing storyboard data 2ms
+web:test:  × app/home/(user)/ai/storyboard/_lib/services/storyboard-service-client.test.ts > StoryboardService > getStoryboard > should generate storyboard from outline when storyboard is missing 3ms
+web:test:    → this.supabase.from(...).select(...).eq(...).single is not a function
+web:test:  × app/home/(user)/ai/storyboard/_lib/services/storyboard-service-client.test.ts > StoryboardService > getStoryboard > should handle missing storyboard column gracefully 1ms
+web:test:    → this.supabase.from(...).select(...).eq(...).single is not a function
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/storyboard-service-client.test.ts > StoryboardService > getStoryboard > should throw error when submission not found 1ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/storyboard-service-client.test.ts > StoryboardService > getStoryboard > should handle invalid JSON in outline 0ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/storyboard-service-client.test.ts > StoryboardService > saveStoryboard > should save storyboard successfully 1ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/storyboard-service-client.test.ts > StoryboardService > saveStoryboard > should handle missing storyboard column during save 0ms
+web:test:  × app/home/(user)/ai/storyboard/_lib/services/storyboard-service-client.test.ts > StoryboardService > saveStoryboard > should handle database errors during save 2ms
+web:test:    → promise resolved "false" instead of rejecting
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/storyboard-service-client.test.ts > StoryboardService > saveStoryboard > should handle exceptions during save operation 0ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/storyboard-service-client.test.ts > StoryboardService > listPresentations > should return list of presentations ordered by creation date 0ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/storyboard-service-client.test.ts > StoryboardService > listPresentations > should return empty array when no presentations exist 0ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/storyboard-service-client.test.ts > StoryboardService > listPresentations > should handle database errors during listing 0ms
+web:test:  ✓ app/home/(user)/ai/storyboard/_lib/services/storyboard-service-client.test.ts > StoryboardService > generatePowerPoint > should throw not implemented error 0ms
+web:test:  × app/home/(user)/ai/storyboard/_lib/services/storyboard-service-client.test.ts > StoryboardService > generateStoryboardFromOutline (private method testing) > should generate slides from headings with correct layouts 0ms
+web:test:    → this.supabase.from(...).select(...).eq(...).single is not a function
+web:test:  × app/home/(user)/ai/storyboard/_lib/services/storyboard-service-client.test.ts > StoryboardService > generateStoryboardFromOutline (private method testing) > should handle subheadlines from level 3 headings 0ms
+web:test:    → this.supabase.from(...).select(...).eq(...).single is not a function
+web:test:  × app/home/(user)/ai/storyboard/_lib/services/storyboard-service-client.test.ts > StoryboardService > generateStoryboardFromOutline (private method testing) > should create default title slide when no content exists 0ms
+web:test:    → this.supabase.from(...).select(...).eq(...).single is not a function
+web:test:  × app/home/(user)/ai/storyboard/_lib/services/storyboard-service-client.test.ts > StoryboardService > generateStoryboardFromOutline (private method testing) > should extract title from first level 1 heading 0ms
+web:test:    → this.supabase.from(...).select(...).eq(...).single is not a function
+web:test:  × app/home/(user)/ai/storyboard/_lib/services/storyboard-service-client.test.ts > StoryboardService > generateStoryboardFromOutline (private method testing) > should handle nested text content in headings 0ms
+web:test:    → this.supabase.from(...).select(...).eq(...).single is not a function
+web:test:  × app/home/(user)/ai/storyboard/_lib/services/storyboard-service-client.test.ts > StoryboardService > generateStoryboardFromOutline (private method testing) > should handle outline without content property 0ms
+web:test:    → this.supabase.from(...).select(...).eq(...).single is not a function
+web:test:  × app/home/(user)/ai/storyboard/_lib/services/storyboard-service-client.test.ts > StoryboardService > generateStoryboardFromOutline (private method testing) > should assign proper order to slides 0ms
+web:test:    → this.supabase.from(...).select(...).eq(...).single is not a function
+web:test:  × app/home/(user)/ai/storyboard/_lib/services/storyboard-service-client.test.ts > StoryboardService > generateStoryboardFromOutline (private method testing) > should handle nodes without text content 0ms
+web:test:    → this.supabase.from(...).select(...).eq(...).single is not a function
+web:test:  × app/home/(user)/ai/storyboard/_lib/services/storyboard-service-client.test.ts > StoryboardService > edge cases and error handling > should handle complex nested outline structure 1ms
+web:test:    → this.supabase.from(...).select(...).eq(...).single is not a function
+web:test:  × app/home/(user)/ai/storyboard/_lib/services/storyboard-service-client.test.ts > StoryboardService > edge cases and error handling > should handle outline as object instead of string 1ms
+web:test:    → this.supabase.from(...).select(...).eq(...).single is not a function
+web:test:  × app/home/(user)/ai/canvas/_lib/contexts/cost-tracking-context.test.tsx > CostTrackingContext > Provider Component > initializes with default values when user is not loaded 4ms
+web:test:    → React is not defined
+web:test:  × app/home/(user)/ai/canvas/_lib/contexts/cost-tracking-context.test.tsx > CostTrackingContext > Provider Component > generates session ID when user loads 1ms
+web:test:    → React is not defined
+web:test:  × app/home/(user)/ai/canvas/_lib/contexts/cost-tracking-context.test.tsx > CostTrackingContext > Provider Component > fetches initial costs on user load 0ms
+web:test:    → React is not defined
+web:test:  × app/home/(user)/ai/canvas/_lib/contexts/cost-tracking-context.test.tsx > CostTrackingContext > Provider Component > handles successful API response with zero cost 0ms
+web:test:    → React is not defined
+web:test:  × app/home/(user)/ai/canvas/_lib/contexts/cost-tracking-context.test.tsx > CostTrackingContext > Provider Component > handles successful API response with existing cost 0ms
+web:test:    → React is not defined
+web:test:  × app/home/(user)/ai/canvas/_lib/contexts/cost-tracking-context.test.tsx > CostTrackingContext > Provider Component > handles API response without cost property 0ms
+web:test:    → React is not defined
+web:test:  × app/home/(user)/ai/canvas/_lib/contexts/cost-tracking-context.test.tsx > CostTrackingContext > Provider Component > handles API failure response 0ms
+web:test:    → React is not defined
+web:test:  × app/home/(user)/ai/canvas/_lib/contexts/cost-tracking-context.test.tsx > CostTrackingContext > Provider Component > handles network error 0ms
+web:test:    → React is not defined
+web:test:  × app/home/(user)/ai/canvas/_lib/contexts/cost-tracking-context.test.tsx > CostTrackingContext > Provider Component > handles malformed JSON response 0ms
+web:test:    → React is not defined
+web:test:  × app/home/(user)/ai/canvas/_lib/contexts/cost-tracking-context.test.tsx > CostTrackingContext > Provider Component > re-initializes when user ID changes 0ms
+web:test:    → React is not defined
+web:test:  × app/home/(user)/ai/canvas/_lib/contexts/cost-tracking-context.test.tsx > CostTrackingContext > addCost Function > increases session cost correctly 0ms
+web:test:    → React is not defined
+web:test:  × app/home/(user)/ai/canvas/_lib/contexts/cost-tracking-context.test.tsx > CostTrackingContext > addCost Function > handles decimal values 0ms
+web:test:    → React is not defined
+web:test:  × app/home/(user)/ai/canvas/_lib/contexts/cost-tracking-context.test.tsx > CostTrackingContext > addCost Function > handles multiple sequential additions 0ms
+web:test:    → React is not defined
+web:test:  × app/home/(user)/ai/canvas/_lib/contexts/cost-tracking-context.test.tsx > CostTrackingContext > addCost Function > handles zero values 0ms
+web:test:    → React is not defined
+web:test:  × app/home/(user)/ai/canvas/_lib/contexts/cost-tracking-context.test.tsx > CostTrackingContext > addCost Function > handles negative values (edge case) 0ms
+web:test:    → React is not defined
+web:test:  × app/home/(user)/ai/canvas/_lib/contexts/cost-tracking-context.test.tsx > CostTrackingContext > useCostTracking Hook > returns context values correctly 0ms
+web:test:    → React is not defined
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/contexts/cost-tracking-context.test.tsx > CostTrackingContext > useCostTracking Hook > throws error when used outside provider 8ms
+web:test:  × app/home/(user)/ai/canvas/_lib/contexts/cost-tracking-context.test.tsx > CostTrackingContext > useCostTracking Hook > addCost function from hook updates context state 0ms
+web:test:    → React is not defined
+web:test:  × app/home/(user)/ai/canvas/_lib/contexts/cost-tracking-context.test.tsx > CostTrackingContext > Integration Tests > complete user flow from loading to cost tracking 0ms
+web:test:    → React is not defined
+web:test:  × app/home/(user)/ai/canvas/_lib/contexts/cost-tracking-context.test.tsx > CostTrackingContext > Integration Tests > multiple components can share cost tracking state 0ms
+web:test:    → React is not defined
+web:test:  × app/home/(user)/ai/canvas/_lib/contexts/cost-tracking-context.test.tsx > CostTrackingContext > Edge Cases > handles very large cost values 0ms
+web:test:    → React is not defined
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/utils/normalize-editor-content.test.ts > normalizeEditorContent > Core Functionality - Main Function > should normalize valid TiptapDocument and add metadata 2ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/utils/normalize-editor-content.test.ts > normalizeEditorContent > Core Functionality - Main Function > should normalize JSON string content 0ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/utils/normalize-editor-content.test.ts > normalizeEditorContent > Core Functionality - Main Function > should apply outline-specific transformations when sectionType is outline 0ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/utils/normalize-editor-content.test.ts > normalizeEditorContent > Core Functionality - Main Function > should not add outline heading if one already exists 0ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/utils/normalize-editor-content.test.ts > normalizeEditorContent > Content Parsing Tests > should handle null input gracefully 0ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/utils/normalize-editor-content.test.ts > normalizeEditorContent > Content Parsing Tests > should handle undefined input gracefully 0ms
+web:test:  × app/home/(user)/ai/canvas/_lib/utils/normalize-editor-content.test.ts > normalizeEditorContent > Content Parsing Tests > should handle invalid JSON string 4ms
+web:test:    → expected "error" to be called with arguments: [ …(2) ][90m
+web:test: 
+web:test: Number of calls: [1m0[22m
+web:test: [39m
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/utils/normalize-editor-content.test.ts > normalizeEditorContent > Content Parsing Tests > should handle empty string 0ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/utils/normalize-editor-content.test.ts > normalizeEditorContent > Content Parsing Tests > should handle non-object, non-string input 0ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/utils/normalize-editor-content.test.ts > normalizeEditorContent > Node Structure Normalization Tests > should fix empty text nodes 0ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/utils/normalize-editor-content.test.ts > normalizeEditorContent > Node Structure Normalization Tests > should fix text nodes missing text property 0ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/utils/normalize-editor-content.test.ts > normalizeEditorContent > Node Structure Normalization Tests > should fix paragraphs without content 0ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/utils/normalize-editor-content.test.ts > normalizeEditorContent > Node Structure Normalization Tests > should fix paragraphs with empty content array 0ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/utils/normalize-editor-content.test.ts > normalizeEditorContent > Node Structure Normalization Tests > should fix empty bullet lists 0ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/utils/normalize-editor-content.test.ts > normalizeEditorContent > Node Structure Normalization Tests > should fix empty ordered lists 0ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/utils/normalize-editor-content.test.ts > normalizeEditorContent > Node Structure Normalization Tests > should fix list items without paragraph content 0ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/utils/normalize-editor-content.test.ts > normalizeEditorContent > Node Structure Normalization Tests > should fix malformed list items in lists 0ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/utils/normalize-editor-content.test.ts > normalizeEditorContent > Nested Structure Tests > should recursively normalize nested content 0ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/utils/normalize-editor-content.test.ts > normalizeEditorContent > Nested Structure Tests > should handle malformed nested arrays with null elements 0ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/utils/normalize-editor-content.test.ts > normalizeEditorContent > Nested Structure Tests > should handle deeply nested structures 0ms
+web:test:  × app/home/(user)/ai/canvas/_lib/utils/normalize-editor-content.test.ts > normalizeEditorContent > Schema Validation Tests > should validate document type is "doc" 0ms
+web:test:    → expected "error" to be called with arguments: [ 'Schema validation failed:', …(1) ][90m
+web:test: 
+web:test: Number of calls: [1m0[22m
+web:test: [39m
+web:test:  × app/home/(user)/ai/canvas/_lib/utils/normalize-editor-content.test.ts > normalizeEditorContent > Schema Validation Tests > should validate root content array exists 0ms
+web:test:    → expected "error" to be called with arguments: [ 'Schema validation failed:', …(1) ][90m
+web:test: 
+web:test: Number of calls: [1m0[22m
+web:test: [39m
+web:test:  × app/home/(user)/ai/canvas/_lib/utils/normalize-editor-content.test.ts > normalizeEditorContent > Schema Validation Tests > should validate nodes have required type property 0ms
+web:test:    → expected "error" to be called with arguments: [ 'Schema validation failed:', …(1) ][90m
+web:test: 
+web:test: Number of calls: [1m0[22m
+web:test: [39m
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/utils/normalize-editor-content.test.ts > normalizeEditorContent > Schema Validation Tests > should validate and normalize text nodes missing text property 0ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/utils/normalize-editor-content.test.ts > normalizeEditorContent > Input Immutability Tests > should not mutate the original input object 0ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/utils/normalize-editor-content.test.ts > normalizeEditorContent > Input Immutability Tests > should deep clone nested structures without mutation 0ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/utils/normalize-editor-content.test.ts > normalizeEditorContent > Metadata Addition Tests > should add correct metadata for all section types 0ms
+web:test:  ✓ app/home/(user)/ai/canvas/_lib/utils/normalize-editor-content.test.ts > normalizeEditorContent > Metadata Addition Tests > should override existing metadata with new metadata structure 0ms
+payload:test:  ✓ src/lib/form-submission-protection.test.ts > FormSubmissionProtectionManager > Mutation Observer > sets up mutation observer on initialization 102ms
+payload:test:  ✓ src/lib/form-submission-protection.test.ts > FormSubmissionProtectionManager > Cleanup > disconnects all observers on cleanup 101ms
+payload:test:  ✓ src/lib/form-submission-protection.test.ts > FormSubmissionProtectionManager > Cleanup > clears all tracking data on cleanup 1ms
+payload:test:  ✓ src/lib/form-submission-protection.test.ts > FormSubmissionProtectionManager > Button Click Protection > handles button interaction within forms 3ms
+payload:test:  ✓ src/lib/form-submission-protection.test.ts > FormSubmissionProtectionManager > Button Click Protection > prevents interactions on disabled buttons 1ms
+payload:test:  ✓ src/lib/form-submission-protection.test.ts > Global Singleton Management > returns same instance from getFormSubmissionProtectionManager 0ms
+payload:test:  ✓ src/lib/form-submission-protection.test.ts > Global Singleton Management > initializes global instance correctly 0ms
+payload:test:  ✓ src/lib/form-submission-protection.test.ts > Global Singleton Management > cleans up global instance 0ms
+payload:test: 
+payload:test: ⎯⎯⎯⎯⎯⎯ Failed Tests 15 ⎯⎯⎯⎯⎯⎯⎯
+payload:test: 
+payload:test:  FAIL  src/lib/enhanced-api-wrapper.test.ts > EnhancedAPIManager > Metrics Management > should calculate moving average response time correctly
+payload:test: AssertionError: expected 0 to be greater than 0
+payload:test:  ❯ src/lib/enhanced-api-wrapper.test.ts:509:40
+payload:test:     507|    let metrics = manager.getMetrics();
+payload:test:     508|    expect(metrics.successfulRequests).toBe(1);
+payload:test:     509|    expect(metrics.averageResponseTime).toBeGreaterThan(0);
+payload:test:        |                                        ^
+payload:test:     510| 
+payload:test:     511|    await enhancedHandlers[1](request);
+payload:test: 
+payload:test: ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/15]⎯
+payload:test: 
+payload:test:  FAIL  src/lib/request-deduplication.test.ts > RequestDeduplicationManager > Deduplication Decision Logic > should only deduplicate POST/PUT/PATCH requests
+payload:test: AssertionError: expected "spy" to be called 4 times, but got 3 times
+payload:test:  ❯ src/lib/request-deduplication.test.ts:298:20
+payload:test:     296|    await manager.processRequest(deleteRequest, handler);
+payload:test:     297| 
+payload:test:     298|    expect(handler).toHaveBeenCalledTimes(4);
+payload:test:        |                    ^
+payload:test:     299|   });
+payload:test:     300| 
+payload:test: 
+payload:test: ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/15]⎯
+payload:test: 
+payload:test:  FAIL  src/lib/request-deduplication.test.ts > RequestDeduplicationManager > Statistics and Monitoring > should return accurate cache statistics
+payload:test: AssertionError: expected 2 to be 1 // Object.is equality
+payload:test: 
+payload:test: [32m- Expected[39m
+payload:test: [31m+ Received[39m
+payload:test: 
+payload:test: [32m- 1[39m
+payload:test: [31m+ 2[39m
+payload:test: 
+payload:test:  ❯ src/lib/request-deduplication.test.ts:623:31
+payload:test:     621| 
+payload:test:     622|    stats = manager.getStats();
+payload:test:     623|    expect(stats.totalEntries).toBe(1);
+payload:test:        |                               ^
+payload:test:     624|    expect(stats.completedEntries).toBe(1);
+payload:test:     625|    expect(stats.totalDuplicates).toBe(1);
+payload:test: 
+payload:test: ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/15]⎯
+payload:test: 
+payload:test:  FAIL  src/lib/request-deduplication.test.ts > RequestDeduplicationManager > Statistics and Monitoring > should track duplicate request counts correctly
+payload:test: AssertionError: expected +0 to be 3 // Object.is equality
+payload:test: 
+payload:test: [32m- Expected[39m
+payload:test: [31m+ Received[39m
+payload:test: 
+payload:test: [32m- 3[39m
+payload:test: [31m+ 0[39m
+payload:test: 
+payload:test:  ❯ src/lib/request-deduplication.test.ts:648:34
+payload:test:     646| 
+payload:test:     647|    const stats = manager.getStats();
+payload:test:     648|    expect(stats.totalDuplicates).toBe(3);
+payload:test:        |                                  ^
+payload:test:     649|    expect(handler).toHaveBeenCalledTimes(1);
+payload:test:     650|   });
+payload:test: 
+payload:test: ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/15]⎯
+payload:test: 
+payload:test:  FAIL  src/lib/request-deduplication.test.ts > RequestDeduplicationManager > Logging System > should log initialization message
+payload:test: AssertionError: expected "spy" to be called with arguments: [ StringContaining "[REQ-DEDUP-INFO]" ][90m
+payload:test: 
+payload:test: Number of calls: [1m0[22m
+payload:test: [39m
+payload:test:  ❯ src/lib/request-deduplication.test.ts:658:28
+payload:test:     656|    getDeduplicationManager();
+payload:test:     657| 
+payload:test:     658|    expect(consoleMock.log).toHaveBeenCalledWith(
+payload:test:        |                            ^
+payload:test:     659|     expect.stringContaining("[REQ-DEDUP-INFO]"),
+payload:test:     660|    );
+payload:test: 
+payload:test: ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/15]⎯
+payload:test: 
+payload:test:  FAIL  src/lib/request-deduplication.test.ts > RequestDeduplicationManager > Logging System > should log cache hits with appropriate level
+payload:test: AssertionError: expected "spy" to be called with arguments: [ StringContaining{…} ][90m
+payload:test: 
+payload:test: Number of calls: [1m0[22m
+payload:test: [39m
+payload:test:  ❯ src/lib/request-deduplication.test.ts:684:28
+payload:test:     682|    await manager.processRequest(request.clone(), handler); // Cache hit
+payload:test:     683| 
+payload:test:     684|    expect(consoleMock.log).toHaveBeenCalledWith(
+payload:test:        |                            ^
+payload:test:     685|     expect.stringContaining("Returning cached response"),
+payload:test:     686|    );
+payload:test: 
+payload:test: ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/15]⎯
+payload:test: 
+payload:test:  FAIL  src/lib/request-deduplication.test.ts > RequestDeduplicationManager > Integration Scenarios > should handle complete request lifecycle correctly
+payload:test: TypeError: Response.clone: Body has already been consumed.
+payload:test:  ❯ RequestDeduplicationManager.serializeResponse src/lib/request-deduplication.ts:127:27
+payload:test:     125|   response: NextResponse,
+payload:test:     126|  ): Promise<CachedResponse> {
+payload:test:     127|   const cloned = response.clone();
+payload:test:        |                           ^
+payload:test:     128|   const body = await cloned.text();
+payload:test:     129| 
+payload:test:  ❯ RequestDeduplicationManager.processRequest src/lib/request-deduplication.ts:272:38
+payload:test:  ❯ src/lib/request-deduplication.test.ts:817:20
+payload:test: 
+payload:test: ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/15]⎯
+payload:test: 
+payload:test:  FAIL  src/lib/storage-url-generators.test.ts > Storage URL Generators > createURLGenerator (Enhanced Generator) > should handle missing filename with warning log and placeholder URL
+payload:test: AssertionError: expected "spy" to be called with arguments: [ Array(1) ][90m
+payload:test: 
+payload:test: Number of calls: [1m0[22m
+payload:test: [39m
+payload:test:  ❯ src/lib/storage-url-generators.test.ts:316:28
+payload:test:     314|    // Assert
+payload:test:     315|    expect(result).toBe("/uploads/placeholder-media.png");
+payload:test:     316|    expect(mockConsoleWarn).toHaveBeenCalledWith(
+payload:test:        |                            ^
+payload:test:     317|     "[URL-GENERATOR] Warning: Filename is missing for media URL genera…
+payload:test:     318|    );
+payload:test: 
+payload:test: ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/15]⎯
+payload:test: 
+payload:test:  FAIL  src/lib/storage-url-generators.test.ts > Storage URL Generators > createURLGenerator (Enhanced Generator) > should handle undefined filename with warning log and placeholder URL
+payload:test: AssertionError: expected "spy" to be called with arguments: [ Array(1) ][90m
+payload:test: 
+payload:test: Number of calls: [1m0[22m
+payload:test: [39m
+payload:test:  ❯ src/lib/storage-url-generators.test.ts:330:28
+payload:test:     328|    // Assert
+payload:test:     329|    expect(result).toBe("/uploads/placeholder-downloads.png");
+payload:test:     330|    expect(mockConsoleWarn).toHaveBeenCalledWith(
+payload:test:        |                            ^
+payload:test:     331|     "[URL-GENERATOR] Warning: Filename is missing for downloads URL ge…
+payload:test:     332|    );
+payload:test: 
+payload:test: ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/15]⎯
+payload:test: 
+payload:test:  FAIL  src/lib/storage-url-generators.test.ts > Storage URL Generators > createURLGenerator (Enhanced Generator) > should log generated URL in development mode
+payload:test: AssertionError: expected "spy" to be called with arguments: [ Array(1) ][90m
+payload:test: 
+payload:test: Number of calls: [1m0[22m
+payload:test: [39m
+payload:test:  ❯ src/lib/storage-url-generators.test.ts:352:27
+payload:test:     350|    // Assert
+payload:test:     351|    expect(result).toBe("https://custom.domain.com/test.jpg");
+payload:test:     352|    expect(mockConsoleLog).toHaveBeenCalledWith(
+payload:test:        |                           ^
+payload:test:     353|     "[URL-GENERATOR] Generated media URL: https://custom.domain.com/te…
+payload:test:     354|    );
+payload:test: 
+payload:test: ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/15]⎯
+payload:test: 
+payload:test:  FAIL  src/lib/storage-url-generators.test.ts > Storage URL Generators > createURLGenerator (Enhanced Generator) > should handle generator function errors with error log and fallback URL
+payload:test: AssertionError: expected "spy" to be called with arguments: [ …(2) ][90m
+payload:test: 
+payload:test: Number of calls: [1m0[22m
+payload:test: [39m
+payload:test:  ❯ src/lib/storage-url-generators.test.ts:389:29
+payload:test:     387|    // Assert
+payload:test:     388|    expect(result).toBe("/uploads/test.jpg");
+payload:test:     389|    expect(mockConsoleError).toHaveBeenCalledWith(
+payload:test:        |                             ^
+payload:test:     390|     "[URL-GENERATOR] Error generating URL for media/test.jpg:",
+payload:test:     391|     expect.any(Error),
+payload:test: 
+payload:test: ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/15]⎯
+payload:test: 
+payload:test:  FAIL  src/lib/storage-url-generators.test.ts > Storage URL Generators > createURLGenerator (Enhanced Generator) > should handle error with undefined filename (missing filename branch)
+payload:test: AssertionError: expected "spy" to be called at least once
+payload:test:  ❯ src/lib/storage-url-generators.test.ts:409:28
+payload:test:     407|    // and returns placeholder URL, not the error fallback
+payload:test:     408|    expect(result).toBe("/uploads/placeholder-downloads.png");
+payload:test:     409|    expect(mockConsoleWarn).toHaveBeenCalled();
+payload:test:        |                            ^
+payload:test:     410|   });
+payload:test:     411| 
+payload:test: 
+payload:test: ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/15]⎯
+payload:test: 
+payload:test:  FAIL  src/lib/storage-url-generators.test.ts > Storage URL Generators > createURLGenerator (Enhanced Generator) > should handle error with valid filename (error fallback branch)
+payload:test: AssertionError: expected "spy" to be called at least once
+payload:test:  ❯ src/lib/storage-url-generators.test.ts:426:29
+payload:test:     424|    // triggering error handling and fallback URL
+payload:test:     425|    expect(result).toBe("/uploads/valid-file.pdf");
+payload:test:     426|    expect(mockConsoleError).toHaveBeenCalled();
+payload:test:        |                             ^
+payload:test:     427|   });
+payload:test:     428|  });
+payload:test: 
+payload:test: ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/15]⎯
+payload:test: 
+payload:test:  FAIL  src/lib/storage-url-generators.test.ts > Storage URL Generators > Edge Cases > should handle null filename in enhanced generator
+payload:test: AssertionError: expected "spy" to be called at least once
+payload:test:  ❯ src/lib/storage-url-generators.test.ts:475:28
+payload:test:     473|    // Assert
+payload:test:     474|    expect(result).toBe("/uploads/placeholder-media.png");
+payload:test:     475|    expect(mockConsoleWarn).toHaveBeenCalled();
+payload:test:        |                            ^
+payload:test:     476|   });
+payload:test:     477|  });
+payload:test: 
+payload:test: ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/15]⎯
+payload:test: 
+payload:test:  FAIL  src/lib/storage-url-generators.test.ts > Storage URL Generators > Integration Scenarios > should work end-to-end with factory and enhanced generator
+payload:test: AssertionError: expected "spy" to be called with arguments: [ Array(1) ][90m
+payload:test: 
+payload:test: Number of calls: [1m0[22m
+payload:test: [39m
+payload:test:  ❯ src/lib/storage-url-generators.test.ts:576:27
+payload:test:     574|     "https://test-bucket.test-account.r2.cloudflarestorage.com/integra…
+payload:test:     575|    );
+payload:test:     576|    expect(mockConsoleLog).toHaveBeenCalledWith(
+payload:test:        |                           ^
+payload:test:     577|     "[URL-GENERATOR] Generated media URL: https://test-bucket.test-acc…
+payload:test:     578|    );
+payload:test: 
+payload:test: ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/15]⎯
+payload:test: 
+payload:test: 
+payload:test:  Test Files  3 failed | 1 passed (4)
+payload:test:       Tests  15 failed | 113 passed (128)
+payload:test:    Start at  10:18:49
+payload:test:    Duration  2.40s (transform 287ms, setup 0ms, collect 374ms, tests 1.07s, environment 485ms, prepare 162ms)
+payload:test: 
+payload:test:  ELIFECYCLE  Test failed. See above for more details.
+payload:test: ERROR: command finished with error: command (/home/msmith/projects/2025slideheroes/apps/payload) /home/msmith/.local/share/pnpm/.tools/@pnpm+linux-x64/9.12.0/bin/pnpm run test exited (1)
+payload#test: command (/home/msmith/projects/2025slideheroes/apps/payload) /home/msmith/.local/share/pnpm/.tools/@pnpm+linux-x64/9.12.0/bin/pnpm run test exited (1)
+
+ Tasks:    2 successful, 5 total
+Cached:    2 cached, 5 total
+  Time:    3.082s 
+Failed:    payload#test
+
+ ERROR  run failed: command  exited (1)
+ ELIFECYCLE  Test failed. See above for more details.

@@ -20,7 +20,7 @@ import { RadialProgress } from "./RadialProgress";
  * @param url - Original URL
  * @returns Transformed URL or null if input is null
  */
-function transformImageUrl(url: string | null): string | null {
+function _transformImageUrl(url: string | null): string | null {
 	if (!url) return null;
 
 	// If the URL contains r2.cloudflarestorage.com, transform it to the custom domain
@@ -95,14 +95,14 @@ export function CourseDashboardClient({
 	courseProgress,
 	lessonProgress,
 	quizAttempts,
-	userId,
+	userId: _userId,
 }: CourseDashboardClientProps) {
 	const _supabase = useSupabase();
 	const [lessons, setLessons] = useState<CourseLesson[]>([]);
 	const [displayedLessons, setDisplayedLessons] = useState<CourseLesson[]>([]);
 	const [isCourseCompleted, setIsCourseCompleted] = useState<boolean>(false);
 	// Cache to remember failed image URLs to prevent repeated errors
-	const [failedImageUrls, setFailedImageUrls] = useState<Set<string>>(
+	const [_failedImageUrls, _setFailedImageUrls] = useState<Set<string>>(
 		new Set(),
 	);
 

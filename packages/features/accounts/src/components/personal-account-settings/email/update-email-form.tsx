@@ -14,12 +14,12 @@ import {
 } from "@kit/ui/form";
 import { If } from "@kit/ui/if";
 import { Input } from "@kit/ui/input";
+import { toast } from "@kit/ui/sonner";
 import { Trans } from "@kit/ui/trans";
 import { CheckIcon } from "@radix-ui/react-icons";
 import type { User } from "@supabase/supabase-js";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
 
 import { UpdateEmailSchema } from "../../../schema/update-email.schema";
 

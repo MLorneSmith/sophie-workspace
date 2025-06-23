@@ -1,8 +1,12 @@
 import { BaselimeRum } from "@baselime/react-rum";
 import { MonitoringContext } from "@kit/monitoring-core";
+import type React from "react";
 import { useRef } from "react";
 
 import { useBaselime } from "../hooks/use-baselime";
+
+type ErrorPageProps = Record<string, unknown>;
+type ErrorPageComponent = React.FunctionComponent<ErrorPageProps>;
 
 export function BaselimeProvider({
 	children,
@@ -12,7 +16,10 @@ export function BaselimeProvider({
 }: React.PropsWithChildren<{
 	apiKey?: string;
 	enableWebVitals?: boolean;
-	ErrorPage?: React.ReactElement;
+	ErrorPage?: React.ReactElement<
+		ErrorPageProps,
+		string | ErrorPageComponent | typeof React.Component
+	> | null;
 }>) {
 	const key = apiKey ?? process.env.NEXT_PUBLIC_BASELIME_KEY ?? "";
 
@@ -28,8 +35,7 @@ export function BaselimeProvider({
 		<BaselimeRum
 			apiKey={key}
 			enableWebVitals={enableWebVitals}
-			// @ts-expect-error - BaselimeRum expects React 18 types, but we're using React 19
-			fallback={ErrorPage ?? undefined}
+			fallback={ErrorPage ?? null}
 		>
 			<MonitoringProvider>{children}</MonitoringProvider>
 		</BaselimeRum>
@@ -42,7 +48,6 @@ function MonitoringProvider(props: React.PropsWithChildren) {
 
 	return (
 		<MonitoringContext.Provider value={provider.current}>
-			{/* @ts-expect-error - React 18/19 type mismatch with BaselimeRum */}
 			{props.children}
 		</MonitoringContext.Provider>
 	);

@@ -12,6 +12,19 @@ interface CookieOptions {
 	sameSite?: "strict" | "lax" | "none";
 }
 
+// Type definition for the Cookie Store API
+interface CookieStore {
+	set(options: {
+		name: string;
+		value: string;
+		path?: string;
+		expires?: Date;
+		domain?: string;
+		secure?: boolean;
+		sameSite?: "strict" | "lax" | "none";
+	}): Promise<void>;
+}
+
 /**
  * Sets a cookie value using the modern approach when available,
  * falls back to document.cookie for compatibility
@@ -41,7 +54,9 @@ export function setCookie(
 
 		// Note: cookieStore.set() returns a Promise, but we don't await it
 		// to maintain synchronous behavior expected by calling code
-		(window as any).cookieStore.set(cookieOptions).catch((_error: Error) => {
+		const cookieStore = (window as unknown as { cookieStore: CookieStore })
+			.cookieStore;
+		cookieStore.set(cookieOptions).catch((_error: Error) => {
 			// TODO: Async logger needed
 			// (await getLogger()).warn('Failed to set cookie via Cookie Store API:', { data: error });
 			// Fallback to document.cookie
@@ -90,7 +105,8 @@ function setViaDOMCookie(
 	}
 
 	// Intentional direct cookie assignment for compatibility - exempt from linting rule
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+	// Cookie Store API is not available in all browsers, so we use the traditional approach
+	// biome-ignore lint/suspicious/noDocumentCookie: Required for browser compatibility
 	document.cookie = parts.join("; ");
 }
 

@@ -36,41 +36,14 @@ type QuizAttempt = Database["public"]["Tables"]["quiz_attempts"]["Row"];
 type LessonProgress = Database["public"]["Tables"]["lesson_progress"]["Row"];
 type SurveyResponse = Database["public"]["Tables"]["survey_responses"]["Row"];
 
-// Payload CMS types
-interface PayloadQuiz {
-	id: string;
-	title?: string;
-	questions: Array<{
-		id: string;
-		question: string;
-		questiontype: "single-answer" | "multi-answer";
-		options: Array<{
-			text: string;
-			iscorrect: boolean;
-		}>;
-	}>;
-	passingScore: number;
-}
+// Payload CMS types (removed duplicates - these interfaces are defined below)
 
-interface PayloadSurvey {
-	id: string;
-	title: string;
-	questions: Array<{
-		id: string;
-		text: string;
-		type: string;
-		category: string;
-		position: number;
-		options: Array<{
-			id: string;
-			text: string;
-		}>;
-	}>;
-}
+// Define types for content that can be rendered by PayloadContentRenderer
+type PayloadContent = string | Record<string, unknown> | unknown;
 
 interface PayloadLesson {
 	title: string;
-	content: string | any;
+	content: PayloadContent;
 	lessonNumber: number;
 	lesson_number?: number | string;
 	id: string;
@@ -85,12 +58,12 @@ interface PayloadLesson {
 	bunny_library_id?: string | null;
 	video_source_type?: string | null;
 	youtube_video_id?: string | null;
-	todo?: any;
+	todo?: PayloadContent;
 	todo_complete_quiz?: boolean | null;
-	todo_watch_content?: any;
-	todo_read_content?: any;
-	todo_course_project?: any;
-	downloads?: any[];
+	todo_watch_content?: PayloadContent;
+	todo_read_content?: PayloadContent;
+	todo_course_project?: PayloadContent;
+	downloads?: Download[];
 }
 
 interface Download {

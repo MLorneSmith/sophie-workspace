@@ -20,7 +20,6 @@ interface NewRelicAgent {
 
 // Extend global object to include newrelic
 declare global {
-	// biome-ignore lint/correctness/noUnusedVariables: Global declaration
 	var newrelic: NewRelicAgent | undefined;
 }
 

@@ -3,7 +3,7 @@
  */
 
 // Common action result types for test files
-export type ActionResult<T = any> =
+export type ActionResult<T = unknown> =
 	| { success: true; data?: T }
 	| { success: false; error: string };
 
@@ -14,7 +14,7 @@ export type OutlineActionResult =
 	| { error: string };
 
 export type SimplifyTextResult =
-	| { success: true; response: any }
+	| { success: true; response: unknown }
 	| { success: false; error: string };
 
 // Global test helper to cast action results

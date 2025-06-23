@@ -1,6 +1,5 @@
 "use client";
 
-import { createServiceLogger } from "@kit/shared/logger";
 import type React from "react";
 import { createContext, useContext, useEffect, useState } from "react";
 import {
@@ -10,7 +9,7 @@ import {
 } from "../_config/formContent";
 
 // Initialize service logger
-const { getLogger } = createServiceLogger("HOME-(USER)");
+// const { getLogger } = createServiceLogger("HOME-(USER)");
 
 export interface FormData {
 	title: string;

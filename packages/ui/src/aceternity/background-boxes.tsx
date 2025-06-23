@@ -11,8 +11,15 @@ interface BoxesProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export const BoxesCore = ({ className, children, ...rest }: BoxesProps) => {
-	const rows = new Array(150).fill(1);
-	const cols = new Array(100).fill(1);
+	// Create arrays with stable values for keys
+	const rows = React.useMemo(
+		() => Array.from({ length: 150 }, (_, i) => `row-${i}`),
+		[],
+	);
+	const cols = React.useMemo(
+		() => Array.from({ length: 100 }, (_, i) => `col-${i}`),
+		[],
+	);
 
 	// Company colors with higher opacity for better visibility
 	const colors = [
@@ -60,16 +67,16 @@ export const BoxesCore = ({ className, children, ...rest }: BoxesProps) => {
 					}}
 					className="absolute -top-1/4 left-1/4 z-0 flex h-[500%] w-[200%] -translate-x-1/2 -translate-y-1/2"
 				>
-					{rows.map((_, i) => (
+					{rows.map((rowKey, i) => (
 						<motion.div
-							key={`row-${i}`}
+							key={rowKey}
 							style={{
 								position: "relative",
 								height: "2rem",
 								width: "4rem",
 							}}
 						>
-							{cols.map((_, j) => (
+							{cols.map((colKey, j) => (
 								<motion.div
 									whileHover={{
 										backgroundColor: getRandomColor(),
@@ -81,7 +88,7 @@ export const BoxesCore = ({ className, children, ...rest }: BoxesProps) => {
 									animate={{
 										transition: { duration: 2 },
 									}}
-									key={`col-${j}`}
+									key={colKey}
 									style={{
 										position: "relative",
 										height: "2rem",

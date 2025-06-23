@@ -11,6 +11,14 @@ import {
 	updateLessonProgressAction,
 } from "./server-actions";
 
+// Type aliases for action inputs
+type UpdateCourseProgressInput = Parameters<
+	typeof updateCourseProgressAction
+>[0];
+type UpdateLessonProgressInput = Parameters<
+	typeof updateLessonProgressAction
+>[0];
+
 // Mock enhanceAction to preserve schema validation
 vi.mock("@kit/next/actions", () => ({
 	enhanceAction: vi.fn((fn, options) => {
@@ -116,7 +124,9 @@ describe("Course Server Actions", () => {
 				};
 
 				// Should not throw validation error
-				const result = await updateCourseProgressAction(input as any);
+				const result = await updateCourseProgressAction(
+					input as unknown as UpdateCourseProgressInput,
+				);
 				expect(result).toEqual({ success: true });
 
 				// Verify the insert was called with string courseId
@@ -492,7 +502,9 @@ describe("Course Server Actions", () => {
 					completed: true,
 				};
 
-				const result = await updateLessonProgressAction(input as any);
+				const result = await updateLessonProgressAction(
+					input as unknown as UpdateLessonProgressInput,
+				);
 				expect(result).toEqual({ success: true });
 			});
 
@@ -502,7 +514,9 @@ describe("Course Server Actions", () => {
 					lessonId: 456,
 				};
 
-				const result = await updateLessonProgressAction(input as any);
+				const result = await updateLessonProgressAction(
+					input as unknown as UpdateLessonProgressInput,
+				);
 				expect(result).toEqual({ success: true });
 			});
 		});
@@ -648,7 +662,9 @@ describe("Course Server Actions", () => {
 				};
 
 				// Should not throw error
-				const result = await updateLessonProgressAction(input as any);
+				const result = await updateLessonProgressAction(
+					input as unknown as UpdateLessonProgressInput,
+				);
 				expect(result).toEqual({ success: true });
 			});
 		});

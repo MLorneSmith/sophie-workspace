@@ -54,7 +54,7 @@ vi.mock("@kit/next/actions", () => ({
 import { getChatCompletion } from "@kit/ai-gateway";
 import { createReasoningOptimizedConfig } from "@kit/ai-gateway/src/configs/templates";
 import { PromptManager } from "@kit/ai-gateway/src/prompts/prompt-manager";
-import { expectError, expectSuccess } from "@/test/test-helpers";
+import { expectError } from "@/test/test-helpers";
 import { simplifyTextAction } from "./simplify-text";
 
 // Helper function to create proper CompletionResult mock
@@ -130,10 +130,12 @@ describe("simplifyTextAction", () => {
 			};
 
 			// Act
-			const result = await simplifyTextAction(invalidInput as any);
+			const result = await simplifyTextAction(
+				invalidInput as unknown as Parameters<typeof simplifyTextAction>[0],
+			);
 
 			// Assert
-			expect(expectError(result as any)).toBe("Validation failed");
+			expect(expectError(result)).toBe("Validation failed");
 		});
 
 		it("should reject missing userId field", async () => {
@@ -145,10 +147,12 @@ describe("simplifyTextAction", () => {
 			};
 
 			// Act
-			const result = await simplifyTextAction(invalidInput as any);
+			const result = await simplifyTextAction(
+				invalidInput as unknown as Parameters<typeof simplifyTextAction>[0],
+			);
 
 			// Assert
-			expect(expectError(result as any)).toBe("Validation failed");
+			expect(expectError(result)).toBe("Validation failed");
 		});
 
 		it("should reject missing canvasId field", async () => {
@@ -160,10 +164,12 @@ describe("simplifyTextAction", () => {
 			};
 
 			// Act
-			const result = await simplifyTextAction(invalidInput as any);
+			const result = await simplifyTextAction(
+				invalidInput as unknown as Parameters<typeof simplifyTextAction>[0],
+			);
 
 			// Assert
-			expect(expectError(result as any)).toBe("Validation failed");
+			expect(expectError(result)).toBe("Validation failed");
 		});
 
 		it("should reject missing sectionType field", async () => {
@@ -175,10 +181,12 @@ describe("simplifyTextAction", () => {
 			};
 
 			// Act
-			const result = await simplifyTextAction(invalidInput as any);
+			const result = await simplifyTextAction(
+				invalidInput as unknown as Parameters<typeof simplifyTextAction>[0],
+			);
 
 			// Assert
-			expect(expectError(result as any)).toBe("Validation failed");
+			expect(expectError(result)).toBe("Validation failed");
 		});
 	});
 

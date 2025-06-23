@@ -21,10 +21,10 @@ interface QuizDocument {
  */
 export const ensureProperQuizQuestionFormat: CollectionAfterReadHook = async ({
 	doc,
-	req,
+	_req,
 }: {
 	doc: QuizDocument;
-	req: { payload?: { logger?: { warn: (msg: string) => void } } };
+	_req: { payload?: { logger?: { warn: (msg: string) => void } } };
 }) => {
 	// Skip if no document or no questions field
 	if (!doc || !doc.questions) {

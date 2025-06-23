@@ -96,8 +96,8 @@ export function AccountSelector({
 						data-test={"account-selector-trigger"}
 						size={collapsed ? "icon" : "default"}
 						variant="ghost"
-						role="combobox"
 						aria-expanded={open}
+						aria-haspopup="listbox"
 						className={cn(
 							"dark:shadow-primary/10 group mr-1 w-full min-w-0 px-2 lg:w-auto lg:max-w-fit",
 							{

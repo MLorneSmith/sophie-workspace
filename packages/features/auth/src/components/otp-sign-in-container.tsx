@@ -185,7 +185,8 @@ function OtpEmailForm({
 	shouldCreateUser: boolean;
 	onSendOtp: (email: string) => void;
 }) {
-	const { captchaToken, resetCaptchaToken } = useCaptchaToken();
+	const { captchaToken, resetCaptchaToken: _resetCaptchaToken } =
+		useCaptchaToken();
 	const signInMutation = useSignInWithOtp();
 
 	const emailForm = useForm<z.infer<typeof EmailSchema>>({

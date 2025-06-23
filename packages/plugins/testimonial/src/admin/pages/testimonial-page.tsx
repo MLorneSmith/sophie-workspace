@@ -105,7 +105,9 @@ export async function TestimonialPage(props: {
 							controls
 							className={"my-4 min-h-[250px] w-full max-w-md"}
 							src={url}
-						/>
+						>
+							<track kind="captions" />
+						</video>
 					)}
 				</If>
 			</PageBody>

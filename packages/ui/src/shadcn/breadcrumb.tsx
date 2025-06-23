@@ -60,8 +60,6 @@ const BreadcrumbPage: React.FC<React.ComponentPropsWithoutRef<"span">> = ({
 	...props
 }) => (
 	<span
-		role="link"
-		aria-disabled="true"
 		aria-current="page"
 		className={cn("text-foreground font-normal", className)}
 		{...props}

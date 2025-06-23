@@ -3,6 +3,7 @@
  * Tests storyboard data operations, outline parsing, and slide generation
  */
 
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { StoryboardService } from "./storyboard-service-client";
 
@@ -74,7 +75,7 @@ describe("StoryboardService", () => {
 			order: vi.fn(),
 		};
 
-		service = new StoryboardService(mockSupabase as any);
+		service = new StoryboardService(mockSupabase as unknown as SupabaseClient);
 	});
 
 	describe("getStoryboard", () => {

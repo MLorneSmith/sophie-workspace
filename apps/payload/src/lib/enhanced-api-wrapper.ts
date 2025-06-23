@@ -8,7 +8,6 @@
 
 import { createEnvironmentLogger } from "@kit/shared/logger";
 import { type NextRequest, NextResponse } from "next/server";
-import type { Payload } from "payload";
 
 // Type for log data - consistent with database adapter
 type LogData =

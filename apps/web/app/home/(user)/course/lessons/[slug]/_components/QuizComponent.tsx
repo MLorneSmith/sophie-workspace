@@ -130,7 +130,7 @@ export function QuizComponent({
 	previousAttempts = [],
 	courseId,
 	currentLessonId,
-	currentLessonNumber,
+	currentLessonNumber: _currentLessonNumber,
 }: QuizComponentProps) {
 	// Define state for the quiz
 	const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);

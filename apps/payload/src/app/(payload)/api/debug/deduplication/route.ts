@@ -21,19 +21,6 @@ import {
 	getDeduplicationStats,
 } from "../../../../../lib/request-deduplication";
 
-// Type for error objects with timestamp
-interface ErrorWithTimestamp {
-	timestamp: string;
-	[key: string]: unknown;
-}
-
-// Type for deduplication manager with cache access
-interface DeduplicationManagerWithCache {
-	cache?: {
-		clear(): void;
-	};
-}
-
 const logger = createEnvironmentLogger("DEBUG-API");
 
 // Only allow debug endpoints in non-production environments
@@ -143,8 +130,8 @@ export async function POST(request: NextRequest) {
 		switch (action) {
 			case "clear-cache": {
 				const manager = getDeduplicationManager();
-				// Force cleanup by accessing the cache through reflection
-				(manager as any).cache?.clear();
+				// Use the shutdown method to clear cache
+				manager.shutdown();
 				return NextResponse.json({
 					success: true,
 					message: "Deduplication cache cleared",
