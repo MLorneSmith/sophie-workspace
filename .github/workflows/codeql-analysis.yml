@@ -56,5 +56,6 @@ jobs:
       uses: github/codeql-action/analyze@v3
       with:
         category: "/language:${{matrix.language}}"
+      continue-on-error: true # Allow workflow to pass until code scanning is enabled
 
     # Note: CodeQL analysis results are automatically uploaded by the analyze action above
