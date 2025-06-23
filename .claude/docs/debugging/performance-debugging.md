@@ -19,12 +19,12 @@ interface PerformanceMetrics {
   LCP: number; // Largest Contentful Paint
   FID: number; // First Input Delay
   CLS: number; // Cumulative Layout Shift
-  
+
   // Additional metrics
   TTFB: number; // Time to First Byte
-  FCP: number;  // First Contentful Paint
-  TTI: number;  // Time to Interactive
-  
+  FCP: number; // First Contentful Paint
+  TTI: number; // Time to Interactive
+
   // Custom metrics
   apiResponseTime: number;
   renderTime: number;
@@ -73,12 +73,12 @@ const LazyComponent = lazy(() => import('./HeavyComponent'));
 <link rel="preload" href="/hero-image.jpg" as="image" />
 
 // Optimize images
-<img 
-  src="/image.webp" 
+<img
+  src="/image.webp"
   loading="lazy"
-  width="300" 
+  width="300"
   height="200"
-  alt="Description" 
+  alt="Description"
 />
 
 // Tree shaking
@@ -149,8 +149,8 @@ EXPLAIN ANALYZE SELECT * FROM users WHERE email = 'user@example.com';
 CREATE INDEX CONCURRENTLY idx_users_email ON users(email);
 
 -- Optimize N+1 queries
-SELECT u.*, p.* FROM users u 
-LEFT JOIN profiles p ON u.id = p.user_id 
+SELECT u.*, p.* FROM users u
+LEFT JOIN profiles p ON u.id = p.user_id
 WHERE u.active = true;
 ```
 
@@ -161,7 +161,7 @@ WHERE u.active = true;
 const getCachedData = async (key: string) => {
   const cached = await redis.get(key);
   if (cached) return JSON.parse(cached);
-  
+
   const data = await fetchFromDatabase();
   await redis.setex(key, 300, JSON.stringify(data)); // 5 min cache
   return data;
@@ -170,7 +170,7 @@ const getCachedData = async (key: string) => {
 // Batch API calls
 const batchLoader = new DataLoader(async (ids) => {
   const results = await fetchMultipleItems(ids);
-  return ids.map(id => results.find(r => r.id === id));
+  return ids.map((id) => results.find((r) => r.id === id));
 });
 ```
 
@@ -196,7 +196,7 @@ const batchLoader = new DataLoader(async (ids) => {
 useEffect(() => {
   const handleResize = () => setWindowSize(window.innerWidth);
   window.addEventListener('resize', handleResize);
-  
+
   return () => window.removeEventListener('resize', handleResize);
 }, []);
 
@@ -205,18 +205,18 @@ useEffect(() => {
   const timer = setInterval(() => {
     // Do something
   }, 1000);
-  
+
   return () => clearInterval(timer);
 }, []);
 
 // Abort fetch requests
 useEffect(() => {
   const controller = new AbortController();
-  
+
   fetch('/api/data', { signal: controller.signal })
-    .then(response => response.json())
+    .then((response) => response.json())
     .then(setData);
-  
+
   return () => controller.abort();
 }, []);
 ```
@@ -273,10 +273,10 @@ const ProfilePage = lazy(() => import('./pages/ProfilePage'));
 const HeavyChart = lazy(() => import('./components/HeavyChart'));
 
 // Conditional loading
-const AdminPanel = lazy(() => 
-  import('./components/AdminPanel').then(module => ({
-    default: module.AdminPanel
-  }))
+const AdminPanel = lazy(() =>
+  import('./components/AdminPanel').then((module) => ({
+    default: module.AdminPanel,
+  })),
 );
 ```
 
@@ -357,12 +357,12 @@ import Image from 'next/image';
 // Automated performance testing
 const performanceTest = async () => {
   const start = performance.now();
-  
+
   // Execute operation
   await operationUnderTest();
-  
+
   const duration = performance.now() - start;
-  
+
   // Assert performance requirements
   expect(duration).toBeLessThan(1000); // 1 second max
 };
@@ -386,7 +386,7 @@ const reportPerformance = (metric: string, value: number) => {
   if (typeof window !== 'undefined' && window.gtag) {
     window.gtag('event', 'timing_complete', {
       name: metric,
-      value: Math.round(value)
+      value: Math.round(value),
     });
   }
 };
@@ -396,7 +396,9 @@ new PerformanceObserver((list) => {
   list.getEntries().forEach((entry) => {
     reportPerformance(entry.name, entry.value);
   });
-}).observe({ entryTypes: ['largest-contentful-paint', 'first-input', 'layout-shift'] });
+}).observe({
+  entryTypes: ['largest-contentful-paint', 'first-input', 'layout-shift'],
+});
 ```
 
 ## Best Practices for AI Assistants

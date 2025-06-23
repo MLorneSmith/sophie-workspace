@@ -14,8 +14,9 @@
 ### Test Setup
 
 ```typescript
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, act, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { CostTrackingProvider, useCostTracking } from './cost-tracking-context';
 
 // Mock dependencies
@@ -49,54 +50,63 @@ describe('CostTrackingContext', () => {
 #### Provider Component Tests
 
 - [ ] **Test Case**: Provider initializes with default values when user is not loaded
+
   - **Input**: No user data (useUser returns null)
   - **Expected Output**: Default state (sessionCost: 0, sessionId: '', isLoading: true)
   - **Status**: ❌ Not Started
   - **Notes**: Should not make API call without user
 
 - [ ] **Test Case**: Provider generates session ID when user loads
+
   - **Input**: useUser returns valid user data
   - **Expected Output**: sessionId is generated using uuid v4
   - **Status**: ❌ Not Started
   - **Notes**: Should call uuidv4() once
 
 - [ ] **Test Case**: Provider fetches initial costs on user load
+
   - **Input**: useUser returns user, API returns success with cost data
   - **Expected Output**: sessionCost updated with fetched value, isLoading becomes false
   - **Status**: ❌ Not Started
   - **Notes**: Should call /api/ai-usage/session-cost
 
 - [ ] **Test Case**: Provider handles successful API response with zero cost
+
   - **Input**: API returns { success: true, cost: 0 }
   - **Expected Output**: sessionCost = 0, isLoading = false
   - **Status**: ❌ Not Started
   - **Notes**: Should handle zero as valid cost
 
 - [ ] **Test Case**: Provider handles successful API response with existing cost
+
   - **Input**: API returns { success: true, cost: 5.25 }
   - **Expected Output**: sessionCost = 5.25, isLoading = false
   - **Status**: ❌ Not Started
   - **Notes**: Should preserve decimal precision
 
 - [ ] **Test Case**: Provider handles API response without cost property
+
   - **Input**: API returns { success: true } (no cost property)
   - **Expected Output**: sessionCost = 0 (default), isLoading = false
   - **Status**: ❌ Not Started
   - **Notes**: Should use || 0 fallback
 
 - [ ] **Test Case**: Provider handles API failure response
+
   - **Input**: API returns { success: false, error: 'Database error' }
   - **Expected Output**: sessionCost remains 0, isLoading = false
   - **Status**: ❌ Not Started
   - **Notes**: Should not update sessionCost on failure
 
 - [ ] **Test Case**: Provider handles network error
+
   - **Input**: fetch() throws network error
   - **Expected Output**: sessionCost remains 0, isLoading = false, error logged
   - **Status**: ❌ Not Started
   - **Notes**: Should catch and log error
 
 - [ ] **Test Case**: Provider handles malformed JSON response
+
   - **Input**: API returns invalid JSON
   - **Expected Output**: sessionCost remains 0, isLoading = false, error logged
   - **Status**: ❌ Not Started
@@ -111,24 +121,28 @@ describe('CostTrackingContext', () => {
 #### addCost Function Tests
 
 - [ ] **Test Case**: addCost increases session cost correctly
+
   - **Input**: Initial cost 10, addCost(5)
   - **Expected Output**: sessionCost becomes 15
   - **Status**: ❌ Not Started
   - **Notes**: Should use functional state update
 
 - [ ] **Test Case**: addCost handles decimal values
+
   - **Input**: Initial cost 0, addCost(2.75)
   - **Expected Output**: sessionCost becomes 2.75
   - **Status**: ❌ Not Started
   - **Notes**: Should preserve decimal precision
 
 - [ ] **Test Case**: addCost handles multiple sequential additions
+
   - **Input**: addCost(1), addCost(2), addCost(3)
   - **Expected Output**: sessionCost becomes 6
   - **Status**: ❌ Not Started
   - **Notes**: Should accumulate correctly
 
 - [ ] **Test Case**: addCost handles zero values
+
   - **Input**: Initial cost 5, addCost(0)
   - **Expected Output**: sessionCost remains 5
   - **Status**: ❌ Not Started
@@ -143,12 +157,14 @@ describe('CostTrackingContext', () => {
 #### Hook Tests
 
 - [ ] **Test Case**: useCostTracking returns context values correctly
+
   - **Input**: Provider with sessionCost: 15, sessionId: 'test-id'
   - **Expected Output**: Hook returns { sessionCost: 15, sessionId: 'test-id', addCost: function, isLoading: false }
   - **Status**: ❌ Not Started
   - **Notes**: Should return all context properties
 
 - [ ] **Test Case**: useCostTracking throws error when used outside provider
+
   - **Input**: Component using hook without CostTrackingProvider
   - **Expected Output**: Error: 'useCostTracking must be used within a CostTrackingProvider'
   - **Status**: ❌ Not Started
@@ -163,6 +179,7 @@ describe('CostTrackingContext', () => {
 #### Integration Tests
 
 - [ ] **Test Case**: Complete user flow from loading to cost tracking
+
   - **Input**: User loads → API succeeds → addCost called
   - **Expected Output**: Full state progression from loading to tracking costs
   - **Status**: ❌ Not Started
@@ -204,7 +221,7 @@ it('should initialize provider with default values when no user', () => {
   // Arrange
   const mockUseUser = vi.mocked(useUser);
   mockUseUser.mockReturnValue({ data: null });
-  
+
   const TestComponent = () => {
     const { sessionCost, sessionId, isLoading } = useCostTracking();
     return (
@@ -215,14 +232,14 @@ it('should initialize provider with default values when no user', () => {
       </div>
     );
   };
-  
+
   // Act
   render(
     <CostTrackingProvider>
       <TestComponent />
     </CostTrackingProvider>
   );
-  
+
   // Assert
   expect(screen.getByTestId('cost')).toHaveTextContent('0');
   expect(screen.getByTestId('session-id')).toHaveTextContent('');

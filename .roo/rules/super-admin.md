@@ -3,14 +3,17 @@ description: Super Admin functionalities
 globs: apps/*/app/admin/**,packages/features/admin/**
 alwaysApply: false
 ---
+
 ## Super Admin
 
 1. Page Authentication:
+
    - All pages in the admin section must be wrapped with the `AdminGuard` HOC
    - This ensures only users with the 'super-admin' role and MFA enabled can access these pages
    - Example: `export default AdminGuard(AdminPageComponent);`
 
 2. Server Actions:
+
    - Use the `adminAction` wrapper for all server actions in the admin section
    - This checks if the current user is a super admin before executing the action
    - Example:
@@ -23,12 +26,13 @@ alwaysApply: false
          },
          {
            schema: YourActionSchema,
-         }
-       )
+         },
+       ),
      );
      ```
 
 3. Authorization Functions:
+
    - Import and use `isSuperAdmin` from '@kit/admin' to check if the current user is a super admin [is-super-admin.ts](mdc:packages/features/admin/src/lib/server/utils/is-super-admin.ts)
    - This function returns a boolean indicating whether the user has the super-admin role and MFA enabled
    - Example:
@@ -41,6 +45,7 @@ alwaysApply: false
      ```
 
 4. Schema Validation:
+
    - Define Zod schemas for all admin actions in the 'schema' directory
    - Follow the pattern in [admin-actions.schema.ts](mdc:packages/features/admin/src/lib/server/schema/admin-actions.schema.ts)
    - Include appropriate validation for all fields
@@ -85,6 +90,7 @@ The Super Admin section requires strict access control as it provides elevated p
    ```
 
 2. Data Loading:
+
    - Create a cached loader function in a server directory
    - Use the Supabase client for database operations
    - Example:
@@ -92,19 +98,21 @@ The Super Admin section requires strict access control as it provides elevated p
      ```typescript
      // in _lib/server/loaders/your-loader.ts
      import { cache } from 'react';
+
      import { getSupabaseServerClient } from '@kit/supabase/server-client';
 
      export const loadYourAdminData = cache(async () => {
        const client = getSupabaseServerClient();
-       
+
        const { data, error } = await client.from('your_table').select('*');
-       
+
        if (error) throw error;
        return data;
      });
      ```
 
 3. Dynamic Routes:
+
    - For pages that need parameters (like `[id]`), handle them appropriately
    - For example:
 
@@ -136,9 +144,11 @@ The Super Admin section requires strict access control as it provides elevated p
 
    ```typescript
    import 'server-only';
+
    import { SupabaseClient } from '@supabase/supabase-js';
-   import { Database } from '@kit/supabase/database';
+
    import { getLogger } from '@kit/shared/logger';
+   import { Database } from '@kit/supabase/database';
 
    export function createYourAdminService(client: SupabaseClient<Database>) {
      return new YourAdminService(client);
@@ -171,6 +181,7 @@ The Super Admin section requires strict access control as it provides elevated p
    ```
 
 2. Important Patterns:
+
    - Mark files with 'server-only' directive
    - Use factory functions to create service instances
    - Use class-based services with typed parameters
@@ -179,6 +190,7 @@ The Super Admin section requires strict access control as it provides elevated p
    - Handle errors consistently
 
 3. Security Checks:
+
    - Implement methods to verify the current user is not taking action on their own account
    - Example:
 
@@ -200,6 +212,7 @@ The Super Admin section requires strict access control as it provides elevated p
      ```
 
 4. Data Access:
+
    - Use the appropriate Supabase client (admin or regular)
    - For admin-only operations, use the admin client
    - For regular operations, use the standard client

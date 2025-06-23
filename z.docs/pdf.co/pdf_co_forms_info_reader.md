@@ -1,6 +1,6 @@
 [Skip to main content](https://developer.pdf.co/api/pdf-forms-info-reader/index.html#main-content)
 
- Back to top
+Back to top
 
 `Ctrl` + `K`
 
@@ -10,7 +10,7 @@
 
 [Add More](https://app.pdf.co/subscriptions)
 
-# PDF Forms Info Reader [\#](https://developer.pdf.co/api/pdf-forms-info-reader/index.html\#pdf-forms-info-reader "Permalink to this heading")
+# PDF Forms Info Reader [\#](https://developer.pdf.co/api/pdf-forms-info-reader/index.html#pdf-forms-info-reader 'Permalink to this heading')
 
 Get information about fillable form fields inside a **PDF** file.
 
@@ -18,11 +18,11 @@ Note
 
 For one-time check of **PDF** file information and find form fields please use [PDF Edit Add Helper](https://app.pdf.co/pdf-edit-add-helper).
 
-## Available Methods [\#](https://developer.pdf.co/api/pdf-forms-info-reader/index.html\#available-methods "Permalink to this heading")
+## Available Methods [\#](https://developer.pdf.co/api/pdf-forms-info-reader/index.html#available-methods 'Permalink to this heading')
 
 - [/pdf/info/fields](https://developer.pdf.co/api/pdf-forms-info-reader/index.html#post-tag-pdf-info-fields)
 
-## /pdf/info/fields [\#](https://developer.pdf.co/api/pdf-forms-info-reader/index.html\#post-tag-pdf-info-fields "Permalink to this heading")
+## /pdf/info/fields [\#](https://developer.pdf.co/api/pdf-forms-info-reader/index.html#post-tag-pdf-info-fields 'Permalink to this heading')
 
 Extracts information about fillable **PDF** fields (fillable edit boxes, fillable check-boxes, radio buttons, combo-boxes) from input **PDF** file along with general information about the input **PDF** document. The purpose of this endpoint is to get information about fillable **PDFs** for use with **PDF.co** [PDF Add](https://developer.pdf.co/api/pdf-add/index.html#pdf-edit-add) method.
 
@@ -30,7 +30,7 @@ Extracts information about fillable **PDF** fields (fillable edit boxes, fillabl
 
 - **Endpoint:** /v1/pdf/info/fields
 
-### Attributes [\#](https://developer.pdf.co/api/pdf-forms-info-reader/index.html\#attributes "Permalink to this heading")
+### Attributes [\#](https://developer.pdf.co/api/pdf-forms-info-reader/index.html#attributes 'Permalink to this heading')
 
 Note
 
@@ -45,20 +45,20 @@ Attributes are _case-sensitive_ and should be inside JSON for POST request, for 
 
 Copy to clipboard
 
-| Attribute | Description | Required |
-| --- | --- | --- |
-| `url` | URL to the source file. [1](https://developer.pdf.co/api/pdf-forms-info-reader/index.html#f1) | _yes_ |
-| `httpusername` | HTTP auth user name if required to access source `url`. | _no_ |
-| `httppassword` | HTTP auth password if required to access source `url`. | _no_ |
-| `password` | Password of PDF file, the input must be in string format. | _no_ |
-| `async` | Set `async` to `true` for long processes to run in the background, API will then return a `jobId` which you can use with the [Background Job Check](https://developer.pdf.co/api/background-job-check/index.html#job-check) endpoint to check the status of the process and retrieve the output while you can proceed with other tasks. | _no_ |
-| `profiles` | Use this parameter to set additional configurations for fine-tuning and extra options. Explore the [Profiles](https://developer.pdf.co/api/profiles/index.html#api-profiles) section for more. | _no_ |
+| Attribute      | Description                                                                                                                                                                                                                                                                                                                             | Required |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| `url`          | URL to the source file. [1](https://developer.pdf.co/api/pdf-forms-info-reader/index.html#f1)                                                                                                                                                                                                                                           | _yes_    |
+| `httpusername` | HTTP auth user name if required to access source `url`.                                                                                                                                                                                                                                                                                 | _no_     |
+| `httppassword` | HTTP auth password if required to access source `url`.                                                                                                                                                                                                                                                                                  | _no_     |
+| `password`     | Password of PDF file, the input must be in string format.                                                                                                                                                                                                                                                                               | _no_     |
+| `async`        | Set `async` to `true` for long processes to run in the background, API will then return a `jobId` which you can use with the [Background Job Check](https://developer.pdf.co/api/background-job-check/index.html#job-check) endpoint to check the status of the process and retrieve the output while you can proceed with other tasks. | _no_     |
+| `profiles`     | Use this parameter to set additional configurations for fine-tuning and extra options. Explore the [Profiles](https://developer.pdf.co/api/profiles/index.html#api-profiles) section for more.                                                                                                                                          | _no_     |
 
-### Query parameters [\#](https://developer.pdf.co/api/pdf-forms-info-reader/index.html\#query-parameters "Permalink to this heading")
+### Query parameters [\#](https://developer.pdf.co/api/pdf-forms-info-reader/index.html#query-parameters 'Permalink to this heading')
 
 _No query parameters accepted._
 
-### Payload [3](https://developer.pdf.co/api/pdf-forms-info-reader/index.html\#f3) [\#](https://developer.pdf.co/api/pdf-forms-info-reader/index.html\#example-tag-payload "Permalink to this heading")
+### Payload [3](https://developer.pdf.co/api/pdf-forms-info-reader/index.html#f3) [\#](https://developer.pdf.co/api/pdf-forms-info-reader/index.html#example-tag-payload 'Permalink to this heading')
 
 ```
 {
@@ -70,7 +70,7 @@ _No query parameters accepted._
 
 Copy to clipboard
 
-### Response [2](https://developer.pdf.co/api/pdf-forms-info-reader/index.html\#f2) [\#](https://developer.pdf.co/api/pdf-forms-info-reader/index.html\#example-tag-response "Permalink to this heading")
+### Response [2](https://developer.pdf.co/api/pdf-forms-info-reader/index.html#f2) [\#](https://developer.pdf.co/api/pdf-forms-info-reader/index.html#example-tag-response 'Permalink to this heading')
 
 ```
 {
@@ -167,7 +167,7 @@ Copy to clipboard
 
 Copy to clipboard
 
-### CURL [\#](https://developer.pdf.co/api/pdf-forms-info-reader/index.html\#curl "Permalink to this heading")
+### CURL [\#](https://developer.pdf.co/api/pdf-forms-info-reader/index.html#curl 'Permalink to this heading')
 
 ```
 curl --location --request POST 'https://api.pdf.co/v1/pdf/info/fields' \
@@ -182,9 +182,9 @@ curl --location --request POST 'https://api.pdf.co/v1/pdf/info/fields' \
 
 Copy to clipboard
 
-* * *
+---
 
-## Code samples [\#](https://developer.pdf.co/api/pdf-forms-info-reader/index.html\#code-samples "Permalink to this heading")
+## Code samples [\#](https://developer.pdf.co/api/pdf-forms-info-reader/index.html#code-samples 'Permalink to this heading')
 
 JavaScript / Node.js
 
@@ -354,7 +354,7 @@ request(options, function (error, response) {
 
 Copy to clipboard
 
-### On Github [\#](https://developer.pdf.co/api/pdf-forms-info-reader/index.html\#on-github "Permalink to this heading")
+### On Github [\#](https://developer.pdf.co/api/pdf-forms-info-reader/index.html#on-github 'Permalink to this heading')
 
 - [JavaScript samples](https://github.com/bytescout/pdf-co-api-samples/tree/master/PDF%20Forms%20Info%20Reader/JavaScript/Read%20PDF%20Form%20Information)
 
@@ -382,12 +382,12 @@ Supports publicly accessible links from any source, including [Google Drive](htt
 
 Main response codes as follows:
 
-| Code | Description |
-| --- | --- |
-| `200` | _Success_ |
-| `400` | _Bad request_. Typically happens because of bad input parameters, or because the input URLs can’t be reached, possibly due to access restrictions like needing a login or password. |
-| `401` | _Unauthorized_ |
-| `402` | _Not enough credits_ |
+| Code  | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `200` | _Success_                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| `400` | _Bad request_. Typically happens because of bad input parameters, or because the input URLs can’t be reached, possibly due to access restrictions like needing a login or password.                                                                                                                                                                                                                                                                                                                                 |
+| `401` | _Unauthorized_                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `402` | _Not enough credits_                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | `445` | _Timeout error_. To process large documents or files please use asynchronous mode (set the `async` parameter to `true`) and then check status using the [/job/check](https://developer.pdf.co/api/background-job-check/index.html#post-tag-job-check) endpoint. If a file contains many pages then specify a page range using the `pages` parameter. The number of pages of the document can be obtained using the [/pdf/info](https://developer.pdf.co/api/pdf-info-reader/index.html#post-tag-pdf-info) endpoint. |
 
 Note
@@ -407,7 +407,7 @@ What is 9 + 7?
 
 Close
 
-* * *
+---
 
 This website uses cookies for functional and analytical purposes. By continuing, you agree
 to our cookie use. Please read our

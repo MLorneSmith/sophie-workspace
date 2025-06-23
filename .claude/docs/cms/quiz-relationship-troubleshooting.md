@@ -31,30 +31,30 @@ The quiz system has complex relationships between quizzes, questions, and course
    ```sql
    -- Fix quiz-question relationships
    WITH quiz_questions AS (
-     SELECT 
+     SELECT
        q.id AS quiz_id,
        jsonb_array_elements(q.questions->'ids') AS question_id
-     FROM 
+     FROM
        payload.course_quizzes q
-     WHERE 
+     WHERE
        q.questions IS NOT NULL
    )
    INSERT INTO payload.course_quizzes_rels (id, parent_id, path, order, value, collection)
-   SELECT 
+   SELECT
      uuid_generate_v4(),
      qq.quiz_id,
      'questions',
      0,
      qq.question_id->>'id',
      'quiz_questions'
-   FROM 
+   FROM
      quiz_questions qq
-   LEFT JOIN 
-     payload.course_quizzes_rels r 
-     ON r.parent_id = qq.quiz_id 
-     AND r.path = 'questions' 
+   LEFT JOIN
+     payload.course_quizzes_rels r
+     ON r.parent_id = qq.quiz_id
+     AND r.path = 'questions'
      AND r.value = qq.question_id->>'id'
-   WHERE 
+   WHERE
      r.id IS NULL;
    ```
 
@@ -85,30 +85,30 @@ The quiz system has complex relationships between quizzes, questions, and course
    ```sql
    -- Fix course-quiz relationships
    WITH course_quizzes AS (
-     SELECT 
+     SELECT
        c.id AS course_id,
        jsonb_array_elements(c.quizzes->'ids') AS quiz_id
-     FROM 
+     FROM
        payload.courses c
-     WHERE 
+     WHERE
        c.quizzes IS NOT NULL
    )
    INSERT INTO payload.courses_rels (id, parent_id, path, order, value, collection)
-   SELECT 
+   SELECT
      uuid_generate_v4(),
      cq.course_id,
      'quizzes',
      0,
      cq.quiz_id->>'id',
      'course_quizzes'
-   FROM 
+   FROM
      course_quizzes cq
-   LEFT JOIN 
-     payload.courses_rels r 
-     ON r.parent_id = cq.course_id 
-     AND r.path = 'quizzes' 
+   LEFT JOIN
+     payload.courses_rels r
+     ON r.parent_id = cq.course_id
+     AND r.path = 'quizzes'
      AND r.value = cq.quiz_id->>'id'
-   WHERE 
+   WHERE
      r.id IS NULL;
    ```
 

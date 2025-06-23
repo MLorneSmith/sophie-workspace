@@ -182,11 +182,13 @@ The system tracks various connection metrics:
 ### Common Issues
 
 1. **Connection Pool Exhaustion**
+
    - Check `max` pool setting for your environment
    - Monitor connection metrics via health endpoint
    - Verify no connection leaks in application code
 
 2. **Connection Timeouts**
+
    - Adjust timeout settings for your environment
    - Check network latency to database
    - Verify database server capacity

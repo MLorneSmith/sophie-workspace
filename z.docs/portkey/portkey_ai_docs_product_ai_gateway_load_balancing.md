@@ -18,7 +18,7 @@ This feature is available on all Portkey [plans](https://portkey.ai/pricing).
 
 This ensures high availability and optimal performance of your generative AI apps, preventing any single LLM from becoming a performance bottleneck.
 
-## [​](https://portkey.ai/docs/product/ai-gateway/load-balancing\#enable-load-balancing)  Enable Load Balancing
+## [​](https://portkey.ai/docs/product/ai-gateway/load-balancing#enable-load-balancing) Enable Load Balancing
 
 To enable Load Balancing, you can modify the `config` object to include a `strategy` with `loadbalance` mode.
 
@@ -45,17 +45,18 @@ Copy
 
 ```
 
-### [​](https://portkey.ai/docs/product/ai-gateway/load-balancing\#you-can-create-and-then-use-the-config-in-your-requests)  You can [create](https://portkey.ai/docs/product/ai-gateway/configs\#creating-configs) and then [use](https://portkey.ai/docs/product/ai-gateway/configs\#using-configs) the config in your requests
+### [​](https://portkey.ai/docs/product/ai-gateway/load-balancing#you-can-create-and-then-use-the-config-in-your-requests) You can [create](https://portkey.ai/docs/product/ai-gateway/configs#creating-configs) and then [use](https://portkey.ai/docs/product/ai-gateway/configs#using-configs) the config in your requests
 
-## [​](https://portkey.ai/docs/product/ai-gateway/load-balancing\#how-load-balancing-works)  How Load Balancing Works
+## [​](https://portkey.ai/docs/product/ai-gateway/load-balancing#how-load-balancing-works) How Load Balancing Works
 
 1. **Defining the Loadbalance Targets & their Weights**: You provide a list of `virtual keys` (or `provider` \+ `api_key` pairs), and assign a `weight` value to each target. The weights represent the relative share of requests that should be routed to each target.
 2. **Weight Normalization**: Portkey first sums up all the weights you provided for the targets. It then divides each target’s weight by the total sum to calculate the normalized weight for that target. This ensures the weights add up to 1 (or 100%), allowing Portkey to distribute the load proportionally.
-For example, let’s say you have three targets with weights 5, 3, and 1. The total sum of weights is 9 (5 + 3 + 1). Portkey will then normalize the weights as follows:
+   For example, let’s say you have three targets with weights 5, 3, and 1. The total sum of weights is 9 (5 + 3 + 1). Portkey will then normalize the weights as follows:
 
    - Target 1: 5 / 9 = 0.55 (55% of the traffic)
    - Target 2: 3 / 9 = 0.33 (33% of the traffic)
    - Target 3: 1 / 9 = 0.11 (11% of the traffic)
+
 3. **Request Distribution**: When a request comes in, Portkey routes it to a target LLM based on the normalized weight probabilities. This ensures the traffic is distributed across the LLMs according to the specified weights.
 
 - Default `weight` value is `1`
@@ -63,7 +64,7 @@ For example, let’s say you have three targets with weights 5, 3, and 1. The to
 - If `weight` is not set for a target, the default `weight` value (i.e. `1`) is applied.
 - You can set `"weight":0` for a specific target to stop routing traffic to it without removing it from your Config
 
-## [​](https://portkey.ai/docs/product/ai-gateway/load-balancing\#caveats-and-considerations)  Caveats and Considerations
+## [​](https://portkey.ai/docs/product/ai-gateway/load-balancing#caveats-and-considerations) Caveats and Considerations
 
 While the Load Balancing feature offers numerous benefits, there are a few things to consider:
 

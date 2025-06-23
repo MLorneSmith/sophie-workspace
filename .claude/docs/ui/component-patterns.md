@@ -5,9 +5,10 @@
 ### Client Components
 
 ```tsx
-'use client'; // Required for client components
+'use client';
 
-import { useState, useMemo, useCallback, useEffect } from 'react';
+// Required for client components
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 /**
  * ComponentName - Brief description of the component
@@ -16,26 +17,22 @@ import { useState, useMemo, useCallback, useEffect } from 'react';
 function ComponentName({ prop1, prop2 }: ComponentNameProps) {
   // 1. Hooks
   const [state, setState] = useState(initialState);
-  
+
   // 2. Derived state
   const derivedValue = useMemo(() => computeValue(prop1), [prop1]);
-  
+
   // 3. Event handlers
   const handleEvent = useCallback(() => {
     // Implementation
   }, [dependencies]);
-  
+
   // 4. Effects
   useEffect(() => {
     // Side effects
   }, [dependencies]);
-  
+
   // 5. Render
-  return (
-    <div className="...">
-      {/* Component JSX */}
-    </div>
-  );
+  return <div className="...">{/* Component JSX */}</div>;
 }
 
 // Props interface
@@ -54,7 +51,6 @@ export { ComponentName };
 
 ```tsx
 // No 'use client' directive - this is a Server Component
-
 import { getSupabaseServerClient } from '@kit/supabase/server-client';
 
 /**
@@ -69,13 +65,7 @@ async function ServerComponent({ userId }: { userId: string }) {
     .select('*')
     .eq('user_id', userId);
 
-  return (
-    <div>
-      {data?.map(item => (
-        <div key={item.id}>{item.name}</div>
-      ))}
-    </div>
-  );
+  return <div>{data?.map((item) => <div key={item.id}>{item.name}</div>)}</div>;
 }
 
 export default ServerComponent;
@@ -144,8 +134,8 @@ export default ServerComponent;
 ```tsx
 'use client';
 
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import { Button } from '@kit/ui/button';
@@ -173,7 +163,7 @@ function ProfileForm() {
 
   const onSubmit = form.handleSubmit(async (data) => {
     const result = await updateProfileAction(data);
-    
+
     if (result.error) {
       // Handle error
     } else {
@@ -210,8 +200,10 @@ function ProfileForm() {
 'use client';
 
 import { useMemo } from 'react';
+
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+
 import { ChevronDown } from 'lucide-react';
 
 import {

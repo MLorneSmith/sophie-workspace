@@ -13,7 +13,7 @@ This means that even if the draggable or droppable nodes look round or triangula
 
 If you'd like to use other shapes than rectangles for detecting collisions, build your own [custom collision detection algorithm](https://docs.dndkit.com/api-documentation/context-provider/collision-detection-algorithms#custom-collision-detection-strategies).
 
-## [Direct link to heading](https://docs.dndkit.com/api-documentation/context-provider/collision-detection-algorithms\#rectangle-intersection)    Rectangle intersection
+## [Direct link to heading](https://docs.dndkit.com/api-documentation/context-provider/collision-detection-algorithms#rectangle-intersection) Rectangle intersection
 
 By default, [`DndContext`](https://docs.dndkit.com/api-documentation/context-provider) uses the **rectangle intersection** collision detection algorithm.
 
@@ -23,7 +23,7 @@ This means that in order for a draggable item to be considered **over** a droppa
 
 ![](https://docs.dndkit.com/~gitbook/image?url=https%3A%2F%2F3633755066-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-legacy-files%2Fo%2Fassets%252F-MMujhzqaYbBEEmDxnZO%252F-MPFQ23hCUNnWbywZOR7%252F-MPFVJjPsKb2W5rV2c7w%252FRect%2520intersection%2520%281%29.png%3Falt%3Dmedia%26token%3D6e318a2b-8a2b-4921-a4ad-566e3d3db20d&width=768&dpr=4&quality=100&sign=3cd16957&sv=2)
 
-## [Direct link to heading](https://docs.dndkit.com/api-documentation/context-provider/collision-detection-algorithms\#closest-center)    Closest center
+## [Direct link to heading](https://docs.dndkit.com/api-documentation/context-provider/collision-detection-algorithms#closest-center) Closest center
 
 While the rectangle intersection algorithm is well suited for most drag and drop use cases, it can be unforgiving, since it requires both the draggable and droppable bounding rectangles to come into direct contact and intersect.
 
@@ -33,7 +33,7 @@ As its name suggests, the closest center algorithm finds the droppable container
 
 ![](https://docs.dndkit.com/~gitbook/image?url=https%3A%2F%2F3633755066-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-legacy-files%2Fo%2Fassets%252F-MMujhzqaYbBEEmDxnZO%252F-MPBTT2S6zYhucGIeZEM%252F-MPBbBG0AJU8WQ9-tTWi%252FClosest%2520center%2520%282%29.png%3Falt%3Dmedia%26token%3D4c980f87-7cfd-43aa-88a1-7b85c55ce66a&width=768&dpr=4&quality=100&sign=dccf6f52&sv=2)
 
-## [Direct link to heading](https://docs.dndkit.com/api-documentation/context-provider/collision-detection-algorithms\#closest-corners)    Closest corners
+## [Direct link to heading](https://docs.dndkit.com/api-documentation/context-provider/collision-detection-algorithms#closest-corners) Closest corners
 
 Like to the closest center algorithm, the closest corner algorithm doesn't require the draggable and droppable rectangles to intersect.
 
@@ -43,7 +43,7 @@ Rather, it measures the distance between all four corners of the active draggabl
 
 The distance is measured from the top left corner of the draggable item to the top left corner of the droppable bounding rectangle, top right to top right, bottom left to bottom left, and bottom right to bottom right.
 
-### [Direct link to heading](https://docs.dndkit.com/api-documentation/context-provider/collision-detection-algorithms\#when-should-i-use-the-closest-corners-algorithm-instead-of-closest-center)    **When should I use the closest corners algorithm instead of closest center?**
+### [Direct link to heading](https://docs.dndkit.com/api-documentation/context-provider/collision-detection-algorithms#when-should-i-use-the-closest-corners-algorithm-instead-of-closest-center) **When should I use the closest corners algorithm instead of closest center?**
 
 In most cases, the **closest center** algorithm works well, and is generally the recommended default for sortable lists because it provides a more forgiving experience than the **rectangle intersection algorithm**.
 
@@ -59,7 +59,7 @@ In those situations, the **closest corners** algorithm is preferred and will yie
 
 Closest corners is 'A2', as the human eye would expect.
 
-## [Direct link to heading](https://docs.dndkit.com/api-documentation/context-provider/collision-detection-algorithms\#pointer-within)    Pointer within
+## [Direct link to heading](https://docs.dndkit.com/api-documentation/context-provider/collision-detection-algorithms#pointer-within) Pointer within
 
 As its name suggests, the pointer within collision detection algorithm only registers collision when the pointer is contained within the bounding rectangle of other droppable containers.
 
@@ -67,13 +67,13 @@ This collision detection algorithm is well suited for high precision drag and dr
 
 As its name suggests, this collision detection algorithm **only works with pointer-based sensors**. For this reason, we suggest you use [composition of collision detection algorithms](https://docs.dndkit.com/api-documentation/context-provider/collision-detection-algorithms#composition-of-existing-algorithms) if you intend to use the `pointerWithin` collision detection algorithm so that you can fall back to a different collision detection algorithm for the Keyboard sensor.
 
-## [Direct link to heading](https://docs.dndkit.com/api-documentation/context-provider/collision-detection-algorithms\#custom-collision-detection-algorithms)    Custom collision detection algorithms
+## [Direct link to heading](https://docs.dndkit.com/api-documentation/context-provider/collision-detection-algorithms#custom-collision-detection-algorithms) Custom collision detection algorithms
 
 In advanced use cases, you may want to build your own collision detection algorithms if the ones provided out of the box do not suit your use case.
 
 You can either write a new collision detection algorithm from scratch, or compose two or more existing collision detection algorithms.
 
-### [Direct link to heading](https://docs.dndkit.com/api-documentation/context-provider/collision-detection-algorithms\#composition-of-existing-algorithms)    Composition of existing algorithms
+### [Direct link to heading](https://docs.dndkit.com/api-documentation/context-provider/collision-detection-algorithms#composition-of-existing-algorithms) Composition of existing algorithms
 
 Sometimes, you don't need to build custom collision detection algorithms from scratch. Instead, you can compose existing collision algorithms to augment them.
 
@@ -141,7 +141,7 @@ function customCollisionDetectionAlgorithm({
 };
 ```
 
-### [Direct link to heading](https://docs.dndkit.com/api-documentation/context-provider/collision-detection-algorithms\#building-custom-collision-detection-algorithms)    Building custom collision detection algorithms
+### [Direct link to heading](https://docs.dndkit.com/api-documentation/context-provider/collision-detection-algorithms#building-custom-collision-detection-algorithms) Building custom collision detection algorithms
 
 For advanced use cases or to detect collision between non-rectangular or non-axis aligned shapes, you'll want to build your own collision detection algorithms.
 
@@ -210,4 +210,4 @@ To learn more, refer to the implementation of the built-in collision detection a
 
 Last updated 2 years ago
 
-* * *
+---

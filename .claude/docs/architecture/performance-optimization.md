@@ -31,8 +31,12 @@ Ensure proper exports to enable tree shaking:
 
 ```tsx
 // Good: Named exports
-export function Button() { /* ... */ }
-export function Input() { /* ... */ }
+export function Button() {
+  /* ... */
+}
+export function Input() {
+  /* ... */
+}
 
 // Avoid: Default exports of multiple components
 export default { Button, Input };
@@ -65,15 +69,15 @@ export default function DashboardPage() {
   return (
     <div>
       <h1>Dashboard</h1>
-      
+
       {/* Critical content loads first */}
       <UserInfo />
-      
+
       {/* Non-critical content streams in */}
       <Suspense fallback={<p>Loading stats...</p>}>
         <UserStats />
       </Suspense>
-      
+
       <Suspense fallback={<p>Loading activity...</p>}>
         <RecentActivity />
       </Suspense>
@@ -89,22 +93,22 @@ export default function DashboardPage() {
 Use memoization to prevent unnecessary re-renders:
 
 ```tsx
-import { useMemo, useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 
 function ExpensiveComponent({ data, onAction }) {
   // Memoize expensive calculations
   const processedData = useMemo(() => {
     return expensiveCalculation(data);
   }, [data]);
-  
+
   // Memoize callbacks
   const handleAction = useCallback(() => {
     onAction(data.id);
   }, [onAction, data.id]);
-  
+
   return (
     <div onClick={handleAction}>
-      {processedData.map(item => (
+      {processedData.map((item) => (
         <div key={item.id}>{item.name}</div>
       ))}
     </div>
@@ -121,13 +125,13 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 
 function VirtualList({ items }) {
   const parentRef = useRef(null);
-  
+
   const virtualizer = useVirtualizer({
     count: items.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => 50,
   });
-  
+
   return (
     <div ref={parentRef} style={{ height: '500px', overflow: 'auto' }}>
       <div
@@ -137,7 +141,7 @@ function VirtualList({ items }) {
           position: 'relative',
         }}
       >
-        {virtualizer.getVirtualItems().map(virtualItem => (
+        {virtualizer.getVirtualItems().map((virtualItem) => (
           <div
             key={virtualItem.key}
             style={{
@@ -272,13 +276,13 @@ const { data } = await supabase
 CREATE POLICY "Users can only see their accounts" ON accounts
   FOR SELECT USING (
     auth.uid() IN (
-      SELECT user_id FROM accounts_memberships 
+      SELECT user_id FROM accounts_memberships
       WHERE account_id = accounts.id
     )
   );
 
 -- Add index to support the policy
-CREATE INDEX idx_accounts_memberships_user_account 
+CREATE INDEX idx_accounts_memberships_user_account
 ON accounts_memberships(user_id, account_id);
 ```
 
@@ -324,21 +328,21 @@ Use dynamic imports for feature packages:
 ```tsx
 // Lazy load admin features
 const AdminDashboard = dynamic(
-  () => import('@kit/admin').then(mod => ({ default: mod.AdminDashboard })),
+  () => import('@kit/admin').then((mod) => ({ default: mod.AdminDashboard })),
   {
     loading: () => <AdminDashboardSkeleton />,
     ssr: false, // Admin features don't need SSR
-  }
+  },
 );
 
 // Conditional loading based on user role
 function App() {
   const { user } = useUser();
-  
+
   if (user?.role === 'admin') {
     return <AdminDashboard />;
   }
-  
+
   return <UserDashboard />;
 }
 ```
@@ -357,7 +361,7 @@ export async function* streamAIResponse(prompt: string) {
     {
       model: 'gpt-3.5-turbo', // Use cheaper model for simple tasks
       temperature: 0.1, // Lower temperature for consistency
-    }
+    },
   );
 
   for await (const chunk of stream) {
@@ -380,16 +384,14 @@ Optimize billing operations:
 export async function processBatchBilling(subscriptions: Subscription[]) {
   // Process in chunks to avoid rate limits
   const chunks = chunk(subscriptions, 10);
-  
+
   for (const chunk of chunks) {
     await Promise.all(
-      chunk.map(subscription => 
-        processSubscriptionBilling(subscription)
-      )
+      chunk.map((subscription) => processSubscriptionBilling(subscription)),
     );
-    
+
     // Small delay between chunks
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await new Promise((resolve) => setTimeout(resolve, 100));
   }
 }
 
@@ -412,9 +414,9 @@ export async function register() {
   if (process.env.NEXT_RUNTIME === 'nodejs') {
     // Initialize performance monitoring
     const { getServerMonitoringService } = await import('@kit/monitoring/api');
-    
+
     const monitoring = getServerMonitoringService();
-    
+
     // Track server-side performance
     monitoring.captureMessage('Server initialized');
   }
@@ -425,10 +427,10 @@ export function reportWebVitals(metric: NextWebVitalsMetric) {
   // Track Core Web Vitals
   if (metric.label === 'web-vital') {
     const monitoring = useMonitoring();
-    
+
     monitoring.setTag('page', window.location.pathname);
     monitoring.setMeasurement(metric.name, metric.value);
-    
+
     // Alert on poor performance
     if (metric.name === 'LCP' && metric.value > 2500) {
       monitoring.captureMessage(`Poor LCP: ${metric.value}ms`);
@@ -446,11 +448,12 @@ Monitor Supabase performance:
 export function trackDatabaseQuery(
   query: string,
   duration: number,
-  table: string
+  table: string,
 ) {
-  if (duration > 1000) { // Queries over 1 second
+  if (duration > 1000) {
+    // Queries over 1 second
     console.warn(`Slow query on ${table}: ${duration}ms`);
-    
+
     // Send to monitoring service
     const monitoring = getServerMonitoringService();
     monitoring.setMeasurement('db.query.duration', duration);

@@ -1,14 +1,14 @@
-## [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors\#concepts)    Concepts
+## [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors#concepts) Concepts
 
 Sensors are an abstraction to detect different input methods in order to initiate drag operations, respond to movement and end or cancel the operation.
 
-### [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors\#activators)    Activators
+### [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors#activators) Activators
 
 Sensors may define one or multiple **activator events**. Activator events use React [SyntheticEvent listeners](https://reactjs.org/docs/events.html), which leads to improved performance over manually adding event listeners to each individual draggable node.
 
 Sensors are initialized once one of the activator events is detected.
 
-### [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors\#built-in-sensors)    Built-in sensors
+### [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors#built-in-sensors) Built-in sensors
 
 The built-in sensors are:
 
@@ -20,11 +20,11 @@ The built-in sensors are:
 
 - [Keyboard](https://docs.dndkit.com/api-documentation/sensors/keyboard)
 
-### [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors\#custom-sensors)    Custom sensors
+### [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors#custom-sensors) Custom sensors
 
 If necessary, you may also implement custom sensors to respond to other inputs or if the built-in sensors do not suit your needs. If you build a custom sensor and you think others could benefit, don't hesitate to open an RFC pull request.
 
-## [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors\#lifecycle)    Lifecycle
+## [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors#lifecycle) Lifecycle
 
 The lifecycle of a sensor is as follows:
 
@@ -44,9 +44,9 @@ From an implementation perspective, Sensors are [classes](https://developer.mozi
 
 They are class-based rather than hooks because they need to be instantiated synchronously to respond to user interactions immediately, and it must be possible for them to be conditionally invoked.
 
-## [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors\#hooks)    Hooks
+## [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors#hooks) Hooks
 
-### [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors\#usesensor)    useSensor
+### [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors#usesensor) useSensor
 
 By default, `DndContext` uses the [Pointer](https://docs.dndkit.com/api-documentation/sensors/pointer) and [Keyboard](https://docs.dndkit.com/api-documentation/sensors/keyboard) sensors.
 
@@ -74,7 +74,7 @@ function App() {
 }
 ```
 
-### [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors\#usesensors)    useSensors
+### [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors#usesensors) useSensors
 
 When initializing sensors with `useSensor`, make sure you pass the sensors to `useSensors` before passing them to `DndContext`:
 
@@ -140,4 +140,4 @@ function App() {
 
 Last updated 4 years ago
 
-* * *
+---

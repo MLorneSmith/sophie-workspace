@@ -12,7 +12,7 @@ implementation detail is that the `contentEditable` is being set to `"false"` or
 Specific plugins can listen to the mode change too – allowing them to customize parts of the UI depending on the
 mode.
 
-## Setting the mode [​](https://lexical.dev/docs/concepts/read-only\#setting-the-mode "Direct link to heading")
+## Setting the mode [​](https://lexical.dev/docs/concepts/read-only#setting-the-mode 'Direct link to heading')
 
 In order to set the mode, this can be done on creation of the editor:
 
@@ -40,7 +40,7 @@ editor.setEditable(true);
 
 ```
 
-## Reading the mode [​](https://lexical.dev/docs/concepts/read-only\#reading-the-mode "Direct link to heading")
+## Reading the mode [​](https://lexical.dev/docs/concepts/read-only#reading-the-mode 'Direct link to heading')
 
 In order to find the current mode of the editor you can use:
 

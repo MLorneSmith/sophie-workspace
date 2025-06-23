@@ -18,84 +18,98 @@
 Note: Due to Vitest import resolution issues with @kit packages, focused on comprehensive schema validation testing which is the most critical part of this action.
 
 - [x] **Test Case**: Accept valid input data
+
   - **Input**: Valid schema with content, submissionId, type, sessionId
   - **Expected Output**: Validation passes
   - **Status**: ✅ Complete
   - **Notes**: Tests core validation success path
 
 - [x] **Test Case**: Validate all supported type enums
+
   - **Input**: All enum values: situation, complication, answer, outline
   - **Expected Output**: All enum values pass validation
   - **Status**: ✅ Complete
   - **Notes**: Ensures enum consistency
 
 - [x] **Test Case**: SessionId is optional
+
   - **Input**: Valid data without sessionId
   - **Expected Output**: Validation passes
   - **Status**: ✅ Complete
   - **Notes**: Optional field handling
 
 - [x] **Test Case**: Reject empty content
+
   - **Input**: Empty content string
   - **Expected Output**: Validation fails
   - **Status**: ✅ Complete
   - **Notes**: Required field validation
 
 - [x] **Test Case**: Reject empty submissionId
+
   - **Input**: Empty submissionId string
   - **Expected Output**: Validation fails
   - **Status**: ✅ Complete
   - **Notes**: Required field validation
 
 - [x] **Test Case**: Reject missing required fields
+
   - **Input**: Missing content, submissionId, or type
   - **Expected Output**: Validation fails
   - **Status**: ✅ Complete
   - **Notes**: Tests all required field combinations
 
 - [x] **Test Case**: Reject invalid type enum values
+
   - **Input**: Invalid type values
   - **Expected Output**: Validation fails
   - **Status**: ✅ Complete
   - **Notes**: Only accepts "situation", "complication", "answer", "outline"
 
 - [x] **Test Case**: Handle null and undefined values
+
   - **Input**: Various null/undefined combinations
   - **Expected Output**: Validation fails gracefully
   - **Status**: ✅ Complete
   - **Notes**: Edge case handling
 
 - [x] **Test Case**: Accept additional properties
+
   - **Input**: Valid data with extra properties
   - **Expected Output**: Validation passes (ignores extra props)
   - **Status**: ✅ Complete
   - **Notes**: Schema flexibility
 
 - [x] **Test Case**: Accept long content strings
+
   - **Input**: Very long content (10,000 chars)
   - **Expected Output**: Validation passes
   - **Status**: ✅ Complete
   - **Notes**: No artificial length limits
 
 - [x] **Test Case**: Accept content with special characters
+
   - **Input**: Unicode, emojis, special symbols
   - **Expected Output**: Validation passes
   - **Status**: ✅ Complete
   - **Notes**: International content support
 
 - [x] **Test Case**: Accept multiline content
+
   - **Input**: Content with newlines and extra whitespace
   - **Expected Output**: Validation passes
   - **Status**: ✅ Complete
   - **Notes**: Rich text content support
 
 - [x] **Test Case**: Validate case-sensitive type enum
+
   - **Input**: Type values with incorrect casing
   - **Expected Output**: Validation fails
   - **Status**: ✅ Complete
   - **Notes**: Exact enum matching required
 
 - [x] **Test Case**: Accept various session ID formats
+
   - **Input**: Different session ID patterns
   - **Expected Output**: Validation passes
   - **Status**: ✅ Complete
@@ -133,7 +147,8 @@ Due to Vitest import resolution issues with @kit packages, the following integra
 ## Test Setup Template
 
 ```typescript
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { generateIdeasAction } from './generate-ideas';
 
 // Mock all external dependencies
@@ -147,7 +162,7 @@ describe('generateIdeasAction', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
-  
+
   // Tests here
 });
 ```

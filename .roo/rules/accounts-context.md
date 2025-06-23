@@ -1,8 +1,9 @@
 ---
 description: Personal Accounts context and functionality
-globs: 
+globs:
 alwaysApply: false
 ---
+
 # Personal Account Context
 
 This rule provides guidance for working with personal account related components in the application.

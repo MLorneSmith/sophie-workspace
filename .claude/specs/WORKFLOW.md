@@ -101,20 +101,20 @@ Draft → Approved → Archived
 
 ### Primary Commands
 
-| Command | Purpose | Input Required |
-|---------|---------|----------------|
-| `/write-feature-spec [name]` | Create new specification | Feature name |
-| `/manage-specs approve [name]` | Move draft to approved | Spec name |
-| `/build-feature [name]` | Implement approved spec | Spec name |
-| `/manage-specs archive [name]` | Archive completed spec | Spec name |
+| Command                        | Purpose                  | Input Required |
+| ------------------------------ | ------------------------ | -------------- |
+| `/write-feature-spec [name]`   | Create new specification | Feature name   |
+| `/manage-specs approve [name]` | Move draft to approved   | Spec name      |
+| `/build-feature [name]`        | Implement approved spec  | Spec name      |
+| `/manage-specs archive [name]` | Archive completed spec   | Spec name      |
 
 ### Management Commands
 
-| Command | Purpose | Input Required |
-|---------|---------|----------------|
-| `/manage-specs list [status]` | List specs by status | Optional: draft/approved/archived |
-| `/manage-specs status [name]` | Check spec location and metadata | Optional: spec name |
-| `/manage-specs draft [name]` | Rollback approved to draft | Spec name |
+| Command                       | Purpose                          | Input Required                    |
+| ----------------------------- | -------------------------------- | --------------------------------- |
+| `/manage-specs list [status]` | List specs by status             | Optional: draft/approved/archived |
+| `/manage-specs status [name]` | Check spec location and metadata | Optional: spec name               |
+| `/manage-specs draft [name]`  | Rollback approved to draft       | Spec name                         |
 
 ## Automation Features
 
@@ -122,7 +122,7 @@ Draft → Approved → Archived
 
 - **Pattern Detection**: Finds similar features in codebase
 - **Architecture Suggestions**: Based on existing patterns + feature type
-- **Security Templates**: Generates RLS policies and validation schemas  
+- **Security Templates**: Generates RLS policies and validation schemas
 - **Risk Assessment**: Tailored to feature complexity
 - **Implementation Planning**: Phased approach with realistic timelines
 

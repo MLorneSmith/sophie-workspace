@@ -122,12 +122,14 @@ Expected output for properly configured R2:
 2. **Navigate to admin panel**: `http://localhost:3020/admin`
 
 3. **Test Media Collection**:
+
    - Go to Media collection
    - Upload an image file
    - Verify it appears in the admin interface
    - Check that the file URL is accessible
 
 4. **Test Downloads Collection**:
+
    - Go to Downloads collection
    - Upload a PDF or document file
    - Verify it appears in the admin interface
@@ -168,10 +170,14 @@ Expected output for properly configured R2:
 // Single plugin trying to handle both collections
 s3Storage({
   collections: {
-    media: { /* config */ },
-    downloads: { /* config */ }
+    media: {
+      /* config */
+    },
+    downloads: {
+      /* config */
+    },
   },
-  bucket: "single-bucket", // Conflict source
+  bucket: 'single-bucket', // Conflict source
   // Shared configuration causing issues
 })
 ```
@@ -223,7 +229,7 @@ plugins: [mediaPlugin, downloadsPlugin, ...]
 
 - [ ] Media collection interface displays properly
 - [ ] Media files upload and are accessible via correct URLs
-- [ ] Downloads collection interface displays properly  
+- [ ] Downloads collection interface displays properly
 - [ ] Downloads files upload and are accessible via correct URLs
 - [ ] No more conflicts between collections
 - [ ] Verification script passes with green checkmarks

@@ -40,7 +40,7 @@ Simplify prompts
 - bulleted list
 - example code block
 - csv
-  
+
 # Prompt structure
 
 1. Context

@@ -177,7 +177,12 @@ None - all functions are pure transformations without external dependencies.
     },
     {
       "type": "paragraph",
-      "content": [{ "type": "text", "text": "Revenue increased by 25% over the last quarter, with Q1 showing 100M, Q2 at 125M, and Q3 reaching 150M." }]
+      "content": [
+        {
+          "type": "text",
+          "text": "Revenue increased by 25% over the last quarter, with Q1 showing 100M, Q2 at 125M, and Q3 reaching 150M."
+        }
+      ]
     }
   ]
 }
