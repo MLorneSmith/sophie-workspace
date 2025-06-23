@@ -1,0 +1,63 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.25.0
+
+# Configuration for Snyk vulnerability scanning
+# This file allows us to customize Snyk's behavior for our repository
+
+# Language settings for Node.js project
+language-settings:
+  node:
+    # Skip dev dependencies in production scans (they're still scanned in development)
+    dev-dependencies: false
+    # Include yarn workspace dependencies
+    yarn-workspaces: true
+    # Include pnpm workspace dependencies  
+    pnpm-workspaces: true
+
+# Patch settings
+patch: {}
+
+# Ignore specific vulnerabilities (use sparingly and with justification)
+ignore: {}
+
+# Exclude paths from scanning
+exclude:
+  # Exclude build outputs
+  global:
+    - 'dist/**'
+    - 'build/**'
+    - '.next/**'
+    - 'out/**'
+    - 'coverage/**'
+    - '.turbo/**'
+    
+  # Exclude test files from code analysis (dependencies still scanned)
+  code:
+    - '**/*.test.ts'
+    - '**/*.test.tsx' 
+    - '**/*.spec.ts'
+    - '**/*.spec.tsx'
+    - 'test/**'
+    - 'tests/**'
+    - '__tests__/**'
+    - 'apps/e2e/**'
+    
+  # Exclude documentation and config files from code analysis
+  - '**/*.md'
+  - '**/*.json'
+  - '**/*.yml'
+  - '**/*.yaml'
+  - '.github/**'
+  - 'docs/**'
+
+# Project-specific configurations
+project-environment:
+  # Set environment for proper vulnerability assessment
+  production: true
+  
+# Enable additional security features
+experimental:
+  # Enable deep dependency analysis
+  deep-dependencies: true
+  # Enable container scanning if using Docker
+  container-scanning: false
