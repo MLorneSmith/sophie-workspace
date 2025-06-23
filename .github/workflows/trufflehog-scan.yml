@@ -42,7 +42,6 @@ jobs:
           head: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
           # Extra args for custom regex patterns
           extra_args: |
-            --config=.trufflehog/config.yaml
             --only-verified
             --fail
             --json
@@ -108,7 +107,6 @@ jobs:
         with:
           path: ./
           extra_args: |
-            --config=.trufflehog/config.yaml
             --only-verified
             --json
             --include-detectors="all"
