@@ -30,6 +30,7 @@ import {
 	InputOTPSeparator,
 	InputOTPSlot,
 } from "@kit/ui/input-otp";
+import { toast } from "@kit/ui/sonner";
 import { Trans } from "@kit/ui/trans";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -38,8 +39,8 @@ import Image from "next/image";
 import { useCallback, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
 import { z } from "zod";
+import { refreshAuthSession } from "../../../server/personal-accounts-server-actions";
 
 export function MultiFactorAuthSetupDialog(props: { userId: string }) {
 	const { t } = useTranslation();
@@ -158,7 +159,7 @@ function MultiFactorAuthSetupForm({
 		[onEnrolled, verifyCodeMutation],
 	);
 
-	if (state.error) {
+	if (_state.error) {
 		return <ErrorAlert />;
 	}
 
@@ -225,11 +226,11 @@ function MultiFactorAuthSetupForm({
 
 								<Button
 									disabled={
-										!verificationCodeForm.formState.isValid || state.loading
+										!verificationCodeForm.formState.isValid || _state.loading
 									}
 									type={"submit"}
 								>
-									{state.loading ? (
+									{_state.loading ? (
 										<Trans i18nKey={"account:verifyingCode"} />
 									) : (
 										<Trans i18nKey={"account:enableMfaFactor"} />
@@ -313,13 +314,15 @@ function FactorQrCode({
 
 					const data = response.data;
 
-					if (data.type === "totp") {
+					if (data && data.type === "totp") {
 						form.setValue("factorName", name);
 						form.setValue("qrCode", data.totp.qr_code);
 					}
 
 					// dispatch event to set factor ID
-					onSetFactorId(data.id);
+					if (data) {
+						onSetFactorId(data.id);
+					}
 				}}
 			/>
 		);
@@ -431,10 +434,10 @@ function useEnrollFactor(userId: string) {
 			factorType: "totp",
 		});
 
-		if (response._error) {
+		if (response.error) {
 			return {
 				success: false as const,
-				data: response.error.code,
+				data: response.error.code || "",
 			};
 		}
 
@@ -465,8 +468,12 @@ function useVerifyCodeMutation(userId: string) {
 			factorId: params.factorId,
 		});
 
-		if (challenge._error) {
+		if (challenge.error) {
 			throw challenge.error;
+		}
+
+		if (!challenge.data) {
+			throw new Error("Challenge data is missing");
 		}
 
 		const challengeId = challenge.data.id;

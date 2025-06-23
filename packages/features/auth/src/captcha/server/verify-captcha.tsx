@@ -25,7 +25,7 @@ export async function verifyCaptchaToken(token: string) {
 		body: formData,
 	});
 
-	if (!_res._ok) {
+	if (!res.ok) {
 		// TODO: Async logger needed
 		// (await getLogger()).error("Captcha failed:", { data: res.statusText });
 

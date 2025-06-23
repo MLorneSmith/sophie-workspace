@@ -5,6 +5,7 @@
 export interface SimplifiedSection {
 	type: "heading" | "bullet";
 	content: string;
+	[key: string]: unknown; // Add index signature for TypeScript compatibility
 }
 
 export interface SimplifiedContent {
@@ -32,11 +33,11 @@ export function parseSimplified(response: string): SimplifiedContent {
 				if (parsed?.sections?.length > 0) {
 					// Validate each section has required fields
 					const validSections = parsed.sections.every(
-						(section: Record<string, unknown>): section is SimplifiedSection =>
+						(section: Record<string, unknown>) =>
 							section.type &&
 							(section.type === "heading" || section.type === "bullet") &&
 							typeof section.content === "string",
-					// );
+					);
 
 					if (validSections) {
 						return parsed as SimplifiedContent;
@@ -44,8 +45,8 @@ export function parseSimplified(response: string): SimplifiedContent {
 				}
 			} catch (_jsonError) {
 				// TODO: Async logger needed
-		// (await getLogger()).error("Failed to parse JSON content:", { data: jsonError });
-		// }
+				// (await getLogger()).error("Failed to parse JSON content:", { data: jsonError });
+			}
 		}
 
 		// If JSON parsing fails or validation fails, return a basic structure
@@ -61,10 +62,11 @@ export function parseSimplified(response: string): SimplifiedContent {
 				},
 			],
 		};
-	} catch (error) 
+	} catch (_error) {
 		// TODO: Async logger needed
 		// (await getLogger()).error("Failed to parse simplified content:", { data: error });
 		// TODO: Async logger needed
 		// (await getLogger()).error("Raw response:", { data: response });
 		throw new Error("Failed to parse AI response");
+	}
 }

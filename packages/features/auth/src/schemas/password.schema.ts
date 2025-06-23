@@ -27,7 +27,7 @@ export const PasswordSchema = z
  * This is required to validate the password requirements on sign up and password change
  */
 export const RefinedPasswordSchema = PasswordSchema.superRefine((val, ctx) =>
-	validatePassword(val, ctx),
+	_validatePassword(val, ctx),
 );
 
 export function refineRepeatPassword(

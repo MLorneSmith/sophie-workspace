@@ -1,8 +1,9 @@
 ---
 description: The OTP API provides the ability to perform additional checks before executing sensitive operations
-globs: 
+globs:
 alwaysApply: false
 ---
+
 The OTP API allows the user to:
 
 1. protect sensitive operations behind an additional layer of verification
@@ -12,14 +13,13 @@ The OTP API allows the user to:
 - The Database schema can be found at [12-one-time-tokens.sql](mdc:apps/web/supabase/schemas/12-one-time-tokens.sql)
 
 ## Creating an OTP Token
+
 We can se the [verify-otp-form.tsx](mdc:packages/otp/src/components/verify-otp-form.tsx) for creating a quick form to create tokens server side.
 
 ```tsx
 import { VerifyOtpForm } from '@kit/otp/components';
 
-function MyVerificationPage(props: {
-    userEmail: string;
-}) {
+function MyVerificationPage(props: { userEmail: string }) {
   return (
     <VerifyOtpForm
       purpose="password-reset"
@@ -39,13 +39,14 @@ function MyVerificationPage(props: {
 ```
 
 ## Verifying a Token
+
 And here is the server action that verifies the OTP:
 
 ```tsx
 // Verify the token
 const result = await api.verifyToken({
   token: submittedToken,
-  purpose: 'email-verification'
+  purpose: 'email-verification',
 });
 
 if (result.valid) {

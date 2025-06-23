@@ -41,10 +41,10 @@ The project uses PostCSS to process Tailwind CSS v4. The configuration is in `po
 ```javascript
 export default {
   plugins: {
-    'tailwindcss': {},
-    'autoprefixer': {},
+    tailwindcss: {},
+    autoprefixer: {},
   },
-}
+};
 ```
 
 ### Theme Configuration
@@ -73,6 +73,7 @@ Order Tailwind classes in the following groups:
 6. Responsive variants
 
 Example:
+
 ```tsx
 <div className="
   flex items-center justify-between  /* Layout */
@@ -114,6 +115,7 @@ Our application uses CSS variables for theming, which automatically adapt to lig
 - **Destructive**: `destructive` / `destructive-foreground` - Error/danger states
 
 Example:
+
 ```tsx
 <button className="bg-primary text-primary-foreground hover:bg-primary/90">
   Button
@@ -139,9 +141,7 @@ All color variables automatically adjust for dark mode. The dark variant is conf
 This means you can use `dark:` prefix for dark mode specific styles when needed:
 
 ```tsx
-<div className="bg-white dark:bg-gray-900">
-  Custom dark mode background
-</div>
+<div className="bg-white dark:bg-gray-900">Custom dark mode background</div>
 ```
 
 ## Spacing System
@@ -217,6 +217,7 @@ The `tailwindcss-animate` plugin is configured via the `@plugin` directive in `g
 ```
 
 Available animation utilities:
+
 - `animate-in` / `animate-out` - Entry and exit animations
 - `fade-in` / `fade-out` - Opacity animations
 - `zoom-in` / `zoom-out` - Scale animations
@@ -230,12 +231,7 @@ Available animation utilities:
 Always include focus styles for accessibility:
 
 ```tsx
-<button className="
-  focus:outline-none 
-  focus:ring-2 
-  focus:ring-primary 
-  focus:ring-offset-2
-">
+<button className="focus:ring-primary focus:outline-none focus:ring-2 focus:ring-offset-2">
   Accessible Button
 </button>
 ```
@@ -245,24 +241,7 @@ Always include focus styles for accessibility:
 Standard pattern for form inputs:
 
 ```tsx
-<input className="
-  w-full 
-  rounded-md 
-  border 
-  border-input 
-  bg-background 
-  px-3 
-  py-2 
-  text-sm 
-  ring-offset-background 
-  placeholder:text-muted-foreground 
-  focus-visible:outline-none 
-  focus-visible:ring-2 
-  focus-visible:ring-ring 
-  focus-visible:ring-offset-2 
-  disabled:cursor-not-allowed 
-  disabled:opacity-50
-" />
+<input className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" />
 ```
 
 ### Card Components
@@ -270,16 +249,8 @@ Standard pattern for form inputs:
 Standard card pattern:
 
 ```tsx
-<div className="
-  rounded-lg 
-  border 
-  bg-card 
-  text-card-foreground 
-  shadow-sm
-">
-  <div className="p-6">
-    {/* Card content */}
-  </div>
+<div className="bg-card text-card-foreground rounded-lg border shadow-sm">
+  <div className="p-6">{/* Card content */}</div>
 </div>
 ```
 
@@ -296,6 +267,7 @@ Tailwind CSS v4 supports container queries for component-responsive design:
 ```
 
 Container query breakpoints:
+
 - `@sm`: 384px
 - `@md`: 448px
 - `@lg`: 512px
@@ -315,19 +287,21 @@ Tailwind CSS v4 automatically removes unused styles in production builds. The `@
 
 ### Best Practices for Performance
 
-1. **Avoid dynamic class names**: 
+1. **Avoid dynamic class names**:
+
    ```tsx
    // ❌ Bad - Tailwind can't detect these
    <div className={`text-${color}-500`} />
-   
+
    // ✅ Good - Use complete class names
    <div className={color === 'red' ? 'text-red-500' : 'text-blue-500'} />
    ```
 
 2. **Use CSS variables for dynamic values**:
+
    ```tsx
    // For truly dynamic values, use CSS variables
-   <div 
+   <div
      className="bg-[var(--dynamic-color)]"
      style={{ '--dynamic-color': dynamicColor }}
    />

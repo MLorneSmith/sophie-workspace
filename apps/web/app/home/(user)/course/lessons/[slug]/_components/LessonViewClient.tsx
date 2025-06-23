@@ -36,20 +36,47 @@ type QuizAttempt = Database["public"]["Tables"]["quiz_attempts"]["Row"];
 type LessonProgress = Database["public"]["Tables"]["lesson_progress"]["Row"];
 type SurveyResponse = Database["public"]["Tables"]["survey_responses"]["Row"];
 
-// Payload CMS types
+// Payload CMS types (removed duplicates - these interfaces are defined below)
+
+// Define types for content that can be rendered by PayloadContentRenderer
+type PayloadContent = string | Record<string, unknown> | unknown;
+
 interface PayloadLesson {
 	title: string;
-	content: string;
+	content: PayloadContent;
 	lessonNumber: number;
+	lesson_number?: number | string;
 	id: string;
+	quiz_id?: string;
+	quiz_id_id?: string;
+	survey_id?: string;
+	survey_id_id?: string;
+	course?: string | { id?: string; value?: string };
+	course_id?: string | { id?: string };
+	estimated_duration?: number | null;
+	bunny_video_id?: string | null;
+	bunny_library_id?: string | null;
+	video_source_type?: string | null;
+	youtube_video_id?: string | null;
+	todo?: PayloadContent;
+	todo_complete_quiz?: boolean | null;
+	todo_watch_content?: PayloadContent;
+	todo_read_content?: PayloadContent;
+	todo_course_project?: PayloadContent;
+	downloads?: Download[];
 }
 
 interface Download {
-	url: string;
+	url?: string;
 	title?: string;
+	filename?: string;
+	description?: string;
+	mimeType?: string;
+	filesize?: number;
 }
 
 interface PayloadQuiz {
+	id: string;
 	questions: Array<{
 		question: string;
 		questiontype: "single-answer" | "multi-answer";
@@ -62,6 +89,7 @@ interface PayloadQuiz {
 }
 
 interface PayloadSurvey {
+	id: string;
 	questions: Array<{
 		question: string;
 		type: string;
@@ -159,10 +187,10 @@ export function LessonViewClient({
 	const [showQuiz, setShowQuiz] = useState(false);
 	const [showSurvey, setShowSurvey] = useState(false);
 	const [quizCompleted, setQuizCompleted] = useState(
-		quizAttempts.length > 0 && quizAttempts[0].passed,
+		quizAttempts.length > 0 && quizAttempts[0]?.passed === true,
 	);
 	const [surveyCompleted, setSurveyCompleted] = useState(
-		surveyResponses.length > 0 && surveyResponses[0].completed,
+		surveyResponses.length > 0 && surveyResponses[0]?.completed === true,
 	);
 	const [isMarkingCompleted, setIsMarkingCompleted] = useState(false);
 
@@ -183,7 +211,7 @@ export function LessonViewClient({
 		!!survey && !!survey.id && (!!lesson.survey_id || !!lesson.survey_id_id);
 
 	// Extract course ID safely
-	const getCourseId = () => {
+	const getCourseId = (): string => {
 		// Handle different possible formats of course relationship
 		if (lesson.course) {
 			if (typeof lesson.course === "object") {
@@ -203,9 +231,12 @@ export function LessonViewClient({
 		}
 		// If course_id exists directly on the lesson
 		if (lesson.course_id) {
-			return typeof lesson.course_id === "object" && lesson.course_id.id
-				? lesson.course_id.id
-				: lesson.course_id;
+			if (typeof lesson.course_id === "object" && lesson.course_id.id) {
+				return lesson.course_id.id;
+			}
+			if (typeof lesson.course_id === "string") {
+				return lesson.course_id;
+			}
 		}
 		// Fallback to empty string if no course ID found
 		return "";
@@ -276,7 +307,7 @@ export function LessonViewClient({
 				await submitQuizAttemptAction({
 					courseId,
 					lessonId: lesson.id,
-					quizId: quiz.id,
+					quizId: quiz?.id || "",
 					answers,
 					score,
 					passed,
@@ -372,10 +403,20 @@ export function LessonViewClient({
 								<QuizComponent
 									quiz={quiz}
 									onSubmit={handleQuizSubmit}
-									previousAttempts={quizAttempts}
+									previousAttempts={quizAttempts.map((attempt) => ({
+										id: attempt.id,
+										score: attempt.score || 0,
+										passed: attempt.passed || false,
+										answers: attempt.answers as Record<string, unknown>,
+										created_at: attempt.started_at || "",
+									}))}
 									courseId={courseId}
 									currentLessonId={lesson.id}
-									currentLessonNumber={lesson.lesson_number}
+									currentLessonNumber={
+										typeof lesson.lesson_number === "number"
+											? lesson.lesson_number
+											: Number(lesson.lesson_number) || 0
+									}
 								/>
 							)
 						) : (
@@ -528,7 +569,7 @@ export function LessonViewClient({
 										// 	data: lesson.downloads
 										// 		? `${lesson.downloads.length} items`
 										// 		: "undefined",
-		});
+										// });
 
 										if (lesson.downloads && lesson.downloads.length > 0) {
 											// TODO: Async logger needed

@@ -9,7 +9,7 @@ This document outlines the process of setting up a reference Payload CMS website
 3. Fixed database connection issues by updating the DATABASE_URI to use the service name instead of localhost
 4. Successfully accessed the Payload CMS admin panel
 5. Created an admin user with the following credentials:
-   - Email: michael@slideheroes.com
+   - Email: <michael@slideheroes.com>
    - Password: aiesec1992
    - Name: Michael Smith
 
@@ -109,6 +109,6 @@ PREVIEW_SECRET=YOUR_SECRET_HERE
 
 ## Accessing the Reference Setup
 
-To access the admin panel, visit http://localhost:3002/admin and log in with the credentials provided above.
+To access the admin panel, visit <http://localhost:3002/admin> and log in with the credentials provided above.
 
 This reference setup can be used to compare with our existing Payload CMS implementation to identify and debug issues. You can examine the configuration files, collection structures, and database setup to understand how a properly functioning Payload CMS should be configured.

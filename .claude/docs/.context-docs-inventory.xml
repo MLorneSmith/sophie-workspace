@@ -343,44 +343,44 @@
         <topic>Coverage Metrics</topic>
       </topics>
     </document>
-    <document path="testing/context/mocking-strategies.md">
-      <name>Mocking Strategies</name>
-      <description>Strategies and patterns for effective mocking in unit tests.</description>
+    <document path="testing/context/testing-fundamentals.md">
+      <name>Testing Fundamentals</name>
+      <description>Core testing principles and patterns including AAA pattern, naming conventions, test structure, and essential patterns for the SlideHeroes codebase.</description>
       <topics>
-        <topic>Mock Patterns</topic>
-        <topic>Test Isolation</topic>
+        <topic>Core Principles</topic>
+        <topic>AAA Pattern</topic>
+        <topic>Naming Conventions</topic>
+        <topic>Test Organization</topic>
       </topics>
     </document>
-    <document path="testing/context/test-driven-development.md">
-      <name>Test-Driven Development Guide</name>
-      <description>TDD practices and workflow for the project.</description>
+    <document path="testing/context/mocking-and-typescript.md">
+      <name>Mocking and TypeScript Testing Guide</name>
+      <description>Comprehensive guide for all mocking strategies and TypeScript-specific testing patterns. Includes Vitest mocking, project-specific mocks (Supabase, server actions, Portkey), and TypeScript compilation fixes.</description>
       <topics>
-        <topic>TDD Workflow</topic>
-        <topic>Best Practices</topic>
+        <topic>Vitest Mocking</topic>
+        <topic>TypeScript Patterns</topic>
+        <topic>Project Mocks</topic>
+        <topic>Type Safety</topic>
       </topics>
     </document>
-    <document path="testing/context/unit-testing-best-practices.md">
-      <name>Unit Testing Best Practices</name>
-      <description>Collection of best practices for writing effective unit tests.</description>
+    <document path="testing/context/testing-examples.md">
+      <name>Testing Examples</name>
+      <description>Concrete, working test examples from the SlideHeroes codebase organized by feature type. Includes server actions, React components, AI integrations, and real-world patterns.</description>
       <topics>
-        <topic>Test Quality</topic>
-        <topic>Best Practices</topic>
+        <topic>Server Action Tests</topic>
+        <topic>Component Tests</topic>
+        <topic>Integration Tests</topic>
+        <topic>Real Examples</topic>
       </topics>
     </document>
-    <document path="testing/context/unit-testing-patterns.md">
-      <name>Unit Testing Patterns</name>
-      <description>Common patterns and approaches for unit testing various components.</description>
+    <document path="testing/context/typescript-test-patterns.md">
+      <name>TypeScript Test Patterns</name>
+      <description>Comprehensive TypeScript patterns for fixing test file compilation errors. Covers common error patterns, action result types, mock patterns, component testing, Supabase mocks, error handling, and best practices specific to the SlideHeroes codebase.</description>
       <topics>
-        <topic>Test Patterns</topic>
-        <topic>Component Testing</topic>
-      </topics>
-    </document>
-    <document path="testing/context/vitest-setup-confirmation.md">
-      <name>Vitest Setup Confirmation</name>
-      <description>Confirmation and verification of Vitest testing framework setup.</description>
-      <topics>
-        <topic>Vitest Configuration</topic>
-        <topic>Setup Verification</topic>
+        <topic>TypeScript Error Patterns</topic>
+        <topic>Action Result Types</topic>
+        <topic>Mock Type Safety</topic>
+        <topic>Test Compilation Fixes</topic>
       </topics>
     </document>
   </category>
@@ -421,6 +421,16 @@
         <topic>Styling Conventions</topic>
         <topic>Utility Classes</topic>
         <topic>Custom Configurations</topic>
+      </topics>
+    </document>
+    <document path="ui/ui-components-guide.md">
+      <name>UI Components Guide</name>
+      <description>Comprehensive guide for working with shadcn UI and Aceternity UI component libraries. Covers usage patterns, installed components, adding new components, and best practices.</description>
+      <topics>
+        <topic>shadcn UI Components</topic>
+        <topic>Aceternity UI Components</topic>
+        <topic>Component Import Patterns</topic>
+        <topic>Adding Components</topic>
       </topics>
     </document>
   </category>

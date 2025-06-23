@@ -28,10 +28,11 @@ export function createI18nSettings({
 		fallbackNS: ns,
 		missingInterpolationHandler: (_text, _value, _options) => {
 			// TODO: Async logger needed
-		// (await getLogger()).debug(`Missing interpolation value for key: ${text}`, { arg1: value, arg2: options, arg3:  });
-			// },
+			// (await getLogger()).debug(`Missing interpolation value for key: ${_text}`, { value: _value, options: _options });
+		},
 		ns,
-		react: 
-			useSuspense: true,,
+		react: {
+			useSuspense: true,
+		},
 	};
 }

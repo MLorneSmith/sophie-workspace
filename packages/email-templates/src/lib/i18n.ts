@@ -19,10 +19,10 @@ export function initializeEmailI18n(params: {
 				return data as Record<string, string>;
 			} catch (_error) {
 				// TODO: Async logger needed
-		// (await getLogger()).info(`Error loading i18n file: locales/${language}/${namespace}.json`, { arg1: error, arg2:  });
+				// (await getLogger()).info(`Error loading i18n file: locales/${language}/${namespace}.json`, { error: _error });
 
 				return {};
-		// }
+			}
 		},
 	);
 }

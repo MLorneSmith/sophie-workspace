@@ -60,42 +60,56 @@ export type { SupabaseClient };
  * This is used as a fallback when the real client can't be initialized
  */
 function createMockClient(): SupabaseClient {
+	// Create a recursive mock that satisfies the SupabaseQueryBuilder interface
+	const createQueryBuilder = (): unknown => ({
+		select: createQueryBuilder,
+		insert: createQueryBuilder,
+		update: createQueryBuilder,
+		delete: createQueryBuilder,
+		eq: createQueryBuilder,
+		neq: createQueryBuilder,
+		gt: createQueryBuilder,
+		gte: createQueryBuilder,
+		lt: createQueryBuilder,
+		lte: createQueryBuilder,
+		like: createQueryBuilder,
+		ilike: createQueryBuilder,
+		is: createQueryBuilder,
+		in: createQueryBuilder,
+		contains: createQueryBuilder,
+		containedBy: createQueryBuilder,
+		rangeLt: createQueryBuilder,
+		rangeGt: createQueryBuilder,
+		rangeGte: createQueryBuilder,
+		rangeLte: createQueryBuilder,
+		rangeAdjacent: createQueryBuilder,
+		overlaps: createQueryBuilder,
+		textSearch: createQueryBuilder,
+		match: createQueryBuilder,
+		not: createQueryBuilder,
+		or: createQueryBuilder,
+		filter: createQueryBuilder,
+		order: createQueryBuilder,
+		limit: createQueryBuilder,
+		range: createQueryBuilder,
+		abortSignal: createQueryBuilder,
+		single: () => ({ data: null, error: null }),
+		maybeSingle: () => ({ data: null, error: null }),
+		csv: () => ({ data: null, error: null }),
+		geojson: () => ({ data: null, error: null }),
+		explain: createQueryBuilder,
+		rollback: createQueryBuilder,
+		returns: createQueryBuilder,
+		// biome-ignore lint/suspicious/noThenProperty: Mock implementation requires then for promise-like behavior
+		then: (onResolve: (value: SupabaseResponse) => void) =>
+			onResolve({ data: null, error: null }),
+		data: null,
+		error: null,
+	});
+
 	return {
 		// Table operations
-		from: (_table: string) => ({
-			// Insert operations
-			insert: (_data: Record<string, unknown>) => ({
-				select: (_columns: string) => ({
-					single: () => ({ data: null, error: null }),
-				}),
-			}),
-			// Select operations
-			select: (_columns?: string) => ({
-				eq: (_column: string, _value: unknown) => ({
-					single: () => ({ data: null, error: null }),
-					order: () => ({ limit: () => ({ data: null, error: null }) }),
-				}),
-				order: () => ({ limit: () => ({ data: null, error: null }) }),
-				limit: () => ({ data: null, error: null }),
-				single: () => ({ data: null, error: null }),
-				data: null,
-				error: null,
-			}),
-			// Update operations
-			update: (_data: Record<string, unknown>) => ({
-				eq: () => ({ data: null, error: null }),
-				match: () => ({ data: null, error: null }),
-				data: null,
-				error: null,
-			}),
-			// Delete operations
-			delete: () => ({
-				eq: () => ({ data: null, error: null }),
-				match: () => ({ data: null, error: null }),
-				data: null,
-				error: null,
-			}),
-		}),
+		from: (_table: string) => createQueryBuilder(),
 		// RPC calls
 		rpc: (_func: string, _params?: Record<string, unknown>) => ({
 			data: null,
@@ -103,18 +117,7 @@ function createMockClient(): SupabaseClient {
 		}),
 		// Schema operations
 		schema: (_schema: string) => ({
-			from: (_table: string) => ({
-				select: (_columns?: string) => ({ data: null, error: null }),
-				insert: (_data: Record<string, unknown>) => ({
-					data: null,
-					error: null,
-				}),
-				update: (_data: Record<string, unknown>) => ({
-					data: null,
-					error: null,
-				}),
-				delete: () => ({ data: null, error: null }),
-			}),
+			from: (_table: string) => createQueryBuilder(),
 		}),
 		// Auth related methods (minimal implementation)
 		auth: {
@@ -122,7 +125,7 @@ function createMockClient(): SupabaseClient {
 			getSession: () =>
 				Promise.resolve({ data: { session: null }, error: null }),
 		},
-	};
+	} as SupabaseClient;
 }
 
 /**
@@ -186,7 +189,7 @@ export async function getSupabaseClient(
 					(await getLogger()).info(
 						"Supabase admin client successfully connected",
 					);
-					return adminClient;
+					return adminClient as unknown as SupabaseClient;
 				} catch (adminConnectionError) {
 					(await getLogger()).error(
 						"Error testing Supabase admin connection:",
@@ -228,7 +231,7 @@ export async function getSupabaseClient(
 
 		// Test connection with a simple query
 		try {
-			const { data, error } = await client
+			const { error } = await client
 				.from("ai_cost_configuration")
 				.select("id")
 				.limit(1);
@@ -244,7 +247,7 @@ export async function getSupabaseClient(
 			}
 
 			(await getLogger()).info("Supabase client successfully connected");
-			return client;
+			return client as unknown as SupabaseClient;
 		} catch (connectionError) {
 			(await getLogger()).error("Error testing Supabase connection:", {
 				data: connectionError,

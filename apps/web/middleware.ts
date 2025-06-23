@@ -24,18 +24,18 @@ const getUser = (request: NextRequest, response: NextResponse) => {
 };
 
 export async function middleware(request: NextRequest) {
-	const secureHeaders = await createResponseWithSecureHeaders();
+	const secureHeaders = await _createResponseWithSecureHeaders();
 	const response = NextResponse.next(secureHeaders);
 
 	// set a unique request ID for each request
 	// this helps us log and trace requests
-	setRequestId(request);
+	_setRequestId(request);
 
 	// apply CSRF protection for mutating requests
 	const csrfResponse = await withCsrfMiddleware(request, response);
 
 	// handle patterns for specific routes
-	const handlePattern = matchUrlPattern(request.url);
+	const handlePattern = _matchUrlPattern(request.url);
 
 	// if a pattern handler exists, call it
 	if (handlePattern) {

@@ -32,7 +32,7 @@ const EMPTY_EDITOR_STATE = {
 };
 
 export const TiptapTabContent = forwardRef<TiptapEditorRef, TabContentProps>(
-	function TiptapTabContent({ sectionType }, _ref) {
+	function TiptapTabContent({ sectionType }, ref) {
 		// Add state to track content loading errors
 		const [contentError, setContentError] = useState<string | null>(null);
 		const searchParams = useSearchParams();
@@ -145,7 +145,7 @@ export const TiptapTabContent = forwardRef<TiptapEditorRef, TabContentProps>(
 
 				// Try to parse string content as JSON
 				try {
-					const parsed = JSON.parse(rawContent);
+					const parsed = JSON.parse(rawContent as string);
 					if (
 						typeof parsed === "object" &&
 						parsed !== null &&
@@ -224,27 +224,27 @@ export const TiptapTabContent = forwardRef<TiptapEditorRef, TabContentProps>(
 		}
 
 		// Prepare the content for the editor in a safe way
-		let _editorContent = "";
+		let editorContent = "";
 		try {
 			if (typeof content === "string") {
 				// Parse and stringify to ensure clean JSON
 				const parsed = JSON.parse(content);
 				// Normalize content to prevent ProseMirror model conflicts
 				const normalized = normalizeEditorContent(parsed, sectionType);
-				_editorContent = JSON.stringify(normalized);
+				editorContent = JSON.stringify(normalized);
 			} else if (content) {
 				// The content is already an object, normalize and stringify it
 				const normalized = normalizeEditorContent(content, sectionType);
-				_editorContent = JSON.stringify(normalized);
+				editorContent = JSON.stringify(normalized);
 			} else {
-				_editorContent = JSON.stringify(EMPTY_EDITOR_STATE);
+				editorContent = JSON.stringify(EMPTY_EDITOR_STATE);
 			}
 			// TODO: Async logger needed
 			// (await getLogger()).info("Prepared editor content:", {
 			// 	sectionType,
 			// 	contentType: typeof editorContent,
 			// 	contentLength: editorContent.length,
-		});
+			// });
 		} catch (_e) {
 			// TODO: Async logger needed
 			// TODO: Fix logger call - was: error

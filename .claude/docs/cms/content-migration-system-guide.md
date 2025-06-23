@@ -29,6 +29,7 @@ The `reset-and-migrate.ps1` script is the primary entry point for the migration 
 ```
 
 Options:
+
 - `-ForceRegenerate`: Force regeneration of processed data
 - `-SkipVerification`: Skip verification steps
 - `-Verbose`: Enable verbose output
@@ -44,6 +45,7 @@ The setup phase prepares the database environment:
 ```
 
 Key functions:
+
 - `Reset-SupabaseDatabase`: Reset the Supabase database
 - `Reset-PayloadSchema`: Reset the Payload schema
 - `Run-PayloadMigrations`: Run Payload migrations
@@ -57,9 +59,11 @@ The processing phase transforms raw data into SQL seed files:
 ```
 
 Options:
+
 - `-ForceRegenerate`: Force regeneration of processed data
 
 Key functions:
+
 - `Process-RawData`: Process raw data files
 - `Generate-SqlSeedFiles`: Generate SQL seed files
 - `Fix-References`: Fix references between entities
@@ -73,9 +77,11 @@ The loading phase populates the database with content:
 ```
 
 Options:
+
 - `-SkipVerification`: Skip verification steps
 
 Key functions:
+
 - `Run-ContentMigrations`: Run content migrations
 - `Migrate-BlogPosts`: Migrate blog posts
 - `Fix-UuidTables`: Fix UUID tables
@@ -90,6 +96,7 @@ The verification phase ensures data integrity:
 ```
 
 Key functions:
+
 - `Verify-DatabaseState`: Verify database state
 - `Verify-PostsContent`: Verify posts content
 - `Verify-Relationships`: Verify relationships
@@ -103,6 +110,7 @@ For migrating content to remote environments:
 ```
 
 Options:
+
 - `-SkipCore`: Skip core tables migration
 - `-SkipPosts`: Skip posts migration
 - `-SkipDocumentation`: Skip documentation migration
@@ -124,6 +132,7 @@ For fixing relationship inconsistencies:
 ```
 
 Options:
+
 - `-SkipVerification`: Skip verification
 - `-ContinueOnError`: Continue on error
 - `-VerboseOutput`: Enable verbose output
@@ -135,6 +144,7 @@ For better performance:
 ```
 
 Options:
+
 - `-SkipVerification`: Skip verification
 - `-SkipFallback`: Skip fallback repair
 - `-VerboseOutput`: Enable verbose output
@@ -148,6 +158,7 @@ For verifying remote content:
 ```
 
 Options:
+
 - `-VerifyCore`: Verify core tables
 - `-VerifyPosts`: Verify posts
 - `-VerifyDocumentation`: Verify documentation
@@ -351,7 +362,7 @@ Schedule regular migrations:
 name: Scheduled Migration
 on:
   schedule:
-    - cron: '0 0 * * 0'  # Weekly on Sunday at midnight
+    - cron: '0 0 * * 0' # Weekly on Sunday at midnight
 jobs:
   migrate:
     runs-on: ubuntu-latest
@@ -380,6 +391,7 @@ jobs:
 ## Troubleshooting
 
 For common issues and solutions, refer to:
+
 - [Content Migration Troubleshooting](./content-migration-troubleshooting.md)
 - [Quiz Relationship Troubleshooting](./quiz-relationship-troubleshooting.md)
 - [WSL Troubleshooting](./wsl-troubleshooting.md)
@@ -423,12 +435,12 @@ reset-and-migrate.ps1
 
 ### Common Error Codes
 
-| Error Code | Description | Resolution |
-|------------|-------------|------------|
-| E001 | Database connection failed | Check database credentials and connection |
-| E002 | Schema creation failed | Check database permissions |
-| E003 | Data processing failed | Check raw data format |
-| E004 | SQL generation failed | Check SQL templates |
-| E005 | Content migration failed | Check migration scripts |
-| E006 | Relationship fix failed | Run relationship repair script |
-| E007 | Verification failed | Check verification logs |
+| Error Code | Description                | Resolution                                |
+| ---------- | -------------------------- | ----------------------------------------- |
+| E001       | Database connection failed | Check database credentials and connection |
+| E002       | Schema creation failed     | Check database permissions                |
+| E003       | Data processing failed     | Check raw data format                     |
+| E004       | SQL generation failed      | Check SQL templates                       |
+| E005       | Content migration failed   | Check migration scripts                   |
+| E006       | Relationship fix failed    | Run relationship repair script            |
+| E007       | Verification failed        | Check verification logs                   |

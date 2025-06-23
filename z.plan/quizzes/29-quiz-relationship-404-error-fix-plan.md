@@ -18,6 +18,7 @@ We're experiencing 404 Not Found errors when accessing quiz data for certain les
 - Preparation and Practice
 
 The errors in NextJS logs show:
+
 ```
 Error: Failed to call Payload API (course_quizzes/d5e6f7a8-b9c0-d1e2-f3a4-b5c6d7e8f9a0?depth=1): 404 Not Found
 ```
@@ -32,6 +33,7 @@ Through investigation of the database, migration scripts, and application code, 
 
 2. **Format inconsistency:**
    - The Payload API expects a specific JSONB format for relationship fields:
+
      ```json
      {
        "questions": [
@@ -45,6 +47,7 @@ Through investigation of the database, migration scripts, and application code, 
        ]
      }
      ```
+
    - Some quiz records have incorrectly formatted arrays
 
 3. **Relationship model transition:**

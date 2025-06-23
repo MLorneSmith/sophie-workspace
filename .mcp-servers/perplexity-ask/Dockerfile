@@ -1,5 +1,18 @@
-# Perplexity MCP Server Container
-# Containerizes server-perplexity-ask to avoid npx download delays
+# Official Perplexity MCP Server Container
+# Built from ppl-ai/modelcontextprotocol repository
+FROM node:22-alpine AS builder
+
+# Install build dependencies
+RUN apk add --no-cache git
+
+# Clone the official repository
+RUN git clone https://github.com/ppl-ai/modelcontextprotocol.git /tmp/modelcontextprotocol
+
+# Build the perplexity-ask server
+WORKDIR /tmp/modelcontextprotocol/perplexity-ask
+RUN npm install && npm run build
+
+# Production stage
 FROM node:22-alpine AS base
 
 # Install curl for health checks
@@ -8,8 +21,10 @@ RUN apk add --no-cache curl
 # Set working directory
 WORKDIR /app
 
-# Install the MCP server globally with npm (simpler for containers)
-RUN npm install -g server-perplexity-ask
+# Copy built server from builder stage
+COPY --from=builder /tmp/modelcontextprotocol/perplexity-ask/package*.json ./
+COPY --from=builder /tmp/modelcontextprotocol/perplexity-ask/dist ./dist
+COPY --from=builder /tmp/modelcontextprotocol/perplexity-ask/node_modules ./node_modules
 
 # Copy the proxy server script
 COPY proxy-server.js .

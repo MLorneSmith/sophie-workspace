@@ -6,13 +6,13 @@ The Pointer sensor responds to [Pointer events](https://developer.mozilla.org/en
 >
 > – Source: [MDN](https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events)
 
-### [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors/pointer\#activator)    Activator
+### [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors/pointer#activator) Activator
 
 The pointer activator is the `onPointerDown` event handler. The Pointer sensor is initialized if the pointer event was triggered by the [primary pointer](https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events#Determining_the_Primary_Pointer).
 
 For mouse there is only one pointer, so it will always be the primary pointer. For touch input, a pointer is considered primary if the user touched the screen when there were no other active touches. For pen and stylus input, a pointer is considered primary if the user's pen initially contacted the screen when there were no other active pens contacting the screen.
 
-### [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors/pointer\#activation-constraints)    Activation constraints
+### [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors/pointer#activation-constraints) Activation constraints
 
 The Pointer sensor has two activation constraints:
 
@@ -20,10 +20,9 @@ The Pointer sensor has two activation constraints:
 
 - Delay constraint
 
-
 These activation constraints are mutually exclusive and may not be used simultaneously.
 
-#### [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors/pointer\#distance)    Distance
+#### [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors/pointer#distance) Distance
 
 The distance constraint subscribes to the following interface:
 
@@ -37,7 +36,7 @@ interface DistanceConstraint {
 
 The `distance` property represents the distance, in _pixels_, by which the pointer needs to be moved before a drag start event is emitted.
 
-#### [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors/pointer\#delay)    Delay
+#### [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors/pointer#delay) Delay
 
 The delay constraint subscribe to the following interface:
 
@@ -56,9 +55,9 @@ The `tolerance` property represents the distance, in _pixels_, of motion that is
 
 This property is particularly useful for touch input, where some tolerance should be accounted for when using a delay constraint, as touch input is less precise than mouse input.
 
-### [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors/pointer\#recommendations)    Recommendations
+### [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors/pointer#recommendations) Recommendations
 
-#### [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors/pointer\#touch-action)    `touch-action`
+#### [Direct link to heading](https://docs.dndkit.com/api-documentation/sensors/pointer#touch-action) `touch-action`
 
 We highly recommend you specify the `touch-action` CSS property for all of your draggable elements.
 
@@ -78,4 +77,4 @@ Once a `pointerdown` or `touchstart` event has been initiated, any changes to th
 
 Last updated 3 years ago
 
-* * *
+---

@@ -11,6 +11,7 @@ Our SlideHeroes application uses PostgreSQL on Supabase with three primary schem
 ## Auth Schema (Managed by Supabase)
 
 Standard Supabase authentication tables:
+
 - `auth.users` - User accounts and authentication
 - `auth.identities` - OAuth and identity providers
 - `auth.sessions` - Active user sessions
@@ -43,7 +44,7 @@ ALTER TABLE public.accounts ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view accounts they belong to" ON public.accounts
   FOR SELECT USING (
     auth.uid() IN (
-      SELECT user_id FROM public.accounts_memberships 
+      SELECT user_id FROM public.accounts_memberships
       WHERE account_id = accounts.id
     )
   );
@@ -88,7 +89,7 @@ CREATE TABLE public.subscriptions (
 ### Additional SaaS Tables
 
 - `public.invitations` - Team invitations
-- `public.notifications` - User notifications  
+- `public.notifications` - User notifications
 - `public.billing_customers` - Billing customer data
 - `public.orders` - One-time purchases
 - `public.one_time_tokens` - Secure token management
@@ -312,7 +313,7 @@ CREATE TABLE payload.media (
 Payload CMS uses relationship tables for many-to-many relationships:
 
 - `payload.course_lessons_rels` - Course to lesson relationships
-- `payload.course_quizzes_rels` - Course to quiz relationships  
+- `payload.course_quizzes_rels` - Course to quiz relationships
 - `payload.courses_rels` - Course to category/tag relationships
 - `payload.documentation_rels` - Documentation relationships
 - `payload.posts_rels` - Post to category/tag relationships

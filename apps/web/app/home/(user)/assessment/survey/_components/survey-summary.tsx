@@ -7,7 +7,7 @@ import { Progress } from "@kit/ui/progress";
 import { Trans } from "@kit/ui/trans";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import type { Survey } from "@/../apps/payload/payload-types";
+import type { Survey } from "../../../../../../../payload/payload-types";
 import { useSurveyScores } from "../../_lib/client/hooks/use-survey-scores";
 import { RadarChart } from "./radar-chart";
 
@@ -18,7 +18,7 @@ type SurveySummaryProps = {
 };
 
 export function SurveySummary({
-	survey: _survey,
+	survey,
 	categoryScores: initialCategoryScores,
 	totalQuestions: _totalQuestions,
 }: SurveySummaryProps) {
@@ -28,10 +28,9 @@ export function SurveySummary({
 	// Fetch scores from database if not provided
 	const {
 		categoryScores: dbCategoryScores,
-		highestCategory: _dbHighestCategory,
-		lowestCategory: _dbLowestCategory,
-		isLoading: _isLoading,
-	} = useSurveyScores(user?.id || "", String(_survey.id));
+		highestCategory: dbHighestCategory,
+		lowestCategory: dbLowestCategory,
+	} = useSurveyScores(user?.id || "", String(survey.id));
 
 	// Use provided scores or fall back to database scores
 	const categoryScores =
@@ -65,7 +64,12 @@ export function SurveySummary({
 				);
 			}
 		}
-	}, [categoryScores, initialCategoryScores]);
+	}, [
+		categoryScores,
+		initialCategoryScores,
+		dbHighestCategory,
+		dbLowestCategory,
+	]);
 
 	// Get category names - using the category key directly since we don't have a mapping
 	const getCategoryName = (categoryKey: string) => {

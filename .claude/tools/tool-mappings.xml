@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool_mappings>
+  <description>
+    Maps abstract tool categories referenced in agent definitions to concrete Claude Code and MCP implementations.
+    This enables agents to understand which specific tools to use for each capability.
+  </description>
+
+  <!-- Version Control Operations -->
+  <mapping>
+    <abstract_tool>git</abstract_tool>
+    <concrete_implementations>
+      <mcp_tool server="github_mcp">
+        <description>GitHub API integration for repository management</description>
+        <functions>
+          <function>create_or_update_file</function>
+          <function>push_files</function>
+          <function>create_branch</function>
+          <function>create_pull_request</function>
+          <function>list_commits</function>
+          <function>get_file_contents</function>
+        </functions>
+      </mcp_tool>
+      <claude_native tool="Bash">
+        <description>Local git operations via command line</description>
+        <commands>
+          <command>git status</command>
+          <command>git add .</command>
+          <command>git commit -m "message"</command>
+          <command>git push</command>
+          <command>git branch</command>
+          <command>git checkout</command>
+        </commands>
+      </claude_native>
+    </concrete_implementations>
+  </mapping>
+
+  <!-- File System Operations -->
+  <mapping>
+    <abstract_tool>file_system</abstract_tool>
+    <concrete_implementations>
+      <claude_native tool="Read">
+        <description>Read file contents</description>
+      </claude_native>
+      <claude_native tool="Write">
+        <description>Create new files</description>
+      </claude_native>
+      <claude_native tool="Edit">
+        <description>Modify existing files</description>
+      </claude_native>
+      <claude_native tool="MultiEdit">
+        <description>Make multiple edits to a single file</description>
+      </claude_native>
+      <claude_native tool="LS">
+        <description>List directory contents</description>
+      </claude_native>
+    </concrete_implementations>
+  </mapping>
+
+  <!-- Test Execution -->
+  <mapping>
+    <abstract_tool>test_runner</abstract_tool>
+    <concrete_implementations>
+      <claude_native tool="Bash">
+        <description>Execute test commands</description>
+        <commands>
+          <command>pnpm test</command>
+          <command>pnpm test:unit</command>
+          <command>pnpm test:integration</command>
+          <command>pnpm test:e2e</command>
+          <command>pnpm vitest run</command>
+          <command>pnpm vitest watch</command>
+        </commands>
+      </claude_native>
+      <mcp_tool server="browser_tools_mcp">
+        <description>Browser-based testing and auditing</description>
+        <functions>
+          <function>runAccessibilityAudit</function>
+          <function>runPerformanceAudit</function>
+          <function>runSEOAudit</function>
+          <function>takeScreenshot</function>
+        </functions>
+      </mcp_tool>
+    </concrete_implementations>
+  </mapping>
+
+  <!-- Code Quality Tools -->
+  <mapping>
+    <abstract_tool>linter</abstract_tool>
+    <concrete_implementations>
+      <claude_native tool="Bash">
+        <description>Run linting and formatting tools</description>
+        <commands>
+          <command>pnpm lint</command>
+          <command>pnpm lint:fix</command>
+          <command>pnpm format</command>
+          <command>pnpm biome check</command>
+          <command>pnpm biome check --fix</command>
+        </commands>
+      </claude_native>
+    </concrete_implementations>
+  </mapping>
+
+  <!-- Static Analysis -->
+  <mapping>
+    <abstract_tool>static_analyzer</abstract_tool>
+    <concrete_implementations>
+      <claude_native tool="Bash">
+        <description>TypeScript and static analysis</description>
+        <commands>
+          <command>pnpm typecheck</command>
+          <command>pnpm build</command>
+          <command>tsc --noEmit</command>
+        </commands>
+      </claude_native>
+      <mcp_tool server="newrelic_mcp">
+        <description>Runtime analysis and monitoring</description>
+        <functions>
+          <function>query_newrelic_logs</function>
+          <function>get_error_traces</function>
+        </functions>
+      </mcp_tool>
+    </concrete_implementations>
+  </mapping>
+
+  <!-- Security Scanning -->
+  <mapping>
+    <abstract_tool>security_scanner</abstract_tool>
+    <concrete_implementations>
+      <claude_native tool="Bash">
+        <description>Security vulnerability scanning</description>
+        <commands>
+          <command>pnpm audit</command>
+          <command>pnpm audit:fix</command>
+          <command>pnpm dlx @sandworm/audit</command>
+        </commands>
+      </claude_native>
+      <mcp_tool server="supabase_mcp">
+        <description>Database security advisors</description>
+        <functions>
+          <function>get_advisors</function>
+        </functions>
+      </mcp_tool>
+    </concrete_implementations>
+  </mapping>
+
+  <!-- Test Coverage Analysis -->
+  <mapping>
+    <abstract_tool>coverage_analyzer</abstract_tool>
+    <concrete_implementations>
+      <claude_native tool="Bash">
+        <description>Code coverage reporting</description>
+        <commands>
+          <command>pnpm test:coverage</command>
+          <command>pnpm vitest run --coverage</command>
+        </commands>
+      </claude_native>
+    </concrete_implementations>
+  </mapping>
+
+  <!-- Search and Discovery -->
+  <mapping>
+    <abstract_tool>vector_search</abstract_tool>
+    <concrete_implementations>
+      <claude_native tool="Grep">
+        <description>Pattern-based file content search</description>
+        <usage>Search for code patterns, imports, function usage</usage>
+      </claude_native>
+      <claude_native tool="Glob">
+        <description>File path pattern matching</description>
+        <usage>Find files by name patterns like "*.test.ts"</usage>
+      </claude_native>
+      <claude_native tool="Task">
+        <description>Agent-based comprehensive search</description>
+        <usage>Complex searches across multiple files and contexts</usage>
+      </claude_native>
+    </concrete_implementations>
+  </mapping>
+
+  <!-- YAML/Configuration Management -->
+  <mapping>
+    <abstract_tool>index_updater</abstract_tool>
+    <concrete_implementations>
+      <claude_native tool="Edit">
+        <description>Update YAML files</description>
+        <usage>Modify index.yml and other configuration files</usage>
+      </claude_native>
+      <claude_native tool="MultiEdit">
+        <description>Batch updates to YAML files</description>
+        <usage>Update multiple entries in index.yml</usage>
+      </claude_native>
+    </concrete_implementations>
+  </mapping>
+
+  <!-- Documentation Search -->
+  <mapping>
+    <abstract_tool>documentation_search</abstract_tool>
+    <concrete_implementations>
+      <mcp_tool server="context7_mcp">
+        <description>Real-time library documentation</description>
+        <functions>
+          <function>resolve-library-id</function>
+          <function>get-library-docs</function>
+        </functions>
+      </mcp_tool>
+      <mcp_tool server="supabase_mcp">
+        <description>Supabase documentation search</description>
+        <functions>
+          <function>search_docs</function>
+        </functions>
+      </mcp_tool>
+      <mcp_tool server="cloudflare_mcp">
+        <description>Cloudflare documentation search</description>
+        <functions>
+          <function>search_cloudflare_documentation</function>
+        </functions>
+      </mcp_tool>
+    </concrete_implementations>
+  </mapping>
+
+  <!-- Database Operations -->
+  <mapping>
+    <abstract_tool>database_manager</abstract_tool>
+    <concrete_implementations>
+      <mcp_tool server="postgres_mcp">
+        <description>Local PostgreSQL operations (localhost:54322)</description>
+        <functions>
+          <function>pg_execute_query</function>
+          <function>pg_execute_mutation</function>
+          <function>pg_manage_schema</function>
+          <function>pg_manage_rls</function>
+        </functions>
+      </mcp_tool>
+      <mcp_tool server="supabase_mcp">
+        <description>Remote Supabase operations (production/staging)</description>
+        <functions>
+          <function>apply_migration</function>
+          <function>execute_sql</function>
+          <function>list_tables</function>
+          <function>generate_typescript_types</function>
+        </functions>
+      </mcp_tool>
+    </concrete_implementations>
+  </mapping>
+
+  <!-- Task Management -->
+  <mapping>
+    <abstract_tool>task_tracker</abstract_tool>
+    <concrete_implementations>
+      <claude_native tool="TodoWrite">
+        <description>Create and update task lists</description>
+      </claude_native>
+      <claude_native tool="TodoRead">
+        <description>Read current task status</description>
+      </claude_native>
+      <mcp_tool server="github_mcp">
+        <description>GitHub issue tracking</description>
+        <functions>
+          <function>create_issue</function>
+          <function>update_issue</function>
+          <function>add_issue_comment</function>
+        </functions>
+      </mcp_tool>
+    </concrete_implementations>
+  </mapping>
+
+  <!-- Monitoring and Debugging -->
+  <mapping>
+    <abstract_tool>monitoring</abstract_tool>
+    <concrete_implementations>
+      <mcp_tool server="newrelic_mcp">
+        <description>Application performance monitoring</description>
+        <functions>
+          <function>query_newrelic_logs</function>
+          <function>get_transaction_traces</function>
+          <function>get_error_traces</function>
+          <function>get_otel_traces</function>
+        </functions>
+      </mcp_tool>
+      <mcp_tool server="cloudflare_mcp">
+        <description>Worker and edge function monitoring</description>
+        <functions>
+          <function>query_worker_observability</function>
+          <function>observability_keys</function>
+          <function>observability_values</function>
+        </functions>
+      </mcp_tool>
+      <mcp_tool server="browser_tools_mcp">
+        <description>Browser console and network monitoring</description>
+        <functions>
+          <function>getConsoleErrors</function>
+          <function>getNetworkErrors</function>
+          <function>getConsoleLogs</function>
+        </functions>
+      </mcp_tool>
+    </concrete_implementations>
+  </mapping>
+
+  <!-- AI and External APIs -->
+  <mapping>
+    <abstract_tool>ai_integration</abstract_tool>
+    <concrete_implementations>
+      <mcp_tool server="perplexity_mcp">
+        <description>AI-powered conversational search</description>
+        <functions>
+          <function>perplexity_ask</function>
+        </functions>
+      </mcp_tool>
+      <mcp_tool server="exa_mcp">
+        <description>Advanced web search</description>
+        <functions>
+          <function>exa_search</function>
+        </functions>
+      </mcp_tool>
+      <claude_native tool="WebSearch">
+        <description>Claude's built-in web search</description>
+      </claude_native>
+    </concrete_implementations>
+  </mapping>
+
+  <!-- Complex Problem Solving -->
+  <mapping>
+    <abstract_tool>reasoning_engine</abstract_tool>
+    <concrete_implementations>
+      <mcp_tool server="code_reasoning_mcp">
+        <description>Sequential thinking and problem decomposition</description>
+        <functions>
+          <function>code-reasoning</function>
+        </functions>
+      </mcp_tool>
+      <claude_native tool="Task">
+        <description>Agent-based complex task execution</description>
+      </claude_native>
+    </concrete_implementations>
+  </mapping>
+
+  <usage_guidelines>
+    <guideline>
+      When an agent references an abstract tool, consult this mapping to determine which concrete implementation to use based on the context and requirements.
+    </guideline>
+    <guideline>
+      Prefer Claude native tools for basic operations and MCP tools for specialized platform integrations.
+    </guideline>
+    <guideline>
+      For database operations, use postgres_mcp for local development and supabase_mcp for remote/production.
+    </guideline>
+    <guideline>
+      Always check tool availability in the current environment before attempting to use MCP tools.
+    </guideline>
+  </usage_guidelines>
+</tool_mappings>

@@ -159,8 +159,8 @@ export default function DashboardDemo() {
 }
 
 function generateDemoData() {
-	const _today = new Date();
-	const _formatter = new Intl.DateTimeFormat("en-us", {
+	const today = new Date();
+	const formatter = new Intl.DateTimeFormat("en-us", {
 		month: "long",
 		year: "2-digit",
 	});
@@ -884,14 +884,14 @@ export function PageViewsChart() {
 						/>
 						<ChartTooltip
 							content={
-								<_ChartTooltipContent
-									_className="w-[150px]"
-									_nameKey="views"
-									_labelFormatter={(value) => {
+								<ChartTooltipContent
+									className="w-[150px]"
+									nameKey="views"
+									labelFormatter={(value) => {
 										return new Date(value).toLocaleDateString("en-US", {
-											_month: "short",
-											_day: "numeric",
-											_year: "numeric",
+											month: "short",
+											day: "numeric",
+											year: "numeric",
 										});
 									}}
 								/>

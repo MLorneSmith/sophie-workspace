@@ -1,67 +1,231 @@
 <prompt>
+  <metadata>
+    <primary_agent>Product Owner</primary_agent>
+    <supporting_agents>
+      <agent role="validator">Critic</agent>
+    </supporting_agents>
+    <phase>3-stakeholder-validation</phase>
+    <orchestrator>/build-feature command</orchestrator>
+    <orchestrator_file>.claude/commands/build-feature.md</orchestrator_file>
+  </metadata>
+  
+  <agent_context>
+    <product_owner>
+      <role>Facilitate stakeholder validation and requirement clarification</role>
+      <context_files>
+        - stakeholder-feedback.md
+        - user-validation-results.md
+        - business-priorities.md
+      </context_files>
+    </product_owner>
+    <critic>
+      <role>Ensure validation addresses all quality concerns</role>
+      <validation_focus>
+        - Completeness of stakeholder feedback
+        - Clarity of refined requirements
+        - Alignment with original PRD intent
+        - Risk mitigation adequacy
+      </validation_focus>
+    </critic>
+  </agent_context>
+  
   <task>
-    Validate a PRD chunk for a 5-agent team (Product Owner, Scrum Master, 2 Builders, 1 Reviewer) by analyzing requirements, identifying ambiguities, and proposing clarifications.
+    Conduct an interactive stakeholder validation session for a PRD chunk. Analyze requirements, identify ambiguities, present findings to the user, collect their feedback, and refine the requirements based on their input.
   </task>
   
   <context_loading>
-    <instructions>
-      Before proceeding, read the context documentation inventory:
-      - Read: .claude/docs/.context-docs-inventory.xml
-      Based on the chunk's technical focus, read relevant context:
-      - For security validation: Read security/authentication-patterns.md, security/authorization-patterns.md
-      - For UI requirements: Read ui/accessibility.md, ui/responsive-design.md
-      - For data concerns: Read data/database-schema.md
-      - For testing approach: Read testing/unit-testing-prioritization-plan.md
-    </instructions>
+    <from_previous_phases>
+      <!-- Load Phase 2 chunking outputs -->
+      <read priority="1">.claude/build/4-output/{epic-name}/2-chunks/chunk-{chunk-id}.md - Chunk analysis</read>
+      <read priority="2">.claude/build/4-output/contexts/chunks/chunk-{chunk-id}/context.md - Chunk context</read>
+      <read priority="3">.claude/build/4-output/{epic-name}/1-prd/prd-content.md - Original PRD for reference</read>
+    </from_previous_phases>
+    <current_context>
+      <instructions>
+        Before proceeding, read the context documentation inventory:
+        - Read: .claude/docs/.context-docs-inventory.xml
+        Based on the chunk's technical focus, read relevant context:
+        - For security validation: Read security/authentication-patterns.md, security/authorization-patterns.md
+        - For UI requirements: Read ui/accessibility.md, ui/responsive-design.md
+        - For data concerns: Read data/database-schema.md
+        - For testing approach: Read testing/unit-testing-prioritization-plan.md
+      </instructions>
+    </current_context>
+    <validation>
+      <required_files>
+        <file path=".claude/build/4-output/{epic-name}/2-chunks/chunk-{chunk-id}.md" description="Chunk details from Phase 2"/>
+        <file path=".claude/build/4-output/contexts/chunks/chunk-{chunk-id}/context.md" description="Chunk context and dependencies"/>
+      </required_files>
+      <actions>
+        <on_missing>Error: Required chunk analysis files not found. Ensure Phase 2 (Chunking) completed successfully before proceeding.</on_missing>
+        <on_present>Proceed with stakeholder validation</on_present>
+      </actions>
+    </validation>
   </context_loading>
 
-  <tools_available>
-    <tool_reference source=".aishell/refs/available-tools.xml">
-      <tool name="context7_mcp" usage="For verifying APIs/libraries and technical details" />
-      <tool name="github_mcp" usage="For CRUD operations to store outputs and reference codebase files" />
-      <tool name="sequential_thinking_mcp" usage="For identifying ambiguities and simulating stakeholder feedback" />
-    </tool_reference>
-  </tools_available>
+  <available_tools>
+    <description>
+      You have access to the following tools for executing this task. Tool mappings are defined in .claude/tools/tool-mappings.xml and full documentation is in .claude/tools/available-tools.xml
+    </description>
+    
+    <!-- Claude Native Tools -->
+    <tool_group name="Claude Native Tools">
+      <tool name="Read" description="Read chunk documents and validation context"/>
+      <tool name="Write" description="Create validation reports and feedback documents"/>
+      <tool name="Edit" description="Update chunk documentation with clarifications"/>
+      <tool name="Bash" description="Execute gh CLI for GitHub operations"/>
+      <tool name="Grep" description="Search for similar patterns in codebase"/>
+      <tool name="TodoWrite" description="Track validation progress"/>
+    </tool_group>
+    
+    <!-- MCP Tools for Stakeholder Validation -->
+    <tool_group name="MCP Tools">
+      <tool name="github_mcp" description="GitHub API operations">
+        <functions>update_issue, add_issue_comment, get_issue</functions>
+        <usage>Add validation feedback to chunk issues, update priorities</usage>
+      </tool>
+      <tool name="context7_mcp" description="Technical verification">
+        <functions>resolve-library-id, get-library-docs</functions>
+        <usage>Verify technical feasibility and API compatibility</usage>
+      </tool>
+      <tool name="code_reasoning_mcp" description="Ambiguity analysis">
+        <functions>code-reasoning</functions>
+        <usage>Identify unclear requirements and edge cases</usage>
+      </tool>
+      <tool name="perplexity_mcp" description="Best practices research">
+        <functions>perplexity_ask</functions>
+        <usage>Research industry standards for validation</usage>
+      </tool>
+    </tool_group>
+    
+    <tool_usage_guidelines>
+      - Use Read to examine chunk requirements and existing patterns
+      - Use code_reasoning_mcp to identify ambiguities systematically
+      - Use context7_mcp to verify technical assumptions
+      - Use github_mcp to add validation feedback to issues
+      - Use Write to create detailed validation reports
+      - Use perplexity_mcp if industry best practices are needed
+    </tool_usage_guidelines>
+  </available_tools>
 
-  <instructions>
-    <step number="1">
-      <title>Summarize Chunk</title>
-      <description>Summarize the chunk’s objectives and features (50-100 words), verifying technical details with Context7 MCP Server.</description>
-    </step>
-    <step number="2">
-      <title>Identify Ambiguities</title>
-      <description>Highlight unclear or incomplete requirements, including cross-cutting concerns, using Sequential Thinking MCP.</description>
-    </step>
-    <step number="3">
-      <title>Propose Clarifications</title>
-      <description>List 2-3 clarification questions or assumptions.</description>
-    </step>
-    <step number="4">
-      <title>Assign Agent</title>
-      <description>Recommend an agent role to validate this chunk.</description>
-    </step>
-    <step number="5">
-      <title>Update GitHub Projects</title>
-      <description>
-        - Add stakeholder feedback as issue comments on chunk
-        - Update fields based on validation:
-          - AAFD Stage: Validation
-          - Priority: Adjust if stakeholder feedback indicates change
-          - Add/update Cross-cutting Dependencies if discovered
-        - Use Priority Matrix view in GitHub Projects to visualize:
-          - Chunk priorities relative to each other
-          - Impact vs effort assessment
-          - Dependencies between chunks
-        - If scope changes: Update chunk issue description
-        - If rejected: Move to Blocked column with explanation
-        - Store feedback in: .claude/build/3-output/{epic-name}/3-validation/stakeholder-feedback.md
-      </description>
-    </step>
-    <step number="6">
-      <title>Output Format</title>
-      <description>Structured markdown with sections for chunk ID, summary, ambiguities, clarifications, assigned agent, index updates, and commit instructions.</description>
-    </step>
-  </instructions>
+  <interactive_validation_process>
+    <phase name="initial_analysis">
+      <step number="1">
+        <title>Analyze Chunk</title>
+        <description>
+          - Read and understand the chunk requirements
+          - Verify technical details with Context7 MCP Server
+          - Use code_reasoning_mcp to identify potential issues
+          - Search codebase for related patterns and constraints
+        </description>
+      </step>
+      
+      <step number="2">
+        <title>Prepare Validation Summary</title>
+        <description>
+          Create a concise summary (50-100 words) of:
+          - What the chunk aims to accomplish
+          - Key features and components involved
+          - Technical dependencies identified
+          - Initial assessment of complexity
+        </description>
+      </step>
+    </phase>
+    
+    <phase name="stakeholder_interaction">
+      <step number="3">
+        <title>Present Initial Findings to User</title>
+        <description>
+          Present to the user:
+          1. Your chunk summary
+          2. List of identified ambiguities or unclear requirements
+          3. Potential technical concerns or constraints
+          4. Cross-cutting dependencies discovered
+          
+          Format as a clear, structured presentation that invites feedback.
+        </description>
+      </step>
+      
+      <step number="4">
+        <title>Ask Clarification Questions</title>
+        <description>
+          Based on ambiguities found, ask the user specific questions:
+          - Present 2-3 focused clarification questions
+          - Provide context for why each clarification is needed
+          - Suggest possible options or assumptions if helpful
+          - Wait for user responses before proceeding
+        </description>
+        <interaction_guidelines>
+          - Ask one set of related questions at a time
+          - Be specific about what needs clarification
+          - Provide examples when helpful
+          - Acknowledge and summarize user responses
+        </interaction_guidelines>
+      </step>
+      
+      <step number="5">
+        <title>Discuss Priority and Scope</title>
+        <description>
+          Engage the user in priority discussion:
+          - Present your assessment of chunk complexity/effort
+          - Ask about business priority relative to other chunks
+          - Confirm scope boundaries
+          - Discuss any suggested scope changes
+          - Get user's input on timeline expectations
+        </description>
+      </step>
+      
+      <step number="6">
+        <title>Confirm Understanding</title>
+        <description>
+          Before finalizing:
+          - Summarize all clarifications received
+          - Present refined requirements based on feedback
+          - Ask user to confirm your understanding is correct
+          - Make any final adjustments based on confirmation
+        </description>
+      </step>
+    </phase>
+    
+    <phase name="documentation_and_updates">
+      <step number="7">
+        <title>Document Validated Requirements</title>
+        <description>
+          Create comprehensive validation report including:
+          - Original requirements
+          - All ambiguities identified
+          - User's clarifications and decisions
+          - Refined requirements
+          - Priority and scope agreements
+          - Any new constraints or dependencies
+        </description>
+      </step>
+      
+      <step number="8">
+        <title>Update GitHub Projects</title>
+        <description>
+          Based on validation session:
+          - Add stakeholder feedback as issue comments on chunk
+          - Update fields based on validation:
+            - AAFD Stage: Validation
+            - Priority: Adjust based on user feedback
+            - Add/update Cross-cutting Dependencies
+          - Update chunk issue description with refined requirements
+          - If rejected: Move to Blocked column with explanation
+          - Store feedback in: .claude/build/4-output/{epic-name}/3-validation/stakeholder-feedback.md
+        </description>
+      </step>
+    </phase>
+  </interactive_validation_process>
+  
+  <interaction_guidelines>
+    <approach>collaborative and consultative</approach>
+    <tone>professional yet conversational</tone>
+    <pacing>allow time for thoughtful user responses</pacing>
+    <clarification>ask follow-ups if responses are unclear</clarification>
+    <validation>confirm understanding before moving forward</validation>
+    <flexibility>adapt questions based on user expertise level</flexibility>
+  </interaction_guidelines>
 
   <input>
     <prd_chunk_content>{PRD_CHUNK_CONTENT}</prd_chunk_content>
@@ -72,49 +236,158 @@
     <branch_name>{BRANCH_NAME}</branch_name>
   </input>
 
-  <example>
-    <input>
+  <example_interaction>
+    <context>
       <prd_chunk_content><![CDATA[<features><feature name="Prompts Router"><description>CRUD operations, likes, and search for prompts.</description><database_tables>prompts, prompt_likes</database_tables></feature></features>]]></prd_chunk_content>
       <chunk_id>chunk_1</chunk_id>
-      <codebase_files>apps/api/src/db/schema.ts, apps/web/src/app/prompts/page.tsx</codebase_files>
-      <repo_path>.ai/validation/</repo_path>
-      <index_file>.ai/index.yml</index_file>
-      <branch_name>main</branch_name>
-    </input>
-
-    <output>
-      <validation>
-        <chunk_id>chunk_1</chunk_id>
-        <summary>This chunk specifies the Prompts tRPC router for `/prompts` page, enabling CRUD operations, likes, and search with tRPC, Zod, and Drizzle-ORM. It targets `prompts` and `prompt_likes` tables, with shared Zod schemas and tRPC middleware. (Verified with Context7 MCP.)</summary>
-        <ambiguities>
-          <ambiguity>Indexing strategy for `prompts.title` is unspecified</ambiguity>
-          <ambiguity>Unclear if search includes tag-based filtering</ambiguity>
-          <ambiguity>Shared middleware implementation details missing</ambiguity>
-        </ambiguities>
-        <clarifications>
-          <clarification>Should `prompts.title` use full-text indexing for search?</clarification>
-          <clarification>Does search include tag-based filtering?</clarification>
-          <clarification>Assume shared middleware handles auth for both routers?</clarification>
-        </clarifications>
-        <assigned_agent>Product Owner</assigned_agent>
-        <index_updates>
-          <![CDATA[
-chunk_1_validation:
-  id: chunk_1_validation
-  type: validation
-  status: needs_revision
-  linked_chunk: chunk_1
-  source_file: .ai/validation/chunk_1.validation.md
-          ]]>
-        </index_updates>
-        <commit_instructions>
-          <![CDATA[
-git add .ai/validation/chunk_1.validation.md .ai/index.yml
-git commit -m "Validate PRD chunk for Prompts Router"
-git push origin main
-          ]]>
-        </commit_instructions>
-      </validation>
-    </output>
-  </example>
+    </context>
+    
+    <claude_presents>
+      ## Chunk Validation: Prompts Router (chunk_1)
+      
+      ### Summary
+      I've analyzed this chunk which specifies a Prompts tRPC router for the `/prompts` page. It will enable CRUD operations, likes, and search functionality using our existing tRPC, Zod, and Drizzle-ORM stack. The feature targets the `prompts` and `prompt_likes` tables.
+      
+      ### Identified Ambiguities
+      
+      1. **Search Implementation Details**
+         - The indexing strategy for `prompts.title` is unspecified
+         - It's unclear if search should include tag-based filtering
+         - No mention of search performance requirements
+      
+      2. **Authentication & Authorization**
+         - Shared middleware implementation details are missing
+         - Unclear which operations require authentication
+         - No specification for rate limiting on likes
+      
+      3. **Data Model Concerns**
+         - The relationship between prompts and users isn't specified
+         - No mention of soft deletes vs hard deletes
+      
+      ### Technical Dependencies Identified
+      - Existing tRPC router pattern in `apps/api/src/routers/`
+      - Database tables: `prompts`, `prompt_likes`
+      - Frontend component at `apps/web/src/app/prompts/page.tsx`
+      
+      ### Questions for Clarification
+    </claude_presents>
+    
+    <claude_asks>
+      I need your input on a few key decisions:
+      
+      **1. Search Functionality**
+      Should the search feature:
+      a) Use PostgreSQL full-text search for `prompts.title` and `prompts.content`?
+      b) Include tag-based filtering (would require a `prompt_tags` table)?
+      c) Support fuzzy matching for typo tolerance?
+      
+      **2. Authentication Requirements**
+      Which operations should require authentication:
+      a) All CRUD operations require auth, search is public?
+      b) Only create/update/delete require auth, read is public?
+      c) Everything requires auth including search?
+      
+      **3. Like System Design**
+      For the likes feature:
+      a) Should we prevent multiple likes from the same user?
+      b) Do we need a like count cache for performance?
+      c) Should likes be anonymous or tracked to users?
+    </claude_asks>
+    
+    <user_responds>
+      1. Let's use PostgreSQL full-text search for both title and content. Include tag-based filtering - yes we'll need a prompt_tags table. No fuzzy matching for now.
+      
+      2. Create/update/delete require auth. Read and search should be public.
+      
+      3. One like per user, tracked to users (not anonymous). Yes to like count cache.
+    </user_responds>
+    
+    <claude_confirms>
+      Thank you! Let me confirm I understood correctly:
+      
+      ### Refined Requirements
+      
+      **Search Implementation:**
+      - PostgreSQL full-text search on `prompts.title` and `prompts.content`
+      - Tag-based filtering with new `prompt_tags` table
+      - No fuzzy matching in initial version
+      
+      **Authentication:**
+      - Public: read prompts, search prompts
+      - Authenticated: create, update, delete prompts, like/unlike
+      
+      **Likes System:**
+      - One like per authenticated user (enforced by unique constraint)
+      - Likes tracked to user IDs
+      - Cached like counts for performance
+      
+      **Priority & Scope**
+      Given this is a core feature for user engagement, what priority would you assign relative to other features? Also, should we build this as:
+      - MVP: Basic CRUD + simple search
+      - Full: Everything including tags and optimized search
+    </claude_confirms>
+    
+    <user_responds>
+      Confirmed on all the requirements. This is high priority - it's a key differentiator. Let's go with the full version including tags and optimized search from the start.
+    </user_responds>
+    
+    <claude_finalizes>
+      Perfect! I'll document this as a high-priority chunk with the full feature set. The validation is complete.
+      
+      ### Final Validation Summary
+      - **Status**: Validated and clarified
+      - **Priority**: High
+      - **Scope**: Full implementation including tags and search optimization
+      - **Key decisions documented**: Search approach, auth requirements, like system design
+      
+      I'll now update the GitHub issue and create the validation documentation.
+    </claude_finalizes>
+  </example_interaction>
+  
+  <agent_workflow>
+    <pattern name="stakeholder_validation_cycle">
+      <step order="1">
+        <agent>Product Owner Agent</agent>
+        <action>Facilitate stakeholder review sessions</action>
+        <output>Collected feedback and clarification needs</output>
+      </step>
+      <step order="2">
+        <agent>Critic Agent</agent>
+        <action>Validate completeness of stakeholder feedback</action>
+        <output>Assessment of validation thoroughness</output>
+      </step>
+      <step order="3">
+        <agent>Product Owner Agent</agent>
+        <action>Refine requirements based on feedback</action>
+        <output>Updated chunk requirements with clarifications</output>
+      </step>
+    </pattern>
+  </agent_workflow>
+  
+  <quality_gate>
+    <validator>Critic Agent</validator>
+    <criteria>
+      <stakeholder_coverage>All key stakeholders provided feedback</stakeholder_coverage>
+      <ambiguity_resolution>All identified ambiguities addressed</ambiguity_resolution>
+      <requirement_clarity>Requirements refined to implementation-ready state</requirement_clarity>
+      <risk_identification>New risks identified and mitigation planned</risk_identification>
+      <priority_validation>Business priorities confirmed or adjusted</priority_validation>
+    </criteria>
+    <actions>
+      <on_pass>Validated chunks proceed to Phase 4 (User Story Creation)</on_pass>
+      <on_fail>Chunks returned for additional stakeholder clarification</on_fail>
+    </actions>
+  </quality_gate>
+  
+  <handoff_protocol>
+    <from>Product Owner Agent</from>
+    <to>Planner Agent (Phase 4)</to>
+    <context_package>
+      <validated_chunks>Chunks with all stakeholder feedback incorporated</validated_chunks>
+      <clarified_requirements>Refined requirements with ambiguities resolved</clarified_requirements>
+      <priority_updates>Any priority adjustments from stakeholders</priority_updates>
+      <additional_context>New constraints or dependencies identified</additional_context>
+      <validation_summary>Summary of changes made during validation</validation_summary>
+    </context_package>
+  </handoff_protocol>
 </prompt>

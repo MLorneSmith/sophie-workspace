@@ -1,7 +1,7 @@
 # Issue: Clarify Docker infrastructure: Supabase runs in Docker, web app does not
 
 **ID**: ISSUE-26
-**GitHub URL**: https://github.com/MLorneSmith/2025slideheroes/issues/26
+**GitHub URL**: <https://github.com/MLorneSmith/2025slideheroes/issues/26>
 **Created**: 2025-12-06T00:00:00Z
 **Reporter**: Claude Debug Assistant
 **Severity**: medium

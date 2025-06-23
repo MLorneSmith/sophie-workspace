@@ -3,6 +3,7 @@ description: Writing Forms with Shadcn UI, Server Actions, Zod
 globs: apps/**/*.tsx,packages/**/*.tsx
 alwaysApply: false
 ---
+
 # Forms
 
 - Use React Hook Form for form validation and submission.
@@ -35,7 +36,9 @@ Server Actions [server-actions.md](mdc:.roo/rules/server-actions.md) can help us
 'use server';
 
 import { z } from 'zod';
+
 import { enhanceAction } from '@kit/next/actions';
+
 import { CreateNoteSchema } from '../schema/create-note.schema';
 
 export const createNoteAction = enhanceAction(

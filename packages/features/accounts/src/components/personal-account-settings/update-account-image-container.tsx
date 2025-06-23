@@ -3,11 +3,11 @@
 import type { Database } from "@kit/supabase/database";
 import { useSupabase } from "@kit/supabase/hooks/use-supabase";
 import { ImageUploader } from "@kit/ui/image-uploader";
+import { toast } from "@kit/ui/sonner";
 import { Trans } from "@kit/ui/trans";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
 
 import { useRevalidatePersonalAccountDataQuery } from "../../hooks/use-personal-account-data";
 
@@ -46,7 +46,7 @@ function UploadProfileAvatarForm(props: {
 				success: t("updateProfileSuccess"),
 				error: t("updateProfileError"),
 				loading: t("updateProfileLoading"),
-		});
+			});
 		},
 		[t],
 	);
@@ -72,7 +72,7 @@ function UploadProfileAvatarForm(props: {
 									.from("accounts")
 									.update({
 										picture_url: pictureUrl,
-									// })
+									})
 									.eq("id", props.userId)
 									.throwOnError();
 							})
@@ -90,7 +90,7 @@ function UploadProfileAvatarForm(props: {
 								.from("accounts")
 								.update({
 									picture_url: null,
-								// })
+								})
 								.eq("id", props.userId)
 								.throwOnError();
 						})

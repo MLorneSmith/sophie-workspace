@@ -16,7 +16,7 @@ import { CheckCircle2Icon } from "lucide-react";
 import Image from "next/image";
 import { forwardRef, useState } from "react";
 
-import { useUpdateSubtask } from "../_lib/hooks/use-tasks";
+import { _useUpdateSubtask } from "../_lib/hooks/use-tasks";
 import type { Subtask, Task } from "../_lib/schema/task.schema";
 import { TaskDialog } from "./task-dialog";
 
@@ -27,7 +27,7 @@ interface TaskCardProps {
 export const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
 	({ task }, _ref) => {
 		const [isDialogOpen, setIsDialogOpen] = useState(false);
-		const updateSubtask = useUpdateSubtask();
+		const updateSubtask = _useUpdateSubtask();
 		const {
 			attributes,
 			listeners,
@@ -62,9 +62,6 @@ export const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
 							task.priority === "low" &&
 								"border-l-success hover:border-l-success/80 border-l-4",
 						)}
-						// biome-ignore lint/a11y/useSemanticElements: Card component needs role="button" due to drag-and-drop functionality conflicts with semantic button element
-						role="button"
-						tabIndex={0}
 						onClick={(_e) => {
 							if (!isDragging) {
 								setIsDialogOpen(true);
@@ -79,6 +76,8 @@ export const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
 						aria-label={`Open task: ${task.title}`}
 						{...attributes}
 						{...listeners}
+						// Override any duplicate props from attributes/listeners
+						tabIndex={0}
 					>
 						<CardHeader className="space-y-3 p-4 pb-2">
 							<CardTitle className="text-base">{task.title}</CardTitle>

@@ -3,12 +3,12 @@
 import { Alert, AlertDescription } from "@kit/ui/alert";
 import { If } from "@kit/ui/if";
 import { Trans } from "@kit/ui/trans";
-
 import { UserCheck } from "lucide-react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 
 import { useLastAuthMethod } from "../hooks/use-last-auth-method";
 
@@ -33,6 +33,7 @@ export function ExistingAccountHintImpl({
 		useLastAuthMethod();
 
 	const params = useSearchParams();
+	const { t } = useTranslation();
 
 	const isInvite = params.get("invite_token");
 
@@ -76,7 +77,7 @@ export function ExistingAccountHintImpl({
 				<AlertDescription>
 					<Trans
 						i18nKey="auth:existingAccountHint"
-						values={{ method: methodDescription }}
+						values={{ method: t(methodDescription) }}
 						components={{
 							method: <span className="font-medium" />,
 							signInLink: (

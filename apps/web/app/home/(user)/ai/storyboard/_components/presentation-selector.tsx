@@ -49,8 +49,8 @@ export function PresentationSelector({ onSelect }: PresentationSelectorProps) {
 				// TODO: Async logger needed
 				// (await getLogger()).error(
 				// 	"Error fetching presentations:",
-				// 	{ data: err }
-				);
+				// 	{ data: _err }
+				// );
 				setError("Failed to load presentations");
 			} finally {
 				setIsLoading(false);

@@ -179,6 +179,7 @@ export function LinkAccountsList(props: { providers: Provider[] }) {
 						{availableProviders.map((provider) => (
 							<button
 								key={provider}
+								type="button"
 								className="hover:bg-muted/50 flex h-14 items-center justify-between rounded-lg border p-3 transition-colors"
 								onClick={() => _handleLinkAccount(provider)}
 							>

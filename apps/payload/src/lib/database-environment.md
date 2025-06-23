@@ -5,10 +5,12 @@ This document outlines the environment variables and configuration options for t
 ## Required Environment Variables
 
 ### Core Database Configuration
+
 - `DATABASE_URI` - PostgreSQL connection string (required)
 - `PAYLOAD_SECRET` - Payload CMS secret key (required)
 
 ### Optional Database Configuration
+
 - `DB_LOG_LEVEL` - Logging level for database operations
   - Values: `debug`, `info`, `warn`, `error`
   - Default: `debug` in development, `info` in production
@@ -24,6 +26,7 @@ This document outlines the environment variables and configuration options for t
 ## Environment-Specific Pool Configurations
 
 ### Development Environment
+
 ```bash
 NODE_ENV=development
 # Pool settings are optimized for development:
@@ -39,6 +42,7 @@ NODE_ENV=development
 ```
 
 ### Production Environment
+
 ```bash
 NODE_ENV=production
 # Pool settings are optimized for production:
@@ -54,6 +58,7 @@ NODE_ENV=production
 ```
 
 ### Test/Staging Environment
+
 ```bash
 NODE_ENV=test
 # Pool settings for test environments:
@@ -65,7 +70,9 @@ NODE_ENV=test
 ## SSL Configuration
 
 ### Production SSL (Auto-configured)
+
 When `NODE_ENV=production`, SSL is automatically enabled with:
+
 ```javascript
 {
   rejectUnauthorized: false,
@@ -74,11 +81,13 @@ When `NODE_ENV=production`, SSL is automatically enabled with:
 ```
 
 ### Development SSL (Disabled)
+
 SSL is disabled in development for local database connections.
 
 ## Storage Configuration
 
 ### S3 Storage (Optional)
+
 ```bash
 S3_BUCKET=your-bucket-name
 S3_REGION=us-east-1
@@ -87,31 +96,37 @@ AWS_SECRET_ACCESS_KEY=your-secret-key
 ```
 
 ### Local Storage (Default)
+
 If S3 variables are not set, the system defaults to local file storage.
 
 ## Additional Payload Configuration
 
 ### Server Configuration
+
 ```bash
 PAYLOAD_PUBLIC_SERVER_URL=https://your-domain.com
 ```
 
 ### Upload Limits
+
 ```bash
 MAX_FILE_SIZE=5000000  # 5MB default
 ```
 
 ### Localization (Optional)
+
 ```bash
 ENABLE_LOCALIZATION=true  # Enable multi-language support
 ```
 
 ### Debug Mode
+
 ```bash
 PAYLOAD_DEBUG=true  # Enable debug logging
 ```
 
 ### CORS Configuration
+
 ```bash
 ALLOWED_ORIGINS=https://domain1.com,https://domain2.com
 # Or use '*' for all origins (not recommended for production)
@@ -120,17 +135,21 @@ ALLOWED_ORIGINS=https://domain1.com,https://domain2.com
 ## Database Schema Information
 
 ### Schema Configuration
+
 - **Schema Name**: `payload` (fixed)
 - **ID Type**: `uuid` (fixed)
 - **Schema Push**: Disabled (prevents unwanted migrations)
 
 ### Migration Management
+
 Migrations are managed through Payload's built-in migration system. The enhanced adapter does not interfere with normal migration processes.
 
 ## Monitoring and Health Checks
 
 ### Health Check Endpoint
+
 The system provides a health check endpoint at `/health` that returns:
+
 ```json
 {
   "status": "healthy",
@@ -149,7 +168,9 @@ The system provides a health check endpoint at `/health` that returns:
 ```
 
 ### Connection Metrics
+
 The system tracks various connection metrics:
+
 - Total connections created
 - Active/idle connection counts
 - Failed connection attempts
@@ -161,11 +182,13 @@ The system tracks various connection metrics:
 ### Common Issues
 
 1. **Connection Pool Exhaustion**
+
    - Check `max` pool setting for your environment
    - Monitor connection metrics via health endpoint
    - Verify no connection leaks in application code
 
 2. **Connection Timeouts**
+
    - Adjust timeout settings for your environment
    - Check network latency to database
    - Verify database server capacity
@@ -176,12 +199,15 @@ The system tracks various connection metrics:
    - Ensure `rejectUnauthorized: false` if using self-signed certificates
 
 ### Debug Logging
+
 Enable debug logging to troubleshoot connection issues:
+
 ```bash
 DB_LOG_LEVEL=debug
 ```
 
 This will provide detailed logs of:
+
 - Connection initialization attempts
 - Pool configuration details
 - Health check results
@@ -191,16 +217,19 @@ This will provide detailed logs of:
 ## Performance Optimization
 
 ### Connection Pool Tuning
+
 - **Development**: Lower connection limits for resource conservation
 - **Production**: Higher limits for better concurrency
 - **Serverless**: Optimized for quick startup/shutdown cycles
 
 ### Retry Logic
+
 - Exponential backoff for failed connections
 - Maximum 3 retry attempts with configurable delays
 - Automatic recovery from transient failures
 
 ### Health Monitoring
+
 - Periodic connection health verification
 - Automatic failure detection and logging
 - Metrics collection for performance analysis

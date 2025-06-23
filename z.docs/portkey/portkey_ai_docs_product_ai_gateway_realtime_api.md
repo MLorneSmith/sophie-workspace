@@ -20,7 +20,7 @@ This feature is available on all Portkey [plans](https://portkey.ai/pricing).
 
 Portkey’s AI Gateway provides a solution to these problems with a seamless integration. Portkeys logging is unique in that it captures the entire request and response, including the model’s response, cost, and guardrail violations.
 
-### [​](https://portkey.ai/docs/product/ai-gateway/realtime-api\#heres-how-to-get-started)  Here’s how to get started:
+### [​](https://portkey.ai/docs/product/ai-gateway/realtime-api#heres-how-to-get-started) Here’s how to get started
 
 - Python
 - NodeJS
@@ -71,7 +71,7 @@ For advanced use cases, you can use configs ( [https://portkey.ai/docs/product/a
 
 If you would not like to store your API Keys with Portkey, you can pass your openai key in the `Authorization` header.
 
-## [​](https://portkey.ai/docs/product/ai-gateway/realtime-api\#fire-away)  Fire Away!
+## [​](https://portkey.ai/docs/product/ai-gateway/realtime-api#fire-away) Fire Away
 
 You can see your logs in realtime with neatly visualized traces and cost tracking.
 
@@ -79,7 +79,7 @@ You can see your logs in realtime with neatly visualized traces and cost trackin
 
 Realtime API Traces
 
-## [​](https://portkey.ai/docs/product/ai-gateway/realtime-api\#next-steps)  Next Steps
+## [​](https://portkey.ai/docs/product/ai-gateway/realtime-api#next-steps) Next Steps
 
 - [For more info on realtime API, refer here](https://platform.openai.com/docs/guides/realtime)
 - [Portkeys OpenAI Integration](https://portkey.ai/docs/integrations/llms/openai)

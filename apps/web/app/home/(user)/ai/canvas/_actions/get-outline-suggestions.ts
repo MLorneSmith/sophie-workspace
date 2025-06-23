@@ -145,11 +145,10 @@ ${improvementFormat}`,
 			};
 		} catch (error) {
 			// TODO: Async logger needed
-			// TODO: Async logger needed
 			// (await getLogger()).error(
 			// 	"Error in outline suggestions action:",
 			// 	{ data: error }
-			);
+			// );
 
 			return {
 				success: false,

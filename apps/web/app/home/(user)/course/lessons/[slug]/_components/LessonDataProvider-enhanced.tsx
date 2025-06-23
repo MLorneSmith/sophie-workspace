@@ -6,23 +6,25 @@ import { updateLessonProgressAction } from "../../../_lib/server/server-actions"
 type PayloadLesson = Database["payload"]["Tables"]["course_lessons"]["Row"];
 type PayloadQuiz = {
 	id: string;
-	title: string;
 	questions: Array<{
-		id: string;
-		text: string;
-		options?: Array<{ id: string; text: string; isCorrect?: boolean }>;
-		[key: string]: unknown;
+		question: string;
+		questiontype: "single-answer" | "multi-answer";
+		options: Array<{
+			text: string;
+			iscorrect: boolean;
+		}>;
 	}>;
-	[key: string]: unknown;
+	passingScore: number;
 };
 type PayloadSurvey = {
 	id: string;
 	title: string;
-	questions?: Array<{
-		id: string;
-		text: string;
+	questions: Array<{
+		question: string;
 		type: string;
-		[key: string]: unknown;
+		options?: Array<{
+			text: string;
+		}>;
 	}>;
 	[key: string]: unknown;
 };
@@ -38,7 +40,7 @@ type SurveyResponse = Database["public"]["Tables"]["survey_responses"]["Row"];
  */
 export async function LessonDataProviderEnhanced({
 	children,
-	_slug,
+	slug,
 	lessonId,
 	courseId,
 	lesson,
@@ -51,7 +53,7 @@ export async function LessonDataProviderEnhanced({
 		survey: PayloadSurvey | null;
 		surveyResponses: SurveyResponse[];
 	}) => React.ReactNode;
-	_slug: string;
+	slug: string;
 	lessonId: string;
 	courseId: string;
 	lesson: PayloadLesson;
@@ -59,7 +61,7 @@ export async function LessonDataProviderEnhanced({
 	// Dynamically import the server client to avoid issues with next/headers
 	const { getSupabaseServerClient } = await import(
 		"@kit/supabase/server-client"
-	// );
+	);
 	const supabase = getSupabaseServerClient();
 
 	// Get user - should be authenticated by middleware
@@ -92,8 +94,8 @@ export async function LessonDataProviderEnhanced({
 	let quiz: PayloadQuiz | null = null;
 	let quizAttempts: QuizAttempt[] = [];
 
-	// Check for quiz relationship using quiz_id or quiz_id_id
-	const quizId = lesson.quiz_id || lesson.quiz_id_id;
+	// Check for quiz relationship using quiz_id_id (correct column name)
+	const quizId = lesson.quiz_id_id;
 
 	if (quizId) {
 		try {
@@ -102,10 +104,13 @@ export async function LessonDataProviderEnhanced({
 			const { getQuiz } = await import("@kit/cms/payload");
 
 			// Extract the actual quiz ID to avoid [object Object] issues in error messages
-			const quizIdStr =
-				typeof quizId === "object"
-					? quizId?.id || quizId?.value || JSON.stringify(quizId)
-					: String(quizId || "");
+			let quizIdStr = "";
+			if (typeof quizId === "object" && quizId !== null) {
+				const quizObj = quizId as unknown as { id?: string; value?: string };
+				quizIdStr = quizObj.id || quizObj.value || JSON.stringify(quizId);
+			} else {
+				quizIdStr = String(quizId || "");
+			}
 
 			// Skip empty or clearly invalid quiz IDs
 			if (
@@ -155,7 +160,7 @@ export async function LessonDataProviderEnhanced({
 									typeof q === "string"
 										? q
 										: (q.id as string) || (q.value as string) || String(q),
-							// );
+							);
 
 							if (questionIds.length > 0) {
 								// Build query parameters
@@ -167,8 +172,8 @@ export async function LessonDataProviderEnhanced({
 								const questionsResponse = await callPayloadAPI(
 									`quiz_questions?${queryParams}&sort=order`,
 									{},
-									null,
-								// );
+									undefined,
+								);
 
 								if (questionsResponse?.docs?.length > 0) {
 									// TODO: Async logger needed
@@ -192,12 +197,13 @@ export async function LessonDataProviderEnhanced({
 			// Get user's quiz attempts for this quiz (even if quiz fetch failed)
 			try {
 				// Extract the actual quiz ID for the database query
-				const actualQuizId =
-					typeof quizId === "object" && quizId.value
-						? quizId.value
-						: typeof quizId === "object" && quizId.id
-							? quizId.id
-							: quizId;
+				let actualQuizId = "";
+				if (typeof quizId === "object" && quizId !== null) {
+					const quizObj = quizId as unknown as { id?: string; value?: string };
+					actualQuizId = quizObj.value || quizObj.id || "";
+				} else {
+					actualQuizId = String(quizId || "");
+				}
 
 				const { data: attempts } = await supabase
 					.from("quiz_attempts")
@@ -223,14 +229,22 @@ export async function LessonDataProviderEnhanced({
 	let survey: PayloadSurvey | null = null;
 	let surveyResponses: SurveyResponse[] = [];
 
-	// Check for survey relationship - Payload might use either survey_id or survey_id_id
-	const surveyId = lesson.survey_id || lesson.survey_id_id;
+	// Check for survey relationship - use survey_id_id (correct column name)
+	const surveyId = lesson.survey_id_id;
 
 	if (surveyId) {
 		try {
 			// Extract the actual survey ID, handling different possible formats
-			const _actualSurveyId =
-				typeof surveyId === "object" ? surveyId.id || surveyId.value : surveyId;
+			let actualSurveyId = "";
+			if (typeof surveyId === "object" && surveyId !== null) {
+				const surveyObj = surveyId as unknown as {
+					id?: string;
+					value?: string;
+				};
+				actualSurveyId = surveyObj.id || surveyObj.value || "";
+			} else {
+				actualSurveyId = String(surveyId || "");
+			}
 
 			// TODO: Async logger needed
 			// (await getLogger()).info(
@@ -244,7 +258,7 @@ export async function LessonDataProviderEnhanced({
 				// Import both functions we need
 				const { getSurvey, getSurveyQuestions } = await import(
 					"@kit/cms/payload"
-				// );
+				);
 
 				// First try to get the survey by ID using a direct API call
 				// TODO: Async logger needed
@@ -276,11 +290,13 @@ export async function LessonDataProviderEnhanced({
 						// Pre-fetch questions to ensure they're available
 						// TODO: Async logger needed
 						// TODO: Fix logger call - was: info
-						const questionsData = await getSurveyQuestions(survey.id);
+						const questionsData = await getSurveyQuestions(survey?.id);
 
 						if (questionsData?.docs && questionsData.docs.length > 0) {
 							// Add questions to the survey object directly
-							survey.questions = questionsData.docs;
+							if (survey) {
+								survey.questions = questionsData.docs;
+							}
 							// TODO: Async logger needed
 							// TODO: Fix logger call - was: info
 						} else {

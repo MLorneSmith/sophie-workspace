@@ -3,7 +3,7 @@ import { z } from "zod";
 export const StripeClientEnvSchema = z
 	.object({
 		publishableKey: z.string().min(1),
-	// })
+	})
 	.refine(
 		(schema) => {
 			return schema.publishableKey.startsWith("pk_");

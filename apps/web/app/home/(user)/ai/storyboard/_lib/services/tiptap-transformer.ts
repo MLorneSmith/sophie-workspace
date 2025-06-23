@@ -1,6 +1,6 @@
 "use client";
 
-import type { Slide, StoryboardData, StoryboardSlide } from "../types/index";
+import type { Slide, StoryboardData } from "../types/index";
 
 /**
  * Helper function to generate UUID since we don't have access to @kit/shared/utils/uuid
@@ -65,28 +65,9 @@ export namespace TipTapTransformer {
 		// Identify slide boundaries and create slide structure
 		const slides = identifySlides(document);
 
-		// Convert Slide[] to StoryboardSlide[]
-		const storyboardSlides: StoryboardSlide[] = slides.map((slide) => {
-			return {
-				id: slide.id,
-				headline: slide.title,
-				order: slide.order,
-				storyboard: {
-					layoutId: slide.layoutId,
-					subHeadlines: slide.subheadlines,
-					contentAreas: [],
-					settings: {
-						chartTypes: {},
-						imageSettings: {},
-						tableSettings: {},
-					},
-				},
-			};
-		});
-
 		return {
 			title: presentationTitle,
-			slides: storyboardSlides,
+			slides: slides,
 		};
 	}
 
@@ -165,7 +146,7 @@ export namespace TipTapTransformer {
 							headingLevel,
 							node,
 							document.content.slice(i + 1).filter(Boolean),
-						// );
+						);
 
 						// Save the previous slide if we have one
 						if (currentSlide) {
@@ -217,7 +198,7 @@ export namespace TipTapTransformer {
 					// Level 4+ headings become content items
 					else if (currentSlide) {
 						currentSlide.content.push({
-							type: "text",
+							type: "text" as const,
 							text: headingText,
 							columnIndex: currentColumnIndex,
 							formatting: { bold: true },
@@ -229,14 +210,14 @@ export namespace TipTapTransformer {
 					const text = extractTextFromNode(node);
 					if (text.trim().length > 0) {
 						currentSlide.content.push({
-							type: "text",
+							type: "text" as const,
 							text,
 							columnIndex: currentColumnIndex,
 						});
 
 						// Check if this paragraph contains data that might be better as a chart
-						if (_mightBeChartData(_text)) {
-							suggestChartTypeForSlide(_currentSlide, _text);
+						if (mightBeChartData(text)) {
+							suggestChartTypeForSlide(currentSlide, text);
 						}
 					}
 				}
@@ -337,7 +318,7 @@ export namespace TipTapTransformer {
 
 				// Check for numerical content
 				const text = extractTextFromNode(node);
-				if (TipTapTransformer.mightBeChartData(text)) {
+				if (mightBeChartData(text)) {
 					hasNumericalContent = true;
 				}
 			} else if (node.type === "heading" && node.attrs?.level === 3) {
@@ -387,7 +368,7 @@ export namespace TipTapTransformer {
 					if (!itemContent) continue;
 					if (itemContent.type === "paragraph") {
 						slide.content.push({
-							type,
+							type: type,
 							text: extractTextFromNode(itemContent),
 							columnIndex,
 						});
@@ -407,7 +388,7 @@ export namespace TipTapTransformer {
 	 * @param text The text to analyze
 	 * @returns Boolean indicating if this might be chart data
 	 */
-	function _mightBeChartData(text: string): boolean {
+	function mightBeChartData(text: string): boolean {
 		// Check for percentage patterns
 		const percentagePattern = /\b\d+(\.\d+)?%\b/;
 		if (percentagePattern.test(text)) return true;
@@ -441,7 +422,7 @@ export namespace TipTapTransformer {
 	 * @param slide The slide to modify
 	 * @param text Text containing potential chart data
 	 */
-	function _suggestChartTypeForSlide(slide: Slide, text: string): void {
+	function suggestChartTypeForSlide(slide: Slide, text: string): void {
 		// Analyze text to determine best chart type
 		let chartType: "bar" | "line" | "pie" | "area" = "bar";
 
@@ -475,7 +456,7 @@ export namespace TipTapTransformer {
 		const hasChartContent = slide.content.some((c) => c.type === "chart");
 		if (!hasChartContent) {
 			slide.content.push({
-				type: "chart",
+				type: "chart" as const,
 				columnIndex: 0,
 				chartType,
 				// Create placeholder chart data

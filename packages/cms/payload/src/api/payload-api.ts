@@ -27,11 +27,13 @@ export async function callPayloadAPI(
 			// Server-side: skip authentication in Payload CMS context
 			// This avoids the server-only dependency chain
 			// TODO: Async logger needed
-		// (await getLogger()).info("Server-side context detected, { data: skipping authentication" });
+			// (await getLogger()).info("Server-side context detected, skipping authentication");
 			// We'll continue without a session, which is fine for most Payload CMS operations
 			// The user will still be authenticated through the Next.js middleware
-		// }
-	} catch (error) 
+		}
+	} catch (error) {
+		logger.warn("Error getting session", { error });
+	}
 
 	// Use port 3020 to match the actual Payload CMS server port
 	const payloadUrl =
@@ -66,18 +68,18 @@ export async function callPayloadAPI(
 					// Try to parse as JSON
 					const errorJson = JSON.parse(errorText);
 					// TODO: Async logger needed
-		// (await getLogger()).error(`[${requestId}] Payload API error:`, { data: errorJson });
+					// (await getLogger()).error(`[${requestId}] Payload API error:`, { data: errorJson });
 					errorMessage =
 						errorJson.message || errorJson.error || JSON.stringify(errorJson);
 				} catch (_parseError) {
 					// Not valid JSON
 					// TODO: Async logger needed
-		// (await getLogger()).error(
-						`[${requestId}] Payload API error (non-JSON):`,
-						response.status,
-						response.statusText,
-						errorText,
-		// );
+					// (await getLogger()).error(
+					// 				`[${requestId}] Payload API error (non-JSON):`,
+					// 				response.status,
+					// 				response.statusText,
+					// 				errorText,
+					// );
 					errorMessage =
 						errorText || `${response.status} ${response.statusText}`;
 				}
@@ -85,18 +87,18 @@ export async function callPayloadAPI(
 				// Throw a more detailed error
 				throw new Error(
 					`Failed to call Payload API (${endpoint}): ${response.status} ${response.statusText} - ${errorMessage}`,
-				// );
+				);
 			} catch (_jsonError) {
 				// If error response couldn't be read at all
 				// TODO: Async logger needed
-		// (await getLogger()).error(
-					`[${requestId}] Payload API error (unreadable):`,
-					response.status,
-					response.statusText,
-		// );
+				// (await getLogger()).error(
+				// 			`[${requestId}] Payload API error (unreadable):`,
+				// 			response.status,
+				// 			response.statusText,
+				// );
 				throw new Error(
 					`Failed to call Payload API (${endpoint}): ${response.status} ${response.statusText}`,
-				// );
+				);
 			}
 		}
 
@@ -104,17 +106,17 @@ export async function callPayloadAPI(
 		try {
 			const data = await response.json();
 			// TODO: Async logger needed
-		// (await getLogger()).info(`[${requestId}] API Response successful for: ${endpoint}`);
+			// (await getLogger()).info(`[${requestId}] API Response successful for: ${endpoint}`);
 			return data;
 		} catch (error) {
 			// Type guard for Error objects
 			const parseError =
 				error instanceof Error ? error : new Error(String(error));
 			// TODO: Async logger needed
-		// (await getLogger()).error(`[${requestId}] Error parsing JSON response:`, { data: parseError });
+			// (await getLogger()).error(`[${requestId}] Error parsing JSON response:`, { data: parseError });
 			throw new Error(
 				`Failed to parse Payload API response: ${parseError.message}`,
-		// );
+			);
 		}
 	} catch (error: unknown) {
 		// Catch network errors or other exceptions

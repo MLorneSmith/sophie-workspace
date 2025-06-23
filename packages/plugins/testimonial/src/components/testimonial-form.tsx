@@ -17,13 +17,14 @@ import { Input } from "@kit/ui/input";
 import { Textarea } from "@kit/ui/textarea";
 import { Trans } from "@kit/ui/trans";
 import { cn } from "@kit/ui/utils";
+import { useMutation } from "@tanstack/react-query";
 import { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
 
 import {
 	TextTestimonialFormSchema,
-	type VideoTestimonialSchema,
+	VideoTestimonialSchema,
 } from "../schema/create-testimonial.schema";
 import { createTestimonialAction } from "../server/server-actions";
 import { StarRating } from "./star-rating";
@@ -70,8 +71,8 @@ export function TestimonialForm(props: TestimonialFormProps) {
 				}
 			} catch (_error) {
 				// TODO: Async logger needed
-		// (await getLogger()).error("Error submitting testimonial:", { data: error });
-		// }
+				// (await getLogger()).error("Error submitting testimonial:", { data: _error });
+			}
 		});
 	}
 
@@ -140,7 +141,7 @@ export function TestimonialForm(props: TestimonialFormProps) {
 									onRatingChange={(value) => {
 										form.setValue(field.name, value, {
 											shouldValidate: true,
-		});
+										});
 									}}
 								/>
 							</FormControl>
@@ -270,7 +271,7 @@ export function _VideoTestimonialForm(props: VideoTestimonialFormProps) {
 									onRatingChange={(value) => {
 										form.setValue(field.name, value, {
 											shouldValidate: true,
-		});
+										});
 									}}
 								/>
 							</FormControl>
@@ -288,7 +289,7 @@ export function _VideoTestimonialForm(props: VideoTestimonialFormProps) {
 										onVideoRecorded={(video) => {
 											form.setValue(field.name, video as unknown as string, {
 												shouldValidate: true,
-		});
+											});
 										}}
 										maxRecordingTime={props.maxRecordingTime}
 									/>

@@ -9,7 +9,7 @@ const RESEND_API_KEY = z
 	.string({
 		description: "The API key for the Resend API",
 		required_error: "Please provide the API key for the Resend API",
-	// })
+	})
 	.parse(process.env.RESEND_API_KEY);
 
 export function createResendMailer() {

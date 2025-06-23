@@ -16,17 +16,17 @@ Connect Bedrock with Amazon Assumed Role
 
 Available on all plans.
 
-## [​](https://portkey.ai/docs/product/ai-gateway/virtual-keys/bedrock-amazon-assumed-role\#select-aws-assumed-role-authentication)  Select AWS Assumed Role Authentication
+## [​](https://portkey.ai/docs/product/ai-gateway/virtual-keys/bedrock-amazon-assumed-role#select-aws-assumed-role-authentication) Select AWS Assumed Role Authentication
 
 Create a new virtual key on Portkey, select **Bedrock** as the provider and **AWS Assumed Role** as the authentication method.
 
 ![](https://mintlify.s3.us-west-1.amazonaws.com/portkey-docs/images/product/ai-gateway/Bedrock-Assumed-Role.png)
 
-## [​](https://portkey.ai/docs/product/ai-gateway/virtual-keys/bedrock-amazon-assumed-role\#create-an-aws-role-for-portkey-to-assume)  Create an AWS Role for Portkey to Assume
+## [​](https://portkey.ai/docs/product/ai-gateway/virtual-keys/bedrock-amazon-assumed-role#create-an-aws-role-for-portkey-to-assume) Create an AWS Role for Portkey to Assume
 
 This role you create will be used by Porktey to execute InvokeModel commands on Bedrock models in your AWS account. The setup process will establish a minimal-permission (“least privilege”) role and set it up to allow Porktey to assume this role.
 
-### [​](https://portkey.ai/docs/product/ai-gateway/virtual-keys/bedrock-amazon-assumed-role\#create-a-permission-policy-in-your-aws-account-using-the-following-json)  Create a permission policy in your AWS account using the following JSON
+### [​](https://portkey.ai/docs/product/ai-gateway/virtual-keys/bedrock-amazon-assumed-role#create-a-permission-policy-in-your-aws-account-using-the-following-json) Create a permission policy in your AWS account using the following JSON
 
 Copy
 
@@ -50,19 +50,19 @@ Copy
 
 ![](https://mintlify.s3.us-west-1.amazonaws.com/portkey-docs/images/product/ai-gateway/create-policy.png)
 
-### [​](https://portkey.ai/docs/product/ai-gateway/virtual-keys/bedrock-amazon-assumed-role\#create-a-new-iam-role)  Create a new IAM role
+### [​](https://portkey.ai/docs/product/ai-gateway/virtual-keys/bedrock-amazon-assumed-role#create-a-new-iam-role) Create a new IAM role
 
 Choose _AWS account_ as the trusted entity type. If you set an external ID be sure to copy it, we will need it later.
 
 ![](https://mintlify.s3.us-west-1.amazonaws.com/portkey-docs/images/product/ai-gateway/create-role.png)
 
-### [​](https://portkey.ai/docs/product/ai-gateway/virtual-keys/bedrock-amazon-assumed-role\#add-the-above-policy-to-the-role)  Add the above policy to the role
+### [​](https://portkey.ai/docs/product/ai-gateway/virtual-keys/bedrock-amazon-assumed-role#add-the-above-policy-to-the-role) Add the above policy to the role
 
 Search for the policy you created above and add it to the role.
 
 ![](https://mintlify.s3.us-west-1.amazonaws.com/portkey-docs/images/product/ai-gateway/add-policy.png)
 
-### [​](https://portkey.ai/docs/product/ai-gateway/virtual-keys/bedrock-amazon-assumed-role\#configure-trust-relationship-for-the-role)  Configure Trust Relationship for the role
+### [​](https://portkey.ai/docs/product/ai-gateway/virtual-keys/bedrock-amazon-assumed-role#configure-trust-relationship-for-the-role) Configure Trust Relationship for the role
 
 Once the role is created, open the role and navigate to the _Trust relationships_ tab and click _Edit trust policy_.
 This is where you will add the Portkey AWS account as a trusted entity.
@@ -126,7 +126,7 @@ Copy
 
 ```
 
-## [​](https://portkey.ai/docs/product/ai-gateway/virtual-keys/bedrock-amazon-assumed-role\#configure-the-virtual-key-with-the-role-arn)  Configure the virtual key with the role ARN
+## [​](https://portkey.ai/docs/product/ai-gateway/virtual-keys/bedrock-amazon-assumed-role#configure-the-virtual-key-with-the-role-arn) Configure the virtual key with the role ARN
 
 Once the role is created, copy the role ARN and paste it into the Bedrock integrations modal in Portkey along with the external ID if you set one and the AWS region you are using.
 

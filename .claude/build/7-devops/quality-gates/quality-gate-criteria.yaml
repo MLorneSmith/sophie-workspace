@@ -1,0 +1,214 @@
+# Quality Gate Criteria for AAFD Methodology
+# Defines specific criteria for each phase transition
+
+quality_gates:
+  # Phase 1 -> Phase 2: PRD to Technical Chunking
+  prd_to_chunking:
+    validator: Critic Agent
+    criteria:
+      completeness:
+        description: "All PRD sections filled with appropriate detail"
+        checks:
+          - executive_summary_complete: true
+          - objectives_defined: true
+          - success_metrics_measurable: true
+          - target_users_identified: true
+          - features_specified: true
+          - technical_requirements_documented: true
+          - scope_clearly_defined: true
+          - risks_assessed: true
+          
+      clarity:
+        description: "Requirements are unambiguous and implementable"
+        checks:
+          - no_vague_language: true
+          - technical_terms_defined: true
+          - acceptance_criteria_specific: true
+          - dependencies_explicit: true
+          
+      feasibility:
+        description: "Solution is technically and business viable"
+        checks:
+          - technical_approach_validated: true
+          - resource_requirements_realistic: true
+          - timeline_achievable: true
+          - no_blocking_dependencies: true
+          
+      testability:
+        description: "All requirements can be validated"
+        checks:
+          - acceptance_criteria_measurable: true
+          - success_metrics_quantifiable: true
+          - test_scenarios_identifiable: true
+          
+  # Phase 2 -> Phase 3: Chunks to Stakeholder Validation
+  chunks_to_validation:
+    validator: Critic Agent
+    criteria:
+      independence:
+        description: "Chunks can be developed separately"
+        checks:
+          - minimal_inter_chunk_dependencies: true
+          - clear_interfaces_defined: true
+          - no_circular_dependencies: true
+          
+      completeness:
+        description: "All PRD requirements covered"
+        checks:
+          - all_features_mapped: true
+          - no_requirements_orphaned: true
+          - cross_cutting_concerns_addressed: true
+          
+      sizing:
+        description: "Chunks appropriately sized"
+        checks:
+          - token_count_3k_to_5k: true
+          - single_sprint_completable: true
+          - cognitive_load_manageable: true
+          
+      boundaries:
+        description: "Clear technical boundaries"
+        checks:
+          - file_ownership_clear: true
+          - api_boundaries_defined: true
+          - data_flow_documented: true
+          
+  # Phase 3 -> Phase 4: Validated Chunks to User Stories
+  validation_to_stories:
+    validator: Critic Agent
+    criteria:
+      stakeholder_coverage:
+        description: "All stakeholders provided input"
+        checks:
+          - product_owner_approved: true
+          - technical_leads_reviewed: true
+          - user_representatives_consulted: true
+          
+      ambiguity_resolution:
+        description: "All ambiguities addressed"
+        checks:
+          - clarification_questions_answered: true
+          - assumptions_validated: true
+          - edge_cases_considered: true
+          
+      requirement_clarity:
+        description: "Requirements implementation-ready"
+        checks:
+          - no_interpretation_needed: true
+          - technical_approach_agreed: true
+          - ui_ux_decisions_made: true
+          
+  # Phase 4 -> Phase 5: User Stories to Sprint Planning
+  stories_to_sprint:
+    validator: Critic Agent
+    criteria:
+      invest_compliance:
+        description: "Stories follow INVEST principles"
+        checks:
+          independent:
+            - no_story_dependencies: true
+            - self_contained_value: true
+          negotiable:
+            - implementation_flexible: true
+            - not_overly_prescriptive: true
+          valuable:
+            - clear_user_benefit: true
+            - business_value_articulated: true
+          estimable:
+            - complexity_understood: true
+            - effort_quantifiable: true
+          small:
+            - single_sprint_completion: true
+            - 1_to_8_story_points: true
+          testable:
+            - acceptance_criteria_clear: true
+            - test_scenarios_defined: true
+            
+      technical_completeness:
+        description: "Technical tasks identified"
+        checks:
+          - all_files_identified: true
+          - api_changes_documented: true
+          - database_changes_noted: true
+          - dependencies_listed: true
+          
+  # Phase 5 -> Phase 6: Sprint Plan to Implementation
+  sprint_to_implementation:
+    validator: Planner Agent
+    criteria:
+      capacity_alignment:
+        description: "Workload matches team capacity"
+        checks:
+          - total_points_within_velocity: true
+          - individual_capacity_respected: true
+          - buffer_time_included: true
+          
+      goal_clarity:
+        description: "Sprint goal achievable"
+        checks:
+          - goal_specific: true
+          - goal_measurable: true
+          - goal_aligned_with_epic: true
+          
+      story_readiness:
+        description: "Stories ready for development"
+        checks:
+          - all_stories_refined: true
+          - dependencies_sequenced: true
+          - technical_approach_clear: true
+          
+  # Phase 6: Implementation Completion
+  implementation_completion:
+    validator: Critic Agent
+    criteria:
+      functional_completeness:
+        description: "All acceptance criteria met"
+        checks:
+          - all_features_implemented: true
+          - acceptance_tests_passing: true
+          - edge_cases_handled: true
+          
+      code_quality:
+        description: "Code meets standards"
+        checks:
+          - linting_passed: true
+          - type_checking_passed: true
+          - no_security_vulnerabilities: true
+          - performance_acceptable: true
+          
+      test_coverage:
+        description: "Adequate testing"
+        checks:
+          - unit_tests_present: true
+          - integration_tests_written: true
+          - coverage_above_threshold: true
+          
+      documentation:
+        description: "Code documented"
+        checks:
+          - functions_documented: true
+          - complex_logic_explained: true
+          - api_documentation_updated: true
+          
+# Severity levels for gate failures
+failure_severity:
+  critical:
+    description: "Must be fixed before proceeding"
+    examples:
+      - missing_acceptance_criteria
+      - no_success_metrics
+      - security_vulnerabilities
+      
+  major:
+    description: "Should be fixed, may proceed with caution"
+    examples:
+      - incomplete_documentation
+      - minor_ambiguities
+      - suboptimal_test_coverage
+      
+  minor:
+    description: "Nice to fix, can proceed"
+    examples:
+      - formatting_issues
+      - verbose_descriptions
+      - redundant_information

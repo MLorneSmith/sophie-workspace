@@ -1,7 +1,6 @@
 [Skip to main content](https://developer.pdf.co/api/pdf-filler/index.html#main-content)
 
- Back to top
-
+Back to top
 
 `Ctrl` + `K`
 
@@ -11,17 +10,17 @@
 
 [Add More](https://app.pdf.co/subscriptions)
 
-# PDF Filler [\#](https://developer.pdf.co/api/pdf-filler/index.html\#pdf-filler "Permalink to this heading")
+# PDF Filler [\#](https://developer.pdf.co/api/pdf-filler/index.html#pdf-filler 'Permalink to this heading')
 
 This uses the [PDF Add](https://developer.pdf.co/api/pdf-add/index.html#pdf-edit-add) API.
 
-## Create Fillable PDF Forms [\#](https://developer.pdf.co/api/pdf-filler/index.html\#create-fillable-pdf-forms "Permalink to this heading")
+## Create Fillable PDF Forms [\#](https://developer.pdf.co/api/pdf-filler/index.html#create-fillable-pdf-forms 'Permalink to this heading')
 
 You can create fillable **PDF** forms by adding editable text boxes and checkboxes.
 
 By using the [annotations\[\]](https://developer.pdf.co/api/pdf-add/index.html#pdf-add-annotations) attribute and setting the `type` to `textfield` or `checkbox` you can create form elements to be placed on your **PDF**.
 
-### Payload [3](https://developer.pdf.co/api/pdf-filler/index.html\#f3) [\#](https://developer.pdf.co/api/pdf-filler/index.html\#example-tag-payload "Permalink to this heading")
+### Payload [3](https://developer.pdf.co/api/pdf-filler/index.html#f3) [\#](https://developer.pdf.co/api/pdf-filler/index.html#example-tag-payload 'Permalink to this heading')
 
 ```
 {
@@ -64,7 +63,7 @@ By using the [annotations\[\]](https://developer.pdf.co/api/pdf-add/index.html#p
 
 Copy to clipboard
 
-### Response [2](https://developer.pdf.co/api/pdf-filler/index.html\#f2) [\#](https://developer.pdf.co/api/pdf-filler/index.html\#example-tag-response "Permalink to this heading")
+### Response [2](https://developer.pdf.co/api/pdf-filler/index.html#f2) [\#](https://developer.pdf.co/api/pdf-filler/index.html#example-tag-response 'Permalink to this heading')
 
 ```
 {
@@ -80,7 +79,7 @@ Copy to clipboard
 
 Copy to clipboard
 
-### CURL [\#](https://developer.pdf.co/api/pdf-filler/index.html\#curl "Permalink to this heading")
+### CURL [\#](https://developer.pdf.co/api/pdf-filler/index.html#curl 'Permalink to this heading')
 
 ```
 curl --location --request POST 'https://api.pdf.co/v1/pdf/edit/add' \
@@ -126,15 +125,15 @@ curl --location --request POST 'https://api.pdf.co/v1/pdf/edit/add' \
 
 Copy to clipboard
 
-* * *
+---
 
-## Fill PDF Forms [\#](https://developer.pdf.co/api/pdf-filler/index.html\#fill-pdf-forms "Permalink to this heading")
+## Fill PDF Forms [\#](https://developer.pdf.co/api/pdf-filler/index.html#fill-pdf-forms 'Permalink to this heading')
 
 You can fill existing form fields in a PDF after identifying the form field names.
 
 Once form fields are identified then the [fields\[\]](https://developer.pdf.co/api/pdf-add/index.html#pdf-add-fields) attribute should be used to populate the fields by `fieldName`.
 
-### Payload [3](https://developer.pdf.co/api/pdf-filler/index.html\#f3) [\#](https://developer.pdf.co/api/pdf-filler/index.html\#id4 "Permalink to this heading")
+### Payload [3](https://developer.pdf.co/api/pdf-filler/index.html#f3) [\#](https://developer.pdf.co/api/pdf-filler/index.html#id4 'Permalink to this heading')
 
 ```
 {
@@ -197,7 +196,7 @@ Once form fields are identified then the [fields\[\]](https://developer.pdf.co/a
 
 Copy to clipboard
 
-### Response [2](https://developer.pdf.co/api/pdf-filler/index.html\#f2) [\#](https://developer.pdf.co/api/pdf-filler/index.html\#id6 "Permalink to this heading")
+### Response [2](https://developer.pdf.co/api/pdf-filler/index.html#f2) [\#](https://developer.pdf.co/api/pdf-filler/index.html#id6 'Permalink to this heading')
 
 ```
 {
@@ -215,7 +214,7 @@ Copy to clipboard
 
 Copy to clipboard
 
-### CURL [\#](https://developer.pdf.co/api/pdf-filler/index.html\#id7 "Permalink to this heading")
+### CURL [\#](https://developer.pdf.co/api/pdf-filler/index.html#id7 'Permalink to this heading')
 
 ```
 curl --location --request POST 'https://api.pdf.co/v1/pdf/edit/add' \
@@ -295,9 +294,9 @@ curl --location --request POST 'https://api.pdf.co/v1/pdf/edit/add' \
 
 Copy to clipboard
 
-* * *
+---
 
-## Code samples [\#](https://developer.pdf.co/api/pdf-filler/index.html\#code-samples "Permalink to this heading")
+## Code samples [\#](https://developer.pdf.co/api/pdf-filler/index.html#code-samples 'Permalink to this heading')
 
 JavaScript / Node.js
 
@@ -884,7 +883,7 @@ PHP
 
 Copy to clipboard
 
-### On Github [\#](https://developer.pdf.co/api/pdf-filler/index.html\#on-github "Permalink to this heading")
+### On Github [\#](https://developer.pdf.co/api/pdf-filler/index.html#on-github 'Permalink to this heading')
 
 - [JavaScript samples](https://github.com/bytescout/pdf-co-api-samples/tree/master/PDF%20Fill%20PDF%20Forms/JavaScript)
 
@@ -908,7 +907,6 @@ Copy to clipboard
 
 - [VB.NET](https://github.com/bytescout/pdf-co-api-samples/tree/master/PDF%20Fill%20PDF%20Forms/VB.NET)
 
-
 Footnotes
 
 1
@@ -919,12 +917,12 @@ Supports publicly accessible links from any source, including [Google Drive](htt
 
 Main response codes as follows:
 
-| Code | Description |
-| --- | --- |
-| `200` | _Success_ |
-| `400` | _Bad request_. Typically happens because of bad input parameters, or because the input URLs can’t be reached, possibly due to access restrictions like needing a login or password. |
-| `401` | _Unauthorized_ |
-| `402` | _Not enough credits_ |
+| Code  | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `200` | _Success_                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| `400` | _Bad request_. Typically happens because of bad input parameters, or because the input URLs can’t be reached, possibly due to access restrictions like needing a login or password.                                                                                                                                                                                                                                                                                                                                 |
+| `401` | _Unauthorized_                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `402` | _Not enough credits_                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | `445` | _Timeout error_. To process large documents or files please use asynchronous mode (set the `async` parameter to `true`) and then check status using the [/job/check](https://developer.pdf.co/api/background-job-check/index.html#post-tag-job-check) endpoint. If a file contains many pages then specify a page range using the `pages` parameter. The number of pages of the document can be obtained using the [/pdf/info](https://developer.pdf.co/api/pdf-info-reader/index.html#post-tag-pdf-info) endpoint. |
 
 Note
@@ -944,15 +942,13 @@ What is 1 + 5?
 
 Close
 
-* * *
+---
 
 This website uses cookies for functional and analytical purposes. By continuing, you agree
 to our cookie use. Please read our
 [privacy policy](https://pdf.co/resources/legal/privacy)
 for more information.
 
-
 I Agree
-
 
 On this page

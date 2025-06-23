@@ -22,7 +22,7 @@ Using the Gateway, you can call `vision`, `audio (text-to-speech & speech-to-tex
 
 ![](https://mintlify.s3.us-west-1.amazonaws.com/portkey-docs/images/product/ai-gateway/multi.png)
 
-#### [​](https://portkey.ai/docs/product/ai-gateway/multimodal-capabilities\#explore-the-ai-gateways-multimodal-capabilities-below)  Explore the AI Gateway’s Multimodal capabilities below:
+#### [​](https://portkey.ai/docs/product/ai-gateway/multimodal-capabilities#explore-the-ai-gateways-multimodal-capabilities-below) Explore the AI Gateway’s Multimodal capabilities below
 
 [**Vision**](https://portkey.ai/docs/product/ai-gateway/multimodal-capabilities/vision) [**Image Generation**](https://portkey.ai/docs/product/ai-gateway/multimodal-capabilities/image-generation) [**Function Calling**](https://portkey.ai/docs/product/ai-gateway/multimodal-capabilities/function-calling) [**Speech-to-Text**](https://portkey.ai/docs/product/ai-gateway/multimodal-capabilities/speech-to-text) [**Text-to-Speech**](https://portkey.ai/docs/product/ai-gateway/multimodal-capabilities/text-to-speech)
 

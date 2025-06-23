@@ -1,4 +1,116 @@
 <prompt>
+  <metadata>
+    <primary_agent>Builder</primary_agent>
+    <supporting_agents>
+      <agent role="continuous_review">Reviewer</agent>
+      <agent role="issue_resolution">Fixer</agent>
+      <agent role="final_validation">Critic</agent>
+    </supporting_agents>
+    <phase>6-implementation</phase>
+    <orchestrator>/build-feature command</orchestrator>
+    <orchestrator_file>.claude/commands/build-feature.md</orchestrator_file>
+  </metadata>
+  
+  <agent_context>
+    <builder>
+      <role>Primary implementer using Claude Code for TDD development</role>
+      <context_files>
+        - story-context.md
+        - technical-patterns.md
+        - code-standards.md
+        - test-templates.md
+      </context_files>
+    </builder>
+    <reviewer>
+      <role>Continuous code review during implementation</role>
+      <review_focus>
+        - Security vulnerabilities
+        - Performance issues
+        - Best practices adherence
+        - Test coverage adequacy
+        - Code maintainability
+      </review_focus>
+    </reviewer>
+    <fixer>
+      <role>Resolve issues identified by Reviewer</role>
+      <fix_capabilities>
+        - Root cause analysis
+        - Targeted remediation
+        - Pattern-based solutions
+        - Performance optimization
+        - Security hardening
+      </fix_capabilities>
+    </fixer>
+    <critic>
+      <role>Final quality validation before story completion</role>
+      <validation_scope>
+        - Story acceptance criteria met
+        - Code quality standards passed
+        - Test coverage adequate
+        - Documentation complete
+        - No outstanding issues
+      </validation_scope>
+    </critic>
+  </agent_context>
+  
+  <available_tools>
+    <description>
+      You have access to the following tools for executing this task. Tool mappings are defined in .claude/tools/tool-mappings.xml and full documentation is in .claude/tools/available-tools.xml
+    </description>
+    
+    <!-- Claude Native Tools -->
+    <tool_group name="Claude Native Tools">
+      <tool name="Read" description="Read story context and existing code"/>
+      <tool name="Write" description="Create new files (tests, components)"/>
+      <tool name="Edit" description="Modify existing files"/>
+      <tool name="MultiEdit" description="Make multiple related changes"/>
+      <tool name="Bash" description="Run tests, linting, type checking"/>
+      <tool name="Grep" description="Find code patterns and usage"/>
+      <tool name="Glob" description="Find files by patterns"/>
+      <tool name="TodoWrite" description="Track implementation tasks"/>
+      <tool name="TodoRead" description="Check task progress"/>
+    </tool_group>
+    
+    <!-- MCP Tools for Implementation -->
+    <tool_group name="MCP Tools">
+      <tool name="github_mcp" description="Version control">
+        <functions>create_branch, push_files, create_pull_request</functions>
+        <usage>Branch management, code commits, PR creation</usage>
+      </tool>
+      <tool name="postgres_mcp" description="Local database operations">
+        <functions>pg_execute_query, pg_manage_schema, pg_manage_rls</functions>
+        <usage>Test database setup, schema changes, RLS policies</usage>
+      </tool>
+      <tool name="supabase_mcp" description="Remote database operations">
+        <functions>apply_migration, generate_typescript_types</functions>
+        <usage>Deploy migrations, update types after schema changes</usage>
+      </tool>
+      <tool name="browser_tools_mcp" description="UI testing">
+        <functions>takeScreenshot, runAccessibilityAudit, getConsoleErrors</functions>
+        <usage>Test UI components, check accessibility, debug errors</usage>
+      </tool>
+      <tool name="newrelic_mcp" description="Performance monitoring">
+        <functions>query_newrelic_logs, get_error_traces</functions>
+        <usage>Check performance impact, debug production issues</usage>
+      </tool>
+      <tool name="context7_mcp" description="Documentation lookup">
+        <functions>resolve-library-id, get-library-docs</functions>
+        <usage>Get current API docs for libraries being used</usage>
+      </tool>
+    </tool_group>
+    
+    <tool_usage_guidelines>
+      - Use Read extensively to understand existing patterns
+      - Write tests FIRST (TDD approach)
+      - Use Bash to run tests frequently during development
+      - Use postgres_mcp for LOCAL database testing
+      - Use browser_tools_mcp for UI component testing
+      - Use github_mcp to create feature branches and commits
+      - Use context7_mcp when implementing new library features
+      - Use TodoWrite to track progress through story tasks
+    </tool_usage_guidelines>
+  </available_tools>
+  
   <task>
     Implement a user story following Test-Driven Development practices and project standards, creating production-ready code with proper testing, error handling, and documentation.
   </task>
@@ -6,9 +118,10 @@
   <context_loading>
     <mandatory_reads>
       <read priority="1">CLAUDE.md - Project standards and conventions</read>
-      <read priority="2">.claude/contexts/story-{story_id}/context.md - Story requirements</read>
-      <read priority="3">.claude/contexts/story-{story_id}/technical-notes.md - Technical approach</read>
-      <read priority="4">.claude/contexts/story-{story_id}/progress.md - Current progress</read>
+      <read priority="2">.claude/build/4-output/{epic-name}/5-sprints/sprint-{number}.md - Sprint plan and priorities</read>
+      <read priority="3">.claude/build/4-output/contexts/stories/story-{story_id}/context.md - Story requirements</read>
+      <read priority="4">.claude/build/4-output/contexts/stories/story-{story_id}/technical-notes.md - Technical approach</read>
+      <read priority="5">.claude/build/4-output/contexts/stories/story-{story_id}/progress.md - Current progress</read>
     </mandatory_reads>
     
     <conditional_reads>
@@ -391,7 +504,7 @@
     <phase name="progress_tracking">
       <step number="13">
         <title>Update Progress Documentation</title>
-        <file_path>.claude/contexts/story-{story_id}/progress.md</file_path>
+        <file_path>.claude/build/4-output/contexts/stories/story-{story_id}/progress.md</file_path>
         <template>
           <![CDATA[
           # Story Progress: {Story Title}
@@ -443,6 +556,94 @@
           - Add comment with implementation notes
           - Update Implementation Phase field
           - Link to any related PRs or issues
+        </actions>
+      </step>
+    </phase>
+    
+    <phase name="session_handoff">
+      <step number="15">
+        <title>Prepare Session Handoff</title>
+        <description>Document current state for next session or story handoff</description>
+        <file_path>.claude/build/4-output/contexts/stories/story-{story_id}/session-handoff.md</file_path>
+        <template>
+          <![CDATA[
+          # Session Handoff: {Story Title} - {Date}
+          
+          ## Current Implementation State
+          - **Active Task**: {Specific function/component being worked on}
+          - **TDD Phase**: {Red/Green/Refactor}
+          - **Files Modified**: {List of files with uncommitted changes}
+          - **Test Status**: {X passing, Y failing}
+          - **Last Working State**: {Git commit SHA}
+          
+          ## Immediate Next Action
+          - **Task**: {Exact next step to take}
+          - **Context**: {Why this step is needed}
+          - **Files to Continue**: {Specific files to open}
+          - **Expected Outcome**: {What should happen when task is done}
+          
+          ## Technical Context
+          - **Pattern Being Followed**: {Reference to similar implementation}
+          - **Key Decisions**: {Choices made this session}
+          - **Assumptions Made**: {What we're assuming will work}
+          - **Potential Issues**: {Things to watch out for}
+          
+          ## For Story Handoff
+          - **Shared Components**: {Components other stories might need}
+          - **API Changes**: {New interfaces that affect other stories}
+          - **Database Changes**: {Schema modifications}
+          - **Breaking Changes**: {Things that might affect other work}
+          
+          ## Quick Resume Checklist
+          - [ ] Load story context: `/read .claude/contexts/stories/story-{story_id}/context.md`
+          - [ ] Load progress: `/read .claude/contexts/stories/story-{story_id}/progress.md`
+          - [ ] Load handoff: `/read .claude/contexts/stories/story-{story_id}/session-handoff.md`
+          - [ ] Check git status: `git status`
+          - [ ] Run tests: `pnpm test {specific-test-file}`
+          ]]>
+        </template>
+        <actions>
+          - Create/update session handoff document using template from .claude/templates/session-handoff.md
+          - Document exact current state and next action
+          - Include technical context for resuming work
+          - Note any cross-story impacts or coordination needs
+        </actions>
+      </step>
+      
+      <step number="16">
+        <title>Update Coordination Files</title>
+        <description>Update shared coordination files for multi-story work</description>
+        <files_to_update>
+          <file>.claude/build/4-output/contexts/dependencies/sprint-{sprint_number}-coordination.md</file>
+          <file>.claude/build/4-output/contexts/stories/story-{story_id}/shared-impact.md</file>
+        </files_to_update>
+        <coordination_update_template>
+          <![CDATA[
+          ## Story #{story_id} Session Update - {Date}
+          
+          ### Implementation Progress
+          - **Current Phase**: {Implementation phase}
+          - **Components Modified**: {List of shared components}
+          - **Files Changed**: {Files that other stories might need}
+          - **API Changes**: {New or modified interfaces}
+          
+          ### Cross-Story Impact
+          - **Blocks**: {Stories waiting for this work}
+          - **Blocked By**: {Dependencies still needed}
+          - **Safe to Parallel**: {Stories that can work alongside}
+          - **Coordination Needed**: {Stories requiring coordination}
+          
+          ### File Conflict Status
+          - **High Risk**: {Files multiple stories will modify}
+          - **Exclusive Use**: {Files only this story modifies}
+          - **Shared Stable**: {Shared files safe for others to use}
+          ]]>
+        </coordination_update_template>
+        <actions>
+          - Update sprint coordination file with current story status
+          - Document shared component changes
+          - Note file-level conflicts or coordination needs
+          - Update dependency status for other stories
         </actions>
       </step>
     </phase>
@@ -516,4 +717,57 @@
       Measure before optimizing - use React Query for data fetching, avoid waterfalls
     </practice>
   </best_practices>
+  
+  <agent_workflow>
+    <pattern name="continuous_quality_implementation">
+      <step order="1">
+        <agent>Builder Agent</agent>
+        <action>Implement story using TDD with Claude Code</action>
+        <output>Code implementation with tests</output>
+      </step>
+      <step order="2" type="continuous">
+        <agent>Reviewer Agent</agent>
+        <action>Review code as it's written</action>
+        <output>Issues and improvement suggestions</output>
+      </step>
+      <step order="3" type="triggered">
+        <agent>Fixer Agent</agent>
+        <action>Fix issues identified by Reviewer</action>
+        <output>Resolved issues with targeted fixes</output>
+      </step>
+      <step order="4" type="final">
+        <agent>Critic Agent</agent>
+        <action>Final quality validation</action>
+        <output>Story completion approval or rejection</output>
+      </step>
+    </pattern>
+  </agent_workflow>
+  
+  <quality_gate>
+    <validator>Critic Agent</validator>
+    <criteria>
+      <functional_completeness>All acceptance criteria implemented and tested</functional_completeness>
+      <code_quality>Passes all linting, type checking, and security scans</code_quality>
+      <test_coverage>Adequate test coverage for all new code</test_coverage>
+      <documentation>Code is self-documenting with necessary comments</documentation>
+      <performance>Meets performance requirements, no regressions</performance>
+      <security>No vulnerabilities, follows security best practices</security>
+    </criteria>
+    <actions>
+      <on_pass>Story marked as complete, ready for deployment</on_pass>
+      <on_fail>Story returned to Builder with specific fixes required</on_fail>
+    </actions>
+  </quality_gate>
+  
+  <handoff_protocol>
+    <from>Builder + Reviewer + Fixer Agents</from>
+    <to>Deployment Pipeline</to>
+    <context_package>
+      <completed_code>Fully tested and reviewed implementation</completed_code>
+      <quality_report>Final validation report from Critic</quality_report>
+      <deployment_notes>Any special deployment considerations</deployment_notes>
+      <monitoring_requirements>Metrics to track post-deployment</monitoring_requirements>
+      <rollback_plan>How to revert if issues arise</rollback_plan>
+    </context_package>
+  </handoff_protocol>
 </prompt>

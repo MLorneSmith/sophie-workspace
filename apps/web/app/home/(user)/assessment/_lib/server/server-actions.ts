@@ -12,7 +12,7 @@ const { getLogger } = createServiceLogger("HOME-(USER)");
 /**
  * Schema for saving a survey response
  */
-const _SaveResponseSchema = z.object({
+export const SaveResponseSchema = z.object({
 	surveyId: z.string(),
 	questionId: z.string(),
 	questionIndex: z.number(),
@@ -165,7 +165,7 @@ export const saveResponseAction = enhanceAction(
 				// 	message: error.message,
 				// 	stack: error.stack,
 				// 	name: error.name,
-		});
+				// });
 			}
 
 			return {
@@ -184,7 +184,7 @@ export const saveResponseAction = enhanceAction(
 /**
  * Schema for completing a survey
  */
-const _CompleteSurveySchema = z.object({
+export const CompleteSurveySchema = z.object({
 	surveyId: z.string(),
 	responseId: z.string(),
 	categoryScores: z.record(z.string(), z.number()),
@@ -235,7 +235,7 @@ export const completeSurveyAction = enhanceAction(
 				// 	message: error.message,
 				// 	stack: error.stack,
 				// 	name: error.name,
-		});
+				// });
 			}
 
 			return {
@@ -247,6 +247,6 @@ export const completeSurveyAction = enhanceAction(
 	},
 	{
 		auth: true,
-		schema: _CompleteSurveySchema,
+		schema: CompleteSurveySchema,
 	},
 );

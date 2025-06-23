@@ -15,5 +15,5 @@ export const VideoTestimonialSchema = z.object({
 	customerName: z.string().min(1, "Customer name is required").max(255),
 	content: z.string().optional(),
 	rating: z.number().min(1).max(5),
-	video: z.custom<string>(),
+	video: z.string().min(1, "Video URL is required"),
 });

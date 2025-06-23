@@ -8,10 +8,10 @@ const noop = (event: string) => {
 	// do nothing - this is to prevent errors when the analytics service is not initialized
 
 	return async (...args: unknown[]) => {
-		(await getLogger()).debug(
-			`Noop analytics service called with event: ${event}`,
-			...args.filter(Boolean),
-		);
+		const logger = await getLogger();
+		logger.debug(`Noop analytics service called with event: ${event}`, {
+			args: args.filter(Boolean),
+		});
 	};
 };
 

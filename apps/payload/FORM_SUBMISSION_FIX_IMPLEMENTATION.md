@@ -5,6 +5,7 @@ This document provides step-by-step instructions to fix the frontend form submis
 ## Problem Summary
 
 The Payload CMS admin interface is experiencing:
+
 - Multiple rapid POST requests to `/admin/create-first-user`
 - Form submission loops causing duplicate entries
 - Race conditions due to React state updates
@@ -25,12 +26,14 @@ The fix consists of three main components:
 #### Option A: Replace the Auto-generated Route (Recommended)
 
 1. **Backup the original file:**
+
    ```bash
    cd apps/payload/src/app/(payload)/api/[...slug]/
    cp route.ts route.ts.backup
    ```
 
 2. **Replace with enhanced version:**
+
    ```bash
    cp route.enhanced.ts route.ts
    ```
@@ -68,18 +71,12 @@ import Script from 'next/script'
 export default function PayloadLayout({ children }: { children: React.ReactNode }) {
   return (
     <html>
-      <head>
-        {/* Existing head content */}
-      </head>
+      <head>{/* Existing head content */}</head>
       <body>
         {children}
-        
+
         {/* Form protection script */}
-        <Script
-          src="/admin/form-protection.js"
-          strategy="afterInteractive"
-          id="form-protection"
-        />
+        <Script src="/admin/form-protection.js" strategy="afterInteractive" id="form-protection" />
       </body>
     </html>
   )
@@ -89,6 +86,7 @@ export default function PayloadLayout({ children }: { children: React.ReactNode 
 #### Method 2: Copy Script to Public Directory
 
 1. **Copy the protection script:**
+
    ```bash
    cp apps/payload/src/lib/client-form-protection-init.js apps/payload/public/admin/form-protection.js
    ```
@@ -96,73 +94,73 @@ export default function PayloadLayout({ children }: { children: React.ReactNode 
 2. **Or create a simplified version** in `apps/payload/public/admin/form-protection.js`:
 
 ```javascript
-(function() {
-  'use strict';
-  
-  console.log('[FORM-PROTECTION] Initializing...');
-  
-  const formStates = new Map();
-  const TIMEOUT_MS = 30000; // 30 seconds
-  
+;(function () {
+  'use strict'
+
+  console.log('[FORM-PROTECTION] Initializing...')
+
+  const formStates = new Map()
+  const TIMEOUT_MS = 30000 // 30 seconds
+
   function protectForm(form) {
-    if (form.hasAttribute('data-protected')) return;
-    
-    const formId = form.action || Math.random().toString(36);
-    form.setAttribute('data-protected', 'true');
-    form.setAttribute('data-form-id', formId);
-    
-    formStates.set(formId, { submitting: false });
-    
-    form.addEventListener('submit', function(e) {
-      const state = formStates.get(formId);
-      
+    if (form.hasAttribute('data-protected')) return
+
+    const formId = form.action || Math.random().toString(36)
+    form.setAttribute('data-protected', 'true')
+    form.setAttribute('data-form-id', formId)
+
+    formStates.set(formId, { submitting: false })
+
+    form.addEventListener('submit', function (e) {
+      const state = formStates.get(formId)
+
       if (state.submitting) {
-        e.preventDefault();
-        e.stopPropagation();
-        console.log('[FORM-PROTECTION] Prevented duplicate submission');
-        return false;
+        e.preventDefault()
+        e.stopPropagation()
+        console.log('[FORM-PROTECTION] Prevented duplicate submission')
+        return false
       }
-      
-      state.submitting = true;
-      
+
+      state.submitting = true
+
       // Disable submit buttons
-      const buttons = form.querySelectorAll('button[type="submit"], input[type="submit"]');
-      buttons.forEach(btn => {
-        btn.disabled = true;
-        btn.textContent = btn.textContent.includes('Processing') ? btn.textContent : 'Processing...';
-      });
-      
+      const buttons = form.querySelectorAll('button[type="submit"], input[type="submit"]')
+      buttons.forEach((btn) => {
+        btn.disabled = true
+        btn.textContent = btn.textContent.includes('Processing') ? btn.textContent : 'Processing...'
+      })
+
       // Reset after timeout
       setTimeout(() => {
-        state.submitting = false;
-        buttons.forEach(btn => {
-          btn.disabled = false;
-          btn.textContent = btn.textContent.replace('Processing...', '').trim() || 'Submit';
-        });
-      }, TIMEOUT_MS);
-    });
-    
-    console.log('[FORM-PROTECTION] Protected form:', formId);
+        state.submitting = false
+        buttons.forEach((btn) => {
+          btn.disabled = false
+          btn.textContent = btn.textContent.replace('Processing...', '').trim() || 'Submit'
+        })
+      }, TIMEOUT_MS)
+    })
+
+    console.log('[FORM-PROTECTION] Protected form:', formId)
   }
-  
+
   function scanForForms() {
-    const forms = document.querySelectorAll('form');
-    forms.forEach(protectForm);
+    const forms = document.querySelectorAll('form')
+    forms.forEach(protectForm)
   }
-  
+
   // Initialize
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', scanForForms);
+    document.addEventListener('DOMContentLoaded', scanForForms)
   } else {
-    scanForForms();
+    scanForForms()
   }
-  
+
   // Re-scan periodically for dynamic content
-  setInterval(scanForForms, 2000);
-  
+  setInterval(scanForForms, 2000)
+
   // Expose for debugging
-  window.formProtection = { scanForForms, formStates };
-})();
+  window.formProtection = { scanForForms, formStates }
+})()
 ```
 
 ### Step 3: Configure Environment Variables
@@ -182,17 +180,20 @@ ENABLE_DB_METRICS_LOGGING=true
 ### Step 4: Verify Installation
 
 1. **Start your Payload application:**
+
    ```bash
    cd apps/payload
    npm run dev
    ```
 
 2. **Check the debug endpoint:**
+
    ```bash
    curl http://localhost:3000/api/debug/deduplication
    ```
 
 3. **Monitor the logs** for these messages:
+
    ```
    [REQ-DEDUP-INFO] Request deduplication manager initialized
    [ENHANCED-API-INFO] Enhanced API Manager initialized
@@ -204,12 +205,14 @@ ENABLE_DB_METRICS_LOGGING=true
 1. **Navigate to the admin interface** (usually `/admin`)
 
 2. **Open browser DevTools** and check for:
+
    ```
    [FORM-PROTECTION] Initializing...
    [FORM-PROTECTION] Protected form: [form-id]
    ```
 
 3. **Try submitting a form** and verify:
+
    - Only one request is sent to the server
    - Submit button shows "Processing..." state
    - No duplicate requests in Network tab
@@ -224,6 +227,7 @@ ENABLE_DB_METRICS_LOGGING=true
 ### Debug Endpoint
 
 Access real-time deduplication status:
+
 ```bash
 # Get status
 curl http://localhost:3000/api/debug/deduplication
@@ -257,6 +261,7 @@ console.log(window.formProtection?.formStates)
 Look for these key log messages:
 
 **Success indicators:**
+
 ```
 [REQ-DEDUP-INFO] Returning cached response
 [FORM-PROTECTION] Prevented duplicate submission
@@ -264,12 +269,14 @@ Look for these key log messages:
 ```
 
 **Warning indicators:**
+
 ```
 [REQ-DEDUP-INFO] Duplicate request detected
 [FORM-PROTECTION] Prevented double-click
 ```
 
 **Error indicators:**
+
 ```
 [REQ-DEDUP-ERROR] Request failed
 [ENHANCED-API-ERROR] API Error
@@ -280,6 +287,7 @@ Look for these key log messages:
 If you need to rollback the changes:
 
 1. **Restore original API route:**
+
    ```bash
    cd apps/payload/src/app/(payload)/api/[...slug]/
    cp route.ts.backup route.ts

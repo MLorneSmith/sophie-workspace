@@ -3,6 +3,8 @@
  * Tests AI-powered outline suggestion generation with SCQA content processing
  */
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { createMockSupabaseClient } from "@/test/test-helpers";
+import type { ActionResult } from "@/test/test-types";
 
 // Mock AI Gateway
 vi.mock("@kit/ai-gateway", () => ({
@@ -33,7 +35,7 @@ vi.mock("@kit/next/actions", () => ({
 			if (options?.schema) {
 				const result = options.schema.safeParse(data);
 				if (!result.success) {
-					return { error: "Validation failed" };
+					return { success: false, error: "Validation failed" };
 				}
 			}
 			// Call function with mock user
@@ -98,26 +100,29 @@ describe("getOutlineSuggestionsAction", () => {
 			const validData = { submissionId: "valid-uuid-123" };
 
 			// Setup Supabase mock
-			const mockSupabase = {
-				from: vi.fn(() => ({
-					select: vi.fn().mockReturnThis(),
-					eq: vi.fn().mockReturnThis(),
-					single: vi.fn().mockResolvedValue({
-						data: {
-							situation: '{"type":"doc","content":[]}',
-							complication: '{"type":"doc","content":[]}',
-							answer: '{"type":"doc","content":[]}',
-						},
-						error: null,
-					}),
-				})),
-			};
+			const mockSupabaseClient = createMockSupabaseClient();
+			mockSupabaseClient.from = vi.fn(() => ({
+				select: vi.fn().mockReturnThis(),
+				eq: vi.fn().mockReturnThis(),
+				single: vi.fn().mockResolvedValue({
+					data: {
+						situation: '{"type":"doc","content":[]}',
+						complication: '{"type":"doc","content":[]}',
+						answer: '{"type":"doc","content":[]}',
+					},
+					error: null,
+				}),
+			})) as unknown;
 			vi.mocked(getSupabaseServerClient).mockReturnValue(
-				mockSupabase as unknown,
+				mockSupabaseClient as unknown as ReturnType<
+					typeof getSupabaseServerClient
+				>,
 			);
 
 			// Act
-			const result = await getOutlineSuggestionsAction(validData);
+			const result = (await getOutlineSuggestionsAction(
+				validData,
+			)) as ActionResult;
 
 			// Assert
 			expect(result.success).toBe(true);
@@ -160,19 +165,20 @@ describe("getOutlineSuggestionsAction", () => {
 					'{"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"Our solution"}]}]}',
 			};
 
-			// Setup Supabase mock
-			const mockSupabase = {
-				from: vi.fn(() => ({
-					select: vi.fn().mockReturnThis(),
-					eq: vi.fn().mockReturnThis(),
-					single: vi.fn().mockResolvedValue({
-						data: submissionData,
-						error: null,
-					}),
-				})),
-			};
+			// Setup Supabase mock using the test helper
+			const mockSupabaseClient = createMockSupabaseClient();
+			mockSupabaseClient.from = vi.fn(() => ({
+				select: vi.fn().mockReturnThis(),
+				eq: vi.fn().mockReturnThis(),
+				single: vi.fn().mockResolvedValue({
+					data: submissionData,
+					error: null,
+				}),
+			})) as unknown;
 			vi.mocked(getSupabaseServerClient).mockReturnValue(
-				mockSupabase as unknown,
+				mockSupabaseClient as unknown as ReturnType<
+					typeof getSupabaseServerClient
+				>,
 			);
 
 			const expectedSuggestions = {
@@ -204,7 +210,7 @@ describe("getOutlineSuggestionsAction", () => {
 			});
 
 			// Assert
-			expect(_result._success).toBe(true);
+			expect(result.success).toBe(true);
 			expect(result.data).toEqual(expectedSuggestions);
 		});
 
@@ -224,33 +230,34 @@ describe("getOutlineSuggestionsAction", () => {
 			};
 
 			// Setup Supabase mock
-			const mockSupabase = {
-				from: vi.fn(() => ({
-					select: vi.fn().mockReturnThis(),
-					eq: vi.fn().mockReturnThis(),
-					single: vi.fn().mockResolvedValue({
-						data: {
-							situation: lexicalContent,
-							complication: null,
-							answer: null,
-						},
-						error: null,
-					}),
-				})),
-			};
+			const mockSupabaseClient = createMockSupabaseClient();
+			mockSupabaseClient.from = vi.fn(() => ({
+				select: vi.fn().mockReturnThis(),
+				eq: vi.fn().mockReturnThis(),
+				single: vi.fn().mockResolvedValue({
+					data: {
+						situation: lexicalContent,
+						complication: null,
+						answer: null,
+					},
+					error: null,
+				}),
+			})) as unknown;
 			vi.mocked(getSupabaseServerClient).mockReturnValue(
-				mockSupabase as unknown,
+				mockSupabaseClient as unknown as ReturnType<
+					typeof getSupabaseServerClient
+				>,
 			);
 
 			vi.mocked(lexicalToTiptap).mockReturnValue(convertedTiptap);
 
 			// Act
-			const _result = await getOutlineSuggestionsAction({
+			const result = await getOutlineSuggestionsAction({
 				submissionId: "test-id",
 			});
 
 			// Assert
-			expect(_result._success).toBe(true);
+			expect(result.success).toBe(true);
 			expect(lexicalToTiptap).toHaveBeenCalledWith(lexicalContent);
 			expect(getChatCompletion).toHaveBeenCalledWith(
 				expect.arrayContaining([
@@ -278,31 +285,32 @@ describe("getOutlineSuggestionsAction", () => {
 			};
 
 			// Setup Supabase mock
-			const mockSupabase = {
-				from: vi.fn(() => ({
-					select: vi.fn().mockReturnThis(),
-					eq: vi.fn().mockReturnThis(),
-					single: vi.fn().mockResolvedValue({
-						data: {
-							situation: JSON.stringify(simpleContent),
-							complication: null,
-							answer: null,
-						},
-						error: null,
-					}),
-				})),
-			};
+			const mockSupabaseClient = createMockSupabaseClient();
+			mockSupabaseClient.from = vi.fn(() => ({
+				select: vi.fn().mockReturnThis(),
+				eq: vi.fn().mockReturnThis(),
+				single: vi.fn().mockResolvedValue({
+					data: {
+						situation: JSON.stringify(simpleContent),
+						complication: null,
+						answer: null,
+					},
+					error: null,
+				}),
+			})) as unknown;
 			vi.mocked(getSupabaseServerClient).mockReturnValue(
-				mockSupabase as unknown,
+				mockSupabaseClient as unknown as ReturnType<
+					typeof getSupabaseServerClient
+				>,
 			);
 
 			// Act
-			const _result = await getOutlineSuggestionsAction({
+			const result = await getOutlineSuggestionsAction({
 				submissionId: "test-id",
 			});
 
 			// Assert
-			expect(_result._success).toBe(true);
+			expect(result.success).toBe(true);
 			expect(getChatCompletion).toHaveBeenCalledWith(
 				expect.arrayContaining([
 					expect.objectContaining({
@@ -317,31 +325,32 @@ describe("getOutlineSuggestionsAction", () => {
 		it("should handle empty content gracefully", async () => {
 			// Arrange
 			// Setup Supabase mock
-			const mockSupabase = {
-				from: vi.fn(() => ({
-					select: vi.fn().mockReturnThis(),
-					eq: vi.fn().mockReturnThis(),
-					single: vi.fn().mockResolvedValue({
-						data: {
-							situation: null,
-							complication: "",
-							answer: '{"type":"doc","content":[]}',
-						},
-						error: null,
-					}),
-				})),
-			};
+			const mockSupabaseClient = createMockSupabaseClient();
+			mockSupabaseClient.from = vi.fn(() => ({
+				select: vi.fn().mockReturnThis(),
+				eq: vi.fn().mockReturnThis(),
+				single: vi.fn().mockResolvedValue({
+					data: {
+						situation: null,
+						complication: "",
+						answer: '{"type":"doc","content":[]}',
+					},
+					error: null,
+				}),
+			})) as unknown;
 			vi.mocked(getSupabaseServerClient).mockReturnValue(
-				mockSupabase as unknown,
+				mockSupabaseClient as unknown as ReturnType<
+					typeof getSupabaseServerClient
+				>,
 			);
 
 			// Act
-			const _result = await getOutlineSuggestionsAction({
+			const result = await getOutlineSuggestionsAction({
 				submissionId: "test-id",
 			});
 
 			// Assert
-			expect(_result._success).toBe(true);
+			expect(result.success).toBe(true);
 			expect(getChatCompletion).toHaveBeenCalledWith(
 				expect.arrayContaining([
 					expect.objectContaining({
@@ -360,18 +369,19 @@ describe("getOutlineSuggestionsAction", () => {
 		it("should handle database connection failure", async () => {
 			// Arrange
 			// Setup Supabase mock with error
-			const mockSupabase = {
-				from: vi.fn(() => ({
-					select: vi.fn().mockReturnThis(),
-					eq: vi.fn().mockReturnThis(),
-					single: vi.fn().mockResolvedValue({
-						data: null,
-						error: { message: "Connection timeout" },
-					}),
-				})),
-			};
+			const mockSupabaseClient = createMockSupabaseClient();
+			mockSupabaseClient.from = vi.fn(() => ({
+				select: vi.fn().mockReturnThis(),
+				eq: vi.fn().mockReturnThis(),
+				single: vi.fn().mockResolvedValue({
+					data: null,
+					error: { message: "Connection timeout" },
+				}),
+			})) as unknown;
 			vi.mocked(getSupabaseServerClient).mockReturnValue(
-				mockSupabase as unknown,
+				mockSupabaseClient as unknown as ReturnType<
+					typeof getSupabaseServerClient
+				>,
 			);
 
 			// Act
@@ -380,29 +390,30 @@ describe("getOutlineSuggestionsAction", () => {
 			});
 
 			// Assert
-			expect(_result._success).toBe(false);
+			expect(result.success).toBe(false);
 			expect(result.error).toBe("Failed to fetch submission data");
 		});
 
 		it("should handle AI service failure", async () => {
 			// Arrange
 			// Setup Supabase mock for basic data
-			const mockSupabase = {
-				from: vi.fn(() => ({
-					select: vi.fn().mockReturnThis(),
-					eq: vi.fn().mockReturnThis(),
-					single: vi.fn().mockResolvedValue({
-						data: {
-							situation: '{"type":"doc","content":[]}',
-							complication: '{"type":"doc","content":[]}',
-							answer: '{"type":"doc","content":[]}',
-						},
-						error: null,
-					}),
-				})),
-			};
+			const mockSupabaseClient = createMockSupabaseClient();
+			mockSupabaseClient.from = vi.fn(() => ({
+				select: vi.fn().mockReturnThis(),
+				eq: vi.fn().mockReturnThis(),
+				single: vi.fn().mockResolvedValue({
+					data: {
+						situation: '{"type":"doc","content":[]}',
+						complication: '{"type":"doc","content":[]}',
+						answer: '{"type":"doc","content":[]}',
+					},
+					error: null,
+				}),
+			})) as unknown;
 			vi.mocked(getSupabaseServerClient).mockReturnValue(
-				mockSupabase as unknown,
+				mockSupabaseClient as unknown as ReturnType<
+					typeof getSupabaseServerClient
+				>,
 			);
 
 			vi.mocked(getChatCompletion).mockRejectedValue(
@@ -415,29 +426,30 @@ describe("getOutlineSuggestionsAction", () => {
 			});
 
 			// Assert
-			expect(_result._success).toBe(false);
+			expect(result.success).toBe(false);
 			expect(result.error).toBe("AI service unavailable");
 		});
 
 		it("should handle malformed JSON in AI response", async () => {
 			// Arrange
 			// Setup Supabase mock for basic data
-			const mockSupabase = {
-				from: vi.fn(() => ({
-					select: vi.fn().mockReturnThis(),
-					eq: vi.fn().mockReturnThis(),
-					single: vi.fn().mockResolvedValue({
-						data: {
-							situation: '{"type":"doc","content":[]}',
-							complication: '{"type":"doc","content":[]}',
-							answer: '{"type":"doc","content":[]}',
-						},
-						error: null,
-					}),
-				})),
-			};
+			const mockSupabaseClient = createMockSupabaseClient();
+			mockSupabaseClient.from = vi.fn(() => ({
+				select: vi.fn().mockReturnThis(),
+				eq: vi.fn().mockReturnThis(),
+				single: vi.fn().mockResolvedValue({
+					data: {
+						situation: '{"type":"doc","content":[]}',
+						complication: '{"type":"doc","content":[]}',
+						answer: '{"type":"doc","content":[]}',
+					},
+					error: null,
+				}),
+			})) as unknown;
 			vi.mocked(getSupabaseServerClient).mockReturnValue(
-				mockSupabase as unknown,
+				mockSupabaseClient as unknown as ReturnType<
+					typeof getSupabaseServerClient
+				>,
 			);
 
 			vi.mocked(getChatCompletion).mockResolvedValue({
@@ -462,7 +474,7 @@ describe("getOutlineSuggestionsAction", () => {
 			});
 
 			// Assert
-			expect(_result._success).toBe(false);
+			expect(result.success).toBe(false);
 			expect(result.error).toContain("Unexpected token");
 		});
 	});
@@ -471,31 +483,32 @@ describe("getOutlineSuggestionsAction", () => {
 		it("should handle null/undefined content fields", async () => {
 			// Arrange
 			// Setup Supabase mock
-			const mockSupabase = {
-				from: vi.fn(() => ({
-					select: vi.fn().mockReturnThis(),
-					eq: vi.fn().mockReturnThis(),
-					single: vi.fn().mockResolvedValue({
-						data: {
-							situation: null,
-							complication: undefined,
-							answer: null,
-						},
-						error: null,
-					}),
-				})),
-			};
+			const mockSupabaseClient = createMockSupabaseClient();
+			mockSupabaseClient.from = vi.fn(() => ({
+				select: vi.fn().mockReturnThis(),
+				eq: vi.fn().mockReturnThis(),
+				single: vi.fn().mockResolvedValue({
+					data: {
+						situation: null,
+						complication: undefined,
+						answer: null,
+					},
+					error: null,
+				}),
+			})) as unknown;
 			vi.mocked(getSupabaseServerClient).mockReturnValue(
-				mockSupabase as unknown,
+				mockSupabaseClient as unknown as ReturnType<
+					typeof getSupabaseServerClient
+				>,
 			);
 
 			// Act
-			const _result = await getOutlineSuggestionsAction({
+			const result = await getOutlineSuggestionsAction({
 				submissionId: "test-id",
 			});
 
 			// Assert
-			expect(_result._success).toBe(true);
+			expect(result.success).toBe(true);
 			expect(getChatCompletion).toHaveBeenCalledWith(
 				expect.arrayContaining([
 					expect.objectContaining({
@@ -522,31 +535,32 @@ describe("getOutlineSuggestionsAction", () => {
 			};
 
 			// Setup Supabase mock
-			const mockSupabase = {
-				from: vi.fn(() => ({
-					select: vi.fn().mockReturnThis(),
-					eq: vi.fn().mockReturnThis(),
-					single: vi.fn().mockResolvedValue({
-						data: {
-							situation: JSON.stringify(unicodeContent),
-							complication: null,
-							answer: null,
-						},
-						error: null,
-					}),
-				})),
-			};
+			const mockSupabaseClient = createMockSupabaseClient();
+			mockSupabaseClient.from = vi.fn(() => ({
+				select: vi.fn().mockReturnThis(),
+				eq: vi.fn().mockReturnThis(),
+				single: vi.fn().mockResolvedValue({
+					data: {
+						situation: JSON.stringify(unicodeContent),
+						complication: null,
+						answer: null,
+					},
+					error: null,
+				}),
+			})) as unknown;
 			vi.mocked(getSupabaseServerClient).mockReturnValue(
-				mockSupabase as unknown,
+				mockSupabaseClient as unknown as ReturnType<
+					typeof getSupabaseServerClient
+				>,
 			);
 
 			// Act
-			const _result = await getOutlineSuggestionsAction({
+			const result = await getOutlineSuggestionsAction({
 				submissionId: "test-id",
 			});
 
 			// Assert
-			expect(_result._success).toBe(true);
+			expect(result.success).toBe(true);
 			expect(getChatCompletion).toHaveBeenCalledWith(
 				expect.arrayContaining([
 					expect.objectContaining({

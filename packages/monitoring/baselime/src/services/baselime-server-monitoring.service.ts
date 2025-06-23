@@ -5,7 +5,7 @@ const apiKey = z
 	.string({
 		required_error: "NEXT_PUBLIC_BASELIME_KEY is required",
 		description: "The Baseline API key",
-	// })
+	})
 	.parse(process.env.NEXT_PUBLIC_BASELIME_KEY);
 
 export class BaselimeServerMonitoringService implements MonitoringService {
@@ -54,7 +54,7 @@ export class BaselimeServerMonitoringService implements MonitoringService {
 			// (await getLogger()).error("Failed to send event to Baselime", {
 			//	response,
 			//	event,
-		});
+			// });
 		}
 	}
 
@@ -88,7 +88,7 @@ export class BaselimeServerMonitoringService implements MonitoringService {
 			// (await getLogger()).error("Failed to send event to Baselime", {
 			//	response,
 			//	event,
-		});
+			// });
 		}
 	}
 

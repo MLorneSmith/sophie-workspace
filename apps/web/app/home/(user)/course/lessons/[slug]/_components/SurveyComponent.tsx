@@ -37,6 +37,7 @@ type PayloadSurvey = {
 
 type Question = {
 	id: string;
+	title: string;
 	text: string;
 	type: string;
 	category: string;
@@ -56,18 +57,18 @@ type SurveyComponentProps = {
 export function SurveyComponent({
 	survey,
 	surveyResponses = [],
-	_userId,
+	userId: _userId,
 	onComplete,
 }: SurveyComponentProps) {
-	const [_isPending, startTransition] = useTransition();
+	const [isPending, startTransition] = useTransition();
 	const _supabase = useSupabase();
 
 	const [questions, setQuestions] = useState<Question[]>([]);
-	const [currentQuestionIndex, _setCurrentQuestionIndex] = useState(0);
+	const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 	const [responses, setResponses] = useState<
 		Record<string, { answer: string; score: number; category: string }>
 	>({});
-	const [_showSummary, setShowSummary] = useState(false);
+	const [showSummary, setShowSummary] = useState(false);
 
 	// Fetch survey questions - with improved handling for pre-fetched questions
 	const { data: questionsData, isLoading: isQuestionsLoading } = useQuery({
@@ -88,7 +89,7 @@ export function SurveyComponent({
 
 				// Check if questions are fully populated with text
 				const hasFullyPopulatedQuestions = survey.questions.some(
-					(q: PayloadSurvey["questions"][0]) => q.text || q.question,
+					(q) => q && (q.text || q.question),
 				);
 
 				if (hasFullyPopulatedQuestions) {
@@ -149,19 +150,20 @@ export function SurveyComponent({
 
 	// Set questions when data is loaded
 	useEffect(() => {
-		if (questionsData && questionsData._length > 0) {
+		if (questionsData && questionsData.length > 0) {
 			// TODO: Async logger needed
 			// TODO: Fix logger call - was: info
 
 			// Transform questions to ensure they have the right format
 			const transformedQuestions = questionsData.map(
-				(q: PayloadSurvey["questions"][0]) => {
+				(q: NonNullable<PayloadSurvey["questions"]>[0]) => {
 					// TODO: Async logger needed
 					// TODO: Fix logger call - was: info
 
 					// Ensure each question has the required properties
 					const question: Question = {
 						id: q.id,
+						title: q.question || q.text || "",
 						text: q.text || q.question || "",
 						type: q.type || "multiple_choice",
 						category: q.category || "general",
@@ -187,7 +189,9 @@ export function SurveyComponent({
 					else if (Array.isArray(q.options)) {
 						question.options = q.options.map(
 							(
-								opt: PayloadSurvey["questions"][0]["options"][0],
+								opt: NonNullable<
+									NonNullable<PayloadSurvey["questions"]>[0]["options"]
+								>[0],
 								index: number,
 							) => {
 								if (typeof opt === "string") {
@@ -243,7 +247,7 @@ export function SurveyComponent({
 			// TODO: Fix logger call - was: warn
 
 			// Special handling for Three Quick Questions survey
-			if (_survey?._id === "6f463bef-d7a0-4e5a-b0fa-a789b5d6f0e0") {
+			if (survey?.id === "6f463bef-d7a0-4e5a-b0fa-a789b5d6f0e0") {
 				// TODO: Async logger needed
 				// TODO: Fix logger call - was: info
 
@@ -301,28 +305,28 @@ export function SurveyComponent({
 				setQuestions(hardcodedQuestions);
 			}
 		}
-	}, [questionsData]);
+	}, [questionsData, survey?.id]);
 
 	// Check if user has already completed this survey
 	useEffect(() => {
 		if (surveyResponses && surveyResponses.length > 0) {
 			const response = surveyResponses[0];
-			if (response.completed) {
+			if (response?.completed) {
 				setShowSummary(true);
 			}
 		}
 	}, [surveyResponses]);
 
 	// Calculate progress
-	const _progress =
+	const progress =
 		questions.length > 0 ? (currentQuestionIndex / questions.length) * 100 : 0;
-	const _isLastQuestion = currentQuestionIndex === questions.length - 1;
+	const isLastQuestion = currentQuestionIndex === questions.length - 1;
 	const currentQuestion = questions[currentQuestionIndex];
 
 	// Handle answer submission
-	const _handleAnswer = (questionId: string, answer: string, score: number) => {
+	const handleAnswer = (questionId: string, answer: string, score: number) => {
 		// Save the response
-		const category = currentQuestion.category || "general";
+		const category = currentQuestion?.category || "general";
 
 		// Save the response locally
 		setResponses({
@@ -344,11 +348,11 @@ export function SurveyComponent({
 				});
 
 				// Move to the next question or complete the survey
-				if (_isLastQuestion) {
+				if (isLastQuestion) {
 					setShowSummary(true);
 					onComplete();
 				} else {
-					setCurrentQuestionIndex(_currentQuestionIndex + 1);
+					setCurrentQuestionIndex(currentQuestionIndex + 1);
 				}
 			} catch (_error) {
 				toast.error("Failed to save response. Please try again.");

@@ -29,7 +29,7 @@ interface PlaceholdersAndVanishInputProps {
 
 // Spring configuration for smoother animations
 const springConfig = {
-	type: "spring",
+	type: "spring" as const,
 	stiffness: 150,
 	damping: 15,
 	mass: 0.1,

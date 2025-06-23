@@ -292,10 +292,12 @@ After implementing these changes, we will:
 
 1. Run a complete migration using `./reset-and-migrate.ps1`
 2. Verify results through SQL queries:
+
    ```sql
    SELECT COUNT(*) FROM payload.course_quizzes WHERE course_id_id IS NULL;
    SELECT COUNT(*) FROM payload.course_quizzes_rels WHERE field = 'course_id';
    ```
+
 3. Test quiz functionality in the web application
 4. Verify that the trigger successfully prevents course_id resets
 

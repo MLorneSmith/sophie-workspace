@@ -13,6 +13,7 @@ We identified and fixed multiple issues that were causing quiz questions not to 
 
    - Quiz questions were stored in a simple array format: `["id1", "id2", ...]`
    - Payload CMS expects a complex object structure:
+
      ```json
      [{
        "id": "id1",

@@ -16,7 +16,7 @@ vi.mock("@kit/ai-gateway/src/configs/templates", () => ({
 
 vi.mock("@kit/ai-gateway/src/prompts/prompt-manager", () => ({
 	PromptManager: {
-		compile: vi.fn(),
+		compileTemplate: vi.fn(),
 	},
 }));
 
@@ -40,7 +40,7 @@ vi.mock("@kit/next/actions", () => ({
 			if (options?.schema) {
 				const result = options.schema.safeParse(data);
 				if (!result.success) {
-					return { error: "Validation failed" };
+					return { success: false, error: "Validation failed" } as const;
 				}
 			}
 			// Mock authenticated user
@@ -54,6 +54,7 @@ vi.mock("@kit/next/actions", () => ({
 import { getChatCompletion } from "@kit/ai-gateway";
 import { createReasoningOptimizedConfig } from "@kit/ai-gateway/src/configs/templates";
 import { PromptManager } from "@kit/ai-gateway/src/prompts/prompt-manager";
+import { expectError } from "../../../../../../test/test-helpers";
 import { simplifyTextAction } from "./simplify-text";
 
 // Helper function to create proper CompletionResult mock
@@ -87,7 +88,7 @@ describe("simplifyTextAction", () => {
 
 		vi.mocked(PromptManager.compileTemplate).mockImplementation(
 			(template: string, variables: Record<string, unknown>) => {
-				return template.replace("{{content}}", variables.content);
+				return template.replace("{{content}}", String(variables.content || ""));
 			},
 		);
 
@@ -129,10 +130,12 @@ describe("simplifyTextAction", () => {
 			};
 
 			// Act
-			const result = await simplifyTextAction(invalidInput as unknown);
+			const result = await simplifyTextAction(
+				invalidInput as unknown as Parameters<typeof simplifyTextAction>[0],
+			);
 
 			// Assert
-			expect(result.error).toBe("Validation failed");
+			expect(expectError(result as any)).toBe("Validation failed");
 		});
 
 		it("should reject missing userId field", async () => {
@@ -144,10 +147,12 @@ describe("simplifyTextAction", () => {
 			};
 
 			// Act
-			const result = await simplifyTextAction(invalidInput as unknown);
+			const result = await simplifyTextAction(
+				invalidInput as unknown as Parameters<typeof simplifyTextAction>[0],
+			);
 
 			// Assert
-			expect(result.error).toBe("Validation failed");
+			expect(expectError(result as any)).toBe("Validation failed");
 		});
 
 		it("should reject missing canvasId field", async () => {
@@ -159,10 +164,12 @@ describe("simplifyTextAction", () => {
 			};
 
 			// Act
-			const result = await simplifyTextAction(invalidInput as unknown);
+			const result = await simplifyTextAction(
+				invalidInput as unknown as Parameters<typeof simplifyTextAction>[0],
+			);
 
 			// Assert
-			expect(result.error).toBe("Validation failed");
+			expect(expectError(result as any)).toBe("Validation failed");
 		});
 
 		it("should reject missing sectionType field", async () => {
@@ -174,10 +181,12 @@ describe("simplifyTextAction", () => {
 			};
 
 			// Act
-			const result = await simplifyTextAction(invalidInput as unknown);
+			const result = await simplifyTextAction(
+				invalidInput as unknown as Parameters<typeof simplifyTextAction>[0],
+			);
 
 			// Assert
-			expect(result.error).toBe("Validation failed");
+			expect(expectError(result as any)).toBe("Validation failed");
 		});
 	});
 
@@ -482,7 +491,7 @@ describe("simplifyTextAction", () => {
 
 			// Assert - Empty content is valid according to the schema, so it should succeed
 			expect(result.success).toBe(true);
-			expect(result.response).toBe("");
+			expect(result.response).toEqual(createMockCompletionResult(""));
 		});
 
 		it("should handle special characters in content", async () => {
@@ -505,7 +514,9 @@ describe("simplifyTextAction", () => {
 
 			// Assert
 			expect(result.success).toBe(true);
-			expect(result.response).toBe("Simplified special content");
+			expect(result.response).toEqual(
+				createMockCompletionResult("Simplified special content"),
+			);
 		});
 
 		it("should handle multiline content", async () => {

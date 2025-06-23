@@ -3,7 +3,8 @@ import type { PostgresAdapterArgs } from "@payloadcms/db-postgres";
 import { postgresAdapter } from "@payloadcms/db-postgres";
 
 // Initialize enhanced logger for database adapter
-const { getLogger: _getLogger, getContextLogger: _getContextLogger } = createServiceLogger("DB-ADAPTER");
+const { getLogger: _getLogger, getContextLogger: _getContextLogger } =
+	createServiceLogger("DB-ADAPTER");
 
 // Global variable to survive Next.js hot reloads
 declare global {
@@ -42,6 +43,7 @@ class DatabaseAdapterManager {
 	private healthCheckInterval: NodeJS.Timeout | null = null;
 	private validationPromise: Promise<void> | null = null;
 	private readonly environment: string;
+	private readonly logger = _getLogger();
 
 	constructor() {
 		this.environment = process.env.NODE_ENV || "development";
@@ -55,8 +57,7 @@ class DatabaseAdapterManager {
 			consecutiveFailures: 0,
 		};
 
-		// Initialize logger synchronously
-		this.logger = getLogger();
+		// Logger is already initialized as a class property
 		this.logger.info("DatabaseAdapterManager initialized", {
 			environment: this.environment,
 			operation: "db_adapter_init",
@@ -364,7 +365,7 @@ class DatabaseAdapterManager {
 			this.environment === "development" ||
 			process.env.ENABLE_DB_METRICS_LOGGING
 		) {
-			this.log("Database metrics", "info", this.metrics);
+			this.log("Database metrics", "info", { ...this.metrics });
 		}
 	}
 

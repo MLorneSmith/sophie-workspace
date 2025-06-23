@@ -85,7 +85,7 @@ export const GET = enhanceRouteHandler(
 			// (await getLogger()).error(
 			// 	"Error in session-cost API route:",
 			// 	{ data: error },
-			);
+			// );
 			return NextResponse.json({
 				success: false,
 				error: "Internal server error",

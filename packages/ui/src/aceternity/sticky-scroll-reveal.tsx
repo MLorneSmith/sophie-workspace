@@ -82,7 +82,7 @@ export function StickyScrollReveal({
 		return () => observer.disconnect();
 	}, []);
 
-	useMotionValueEvent(scrollYProgress, "change", (latest) => {
+	useMotionValueEvent(scrollYProgress, "change", (latest: number) => {
 		const progress = Math.max(0, Math.min(1, latest));
 
 		if (progress <= SCROLL_THRESHOLDS.FIRST_IMAGE_END) {

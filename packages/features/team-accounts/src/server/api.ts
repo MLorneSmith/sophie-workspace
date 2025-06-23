@@ -166,7 +166,7 @@ export class TeamAccountsApi {
 			.select("*", {
 				head: true,
 				count: "exact",
-			// })
+			})
 			.eq("account_id", accountId);
 
 		if (error) {

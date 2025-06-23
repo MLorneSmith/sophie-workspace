@@ -1,10 +1,12 @@
 # Parallel Task Version Execution
 
 ## Variables
+
 PLAN_TO_EXECUTE: $ARGUMENTS
 NUMBER_OF_PARALLEL_WORKTREES: $ARGUMENTS
 
 ## Run these commands top to bottom
+
 RUN `eza . --tree`
 READ: PLAN_TO_EXECUTE
 

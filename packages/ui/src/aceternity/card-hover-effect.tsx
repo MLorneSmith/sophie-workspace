@@ -63,6 +63,12 @@ export function HoverEffect({ items, className }: HoverEffectProps) {
 					className="group relative block h-full w-full p-2"
 					onMouseEnter={() => setHoveredIndex(idx)}
 					onMouseLeave={() => setHoveredIndex(null)}
+					onFocus={() => setHoveredIndex(idx)}
+					onBlur={() => setHoveredIndex(null)}
+					// biome-ignore lint/a11y/noNoninteractiveTabindex: Card needs keyboard focus for hover effect
+					tabIndex={0}
+					// biome-ignore lint/a11y/useSemanticElements: This is an interactive card component
+					role="article"
 				>
 					<AnimatePresence>
 						{hoveredIndex === idx && (

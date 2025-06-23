@@ -7,7 +7,12 @@ import { pino } from "pino";
 import { z } from "zod";
 
 import { DEFAULT_TASKS } from "../config/default-tasks";
-import { SubtaskSchema, UpdateTaskStatusSchema } from "../schema/task.schema";
+import {
+	SubtaskSchema,
+	TaskPriorityEnum,
+	TaskStatusEnum,
+	UpdateTaskStatusSchema,
+} from "../schema/task.schema";
 import { deleteTaskImageAction, uploadTaskImageAction } from "./image-actions";
 
 const logger = pino({
@@ -24,8 +29,8 @@ const logger = pino({
 const CreateTaskSchema = z.object({
 	title: z.string().min(1, "Title is required"),
 	description: z.string().optional(),
-	status: z.enum(["to-do", "in-progress", "done"]),
-	priority: z.enum(["low", "medium", "high"]),
+	status: TaskStatusEnum,
+	priority: TaskPriorityEnum,
 	image: z.any().optional(),
 	subtasks: z.array(SubtaskSchema).optional(),
 });

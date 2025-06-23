@@ -94,10 +94,7 @@ supabase bootstrap [template] [flags]
 
 - -p, --password <string>Optional
 
-
-
 Password to your remote Postgres database.
-
 
 * * *
 
@@ -123,28 +120,19 @@ supabase init [flags]
 
 - --forceOptional
 
-
-
 Overwrite existing supabase/config.toml.
 
 - --use-orioledbOptional
-
-
 
 Use OrioleDB storage engine for Postgres.
 
 - --with-intellij-settingsOptional
 
-
-
 Generate IntelliJ IDEA settings for Deno.
 
 - --with-vscode-settingsOptional
 
-
-
 Generate VS Code settings for Deno.
-
 
 Basic usageInitialize from an existing directory
 
@@ -186,22 +174,15 @@ supabase login [flags]
 
 - --name <string>Optional
 
-
-
 Name that will be used to store token in your settings
 
 - --no-browserOptional
-
-
 
 Do not open browser automatically
 
 - --token <string>Optional
 
-
-
 Use provided token instead of automatic login flow
-
 
 Basic usage
 
@@ -247,16 +228,11 @@ supabase link [flags]
 
 - -p, --password <string>Optional
 
-
-
 Password to your remote Postgres database.
 
 - --project-ref <string>Optional
 
-
-
 Project ref of the Supabase project.
-
 
 Basic usageLink without database passwordLink using DNS-over-HTTPS resolver
 
@@ -301,16 +277,11 @@ supabase start [flags]
 
 - -x, --exclude <strings>Optional
 
-
-
 Names of containers to not start. \[gotrue,realtime,storage-api,imgproxy,kong,mailpit,postgrest,postgres-meta,studio,edge-runtime,logflare,vector,supavisor\]
 
 - --ignore-health-checkOptional
 
-
-
 Ignore unhealthy services and exit 0
-
 
 Basic usageStart containers without studio and imgproxyIgnore service health checks
 
@@ -355,22 +326,15 @@ supabase stop [flags]
 
 - --allOptional
 
-
-
 Stop all local Supabase instances from all projects across the machine.
 
 - --no-backupOptional
-
-
 
 Deletes all data volumes after stopping.
 
 - --project-id <string>Optional
 
-
-
 Local project ID to stop.
-
 
 Basic usageClean up local data after stopping
 
@@ -411,10 +375,7 @@ supabase status [flags]
 
 - --override-name <strings>Optional
 
-
-
 Override specific variable names.
-
 
 Basic usageFormat status as environment variablesCustomize the names of exported variables
 
@@ -474,22 +435,15 @@ supabase test db [path] ... [flags]
 
 - --db-url <string>Optional
 
-
-
 Tests the database specified by the connection string (must be percent-encoded).
 
 - --linkedOptional
-
-
 
 Runs pgTAP tests on the linked project.
 
 - --localOptional
 
-
-
 Runs pgTAP tests on the local database.
-
 
 Basic usage
 
@@ -527,10 +481,7 @@ supabase test new <name> [flags]
 
 - -t, --template <\[ pgtap \]>Optional
 
-
-
 Template framework to generate.
-
 
 * * *
 
@@ -557,22 +508,15 @@ supabase gen keys [flags]
 
 - --override-name <strings>Optional
 
-
-
 Override specific variable names.
 
 - --project-ref <string>Optional
-
-
 
 Project ref of the Supabase project.
 
 - --experimentalRequired
 
-
-
 enable experimental features
-
 
 * * *
 
@@ -590,52 +534,35 @@ supabase gen types [flags]
 
 - --db-url <string>Optional
 
-
-
 Generate types from a database url.
 
 - --lang <\[ typescript \| go \| swift \]>Optional
-
-
 
 Output language of the generated types.
 
 - --linkedOptional
 
-
-
 Generate types from the linked project.
 
 - --localOptional
-
-
 
 Generate types from the local dev database.
 
 - --postgrest-v9-compatOptional
 
-
-
 Generate types compatible with PostgREST v9 and below. Only use together with --db-url.
 
 - --project-id <string>Optional
-
-
 
 Generate types from a project ID.
 
 - -s, --schema <strings>Optional
 
-
-
 Comma separated list of schema to include.
 
 - --swift-access-control <\[ internal \| public \]>Optional
 
-
-
 Access control for Swift generated types.
-
 
 * * *
 
@@ -675,34 +602,23 @@ supabase db pull [migration name] [flags]
 
 - --db-url <string>Optional
 
-
-
 Pulls from the database specified by the connection string (must be percent-encoded).
 
 - --linkedOptional
-
-
 
 Pulls from the linked project.
 
 - --localOptional
 
-
-
 Pulls from the local database.
 
 - -p, --password <string>Optional
-
-
 
 Password to your remote Postgres database.
 
 - -s, --schema <strings>Optional
 
-
-
 Comma separated list of schema to include.
-
 
 Basic usageLocal studioCustom schemas
 
@@ -751,52 +667,35 @@ supabase db push [flags]
 
 - --db-url <string>Optional
 
-
-
 Pushes to the database specified by the connection string (must be percent-encoded).
 
 - --dry-runOptional
-
-
 
 Print the migrations that would be applied, but don't actually apply them.
 
 - --include-allOptional
 
-
-
 Include all migrations not found on remote history table.
 
 - --include-rolesOptional
-
-
 
 Include custom roles from supabase/roles.sql.
 
 - --include-seedOptional
 
-
-
 Include seed data from your config.
 
 - --linkedOptional
-
-
 
 Pushes to the linked project.
 
 - --localOptional
 
-
-
 Pushes to the local database.
 
 - -p, --password <string>Optional
 
-
-
 Password to your remote Postgres database.
-
 
 Basic usageSelf hostedDry run
 
@@ -838,34 +737,23 @@ supabase db reset [flags]
 
 - --db-url <string>Optional
 
-
-
 Resets the database specified by the connection string (must be percent-encoded).
 
 - --linkedOptional
-
-
 
 Resets the linked project with local migrations.
 
 - --localOptional
 
-
-
 Resets the local database with local migrations.
 
 - --no-seedOptional
-
-
 
 Skip running the seed script after reset.
 
 - --version <string>Optional
 
-
-
 Reset up to the specified version.
-
 
 Basic usage
 
@@ -911,76 +799,51 @@ supabase db dump [flags]
 
 - --data-onlyOptional
 
-
-
 Dumps only data records.
 
 - --db-url <string>Optional
-
-
 
 Dumps from the database specified by the connection string (must be percent-encoded).
 
 - --dry-runOptional
 
-
-
 Prints the pg\_dump script that would be executed.
 
 - -x, --exclude <strings>Optional
-
-
 
 List of schema.tables to exclude from data-only dump.
 
 - -f, --file <string>Optional
 
-
-
 File path to save the dumped contents.
 
 - --keep-commentsOptional
-
-
 
 Keeps commented lines from pg\_dump output.
 
 - --linkedOptional
 
-
-
 Dumps from the linked project.
 
 - --localOptional
-
-
 
 Dumps from the local database.
 
 - -p, --password <string>Optional
 
-
-
 Password to your remote Postgres database.
 
 - --role-onlyOptional
-
-
 
 Dumps only cluster roles.
 
 - -s, --schema <strings>Optional
 
-
-
 Comma separated list of schema to include.
 
 - --use-copyOptional
 
-
-
 Uses copy statements in place of inserts.
-
 
 Basic usageRole onlyData only
 
@@ -1029,52 +892,35 @@ supabase db diff [flags]
 
 - --db-url <string>Optional
 
-
-
 Diffs against the database specified by the connection string (must be percent-encoded).
 
 - -f, --file <string>Optional
-
-
 
 Saves schema diff to a new migration file.
 
 - --linkedOptional
 
-
-
 Diffs local migration files against the linked project.
 
 - --localOptional
-
-
 
 Diffs local migration files against the local database.
 
 - -s, --schema <strings>Optional
 
-
-
 Comma separated list of schema to include.
 
 - --use-migraOptional
-
-
 
 Use migra to generate schema diff.
 
 - --use-pg-schemaOptional
 
-
-
 Use pg-schema-diff to generate schema diff.
 
 - --use-pgadminOptional
 
-
-
 Use pgAdmin to generate schema diff.
-
 
 Basic usageAgainst linked projectFor a specific schema
 
@@ -1130,40 +976,27 @@ supabase db lint [flags]
 
 - --db-url <string>Optional
 
-
-
 Lints the database specified by the connection string (must be percent-encoded).
 
 - --fail-on <\[ none \| warning \| error \]>Optional
-
-
 
 Error level to exit with non-zero status.
 
 - --level <\[ warning \| error \]>Optional
 
-
-
 Error level to emit.
 
 - --linkedOptional
-
-
 
 Lints the linked project for schema errors.
 
 - --localOptional
 
-
-
 Lints the local database for schema errors.
 
 - -s, --schema <strings>Optional
 
-
-
 Comma separated list of schema to include.
-
 
 Basic usageWarnings for a specific schema
 
@@ -1199,10 +1032,7 @@ supabase db start [flags]
 
 - --from-backup <string>Optional
 
-
-
 Path to a logical backup file.
-
 
 * * *
 
@@ -1277,28 +1107,19 @@ supabase migration list [flags]
 
 - --db-url <string>Optional
 
-
-
 Lists migrations of the database specified by the connection string (must be percent-encoded).
 
 - --linkedOptional
-
-
 
 Lists migrations applied to the linked project.
 
 - --localOptional
 
-
-
 Lists migrations applied to the local database.
 
 - -p, --password <string>Optional
 
-
-
 Password to your remote Postgres database.
-
 
 Basic usageConnect to self-hosted database
 
@@ -1336,22 +1157,15 @@ supabase migration fetch [flags]
 
 - --db-url <string>Optional
 
-
-
 Fetches migrations from the database specified by the connection string (must be percent-encoded).
 
 - --linkedOptional
-
-
 
 Fetches migration history from the linked project.
 
 - --localOptional
 
-
-
 Fetches migration history from the local database.
-
 
 * * *
 
@@ -1429,34 +1243,23 @@ supabase migration repair [version] ... [flags]
 
 - --db-url <string>Optional
 
-
-
 Repairs migrations of the database specified by the connection string (must be percent-encoded).
 
 - --linkedOptional
-
-
 
 Repairs the migration history of the linked project.
 
 - --localOptional
 
-
-
 Repairs the migration history of the local database.
 
 - -p, --password <string>Optional
-
-
 
 Password to your remote Postgres database.
 
 - --status <\[ applied \| reverted \]>Required
 
-
-
 Version status to update.
-
 
 Mark a migration as revertedMark a migration as applied
 
@@ -1500,34 +1303,23 @@ supabase migration squash [flags]
 
 - --db-url <string>Optional
 
-
-
 Squashes migrations of the database specified by the connection string (must be percent-encoded).
 
 - --linkedOptional
-
-
 
 Squashes the migration history of the linked project.
 
 - --localOptional
 
-
-
 Squashes the migration history of the local database.
 
 - -p, --password <string>Optional
-
-
 
 Password to your remote Postgres database.
 
 - --version <string>Optional
 
-
-
 Squash up to the specified version.
-
 
 * * *
 
@@ -1545,28 +1337,19 @@ supabase migration up [flags]
 
 - --db-url <string>Optional
 
-
-
 Applies migrations to the database specified by the connection string (must be percent-encoded).
 
 - --include-allOptional
-
-
 
 Include all migrations not found on remote history table.
 
 - --linkedOptional
 
-
-
 Applies pending migrations to the linked project.
 
 - --localOptional
 
-
-
 Applies pending migrations to the local database.
-
 
 * * *
 
@@ -1592,16 +1375,11 @@ supabase seed buckets
 
 - --linkedOptional
 
-
-
 Seeds the linked project.
 
 - --localOptional
 
-
-
 Seeds the local database.
-
 
 * * *
 
@@ -1660,22 +1438,15 @@ supabase inspect db calls
 
 - --db-url <string>Optional
 
-
-
 Inspect the database specified by the connection string (must be percent-encoded).
 
 - --linkedOptional
-
-
 
 Inspect the linked project.
 
 - --localOptional
 
-
-
 Inspect the local database.
-
 
 * * *
 
@@ -1704,22 +1475,15 @@ supabase inspect db long-running-queries
 
 - --db-url <string>Optional
 
-
-
 Inspect the database specified by the connection string (must be percent-encoded).
 
 - --linkedOptional
-
-
 
 Inspect the linked project.
 
 - --localOptional
 
-
-
 Inspect the local database.
-
 
 * * *
 
@@ -1753,22 +1517,15 @@ supabase inspect db outliers
 
 - --db-url <string>Optional
 
-
-
 Inspect the database specified by the connection string (must be percent-encoded).
 
 - --linkedOptional
-
-
 
 Inspect the linked project.
 
 - --localOptional
 
-
-
 Inspect the local database.
-
 
 * * *
 
@@ -1795,22 +1552,15 @@ supabase inspect db blocking
 
 - --db-url <string>Optional
 
-
-
 Inspect the database specified by the connection string (must be percent-encoded).
 
 - --linkedOptional
-
-
 
 Inspect the linked project.
 
 - --localOptional
 
-
-
 Inspect the local database.
-
 
 * * *
 
@@ -1839,22 +1589,15 @@ supabase inspect db locks
 
 - --db-url <string>Optional
 
-
-
 Inspect the database specified by the connection string (must be percent-encoded).
 
 - --linkedOptional
-
-
 
 Inspect the linked project.
 
 - --localOptional
 
-
-
 Inspect the local database.
-
 
 * * *
 
@@ -1881,22 +1624,15 @@ supabase inspect db total-index-size
 
 - --db-url <string>Optional
 
-
-
 Inspect the database specified by the connection string (must be percent-encoded).
 
 - --linkedOptional
-
-
 
 Inspect the linked project.
 
 - --localOptional
 
-
-
 Inspect the local database.
-
 
 * * *
 
@@ -1928,22 +1664,15 @@ supabase inspect db index-sizes
 
 - --db-url <string>Optional
 
-
-
 Inspect the database specified by the connection string (must be percent-encoded).
 
 - --linkedOptional
-
-
 
 Inspect the linked project.
 
 - --localOptional
 
-
-
 Inspect the local database.
-
 
 * * *
 
@@ -1975,22 +1704,15 @@ supabase inspect db index-usage
 
 - --db-url <string>Optional
 
-
-
 Inspect the database specified by the connection string (must be percent-encoded).
 
 - --linkedOptional
-
-
 
 Inspect the linked project.
 
 - --localOptional
 
-
-
 Inspect the local database.
-
 
 * * *
 
@@ -2017,22 +1739,15 @@ supabase inspect db unused-indexes
 
 - --db-url <string>Optional
 
-
-
 Inspect the database specified by the connection string (must be percent-encoded).
 
 - --linkedOptional
-
-
 
 Inspect the linked project.
 
 - --localOptional
 
-
-
 Inspect the local database.
-
 
 * * *
 
@@ -2061,22 +1776,15 @@ supabase inspect db total-table-sizes
 
 - --db-url <string>Optional
 
-
-
 Inspect the database specified by the connection string (must be percent-encoded).
 
 - --linkedOptional
-
-
 
 Inspect the linked project.
 
 - --localOptional
 
-
-
 Inspect the local database.
-
 
 * * *
 
@@ -2107,22 +1815,15 @@ supabase inspect db table-sizes
 
 - --db-url <string>Optional
 
-
-
 Inspect the database specified by the connection string (must be percent-encoded).
 
 - --linkedOptional
-
-
 
 Inspect the linked project.
 
 - --localOptional
 
-
-
 Inspect the local database.
-
 
 * * *
 
@@ -2153,22 +1854,15 @@ supabase inspect db table-index-sizes
 
 - --db-url <string>Optional
 
-
-
 Inspect the database specified by the connection string (must be percent-encoded).
 
 - --linkedOptional
-
-
 
 Inspect the linked project.
 
 - --localOptional
 
-
-
 Inspect the local database.
-
 
 * * *
 
@@ -2200,22 +1894,15 @@ supabase inspect db cache-hit
 
 - --db-url <string>Optional
 
-
-
 Inspect the database specified by the connection string (must be percent-encoded).
 
 - --linkedOptional
-
-
 
 Inspect the linked project.
 
 - --localOptional
 
-
-
 Inspect the local database.
-
 
 * * *
 
@@ -2245,22 +1932,15 @@ supabase inspect db table-record-counts
 
 - --db-url <string>Optional
 
-
-
 Inspect the database specified by the connection string (must be percent-encoded).
 
 - --linkedOptional
-
-
 
 Inspect the linked project.
 
 - --localOptional
 
-
-
 Inspect the local database.
-
 
 * * *
 
@@ -2291,22 +1971,15 @@ supabase inspect db seq-scans
 
 - --db-url <string>Optional
 
-
-
 Inspect the database specified by the connection string (must be percent-encoded).
 
 - --linkedOptional
-
-
 
 Inspect the linked project.
 
 - --localOptional
 
-
-
 Inspect the local database.
-
 
 * * *
 
@@ -2336,22 +2009,15 @@ supabase inspect db replication-slots
 
 - --db-url <string>Optional
 
-
-
 Inspect the database specified by the connection string (must be percent-encoded).
 
 - --linkedOptional
-
-
 
 Inspect the linked project.
 
 - --localOptional
 
-
-
 Inspect the local database.
-
 
 * * *
 
@@ -2360,7 +2026,7 @@ Inspect the local database.
 This command shows the number of active connections for each database roles to see which specific role might be consuming more connections than expected.
 
 This is a Supabase specific command. You can see this breakdown on the dashboard as well:
-https://app.supabase.com/project/\_/database/roles
+<https://app.supabase.com/project/\_/database/roles>
 
 The maximum number of active connections depends [on your instance size](https://supabase.com/docs/guides/platform/compute-add-ons). You can [manually overwrite](https://supabase.com/docs/guides/platform/performance#allowing-higher-number-of-connections) the allowed number of connection but it is not advised.
 
@@ -2400,22 +2066,15 @@ supabase inspect db role-connections
 
 - --db-url <string>Optional
 
-
-
 Inspect the database specified by the connection string (must be percent-encoded).
 
 - --linkedOptional
-
-
 
 Inspect the linked project.
 
 - --localOptional
 
-
-
 Inspect the local database.
-
 
 * * *
 
@@ -2447,22 +2106,15 @@ supabase inspect db bloat
 
 - --db-url <string>Optional
 
-
-
 Inspect the database specified by the connection string (must be percent-encoded).
 
 - --linkedOptional
-
-
 
 Inspect the linked project.
 
 - --localOptional
 
-
-
 Inspect the local database.
-
 
 * * *
 
@@ -2496,22 +2148,15 @@ supabase inspect db vacuum-stats
 
 - --db-url <string>Optional
 
-
-
 Inspect the database specified by the connection string (must be percent-encoded).
 
 - --linkedOptional
-
-
 
 Inspect the linked project.
 
 - --localOptional
 
-
-
 Inspect the local database.
-
 
 * * *
 
@@ -2529,28 +2174,19 @@ supabase inspect report [flags]
 
 - --output-dir <string>Optional
 
-
-
 Path to save CSV files in
 
 - --db-url <string>Optional
-
-
 
 Inspect the database specified by the connection string (must be percent-encoded).
 
 - --linkedOptional
 
-
-
 Inspect the linked project.
 
 - --localOptional
 
-
-
 Inspect the local database.
-
 
 * * *
 
@@ -2616,28 +2252,19 @@ supabase projects create [project name] [flags]
 
 - --db-password <string>Optional
 
-
-
 Database password of the project.
 
 - --org-id <string>Optional
-
-
 
 Organization ID to create the project in.
 
 - --region <string>Optional
 
-
-
 Select a region close to you for the best performance.
 
 - --size <string>Optional
 
-
-
 Select a desired instance size for your project.
-
 
 * * *
 
@@ -2669,10 +2296,7 @@ supabase projects api-keys [flags]
 
 - --project-ref <string>Optional
 
-
-
 Project ref of the Supabase project.
-
 
 * * *
 
@@ -2710,10 +2334,7 @@ supabase config push
 
 - --project-ref <string>Optional
 
-
-
 Project ref of the Supabase project.
-
 
 * * *
 
@@ -2746,34 +2367,23 @@ supabase branches create [name] [flags]
 
 - --persistentOptional
 
-
-
 Whether to create a persistent branch.
 
 - --region <string>Optional
-
-
 
 Select a region to deploy the branch database.
 
 - --size <string>Optional
 
-
-
 Select a desired instance size for the branch database.
 
 - --experimentalRequired
-
-
 
 enable experimental features
 
 - --project-ref <string>Optional
 
-
-
 Project ref of the Supabase project.
-
 
 * * *
 
@@ -2793,16 +2403,11 @@ supabase branches list
 
 - --experimentalRequired
 
-
-
 enable experimental features
 
 - --project-ref <string>Optional
 
-
-
 Project ref of the Supabase project.
-
 
 * * *
 
@@ -2822,16 +2427,11 @@ supabase branches get [branch-id]
 
 - --experimentalRequired
 
-
-
 enable experimental features
 
 - --project-ref <string>Optional
 
-
-
 Project ref of the Supabase project.
-
 
 * * *
 
@@ -2851,40 +2451,27 @@ supabase branches update [branch-id] [flags]
 
 - --git-branch <string>Optional
 
-
-
 Change the associated git branch.
 
 - --name <string>Optional
-
-
 
 Rename the preview branch.
 
 - --persistentOptional
 
-
-
 Switch between ephemeral and persistent branch.
 
 - --status <string>Optional
-
-
 
 Override the current branch status.
 
 - --experimentalRequired
 
-
-
 enable experimental features
 
 - --project-ref <string>Optional
 
-
-
 Project ref of the Supabase project.
-
 
 * * *
 
@@ -2904,16 +2491,11 @@ supabase branches delete [branch-id]
 
 - --experimentalRequired
 
-
-
 enable experimental features
 
 - --project-ref <string>Optional
 
-
-
 Project ref of the Supabase project.
-
 
 * * *
 
@@ -2933,16 +2515,11 @@ supabase branches disable
 
 - --experimentalRequired
 
-
-
 enable experimental features
 
 - --project-ref <string>Optional
 
-
-
 Project ref of the Supabase project.
-
 
 * * *
 
@@ -2987,10 +2564,7 @@ supabase functions list [flags]
 
 - --project-ref <string>Optional
 
-
-
 Project ref of the Supabase project.
-
 
 * * *
 
@@ -3010,16 +2584,11 @@ supabase functions download <Function name> [flags]
 
 - --legacy-bundleOptional
 
-
-
 Use legacy bundling mechanism.
 
 - --project-ref <string>Optional
 
-
-
 Project ref of the Supabase project.
-
 
 * * *
 
@@ -3062,40 +2631,27 @@ supabase functions serve [flags]
 
 - --env-file <string>Optional
 
-
-
 Path to an env file to be populated to the Function environment.
 
 - --import-map <string>Optional
-
-
 
 Path to import map file.
 
 - --inspectOptional
 
-
-
 Alias of --inspect-mode brk.
 
 - --inspect-mainOptional
-
-
 
 Allow inspecting the main worker.
 
 - --inspect-mode <\[ run \| brk \| wait \]>Optional
 
-
-
 Activate inspector capability for debugging.
 
 - --no-verify-jwtOptional
 
-
-
 Disable JWT verification for the Function.
-
 
 * * *
 
@@ -3115,40 +2671,27 @@ supabase functions deploy [Function name] [flags]
 
 - --import-map <string>Optional
 
-
-
 Path to import map file.
 
 - -j, --jobs <uint>Optional
-
-
 
 Maximum number of parallel jobs.
 
 - --no-verify-jwtOptional
 
-
-
 Disable JWT verification for the Function.
 
 - --project-ref <string>Optional
-
-
 
 Project ref of the Supabase project.
 
 - --use-apiOptional
 
-
-
 Use Management API to bundle functions.
 
 - --use-dockerOptional
 
-
-
 Use Docker to bundle functions.
-
 
 * * *
 
@@ -3168,10 +2711,7 @@ supabase functions delete <Function name> [flags]
 
 - --project-ref <string>Optional
 
-
-
 Project ref of the Supabase project.
-
 
 * * *
 
@@ -3201,16 +2741,11 @@ supabase secrets set <NAME=VALUE> ... [flags]
 
 - --env-file <string>Optional
 
-
-
 Read secrets from a .env file.
 
 - --project-ref <string>Optional
 
-
-
 Project ref of the Supabase project.
-
 
 * * *
 
@@ -3230,10 +2765,7 @@ supabase secrets list
 
 - --project-ref <string>Optional
 
-
-
 Project ref of the Supabase project.
-
 
 * * *
 
@@ -3253,10 +2785,7 @@ supabase secrets unset [NAME] ...
 
 - --project-ref <string>Optional
 
-
-
 Project ref of the Supabase project.
-
 
 * * *
 
@@ -3285,28 +2814,19 @@ supabase storage ls [path] [flags]
 
 - -r, --recursiveOptional
 
-
-
 Recursively list a directory.
 
 - --experimentalRequired
-
-
 
 enable experimental features
 
 - --linkedOptional
 
-
-
 Connects to Storage API of the linked project.
 
 - --localOptional
 
-
-
 Connects to Storage API of the local database.
-
 
 * * *
 
@@ -3324,46 +2844,31 @@ supabase storage cp <src> <dst> [flags]
 
 - --cache-control <string>Optional
 
-
-
 Custom Cache-Control header for HTTP upload.
 
 - --content-type <string>Optional
-
-
 
 Custom Content-Type header for HTTP upload.
 
 - -j, --jobs <uint>Optional
 
-
-
 Maximum number of parallel jobs.
 
 - -r, --recursiveOptional
-
-
 
 Recursively copy a directory.
 
 - --experimentalRequired
 
-
-
 enable experimental features
 
 - --linkedOptional
-
-
 
 Connects to Storage API of the linked project.
 
 - --localOptional
 
-
-
 Connects to Storage API of the local database.
-
 
 * * *
 
@@ -3381,28 +2886,19 @@ supabase storage mv <src> <dst> [flags]
 
 - -r, --recursiveOptional
 
-
-
 Recursively move a directory.
 
 - --experimentalRequired
-
-
 
 enable experimental features
 
 - --linkedOptional
 
-
-
 Connects to Storage API of the linked project.
 
 - --localOptional
 
-
-
 Connects to Storage API of the local database.
-
 
 * * *
 
@@ -3420,28 +2916,19 @@ supabase storage rm <file> ... [flags]
 
 - -r, --recursiveOptional
 
-
-
 Recursively remove a directory.
 
 - --experimentalRequired
-
-
 
 enable experimental features
 
 - --linkedOptional
 
-
-
 Connects to Storage API of the linked project.
 
 - --localOptional
 
-
-
 Connects to Storage API of the local database.
-
 
 * * *
 
@@ -3468,10 +2955,7 @@ supabase encryption get-root-key
 
 - --project-ref <string>Optional
 
-
-
 Project ref of the Supabase project.
-
 
 * * *
 
@@ -3489,10 +2973,7 @@ supabase encryption update-root-key
 
 - --project-ref <string>Optional
 
-
-
 Project ref of the Supabase project.
-
 
 * * *
 
@@ -3525,46 +3006,31 @@ supabase sso add [flags]
 
 - --attribute-mapping-file <string>Optional
 
-
-
 File containing a JSON mapping between SAML attributes to custom JWT claims.
 
 - --domains <strings>Optional
-
-
 
 Comma separated list of email domains to associate with the added identity provider.
 
 - --metadata-file <string>Optional
 
-
-
 File containing a SAML 2.0 Metadata XML document describing the identity provider.
 
 - --metadata-url <string>Optional
-
-
 
 URL pointing to a SAML 2.0 Metadata XML document describing the identity provider.
 
 - --skip-url-validationOptional
 
-
-
 Whether local validation of the SAML 2.0 Metadata URL should not be performed.
 
 - -t, --type <\[ saml \]>Required
-
-
 
 Type of identity provider (according to supported protocol).
 
 - --project-ref <string>Optional
 
-
-
 Project ref of the Supabase project.
-
 
 Add with Metadata URLAdd with Metadata File
 
@@ -3606,10 +3072,7 @@ supabase sso list
 
 - --project-ref <string>Optional
 
-
-
 Project ref of the Supabase project.
-
 
 * * *
 
@@ -3629,16 +3092,11 @@ supabase sso show <provider-id> [flags]
 
 - --metadataOptional
 
-
-
 Show SAML 2.0 XML Metadata only
 
 - --project-ref <string>Optional
 
-
-
 Project ref of the Supabase project.
-
 
 Show informationGet raw SAML 2.0 Metadata XML
 
@@ -3675,10 +3133,7 @@ supabase sso info
 
 - --project-ref <string>Optional
 
-
-
 Project ref of the Supabase project.
-
 
 Show project information
 
@@ -3714,52 +3169,35 @@ supabase sso update <provider-id> [flags]
 
 - --add-domains <strings>Optional
 
-
-
 Add this comma separated list of email domains to the identity provider.
 
 - --attribute-mapping-file <string>Optional
-
-
 
 File containing a JSON mapping between SAML attributes to custom JWT claims.
 
 - --domains <strings>Optional
 
-
-
 Replace domains with this comma separated list of email domains.
 
 - --metadata-file <string>Optional
-
-
 
 File containing a SAML 2.0 Metadata XML document describing the identity provider.
 
 - --metadata-url <string>Optional
 
-
-
 URL pointing to a SAML 2.0 Metadata XML document describing the identity provider.
 
 - --remove-domains <strings>Optional
-
-
 
 Remove this comma separated list of email domains from the identity provider.
 
 - --skip-url-validationOptional
 
-
-
 Whether local validation of the SAML 2.0 Metadata URL should not be performed.
 
 - --project-ref <string>Optional
 
-
-
 Project ref of the Supabase project.
-
 
 Replace domainsAdd an additional domainRemove a domain
 
@@ -3797,10 +3235,7 @@ supabase sso remove <provider-id>
 
 - --project-ref <string>Optional
 
-
-
 Project ref of the Supabase project.
-
 
 Remove a provider
 
@@ -3858,16 +3293,11 @@ supabase domains activate
 
 - --include-raw-outputOptional
 
-
-
 Include raw output (useful for debugging).
 
 - --project-ref <string>Optional
 
-
-
 Project ref of the Supabase project.
-
 
 * * *
 
@@ -3889,22 +3319,15 @@ supabase domains create [flags]
 
 - --custom-hostname <string>Optional
 
-
-
 The custom hostname to use for your Supabase project.
 
 - --include-raw-outputOptional
-
-
 
 Include raw output (useful for debugging).
 
 - --project-ref <string>Optional
 
-
-
 Project ref of the Supabase project.
-
 
 * * *
 
@@ -3924,16 +3347,11 @@ supabase domains get
 
 - --include-raw-outputOptional
 
-
-
 Include raw output (useful for debugging).
 
 - --project-ref <string>Optional
 
-
-
 Project ref of the Supabase project.
-
 
 * * *
 
@@ -3951,16 +3369,11 @@ supabase domains reverify
 
 - --include-raw-outputOptional
 
-
-
 Include raw output (useful for debugging).
 
 - --project-ref <string>Optional
 
-
-
 Project ref of the Supabase project.
-
 
 * * *
 
@@ -3978,16 +3391,11 @@ supabase domains delete
 
 - --include-raw-outputOptional
 
-
-
 Include raw output (useful for debugging).
 
 - --project-ref <string>Optional
 
-
-
 Project ref of the Supabase project.
-
 
 * * *
 
@@ -4025,22 +3433,15 @@ supabase vanity-subdomains activate [flags]
 
 - --desired-subdomain <string>Optional
 
-
-
 The desired vanity subdomain to use for your Supabase project.
 
 - --experimentalRequired
-
-
 
 enable experimental features
 
 - --project-ref <string>Optional
 
-
-
 Project ref of the Supabase project.
-
 
 * * *
 
@@ -4058,16 +3459,11 @@ supabase vanity-subdomains get
 
 - --experimentalRequired
 
-
-
 enable experimental features
 
 - --project-ref <string>Optional
 
-
-
 Project ref of the Supabase project.
-
 
 * * *
 
@@ -4085,22 +3481,15 @@ supabase vanity-subdomains check-availability [flags]
 
 - --desired-subdomain <string>Optional
 
-
-
 The desired vanity subdomain to use for your Supabase project.
 
 - --experimentalRequired
-
-
 
 enable experimental features
 
 - --project-ref <string>Optional
 
-
-
 Project ref of the Supabase project.
-
 
 * * *
 
@@ -4120,16 +3509,11 @@ supabase vanity-subdomains delete
 
 - --experimentalRequired
 
-
-
 enable experimental features
 
 - --project-ref <string>Optional
 
-
-
 Project ref of the Supabase project.
-
 
 * * *
 
@@ -4160,16 +3544,11 @@ supabase network-bans get
 
 - --experimentalRequired
 
-
-
 enable experimental features
 
 - --project-ref <string>Optional
 
-
-
 Project ref of the Supabase project.
-
 
 * * *
 
@@ -4187,22 +3566,15 @@ supabase network-bans remove [flags]
 
 - --db-unban-ip <strings>Optional
 
-
-
 IP to allow DB connections from.
 
 - --experimentalRequired
-
-
 
 enable experimental features
 
 - --project-ref <string>Optional
 
-
-
 Project ref of the Supabase project.
-
 
 * * *
 
@@ -4229,16 +3601,11 @@ supabase network-restrictions get
 
 - --experimentalRequired
 
-
-
 enable experimental features
 
 - --project-ref <string>Optional
 
-
-
 Project ref of the Supabase project.
-
 
 * * *
 
@@ -4256,28 +3623,19 @@ supabase network-restrictions update [flags]
 
 - --bypass-cidr-checksOptional
 
-
-
 Bypass some of the CIDR validation checks.
 
 - --db-allow-cidr <strings>Optional
-
-
 
 CIDR to allow DB connections from.
 
 - --experimentalRequired
 
-
-
 enable experimental features
 
 - --project-ref <string>Optional
 
-
-
 Project ref of the Supabase project.
-
 
 * * *
 
@@ -4304,16 +3662,11 @@ supabase ssl-enforcement get
 
 - --experimentalRequired
 
-
-
 enable experimental features
 
 - --project-ref <string>Optional
 
-
-
 Project ref of the Supabase project.
-
 
 * * *
 
@@ -4331,28 +3684,19 @@ supabase ssl-enforcement update [flags]
 
 - --disable-db-ssl-enforcementOptional
 
-
-
 Whether the DB should disable SSL enforcement for all external connections.
 
 - --enable-db-ssl-enforcementOptional
-
-
 
 Whether the DB should enable SSL enforcement for all external connections.
 
 - --experimentalRequired
 
-
-
 enable experimental features
 
 - --project-ref <string>Optional
 
-
-
 Project ref of the Supabase project.
-
 
 * * *
 
@@ -4380,16 +3724,11 @@ supabase postgres-config get
 
 - --experimentalRequired
 
-
-
 enable experimental features
 
 - --project-ref <string>Optional
 
-
-
 Project ref of the Supabase project.
-
 
 * * *
 
@@ -4410,34 +3749,23 @@ supabase postgres-config update [flags]
 
 - --config <strings>Optional
 
-
-
 Config overrides specified as a 'key=value' pair
 
 - --no-restartOptional
-
-
 
 Do not restart the database after updating config.
 
 - --replace-existing-overridesOptional
 
-
-
 If true, replaces all existing overrides with the ones provided. If false (default), merges existing overrides with the ones provided.
 
 - --experimentalRequired
-
-
 
 enable experimental features
 
 - --project-ref <string>Optional
 
-
-
 Project ref of the Supabase project.
-
 
 * * *
 
@@ -4457,28 +3785,19 @@ supabase postgres-config delete [flags]
 
 - --config <strings>Optional
 
-
-
 Config keys to delete (comma-separated)
 
 - --no-restartOptional
-
-
 
 Do not restart the database after deleting config.
 
 - --experimentalRequired
 
-
-
 enable experimental features
 
 - --project-ref <string>Optional
 
-
-
 Project ref of the Supabase project.
-
 
 * * *
 
@@ -4507,10 +3826,7 @@ supabase snippets list
 
 - --project-ref <string>Optional
 
-
-
 Project ref of the Supabase project.
-
 
 * * *
 
@@ -4530,10 +3846,7 @@ supabase snippets download <snippet-id>
 
 - --project-ref <string>Optional
 
-
-
 Project ref of the Supabase project.
-
 
 * * *
 
@@ -4584,14 +3897,14 @@ source <(supabase completion zsh)
 
 To load completions for every new session, execute once:
 
-#### Linux:
+#### Linux
 
 ```
 supabase completion zsh > "${fpath[1]}/_supabase"
 
 ```
 
-#### macOS:
+#### macOS
 
 ```
 supabase completion zsh > $(brew --prefix)/share/zsh/site-functions/_supabase
@@ -4612,10 +3925,7 @@ supabase completion zsh [flags]
 
 - --no-descriptionsOptional
 
-
-
 disable completion descriptions
-
 
 * * *
 
@@ -4645,10 +3955,7 @@ supabase completion powershell [flags]
 
 - --no-descriptionsOptional
 
-
-
 disable completion descriptions
-
 
 * * *
 
@@ -4684,10 +3991,7 @@ supabase completion fish [flags]
 
 - --no-descriptionsOptional
 
-
-
 disable completion descriptions
-
 
 * * *
 
@@ -4707,14 +4011,14 @@ source <(supabase completion bash)
 
 To load completions for every new session, execute once:
 
-#### Linux:
+#### Linux
 
 ```
 supabase completion bash > /etc/bash_completion.d/supabase
 
 ```
 
-#### macOS:
+#### macOS
 
 ```
 supabase completion bash > $(brew --prefix)/etc/bash_completion.d/supabase
@@ -4735,19 +4039,10 @@ supabase completion bash
 
 - --no-descriptionsOptional
 
-
-
 disable completion descriptions
-
 
 1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
 
-
-
    [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
-
-
-
-
 
    AcceptOpt outPrivacy settings

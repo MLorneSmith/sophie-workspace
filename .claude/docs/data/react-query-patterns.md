@@ -9,7 +9,10 @@ SlideHeroes uses React Query with the standard MakerKit configuration:
 'use client';
 
 import { useState } from 'react';
+
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+// apps/web/components/react-query-provider.tsx
 
 export function ReactQueryProvider(props: React.PropsWithChildren) {
   const [queryClient] = useState(
@@ -36,17 +39,19 @@ export function ReactQueryProvider(props: React.PropsWithChildren) {
 
 ```tsx
 import { useQuery } from '@tanstack/react-query';
+
 import { useSupabase } from '@kit/supabase/hooks/use-supabase';
 
 function useCourses() {
   const supabase = useSupabase();
-  
+
   return useQuery({
     queryKey: ['courses'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('courses')
-        .select(`
+        .select(
+          `
           id,
           title,
           slug,
@@ -54,11 +59,12 @@ function useCourses() {
           status,
           difficulty,
           estimated_duration
-        `)
+        `,
+        )
         .eq('status', 'published')
         .order('created_at', { ascending: false })
         .throwOnError();
-        
+
       return data;
     },
   });
@@ -70,6 +76,7 @@ function useCourses() {
 Follow consistent patterns for query keys based on our content structure:
 
 ### Course System
+
 - `['courses']` - All courses
 - `['courses', courseId]` - Single course
 - `['courses', courseId, 'lessons']` - Course lessons
@@ -78,11 +85,13 @@ Follow consistent patterns for query keys based on our content structure:
 - `['quizzes', quizId]` - Single quiz
 
 ### User Progress
+
 - `['course-progress', userId]` - User's course progress
 - `['course-progress', userId, courseId]` - Progress for specific course
 - `['certificates', userId]` - User's certificates
 
 ### Account Management
+
 - `['accounts', accountId]` - Account details
 - `['accounts', accountId, 'memberships']` - Account memberships
 - `['accounts', accountId, 'subscriptions']` - Account subscriptions
@@ -92,21 +101,21 @@ Follow consistent patterns for query keys based on our content structure:
 SlideHeroes integrates React Query with MakerKit server actions:
 
 ```tsx
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { updateCourseProgressAction } from '@/app/actions/course-progress';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 function useUpdateCourseProgress() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: updateCourseProgressAction,
     onSuccess: (_, variables) => {
       // Invalidate related queries
-      queryClient.invalidateQueries({ 
-        queryKey: ['course-progress', variables.userId] 
+      queryClient.invalidateQueries({
+        queryKey: ['course-progress', variables.userId],
       });
-      queryClient.invalidateQueries({ 
-        queryKey: ['course-progress', variables.userId, variables.courseId] 
+      queryClient.invalidateQueries({
+        queryKey: ['course-progress', variables.userId, variables.courseId],
       });
     },
     onError: (error) => {
@@ -118,7 +127,7 @@ function useUpdateCourseProgress() {
 // Usage in component
 function LessonCompleteButton({ lessonId, courseId }: Props) {
   const updateProgress = useUpdateCourseProgress();
-  
+
   const handleComplete = () => {
     updateProgress.mutate({
       lessonId,
@@ -128,10 +137,7 @@ function LessonCompleteButton({ lessonId, courseId }: Props) {
   };
 
   return (
-    <button 
-      onClick={handleComplete}
-      disabled={updateProgress.isPending}
-    >
+    <button onClick={handleComplete} disabled={updateProgress.isPending}>
       {updateProgress.isPending ? 'Saving...' : 'Mark Complete'}
     </button>
   );
@@ -145,7 +151,7 @@ function LessonCompleteButton({ lessonId, courseId }: Props) {
 ```tsx
 function useCourseWithLessons(courseId: string) {
   const supabase = useSupabase();
-  
+
   return useQuery({
     queryKey: ['courses', courseId, 'with-lessons'],
     queryFn: async () => {
@@ -165,10 +171,10 @@ function useCourseWithLessons(courseId: string) {
           .in('id', course.course_lessons)
           .order('order_index')
           .throwOnError();
-        
+
         return { ...course, lessons };
       }
-      
+
       return { ...course, lessons: [] };
     },
     enabled: !!courseId,
@@ -185,7 +191,9 @@ function usePayloadContent<T>(collection: string, slug?: string) {
   return useQuery({
     queryKey: [collection, slug],
     queryFn: async () => {
-      const response = await fetch(`/api/payload/${collection}${slug ? `/${slug}` : ''}`);
+      const response = await fetch(
+        `/api/payload/${collection}${slug ? `/${slug}` : ''}`,
+      );
       if (!response.ok) throw new Error('Failed to fetch content');
       return response.json() as T;
     },
@@ -209,9 +217,15 @@ function usePosts() {
 function useOptimisticLessonComplete() {
   const queryClient = useQueryClient();
   const supabase = useSupabase();
-  
+
   return useMutation({
-    mutationFn: async ({ lessonId, courseId }: { lessonId: string; courseId: string }) => {
+    mutationFn: async ({
+      lessonId,
+      courseId,
+    }: {
+      lessonId: string;
+      courseId: string;
+    }) => {
       const { error } = await supabase
         .from('course_progress')
         .upsert({
@@ -224,16 +238,16 @@ function useOptimisticLessonComplete() {
     },
     onMutate: async (variables) => {
       // Cancel outgoing refetches
-      await queryClient.cancelQueries({ 
-        queryKey: ['course-progress', variables.courseId] 
+      await queryClient.cancelQueries({
+        queryKey: ['course-progress', variables.courseId],
       });
-      
+
       // Snapshot previous value
       const previousProgress = queryClient.getQueryData([
-        'course-progress', 
-        variables.courseId
+        'course-progress',
+        variables.courseId,
       ]);
-      
+
       // Optimistically update
       queryClient.setQueryData(
         ['course-progress', variables.courseId],
@@ -246,9 +260,9 @@ function useOptimisticLessonComplete() {
               completed_at: new Date().toISOString(),
             },
           },
-        })
+        }),
       );
-      
+
       return { previousProgress };
     },
     onError: (err, variables, context) => {
@@ -256,14 +270,14 @@ function useOptimisticLessonComplete() {
       if (context?.previousProgress) {
         queryClient.setQueryData(
           ['course-progress', variables.courseId],
-          context.previousProgress
+          context.previousProgress,
         );
       }
     },
     onSettled: (_, __, variables) => {
       // Always refetch after completion
-      queryClient.invalidateQueries({ 
-        queryKey: ['course-progress', variables.courseId] 
+      queryClient.invalidateQueries({
+        queryKey: ['course-progress', variables.courseId],
       });
     },
   });
@@ -277,14 +291,15 @@ SlideHeroes uses account-based access patterns:
 ```tsx
 function useAccountCourses(accountId: string) {
   const supabase = useSupabase();
-  
+
   return useQuery({
     queryKey: ['accounts', accountId, 'courses'],
     queryFn: async () => {
       // Get account's course progress and join with course data
       const { data } = await supabase
         .from('course_progress')
-        .select(`
+        .select(
+          `
           *,
           course:courses(
             id,
@@ -293,10 +308,11 @@ function useAccountCourses(accountId: string) {
             description,
             featured_image_id
           )
-        `)
+        `,
+        )
         .eq('account_id', accountId)
         .throwOnError();
-      
+
       return data;
     },
     enabled: !!accountId,
@@ -316,14 +332,14 @@ function useCourseWithErrorHandling(courseId: string) {
         .select('*')
         .eq('id', courseId)
         .single();
-      
+
       if (error) {
         if (error.code === 'PGRST116') {
           throw new Error('Course not found');
         }
         throw new Error(`Failed to load course: ${error.message}`);
       }
-      
+
       return data;
     },
     retry: (failureCount, error) => {
@@ -343,7 +359,7 @@ function useCourseWithErrorHandling(courseId: string) {
 function usePrefetchCourse() {
   const queryClient = useQueryClient();
   const supabase = useSupabase();
-  
+
   return (courseId: string) => {
     queryClient.prefetchQuery({
       queryKey: ['courses', courseId],
@@ -364,7 +380,7 @@ function usePrefetchCourse() {
 // Usage in navigation component
 function CourseCard({ course }: { course: Course }) {
   const prefetchCourse = usePrefetchCourse();
-  
+
   return (
     <Link
       href={`/courses/${course.slug}`}
@@ -382,13 +398,13 @@ function CourseCard({ course }: { course: Course }) {
 ```tsx
 function useInfinitePosts() {
   const supabase = useSupabase();
-  
+
   return useInfiniteQuery({
     queryKey: ['posts', 'infinite'],
     queryFn: async ({ pageParam = 0 }) => {
       const from = pageParam * 10;
       const to = from + 9;
-      
+
       const { data } = await supabase
         .from('posts')
         .select('*')
@@ -396,7 +412,7 @@ function useInfinitePosts() {
         .order('published_at', { ascending: false })
         .range(from, to)
         .throwOnError();
-      
+
       return data;
     },
     getNextPageParam: (lastPage, allPages) => {
@@ -417,7 +433,7 @@ function CourseDetails({ courseId }: { courseId: string }) {
     queryKey: ['courses', courseId],
     queryFn: () => fetchCourse(courseId),
   });
-  
+
   return (
     <div>
       <h1>{course.title}</h1>
@@ -442,7 +458,7 @@ function CourseDetailPage({ courseId }: { courseId: string }) {
 function useCourseProgressRealtime(courseId: string) {
   const supabase = useSupabase();
   const queryClient = useQueryClient();
-  
+
   const query = useQuery({
     queryKey: ['course-progress', courseId],
     queryFn: async () => {
@@ -454,7 +470,7 @@ function useCourseProgressRealtime(courseId: string) {
       return data;
     },
   });
-  
+
   useEffect(() => {
     const channel = supabase
       .channel(`course-progress-${courseId}`)
@@ -467,18 +483,18 @@ function useCourseProgressRealtime(courseId: string) {
           filter: `course_id=eq.${courseId}`,
         },
         () => {
-          queryClient.invalidateQueries({ 
-            queryKey: ['course-progress', courseId] 
+          queryClient.invalidateQueries({
+            queryKey: ['course-progress', courseId],
           });
-        }
+        },
       )
       .subscribe();
-    
+
     return () => {
       supabase.removeChannel(channel);
     };
   }, [courseId, supabase, queryClient]);
-  
+
   return query;
 }
 ```

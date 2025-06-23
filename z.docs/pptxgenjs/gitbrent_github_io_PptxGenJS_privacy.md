@@ -96,4 +96,4 @@ For any questions or concerns regarding your privacy, you may contact us using t
 
 Brent Ely
 
-gitbrent@users.noreply.github.com
+<gitbrent@users.noreply.github.com>

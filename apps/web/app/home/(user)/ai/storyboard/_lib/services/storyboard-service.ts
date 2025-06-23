@@ -6,6 +6,7 @@ import { getSupabaseServerClient } from "@kit/supabase/server-client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
+import type { Json } from "~/lib/database.types";
 import type { BuildingBlocksSubmission, StoryboardData } from "../types";
 import { TipTapTransformer } from "./tiptap-transformer";
 
@@ -134,7 +135,8 @@ export const getPresentationAction = enhanceAction(
 			}
 
 			// Type-cast the presentation data to our known type
-			const typedPresentation = presentation as BuildingBlocksSubmission;
+			const typedPresentation =
+				presentation as unknown as BuildingBlocksSubmission;
 
 			// If we have a presentation but no storyboard, generate one
 			if (
@@ -159,7 +161,7 @@ export const getPresentationAction = enhanceAction(
 						await supabase
 							.from("building_blocks_submissions")
 							.update({
-								storyboard: storyboard as any,
+								storyboard: storyboard as unknown as Json,
 							})
 							.eq("id", data.presentationId);
 					} catch (_saveError) {
@@ -237,7 +239,7 @@ export const saveStoryboardAction = enhanceAction(
 			const { error } = await supabase
 				.from("building_blocks_submissions")
 				.update({
-					storyboard: data.storyboard as any,
+					storyboard: data.storyboard as unknown as Json,
 				})
 				.eq("id", data.presentationId);
 

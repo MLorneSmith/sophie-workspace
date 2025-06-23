@@ -3,7 +3,12 @@
  * Tests pure transformation functions for converting TipTap documents to storyboard format
  */
 
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import type {
+	TipTapDocument,
+	TipTapNode,
+	TipTapTextNode,
+} from "../types/index";
 // Import the class to test
 import { TipTapTransformer } from "./tiptap-transformer";
 
@@ -45,8 +50,9 @@ describe("TipTapTransformer", () => {
 			// Assert
 			expect(result.title).toBe("Main Title");
 			expect(result.slides).toHaveLength(1);
-			expect(result.slides[0].headline).toBe("Main Title");
-			expect(result.slides[0].storyboard.layoutId).toBe("title");
+			expect(result.slides[0]).toBeDefined();
+			expect(result.slides[0]?.title).toBe("Main Title");
+			expect(result.slides[0]?.layoutId).toBe("title");
 		});
 
 		it("should transform a JSON string document", () => {
@@ -80,7 +86,7 @@ describe("TipTapTransformer", () => {
 			// Assert
 			expect(result.title).toBe("Fallback Title");
 			expect(result.slides).toHaveLength(1);
-			expect(result.slides[0].headline).toBe("Untitled Presentation"); // Uses document meta or default
+			expect(result.slides[0]?.title).toBe("Untitled Presentation"); // Uses document meta or default
 			// biome-ignore lint/suspicious/noConsole: Test assertion for console.error mock
 			expect(console.error).toHaveBeenCalledWith(
 				"Error parsing TipTap document:",
@@ -136,9 +142,9 @@ describe("TipTapTransformer", () => {
 
 			// Assert
 			expect(result.slides).toHaveLength(3);
-			expect(result.slides[0].headline).toBe("Title Slide");
-			expect(result.slides[1].headline).toBe("Section 1");
-			expect(result.slides[2].headline).toBe("Section 2");
+			expect(result.slides[0]?.title).toBe("Title Slide");
+			expect(result.slides[1]?.title).toBe("Section 1");
+			expect(result.slides[2]?.title).toBe("Section 2");
 		});
 
 		it("should handle empty document", () => {
@@ -151,7 +157,7 @@ describe("TipTapTransformer", () => {
 			// Assert
 			expect(result.title).toBe("Untitled Presentation");
 			expect(result.slides).toHaveLength(1);
-			expect(result.slides[0].storyboard.layoutId).toBe("title");
+			expect(result.slides[0]?.layoutId).toBe("title");
 		});
 	});
 
@@ -192,11 +198,8 @@ describe("TipTapTransformer", () => {
 
 			// Assert
 			expect(result.slides).toHaveLength(1);
-			expect(result.slides[0].storyboard.layoutId).toBe("two-column");
-			expect(result.slides[0].storyboard.subHeadlines).toEqual([
-				"Column 1",
-				"Column 2",
-			]);
+			expect(result.slides[0]?.layoutId).toBe("two-column");
+			expect(result.slides[0]?.subheadlines).toEqual(["Column 1", "Column 2"]);
 		});
 
 		it("should detect three-column layout from three level 3 headings", () => {
@@ -231,8 +234,8 @@ describe("TipTapTransformer", () => {
 			const result = TipTapTransformer.transform(tipTapDoc);
 
 			// Assert
-			expect(result.slides[0].storyboard.layoutId).toBe("three-column");
-			expect(result.slides[0].storyboard.subHeadlines).toEqual([
+			expect(result.slides[0]?.layoutId).toBe("three-column");
+			expect(result.slides[0]?.subheadlines).toEqual([
 				"Col 1",
 				"Col 2",
 				"Col 3",
@@ -297,7 +300,7 @@ describe("TipTapTransformer", () => {
 			const result = TipTapTransformer.transform(tipTapDoc);
 
 			// Assert
-			expect(result.slides[0].storyboard.layoutId).toBe("bullet-list");
+			expect(result.slides[0]?.layoutId).toBe("bullet-list");
 		});
 
 		it("should detect chart layout from numerical content", () => {
@@ -326,7 +329,7 @@ describe("TipTapTransformer", () => {
 			const result = TipTapTransformer.transform(tipTapDoc);
 
 			// Assert
-			expect(result.slides[0].storyboard.layoutId).toBe("chart");
+			expect(result.slides[0]?.layoutId).toBe("chart");
 		});
 	});
 
@@ -354,7 +357,7 @@ describe("TipTapTransformer", () => {
 			// Assert
 			// Layout detection prioritizes paragraph content over chart detection
 			// So this becomes "content" layout instead of "chart"
-			expect(result.slides[0].storyboard.layoutId).toBe("content");
+			expect(result.slides[0]?.layoutId).toBe("content");
 		});
 
 		it("should detect multiple numbers as potential data", () => {
@@ -380,7 +383,7 @@ describe("TipTapTransformer", () => {
 			const result = TipTapTransformer.transform(tipTapDoc);
 
 			// Assert
-			expect(result.slides[0].storyboard.layoutId).toBe("chart");
+			expect(result.slides[0]?.layoutId).toBe("chart");
 		});
 
 		it("should detect trend keywords", () => {
@@ -409,7 +412,7 @@ describe("TipTapTransformer", () => {
 			const result = TipTapTransformer.transform(tipTapDoc);
 
 			// Assert
-			expect(result.slides[0].storyboard.layoutId).toBe("chart");
+			expect(result.slides[0]?.layoutId).toBe("chart");
 		});
 	});
 
@@ -505,7 +508,7 @@ describe("TipTapTransformer", () => {
 
 			// Assert
 			expect(result.slides).toHaveLength(1);
-			expect(result.slides[0].headline).toBe("Nested List");
+			expect(result.slides[0]?.title).toBe("Nested List");
 		});
 
 		it("should handle ordered lists", () => {
@@ -549,7 +552,7 @@ describe("TipTapTransformer", () => {
 
 			// Assert
 			expect(result.slides).toHaveLength(1);
-			expect(result.slides[0].headline).toBe("Ordered List");
+			expect(result.slides[0]?.title).toBe("Ordered List");
 		});
 
 		it("should extract text from complex nested structures", () => {
@@ -670,19 +673,19 @@ describe("TipTapTransformer", () => {
 
 			// Assert
 			expect(result.slides).toHaveLength(1);
-			expect(result.slides[0].storyboard.layoutId).toBe("title");
+			expect(result.slides[0]?.layoutId).toBe("title");
 		});
 
 		it("should handle nodes without content property", () => {
 			// Arrange
-			const tipTapDoc = {
-				type: "doc" as const,
+			const tipTapDoc: TipTapDocument = {
+				type: "doc",
 				content: [
 					{
 						type: "heading",
 						attrs: { level: 1 },
 						// missing content property
-					} as unknown,
+					} as TipTapNode,
 				],
 			};
 
@@ -695,23 +698,28 @@ describe("TipTapTransformer", () => {
 
 		it("should handle very deep nesting without stack overflow", () => {
 			// Arrange
-			let deepContent: unknown = { type: "text", text: "deep content" };
+			let deepContent: TipTapNode | TipTapTextNode = {
+				type: "text",
+				text: "deep content",
+			} as TipTapTextNode;
 			for (let i = 0; i < 100; i++) {
 				deepContent = {
 					type: "paragraph",
-					content: [deepContent],
-				};
+					content: [deepContent as TipTapNode],
+				} as TipTapNode;
 			}
 
-			const tipTapDoc = {
-				type: "doc" as const,
+			const tipTapDoc: TipTapDocument = {
+				type: "doc",
 				content: [
 					{
 						type: "heading",
 						attrs: { level: 1 },
-						content: [{ type: "text", text: "Deep Test" }],
-					},
-					deepContent,
+						content: [
+							{ type: "text", text: "Deep Test" } as unknown as TipTapNode,
+						],
+					} as TipTapNode,
+					deepContent as TipTapNode,
 				],
 			};
 
@@ -721,17 +729,19 @@ describe("TipTapTransformer", () => {
 
 		it("should handle null/undefined values gracefully", () => {
 			// Arrange
-			const tipTapDoc = {
-				type: "doc" as const,
+			const tipTapDoc: TipTapDocument = {
+				type: "doc",
 				content: [
 					null,
 					{
 						type: "heading",
 						attrs: { level: 1 },
-						content: [{ type: "text", text: "Valid Title" }],
-					},
+						content: [
+							{ type: "text", text: "Valid Title" } as unknown as TipTapNode,
+						],
+					} as TipTapNode,
 					undefined,
-				].filter(Boolean),
+				].filter(Boolean) as TipTapNode[],
 			};
 
 			// Act
@@ -794,7 +804,7 @@ describe("TipTapTransformer", () => {
 
 			// Assert
 			expect(result.slides).toHaveLength(1);
-			expect(result.slides[0].headline).toBe("Section");
+			expect(result.slides[0]?.title).toBe("Section");
 		});
 	});
 
@@ -816,7 +826,7 @@ describe("TipTapTransformer", () => {
 
 			// Assert
 			expect(result.slides).toHaveLength(1);
-			expect(result.slides[0].headline).toBe("Meta Title");
+			expect(result.slides[0]?.title).toBe("Meta Title");
 		});
 
 		it("should prioritize parameter title over meta sectionType", () => {
@@ -862,7 +872,7 @@ describe("TipTapTransformer", () => {
 			const result = TipTapTransformer.transform(tipTapDoc);
 
 			// Assert
-			expect(result.slides[0].storyboard.subHeadlines).toHaveLength(1);
+			expect(result.slides[0]?.subheadlines).toHaveLength(1);
 		});
 
 		it("should truncate excess subheadlines", () => {
@@ -907,9 +917,9 @@ describe("TipTapTransformer", () => {
 			const result = TipTapTransformer.transform(tipTapDoc);
 
 			// Assert
-			expect(result.slides[0].storyboard.layoutId).toBe("three-column");
-			expect(result.slides[0].storyboard.subHeadlines).toHaveLength(3);
-			expect(result.slides[0].storyboard.subHeadlines).toEqual([
+			expect(result.slides[0]?.layoutId).toBe("three-column");
+			expect(result.slides[0]?.subheadlines).toHaveLength(3);
+			expect(result.slides[0]?.subheadlines).toEqual([
 				"Col 1",
 				"Col 2",
 				"Col 3",

@@ -5,12 +5,32 @@
  * and data required for the AI Gateway functionality.
  */
 
-
 import { createServiceLogger } from "@kit/shared/logger";
 import type { SupabaseClient } from "./supabase-client";
 
 // Initialize service logger
 const { getLogger } = createServiceLogger("AI-GATEWAY");
+
+// Extended Supabase client type for operations not covered by base type
+type ExtendedSupabaseClient = {
+	from: (table: string) => {
+		select: (
+			columns: string,
+			options?: { count?: string; head?: boolean },
+		) => Promise<{ count?: number; error?: unknown }> & {
+			limit: (count: number) => Promise<{ data?: unknown; error?: unknown }>;
+		};
+		insert: (data: unknown) => Promise<{ error?: unknown; data?: unknown }> & {
+			select: (columns: string) => {
+				single: () => Promise<{ data?: unknown; error?: unknown }>;
+			};
+		};
+	};
+	rpc: (
+		func: string,
+		params?: Record<string, unknown>,
+	) => Promise<{ data?: unknown; error?: unknown }>;
+};
 
 /**
  * Initializes cost configuration data if the table is empty
@@ -26,28 +46,36 @@ export async function initializeCostConfiguration(
 		(await getLogger()).info("Checking AI cost configuration data...");
 
 		// Check if we already have cost configuration data
-		const { count, error: countError } = await supabase
+		const { count, error: countError } = await (
+			supabase as unknown as ExtendedSupabaseClient
+		)
 			.from("ai_cost_configuration")
 			.select("*", { count: "exact", head: true });
 
 		if (countError) {
 			(await getLogger()).error("Error checking cost configuration:", {
 				error: countError,
-				message: countError.message,
-				hint: countError.hint,
-		});
+				message: (countError as { message?: string; hint?: string }).message,
+				hint: (countError as { message?: string; hint?: string }).hint,
+			});
 			return false;
 		}
 
 		if (count && count > 0) {
-			(await getLogger()).info(`AI cost configuration already exists (${count} entries)`);
+			(await getLogger()).info(
+				`AI cost configuration already exists (${count} entries)`,
+			);
 			return true;
 		}
 
-		(await getLogger()).info("No cost configuration found, seeding initial data...");
+		(await getLogger()).info(
+			"No cost configuration found, seeding initial data...",
+		);
 
 		// Insert default pricing data for common models
-		const { error: insertError } = await supabase
+		const { error: insertError } = await (
+			supabase as unknown as ExtendedSupabaseClient
+		)
 			.from("ai_cost_configuration")
 			.insert([
 				// OpenAI models
@@ -158,16 +186,18 @@ export async function initializeCostConfiguration(
 		if (insertError) {
 			(await getLogger()).error("Error seeding cost configuration data:", {
 				error: insertError,
-				message: insertError.message,
-				hint: insertError.hint,
-		});
+				message: (insertError as { message?: string; hint?: string }).message,
+				hint: (insertError as { message?: string; hint?: string }).hint,
+			});
 			return false;
 		}
 
 		(await getLogger()).info("Successfully seeded AI cost configuration data");
 		return true;
 	} catch (error) {
-		(await getLogger()).error("Fatal error initializing cost configuration:", { data: error });
+		(await getLogger()).error("Fatal error initializing cost configuration:", {
+			data: error,
+		});
 		return false;
 	}
 }
@@ -182,13 +212,17 @@ export async function testDatabasePermissions(
 	supabase: SupabaseClient,
 ): Promise<boolean> {
 	try {
-		(await getLogger()).info("Testing database permissions with a test insert...");
+		(await getLogger()).info(
+			"Testing database permissions with a test insert...",
+		);
 
 		// Generate a unique test ID
 		const testId = `test-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
 		// Attempt to insert a test record
-		const { data, error } = await supabase
+		const { data, error } = await (
+			supabase as unknown as ExtendedSupabaseClient
+		)
 			.from("ai_request_logs")
 			.insert({
 				user_id: null,
@@ -202,28 +236,30 @@ export async function testDatabasePermissions(
 				cost: 0,
 				feature: "system-test",
 				status: "test",
-			// })
+			})
 			.select("id")
 			.single();
 
 		if (error) {
 			(await getLogger()).error("Database permission test failed:", {
 				error,
-				message: error.message,
-				details: error.details,
-				hint: error.hint,
-				code: error.code,
-		});
+				message: (error as { message?: string; details?: string; hint?: string; code?: string }).message,
+				details: (error as { message?: string; details?: string; hint?: string; code?: string }).details,
+				hint: (error as { message?: string; details?: string; hint?: string; code?: string }).hint,
+				code: (error as { message?: string; details?: string; hint?: string; code?: string }).code,
+			});
 			return false;
 		}
 
 		(await getLogger()).info("Database permission test successful:", {
-			recordId: data?.id,
+			recordId: (data as { id?: string })?.id,
 			testId,
 		});
 		return true;
 	} catch (error) {
-		(await getLogger()).error("Fatal error testing database permissions:", { data: error });
+		(await getLogger()).error("Fatal error testing database permissions:", {
+			data: error,
+		});
 		return false;
 	}
 }
@@ -241,7 +277,9 @@ export async function testDatabaseFunctions(
 		(await getLogger()).info("Testing database function permissions...");
 
 		// Test the calculate_ai_cost function
-		const { data, error } = await supabase.rpc("calculate_ai_cost", {
+		const { data, error } = await (
+			supabase as unknown as ExtendedSupabaseClient
+		).rpc("calculate_ai_cost", {
 			p_provider: "openai",
 			p_model: "gpt-3.5-turbo",
 			p_prompt_tokens: 100,
@@ -251,20 +289,22 @@ export async function testDatabaseFunctions(
 		if (error) {
 			(await getLogger()).error("Database function test failed:", {
 				error,
-				message: error.message,
-				details: error.details,
-				hint: error.hint,
-				code: error.code,
-		});
+				message: (error as { message?: string; details?: string; hint?: string; code?: string }).message,
+				details: (error as { message?: string; details?: string; hint?: string; code?: string }).details,
+				hint: (error as { message?: string; details?: string; hint?: string; code?: string }).hint,
+				code: (error as { message?: string; details?: string; hint?: string; code?: string }).code,
+			});
 			return false;
 		}
 
-		(await _getLogger()).info("Database function test successful:", {
+		(await getLogger()).info("Database function test successful:", {
 			calculatedCost: data,
 		});
 		return true;
 	} catch (error) {
-		(await getLogger()).error("Fatal error testing database functions:", { data: error });
+		(await getLogger()).error("Fatal error testing database functions:", {
+			data: error,
+		});
 		return false;
 	}
 }
@@ -292,7 +332,9 @@ export async function initializeAiGatewayDatabase(
 		// Test function permissions
 		const functionsOk = await testDatabaseFunctions(supabase);
 		if (!functionsOk) {
-			(await getLogger()).warn("Database function test failed, continuing with initialization anyway...");
+			(await getLogger()).warn(
+				"Database function test failed, continuing with initialization anyway...",
+			);
 		}
 
 		// Initialize cost configuration
@@ -304,7 +346,9 @@ export async function initializeAiGatewayDatabase(
 		// Return overall success status
 		return permissionsOk && functionsOk && costConfigOk;
 	} catch (error) {
-		(await getLogger()).error("Fatal error initializing AI Gateway database:", { data: error });
+		(await getLogger()).error("Fatal error initializing AI Gateway database:", {
+			data: error,
+		});
 		return false;
 	}
 }

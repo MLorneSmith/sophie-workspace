@@ -3,7 +3,7 @@
 import type { LineItemSchema } from "@kit/billing";
 import { formatCurrency } from "@kit/shared/utils";
 import { useMemo } from "react";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import type { z } from "zod";
 
 type PlanCostDisplayProps = {
@@ -73,11 +73,11 @@ export function PlanCostDisplay({
 		});
 
 		return (
-			<_span _className={"text-lg"}>
-				<_Trans
-					_i18nKey={tierTranslationKey}
-					_values={{
-						price: formattedCost,
+			<span className={"text-lg"}>
+				<Trans
+					i18nKey={tierTranslationKey}
+					values={{
+						price: _formattedCost,
 						unit: primaryLineItem.unit,
 					}}
 				/>
@@ -89,7 +89,7 @@ export function PlanCostDisplay({
 		currencyCode: currencyCode.toLowerCase(),
 		value: displayCost,
 		locale: i18n.language,
-		});
+	});
 
-	return <_span _className={className}>{_formattedCost}</_span>;
+	return <span className={className}>{_formattedCost}</span>;
 }

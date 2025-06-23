@@ -80,14 +80,14 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 		const _editorRef = useRef(null);
 
 		// Parse and normalize initial content
-		const _initialContent = useMemo(() => {
+		const initialContent = useMemo(() => {
 			// TODO: Async logger needed
 			// (await getLogger()).info("TiptapEditor parsing content:", {
 			// 	sectionType,
 			// 	contentType: typeof content,
 			// 	contentLength:
 			// 		typeof content === "string" ? content.length : "not a string",
-		});
+			// });
 
 			try {
 				if (typeof content !== "string") {
@@ -104,13 +104,13 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 				}
 
 				// Parse the content string into an object
-				const _parsed = JSON.parse(content);
+				const parsed = JSON.parse(content);
 				// TODO: Async logger needed
 				// (await getLogger()).info("Successfully parsed content:", {
 				// 	type: parsed?.type,
 				// 	contentLength: parsed?.content?.length,
 				// 	firstNodeType: parsed?.content?.[0]?.type,
-		});
+				// });
 
 				// Normalize the content before passing it to the editor
 				// This helps prevent ProseMirror model version conflicts
@@ -206,7 +206,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 			unknown,
 			MutationContext
 		>({
-			mutationFn: async (newContent: unknown) => {
+			mutationFn: async (newContent: unknown): Promise<SubmissionData> => {
 				(await getLogger()).debug("Saving content:", {
 					sectionType,
 					newContent,
@@ -219,7 +219,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 					.single();
 
 				if (error) throw error;
-				return data;
+				return data as SubmissionData;
 			},
 			onMutate: async (newContent: unknown): Promise<MutationContext> => {
 				// Cancel outgoing refetches
@@ -261,7 +261,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 				// (await getLogger()).debug("Content saved successfully:", {
 				// 	sectionType,
 				// 	data: data?.[sectionType],
-		});
+				// });
 				setSaveStatus("saved");
 				setTimeout(() => setSaveStatus("idle"), 2000);
 			},
@@ -292,7 +292,13 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 					setTimeout(() => setSaveStatus("idle"), 3000);
 				}
 			},
-			[updateContent, setSaveStatus, sectionType],
+			[
+				updateContent,
+				sectionType, // TODO: Async logger needed
+				// TODO: Fix logger call - was: error
+				setSaveStatus,
+				setSaveStatus,
+			],
 		);
 
 		// Debounced save handler
@@ -314,7 +320,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 				}
 			};
 			registerSaveCallback(callback);
-		}, [registerSaveCallback, saveContent, editor]);
+		}, [saveContent, editor, registerSaveCallback]);
 
 		// Update editor content when it changes, with improved error handling
 		useEffect(() => {
@@ -327,7 +333,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 				// 	sectionType,
 				// 	initialContentType: typeof initialContent,
 				// 	editorExists: !!editor,
-		});
+				// });
 
 				// Only update if content has changed to avoid loops
 				const currentContent = editor.getJSON();
@@ -380,7 +386,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 				// TODO: Async logger needed
 				// TODO: Fix logger call - was: error
 			}
-		}, [editor, initialContent, sectionType]);
+		}, [editor, sectionType, initialContent]);
 
 		// Handle editor changes
 		useEffect(() => {

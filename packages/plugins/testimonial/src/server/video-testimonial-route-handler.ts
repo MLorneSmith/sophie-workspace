@@ -6,16 +6,18 @@ import { VideoTestimonialSchema } from "../schema/create-testimonial.schema";
 import { createTestimonialService } from "./testimonial.service";
 
 export const createVideoTestimonialRouteHandler = enhanceRouteHandler(
-	async ({ body }) => {
+	async ({ request }) => {
+		const body = await request.json();
+		const validatedData = VideoTestimonialSchema.parse(body);
+
 		const client = getSupabaseServerAdminClient();
 		const service = createTestimonialService(client);
 
-		await service.insertTestimonial(body);
+		await service.insertTestimonial(validatedData);
 
 		return NextResponse.json({ success: true });
 	},
 	{
 		auth: false,
-		schema: VideoTestimonialSchema,
 	},
 );

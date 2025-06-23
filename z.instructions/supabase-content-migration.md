@@ -15,9 +15,11 @@ This document outlines the process for migrating content from your **local Supab
    This successfully synchronizes the database schema (tables, columns, constraints, etc.) but does not migrate the actual data.
 
 2. **Schema Verification**: We can verify that the schema has been successfully pushed by checking:
+
    ```bash
    supabase db diff
    ```
+
    If there are no differences, the schema is in sync.
 
 ### Content Migration

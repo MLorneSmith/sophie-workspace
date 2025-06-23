@@ -14,12 +14,15 @@ This document outlines a strategic approach to implementing unit tests for the S
 ## **Priority 1: Core Custom Business Logic (Start Here)**
 
 ### 1.1 AI Canvas/Editor System
+
 **Location**: `apps/web/app/home/(user)/ai/canvas/`
 
 **High Priority Test Targets**:
+
 - **Server Actions**:
+
   - `_actions/generate-ideas.ts` - AI content generation logic
-  - `_actions/generate-outline.ts` - Outline generation algorithms  
+  - `_actions/generate-outline.ts` - Outline generation algorithms
   - `_actions/convert-editor-data.ts` - Data transformation between formats
   - `_actions/simplify-text.ts` - Text processing and simplification
   - `_actions/update-building-block-title.action.ts` - Title management logic
@@ -30,15 +33,18 @@ This document outlines a strategic approach to implementing unit tests for the S
   - `_lib/hooks/use-action-with-cost.ts` - Cost tracking integration
 
 **Testing Focus**:
+
 - Input validation and sanitization
 - Content transformation accuracy
 - Error handling for AI service failures
 - Cost calculation correctness
 
 ### 1.2 Storyboard/Presentation System
+
 **Location**: `apps/web/app/home/(user)/ai/storyboard/`
 
 **High Priority Test Targets**:
+
 - **Core Services**:
   - `_lib/services/storyboard-service.ts` - Business logic for storyboard management
   - `_lib/services/tiptap-transformer.ts` - Content format transformations
@@ -46,15 +52,18 @@ This document outlines a strategic approach to implementing unit tests for the S
   - `_lib/services/storyboard-service-client.ts` - Client-side service integration
 
 **Testing Focus**:
+
 - Slide ordering and manipulation
 - Content transformation between formats
 - PowerPoint generation accuracy
 - Data persistence and retrieval
 
 ### 1.3 Course/Lesson System
+
 **Location**: `apps/web/app/home/(user)/course/`
 
 **High Priority Test Targets**:
+
 - **Business Logic**:
   - Course progress calculations in `_components/CourseProgressBar.tsx`
   - Quiz processing logic in `lessons/[slug]/_components/QuizComponent.tsx`
@@ -62,6 +71,7 @@ This document outlines a strategic approach to implementing unit tests for the S
 - **Server Actions**: `_lib/server/server-actions.ts`
 
 **Testing Focus**:
+
 - Progress calculation accuracy
 - Quiz scoring algorithms
 - Course completion detection
@@ -70,9 +80,11 @@ This document outlines a strategic approach to implementing unit tests for the S
 ## **Priority 2: Payload CMS Custom Logic (High Impact)**
 
 ### 2.1 Custom Collections
+
 **Location**: `apps/payload/src/collections/`
 
 **High Priority Test Targets**:
+
 - **Collection Configurations**:
   - `CourseLessons.ts` - Validation hooks and field logic
   - `CourseQuizzes.ts` - Quiz-specific validation
@@ -80,30 +92,36 @@ This document outlines a strategic approach to implementing unit tests for the S
   - `SurveyQuestions.ts` - Survey logic and validation
 
 **Testing Focus**:
+
 - Field validation rules
 - Custom hooks execution
 - Relationship integrity
 - Data transformation on save/load
 
 ### 2.2 Custom Blocks
+
 **Location**: `apps/payload/src/blocks/`
 
 **High Priority Test Targets**:
+
 - **Field Components**:
   - `BunnyVideo/Field.tsx` - Video ID extraction and validation
   - `YouTubeVideo/Field.tsx` - YouTube URL parsing
   - Block configuration validation
 
 **Testing Focus**:
+
 - Video ID extraction accuracy
 - URL validation and sanitization
 - Field state management
 - Error handling for invalid inputs
 
 ### 2.3 Enhanced Systems
+
 **Location**: `apps/payload/src/lib/`
 
 **High Priority Test Targets**:
+
 - **Core Infrastructure**:
   - `enhanced-api-wrapper.ts` - API enhancement logic
   - `request-deduplication.ts` - Deduplication algorithms
@@ -111,6 +129,7 @@ This document outlines a strategic approach to implementing unit tests for the S
   - `storage-url-generators.ts` - URL generation logic
 
 **Testing Focus**:
+
 - Request deduplication effectiveness
 - API wrapper functionality
 - URL generation accuracy
@@ -119,27 +138,33 @@ This document outlines a strategic approach to implementing unit tests for the S
 ## **Priority 3: Integration Points (Medium-High Impact)**
 
 ### 3.1 Custom API Routes
+
 **Location**: `apps/web/app/api/`
 
 **High Priority Test Targets**:
+
 - `ai-usage/session-cost/route.ts` - Cost tracking API
 - `courses/[courseId]/lessons/route.ts` - Course data API
 
 **Testing Focus**:
+
 - Request/response validation
 - Error handling
 - Authentication/authorization
 - Data consistency
 
 ### 3.2 Kanban System
+
 **Location**: `apps/web/app/home/(user)/kanban/`
 
 **High Priority Test Targets**:
+
 - `_lib/api/tasks.ts` - Task management API
 - `_lib/server/server-actions.ts` - Server-side task operations
 - Task state management logic
 
 **Testing Focus**:
+
 - Task CRUD operations
 - State transitions
 - Data persistence
@@ -148,9 +173,11 @@ This document outlines a strategic approach to implementing unit tests for the S
 ## **Priority 4: Utility Functions (Medium Impact)**
 
 ### 4.1 Shared Utilities
+
 **Locations**: `apps/web/lib/`, `apps/payload/src/lib/`
 
 **Test Targets**:
+
 - Data transformation functions
 - Validation schemas
 - Custom hooks with business logic
@@ -167,6 +194,7 @@ This document outlines a strategic approach to implementing unit tests for the S
 ## **Recommended Testing Implementation Strategy**
 
 ### Phase 1: Foundation (Week 1-2)
+
 1. **Set up testing infrastructure** (Vitest configuration)
 2. **Start with pure functions**:
    - `normalize-editor-content.ts`
@@ -177,6 +205,7 @@ This document outlines a strategic approach to implementing unit tests for the S
    - Progress calculations
 
 ### Phase 2: Core Business Logic (Week 3-4)
+
 1. **AI generation functions**:
    - Outline generation
    - Ideas generation
@@ -189,12 +218,14 @@ This document outlines a strategic approach to implementing unit tests for the S
    - Quiz processing
 
 ### Phase 3: Integration Testing (Week 5-6)
+
 1. **API route handlers**
 2. **Payload collection hooks**
 3. **File upload/storage functions**
 4. **Database operations**
 
 ### Phase 4: Component Logic (Week 7-8)
+
 1. **Complex form validation**
 2. **Custom field components**
 3. **Interactive UI behaviors**
@@ -203,23 +234,27 @@ This document outlines a strategic approach to implementing unit tests for the S
 ## **Testing Best Practices for This Project**
 
 ### Pure Functions First
+
 - Start with functions that have no side effects
 - Easy to test and provide immediate confidence
 - Examples: content normalization, calculations, transformations
 
 ### Mock External Dependencies
+
 - AI services (OpenAI, Claude)
 - File storage (R2, S3)
 - Database operations
 - Third-party APIs
 
 ### Test Critical Paths
+
 - User workflows that generate revenue
 - Data integrity operations
 - Security-sensitive functions
 - Performance-critical operations
 
 ### Error Handling
+
 - Invalid input scenarios
 - Network failures
 - Service unavailability

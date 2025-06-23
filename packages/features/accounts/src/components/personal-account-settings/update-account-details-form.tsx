@@ -10,10 +10,10 @@ import {
 	FormMessage,
 } from "@kit/ui/form";
 import { Input } from "@kit/ui/input";
+import { toast } from "@kit/ui/sonner";
 import { Trans } from "@kit/ui/trans";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
 
 import { useUpdateAccountData } from "../../hooks/use-update-account";
 import { AccountDetailsSchema } from "../../schema/account-details.schema";

@@ -8,7 +8,14 @@ import {
 } from "@tanstack/react-table";
 
 import { Trans } from "../makerkit/trans";
-import { TableCell, TableHead, TableRow } from "./table";
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "./table";
 
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
@@ -29,9 +36,9 @@ export function DataTable<TData, TValue>({
 	});
 
 	return (
-		<_div _className="rounded-md border">
-			<_Table>
-				<_TableHeader>
+		<div className="rounded-md border">
+			<Table>
+				<TableHeader>
 					{table.getHeaderGroups().map((headerGroup) => (
 						<TableRow key={headerGroup.id}>
 							{headerGroup.headers.map((header) => {
@@ -48,9 +55,9 @@ export function DataTable<TData, TValue>({
 							})}
 						</TableRow>
 					))}
-				</_TableHeader>
+				</TableHeader>
 
-				<_TableBody>
+				<TableBody>
 					{table.getRowModel().rows?.length ? (
 						table.getRowModel().rows.map((row) => (
 							<TableRow
@@ -72,8 +79,8 @@ export function DataTable<TData, TValue>({
 							</TableCell>
 						</TableRow>
 					)}
-				</_TableBody>
-			</_Table>
-		</_div>
+				</TableBody>
+			</Table>
+		</div>
 	);
 }

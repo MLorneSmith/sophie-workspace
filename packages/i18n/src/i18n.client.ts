@@ -54,8 +54,8 @@ export async function initializeI18nClient(
 			(err) => {
 				if (err) {
 					// TODO: Async logger needed
-		// (await getLogger()).error("Error initializing i18n client", { data: err });
-		// }
+					// (await getLogger()).error("Error initializing i18n client", { data: err });
+				}
 			},
 		);
 
@@ -73,7 +73,7 @@ export async function initializeI18nClient(
 		iteration++;
 
 		// TODO: Async logger needed
-		// (await getLogger()).debug(`Keeping component from rendering if no languages or namespaces are loaded. Iteration: ${iteration}. Will stop after ${MAX_ITERATIONS} iterations.`, { data:  });
+		// (await getLogger()).debug(`Keeping component from rendering if no languages or namespaces are loaded. Iteration: ${iteration}. Will stop after ${MAX_ITERATIONS} iterations.`);
 
 		throw new Error("No languages or namespaces loaded");
 	}

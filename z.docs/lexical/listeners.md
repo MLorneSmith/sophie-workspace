@@ -5,7 +5,7 @@ On this page
 Listeners are a mechanism that lets the Editor instance inform the user when a certain operation has occurred. All listeners follow a reactive pattern where you can do an operation upon something happening in the future. All listeners also return a function that easily allows for the
 listener to be unregistered. Below are the different listeners that Lexical supports today:
 
-## `registerUpdateListener` [​](https://lexical.dev/docs/concepts/listeners\#registerupdatelistener "Direct link to heading")
+## `registerUpdateListener` [​](https://lexical.dev/docs/concepts/listeners#registerupdatelistener 'Direct link to heading')
 
 Get notified when Lexical commits an update to the DOM.
 
@@ -54,7 +54,7 @@ done it in a single DOM update. This can have an impact on performance, which is
 To avoid this, we recommend looking into [Node Transforms](https://lexical.dev/docs/concepts/transforms), which allow you to listen to node changes and
 transform them as part of the same given update, meaning no waterfalls!
 
-## `registerTextContentListener` [​](https://lexical.dev/docs/concepts/listeners\#registertextcontentlistener "Direct link to heading")
+## `registerTextContentListener` [​](https://lexical.dev/docs/concepts/listeners#registertextcontentlistener 'Direct link to heading')
 
 Get notified when Lexical commits an update to the DOM and the text content of the editor changes from
 the previous state of the editor. If the text content is the same between updates, no notifications to
@@ -73,7 +73,7 @@ removeTextContentListener();
 
 ```
 
-## `registerMutationListener` [​](https://lexical.dev/docs/concepts/listeners\#registermutationlistener "Direct link to heading")
+## `registerMutationListener` [​](https://lexical.dev/docs/concepts/listeners#registermutationlistener 'Direct link to heading')
 
 Get notified when a specific type of Lexical node has been mutated. There are three states of mutation:
 
@@ -106,7 +106,7 @@ removeMutationListener();
 
 ```
 
-## `registerEditableListener` [​](https://lexical.dev/docs/concepts/listeners\#registereditablelistener "Direct link to heading")
+## `registerEditableListener` [​](https://lexical.dev/docs/concepts/listeners#registereditablelistener 'Direct link to heading')
 
 Get notified when the editor's mode has changed. The editor's mode can be changed
 via `editor.setEditable(boolean)`.
@@ -124,7 +124,7 @@ removeEditableListener();
 
 ```
 
-## `registerDecoratorListener` [​](https://lexical.dev/docs/concepts/listeners\#registerdecoratorlistener "Direct link to heading")
+## `registerDecoratorListener` [​](https://lexical.dev/docs/concepts/listeners#registerdecoratorlistener 'Direct link to heading')
 
 Get notified when the editor's decorator object changes. The decorator object contains
 all `DecoratorNode` keys -> their decorated value. This is primarily used with external
@@ -143,7 +143,7 @@ removeDecoratorListener();
 
 ```
 
-## `registerRootListener` [​](https://lexical.dev/docs/concepts/listeners\#registerrootlistener "Direct link to heading")
+## `registerRootListener` [​](https://lexical.dev/docs/concepts/listeners#registerrootlistener 'Direct link to heading')
 
 Get notified when the editor's root DOM element (the content editable Lexical attaches to) changes. This is primarily used to
 attach event listeners to the root element. _The root listener function is executed directly upon registration and then on any subsequent update._

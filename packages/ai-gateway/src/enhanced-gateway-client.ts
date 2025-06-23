@@ -53,15 +53,21 @@ async function _createPortkeyConfigHeaders(options: {
 				typeof config === "string" ? config : JSON.stringify(config);
 
 			// Add debugging information about the configuration
-			(await getLogger()).info("Portkey config structure:", { data: JSON.stringify(config, null, 2) });
-			(await getLogger()).info("Portkey config header value:", { data: headers["x-portkey-config"] });
+			(await getLogger()).info("Portkey config structure:", {
+				data: JSON.stringify(config, null, 2),
+			});
+			(await getLogger()).info("Portkey config header value:", {
+				data: headers["x-portkey-config"],
+			});
 		} catch (error) {
-			(await getLogger()).error("Error serializing Portkey config:", { data: error });
+			(await getLogger()).error("Error serializing Portkey config:", {
+				data: error,
+			});
 			// If serialization fails, provide a minimal valid config
 			headers["x-portkey-config"] = JSON.stringify({
 				strategy: { mode: "single" },
 				targets: [{ provider: provider }],
-		});
+			});
 		}
 	}
 
@@ -96,7 +102,9 @@ export async function _createGatewayClient(options: PortkeyClientOptions = {}) {
 	// Determine the correct provider based on the model
 	const provider = await getProviderForModel(model);
 
-	(await getLogger()).info(`Creating gateway client for model: ${model}`, { provider });
+	(await getLogger()).info(`Creating gateway client for model: ${model}`, {
+		provider,
+	});
 
 	// Create headers using our Portkey config headers function
 	const headers = await _createPortkeyConfigHeaders({
@@ -104,10 +112,10 @@ export async function _createGatewayClient(options: PortkeyClientOptions = {}) {
 		apiKey: process.env.PORTKEY_API_KEY || "",
 		// Include the configuration properly as a header parameter
 		config: config,
-		});
+	});
 
 	// Add our custom tracking metadata
-	if (_userId) headers"x-portkey-request-metadata-user-id" = userId;
+	if (userId) headers["x-portkey-request-metadata-user-id"] = userId;
 	if (teamId) headers["x-portkey-request-metadata-team-id"] = teamId;
 	if (feature) headers["x-portkey-request-metadata-feature"] = feature;
 	if (sessionId) headers["x-portkey-trace-id"] = sessionId;
@@ -119,7 +127,7 @@ export async function _createGatewayClient(options: PortkeyClientOptions = {}) {
 		apiKey: process.env.OPENAI_API_KEY || "", // Can be empty when using virtual keys
 		baseURL: PORTKEY_GATEWAY_URL,
 		defaultHeaders: headers,
-		});
+	});
 
 	return client;
 }

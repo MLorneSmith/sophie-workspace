@@ -1,8 +1,9 @@
 ---
 description: I18n and Translations
-globs: 
+globs:
 alwaysApply: false
 ---
+
 # i18n System Guide
 
 This document provides a comprehensive overview of the internationalization (i18n) system in our Next.js application.
@@ -42,7 +43,7 @@ import { useTranslation } from 'react-i18next';
 
 export function MyComponent() {
   const { t } = useTranslation('common');
-  
+
   return <h1>{t('homeTabLabel')}</h1>;
 }
 ```
@@ -57,8 +58,8 @@ import { Trans } from '@kit/ui/trans';
 export function MyComponent() {
   return (
     <div>
-      <Trans 
-        i18nKey="teams:inviteAlertBody" 
+      <Trans
+        i18nKey="teams:inviteAlertBody"
         values={{ accountName: 'My Team' }}
       />
     </div>
@@ -89,6 +90,7 @@ export function SettingsPage() {
 2. Follow the existing structure, adding your new keys
 
 For example, in `apps/web/public/locales/en/common.json`:
+
 ```json
 {
   "existingKey": "Existing translation",
@@ -123,6 +125,7 @@ const settings = getI18nSettings(language, ['specific-namespace']);
 ### Language Priority
 
 The system uses the following priority to determine the language:
+
 1. User-selected language (from cookie)
 2. Browser language (if priority is set to 'user')
 3. Default language from environment variable

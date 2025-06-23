@@ -9,8 +9,8 @@ ultrathink
 
 ## Being Specific
 
-
 ### Modifiers
+
 - scope
 - depth
 - completness
@@ -20,6 +20,7 @@ ultrathink
 - Can use AI to generate the example
 
 ## Delimiter
+
 e.g. <smoothly_flowing_pragraphs> tags
 
 ### State what we WANT, not what we do not want
@@ -29,15 +30,17 @@ e.g. <smoothly_flowing_pragraphs> tags
 Prompt the modelt o think iteratively
 
 ## Be concise
+
 Simplify prompts
 
 # Define output formats clearly
+
 - json
 - xml
 - bulleted list
 - example code block
 - csv
-  
+
 # Prompt structure
 
 1. Context
@@ -52,6 +55,7 @@ Simplify prompts
 <conversation_type> to define the tone of the conversation (e.g. technical that uses more bullets)
 
 ## Directions on tool calling
+
 There is existing prompts that deine when to use a tool based on (Know / Maybe / Now)
 But we can build on those
 Define Tool Priority
