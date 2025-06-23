@@ -304,13 +304,13 @@ jobs:
           head: ${{ github.event.pull_request.head.sha }}
           extra_args: |
             --only-verified
-            --json
+            --format=sarif
             --max-depth=5
         continue-on-error: true
 
       - name: Upload TruffleHog Results
         uses: github/codeql-action/upload-sarif@v3
-        if: always()
+        if: always() && hashFiles('trufflehog.sarif') != ''
         with:
           sarif_file: trufflehog.sarif
           category: secret-scanning

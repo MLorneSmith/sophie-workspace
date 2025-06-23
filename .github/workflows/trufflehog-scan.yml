@@ -43,13 +43,13 @@ jobs:
           # Extra args for custom regex patterns
           extra_args: |
             --only-verified
-            --json
+            --format=sarif
             --max-depth=5
         continue-on-error: true
 
       - name: Upload TruffleHog Results to GitHub Advanced Security
         uses: github/codeql-action/upload-sarif@v3
-        if: always()
+        if: always() && hashFiles('trufflehog.sarif') != ''
         with:
           sarif_file: trufflehog.sarif
           category: secret-scanning
@@ -107,7 +107,7 @@ jobs:
           path: ./
           extra_args: |
             --only-verified
-            --json
+            --format=sarif
             --include-detectors="all"
 
       - name: Create Issue if Secrets Found
