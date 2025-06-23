@@ -40,6 +40,7 @@ type SurveyResponse = Database["public"]["Tables"]["survey_responses"]["Row"];
  */
 export async function LessonDataProviderEnhanced({
 	children,
+	// biome-ignore lint/correctness/noUnusedFunctionParameters: Parameter required by interface
 	slug,
 	lessonId,
 	courseId,
@@ -234,21 +235,9 @@ export async function LessonDataProviderEnhanced({
 
 	if (surveyId) {
 		try {
-			// Extract the actual survey ID, handling different possible formats
-			let actualSurveyId = "";
-			if (typeof surveyId === "object" && surveyId !== null) {
-				const surveyObj = surveyId as unknown as {
-					id?: string;
-					value?: string;
-				};
-				actualSurveyId = surveyObj.id || surveyObj.value || "";
-			} else {
-				actualSurveyId = String(surveyId || "");
-			}
-
 			// TODO: Async logger needed
 			// (await getLogger()).info(
-			// `Lesson ${lesson.title} (${lessonId}) has survey ID: ${actualSurveyId}`,
+			// `Lesson ${lesson.title} (${lessonId}) has survey ID: ${String(surveyId)}`,
 			// );
 			// TODO: Async logger needed
 			// TODO: Fix logger call - was: info
@@ -290,7 +279,9 @@ export async function LessonDataProviderEnhanced({
 						// Pre-fetch questions to ensure they're available
 						// TODO: Async logger needed
 						// TODO: Fix logger call - was: info
-						const questionsData = await getSurveyQuestions(survey?.id);
+						const questionsData = survey?.id
+							? await getSurveyQuestions(survey.id)
+							: null;
 
 						if (questionsData?.docs && questionsData.docs.length > 0) {
 							// Add questions to the survey object directly

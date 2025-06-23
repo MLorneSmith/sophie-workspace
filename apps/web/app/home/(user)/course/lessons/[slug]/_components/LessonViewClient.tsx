@@ -402,7 +402,13 @@ export function LessonViewClient({
 							quiz && (
 								<QuizComponent
 									quiz={quiz}
-									onSubmit={handleQuizSubmit}
+									onSubmit={(answers, score, passed) =>
+										handleQuizSubmit(
+											answers as Record<string, string | string[] | boolean>,
+											score,
+											passed,
+										)
+									}
 									previousAttempts={quizAttempts.map((attempt) => ({
 										id: attempt.id,
 										score: attempt.score || 0,
@@ -557,7 +563,7 @@ export function LessonViewClient({
 
 								{/* Main content */}
 								<div className="prose prose-sm dark:prose-invert max-w-none">
-									<PayloadContentRenderer content={lesson.content} />
+									<PayloadContentRenderer content={lesson.content as unknown} />
 								</div>
 
 								{/* Render Downloads with better error handling and diagnostics */}
