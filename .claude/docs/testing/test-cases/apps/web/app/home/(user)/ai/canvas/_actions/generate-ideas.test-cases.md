@@ -3,6 +3,7 @@
 ## File: `apps/web/app/home/(user)/ai/canvas/_actions/generate-ideas.ts`
 
 ## Status Summary
+
 - **Created**: 2025-01-06
 - **Last Updated**: 2025-01-06
 - **Test Implementation Status**: Completed (Schema Validation Focus)
@@ -13,6 +14,7 @@
 ## Test Cases Checklist
 
 ### ✅ Implemented: Schema Validation Tests
+
 Note: Due to Vitest import resolution issues with @kit packages, focused on comprehensive schema validation testing which is the most critical part of this action.
 
 - [x] **Test Case**: Accept valid input data
@@ -106,6 +108,7 @@ Note: Due to Vitest import resolution issues with @kit packages, focused on comp
   - **Notes**: Optional field edge case
 
 ### 🚧 Not Implemented: Integration Tests (Blocked)
+
 Due to Vitest import resolution issues with @kit packages, the following integration tests were not implemented but have detailed test plans:
 
 - [ ] **Database Integration**: Supabase client mocking and data retrieval
@@ -114,6 +117,7 @@ Due to Vitest import resolution issues with @kit packages, the following integra
 - [ ] **Performance Logging**: Metrics and cost tracking
 
 ## Dependencies to Mock
+
 - `@kit/supabase/server-client` - Database operations
 - `@kit/ai-gateway` - AI service calls (getChatCompletion)
 - `@kit/ai-gateway/src/configs/config-manager` - Config management
@@ -121,11 +125,13 @@ Due to Vitest import resolution issues with @kit packages, the following integra
 - `@kit/next/actions` - Server action wrapper
 
 ## Performance Considerations
+
 - Track timing measurements (startTime/endTime)
 - Verify console logging for metrics
 - Test metadata.cost inclusion
 
 ## Test Setup Template
+
 ```typescript
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { generateIdeasAction } from './generate-ideas';
@@ -147,12 +153,14 @@ describe('generateIdeasAction', () => {
 ```
 
 ## Coverage Goals
+
 - Lines: 90%+
 - Branches: 85%+
 - Functions: 100%
 - Statements: 90%+
 
 ## Notes
+
 - This is a complex server action with multiple integrations
 - Focus on testing business logic, not framework implementation
 - Mock all external services and database calls

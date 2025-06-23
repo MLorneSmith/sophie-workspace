@@ -3,6 +3,7 @@
 ## File: `apps/web/app/home/(user)/ai/storyboard/_lib/services/storyboard-service.ts`
 
 ## Status Summary
+
 - **Created**: 2025-01-06
 - **Last Updated**: 2025-01-06
 - **Test Implementation Status**: In Progress
@@ -20,6 +21,7 @@ This file contains three main server actions that handle storyboard operations:
 4. **`generateStoryboardFromOutline`** - Helper function to transform outlines to storyboards
 
 ### Dependencies to Mock
+
 - `@kit/supabase/server-client` - Database operations
 - `@kit/shared/logger` - Logging functionality
 - `@kit/next/actions` (enhanceAction wrapper) - Server action framework
@@ -141,6 +143,7 @@ This file contains three main server actions that handle storyboard operations:
 ### Edge Cases
 
 #### Authentication & Authorization
+
 - [ ] **Test Case**: All actions require authentication
   - **Input**: Unauthenticated request
   - **Expected Output**: Authentication error
@@ -148,6 +151,7 @@ This file contains three main server actions that handle storyboard operations:
   - **Notes**: Tests enhanceAction auth requirement
 
 #### Data Validation
+
 - [ ] **Test Case**: Invalid presentation ID format
   - **Input**: `{ presentationId: 123 }` (number instead of string)
   - **Expected Output**: Validation error
@@ -269,14 +273,16 @@ const mockStoryboardData = {
 ```
 
 ### Coverage Goals
+
 - **Target Lines**: 85%
 - **Target Branches**: 80%
 - **Target Functions**: 100%
 - **Focus Areas**: Error handling paths, validation logic, fallback mechanisms
 
 ### Notes
+
 - **Dependencies mocked**: Supabase, Logger, TipTap Transformer, Next.js Cache
-- **Special considerations**: 
+- **Special considerations**:
   - Complex error handling with multiple fallback strategies
   - Database schema evolution (storyboard column may not exist)
   - JSON parsing and validation at multiple levels
@@ -285,6 +291,7 @@ const mockStoryboardData = {
 - **Priority**: Critical - core business logic for storyboard system
 
 ### Implementation Priority
+
 1. Start with `generateStoryboardFromOutline` (pure function, easier to test)
 2. Test `getPresentationsAction` (simpler database operation)
 3. Test `saveStoryboardAction` (validation and error handling)

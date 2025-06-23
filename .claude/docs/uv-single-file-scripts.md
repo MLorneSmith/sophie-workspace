@@ -39,8 +39,8 @@ Additionally, your script can be read directly from stdin.
 Note that if you use `uv run` in a _project_, i.e., a directory with a `pyproject.toml`, it will install the current project before running the script. If your script does not depend on the project, use the `--no-project` flag to skip this:
 
 ```bash
-$ # Note: the `--no-project` flag must be provided _before_ the script name.
-$ uv run --no-project example.py
+# Note: the `--no-project` flag must be provided _before_ the script name.
+uv run --no-project example.py
 ```
 
 ## Running a script with dependencies
@@ -48,13 +48,13 @@ $ uv run --no-project example.py
 When your script requires other packages, they must be installed into the environment that the script runs in. Request the dependency using the `--with` option:
 
 ```bash
-$ uv run --with rich example.py
+uv run --with rich example.py
 ```
 
 Constraints can be added to the requested dependency if specific versions are needed:
 
 ```bash
-$ uv run --with 'rich>12,<13' example.py
+uv run --with 'rich>12,<13' example.py
 ```
 
 Multiple dependencies can be requested by repeating with `--with` option.
@@ -64,7 +64,7 @@ Multiple dependencies can be requested by repeating with `--with` option.
 Python recently added a standard format for inline script metadata. It allows for selecting Python versions and defining dependencies. Use `uv init --script` to initialize scripts with the inline metadata:
 
 ```bash
-$ uv init --script example.py --python 3.12
+uv init --script example.py --python 3.12
 ```
 
 ## Declaring script dependencies
@@ -72,7 +72,7 @@ $ uv init --script example.py --python 3.12
 The inline metadata format allows the dependencies for a script to be declared in the script itself. Use `uv add --script` to declare the dependencies for the script:
 
 ```bash
-$ uv add --script example.py 'requests<3' 'rich'
+uv add --script example.py 'requests<3' 'rich'
 ```
 
 This will add a `script` section at the top of the script declaring the dependencies using TOML:
@@ -112,7 +112,7 @@ Ensure that your script is executable, e.g., with `chmod +x greet`, then run the
 If you wish to use an alternative package index to resolve dependencies, you can provide the index with the `--index` option:
 
 ```bash
-$ uv add --index "https://example.com/simple" --script example.py 'requests<3' 'rich'
+uv add --index "https://example.com/simple" --script example.py 'requests<3' 'rich'
 ```
 
 ## Locking dependencies
@@ -120,7 +120,7 @@ $ uv add --index "https://example.com/simple" --script example.py 'requests<3' '
 uv supports locking dependencies for PEP 723 scripts using the `uv.lock` file format:
 
 ```bash
-$ uv lock --script example.py
+uv lock --script example.py
 ```
 
 Running `uv lock --script` will create a `.lock` file adjacent to the script (e.g., `example.py.lock`).
@@ -144,8 +144,8 @@ In addition to locking dependencies, uv supports an `exclude-newer` field in the
 uv allows arbitrary Python versions to be requested on each script invocation:
 
 ```bash
-$ # Use a specific Python version
-$ uv run --python 3.10 example.py
+# Use a specific Python version
+uv run --python 3.10 example.py
 ```
 
 ## Using GUI scripts

@@ -1,6 +1,7 @@
 # Test Cases: normalize-editor-content.ts
 
 ## Status Summary
+
 - **Created**: 2025-01-06
 - **Last Updated**: 2025-01-06
 - **Test Implementation Status**: ✅ Complete
@@ -11,6 +12,7 @@
 ## File: `apps/web/app/home/(user)/ai/canvas/_lib/utils/normalize-editor-content.ts`
 
 ### Test Setup
+
 ```typescript
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { normalizeEditorContent } from './normalize-editor-content';
@@ -34,6 +36,7 @@ describe('normalizeEditorContent', () => {
 ### Test Cases Checklist
 
 #### Core Functionality - Main Function
+
 - [ ] **Test Case**: Normalizes valid TiptapDocument object
   - **Input**: `{ type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Hello' }] }] }` with `sectionType: 'situation'`
   - **Expected Output**: Normalized document with metadata
@@ -53,6 +56,7 @@ describe('normalizeEditorContent', () => {
   - **Notes**: Test outline transformation logic
 
 #### Content Parsing Tests
+
 - [ ] **Test Case**: Handles null input gracefully
   - **Input**: `null` with any section type
   - **Expected Output**: Safe default document with paragraph containing space
@@ -78,6 +82,7 @@ describe('normalizeEditorContent', () => {
   - **Notes**: Should treat as falsy content
 
 #### Node Structure Normalization Tests
+
 - [ ] **Test Case**: Fixes empty text nodes
   - **Input**: Document with text node having empty string or no text
   - **Expected Output**: Text node with single space
@@ -109,6 +114,7 @@ describe('normalizeEditorContent', () => {
   - **Notes**: Test listItem normalization
 
 #### Nested Structure Tests
+
 - [ ] **Test Case**: Recursively normalizes nested content
   - **Input**: Complex nested structure with multiple levels
   - **Expected Output**: All levels properly normalized
@@ -122,6 +128,7 @@ describe('normalizeEditorContent', () => {
   - **Notes**: Test robustness of recursive normalization
 
 #### Schema Validation Tests
+
 - [ ] **Test Case**: Validates document type is 'doc'
   - **Input**: Document with wrong root type
   - **Expected Output**: Should throw error and fallback to safe content
@@ -135,20 +142,23 @@ describe('normalizeEditorContent', () => {
   - **Notes**: Test content array validation
 
 ### Coverage Report
+
 - Lines: 0%
 - Branches: 0%
 - Functions: 0%
 - Statements: 0%
 
 ### Implementation Notes
+
 - **Dependencies mocked**: `Date.prototype.toISOString` for consistent timestamps
-- **Special considerations**: 
+- **Special considerations**:
   - Function uses console.error for logging - consider spying on console methods
   - Deep cloning is used extensively - test that mutations don't affect input
   - Schema validation errors trigger fallback behavior
 - **Time spent**: [To be tracked]
 
 ### Example Test Implementation
+
 ```typescript
 it('should normalize valid TiptapDocument and add metadata', () => {
   // Arrange

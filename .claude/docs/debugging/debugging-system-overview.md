@@ -5,11 +5,13 @@ The Claude Code debugging system consists of two complementary commands that sep
 ## System Components
 
 ### 1. Log Issue Command (`/log-issue`)
+
 **Purpose**: Document issues systematically with diagnostic data
 **Output**: Standardized issue specifications
 **Storage**: Local files + optional GitHub issues
 
 ### 2. Debug Issue Command (`/debug-issue`)
+
 **Purpose**: Resolve documented issues through focused debugging
 **Input**: Issue specifications from log-issue
 **Output**: Implemented fixes and resolution documentation
@@ -42,21 +44,25 @@ The Claude Code debugging system consists of two complementary commands that sep
 ## Key Benefits
 
 ### Separation of Concerns
+
 - **Documentation**: Capture all relevant data without fix pressure
 - **Resolution**: Focus on solving with complete context
 - **Collaboration**: Share specifications with team members
 
 ### Data-Driven Debugging
+
 - MCP tools provide objective diagnostic data
 - Systematic collection prevents missed information
 - Historical data enables pattern recognition
 
 ### Knowledge Base Building
+
 - Issues become searchable documentation
 - Common patterns emerge over time
 - Solutions can be referenced for similar issues
 
 ### Quality Assurance
+
 - Standardized format ensures completeness
 - Verification step confirms resolution
 - Tests prevent regression
@@ -64,6 +70,7 @@ The Claude Code debugging system consists of two complementary commands that sep
 ## Command Usage Examples
 
 ### Logging a Performance Issue
+
 ```bash
 /log-issue github
 
@@ -81,6 +88,7 @@ The Claude Code debugging system consists of two complementary commands that sep
 ```
 
 ### Debugging the Issue
+
 ```bash
 /debug-issue ISSUE-1641234567-xyz
 
@@ -118,18 +126,21 @@ The Claude Code debugging system consists of two complementary commands that sep
 ## Integration Points
 
 ### GitHub Integration
+
 - Issues can be created directly in GitHub
 - Links maintained between local files and GitHub issues
 - Comments and discussion happen in GitHub
 - Resolution updates both local and GitHub
 
 ### MCP Tool Integration
+
 - **browser-tools**: Console logs, network analysis, performance audits
 - **postgres**: Database queries, performance monitoring, RLS policies
 - **cloudflare-observability**: Worker logs and metrics
 - **supabase**: Service logs and diagnostics
 
 ### Development Workflow
+
 - Issues integrate with git branches and PRs
 - Commit messages reference issue IDs
 - Pull requests automatically close issues
@@ -138,20 +149,25 @@ The Claude Code debugging system consists of two complementary commands that sep
 ## Advanced Features
 
 ### Pattern Recognition
+
 The system builds a library of common issue patterns:
+
 - Slow query patterns
 - Memory leak patterns  
 - CORS error patterns
 - Type mismatch patterns
 
 ### Automated Analysis
+
 Issue specifications include automated analysis:
+
 - Error pattern matching
 - Performance metric interpretation
 - Suggested investigation areas
 - Related component identification
 
 ### Team Collaboration
+
 - Standardized format enables team handoffs
 - Diagnostic data provides objective evidence
 - Resolution documentation shares knowledge
@@ -160,6 +176,7 @@ Issue specifications include automated analysis:
 ## Best Practices
 
 ### When to Log Issues
+
 - Any unexpected behavior
 - Performance degradation
 - Error messages in production
@@ -167,6 +184,7 @@ Issue specifications include automated analysis:
 - User-reported problems
 
 ### Writing Good Issue Descriptions
+
 - Clear, specific titles
 - Complete reproduction steps
 - Expected vs actual behavior
@@ -174,6 +192,7 @@ Issue specifications include automated analysis:
 - Error messages and stack traces
 
 ### Debugging Systematically
+
 - Always start with issue specification
 - Follow diagnostic data, not assumptions
 - Make incremental, tested changes
@@ -181,6 +200,7 @@ Issue specifications include automated analysis:
 - Add tests to prevent regression
 
 ### Maintaining the System
+
 - Review and update patterns regularly
 - Archive resolved issues periodically
 - Keep diagnostic tools updated
@@ -189,18 +209,21 @@ Issue specifications include automated analysis:
 ## Common Scenarios
 
 ### Production Bug
+
 1. `/log-issue github` - Document with all diagnostic data
 2. Team triage in GitHub issue
 3. `/debug-issue #123` - Systematic resolution
 4. Deploy fix with monitoring
 
 ### Performance Investigation
+
 1. `/log-issue file` - Collect performance metrics
 2. Analyze patterns in data
 3. `/debug-issue ISSUE-ID` - Implement optimizations
 4. Verify improvement with same tools
 
 ### Regression Testing
+
 1. `/log-issue file` - Document broken functionality
 2. Compare with previous working state
 3. `/debug-issue ISSUE-ID` - Identify and fix regression

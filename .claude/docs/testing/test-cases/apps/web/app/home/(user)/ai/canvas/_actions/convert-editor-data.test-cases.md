@@ -1,6 +1,7 @@
 # Test Cases: convert-editor-data.ts
 
 ## Status Summary
+
 - **Created**: 2025-01-06
 - **Last Updated**: 2025-01-06  
 - **Test Implementation Status**: ✅ Completed
@@ -9,23 +10,28 @@
 - **Coverage**: 100% (Business Logic Testing)
 
 ## File Overview
+
 **Path**: `apps/web/app/home/(user)/ai/canvas/_actions/convert-editor-data.ts`
 **Type**: Server Action - Data Migration  
-**Main Function**: `convertExistingRecordsToTiptap()` 
+**Main Function**: `convertExistingRecordsToTiptap()`
 **Purpose**: One-time migration script to convert building block submissions from Lexical format to Tiptap format
-**Key Dependencies**: 
+**Key Dependencies**:
+
 - Supabase client for database operations
 - `lexicalToTiptap` conversion utility
 - Building blocks submissions table
 
 ## Test Strategy
+
 This file contains a data migration server action that:
+
 1. Fetches all building block submissions from database
 2. Converts Lexical format content to Tiptap format for each field
 3. Updates records with converted data
 4. Returns conversion results with success/failure counts
 
 **Focus Areas**:
+
 - Database interaction mocking
 - Content format conversion accuracy  
 - Error handling for failed conversions
@@ -35,6 +41,7 @@ This file contains a data migration server action that:
 ## Test Cases Implemented ✅
 
 ### Core Business Logic Testing
+
 - [x] **Test Case**: Convert all content fields correctly
   - **Status**: ✅ Complete
   - **Implementation**: Full conversion logic with all 4 fields
@@ -66,6 +73,7 @@ This file contains a data migration server action that:
   - **Actual Effort**: 20 min
 
 ### Batch Processing Logic
+
 - [x] **Test Case**: Process multiple submissions correctly
   - **Status**: ✅ Complete
   - **Implementation**: 3-submission batch with varied content
@@ -97,6 +105,7 @@ This file contains a data migration server action that:
   - **Actual Effort**: 15 min
 
 ### JSON Serialization & Data Integrity
+
 - [x] **Test Case**: Properly serialize converted Tiptap documents
   - **Status**: ✅ Complete
   - **Implementation**: JSON roundtrip validation
@@ -123,6 +132,7 @@ This file contains a data migration server action that:
   - **Actual Effort**: 15 min
 
 ## Implementation Notes
+
 - **Approach**: Extracted business logic into pure functions for testing due to @kit import resolution issues
 - **Focus**: Core conversion logic, error handling, and batch processing
 - **Coverage**: 100% of testable business logic
@@ -133,6 +143,7 @@ This file contains a data migration server action that:
 ## Mocking Strategy
 
 ### Supabase Client Mock
+
 ```typescript
 const mockSupabaseClient = {
   from: vi.fn(() => ({
@@ -144,6 +155,7 @@ const mockSupabaseClient = {
 ```
 
 ### Format Conversion Mock
+
 ```typescript
 vi.mock('../_components/editor/tiptap/utils/format-conversion', () => ({
   lexicalToTiptap: vi.fn().mockReturnValue({ type: 'doc', content: [] })
@@ -153,6 +165,7 @@ vi.mock('../_components/editor/tiptap/utils/format-conversion', () => ({
 ## Test Data Examples
 
 ### Sample Submission
+
 ```typescript
 const mockSubmission = {
   id: 'sub-123',
@@ -164,6 +177,7 @@ const mockSubmission = {
 ```
 
 ### Expected Converted Data
+
 ```typescript
 const expectedConversion = {
   situation: '{"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"Sample situation"}]}]}',
@@ -174,6 +188,7 @@ const expectedConversion = {
 ```
 
 ## Notes
+
 - This is a migration script, so focus on data integrity and error recovery
 - Test both successful conversion paths and various failure scenarios
 - Ensure proper error logging and result aggregation

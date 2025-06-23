@@ -291,10 +291,10 @@ Copy
 
 ```json
 {
-	"provider": "openai",
-	"api_key": "OPENAI_API_KEY",
-	"openai_organization": "org-xxxxxx",
-	"openai_project": "proj_xxxxxxxx"
+ "provider": "openai",
+ "api_key": "OPENAI_API_KEY",
+ "openai_organization": "org-xxxxxx",
+ "openai_project": "proj_xxxxxxxx"
 }
 
 ```

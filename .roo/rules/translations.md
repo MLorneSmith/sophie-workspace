@@ -89,6 +89,7 @@ export function SettingsPage() {
 2. Follow the existing structure, adding your new keys
 
 For example, in `apps/web/public/locales/en/common.json`:
+
 ```json
 {
   "existingKey": "Existing translation",
@@ -123,6 +124,7 @@ const settings = getI18nSettings(language, ['specific-namespace']);
 ### Language Priority
 
 The system uses the following priority to determine the language:
+
 1. User-selected language (from cookie)
 2. Browser language (if priority is set to 'user')
 3. Default language from environment variable

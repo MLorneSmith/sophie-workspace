@@ -32,6 +32,7 @@ Layouts in Makerkit provide the structure for various parts of the application:
    - Team Workspace Layout (`app/home/[account]/layout.tsx`): For team account context
 
 Layouts handle:
+
 - Workspace context providers
 - Navigation components
 - Authentication requirements
@@ -205,6 +206,7 @@ export default withI18n(TeamLayout);
 Break down pages into reusable components:
 
 1. **Page Headers**: Create header components for consistent titling:
+
    ```tsx
    // _components/my-feature-header.tsx
    import { PageHeader } from '@kit/ui/page-header';
@@ -226,6 +228,7 @@ Break down pages into reusable components:
    ```
 
 2. **Feature Components**: Create components for feature-specific functionality:
+
    ```tsx
    // _components/my-feature-component.tsx
    'use client';

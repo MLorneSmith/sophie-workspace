@@ -3,6 +3,7 @@
 ## File: `apps/web/app/home/(user)/ai/canvas/_lib/contexts/cost-tracking-context.tsx`
 
 ### Status Summary
+
 - **Created**: 2025-01-06
 - **Last Updated**: 2025-01-06
 - **Test Implementation Status**: Starting
@@ -11,6 +12,7 @@
 - **Coverage**: 0%
 
 ### Test Setup
+
 ```typescript
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, act, waitFor } from '@testing-library/react';
@@ -45,6 +47,7 @@ describe('CostTrackingContext', () => {
 ### Test Cases Checklist
 
 #### Provider Component Tests
+
 - [ ] **Test Case**: Provider initializes with default values when user is not loaded
   - **Input**: No user data (useUser returns null)
   - **Expected Output**: Default state (sessionCost: 0, sessionId: '', isLoading: true)
@@ -106,6 +109,7 @@ describe('CostTrackingContext', () => {
   - **Notes**: useEffect dependency on userQuery.data?.id
 
 #### addCost Function Tests
+
 - [ ] **Test Case**: addCost increases session cost correctly
   - **Input**: Initial cost 10, addCost(5)
   - **Expected Output**: sessionCost becomes 15
@@ -137,6 +141,7 @@ describe('CostTrackingContext', () => {
   - **Notes**: Function doesn't validate positive-only, should work mathematically
 
 #### Hook Tests
+
 - [ ] **Test Case**: useCostTracking returns context values correctly
   - **Input**: Provider with sessionCost: 15, sessionId: 'test-id'
   - **Expected Output**: Hook returns { sessionCost: 15, sessionId: 'test-id', addCost: function, isLoading: false }
@@ -156,6 +161,7 @@ describe('CostTrackingContext', () => {
   - **Notes**: Should trigger re-render with updated state
 
 #### Integration Tests
+
 - [ ] **Test Case**: Complete user flow from loading to cost tracking
   - **Input**: User loads → API succeeds → addCost called
   - **Expected Output**: Full state progression from loading to tracking costs
@@ -169,6 +175,7 @@ describe('CostTrackingContext', () => {
   - **Notes**: Context sharing verification
 
 ### Edge Cases
+
 - [ ] **Test Case**: Provider handles very large cost values
   - **Input**: addCost(999999.99)
   - **Expected Output**: Handles large numbers without precision loss
@@ -176,12 +183,14 @@ describe('CostTrackingContext', () => {
   - **Notes**: JavaScript number precision limits
 
 ### Coverage Report
+
 - Lines: 0%
 - Branches: 0%
 - Functions: 0%
 - Statements: 0%
 
 ### Notes
+
 - Dependencies mocked: uuid, @kit/supabase/hooks/use-user, global fetch
 - Special considerations: React context testing requires wrapper components
 - Time spent: [To be tracked]
@@ -189,6 +198,7 @@ describe('CostTrackingContext', () => {
 - UI rendering aspects minimized per project standards
 
 ### Example Test Implementation
+
 ```typescript
 it('should initialize provider with default values when no user', () => {
   // Arrange

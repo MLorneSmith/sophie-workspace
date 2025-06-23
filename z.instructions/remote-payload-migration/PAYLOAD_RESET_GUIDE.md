@@ -2,7 +2,6 @@
 
 This guide documents the complete 4-step reset procedure for Payload CMS when schema corruption occurs or a fresh start is needed in production.
 
-
 ## 🚨 When to Use This Guide
 
 - Migration failures due to schema corruption
@@ -14,6 +13,7 @@ This guide documents the complete 4-step reset procedure for Payload CMS when sc
 ## ⚠️ Critical Prerequisites
 
 ### 1. Database Backup (MANDATORY)
+
 ```bash
 # Create timestamped backup
 pg_dump "$DATABASE_URI" > "backup_$(date +%Y%m%d_%H%M%S).sql"
@@ -23,6 +23,7 @@ pg_restore --list backup_20250528_131900.sql | head -10
 ```
 
 ### 2. SSL Certificate Setup
+
 ```bash
 cd apps/payload
 
@@ -39,6 +40,7 @@ Invoke-WebRequest -Uri "https://supabase.com/docs/guides/database/ssl" -OutFile 
 ```
 
 ### 3. Environment Variables (VERIFIED WORKING CONFIGURATION)
+
 ```bash
 # CRITICAL: Verify these environment variables are set BEFORE proceeding
 export DATABASE_URI="postgresql://postgres.ldebzombxtszzcgnylgq:UcQ5TYC3Hdh0v5G0@aws-0-us-east-2.pooler.supabase.com:6543/postgres?sslmode=require&sslrootcert=prod-ca-2021.crt"
@@ -58,6 +60,7 @@ $env:PAYLOAD_PUBLIC_SERVER_URL="https://payload.slideheroes.com"
 ```
 
 ### 4. Environment Variables Verification (MANDATORY)
+
 ```bash
 # UNIX/Linux/MacOS - Verify all required variables are set
 echo "DATABASE_URI: ${DATABASE_URI:0:50}..."
@@ -80,6 +83,7 @@ Get-ChildItem Env: | Where-Object Name -like "*PAYLOAD*"
 ```
 
 ### 5. Verify SSL Connection
+
 ```bash
 # Use Supabase MCP: execute_sql
 # Parameters: { "project_id": "ldebzombxtszzcgnylgq", "query": "SELECT version();" }
@@ -105,6 +109,7 @@ Get-ChildItem Env: | Where-Object Name -like "*PAYLOAD*"
 ```
 
 > **Note:** You may need to clean up enum types manually if they persist after dropping the schema:
+>
 > ```sql
 > DROP TYPE IF EXISTS enum_users_role CASCADE;
 > DROP TYPE IF EXISTS payload.enum_users_role CASCADE;
@@ -114,6 +119,7 @@ Get-ChildItem Env: | Where-Object Name -like "*PAYLOAD*"
 > **Updated:** Enum cleanup is now a required step in the main reset procedure, not optional troubleshooting.
 
 **Verification:**
+
 ```bash
 # Use Supabase MCP: execute_sql
 # Parameters: { "project_id": "ldebzombxtszzcgnylgq", "query": "SELECT table_name FROM information_schema.tables WHERE table_schema = 'payload';" }
@@ -121,6 +127,7 @@ Get-ChildItem Env: | Where-Object Name -like "*PAYLOAD*"
 ```
 
 ### Step 2: Clear Migration Files
+
 ```bash
 cd apps/payload
 
@@ -141,6 +148,7 @@ cat src/migrations/index.ts
 ```
 
 **Verification:**
+
 ```bash
 # Confirm migrations directory is clean (Windows PowerShell)
 (Get-ChildItem src/migrations/ -Name "*.ts" -Exclude "index.ts").Count
@@ -149,6 +157,7 @@ cat src/migrations/index.ts
 ```
 
 ### Step 3: Generate Fresh Migration
+
 ```bash
 # Generate new comprehensive migration
 pnpm payload migrate:create --name reset_schema
@@ -158,11 +167,13 @@ Get-ChildItem src/migrations/ -File
 ```
 
 **Expected Results:**
+
 - New migration file: `20250529_XXXXXX.ts` (timestamp-based naming)
 - Migration size: ~1,485+ lines (comprehensive schema)
 - Updated index.ts with migration export
 
 **Verification:**
+
 ```bash
 # Check migration file exists (Windows PowerShell)
 Get-ChildItem src/migrations/ -Name "*.ts" -Exclude "index.ts"
@@ -173,6 +184,7 @@ Get-Content src/migrations/20*.ts | Select-Object -First 20
 ```
 
 ### Step 4: Execute Migration
+
 ```bash
 # CRITICAL: Create payload schema first
 # Use Supabase MCP: execute_sql
@@ -185,6 +197,7 @@ pnpm payload migrate
 ```
 
 **Expected Output:**
+
 ```
 [PAYLOAD-CONFIG] Initializing Payload CMS with enhanced database connection management
 [PAYLOAD-CONFIG] Environment: development
@@ -196,6 +209,7 @@ pnpm payload migrate
 ```
 
 **Verification:**
+
 ```bash
 # Use Supabase MCP: execute_sql
 # Parameters: { "project_id": "ldebzombxtszzcgnylgq", "query": "SELECT schema_name FROM information_schema.schemata WHERE schema_name = 'payload';" }
@@ -209,6 +223,7 @@ pnpm payload migrate
 ## 🔍 Comprehensive Verification
 
 ### 5. Schema State Verification
+
 ```bash
 # Use Supabase MCP: execute_sql
 # Parameters: { "project_id": "ldebzombxtszzcgnylgq", "query": "SELECT table_name FROM information_schema.tables WHERE table_schema = 'payload' ORDER BY table_name;" }
@@ -220,6 +235,7 @@ pnpm payload migrate
 ```
 
 ### 6. Migration Record Verification
+
 ```bash
 # Use Supabase MCP: execute_sql
 # Parameters: { "project_id": "ldebzombxtszzcgnylgq", "query": "SELECT * FROM payload.payload_migrations ORDER BY created_at DESC LIMIT 1;" }
@@ -231,6 +247,7 @@ pnpm payload migrate
 ```
 
 ### 7. Schema Integrity Verification
+
 ```bash
 # Use Supabase MCP: execute_sql
 # Parameters: { "project_id": "ldebzombxtszzcgnylgq", "query": "SELECT tc.table_name, tc.constraint_name, tc.constraint_type FROM information_schema.table_constraints tc WHERE tc.table_schema = 'payload' AND tc.constraint_type = 'FOREIGN KEY';" }
@@ -242,6 +259,7 @@ pnpm payload migrate
 ```
 
 ### 8. Application Health Verification
+
 ```bash
 # Test Payload CLI
 pnpm payload --help
@@ -256,6 +274,7 @@ curl -f https://payload.slideheroes.com/api/health || echo "API not accessible"
 ## 🐛 Troubleshooting Reset Issues
 
 ### Missing Environment Variables
+
 ```bash
 # CRITICAL: Check environment variables first
 echo "Checking critical environment variables..."
@@ -274,6 +293,7 @@ if (-not $env:PAYLOAD_ENABLE_SSL) { Write-Host "ERROR: PAYLOAD_ENABLE_SSL not se
 ```
 
 ### SSL Connection Failures
+
 ```bash
 # CRITICAL: Use correct certificate filename (prod-ca-2021.crt, NOT supabase-ca-cert.crt)
 ls -la prod-ca-2021.crt  # UNIX/Linux/MacOS
@@ -294,6 +314,7 @@ Unblock-File prod-ca-2021.crt  # Windows PowerShell
 ```
 
 ### Migration Generation Failures
+
 ```bash
 # Enable debug mode
 export PAYLOAD_DEBUG=true  # UNIX/Linux/MacOS
@@ -307,6 +328,7 @@ pnpm payload --help | grep migrate
 ```
 
 ### Schema Drop Failures
+
 ```bash
 # Use Supabase MCP: execute_sql
 # Parameters: { "project_id": "ldebzombxtszzcgnylgq", "query": "SELECT pid, usename, application_name FROM pg_stat_activity WHERE datname = current_database();" }
@@ -322,6 +344,7 @@ pnpm payload --help | grep migrate
 ```
 
 ### Migration Execution Failures
+
 ```bash
 # CRITICAL: Ensure payload schema exists before migration
 # Use Supabase MCP: execute_sql
@@ -339,6 +362,7 @@ pnpm payload migrate
 ## 📊 Success Metrics
 
 ### Expected Schema Results
+
 - **Tables Created**: 58+ tables in payload schema
 - **Migration File Size**: 1,548+ lines
 - **Foreign Key Constraints**: 88+ constraints
@@ -346,6 +370,7 @@ pnpm payload migrate
 - **Execution Time**: 30-60 seconds
 
 ### Verification Checklist
+
 - [ ] Environment variables verified and set correctly
 - [ ] SSL certificate exists with correct filename (prod-ca-2021.crt)
 - [ ] Schema dropped successfully
@@ -362,12 +387,14 @@ pnpm payload migrate
 ## 🔄 Rollback from Reset
 
 ### Option 1: Restore from Backup (Recommended)
+
 ```bash
 # Restore complete database from backup using psql as no direct MCP equivalent for restore
 psql "$DATABASE_URI" < backup_20250528_131900.sql
 ```
 
 ### Option 2: Re-run Reset (If Partial Failure)
+
 ```bash
 # Use Supabase MCP: execute_sql
 # Parameters: { "project_id": "ldebzombxtszzcgnylgq", "query": "DROP SCHEMA IF EXISTS payload CASCADE;" }
@@ -377,12 +404,14 @@ psql "$DATABASE_URI" < backup_20250528_131900.sql
 ## 🚨 Emergency Procedures
 
 ### If Reset Fails Completely
+
 1. **Immediate**: Restore from backup
 2. **Investigate**: Check logs and error messages
 3. **Verify**: Environment variables and SSL setup (most common issue)
 4. **Retry**: With debug mode enabled
 
 ### If Database Connection Lost
+
 1. **Check**: Environment variables (DATABASE_URI, PAYLOAD_ENABLE_SSL)
 2. **Verify**: SSL certificate validity and correct filename (prod-ca-2021.crt)
 3. **Test**: Connection string format
@@ -464,10 +493,10 @@ ldebzombxtszzcgnylgq
 
 > **Note:** When delegating tasks related to this reset, always provide this project ID to ensure correct context and access.
 
-
 ## 📞 Support
 
 If reset procedure fails:
+
 1. **FIRST**: Check environment variables are properly set (most common issue)
 2. **SECOND**: Verify SSL certificate filename is correct (prod-ca-2021.crt)
 3. Restore from backup immediately if needed

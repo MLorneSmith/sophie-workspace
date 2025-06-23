@@ -137,7 +137,7 @@ Copy
 
 Based on the `conditions` and the Config structure described above, you can create your [Config in Portkey UI](https://app.portkey.ai/configs), and save it to get Config ID. The UI also helps you autofill and autoformat your Config.
 
-#### [​](https://portkey.ai/docs/product/ai-gateway/conditional-routing\#adding-the-above-sample-condition-to-our-final-config)  Adding the above sample condition to our final Config:
+#### [​](https://portkey.ai/docs/product/ai-gateway/conditional-routing\#adding-the-above-sample-condition-to-our-final-config)  Adding the above sample condition to our final Config
 
 - Simple Conditional Config
 - Nested Conditional Config

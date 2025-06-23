@@ -332,6 +332,7 @@ function AccessibleForm() {
 ```
 
 The ShadcnUI Form components automatically handle:
+
 - `aria-invalid` when there are errors
 - `aria-describedby` linking error messages
 - Proper label associations
@@ -661,13 +662,13 @@ describe('AccessibleButton', () => {
 
 ### Manual Testing Checklist
 
-1. **Keyboard Navigation**: 
+1. **Keyboard Navigation**:
    - Can navigate with Tab/Shift+Tab
    - Can activate with Enter/Space
    - Focus indicators are visible
    - No keyboard traps
 
-2. **Screen Reader Testing**: 
+2. **Screen Reader Testing**:
    - All interactive elements have accessible names
    - Form fields have associated labels
    - Error messages are announced

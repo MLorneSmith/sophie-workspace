@@ -118,13 +118,13 @@ Database Design & Data Modeling
 
 Schema design, relationships, indexing, data flow, migration strategies
 
-##Role in ecosystem
+## Role in ecosystem
 Data foundation that supports all application logic; critical for performance
 
-##What happens without it
+## What happens without it
 Data inconsistency, poor performance, difficult feature additions, data loss risks
 
-##Tools
+## Tools
 Supabase, PostgreSQL, database diagramming tools, migration tools
 
 ## Job titles

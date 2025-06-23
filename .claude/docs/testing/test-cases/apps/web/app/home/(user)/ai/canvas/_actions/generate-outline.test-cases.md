@@ -1,6 +1,7 @@
 # Test Cases: generate-outline.ts
 
 ## Status Summary
+
 - **Created**: 2025-01-06
 - **Last Updated**: 2025-01-06  
 - **Test Implementation Status**: Completed
@@ -11,6 +12,7 @@
 ## File: `apps/web/app/home/(user)/ai/canvas/_actions/generate-outline.ts`
 
 ### Test Setup
+
 ```typescript
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { generateOutlineAction } from './generate-outline';
@@ -55,6 +57,7 @@ describe('Generate Outline Action', () => {
 ### Test Cases Checklist
 
 #### Core Functionality
+
 - [ ] **Test Case**: Valid submission generates outline structure
   - **Input**: `{ submissionId: "valid-id", forceRegenerate: false }`
   - **Expected Output**: Success response with TipTap document structure
@@ -74,6 +77,7 @@ describe('Generate Outline Action', () => {
   - **Notes**: Should check if valid outline exists first
 
 #### Schema Validation
+
 - [ ] **Test Case**: Validates required submissionId
   - **Input**: `{ forceRegenerate: true }`
   - **Expected Output**: Validation error for missing submissionId
@@ -93,6 +97,7 @@ describe('Generate Outline Action', () => {
   - **Notes**: submissionId must be non-empty string
 
 #### Content Processing
+
 - [ ] **Test Case**: Processes Lexical format content
   - **Input**: Submission with Lexical JSON in situation/complication/answer
   - **Expected Output**: Content converted to TipTap format in outline
@@ -112,6 +117,7 @@ describe('Generate Outline Action', () => {
   - **Notes**: Each section processed independently
 
 #### Content Structure
+
 - [ ] **Test Case**: Creates proper outline heading structure
   - **Input**: Submission with all three sections
   - **Expected Output**: Document with "Presentation Outline" h1 and section h2 headings
@@ -131,6 +137,7 @@ describe('Generate Outline Action', () => {
   - **Notes**: Lists should be preserved even if they contain minimal text
 
 #### Edge Cases
+
 - [ ] **Test Case**: Handles null content in sections
   - **Input**: Submission with null values for situation/complication/answer
   - **Expected Output**: Empty TipTap document structure with just main heading
@@ -156,6 +163,7 @@ describe('Generate Outline Action', () => {
   - **Notes**: parseTiptapDocument should handle parse errors gracefully
 
 #### Normalization Function Tests  
+
 - [ ] **Test Case**: Normalizes empty text nodes
   - **Input**: TipTap document with empty text nodes
   - **Expected Output**: Text nodes filled with single space
@@ -181,6 +189,7 @@ describe('Generate Outline Action', () => {
   - **Notes**: Ensures proper list item structure
 
 #### Database Integration
+
 - [ ] **Test Case**: Successfully updates outline in database
   - **Input**: Valid submission data
   - **Expected Output**: Database update called with stringified outline
@@ -200,6 +209,7 @@ describe('Generate Outline Action', () => {
   - **Notes**: Should handle supabase update errors
 
 #### Metadata and Output Format
+
 - [ ] **Test Case**: Adds correct metadata to outline
   - **Input**: Valid submission
   - **Expected Output**: Outline includes meta.sectionType, timestamp, version
@@ -213,6 +223,7 @@ describe('Generate Outline Action', () => {
   - **Notes**: Must be valid TipTap document format
 
 #### Error Scenarios
+
 - [ ] **Test Case**: Handles unknown errors gracefully
   - **Input**: Scenario that causes unexpected error
   - **Expected Output**: Error response with generic message
@@ -226,17 +237,20 @@ describe('Generate Outline Action', () => {
   - **Notes**: Should handle when submission query returns null
 
 ### Coverage Report
+
 - Lines: 0%
 - Branches: 0%
 - Functions: 0%
 - Statements: 0%
 
 ### Notes
+
 - Dependencies mocked: enhanceAction, getSupabaseServerClient, lexicalToTiptap
 - Special considerations: Complex TipTap document structure validation, content format conversion
 - Time spent: [Track time for estimation accuracy]
 
 ### Example Test Implementation
+
 ```typescript
 it('should generate outline with proper structure for valid submission', async () => {
   // Arrange

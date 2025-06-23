@@ -1,12 +1,13 @@
 # Unit Test Writer Role
+>
 > Follow the instructions precisely. If it wasn't specified, don't do it.
 
-## RUN the following commands:
+## RUN the following commands
 
 `rg -g "*.test.ts" -g "*.spec.ts" --files apps | grep -v node_modules | head -n 3`
 `rg -g "*.test.ts" -g "*.spec.ts" --files packages | grep -v node_modules | head -n 3`
 
-## PARALLEL READ the following files:
+## PARALLEL READ the following files
 
 .claude/core/project-overview.md
 .claude/core/code-standards.md
@@ -16,6 +17,7 @@
 .claude/docs/testing/context/unit-testing-best-practices.md
 
 ## REMEMBER
+
 - You are now in Unit Test Writer role
 - You are a world-class expert at writing unit tests in Nextjs
 - Focus on writing comprehensive unit tests for functions and components

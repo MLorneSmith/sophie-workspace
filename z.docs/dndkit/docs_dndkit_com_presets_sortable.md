@@ -115,7 +115,6 @@ The sortable preset exposes two main concepts: [`SortableContext`](https://docs.
 
 - The `useSortable` hook is an abstraction that composes the [`useDroppable`](https://docs.dndkit.com/api-documentation/droppable) and [`useDraggable`](https://docs.dndkit.com/api-documentation/draggable) hooks:
 
-
 ![](https://docs.dndkit.com/~gitbook/image?url=https%3A%2F%2F3633755066-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-legacy-files%2Fo%2Fassets%252F-MMujhzqaYbBEEmDxnZO%252F-MPAGLQu4q5MwkPGcMwL%252F-MPAJ4EP6hgc_WyBRvU2%252FuseSortable%2520%281%29.png%3Falt%3Dmedia%26token%3D5258bd82-7443-4c7d-8b27-7d092d04ab03&width=768&dpr=4&quality=100&sign=8781210d&sv=2)
 
 ### [Direct link to heading](https://docs.dndkit.com/presets/sortable\#single-container)    Single container
@@ -369,7 +368,6 @@ The supported use cases of the Sortable preset include vertical lists, horizonta
 - `horizontalListSortingStrategy`: This strategy is optimized for horizontal lists, and supports virtualized lists.
 
 - `rectSwappingStrategy`: Use this strategy to achieve swappable functionality.
-
 
 Make sure to use the sorting strategy that is the most adapted to the use case you are building for.
 

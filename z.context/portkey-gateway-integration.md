@@ -12,6 +12,7 @@ This document outlines the steps to integrate Portkey AI Gateway into the codeba
 2. **Install Portkey SDK**:
 
    - Install the Portkey Node.js SDK in your project:
+
      ```bash
      pnpm add portkey-ai
      ```

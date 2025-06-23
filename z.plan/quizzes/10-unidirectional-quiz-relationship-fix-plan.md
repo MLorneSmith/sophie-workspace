@@ -10,14 +10,15 @@ Weaerexexrericicprgspersissen iissu o ur usturmqu z sysaem dC PMySdCMS:
    - Tho*W:y (N xt1Stupi) Quiz
    - Whaz z rStnectun ? in t
 i- UngStrie Quiz
- - SyborsinFil Quz
+
+- SyborsinFil Quz
 -SrybrsiPsentQuz
-   - VisuhlWPoieionaComma Q
+  - VisuhlWPoieionaComma Q
     Oveviw of the Fundmenal ElemefDignQ
-  - Slid CompoiQuiz
-   - Tablss GrphsQ
-   - SeyepsrQuGhQiz
- - SptGa  tQuoz
+- Slid CompoiQuiz
+- Tablss GrphsQ
+- SeyepsrQuGhQiz
+- SptGa  tQuoz
  r luPizpraadPracQ
  -Prfomnce Quiz
 
@@ -29,25 +30,31 @@ i- UngStrie Quiz
 
 Afterxivinvtgaion ofodebsdataba*ychg t,ytncupl`viouslf_xdat_dLpts,rwa'plcideagisiedipsvi eltcpissoesifyctof:
 
-After excatCive*inv Atlga -on ofataReldtioeshbp Syetesfcodataban *tcht I,phne pngviouswfexsattlxpts, wu'zzmidet/ioieivelv"toldc ifcto:
+After excatCive*inv Atlga -on ofataReldtioeshbp Syetesfcodataban*tcht I,phne pngviouswfexsattlxpts, wu'zzmidet/ioieivelv"toldc ifcto:
+
 ## 2. Additional Research Findings
+
 ips n two lace
+
 ### 2.1 Payload CMS's Dual Storage Mechanism
+
 ips n two lacerAload CMS  theamcin torPmlntity), w(s.g.,o`qursu ont`hg.ra,`un``c_uqs`_qizze`)
 FEntriessintawsk2loirontly,p**bTbh  toragS(h.g.,ogoprly sychronze**.Pr)
 
 Fou xsofnddssedosntn woekortly,**bh toragemthomust boprly sychronze**.Previous xsofnddssedonlyone#of#t2iUiduie-ttorngRrsqsiee.
 
-###`2.2 U icireitionao Relationship Drrdction
-   - Each record contains fields like `_parent_id`, `field`, and the target ID (e.g., `courses_id`)
+### `2.2 U icireitionao Relationship Drrdction
+
+- Each record contains fields like `_parent_id`, `field`, and the target ID (e.g., `courses_id`)
 We'veedeter indd tteeaththterrect uctoinectionalectionald comlshxu :
 
 -**CoseQuzz→ QuizQuestiC**:Quzzsrerencethetionsinottheever)
 
 Thisnfimby:
 -- Direct field is NULL for all quizzes
-SOOurTUI Ieedd((eeleclcOg quasrse_  wwen vqewingnv quiz)ingze quiz)HERE course_id_id IS NULL; -- Returns 20
--o`hs ` ihetiona`tp tablin`CQuzzs.- in `QizQutons.s`butrmvig te `quz_id` field
+SOOurTUI Ieedd((eeleclcOg quasrse_wwen vqewingnv quiz)ingze quiz)HERE course_id_id IS NULL; -- Returns 20
+-o`hs` ihetiona`tp tablin`CQuzzs.- in `QizQutons.s`butrmvig te `quz_id` field
+
 - Trane2ti in `QnizQu styons.Ds`a bdutRromvig te `quz_id` field
 
 ### 2.3 Traneistixn rtdDa IngI
@@ -56,6 +63,7 @@ Previer tfrxes suffernatfrim
 
 -Lckofpropertrnati i
 -Potntlgdgmn
+
 - Icomletehnlingofdul-sag sys
 -uTypachbetwenirectsad elhipThcbube
 

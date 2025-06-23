@@ -14,6 +14,7 @@ We use Portkey AI Gateway as an abstraction layer for AI service providers. This
 ## Architecture
 
 We use OpenAI SDK with Portkey's proxy URL rather than Portkey's SDK directly. This gives us:
+
 - Better TypeScript support
 - Consistent API interface
 - Custom header-based configuration
@@ -182,6 +183,7 @@ for await (const chunk of stream) {
 ## Usage Tracking
 
 The gateway automatically tracks:
+
 - User ID and Team ID for billing
 - Feature name for cost attribution
 - Session ID for request grouping
@@ -189,6 +191,7 @@ The gateway automatically tracks:
 - Request IDs for debugging
 
 Tracked data includes:
+
 - Prompt tokens
 - Completion tokens
 - Total cost calculation
@@ -197,11 +200,13 @@ Tracked data includes:
 ## Environment Variables
 
 Required:
+
 - `PORTKEY_API_KEY` - Your Portkey API key
 - `PORTKEY_VIRTUAL_KEY` - Virtual key for provider access
 - `OPENAI_API_KEY` - OpenAI API key (can be empty with virtual keys)
 
 Optional:
+
 - `CHECK_AI_USAGE_LIMITS` - Enable usage limit checking (default: false)
 - `BYPASS_AI_CREDITS` - Bypass credit deduction (default: true)
 - `AI_USAGE_DEBUG` - Enable verbose debug logging (default: false)

@@ -125,6 +125,7 @@ The following Aceternity components are currently installed:
    ```
 
 5. **Usage**: Import the component in your application:
+
    ```typescript
    import { NewComponent } from '@kit/ui/new-component';
    ```

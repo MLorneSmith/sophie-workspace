@@ -63,6 +63,7 @@ const containerWidth = "container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl";
 ## Component-Specific Implementation
 
 ### Hero Title
+
 ```tsx
 <span className="text-display-1 md:text-display-2 lg:text-display-1 leading-tight tracking-tight">
   {homepageContentConfig.hero.title}
@@ -70,6 +71,7 @@ const containerWidth = "container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl";
 ```
 
 ### Section Headers
+
 ```tsx
 <h2 className="text-h2 mb-4 text-center leading-snug">
   {sectionTitle}
@@ -77,6 +79,7 @@ const containerWidth = "container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl";
 ```
 
 ### Section Subtitles
+
 ```tsx
 <p className="text-body-lg text-gray-600 dark:text-gray-300 text-center leading-relaxed max-w-4xl mx-auto mb-12">
   {sectionSubtitle}
@@ -86,6 +89,7 @@ const containerWidth = "container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl";
 ## Standard Section Pattern
 
 Each main section follows this pattern:
+
 ```tsx
 <section className={`${containerWidth} ${spacing.section}`}>
   {/* Title */}
@@ -108,7 +112,9 @@ Each main section follows this pattern:
 ## Special Cases
 
 ### SecondaryHero Component
+
 When using SecondaryHero (e.g., in pricing section), use span instead of h2 to avoid nesting issues:
+
 ```tsx
 <SecondaryHero
   heading={
@@ -125,7 +131,9 @@ When using SecondaryHero (e.g., in pricing section), use span instead of h2 to a
 ```
 
 ### StickyScrollReveal Section
+
 The sticky section requires additional spacing to prevent headline overlap:
+
 ```tsx
 <section className={`w-full ${spacing.section}`}>
   <div className={`${containerWidth} mb-[20vh]`}>
@@ -163,6 +171,7 @@ The sticky section requires additional spacing to prevent headline overlap:
 ## Content Management
 
 Typography content is managed through homepage-content.config.ts:
+
 ```typescript
 export const homepageContentConfig = {
   section: {
@@ -203,6 +212,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 ## Reference Implementation
 
 Complete implementation examples can be found at:
+
 - `apps/web/app/(marketing)/page.tsx`
 - `apps/web/app/test/page.tsx`
 
@@ -215,6 +225,7 @@ We've implemented a dual typography system that maintains the large, impactful s
 ### Typography Scales
 
 #### Marketing Pages (Original Large Scale)
+
 ```typescript
 fontSize: {
   'display': ['4.768rem', { lineHeight: '1.1', letterSpacing: '-0.02em' }],
@@ -226,6 +237,7 @@ fontSize: {
 ```
 
 #### Internal Pages (Compact Scale)
+
 ```typescript
 fontSize: {
   'app-display': ['2.75rem', { lineHeight: '1.1', letterSpacing: '-0.02em' }],
@@ -241,6 +253,7 @@ fontSize: {
 1. **Layout-Based Typography**
    - Marketing pages use the data-marketing attribute to enable large typography
    - Internal pages use the compact scale by default
+
    ```tsx
    // Marketing layout
    <div data-marketing className="flex min-h-screen flex-col">
@@ -249,6 +262,7 @@ fontSize: {
    ```
 
 2. **CSS Implementation**
+
    ```css
    /* Default (Internal App) Typography */
    h1, .h1 { @apply text-app-h1 font-heading font-bold tracking-tight; }
@@ -260,6 +274,7 @@ fontSize: {
 
 3. **Component System**
    - Typography component for consistent usage:
+
    ```tsx
    export function Typography({ 
      variant,
@@ -277,6 +292,7 @@ fontSize: {
    ```
 
 4. **Convenience Components**
+
    ```tsx
    export function AppHeading1(props: Omit<TypographyProps, 'variant'>) {
      return <Typography variant="h1" {...props} />;

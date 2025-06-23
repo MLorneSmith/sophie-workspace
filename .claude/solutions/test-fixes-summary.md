@@ -37,12 +37,14 @@ Multiple unit test failures across the monorepo have been partially addressed. H
 - **Problem**: Playwright browsers not installed, requires system dependencies
 - **Error**: `browserType.launch: Executable doesn't exist`
 - **Solution Required**:
+
   ```bash
   # Install system dependencies (requires sudo)
   sudo apt-get install libnss3 libnspr4 libasound2
   # Then install browsers
   pnpm exec playwright install chromium
   ```
+
 - **Note**: This is an environment issue, not a code issue
 
 ### 2. ⚠️ Test Expectation Mismatches (Various)

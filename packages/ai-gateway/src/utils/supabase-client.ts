@@ -189,7 +189,7 @@ export async function getSupabaseClient(
 					(await getLogger()).info(
 						"Supabase admin client successfully connected",
 					);
-					return adminClient as SupabaseClient;
+					return adminClient as unknown as SupabaseClient;
 				} catch (adminConnectionError) {
 					(await getLogger()).error(
 						"Error testing Supabase admin connection:",
@@ -247,7 +247,7 @@ export async function getSupabaseClient(
 			}
 
 			(await getLogger()).info("Supabase client successfully connected");
-			return client as SupabaseClient;
+			return client as unknown as SupabaseClient;
 		} catch (connectionError) {
 			(await getLogger()).error("Error testing Supabase connection:", {
 				data: connectionError,

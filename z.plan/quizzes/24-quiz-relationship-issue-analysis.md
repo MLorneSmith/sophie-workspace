@@ -45,10 +45,12 @@ The most recent script created specifically to address relationship issues:
 
 - **Purpose**: Originally designed to fix bidirectional relationships comprehensively
 - **Current State**: Deprecated with the following message:
+
   ```
   This script has been superseded by the consolidated quiz relationship migration
   located at: apps/payload/src/migrations/20250425_150000_consolidated_quiz_relationship_fix.ts
   ```
+
 - **Issue**: The referenced migration file doesn't exist
 
 ### 3.3. `fix:quiz-question-relationships-enhanced`

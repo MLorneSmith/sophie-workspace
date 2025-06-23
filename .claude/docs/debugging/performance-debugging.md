@@ -5,12 +5,14 @@ This guide provides systematic approaches for AI coding assistants to identify a
 ## Performance Debugging Methodology
 
 ### 1. Measurement First
+
 - **Establish baseline**: Measure current performance before making changes
 - **Use real data**: Test with production-like data volumes
 - **Multiple metrics**: Don't rely on a single performance indicator
 - **Consistent environment**: Use the same testing conditions
 
 ### 2. Performance Metrics to Track
+
 ```typescript
 interface PerformanceMetrics {
   // Core Web Vitals
@@ -35,17 +37,20 @@ interface PerformanceMetrics {
 ### Pattern 1: Slow Initial Load
 
 **Symptoms:**
+
 - High Time to First Byte (TTFB)
 - Large bundle sizes
 - Slow First Contentful Paint (FCP)
 
 **Investigation Steps:**
+
 1. **Analyze bundle size**: Use webpack-bundle-analyzer
 2. **Check network requests**: Monitor initial resource loading
 3. **Examine critical path**: Identify blocking resources
 4. **Review server response**: Check API response times
 
 **Diagnostic Commands:**
+
 ```bash
 # Analyze bundle size
 npx webpack-bundle-analyzer build/static/js/*.js
@@ -58,6 +63,7 @@ curl -w "@curl-format.txt" -o /dev/null -s "http://localhost:3000"
 ```
 
 **Common Solutions:**
+
 ```typescript
 // Code splitting
 const LazyComponent = lazy(() => import('./HeavyComponent'));
@@ -82,17 +88,20 @@ import { debounce } from 'lodash/debounce'; // Instead of entire lodash
 ### Pattern 2: Runtime Performance Issues
 
 **Symptoms:**
+
 - Janky scrolling or animations
 - High CPU usage
 - Unresponsive UI during interactions
 
 **Investigation Steps:**
+
 1. **Profile JavaScript**: Use Chrome DevTools Performance tab
 2. **Check React renders**: Use React DevTools Profiler
 3. **Monitor memory usage**: Look for memory leaks
 4. **Analyze main thread**: Identify blocking operations
 
 **React Performance Debugging:**
+
 ```typescript
 // Identify unnecessary re-renders
 const MemoizedComponent = memo(({ data }) => {
@@ -118,17 +127,20 @@ const handleClick = useCallback((id: string) => {
 ### Pattern 3: Database/API Performance
 
 **Symptoms:**
+
 - Slow API responses
 - High database CPU usage
 - Timeout errors
 
 **Investigation Steps:**
+
 1. **Analyze query performance**: Check execution plans
 2. **Monitor database metrics**: CPU, memory, connections
 3. **Review API endpoints**: Identify slow routes
 4. **Check caching**: Verify cache hit rates
 
 **Database Optimization:**
+
 ```sql
 -- Analyze slow queries
 EXPLAIN ANALYZE SELECT * FROM users WHERE email = 'user@example.com';
@@ -143,6 +155,7 @@ WHERE u.active = true;
 ```
 
 **API Optimization:**
+
 ```typescript
 // Implement caching
 const getCachedData = async (key: string) => {
@@ -164,17 +177,20 @@ const batchLoader = new DataLoader(async (ids) => {
 ### Pattern 4: Memory Leaks
 
 **Symptoms:**
+
 - Increasing memory usage over time
 - Browser becomes unresponsive
 - Out of memory errors
 
 **Investigation Steps:**
+
 1. **Take heap snapshots**: Compare memory usage over time
 2. **Check event listeners**: Look for unremoved listeners
 3. **Examine closures**: Find retained references
 4. **Review timers**: Ensure intervals are cleared
 
 **Memory Leak Prevention:**
+
 ```typescript
 // Clean up event listeners
 useEffect(() => {
@@ -208,6 +224,7 @@ useEffect(() => {
 ## Performance Debugging Tools
 
 ### Browser DevTools
+
 ```javascript
 // Performance measurement
 performance.mark('operation-start');
@@ -227,12 +244,14 @@ new PerformanceObserver((list) => {
 ```
 
 ### React DevTools Profiler
+
 1. **Start profiling**: Click record button
 2. **Perform actions**: Execute the slow operation
 3. **Stop profiling**: Analyze the flame graph
 4. **Identify issues**: Look for unnecessary renders and long operations
 
 ### Lighthouse Audits
+
 ```bash
 # Run lighthouse audit
 npx lighthouse http://localhost:3000 \
@@ -244,6 +263,7 @@ npx lighthouse http://localhost:3000 \
 ## Performance Optimization Strategies
 
 ### 1. Code Splitting and Lazy Loading
+
 ```typescript
 // Route-based splitting
 const HomePage = lazy(() => import('./pages/HomePage'));
@@ -261,6 +281,7 @@ const AdminPanel = lazy(() =>
 ```
 
 ### 2. Memoization and Caching
+
 ```typescript
 // Expensive calculations
 const expensiveValue = useMemo(() => {
@@ -284,6 +305,7 @@ const ExpensiveComponent = memo(({ data, onUpdate }) => {
 ```
 
 ### 3. Virtual Scrolling for Large Lists
+
 ```typescript
 import { FixedSizeList as List } from 'react-window';
 
@@ -304,6 +326,7 @@ const VirtualizedList = ({ items }) => (
 ```
 
 ### 4. Image Optimization
+
 ```typescript
 // Next.js Image component
 import Image from 'next/image';
@@ -329,6 +352,7 @@ import Image from 'next/image';
 ## Performance Testing Workflow
 
 ### 1. Baseline Measurement
+
 ```typescript
 // Automated performance testing
 const performanceTest = async () => {
@@ -345,6 +369,7 @@ const performanceTest = async () => {
 ```
 
 ### 2. Load Testing
+
 ```bash
 # Using Artillery for load testing
 artillery quick --count 10 --num 100 http://localhost:3000
@@ -354,6 +379,7 @@ k6 run performance-test.js
 ```
 
 ### 3. Continuous Monitoring
+
 ```typescript
 // Performance monitoring in production
 const reportPerformance = (metric: string, value: number) => {
@@ -376,17 +402,20 @@ new PerformanceObserver((list) => {
 ## Best Practices for AI Assistants
 
 ### 1. Systematic Performance Analysis
+
 - Always measure before optimizing
 - Focus on the biggest bottlenecks first
 - Test optimizations in realistic conditions
 - Monitor for regressions after changes
 
 ### 2. Performance Budget
+
 - Set performance budgets for bundle size, load time, etc.
 - Fail builds that exceed performance budgets
 - Regular performance audits
 
 ### 3. Documentation
+
 - Document performance requirements
 - Record optimization decisions and trade-offs
 - Maintain performance testing procedures

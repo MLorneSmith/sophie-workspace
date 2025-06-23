@@ -1,11 +1,21 @@
 import tsconfigPaths from "vite-tsconfig-paths";
 import { defineConfig } from "vitest/config";
+import react from "@vitejs/plugin-react";
 
 export default defineConfig({
 	plugins: [
+		// Enable React support with automatic JSX transform
+		react({
+			jsxImportSource: 'react',
+		}),
 		// Synchronize TypeScript paths with Vitest/Vite module resolution
 		tsconfigPaths(),
 	],
+	esbuild: {
+		// Configure JSX transformation
+		jsx: 'automatic',
+		jsxImportSource: 'react',
+	},
 	test: {
 		// Environment setup
 		environment: "jsdom",

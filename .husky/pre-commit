@@ -11,6 +11,7 @@ has_biome_files=false
 has_payload_files=false
 has_package_files=false
 has_md_files=false
+has_yaml_files=false
 
 # Check each staged file and process accordingly
 for file in $staged_files; do
@@ -48,12 +49,23 @@ for file in $staged_files; do
       biome lint --write "$file" 2>/dev/null || true
     fi
   elif echo "$file" | grep -qE '\.(md|mdx)$'; then
-    # Markdown files - use Prettier
+    # Markdown files - use Prettier and markdownlint
     if ! $has_md_files; then
-      echo "📝 Processing markdown files with Prettier..."
+      echo "📝 Processing markdown files with Prettier and markdownlint..."
       has_md_files=true
     fi
     prettier --write "$file" 2>/dev/null || true
+    # Skip markdown linting for excluded directories
+    if ! echo "$file" | grep -qE '^(z\.(plan|instructions|docs|todo|context)|\.claude|\.mcp-servers|\.roo)/'; then
+      markdownlint-cli2 --fix "$file" 2>/dev/null || true
+    fi
+  elif echo "$file" | grep -qE '\.(yaml|yml)$'; then
+    # YAML files - run yaml-lint
+    if ! $has_yaml_files; then
+      echo "📄 Processing YAML files with yaml-lint..."
+      has_yaml_files=true
+    fi
+    npx yaml-lint "$file" || echo "⚠️  YAML lint failed for $file"
   fi
 done
 
@@ -64,7 +76,7 @@ if echo "$staged_files" | grep -qE '\.(ts|tsx)$'; then
 fi
 
 # Re-stage all modified files
-if $has_biome_files || $has_payload_files || $has_package_files || $has_md_files; then
+if $has_biome_files || $has_payload_files || $has_package_files || $has_md_files || $has_yaml_files; then
   echo "📥 Re-staging formatted files..."
   git add . 2>/dev/null || true
 fi

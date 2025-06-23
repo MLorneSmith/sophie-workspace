@@ -5,6 +5,7 @@ This guide will fix the `ENOENT: no such file or directory, mkdir 'media'` error
 ## 🚨 Problem Summary
 
 The error occurs because:
+
 1. **No cloud storage configured** - Your Payload CMS falls back to local file storage
 2. **Serverless environment limitation** - Vercel's read-only filesystem prevents creating directories
 3. **Missing Cloudflare R2 setup** - Your intended R2 storage isn't activating
@@ -72,6 +73,7 @@ node scripts/verify-config.js
 ### 1. Enhanced Payload Configuration
 
 **Before:** Only basic S3 support, falls back to local storage
+
 ```javascript
 // Old configuration - caused mkdir errors
 if (process.env.S3_BUCKET && process.env.S3_REGION) {
@@ -81,6 +83,7 @@ return undefined; // Falls back to local storage = ERROR
 ```
 
 **After:** Proper R2 support with fallbacks and warnings
+
 ```javascript
 // New configuration - R2 first, then S3, with production warnings
 if (process.env.CLOUDFLARE_R2_BUCKET && ...) {
@@ -95,6 +98,7 @@ if (process.env.CLOUDFLARE_R2_BUCKET && ...) {
 ### 2. Environment Variable Detection
 
 **Enhanced Configuration Logic:**
+
 - ✅ Cloudflare R2 detection (recommended)
 - ✅ AWS S3 fallback support
 - ✅ Production warnings when no storage configured
@@ -103,6 +107,7 @@ if (process.env.CLOUDFLARE_R2_BUCKET && ...) {
 ### 3. Serverless Compatibility
 
 **R2-Specific Settings:**
+
 ```javascript
 config: {
   endpoint: `https://${accountId}.r2.cloudflarestorage.com`,
@@ -115,6 +120,7 @@ config: {
 ## 🎯 Expected Results
 
 ### Before Fix
+
 ```
 [ERROR] ENOENT: no such file or directory, mkdir 'media'
 ❌ Media uploads fail
@@ -122,6 +128,7 @@ config: {
 ```
 
 ### After Fix
+
 ```
 [PAYLOAD-CONFIG] Configuring Cloudflare R2 storage
 [PAYLOAD-CONFIG] R2 Bucket: your-bucket-name
@@ -135,6 +142,7 @@ config: {
 ### Still getting mkdir errors?
 
 1. **Check environment variables:**
+
    ```bash
    node scripts/verify-config.js
    ```
@@ -150,17 +158,21 @@ config: {
 ### Common Issues
 
 **"Access Denied"**
+
 - Regenerate R2 API tokens with proper permissions
 
 **"SignatureDoesNotMatch"**  
+
 - Double-check Account ID and secret key
 
 **"NoSuchBucket"**
+
 - Verify bucket name matches exactly
 
 ## 💰 Cost Benefits
 
 **Cloudflare R2 vs AWS S3:**
+
 - ✅ No egress fees (R2) vs $0.09/GB egress (S3)
 - ✅ Global CDN included
 - ✅ Simpler pricing structure
@@ -176,6 +188,7 @@ config: {
 ## 📞 Support
 
 If you need help:
+
 1. Run `node scripts/verify-config.js` first
 2. Check the detailed guides in this directory
 3. Review Vercel deployment logs for specific errors

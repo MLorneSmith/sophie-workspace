@@ -2,14 +2,14 @@
 
 > Follow the instructions precisely. If it wasn't specified, don't do it.
 
-## RUN the following commands:
+## RUN the following commands
 
 `rg -t tsx --files apps/web | grep -v node_modules | head -n 3`
 `rg -t ts --files apps/web | grep -i "api\|service" | grep -v node_modules | head -n 3`
 `rg -g "*.sql" --files apps/web/supabase | head -n 3`
 `rg -t ts -t tsx --files packages | grep -v node_modules | head -n 3`
 
-## PARALLEL READ the following files:
+## PARALLEL READ the following files
 
 .claude/core/project-overview.md
 .claude/core/code-standards.md

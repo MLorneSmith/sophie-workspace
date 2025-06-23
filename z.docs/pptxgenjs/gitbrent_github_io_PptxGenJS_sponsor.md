@@ -4,7 +4,7 @@
 
 # Donate / Sponsor
 
-##### Support this project by making a donation!
+##### Support this project by making a donation
 
 Are you building killer apps? Showcasing your amazing research? Selling products that include our library?
 

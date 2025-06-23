@@ -408,7 +408,7 @@ export const POST = enhanceRouteHandler(
 - Write clean, clear, well-designed, explicit Typescript
 - Use implicit type inference, unless impossible
 - `any` and `unknown` are a code smell and must justified if used
-- Handle errors gracefully using try/catch and appropriate error types. 
+- Handle errors gracefully using try/catch and appropriate error types.
 
 ### Components
 

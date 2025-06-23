@@ -48,7 +48,6 @@ While the `RootNode` is not "part of the document" in the traditional sense, it 
 
 If you are attempting to use the `RootNode` for document-level metadata (e.g., undo/redo support), consider alternative designs. Currently, Lexical does not provide direct facilities for this use case, but solutions like creating a shadow root under the `RootNode` might work.
 
-
 By design, the `RootNode` serves as a container for the editor's content rather than an active part of the document's logical structure. This approach simplifies operations like serialization and keeps the focus on content nodes.
 
 ### [`LineBreakNode`](https://github.com/facebook/lexical/blob/main/packages/lexical/src/nodes/LexicalLineBreakNode.ts) [​](https://lexical.dev/docs/concepts/nodes\#linebreaknode "Direct link to heading")

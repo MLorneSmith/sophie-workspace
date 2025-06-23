@@ -243,10 +243,10 @@ export async function testDatabasePermissions(
 		if (error) {
 			(await getLogger()).error("Database permission test failed:", {
 				error,
-				message: (error as { message?: string }).message,
-				details: (error as { message?: string }).details,
-				hint: (error as { message?: string }).hint,
-				code: (error as { message?: string }).code,
+				message: (error as { message?: string; details?: string; hint?: string; code?: string }).message,
+				details: (error as { message?: string; details?: string; hint?: string; code?: string }).details,
+				hint: (error as { message?: string; details?: string; hint?: string; code?: string }).hint,
+				code: (error as { message?: string; details?: string; hint?: string; code?: string }).code,
 			});
 			return false;
 		}
@@ -289,10 +289,10 @@ export async function testDatabaseFunctions(
 		if (error) {
 			(await getLogger()).error("Database function test failed:", {
 				error,
-				message: (error as { message?: string }).message,
-				details: (error as { message?: string }).details,
-				hint: (error as { message?: string }).hint,
-				code: (error as { message?: string }).code,
+				message: (error as { message?: string; details?: string; hint?: string; code?: string }).message,
+				details: (error as { message?: string; details?: string; hint?: string; code?: string }).details,
+				hint: (error as { message?: string; details?: string; hint?: string; code?: string }).hint,
+				code: (error as { message?: string; details?: string; hint?: string; code?: string }).code,
 			});
 			return false;
 		}

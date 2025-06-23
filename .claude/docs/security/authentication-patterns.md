@@ -430,7 +430,9 @@ export const updatePasswordAction = enhanceAction(
 ## Security Best Practices
 
 ### 1. CSRF Protection
+
 All mutating requests are protected with CSRF tokens:
+
 ```tsx
 const csrfProtect = createCsrfProtect({
   cookie: {
@@ -442,18 +444,23 @@ const csrfProtect = createCsrfProtect({
 ```
 
 ### 2. Secure Headers
+
 Enable strict CSP headers in production:
+
 ```bash
 ENABLE_STRICT_CSP=true
 ```
 
 ### 3. Session Security
+
 - Sessions are stored in secure, HTTP-only cookies
 - Automatic token refresh before expiration
 - Server-side session validation on all protected routes
 
 ### 4. Rate Limiting
+
 Implement rate limiting for authentication endpoints:
+
 ```tsx
 // Using upstash/ratelimit with Redis
 import { Ratelimit } from '@upstash/ratelimit';
@@ -473,7 +480,9 @@ export async function rateLimitAuth(identifier: string) {
 ```
 
 ### 5. Audit Logging
+
 Log authentication events for security monitoring:
+
 ```tsx
 export async function logAuthEvent(event: {
   type: 'sign_in' | 'sign_out' | 'password_reset' | 'mfa_verified';
@@ -496,7 +505,9 @@ export async function logAuthEvent(event: {
 ```
 
 ### 6. Input Validation
+
 All authentication inputs are validated with Zod schemas:
+
 ```tsx
 const signInSchema = z.object({
   email: z.string().email().toLowerCase().trim(),

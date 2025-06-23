@@ -5,6 +5,7 @@ This guide provides systematic approaches for AI coding assistants to debug inte
 ## Integration Debugging Methodology
 
 ### 1. Integration Issue Classification
+
 ```typescript
 interface IntegrationIssue {
   type: 'api' | 'webhook' | 'auth' | 'data_sync' | 'third_party' | 'microservice';
@@ -19,6 +20,7 @@ interface IntegrationIssue {
 ```
 
 ### 2. Integration Monitoring Setup
+
 ```typescript
 // Request/Response logging middleware
 const integrationLogger = (serviceName: string) => {
@@ -62,18 +64,21 @@ const integrationLogger = (serviceName: string) => {
 ### Pattern 1: API Communication Failures
 
 **Symptoms:**
+
 - HTTP timeout errors
 - Connection refused errors
 - Intermittent API failures
 - Malformed response data
 
 **Investigation Steps:**
+
 1. **Check network connectivity**: Verify services can reach each other
 2. **Examine request/response logs**: Look for patterns in failures
 3. **Validate API contracts**: Ensure request/response formats match
 4. **Test with different environments**: Compare staging vs production
 
 **API Debugging Tools:**
+
 ```typescript
 // Comprehensive API client with debugging
 class DebugApiClient {
@@ -191,18 +196,21 @@ class DebugApiClient {
 ### Pattern 2: Authentication and Authorization Issues
 
 **Symptoms:**
+
 - 401 Unauthorized errors
 - 403 Forbidden responses
 - Token expiration issues
 - OAuth flow failures
 
 **Investigation Steps:**
+
 1. **Verify credentials**: Check API keys, tokens, and certificates
 2. **Examine token lifecycle**: Validate token generation and refresh
 3. **Check permissions**: Verify service accounts have required permissions
 4. **Test auth flows**: Manually test authentication processes
 
 **Auth Debugging:**
+
 ```typescript
 // JWT token debugging
 const debugJwtToken = (token: string) => {
@@ -292,18 +300,21 @@ class OAuthDebugger {
 ### Pattern 3: Webhook and Event Processing Issues
 
 **Symptoms:**
+
 - Missing webhook deliveries
 - Duplicate event processing
 - Webhook signature validation failures
 - Event ordering issues
 
 **Investigation Steps:**
+
 1. **Check webhook configuration**: Verify endpoints and event types
 2. **Examine delivery logs**: Look for failed deliveries and retries
 3. **Validate signatures**: Ensure webhook signatures are correct
 4. **Test idempotency**: Verify duplicate event handling
 
 **Webhook Debugging:**
+
 ```typescript
 // Webhook signature validation
 const validateWebhookSignature = (
@@ -387,18 +398,21 @@ class WebhookProcessor {
 ### Pattern 4: Data Synchronization Issues
 
 **Symptoms:**
+
 - Inconsistent data between services
 - Sync delays or failures
 - Conflict resolution problems
 - Data transformation errors
 
 **Investigation Steps:**
+
 1. **Compare data states**: Check data consistency across services
 2. **Examine sync logs**: Look for sync failures and conflicts
 3. **Validate transformations**: Ensure data mapping is correct
 4. **Test conflict resolution**: Verify conflict handling logic
 
 **Data Sync Debugging:**
+
 ```typescript
 // Data consistency checker
 class DataConsistencyChecker {
@@ -479,6 +493,7 @@ class DataConsistencyChecker {
 ## Integration Testing and Monitoring
 
 ### 1. Health Checks
+
 ```typescript
 // Service health monitoring
 class IntegrationHealthChecker {
@@ -526,6 +541,7 @@ class IntegrationHealthChecker {
 ```
 
 ### 2. Circuit Breaker Pattern
+
 ```typescript
 // Circuit breaker for external services
 class CircuitBreaker {
@@ -582,24 +598,28 @@ class CircuitBreaker {
 ## Best Practices for AI Assistants
 
 ### 1. Systematic Integration Debugging
+
 - Always check both sides of the integration
 - Use correlation IDs to trace requests across services
 - Implement comprehensive logging for all integration points
 - Test integrations in isolation when possible
 
 ### 2. Monitoring and Alerting
+
 - Monitor key integration metrics (latency, error rates, throughput)
 - Set up alerts for integration failures
 - Implement health checks for all external dependencies
 - Use circuit breakers for resilience
 
 ### 3. Error Handling and Recovery
+
 - Implement proper retry logic with exponential backoff
 - Handle partial failures gracefully
 - Provide meaningful error messages for debugging
 - Design for eventual consistency in distributed systems
 
 ### 4. Security and Compliance
+
 - Validate all external inputs
 - Use secure communication channels (HTTPS, TLS)
 - Implement proper authentication and authorization

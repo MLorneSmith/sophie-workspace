@@ -4,7 +4,7 @@
  */
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { z } from "zod";
-import { expectError, successResult } from "@/test/test-helpers";
+import { expectError, successResult, errorResult } from "@/test/test-helpers";
 import type { ActionResult } from "@/test/test-types";
 
 // Create a test wrapper that mimics enhanceAction behavior

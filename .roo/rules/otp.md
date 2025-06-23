@@ -12,6 +12,7 @@ The OTP API allows the user to:
 - The Database schema can be found at [12-one-time-tokens.sql](mdc:apps/web/supabase/schemas/12-one-time-tokens.sql)
 
 ## Creating an OTP Token
+
 We can se the [verify-otp-form.tsx](mdc:packages/otp/src/components/verify-otp-form.tsx) for creating a quick form to create tokens server side.
 
 ```tsx
@@ -39,6 +40,7 @@ function MyVerificationPage(props: {
 ```
 
 ## Verifying a Token
+
 And here is the server action that verifies the OTP:
 
 ```tsx

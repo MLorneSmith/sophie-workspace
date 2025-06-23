@@ -2,7 +2,6 @@
 
  Back to top
 
-
 `Ctrl` + `K`
 
 [Login](https://app.pdf.co/login) [Sign Up](https://app.pdf.co/signup) [**Dashboard**](https://app.pdf.co/)
@@ -109,12 +108,9 @@ to our cookie use. Please read our
 [privacy policy](https://pdf.co/resources/legal/privacy)
 for more information.
 
-
 I Agree
 
-
 On this page
-
 
 [iframe](https://td.doubleclick.net/td/rul/936954131?random=1744037944149&cv=11&fst=1744037944149&fmt=3&bg=ffffff&guid=ON&async=1&gtm=45be5421v9178924140z872476096za200zb72476096&gcd=13r3r3r3r5l1&dma=0&tag_exp=102509682~102788824~102803279~102813109~102887799~102926062~102975949~103016951~103021830~103027016&u_w=1280&u_h=720&url=https%3A%2F%2Fdeveloper.pdf.co%2Fapi%2Fintroduction%2Findex.html&hn=www.googleadservices.com&frm=0&tiba=Getting%20Started%20%E2%80%94%20pdf.co%20documentation&npa=0&pscdl=noapi&auid=1335395896.1744037944&uaa=x86&uab=64&uafvl=Chromium%3B131.0.6778.33%7CNot_A%2520Brand%3B24.0.0.0&uamb=0&uam=&uap=Windows&uapv=10.0&uaw=0&fledge=1&data=event%3Dgtag.config)[iframe](https://td.doubleclick.net/td/ga/rul?tid=G-FJJWDFCD9X&gacid=502565858.1744037944&gtm=45je5421v9104111730z872476096za200zb72476096&dma=0&gcs=G111&gcd=13r3r3r3r5l1&npa=0&pscdl=noapi&aip=1&fledge=1&frm=0&tag_exp=102509683~102788824~102803279~102813109~102887799~102926062~102975949~103016951~103021830~103027016&z=1538586287)
 

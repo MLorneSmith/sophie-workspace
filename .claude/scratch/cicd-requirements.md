@@ -42,7 +42,7 @@ I want to be able to run the following checks:
    6. Bundle minification
 6. Should we use something like CodeCov for code coverage?
 7. Should we use something like TruffleHog OSS for security scanning?
-8. Should we use something like https://github.com/marketplace/actions/cache to improve pipeline performance
+8. Should we use something like <https://github.com/marketplace/actions/cache> to improve pipeline performance
 
 ## I don't know what I don't know
 

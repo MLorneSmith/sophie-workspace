@@ -83,7 +83,7 @@ This means that even if you change the `system` message while keeping the `user`
 
 This allows you to modify the behavior or context of the assistant without affecting the cache hits for similar user queries.
 
-### [​](https://portkey.ai/docs/product/ai-gateway/cache-simple-and-semantic\#read-more-how-to-set-cache-in-configs)  [Read more how to set cache in Configs](https://portkey.ai/docs/product/ai-gateway/cache-simple-and-semantic\#how-cache-works-with-configs).
+### [​](https://portkey.ai/docs/product/ai-gateway/cache-simple-and-semantic\#read-more-how-to-set-cache-in-configs)  [Read more how to set cache in Configs](https://portkey.ai/docs/product/ai-gateway/cache-simple-and-semantic\#how-cache-works-with-configs)
 
 * * *
 

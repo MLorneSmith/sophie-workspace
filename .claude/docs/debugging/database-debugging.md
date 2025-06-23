@@ -5,6 +5,7 @@ This guide provides systematic approaches for AI coding assistants to debug data
 ## Database Debugging Methodology
 
 ### 1. Issue Classification
+
 ```typescript
 interface DatabaseIssue {
   type: 'performance' | 'connectivity' | 'data_integrity' | 'permissions' | 'migration';
@@ -17,6 +18,7 @@ interface DatabaseIssue {
 ```
 
 ### 2. Diagnostic Information Collection
+
 ```sql
 -- Essential diagnostic queries
 -- Check active connections
@@ -45,17 +47,20 @@ ORDER BY idx_scan ASC;
 ### Pattern 1: Slow Query Performance
 
 **Symptoms:**
+
 - API timeouts
 - High database CPU usage
 - Slow page loads
 
 **Investigation Steps:**
+
 1. **Identify slow queries**: Use `pg_stat_statements` or query logs
 2. **Analyze execution plans**: Use `EXPLAIN ANALYZE`
 3. **Check missing indexes**: Review query patterns
 4. **Examine table statistics**: Ensure statistics are up to date
 
 **Diagnostic Queries:**
+
 ```sql
 -- Find slow queries
 SELECT query, 
@@ -84,6 +89,7 @@ WHERE schemaname = 'public'
 ```
 
 **Common Solutions:**
+
 ```sql
 -- Add missing indexes
 CREATE INDEX CONCURRENTLY idx_users_email ON users(email);
@@ -107,17 +113,20 @@ ANALYZE profiles;
 ### Pattern 2: Row Level Security (RLS) Issues
 
 **Symptoms:**
+
 - Users seeing data they shouldn't
 - Users unable to access their own data
 - Unexpected permission denied errors
 
 **Investigation Steps:**
+
 1. **Review RLS policies**: Check policy definitions and logic
 2. **Test with different users**: Verify policies work for all user types
 3. **Check policy performance**: Ensure policies don't cause slow queries
 4. **Validate JWT claims**: Verify authentication tokens contain correct data
 
 **RLS Debugging:**
+
 ```sql
 -- Check current RLS policies
 SELECT schemaname, tablename, policyname, permissive, roles, cmd, qual, with_check
@@ -141,6 +150,7 @@ WHERE schemaname = 'public';
 ```
 
 **Common RLS Patterns:**
+
 ```sql
 -- User can only access their own data
 CREATE POLICY user_own_data ON user_profiles
@@ -172,18 +182,21 @@ FOR SELECT USING (
 ### Pattern 3: Connection and Transaction Issues
 
 **Symptoms:**
+
 - Connection pool exhaustion
 - Deadlocks
 - Transaction timeout errors
 - Inconsistent data states
 
 **Investigation Steps:**
+
 1. **Monitor connection usage**: Check active connections and pool status
 2. **Identify long-running transactions**: Find blocking queries
 3. **Check for deadlocks**: Review deadlock logs
 4. **Examine transaction isolation**: Verify appropriate isolation levels
 
 **Connection Debugging:**
+
 ```sql
 -- Check active connections
 SELECT pid, usename, application_name, client_addr, state, 
@@ -212,6 +225,7 @@ WHERE (now() - pg_stat_activity.query_start) > interval '5 minutes';
 ```
 
 **Connection Management:**
+
 ```typescript
 // Proper connection pooling with Supabase
 const supabase = createClient(url, key, {
@@ -268,18 +282,21 @@ const withRetry = async <T>(operation: () => Promise<T>, maxRetries = 3): Promis
 ### Pattern 4: Data Integrity Issues
 
 **Symptoms:**
+
 - Orphaned records
 - Constraint violations
 - Inconsistent data relationships
 - Missing required data
 
 **Investigation Steps:**
+
 1. **Check foreign key constraints**: Verify referential integrity
 2. **Validate data consistency**: Look for orphaned or inconsistent records
 3. **Review constraint definitions**: Ensure constraints match business rules
 4. **Examine migration history**: Check for incomplete migrations
 
 **Data Integrity Checks:**
+
 ```sql
 -- Find orphaned records
 SELECT p.id, p.user_id 
@@ -308,6 +325,7 @@ HAVING COUNT(*) > 1;
 ```
 
 **Data Integrity Solutions:**
+
 ```sql
 -- Add missing constraints
 ALTER TABLE profiles 
@@ -332,6 +350,7 @@ WHERE user_id NOT IN (SELECT id FROM users);
 ## Database Performance Optimization
 
 ### 1. Query Optimization
+
 ```sql
 -- Use appropriate joins
 -- Good: Use EXISTS for existence checks
@@ -355,6 +374,7 @@ LIMIT 20;
 ```
 
 ### 2. Index Strategy
+
 ```sql
 -- Covering indexes for common queries
 CREATE INDEX idx_orders_user_status_amount 
@@ -376,6 +396,7 @@ WHERE active = true;
 ```
 
 ### 3. Monitoring and Alerting
+
 ```typescript
 // Database monitoring
 const monitorDatabase = async () => {
@@ -409,24 +430,28 @@ const monitorDatabase = async () => {
 ## Best Practices for AI Assistants
 
 ### 1. Systematic Database Debugging
+
 - Always start with query execution plans
 - Check indexes before adding new ones
 - Monitor query performance over time
 - Test RLS policies with different user contexts
 
 ### 2. Performance Considerations
+
 - Use connection pooling appropriately
 - Implement proper pagination
 - Add indexes based on query patterns, not assumptions
 - Monitor and alert on key database metrics
 
 ### 3. Data Safety
+
 - Always test migrations on staging first
 - Use transactions for multi-step operations
 - Implement proper backup and recovery procedures
 - Validate data integrity after major changes
 
 ### 4. Security Best Practices
+
 - Implement RLS for multi-tenant applications
 - Use parameterized queries to prevent SQL injection
 - Regularly audit database permissions

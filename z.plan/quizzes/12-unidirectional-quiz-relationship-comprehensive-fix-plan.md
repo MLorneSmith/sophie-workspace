@@ -39,6 +39,7 @@ When one storage mechanism is updated without the other, Payload's internal hook
 
 - **Missing Column Query**: The loader attempts to query `quiz_questions?where[quiz_id][equals]=${actualQuizId}` but `quiz_id` column does not exist
 - **PostgreSQL UUID Type Handling**: Some code treats UUIDs as text strings without proper type casting:
+
   ```sql
   -- Problematic approach in existing code
   UPDATE payload.course_quizzes

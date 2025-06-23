@@ -8,7 +8,6 @@ Modifiers let you dynamically modify the movement coordinates that are detected 
 
 - Applying resistance or clamping the motion
 
-
 ## [Direct link to heading](https://docs.dndkit.com/api-documentation/modifiers\#installation)    Installation
 
 To start using modifiers, install the modifiers package via yarn or npm:

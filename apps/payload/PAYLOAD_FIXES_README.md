@@ -10,15 +10,18 @@ This document describes the critical fixes and enhancements applied to the Paylo
 A form protection script is now automatically loaded in the Payload admin interface to enhance security and prevent automated attacks or abuse.
 
 **How it works:**  
+
 - The script is located at:  
   `apps/payload/public/admin/form-protection.js`
 - It is injected into every admin page via the layout at:  
   `apps/payload/src/app/(payload)/layout.tsx`
 - The script is loaded automatically and does not require any manual action from users or admins.
 - It is loaded with the following tag:
+
   ```html
   <script src="/admin/form-protection.js" async></script>
   ```
+
 - The script is designed to be non-intrusive and compatible with Payload CMS v3.39.1.
 
 ---
@@ -29,6 +32,7 @@ A form protection script is now automatically loaded in the Payload admin interf
 A simple health check endpoint is available for monitoring the status of the Payload CMS instance and its database connection.
 
 **Endpoint:**  
+
 ```
 /api/health
 ```
@@ -37,6 +41,7 @@ A simple health check endpoint is available for monitoring the status of the Pay
 `apps/payload/src/app/(payload)/api/health/route.ts`
 
 **Response Example:**
+
 ```json
 {
   "status": "healthy",
@@ -50,6 +55,7 @@ A simple health check endpoint is available for monitoring the status of the Pay
 ```
 
 **Fields:**
+
 - `status`: `"healthy"` if the database is connected, otherwise `"unhealthy"`
 - `timestamp`: Current server time (ISO8601)
 - `database.status`: `"connected"` or `"disconnected"`
@@ -57,6 +63,7 @@ A simple health check endpoint is available for monitoring the status of the Pay
 - `version`: Payload CMS version
 
 **Usage:**  
+
 - Use this endpoint with monitoring tools (e.g., UptimeRobot, Prometheus, custom scripts) to verify service and database health.
 - **Security Note:** This endpoint is accessible by default; restrict access in production if sensitive.
 

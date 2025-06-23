@@ -1,16 +1,20 @@
 # Remote Database Reset Workflow
 
 ## Overview
+
 This workflow provides step-by-step instructions for completely resetting the remote Supabase database for the Payload CMS schema. This is a destructive operation that rebuilds the Payload schema from scratch when schema corruption occurs or a fresh start is needed.
 
 ## ⚠️ Critical Warning
+
 **This procedure completely destroys and rebuilds the Payload schema in production.** Use only when:
+
 - Migration failures due to schema corruption
 - "Column does not exist" errors during migration
 - Inconsistent schema state after failed migrations
 - Complete rebuild of Payload schema is required
 
 ## Prerequisites
+
 - [ ] Access to remote Supabase database credentials
 - [ ] Database backup completed (MANDATORY)
 - [ ] SSL certificate obtained for secure connection
@@ -18,6 +22,7 @@ This workflow provides step-by-step instructions for completely resetting the re
 - [ ] Use TodoWrite tool to track progress through the workflow steps
 
 ## Supabase Project Configuration
+
 ```
 Project ID: ldebzombxtszzcgnylgq
 Database Host: aws-0-us-east-2.pooler.supabase.com
@@ -27,6 +32,7 @@ SSL Certificate: prod-ca-2021.crt
 ## Step 1: Pre-Reset Preparation
 
 ### 1.1 Create Database Backup
+
 **MANDATORY** - Create a timestamped backup before proceeding:
 
 ```bash
@@ -41,6 +47,7 @@ pg_restore --list backup_*.sql | head -10
 ```
 
 ### 1.2 Setup SSL Certificate
+
 Ensure SSL certificate exists in apps/payload directory:
 
 ```bash
@@ -54,6 +61,7 @@ ls -la prod-ca-2021.crt
 ```
 
 ### 1.3 Configure Environment Variables
+
 Set all required environment variables for production connection:
 
 ```bash
@@ -66,6 +74,7 @@ export PAYLOAD_PUBLIC_SERVER_URL="https://payload.slideheroes.com"
 ```
 
 ### 1.4 Verify Environment Variables
+
 Confirm all required variables are properly set:
 
 ```bash
@@ -78,6 +87,7 @@ echo "PAYLOAD_PUBLIC_SERVER_URL: $PAYLOAD_PUBLIC_SERVER_URL"
 ```
 
 ### 1.5 Test SSL Connection
+
 Verify database connectivity before proceeding:
 
 ```bash
@@ -89,6 +99,7 @@ Verify database connectivity before proceeding:
 ## Step 2: Schema Cleanup
 
 ### 2.1 Drop Payload Schema
+
 Remove the existing Payload schema and all its contents:
 
 ```bash
@@ -98,6 +109,7 @@ Remove the existing Payload schema and all its contents:
 ```
 
 ### 2.2 Clean Up Enum Types
+
 Clean up any orphaned enum types that may persist:
 
 ```bash
@@ -107,6 +119,7 @@ Clean up any orphaned enum types that may persist:
 ```
 
 ### 2.3 Verify Schema Removal
+
 Confirm the Payload schema has been completely removed:
 
 ```bash
@@ -122,6 +135,7 @@ Confirm the Payload schema has been completely removed:
 ## Step 3: Migration File Cleanup
 
 ### 3.1 Clear Migration Files
+
 Remove all existing migration files to start fresh:
 
 ```bash
@@ -140,6 +154,7 @@ cat src/migrations/index.ts
 ```
 
 ### 3.2 Verify Migration Cleanup
+
 Confirm migration directory is properly cleaned:
 
 ```bash
@@ -152,6 +167,7 @@ find src/migrations/ -name "*.json" | wc -l
 ## Step 4: Generate Fresh Migration
 
 ### 4.1 Generate New Migration
+
 Create a comprehensive migration for the entire schema:
 
 ```bash
@@ -165,6 +181,7 @@ ls -la src/migrations/
 ```
 
 ### 4.2 Verify Migration Generation
+
 Confirm the new migration is properly generated:
 
 ```bash
@@ -182,6 +199,7 @@ wc -l src/migrations/20*.ts
 ## Step 5: Execute Migration
 
 ### 5.1 Create Payload Schema
+
 Create the Payload schema before running migration:
 
 ```bash
@@ -191,6 +209,7 @@ Create the Payload schema before running migration:
 ```
 
 ### 5.2 Run Fresh Migration
+
 Execute the newly generated migration:
 
 ```bash
@@ -203,6 +222,7 @@ pnpm payload migrate
 ```
 
 ### 5.3 Expected Migration Output
+
 Look for these success indicators:
 
 ```
@@ -218,6 +238,7 @@ Look for these success indicators:
 ## Step 6: Comprehensive Verification
 
 ### 6.1 Schema State Verification
+
 Verify the Payload schema was properly created:
 
 ```bash
@@ -231,6 +252,7 @@ Verify the Payload schema was properly created:
 ```
 
 ### 6.2 Migration Record Verification
+
 Confirm the migration was properly recorded:
 
 ```bash
@@ -244,6 +266,7 @@ Confirm the migration was properly recorded:
 ```
 
 ### 6.3 Schema Integrity Verification
+
 Verify database constraints and indexes:
 
 ```bash
@@ -257,6 +280,7 @@ Verify database constraints and indexes:
 ```
 
 ### 6.4 Application Health Verification
+
 Test Payload application functionality:
 
 ```bash
@@ -273,6 +297,7 @@ curl -f https://payload.slideheroes.com/api/health || echo "API not accessible"
 ## Step 7: Connection Testing
 
 ### 7.1 Test Database Connection
+
 Verify the reset database is accessible:
 
 ```bash
@@ -282,6 +307,7 @@ Verify the reset database is accessible:
 ```
 
 ### 7.2 Test Schema Access
+
 Confirm schema and tables are accessible:
 
 ```bash
@@ -293,6 +319,7 @@ Confirm schema and tables are accessible:
 ## Troubleshooting
 
 ### Missing Environment Variables
+
 If environment variables are not set:
 
 ```bash
@@ -306,6 +333,7 @@ export PAYLOAD_PUBLIC_SERVER_URL="https://payload.slideheroes.com"
 ```
 
 ### SSL Connection Failures
+
 If SSL connections fail:
 
 ```bash
@@ -319,6 +347,7 @@ curl -o prod-ca-2021.crt https://supabase.com/docs/guides/database/ssl
 ```
 
 ### Migration Generation Failures
+
 If migration generation fails:
 
 ```bash
@@ -333,6 +362,7 @@ pnpm payload --help | grep migrate
 ```
 
 ### Schema Drop Failures
+
 If schema cannot be dropped:
 
 ```bash
@@ -350,12 +380,14 @@ If schema cannot be dropped:
 ## Rollback Procedures
 
 ### Option 1: Restore from Backup (Recommended)
+
 ```bash
 # Restore complete database from backup
 psql "$DATABASE_URI" < backup_20250528_131900.sql
 ```
 
 ### Option 2: Re-run Reset (If Partial Failure)
+
 ```bash
 # Use Supabase MCP: execute_sql
 # Parameters: { "project_id": "ldebzombxtszzcgnylgq", "query": "DROP SCHEMA IF EXISTS payload CASCADE;" }
@@ -363,6 +395,7 @@ psql "$DATABASE_URI" < backup_20250528_131900.sql
 ```
 
 ## Success Metrics
+
 - **Tables Created**: 58+ tables in payload schema
 - **Migration File Size**: 1,548+ lines
 - **Foreign Key Constraints**: 88+ constraints
@@ -370,6 +403,7 @@ psql "$DATABASE_URI" < backup_20250528_131900.sql
 - **Execution Time**: 30-60 seconds
 
 ## Completion Checklist
+
 - [ ] Database backup created and verified
 - [ ] SSL certificate setup confirmed (prod-ca-2021.crt)
 - [ ] Environment variables loaded and verified
@@ -386,30 +420,36 @@ psql "$DATABASE_URI" < backup_20250528_131900.sql
 ## Claude Code Execution Commands
 
 ### Execute This Workflow
+
 ```bash
 /run-workflow remote-db-reset
 ```
 
 ### Test Connection Command
+
 ```bash
 # Use Supabase MCP: execute_sql
 # Parameters: { "project_id": "ldebzombxtszzcgnylgq", "query": "SELECT version();" }
 ```
 
 ### Verify Schema Command
+
 ```bash
 # Use Supabase MCP: execute_sql
 # Parameters: { "project_id": "ldebzombxtszzcgnylgq", "query": "SELECT table_name FROM information_schema.tables WHERE table_schema = 'payload' ORDER BY table_name;" }
 ```
 
 ## Related Documentation
+
 - **Migration Guide**: `z.instructions/remote-payload-migration/Migration_Guide.md`
 - **Reset Guide**: `z.instructions/remote-payload-migration/PAYLOAD_RESET_GUIDE.md`
 - **Quick Reference**: `z.instructions/remote-payload-migration/Quick_Migration_Reference.md`
 - **Config Files**: `apps/payload/src/payload.config.ts`
 
 ## Support
+
 If reset procedure fails:
+
 1. **FIRST**: Check environment variables are properly set (most common issue)
 2. **SECOND**: Verify SSL certificate filename is correct (prod-ca-2021.crt)
 3. Restore from backup immediately if needed

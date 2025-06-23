@@ -19,6 +19,7 @@ Our AI Gateway implementation provides:
    - Uses Portkey's virtual keys for secure API key management
    - API keys stored in Portkey's vault, not exposed in codebase
    - Environment variables:
+
      ```env
      PORTKEY_API_KEY=your-portkey-api-key
      PORTKEY_VIRTUAL_KEY=your-virtual-key
@@ -69,6 +70,7 @@ src/configs/
    ```
 
 3. **Retry Configuration**
+
    ```typescript
    {
      attempts: number;

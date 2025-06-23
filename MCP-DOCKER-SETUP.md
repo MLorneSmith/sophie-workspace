@@ -266,6 +266,7 @@ docker stats
    ```
 
 4. **Environment variables not loaded**
+
    ```bash
    docker-compose -f docker-compose.mcp.yml config  # Verify config
    ```

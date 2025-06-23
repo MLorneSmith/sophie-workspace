@@ -52,15 +52,15 @@ I'd like to explore how we can use Github projects to track the implementation o
 
 Ultrathink through the following questions:
 
-1.  What is the right development lifecycle for building a feature?
-2.  What are the appropriate steps within the feature development lifecycle that we should include in our workflow?
-3.  How can we use Claude Code to manage the workflow for building a feature?
-4.  How can we use templates to provide structure for our output?
-5.  What are the appropriate prompts and commands for each step?
-6.  What are the appropriate roles for each step?
-7.  What are the appropriate tools for each step?
-8.  How can we ensure that the output of each step is of high quality?
-9.  How can we ensure that the workflow is efficient, effective and manages context well?
+1. What is the right development lifecycle for building a feature?
+2. What are the appropriate steps within the feature development lifecycle that we should include in our workflow?
+3. How can we use Claude Code to manage the workflow for building a feature?
+4. How can we use templates to provide structure for our output?
+5. What are the appropriate prompts and commands for each step?
+6. What are the appropriate roles for each step?
+7. What are the appropriate tools for each step?
+8. How can we ensure that the output of each step is of high quality?
+9. How can we ensure that the workflow is efficient, effective and manages context well?
 10. How can we use Github projects to track the implementation of a feature?
 
 ## Decisions
