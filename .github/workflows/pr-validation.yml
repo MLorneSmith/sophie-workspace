@@ -305,7 +305,6 @@ jobs:
           extra_args: |
             --only-verified
             --max-depth=5
-            --github-actions
         continue-on-error: true
 
       # Note: --github-actions flag outputs directly to GitHub Actions, no SARIF upload needed
