@@ -23,8 +23,8 @@
 		"lint": "biome lint . && manypkg check && pnpm lint:yaml && pnpm lint:md",
 		"lint:fix": "biome lint --write . && manypkg fix && pnpm lint:md:fix",
 		"lint:yaml": "npx yaml-lint '**/*.{yml,yaml}'",
-		"lint:md": "markdownlint-cli2 '**/*.md' '!node_modules' '!**/node_modules' '!z.plan/**' '!z.instructions/**' '!z.docs/**' '!z.todo/**' '!z.context/**' '!.claude/**' '!.mcp-servers/**' '!.roo/**'",
-		"lint:md:fix": "markdownlint-cli2 --fix '**/*.md' '!node_modules' '!**/node_modules' '!z.plan/**' '!z.instructions/**' '!z.docs/**' '!z.todo/**' '!z.context/**' '!.claude/**' '!.mcp-servers/**' '!.roo/**'",
+		"lint:md": "markdownlint-cli2 '**/*.md' '!node_modules' '!**/node_modules' '!.claude/**' '!.mcp-servers/**' '!.roo/**'",
+		"lint:md:fix": "markdownlint-cli2 --fix '**/*.md' '!node_modules' '!**/node_modules' '!.claude/**' '!.mcp-servers/**' '!.roo/**'",
 		"typecheck": "turbo typecheck --affected --cache-dir=.turbo",
 		"test": "turbo test --cache-dir=.turbo",
 		"update": "pnpm update -r",
@@ -48,7 +48,9 @@
 		"knip": "knip",
 		"knip:production": "knip --production",
 		"knip:workspace": "knip --workspace",
-		"knip:fix": "knip --fix"
+		"knip:fix": "knip --fix",
+		"a11y:test": "turbo a11y:test",
+		"a11y:report": "turbo a11y:report"
 	},
 	"config": {
 		"commitizen": {
@@ -70,7 +72,7 @@
 		],
 		"**/*.{md,mdx}": [
 			"prettier --write",
-			"bash -c 'if ! echo \"$0\" | grep -qE \"^(z\\.(plan|instructions|docs|todo|context)|\\.claude|\\.mcp-servers|\\.roo)/\"; then markdownlint-cli2 --fix \"$0\"; fi'"
+			"bash -c 'if ! echo \"$0\" | grep -qE \"^(\\.claude|\\.mcp-servers|\\.roo)/\"; then markdownlint-cli2 --fix \"$0\"; fi'"
 		],
 		"**/*.{yaml,yml}": [
 			"bash -c 'if [[ \"$0\" != *\"pnpm-lock.yaml\"* ]]; then yaml-lint \"$0\"; fi'"
@@ -89,6 +91,7 @@
 		]
 	},
 	"devDependencies": {
+		"@axe-core/cli": "^4.10.2",
 		"@biomejs/biome": "2.0.0",
 		"@commitlint/cli": "^19.8.1",
 		"@commitlint/config-conventional": "^19.8.1",
