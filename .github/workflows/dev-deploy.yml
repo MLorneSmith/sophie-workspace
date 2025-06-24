@@ -8,6 +8,9 @@ on:
 permissions:
   contents: read
   deployments: write
+  pull-requests: write
+  issues: write
+  checks: write
 
 env:
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
