@@ -359,7 +359,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: changes
     if: needs.changes.outputs.dependencies == 'true' || needs.changes.outputs.typescript == 'true'
-    continue-on-error: false # Block PRs with high/critical vulnerabilities
     steps:
       - uses: actions/checkout@v4
 
@@ -376,11 +375,31 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run Snyk to check for vulnerabilities
+        id: snyk_check
         uses: snyk/actions/node@master
+        continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          args: --severity-threshold=high --fail-on=upgradable
+          args: --severity-threshold=high --fail-on=upgradable --sarif-file-output=snyk.sarif
+
+      - name: Display Snyk Results
+        if: always()
+        run: |
+          echo "Snyk scan outcome: ${{ steps.snyk_check.outcome }}"
+          if [ -f snyk.sarif ]; then
+            echo "SARIF file generated successfully"
+            echo "File size: $(ls -lh snyk.sarif | awk '{print $5}')"
+          else
+            echo "Warning: SARIF file not generated"
+          fi
+          
+      - name: Fail if vulnerabilities found
+        if: steps.snyk_check.outcome == 'failure'
+        run: |
+          echo "❌ Snyk found high severity vulnerabilities that must be fixed"
+          echo "Check the Snyk output above for details"
+          exit 1
 
       - name: Upload Snyk report as sarif
         uses: github/codeql-action/upload-sarif@v3
