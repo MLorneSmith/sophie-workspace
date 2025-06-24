@@ -14,7 +14,7 @@ jobs:
   semgrep:
     name: Scan
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     permissions:
       contents: read
       pull-requests: write
@@ -33,11 +33,18 @@ jobs:
       - name: Run Semgrep
         run: |
           # Run Semgrep CI - rules are configured in Semgrep Cloud
-          semgrep ci
+          # For PRs, only scan changed files to speed up analysis
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            semgrep ci --baseline-commit="${{ github.event.pull_request.base.sha }}"
+          else
+            semgrep ci
+          fi
         env:
           SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
-          SEMGREP_TIMEOUT: 300
+          SEMGREP_TIMEOUT: 1200  # 20 minutes
           SEMGREP_VERSION_CHECK: false
+          SEMGREP_SEND_METRICS: off
+          SEMGREP_ENABLE_VERSION_CHECK: false
           
       # Semgrep Cloud handles PR comments automatically when SEMGREP_APP_TOKEN is used
       # No need for manual SARIF upload or PR commenting
