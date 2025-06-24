@@ -2,7 +2,7 @@
 
 Usage: `/run-workflow [workflow_name]`
 
-This command loads and executes a workflow file from the `.claude/workflows/` directory based on the workflow name provided.
+This command loads and executes a workflow file from the `.claude/instructions/workflows/` directory based on the workflow name provided.
 
 ## How It Works
 
