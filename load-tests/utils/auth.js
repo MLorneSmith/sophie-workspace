@@ -1,43 +1,43 @@
-import http from 'k6/http';
-import { check } from 'k6';
+import http from "k6/http";
+import { check } from "k6";
 
 export function login(email, password, baseUrl) {
-  const loginUrl = `${baseUrl}/auth/sign-in`;
-  
-  const payload = JSON.stringify({
-    email: email,
-    password: password,
-  });
+	const loginUrl = `${baseUrl}/auth/sign-in`;
 
-  const params = {
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  };
+	const payload = JSON.stringify({
+		email: email,
+		password: password,
+	});
 
-  const response = http.post(loginUrl, payload, params);
-  
-  check(response, {
-    'login successful': (r) => r.status === 200,
-    'auth token present': (r) => r.cookies['auth-token'] !== undefined,
-  });
+	const params = {
+		headers: {
+			"Content-Type": "application/json",
+		},
+	};
 
-  if (response.status !== 200) {
-    console.error(`Login failed: ${response.status} ${response.body}`);
-    return null;
-  }
+	const response = http.post(loginUrl, payload, params);
 
-  return {
-    token: response.cookies['auth-token'],
-    sessionId: response.json('sessionId'),
-  };
+	check(response, {
+		"login successful": (r) => r.status === 200,
+		"auth token present": (r) => r.cookies["auth-token"] !== undefined,
+	});
+
+	if (response.status !== 200) {
+		console.error(`Login failed: ${response.status} ${response.body}`);
+		return null;
+	}
+
+	return {
+		token: response.cookies["auth-token"],
+		sessionId: response.json("sessionId"),
+	};
 }
 
 export function getAuthHeaders(token) {
-  return {
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-  };
+	return {
+		headers: {
+			Authorization: `Bearer ${token}`,
+			"Content-Type": "application/json",
+		},
+	};
 }

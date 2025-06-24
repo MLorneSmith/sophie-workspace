@@ -77,7 +77,7 @@ export default defineConfig({
 
 		/* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
 		trace: "on-first-retry",
-		
+
 		/* Increase timeouts for matrix testing across different devices */
 		navigationTimeout: 10000, // Increased for slower mobile devices
 		actionTimeout: 8000, // More time for interactions
@@ -103,7 +103,7 @@ export default defineConfig({
 			name: "webkit",
 			use: { ...devices["Desktop Safari"] },
 		},
-		
+
 		// Mobile viewports
 		{
 			name: "Mobile Chrome",
@@ -118,7 +118,7 @@ export default defineConfig({
 			use: { ...devices["Pixel 5"], browserName: "firefox" },
 		},
 
-		// Tablet viewports  
+		// Tablet viewports
 		{
 			name: "Tablet Chrome",
 			use: { ...devices["iPad Pro"] },
@@ -131,11 +131,11 @@ export default defineConfig({
 		// Accessibility testing (existing)
 		{
 			name: "accessibility",
-			use: { 
+			use: {
 				...devices["Desktop Chrome"],
 				// Optimize for accessibility testing
-				colorScheme: 'light',
-				reduceMotion: 'reduce',
+				colorScheme: "light",
+				reduceMotion: "reduce",
 			},
 			testMatch: /.*accessibility.*\.spec\.ts/,
 		},
