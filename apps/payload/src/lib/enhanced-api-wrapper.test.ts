@@ -464,34 +464,28 @@ describe("EnhancedAPIManager", () => {
 	describe("Metrics Management", () => {
 		it("should calculate moving average response time correctly", async () => {
 			const manager = getEnhancedAPIManager();
-			
+
 			// Mock Date.now() to control timing
 			let currentTime = 1000;
-			vi.spyOn(Date, 'now').mockImplementation(() => currentTime);
+			vi.spyOn(Date, "now").mockImplementation(() => currentTime);
 
 			// Create handlers that simulate different response times
 			const mockHandlers = [
-				vi.fn().mockImplementation(
-					async () => {
-						// Simulate 10ms response time
-						currentTime += 10;
-						return new Response("OK", { status: 200 });
-					},
-				),
-				vi.fn().mockImplementation(
-					async () => {
-						// Simulate 20ms response time
-						currentTime += 20;
-						return new Response("OK", { status: 200 });
-					},
-				),
-				vi.fn().mockImplementation(
-					async () => {
-						// Simulate 30ms response time before error
-						currentTime += 30;
-						throw new Error("Test error");
-					},
-				),
+				vi.fn().mockImplementation(async () => {
+					// Simulate 10ms response time
+					currentTime += 10;
+					return new Response("OK", { status: 200 });
+				}),
+				vi.fn().mockImplementation(async () => {
+					// Simulate 20ms response time
+					currentTime += 20;
+					return new Response("OK", { status: 200 });
+				}),
+				vi.fn().mockImplementation(async () => {
+					// Simulate 30ms response time before error
+					currentTime += 30;
+					throw new Error("Test error");
+				}),
 			];
 
 			// Create enhanced handlers
@@ -519,7 +513,7 @@ describe("EnhancedAPIManager", () => {
 			expect(metrics.failedRequests).toBe(1);
 			expect(metrics.totalRequests).toBe(3);
 			expect(metrics.averageResponseTime).toBe(20); // Average of 10, 20, and 30
-			
+
 			// Restore Date.now
 			vi.restoreAllMocks();
 		});
