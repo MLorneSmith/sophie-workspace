@@ -529,6 +529,7 @@ describe("QuizComponent", () => {
 					{
 						id: "q1",
 						question: "Test question",
+						questiontype: "multi-answer" as const,
 						options: [
 							{ text: "Option 1", iscorrect: true },
 							{ text: "Option 2", iscorrect: true },
@@ -606,6 +607,7 @@ describe("QuizComponent", () => {
 					{
 						id: "q1",
 						question: "What is 2 + 2?",
+						questiontype: "single-answer" as const,
 						options: [
 							{ text: "3", iscorrect: false },
 							{ text: "4", iscorrect: true },
@@ -614,6 +616,7 @@ describe("QuizComponent", () => {
 					{
 						id: "q2",
 						question: "What is 3 + 3?",
+						questiontype: "single-answer" as const,
 						options: [
 							{ text: "6", iscorrect: true },
 							{ text: "7", iscorrect: false },
@@ -641,6 +644,7 @@ describe("QuizComponent", () => {
 					{
 						id: "q1",
 						question: "What is 2 + 2?",
+						questiontype: "single-answer" as const,
 						options: [
 							{ text: "3", iscorrect: false },
 							{ text: "4", iscorrect: true },
@@ -649,6 +653,7 @@ describe("QuizComponent", () => {
 					{
 						id: "q2",
 						question: "What is 3 + 3?",
+						questiontype: "single-answer" as const,
 						options: [
 							{ text: "6", iscorrect: true },
 							{ text: "7", iscorrect: false },
@@ -676,6 +681,7 @@ describe("QuizComponent", () => {
 					{
 						id: "q1",
 						question: "What is 2 + 2?",
+						questiontype: "single-answer" as const,
 						options: [
 							{ text: "3", iscorrect: false },
 							{ text: "4", iscorrect: true },
@@ -831,7 +837,7 @@ describe("QuizComponent", () => {
 			const user = userEvent.setup();
 			const partialQuiz = {
 				...sampleQuiz,
-				questions: [sampleQuiz.questions[0]], // Only one question
+				questions: sampleQuiz.questions.slice(0, 1), // Only one question
 			};
 
 			render(<QuizComponent {...defaultProps} quiz={partialQuiz} />);

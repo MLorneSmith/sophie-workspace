@@ -9,18 +9,18 @@
 
 // Mock types for documentation purposes
 type MigrateUpArgs = {
-	db: { execute: (query: any) => Promise<any> };
-	payload: any;
-	req: any;
+	db: { execute: (query: unknown) => Promise<unknown> };
+	payload: unknown;
+	req: unknown;
 };
 
 type MigrateDownArgs = {
-	db: { execute: (query: any) => Promise<any> };
-	payload: any;
-	req: any;
+	db: { execute: (query: unknown) => Promise<unknown> };
+	payload: unknown;
+	req: unknown;
 };
 
-const sql = (strings: TemplateStringsArray, ...values: any[]) =>
+const sql = (strings: TemplateStringsArray, ..._values: unknown[]) =>
 	strings.join("");
 
 /**
@@ -29,7 +29,7 @@ const sql = (strings: TemplateStringsArray, ...values: any[]) =>
  * pnpm migrate:create --name your-migration-name
  */
 
-export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
+export async function up({ db, payload: _payload, req: _req }: MigrateUpArgs): Promise<void> {
 	// Create a new enum type for the status field
 	await db.execute(sql`
     CREATE TYPE "payload"."enum_blog_posts_status" AS ENUM('draft', 'published');
@@ -113,8 +113,8 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
 
 export async function down({
 	db,
-	payload,
-	req,
+	payload: _payload,
+	req: _req,
 }: MigrateDownArgs): Promise<void> {
 	// Drop tables and constraints in reverse order
 	await db.execute(sql`
