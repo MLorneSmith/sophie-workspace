@@ -32,52 +32,12 @@ jobs:
 
       - name: Run Semgrep
         run: |
-          # Run Semgrep with our configuration
-          semgrep ci \
-            --config=auto \
-            --config=p/security-audit \
-            --config=p/typescript \
-            --config=p/react \
-            --config=p/nodejs \
-            --config=p/nextjs \
-            --json \
-            --output=semgrep-results.json
+          # Run Semgrep CI - rules are configured in Semgrep Cloud
+          semgrep ci
         env:
           SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
           SEMGREP_TIMEOUT: 300
           SEMGREP_VERSION_CHECK: false
           
-      - name: Upload Semgrep results to GitHub Advanced Security
-        uses: github/codeql-action/upload-sarif@v3
-        if: always()
-        with:
-          sarif_file: semgrep-results.json
-          category: semgrep
-        continue-on-error: true # Allow workflow to pass if GHAS is not available
-
-      - name: Comment PR with findings
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const fs = require('fs');
-            const results = JSON.parse(fs.readFileSync('semgrep-results.json', 'utf8'));
-            
-            if (results.errors && results.errors.length > 0) {
-              const comment = `## 🔍 Semgrep Security Scan Results
-              
-              Found ${results.errors.length} potential security issues:
-              
-              ${results.errors.map(error => `- **${error.severity}**: ${error.check_id} in \`${error.path}\`
-                Line ${error.start.line}: ${error.extra.message}`).join('\n')}
-              
-              Please review and address these findings before merging.`;
-              
-              github.rest.issues.createComment({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: comment
-              });
-            }
+      # Semgrep Cloud handles PR comments automatically when SEMGREP_APP_TOKEN is used
+      # No need for manual SARIF upload or PR commenting
