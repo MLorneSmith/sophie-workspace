@@ -53,5 +53,16 @@
 			"staging": true,
 			"dev": true
 		}
+	},
+	"deploymentProtection": {
+		"checks": [
+			{
+				"name": "Health Check",
+				"path": "/healthcheck",
+				"method": "GET"
+			}
+		],
+		"timeout": 30000,
+		"errorThreshold": 0.05
 	}
 }

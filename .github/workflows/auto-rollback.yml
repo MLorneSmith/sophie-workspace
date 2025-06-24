@@ -1,0 +1,183 @@
+name: Auto Rollback
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      deployment_url:
+        required: true
+        type: string
+      previous_deployment_url:
+        required: false
+        type: string
+    secrets:
+      VERCEL_TOKEN:
+        required: true
+      VERCEL_ORG_ID:
+        required: true
+      VERCEL_PROJECT_ID:
+        required: true
+
+jobs:
+  health-check:
+    name: Health Check
+    runs-on: ubuntu-latest
+    outputs:
+      health_status: ${{ steps.health.outputs.status }}
+    steps:
+      - name: Wait for deployment
+        run: sleep 30
+
+      - name: Health check
+        id: health
+        run: |
+          response=$(curl -s -o /dev/null -w "%{http_code}" "${{ inputs.deployment_url }}/healthcheck")
+          if [ "$response" = "200" ]; then
+            echo "status=healthy" >> $GITHUB_OUTPUT
+          else
+            echo "status=unhealthy" >> $GITHUB_OUTPUT
+          fi
+
+  smoke-tests:
+    name: Smoke Tests
+    runs-on: ubuntu-latest
+    needs: health-check
+    if: needs.health-check.outputs.health_status == 'healthy'
+    outputs:
+      smoke_status: ${{ steps.smoke.outputs.status }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run smoke tests
+        id: smoke
+        env:
+          BASE_URL: ${{ inputs.deployment_url }}
+        run: |
+          if pnpm --filter=e2e test:smoke; then
+            echo "status=passed" >> $GITHUB_OUTPUT
+          else
+            echo "status=failed" >> $GITHUB_OUTPUT
+          fi
+
+  monitor-errors:
+    name: Monitor Error Rate
+    runs-on: ubuntu-latest
+    needs: [health-check, smoke-tests]
+    if: needs.health-check.outputs.health_status == 'healthy' && needs.smoke-tests.outputs.smoke_status == 'passed'
+    outputs:
+      error_rate: ${{ steps.monitor.outputs.error_rate }}
+      should_rollback: ${{ steps.monitor.outputs.should_rollback }}
+    steps:
+      - name: Monitor for 5 minutes
+        id: monitor
+        run: |
+          end_time=$(($(date +%s) + 300))
+          total_requests=0
+          error_requests=0
+          
+          while [ $(date +%s) -lt $end_time ]; do
+            response=$(curl -s -o /dev/null -w "%{http_code}" "${{ inputs.deployment_url }}/healthcheck")
+            total_requests=$((total_requests + 1))
+            
+            if [ "$response" != "200" ]; then
+              error_requests=$((error_requests + 1))
+            fi
+            
+            sleep 10
+          done
+          
+          if [ $total_requests -gt 0 ]; then
+            error_rate=$(echo "scale=4; $error_requests / $total_requests" | bc)
+            echo "error_rate=$error_rate" >> $GITHUB_OUTPUT
+            
+            if (( $(echo "$error_rate > 0.05" | bc -l) )); then
+              echo "should_rollback=true" >> $GITHUB_OUTPUT
+            else
+              echo "should_rollback=false" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "error_rate=0" >> $GITHUB_OUTPUT
+            echo "should_rollback=false" >> $GITHUB_OUTPUT
+          fi
+
+  rollback:
+    name: Rollback Deployment
+    runs-on: ubuntu-latest
+    needs: [health-check, smoke-tests, monitor-errors]
+    if: |
+      always() && (
+        needs.health-check.outputs.health_status == 'unhealthy' ||
+        needs.smoke-tests.outputs.smoke_status == 'failed' ||
+        needs.monitor-errors.outputs.should_rollback == 'true'
+      )
+    steps:
+      - name: Install Vercel CLI
+        run: npm install -g vercel@latest
+
+      - name: Get current deployment
+        id: current
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          deployment_id=$(vercel ls --token=$VERCEL_TOKEN --scope=$VERCEL_ORG_ID | grep "${{ inputs.environment }}" | head -1 | awk '{print $1}')
+          echo "deployment_id=$deployment_id" >> $GITHUB_OUTPUT
+
+      - name: Get previous deployment
+        id: previous
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          previous_id=$(vercel ls --token=$VERCEL_TOKEN --scope=$VERCEL_ORG_ID | grep "${{ inputs.environment }}" | head -2 | tail -1 | awk '{print $1}')
+          echo "previous_id=$previous_id" >> $GITHUB_OUTPUT
+
+      - name: Promote previous deployment
+        if: steps.previous.outputs.previous_id != ''
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          vercel promote ${{ steps.previous.outputs.previous_id }} --token=$VERCEL_TOKEN --scope=$VERCEL_ORG_ID
+
+      - name: Notify rollback
+        if: always()
+        run: |
+          echo "🚨 ROLLBACK TRIGGERED for ${{ inputs.environment }}"
+          echo "Reason: Health check failed, smoke tests failed, or error rate exceeded 5%"
+          echo "Current deployment: ${{ steps.current.outputs.deployment_id }}"
+          echo "Rolled back to: ${{ steps.previous.outputs.previous_id }}"
+
+  notify-success:
+    name: Notify Success
+    runs-on: ubuntu-latest
+    needs: [health-check, smoke-tests, monitor-errors]
+    if: |
+      needs.health-check.outputs.health_status == 'healthy' &&
+      needs.smoke-tests.outputs.smoke_status == 'passed' &&
+      needs.monitor-errors.outputs.should_rollback == 'false'
+    steps:
+      - name: Notify success
+        run: |
+          echo "✅ Deployment to ${{ inputs.environment }} successful"
+          echo "Health check: ✅"
+          echo "Smoke tests: ✅"
+          echo "Error rate: ${{ needs.monitor-errors.outputs.error_rate }} (below 5% threshold)"

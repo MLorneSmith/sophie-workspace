@@ -211,3 +211,16 @@ jobs:
         run: |
           echo "Security scanning will be implemented in Week 3"
           # TODO: Implement Snyk/OWASP scanning
+
+  # Auto-rollback workflow
+  auto-rollback:
+    name: Auto Rollback
+    needs: deploy
+    uses: ./.github/workflows/auto-rollback.yml
+    with:
+      environment: staging
+      deployment_url: ${{ needs.deploy.outputs.url }}
+    secrets:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}

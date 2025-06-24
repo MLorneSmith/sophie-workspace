@@ -157,21 +157,26 @@ jobs:
             # TODO: Send failure notification to Slack
           fi
 
-  # Rollback on failure
-  rollback:
-    name: Rollback on Failure
-    runs-on: ubuntu-latest
-    needs: health-check
-    if: failure()
-    steps:
-      - name: Trigger rollback
-        run: |
-          echo "🔄 Initiating automatic rollback"
-          # TODO: Implement Vercel rollback
-          # vercel rollback --token=${{ secrets.VERCEL_TOKEN }}
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+  # Auto-rollback workflow
+  auto-rollback:
+    name: Auto Rollback
+    needs: deploy
+    uses: ./.github/workflows/auto-rollback.yml
+    with:
+      environment: production
+      deployment_url: ${{ needs.deploy.outputs.url }}
+    secrets:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
+  # Create issue on rollback
+  rollback-issue:
+    name: Create Rollback Issue
+    runs-on: ubuntu-latest
+    needs: auto-rollback
+    if: needs.auto-rollback.result == 'failure'
+    steps:
       - name: Create rollback issue
         uses: actions/github-script@v7
         with:
