@@ -1,0 +1,80 @@
+rules:
+  # Custom rule for Supabase SQL injection prevention
+  - id: supabase-sql-injection
+    pattern-either:
+      - pattern: |
+          supabase.from($TABLE).select(`... ${$VAR} ...`)
+      - pattern: |
+          supabase.from($TABLE).select("... " + $VAR + " ...")
+      - pattern: |
+          supabase.rpc($FUNC, { $KEY: `... ${$VAR} ...` })
+    message: Potential SQL injection in Supabase query. Use parameterized queries instead.
+    languages: [typescript, javascript]
+    severity: ERROR
+    metadata:
+      category: security
+      cwe: 89
+      owasp: A03:2021
+
+  # Prevent hardcoded API keys
+  - id: hardcoded-api-keys
+    pattern-either:
+      - pattern: |
+          $KEY = "sk_..."
+      - pattern: |
+          $KEY = "pk_..."
+      - pattern: |
+          process.env.OPENAI_API_KEY = "..."
+      - pattern: |
+          apiKey: "..."
+    message: Hardcoded API key detected. Use environment variables instead.
+    languages: [typescript, javascript]
+    severity: ERROR
+
+  # Ensure server actions use enhanceAction
+  - id: unenhanced-server-action
+    patterns:
+      - pattern: |
+          export async function $FUNC(...) {
+            "use server"
+            ...
+          }
+      - pattern-not: |
+          export const $FUNC = enhanceAction(async (...) => {
+            ...
+          })
+    message: Server actions must use enhanceAction for proper error handling and validation
+    languages: [typescript, javascript]
+    severity: WARNING
+    paths:
+      include:
+        - "apps/web/**/_actions/**"
+
+# Exclude patterns
+paths:
+  exclude:
+    - node_modules
+    - .next
+    - dist
+    - build
+    - coverage
+    - "*.test.ts"
+    - "*.test.tsx"
+    - "*.spec.ts"
+    - "*.spec.tsx"
+    - "__tests__"
+    - ".turbo"
+    - "packages/*/dist"
+
+# Include specific paths for monorepo
+paths:
+  include:
+    - apps/web
+    - apps/payload
+    - packages/*
+
+# Performance settings
+performance:
+  max_target_bytes: 10000000  # 10MB
+  max_memory_mb: 2048
+  timeout_threshold: 5m
