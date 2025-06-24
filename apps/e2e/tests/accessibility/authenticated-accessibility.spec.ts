@@ -32,10 +32,12 @@ test.describe("Authenticated Accessibility Tests - WCAG 2.1 AA", () => {
 
 		try {
 			// Use existing auth method if available
-			await authPO.signInWithEmailAndPassword(
-				process.env.TEST_USER_EMAIL!,
-				process.env.TEST_USER_PASSWORD!,
-			);
+			const email = process.env.TEST_USER_EMAIL;
+			const password = process.env.TEST_USER_PASSWORD;
+			if (!email || !password) {
+				throw new Error("Test user credentials not configured");
+			}
+			await authPO.signInWithEmailAndPassword(email, password);
 
 			await accessibilityPO.navigateAndWait("/home");
 
@@ -59,10 +61,12 @@ test.describe("Authenticated Accessibility Tests - WCAG 2.1 AA", () => {
 		);
 
 		try {
-			await authPO.signInWithEmailAndPassword(
-				process.env.TEST_USER_EMAIL!,
-				process.env.TEST_USER_PASSWORD!,
-			);
+			const email = process.env.TEST_USER_EMAIL;
+			const password = process.env.TEST_USER_PASSWORD;
+			if (!email || !password) {
+				throw new Error("Test user credentials not configured");
+			}
+			await authPO.signInWithEmailAndPassword(email, password);
 
 			await accessibilityPO.navigateAndWait("/home/ai/canvas");
 
@@ -86,10 +90,12 @@ test.describe("Authenticated Accessibility Tests - WCAG 2.1 AA", () => {
 		);
 
 		try {
-			await authPO.signInWithEmailAndPassword(
-				process.env.TEST_USER_EMAIL!,
-				process.env.TEST_USER_PASSWORD!,
-			);
+			const email = process.env.TEST_USER_EMAIL;
+			const password = process.env.TEST_USER_PASSWORD;
+			if (!email || !password) {
+				throw new Error("Test user credentials not configured");
+			}
+			await authPO.signInWithEmailAndPassword(email, password);
 
 			await accessibilityPO.navigateAndWait("/home/ai/storyboard");
 
@@ -113,10 +119,12 @@ test.describe("Authenticated Accessibility Tests - WCAG 2.1 AA", () => {
 		);
 
 		try {
-			await authPO.signInWithEmailAndPassword(
-				process.env.TEST_USER_EMAIL!,
-				process.env.TEST_USER_PASSWORD!,
-			);
+			const email = process.env.TEST_USER_EMAIL;
+			const password = process.env.TEST_USER_PASSWORD;
+			if (!email || !password) {
+				throw new Error("Test user credentials not configured");
+			}
+			await authPO.signInWithEmailAndPassword(email, password);
 
 			await accessibilityPO.navigateAndWait("/home/course");
 
@@ -142,10 +150,12 @@ test.describe("Authenticated Accessibility Tests - WCAG 2.1 AA", () => {
 		);
 
 		try {
-			await authPO.signInWithEmailAndPassword(
-				process.env.TEST_USER_EMAIL!,
-				process.env.TEST_USER_PASSWORD!,
-			);
+			const email = process.env.TEST_USER_EMAIL;
+			const password = process.env.TEST_USER_PASSWORD;
+			if (!email || !password) {
+				throw new Error("Test user credentials not configured");
+			}
+			await authPO.signInWithEmailAndPassword(email, password);
 
 			await accessibilityPO.navigateAndWait("/home/account");
 
@@ -169,10 +179,12 @@ test.describe("Authenticated Accessibility Tests - WCAG 2.1 AA", () => {
 		);
 
 		try {
-			await authPO.signInWithEmailAndPassword(
-				process.env.TEST_USER_EMAIL!,
-				process.env.TEST_USER_PASSWORD!,
-			);
+			const email = process.env.TEST_USER_EMAIL;
+			const password = process.env.TEST_USER_PASSWORD;
+			if (!email || !password) {
+				throw new Error("Test user credentials not configured");
+			}
+			await authPO.signInWithEmailAndPassword(email, password);
 
 			await accessibilityPO.navigateAndWait("/home/kanban");
 

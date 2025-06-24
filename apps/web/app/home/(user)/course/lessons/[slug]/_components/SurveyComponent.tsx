@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState, useTransition } from "react";
 import { toast } from "sonner";
 import type { Database } from "~/lib/database.types";
+import type { SurveyQuestion } from "~/payload/payload-types";
 import { saveResponseAction } from "../../../../assessment/_lib/server/server-actions";
 import { QuestionCard } from "../../../../assessment/survey/_components/question-card";
 
@@ -255,6 +256,7 @@ export function SurveyComponent({
 				const hardcodedQuestions = [
 					{
 						id: "61a8e0b5-c600-49cc-9b18-6ba0f158bed3",
+						title: "Goals Question",
 						text: "Fill in the blank: After taking this course, I will be able to ________________________.",
 						type: "text_field",
 						category: "goals",
@@ -263,6 +265,7 @@ export function SurveyComponent({
 					},
 					{
 						id: "e0a592e6-d96a-4b62-ad11-3d6e16b2175d",
+						title: "Experience Level",
 						text: "How experienced do you feel in this course's subject matter?",
 						type: "scale",
 						category: "experience",
@@ -292,6 +295,7 @@ export function SurveyComponent({
 					},
 					{
 						id: "e0b335b6-dde9-4117-963b-c482b3ae5595",
+						title: "Roadblocks",
 						text: "What's the biggest roadblock you have with this course's subject matter right now?",
 						type: "text_field",
 						category: "roadblocks",
@@ -403,7 +407,20 @@ export function SurveyComponent({
 					{currentQuestion && (
 						<QuestionCard
 							key={currentQuestion.id}
-							question={currentQuestion}
+							question={
+								{
+									...currentQuestion,
+									questionSlug: currentQuestion.id,
+									type: currentQuestion.type as "multiple_choice" | "text_field" | "scale",
+									options: currentQuestion.options.map((opt) => ({
+										option: opt.text,
+										id: opt.id,
+									})),
+									questionspin: "Positive",
+									updatedAt: new Date().toISOString(),
+									createdAt: new Date().toISOString(),
+								} as SurveyQuestion
+							}
 							onAnswer={handleAnswer}
 							isLoading={isPending}
 						/>
