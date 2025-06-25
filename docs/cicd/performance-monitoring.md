@@ -55,9 +55,9 @@ The performance budgets are defined in `lighthouserc.json`:
   "ci": {
     "assert": {
       "assertions": {
-        "categories:performance": ["error", {"minScore": 0.9}],
-        "largest-contentful-paint": ["error", {"maxNumericValue": 2500}],
-        "cumulative-layout-shift": ["error", {"maxNumericValue": 0.1}],
+        "categories:performance": ["error", { "minScore": 0.9 }],
+        "largest-contentful-paint": ["error", { "maxNumericValue": 2500 }],
+        "cumulative-layout-shift": ["error", { "maxNumericValue": 0.1 }]
         // ... additional assertions
       }
     }
@@ -97,6 +97,7 @@ The performance budgets are defined in `lighthouserc.json`:
 - **Render blocking resources**: Review critical CSS/JS
 
 ### 3. Local Testing
+
 ```bash
 # Run Lighthouse locally
 pnpm add -g @lhci/cli
@@ -109,12 +110,14 @@ pnpm --filter web analyze
 ## Performance Optimization Checklist
 
 ### Before Deployment
+
 - [ ] Run local Lighthouse tests
 - [ ] Check bundle size impact
 - [ ] Verify image optimization
 - [ ] Test on slower connections
 
 ### After Regression Alert
+
 1. Review recent commits for performance impact
 2. Check third-party script changes
 3. Analyze bundle size differences
@@ -124,6 +127,7 @@ pnpm --filter web analyze
 ## Integration with CI/CD
 
 ### Staging Workflow
+
 ```yaml
 performance-test:
   uses: ./.github/workflows/lighthouse-ci.yml
@@ -133,6 +137,7 @@ performance-test:
 ```
 
 ### Enforcement
+
 - Performance tests block deployment on critical regressions
 - Non-critical warnings allow deployment but create tracking issues
 

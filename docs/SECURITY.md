@@ -60,6 +60,7 @@ We use [Snyk](https://snyk.io/) for comprehensive security scanning:
 ### 1. Detection
 
 Vulnerabilities are detected through:
+
 - Automated Snyk scanning
 - Security researcher reports
 - Internal security reviews
@@ -68,6 +69,7 @@ Vulnerabilities are detected through:
 ### 2. Assessment
 
 Each vulnerability is assessed for:
+
 - **Severity**: Critical, High, Medium, Low
 - **Exploitability**: Remote, Local, Conditional
 - **Impact**: Data exposure, service disruption, privilege escalation
@@ -75,12 +77,12 @@ Each vulnerability is assessed for:
 
 ### 3. Response Timeline
 
-| Severity | Initial Response | Patch Timeline | Communication |
-|----------|------------------|----------------|---------------|
-| Critical | 2 hours | 24 hours | Immediate notification |
-| High | 8 hours | 72 hours | Next business day |
-| Medium | 24 hours | 7 days | Weekly summary |
-| Low | 72 hours | 30 days | Monthly summary |
+| Severity | Initial Response | Patch Timeline | Communication          |
+| -------- | ---------------- | -------------- | ---------------------- |
+| Critical | 2 hours          | 24 hours       | Immediate notification |
+| High     | 8 hours          | 72 hours       | Next business day      |
+| Medium   | 24 hours         | 7 days         | Weekly summary         |
+| Low      | 72 hours         | 30 days        | Monthly summary        |
 
 ### 4. Resolution Process
 
@@ -99,15 +101,17 @@ Each vulnerability is assessed for:
 If you discover a security vulnerability, please report it responsibly:
 
 1. **GitHub Security Advisories** (Preferred):
+
    - Go to [Security Advisories](https://github.com/MLorneSmith/2025slideheroes/security/advisories)
    - Click "Report a vulnerability"
    - Provide detailed information about the vulnerability
 
-2. **Email**: Send details to security@slideheroes.com
+2. **Email**: Send details to <security@slideheroes.com>
 
 ### What to Include
 
 Please include the following information:
+
 - **Description**: Clear description of the vulnerability
 - **Impact**: Potential impact and affected systems
 - **Reproduction**: Step-by-step reproduction instructions
@@ -135,12 +139,12 @@ Please include the following information:
 
 The following secrets must be configured in GitHub repository settings:
 
-| Secret | Purpose | Required For |
-|--------|---------|--------------|
-| `SNYK_TOKEN` | Snyk API authentication | Security scanning |
-| `SUPABASE_SERVICE_ROLE_KEY` | Database access | Application runtime |
-| `STRIPE_SECRET_KEY` | Payment processing | Billing system |
-| `TURBO_TOKEN` | Build caching | CI/CD performance |
+| Secret                      | Purpose                 | Required For        |
+| --------------------------- | ----------------------- | ------------------- |
+| `SNYK_TOKEN`                | Snyk API authentication | Security scanning   |
+| `SUPABASE_SERVICE_ROLE_KEY` | Database access         | Application runtime |
+| `STRIPE_SECRET_KEY`         | Payment processing      | Billing system      |
+| `TURBO_TOKEN`               | Build caching           | CI/CD performance   |
 
 ### Environment Variables
 
@@ -264,7 +268,7 @@ All team members must complete:
 
 ### Security Team
 
-- **Email**: security@slideheroes.com
+- **Email**: <security@slideheroes.com>
 - **Response Time**: 24 hours maximum
 - **Emergency**: Critical issues escalated immediately
 
@@ -276,5 +280,5 @@ All team members must complete:
 
 ---
 
-*Last Updated: 2025-06-23*
-*Next Review: 2025-09-23*
+_Last Updated: 2025-06-23_
+_Next Review: 2025-09-23_

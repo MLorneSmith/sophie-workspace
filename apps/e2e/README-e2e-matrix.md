@@ -5,6 +5,7 @@ This document describes the comprehensive End-to-End testing setup for SlideHero
 ## Overview
 
 The E2E test matrix ensures SlideHeroes works consistently across:
+
 - **Desktop Browsers**: Chrome, Firefox, Safari
 - **Mobile Devices**: iPhone, Android phones, tablets
 - **Different Viewports**: Desktop, tablet, mobile
@@ -14,25 +15,25 @@ The E2E test matrix ensures SlideHeroes works consistently across:
 
 ### Browser Matrix
 
-| Browser        | Engine   | Desktop | Mobile | Tablet | Accessibility |
-|----------------|----------|---------|--------|--------|---------------|
-| Chromium       | Blink    | ✅      | ✅     | ✅     | ✅           |
-| Firefox        | Gecko    | ✅      | ✅     | ❌     | ❌           |
-| Safari/WebKit  | WebKit   | ✅      | ✅     | ✅     | ❌           |
+| Browser       | Engine | Desktop | Mobile | Tablet | Accessibility |
+| ------------- | ------ | ------- | ------ | ------ | ------------- |
+| Chromium      | Blink  | ✅      | ✅     | ✅     | ✅            |
+| Firefox       | Gecko  | ✅      | ✅     | ❌     | ❌            |
+| Safari/WebKit | WebKit | ✅      | ✅     | ✅     | ❌            |
 
 ### Viewport Configurations
 
 ```typescript
 // Desktop viewports
 Desktop Chrome: 1280x720
-Desktop Firefox: 1280x720  
+Desktop Firefox: 1280x720
 Desktop Safari: 1280x720
 
 // Mobile viewports
 Pixel 5: 393x851
 iPhone 12: 390x844
 
-// Tablet viewports  
+// Tablet viewports
 iPad Pro: 1024x1366
 ```
 
@@ -110,12 +111,14 @@ The workflow dynamically configures which browsers to test based on the trigger 
 ### Artifacts and Reports
 
 #### Test Artifacts
+
 - **Screenshots**: Captured on test failures (full page)
 - **Videos**: Recorded for failed tests in CI
 - **Traces**: Playwright trace files for debugging
 - **JUnit XML**: For CI/CD integration
 
 #### Report Merging
+
 The workflow merges results from all browser runs into a unified HTML report.
 
 ## Configuration Details
@@ -150,22 +153,28 @@ actionTimeout: 8000,
 ```typescript
 projects: [
   // Desktop browsers
-  { name: "chromium", use: { ...devices["Desktop Chrome"] } },
-  { name: "firefox", use: { ...devices["Desktop Firefox"] } },
-  { name: "webkit", use: { ...devices["Desktop Safari"] } },
-  
-  // Mobile viewports
-  { name: "Mobile Chrome", use: { ...devices["Pixel 5"] } },
-  { name: "Mobile Safari", use: { ...devices["iPhone 12"] } },
-  { name: "Mobile Firefox", use: { ...devices["Pixel 5"], browserName: "firefox" } },
+  { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+  { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
+  { name: 'webkit', use: { ...devices['Desktop Safari'] } },
 
-  // Tablet viewports  
-  { name: "Tablet Chrome", use: { ...devices["iPad Pro"] } },
-  { name: "Tablet Safari", use: { ...devices["iPad Pro"], browserName: "webkit" } },
+  // Mobile viewports
+  { name: 'Mobile Chrome', use: { ...devices['Pixel 5'] } },
+  { name: 'Mobile Safari', use: { ...devices['iPhone 12'] } },
+  {
+    name: 'Mobile Firefox',
+    use: { ...devices['Pixel 5'], browserName: 'firefox' },
+  },
+
+  // Tablet viewports
+  { name: 'Tablet Chrome', use: { ...devices['iPad Pro'] } },
+  {
+    name: 'Tablet Safari',
+    use: { ...devices['iPad Pro'], browserName: 'webkit' },
+  },
 
   // Accessibility testing
-  { name: "accessibility", testMatch: /.*accessibility.*\.spec\.ts/ },
-]
+  { name: 'accessibility', testMatch: /.*accessibility.*\.spec\.ts/ },
+];
 ```
 
 ## Test Strategy
@@ -179,14 +188,14 @@ projects: [
 
 ### Test Categories
 
-| Category | Coverage | Browsers | Frequency |
-|----------|----------|----------|-----------|
-| Authentication | All flows | All | Every PR |
-| Core Features | Major paths | Core (Chrome/Firefox) | Every PR |
-| Responsive Design | Layouts | Mobile/Tablet | Main branch |
-| Accessibility | WCAG 2.1 AA | Chrome | Every PR |
-| Performance | Load times | Chrome | Nightly |
-| Integration | API calls | All | Main branch |
+| Category          | Coverage    | Browsers              | Frequency   |
+| ----------------- | ----------- | --------------------- | ----------- |
+| Authentication    | All flows   | All                   | Every PR    |
+| Core Features     | Major paths | Core (Chrome/Firefox) | Every PR    |
+| Responsive Design | Layouts     | Mobile/Tablet         | Main branch |
+| Accessibility     | WCAG 2.1 AA | Chrome                | Every PR    |
+| Performance       | Load times  | Chrome                | Nightly     |
+| Integration       | API calls   | All                   | Main branch |
 
 ## Debugging Failed Tests
 
@@ -212,11 +221,13 @@ pnpm --filter e2e playwright test --debug tests/auth/auth.spec.ts
 ### Common Issues
 
 #### Mobile-Specific Issues
+
 - **Timeout Issues**: Mobile devices may be slower, timeouts are increased
 - **Touch Events**: Ensure tests use appropriate mobile interactions
 - **Viewport Issues**: Check responsive design breakpoints
 
 #### Browser-Specific Issues
+
 - **Firefox**: May have different timing, especially for animations
 - **Safari**: WebKit differences in JavaScript execution
 - **Chrome**: Most reliable baseline for comparison
@@ -234,9 +245,9 @@ pnpm --filter e2e playwright test --debug tests/auth/auth.spec.ts
 
 ```yaml
 # CI resource allocation
-workers: 2  # Balanced performance vs resource usage
-retries: 3  # Handle flaky tests
-timeout: 60000  # 1-minute test timeout
+workers: 2 # Balanced performance vs resource usage
+retries: 3 # Handle flaky tests
+timeout: 60000 # 1-minute test timeout
 ```
 
 ## Maintenance
@@ -305,6 +316,7 @@ pnpm --filter e2e playwright doctor
 ### Environment Variables
 
 Required for CI:
+
 ```bash
 SUPABASE_SERVICE_ROLE_KEY=xxx
 SUPABASE_DB_WEBHOOK_SECRET=xxx
@@ -318,7 +330,7 @@ PLAYWRIGHT_SERVER_COMMAND='pnpm dev'
 ### Planned Improvements
 
 1. **Visual Regression Testing**: Screenshot comparison across browsers
-2. **Performance Budgets**: Automated performance threshold checking  
+2. **Performance Budgets**: Automated performance threshold checking
 3. **Cross-Device Testing**: Real device testing integration
 4. **Accessibility Automation**: Enhanced a11y testing
 

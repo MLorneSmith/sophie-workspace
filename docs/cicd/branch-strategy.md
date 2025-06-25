@@ -387,6 +387,7 @@ Generated automatically from commit messages and PR descriptions:
 2. **Resolve conflicts manually**
 3. **Test thoroughly**
 4. **Force push** (if rebased):
+
    ```bash
    git push --force-with-lease origin feature/my-feature
    ```
