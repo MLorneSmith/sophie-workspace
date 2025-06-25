@@ -136,15 +136,46 @@ jobs:
       - name: Notify New Relic
         if: needs.health-check.result == 'success'
         run: |
-          echo "Creating New Relic deployment marker"
-          # TODO: Implement New Relic deployment marker
-          # curl -X POST "https://api.newrelic.com/v2/applications/${NEW_RELIC_APP_ID}/deployments.json" \
-          #   -H "X-Api-Key:${NEW_RELIC_API_KEY}" \
-          #   -H "Content-Type: application/json" \
-          #   -d "{\"deployment\":{\"revision\":\"${GITHUB_SHA}\",\"user\":\"${GITHUB_ACTOR}\"}}"
+          echo "📊 Creating New Relic deployment marker for production..."
+          
+          # Create deployment marker
+          curl -X POST "https://api.newrelic.com/v2/applications/${NEW_RELIC_APP_ID}/deployments.json" \
+            -H "X-Api-Key:${NEW_RELIC_API_KEY}" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"deployment\": {
+                \"revision\": \"${GITHUB_SHA}\",
+                \"user\": \"${GITHUB_ACTOR}\",
+                \"description\": \"Production deployment from ${GITHUB_REF_NAME}\",
+                \"changelog\": \"Production release via GitHub Actions\"
+              }
+            }"
+
+          # Send production CI/CD custom event
+          curl -X POST "https://insights-collector.newrelic.com/v1/accounts/${NEW_RELIC_ACCOUNT_ID}/events" \
+            -H "Content-Type: application/json" \
+            -H "X-Insert-Key: ${NEW_RELIC_INSERT_KEY}" \
+            -d "[{
+              \"eventType\": \"CICDEvent\",
+              \"timestamp\": $(date +%s),
+              \"environment\": \"production\",
+              \"deployment_id\": \"${GITHUB_SHA}\",
+              \"branch\": \"${GITHUB_REF_NAME}\",
+              \"workflow\": \"production-deploy\",
+              \"actor\": \"${GITHUB_ACTOR}\",
+              \"repository\": \"${GITHUB_REPOSITORY}\",
+              \"status\": \"success\",
+              \"deployment_url\": \"${{ needs.deploy.outputs.url }}\",
+              \"health_check_status\": \"${{ needs.health-check.result }}\",
+              \"commit_sha\": \"${GITHUB_SHA}\"
+            }]"
+          
+          echo "✅ Production deployment marker created successfully"
         env:
           NEW_RELIC_API_KEY: ${{ secrets.NEW_RELIC_API_KEY }}
           NEW_RELIC_APP_ID: ${{ secrets.NEW_RELIC_APP_ID }}
+          NEW_RELIC_ACCOUNT_ID: ${{ secrets.NEW_RELIC_ACCOUNT_ID }}
+          NEW_RELIC_INSERT_KEY: ${{ secrets.NEW_RELIC_INSERT_KEY }}
 
       - name: Notify Slack
         if: always()

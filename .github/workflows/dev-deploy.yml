@@ -129,7 +129,43 @@ jobs:
     steps:
       - name: Create New Relic deployment marker
         run: |
-          echo "New Relic deployment notification will be implemented"
-          # TODO: Implement New Relic deployment marker
+          echo "📊 Sending CI/CD metrics to New Relic..."
+          
+          # Create deployment marker
+          curl -X POST "https://api.newrelic.com/v2/applications/${NEW_RELIC_APP_ID}/deployments.json" \
+            -H "X-Api-Key:${NEW_RELIC_API_KEY}" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"deployment\": {
+                \"revision\": \"${GITHUB_SHA}\",
+                \"user\": \"${GITHUB_ACTOR}\",
+                \"description\": \"Development deployment from ${GITHUB_REF_NAME}\",
+                \"changelog\": \"Automated deployment via GitHub Actions\"
+              }
+            }"
+
+          # Send CI/CD custom event
+          curl -X POST "https://insights-collector.newrelic.com/v1/accounts/${NEW_RELIC_ACCOUNT_ID}/events" \
+            -H "Content-Type: application/json" \
+            -H "X-Insert-Key: ${NEW_RELIC_INSERT_KEY}" \
+            -d "[{
+              \"eventType\": \"CICDEvent\",
+              \"timestamp\": $(date +%s),
+              \"environment\": \"development\",
+              \"deployment_id\": \"${GITHUB_SHA}\",
+              \"branch\": \"${GITHUB_REF_NAME}\",
+              \"workflow\": \"dev-deploy\",
+              \"actor\": \"${GITHUB_ACTOR}\",
+              \"repository\": \"${GITHUB_REPOSITORY}\",
+              \"status\": \"success\",
+              \"deployment_url\": \"${{ needs.deploy.outputs.url }}\",
+              \"build_duration_seconds\": \"${{ job.duration || 0 }}\",
+              \"commit_sha\": \"${GITHUB_SHA}\"
+            }]"
+          
+          echo "✅ New Relic metrics sent successfully"
         env:
           NEW_RELIC_API_KEY: ${{ secrets.NEW_RELIC_API_KEY }}
+          NEW_RELIC_APP_ID: ${{ secrets.NEW_RELIC_APP_ID }}
+          NEW_RELIC_ACCOUNT_ID: ${{ secrets.NEW_RELIC_ACCOUNT_ID }}
+          NEW_RELIC_INSERT_KEY: ${{ secrets.NEW_RELIC_INSERT_KEY }}
