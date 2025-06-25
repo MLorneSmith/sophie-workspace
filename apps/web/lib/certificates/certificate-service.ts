@@ -128,10 +128,12 @@ export async function generateCertificate({
 	}
 
 	// 3. Fill the form with the user's name
-	// TODO: Async logger needed
-	// TODO: Fix logger call - was: info
-	// TODO: Async logger needed
-	// TODO: Fix logger call - was: info
+	logger.info("Filling certificate form", {
+		operation: "fill_form",
+		userId,
+		courseId,
+		nameFieldName,
+	});
 
 	const fillFormResponse = await fetch("https://api.pdf.co/v1/pdf/edit/add", {
 		method: "POST",
@@ -166,33 +168,36 @@ export async function generateCertificate({
 	const certificateBuffer = await certificateResponse.arrayBuffer();
 
 	// 5. Store the certificate in Supabase Storage
-	// TODO: Async logger needed
-	// TODO: Fix logger call - was: info
-	// TODO: Async logger needed
-	// TODO: Fix logger call - was: info
-	// TODO: Async logger needed
-	// TODO: Fix logger call - was: info
+	logger.info("Storing certificate in Supabase Storage", {
+		operation: "store_certificate",
+		userId,
+		courseId,
+	});
 
 	const supabase = getSupabaseServerClient();
 	const { data: buckets, error: bucketsError } =
 		await supabase.storage.listBuckets();
 
 	if (bucketsError) {
-		// TODO: Async logger needed
-		// TODO: Fix logger call - was: error
+		logger.error("Failed to list storage buckets", {
+			operation: "list_buckets",
+			error: bucketsError,
+		});
 		throw new Error(`Failed to list buckets: ${bucketsError.message}`);
 	}
 
-	// TODO: Async logger needed
-	// TODO: Fix logger call - was: info
+	logger.info("Listed storage buckets", {
+		operation: "list_buckets",
+		bucketCount: buckets?.length || 0,
+	});
 
 	// Log all bucket names for debugging
 	if (buckets && buckets.length > 0) {
-		// TODO: Async logger needed
-		// TODO: Fix logger call - was: info
+		logger.debug("Available buckets", {
+			operation: "list_buckets",
+			buckets: buckets.map((b) => b.name),
+		});
 		for (const _bucket of buckets) {
-			// TODO: Async logger needed
-			// TODO: Fix logger call - was: info
 			// console.log("Found bucket:", _bucket.name);
 		}
 	}
@@ -202,8 +207,9 @@ export async function generateCertificate({
 	);
 
 	if (!certificatesBucket) {
-		// TODO: Async logger needed
-		// TODO: Fix logger call - was: info
+		logger.info("Certificates bucket not found, creating new bucket", {
+			operation: "create_bucket",
+		});
 
 		// Try to create the bucket with multiple attempts if needed
 		let createBucketError = null;
@@ -220,21 +226,30 @@ export async function generateCertificate({
 
 				if (error) {
 					createBucketError = error;
-					// TODO: Async logger needed
-					// TODO: Fix logger call - was: error
+					logger.error("Failed to create certificates bucket", {
+						operation: "create_bucket",
+						error,
+						retryCount,
+						maxRetries,
+					});
 					retryCount++;
 					// Wait a bit before retrying
 					await new Promise((resolve) => setTimeout(resolve, 1000));
 				} else {
-					// TODO: Async logger needed
-					// TODO: Fix logger call - was: info
+					logger.info("Certificates bucket created successfully", {
+						operation: "create_bucket",
+					});
 					createBucketError = null;
 					break;
 				}
 			} catch (error) {
 				createBucketError = error;
-				// TODO: Async logger needed
-				// TODO: Fix logger call - was: error
+				logger.error("Exception creating certificates bucket", {
+					operation: "create_bucket",
+					error,
+					retryCount,
+					maxRetries,
+				});
 				retryCount++;
 				// Wait a bit before retrying
 				await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -242,22 +257,30 @@ export async function generateCertificate({
 		}
 
 		if (createBucketError) {
-			// TODO: Async logger needed
-			// TODO: Fix logger call - was: error
+			logger.error("Failed to create certificates bucket after retries", {
+				operation: "create_bucket",
+				error: createBucketError,
+				retries: maxRetries,
+			});
 			throw new Error(
 				`Failed to create certificates bucket: ${(createBucketError as Error)?.message || String(createBucketError)}`,
 			);
 		}
 	} else {
-		// TODO: Async logger needed
-		// TODO: Fix logger call - was: info
+		logger.info("Using existing certificates bucket", {
+			operation: "use_bucket",
+		});
 	}
 
 	// Create a unique filename for the certificate
 	const timestamp = Date.now();
 	const fileName = `${userId}/${courseId}/${timestamp}.pdf`;
-	// TODO: Async logger needed
-	// TODO: Fix logger call - was: info
+	logger.info("Uploading certificate file", {
+		operation: "upload_certificate",
+		fileName,
+		userId,
+		courseId,
+	});
 	const { error: uploadError } = await supabase.storage
 		.from("certificates")
 		.upload(fileName, certificateBuffer, {
@@ -266,8 +289,11 @@ export async function generateCertificate({
 		});
 
 	if (uploadError) {
-		// TODO: Async logger needed
-		// TODO: Fix logger call - was: error
+		logger.error("Failed to upload certificate", {
+			operation: "upload_certificate",
+			error: uploadError,
+			fileName,
+		});
 		throw new Error(`Failed to upload certificate: ${uploadError.message}`);
 	}
 

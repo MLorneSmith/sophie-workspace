@@ -71,13 +71,13 @@ describe("StoryboardService", () => {
 			update: vi.fn().mockReturnThis(),
 			order: vi.fn().mockReturnThis(),
 		};
-		
+
 		// Make each method return the chain itself
 		chainMock.select.mockReturnValue(chainMock);
 		chainMock.eq.mockReturnValue(chainMock);
 		chainMock.update.mockReturnValue(chainMock);
 		chainMock.order.mockReturnValue(chainMock);
-		
+
 		return chainMock;
 	};
 
@@ -187,11 +187,13 @@ describe("StoryboardService", () => {
 			// Override the single method on the chain returned by from()
 			const fromResult = mockSupabase.from();
 			fromResult.single.mockResolvedValue({ data: mockData, error: null });
-			
+
 			// Mock the save operation - create a new chain for the update operation
 			const updateChain = createChainableMock();
 			updateChain.eq.mockResolvedValue({ error: null });
-			mockSupabase.from.mockReturnValueOnce(fromResult).mockReturnValueOnce(updateChain);
+			mockSupabase.from
+				.mockReturnValueOnce(fromResult)
+				.mockReturnValueOnce(updateChain);
 
 			// Act
 			const result = await service.getStoryboard("submission-1");
@@ -230,18 +232,18 @@ describe("StoryboardService", () => {
 				data: null,
 				error: { message: "column 'storyboard' does not exist" },
 			});
-			
+
 			// Mock the fallback call to succeed
 			const secondChain = createChainableMock();
 			secondChain.single.mockResolvedValue({
 				data: fallbackData,
 				error: null,
 			});
-			
+
 			// Mock saveStoryboard call
 			const updateChain = createChainableMock();
 			updateChain.eq.mockResolvedValue({ error: null });
-			
+
 			mockSupabase.from
 				.mockReturnValueOnce(firstChain)
 				.mockReturnValueOnce(secondChain)
@@ -323,7 +325,7 @@ describe("StoryboardService", () => {
 			// Arrange
 			const storyboardData = { title: "Test", slides: [] };
 			const columnError = { message: "column 'storyboard' does not exist" };
-			
+
 			// Create a chain for the update operation
 			const updateChain = createChainableMock();
 			updateChain.eq.mockResolvedValue({ error: columnError });
@@ -354,7 +356,10 @@ describe("StoryboardService", () => {
 			mockSupabase.from.mockReturnValue(updateChain);
 
 			// Act
-			const result = await service.saveStoryboard("submission-1", storyboardData);
+			const result = await service.saveStoryboard(
+				"submission-1",
+				storyboardData,
+			);
 
 			// Assert
 			expect(result).toBe(false);
@@ -367,7 +372,7 @@ describe("StoryboardService", () => {
 		it("should handle exceptions during save operation", async () => {
 			// Arrange
 			const storyboardData = { title: "Test", slides: [] };
-			
+
 			// Create a chain that throws an error
 			const updateChain = createChainableMock();
 			updateChain.update.mockImplementation(() => {
@@ -486,11 +491,13 @@ describe("StoryboardService", () => {
 
 			const fromResult = mockSupabase.from();
 			fromResult.single.mockResolvedValue({ data: mockData, error: null });
-			
+
 			// Mock the save operation
 			const updateChain = createChainableMock();
 			updateChain.eq.mockResolvedValue({ error: null });
-			mockSupabase.from.mockReturnValueOnce(fromResult).mockReturnValueOnce(updateChain);
+			mockSupabase.from
+				.mockReturnValueOnce(fromResult)
+				.mockReturnValueOnce(updateChain);
 
 			// Act
 			const result = await service.getStoryboard("submission-1");
@@ -532,11 +539,13 @@ describe("StoryboardService", () => {
 
 			const fromResult = mockSupabase.from();
 			fromResult.single.mockResolvedValue({ data: mockData, error: null });
-			
+
 			// Mock the save operation
 			const updateChain = createChainableMock();
 			updateChain.eq.mockResolvedValue({ error: null });
-			mockSupabase.from.mockReturnValueOnce(fromResult).mockReturnValueOnce(updateChain);
+			mockSupabase.from
+				.mockReturnValueOnce(fromResult)
+				.mockReturnValueOnce(updateChain);
 
 			// Act
 			const result = await service.getStoryboard("submission-1");
@@ -561,11 +570,13 @@ describe("StoryboardService", () => {
 
 			const fromResult = mockSupabase.from();
 			fromResult.single.mockResolvedValue({ data: mockData, error: null });
-			
+
 			// Mock the save operation
 			const updateChain = createChainableMock();
 			updateChain.eq.mockResolvedValue({ error: null });
-			mockSupabase.from.mockReturnValueOnce(fromResult).mockReturnValueOnce(updateChain);
+			mockSupabase.from
+				.mockReturnValueOnce(fromResult)
+				.mockReturnValueOnce(updateChain);
 
 			// Act
 			const result = await service.getStoryboard("submission-1");
@@ -607,11 +618,13 @@ describe("StoryboardService", () => {
 
 			const fromResult = mockSupabase.from();
 			fromResult.single.mockResolvedValue({ data: mockData, error: null });
-			
+
 			// Mock the save operation
 			const updateChain = createChainableMock();
 			updateChain.eq.mockResolvedValue({ error: null });
-			mockSupabase.from.mockReturnValueOnce(fromResult).mockReturnValueOnce(updateChain);
+			mockSupabase.from
+				.mockReturnValueOnce(fromResult)
+				.mockReturnValueOnce(updateChain);
 
 			// Act
 			const result = await service.getStoryboard("submission-1");
@@ -648,11 +661,13 @@ describe("StoryboardService", () => {
 
 			const fromResult = mockSupabase.from();
 			fromResult.single.mockResolvedValue({ data: mockData, error: null });
-			
+
 			// Mock the save operation
 			const updateChain = createChainableMock();
 			updateChain.eq.mockResolvedValue({ error: null });
-			mockSupabase.from.mockReturnValueOnce(fromResult).mockReturnValueOnce(updateChain);
+			mockSupabase.from
+				.mockReturnValueOnce(fromResult)
+				.mockReturnValueOnce(updateChain);
 
 			// Act
 			const result = await service.getStoryboard("submission-1");
@@ -674,11 +689,13 @@ describe("StoryboardService", () => {
 
 			const fromResult = mockSupabase.from();
 			fromResult.single.mockResolvedValue({ data: mockData, error: null });
-			
+
 			// Mock the save operation
 			const updateChain = createChainableMock();
 			updateChain.eq.mockResolvedValue({ error: null });
-			mockSupabase.from.mockReturnValueOnce(fromResult).mockReturnValueOnce(updateChain);
+			mockSupabase.from
+				.mockReturnValueOnce(fromResult)
+				.mockReturnValueOnce(updateChain);
 
 			// Act
 			const result = await service.getStoryboard("submission-1");
@@ -720,11 +737,13 @@ describe("StoryboardService", () => {
 
 			const fromResult = mockSupabase.from();
 			fromResult.single.mockResolvedValue({ data: mockData, error: null });
-			
+
 			// Mock the save operation
 			const updateChain = createChainableMock();
 			updateChain.eq.mockResolvedValue({ error: null });
-			mockSupabase.from.mockReturnValueOnce(fromResult).mockReturnValueOnce(updateChain);
+			mockSupabase.from
+				.mockReturnValueOnce(fromResult)
+				.mockReturnValueOnce(updateChain);
 
 			// Act
 			const result = await service.getStoryboard("submission-1");
@@ -757,11 +776,13 @@ describe("StoryboardService", () => {
 
 			const fromResult = mockSupabase.from();
 			fromResult.single.mockResolvedValue({ data: mockData, error: null });
-			
+
 			// Mock the save operation
 			const updateChain = createChainableMock();
 			updateChain.eq.mockResolvedValue({ error: null });
-			mockSupabase.from.mockReturnValueOnce(fromResult).mockReturnValueOnce(updateChain);
+			mockSupabase.from
+				.mockReturnValueOnce(fromResult)
+				.mockReturnValueOnce(updateChain);
 
 			// Act
 			const result = await service.getStoryboard("submission-1");
@@ -822,11 +843,13 @@ describe("StoryboardService", () => {
 
 			const fromResult = mockSupabase.from();
 			fromResult.single.mockResolvedValue({ data: mockData, error: null });
-			
+
 			// Mock the save operation
 			const updateChain = createChainableMock();
 			updateChain.eq.mockResolvedValue({ error: null });
-			mockSupabase.from.mockReturnValueOnce(fromResult).mockReturnValueOnce(updateChain);
+			mockSupabase.from
+				.mockReturnValueOnce(fromResult)
+				.mockReturnValueOnce(updateChain);
 
 			// Act
 			const result = await service.getStoryboard("submission-1");
@@ -860,11 +883,13 @@ describe("StoryboardService", () => {
 
 			const fromResult = mockSupabase.from();
 			fromResult.single.mockResolvedValue({ data: mockData, error: null });
-			
+
 			// Mock the save operation
 			const updateChain = createChainableMock();
 			updateChain.eq.mockResolvedValue({ error: null });
-			mockSupabase.from.mockReturnValueOnce(fromResult).mockReturnValueOnce(updateChain);
+			mockSupabase.from
+				.mockReturnValueOnce(fromResult)
+				.mockReturnValueOnce(updateChain);
 
 			// Act
 			const result = await service.getStoryboard("submission-1");

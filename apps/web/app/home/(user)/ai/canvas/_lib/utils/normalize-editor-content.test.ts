@@ -170,9 +170,6 @@ describe("normalizeEditorContent", () => {
 
 		it("should handle invalid JSON string", () => {
 			// Arrange
-			const consoleErrorSpy = vi
-				.spyOn(console, "error")
-				.mockImplementation(() => {});
 			const input = "{ invalid json }";
 			const sectionType: EditorContentTypes = "situation";
 
@@ -187,10 +184,7 @@ describe("normalizeEditorContent", () => {
 				type: "text",
 				text: " ",
 			});
-			expect(consoleErrorSpy).toHaveBeenCalledWith(
-				"Failed to parse content JSON:",
-				expect.any(SyntaxError),
-			);
+			// Note: console.error has been removed from implementation in favor of async logger
 		});
 
 		it("should handle empty string", () => {
@@ -543,9 +537,6 @@ describe("normalizeEditorContent", () => {
 	describe("Schema Validation Tests", () => {
 		it('should validate document type is "doc"', () => {
 			// Arrange
-			const consoleErrorSpy = vi
-				.spyOn(console, "error")
-				.mockImplementation(() => {});
 			const input = {
 				type: "paragraph", // Wrong root type
 				content: [{ type: "text", text: "Test" }],
@@ -556,10 +547,8 @@ describe("normalizeEditorContent", () => {
 			const result = normalizeEditorContent(input, sectionType);
 
 			// Assert
-			expect(consoleErrorSpy).toHaveBeenCalledWith(
-				"Schema validation failed:",
-				expect.any(Error),
-			);
+			// Note: console.error has been removed from implementation in favor of async logger
+			// Schema validation failure results in fallback to safe content
 			expect(result.type).toBe("doc"); // Should fallback to safe content
 			expect(result.content).toHaveLength(1);
 			expect(result.content?.[0]?.type).toBe("paragraph");
@@ -567,9 +556,6 @@ describe("normalizeEditorContent", () => {
 
 		it("should validate root content array exists", () => {
 			// Arrange
-			const consoleErrorSpy = vi
-				.spyOn(console, "error")
-				.mockImplementation(() => {});
 			const input = {
 				type: "doc",
 				// Missing content property
@@ -580,10 +566,8 @@ describe("normalizeEditorContent", () => {
 			const result = normalizeEditorContent(input, sectionType);
 
 			// Assert
-			expect(consoleErrorSpy).toHaveBeenCalledWith(
-				"Schema validation failed:",
-				expect.any(Error),
-			);
+			// Note: console.error has been removed from implementation in favor of async logger
+			// Schema validation failure results in fallback to safe content
 			expect(result.type).toBe("doc"); // Should fallback to safe content
 			expect(result.content).toEqual([
 				{
@@ -595,9 +579,6 @@ describe("normalizeEditorContent", () => {
 
 		it("should validate nodes have required type property", () => {
 			// Arrange
-			const consoleErrorSpy = vi
-				.spyOn(console, "error")
-				.mockImplementation(() => {});
 			const input: TiptapDocument = {
 				type: "doc",
 				content: [
@@ -611,10 +592,8 @@ describe("normalizeEditorContent", () => {
 			const result = normalizeEditorContent(input, sectionType);
 
 			// Assert
-			expect(consoleErrorSpy).toHaveBeenCalledWith(
-				"Schema validation failed:",
-				expect.any(Error),
-			);
+			// Note: console.error has been removed from implementation in favor of async logger
+			// Schema validation failure results in fallback to safe content
 			expect(result.type).toBe("doc"); // Should fallback to safe content
 		});
 

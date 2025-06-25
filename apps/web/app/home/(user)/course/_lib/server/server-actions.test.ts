@@ -444,10 +444,6 @@ describe("Course Server Actions", () => {
 					return chain;
 				});
 
-				const consoleErrorSpy = vi
-					.spyOn(console, "error")
-					.mockImplementation(() => {});
-
 				const input = {
 					courseId: "course-123",
 					completed: true,
@@ -456,12 +452,7 @@ describe("Course Server Actions", () => {
 				const result = await updateCourseProgressAction(input);
 
 				expect(result).toEqual({ success: true });
-				expect(consoleErrorSpy).toHaveBeenCalledWith(
-					"Failed to generate certificate:",
-					expect.any(Error),
-				);
-
-				consoleErrorSpy.mockRestore();
+				// Note: console.error has been removed from implementation in favor of async logger
 			});
 		});
 
@@ -636,7 +627,9 @@ describe("Course Server Actions", () => {
 				};
 
 				// Mock CMS responses
-				mockGetCourseBySlug.mockResolvedValueOnce({});
+				mockGetCourseBySlug.mockResolvedValueOnce({
+					docs: [{ id: "course-123" }],
+				});
 				mockGetCourseLessons.mockResolvedValueOnce({
 					docs: [
 						{ id: "lesson-456", lesson_number: "101", title: "Test Lesson" },

@@ -281,9 +281,6 @@ describe("CostTrackingContext", () => {
 
 		it("handles API failure response", async () => {
 			// Arrange
-			const consoleSpy = vi
-				.spyOn(console, "error")
-				.mockImplementation(() => {});
 			mockUseUser.mockReturnValue(
 				createMockUseQueryResult(
 					createMockUser({ id: "user-123", email: "test@example.com" }),
@@ -308,15 +305,11 @@ describe("CostTrackingContext", () => {
 
 			// Assert - should remain at default
 			expect(screen.getByTestId("cost")).toHaveTextContent("0");
-
-			consoleSpy.mockRestore();
+			// Note: console.error has been removed from implementation in favor of async logger
 		});
 
 		it("handles network error", async () => {
 			// Arrange
-			const consoleSpy = vi
-				.spyOn(console, "error")
-				.mockImplementation(() => {});
 			mockUseUser.mockReturnValue(
 				createMockUseQueryResult(
 					createMockUser({ id: "user-123", email: "test@example.com" }),
@@ -338,19 +331,11 @@ describe("CostTrackingContext", () => {
 
 			// Assert
 			expect(screen.getByTestId("cost")).toHaveTextContent("0");
-			expect(consoleSpy).toHaveBeenCalledWith(
-				"Failed to fetch initial costs:",
-				expect.any(Error),
-			);
-
-			consoleSpy.mockRestore();
+			// Note: console.error has been removed from implementation in favor of async logger
 		});
 
 		it("handles malformed JSON response", async () => {
 			// Arrange
-			const consoleSpy = vi
-				.spyOn(console, "error")
-				.mockImplementation(() => {});
 			mockUseUser.mockReturnValue(
 				createMockUseQueryResult(
 					createMockUser({ id: "user-123", email: "test@example.com" }),
@@ -377,12 +362,7 @@ describe("CostTrackingContext", () => {
 
 			// Assert
 			expect(screen.getByTestId("cost")).toHaveTextContent("0");
-			expect(consoleSpy).toHaveBeenCalledWith(
-				"Failed to fetch initial costs:",
-				expect.any(Error),
-			);
-
-			consoleSpy.mockRestore();
+			// Note: console.error has been removed from implementation in favor of async logger
 		});
 
 		it("re-initializes when user ID changes", async () => {
