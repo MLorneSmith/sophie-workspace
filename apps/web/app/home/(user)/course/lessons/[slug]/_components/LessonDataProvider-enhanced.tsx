@@ -18,12 +18,20 @@ type PayloadQuiz = {
 };
 type PayloadSurvey = {
 	id: string;
-	title: string;
-	questions: Array<{
-		question: string;
-		type: string;
+	title?: string;
+	slug?: string;
+	questions?: Array<{
+		id: string;
+		text?: string;
+		question?: string;
+		type?: string;
+		category?: string;
+		position?: number;
 		options?: Array<{
-			text: string;
+			id?: string;
+			text?: string;
+			option?: string;
+			score?: number;
 		}>;
 	}>;
 	[key: string]: unknown;

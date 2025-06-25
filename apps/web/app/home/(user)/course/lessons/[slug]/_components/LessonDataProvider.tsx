@@ -31,14 +31,22 @@ interface PayloadQuizQuestion {
 
 interface PayloadSurvey {
 	id: string;
-	title: string;
-	questions?: PayloadSurveyQuestion[];
-}
-
-interface PayloadSurveyQuestion {
-	id: string;
-	question: string;
-	type: string;
+	title?: string;
+	slug?: string;
+	questions?: Array<{
+		id: string;
+		text?: string;
+		question?: string;
+		type?: string;
+		category?: string;
+		position?: number;
+		options?: Array<{
+			id?: string;
+			text?: string;
+			option?: string;
+			score?: number;
+		}>;
+	}>;
 }
 
 // Database types
