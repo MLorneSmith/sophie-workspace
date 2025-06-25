@@ -39,7 +39,7 @@ type SurveyResponse = Database["public"]["Tables"]["survey_responses"]["Row"];
 // Payload CMS types (removed duplicates - these interfaces are defined below)
 
 // Define types for content that can be rendered by PayloadContentRenderer
-type PayloadContent = string | Record<string, unknown> | unknown;
+type PayloadContent = string | Record<string, unknown> | null | undefined;
 
 interface PayloadLesson {
 	title: string;
@@ -88,13 +88,22 @@ interface PayloadQuiz {
 	passingScore: number;
 }
 
-interface PayloadSurvey {
+interface SimpleSurvey {
 	id: string;
-	questions: Array<{
-		question: string;
-		type: string;
+	title?: string;
+	slug?: string;
+	questions?: Array<{
+		id: string;
+		text?: string;
+		question?: string;
+		type?: string;
+		category?: string;
+		position?: number;
 		options?: Array<{
-			text: string;
+			id?: string;
+			text?: string;
+			option?: string;
+			score?: number;
 		}>;
 	}>;
 }
@@ -105,7 +114,7 @@ interface LessonViewClientProps {
 	quizAttempts: QuizAttempt[];
 	lessonProgress: LessonProgress | null;
 	userId: string;
-	survey?: PayloadSurvey | null;
+	survey?: SimpleSurvey | null;
 	surveyResponses?: SurveyResponse[];
 }
 
