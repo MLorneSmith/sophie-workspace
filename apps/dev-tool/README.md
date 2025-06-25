@@ -16,7 +16,8 @@ Open the link printed in the terminal to see the result.
 
 ## Testing production environment variables
 
-To test your production environment variables, create a `.env.production.local` file in the `apps/web` directory and add your production environment variables.
+To test your production environment variables, create a `.env.production.local` file in the `apps/web` directory and
+add your production environment variables.
 
 This environment variables are not committed to the repository, so you can use them for testing purposes.
 

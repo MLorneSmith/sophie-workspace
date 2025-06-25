@@ -2,7 +2,7 @@
 
 This AGENTS.md file provides comprehensive guidance for OpenAI Codex and other AI agents working with this codebase.
 
-### Core Technologies
+## Core Technologies
 
 - **Next.js 15** with App Router and Turbopack
 - **Supabase** for database, auth, and storage
@@ -11,7 +11,7 @@ This AGENTS.md file provides comprehensive guidance for OpenAI Codex and other A
 - **Tailwind CSS 4** for styling
 - **Turborepo** for monorepo management
 
-### Monorepo Structure
+## Monorepo Structure
 
 - @apps/web - Main Next.js SaaS application
 - @apps/dev-tool - Development utilities (port 3010)
@@ -19,7 +19,7 @@ This AGENTS.md file provides comprehensive guidance for OpenAI Codex and other A
 - @packages/ - Shared packages and utilities
 - @tooling/ - Build tools and development scripts
 
-### Multi-Tenant Architecture
+## Multi-Tenant Architecture
 
 **Personal Accounts**: Individual user accounts (auth.users.id = accounts.id)
 **Team Accounts**: Shared workspaces with members, roles, and permissions
@@ -58,7 +58,7 @@ pnpm test                   # Run tests
 
 ### Route Organization
 
-```
+```bash
 app/
 ├── (marketing)/          # Public pages (landing, blog, docs)
 ├── (auth)/              # Authentication pages
@@ -92,15 +92,17 @@ Example:
 
 ### Security & RLS Implementation
 
-**Critical Security Guidelines - Read Carefully! ⚠️**
+#### Critical Security Guidelines - Read Carefully! ⚠️
 
 #### Database Security Fundamentals
 
 - **Always enable RLS** on new tables unless explicitly instructed otherwise
 - **NEVER use SECURITY DEFINER functions** without explicit access controls - they bypass RLS entirely
 - **Always use security_invoker=true for views** to maintain proper access control
-- **Storage buckets MUST validate access** using account_id in the path structure. See @apps/web/supabase/schemas/16-storage.sql for proper implementation.
-- **Use locks if required**: Database locks prevent race conditions and timing attacks in concurrent operations. Make sure to take these into account for all database operations.
+- **Storage buckets MUST validate access** using account_id in the path structure. See
+  @apps/web/supabase/schemas/16-storage.sql for proper implementation.
+- **Use locks if required**: Database locks prevent race conditions and timing attacks in concurrent
+  operations. Make sure to take these into account for all database operations.
 
 #### Security Definer Function - Dangerous Pattern ❌
 
@@ -251,7 +253,7 @@ function InteractiveNotes() {
 
 #### Performance Optimization - Parallel Data Fetching 🚀
 
-**Sequential (Slow) Pattern ❌**
+##### Sequential (Slow) Pattern ❌
 
 ```typescript
 async function SlowDashboard() {
@@ -262,7 +264,7 @@ async function SlowDashboard() {
 }
 ```
 
-**Parallel (Optimized) Pattern ✅**
+##### Parallel (Optimized) Pattern ✅
 
 ```typescript
 async function FastDashboard() {
@@ -468,7 +470,7 @@ Adding new languages:
 2. Create translation files in @apps/web/public/locales/[new-language]/
 3. Copy structure from English files
 
-Translation files: @apps/web/public/locales/<locale>/<namespace>.json
+Translation files: @apps/web/public/locales/[locale]/[namespace].json
 
 ## Security Guidelines 🛡️
 
@@ -608,7 +610,7 @@ async function myServerAction() {
 
 ## Quick Reference Checklist ✅
 
-### Development Workflow
+### Development Checklist
 
 - [ ] Enable RLS on new tables
 - [ ] Generate TypeScript types after schema changes and infer types from these

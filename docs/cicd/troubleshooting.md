@@ -40,7 +40,7 @@ curl -f https://slideheroes.com/api/health
 
 **Symptoms**:
 
-```
+```text
 error TS2307: Cannot find module '@/components/ui/button'
 error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'
 ```
@@ -84,7 +84,7 @@ pnpm install
 
 **Symptoms**:
 
-```
+```text
 error: Expected 2 spaces but received 4 spaces (indent)
 error: Missing semicolon (semi)
 ```
@@ -117,7 +117,7 @@ pnpm biome check path/to/file.ts
 
 **Symptoms**:
 
-```
+```text
 ERR_PNPM_OUTDATED_LOCKFILE
 WARN deprecated package@1.0.0
 ```
@@ -144,7 +144,7 @@ pnpm audit --fix
 
 **Symptoms**:
 
-```
+```text
 FAIL src/components/Button.test.tsx
 Expected: "Submit"
 Received: "Loading..."
@@ -186,7 +186,7 @@ vi.mock('@/lib/api', () => ({
 
 **Symptoms**:
 
-```
+```text
 TimeoutError: locator.click() timed out after 30000ms
 Error: expect(page).toHaveTitle() timeout exceeded
 ```
@@ -231,7 +231,7 @@ await page.route('**/api/auth/**', (route) => {
 
 **Symptoms**:
 
-```
+```text
 Error: Build failed with exit code 1
 Error: Function timeout (60s) exceeded
 ```
@@ -277,7 +277,7 @@ vercel --node-version 20.x
 
 **Symptoms**:
 
-```
+```text
 Error: Process completed with exit code 1
 Error: Unable to resolve action `actions/setup-node@v5`
 ```

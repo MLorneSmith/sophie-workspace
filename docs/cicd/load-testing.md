@@ -6,7 +6,7 @@ SlideHeroes uses [k6](https://k6.io/) for load testing to ensure our application
 
 ## Architecture
 
-```
+```text
 load-tests/
 ├── k6.config.js          # Shared configuration
 ├── scenarios/            # Test scenarios

@@ -1,6 +1,7 @@
 # Testing Sharp Optimization & Serverless Integration
 
-This guide provides step-by-step instructions for testing the Sharp optimization integration in Payload CMS, including admin preview, troubleshooting, and performance monitoring.
+This guide provides step-by-step instructions for testing the Sharp optimization integration in Payload CMS,
+including admin preview, troubleshooting, and performance monitoring.
 
 ---
 

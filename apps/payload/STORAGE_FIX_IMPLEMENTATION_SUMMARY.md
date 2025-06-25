@@ -2,7 +2,8 @@
 
 ## Implementation Summary
 
-This document summarizes the comprehensive fix for Payload CMS S3 storage issues with Cloudflare R2, implementing separate storage plugin instances to resolve conflicts between media and downloads collections.
+This document summarizes the comprehensive fix for Payload CMS S3 storage issues with Cloudflare R2, implementing
+separate storage plugin instances to resolve conflicts between media and downloads collections.
 
 ## ✅ What Was Fixed
 
@@ -29,13 +30,13 @@ This document summarizes the comprehensive fix for Payload CMS S3 storage issues
 
 ### Updated Core Files
 
-3. **`src/payload.config.ts`** - Complete rewrite with separate storage plugin architecture
-4. **`src/collections/Media.ts`** - Enhanced with proper upload settings and metadata fields
-5. **`src/collections/Downloads.ts`** - Extended MIME types and collection-specific configuration
+1. **`src/payload.config.ts`** - Complete rewrite with separate storage plugin architecture
+2. **`src/collections/Media.ts`** - Enhanced with proper upload settings and metadata fields
+3. **`src/collections/Downloads.ts`** - Extended MIME types and collection-specific configuration
 
 ### Enhanced Verification
 
-6. **`scripts/verify-config.js`** - Comprehensive testing and validation script
+1. **`scripts/verify-config.js`** - Comprehensive testing and validation script
 
 ## 🏗️ New Architecture Benefits
 
@@ -104,7 +105,7 @@ node scripts/verify-config.js
 
 Expected output for properly configured R2:
 
-```
+```text
 🎉 All configuration looks good!
    ✅ Separate storage plugin architecture implemented
    ✅ Storage configuration working correctly

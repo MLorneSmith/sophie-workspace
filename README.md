@@ -14,9 +14,9 @@ SlideHeroes is a SaaS platform for learning how to write board-level business pr
 
 SlideHeroes targets small and medium sized consultancies, advisory firms, and technology companies. SlideHeroes also targets individual professionals and subject matter experts who are responsible for creating high-stakes presentations.
 
-# SlideHeroes App and Website
+## SlideHeroes App and Website
 
-## Current status
+### Current status
 
 The SlideHeroes app and website are currently under active development. The app is not yet feature complete, and the website is not yet fully launched. The app is currently in a private beta, and the website is currently in a private preview.
 
@@ -241,19 +241,19 @@ This project uses Claude's context priming capabilities to provide specialized a
 
 1. **Switch to a role** at the beginning of your session:
 
-   ```
+   ```bash
    /read .claude/roles/ui-engineer.md
    ```
 
 2. **Ask role-specific questions** after loading a role:
 
-   ```
+   ```text
    Now that you're in UI Engineer role, help me implement a responsive navigation component.
    ```
 
 3. **Combine roles** for complex tasks:
 
-   ```
+   ```bash
    /read .claude/roles/ui-engineer.md
    /read .claude/roles/data-engineer.md
 
@@ -262,7 +262,7 @@ This project uses Claude's context priming capabilities to provide specialized a
 
 4. **Use task-specific commands** for common workflows:
 
-   ```
+   ```bash
    /read .claude/tasks/ui/new-component.md
 
    I need a Button component with primary, secondary, and danger variants.

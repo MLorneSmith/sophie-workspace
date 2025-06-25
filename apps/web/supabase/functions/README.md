@@ -18,7 +18,8 @@ curl -H "Authorization: Bearer <anon_key>" http://127.0.0.1:54321/functions/v1/h
 
 ## Development
 
-Edge Functions use Deno and run in the Supabase Edge Runtime. See the [Supabase Edge Functions documentation](https://supabase.com/docs/guides/functions) for more details.
+Edge Functions use Deno and run in the Supabase Edge Runtime. See the
+[Supabase Edge Functions documentation](https://supabase.com/docs/guides/functions) for more details.
 
 ### Local Development
 

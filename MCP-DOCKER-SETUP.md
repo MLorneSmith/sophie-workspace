@@ -114,7 +114,7 @@ The `.mcp.json` configuration has been updated to use HTTP connections to Docker
 
 ## File Structure
 
-```
+```text
 .mcp-servers/
 ├── perplexity-ask/
 │   └── Dockerfile

@@ -2,7 +2,8 @@
 
 ## Overview
 
-This guide provides comprehensive instructions for setting up a local development environment that mirrors the production CI/CD pipeline, enabling developers to test changes before committing.
+This guide provides comprehensive instructions for setting up a local development environment that mirrors the
+production CI/CD pipeline, enabling developers to test changes before committing.
 
 ## Prerequisites
 
