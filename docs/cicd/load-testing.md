@@ -2,7 +2,8 @@
 
 ## Overview
 
-SlideHeroes uses [k6](https://k6.io/) for load testing to ensure our application can handle expected user traffic and identify performance bottlenecks before they impact users.
+SlideHeroes uses [k6](https://k6.io/) for load testing to ensure our application can handle expected user traffic
+and identify performance bottlenecks before they impact users.
 
 ## Architecture
 

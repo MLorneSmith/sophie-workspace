@@ -2,7 +2,8 @@
 
 ## Summary
 
-Successfully implemented Snyk security scanning integration for the SlideHeroes CI/CD pipeline as requested in Issue #53. The implementation includes both PR validation checks and weekly security audits.
+Successfully implemented Snyk security scanning integration for the SlideHeroes CI/CD pipeline as requested in Issue
+\#53. The implementation includes both PR validation checks and weekly security audits.
 
 ## Implementation Details
 

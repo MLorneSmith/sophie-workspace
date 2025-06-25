@@ -2,7 +2,8 @@
 
 ## Overview
 
-SlideHeroes uses Lighthouse CI to monitor and enforce performance budgets across staging and production environments. This ensures optimal user experience and maintains Core Web Vitals compliance.
+SlideHeroes uses Lighthouse CI to monitor and enforce performance budgets across staging and production environments.
+This ensures optimal user experience and maintains Core Web Vitals compliance.
 
 ## Performance Targets
 

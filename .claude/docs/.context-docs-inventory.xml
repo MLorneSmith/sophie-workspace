@@ -470,6 +470,20 @@
     </document>
   </category>
 
+  <category id="systems" name="System Documentation">
+    <document path="../context/systems/enhanced-logger.md">
+      <name>Enhanced Logger System</name>
+      <description>Comprehensive documentation of the async logger system including architecture, usage patterns, security features, and migration guide from console logging.</description>
+      <topics>
+        <topic>Logger Architecture</topic>
+        <topic>Async Patterns</topic>
+        <topic>Security Features</topic>
+        <topic>Migration Guide</topic>
+        <topic>Testing Strategies</topic>
+      </topics>
+    </document>
+  </category>
+
   <category id="test-cases" name="Test Case Specifications">
     <description>Specific test case documentation for individual components and services throughout the application, organized by file path.</description>
     <document-count>18</document-count>

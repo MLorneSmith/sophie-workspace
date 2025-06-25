@@ -2,7 +2,8 @@
 
 ## Overview
 
-The SlideHeroes project uses a comprehensive GitOps-based CI/CD pipeline built on GitHub Actions and Vercel, designed for a multi-environment deployment strategy with automated testing, validation, and monitoring.
+The SlideHeroes project uses a comprehensive GitOps-based CI/CD pipeline built on GitHub Actions and Vercel, designed
+for a multi-environment deployment strategy with automated testing, validation, and monitoring.
 
 ## Architecture
 
@@ -407,4 +408,5 @@ For detailed implementation guidance and current project context, see:
 
 ---
 
-_This documentation is maintained by the development team and updated with each CI/CD pipeline change. For the most comprehensive and current context, AI assistants should reference the `.claude/context/` directory._
+_This documentation is maintained by the development team and updated with each CI/CD pipeline change. For the most
+comprehensive and current context, AI assistants should reference the `.claude/context/` directory._

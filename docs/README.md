@@ -1,6 +1,7 @@
 # SlideHeroes Documentation
 
-Welcome to the SlideHeroes project documentation. This directory contains essential human-readable documentation for the project.
+Welcome to the SlideHeroes project documentation. This directory contains essential human-readable documentation for
+the project.
 
 ## 📚 Documentation Structure
 
@@ -152,4 +153,6 @@ pnpm build                  # Build all applications
 
 ---
 
-💡 **Note**: This documentation structure is designed to serve both human developers and AI coding assistants effectively. For the most comprehensive and up-to-date project context, AI assistants should primarily reference the `.claude/` directory.
+💡 **Note**: This documentation structure is designed to serve both human developers and AI coding assistants
+effectively. For the most comprehensive and up-to-date project context, AI assistants should primarily reference the
+`.claude/` directory.

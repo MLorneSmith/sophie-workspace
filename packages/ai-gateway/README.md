@@ -1,6 +1,7 @@
 # Portkey AI Gateway Integration
 
-This package provides a secure and type-safe integration with the Portkey AI Gateway, allowing server-side access to various AI providers through a unified interface.
+This package provides a secure and type-safe integration with the Portkey AI Gateway,
+allowing server-side access to various AI providers through a unified interface.
 
 ## Key Implementation Choices
 

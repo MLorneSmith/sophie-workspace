@@ -2,7 +2,8 @@
 
 ## Overview
 
-The SlideHeroes project follows a **GitFlow-inspired branching model** optimized for continuous deployment with three main environments: development, staging, and production.
+The SlideHeroes project follows a **GitFlow-inspired branching model** optimized for continuous deployment with three
+main environments: development, staging, and production.
 
 ## Branch Structure
 

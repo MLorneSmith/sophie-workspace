@@ -14,12 +14,14 @@ The default sender provider is directly from the Postgres database.
 WEBHOOK_SENDER_PROVIDER=postgres
 ```
 
-Should you add a middleware to the webhook sender provider, you can do so by adding the following to the `WEBHOOK_SENDER_PROVIDER` environment variable.
+Should you add a middleware to the webhook sender provider, you can do so by adding the
+following to the `WEBHOOK_SENDER_PROVIDER` environment variable.
 
 ```bash
 WEBHOOK_SENDER_PROVIDER=svix
 ```
 
-For example, you can add [https://docs.svix.com/quickstart]](Swix) as a webhook sender provider that receives webhooks from the database changes and forwards them to your application.
+For example, you can add [https://docs.svix.com/quickstart]](Swix) as a webhook sender
+provider that receives webhooks from the database changes and forwards them to your application.
 
 Svix is not implemented yet.

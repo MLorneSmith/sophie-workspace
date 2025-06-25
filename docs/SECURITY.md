@@ -2,7 +2,8 @@
 
 ## Overview
 
-SlideHeroes takes security seriously. This document outlines our security practices, vulnerability reporting process, and response procedures.
+SlideHeroes takes security seriously. This document outlines our security practices, vulnerability reporting process,
+and response procedures.
 
 ## Supported Versions
 
