@@ -2,7 +2,8 @@
 
 ## Overview
 
-This guide provides solutions for common CI/CD issues, debugging techniques, and escalation procedures for the SlideHeroes deployment pipeline.
+This guide provides solutions for common CI/CD issues, debugging techniques, and escalation procedures for the
+SlideHeroes deployment pipeline.
 
 ## Quick Diagnostics
 

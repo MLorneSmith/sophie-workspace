@@ -2,7 +2,8 @@
 
 ## Overview
 
-The SlideHeroes deployment process is fully automated through GitHub Actions and Vercel, providing a seamless path from code commit to production deployment with comprehensive testing and monitoring at each stage.
+The SlideHeroes deployment process is fully automated through GitHub Actions and Vercel, providing a seamless path
+from code commit to production deployment with comprehensive testing and monitoring at each stage.
 
 ## Deployment Pipeline
 

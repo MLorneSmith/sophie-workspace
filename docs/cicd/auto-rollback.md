@@ -2,7 +2,8 @@
 
 ## Overview
 
-The auto-rollback system automatically reverts deployments when critical failures are detected, ensuring system stability and minimal downtime.
+The auto-rollback system automatically reverts deployments when critical failures are detected, ensuring system
+stability and minimal downtime.
 
 ## Architecture
 

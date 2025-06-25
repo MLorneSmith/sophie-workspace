@@ -1,10 +1,12 @@
 # MCP Docker Setup
 
-This document explains the Docker-based MCP server implementation that replaces unreliable `npx`-based servers with containerized versions.
+This document explains the Docker-based MCP server implementation that replaces unreliable
+`npx`-based servers with containerized versions.
 
 ## Overview
 
-The previous MCP setup relied on `npx` to download and run packages dynamically, causing frequent connection issues and startup delays. This Docker-based solution provides:
+The previous MCP setup relied on `npx` to download and run packages dynamically, causing
+frequent connection issues and startup delays. This Docker-based solution provides:
 
 - **Reliability**: Pre-built containers eliminate download delays
 - **Performance**: Faster startup times and stable connections
@@ -330,4 +332,5 @@ The `./scripts/mcp-status.sh` script provides a comprehensive health check of al
 
 ---
 
-_This setup provides a robust, containerized MCP infrastructure that eliminates the reliability issues of npx-based servers while maintaining full compatibility with Claude Code._
+_This setup provides a robust, containerized MCP infrastructure that eliminates the
+reliability issues of npx-based servers while maintaining full compatibility with Claude Code._

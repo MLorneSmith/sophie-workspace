@@ -1,6 +1,7 @@
 # Manual Label Creation for AAFD v2.0
 
-Since we don't have direct API access in this environment, here are the exact commands you can run to create the technical domain labels:
+Since we don't have direct API access in this environment, here are the exact commands you
+can run to create the technical domain labels:
 
 ## Option 1: Using curl (if you have a GitHub token)
 

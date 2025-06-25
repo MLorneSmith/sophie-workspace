@@ -106,7 +106,8 @@ NEW_RELIC_APP_NAME=SlideHeroes-Development
 
 #### Important
 
-Custom domains should be configured in the Vercel project dashboard, not via CLI commands. This ensures proper automatic routing.
+Custom domains should be configured in the Vercel project dashboard, not via CLI commands. This ensures proper
+automatic routing.
 
 1. Go to Vercel Dashboard → Project Settings → Domains
 2. Add each domain:
