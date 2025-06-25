@@ -529,13 +529,21 @@ export class PptxGenerator {
 
 			case "chart":
 				if (content.chartType && content.chartData) {
-					const chartData = this.parseChartData(content);
+					const parsedData = this.parseChartData(content);
+					// Extract chart data array and options separately
+					const chartDataArray = (parsedData.chartData as unknown[]) || [];
 					const chartOptions = {
-						...chartData,
 						x: position.x,
 						y: position.y,
 						w: position.w,
 						h: position.h,
+						chartColors: parsedData.chartColors,
+						title: parsedData.title,
+						showTitle: parsedData.showTitle,
+						showLegend: parsedData.showLegend,
+						legendPos: parsedData.legendPos,
+						dataLabelPosition: parsedData.dataLabelPosition,
+						showDataLabels: parsedData.showDataLabels,
 					};
 
 					try {
@@ -544,6 +552,7 @@ export class PptxGenerator {
 							case "bar":
 								(slide as unknown as PptxSlide).addChart(
 									(this.pptx as unknown as pptxgen).ChartType.bar,
+									chartDataArray,
 									chartOptions,
 								);
 								break;
@@ -551,6 +560,7 @@ export class PptxGenerator {
 							case "line":
 								(slide as unknown as PptxSlide).addChart(
 									(this.pptx as unknown as pptxgen).ChartType.line,
+									chartDataArray,
 									chartOptions,
 								);
 								break;
@@ -558,6 +568,7 @@ export class PptxGenerator {
 							case "pie":
 								(slide as unknown as PptxSlide).addChart(
 									(this.pptx as unknown as pptxgen).ChartType.pie,
+									chartDataArray,
 									chartOptions,
 								);
 								break;
@@ -565,6 +576,7 @@ export class PptxGenerator {
 							case "area":
 								(slide as unknown as PptxSlide).addChart(
 									(this.pptx as unknown as pptxgen).ChartType.area,
+									chartDataArray,
 									chartOptions,
 								);
 								break;
@@ -572,6 +584,7 @@ export class PptxGenerator {
 							case "scatter":
 								(slide as unknown as PptxSlide).addChart(
 									(this.pptx as unknown as pptxgen).ChartType.scatter,
+									chartDataArray,
 									chartOptions,
 								);
 								break;
@@ -579,6 +592,7 @@ export class PptxGenerator {
 							case "bubble":
 								(slide as unknown as PptxSlide).addChart(
 									(this.pptx as unknown as pptxgen).ChartType.bubble,
+									chartDataArray,
 									chartOptions,
 								);
 								break;
@@ -586,6 +600,7 @@ export class PptxGenerator {
 							case "radar":
 								(slide as unknown as PptxSlide).addChart(
 									(this.pptx as unknown as pptxgen).ChartType.radar,
+									chartDataArray,
 									chartOptions,
 								);
 								break;
@@ -593,6 +608,7 @@ export class PptxGenerator {
 							case "doughnut":
 								(slide as unknown as PptxSlide).addChart(
 									(this.pptx as unknown as pptxgen).ChartType.doughnut,
+									chartDataArray,
 									chartOptions,
 								);
 								break;
@@ -601,6 +617,7 @@ export class PptxGenerator {
 								// Default to bar chart if type is unknown
 								(slide as unknown as PptxSlide).addChart(
 									(this.pptx as unknown as pptxgen).ChartType.bar,
+									chartDataArray,
 									chartOptions,
 								);
 								break;

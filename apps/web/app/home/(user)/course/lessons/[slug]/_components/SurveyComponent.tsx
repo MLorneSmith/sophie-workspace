@@ -411,7 +411,10 @@ export function SurveyComponent({
 								{
 									...currentQuestion,
 									questionSlug: currentQuestion.id,
-									type: currentQuestion.type as "multiple_choice" | "text_field" | "scale",
+									type: currentQuestion.type as
+										| "multiple_choice"
+										| "text_field"
+										| "scale",
 									options: currentQuestion.options.map((opt) => ({
 										option: opt.text,
 										id: opt.id,
