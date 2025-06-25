@@ -83,7 +83,9 @@ describe("updateBuildingBlockTitleAction", () => {
 				title: null as unknown as string,
 			});
 
-			expect(expectError(result as ActionResult<unknown>)).toBe("Validation failed");
+			expect(expectError(result as ActionResult<unknown>)).toBe(
+				"Validation failed",
+			);
 		});
 
 		it("should reject missing fields", async () => {
@@ -91,7 +93,9 @@ describe("updateBuildingBlockTitleAction", () => {
 				id: undefined as unknown as string,
 			} as { id: string; title: string });
 
-			expect(expectError(result as ActionResult<unknown>)).toBe("Validation failed");
+			expect(expectError(result as ActionResult<unknown>)).toBe(
+				"Validation failed",
+			);
 		});
 	});
 
