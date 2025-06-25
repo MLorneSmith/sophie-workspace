@@ -1,6 +1,6 @@
 # Code Check
 
-Check and fix TypeScript, linting, and formatting errors across the project.
+Check and fix TypeScript, linting, formatting, YAML, and Markdown errors across the project.
 
 ## Steps
 
@@ -28,7 +28,19 @@ Check and fix TypeScript, linting, and formatting errors across the project.
    pnpm format
    ```
 
-5. If any errors are found:
+5. Run YAML lint check:
+   ```bash
+   pnpm lint:yaml
+   ```
+   Note: Focus on project YAML files, ignore node_modules errors
+
+6. Run Markdown lint check:
+   ```bash
+   pnpm lint:md
+   ```
+   Note: Check all Markdown files for formatting and style issues
+
+7. If any errors are found:
    - Read the code standards from `.claude/context/standards/code-standards.md`
    - Fix TypeScript errors by updating type definitions and imports
    - Fix linting errors using:
@@ -39,14 +51,26 @@ Check and fix TypeScript, linting, and formatting errors across the project.
      ```bash
      pnpm format:fix
      ```
+   - Fix YAML errors by:
+     - Removing duplicate keys
+     - Fixing indentation issues
+     - Ensuring proper YAML syntax
+   - Fix Markdown errors using:
+     ```bash
+     pnpm lint:md:fix
+     ```
+     Or manually fix:
+     - Line length issues (keep under 120 characters)
+     - Missing language specifiers in code blocks
+     - Heading levels and formatting
    - Re-run all checks to ensure fixes are complete
 
-6. Report summary of:
+8. Report summary of:
    - Number and types of errors found
    - Files modified
    - Any remaining issues that need manual attention
 
-7. Update GitHub issue #101 with the results:
+9. Update GitHub issue #101 with the results:
    ```bash
    # Post a comment to the tracking issue with the fix summary
    gh issue comment 101 --repo MLorneSmith/2025slideheroes --body "### Code Check Run - $(date +%Y-%m-%d)
@@ -55,6 +79,8 @@ Check and fix TypeScript, linting, and formatting errors across the project.
 - TypeScript: [count]
 - Linting: [count]
 - Formatting: [count]
+- YAML: [count]
+- Markdown: [count]
 
 **Files Modified:**
 [List files and fixes]
@@ -71,4 +97,9 @@ Check and fix TypeScript, linting, and formatting errors across the project.
 - The project uses Biome for linting and formatting
 - TypeScript strict mode is enabled
 - Code standards are defined in `.claude/context/standards/code-standards.md`
+- YAML files are validated using yaml-lint
+- Focus on project YAML files (e.g., .semgrep.yml, GitHub Actions workflows)
+- Ignore YAML errors in node_modules as they are third-party files
+- Markdown files are validated using markdownlint-cli2
+- Common Markdown issues include line length (120 char limit) and missing code block languages
 - Always verify fixes don't introduce new issues
