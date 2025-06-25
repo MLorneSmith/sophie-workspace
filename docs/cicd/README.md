@@ -390,13 +390,16 @@ See [Troubleshooting Guide](./troubleshooting.md) for common CI/CD issues and so
 ## Related Documentation
 
 ### CI/CD Specific
+
 - [Branch Strategy](./branch-strategy.md)
-- [Deployment Process](./deployment-process.md)  
+- [Deployment Process](./deployment-process.md)
 - [Troubleshooting Guide](./troubleshooting.md)
 - [Local Development Setup](./local-development.md)
 
 ### Comprehensive Project Context
+
 For detailed implementation guidance and current project context, see:
+
 - **[Complete CI/CD Context](../../.claude/context/cicd-pipeline.md)** - AI-optimized pipeline documentation
 - **[Development Flow](../../.claude/context/development-flow.md)** - Detailed setup and daily workflows
 - **[Architecture Overview](../../.claude/context/architecture.md)** - System design and technology decisions

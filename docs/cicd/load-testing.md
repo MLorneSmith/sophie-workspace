@@ -25,6 +25,7 @@ load-tests/
 ### Local Development
 
 1. **Install k6** (if not already installed):
+
    ```bash
    # The project includes k6 in .bin/k6
    # Or install globally:
@@ -35,11 +36,13 @@ load-tests/
    ```
 
 2. **Run all tests**:
+
    ```bash
    pnpm run load-test
    ```
 
 3. **Run specific test**:
+
    ```bash
    pnpm run load-test:login      # Login flow only
    pnpm run load-test:dashboard   # Dashboard performance
@@ -47,6 +50,7 @@ load-tests/
    ```
 
 4. **Configure target URL**:
+
    ```bash
    K6_API_URL=http://localhost:3000 pnpm run load-test
    ```
@@ -65,17 +69,20 @@ Load tests automatically run on staging deployments:
 ### 1. Login Flow (`login-flow.js`)
 
 Tests the authentication flow under load:
+
 - Homepage visit
 - Login page load
 - Authentication request
 - Dashboard access
 
 **Key Metrics**:
+
 - Login success rate
 - Authentication response time
 - Session creation time
 
 **Thresholds**:
+
 - 95% of requests < 1s
 - Error rate < 10%
 - Login error rate < 10%
@@ -83,17 +90,20 @@ Tests the authentication flow under load:
 ### 2. Dashboard Load (`dashboard-load.js`)
 
 Tests dashboard performance with concurrent users:
+
 - Initial dashboard load
 - Parallel API calls (profile, projects, analytics, notifications)
 - Project operations
 - Real-time update polling
 
 **Key Metrics**:
+
 - API call duration
 - Dashboard error count
 - Response time percentiles
 
 **Thresholds**:
+
 - 95% of requests < 2s
 - 99% of requests < 3s
 - Error rate < 5%
@@ -101,11 +111,13 @@ Tests dashboard performance with concurrent users:
 ### 3. User Journey (`user-journey.js`)
 
 Simulates realistic user workflows:
+
 - Random action selection based on weights
 - Multiple operations per session
 - Think time between actions
 
 **Actions**:
+
 - View dashboard (30% weight)
 - Create project (10% weight)
 - Edit project (15% weight)
@@ -114,6 +126,7 @@ Simulates realistic user workflows:
 - Update profile (15% weight)
 
 **Thresholds**:
+
 - Journey completion rate > 90%
 - 95% of actions < 3s
 
@@ -132,15 +145,17 @@ thresholds: {
 ## Load Patterns
 
 ### Ramping VUs (Virtual Users)
+
 ```javascript
 stages: [
   { duration: '30s', target: 20 }, // Ramp up
-  { duration: '1m', target: 20 },  // Sustain
-  { duration: '30s', target: 0 },  // Ramp down
-]
+  { duration: '1m', target: 20 }, // Sustain
+  { duration: '30s', target: 0 }, // Ramp down
+];
 ```
 
 ### Constant Load
+
 ```javascript
 executor: 'constant-vus',
 vus: 50,
@@ -148,6 +163,7 @@ duration: '5m',
 ```
 
 ### Ramping Arrival Rate
+
 ```javascript
 executor: 'ramping-arrival-rate',
 startRate: 10,
@@ -163,6 +179,7 @@ stages: [
 Load test metrics are automatically sent to New Relic when `NEW_RELIC_LICENSE_KEY` is set:
 
 ### Metrics Exported
+
 - `k6.http_req_duration.p95` - 95th percentile response time
 - `k6.http_req_duration.p99` - 99th percentile response time
 - `k6.http_reqs.rate` - Requests per second
@@ -174,8 +191,8 @@ Load test metrics are automatically sent to New Relic when `NEW_RELIC_LICENSE_KE
 Use this NRQL query to visualize k6 metrics:
 
 ```sql
-FROM Metric 
-SELECT 
+FROM Metric
+SELECT
   average(k6.http_req_duration.p95) as 'Response Time p95',
   average(k6.http_req_duration.p99) as 'Response Time p99',
   average(k6.http_reqs.rate) as 'Requests/sec',
@@ -199,21 +216,25 @@ Reports are stored in `load-tests/reports/` with timestamps.
 ## Best Practices
 
 ### 1. Test Data
+
 - Use dedicated test accounts
 - Clean up created data after tests
 - Don't use production data
 
 ### 2. Load Patterns
+
 - Start with small loads
 - Gradually increase to find limits
 - Include think time between actions
 
 ### 3. Monitoring
+
 - Watch application metrics during tests
 - Monitor database performance
 - Check error logs
 
 ### 4. Thresholds
+
 - Set realistic performance goals
 - Consider user experience metrics
 - Account for geographic distribution
@@ -223,11 +244,13 @@ Reports are stored in `load-tests/reports/` with timestamps.
 ### Common Issues
 
 1. **Authentication Failures**
+
    - Verify test user credentials
    - Check CORS settings
    - Ensure cookies are handled correctly
 
 2. **High Error Rates**
+
    - Check rate limiting configuration
    - Verify server capacity
    - Look for database connection limits
@@ -240,6 +263,7 @@ Reports are stored in `load-tests/reports/` with timestamps.
 ### Debug Mode
 
 Enable debug logging:
+
 ```bash
 K6_LOG_LEVEL=debug k6 run scenarios/login-flow.js
 ```
@@ -247,6 +271,7 @@ K6_LOG_LEVEL=debug k6 run scenarios/login-flow.js
 ## GitHub Actions Secrets
 
 Required secrets for CI/CD:
+
 - `K6_TEST_USER_EMAIL` - Test user email
 - `K6_TEST_USER_PASSWORD` - Test user password
 - `NEW_RELIC_LICENSE_KEY` - For metrics export

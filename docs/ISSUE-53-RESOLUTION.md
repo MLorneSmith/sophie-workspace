@@ -7,6 +7,7 @@ Successfully implemented Snyk security scanning integration for the SlideHeroes 
 ## Implementation Details
 
 ### 1. PR Validation Workflow Updates
+
 - **File**: `.github/workflows/pr-validation.yml`
 - **Changes**:
   - Added comprehensive security scan job with Snyk integration
@@ -16,6 +17,7 @@ Successfully implemented Snyk security scanning integration for the SlideHeroes 
   - Uploads results to GitHub Security tab via SARIF format
 
 ### 2. Weekly Security Scan Workflow
+
 - **File**: `.github/workflows/security-weekly-scan.yml` (new)
 - **Features**:
   - Runs every Monday at 9:00 AM UTC
@@ -25,6 +27,7 @@ Successfully implemented Snyk security scanning integration for the SlideHeroes 
   - Uploads scan reports as artifacts for 90-day retention
 
 ### 3. Security Policy Documentation
+
 - **File**: `docs/SECURITY.md` (new)
 - **Contents**:
   - Comprehensive security policy and vulnerability response procedures
@@ -34,6 +37,7 @@ Successfully implemented Snyk security scanning integration for the SlideHeroes 
   - Required GitHub secrets documentation
 
 ### 4. Snyk Configuration
+
 - **File**: `.snyk` (new)
 - **Configuration**:
   - Language settings for Node.js with pnpm workspaces
@@ -41,6 +45,7 @@ Successfully implemented Snyk security scanning integration for the SlideHeroes 
   - Deep dependency analysis enabled
 
 ### 5. Setup Instructions
+
 - **File**: `docs/SNYK_SETUP_INSTRUCTIONS.md` (new)
 - **Contents**:
   - Step-by-step guide for Snyk account creation
@@ -53,15 +58,18 @@ Successfully implemented Snyk security scanning integration for the SlideHeroes 
 The following steps must be completed by a repository administrator:
 
 1. **Create Snyk Account**:
-   - Go to https://app.snyk.io/
+
+   - Go to <https://app.snyk.io/>
    - Sign up using GitHub OAuth
    - Authorize access to the organization
 
 2. **Link Repository**:
+
    - Import the `2025slideheroes` repository in Snyk dashboard
    - Enable all scanning types (Open Source, Code, IaC)
 
 3. **Generate API Token**:
+
    - Navigate to Account Settings → General → Auth Token
    - Copy the generated token
 
@@ -103,6 +111,7 @@ The following steps must be completed by a repository administrator:
 ## Issue Resolution
 
 Issue #53 has been successfully implemented with all acceptance criteria met:
+
 - ✅ Snyk account creation instructions provided
 - ✅ SNYK_TOKEN secret documentation created
 - ✅ Snyk actions added to workflows
