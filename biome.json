@@ -102,6 +102,26 @@
 					}
 				}
 			}
+		},
+		{
+			"includes": [
+				"**/.claude/scripts/**/*.js",
+				"**/scripts/**/*.js"
+			],
+			"linter": {
+				"rules": {
+					"suspicious": {
+						"noConsole": "off",
+						"noAssignInExpressions": "off"
+					},
+					"style": {
+						"useTemplate": "off"
+					},
+					"correctness": {
+						"noUnusedVariables": "off"
+					}
+				}
+			}
 		}
 	]
 }

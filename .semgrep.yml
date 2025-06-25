@@ -50,7 +50,7 @@ rules:
       include:
         - "apps/web/**/_actions/**"
 
-# Exclude patterns
+# File path configuration
 paths:
   exclude:
     - node_modules
@@ -65,9 +65,6 @@ paths:
     - "__tests__"
     - ".turbo"
     - "packages/*/dist"
-
-# Include specific paths for monorepo
-paths:
   include:
     - apps/web
     - apps/payload
