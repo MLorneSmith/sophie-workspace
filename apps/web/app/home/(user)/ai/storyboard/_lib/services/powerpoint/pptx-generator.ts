@@ -1,4 +1,4 @@
-import { createServiceLogger, type Logger } from "@kit/shared/logger";
+import { createServiceLogger } from "@kit/shared/logger";
 import pptxgen from "pptxgenjs";
 
 // Import Logger from the root
@@ -188,7 +188,7 @@ export const LAYOUT_POSITIONS: Record<string, PositionMap> = {
  */
 export class PptxGenerator {
 	private pptx: pptxgen;
-	private logger: Logger;
+	private logger: import("@kit/shared/logger").EnhancedLogger;
 
 	/**
 	 * Initializes a new PptxGenerator instance and defines slide templates
@@ -198,8 +198,8 @@ export class PptxGenerator {
 		this.defineSlideTemplates();
 
 		// Initialize logger using createServiceLogger for synchronous access
-		const { getLogger } = createServiceLogger("PPTX-GENERATOR");
-		this.logger = getLogger();
+		const serviceLogger = createServiceLogger("PPTX-GENERATOR");
+		this.logger = serviceLogger.getLogger();
 	}
 
 	/**
@@ -625,10 +625,9 @@ export class PptxGenerator {
 					} catch (error: unknown) {
 						const errorMessage =
 							error instanceof Error ? error.message : String(error);
-						this.logger.error({
+						this.logger.error("Error adding chart to slide", {
 							chartType: content.chartType,
 							error: errorMessage,
-							message: "Error adding chart to slide",
 						});
 
 						// Add error text instead of failing completely
@@ -661,10 +660,9 @@ export class PptxGenerator {
 					} catch (error: unknown) {
 						const errorMessage =
 							error instanceof Error ? error.message : String(error);
-						this.logger.error({
+						this.logger.error("Error adding image to slide", {
 							imageUrl: content.imageUrl,
 							error: errorMessage,
-							message: "Error adding image to slide",
 						});
 
 						// Add error text instead of failing completely

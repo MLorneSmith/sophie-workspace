@@ -27,7 +27,7 @@ const AUTH_PATHS = ["/auth"];
  */
 export function useAuthChangeListener({
 	privatePathPrefixes = PRIVATE_PATH_PREFIXES,
-	appHomePath,
+	appHomePath: _appHomePath,
 	onEvent,
 }: {
 	appHomePath: string;

@@ -1142,6 +1142,7 @@ export interface Auth {
 }
 
 
-declare module 'payload' {
-  export interface GeneratedTypes extends Config {}
-}
+// Module augmentation for payload is only needed when importing payload package
+// declare module 'payload' {
+//   export interface GeneratedTypes extends Config {}
+// }
