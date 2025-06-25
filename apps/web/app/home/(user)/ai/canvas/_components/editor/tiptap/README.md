@@ -1,6 +1,8 @@
 # Tiptap Editor Implementation
 
-This directory contains the implementation of the Tiptap editor for the SlideHeroes Canvas application. Tiptap is a headless, extensible rich text editor framework for React that provides a more modern and maintainable alternative to the previously used Lexical editor.
+This directory contains the implementation of the Tiptap editor for the SlideHeroes Canvas application. Tiptap is a
+headless, extensible rich text editor framework for React that provides a more modern and maintainable alternative to
+the previously used Lexical editor.
 
 ## Directory Structure
 
@@ -15,7 +17,9 @@ This directory contains the implementation of the Tiptap editor for the SlideHer
 
 ## Feature Flag
 
-The Tiptap editor implementation is controlled by a feature flag in `apps/web/app/home/(user)/ai/canvas/_lib/config.ts`. To enable or disable the Tiptap editor, modify the `useTiptapEditor` flag:
+The Tiptap editor implementation is controlled by a feature flag in
+`apps/web/app/home/(user)/ai/canvas/_lib/config.ts`. To enable or disable the Tiptap editor, modify the
+`useTiptapEditor` flag:
 
 ```typescript
 export const FEATURES = {
@@ -25,7 +29,9 @@ export const FEATURES = {
 
 ## Data Migration
 
-When switching from Lexical to Tiptap, existing data needs to be converted. A data migration utility is provided at `apps/web/app/home/(user)/ai/canvas/_actions/convert-editor-data.ts`. This utility can be run from the admin page at `/home/ai/canvas/admin/convert`.
+When switching from Lexical to Tiptap, existing data needs to be converted. A data migration utility is provided at
+`apps/web/app/home/(user)/ai/canvas/_actions/convert-editor-data.ts`. This utility can be run from the admin page at
+`/home/ai/canvas/admin/convert`.
 
 ## Key Components
 

@@ -1,13 +1,15 @@
 # Payload CMS Fixes: Form Protection & Health Monitoring
 
-This document describes the critical fixes and enhancements applied to the Payload CMS instance, including form protection integration and a health monitoring endpoint.
+This document describes the critical fixes and enhancements applied to the Payload CMS instance, including form
+protection integration and a health monitoring endpoint.
 
 ---
 
 ## 1. Form Protection Integration
 
 **What:**  
-A form protection script is now automatically loaded in the Payload admin interface to enhance security and prevent automated attacks or abuse.
+A form protection script is now automatically loaded in the Payload admin interface to enhance security and prevent
+automated attacks or abuse.
 
 **How it works:**
 
@@ -33,7 +35,7 @@ A simple health check endpoint is available for monitoring the status of the Pay
 
 **Endpoint:**
 
-```
+```text
 /api/health
 ```
 
@@ -64,7 +66,8 @@ A simple health check endpoint is available for monitoring the status of the Pay
 
 **Usage:**
 
-- Use this endpoint with monitoring tools (e.g., UptimeRobot, Prometheus, custom scripts) to verify service and database health.
+- Use this endpoint with monitoring tools (e.g., UptimeRobot, Prometheus, custom scripts) to verify service and
+  database health.
 - **Security Note:** This endpoint is accessible by default; restrict access in production if sensitive.
 
 ---

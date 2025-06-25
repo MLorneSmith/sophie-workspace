@@ -10,13 +10,13 @@ For example:
 
 The default sender provider is directly from the Postgres database.
 
-```
+```bash
 WEBHOOK_SENDER_PROVIDER=postgres
 ```
 
 Should you add a middleware to the webhook sender provider, you can do so by adding the following to the `WEBHOOK_SENDER_PROVIDER` environment variable.
 
-```
+```bash
 WEBHOOK_SENDER_PROVIDER=svix
 ```
 

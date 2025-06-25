@@ -1,6 +1,7 @@
 # E2E Test Matrix Documentation
 
-This document describes the comprehensive End-to-End testing setup for SlideHeroes, including multi-browser support, mobile testing, and CI/CD integration.
+This document describes the comprehensive End-to-End testing setup for SlideHeroes, including multi-browser support,
+mobile testing, and CI/CD integration.
 
 ## Overview
 

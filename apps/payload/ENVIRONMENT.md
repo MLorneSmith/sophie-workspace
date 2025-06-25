@@ -1,6 +1,7 @@
 # Payload CMS Environment Configuration
 
-This document outlines the required environment variables for Payload CMS, with special focus on database configuration and storage setup for production deployments.
+This document outlines the required environment variables for Payload CMS, with special focus on database
+configuration and storage setup for production deployments.
 
 ## Required Environment Variables
 
@@ -10,39 +11,40 @@ This document outlines the required environment variables for Payload CMS, with 
 
 The PostgreSQL connection string for Payload CMS database connectivity.
 
-**Development Format:**
+##### Development Format
 
 ```bash
 DATABASE_URI=postgresql://username:password@localhost:5432/database_name
 ```
 
-**Production Format (with SSL):**
+##### Production Format (with SSL)
 
 ```bash
 DATABASE_URI=postgresql://username:password@host:port/database?sslmode=require
 ```
 
-**Examples for Common Hosting Providers:**
+##### Examples for Common Hosting Providers
 
-**Supabase:**
+###### Supabase
 
 ```bash
 DATABASE_URI=postgresql://postgres:[YOUR-PASSWORD]@db.[PROJECT-REF].supabase.co:5432/postgres?sslmode=require
 ```
 
-**Railway:**
+###### Railway
 
 ```bash
 DATABASE_URI=postgresql://postgres:[PASSWORD]@[HOST]:[PORT]/railway?sslmode=require
 ```
 
-**Neon:**
+###### Neon
 
 ```bash
 DATABASE_URI=postgresql://[USER]:[PASSWORD]@[HOST]/[DATABASE]?sslmode=require
 ```
 
-**PlanetScale (MySQL variant - not recommended for Payload):**
+###### PlanetScale (MySQL variant - not recommended for Payload)
+
 Note: PlanetScale uses MySQL. Use PostgreSQL providers for Payload CMS.
 
 #### Additional SSL Parameters (if needed)
@@ -59,20 +61,20 @@ DATABASE_URI=postgresql://user:pass@host:port/db?sslmode=require&sslcert=server-
 
 A secret key used for JWT token generation and encryption.
 
-**Requirements:**
+##### Requirements
 
 - Minimum 32 characters
 - Use strong, randomly generated string
 - Keep secure and never commit to version control
 
-**Generation:**
+##### Generation
 
 ```bash
 # Generate a secure secret
 openssl rand -base64 32
 ```
 
-**Example:**
+##### Example
 
 ```bash
 PAYLOAD_SECRET=your-super-secure-secret-key-here-min-32-chars
@@ -82,13 +84,13 @@ PAYLOAD_SECRET=your-super-secure-secret-key-here-min-32-chars
 
 The public URL where your Payload CMS application is accessible.
 
-**Development:**
+##### Development
 
 ```bash
 PAYLOAD_PUBLIC_SERVER_URL=http://localhost:3000
 ```
 
-**Production:**
+##### Production
 
 ```bash
 PAYLOAD_PUBLIC_SERVER_URL=https://your-domain.com
@@ -175,7 +177,10 @@ Your AWS secret access key.
 AWS_SECRET_ACCESS_KEY=your-aws-secret-access-key
 ```
 
-**Important:** Without cloud storage configuration, Payload will attempt to use local file storage, which fails in serverless environments like Vercel, causing the "ENOENT: no such file or directory, mkdir 'media'" error.
+##### Important
+
+Without cloud storage configuration, Payload will attempt to use local file storage, which fails in serverless
+environments like Vercel, causing the "ENOENT: no such file or directory, mkdir 'media'" error.
 
 ## Environment File Setup
 
@@ -227,79 +232,80 @@ NODE_ENV=production
 
 ### Common Storage Issues
 
-**Error: "ENOENT: no such file or directory, mkdir 'media'"**
+#### Error: "ENOENT: no such file or directory, mkdir 'media'"
 
-- **Cause:** No cloud storage configured, falling back to local storage in serverless environment
-- **Solution:** Configure Cloudflare R2 or AWS S3 environment variables
+- Cause: No cloud storage configured, falling back to local storage in serverless environment
+- Solution: Configure Cloudflare R2 or AWS S3 environment variables
 
-**Error: "Access Denied" with R2**
+#### Error: "Access Denied" with R2
 
-- **Cause:** Incorrect API token permissions or credentials
-- **Solution:** Regenerate R2 API tokens with proper permissions (Object Read, Write, Delete)
+- Cause: Incorrect API token permissions or credentials
+- Solution: Regenerate R2 API tokens with proper permissions (Object Read, Write, Delete)
 
-**Error: "SignatureDoesNotMatch" with R2**
+#### Error: "SignatureDoesNotMatch" with R2
 
-- **Cause:** Incorrect secret access key or endpoint configuration
-- **Solution:** Double-check R2 credentials and Account ID
+- Cause: Incorrect secret access key or endpoint configuration
+- Solution: Double-check R2 credentials and Account ID
 
-**Error: "NoSuchBucket"**
+#### Error: "NoSuchBucket"
 
-- **Cause:** Bucket name doesn't exist or incorrect
-- **Solution:** Verify bucket name matches exactly in R2 dashboard
+- Cause: Bucket name doesn't exist or incorrect
+- Solution: Verify bucket name matches exactly in R2 dashboard
 
 ## Database Connection Troubleshooting
 
 ### Common SSL/TLS Issues
 
-**Error: "SASL: SCRAM-SERVER-FINAL-MESSAGE: server signature is missing"**
+#### Error: "SASL: SCRAM-SERVER-FINAL-MESSAGE: server signature is missing"
 
-- **Cause:** SSL handshake issues with hosted PostgreSQL providers
-- **Solution:** Ensure `sslmode=require` is in your DATABASE_URI and `NODE_ENV=production`
+- Cause: SSL handshake issues with hosted PostgreSQL providers
+- Solution: Ensure `sslmode=require` is in your DATABASE_URI and `NODE_ENV=production`
 
-**Error: "Connection timeout"**
+#### Error: "Connection timeout"
 
-- **Cause:** Connection pool exhaustion in serverless environments
-- **Solution:** The configuration now includes optimized pool settings for serverless deployment
+- Cause: Connection pool exhaustion in serverless environments
+- Solution: The configuration now includes optimized pool settings for serverless deployment
 
-**Error: "SSL connection required"**
+#### Error: "SSL connection required"
 
-- **Cause:** Hosted PostgreSQL provider requires SSL but connection string missing SSL parameters
-- **Solution:** Add `?sslmode=require` to your DATABASE_URI
+- Cause: Hosted PostgreSQL provider requires SSL but connection string missing SSL parameters
+- Solution: Add `?sslmode=require` to your DATABASE_URI
 
 ### Connection Pool Optimization
 
 The Payload configuration includes serverless-optimized settings:
 
-- **Max connections:** 2 (reduced for serverless)
-- **Connection timeout:** 10 seconds
-- **Idle timeout:** 30 seconds
-- **SSL enabled in production:** Automatic based on NODE_ENV
+- Max connections: 2 (reduced for serverless)
+- Connection timeout: 10 seconds
+- Idle timeout: 30 seconds
+- SSL enabled in production: Automatic based on NODE_ENV
 
 ## Security Best Practices
 
-1. **Never commit secrets to version control**
+1. ### Never commit secrets to version control
 
    - Use `.env.local` for development
    - Set environment variables in hosting platform dashboard for production
 
-2. **Use strong PAYLOAD_SECRET**
+2. ### Use strong PAYLOAD_SECRET
 
    - Minimum 32 characters
    - Randomly generated
    - Different for development and production
 
-3. **Enable SSL in production**
+3. ### Enable SSL in production
 
    - Always use `sslmode=require` for hosted databases
    - Verify SSL certificate settings with your provider
 
-4. **Secure storage credentials**
+4. ### Secure storage credentials
 
    - Use separate R2/S3 credentials for development and production
    - Regularly rotate API tokens
    - Apply principle of least privilege for storage permissions
 
-5. **Monitor connection usage**
+5. ### Monitor connection usage
+
    - Watch for connection pool exhaustion
    - Monitor database connection metrics in production
    - Monitor storage usage and costs
@@ -308,7 +314,7 @@ The Payload configuration includes serverless-optimized settings:
 
 To verify your environment configuration:
 
-1. **Check environment variables are loaded:**
+1. ### Check environment variables are loaded
 
    ```bash
    # In your application, add temporary logging
@@ -318,19 +324,20 @@ To verify your environment configuration:
    console.log('R2 Storage configured:', !!(process.env.CLOUDFLARE_R2_BUCKET && process.env.CLOUDFLARE_R2_ACCOUNT_ID));
    ```
 
-2. **Test database connection:**
+2. ### Test database connection
 
    - Start your application
    - Check console logs for connection success/failure
    - Access Payload admin panel at `/admin`
 
-3. **Test storage configuration:**
+3. ### Test storage configuration
 
    - Go to `/admin` and navigate to Media collection
    - Try uploading a test file
    - Verify file appears in your R2 bucket
 
-4. **Monitor production logs:**
+4. ### Monitor production logs
+
    - Check Vercel/Railway/Netlify function logs
    - Look for database connection errors
    - Monitor storage operation success/failure

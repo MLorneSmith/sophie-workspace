@@ -1,6 +1,7 @@
 # Survey System Implementation
 
-This directory contains the implementation of the survey system for SlideHeroes. The system allows users to take surveys, track their progress, and view their results.
+This directory contains the implementation of the survey system for SlideHeroes. The system allows users to take
+surveys, track their progress, and view their results.
 
 ## Architecture
 
@@ -44,14 +45,14 @@ The API layer is implemented in the `@kit/payload` package, which provides funct
 
 1. Start the Payload CMS server:
 
-   ```
+   ```bash
    cd apps/payload
    pnpm dev
    ```
 
 2. Start the Next.js web app:
 
-   ```
+   ```bash
    cd apps/web
    pnpm dev
    ```
@@ -64,20 +65,21 @@ To seed the database with a sample assessment survey:
 
 1. Install dependencies:
 
-   ```
+   ```bash
    cd apps/payload
    pnpm install
    ```
 
 2. Run the seed script:
 
-   ```
+   ```bash
    pnpm seed:assessment
    ```
 
 ## Authentication
 
-The survey system uses Supabase authentication to identify users. Users must be logged in to take surveys and view their results.
+The survey system uses Supabase authentication to identify users. Users must be logged in to take surveys and view
+their results.
 
 ## Implementation Details
 

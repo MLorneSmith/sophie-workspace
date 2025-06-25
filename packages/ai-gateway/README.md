@@ -92,7 +92,7 @@ This package provides a secure and type-safe integration with the Portkey AI Gat
 
 1. **Directory Structure**
 
-   ```
+   ```text
    src/configs/
    ├── templates/       # Optimization-focused config templates
    ├── use-cases/      # Task-specific configs
@@ -199,7 +199,7 @@ This package provides a secure and type-safe integration with the Portkey AI Gat
 
 1. **Directory Structure**
 
-   ```
+   ```text
    src/prompts/
    ├── messages/          # Message components
    │   ├── system/       # System role definitions

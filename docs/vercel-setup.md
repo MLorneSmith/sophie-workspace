@@ -6,32 +6,32 @@ This document outlines the Vercel deployment configuration for SlideHeroes acros
 
 ### Production Environment
 
-- **Domain**: `slideheroes.com`
-- **Branch**: `main`
-- **Deployment**: Automatic on push to main
-- **Protection**: Requires 2 code reviews + all CI checks
+- Domain: `slideheroes.com`
+- Branch: `main`
+- Deployment: Automatic on push to main
+- Protection: Requires 2 code reviews + all CI checks
 
 ### Staging Environment
 
-- **Domain**: `staging.slideheroes.com`
-- **Branch**: `staging`
-- **Deployment**: Automatic on push to staging
-- **Protection**: Requires 1 code review + all CI checks
-- **Purpose**: Final testing before production release
+- Domain: `staging.slideheroes.com`
+- Branch: `staging`
+- Deployment: Automatic on push to staging
+- Protection: Requires 1 code review + all CI checks
+- Purpose: Final testing before production release
 
 ### Development Environment
 
-- **Domain**: `dev.slideheroes.com`
-- **Branch**: `dev`
-- **Deployment**: Automatic on push to dev
-- **Protection**: Requires CI checks only
-- **Purpose**: Integration testing and development preview
+- Domain: `dev.slideheroes.com`
+- Branch: `dev`
+- Deployment: Automatic on push to dev
+- Protection: Requires CI checks only
+- Purpose: Integration testing and development preview
 
 ### Preview Deployments
 
-- **Domain**: Auto-generated Vercel URLs
-- **Trigger**: Pull requests to any branch
-- **Purpose**: Feature preview and testing
+- Domain: Auto-generated Vercel URLs
+- Trigger: Pull requests to any branch
+- Purpose: Feature preview and testing
 
 ## 🔧 Vercel Project Configuration
 
@@ -104,14 +104,16 @@ NEW_RELIC_APP_NAME=SlideHeroes-Development
 
 ### Domain Setup via Vercel Dashboard
 
-**Important**: Custom domains should be configured in the Vercel project dashboard, not via CLI commands. This ensures proper automatic routing.
+#### Important
 
-1. **Go to Vercel Dashboard** → Project Settings → Domains
-2. **Add each domain**:
+Custom domains should be configured in the Vercel project dashboard, not via CLI commands. This ensures proper automatic routing.
+
+1. Go to Vercel Dashboard → Project Settings → Domains
+2. Add each domain:
    - `slideheroes.com` (production)
    - `staging.slideheroes.com` (staging)
    - `dev.slideheroes.com` (development)
-3. **Configure branch targeting** for each domain in dashboard
+3. Configure branch targeting for each domain in dashboard
 
 ### Required DNS Records
 
@@ -137,10 +139,10 @@ Vercel automatically provisions and manages SSL certificates for all custom doma
 
 ### Automatic Deployments
 
-1. **Production**: Push to `main` → Vercel production deployment
-2. **Staging**: Push to `staging` → Vercel staging deployment
-3. **Development**: Push to `dev` → Vercel dev deployment
-4. **Preview**: Open PR → Vercel preview deployment
+1. Production: Push to `main` → Vercel production deployment
+2. Staging: Push to `staging` → Vercel staging deployment
+3. Development: Push to `dev` → Vercel dev deployment
+4. Preview: Open PR → Vercel preview deployment
 
 ### Manual Deployments
 
@@ -195,19 +197,19 @@ vercel --target development
 
 ### Common Issues
 
-**Build Failures**
+#### Build Failures
 
 - Check build logs in Vercel dashboard
 - Verify all environment variables are set
 - Ensure pnpm lockfile is up to date
 
-**Domain Issues**
+#### Domain Issues
 
 - Verify DNS propagation (can take up to 48 hours)
 - Check DNS records are correctly configured
 - Ensure domain is added in Vercel dashboard
 
-**Environment Variable Issues**
+#### Environment Variable Issues
 
 - Ensure variables are set for the correct environment
 - Check variable names match exactly (case-sensitive)

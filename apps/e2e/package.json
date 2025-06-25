@@ -14,7 +14,7 @@
 		"test:chrome": "playwright test --project=chromium",
 		"test:firefox": "playwright test --project=firefox",
 		"test:safari": "playwright test --project=webkit",
-		"a11y:test": "playwright test tests/accessibility --reporter=html --output-dir=accessibility-report",
+		"a11y:test": "playwright test tests/accessibility --reporter=html",
 		"a11y:report": "playwright show-report accessibility-report",
 		"test:smoke": "playwright test tests/smoke --max-failures=1 --reporter=list",
 		"merge-reports": "playwright merge-reports --reporter html",
