@@ -1,0 +1,265 @@
+{
+	"name": "SlideHeroes CI/CD Dashboard",
+	"description": "Comprehensive CI/CD metrics and deployment tracking for SlideHeroes application",
+	"permissions": "PUBLIC_READ_WRITE",
+	"pages": [
+		{
+			"name": "CI/CD Overview",
+			"description": "High-level overview of CI/CD pipeline performance and deployment frequency",
+			"widgets": [
+				{
+					"title": "Deployment Frequency",
+					"layout": {
+						"column": 1,
+						"row": 1,
+						"width": 4,
+						"height": 3
+					},
+					"visualization": {
+						"id": "viz.line"
+					},
+					"rawConfiguration": {
+						"facet": {
+							"showOtherSeries": false
+						},
+						"legend": {
+							"enabled": true
+						},
+						"nrqlQueries": [
+							{
+								"accountIds": ["ACCOUNT_ID_PLACEHOLDER"],
+								"query": "SELECT count(*) FROM CICDEvent WHERE eventType = 'CICDEvent' FACET environment SINCE 7 days ago TIMESERIES 1 day"
+							}
+						],
+						"platformOptions": {
+							"ignoreTimeRange": false
+						},
+						"yAxisLeft": {
+							"zero": true
+						}
+					}
+				},
+				{
+					"title": "Deployment Success Rate",
+					"layout": {
+						"column": 5,
+						"row": 1,
+						"width": 4,
+						"height": 3
+					},
+					"visualization": {
+						"id": "viz.billboard"
+					},
+					"rawConfiguration": {
+						"facet": {
+							"showOtherSeries": false
+						},
+						"nrqlQueries": [
+							{
+								"accountIds": ["ACCOUNT_ID_PLACEHOLDER"],
+								"query": "SELECT percentage(count(*), WHERE status = 'success') AS 'Success Rate %' FROM CICDEvent WHERE eventType = 'CICDEvent' SINCE 7 days ago FACET environment"
+							}
+						],
+						"platformOptions": {
+							"ignoreTimeRange": false
+						},
+						"thresholds": [
+							{
+								"alertSeverity": "CRITICAL",
+								"value": 90
+							},
+							{
+								"alertSeverity": "WARNING",
+								"value": 95
+							}
+						]
+					}
+				},
+				{
+					"title": "Build Duration Trends",
+					"layout": {
+						"column": 9,
+						"row": 1,
+						"width": 4,
+						"height": 3
+					},
+					"visualization": {
+						"id": "viz.line"
+					},
+					"rawConfiguration": {
+						"facet": {
+							"showOtherSeries": false
+						},
+						"legend": {
+							"enabled": true
+						},
+						"nrqlQueries": [
+							{
+								"accountIds": ["ACCOUNT_ID_PLACEHOLDER"],
+								"query": "SELECT average(build_duration_seconds) FROM CIBuildEvent FACET workflow SINCE 7 days ago TIMESERIES 1 hour"
+							}
+						],
+						"platformOptions": {
+							"ignoreTimeRange": false
+						},
+						"yAxisLeft": {
+							"zero": true
+						}
+					}
+				},
+				{
+					"title": "Recent Deployments",
+					"layout": {
+						"column": 1,
+						"row": 4,
+						"width": 6,
+						"height": 3
+					},
+					"visualization": {
+						"id": "viz.table"
+					},
+					"rawConfiguration": {
+						"facet": {
+							"showOtherSeries": false
+						},
+						"nrqlQueries": [
+							{
+								"accountIds": ["ACCOUNT_ID_PLACEHOLDER"],
+								"query": "SELECT timestamp, environment, workflow, actor, status, deployment_url FROM CICDEvent WHERE eventType = 'CICDEvent' SINCE 1 day ago ORDER BY timestamp DESC LIMIT 20"
+							}
+						],
+						"platformOptions": {
+							"ignoreTimeRange": false
+						}
+					}
+				},
+				{
+					"title": "DORA Metrics - Lead Time",
+					"layout": {
+						"column": 7,
+						"row": 4,
+						"width": 6,
+						"height": 3
+					},
+					"visualization": {
+						"id": "viz.billboard"
+					},
+					"rawConfiguration": {
+						"facet": {
+							"showOtherSeries": false
+						},
+						"nrqlQueries": [
+							{
+								"accountIds": ["ACCOUNT_ID_PLACEHOLDER"],
+								"query": "SELECT average(build_duration_seconds)/60 AS 'Avg Lead Time (min)' FROM CIBuildEvent SINCE 7 days ago"
+							}
+						],
+						"platformOptions": {
+							"ignoreTimeRange": false
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Environment Breakdown",
+			"description": "Detailed metrics broken down by environment (dev, staging, production)",
+			"widgets": [
+				{
+					"title": "Deployments by Environment",
+					"layout": {
+						"column": 1,
+						"row": 1,
+						"width": 4,
+						"height": 3
+					},
+					"visualization": {
+						"id": "viz.pie"
+					},
+					"rawConfiguration": {
+						"facet": {
+							"showOtherSeries": false
+						},
+						"nrqlQueries": [
+							{
+								"accountIds": ["ACCOUNT_ID_PLACEHOLDER"],
+								"query": "SELECT count(*) FROM CICDEvent WHERE eventType = 'CICDEvent' FACET environment SINCE 7 days ago"
+							}
+						],
+						"platformOptions": {
+							"ignoreTimeRange": false
+						}
+					}
+				},
+				{
+					"title": "Production Deployment Health",
+					"layout": {
+						"column": 5,
+						"row": 1,
+						"width": 4,
+						"height": 3
+					},
+					"visualization": {
+						"id": "viz.billboard"
+					},
+					"rawConfiguration": {
+						"facet": {
+							"showOtherSeries": false
+						},
+						"nrqlQueries": [
+							{
+								"accountIds": ["ACCOUNT_ID_PLACEHOLDER"],
+								"query": "SELECT count(*) AS 'Total', percentage(count(*), WHERE status = 'success') AS 'Success Rate %' FROM CICDEvent WHERE environment = 'production' SINCE 7 days ago"
+							}
+						],
+						"platformOptions": {
+							"ignoreTimeRange": false
+						},
+						"thresholds": [
+							{
+								"alertSeverity": "CRITICAL",
+								"value": 95
+							},
+							{
+								"alertSeverity": "WARNING",
+								"value": 98
+							}
+						]
+					}
+				},
+				{
+					"title": "Deployment Timeline",
+					"layout": {
+						"column": 9,
+						"row": 1,
+						"width": 4,
+						"height": 3
+					},
+					"visualization": {
+						"id": "viz.line"
+					},
+					"rawConfiguration": {
+						"facet": {
+							"showOtherSeries": false
+						},
+						"legend": {
+							"enabled": true
+						},
+						"nrqlQueries": [
+							{
+								"accountIds": ["ACCOUNT_ID_PLACEHOLDER"],
+								"query": "SELECT count(*) FROM CICDEvent WHERE eventType = 'CICDEvent' FACET environment SINCE 30 days ago TIMESERIES 1 day"
+							}
+						],
+						"platformOptions": {
+							"ignoreTimeRange": false
+						},
+						"yAxisLeft": {
+							"zero": true
+						}
+					}
+				}
+			]
+		}
+	]
+}
