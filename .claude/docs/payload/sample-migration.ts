@@ -29,7 +29,11 @@ const sql = (strings: TemplateStringsArray, ..._values: unknown[]) =>
  * pnpm migrate:create --name your-migration-name
  */
 
-export async function up({ db, payload: _payload, req: _req }: MigrateUpArgs): Promise<void> {
+export async function up({
+	db,
+	payload: _payload,
+	req: _req,
+}: MigrateUpArgs): Promise<void> {
 	// Create a new enum type for the status field
 	await db.execute(sql`
     CREATE TYPE "payload"."enum_blog_posts_status" AS ENUM('draft', 'published');
