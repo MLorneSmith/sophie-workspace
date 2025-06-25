@@ -201,12 +201,19 @@ test.describe("Accessibility Tests - Detailed Reporting", () => {
 			"/home/account",
 		];
 
+		interface ReportDetail {
+			page: string;
+			violations: number;
+			passes: number;
+			error?: string;
+		}
+
 		const report = {
 			summary: {
 				totalPages: pages.length,
 				violations: 0,
 				passes: 0,
-				details: [] as any[],
+				details: [] as ReportDetail[],
 			},
 		};
 

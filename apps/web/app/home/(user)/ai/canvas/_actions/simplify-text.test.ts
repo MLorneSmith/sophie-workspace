@@ -4,6 +4,7 @@
  */
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { ActionResult } from "@/test/test-types";
 
 // Setup mocks
 vi.mock("@kit/ai-gateway", () => ({
@@ -135,7 +136,7 @@ describe("simplifyTextAction", () => {
 			);
 
 			// Assert
-			expect(expectError(result as any)).toBe("Validation failed");
+			expect(expectError(result as ActionResult)).toBe("Validation failed");
 		});
 
 		it("should reject missing userId field", async () => {
@@ -152,7 +153,7 @@ describe("simplifyTextAction", () => {
 			);
 
 			// Assert
-			expect(expectError(result as any)).toBe("Validation failed");
+			expect(expectError(result as ActionResult)).toBe("Validation failed");
 		});
 
 		it("should reject missing canvasId field", async () => {
@@ -169,7 +170,7 @@ describe("simplifyTextAction", () => {
 			);
 
 			// Assert
-			expect(expectError(result as any)).toBe("Validation failed");
+			expect(expectError(result as ActionResult)).toBe("Validation failed");
 		});
 
 		it("should reject missing sectionType field", async () => {
@@ -186,7 +187,7 @@ describe("simplifyTextAction", () => {
 			);
 
 			// Assert
-			expect(expectError(result as any)).toBe("Validation failed");
+			expect(expectError(result as ActionResult)).toBe("Validation failed");
 		});
 	});
 

@@ -23,7 +23,7 @@ test.describe("Authenticated Accessibility Tests - WCAG 2.1 AA", () => {
 		// This is a placeholder that assumes auth helpers exist
 	});
 
-	test("Dashboard accessibility after authentication", async ({ page }) => {
+	test("Dashboard accessibility after authentication", async ({ page: _page }) => {
 		// Skip if no valid auth method available
 		test.skip(
 			!process.env.TEST_USER_EMAIL,
@@ -54,7 +54,7 @@ test.describe("Authenticated Accessibility Tests - WCAG 2.1 AA", () => {
 		}
 	});
 
-	test("AI Canvas accessibility when authenticated", async ({ page }) => {
+	test("AI Canvas accessibility when authenticated", async ({ page: _page }) => {
 		test.skip(
 			!process.env.TEST_USER_EMAIL,
 			"No test user credentials available",
@@ -83,7 +83,7 @@ test.describe("Authenticated Accessibility Tests - WCAG 2.1 AA", () => {
 		}
 	});
 
-	test("Storyboard accessibility when authenticated", async ({ page }) => {
+	test("Storyboard accessibility when authenticated", async ({ page: _page }) => {
 		test.skip(
 			!process.env.TEST_USER_EMAIL,
 			"No test user credentials available",
@@ -112,7 +112,7 @@ test.describe("Authenticated Accessibility Tests - WCAG 2.1 AA", () => {
 		}
 	});
 
-	test("Course pages accessibility when authenticated", async ({ page }) => {
+	test("Course pages accessibility when authenticated", async ({ page: _page }) => {
 		test.skip(
 			!process.env.TEST_USER_EMAIL,
 			"No test user credentials available",
@@ -142,7 +142,7 @@ test.describe("Authenticated Accessibility Tests - WCAG 2.1 AA", () => {
 	});
 
 	test("Account settings accessibility when authenticated", async ({
-		page,
+		page: _page,
 	}) => {
 		test.skip(
 			!process.env.TEST_USER_EMAIL,
@@ -172,7 +172,7 @@ test.describe("Authenticated Accessibility Tests - WCAG 2.1 AA", () => {
 		}
 	});
 
-	test("Kanban board accessibility when authenticated", async ({ page }) => {
+	test("Kanban board accessibility when authenticated", async ({ page: _page }) => {
 		test.skip(
 			!process.env.TEST_USER_EMAIL,
 			"No test user credentials available",
