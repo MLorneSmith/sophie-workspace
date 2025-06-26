@@ -53,7 +53,12 @@
 		"knip:workspace": "knip --workspace",
 		"knip:fix": "knip --fix",
 		"a11y:test": "turbo a11y:test",
-		"a11y:report": "turbo a11y:report"
+		"a11y:report": "turbo a11y:report",
+		"audit": "snyk test --all-projects --severity-threshold=high",
+		"audit:fix": "snyk wizard",
+		"audit:monitor": "snyk monitor --all-projects",
+		"audit:auth": "snyk auth",
+		"audit:debug": "DEBUG=snyk* snyk test --all-projects --severity-threshold=high --debug"
 	},
 	"config": {
 		"commitizen": {
@@ -113,6 +118,7 @@
 		"lint-staged": "^16.1.0",
 		"markdownlint-cli2": "^0.18.1",
 		"prettier": "^3.5.3",
+		"snyk": "^1.1297.3",
 		"tailwind-merge": "^3.3.1",
 		"turbo": "2.5.4",
 		"typescript": "^5.8.3",

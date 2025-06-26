@@ -66,8 +66,10 @@ All branches are protected and require passing CI/CD checks including:
 - Code linting and formatting (Biome)
 - TypeScript compilation
 - Unit and integration tests
-- Security scanning (when enabled)
+- Security scanning with Snyk (dependencies and SAST)
+- Secret detection with TruffleHog
 - Bundle size analysis (when enabled)
+- Accessibility testing
 
 ## Technical Overview
 
@@ -206,6 +208,26 @@ pnpm supabase:web:typegen
 # Start all development servers
 pnpm dev
 ```
+
+### Security Scanning
+
+This project uses Snyk for security vulnerability scanning. Set up Snyk for local development:
+
+```bash
+# Authenticate with Snyk (opens browser)
+pnpm audit:auth
+
+# Run security audit (matches CI/CD configuration)
+pnpm audit
+
+# Fix vulnerabilities interactively
+pnpm audit:fix
+
+# Monitor dependencies for new vulnerabilities
+pnpm audit:monitor
+```
+
+For detailed setup instructions, see [Snyk Setup Guide](./docs/security/snyk-setup.md).
 
 #### Installing GitHub CLI (if not available)
 
