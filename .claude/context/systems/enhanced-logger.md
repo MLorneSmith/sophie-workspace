@@ -355,3 +355,250 @@ The logger integrates with monitoring services through the `MonitoringService` i
 1. Check log level (reduce in production)
 2. Avoid synchronous logging in critical paths
 3. Use child loggers for request scoping
+
+## Biome Linting Alignment
+
+### Configuration Overview
+
+The project uses biome with strict console rules:
+- `noConsole` is set to `"error"` with `"allow": []`
+- All console statements are forbidden by default
+- Exceptions only for test files and scripts
+
+### Migration Strategy by Component Type
+
+#### Server Components (No "use client" directive)
+```typescript
+// ✅ CORRECT: Use async logger
+import { createServiceLogger } from "@kit/shared/logger";
+
+const { getLogger } = createServiceLogger("SERVICE-NAME");
+
+export async function MyServerComponent() {
+  const logger = await getLogger();
+  logger.info("Operation completed", { context });
+}
+```
+
+#### Client Components ("use client" directive)
+```typescript
+// ✅ CORRECT: Use development-gated console wrapper
+"use client";
+
+// Create a client-safe logger wrapper
+const logger = {
+  info: (...args: unknown[]) => {
+    if (process.env.NODE_ENV === "development") {
+      // biome-ignore lint/suspicious/noConsole: Development logging is allowed
+      console.info(...args);
+    }
+  },
+  error: (...args: unknown[]) => {
+    if (process.env.NODE_ENV === "development") {
+      // biome-ignore lint/suspicious/noConsole: Development logging is allowed
+      console.error(...args);
+    }
+  },
+  warn: (...args: unknown[]) => {
+    if (process.env.NODE_ENV === "development") {
+      // biome-ignore lint/suspicious/noConsole: Development logging is allowed
+      console.warn(...args);
+    }
+  },
+  debug: (...args: unknown[]) => {
+    if (process.env.NODE_ENV === "development") {
+      // biome-ignore lint/suspicious/noConsole: Development logging is allowed
+      console.debug(...args);
+    }
+  },
+};
+
+export function MyClientComponent() {
+  // Use logger.info(), logger.error(), etc.
+  logger.info("Component rendered", { props });
+}
+```
+
+### Biome-Ignore Best Practices
+
+1. **Always include explanation**: Describe why console is needed
+2. **Use correct rule name**: `lint/suspicious/noConsole` (not `nursery/noConsole`)
+3. **Gate with environment checks**: Only log in development
+4. **Place above console statement**: Comment must be immediately before
+
+#### Examples:
+```typescript
+// ✅ CORRECT
+if (process.env.NODE_ENV === "development") {
+  // biome-ignore lint/suspicious/noConsole: Development debugging for API responses
+  console.log("API Response:", data);
+}
+
+// ❌ INCORRECT - No environment check
+// biome-ignore lint/suspicious/noConsole: Debugging
+console.log(data); // Will run in production!
+
+// ❌ INCORRECT - Wrong rule name
+// biome-ignore lint/nursery/noConsole: Debugging
+console.log(data);
+```
+
+### Component Type Detection
+
+#### Automatic Detection Logic:
+```typescript
+// Check first few lines of file:
+const isClientComponent = content.includes('"use client"');
+const isServerAction = content.includes('"use server"');
+
+if (isClientComponent) {
+  // Use development-gated console wrapper
+} else if (isServerAction || !isClientComponent) {
+  // Use async logger (server component or server action)
+}
+```
+
+#### File Patterns:
+- **Client Components**: 
+  - Start with `"use client"`
+  - Use React hooks (useState, useEffect, etc.)
+  - Handle user interactions
+  
+- **Server Components**: 
+  - No `"use client"` directive
+  - Can use `await` in component body
+  - Data fetching components
+  
+- **Server Actions**:
+  - Start with `"use server"`
+  - Always async functions
+  - Database operations
+
+### Migration Workflow
+
+1. **Identify Component Type**:
+   ```bash
+   head -n 5 ComponentName.tsx | grep -E '"use (client|server)"'
+   ```
+
+2. **Apply Appropriate Pattern**:
+   - Client → Development-gated console wrapper
+   - Server → Async logger with createServiceLogger
+
+3. **Verify Linting**:
+   ```bash
+   pnpm biome check path/to/file.tsx
+   ```
+
+4. **Test in Both Environments**:
+   - Development: Logs should appear in console
+   - Production build: No console output
+
+### Production Safety
+
+#### Environment Gating Benefits:
+- **Bundle Size**: Development-only code can be tree-shaken
+- **Performance**: No runtime console calls in production
+- **Security**: Prevents accidental data exposure in production logs
+- **Compliance**: Meets strict linting requirements
+
+#### Verification:
+```bash
+# Check that console statements are properly gated
+rg "console\.(log|info|error|warn)" --type ts --type tsx |
+  grep -v "process.env.NODE_ENV === 'development'"
+# Should return no results for client components
+```
+
+### Common Migration Patterns
+
+#### Pattern 1: Simple Info Logging
+```typescript
+// Before (commented out with TODO)
+// TODO: Async logger needed
+// console.info("Processing item", itemId);
+
+// After (Client Component)
+logger.info("Processing item", { itemId });
+
+// After (Server Component)  
+const logger = await getLogger();
+logger.info("Processing item", { itemId });
+```
+
+#### Pattern 2: Error Handling
+```typescript
+// Before
+// TODO: Async logger needed
+// console.error("Failed to process", error);
+
+// After (Client Component)
+logger.error("Failed to process item", { error, itemId });
+
+// After (Server Component)
+const logger = await getLogger();
+logger.error("Failed to process item", { error, itemId });
+```
+
+#### Pattern 3: Debug Logging with Context
+```typescript
+// Before
+// TODO: Async logger needed  
+// console.log("Debug info:", data);
+
+// After (Client Component)
+logger.debug("Processing step completed", {
+  step: "validation",
+  dataLength: data.length,
+  timestamp: Date.now()
+});
+
+// After (Server Component)
+const logger = await getLogger();
+logger.debug("Processing step completed", {
+  step: "validation", 
+  dataLength: data.length,
+  userId
+});
+```
+
+### Troubleshooting Migration Issues
+
+#### Biome Errors:
+```
+× Don't use console.
+× Unknown lint rule nursery/noConsole
+× Suppression comment has no effect
+```
+
+**Solutions**:
+1. Use correct rule name: `suspicious/noConsole`
+2. Add environment check: `if (process.env.NODE_ENV === "development")`
+3. Place ignore comment immediately before console statement
+4. Use development-gated wrapper for client components
+
+#### TypeScript Errors:
+```
+argument of type 'unknown[]' is not assignable to parameter
+```
+
+**Solution**: Use proper typing in wrapper:
+```typescript
+const logger = {
+  info: (...args: unknown[]) => {
+    // Implementation
+  }
+};
+```
+
+#### React Hook Dependency Issues:
+```
+This hook does not specify all of its dependencies
+```
+
+**Solution**: Add all referenced variables to dependency array:
+```typescript
+useEffect(() => {
+  logger.info(`Survey ${survey?.id} (${survey?.title}): Processed`);
+}, [survey?.id, survey?.title]); // Include all referenced properties
+```

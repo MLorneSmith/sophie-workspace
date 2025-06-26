@@ -36,10 +36,12 @@ async function getGitHash() {
 	try {
 		return await getHashFromProcess();
 	} catch (_error) {
-		// TODO: Async logger needed
-		// (await getLogger()).warn(
-		// `[WARN] Could not find git hash: ${JSON.stringify(error)}. You may want to provide a fallback.`,
-		// );
+		const logger = await getLogger();
+		logger.warn("Could not find git hash", {
+			operation: "get_git_hash",
+			error: _error,
+			message: "You may want to provide a fallback",
+		});
 
 		return "";
 	}
@@ -59,8 +61,12 @@ async function getHashFromProcess() {
 		return execSync('git log --pretty=format:"%h" -n1').toString().trim();
 	}
 
-	// TODO: Async logger needed
-	// TODO: Fix logger call - was: info
+	const logger = await getLogger();
+	logger.info("Git hash not available in edge runtime", {
+		operation: "get_hash_from_process",
+		runtime: process.env.NEXT_RUNTIME,
+		environment: process.env.NODE_ENV,
+	});
 
 	return "";
 }

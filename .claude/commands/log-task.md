@@ -250,7 +250,7 @@ if (outputFormat === 'local' || outputFormat === 'file') {
     repo: '2025slideheroes',
     title: `[TASK] ${taskTitle}`,
     body: taskContent,
-    labels: [priority, 'task', taskType],
+    labels: ['task', priority, taskType],
     assignees: assignee ? [assignee] : []
   });
   

@@ -5,10 +5,17 @@ This file is used to mock the modules that are not needed during development (un
 It allows the development server to load faster by not loading the modules that are not needed.
  */
 
+import { createServiceLogger } from "@kit/shared/logger";
+
+const { getLogger } = createServiceLogger("DEV-MOCK-MODULES");
+
 const noop = (_name: string) => {
-	return () => {
-		// TODO: Async logger needed
-		// TODO: Fix logger call - was: debug
+	return async () => {
+		const logger = await getLogger();
+		logger.debug("Mock module function called", {
+			module: _name,
+			operation: "noop_call",
+		});
 	};
 };
 

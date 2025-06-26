@@ -8,7 +8,7 @@ This command loads and executes a workflow file from the `.claude/instructions/w
 
 When you run `/workflow [name]`, the command will:
 
-1. Look for a file at `.claude/workflows/[name].md`
+1. Look for a file at `.claude/instructions/workflows/[name].md`
 2. Read and execute the workflow instructions
 3. Handle any parameters passed to the specific workflow
 
@@ -41,13 +41,13 @@ if (!workflowName) {
 Attempt to read the corresponding workflow file:
 
 ```
-/read .claude/workflows/${workflowName}.md
+/read .claude/instructions/workflows/${workflowName}.md
 ```
 
 If the file doesn't exist, list available workflows:
 
 ```bash
-ls .claude/workflows/*.md
+ls .claude/instructions/workflows/*.md
 ```
 
 ### 3. Execute Workflow
@@ -64,7 +64,7 @@ Once the workflow file is loaded, follow its instructions. Each workflow file sh
 If the specified workflow doesn't exist:
 
 ```
-Workflow '[name]' not found in .claude/workflows/
+Workflow '[name]' not found in .claude/instructions/workflows/
 Available workflows:
 - feature-development
 - bug-fix

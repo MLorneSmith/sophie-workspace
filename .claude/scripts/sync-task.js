@@ -13,16 +13,44 @@
  *   node sync-task.js "https://..."          # Full GitHub URL
  */
 
-const fs = require("node:fs").promises;
-const path = require("node:path");
-const { exec } = require("node:child_process");
-const { promisify } = require("node:util");
+import { promises as fs } from "node:fs";
+import { join, dirname } from "node:path";
+import { exec } from "node:child_process";
+import { promisify } from "node:util";
+import { fileURLToPath } from "node:url";
+
 const execAsync = promisify(exec);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Load environment variables from .env.local
+async function loadEnvLocal() {
+	try {
+		const envPath = join(__dirname, "../../.env.local");
+		const envContent = await fs.readFile(envPath, "utf8");
+
+		envContent
+			.split("\n")
+			.filter((line) => line.trim() && !line.startsWith("#"))
+			.forEach((line) => {
+				const [key, ...valueParts] = line.split("=");
+				if (key && valueParts.length > 0) {
+					const value = valueParts.join("=").trim();
+					// Only set if not already present (don't override existing env vars)
+					if (!process.env[key.trim()]) {
+						process.env[key.trim()] = value;
+					}
+				}
+			});
+	} catch (error) {
+		// Silently fail if .env.local doesn't exist - it's optional
+	}
+}
 
 // Configuration
 const GITHUB_OWNER = "MLorneSmith";
 const GITHUB_REPO = "2025slideheroes";
-const TASKS_DIR = path.join(__dirname, "../../z.archive/tasks");
+const TASKS_DIR = join(__dirname, "../../.claude/z.archive/tasks");
 const CACHE_DURATION = 60 * 60 * 1000; // 1 hour in milliseconds
 
 // Ensure tasks directory exists
@@ -86,7 +114,7 @@ async function checkLocalCache(issueNumber) {
 			return { exists: false };
 		}
 
-		const filePath = path.join(TASKS_DIR, matchingFile);
+		const filePath = join(TASKS_DIR, matchingFile);
 		const stats = await fs.stat(filePath);
 		const age = Date.now() - stats.mtime.getTime();
 
@@ -222,7 +250,7 @@ function extractSections(body) {
 async function saveToLocal(issueNumber, content) {
 	const date = new Date().toISOString().split("T")[0];
 	const filename = `${date}-TASK-${issueNumber}.md`;
-	const filepath = path.join(TASKS_DIR, filename);
+	const filepath = join(TASKS_DIR, filename);
 
 	await fs.writeFile(filepath, content, "utf8");
 	console.log(`💾 Saved to: ${filepath}`);
@@ -242,7 +270,7 @@ async function cleanupOldCache(issueNumber) {
 
 		// Keep only the newest file
 		for (let i = 1; i < matchingFiles.length; i++) {
-			const oldFile = path.join(TASKS_DIR, matchingFiles[i]);
+			const oldFile = join(TASKS_DIR, matchingFiles[i]);
 			await fs.unlink(oldFile);
 			console.log(`🗑️  Removed old cache: ${matchingFiles[i]}`);
 		}
@@ -253,6 +281,8 @@ async function cleanupOldCache(issueNumber) {
 
 // Main sync function
 async function syncTask(taskReference) {
+	// Load environment variables first
+	await loadEnvLocal();
 	await ensureTasksDir();
 
 	// Parse input
@@ -312,7 +342,7 @@ async function syncTask(taskReference) {
 }
 
 // Run if called directly
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
 	const taskRef = process.argv[2];
 
 	if (!taskRef) {
@@ -333,4 +363,4 @@ if (require.main === module) {
 	});
 }
 
-module.exports = { syncTask, parseTaskReference };
+export { syncTask, parseTaskReference };

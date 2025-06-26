@@ -13,7 +13,7 @@
  *   - GitHub URL: https://github.com/MLorneSmith/2025slideheroes/issues/30
  */
 
-import { mkdir, stat, writeFile } from "node:fs/promises";
+import { mkdir, stat, writeFile, readFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -21,6 +21,33 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const PROJECT_ROOT = join(__dirname, "../..");
 const ISSUES_DIR = join(PROJECT_ROOT, ".claude/z.archive/issues");
+
+// Load environment variables from .env.local
+async function loadEnvLocal() {
+	try {
+		const envPath = join(PROJECT_ROOT, ".env.local");
+		const envContent = await readFile(envPath, "utf8");
+
+		envContent
+			.split("\n")
+			.filter((line) => line.trim() && !line.startsWith("#"))
+			.forEach((line) => {
+				const [key, ...valueParts] = line.split("=");
+				if (key && valueParts.length > 0) {
+					const value = valueParts.join("=").trim();
+					// Only set if not already present (don't override existing env vars)
+					if (!process.env[key.trim()]) {
+						process.env[key.trim()] = value;
+					}
+				}
+			});
+	} catch (error) {
+		// Silently fail if .env.local doesn't exist - it's optional
+	}
+}
+
+// Load environment variables immediately
+await loadEnvLocal();
 
 // GitHub API configuration
 const GITHUB_API_BASE = "https://api.github.com";

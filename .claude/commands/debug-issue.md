@@ -20,11 +20,112 @@ Load the debugging mindset:
 /read .claude/context/roles/debug-engineer.md
 ```
 
-## 2. Load Context Documentation
+## 2. Load Issue Specification First
 
-After adopting the role, load relevant context based on the issue type. Use the context documentation inventory to identify relevant files:
+Load and analyze the issue before determining what context documentation to read:
 
-### 2.1 Read Context Documentation Inventory
+### 2.1 Auto-Sync and Locate Issue
+
+Use the auto-sync service to fetch/cache issues automatically:
+
+```bash
+# Run sync to ensure we have the latest issue data
+node .claude/scripts/sync-issue.js ${issue_reference}
+
+# The script will:
+# 1. Detect if it's a GitHub issue (number, ISSUE-123, #123, URL)
+# 2. Check local cache (1 hour freshness)
+# 3. Auto-fetch from GitHub if needed
+# 4. Create/update local cache file
+# 5. Handle fallbacks gracefully
+```
+
+### 2.2 Parse Issue Reference
+
+The auto-sync service handles all reference formats:
+
+```bash
+# Examples of supported formats:
+node .claude/scripts/sync-issue.js 30              # GitHub issue #30
+node .claude/scripts/sync-issue.js ISSUE-30        # ISSUE-30 format
+node .claude/scripts/sync-issue.js "#30"           # Hash format
+node .claude/scripts/sync-issue.js "https://github.com/MLorneSmith/2025slideheroes/issues/30"  # Full URL
+```
+
+### 2.3 Load Synced Issue
+
+After auto-sync completes, read the local file:
+
+```bash
+# Auto-sync creates files in format: YYYY-MM-DD-ISSUE-{number}.md
+# Find the synced file
+issue_file=$(find .claude/z.archive/issues -name "*-ISSUE-${issue_number}.md" | head -1)
+
+if [ -z "$issue_file" ]; then
+  echo "❌ Issue file not found after auto-sync"
+  exit 1
+fi
+
+echo "📁 Using issue file: $issue_file"
+```
+
+### 2.4 Read and Parse Issue
+
+```typescript
+// Read the issue specification
+const issueContent = await readFile(issuePath);
+const issue = parseIssueSpecification(issueContent);
+
+// Extract key information
+const {
+  id,
+  severity,
+  type,
+  affectedFiles,
+  diagnosticData,
+  reproductionSteps,
+  suggestedAreas,
+} = issue;
+```
+
+### 2.5 Review GitHub Issue Comments (Critical Step)
+
+**IMPORTANT**: Always review GitHub issue comments for status updates, implementation progress, and current context:
+
+```bash
+# Review all comments on the GitHub issue for latest status
+gh issue view ${issue_number} --repo MLorneSmith/2025slideheroes --comments
+
+# This will show:
+# - Implementation status updates
+# - Progress reports
+# - Current phase information
+# - Next steps and priorities
+# - Technical decisions made
+# - Blockers and resolutions
+```
+
+**Why This Is Critical**:
+
+- GitHub issue descriptions may be outdated
+- Comments contain the most current status and context
+- Implementation progress is tracked in comments
+- Status updates override initial issue description
+- Comments reveal actual current state vs original problem
+
+**What to Look For**:
+
+- **Status Update Comments**: "IMPLEMENTATION STATUS UPDATE", "Progress Update", etc.
+- **Current Phase Information**: What's completed vs what's pending
+- **Next Steps**: Specific tasks and priorities for current session
+- **Technical Context**: Decisions, approaches, and discoveries
+- **Blockers and Solutions**: Known issues and their resolutions
+
+## 3. Load Context Documentation
+
+Now that you've read and analyzed the issue, load relevant context based on the issue type:
+
+### 3.1 Read Context Documentation Inventory
 
 First, read the inventory to understand available documentation:
 
@@ -43,7 +144,7 @@ This XML file contains a complete inventory of all context documentation organiz
 - **Testing**: Unit testing strategies, test case templates
 - **UI**: Component patterns, accessibility, responsive design
 
-### 2.2 Core Context (Always Load)
+### 3.2 Core Context (Always Load)
 
 ```
 # PARALLEL READ these core debugging docs:
@@ -52,9 +153,9 @@ This XML file contains a complete inventory of all context documentation organiz
 .claude/docs/debugging/debugging-system-overview.md
 ```
 
-### 2.3 Conditional Context (Based on Issue Type)
+### 3.3 Conditional Context (Based on Issue Type)
 
-After reading the issue (in section 3.4), identify relevant documentation from the inventory and load it based on .claude/docs/.context-docs-inventory.xml. Here are common patterns:
+Based on the issue analysis from section 2, identify relevant documentation from the inventory and load it. Here are common patterns:
 
 ```typescript
 // Based on issue analysis, select relevant docs from the inventory:
@@ -122,118 +223,19 @@ const contextMap = {
 // Note: Use the inventory to discover additional relevant docs not listed here
 ```
 
-### 2.4 Loading Strategy
+### 3.4 Loading Strategy
 
 1. **Always check the inventory first** - New documentation may have been added
 2. **Load docs in parallel** when possible for efficiency
-3. **Be selective** - Only load documentation relevant to the specific issue
+3. **Be selective** - Only load documentation relevant to the specific issue identified in section 2
 4. **Check for test cases** - If debugging a specific component, look for its test case documentation in `testing/test-cases/`
 
-## 3. Load Issue Specification
-
-### 3.1 Auto-Sync and Locate Issue
-
-Use the auto-sync service to fetch/cache issues automatically:
-
-```bash
-# Run sync to ensure we have the latest issue data
-node .claude/scripts/sync-issue.js ${issue_reference}
-
-# The script will:
-# 1. Detect if it's a GitHub issue (number, ISSUE-123, #123, URL)
-# 2. Check local cache (1 hour freshness)
-# 3. Auto-fetch from GitHub if needed
-# 4. Create/update local cache file
-# 5. Handle fallbacks gracefully
-```
-
-### 3.2 Parse Issue Reference
-
-The auto-sync service handles all reference formats:
-
-```bash
-# Examples of supported formats:
-node .claude/scripts/sync-issue.js 30              # GitHub issue #30
-node .claude/scripts/sync-issue.js ISSUE-30        # ISSUE-30 format
-node .claude/scripts/sync-issue.js "#30"           # Hash format
-node .claude/scripts/sync-issue.js "https://github.com/MLorneSmith/2025slideheroes/issues/30"  # Full URL
-```
-
-### 3.3 Load Synced Issue
-
-After auto-sync completes, read the local file:
-
-```bash
-# Auto-sync creates files in format: YYYY-MM-DD-ISSUE-{number}.md
-# Find the synced file
-issue_file=$(find .claude/z.archive/issues -name "*-ISSUE-${issue_number}.md" | head -1)
-
-if [ -z "$issue_file" ]; then
-  echo "❌ Issue file not found after auto-sync"
-  exit 1
-fi
-
-echo "📁 Using issue file: $issue_file"
-```
-
-### 3.4 Read and Parse Issue
-
-```typescript
-// Read the issue specification
-const issueContent = await readFile(issuePath);
-const issue = parseIssueSpecification(issueContent);
-
-// Extract key information
-const {
-  id,
-  severity,
-  type,
-  affectedFiles,
-  diagnosticData,
-  reproductionSteps,
-  suggestedAreas,
-} = issue;
-```
-
-### 3.5 Review GitHub Issue Comments (Critical Step)
-
-**IMPORTANT**: Always review GitHub issue comments for status updates, implementation progress, and current context:
-
-```bash
-# Review all comments on the GitHub issue for latest status
-gh issue view ${issue_number} --repo MLorneSmith/2025slideheroes --comments
-
-# This will show:
-# - Implementation status updates
-# - Progress reports
-# - Current phase information
-# - Next steps and priorities
-# - Technical decisions made
-# - Blockers and resolutions
-```
-
-**Why This Is Critical**:
-
-- GitHub issue descriptions may be outdated
-- Comments contain the most current status and context
-- Implementation progress is tracked in comments
-- Status updates override initial issue description
-- Comments reveal actual current state vs original problem
-
-**What to Look For**:
-
-- **Status Update Comments**: "IMPLEMENTATION STATUS UPDATE", "Progress Update", etc.
-- **Current Phase Information**: What's completed vs what's pending
-- **Next Steps**: Specific tasks and priorities for current session
-- **Technical Context**: Decisions, approaches, and discoveries
-- **Blockers and Solutions**: Known issues and their resolutions
-
-### 3.6 Load Additional Context
+### 3.5 Load Additional Context
 
 After parsing the issue, load specific context based on the issue type:
 
 ```bash
-# Based on the parsed issue type, load additional context from section 2.2
+# Based on the parsed issue type, load additional context from section 3.2
 # For example, if issue.type indicates a database problem:
 # PARALLEL READ:
 # .claude/docs/data/supabase-patterns.md
