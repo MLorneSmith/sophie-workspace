@@ -79,3 +79,9 @@ tasks.json
 
 # ts-node cache
 node-compile-cache/
+
+# Snyk
+.dccache
+snyk-*.log
+snyk-*.json
+# Note: .snyk file should be committed for team consistency
