@@ -10,6 +10,16 @@ import * as React from "react";
 import { useError } from "../error/ErrorContext";
 import { isAuthError, isConnectionError } from "../lib/error-utils";
 
+// Client-safe logger wrapper
+const logger = {
+	error: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.error(...args);
+		}
+	},
+};
+
 const ERROR_MESSAGES = {
 	AUTH_ERROR: "Your session has expired. Please refresh and try again.",
 	LOAD_FAILED:
@@ -89,12 +99,7 @@ export class SetupFormErrorBoundary extends React.Component<Props, State> {
 
 	componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
 		// Log error
-		// TODO: Async logger needed
-		// TODO: Async logger needed
-		// (await getLogger()).error(
-		// 	"SetupFormErrorBoundary caught an error:",
-		// 	{ arg1: error, arg2: errorInfo }
-		// );
+		logger.error("SetupFormErrorBoundary caught an error:", error, errorInfo);
 
 		// Call onError prop if provided
 		this.props.onError?.(error, errorInfo);

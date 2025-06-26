@@ -1,3 +1,7 @@
+import { createServiceLogger } from "@kit/shared/logger";
+
+const { getLogger } = createServiceLogger("ERROR-COORDINATOR");
+
 type ErrorHandler = (error: Error) => Promise<boolean>;
 
 export class ErrorCoordinator {
@@ -35,10 +39,11 @@ export class ErrorCoordinator {
 		}
 
 		// If no handler handled it, log to console
-		// TODO: Async logger needed
-		// (await getLogger()).error("Unhandled error:", {
-		// 	data: error,
-		// });
+		const logger = await getLogger();
+		logger.error("Unhandled error", {
+			component,
+			error,
+		});
 	}
 
 	clear(): void {
