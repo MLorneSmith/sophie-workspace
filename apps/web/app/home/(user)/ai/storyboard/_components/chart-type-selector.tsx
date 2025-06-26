@@ -10,6 +10,16 @@ import {
 } from "@kit/ui/select";
 import type { Slide } from "../_lib/types";
 
+// Client-safe logger wrapper
+const logger = {
+	info: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.info(...args);
+		}
+	},
+};
+
 interface ChartTypeSelectorProps {
 	slide: Slide;
 	contentAreaIndex: number;
@@ -30,10 +40,12 @@ export function ChartTypeSelector({
 
 	const handleChartTypeChange = (_chartTypeId: string) => {
 		// TODO: Implement logic to update the specific content area's chart type and data
-		// TODO: Async logger needed
-		// TODO: Fix logger call - was: info
+		logger.info("Chart type changed:", {
+			slideId: slide.id,
+			contentAreaIndex,
+			chartTypeId: _chartTypeId,
+		});
 		// This will require a more detailed structure for chart data within SlideContent
-		// For now, just logging the change.
 	};
 
 	// TODO: Implement UI to select chart type and potentially input chart data

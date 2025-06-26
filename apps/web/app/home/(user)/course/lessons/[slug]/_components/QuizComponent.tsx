@@ -15,6 +15,16 @@ import { RadioGroup, RadioGroupItem } from "@kit/ui/radio-group";
 import { ChevronRight } from "lucide-react";
 import { useState } from "react";
 
+// Client-safe logger wrapper
+const logger = {
+	error: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.error(...args);
+		}
+	},
+};
+
 interface QuizOption {
 	text: string;
 	iscorrect: boolean;
@@ -390,12 +400,7 @@ export function QuizComponent({
 						}
 					}
 				} catch (_err) {
-					// TODO: Async logger needed
-					// TODO: Async logger needed
-					// (await getLogger()).error(
-					// 	"Error navigating to next lesson:",
-					// 	{ data: err }
-					// );
+					logger.error("Error navigating to next lesson:", _err);
 				}
 			}
 

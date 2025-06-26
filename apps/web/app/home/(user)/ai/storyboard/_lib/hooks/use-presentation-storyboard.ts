@@ -6,6 +6,16 @@ import { toast } from "@kit/ui/sonner";
 import { useQuery } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 
+// Client-safe logger wrapper
+const logger = {
+	error: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.error(...args);
+		}
+	},
+};
+
 import type {
 	BuildingBlocksSubmission,
 	Slide,
@@ -200,9 +210,12 @@ export function usePresentationStoryboard(presentationId: string) {
 							: fallbackData.outline;
 
 					return _generateStoryboardFromOutline(outline);
-				} catch (_err) {
-					// TODO: Async logger needed
-					// TODO: Fix logger call - was: error
+				} catch (err) {
+					logger.error("Failed to generate storyboard from outline:", {
+						error: err,
+						presentationId,
+						operation: "generate_storyboard_fallback",
+					});
 					throw new Error("Failed to generate storyboard from outline");
 				}
 			} else {
@@ -227,9 +240,12 @@ export function usePresentationStoryboard(presentationId: string) {
 					: typedData.outline;
 
 			return _generateStoryboardFromOutline(outline);
-		} catch (_err) {
-			// TODO: Async logger needed
-			// TODO: Fix logger call - was: error
+		} catch (err) {
+			logger.error("Failed to generate storyboard from outline:", {
+				error: err,
+				presentationId,
+				operation: "generate_storyboard_main",
+			});
 			throw new Error("Failed to generate storyboard from outline");
 		}
 	}, [presentationId, supabase]);
@@ -262,8 +278,11 @@ export function usePresentationStoryboard(presentationId: string) {
 						toast.error(
 							"Storyboard feature is not fully set up yet. Database migration needed.",
 						);
-						// TODO: Async logger needed
-						// TODO: Fix logger call - was: error
+						logger.error("Storyboard column missing from database:", {
+							error: result.error,
+							presentationId,
+							operation: "save_storyboard",
+						});
 					} else {
 						throw result.error;
 					}
@@ -272,9 +291,12 @@ export function usePresentationStoryboard(presentationId: string) {
 				// Refetch to ensure we have the latest data
 				await refetch();
 				return true;
-			} catch (_error) {
-				// TODO: Async logger needed
-				// TODO: Fix logger call - was: error
+			} catch (error) {
+				logger.error("Failed to save storyboard:", {
+					error,
+					presentationId,
+					operation: "save_storyboard",
+				});
 				toast.error("Failed to save storyboard");
 				return false;
 			} finally {

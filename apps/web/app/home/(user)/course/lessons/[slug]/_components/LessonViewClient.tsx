@@ -31,6 +31,34 @@ import {
 import { QuizComponent } from "./QuizComponent";
 import { SurveyComponent } from "./SurveyComponent";
 
+// Client-safe logger wrapper for development logging
+const logger = {
+	info: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.info(...args);
+		}
+	},
+	error: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.error(...args);
+		}
+	},
+	warn: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.warn(...args);
+		}
+	},
+	debug: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.debug(...args);
+		}
+	},
+};
+
 // Type aliases for better readability
 type QuizAttempt = Database["public"]["Tables"]["quiz_attempts"]["Row"];
 type LessonProgress = Database["public"]["Tables"]["lesson_progress"]["Row"];
@@ -579,16 +607,17 @@ export function LessonViewClient({
 								{(() => {
 									// Debug logging in development
 									if (process.env.NODE_ENV === "development") {
-										// TODO: Async logger needed
-										// (await getLogger()).info("Lesson downloads:", {
-										// 	data: lesson.downloads
-										// 		? `${lesson.downloads.length} items`
-										// 		: "undefined",
-										// });
+										logger.info("Lesson downloads:", {
+											data: lesson.downloads
+												? `${lesson.downloads.length} items`
+												: "undefined",
+										});
 
 										if (lesson.downloads && lesson.downloads.length > 0) {
-											// TODO: Async logger needed
-											// TODO: Fix logger call - was: info
+											logger.info("Downloads found for lesson", {
+												lessonId: lesson.id,
+												downloadCount: lesson.downloads.length,
+											});
 										}
 									}
 
@@ -605,14 +634,20 @@ export function LessonViewClient({
 														(download: Download, index: number) => {
 															// Additional validation
 															if (!download) {
-																// TODO: Async logger needed
-																// TODO: Fix logger call - was: warn
+																logger.warn("Empty download object found", {
+																	lessonId: lesson.id,
+																	downloadIndex: index,
+																});
 																return null;
 															}
 
 															if (!download.url) {
-																// TODO: Async logger needed
-																// TODO: Fix logger call - was: warn
+																logger.warn("Download missing URL", {
+																	lessonId: lesson.id,
+																	downloadIndex: index,
+																	downloadTitle: download.title,
+																	downloadFilename: download.filename,
+																});
 
 																// Fallback rendering for downloads without URL
 																if (download.filename || download.description) {
@@ -725,8 +760,10 @@ export function LessonViewClient({
 										lesson.content.includes("{%") &&
 										lesson.content.includes("r2file")
 									) {
-										// TODO: Async logger needed
-										// TODO: Fix logger call - was: info
+										logger.info("Processing template tag downloads", {
+											lessonId: lesson.id,
+											contentLength: lesson.content.length,
+										});
 
 										// Extract download section from content
 										const downloadSection = lesson.content.match(

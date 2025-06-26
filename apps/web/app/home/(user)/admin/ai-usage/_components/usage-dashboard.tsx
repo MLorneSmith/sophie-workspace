@@ -25,6 +25,22 @@ import { useState } from "react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import type { UsageStats } from "../_lib/types";
 
+// Client-safe logger wrapper with environment gating
+const logger = {
+	info: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging for admin usage dashboard
+			console.info(...args);
+		}
+	},
+	error: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging for admin usage dashboard
+			console.error(...args);
+		}
+	},
+};
+
 interface UsageDashboardProps {
 	initialData: UsageStats;
 }
@@ -52,21 +68,18 @@ export function UsageDashboard({ initialData }: UsageDashboardProps) {
 
 			// For now, just simulate data refresh
 			setTimeout(() => {
-				// TODO: Async logger needed
-				// TODO: Async logger needed
-				// (await getLogger()).info(
-				// 	"Data refreshed for time range:",
-				// 	{ data: selectedTimeRange }
-				// );
+				logger.info("Data refreshed for time range", {
+					timeRange: selectedTimeRange,
+					timestamp: new Date().toISOString(),
+				});
 				// In a real implementation, this would use actual fetched data
 			}, 500);
 		} catch (_error) {
-			// TODO: Async logger needed
-			// TODO: Async logger needed
-			// (await getLogger()).error(
-			// 	"Error fetching usage data:",
-			// 	{ data: _error }
-			// );
+			logger.error("Error fetching usage data", {
+				timeRange: selectedTimeRange,
+				error: _error,
+				timestamp: new Date().toISOString(),
+			});
 		} finally {
 			setIsLoading(false);
 		}

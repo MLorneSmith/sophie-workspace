@@ -8,6 +8,16 @@ import {
 	transformImageUrl,
 } from "~/lib/utils/image-utils";
 
+// Client-safe logger wrapper with environment gating
+const logger = {
+	info: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging for image loading
+			console.info(...args);
+		}
+	},
+};
+
 type Props = {
 	title: string;
 	src: string;
@@ -36,8 +46,11 @@ export function CoverImage({ title, src, preloadImage, className }: Props) {
 				// Fallback to placeholder if image fails to load
 				const target = e.target as HTMLImageElement;
 				target.src = getPostPlaceholderImage();
-				// TODO: Async logger needed
-				// TODO: Fix logger call - was: info
+				logger.info("Image failed to load, using placeholder", {
+					originalSrc: transformedSrc,
+					title,
+					timestamp: new Date().toISOString(),
+				});
 			}}
 		/>
 	);

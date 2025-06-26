@@ -17,6 +17,34 @@ import {
 import { QuestionCard } from "./question-card";
 import { SurveySummary } from "./survey-summary";
 
+// Create a client-safe logger wrapper
+const logger = {
+	info: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.info(...args);
+		}
+	},
+	error: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.error(...args);
+		}
+	},
+	warn: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.warn(...args);
+		}
+	},
+	debug: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.debug(...args);
+		}
+	},
+};
+
 type SurveyContainerProps = {
 	survey: Survey;
 	questions: SurveyQuestion[];
@@ -35,12 +63,12 @@ export function SurveyContainer({
 	const [isPending, startTransition] = useTransition();
 
 	// Log the initial progress for debugging
-	// TODO: Async logger needed
-	// TODO: Fix logger call - was: info
-	// TODO: Async logger needed
-	// TODO: Fix logger call - was: info
-	// TODO: Async logger needed
-	// TODO: Fix logger call - was: info
+	logger.info("Survey container initialized", {
+		surveyId: survey.id,
+		questionCount: questions.length,
+		initialProgress,
+		userId,
+	});
 
 	const [currentQuestionIndex, setCurrentQuestionIndex] = useState(
 		initialProgress < questions.length ? initialProgress : 0,
@@ -63,19 +91,28 @@ export function SurveyContainer({
 					.maybeSingle();
 
 				if (error) {
-					// TODO: Async logger needed
-					// TODO: Fix logger call - was: error
+					logger.error("Failed to load existing survey scores", {
+						error,
+						userId,
+						surveyId: survey.id,
+					});
 					return;
 				}
 
 				if (data?.category_scores && typeof data.category_scores === "object") {
-					// TODO: Async logger needed
-					// TODO: Fix logger call - was: info
+					logger.info("Loaded existing category scores", {
+						userId,
+						surveyId: survey.id,
+						scoreCount: Object.keys(data.category_scores).length,
+					});
 					setCategoryScores(data.category_scores as Record<string, number>);
 				}
-			} catch (_error) {
-				// TODO: Async logger needed
-				// TODO: Fix logger call - was: error
+			} catch (error) {
+				logger.error("Error loading existing scores", {
+					error,
+					userId,
+					surveyId: survey.id,
+				});
 			}
 		}
 
@@ -152,8 +189,14 @@ export function SurveyContainer({
 							.single();
 
 						if (error) {
-							// TODO: Async logger needed
-							// TODO: Fix logger call - was: error
+							logger.error(
+								"Failed to fetch survey response record for completion",
+								{
+									error,
+									userId,
+									surveyId: survey.id,
+								},
+							);
 							// Continue to show summary even if there's an error
 						} else if (responseData?.id) {
 							// Get the latest category scores from the database
@@ -164,8 +207,14 @@ export function SurveyContainer({
 								responseData.category_scores &&
 								typeof responseData.category_scores === "object"
 							) {
-								// TODO: Async logger needed
-								// TODO: Fix logger call - was: info
+								logger.info(
+									"Using database category scores for survey completion",
+									{
+										userId,
+										surveyId: survey.id,
+										responseId: responseData.id,
+									},
+								);
 								finalCategoryScores = responseData.category_scores as Record<
 									string,
 									number
@@ -194,19 +243,32 @@ export function SurveyContainer({
 
 								// Update local state with final scores for the summary view
 								setCategoryScores(finalCategoryScores);
-							} catch (_completionError) {
-								// TODO: Async logger needed
-								// TODO: Fix logger call - was: error
+							} catch (completionError) {
+								logger.error("Failed to complete survey in Payload", {
+									error: completionError,
+									userId,
+									surveyId: survey.id,
+									responseId: responseData.id,
+								});
 								// Continue to show summary even if there's an error
 							}
 						} else {
-							// TODO: Async logger needed
-							// TODO: Fix logger call - was: error
+							logger.error(
+								"No survey response record ID found for completion",
+								{
+									userId,
+									surveyId: survey.id,
+									responseData,
+								},
+							);
 							// Continue to show summary even if there's no record ID
 						}
-					} catch (_error) {
-						// TODO: Async logger needed
-						// TODO: Fix logger call - was: error
+					} catch (error) {
+						logger.error("Failed to complete survey (general error)", {
+							error,
+							userId,
+							surveyId: survey.id,
+						});
 						// Continue to show summary even if there's an error
 					}
 
@@ -215,9 +277,13 @@ export function SurveyContainer({
 				} else {
 					setCurrentQuestionIndex(currentQuestionIndex + 1);
 				}
-			} catch (_error) {
-				// TODO: Async logger needed
-				// TODO: Fix logger call - was: error
+			} catch (error) {
+				logger.error("Failed to save survey response", {
+					error,
+					surveyId: survey.id,
+					questionId,
+					currentQuestionIndex,
+				});
 			}
 		});
 	};
