@@ -10,6 +10,16 @@ import {
 } from "react";
 import { v4 as uuidv4 } from "uuid";
 
+// Client-safe logger wrapper
+const logger = {
+	error: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.error(...args);
+		}
+	},
+};
+
 // Define the context type
 type CostTrackingContextType = {
 	sessionCost: number;
@@ -48,12 +58,10 @@ export function CostTrackingProvider({ children }: { children: ReactNode }) {
 					setSessionCost(data.cost || 0);
 				}
 			} catch (_error) {
-				// TODO: Async logger needed
-				// TODO: Async logger needed
-				// (await getLogger()).error(
-				// 	"Failed to fetch initial costs:",
-				// 	{ data: _error }
-				// );
+				logger.error("Failed to fetch initial costs:", {
+					error: _error,
+					sessionId: newSessionId,
+				});
 			} finally {
 				setIsLoading(false);
 			}
