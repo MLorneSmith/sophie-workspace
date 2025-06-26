@@ -52,7 +52,7 @@ async function JoinTeamAccountPage(props: JoinTeamAccountPageProps) {
     if (auth.error instanceof MultiFactorAuthError) {
       const urlParams = new URLSearchParams({
         next: `${pathsConfig.app.joinTeam}?invite_token=${token}&email=${searchParams.email ?? ''}`,
-      })
+      });
 
       const verifyMfaUrl = `${pathsConfig.auth.verifyMfa}?${urlParams.toString()}`;
 

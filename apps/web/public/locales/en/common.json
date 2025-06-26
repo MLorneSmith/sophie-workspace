@@ -92,5 +92,21 @@
     "description": "This website uses cookies to ensure you get the best experience on our website.",
     "reject": "Reject",
     "accept": "Accept"
+  },
+  "dropzone": {
+    "success": "Successfully uploaded {{count}} file(s)",
+    "error": "Error uploading {{count}} file(s)",
+    "errorMessageUnknown": "An unknown error occurred.",
+    "errorMessageFileUnknown": "Unknown file",
+    "errorMessageFileSizeUnknown": "Unknown file size",
+    "errorMessageFileSizeTooSmall": "File size is too small",
+    "errorMessageFileSizeTooLarge": "File size is too large",
+    "uploading": "Uploading...",
+    "uploadFiles": "Upload {{count}} file(s)",
+    "maxFileSize": "Maximum file size: {{size}}",
+    "maxFiles": "You may upload only up to {{count}} files, please remove {{files}} files.",
+    "dragAndDrop": "Drag and drop or",
+    "select": "select files",
+    "toUpload": "to upload"
   }
 }

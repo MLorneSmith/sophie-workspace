@@ -19,8 +19,8 @@ export async function loadTranslations() {
   for (const locale of locales) {
     translations[locale] = {};
 
-    const namespaces = readdirSync(join(localesPath, locale)).filter(
-      (file) => file.endsWith('.json'),
+    const namespaces = readdirSync(join(localesPath, locale)).filter((file) =>
+      file.endsWith('.json'),
     );
 
     for (const namespace of namespaces) {
