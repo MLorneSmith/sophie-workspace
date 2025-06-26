@@ -4,6 +4,7 @@ import {
 	_parseAcceptLanguageHeader,
 	initializeServerI18n,
 } from "@kit/i18n/server";
+import { createServiceLogger } from "@kit/shared/logger";
 
 import { cookies, headers } from "next/headers";
 import { cache } from "react";
@@ -17,6 +18,8 @@ import {
 } from "~/lib/i18n/i18n.settings";
 
 import { i18nResolver } from "./i18n.resolver";
+
+const { getLogger } = createServiceLogger("I18N-SERVER");
 
 /**
  * @name priority
@@ -40,7 +43,7 @@ async function createInstance() {
 
 	// if the cookie is set, use the language from the cookie
 	if (langCookieValue) {
-		selectedLanguage = getLanguageOrFallback(langCookieValue);
+		selectedLanguage = await getLanguageOrFallback(langCookieValue);
 	}
 
 	// if not, check if the language priority is set to user and
@@ -48,10 +51,10 @@ async function createInstance() {
 	if (!selectedLanguage && priority === "user") {
 		const userPreferredLanguage = await getPreferredLanguageFromBrowser();
 
-		selectedLanguage = getLanguageOrFallback(userPreferredLanguage);
+		selectedLanguage = await getLanguageOrFallback(userPreferredLanguage);
 	}
 
-	const settings = getI18nSettings(selectedLanguage);
+	const settings = await getI18nSettings(selectedLanguage);
 
 	return initializeServerI18n(settings, i18nResolver);
 }
@@ -79,7 +82,7 @@ async function getPreferredLanguageFromBrowser() {
  * Get the language or fallback to the default language.
  * @param selectedLanguage
  */
-function getLanguageOrFallback(selectedLanguage: string | undefined) {
+async function getLanguageOrFallback(selectedLanguage: string | undefined) {
 	const language = z
 		.enum(languages as [string, ...string[]])
 		.safeParse(selectedLanguage);
@@ -88,8 +91,13 @@ function getLanguageOrFallback(selectedLanguage: string | undefined) {
 		return language.data;
 	}
 
-	// TODO: Async logger needed
-	// TODO: Fix logger call - was: warn
+	const logger = await getLogger();
+	logger.warn("Invalid language provided, falling back to default", {
+		operation: "get_language_or_fallback",
+		providedLanguage: selectedLanguage,
+		fallbackLanguage: languages[0],
+		supportedLanguages: languages,
+	});
 
 	return languages[0];
 }

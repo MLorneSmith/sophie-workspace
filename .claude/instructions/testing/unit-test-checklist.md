@@ -1,18 +1,51 @@
-# Unit Test Checklist Tracker
+# Comprehensive Test Checklist Tracker
 
-## Progress Overview
+> **Evolved from unit-test-checklist.md** - Now covers all test types: Unit, E2E, Accessibility, Integration, Performance
 
-- Total Files: 127 (Priority 1-3 files)
-- Files with Tests: 19 (18 completed, 1 partially complete)
-- Coverage: 15.0%
-- Last Updated: 2025-06-14 (storage-url-generators.ts completed with 32/32 tests passing, 100% coverage. Comprehensive testing of URL generation logic for both R2 and S3 storage backends with factory functions, error handling, logging, and complete mock structure with TypeScript type safety)
+## Progress Overview by Test Type
 
-## Testing Guidelines
+### Unit Tests 
+- **Total Files**: 127 (Priority 1-3 files)
+- **Files with Tests**: 19 (18 completed, 1 partially complete)
+- **Coverage**: 15.0%
+- **Last Updated**: 2025-06-14
 
-- Focus on pure functions first (no side effects)
-- Mock external dependencies (AI services, database, file storage)
-- Test critical business logic before UI components
-- Aim for 80%+ coverage on Priority 1 & 2 areas
+### E2E Tests (Playwright)
+- **Total Workflows**: ~25 critical user journeys
+- **Workflows with Tests**: 3 (basic auth, navigation, course preview)
+- **Coverage**: 12.0%
+- **Last Updated**: 2025-06-20
+
+### Accessibility Tests (axe-core)
+- **Total Components**: ~40 UI components
+- **Components with Tests**: 5 (basic navigation, forms)
+- **Coverage**: 12.5%
+- **Last Updated**: 2025-06-18
+
+### Integration Tests
+- **Total API Endpoints**: ~15 
+- **Endpoints with Tests**: 2 (auth, basic CRUD)
+- **Coverage**: 13.3%
+- **Last Updated**: 2025-06-15
+
+### Performance Tests
+- **Total Critical Paths**: ~10
+- **Paths with Tests**: 1 (homepage load)
+- **Coverage**: 10.0%
+- **Last Updated**: 2025-06-10
+
+## Comprehensive Testing Guidelines
+
+### Test Type Priority by CI/CD Stage
+- **PR Validation**: Unit (required) → Accessibility (UI changes) → Integration (APIs)
+- **Dev Deployment**: Integration → E2E (core workflows) → Performance (basic)
+- **Staging**: E2E (full) → Performance (Core Web Vitals) → Security
+- **Production**: All tests passing + performance validation
+
+### Coverage Targets by Priority
+- **Priority 1 Areas**: 90%+ unit, 80%+ integration, 70%+ E2E
+- **Priority 2 Areas**: 80%+ unit, 60%+ integration, 50%+ E2E
+- **Priority 3 Areas**: 60%+ unit, 40%+ integration, 30%+ E2E
 
 ## Priority 1: Core Custom Business Logic
 

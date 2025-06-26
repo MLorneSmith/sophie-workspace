@@ -1,4 +1,7 @@
 import { createI18nSettings } from "@kit/i18n";
+import { createServiceLogger } from "@kit/shared/logger";
+
+const { getLogger } = createServiceLogger("I18N-SETTINGS");
 
 /**
  * The default language of the application.
@@ -50,8 +53,38 @@ export function getI18nSettings(
 	let lng = language ?? defaultLanguage;
 
 	if (!languages.includes(lng)) {
-		// TODO: Async logger needed
-		// TODO: Fix logger call - was: warn
+		// Log warning asynchronously without blocking in client context
+		if (typeof window === "undefined") {
+			// Server-side: use async logger
+			Promise.resolve(getLogger())
+				.then((logger) => {
+					logger.warn(
+						"Unsupported language requested, falling back to default",
+						{
+							operation: "get_i18n_settings",
+							requestedLanguage: lng,
+							defaultLanguage,
+							supportedLanguages: languages,
+						},
+					);
+				})
+				.catch(() => {
+					// Silent fail for logging
+				});
+		} else {
+			// Client-side: use development console (silent for production)
+			if (process.env.NODE_ENV === "development") {
+				// biome-ignore lint/suspicious/noConsole: Development logging for unsupported language fallback
+				console.warn(
+					"Unsupported language requested, falling back to default",
+					{
+						requestedLanguage: lng,
+						defaultLanguage,
+						supportedLanguages: languages,
+					},
+				);
+			}
+		}
 
 		lng = defaultLanguage;
 	}

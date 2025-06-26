@@ -473,13 +473,17 @@
   <category id="systems" name="System Documentation">
     <document path="../context/systems/enhanced-logger.md">
       <name>Enhanced Logger System</name>
-      <description>Comprehensive documentation of the async logger system including architecture, usage patterns, security features, and migration guide from console logging.</description>
+      <description>Comprehensive documentation of the async logger system including architecture, usage patterns, security features, biome linting alignment, and migration guide from console logging.</description>
       <topics>
         <topic>Logger Architecture</topic>
         <topic>Async Patterns</topic>
         <topic>Security Features</topic>
         <topic>Migration Guide</topic>
         <topic>Testing Strategies</topic>
+        <topic>Biome Linting Alignment</topic>
+        <topic>Client vs Server Components</topic>
+        <topic>Production Safety</topic>
+        <topic>Development-Gated Logging</topic>
       </topics>
     </document>
   </category>

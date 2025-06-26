@@ -349,7 +349,7 @@ if (outputFormat === 'local' || outputFormat === 'file') {
     repo: '2025slideheroes',
     title: issueTitle,
     body: issueContent,
-    labels: [severity, issueType, 'needs-investigation'],
+    labels: ['issue', severity, issueType, 'needs-investigation'],
     assignees: [],
   });
 
