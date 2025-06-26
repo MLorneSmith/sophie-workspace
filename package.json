@@ -70,7 +70,7 @@
 			"cd apps/payload && pnpm lint --fix"
 		],
 		"packages/**/*.{js,jsx,ts,tsx,json}": [
-			"bash -c 'package_dir=$(dirname \"$0\" | cut -d/ -f1-2); if [ -f \"$package_dir/package.json\" ] && grep -q '\"lint\"' \"$package_dir/package.json\"; then cd \"$package_dir\" && pnpm lint --fix; fi'"
+			"bash -c 'package_dir=$(dirname \"$0\" | cut -d/ -f1-2); if [ -f \"$package_dir/package.json\" ] && grep -q \"\\\"lint\\\"\" \"$package_dir/package.json\"; then cd \"$package_dir\" && pnpm lint --fix; fi'"
 		],
 		"!(apps/payload|packages)/**/*.{js,jsx,ts,tsx,json,css}": [
 			"biome format --write",
@@ -78,7 +78,7 @@
 		],
 		"**/*.{md,mdx}": [
 			"prettier --write",
-			"bash -c 'if ! echo \"$0\" | grep -qE \"^(\\.claude|\\.mcp-servers|\\.roo)/\"; then markdownlint-cli2 --fix \"$0\"; fi'"
+			"bash -c 'if ! echo \"$0\" | grep -qE \"(\\.claude|\\.mcp-servers|\\.roo)/\"; then markdownlint-cli2 --fix \"$0\"; fi'"
 		],
 		"**/*.{yaml,yml}": [
 			"bash -c 'if [[ \"$0\" != *\"pnpm-lock.yaml\"* ]]; then npx yamllint \"$0\"; fi'"
