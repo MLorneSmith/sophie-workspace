@@ -10,6 +10,34 @@ import { forwardRef, useEffect, useRef, useState } from "react";
 import type { Database } from "~/lib/database.types";
 
 import { generateOutlineAction } from "../../../_actions/generate-outline";
+
+// Create a client-safe logger wrapper
+const logger = {
+	info: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.info(...args);
+		}
+	},
+	error: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.error(...args);
+		}
+	},
+	warn: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.warn(...args);
+		}
+	},
+	debug: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.debug(...args);
+		}
+	},
+};
 import { normalizeEditorContent } from "../../../_lib/utils/normalize-editor-content";
 import type { EditorContentTypes } from "../../../_types/editor-types";
 import {
@@ -68,8 +96,10 @@ export const TiptapTabContent = forwardRef<TiptapEditorRef, TabContentProps>(
 
 				// Special handling for outline section
 				if (sectionType === "outline") {
-					// TODO: Async logger needed
-					// TODO: Fix logger call - was: info
+					logger.info("Processing outline section", {
+						sectionType,
+						submissionId: id,
+					});
 					const rawContent = data.outline;
 
 					// If outline exists and has valid content, parse, normalize and return it
@@ -86,20 +116,26 @@ export const TiptapTabContent = forwardRef<TiptapEditorRef, TabContentProps>(
 								Array.isArray(parsedContent.content)
 							) {
 								// We found existing outline content, normalize it to ensure integrity
-								// TODO: Async logger needed
-								// TODO: Fix logger call - was: info
+								logger.info("Found existing outline content", {
+									sectionType,
+									contentType: parsedContent.type,
+								});
 								return normalizeEditorContent(parsedContent, "outline");
 							}
 						} catch (_e) {
-							// TODO: Async logger needed
-							// TODO: Fix logger call - was: error
+							logger.error("Failed to parse existing outline content", {
+								sectionType,
+								error: _e,
+							});
 							// Continue to outline generation if parsing fails
 						}
 					}
 
 					// If we get here, we need to generate the outline
-					// TODO: Async logger needed
-					// TODO: Fix logger call - was: info
+					logger.info("Generating new outline content", {
+						sectionType,
+						submissionId: id,
+					});
 					try {
 						const result = (await generateOutlineAction({
 							submissionId: id,
@@ -107,18 +143,26 @@ export const TiptapTabContent = forwardRef<TiptapEditorRef, TabContentProps>(
 						})) as { success: boolean; data?: unknown; error?: string };
 
 						if (result.success && result.data) {
-							// TODO: Async logger needed
-							// TODO: Fix logger call - was: info
+							logger.info("Successfully generated outline content", {
+								sectionType,
+								submissionId: id,
+							});
 							return normalizeEditorContent(result.data, "outline");
 						}
-						// TODO: Async logger needed
-						// TODO: Fix logger call - was: error
+						logger.error("Failed to generate outline content", {
+							sectionType,
+							submissionId: id,
+							error: result.error,
+						});
 						setContentError(
 							"Failed to generate outline. Please try again or reset the outline.",
 						);
 					} catch (_err) {
-						// TODO: Async logger needed
-						// TODO: Fix logger call - was: error
+						logger.error("Exception during outline generation", {
+							sectionType,
+							submissionId: id,
+							error: _err,
+						});
 						setContentError("Error generating outline. Please try again.");
 					}
 
@@ -127,8 +171,11 @@ export const TiptapTabContent = forwardRef<TiptapEditorRef, TabContentProps>(
 
 				// Standard handling for other sections
 				const rawContent = (data as Record<string, unknown>)[sectionType];
-				// TODO: Async logger needed
-				// TODO: Fix logger call - was: debug
+				logger.debug("Processing standard section content", {
+					sectionType,
+					rawContentType: typeof rawContent,
+					hasContent: !!rawContent,
+				});
 
 				if (!rawContent) return EMPTY_EDITOR_STATE;
 
@@ -170,12 +217,20 @@ export const TiptapTabContent = forwardRef<TiptapEditorRef, TabContentProps>(
 						return normalizeEditorContent(convertedContent, sectionType);
 					}
 
-					// TODO: Async logger needed
-					// TODO: Fix logger call - was: debug
+					logger.debug(
+						"Content parsing successful but not in expected format",
+						{
+							sectionType,
+							parsedType: typeof parsed,
+						},
+					);
 					return EMPTY_EDITOR_STATE;
 				} catch (_e) {
-					// TODO: Async logger needed
-					// TODO: Fix logger call - was: debug
+					logger.debug("Failed to parse content as JSON", {
+						sectionType,
+						error: _e,
+						contentType: typeof rawContent,
+					});
 					return EMPTY_EDITOR_STATE;
 				}
 			},
@@ -211,8 +266,10 @@ export const TiptapTabContent = forwardRef<TiptapEditorRef, TabContentProps>(
 									// Force refetch
 									window.location.reload();
 								} catch (_err) {
-									// TODO: Async logger needed
-									// TODO: Fix logger call - was: error
+									logger.error("Failed to retry outline generation", {
+										sectionType,
+										error: _err,
+									});
 								}
 							}
 						}}
@@ -239,15 +296,16 @@ export const TiptapTabContent = forwardRef<TiptapEditorRef, TabContentProps>(
 			} else {
 				editorContent = JSON.stringify(EMPTY_EDITOR_STATE);
 			}
-			// TODO: Async logger needed
-			// (await getLogger()).info("Prepared editor content:", {
-			// 	sectionType,
-			// 	contentType: typeof editorContent,
-			// 	contentLength: editorContent.length,
-			// });
+			logger.info("Prepared editor content:", {
+				sectionType,
+				contentType: typeof editorContent,
+				contentLength: editorContent.length,
+			});
 		} catch (_e) {
-			// TODO: Async logger needed
-			// TODO: Fix logger call - was: error
+			logger.error("Failed to prepare editor content", {
+				sectionType,
+				error: _e,
+			});
 			editorContent = JSON.stringify(EMPTY_EDITOR_STATE);
 		}
 

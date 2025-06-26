@@ -5,10 +5,25 @@ import { Label } from "@kit/ui/label";
 import { RadioGroup, RadioGroupItem } from "@kit/ui/radio-group";
 import { Trans } from "@kit/ui/trans";
 import { useState } from "react";
-
 import type { SurveyQuestion } from "../../../../../../../payload/payload-types";
 import { ScaleQuestion } from "./scale-question";
 import { TextFieldQuestion } from "./text-field-question";
+
+// Client-safe logger wrapper
+const logger = {
+	info: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.info(...args);
+		}
+	},
+	error: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.error(...args);
+		}
+	},
+};
 
 type QuestionCardProps = {
 	question: SurveyQuestion;
@@ -50,29 +65,29 @@ export function QuestionCard({
 	const _handleSubmit = () => {
 		if (selectedOption) {
 			// Log the selected option and available options for debugging
-			// TODO: Async logger needed
-			// (await getLogger()).info("Selected option:", {
-			// 	data: selectedOption,
-			// });
-			// TODO: Async logger needed
-			// (await getLogger()).info("Available options:", {
-			// 	data: question.options,
-			// });
+			logger.info("Selected option:", {
+				data: selectedOption,
+				questionId: question.id,
+			});
+			logger.info("Available options:", {
+				data: question.options,
+				questionId: question.id,
+			});
 
 			const option = question.options?.find((opt) => opt.id === selectedOption);
 
 			if (option) {
 				onAnswer(question.id, option.option, 0);
 			} else {
-				// TODO: Async logger needed
-				// (await getLogger()).error(
-				// 	"Selected option not found:",
-				// 	{ data: selectedOption }
-				// );
-				// TODO: Async logger needed
-				// (await getLogger()).error("Question options:", {
-				// 	data: question.options,
-				// });
+				logger.error("Selected option not found:", {
+					selectedOption,
+					questionId: question.id,
+					questionType: question.type,
+				});
+				logger.error("Question options:", {
+					options: question.options,
+					questionId: question.id,
+				});
 			}
 		}
 	};

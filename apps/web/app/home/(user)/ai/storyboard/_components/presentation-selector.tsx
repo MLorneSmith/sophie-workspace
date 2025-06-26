@@ -13,6 +13,16 @@ import {
 import { Skeleton } from "@kit/ui/skeleton";
 import { useEffect, useState } from "react";
 
+// Client-safe logger wrapper
+const logger = {
+	error: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.error(...args);
+		}
+	},
+};
+
 interface Presentation {
 	id: string;
 	title: string;
@@ -45,12 +55,7 @@ export function PresentationSelector({ onSelect }: PresentationSelectorProps) {
 
 				setPresentations(data || []);
 			} catch (_err) {
-				// TODO: Async logger needed
-				// TODO: Async logger needed
-				// (await getLogger()).error(
-				// 	"Error fetching presentations:",
-				// 	{ data: _err }
-				// );
+				logger.error("Error fetching presentations:", _err);
 				setError("Failed to load presentations");
 			} finally {
 				setIsLoading(false);

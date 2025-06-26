@@ -27,6 +27,22 @@ import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { fetchUsageDataAction } from "../_actions/fetch-usage-data";
 import type { UsageStats } from "../_lib/types";
 
+// Client-safe logger wrapper with environment gating
+const logger = {
+	info: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging for usage dashboard
+			console.info(...args);
+		}
+	},
+	error: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging for usage dashboard
+			console.error(...args);
+		}
+	},
+};
+
 interface UsageDashboardProps {
 	initialData: UsageStats;
 }
@@ -47,26 +63,22 @@ export function UsageDashboard({ initialData }: UsageDashboardProps) {
 
 			if (result.success && result.data) {
 				setCurrentData(result.data);
-				// TODO: Async logger needed
-				// (await getLogger()).info(
-				// 	"Fetched real usage data:",
-				// 	{ data: result.data }
-				// );
+				logger.info("Fetched usage data successfully", {
+					timeRange: selectedTimeRange,
+					totalCost: result.data.totalCost,
+					totalTokens: result.data.totalTokens,
+				});
 			} else {
-				// TODO: Async logger needed
-				// TODO: Async logger needed
-				// (await getLogger()).error(
-				// 	"Failed to fetch usage data:",
-				// 	{ data: result.error }
-				// );
+				logger.error("Failed to fetch usage data", {
+					timeRange: selectedTimeRange,
+					error: result.error,
+				});
 			}
-		} catch (_error) {
-			// TODO: Async logger needed
-			// TODO: Async logger needed
-			// (await getLogger()).error(
-			// 	"Error fetching usage data:",
-			// 	{ data: error }
-			// );
+		} catch (error) {
+			logger.error("Error fetching usage data", {
+				timeRange: selectedTimeRange,
+				error,
+			});
 		} finally {
 			setIsLoading(false);
 		}

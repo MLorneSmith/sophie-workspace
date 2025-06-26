@@ -1,4 +1,5 @@
 import { getSurvey, getSurveyQuestions } from "@kit/payload";
+import { createServiceLogger } from "@kit/shared/logger";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
 import { Card } from "@kit/ui/card";
 import { PageBody } from "@kit/ui/page";
@@ -11,6 +12,8 @@ import { withI18n } from "~/lib/i18n/with-i18n";
 import { HomeLayoutPageHeader } from "../../_components/home-page-header";
 // Import from the current directory
 import { SurveyContainer } from "./_components/survey-container";
+
+const { getLogger } = createServiceLogger("ASSESSMENT-SURVEY");
 
 export const generateMetadata = async () => {
 	const i18n = await createI18nServerInstance();
@@ -84,6 +87,9 @@ async function SurveyPage() {
 		[key: string]: unknown;
 	};
 
+	// Get logger instance outside the map
+	const logger = await getLogger();
+
 	// Transform and sort questions
 	const transformedQuestions = questions.map((question: SurveyQuestion) => {
 		// For multiple_choice questions, add default options if none exist
@@ -91,10 +97,9 @@ async function SurveyPage() {
 			question.type === "multiple_choice" &&
 			(!question.options || question.options.length === 0)
 		) {
-			// TODO: Async logger needed
-			// (await getLogger()).info(
-			// `Adding default options for question: ${question.id}`,
-			// );
+			logger.info("Adding default options for question", {
+				questionId: question.id,
+			});
 
 			// Default options for Likert scale
 			const defaultOptions = [

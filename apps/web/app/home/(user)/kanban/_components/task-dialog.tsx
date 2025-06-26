@@ -43,6 +43,16 @@ import {
 	TaskStatusEnum,
 } from "../_lib/schema/task.schema";
 
+// Client-safe logger wrapper
+const logger = {
+	error: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.error(...args);
+		}
+	},
+};
+
 interface TaskDialogProps {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
@@ -83,8 +93,7 @@ export function TaskDialog({ open, onOpenChange, task }: TaskDialogProps) {
 				setImagePreview(null);
 				onOpenChange(false);
 			} catch (_error) {
-				// TODO: Async logger needed
-				// TODO: Fix logger call - was: error
+				logger.error("Failed to save task:", _error);
 			}
 		},
 		[createTask, updateTask, task, form, onOpenChange],

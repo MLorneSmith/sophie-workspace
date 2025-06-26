@@ -3,8 +3,11 @@
 import { randomUUID } from "node:crypto";
 
 import { enhanceAction } from "@kit/next/actions";
+import { createServiceLogger } from "@kit/shared/logger";
 import { getSupabaseServerAdminClient } from "@kit/supabase/server-admin-client";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
+
+const { getLogger } = createServiceLogger("KANBAN-IMAGE-ACTIONS");
 
 // Define a type for the createPolicy method
 interface StoragePolicy {
@@ -119,10 +122,12 @@ export const uploadTaskImageAction = enhanceAction(
 				},
 			};
 		} catch (error) {
-			// TODO: Async logger needed
-			// (await getLogger()).error("Error uploading image:", {
-			// 	data: error,
-			// });
+			const logger = await getLogger();
+			logger.error("Error uploading image", {
+				operation: "uploadTaskImage",
+				error,
+				userId: user.id,
+			});
 			return {
 				success: false,
 				error:
@@ -159,10 +164,12 @@ export const deleteTaskImageAction = enhanceAction(
 				error: null,
 			};
 		} catch (error) {
-			// TODO: Async logger needed
-			// (await getLogger()).error("Error deleting image:", {
-			// 	data: error,
-			// });
+			const logger = await getLogger();
+			logger.error("Error deleting image", {
+				operation: "deleteTaskImage",
+				error,
+				userId: user.id,
+			});
 			return {
 				success: false,
 				error:
