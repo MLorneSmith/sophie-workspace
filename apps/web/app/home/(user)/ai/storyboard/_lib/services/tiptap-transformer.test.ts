@@ -19,10 +19,13 @@ describe("TipTapTransformer", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
 		console.error = vi.fn();
+		// Set to development to enable console logging in the implementation
+		vi.stubEnv("NODE_ENV", "development");
 	});
 
 	afterEach(() => {
 		console.error = originalConsoleError;
+		vi.unstubAllEnvs();
 	});
 
 	describe("transform", () => {
