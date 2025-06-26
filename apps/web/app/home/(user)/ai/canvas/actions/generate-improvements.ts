@@ -14,8 +14,11 @@ import { presentationContext } from "@kit/ai-gateway/src/prompts/partials/presen
 import { sectionAnalysis } from "@kit/ai-gateway/src/prompts/partials/section-analysis";
 import { parseImprovements } from "@kit/ai-gateway/src/utils/parse-improvements";
 import { enhanceAction } from "@kit/next/actions";
+import { createServiceLogger } from "@kit/shared/logger";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
 import { z } from "zod";
+
+const { getLogger } = createServiceLogger("AI-IMPROVEMENTS-GENERATOR");
 
 // Define Zod schema for request validation
 const ImprovementsSchema = z.object({
@@ -44,14 +47,14 @@ export const generateImprovementsAction = enhanceAction(
 				throw new Error("Failed to fetch submission data");
 			}
 
-			// Debug log the request
-			// TODO: Async logger needed
-			// (await getLogger()).info("Improvements Request:", {
-			// 	contentLength: data.content.length,
-			// 	userId: user.id,
-			// 	submissionId: data.submissionId,
-			// 	type: data.type,
-			// });
+			const logger = await getLogger();
+			logger.info("Processing improvements request", {
+				operation: "generate_improvements",
+				contentLength: data.content.length,
+				userId: user.id,
+				submissionId: data.submissionId,
+				type: data.type,
+			});
 
 			// Create and normalize config
 			const config = createBalancedOptimizedConfig({
@@ -101,33 +104,31 @@ ${improvementFormat}`,
 			// Calculate duration for monitoring
 			const _duration = performance.now() - startTime;
 
-			// Log metrics
-			// TODO: Async logger needed
-			// (await getLogger()).info("AI Request Metrics:", {
-			// 	duration,
-			// 	userId: user.id,
-			// 	status: "success",
-			// });
-
 			// Parse the response using our utility
 			const improvements = parseImprovements(response.content, data.type);
 
-			// Debug log the parsed improvements
-			// TODO: Async logger needed
-			// (await getLogger()).info("Parsed Improvements:", {
-			// 	data: improvements,
-			// });
+			logger.info("Improvements generated successfully", {
+				operation: "generate_improvements",
+				duration: _duration,
+				userId: user.id,
+				submissionId: data.submissionId,
+				type: data.type,
+				improvementsCount: improvements.length,
+			});
 
 			return {
 				success: true,
 				data: { improvements },
 			};
 		} catch (error) {
-			// TODO: Async logger needed
-			// (await getLogger()).error(
-			// 	"Error in improvements action:",
-			// 	{ data: error }
-			// );
+			const logger = await getLogger();
+			logger.error("Error generating improvements", {
+				operation: "generate_improvements",
+				userId: user.id,
+				submissionId: data.submissionId,
+				type: data.type,
+				error,
+			});
 
 			return {
 				success: false,

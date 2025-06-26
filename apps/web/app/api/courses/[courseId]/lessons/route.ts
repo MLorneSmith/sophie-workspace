@@ -1,6 +1,9 @@
 import { getCourseLessons } from "@kit/cms/payload";
 import { enhanceRouteHandler } from "@kit/next/routes";
+import { createServiceLogger } from "@kit/shared/logger";
 import { NextResponse } from "next/server";
+
+const { getLogger } = createServiceLogger("COURSE-LESSONS-API");
 
 export const GET = enhanceRouteHandler(
 	async ({ params, user: _user }) => {
@@ -12,36 +15,36 @@ export const GET = enhanceRouteHandler(
 		}
 
 		try {
-			// TODO: Async logger needed
-			// (await getLogger()).info(
-			// `API - Fetching lessons for course ID: ${params.courseId}`,
-			// );
+			const logger = await getLogger();
+			logger.info("Fetching lessons for course", {
+				operation: "fetch_course_lessons",
+				courseId: params.courseId,
+			});
+
 			const lessons = await getCourseLessons(params.courseId);
 
-			// Debug lessons data
-			// TODO: Async logger needed
-			// (await getLogger()).info("API - Lessons data:", {
-			// 	count: lessons.docs?.length || 0,
-			// 	sampleLesson: lessons.docs?.[0]
-			// 		? {
-			// 			id: lessons.docs[0].id,
-			// 			title: lessons.docs[0].title,
-			// 			lesson_number: lessons.docs[0].lesson_number,
-			// 			quiz_id: lessons.docs[0].quiz_id,
-			// 		}
-			// 		: null,
-			// });
-
-			// Log detailed structure of the first lesson to understand relationship structure
-			// TODO: Async logger needed - removed unused sampleLesson code
+			logger.info("Course lessons fetched successfully", {
+				operation: "fetch_course_lessons",
+				courseId: params.courseId,
+				count: lessons.docs?.length || 0,
+				sampleLesson: lessons.docs?.[0]
+					? {
+							id: lessons.docs[0].id,
+							title: lessons.docs[0].title,
+							lesson_number: lessons.docs[0].lesson_number,
+							quiz_id: lessons.docs[0].quiz_id,
+						}
+					: null,
+			});
 
 			return NextResponse.json(lessons);
-		} catch (_error) {
-			// TODO: Async logger needed
-			// (await getLogger()).error(
-			// 	"Error fetching course lessons:",
-			// 	{ data: error }
-			// );
+		} catch (error) {
+			const logger = await getLogger();
+			logger.error("Error fetching course lessons", {
+				operation: "fetch_course_lessons",
+				courseId: params.courseId,
+				error,
+			});
 			return NextResponse.json(
 				{ error: "Failed to fetch course lessons" },
 				{ status: 500 },

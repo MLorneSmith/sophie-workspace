@@ -1,10 +1,13 @@
 "use server";
 
+import { createServiceLogger } from "@kit/shared/logger";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
 
 import type { Database } from "~/lib/database.types";
 
 import { createTiptapFromText } from "./tiptap-format-utils";
+
+const { getLogger } = createServiceLogger("BUILDING-BLOCKS-SUBMIT");
 
 export type SubmitFormData = {
 	title: string;
@@ -18,6 +21,7 @@ export type SubmitFormData = {
 
 export async function submitBuildingBlocksAction(data: SubmitFormData) {
 	const client = getSupabaseServerClient<Database>();
+	const logger = await getLogger();
 
 	try {
 		const {
@@ -66,23 +70,30 @@ export async function submitBuildingBlocksAction(data: SubmitFormData) {
 			.single();
 
 		if (error) {
-			// TODO: Async logger needed
-			// TODO: Async logger needed
-			// (await getLogger()).error(
-			// 	"Error submitting building blocks:",
-			// 	{ data: error }
-			// );
+			logger.error("Error submitting building blocks:", {
+				error,
+				userId: user.id,
+				operation: "insert_building_blocks",
+				data: {
+					title: data.title,
+					presentation_type: data.presentation_type,
+					question_type: data.question_type,
+				},
+			});
 			throw new Error("Failed to submit building blocks");
 		}
 
 		return { success: true, submissionId: result.id };
-	} catch (_error) {
-		// TODO: Async logger needed
-		// TODO: Async logger needed
-		// (await getLogger()).error(
-		// 	"Error in submitBuildingBlocksAction:",
-		// 	{ data: _error }
-		// );
+	} catch (error) {
+		logger.error("Error in submitBuildingBlocksAction:", {
+			error,
+			operation: "submit_building_blocks",
+			data: {
+				title: data.title,
+				presentation_type: data.presentation_type,
+				question_type: data.question_type,
+			},
+		});
 		throw new Error("Failed to submit building blocks");
 	}
 }
