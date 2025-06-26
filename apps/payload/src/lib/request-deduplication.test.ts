@@ -622,6 +622,7 @@ describe("RequestDeduplicationManager", () => {
 			globalThis.__request_deduplication_manager = undefined;
 
 			// For deduplication to work, we need same hash for identical requests
+			mockDigest.mockReset();
 			mockDigest.mockReturnValue("stats-test-hash-same");
 
 			const manager = getDeduplicationManager();
@@ -662,6 +663,7 @@ describe("RequestDeduplicationManager", () => {
 			globalThis.__request_deduplication_manager = undefined;
 
 			// For deduplication to work, we need same hash for identical requests
+			mockDigest.mockReset();
 			mockDigest.mockReturnValue("duplicate-test-hash-same");
 
 			const manager = getDeduplicationManager();
@@ -832,6 +834,7 @@ describe("RequestDeduplicationManager", () => {
 			globalThis.__request_deduplication_manager = undefined;
 
 			// For deduplication to work, we need same hash for identical requests
+			mockDigest.mockReset();
 			mockDigest.mockReturnValue("lifecycle-test-hash-same");
 
 			const manager = getDeduplicationManager();
