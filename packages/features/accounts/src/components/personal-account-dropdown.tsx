@@ -91,7 +91,7 @@ export function PersonalAccountDropdown({
 					className ?? "",
 					{
 						["active:bg-secondary/50 items-center gap-4 rounded-md" +
-							" hover:bg-secondary p-2 transition-colors border border-dashed"]:
+							" hover:bg-secondary border border-dashed p-2 transition-colors"]:
 							showProfileName,
 					},
 				)}
