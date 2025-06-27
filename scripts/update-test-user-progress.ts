@@ -12,6 +12,10 @@
 import { createServiceLogger } from "@kit/shared/logger";
 import { createClient } from "@supabase/supabase-js";
 import fetch from "node-fetch";
+import { loadTestEnv } from "./load-test-env";
+
+// Load test environment variables
+loadTestEnv();
 
 // Initialize service logger
 const { getLogger } = createServiceLogger("UPDATE_TEST_USER_PROGRESS");
@@ -67,15 +71,15 @@ interface ProgressData {
 async function runScript() {
 	const logger = await getLogger();
 
-	// Hardcoded Supabase credentials
-	// In a production environment, these should be loaded from environment variables
-	const supabaseUrl = "http://127.0.0.1:54321";
-	const supabaseKey =
-		"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU";
+	// Load credentials from environment variables
+	const supabaseUrl = process.env.TEST_SUPABASE_URL;
+	const supabaseKey = process.env.TEST_SUPABASE_SERVICE_ROLE_KEY;
+	const payloadUrl = process.env.TEST_PAYLOAD_URL || "http://localhost:3020";
 
-	// Payload CMS URL
-	const payloadUrl =
-		process.env.PAYLOAD_PUBLIC_SERVER_URL || "http://localhost:3020";
+	// Validate that credentials are loaded
+	if (!supabaseUrl || !supabaseKey) {
+		throw new Error("Missing required test environment variables");
+	}
 
 	logger.info(`Supabase URL: ${supabaseUrl}`);
 	logger.info(`Supabase Key: ${supabaseKey ? "********" : "undefined"}`);
@@ -86,7 +90,8 @@ async function runScript() {
 
 	// Course ID for "Decks for Decision Makers"
 	const COURSE_ID = "3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8";
-	const TEST_USER_EMAIL = "test2@slideheroes.com";
+	const TEST_USER_EMAIL =
+		process.env.TEST_USER_EMAIL || "test2@slideheroes.com";
 	// Only exclude the congratulations and final lessons, not 702 which is required for completion
 	const EXCLUDED_LESSONS = ["801", "802"];
 

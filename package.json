@@ -55,6 +55,7 @@
 		"a11y:test": "turbo a11y:test",
 		"a11y:report": "turbo a11y:report",
 		"audit": "snyk test --all-projects --severity-threshold=high",
+		"audit:code": "snyk code test",
 		"audit:fix": "snyk wizard",
 		"audit:monitor": "snyk monitor --all-projects",
 		"audit:auth": "snyk auth",
