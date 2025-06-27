@@ -122,7 +122,6 @@ function setViaDOMCookie(
 
 	// Intentional direct cookie assignment for compatibility - exempt from linting rule
 	// Cookie Store API is not available in all browsers, so we use the traditional approach
-	// biome-ignore lint/suspicious/noDocumentCookie: Required for browser compatibility
 	// deepcode ignore CookieWithoutSecureFlag/CookieWithoutSecureFlag: Secure flag is conditionally set based on environment and protocol (see line 115)
 	// nosec
 	document.cookie = parts.join("; ");

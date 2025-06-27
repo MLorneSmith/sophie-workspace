@@ -104,7 +104,11 @@
 			}
 		},
 		{
-			"includes": ["**/.claude/scripts/**/*.js", "**/scripts/**/*.js", "**/scripts/**/*.ts"],
+			"includes": [
+				"**/.claude/scripts/**/*.js",
+				"**/scripts/**/*.js",
+				"**/scripts/**/*.ts"
+			],
 			"linter": {
 				"rules": {
 					"suspicious": {
@@ -116,6 +120,16 @@
 					},
 					"correctness": {
 						"noUnusedVariables": "off"
+					}
+				}
+			}
+		},
+		{
+			"includes": ["**/cookie.ts"],
+			"linter": {
+				"rules": {
+					"suspicious": {
+						"noDocumentCookie": "off"
 					}
 				}
 			}
