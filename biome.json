@@ -104,7 +104,7 @@
 			}
 		},
 		{
-			"includes": ["**/.claude/scripts/**/*.js", "**/scripts/**/*.js"],
+			"includes": ["**/.claude/scripts/**/*.js", "**/scripts/**/*.js", "**/scripts/**/*.ts"],
 			"linter": {
 				"rules": {
 					"suspicious": {
