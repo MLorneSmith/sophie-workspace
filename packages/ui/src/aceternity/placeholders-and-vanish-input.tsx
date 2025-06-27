@@ -270,6 +270,7 @@ export function PlaceholdersAndVanishInput({
 					variant="default"
 					size="icon"
 					className="group absolute top-1/2 right-2 z-50 h-8 w-8 -translate-y-1/2 !bg-[#24a9e0] hover:!bg-[#24a9e0]/90 dark:!bg-[#24a9e0] dark:hover:!bg-[#24a9e0]/90"
+					aria-label="Submit presentation name"
 				>
 					<ArrowRightIcon className="h-4 w-4 text-white transition-transform duration-500 group-hover:translate-x-1" />
 				</Button>
