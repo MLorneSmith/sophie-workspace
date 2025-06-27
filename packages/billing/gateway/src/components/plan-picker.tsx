@@ -329,7 +329,7 @@ export function PlanPicker(
 																</Price>
 
 																<div>
-																	<span className={"text-muted-foreground"}>
+																	<span className={"text-foreground/70"}>
 																		<If
 																			condition={
 																				plan.paymentType === "recurring"

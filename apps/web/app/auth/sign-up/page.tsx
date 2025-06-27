@@ -42,7 +42,7 @@ async function SignUpPage({ searchParams }: Props) {
 					<Trans i18nKey={"auth:signUpHeading"} />
 				</Heading>
 
-				<p className={"text-muted-foreground text-sm"}>
+				<p className={"text-foreground text-sm"}>
 					<Trans i18nKey={"auth:signUpSubheading"} />
 				</p>
 			</div>
