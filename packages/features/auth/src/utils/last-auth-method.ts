@@ -3,6 +3,7 @@
 import { isBrowser } from "@kit/shared/utils";
 
 // Key for localStorage
+// deepcode ignore HardcodedNonCryptoSecret: This is a localStorage key name, not a secret value
 const LAST_AUTH_METHOD_KEY = "auth_last_method";
 
 // Types of authentication methods
