@@ -378,7 +378,7 @@ function Price({
 			</span>
 
 			<If condition={isMonthlyPrice && displayBillingPeriod}>
-				<span className={"text-muted-foreground text-sm leading-loose"}>
+				<span className={"text-foreground/70 text-sm leading-loose"}>
 					<span>/</span>
 
 					<Trans i18nKey={"billing:perMonth"} />

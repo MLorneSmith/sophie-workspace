@@ -20,7 +20,7 @@ export function AuthProviderButton({
 		>
 			<OauthProviderLogoImage providerId={providerId} />
 
-			<span>{children}</span>
+			<span className="text-foreground">{children}</span>
 		</Button>
 	);
 }
