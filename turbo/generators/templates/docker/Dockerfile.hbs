@@ -17,7 +17,9 @@ COPY . .
 
 # Install dependencies using lockfile
 RUN pnpm install --frozen-lockfile
-RUN npm rebuild lightingcss --build-from-source --verbose
+
+# Install CURL
+RUN apk add --no-cache curl
 
 # Rebuild the source code only when needed
 FROM base AS builder
