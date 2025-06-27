@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 import { AuthPageObject } from "./auth.po";
+import { OnboardingPageObject } from "../onboarding/onboarding.po";
 
 test.describe("Auth flow", () => {
 	test.describe.configure({ mode: "serial" });
@@ -9,6 +10,8 @@ test.describe("Auth flow", () => {
 
 	test("will sign-up and redirect to the home page", async ({ page }) => {
 		const auth = new AuthPageObject(page);
+		const onboarding = new OnboardingPageObject(page);
+
 		await auth.goToSignUp();
 
 		email = auth.createRandomEmail();
@@ -32,7 +35,22 @@ test.describe("Auth flow", () => {
 
 		await auth.visitConfirmEmailLink(email);
 
+		// New users are redirected to onboarding
+		await page.waitForURL("**/onboarding");
+
+		// Complete onboarding
+		await onboarding.completeOnboarding({
+			name: "Test User",
+			primaryGoal: "work",
+			role: "QA Engineer",
+			industry: "Software",
+			secondaryGoals: ["learn", "automate"],
+			theme: "light",
+		});
+
+		// After onboarding, should be on home page
 		await page.waitForURL("**/home");
+		expect(page.url()).toContain("/home");
 	});
 
 	test("will sign-in with the correct credentials", async ({ page }) => {
@@ -64,7 +82,7 @@ test.describe("Auth flow", () => {
 		await page.goto("/home/settings");
 
 		await auth.signIn({
-			email: "test@makerkit.dev",
+			email: "test1@slideheroes.com",
 			password: "testingpassword",
 		});
 
@@ -85,7 +103,7 @@ test.describe("Protected routes", () => {
 		await page.goto("/home/settings");
 
 		await auth.signIn({
-			email: "test@makerkit.dev",
+			email: "test1@slideheroes.com",
 			password: "testingpassword",
 		});
 
@@ -121,6 +139,14 @@ test.describe("Last auth method tracking", () => {
 		});
 
 		await auth.visitConfirmEmailLink(testEmail);
+
+		// New user goes to onboarding
+		await page.waitForURL("**/onboarding");
+
+		// Complete onboarding
+		const onboarding = new OnboardingPageObject(page);
+		await onboarding.completeOnboarding();
+
 		await page.waitForURL("**/home");
 
 		// Sign out

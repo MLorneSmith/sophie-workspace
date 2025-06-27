@@ -7,7 +7,7 @@ import { TeamAccountsPageObject } from "./team-accounts.po";
 const MFA_KEY = "NHOHJVGPO3R3LKVPRMNIYLCDMBHUM2SE";
 
 test.describe("Team Invitation with MFA Flow", () => {
-	test("complete flow: test@makerkit.dev creates team, invites super-admin@makerkit.dev who accepts after MFA", async ({
+	test("complete flow: test1@slideheroes.com creates team, invites michael@slideheroes.com who accepts after MFA", async ({
 		page,
 	}) => {
 		const auth = new AuthPageObject(page);
@@ -17,11 +17,11 @@ test.describe("Team Invitation with MFA Flow", () => {
 		const teamName = `test-team-${Math.random().toString(36).substring(2, 15)}`;
 		const teamSlug = teamName.toLowerCase().replace(/ /g, "-");
 
-		// Step 1: test@makerkit.dev creates a team and sends invitation
+		// Step 1: test1@slideheroes.com creates a team and sends invitation
 		await page.goto("/auth/sign-in");
 
 		await auth.signIn({
-			email: "test@makerkit.dev",
+			email: "test1@slideheroes.com",
 			password: "testingpassword",
 		});
 
@@ -39,7 +39,7 @@ test.describe("Team Invitation with MFA Flow", () => {
 
 		await invitations.inviteMembers([
 			{
-				email: "super-admin@makerkit.dev",
+				email: "michael@slideheroes.com",
 				role: "member",
 			},
 		]);
@@ -47,7 +47,7 @@ test.describe("Team Invitation with MFA Flow", () => {
 		// Verify invitation was sent
 		await expect(invitations.getInvitations()).toHaveCount(1);
 		const invitationRow = invitations.getInvitationRow(
-			"super-admin@makerkit.dev",
+			"michael@slideheroes.com",
 		);
 		await expect(invitationRow).toBeVisible();
 
@@ -55,17 +55,17 @@ test.describe("Team Invitation with MFA Flow", () => {
 		await auth.signOut();
 		await page.waitForURL("/");
 
-		// Step 2: super-admin@makerkit.dev signs in with MFA
+		// Step 2: michael@slideheroes.com signs in with MFA
 		await page.context().clearCookies();
 
-		await auth.visitConfirmEmailLink("super-admin@makerkit.dev");
+		await auth.visitConfirmEmailLink("michael@slideheroes.com");
 		await page
 			.locator('[data-test="existing-account-hint"]')
 			.getByRole("link", { name: "Already have an account?" })
 			.click();
 
 		await auth.signIn({
-			email: "super-admin@makerkit.dev",
+			email: "michael@slideheroes.com",
 			password: "testingpassword",
 		});
 

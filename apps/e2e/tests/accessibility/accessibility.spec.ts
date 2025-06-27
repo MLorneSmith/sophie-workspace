@@ -146,8 +146,10 @@ test.describe("Accessibility Tests - WCAG 2.1 AA", () => {
 	test("Keyboard navigation accessibility", async ({ page }) => {
 		await page.goto("/");
 
+		// Test keyboard navigation rules
 		const accessibilityScanResults = await new AxeBuilder({ page })
-			.withRules(["keyboard", "focus-order-semantics"])
+			.withTags(["wcag2a", "wcag2aa"])
+			.withRules(["accesskeys", "focus-order-semantics", "tabindex", "bypass"])
 			.analyze();
 
 		expect(accessibilityScanResults.violations).toEqual([]);

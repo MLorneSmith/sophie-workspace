@@ -12,7 +12,7 @@ test.describe("Admin Auth flow without MFA", () => {
 		await page.goto("/auth/sign-in");
 
 		await auth.signIn({
-			email: "owner@makerkit.dev",
+			email: "test1@slideheroes.com",
 			password: "testingpassword",
 		});
 
@@ -29,7 +29,7 @@ test.describe("Admin Auth flow without MFA", () => {
 		await page.goto("/auth/sign-in");
 
 		await auth.signIn({
-			email: "test@makerkit.dev",
+			email: "michael@slideheroes.com",
 			password: "testingpassword",
 		});
 
@@ -304,7 +304,7 @@ async function goToAdmin(page: Page) {
 	await page.goto("/auth/sign-in");
 
 	await auth.signIn({
-		email: "super-admin@makerkit.dev",
+		email: "michael@slideheroes.com",
 		password: "testingpassword",
 	});
 

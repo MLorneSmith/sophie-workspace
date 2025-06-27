@@ -46,7 +46,7 @@ if (!enableTeamAccountTests) {
 export default defineConfig({
 	testDir: "./tests",
 	/* Run tests in files in parallel - disabled for local stability */
-	fullyParallel: process.env.CI ? true : false,
+	fullyParallel: !!process.env.CI,
 	/* Fail the build on CI if you accidentally left test.only in the source code. */
 	forbidOnly: !!process.env.CI,
 	retries: process.env.CI ? 3 : 1,
@@ -152,15 +152,27 @@ export default defineConfig({
 			],
 
 	/* Run your local dev server before starting the tests */
-	webServer: {
-		cwd: "../../",
-		command:
-			process.env.PLAYWRIGHT_SERVER_COMMAND ||
-			"pnpm dev --filter=web --filter=payload",
-		url: "http://localhost:3000",
-		reuseExistingServer: !process.env.CI,
-		timeout: 120 * 1000, // 2 minutes for server startup
-		stdout: "pipe",
-		stderr: "pipe",
-	},
+	webServer: [
+		{
+			cwd: "../../",
+			command: process.env.PLAYWRIGHT_WEB_COMMAND || "pnpm --filter=web dev",
+			url: "http://localhost:3000",
+			name: "Frontend",
+			timeout: 60 * 1000, // Reduced timeout for faster startup
+			reuseExistingServer: !process.env.CI,
+			stdout: "pipe",
+			stderr: "pipe",
+		},
+		{
+			cwd: "../../",
+			command:
+				process.env.PLAYWRIGHT_PAYLOAD_COMMAND || "pnpm --filter=payload dev",
+			url: "http://localhost:3020",
+			name: "Backend",
+			timeout: 60 * 1000, // Reduced timeout for faster startup
+			reuseExistingServer: !process.env.CI,
+			stdout: "pipe",
+			stderr: "pipe",
+		},
+	],
 });
