@@ -28,7 +28,7 @@
 		"typecheck": "turbo typecheck --affected --cache-dir=.turbo",
 		"test": "turbo test --cache-dir=.turbo --filter=!web-e2e",
 		"test:unit": "turbo test --cache-dir=.turbo --filter=!web-e2e",
-		"test:e2e": "turbo dev --parallel & sleep 10 && turbo test --filter=web-e2e",
+		"test:e2e": "turbo test --filter=web-e2e",
 		"update": "pnpm update -r",
 		"syncpack:list": "pnpm dlx syncpack list-mismatches",
 		"syncpack:fix": "pnpm dlx syncpack fix-mismatches",

@@ -142,14 +142,15 @@ export default defineConfig({
 	],
 
 	/* Run your local dev server before starting the tests */
-	webServer: process.env.PLAYWRIGHT_SERVER_COMMAND
-		? {
-				cwd: "../../",
-				command: process.env.PLAYWRIGHT_SERVER_COMMAND,
-				url: "http://localhost:3000",
-				reuseExistingServer: !process.env.CI,
-				stdout: "pipe",
-				stderr: "pipe",
-			}
-		: undefined,
+	webServer: {
+		cwd: "../../",
+		command:
+			process.env.PLAYWRIGHT_SERVER_COMMAND ||
+			"pnpm dev --filter=web --filter=payload",
+		url: "http://localhost:3000",
+		reuseExistingServer: !process.env.CI,
+		timeout: 120 * 1000, // 2 minutes for server startup
+		stdout: "pipe",
+		stderr: "pipe",
+	},
 });
