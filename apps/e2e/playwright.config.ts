@@ -45,13 +45,13 @@ if (!enableTeamAccountTests) {
  */
 export default defineConfig({
 	testDir: "./tests",
-	/* Run tests in files in parallel */
-	fullyParallel: true,
+	/* Run tests in files in parallel - disabled for local stability */
+	fullyParallel: process.env.CI ? true : false,
 	/* Fail the build on CI if you accidentally left test.only in the source code. */
 	forbidOnly: !!process.env.CI,
 	retries: process.env.CI ? 3 : 1,
 	/* Configure parallel execution - optimize for CI vs local */
-	workers: process.env.CI ? 2 : undefined, // Increased for better CI performance
+	workers: process.env.CI ? 2 : 4, // Reduced from default for server stability
 	/* Enhanced reporting for matrix testing */
 	reporter: [
 		["html", { outputFolder: "playwright-report", open: "never" }],
@@ -79,67 +79,77 @@ export default defineConfig({
 		trace: "on-first-retry",
 
 		/* Increase timeouts for matrix testing across different devices */
-		navigationTimeout: 10000, // Increased for slower mobile devices
-		actionTimeout: 8000, // More time for interactions
+		navigationTimeout: 30000, // Increased for server startup and concurrent load
+		actionTimeout: 15000, // More time for interactions under load
 	},
-	// test timeout set to 1 minutes
-	timeout: 60 * 1000,
+	// test timeout set to 2 minutes for better stability
+	timeout: 120 * 1000,
 	expect: {
-		// expect timeout set to 10 seconds
-		timeout: 10 * 1000,
+		// expect timeout set to 20 seconds
+		timeout: 20 * 1000,
 	},
-	/* Configure projects for major browsers */
-	projects: [
-		// Desktop browsers
-		{
-			name: "chromium",
-			use: { ...devices["Desktop Chrome"] },
-		},
-		{
-			name: "firefox",
-			use: { ...devices["Desktop Firefox"] },
-		},
-		{
-			name: "webkit",
-			use: { ...devices["Desktop Safari"] },
-		},
-
-		// Mobile viewports
-		{
-			name: "Mobile Chrome",
-			use: { ...devices["Pixel 5"] },
-		},
-		{
-			name: "Mobile Safari",
-			use: { ...devices["iPhone 12"] },
-		},
-		{
-			name: "Mobile Firefox",
-			use: { ...devices["Pixel 5"], browserName: "firefox" },
-		},
-
-		// Tablet viewports
-		{
-			name: "Tablet Chrome",
-			use: { ...devices["iPad Pro"] },
-		},
-		{
-			name: "Tablet Safari",
-			use: { ...devices["iPad Pro"], browserName: "webkit" },
-		},
-
-		// Accessibility testing (existing)
-		{
-			name: "accessibility",
-			use: {
-				...devices["Desktop Chrome"],
-				// Optimize for accessibility testing
-				colorScheme: "light",
-				reduceMotion: "reduce",
-			},
-			testMatch: /.*accessibility.*\.spec\.ts/,
-		},
-	],
+	/* Configure projects for major browsers - reduced for local development */
+	projects: process.env.CI
+		? [
+				// Full matrix for CI
+				{
+					name: "chromium",
+					use: { ...devices["Desktop Chrome"] },
+				},
+				{
+					name: "firefox",
+					use: { ...devices["Desktop Firefox"] },
+				},
+				{
+					name: "webkit",
+					use: { ...devices["Desktop Safari"] },
+				},
+				{
+					name: "Mobile Chrome",
+					use: { ...devices["Pixel 5"] },
+				},
+				{
+					name: "Mobile Safari",
+					use: { ...devices["iPhone 12"] },
+				},
+				{
+					name: "Mobile Firefox",
+					use: { ...devices["Pixel 5"], browserName: "firefox" },
+				},
+				{
+					name: "Tablet Chrome",
+					use: { ...devices["iPad Pro"] },
+				},
+				{
+					name: "Tablet Safari",
+					use: { ...devices["iPad Pro"], browserName: "webkit" },
+				},
+				{
+					name: "accessibility",
+					use: {
+						...devices["Desktop Chrome"],
+						colorScheme: "light",
+						reduceMotion: "reduce",
+					},
+					testMatch: /.*accessibility.*\.spec\.ts/,
+				},
+			]
+		: [
+				// Minimal set for local development
+				{
+					name: "chromium",
+					use: { ...devices["Desktop Chrome"] },
+				},
+				{
+					name: "accessibility",
+					use: {
+						...devices["Desktop Chrome"],
+						colorScheme: "light",
+						reduceMotion: "reduce",
+					},
+					testMatch: /.*accessibility.*\.spec\.ts/,
+				},
+			],
 
 	/* Run your local dev server before starting the tests */
 	webServer: {

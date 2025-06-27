@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { AccessibilityPO } from "./accessibility.po";
-import { AuthPO } from "../authentication/auth.po";
+import { AuthPageObject } from "../authentication/auth.po";
 
 /**
  * Authenticated Accessibility Tests
@@ -10,15 +10,15 @@ import { AuthPO } from "../authentication/auth.po";
  */
 
 test.describe("Authenticated Accessibility Tests - WCAG 2.1 AA", () => {
-	let authPO: AuthPO;
+	let authPO: AuthPageObject;
 	let accessibilityPO: AccessibilityPO;
 
 	test.beforeEach(async ({ page }) => {
-		authPO = new AuthPO(page);
+		authPO = new AuthPageObject(page);
 		accessibilityPO = new AccessibilityPO(page);
 
 		// Set up auth if needed
-		await authPO.visitSignInPage();
+		await authPO.goToSignIn();
 		// Note: You may need to adjust this based on your existing auth setup
 		// This is a placeholder that assumes auth helpers exist
 	});
@@ -39,7 +39,7 @@ test.describe("Authenticated Accessibility Tests - WCAG 2.1 AA", () => {
 			if (!email || !password) {
 				throw new Error("Test user credentials not configured");
 			}
-			await authPO.signInWithEmailAndPassword(email, password);
+			await authPO.signIn({ email, password });
 
 			await accessibilityPO.navigateAndWait("/home");
 
@@ -70,7 +70,7 @@ test.describe("Authenticated Accessibility Tests - WCAG 2.1 AA", () => {
 			if (!email || !password) {
 				throw new Error("Test user credentials not configured");
 			}
-			await authPO.signInWithEmailAndPassword(email, password);
+			await authPO.signIn({ email, password });
 
 			await accessibilityPO.navigateAndWait("/home/ai/canvas");
 
@@ -101,7 +101,7 @@ test.describe("Authenticated Accessibility Tests - WCAG 2.1 AA", () => {
 			if (!email || !password) {
 				throw new Error("Test user credentials not configured");
 			}
-			await authPO.signInWithEmailAndPassword(email, password);
+			await authPO.signIn({ email, password });
 
 			await accessibilityPO.navigateAndWait("/home/ai/storyboard");
 
@@ -132,7 +132,7 @@ test.describe("Authenticated Accessibility Tests - WCAG 2.1 AA", () => {
 			if (!email || !password) {
 				throw new Error("Test user credentials not configured");
 			}
-			await authPO.signInWithEmailAndPassword(email, password);
+			await authPO.signIn({ email, password });
 
 			await accessibilityPO.navigateAndWait("/home/course");
 
@@ -163,7 +163,7 @@ test.describe("Authenticated Accessibility Tests - WCAG 2.1 AA", () => {
 			if (!email || !password) {
 				throw new Error("Test user credentials not configured");
 			}
-			await authPO.signInWithEmailAndPassword(email, password);
+			await authPO.signIn({ email, password });
 
 			await accessibilityPO.navigateAndWait("/home/account");
 
@@ -194,7 +194,7 @@ test.describe("Authenticated Accessibility Tests - WCAG 2.1 AA", () => {
 			if (!email || !password) {
 				throw new Error("Test user credentials not configured");
 			}
-			await authPO.signInWithEmailAndPassword(email, password);
+			await authPO.signIn({ email, password });
 
 			await accessibilityPO.navigateAndWait("/home/kanban");
 
