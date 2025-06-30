@@ -76,7 +76,10 @@ export class AuthPageObject {
 			const res = await this.mailbox.visitMailbox(email, params);
 
 			expect(res).not.toBeNull();
-		}).toPass();
+		}).toPass({
+			timeout: 30000, // Increase timeout to 30 seconds
+			intervals: [1000, 2000, 5000], // Retry intervals
+		});
 	}
 
 	createRandomEmail() {

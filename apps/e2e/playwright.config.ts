@@ -50,8 +50,10 @@ export default defineConfig({
 	/* Fail the build on CI if you accidentally left test.only in the source code. */
 	forbidOnly: !!process.env.CI,
 	retries: process.env.CI ? 3 : 1,
+	/* Increase max failures for debugging */
+	maxFailures: 20,
 	/* Configure parallel execution - optimize for CI vs local */
-	workers: process.env.CI ? 2 : 4, // Reduced from default for server stability
+	workers: process.env.CI ? 2 : 2, // Reduced to 2 for better stability
 	/* Enhanced reporting for matrix testing */
 	reporter: [
 		["html", { outputFolder: "playwright-report", open: "never" }],
@@ -85,8 +87,8 @@ export default defineConfig({
 	// test timeout set to 2 minutes for better stability
 	timeout: 120 * 1000,
 	expect: {
-		// expect timeout set to 20 seconds
-		timeout: 20 * 1000,
+		// expect timeout set to 30 seconds for email confirmation
+		timeout: 30 * 1000,
 	},
 	/* Configure projects for major browsers - reduced for local development */
 	projects: process.env.CI
