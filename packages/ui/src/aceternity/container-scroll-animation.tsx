@@ -109,9 +109,9 @@ export const Card = ({ rotate, scale, translate, children }: CardProps) => (
 				className={cn(
 					"mx-auto -mt-12 max-w-5xl",
 					"h-[30rem] w-full md:h-[40rem]",
-					"border-4 border-[#6C6C6C]",
+					"border-4 border-border",
 					"p-2 md:p-6",
-					"rounded-[30px] bg-[#222222]",
+					"rounded-[30px] bg-card dark:bg-card",
 					"relative",
 				)}
 				style={{
@@ -126,7 +126,7 @@ export const Card = ({ rotate, scale, translate, children }: CardProps) => (
 					className={cn(
 						"h-full w-full",
 						"overflow-hidden rounded-2xl",
-						"bg-gray-100 dark:bg-zinc-900",
+						"bg-background dark:bg-background",
 						"md:rounded-2xl md:p-4",
 					)}
 					style={{
