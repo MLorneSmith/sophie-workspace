@@ -12,7 +12,7 @@ Steps:
    - Dependency updates mixed with application code
 3. If multiple logical changes detected:
    - List each distinct logical change
-   - Suggest breaking into smaller commits
+   - Suggest breaking into smalle/clear commits
    - Ask user for confirmation to proceed with multiple commits
    - If confirmed, create separate commits for each logical change
 4. If single logical change or user prefers single commit:

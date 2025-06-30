@@ -71,7 +71,8 @@
 			"mcp__exa__exa_search",
 			"mcp__github__add_issue_comment",
 			"Bash(gh issue view:*)",
-			"Bash(pnpm supabase:web:status:*)"
+			"Bash(pnpm supabase:web:status:*)",
+			"Bash(pnpm format:*)"
 		],
 		"deny": []
 	},
