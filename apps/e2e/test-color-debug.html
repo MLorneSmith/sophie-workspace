@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        /* Simulating the CSS variable setup */
+        :root {
+            --foreground: #262626;
+            --primary: #262626;
+            --muted-foreground: #525252;
+            --background: hsl(0 0% 100%);
+        }
+        
+        /* Tailwind v4 style mapping */
+        @theme inline {
+            --color-foreground: #262626;
+            --color-primary: #262626;
+            --color-muted-foreground: #525252;
+        }
+        
+        /* Tailwind v4 generated classes */
+        .text-foreground {
+            color: var(--foreground);
+        }
+        
+        .text-primary {
+            color: var(--primary);
+        }
+        
+        .text-muted-foreground {
+            color: var(--muted-foreground);
+        }
+        
+        /* Background */
+        body {
+            background: white;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Color Debug Test</h1>
+    
+    <p class="text-foreground">This should be #262626 (dark gray) - text-foreground</p>
+    <p class="text-primary">This should be #262626 (dark gray) - text-primary</p>
+    <p class="text-muted-foreground">This should be #525252 (medium gray) - text-muted-foreground</p>
+    
+    <hr>
+    
+    <p style="color: #262626">Direct #262626 for comparison</p>
+    <p style="color: #525252">Direct #525252 for comparison</p>
+    <p style="color: #828282">The error color #828282 for comparison</p>
+    
+    <script>
+        // Log computed colors
+        const elements = {
+            foreground: document.querySelector('.text-foreground'),
+            primary: document.querySelector('.text-primary'),
+            mutedForeground: document.querySelector('.text-muted-foreground')
+        };
+        
+        console.log('Computed colors:');
+        for (const [name, el] of Object.entries(elements)) {
+            const color = getComputedStyle(el).color;
+            console.log(`${name}: ${color}`);
+            
+            // Add computed color info to the page
+            el.innerHTML += ` (computed: ${color})`;
+        }
+        
+        // Check CSS variables
+        const root = getComputedStyle(document.documentElement);
+        console.log('\nCSS Variables:');
+        console.log('--foreground:', root.getPropertyValue('--foreground'));
+        console.log('--primary:', root.getPropertyValue('--primary'));
+        console.log('--muted-foreground:', root.getPropertyValue('--muted-foreground'));
+    </script>
+</body>
+</html>
