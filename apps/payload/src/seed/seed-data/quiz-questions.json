@@ -1,0 +1,4064 @@
+[
+	{
+		"id": "a2373cbd-107a-47f4-badc-639bef4b558f",
+		"text": "There are many types of relationships that we use graphs to display. What chart type best communicates the 'Part-to-Whole' relationship?",
+		"type": "singleChoice",
+		"options": [
+			"Line Charts",
+			"Scatter Plots",
+			"Maps",
+			"Box Plot",
+			"Bar charts"
+		],
+		"correctOptionIndices": [4],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: Bar charts",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 1,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "79f51898-63d9-4f1b-af2b-3aa20579f2f3",
+		"text": "What chart type best communicates the 'Correlation' relationship?",
+		"type": "singleChoice",
+		"options": [
+			"Line Charts",
+			"Scatter Plots",
+			"Maps",
+			"Box Plot",
+			"Bar Charts"
+		],
+		"correctOptionIndices": [1],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: Scatter Plots",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 2,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "271ffa0b-4b9e-4091-a013-09438db51c10",
+		"text": "What chart type best communicates the 'Time Series' relationship?",
+		"type": "singleChoice",
+		"options": [
+			"Line Charts",
+			"Scatter Plots",
+			"Maps",
+			"Box Plot",
+			"Bar Charts"
+		],
+		"correctOptionIndices": [0],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: Line Charts",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 3,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "1d52a304-4741-4ee0-bc25-79cd8e96f392",
+		"text": "What chart types best communicates the 'Deviation' relationship?",
+		"type": "multipleChoice",
+		"options": [
+			"Line Charts",
+			"Scatter Plots",
+			"Maps",
+			"Box Plot",
+			"Bar Charts"
+		],
+		"correctOptionIndices": [0, 4],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answers are: Line Charts, Bar Charts",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 4,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "53fb63c5-a327-4ba8-b49c-f86b336b3219",
+		"text": "What chart type best communicates the 'Distribution' relationship?",
+		"type": "singleChoice",
+		"options": [
+			"Line Charts",
+			"Scatter Plots",
+			"Maps",
+			"Box Plot",
+			"Bar Charts"
+		],
+		"correctOptionIndices": [3],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: Box Plot",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 5,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "9ce5128b-f52d-4793-a1d3-ab7297704396",
+		"text": "What chart type best communicates the 'Nominal Comparison' relationship",
+		"type": "singleChoice",
+		"options": ["Line Chart", "Scatter Plot", "Map", "Box Plot", "Bar Chart"],
+		"correctOptionIndices": [4],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: Bar Chart",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 6,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "b64c923f-74cb-485e-b855-619bc8806436",
+		"text": "What chart type best communicates the 'Geospatial' relationship?",
+		"type": "singleChoice",
+		"options": ["Line Chart", "Scatter Plot", "Map", "Box Plot", "Bar Chart"],
+		"correctOptionIndices": [2],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: Map",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 7,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "4340042e-6c22-4e60-bf7c-7e80a57c0875",
+		"text": "When should we use Pie Charts?",
+		"type": "singleChoice",
+		"options": [
+			"For part-to-whole relationships.",
+			"For time series relationships",
+			"For nominal comparison relationships",
+			"Never."
+		],
+		"correctOptionIndices": [3],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: Never.",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 8,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "0d644b0d-2bee-4e03-934a-a0478cfd5378",
+		"text": "Why do we use contrast?",
+		"type": "singleChoice",
+		"options": [
+			"To make our computer monitor easier to read",
+			"To fill up space",
+			"Our eyes like it. It looks good"
+		],
+		"correctOptionIndices": [2],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: Our eyes like it. It looks good",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 1,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "ceb13c6e-bcff-42c2-9846-fa11dbc873e7",
+		"text": "How important is alignment?",
+		"type": "singleChoice",
+		"options": [
+			"Critically important (make sure you have learned how to use PowerPoint's alignment tools)"
+		],
+		"correctOptionIndices": [0],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: Critically important (make sure you have learned how to use PowerPoint's alignment tools)",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 2,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "e17e4ea5-83e1-4499-b7fd-85effd258251",
+		"text": "How is the principle of proximity helpful?",
+		"type": "singleChoice",
+		"options": [
+			"Helps us understand how groups are created (intentionally or unintentionally)",
+			"Allows us to squeeze more onto the page",
+			"Helps us get to know people"
+		],
+		"correctOptionIndices": [0],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: Helps us understand how groups are created (intentionally or unintentionally)",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 3,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "e2209872-3057-4eda-bfaf-016455e3b799",
+		"text": "How many different font types should you use in a single presentation?",
+		"type": "singleChoice",
+		"options": ["As many as you can", "4", "1", "2", "3"],
+		"correctOptionIndices": [3],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: 2",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 4,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "5e0405e9-6188-498e-a5c3-6f10e47a118d",
+		"text": "How many colors should we use in a presentation?",
+		"type": "singleChoice",
+		"options": [
+			"2 more than the number of fonts",
+			"7",
+			"4 to 5",
+			"2 to 3",
+			"1"
+		],
+		"correctOptionIndices": [3],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: 2 to 3",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 5,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "faacbec0-f4f6-4aa1-b958-cd061aa89ca5",
+		"text": "What should you do with whitespace?",
+		"type": "singleChoice",
+		"options": [
+			"Ensure you are using enough of it",
+			"Color it blue, it is prettier",
+			"Fill it up with text!"
+		],
+		"correctOptionIndices": [0],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: Ensure you are using enough of it",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 6,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "d6d96561-b270-4295-a45c-c4ccf4947fd9",
+		"text": "What is the bare assertion fallacy?",
+		"type": "multipleChoice",
+		"options": [
+			"A premise in an argument that is assumed to be true merely because it says that it is true",
+			"A Dan Brown novel",
+			"Claiming to be right because you say you are right",
+			"A dream where you are presenting naked"
+		],
+		"correctOptionIndices": [0, 2],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answers are: A premise in an argument that is assumed to be true merely because it says that it is true, Claiming to be right because you say you are right",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 1,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "93ad604e-3d30-4e03-9d70-6bb0efc22ffe",
+		"text": "What is graphical excellence?",
+		"type": "multipleChoice",
+		"options": [
+			"Beautiful",
+			"Honest",
+			"Multivariate",
+			"Efficient",
+			"Complicated",
+			"Curved"
+		],
+		"correctOptionIndices": [1, 2, 3],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answers are: Honest, Multivariate, Efficient",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 2,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "7029f28d-5f00-453b-8410-8838c307061f",
+		"text": "Why have we repeated the principle of proximity in this lesson and the previous lesson?",
+		"type": "singleChoice",
+		"options": [
+			"Didn't notice. The course is brilliant. Carry on!",
+			"Because repetition ad nauseum helps me learn?...",
+			"Yo lazy"
+		],
+		"correctOptionIndices": [0],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: Didn't notice. The course is brilliant. Carry on!",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 1,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "b12e2ef8-ff97-4800-9334-e562d62f16c9",
+		"text": "The principle of similarity states that we tend to group things which share visual characteristics such as:",
+		"type": "multipleChoice",
+		"options": [
+			"Size",
+			"Shape",
+			"Color",
+			"Orientation",
+			"Sound",
+			"Length",
+			"Distance"
+		],
+		"correctOptionIndices": [0, 1, 2, 3],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answers are: Size, Shape, Color, Orientation",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 2,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "ee738695-931e-439c-8d5d-6ae611f9a689",
+		"text": "What is symmetry associated with?",
+		"type": "multipleChoice",
+		"options": [
+			"Stability",
+			"Consistency",
+			"Structure",
+			"Rhythm",
+			"Twins",
+			"Music"
+		],
+		"correctOptionIndices": [0, 1, 2],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answers are: Stability, Consistency, Structure",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 3,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "f87db0b3-4f59-42e2-9ea2-55b2b29fa623",
+		"text": "What does the principle of connection state?",
+		"type": "singleChoice",
+		"options": [
+			"Elements that are visually connected are perceived as more related than elements with no connection",
+			"We need to connect our most important ideas",
+			"I just can't make no connection"
+		],
+		"correctOptionIndices": [0],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: Elements that are visually connected are perceived as more related than elements with no connection",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 4,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "93a4e9a2-65e0-4449-b05b-11c9f96c28be",
+		"text": "What is the key to making brainstorming as effective as possible?",
+		"type": "singleChoice",
+		"options": [
+			"Conduct brainstorming sessions early in the day",
+			"Eat lots of sugar",
+			"Don't use brainstorming, it doesn't work",
+			"Engage in debate and dissent"
+		],
+		"correctOptionIndices": [3],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: Engage in debate and dissent",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 1,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "60f27b51-d116-4543-b251-4e288cf0f0b3",
+		"text": "What are our Cardinal Rules of brainstorming?",
+		"type": "multipleChoice",
+		"options": [
+			"Plan your participants",
+			"Focus on ideas",
+			"Structure the session",
+			"Establish rules in advance",
+			"Free associate",
+			"Only invite the single people",
+			"Focus on having fun",
+			"Eat, drink, and be merry",
+			"Conduct sessions on a Friday"
+		],
+		"correctOptionIndices": [0, 1, 2, 3],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answers are: Plan your participants, Focus on ideas, Structure the session, Establish rules in advance",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 2,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "2b095b1c-2f83-4e79-a1c3-31837f224ff4",
+		"text": "What was the golden rule talked about in this lesson?",
+		"type": "singleChoice",
+		"options": [
+			"Facts known by the audience go in the Introduction",
+			"We are creating our presentation to answer a question in the mind of our audience",
+			"Our audience is the hero",
+			"Our objective is to compel our audience to do something",
+			"Follow a process",
+			"Create ideas first, slides second"
+		],
+		"correctOptionIndices": [5],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: Create ideas first, slides second",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 3,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "c5698ab7-e4e8-49be-adcc-951741d150e2",
+		"text": "Hypothetical example: We are in the finance department and are giving an update. What is the best way for us to frame our presentation?",
+		"type": "singleChoice",
+		"options": [
+			"Finance update",
+			"Cost cutting recommendations",
+			"Quarterly review",
+			"How did we perform last quarter, and what do we need to do differently?"
+		],
+		"correctOptionIndices": [3],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: How did we perform last quarter, and what do we need to do differently?",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 1,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "960d0078-1dca-40db-98af-ce0a2e9496d4",
+		"text": "Why are we creating our presentation?",
+		"type": "singleChoice",
+		"options": [
+			"To sell our product to a customer",
+			"To answer a question in the mind of our audience",
+			"To practice our PowerPoint skills",
+			"To raise money for our start-up",
+			"Becuase we have been asked to by our boss"
+		],
+		"correctOptionIndices": [1],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: To answer a question in the mind of our audience",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 2,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "79af9197-83f4-4ccb-a600-91355be4ce7b",
+		"text": "What are they four parts to our introduction?",
+		"type": "multipleChoice",
+		"options": [
+			"Context",
+			"Catalyst",
+			"Beginning",
+			"End",
+			"Middle",
+			"The Why",
+			"Answer",
+			"Question"
+		],
+		"correctOptionIndices": [0, 1, 6, 7],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answers are: Context, Catalyst, Answer, Question",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 3,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "53ea20cf-ff02-44a7-8084-72a6847de667",
+		"text": "What is the Context part of the Introduction?",
+		"type": "singleChoice",
+		"options": [
+			"The objective of the presentation",
+			"The background to the presentation that includes facts already known to your audience",
+			"The answer to the question"
+		],
+		"correctOptionIndices": [1],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: The background to the presentation that includes facts already known to your audience",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 4,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "09474ff2-efb2-413f-9e35-8debedbc0d70",
+		"text": "What is the Catalyst portion of the Introduction?",
+		"type": "multipleChoice",
+		"options": [
+			"An event or trigger, sometimes referred to as the complication",
+			"The techniques that speed-up the development of a presentation",
+			"A leading presentation development platform",
+			"What happened or changed that created the need for you to write this presentation"
+		],
+		"correctOptionIndices": [0, 3],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answers are: An event or trigger, sometimes referred to as the complication, What happened or changed that created the need for you to write this presentation",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 5,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "7b01cac2-8dcb-43c6-9387-dcce8ec98e43",
+		"text": "What is the Question portion of the Introduction?",
+		"type": "multipleChoice",
+		"options": [
+			"What we are trying to plant in the mind of the audience with the context and catalyst portions of the Introduction",
+			"The natural question that arises in the mind of the audience",
+			"The 'topic' of the presentation"
+		],
+		"correctOptionIndices": [0, 1, 2],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answers are: What we are trying to plant in the mind of the audience with the context and catalyst portions of the Introduction, The natural question that arises in the mind of the audience, The 'topic' of the presentation",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 6,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "2285e692-ba6f-4f7b-8af0-6a7028c7458a",
+		"text": "Why is it important to follow a process to develop a presentation?",
+		"type": "singleChoice",
+		"options": [
+			"If you are really good, you don't need to follow a process!",
+			"Because creating presentations is all about left brain thinking",
+			"Because there is not such thing as creativity",
+			"Because it is very easy to focus on the wrong thing, and be led astray"
+		],
+		"correctOptionIndices": [3],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: Because it is very easy to focus on the wrong thing, and be led astray",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 1,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "6e80482c-3ffc-4ca7-9e91-fecd850c7423",
+		"text": "What is the 1st step of our process?",
+		"type": "singleChoice",
+		"options": [
+			"Who is our audience?",
+			"Why are we speaking to our audience (identify their question)?",
+			"What is our answer?",
+			"How will we deliver this presentation?"
+		],
+		"correctOptionIndices": [0],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: Who is our audience?",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 2,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "335caa5a-aec8-4bc1-bb88-c3eb9f68c1c8",
+		"text": "What is the 2nd step of our process?",
+		"type": "singleChoice",
+		"options": [
+			"Who is our audience?",
+			"Why are we speaking to our audience (identify their question)?",
+			"What is our answer?",
+			"How will we deliver this presentation?"
+		],
+		"correctOptionIndices": [1],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: Why are we speaking to our audience (identify their question)?",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 3,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "9e0769d0-d589-43ff-bff5-826fbf332278",
+		"text": "What is the 3rd step of our process?",
+		"type": "singleChoice",
+		"options": [
+			"Who is our audience?",
+			"Why are we speaking to our audience (identify their question)?",
+			"What is our answer?",
+			"How will we deliver this presentation?"
+		],
+		"correctOptionIndices": [2],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: What is our answer?",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 4,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "584cf35e-1469-490b-a99e-2a6a6c4cd639",
+		"text": "What is the 4th step of our process?",
+		"type": "singleChoice",
+		"options": [
+			"Who is our audience?",
+			"Why are we speaking to our audience (identify their question)?",
+			"What is our answer?",
+			"How will we deliver this presentation?"
+		],
+		"correctOptionIndices": [3],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: How will we deliver this presentation?",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 5,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "96df3ab3-6495-446e-94ec-4a7a1dbefc3e",
+		"text": "Our first step is 'The Who'. What do we mean by this?",
+		"type": "singleChoice",
+		"options": [
+			"Determine who your audience truly is. Who are you speaking to?",
+			"The Who is a famous English rock band",
+			"Determining our answer to a key question"
+		],
+		"correctOptionIndices": [0],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: Determine who your audience truly is. Who are you speaking to?",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 6,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "1731a6e5-f47d-4d5b-91e1-791f5a40da22",
+		"text": "The second step in our process is 'The Why'. What do we mean by this?",
+		"type": "singleChoice",
+		"options": [
+			"Determine the question inside the mind of our audience and what we want the audience to do a the end",
+			"Determine our personal objective from creating the presentation",
+			"A process of deep existential soul searching to ensure you are a confident speaker"
+		],
+		"correctOptionIndices": [0],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: Determine the question inside the mind of our audience and what we want the audience to do a the end",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 7,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "c4a8a9be-9055-4545-839a-acc0c193e2fd",
+		"text": "The third step in our process is 'The What'. What does 'The What' focus on?",
+		"type": "singleChoice",
+		"options": [
+			"Themes from Biggie Smalls' debut album 'Ready to Die' which featured 'The What' on track 9",
+			"Determining what types of slides we need to create",
+			"Determining what it is we want our Audience to do as a result of the presentation",
+			"Determining the answer to the question that has been planted in the mind of the audience"
+		],
+		"correctOptionIndices": [3],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: Determining the answer to the question that has been planted in the mind of the audience",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 8,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "74e62246-5f9f-4ec8-a87f-98c6b294d110",
+		"text": "The final step in our process is 'The How'. What is the focus of 'The How'?",
+		"type": "singleChoice",
+		"options": [
+			"How to create beautiful slides",
+			"How to answer our audience's question",
+			"This is how we do it!",
+			"How we will deliver the presentation"
+		],
+		"correctOptionIndices": [3],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: How we will deliver the presentation",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 9,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "f8e616dd-15c5-4c84-aca4-d5b6292516c3",
+		"text": "What are some of the fundamental elements and principles of design?",
+		"type": "multipleChoice",
+		"options": [
+			"Shape & Form",
+			"Rick Astley",
+			"Color",
+			"Composition",
+			"Contrast",
+			"Line",
+			"Point",
+			"Negative Space"
+		],
+		"correctOptionIndices": [0, 2, 3, 4, 5, 6, 7],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answers are: Shape & Form, Color, Composition, Contrast, Line, Point, Negative Space",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 1,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "399e8a29-0a06-4f7c-9c3a-5e5de6eab80b",
+		"text": "What can we do to try and set the right tone?",
+		"type": "multipleChoice",
+		"options": [
+			"Send a well prepared agenda in advance",
+			"Dress appropriately",
+			"Adopt the appropriate disposition for the meeting",
+			"Tell a joke",
+			"Lead the group in song"
+		],
+		"correctOptionIndices": [0, 1, 2],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answers are: Send a well prepared agenda in advance, Dress appropriately, Adopt the appropriate disposition for the meeting",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 1,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "f880d50e-6ff3-445b-b602-4b047b2e2641",
+		"text": "What are some things you can do to manage stress?",
+		"type": "multipleChoice",
+		"options": [
+			"Quite your mind",
+			"Laugh",
+			"Primal therapy",
+			"Prepare",
+			"Breathe",
+			"Don't worry about the presentation until the last minute",
+			"Talk to yourself like a crazy person"
+		],
+		"correctOptionIndices": [0, 1, 3, 4],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answers are: Quite your mind, Laugh, Prepare, Breathe",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 2,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "292f7a7c-e3e5-4e05-a8de-8f23ad89caef",
+		"text": "What body language and delivery mistakes should you be on the lookout for?",
+		"type": "multipleChoice",
+		"options": [
+			"Verbal ticks",
+			"Talking to the screen",
+			"Closed posture",
+			"Being over prepared",
+			"Not displaying any emotion"
+		],
+		"correctOptionIndices": [0, 1, 2, 4],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answers are: Verbal ticks, Talking to the screen, Closed posture, Not displaying any emotion",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 3,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "fff74d0c-bbc7-4c01-9b68-a0a0015599e1",
+		"text": "When preparing and practicing the delivery of your presentation, what four factors should you focus on?",
+		"type": "multipleChoice",
+		"options": [
+			"Timing of your jokes",
+			"Clarity",
+			"Hair, make-up and clothes",
+			"Pace",
+			"Engaging with the audience",
+			"Timbre of your voice",
+			"Smiling and making eye contact"
+		],
+		"correctOptionIndices": [1, 3, 4, 6],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answers are: Clarity, Pace, Engaging with the audience, Smiling and making eye contact",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 1,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "9e95739f-3d3a-4904-920d-5b9dd9926afb",
+		"text": "What is the first step of the recommended preparation process?",
+		"type": "singleChoice",
+		"options": [
+			"Get a good night sleep and review the script once, maybe twice before the presentation",
+			"Present to someone else. Get feedback",
+			"Run through the presentation two or three time working on length, simplifying language, and identifying likely questions",
+			"Speak the presentation out loud and improvise. Test turns of phrases, identify key points that you want to make for each phrase",
+			"Write down the verbal voice over and create a formal script",
+			"Test the length of the presentation. Revise the deck, eliminating or combining slide ideas",
+			"Run through the script a few more times and the put it aside"
+		],
+		"correctOptionIndices": [3],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: Speak the presentation out loud and improvise. Test turns of phrases, identify key points that you want to make for each phrase",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 2,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "0351bc4e-e625-4bfe-bf49-dd7d188e8ae3",
+		"text": "What is the second step of the recommended preparation process?",
+		"type": "singleChoice",
+		"options": [
+			"Get a good night sleep and review the script once, maybe twice before the presentation",
+			"Present to someone else. Get feedback",
+			"Run through the presentation two or three time working on length, simplifying language, and identifying likely questions",
+			"Speak the presentation out loud and improvise. Test turns of phrases, identify key points that you want to make for each phrase",
+			"Write down the verbal voice over and create a formal script",
+			"Test the length of the presentation. Revise the deck, eliminating or combining slide ideas",
+			"Run through the script a few more times and the put it aside"
+		],
+		"correctOptionIndices": [4],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: Write down the verbal voice over and create a formal script",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 3,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "2fa89327-bbfe-48f6-9dde-a62c976f4dfd",
+		"text": "What is the third step of the recommended preparation process?",
+		"type": "singleChoice",
+		"options": [
+			"Get a good night sleep and review the script once, maybe twice before the presentation",
+			"Present to someone else. Get feedback",
+			"Run through the presentation two or three time working on length, simplifying language, and identifying likely questions",
+			"Speak the presentation out loud and improvise. Test turns of phrases, identify key points that you want to make for each phrase",
+			"Write down the verbal voice over and create a formal script",
+			"Test the length of the presentation. Revise the deck, eliminating or combining slide ideas",
+			"Run through the script a few more times and the put it aside"
+		],
+		"correctOptionIndices": [2],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: Run through the presentation two or three time working on length, simplifying language, and identifying likely questions",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 4,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "18d3337f-fb3e-4793-b376-b81c5daff485",
+		"text": "What is the fourth step of the recommended preparation process?",
+		"type": "singleChoice",
+		"options": [
+			"Get a good night sleep and review the script once, maybe twice before the presentation",
+			"Present to someone else. Get feedback",
+			"Run through the presentation two or three time working on length, simplifying language, and identifying likely questions",
+			"Speak the presentation out loud and improvise. Test turns of phrases, identify key points that you want to make for each phrase",
+			"Write down the verbal voice over and create a formal script",
+			"Test the length of the presentation. Revise the deck, eliminating or combining slide ideas",
+			"Run through the script a few more times and the put it aside"
+		],
+		"correctOptionIndices": [5],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: Test the length of the presentation. Revise the deck, eliminating or combining slide ideas",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 5,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "a8d31d89-d804-48e1-ae07-59d561181acf",
+		"text": "What is the fifth step pf the recommended preparation process?",
+		"type": "singleChoice",
+		"options": [
+			"Get a good night sleep and review the script once, maybe twice before the presentation",
+			"Present to someone else. Get feedback",
+			"Run through the presentation two or three time working on length, simplifying language, and identifying likely questions",
+			"Speak the presentation out loud and improvise. Test turns of phrases, identify key points that you want to make for each phrase",
+			"Write down the verbal voice over and create a formal script",
+			"Test the length of the presentation. Revise the deck, eliminating or combining slide ideas",
+			"Run through the script a few more times and the put it aside"
+		],
+		"correctOptionIndices": [1],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: Present to someone else. Get feedback",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 6,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "46b5b17a-1414-4e9f-9920-9e9393bb84b8",
+		"text": "What is the sixth step of the recommended preparation process?",
+		"type": "singleChoice",
+		"options": [
+			"Get a good night sleep and review the script once, maybe twice before the presentation",
+			"Present to someone else. Get feedback",
+			"Run through the presentation two or three time working on length, simplifying language, and identifying likely questions",
+			"Speak the presentation out loud and improvise. Test turns of phrases, identify key points that you want to make for each phrase",
+			"Write down the verbal voice over and create a formal script",
+			"Test the length of the presentation. Revise the deck, eliminating or combining slide ideas",
+			"Run through the script a few more times and the put it aside"
+		],
+		"correctOptionIndices": [6],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: Run through the script a few more times and the put it aside",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 7,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "d07eca40-1577-42d2-ae60-d17d2f11fddc",
+		"text": "What is the seventh step of the recommended preparation process?",
+		"type": "singleChoice",
+		"options": [
+			"Get a good night sleep and review the script once, maybe twice before the presentation",
+			"Present to someone else. Get feedback",
+			"Run through the presentation two or three time working on length, simplifying language, and identifying likely questions",
+			"Speak the presentation out loud and improvise. Test turns of phrases, identify key points that you want to make for each phrase",
+			"Write down the verbal voice over and create a formal script",
+			"Test the length of the presentation. Revise the deck, eliminating or combining slide ideas",
+			"Run through the script a few more times and the put it aside"
+		],
+		"correctOptionIndices": [0],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: Get a good night sleep and review the script once, maybe twice before the presentation",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 8,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "49dbc53c-08c1-4e4c-bc02-8bba054e843e",
+		"text": "What goes in the headline?",
+		"type": "singleChoice",
+		"options": [
+			"Your footnotes",
+			"Your voice-over script",
+			"Your slide title",
+			"The main message of the slide"
+		],
+		"correctOptionIndices": [3],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: The main message of the slide",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 1,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "5bbdd31e-2787-4e19-8a90-4efb7bc4a0ea",
+		"text": "What goes in the body of the slide?",
+		"type": "singleChoice",
+		"options": [
+			"The supporting evidence that supports the main message",
+			"Text",
+			"Charts",
+			"Clip art"
+		],
+		"correctOptionIndices": [0],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: The supporting evidence that supports the main message",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 2,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "4eb29e5c-5988-4f75-90f0-18536e8613f1",
+		"text": "What is a swipe file?",
+		"type": "singleChoice",
+		"options": [
+			"Collection of useful slide designs and frameworks that you can utilize for inspiration",
+			"Hacker code to get free templates",
+			"Where you store illicit data",
+			"Another name for a garbage can"
+		],
+		"correctOptionIndices": [0],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: Collection of useful slide designs and frameworks that you can utilize for inspiration",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 3,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "055c3cb3-289d-407e-99e6-512cb0f591a7",
+		"text": "When is the best time to use clip art?",
+		"type": "singleChoice",
+		"options": [
+			"Never",
+			"In marketing and sales presentations, but not in finance presentations",
+			"No restrictions",
+			"When the clip art is of a cute cat"
+		],
+		"correctOptionIndices": [0],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: Never",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 4,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "57c057d2-4e91-404a-b5b1-cd7be17d3f68",
+		"text": "What elements can be repeated on all slides?",
+		"type": "multipleChoice",
+		"options": [
+			"Company logo",
+			"Location for a headline",
+			"Location for footnotes",
+			"Trademark and confidentiality messages",
+			"Banners",
+			"Location  for page numbers"
+		],
+		"correctOptionIndices": [1, 2, 5],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answers are: Location for a headline, Location for footnotes, Location  for page numbers",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 5,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "d236fe39-a145-4e51-a136-918448f18500",
+		"text": "What do we use Tornado diagrams for?",
+		"type": "singleChoice",
+		"options": [
+			"Composition of markets",
+			"Nominal comparison",
+			"Sensitivity analysis",
+			"To display how several variables change over time"
+		],
+		"correctOptionIndices": [2],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: Sensitivity analysis",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 1,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "450fcb17-ab21-48d9-8bfd-458a00b1d778",
+		"text": "When do we use a Bubble Chart?",
+		"type": "singleChoice",
+		"options": [
+			"For nominal comparisons",
+			"When your scatter plot is ugly",
+			"When you want to show three variables",
+			"To show a time series"
+		],
+		"correctOptionIndices": [2],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: When you want to show three variables",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 2,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "8da2a852-238d-4fd7-8250-468f6f3624c2",
+		"text": "What chart types should we try and avoid using?",
+		"type": "multipleChoice",
+		"options": [
+			"Donut Chart",
+			"Waterfall Chart",
+			"Pie Chart",
+			"Circle chart",
+			"Anything 3-D",
+			"Merimekko Chart"
+		],
+		"correctOptionIndices": [0, 2, 3, 4],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answers are: Donut Chart, Pie Chart, Circle chart, Anything 3-D",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 3,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "a671666a-49f8-4eff-aa69-fab81bc3a384",
+		"text": "What is the best use of a Waterfall Chart?",
+		"type": "singleChoice",
+		"options": [
+			"To show a time series",
+			"To show how increases and decreases in a balance affect that balance over time",
+			"To show a part-to-whole relationship",
+			"As a fancy nominal comparison bar chart"
+		],
+		"correctOptionIndices": [1],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: To show how increases and decreases in a balance affect that balance over time",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 4,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "a56a0c7c-3529-4f07-99ad-12e9cacaac5a",
+		"text": "What is one of the more common uses of a Marimekko Chart?",
+		"type": "singleChoice",
+		"options": [
+			"To confuse our audience",
+			"To show a time series",
+			"To show data on the Finnish textile industry",
+			"To display the composition of markets"
+		],
+		"correctOptionIndices": [3],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: To display the composition of markets",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 5,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "0ce55550-9c97-454f-ad1e-9a63abd8f588",
+		"text": "What are Motion Charts used for?",
+		"type": "singleChoice",
+		"options": [
+			"To explore how several variables change over time",
+			"Sensitivity analysis",
+			"Nominal comparison",
+			"Composition of markets"
+		],
+		"correctOptionIndices": [0],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: To explore how several variables change over time",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 6,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "d34a9b49-1898-4f13-90dc-a05f7bdfdcdf",
+		"text": "What is a storyboard?",
+		"type": "singleChoice",
+		"options": [
+			"A blueprint of the movie",
+			"A cardboard board to pin up cartoon drawings",
+			"What happens when you are subject to a boring story",
+			"A Landyachts longboard design"
+		],
+		"correctOptionIndices": [0],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: A blueprint of the movie",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 1,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "154aa05c-5fbe-476b-9d6c-7d7c1df11e14",
+		"text": "Who invented storyboards?",
+		"type": "singleChoice",
+		"options": ["Steve Jobs", "John Lasseter", "Eric Goldberg", "Walt Disney"],
+		"correctOptionIndices": [3],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: Walt Disney",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 2,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "f265c190-5698-4bc5-afd7-c10064f2fb07",
+		"text": "What was the great innovation of storyboarding?",
+		"type": "singleChoice",
+		"options": [
+			"The introduction of sound (Talkies)",
+			"Allowed film makers to edit the film before making it",
+			"The introduction of color",
+			"The ability to draw your story"
+		],
+		"correctOptionIndices": [1],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: Allowed film makers to edit the film before making it",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 3,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "ff0b9f9f-ed43-4a9a-9f2f-8d48200aa8fe",
+		"text": "What are the two approaches discussed in the lesson?",
+		"type": "singleChoice",
+		"options": [
+			"Black & white and full color",
+			"Animated and static",
+			"Hand-drawn and computer assisted",
+			"Text-based outlining and storyboarding"
+		],
+		"correctOptionIndices": [3],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: Text-based outlining and storyboarding",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 1,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "173e80ab-62ea-4ed4-9046-050b266143f8",
+		"text": "What tools are recommended to use for storyboarding?",
+		"type": "singleChoice",
+		"options": [
+			"A stone tablet and chisel",
+			"PowerPoint",
+			"Adobe Edge Animate",
+			"Pen and paper"
+		],
+		"correctOptionIndices": [3],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: Pen and paper",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 2,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "7ae92e2f-f920-4c44-90d7-f1f662c549ce",
+		"text": "What is the principle of Abstraction?",
+		"type": "singleChoice",
+		"options": [
+			"A grouping principle, whereby a hierarchy is adhered to with higher levels of abstraction (less detail) placed near the top, with more specific concepts underneath ",
+			"A John Grisham novel",
+			"An approach whereby we simplify our question so profoundly that we reach a level of enlightenment"
+		],
+		"correctOptionIndices": [0],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: A grouping principle, whereby a hierarchy is adhered to with higher levels of abstraction (less detail) placed near the top, with more specific concepts underneath ",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 1,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "f220c7e2-51f6-4c5e-821b-dcfd4c90dbca",
+		"text": "Which lists are MECE (pick 2)",
+		"type": "multipleChoice",
+		"options": [
+			"Profit=revenue minus expenses",
+			"Star Wars films: New Hope, Empire, Revenge of the Sith",
+			"The global population broken down into age groups of 0-20 year-olds, 21-40 year-olds, 41-60 year-olds, 61-80 year-olds, and 81 and over"
+		],
+		"correctOptionIndices": [0, 2],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answers are: Profit=revenue minus expenses, The global population broken down into age groups of 0-20 year-olds, 21-40 year-olds, 41-60 year-olds, 61-80 year-olds, and 81 and over",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 2,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "be8aa273-08dc-4e3b-9044-fcb897cef177",
+		"text": "What are the three Golden Rules to follow when applying the principle of abstraction and organizing your ideas?",
+		"type": "multipleChoice",
+		"options": [
+			"Concepts should be arranged in the shape of a triangle",
+			"Concepts at any level must be presented in a strict logical order",
+			"Concepts in any group are always the same kind of idea",
+			"Concepts or ideas at any level of your argument must be more abstract summaries of the concepts that are grouped below",
+			"Concepts must be ordered alphabetically",
+			"Ideas should be clever"
+		],
+		"correctOptionIndices": [1, 2, 3],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answers are: Concepts at any level must be presented in a strict logical order, Concepts in any group are always the same kind of idea, Concepts or ideas at any level of your argument must be more abstract summaries of the concepts that are grouped below",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 3,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "b140f6d8-9741-4315-98ad-b0621d0a0339",
+		"text": "Match the argument with whether it is deductive or inductive: 'Jill and Bob are friends. Jill likes to dance, cook and write. Bob likes to dance and cook. Therefore it can be assumed he also likes to write.",
+		"type": "singleChoice",
+		"options": ["Deductive", "Inductive"],
+		"correctOptionIndices": [1],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: Inductive",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 4,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "4bae4548-5520-4651-8bf5-26ca86d4b4e8",
+		"text": "Match the argument with whether it is deductive or inductive: 'All dogs are mammals. All mammals have kidneys. Therefore all dogs have kidneys.",
+		"type": "singleChoice",
+		"options": ["Inductive", "Deductive"],
+		"correctOptionIndices": [1],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: Deductive",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 5,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "f552345e-ee0e-4d89-b069-85dc7e5ca707",
+		"text": "What is the rule of 7 (updated)?",
+		"type": "singleChoice",
+		"options": [
+			"There is no such thing as 7 or 9 of anything. We should seek to structure our ideas into groups of 4-5 or less",
+			"Rule for calculating compound interest",
+			"Organize your ideas into groups of 7",
+			"Movie staring Brad Pitt"
+		],
+		"correctOptionIndices": [0],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: There is no such thing as 7 or 9 of anything. We should seek to structure our ideas into groups of 4-5 or less",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 6,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "d834ba6b-0ee2-42d3-bcbc-b507c1b63b95",
+		"text": "What are the two defining characteristics of Tables?",
+		"type": "multipleChoice",
+		"options": [
+			"Information is encoded as text (words and numbers)",
+			"They are black and white",
+			"They are not as nice to look at as graphs",
+			"They are arranged in columns and rows"
+		],
+		"correctOptionIndices": [0, 3],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answers are: Information is encoded as text (words and numbers), They are arranged in columns and rows",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 1,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "3b0bd692-02d5-4c83-bed3-2f5dae29917c",
+		"text": "What re some of the primary benefits of a table?",
+		"type": "multipleChoice",
+		"options": [
+			"Tables make it easy to look up individual values",
+			"Tables make it easy to compare pairs of related values",
+			"Textual encoding provides a level of precision that you cannot get in graphs",
+			"Tables are easier to create than graphs",
+			"Tables can handle larger data sets than graphs"
+		],
+		"correctOptionIndices": [0, 1, 2],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answers are: Tables make it easy to look up individual values, Tables make it easy to compare pairs of related values, Textual encoding provides a level of precision that you cannot get in graphs",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 2,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "fb21c1f4-1d78-41ae-804e-aa308a63b820",
+		"text": "What are some of the characteristics that define graphs?",
+		"type": "multipleChoice",
+		"options": [
+			"Information is encoded as text (words and numbers)",
+			"Axes provide scales (quantitative and categorical) that are used to label and assign value to the visual objects",
+			"They are nicer to look at than tables",
+			"They are typically in color",
+			"Values are encoded as visual objects in relation to the axis",
+			"Values are displayed within an area delineated by one or more axis"
+		],
+		"correctOptionIndices": [1, 4, 5],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answers are: Axes provide scales (quantitative and categorical) that are used to label and assign value to the visual objects, Values are encoded as visual objects in relation to the axis, Values are displayed within an area delineated by one or more axis",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 3,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "7735dbb5-d6f3-4f59-9f06-e54d8ddb0cbd",
+		"text": "When should you use graphs?",
+		"type": "multipleChoice",
+		"options": [
+			"When the message or story is contained in the shape of the data",
+			"When the display will be used to reveal relationships among whole sets of values",
+			"When you need to 'sex-up' a slide",
+			"When you have production support and they can create the graph for you"
+		],
+		"correctOptionIndices": [0, 1],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answers are: When the message or story is contained in the shape of the data, When the display will be used to reveal relationships among whole sets of values",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 4,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "6f60950f-5ca3-48d2-a226-c75cb9608799",
+		"text": "Who is the hero of our presentation?",
+		"type": "singleChoice",
+		"options": [
+			"Batman baby!",
+			"I am dammit!",
+			"The audience",
+			"Superman owns Batman"
+		],
+		"correctOptionIndices": [2],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: The audience",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 1,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "b09464a7-050b-43a5-8058-2f30fe736bd5",
+		"text": "What is the Audience Map used for?",
+		"type": "singleChoice",
+		"options": [
+			"To be used to find your presentation venue. X marks the spot.",
+			"To help identify the main decision maker",
+			"To develop a strategic approach for engaging with your 'room'"
+		],
+		"correctOptionIndices": [2],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: To develop a strategic approach for engaging with your 'room'",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 2,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "bb78dbcf-f50d-4789-8958-827ea8ebd0dc",
+		"text": "What are the 4 quadrants of the Audience Map?",
+		"type": "singleChoice",
+		"options": [
+			"Senior, Junior, Advocate, Foe",
+			"Personality, Power, Access, Resistance",
+			"Friend, Foe, Advocate, Neutral",
+			"North, South East and West"
+		],
+		"correctOptionIndices": [1],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: Personality, Power, Access, Resistance",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 3,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "49e74185-c6c4-450f-aa82-ac9d5ec263bd",
+		"text": "Pick the question that corresponds with the 'Personality' quadrant",
+		"type": "singleChoice",
+		"options": [
+			"How do decisions get made?",
+			"What is their style, energy level, and emotional state?",
+			"Who are your 'friends in court'?",
+			"How does your audience like to consume information?"
+		],
+		"correctOptionIndices": [1],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: What is their style, energy level, and emotional state?",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 4,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "ace9a20c-3229-4aaa-b7b8-80d947037875",
+		"text": "Pick the question that corresponds with the 'Access' quadrant",
+		"type": "singleChoice",
+		"options": [
+			"How does your audience like to consume information?",
+			"What is their style, energy level, and emotional state?",
+			"How do decisions get made?",
+			"Who are your 'friends in court'?"
+		],
+		"correctOptionIndices": [0],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: How does your audience like to consume information?",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 5,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "a83c71dc-ea80-434f-a0ed-50a7012604f0",
+		"text": "Pick the question that corresponds with the 'Power' quadrant",
+		"type": "singleChoice",
+		"options": [
+			"How does your audience like to consume information?",
+			"Who are your 'friends in court'?",
+			"How do decisions get made?",
+			"What is their style, energy level, and emotional state?"
+		],
+		"correctOptionIndices": [2],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: How do decisions get made?",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 6,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "2588442d-1f33-4024-b642-4b25ab8427d6",
+		"text": "Pick the question that corresponds with the 'Resistance' quadrant",
+		"type": "singleChoice",
+		"options": [
+			"How does your audience like to consume information?",
+			"Who are your 'friends in court'?",
+			"How do decisions get made?",
+			"What is their style, energy level, and emotional state?"
+		],
+		"correctOptionIndices": [1],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: Who are your 'friends in court'?",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 7,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "02bde0a7-6c2a-487b-94c0-899bac7efaaf",
+		"text": "Why are stories like a cup?",
+		"type": "singleChoice",
+		"options": [
+			"Because they are the brain's natural container for information",
+			"Because they are simple and straightforward",
+			"Because you can put in them whatever you like",
+			"Because they are delicate, and need to be handled carefully"
+		],
+		"correctOptionIndices": [0],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: Because they are the brain's natural container for information",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 1,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "a4c65620-2840-4e71-8c65-b3fa10ff5fad",
+		"text": "What do stories add to our presentations? Why should be use them?",
+		"type": "multipleChoice",
+		"options": [
+			"Stories stop disagreement",
+			"Stories make people laugh",
+			"Stories lull your audience to sleep",
+			"Stories make your message more memorable",
+			"Stories increase trust"
+		],
+		"correctOptionIndices": [0, 3, 4],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answers are: Stories stop disagreement, Stories make your message more memorable, Stories increase trust",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 2,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "63a0a771-f010-469c-88fe-39aba6f83904",
+		"text": "What characteristics make stories memorable?",
+		"type": "multipleChoice",
+		"options": [
+			"Concreteness",
+			"Unexpectedness",
+			"Credibility",
+			"Simplicity",
+			"Emotion"
+		],
+		"correctOptionIndices": [0, 1, 2, 3, 4],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answers are: Concreteness, Unexpectedness, Credibility, Simplicity, Emotion",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 3,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "db36a1cd-4d3c-465c-991f-da190004af14",
+		"text": "What is visual thinking?",
+		"type": "singleChoice",
+		"options": [
+			"Doodling",
+			"The phenomenon of thinking through visual processing",
+			"A thought cloud",
+			"Complex visual charts"
+		],
+		"correctOptionIndices": [1],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: The phenomenon of thinking through visual processing",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 1,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "abd33699-c0eb-40f9-9b9b-293b401e6370",
+		"text": "Match the type of mental processing with the characteristic: 'Conscious, sequential, and slow/hard'",
+		"type": "singleChoice",
+		"options": ["Attentive processing", "Pre-attentive processing"],
+		"correctOptionIndices": [0],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: Attentive processing",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 2,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "d7a3d2c4-37fc-40c5-aa4f-547140d0b799",
+		"text": "Match the type of mental processing with the characteristic: 'Below the level of consciousness, very rapid'",
+		"type": "singleChoice",
+		"options": ["Attentive processing", "Pre-attentive processing"],
+		"correctOptionIndices": [1],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: Pre-attentive processing",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 3,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "ca1ee613-39a5-4e9a-be39-baa30b85e23b",
+		"text": "What are the visual attribute triggers of pre-attentive processing?",
+		"type": "multipleChoice",
+		"options": [
+			"Length",
+			"3D position",
+			"Color",
+			"Size",
+			"Motion",
+			"Hue",
+			"Texture",
+			"Shape",
+			"Width",
+			"Orientation",
+			"Enclosure",
+			"2D position",
+			"Intensity"
+		],
+		"correctOptionIndices": [0, 3, 5, 7, 8, 9, 10, 11, 12],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answers are: Length, Size, Hue, Shape, Width, Orientation, Enclosure, 2D position, Intensity",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 4,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "0bc38f25-e46b-4f96-a427-cecc42e01ba1",
+		"text": "Who is Cicero?",
+		"type": "singleChoice",
+		"options": [
+			"A PowerPoint macro",
+			"Some Italian dude who wasn't nearly as effective as Demosthenes",
+			"Drake's blind brother"
+		],
+		"correctOptionIndices": [1],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: Some Italian dude who wasn't nearly as effective as Demosthenes",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 1,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "a9c9261f-b5af-4c97-9d3c-bf218ad0ddcb",
+		"text": "What is the ultimate objective of our presentation?",
+		"type": "singleChoice",
+		"options": [
+			"To prompt action!",
+			"To get it over with",
+			"To get praise for our slick PowerPoint skills"
+		],
+		"correctOptionIndices": [0],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: To prompt action!",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 2,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "0eb00d27-1118-40b5-81a6-d522c2f78080",
+		"text": "Which of the following are reasonable next steps to follow your presentation?",
+		"type": "multipleChoice",
+		"options": [
+			"For your to develop a full proposal for the customer",
+			"For the customer to test your software as part of a trial",
+			"For the customer to schedule a follow-up demo with field staff"
+		],
+		"correctOptionIndices": [1, 2],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answers are: For the customer to test your software as part of a trial, For the customer to schedule a follow-up demo with field staff",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 3,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	},
+	{
+		"id": "13fa222f-a6be-49ed-ab4a-cca0bf5db311",
+		"text": "Where should the next steps go in your presentation?",
+		"type": "singleChoice",
+		"options": [
+			"In your introduction, that is why you need to identify them at the beginning",
+			"In the footnotes",
+			"In a follow-up email",
+			"At the end of the presentation, but we need to identify their nature early as it might inform the development of the rest of the presentation"
+		],
+		"correctOptionIndices": [3],
+		"explanation": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": [
+					{
+						"type": "paragraph",
+						"format": "",
+						"indent": 0,
+						"version": 1,
+						"children": [
+							{
+								"type": "text",
+								"format": 0,
+								"style": "",
+								"mode": "normal",
+								"detail": 0,
+								"text": "The correct answer is: At the end of the presentation, but we need to identify their nature early as it might inform the development of the rest of the presentation",
+								"version": 1
+							}
+						]
+					}
+				]
+			}
+		},
+		"order": 4,
+		"points": 1,
+		"tags": [],
+		"_status": "published"
+	}
+]
