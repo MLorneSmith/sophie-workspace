@@ -1,0 +1,22 @@
+{
+	"extends": "../../tsconfig.json",
+	"compilerOptions": {
+		"target": "ES2022",
+		"module": "commonjs",
+		"lib": ["ES2022"],
+		"outDir": "./dist",
+		"rootDir": "./",
+		"resolveJsonModule": true,
+		"esModuleInterop": true,
+		"strict": true,
+		"skipLibCheck": true,
+		"forceConsistentCasingInFileNames": true,
+		"noEmit": false,
+		"paths": {
+			"@/*": ["../src/*"],
+			"@payload-config": ["../payload.config.ts"]
+		}
+	},
+	"include": ["./**/*.ts", "../payload-types.ts"],
+	"exclude": ["node_modules", "dist"]
+}
