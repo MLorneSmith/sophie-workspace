@@ -133,7 +133,7 @@ function SuccessState(props: { redirectTo: string }) {
 						<Trans i18nKey={"common:backToHomePage"} />
 					</span>
 
-					<ArrowRightIcon className={"ml-2 h-4"} />
+					<ArrowRightIcon className={"ml-2 h-4"} aria-hidden="true" />
 				</Button>
 			</Link>
 		</div>

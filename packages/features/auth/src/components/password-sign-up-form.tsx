@@ -156,6 +156,7 @@ export function PasswordSignUpForm({
 									className={
 										"zoom-in animate-in slide-in-from-left-2 fill-mode-both h-4 delay-500 duration-500"
 									}
+									aria-hidden="true"
 								/>
 							</>
 						}

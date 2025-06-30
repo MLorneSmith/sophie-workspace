@@ -24,7 +24,7 @@ export function AuthErrorAlert({
 
 	return (
 		<Alert variant={"destructive"}>
-			<ExclamationTriangleIcon className={"w-4"} />
+			<ExclamationTriangleIcon className={"w-4"} aria-hidden="true" />
 
 			<AlertTitle>
 				<Trans i18nKey={"auth:errorAlertHeading"} />
