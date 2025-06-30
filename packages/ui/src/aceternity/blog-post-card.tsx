@@ -31,13 +31,13 @@ export function BlogPostCard({
 		const className = "h-4 w-4 text-gray-50";
 		switch (iconType) {
 			case "presentation":
-				return <Presentation className={className} />;
+				return <Presentation className={className} aria-hidden="true" />;
 			case "chart":
-				return <LineChart className={className} />;
+				return <LineChart className={className} aria-hidden="true" />;
 			case "sparkles":
-				return <Sparkles className={className} />;
+				return <Sparkles className={className} aria-hidden="true" />;
 			default:
-				return <BookOpen className={className} />;
+				return <BookOpen className={className} aria-hidden="true" />;
 		}
 	};
 
@@ -45,7 +45,7 @@ export function BlogPostCard({
 		<div className="group/card w-full max-w-xs">
 			<div
 				className={cn(
-					"card backgroundImage relative mx-auto flex h-96 max-w-sm cursor-pointer flex-col overflow-hidden rounded-md p-4 shadow-xl",
+					"card backgroundImage relative mx-auto flex h-96 max-w-sm flex-col overflow-hidden rounded-md p-4 shadow-xl",
 					"bg-cover",
 				)}
 				style={{ backgroundImage: `url(${backgroundImage})` }}

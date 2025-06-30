@@ -4,13 +4,15 @@
 * Global styles for the entire application
  */
 
+/* CSS Variables and Theme (MUST BE BEFORE Tailwind) */
+@import "./shadcn-ui.css";
+
 /* Tailwind CSS */
 @import "tailwindcss";
 
 /* local styles - update the below if you add a new style */
 @import "./theme.css";
 @import "./theme.utilities.css";
-@import "./shadcn-ui.css";
 @import "./markdoc.css";
 @import "./makerkit.css";
 
@@ -46,6 +48,6 @@
 
 	input::placeholder,
 	textarea::placeholder {
-		color: hsl(var(--muted-foreground));
+		color: var(--muted-foreground);
 	}
 }

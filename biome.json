@@ -23,6 +23,7 @@
 			"!**/packages/playwright-mcp/temp-playwright-mcp/**",
 			"!**/apps/payload/payload-types.ts",
 			"!**/apps/payload/src/app/(payload)/admin/importMap.js",
+			"!**/apps/payload/src/seed/**",
 			"!**/z.docs/**",
 			"!**/z.old/**",
 			"!**/z.test/**",
@@ -130,6 +131,16 @@
 				"rules": {
 					"suspicious": {
 						"noDocumentCookie": "off"
+					}
+				}
+			}
+		},
+		{
+			"includes": ["**/dropzone.tsx"],
+			"linter": {
+				"rules": {
+					"performance": {
+						"noImgElement": "off"
 					}
 				}
 			}
