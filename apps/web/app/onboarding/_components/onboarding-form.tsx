@@ -170,6 +170,15 @@ export function OnboardingForm() {
 				if (result.success) {
 					localStorage.removeItem(STORAGE_KEY);
 					analytics.trackEvent("onboarding_completed", flattenFormData(data));
+
+					// Refresh the router to get the latest session data
+					router.refresh();
+
+					// Add a small delay to ensure user metadata is propagated
+					// This prevents the middleware from redirecting back to onboarding
+					await new Promise((resolve) => setTimeout(resolve, 1500));
+
+					// Navigate using Next.js router
 					router.push("/home");
 				} else {
 					throw new Error(result.message || "Failed to submit form");
@@ -778,7 +787,22 @@ function CompleteStep() {
 			}
 
 			const result = await submitOnboardingFormAction(finalFormData);
+			logger.info("Onboarding submission result", { result });
+
 			if (result.success && result.isComplete === true) {
+				logger.info("Onboarding successful, redirecting to home");
+
+				// Clear local storage to ensure clean state
+				localStorage.removeItem(STORAGE_KEY);
+
+				// Refresh the router to get the latest session data
+				router.refresh();
+
+				// Add a delay to ensure user metadata is propagated and session is refreshed
+				// This prevents the middleware from redirecting back to onboarding
+				await new Promise((resolve) => setTimeout(resolve, 1500));
+
+				// Navigate using Next.js router
 				router.push("/home");
 			} else {
 				logger.error("Onboarding completion failed", {

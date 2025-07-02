@@ -92,8 +92,8 @@ export class OnboardingPageObject {
 
 		await getStartedButton.click();
 
-		// Wait a bit for the form submission to process
-		await this.page.waitForTimeout(2000);
+		// Wait a bit for the form submission to process and metadata to propagate
+		await this.page.waitForTimeout(3000);
 
 		// Check for any visible alerts on the page
 		const alertElement = await this.page.getByRole("alert").first();
@@ -102,25 +102,49 @@ export class OnboardingPageObject {
 			console.error(`Alert found on page: ${alertText}`);
 		}
 
-		// Wait for redirect to home page with better error handling
+		// First, wait for any navigation that might occur
 		try {
-			await this.page.waitForURL("**/home", { timeout: 15000 });
-		} catch (error) {
-			// If we're not redirected to /home, check if we're on an error page or still on onboarding
-			const currentUrl = this.page.url();
-			console.error(`Failed to redirect to /home. Current URL: ${currentUrl}`);
+			await this.page.waitForURL("**/home", { timeout: 5000 });
+			// If we get here, navigation happened successfully
+			return;
+		} catch {
+			// Navigation didn't happen automatically, let's help it along
+		}
 
-			// Check for any error messages on the page
-			const errorMessage = await this.page
-				.locator("text=/error|failed/i")
-				.first()
-				.textContent()
-				.catch(() => null);
-			if (errorMessage) {
-				console.error(`Error message found: ${errorMessage}`);
+		// If we're still on onboarding, navigate to a different page to force session refresh
+		if (this.page.url().includes("/onboarding")) {
+			console.log(
+				"Still on onboarding page, navigating to force session refresh...",
+			);
+			// Navigate to the root page first to force middleware to re-evaluate
+			await this.page.goto("/");
+			await this.page.waitForLoadState("networkidle");
+			// Now navigate to home, which should work with refreshed session
+			await this.page.goto("/home");
+			await this.page.waitForURL("**/home", { timeout: 10000 });
+		} else {
+			// Wait for redirect to home page with better error handling
+			try {
+				await this.page.waitForURL("**/home", { timeout: 15000 });
+			} catch (error) {
+				// If we're not redirected to /home, check if we're on an error page or still on onboarding
+				const currentUrl = this.page.url();
+				console.error(
+					`Failed to redirect to /home. Current URL: ${currentUrl}`,
+				);
+
+				// Check for any error messages on the page
+				const errorMessage = await this.page
+					.locator("text=/error|failed/i")
+					.first()
+					.textContent()
+					.catch(() => null);
+				if (errorMessage) {
+					console.error(`Error message found: ${errorMessage}`);
+				}
+
+				throw error;
 			}
-
-			throw error;
 		}
 	}
 

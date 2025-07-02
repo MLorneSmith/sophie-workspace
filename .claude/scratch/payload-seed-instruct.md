@@ -30,9 +30,15 @@ We have designed a system that has converted this data into the necessary json f
 
 ### Current status
 
-Review the current json files in apps/payload/src/seed/seed-data and evaluate the quality of the json
+Review the current json files in apps/payload/src/seed/seed-data and evaluate the quality of the json files
 
-1. Is it structed in the way we need given our collections?
-2. Do we have all the necessary json files?
-3. Are we handling relationships correctly?
-4. Are there any issues with the json files?
+1. Are these files structed in the way we need given our collections?
+2. Are we handling relationships correctly?
+   1. We have two files that map various relationships. What is the best way to incorporate these? See
+      1. apps/payload/src/seed/seed-data-raw/mappings/download-mappings.js
+      2. apps/payload/src/seed/seed-data-raw/mappings/image-mappings.ts
+      3. apps/payload/src/seed/seed-data-raw/mappings/lesson-quiz-mappings.ts
+3. How do we construct the correct url's for the download and media files?
+   1. The downloads bucket is using the custom domain: downloads.slideheroes.com
+   2. The media bucket is using the custom domain: media.slideheroes.com
+4. Are there any additional issues with the json files?
