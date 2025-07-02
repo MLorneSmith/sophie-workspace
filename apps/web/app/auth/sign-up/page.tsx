@@ -59,7 +59,7 @@ async function SignUpPage({ searchParams }: Props) {
 					asChild
 					variant={"link"}
 					size={"sm"}
-					style={{ color: "#262626" }}
+					className="text-foreground"
 				>
 					<Link href={signInPath} prefetch={true}>
 						<Trans i18nKey={"auth:alreadyHaveAnAccount"} />
