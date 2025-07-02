@@ -109,6 +109,15 @@ export const submitOnboardingFormAction = enhanceAction(
 					{ userId: user.id },
 					"User marked as onboarded successfully",
 				);
+
+				// Refresh the session to ensure the middleware sees the updated metadata
+				const { error: refreshError } = await supabase.auth.refreshSession();
+				if (refreshError) {
+					logger.warn(
+						{ userId: user.id, error: refreshError },
+						"Failed to refresh session after onboarding",
+					);
+				}
 			}
 
 			return {
