@@ -34,4 +34,5 @@ Review the current json files in apps/payload/src/seed/seed-data and evaluate th
 
 1. Is it structed in the way we need given our collections?
 2. Do we have all the necessary json files?
-3. Are there any issues with the json files?
+3. Are we handling relationships correctly?
+4. Are there any issues with the json files?
