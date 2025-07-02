@@ -51,7 +51,7 @@ export default defineConfig({
 	forbidOnly: !!process.env.CI,
 	retries: process.env.CI ? 3 : 1,
 	/* Increase max failures for debugging */
-	maxFailures: 1,
+	maxFailures: process.env.CI ? 10 : 50,
 	/* Configure parallel execution - optimize for CI vs local */
 	workers: process.env.CI ? 2 : 1, // Reduced to 1 for local to avoid resource contention
 	/* Enhanced reporting for matrix testing */
