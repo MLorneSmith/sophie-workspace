@@ -1142,6 +1142,6 @@ export interface Auth {
 }
 
 
-// declare module 'payload' {
-//   export interface GeneratedTypes extends Config {}
-// }// Lint-staged test successful
+declare module 'payload' {
+  export interface GeneratedTypes extends Config {}
+}
