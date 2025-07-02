@@ -60,7 +60,7 @@ async function SignInPage({ searchParams }: SignInPageProps) {
 					asChild
 					variant={"link"}
 					size={"sm"}
-					style={{ color: "#262626" }}
+					className="text-foreground"
 				>
 					<Link href={signUpPath} prefetch={true}>
 						<Trans i18nKey={"auth:doNotHaveAccountYet"} />
