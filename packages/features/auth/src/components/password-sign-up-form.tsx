@@ -58,6 +58,7 @@ export function PasswordSignUpForm({
 			<form
 				className={"flex w-full flex-col gap-y-4"}
 				onSubmit={form.handleSubmit(onSubmit)}
+				data-testid="auth-sign-up-form"
 			>
 				<FormField
 					control={form.control}

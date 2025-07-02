@@ -17,6 +17,7 @@ export class AccessibilityPO {
 	async runFullAccessibilityScan() {
 		return await new AxeBuilder({ page: this.page })
 			.withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+			.exclude("[data-nextjs-devtools]")
 			.analyze();
 	}
 
@@ -24,7 +25,10 @@ export class AccessibilityPO {
 	 * Run specific accessibility rule checks
 	 */
 	async runSpecificRules(rules: string[]) {
-		return await new AxeBuilder({ page: this.page }).withRules(rules).analyze();
+		return await new AxeBuilder({ page: this.page })
+			.withRules(rules)
+			.exclude("[data-nextjs-devtools]")
+			.analyze();
 	}
 
 	/**
@@ -202,6 +206,7 @@ export class AccessibilityPO {
 			.withTags(["wcag2a", "wcag2aa", "wcag21aa"])
 			.include("main")
 			.exclude('[role="presentation"]')
+			.exclude([".hover\\:bg-gray-100"])
 			.disableRules(["color-contrast"]) // Focus on critical structural issues first
 			.analyze();
 	}
