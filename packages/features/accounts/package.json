@@ -17,10 +17,12 @@
 		"./api": "./src/server/api.ts"
 	},
 	"dependencies": {
-		"nanoid": "^5.1.5"
+		"@hookform/resolvers": "^5.1.1",
+		"nanoid": "^5.1.5",
+		"react-hook-form": "^7.58.1",
+		"zod": "^3.25.67"
 	},
 	"devDependencies": {
-		"@hookform/resolvers": "^5.1.1",
 		"@kit/billing-gateway": "workspace:*",
 		"@kit/email-templates": "workspace:*",
 		"@kit/eslint-config": "workspace:*",
@@ -43,9 +45,7 @@
 		"next-themes": "0.4.6",
 		"react": "19.1.0",
 		"react-dom": "19.1.0",
-		"react-hook-form": "^7.58.1",
-		"react-i18next": "^15.5.3",
-		"zod": "^3.25.67"
+		"react-i18next": "^15.5.3"
 	},
 	"prettier": "@kit/prettier-config",
 	"typesVersions": {
