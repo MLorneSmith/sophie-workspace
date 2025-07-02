@@ -29,7 +29,8 @@
 		"published": true,
 		"createdAt": "2025-06-30T17:27:17.928Z",
 		"updatedAt": "2025-06-30T17:27:17.928Z",
-		"category": "Affiliates"
+		"category": "Affiliates",
+		"_ref": "documentation:affiliates/apply-for-affiliate-program"
 	},
 	{
 		"id": "affiliates-affiliates",
@@ -61,7 +62,8 @@
 		"published": true,
 		"createdAt": "2025-06-30T17:27:17.928Z",
 		"updatedAt": "2025-06-30T17:27:17.928Z",
-		"category": "Affiliates"
+		"category": "Affiliates",
+		"_ref": "documentation:affiliates/affiliates"
 	},
 	{
 		"id": "data-security-and-privacy-data-security-and-privacy",
@@ -93,7 +95,8 @@
 		"published": true,
 		"createdAt": "2025-06-30T17:27:17.929Z",
 		"updatedAt": "2025-06-30T17:27:17.929Z",
-		"category": "Data Security And Privacy"
+		"category": "Data Security And Privacy",
+		"_ref": "documentation:data-security-and-privacy/data-security-and-privacy"
 	},
 	{
 		"id": "data-security-and-privacy-where-is-data-stored",
@@ -135,7 +138,8 @@
 		"published": true,
 		"createdAt": "2025-06-30T17:27:17.929Z",
 		"updatedAt": "2025-06-30T17:27:17.929Z",
-		"category": "Data Security And Privacy"
+		"category": "Data Security And Privacy",
+		"_ref": "documentation:data-security-and-privacy/where-is-data-stored"
 	},
 	{
 		"id": "data-security-and-privacy-will-you-train",
@@ -177,7 +181,8 @@
 		"published": true,
 		"createdAt": "2025-06-30T17:27:17.929Z",
 		"updatedAt": "2025-06-30T17:27:17.929Z",
-		"category": "Data Security And Privacy"
+		"category": "Data Security And Privacy",
+		"_ref": "documentation:data-security-and-privacy/will-you-train"
 	},
 	{
 		"id": "difference-between-pro-and-teams",
@@ -224,7 +229,8 @@
 		"published": true,
 		"createdAt": "2025-06-30T17:27:17.929Z",
 		"updatedAt": "2025-06-30T17:27:17.929Z",
-		"category": "General"
+		"category": "General",
+		"_ref": "documentation:difference-between-pro-and-teams"
 	},
 	{
 		"id": "how-much-does-slideheroes-cost",
@@ -262,7 +268,8 @@
 		"published": true,
 		"createdAt": "2025-06-30T17:27:17.930Z",
 		"updatedAt": "2025-06-30T17:27:17.930Z",
-		"category": "General"
+		"category": "General",
+		"_ref": "documentation:how-much-does-slideheroes-cost"
 	},
 	{
 		"id": "just-promote-informally",
@@ -318,7 +325,8 @@
 		"published": true,
 		"createdAt": "2025-06-30T17:27:17.930Z",
 		"updatedAt": "2025-06-30T17:27:17.930Z",
-		"category": "General"
+		"category": "General",
+		"_ref": "documentation:just-promote-informally"
 	},
 	{
 		"id": "our-product-course-without-ai-tools",
@@ -360,7 +368,8 @@
 		"published": true,
 		"createdAt": "2025-06-30T17:27:17.930Z",
 		"updatedAt": "2025-06-30T17:27:17.930Z",
-		"category": "Our Product"
+		"category": "Our Product",
+		"_ref": "documentation:our-product/course-without-ai-tools"
 	},
 	{
 		"id": "our-product-our-product",
@@ -402,7 +411,8 @@
 		"published": true,
 		"createdAt": "2025-06-30T17:27:17.930Z",
 		"updatedAt": "2025-06-30T17:27:17.930Z",
-		"category": "Our Product"
+		"category": "Our Product",
+		"_ref": "documentation:our-product/our-product"
 	},
 	{
 		"id": "purchases-invoicing-purchases-invoicing",
@@ -444,7 +454,8 @@
 		"published": true,
 		"createdAt": "2025-06-30T17:27:17.931Z",
 		"updatedAt": "2025-06-30T17:27:17.931Z",
-		"category": "Purchases Invoicing"
+		"category": "Purchases Invoicing",
+		"_ref": "documentation:purchases-invoicing/purchases-invoicing"
 	},
 	{
 		"id": "purchases-invoicing-currencies",
@@ -486,7 +497,8 @@
 		"published": true,
 		"createdAt": "2025-06-30T17:27:17.931Z",
 		"updatedAt": "2025-06-30T17:27:17.931Z",
-		"category": "Purchases Invoicing"
+		"category": "Purchases Invoicing",
+		"_ref": "documentation:purchases-invoicing/currencies"
 	},
 	{
 		"id": "purchases-invoicing-payment-methods",
@@ -582,7 +594,8 @@
 		"published": true,
 		"createdAt": "2025-06-30T17:27:17.931Z",
 		"updatedAt": "2025-06-30T17:27:17.931Z",
-		"category": "Purchases Invoicing"
+		"category": "Purchases Invoicing",
+		"_ref": "documentation:purchases-invoicing/payment-methods"
 	},
 	{
 		"id": "refunds-refunds",
@@ -624,7 +637,8 @@
 		"published": true,
 		"createdAt": "2025-06-30T17:27:17.932Z",
 		"updatedAt": "2025-06-30T17:27:17.932Z",
-		"category": "Refunds"
+		"category": "Refunds",
+		"_ref": "documentation:refunds/refunds"
 	},
 	{
 		"id": "refunds-refund-policy",
@@ -666,7 +680,8 @@
 		"published": true,
 		"createdAt": "2025-06-30T17:27:17.931Z",
 		"updatedAt": "2025-06-30T17:27:17.931Z",
-		"category": "Refunds"
+		"category": "Refunds",
+		"_ref": "documentation:refunds/refund-policy"
 	},
 	{
 		"id": "refunds-refund-process",
@@ -769,7 +784,8 @@
 		"published": true,
 		"createdAt": "2025-06-30T17:27:17.931Z",
 		"updatedAt": "2025-06-30T17:27:17.931Z",
-		"category": "Refunds"
+		"category": "Refunds",
+		"_ref": "documentation:refunds/refund-process"
 	},
 	{
 		"id": "technical-support-custom-invoices",
@@ -820,7 +836,8 @@
 		"published": true,
 		"createdAt": "2025-06-30T17:27:17.932Z",
 		"updatedAt": "2025-06-30T17:27:17.932Z",
-		"category": "Technical Support"
+		"category": "Technical Support",
+		"_ref": "documentation:technical-support/custom-invoices"
 	},
 	{
 		"id": "technical-support-technical-support",
@@ -862,7 +879,8 @@
 		"published": true,
 		"createdAt": "2025-06-30T17:27:17.932Z",
 		"updatedAt": "2025-06-30T17:27:17.932Z",
-		"category": "Technical Support"
+		"category": "Technical Support",
+		"_ref": "documentation:technical-support/technical-support"
 	},
 	{
 		"id": "technical-support-troubleshooting-payments",
@@ -1005,6 +1023,7 @@
 		"published": true,
 		"createdAt": "2025-06-30T17:27:17.932Z",
 		"updatedAt": "2025-06-30T17:27:17.932Z",
-		"category": "Technical Support"
+		"category": "Technical Support",
+		"_ref": "documentation:technical-support/troubleshooting-payments"
 	}
 ]

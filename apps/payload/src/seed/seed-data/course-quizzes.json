@@ -11,7 +11,8 @@
 		"published": true,
 		"createdAt": "2025-06-30T17:27:17.896Z",
 		"updatedAt": "2025-06-30T17:27:17.896Z",
-		"lesson": "{ref:course-lessons:basic-graphs}"
+		"lesson": "{ref:course-lessons:basic-graphs}",
+		"_ref": "course-quizzes:basic-graphs"
 	},
 	{
 		"id": "elements-of-design-detail",
@@ -25,7 +26,8 @@
 		"published": true,
 		"createdAt": "2025-06-30T17:27:17.896Z",
 		"updatedAt": "2025-06-30T17:27:17.896Z",
-		"lesson": "{ref:course-lessons:elements-of-design-detail}"
+		"lesson": "{ref:course-lessons:elements-of-design-detail}",
+		"_ref": "course-quizzes:elements-of-design-detail"
 	},
 	{
 		"id": "fact-persuasion",
@@ -39,7 +41,8 @@
 		"published": true,
 		"createdAt": "2025-06-30T17:27:17.896Z",
 		"updatedAt": "2025-06-30T17:27:17.896Z",
-		"lesson": "{ref:course-lessons:fact-persuasion}"
+		"lesson": "{ref:course-lessons:fact-persuasion}",
+		"_ref": "course-quizzes:fact-persuasion"
 	},
 	{
 		"id": "gestalt-principles",
@@ -53,7 +56,8 @@
 		"published": true,
 		"createdAt": "2025-06-30T17:27:17.897Z",
 		"updatedAt": "2025-06-30T17:27:17.897Z",
-		"lesson": "{ref:course-lessons:gestalt-principles}"
+		"lesson": "{ref:course-lessons:gestalt-principles}",
+		"_ref": "course-quizzes:gestalt-principles"
 	},
 	{
 		"id": "idea-generation",
@@ -67,7 +71,8 @@
 		"published": true,
 		"createdAt": "2025-06-30T17:27:17.897Z",
 		"updatedAt": "2025-06-30T17:27:17.897Z",
-		"lesson": "{ref:course-lessons:idea-generation}"
+		"lesson": "{ref:course-lessons:idea-generation}",
+		"_ref": "course-quizzes:idea-generation"
 	},
 	{
 		"id": "introductions",
@@ -81,7 +86,8 @@
 		"published": true,
 		"createdAt": "2025-06-30T17:27:17.898Z",
 		"updatedAt": "2025-06-30T17:27:17.898Z",
-		"lesson": "{ref:course-lessons:introductions}"
+		"lesson": "{ref:course-lessons:introductions}",
+		"_ref": "course-quizzes:introductions"
 	},
 	{
 		"id": "our-process",
@@ -95,7 +101,8 @@
 		"published": true,
 		"createdAt": "2025-06-30T17:27:17.899Z",
 		"updatedAt": "2025-06-30T17:27:17.899Z",
-		"lesson": "{ref:course-lessons:our-process}"
+		"lesson": "{ref:course-lessons:our-process}",
+		"_ref": "course-quizzes:our-process"
 	},
 	{
 		"id": "overview-elements-of-design",
@@ -109,7 +116,8 @@
 		"published": true,
 		"createdAt": "2025-06-30T17:27:17.899Z",
 		"updatedAt": "2025-06-30T17:27:17.899Z",
-		"lesson": "{ref:course-lessons:overview-elements-of-design}"
+		"lesson": "{ref:course-lessons:overview-elements-of-design}",
+		"_ref": "course-quizzes:overview-elements-of-design"
 	},
 	{
 		"id": "performance",
@@ -123,7 +131,8 @@
 		"published": true,
 		"createdAt": "2025-06-30T17:27:17.900Z",
 		"updatedAt": "2025-06-30T17:27:17.900Z",
-		"lesson": "{ref:course-lessons:performance}"
+		"lesson": "{ref:course-lessons:performance}",
+		"_ref": "course-quizzes:performance"
 	},
 	{
 		"id": "preparation-practice",
@@ -137,7 +146,8 @@
 		"published": true,
 		"createdAt": "2025-06-30T17:27:17.900Z",
 		"updatedAt": "2025-06-30T17:27:17.900Z",
-		"lesson": "{ref:course-lessons:preparation-practice}"
+		"lesson": "{ref:course-lessons:preparation-practice}",
+		"_ref": "course-quizzes:preparation-practice"
 	},
 	{
 		"id": "slide-composition",
@@ -151,7 +161,8 @@
 		"published": true,
 		"createdAt": "2025-06-30T17:27:17.901Z",
 		"updatedAt": "2025-06-30T17:27:17.901Z",
-		"lesson": "{ref:course-lessons:slide-composition}"
+		"lesson": "{ref:course-lessons:slide-composition}",
+		"_ref": "course-quizzes:slide-composition"
 	},
 	{
 		"id": "specialist-graphs",
@@ -165,7 +176,8 @@
 		"published": true,
 		"createdAt": "2025-06-30T17:27:17.901Z",
 		"updatedAt": "2025-06-30T17:27:17.901Z",
-		"lesson": "{ref:course-lessons:specialist-graphs}"
+		"lesson": "{ref:course-lessons:specialist-graphs}",
+		"_ref": "course-quizzes:specialist-graphs"
 	},
 	{
 		"id": "storyboards-in-film",
@@ -179,7 +191,8 @@
 		"published": true,
 		"createdAt": "2025-06-30T17:27:17.901Z",
 		"updatedAt": "2025-06-30T17:27:17.901Z",
-		"lesson": "{ref:course-lessons:storyboards-in-film}"
+		"lesson": "{ref:course-lessons:storyboards-in-film}",
+		"_ref": "course-quizzes:storyboards-in-film"
 	},
 	{
 		"id": "storyboards-in-presentations",
@@ -193,7 +206,8 @@
 		"published": true,
 		"createdAt": "2025-06-30T17:27:17.901Z",
 		"updatedAt": "2025-06-30T17:27:17.901Z",
-		"lesson": "{ref:course-lessons:storyboards-in-presentations}"
+		"lesson": "{ref:course-lessons:storyboards-in-presentations}",
+		"_ref": "course-quizzes:storyboards-in-presentations"
 	},
 	{
 		"id": "structure",
@@ -207,7 +221,8 @@
 		"published": true,
 		"createdAt": "2025-06-30T17:27:17.902Z",
 		"updatedAt": "2025-06-30T17:27:17.902Z",
-		"lesson": "{ref:course-lessons:structure}"
+		"lesson": "{ref:course-lessons:structure}",
+		"_ref": "course-quizzes:structure"
 	},
 	{
 		"id": "tables-vs-graphs",
@@ -221,7 +236,8 @@
 		"published": true,
 		"createdAt": "2025-06-30T17:27:17.902Z",
 		"updatedAt": "2025-06-30T17:27:17.902Z",
-		"lesson": "{ref:course-lessons:tables-vs-graphs}"
+		"lesson": "{ref:course-lessons:tables-vs-graphs}",
+		"_ref": "course-quizzes:tables-vs-graphs"
 	},
 	{
 		"id": "the-who",
@@ -235,7 +251,8 @@
 		"published": true,
 		"createdAt": "2025-06-30T17:27:17.903Z",
 		"updatedAt": "2025-06-30T17:27:17.903Z",
-		"lesson": "{ref:course-lessons:the-who}"
+		"lesson": "{ref:course-lessons:the-who}",
+		"_ref": "course-quizzes:the-who"
 	},
 	{
 		"id": "using-stories",
@@ -249,7 +266,8 @@
 		"published": true,
 		"createdAt": "2025-06-30T17:27:17.903Z",
 		"updatedAt": "2025-06-30T17:27:17.903Z",
-		"lesson": "{ref:course-lessons:using-stories}"
+		"lesson": "{ref:course-lessons:using-stories}",
+		"_ref": "course-quizzes:using-stories"
 	},
 	{
 		"id": "visual-perception",
@@ -263,7 +281,8 @@
 		"published": true,
 		"createdAt": "2025-06-30T17:27:17.903Z",
 		"updatedAt": "2025-06-30T17:27:17.903Z",
-		"lesson": "{ref:course-lessons:visual-perception}"
+		"lesson": "{ref:course-lessons:visual-perception}",
+		"_ref": "course-quizzes:visual-perception"
 	},
 	{
 		"id": "why-next-steps",
@@ -277,6 +296,7 @@
 		"published": true,
 		"createdAt": "2025-06-30T17:27:17.903Z",
 		"updatedAt": "2025-06-30T17:27:17.903Z",
-		"lesson": "{ref:course-lessons:why-next-steps}"
+		"lesson": "{ref:course-lessons:why-next-steps}",
+		"_ref": "course-quizzes:why-next-steps"
 	}
 ]
