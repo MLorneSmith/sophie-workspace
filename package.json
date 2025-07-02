@@ -75,7 +75,7 @@
 			"bash ./scripts/trufflehog-scan.sh"
 		],
 		"apps/payload/**/*.{js,jsx,ts,tsx,json}": [
-			"bash -c 'cd apps/payload && pnpm lint --fix'"
+			"bash -c 'cd apps/payload && pnpm lint'"
 		],
 		"packages/**/*.{js,jsx,ts,tsx,json}": [
 			"bash -c 'package_dir=$(dirname \"$0\" | cut -d/ -f1-2); if [ -f \"$package_dir/package.json\" ] && grep -q \"\\\"lint\\\"\" \"$package_dir/package.json\"; then cd \"$package_dir\" && pnpm lint --fix; fi'"
