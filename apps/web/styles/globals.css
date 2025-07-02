@@ -4,11 +4,11 @@
 * Global styles for the entire application
  */
 
-/* CSS Variables and Theme (MUST BE BEFORE Tailwind) */
-@import "./shadcn-ui.css";
-
 /* Tailwind CSS */
 @import "tailwindcss";
+
+/* CSS Variables and Theme (MUST BE AFTER Tailwind for v4) */
+@import "./shadcn-ui.css";
 
 /* local styles - update the below if you add a new style */
 @import "./theme.css";
@@ -49,13 +49,13 @@
 	/* Ensure placeholder text meets WCAG AA contrast requirements */
 	input::placeholder,
 	textarea::placeholder {
-		color: #525252; /* 7.8:1 contrast on white background */
+		color: hsl(0 0% 32%); /* 7.8:1 contrast on white background */
 		opacity: 1; /* Prevent browser opacity reduction */
 	}
 
 	.dark input::placeholder,
 	.dark textarea::placeholder {
-		color: #a3a3a3; /* Appropriate contrast for dark mode */
+		color: hsl(0 0% 64%); /* Appropriate contrast for dark mode */
 		opacity: 1;
 	}
 }
