@@ -416,7 +416,15 @@
 		"publishedAt": "2024-04-10T00:00:00.000Z",
 		"_status": "published",
 		"featuredImage": "{ref:media:/cms/images/art-craft-business-presentation-creation/image.png}",
-		"categories": ["Presentations"]
+		"categories": [
+			"Presentations"
+		],
+		"_ref": "posts:art-craft-business-presentation-creation",
+		"description": "",
+		"image_id": null,
+		"tags": [],
+		"downloads": [],
+		"status": "published"
 	},
 	{
 		"slug": "pitch-deck",
@@ -2974,7 +2982,13 @@
 		"publishedAt": "2024-08-19T00:00:00.000Z",
 		"_status": "published",
 		"featuredImage": "{ref:media:/cms/images/pitch-deck/image.png}",
-		"categories": []
+		"categories": [],
+		"_ref": "posts:pitch-deck",
+		"description": "",
+		"image_id": null,
+		"tags": [],
+		"downloads": [],
+		"status": "published"
 	},
 	{
 		"slug": "powerpoint-presentations-defense",
@@ -3033,7 +3047,15 @@
 		"publishedAt": "2024-04-11T00:00:00.000Z",
 		"_status": "published",
 		"featuredImage": "{ref:media:/cms/images/powerpoint-presentations-defense/image.png}",
-		"categories": [null]
+		"categories": [
+			null
+		],
+		"_ref": "posts:powerpoint-presentations-defense",
+		"description": "",
+		"image_id": null,
+		"tags": [],
+		"downloads": [],
+		"status": "published"
 	},
 	{
 		"slug": "presentation-review-bcg",
@@ -4113,7 +4135,15 @@
 		"publishedAt": "2025-06-30T17:23:32.420Z",
 		"_status": "published",
 		"featuredImage": "{ref:media:/cms/images/presentation-review-bcg/image.png}",
-		"categories": [null]
+		"categories": [
+			null
+		],
+		"_ref": "posts:presentation-review-bcg",
+		"description": "",
+		"image_id": null,
+		"tags": [],
+		"downloads": [],
+		"status": "published"
 	},
 	{
 		"slug": "presentation-tips",
@@ -6552,7 +6582,15 @@
 		"publishedAt": "2025-06-30T17:23:32.421Z",
 		"_status": "published",
 		"featuredImage": "{ref:media:/cms/images/presentation-tips/image.png}",
-		"categories": [null]
+		"categories": [
+			null
+		],
+		"_ref": "posts:presentation-tips",
+		"description": "",
+		"image_id": null,
+		"tags": [],
+		"downloads": [],
+		"status": "published"
 	},
 	{
 		"slug": "presentation-tools",
@@ -6824,7 +6862,15 @@
 		"publishedAt": "2024-04-12T00:00:00.000Z",
 		"_status": "published",
 		"featuredImage": "{ref:media:/cms/images/presentation-tools/image.png}",
-		"categories": ["Tools"]
+		"categories": [
+			"Tools"
+		],
+		"_ref": "posts:presentation-tools",
+		"description": "",
+		"image_id": null,
+		"tags": [],
+		"downloads": [],
+		"status": "published"
 	},
 	{
 		"slug": "seneca-partnership",
@@ -7003,7 +7049,15 @@
 		"publishedAt": "2025-06-30T17:23:32.421Z",
 		"_status": "published",
 		"featuredImage": "{ref:media:/cms/images/seneca-partnership/image.png}",
-		"categories": [null]
+		"categories": [
+			null
+		],
+		"_ref": "posts:seneca-partnership",
+		"description": "",
+		"image_id": null,
+		"tags": [],
+		"downloads": [],
+		"status": "published"
 	},
 	{
 		"slug": "typology-business-charts",
@@ -9276,6 +9330,14 @@
 		"publishedAt": "2025-06-30T17:23:32.422Z",
 		"_status": "published",
 		"featuredImage": "{ref:media:/cms/images/typology-business-charts/image.png}",
-		"categories": [null]
+		"categories": [
+			null
+		],
+		"_ref": "posts:typology-business-charts",
+		"description": "",
+		"image_id": null,
+		"tags": [],
+		"downloads": [],
+		"status": "published"
 	}
 ]

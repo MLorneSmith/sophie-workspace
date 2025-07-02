@@ -1,7 +1,8 @@
 [
 	{
-		"id": "lesson-0",
+		"_ref": "course-lessons:lesson-0",
 		"title": "Welcome to DDM",
+		"slug": "lesson-0",
 		"description": "A taster. A preview. An overview of SlideHeroes' flagship presentations course - Decks for Decision Makers",
 		"content": {
 			"root": {
@@ -22,15 +23,19 @@
 				]
 			}
 		},
-		"order": 6,
-		"course": "{ref:courses:course-1}",
-		"published": true,
-		"createdAt": "2025-06-30T17:27:17.923Z",
-		"updatedAt": "2025-06-30T17:27:17.923Z"
+		"bunny_video_id": "2620df68-c2a8-4255-986e-24c1d4c1dbf2",
+		"bunny_library_id": "264486",
+		"lesson_number": 6,
+		"course_id": "{ref:courses:getting-started}",
+		"todo_complete_quiz": false,
+		"downloads": [],
+		"publishedAt": "2025-06-30T17:27:17.923Z",
+		"status": "published"
 	},
 	{
-		"id": "before-we-begin",
+		"_ref": "course-lessons:before-we-begin",
 		"title": "Before we begin...",
+		"slug": "before-we-begin",
 		"description": "A three question survey to help me understand your goals so I can better help you achieve them",
 		"content": {
 			"root": {
@@ -51,15 +56,18 @@
 				]
 			}
 		},
-		"order": 8,
-		"course": "{ref:courses:course-1}",
-		"published": true,
-		"createdAt": "2025-06-30T17:27:17.921Z",
-		"updatedAt": "2025-06-30T17:27:17.921Z"
+		"lesson_number": 8,
+		"course_id": "{ref:courses:getting-started}",
+		"survey_id": "{ref:surveys:three-quick-questions}",
+		"todo_complete_quiz": false,
+		"downloads": [],
+		"publishedAt": "2025-06-30T17:27:17.921Z",
+		"status": "published"
 	},
 	{
-		"id": "tools-and-resources",
+		"_ref": "course-lessons:tools-and-resources",
 		"title": "Presentation Tools & Course Resources",
+		"slug": "tools-and-resources",
 		"description": "Links to some recommended presentation tools + all course materials and downloads",
 		"content": {
 			"root": {
@@ -161,14 +169,14 @@
 				]
 			}
 		},
-		"order": 9,
-		"course": "{ref:courses:course-8}",
-		"published": true,
-		"createdAt": "2025-06-30T17:27:17.926Z",
-		"updatedAt": "2025-06-30T17:27:17.926Z"
+		"lesson_number": 9,
+		"course_id": "{ref:courses:conclusion}",
+		"todo_complete_quiz": false,
+		"downloads": [],
+		"publishedAt": "2025-06-30T17:27:17.926Z",
+		"status": "published"
 	},
 	{
-		"id": "our-process",
 		"title": "Our Process",
 		"description": "Our blueprint for creating high quality presentations",
 		"content": {
@@ -299,14 +307,16 @@
 				]
 			}
 		},
-		"order": 10,
-		"course": "{ref:courses:course-1}",
-		"published": true,
-		"createdAt": "2025-06-30T17:27:17.923Z",
-		"updatedAt": "2025-06-30T17:27:17.923Z"
+		"_ref": "course-lessons:our-process",
+		"slug": "our-process",
+		"course_id": "{ref:courses:getting-started}",
+		"lesson_number": 10,
+		"todo_complete_quiz": false,
+		"downloads": [],
+		"status": "published",
+		"publishedAt": "2025-06-30T17:27:17.923Z"
 	},
 	{
-		"id": "the-who",
 		"title": "The Who",
 		"description": "Where do we start? We start with defining who our actual audience is",
 		"content": {
@@ -328,14 +338,16 @@
 				]
 			}
 		},
-		"order": 11,
-		"course": "{ref:courses:course-2}",
-		"published": true,
-		"createdAt": "2025-06-30T17:27:17.925Z",
-		"updatedAt": "2025-06-30T17:27:17.925Z"
+		"_ref": "course-lessons:the-who",
+		"slug": "the-who",
+		"course_id": "{ref:courses:the-start}",
+		"lesson_number": 11,
+		"todo_complete_quiz": false,
+		"downloads": [],
+		"status": "published",
+		"publishedAt": "2025-06-30T17:27:17.925Z"
 	},
 	{
-		"id": "the-why-introductions",
 		"title": "The Why: Building the Introduction",
 		"description": "How to tee-up your presentation",
 		"content": {
@@ -357,14 +369,16 @@
 				]
 			}
 		},
-		"order": 12,
-		"course": "{ref:courses:course-2}",
-		"published": true,
-		"createdAt": "2025-06-30T17:27:17.925Z",
-		"updatedAt": "2025-06-30T17:27:17.925Z"
+		"_ref": "course-lessons:the-why-introductions",
+		"slug": "the-why-introductions",
+		"course_id": "{ref:courses:the-start}",
+		"lesson_number": 12,
+		"todo_complete_quiz": false,
+		"downloads": [],
+		"status": "published",
+		"publishedAt": "2025-06-30T17:27:17.925Z"
 	},
 	{
-		"id": "the-why-next-steps",
 		"title": "The Why: Next Steps",
 		"description": "What do we want to accomplish from our presentation? What is our ultimate objective?",
 		"content": {
@@ -386,14 +400,16 @@
 				]
 			}
 		},
-		"order": 13,
-		"course": "{ref:courses:course-2}",
-		"published": true,
-		"createdAt": "2025-06-30T17:27:17.925Z",
-		"updatedAt": "2025-06-30T17:27:17.925Z"
+		"_ref": "course-lessons:the-why-next-steps",
+		"slug": "the-why-next-steps",
+		"course_id": "{ref:courses:the-start}",
+		"lesson_number": 13,
+		"todo_complete_quiz": false,
+		"downloads": [],
+		"status": "published",
+		"publishedAt": "2025-06-30T17:27:17.925Z"
 	},
 	{
-		"id": "idea-generation",
 		"title": "Idea Generation",
 		"description": "How do we generate ideas on how to answer the audience's question?",
 		"content": {
@@ -415,14 +431,16 @@
 				]
 			}
 		},
-		"order": 14,
-		"course": "{ref:courses:course-3}",
-		"published": true,
-		"createdAt": "2025-06-30T17:27:17.923Z",
-		"updatedAt": "2025-06-30T17:27:17.923Z"
+		"_ref": "course-lessons:idea-generation",
+		"slug": "idea-generation",
+		"course_id": "{ref:courses:structure}",
+		"lesson_number": 14,
+		"todo_complete_quiz": false,
+		"downloads": [],
+		"status": "published",
+		"publishedAt": "2025-06-30T17:27:17.923Z"
 	},
 	{
-		"id": "what-is-structure",
 		"title": "What is Structure?",
 		"description": "Techniques to develop ensure clarity through structure",
 		"content": {
@@ -444,14 +462,16 @@
 				]
 			}
 		},
-		"order": 15,
-		"course": "{ref:courses:course-2}",
-		"published": true,
-		"createdAt": "2025-06-30T17:27:17.926Z",
-		"updatedAt": "2025-06-30T17:27:17.926Z"
+		"_ref": "course-lessons:what-is-structure",
+		"slug": "what-is-structure",
+		"course_id": "{ref:courses:the-start}",
+		"lesson_number": 15,
+		"todo_complete_quiz": false,
+		"downloads": [],
+		"status": "published",
+		"publishedAt": "2025-06-30T17:27:17.926Z"
 	},
 	{
-		"id": "using-stories",
 		"title": "Using Stories",
 		"description": "Using stories to powerfully convey your ideas",
 		"content": {
@@ -473,14 +493,16 @@
 				]
 			}
 		},
-		"order": 16,
-		"course": "{ref:courses:course-3}",
-		"published": true,
-		"createdAt": "2025-06-30T17:27:17.926Z",
-		"updatedAt": "2025-06-30T17:27:17.926Z"
+		"_ref": "course-lessons:using-stories",
+		"slug": "using-stories",
+		"course_id": "{ref:courses:structure}",
+		"lesson_number": 16,
+		"todo_complete_quiz": false,
+		"downloads": [],
+		"status": "published",
+		"publishedAt": "2025-06-30T17:27:17.926Z"
 	},
 	{
-		"id": "storyboards-film",
 		"title": "Storyboards in Film",
 		"description": "The origin of storyboarding",
 		"content": {
@@ -492,14 +514,16 @@
 				"children": []
 			}
 		},
-		"order": 17,
-		"course": "{ref:courses:course-3}",
-		"published": true,
-		"createdAt": "2025-06-30T17:27:17.925Z",
-		"updatedAt": "2025-06-30T17:27:17.925Z"
+		"_ref": "course-lessons:storyboards-film",
+		"slug": "storyboards-film",
+		"course_id": "{ref:courses:structure}",
+		"lesson_number": 17,
+		"todo_complete_quiz": false,
+		"downloads": [],
+		"status": "published",
+		"publishedAt": "2025-06-30T17:27:17.925Z"
 	},
 	{
-		"id": "storyboards-presentations",
 		"title": "Storyboards in Presentations",
 		"description": "",
 		"content": {
@@ -521,14 +545,16 @@
 				]
 			}
 		},
-		"order": 18,
-		"course": "{ref:courses:course-3}",
-		"published": true,
-		"createdAt": "2025-06-30T17:27:17.925Z",
-		"updatedAt": "2025-06-30T17:27:17.925Z"
+		"_ref": "course-lessons:storyboards-presentations",
+		"slug": "storyboards-presentations",
+		"course_id": "{ref:courses:structure}",
+		"lesson_number": 18,
+		"todo_complete_quiz": false,
+		"downloads": [],
+		"status": "published",
+		"publishedAt": "2025-06-30T17:27:17.925Z"
 	},
 	{
-		"id": "visual-perception",
 		"title": "Visual Perception and Communication",
 		"description": "What are the implications from how people process information?",
 		"content": {
@@ -550,14 +576,16 @@
 				]
 			}
 		},
-		"order": 19,
-		"course": "{ref:courses:course-5}",
-		"published": true,
-		"createdAt": "2025-06-30T17:27:17.926Z",
-		"updatedAt": "2025-06-30T17:27:17.926Z"
+		"_ref": "course-lessons:visual-perception",
+		"slug": "visual-perception",
+		"course_id": "{ref:courses:design}",
+		"lesson_number": 19,
+		"todo_complete_quiz": false,
+		"downloads": [],
+		"status": "published",
+		"publishedAt": "2025-06-30T17:27:17.926Z"
 	},
 	{
-		"id": "fundamental-design-overview",
 		"title": "Overview of the Fundamental Elements of Design",
 		"description": "A brief overview of the fundamentals",
 		"content": {
@@ -569,14 +597,16 @@
 				"children": []
 			}
 		},
-		"order": 20,
-		"course": "{ref:courses:course-5}",
-		"published": true,
-		"createdAt": "2025-06-30T17:27:17.922Z",
-		"updatedAt": "2025-06-30T17:27:17.922Z"
+		"_ref": "course-lessons:fundamental-design-overview",
+		"slug": "fundamental-design-overview",
+		"course_id": "{ref:courses:design}",
+		"lesson_number": 20,
+		"todo_complete_quiz": false,
+		"downloads": [],
+		"status": "published",
+		"publishedAt": "2025-06-30T17:27:17.922Z"
 	},
 	{
-		"id": "fundamental-design-detail",
 		"title": "The Fundamental Elements of Design in Detail",
 		"description": "Let's go deep",
 		"content": {
@@ -598,14 +628,16 @@
 				]
 			}
 		},
-		"order": 21,
-		"course": "{ref:courses:course-5}",
-		"published": true,
-		"createdAt": "2025-06-30T17:27:17.922Z",
-		"updatedAt": "2025-06-30T17:27:17.922Z"
+		"_ref": "course-lessons:fundamental-design-detail",
+		"slug": "fundamental-design-detail",
+		"course_id": "{ref:courses:design}",
+		"lesson_number": 21,
+		"todo_complete_quiz": false,
+		"downloads": [],
+		"status": "published",
+		"publishedAt": "2025-06-30T17:27:17.922Z"
 	},
 	{
-		"id": "gestalt-principles",
 		"title": "Gestalt Principles of Visual Perception",
 		"description": "How we can apply principles of visual perception to better communicate our ideas",
 		"content": {
@@ -627,14 +659,16 @@
 				]
 			}
 		},
-		"order": 22,
-		"course": "{ref:courses:course-5}",
-		"published": true,
-		"createdAt": "2025-06-30T17:27:17.923Z",
-		"updatedAt": "2025-06-30T17:27:17.923Z"
+		"_ref": "course-lessons:gestalt-principles",
+		"slug": "gestalt-principles",
+		"course_id": "{ref:courses:design}",
+		"lesson_number": 22,
+		"todo_complete_quiz": false,
+		"downloads": [],
+		"status": "published",
+		"publishedAt": "2025-06-30T17:27:17.923Z"
 	},
 	{
-		"id": "slide-composition",
 		"title": "Slide Composition",
 		"description": "How to best design slides",
 		"content": {
@@ -656,14 +690,16 @@
 				]
 			}
 		},
-		"order": 23,
-		"course": "{ref:courses:course-6}",
-		"published": true,
-		"createdAt": "2025-06-30T17:27:17.924Z",
-		"updatedAt": "2025-06-30T17:27:17.924Z"
+		"_ref": "course-lessons:slide-composition",
+		"slug": "slide-composition",
+		"course_id": "{ref:courses:facts-and-data}",
+		"lesson_number": 23,
+		"todo_complete_quiz": false,
+		"downloads": [],
+		"status": "published",
+		"publishedAt": "2025-06-30T17:27:17.924Z"
 	},
 	{
-		"id": "fact-based-persuasion",
 		"title": "Overview of Fact-based Persuasion",
 		"description": "Facts and how to present them",
 		"content": {
@@ -685,14 +721,16 @@
 				]
 			}
 		},
-		"order": 24,
-		"course": "{ref:courses:course-4}",
-		"published": true,
-		"createdAt": "2025-06-30T17:27:17.922Z",
-		"updatedAt": "2025-06-30T17:27:17.922Z"
+		"_ref": "course-lessons:fact-based-persuasion",
+		"slug": "fact-based-persuasion",
+		"course_id": "{ref:courses:storytelling}",
+		"lesson_number": 24,
+		"todo_complete_quiz": false,
+		"downloads": [],
+		"status": "published",
+		"publishedAt": "2025-06-30T17:27:17.922Z"
 	},
 	{
-		"id": "tables-vs-graphs",
 		"title": "Tables vs. Graphs",
 		"description": "How to use graphs and tabl;es to present quantitative information",
 		"content": {
@@ -714,14 +752,16 @@
 				]
 			}
 		},
-		"order": 25,
-		"course": "{ref:courses:course-7}",
-		"published": true,
-		"createdAt": "2025-06-30T17:27:17.925Z",
-		"updatedAt": "2025-06-30T17:27:17.925Z"
+		"_ref": "course-lessons:tables-vs-graphs",
+		"slug": "tables-vs-graphs",
+		"course_id": "{ref:courses:performance}",
+		"lesson_number": 25,
+		"todo_complete_quiz": false,
+		"downloads": [],
+		"status": "published",
+		"publishedAt": "2025-06-30T17:27:17.925Z"
 	},
 	{
-		"id": "basic-graphs",
 		"title": "Standard Graphs",
 		"description": "How to properly use graphs to display information",
 		"content": {
@@ -743,14 +783,16 @@
 				]
 			}
 		},
-		"order": 26,
-		"course": "{ref:courses:course-7}",
-		"published": true,
-		"createdAt": "2025-06-30T17:27:17.921Z",
-		"updatedAt": "2025-06-30T17:27:17.921Z"
+		"_ref": "course-lessons:basic-graphs",
+		"slug": "basic-graphs",
+		"course_id": "{ref:courses:performance}",
+		"lesson_number": 26,
+		"todo_complete_quiz": false,
+		"downloads": [],
+		"status": "published",
+		"publishedAt": "2025-06-30T17:27:17.921Z"
 	},
 	{
-		"id": "specialist-graphs",
 		"title": "Specialist Graphs",
 		"description": "Introduction to some common business graphs like the Marimekko and Waterfall",
 		"content": {
@@ -772,14 +814,16 @@
 				]
 			}
 		},
-		"order": 27,
-		"course": "{ref:courses:course-7}",
-		"published": true,
-		"createdAt": "2025-06-30T17:27:17.924Z",
-		"updatedAt": "2025-06-30T17:27:17.924Z"
+		"_ref": "course-lessons:specialist-graphs",
+		"slug": "specialist-graphs",
+		"course_id": "{ref:courses:performance}",
+		"lesson_number": 27,
+		"todo_complete_quiz": false,
+		"downloads": [],
+		"status": "published",
+		"publishedAt": "2025-06-30T17:27:17.924Z"
 	},
 	{
-		"id": "preparation-practice",
 		"title": "Preparation and Practice",
 		"description": "How to prepare for your presentation",
 		"content": {
@@ -801,14 +845,16 @@
 				]
 			}
 		},
-		"order": 28,
-		"course": "{ref:courses:course-4}",
-		"published": true,
-		"createdAt": "2025-06-30T17:27:17.924Z",
-		"updatedAt": "2025-06-30T17:27:17.924Z"
+		"_ref": "course-lessons:preparation-practice",
+		"slug": "preparation-practice",
+		"course_id": "{ref:courses:storytelling}",
+		"lesson_number": 28,
+		"todo_complete_quiz": false,
+		"downloads": [],
+		"status": "published",
+		"publishedAt": "2025-06-30T17:27:17.924Z"
 	},
 	{
-		"id": "performance",
 		"title": "Performance",
 		"description": "Tips and techniques to improve the delivery of your presentation",
 		"content": {
@@ -830,14 +876,16 @@
 				]
 			}
 		},
-		"order": 29,
-		"course": "{ref:courses:course-4}",
-		"published": true,
-		"createdAt": "2025-06-30T17:27:17.924Z",
-		"updatedAt": "2025-06-30T17:27:17.924Z"
+		"_ref": "course-lessons:performance",
+		"slug": "performance",
+		"course_id": "{ref:courses:storytelling}",
+		"lesson_number": 29,
+		"todo_complete_quiz": false,
+		"downloads": [],
+		"status": "published",
+		"publishedAt": "2025-06-30T17:27:17.924Z"
 	},
 	{
-		"id": "congratulations",
 		"title": "Congratulations",
 		"description": "Congratulations",
 		"content": {
@@ -859,14 +907,16 @@
 				]
 			}
 		},
-		"order": 30,
-		"course": "{ref:courses:course-1}",
-		"published": true,
-		"createdAt": "2025-06-30T17:27:17.922Z",
-		"updatedAt": "2025-06-30T17:27:17.922Z"
+		"_ref": "course-lessons:congratulations",
+		"slug": "congratulations",
+		"course_id": "{ref:courses:getting-started}",
+		"lesson_number": 30,
+		"todo_complete_quiz": false,
+		"downloads": [],
+		"status": "published",
+		"publishedAt": "2025-06-30T17:27:17.922Z"
 	},
 	{
-		"id": "before-you-go",
 		"title": "Before you go...",
 		"description": "Feedback",
 		"content": {
@@ -878,10 +928,13 @@
 				"children": []
 			}
 		},
-		"order": 31,
-		"course": "{ref:courses:course-1}",
-		"published": true,
-		"createdAt": "2025-06-30T17:27:17.921Z",
-		"updatedAt": "2025-06-30T17:27:17.921Z"
+		"_ref": "course-lessons:before-you-go",
+		"slug": "before-you-go",
+		"course_id": "{ref:courses:getting-started}",
+		"lesson_number": 31,
+		"todo_complete_quiz": false,
+		"downloads": [],
+		"status": "published",
+		"publishedAt": "2025-06-30T17:27:17.921Z"
 	}
 ]
