@@ -26,13 +26,12 @@ Read .claude/scratch/payload-seed-protocol-design.md
 
 We have a set of raw data files in this directory: \\wsl.localhost\Ubuntu\home\msmith\projects\2025slideheroes\apps\payload\src\seed-data-raw
 
-We need to convert this data into the necessary json files that will be stored in "\\wsl.localhost\Ubuntu\home\msmith\projects\2025slideheroes\apps\payload\src\seed-data"
+We have designed a system that has converted this data into the necessary json files. Read .claude/scratch/data-conversion-plan.md
 
-Develop a plan to do so. Include in this plan the following:
+### Current status
 
-1. Determine if we have a compelte data set given the payload collections that we have
-2. Determine how the data should be split
-3. Determine how to parse the various data types into json
-4. Determine what relationships need to be established and how that should be handled in the json
-   
-Add any additional steps that you feel are necessary
+Review the current json files in apps/payload/src/seed/seed-data and evaluate the quality of the json
+
+1. Is it structed in the way we need given our collections?
+2. Do we have all the necessary json files?
+3. Are there any issues with the json files?
