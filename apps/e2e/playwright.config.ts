@@ -51,9 +51,9 @@ export default defineConfig({
 	forbidOnly: !!process.env.CI,
 	retries: process.env.CI ? 3 : 1,
 	/* Increase max failures for debugging */
-	maxFailures: 20,
+	maxFailures: 1,
 	/* Configure parallel execution - optimize for CI vs local */
-	workers: process.env.CI ? 2 : 2, // Reduced to 2 for better stability
+	workers: process.env.CI ? 2 : 1, // Reduced to 1 for local to avoid resource contention
 	/* Enhanced reporting for matrix testing */
 	reporter: [
 		["html", { outputFolder: "playwright-report", open: "never" }],
@@ -160,7 +160,7 @@ export default defineConfig({
 			command: process.env.PLAYWRIGHT_WEB_COMMAND || "pnpm --filter=web dev",
 			url: "http://localhost:3000",
 			name: "Frontend",
-			timeout: 60 * 1000, // Reduced timeout for faster startup
+			timeout: 90 * 1000, // Increased timeout for initial compilation
 			reuseExistingServer: !process.env.CI,
 			stdout: "pipe",
 			stderr: "pipe",
@@ -171,7 +171,7 @@ export default defineConfig({
 				process.env.PLAYWRIGHT_PAYLOAD_COMMAND || "pnpm --filter=payload dev",
 			url: "http://localhost:3020",
 			name: "Backend",
-			timeout: 60 * 1000, // Reduced timeout for faster startup
+			timeout: 90 * 1000, // Increased timeout for initial compilation
 			reuseExistingServer: !process.env.CI,
 			stdout: "pipe",
 			stderr: "pipe",

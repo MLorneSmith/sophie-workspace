@@ -5,7 +5,7 @@
 	"main": "index.js",
 	"scripts": {
 		"report": "playwright show-report",
-		"test": "playwright test --max-failures=1",
+		"test": "playwright test --max-failures=20",
 		"test:ui": "playwright test --ui",
 		"test:matrix": "playwright test --max-failures=3",
 		"test:desktop": "playwright test --project=chromium --project=firefox --project=webkit",

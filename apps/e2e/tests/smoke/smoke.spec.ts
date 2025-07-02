@@ -25,20 +25,18 @@ test.describe("Smoke Tests", () => {
 
 	test("sign in page loads", async ({ page }) => {
 		await page.goto("/auth/sign-in");
-		await expect(
-			page.locator('[data-testid="auth-sign-in-form"]'),
-		).toBeVisible();
-		await expect(page.locator('input[name="email"]')).toBeVisible();
-		await expect(page.locator('input[name="password"]')).toBeVisible();
+		const signInForm = page.locator('[data-testid="auth-sign-in-form"]');
+		await expect(signInForm).toBeVisible();
+		await expect(signInForm.locator('input[name="email"]')).toBeVisible();
+		await expect(signInForm.locator('input[name="password"]')).toBeVisible();
 	});
 
 	test("sign up page loads", async ({ page }) => {
 		await page.goto("/auth/sign-up");
-		await expect(
-			page.locator('[data-testid="auth-sign-up-form"]'),
-		).toBeVisible();
-		await expect(page.locator('input[name="email"]')).toBeVisible();
-		await expect(page.locator('input[name="password"]')).toBeVisible();
+		const signUpForm = page.locator('[data-testid="auth-sign-up-form"]');
+		await expect(signUpForm).toBeVisible();
+		await expect(signUpForm.locator('input[name="email"]')).toBeVisible();
+		await expect(signUpForm.locator('input[name="password"]')).toBeVisible();
 	});
 
 	test("API health endpoint responds", async ({ request }) => {
@@ -81,20 +79,49 @@ test.describe("Smoke Tests", () => {
 		});
 		expect(bodyStyles).toBeTruthy();
 
-		// Check that JavaScript is working
+		// Check that JavaScript and React are working
+		// Next.js 15 doesn't use traditional React root markers like data-reactroot or #__next
+		// Instead, we check for React internals and Next.js specific elements
 		const hasReact = await page.evaluate(() => {
-			return (
-				typeof window !== "undefined" &&
-				typeof document !== "undefined" &&
-				document.querySelector("[data-reactroot], #__next, #root") !== null
+			// Check for Next.js specific elements
+			interface WindowWithNext extends Window {
+				next?: unknown;
+				__REACT_DEVTOOLS_GLOBAL_HOOK__?: unknown;
+			}
+
+			const hasNextElements = !!(
+				document.querySelector("next-route-announcer") ||
+				(window as WindowWithNext).next
 			);
+
+			// Check for React internals on elements
+			const elements = document.querySelectorAll("*");
+			let hasReactInternals = false;
+			for (let i = 0; i < Math.min(elements.length, 100); i++) {
+				const el = elements[i];
+				const keys = Object.keys(el);
+				if (
+					keys.some(
+						(key) => key.startsWith("__react") || key.startsWith("_react"),
+					)
+				) {
+					hasReactInternals = true;
+					break;
+				}
+			}
+
+			// Check for React dev tools hook
+			const hasReactDevTools = !!(window as WindowWithNext)
+				.__REACT_DEVTOOLS_GLOBAL_HOOK__;
+
+			return hasNextElements || hasReactInternals || hasReactDevTools;
 		});
 		expect(hasReact).toBe(true);
 	});
 
-	test("security headers are present", async ({ request }) => {
-		const response = await request.get("/");
-		const headers = response.headers();
+	test("security headers are present", async ({ page }) => {
+		const response = await page.goto("/");
+		const headers = response?.headers() || {};
 
 		// Check for important security headers
 		expect(headers["x-frame-options"]).toBeTruthy();

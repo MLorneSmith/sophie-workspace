@@ -28,58 +28,100 @@ export class OnboardingPageObject {
 		} = options || {};
 
 		// Wait for onboarding page to load
-		await this.page.waitForURL("/onboarding");
+		await this.page.waitForURL("**/onboarding");
 
 		// Step 1: Welcome - just click continue
 		await this.page.getByRole("button", { name: "Continue" }).click();
 
 		// Step 2: Profile - enter name
-		await this.page.getByLabel("Your name").fill(name);
+		await this.page.getByLabel("Your Name").fill(name);
 		await this.page.getByRole("button", { name: "Continue" }).click();
 
 		// Step 3: Goals
-		// Select primary goal
-		await this.page.getByLabel(this.capitalizeFirst(primaryGoal)).click();
+		// Select primary goal from dropdown
+		await this.page.getByLabel("Primary Goal").selectOption(primaryGoal);
 
 		// Fill in goal-specific fields
 		if (primaryGoal === "work") {
-			await this.page.getByLabel("Your role").fill(role || "Developer");
+			await this.page.getByLabel("Your Role").fill(role || "Developer");
 			await this.page
-				.getByLabel("Your industry")
+				.getByLabel("Your Industry")
 				.fill(industry || "Technology");
 		} else if (primaryGoal === "personal") {
 			await this.page
-				.getByLabel("Your project")
+				.getByLabel("Personal Project")
 				.fill(options?.project || "Personal Website");
 		} else if (primaryGoal === "school") {
 			// Select education level from dropdown
-			await this.page.getByRole("combobox").click();
 			await this.page
-				.getByRole("option", {
-					name: options?.educationLevel || "Undergraduate",
-				})
-				.click();
+				.getByLabel("Education Level")
+				.selectOption(
+					options?.educationLevel?.toLowerCase() || "undergraduate",
+				);
 			await this.page
-				.getByLabel("Your major")
+				.getByLabel("Major/Subject")
 				.fill(options?.major || "Computer Science");
 		}
 
-		// Select secondary goals
+		// Select secondary goals (checkboxes)
 		for (const goal of secondaryGoals) {
-			await this.page.getByLabel(this.capitalizeFirst(goal)).click();
+			await this.page
+				.getByRole("checkbox", {
+					name: `${this.capitalizeFirst(goal)} goal`,
+				})
+				.check();
 		}
 
 		await this.page.getByRole("button", { name: "Continue" }).click();
 
 		// Step 4: Theme - select theme preference
-		await this.page.getByLabel(this.capitalizeFirst(theme)).click();
+		// Click on the theme container using data attribute
+		await this.page.locator(`[data-theme-option="${theme}"]`).click();
 		await this.page.getByRole("button", { name: "Continue" }).click();
 
 		// Step 5: Complete - click "Get Started"
-		await this.page.getByRole("button", { name: "Get Started" }).click();
+		const getStartedButton = this.page.getByRole("button", {
+			name: "Get Started",
+		});
 
-		// Wait for redirect to home page
-		await this.page.waitForURL("/home");
+		// Set up dialog handler in case there's an alert
+		this.page.on("dialog", async (dialog) => {
+			console.error(`Alert dialog detected: ${dialog.message()}`);
+			await dialog.accept();
+		});
+
+		await getStartedButton.click();
+
+		// Wait a bit for the form submission to process
+		await this.page.waitForTimeout(2000);
+
+		// Check for any visible alerts on the page
+		const alertElement = await this.page.getByRole("alert").first();
+		if (await alertElement.isVisible({ timeout: 1000 })) {
+			const alertText = await alertElement.textContent();
+			console.error(`Alert found on page: ${alertText}`);
+		}
+
+		// Wait for redirect to home page with better error handling
+		try {
+			await this.page.waitForURL("**/home", { timeout: 15000 });
+		} catch (error) {
+			// If we're not redirected to /home, check if we're on an error page or still on onboarding
+			const currentUrl = this.page.url();
+			console.error(`Failed to redirect to /home. Current URL: ${currentUrl}`);
+
+			// Check for any error messages on the page
+			const errorMessage = await this.page
+				.locator("text=/error|failed/i")
+				.first()
+				.textContent()
+				.catch(() => null);
+			if (errorMessage) {
+				console.error(`Error message found: ${errorMessage}`);
+			}
+
+			throw error;
+		}
 	}
 
 	/**
