@@ -684,16 +684,19 @@ function ThemeStep() {
 												type="radio"
 												className="sr-only"
 												{...field}
+												id={`theme-${style}`}
 												checked={field.value === style}
 												onChange={() => field.onChange(style)}
+												aria-label={`${style.charAt(0).toUpperCase() + style.slice(1)} mode`}
 											/>
 										</FormControl>
 										<div
-											className={`items-center rounded-md border-2 p-1 transition-colors duration-200 ${
+											className={`items-center rounded-md border-2 p-1 transition-colors duration-200 cursor-pointer ${
 												field.value === style
 													? "border-primary hover:border-primary"
 													: "border-muted hover:border-accent"
 											}`}
+											data-theme-option={style}
 										>
 											<Image
 												src={`/images/${style}.webp`}
