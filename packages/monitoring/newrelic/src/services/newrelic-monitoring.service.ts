@@ -44,9 +44,12 @@ export class NewRelicMonitoringService extends MonitoringService {
 				this.newrelic = global.newrelic;
 				this.isReady = true;
 			} else if (typeof window === "undefined") {
-				// Server-side: Try to require New Relic
+				// Server-side: Try to dynamically import New Relic
+				// Using eval to prevent webpack from analyzing the import
 				try {
-					this.newrelic = require("newrelic") as NewRelicAgent;
+					// biome-ignore lint/security/noGlobalEval: Necessary to prevent webpack bundling
+					const requireFunc = eval("require");
+					this.newrelic = requireFunc("newrelic") as NewRelicAgent;
 					this.isReady = true;
 				} catch (_e) {
 					this.logger.warn(

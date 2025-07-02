@@ -1,3 +1,5 @@
+"use client";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Database } from "@kit/supabase/database";
 import { Button } from "@kit/ui/button";
