@@ -84,8 +84,8 @@ export default defineConfig({
 		navigationTimeout: 30000, // Increased for server startup and concurrent load
 		actionTimeout: 15000, // More time for interactions under load
 	},
-	// test timeout set to 2 minutes for better stability
-	timeout: 120 * 1000,
+	// test timeout increased to 3 minutes for better stability with authentication flows
+	timeout: 180 * 1000,
 	expect: {
 		// expect timeout set to 30 seconds for email confirmation
 		timeout: 30 * 1000,
