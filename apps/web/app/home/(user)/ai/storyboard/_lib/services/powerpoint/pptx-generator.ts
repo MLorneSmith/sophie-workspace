@@ -13,6 +13,10 @@ import type {
 	StoryboardData,
 } from "../../types";
 
+// Re-export layout positions for backward compatibility
+export { LAYOUT_POSITIONS } from "../../constants/layout-positions";
+export type { PositionMap } from "../../constants/layout-positions";
+
 // Removed unused types - ChartType, ChartData, and ChartOptions were not being used
 
 interface TableRow {
@@ -99,88 +103,6 @@ declare module "pptxgenjs" {
 		addSlide(options?: string | Record<string, unknown>): Slide;
 	}
 }
-
-// Template positions for different elements in different slide layouts
-export interface PositionMap {
-	title: {
-		x: number;
-		y: number;
-		w: number;
-		h: number;
-		fontSize: number;
-		align: string;
-	};
-	subheadline1: { x: number; y: number; w: number; h: number };
-	subheadline2?: { x: number; y: number; w: number; h: number };
-	content1: { x: number; y: number; w: number; h: number };
-	content2?: { x: number; y: number; w: number; h: number };
-	[key: string]:
-		| {
-				// Add index signature
-				x: number;
-				y: number;
-				w: number;
-				h: number;
-				fontSize?: number; // Make optional as not all positions have it
-				align?: string; // Make optional as not all positions have it
-		  }
-		| undefined; // Allow undefined for keys that don't exist
-}
-
-// Layout definitions for different slide types
-export const LAYOUT_POSITIONS: Record<string, PositionMap> = {
-	title: {
-		title: { x: 0.5, y: 1.0, w: 9, h: 1.5, fontSize: 44, align: "center" },
-		subheadline1: { x: 0.5, y: 3.0, w: 9, h: 1 },
-		content1: { x: 0.5, y: 4.5, w: 9, h: 1.5 },
-	},
-	section: {
-		title: { x: 0.5, y: 2.5, w: 9, h: 1.5, fontSize: 40, align: "center" },
-		subheadline1: { x: 0.5, y: 4.0, w: 9, h: 1 },
-		content1: { x: 0.5, y: 4.0, w: 9, h: 1.5 },
-	},
-	"one-column": {
-		title: { x: 0.5, y: 0.6, w: 9, h: 0.5, fontSize: 24, align: "left" },
-		subheadline1: { x: 0.5, y: 1.2, w: 9, h: 0.4 },
-		content1: { x: 0.5, y: 1.8, w: 9, h: 4 },
-	},
-	"two-column": {
-		title: { x: 0.5, y: 0.6, w: 9, h: 0.5, fontSize: 24, align: "left" },
-		subheadline1: { x: 0.5, y: 1.2, w: 4.25, h: 0.4 },
-		subheadline2: { x: 5.25, y: 1.2, w: 4.25, h: 0.4 },
-		content1: { x: 0.5, y: 1.8, w: 4.25, h: 4 },
-		content2: { x: 5.25, y: 1.8, w: 4.25, h: 4 },
-	},
-	"bullet-list": {
-		title: { x: 0.5, y: 0.6, w: 9, h: 0.5, fontSize: 24, align: "left" },
-		subheadline1: { x: 0.5, y: 1.2, w: 9, h: 0.4 },
-		content1: { x: 0.5, y: 1.8, w: 9, h: 0.5 },
-	},
-	chart: {
-		title: { x: 0.5, y: 0.6, w: 9, h: 0.5, fontSize: 24, align: "left" },
-		subheadline1: { x: 0.5, y: 1.2, w: 9, h: 0.4 },
-		content1: { x: 1.0, y: 1.8, w: 8, h: 4 },
-	},
-	"image-text": {
-		title: { x: 0.5, y: 0.6, w: 9, h: 0.5, fontSize: 24, align: "left" },
-		subheadline1: { x: 5.0, y: 1.2, w: 4.5, h: 0.4 },
-		content1: { x: 0.5, y: 1.8, w: 4.0, h: 4 }, // Image position
-		content2: { x: 5.0, y: 1.8, w: 4.5, h: 4 }, // Text position
-	},
-	"text-image": {
-		title: { x: 0.5, y: 0.6, w: 9, h: 0.5, fontSize: 24, align: "left" },
-		subheadline1: { x: 0.5, y: 1.2, w: 4.5, h: 0.4 },
-		content1: { x: 0.5, y: 1.8, w: 4.5, h: 4 }, // Text position
-		content2: { x: 5.5, y: 1.8, w: 4.0, h: 4 }, // Image position
-	},
-	comparison: {
-		title: { x: 0.5, y: 0.6, w: 9, h: 0.5, fontSize: 24, align: "left" },
-		subheadline1: { x: 0.5, y: 1.2, w: 4.25, h: 0.4 },
-		subheadline2: { x: 5.25, y: 1.2, w: 4.25, h: 0.4 },
-		content1: { x: 0.5, y: 1.8, w: 4.25, h: 4 },
-		content2: { x: 5.25, y: 1.8, w: 4.25, h: 4 },
-	},
-};
 
 /**
  * PptxGenerator class for handling PowerPoint generation from storyboard data
