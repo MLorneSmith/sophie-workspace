@@ -56,7 +56,12 @@ async function SignInPage({ searchParams }: SignInPageProps) {
 			/>
 
 			<div className={"flex justify-center"}>
-				<Button asChild variant={"link"} size={"sm"}>
+				<Button
+					asChild
+					variant={"link"}
+					size={"sm"}
+					style={{ color: "#262626" }}
+				>
 					<Link href={signUpPath} prefetch={true}>
 						<Trans i18nKey={"auth:doNotHaveAccountYet"} />
 					</Link>

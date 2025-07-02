@@ -139,7 +139,7 @@ export function StickyScrollReveal({
 									<motion.div
 										initial={false}
 										animate={{
-											opacity: isActive ? 1 : 0.3,
+											opacity: isActive ? 1 : 0.7,
 										}}
 										transition={springConfig}
 										style={{
@@ -160,7 +160,7 @@ export function StickyScrollReveal({
 												"mt-10 max-w-lg",
 												isActive
 													? "text-muted-foreground"
-													: "text-muted-foreground/50",
+													: "text-muted-foreground/70",
 											)}
 										>
 											{renderDescription(item.description)}

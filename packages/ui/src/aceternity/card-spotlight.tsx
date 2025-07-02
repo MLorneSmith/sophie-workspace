@@ -70,20 +70,14 @@ export const CardSpotlight = ({
 	const maskImage = useMotionTemplate`radial-gradient(${radius}px circle at ${mouseX}px ${mouseY}px, white, transparent 80%)`;
 
 	return (
-		<div
+		<article
 			className={cn(
-				"group/spotlight relative h-full rounded-md border border-neutral-800 bg-black p-8 dark:border-neutral-800",
+				"group/spotlight relative h-full rounded-md border border-border bg-card p-8",
 				className,
 			)}
 			onMouseMove={handleMouseMove}
 			onMouseEnter={handleMouseEnter}
 			onMouseLeave={handleMouseLeave}
-			onFocus={handleMouseEnter}
-			onBlur={handleMouseLeave}
-			// biome-ignore lint/a11y/noNoninteractiveTabindex: Card needs keyboard focus for spotlight effect
-			tabIndex={0}
-			// biome-ignore lint/a11y/useSemanticElements: This is an interactive card component
-			role="article"
 			{...props}
 		>
 			<motion.div
@@ -106,23 +100,23 @@ export const CardSpotlight = ({
 				<div className="flex items-center gap-4">
 					{iconName &&
 						React.createElement(IconMap[iconName], {
-							className: "h-8 w-8 text-zinc-100",
+							className: "h-8 w-8 text-foreground",
 						})}
 					{heading && (
-						<h3 className="h4 font-heading font-bold text-zinc-100">
+						<h3 className="h4 font-heading font-bold text-foreground">
 							{heading}
 						</h3>
 					)}
 				</div>
 				{description && (
-					<p className="body mt-8 text-zinc-400">{description}</p>
+					<p className="body mt-8 text-muted-foreground">{description}</p>
 				)}
 				{bulletPoints && bulletPoints.length > 0 && (
 					<ul className="mt-auto space-y-2">
 						{bulletPoints.map((point, index) => (
 							<li
 								key={`bullet-${index}-${point.slice(0, 20)}`}
-								className="text-sm text-zinc-400"
+								className="text-sm text-muted-foreground"
 							>
 								• {point}
 							</li>
@@ -130,6 +124,6 @@ export const CardSpotlight = ({
 					</ul>
 				)}
 			</div>
-		</div>
+		</article>
 	);
 };
