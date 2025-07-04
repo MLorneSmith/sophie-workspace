@@ -80,7 +80,7 @@ export default defineConfig({
 		/* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
 		trace: "on-first-retry",
 
-		/* Increase timeouts for matrix testing across different devices */
+		/* Increased timeouts for matrix testing across different devices */
 		navigationTimeout: 30000, // Increased for server startup and concurrent load
 		actionTimeout: 15000, // More time for interactions under load
 	},
@@ -157,7 +157,8 @@ export default defineConfig({
 	webServer: [
 		{
 			cwd: "../../",
-			command: process.env.PLAYWRIGHT_WEB_COMMAND || "pnpm --filter=web dev",
+			command:
+				process.env.PLAYWRIGHT_WEB_COMMAND || "pnpm --filter=web dev:test",
 			url: "http://localhost:3000",
 			name: "Frontend",
 			timeout: 90 * 1000, // Increased timeout for initial compilation

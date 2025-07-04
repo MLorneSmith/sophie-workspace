@@ -10,6 +10,7 @@
 		"build:test": "NODE_ENV=test next build --turbopack",
 		"clean": "git clean -xdf .next .turbo node_modules",
 		"dev": "dotenv -e .env.local -- node -r newrelic node_modules/next/dist/bin/next dev --turbo | pino-pretty -c",
+		"dev:test": "NODE_ENV=test dotenv -e .env.test -- next dev --turbo | pino-pretty -c",
 		"dev:no-newrelic": "next dev --turbo | pino-pretty -c",
 		"lint": "biome lint .",
 		"lint:fix": "biome lint --write .",
