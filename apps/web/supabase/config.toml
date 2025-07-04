@@ -107,13 +107,13 @@ port = 54327
 backend = "postgres"
 
 # Added from Makerkit update
-[db.migrations]
-schema_paths = [
-  "./schemas/*.sql",
-]
+# [db.migrations]
+# schema_paths = [
+#   "./schemas/*.sql",
+# ]
 
-[db.seed]
-sql_paths = ['seed.sql', './seeds/*.sql']
+# [db.seed]
+# sql_paths = ['./seeds/*.sql']
 
 [edge_runtime]
 # Inspector port for debugging Edge Functions.
