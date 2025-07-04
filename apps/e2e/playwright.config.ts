@@ -80,15 +80,15 @@ export default defineConfig({
 		/* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
 		trace: "on-first-retry",
 
-		/* Increase timeouts for matrix testing across different devices */
-		navigationTimeout: 30000, // Increased for server startup and concurrent load
-		actionTimeout: 15000, // More time for interactions under load
+		/* Reduced timeouts for faster feedback */
+		navigationTimeout: 20000, // Reduced from 30s to 20s
+		actionTimeout: 10000, // Reduced from 15s to 10s
 	},
-	// test timeout increased to 3 minutes for better stability with authentication flows
-	timeout: 180 * 1000,
+	// test timeout reduced for faster feedback
+	timeout: 60 * 1000, // Reduced from 180s to 60s
 	expect: {
-		// expect timeout set to 30 seconds for email confirmation
-		timeout: 30 * 1000,
+		// expect timeout for faster feedback
+		timeout: 15 * 1000, // Reduced from 30s to 15s
 	},
 	/* Configure projects for major browsers - reduced for local development */
 	projects: process.env.CI
@@ -157,7 +157,8 @@ export default defineConfig({
 	webServer: [
 		{
 			cwd: "../../",
-			command: process.env.PLAYWRIGHT_WEB_COMMAND || "pnpm --filter=web dev",
+			command:
+				process.env.PLAYWRIGHT_WEB_COMMAND || "pnpm --filter=web dev:test",
 			url: "http://localhost:3000",
 			name: "Frontend",
 			timeout: 90 * 1000, // Increased timeout for initial compilation
