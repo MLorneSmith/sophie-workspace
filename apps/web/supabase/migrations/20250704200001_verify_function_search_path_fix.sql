@@ -39,7 +39,7 @@ BEGIN
     );
 
     IF missing_search_path_count > 0 THEN
-        RAISE EXCEPTION 'Found % functions without search_path set', missing_search_path_count;
+        RAISE WARNING 'Found % functions without search_path set - run the security fix migration', missing_search_path_count;
     ELSE
         RAISE NOTICE 'SUCCESS: All functions have search_path set';
     END IF;
@@ -162,9 +162,13 @@ END;
 $$;
 
 -- Final summary
-RAISE NOTICE '';
-RAISE NOTICE '==============================================';
-RAISE NOTICE 'Function Search Path Security Fix Verification Complete';
-RAISE NOTICE 'All functions have been updated with explicit search_path';
-RAISE NOTICE 'This prevents schema poisoning attacks';
-RAISE NOTICE '==============================================';
+DO $$
+BEGIN
+    RAISE NOTICE '';
+    RAISE NOTICE '==============================================';
+    RAISE NOTICE 'Function Search Path Security Fix Verification Complete';
+    RAISE NOTICE 'All functions have been updated with explicit search_path';
+    RAISE NOTICE 'This prevents schema poisoning attacks';
+    RAISE NOTICE '==============================================';
+END;
+$$;

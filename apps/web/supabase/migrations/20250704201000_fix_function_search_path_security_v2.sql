@@ -1,8 +1,15 @@
--- Migration: Fix Function Search Path Security Vulnerability
--- Description: Adds explicit search_path to all functions to prevent schema poisoning attacks
+-- Migration: Fix Function Search Path Security Vulnerability (v2)
+-- Description: Drops and recreates functions with correct signatures and search_path
 -- Issue: ISSUE-145 - Security Warning: Function Search Path Mutable
 
--- Public Schema Functions
+-- First, drop the functions that have signature conflicts
+DROP FUNCTION IF EXISTS payload.ensure_downloads_id_column_exists(text);
+DROP FUNCTION IF EXISTS payload.fix_dynamic_table(text);
+DROP FUNCTION IF EXISTS payload.get_relationship_data(text, text, text);
+
+-- Now recreate all functions with correct signatures and search_path
+
+-- Public Schema Functions (these should work without dropping)
 
 -- 1. Fix insert_certificate function
 CREATE OR REPLACE FUNCTION public.insert_certificate(
@@ -513,28 +520,37 @@ EXCEPTION
 END;
 $$;
 
--- 12. Fix ensure_downloads_id_column_exists function
-CREATE OR REPLACE FUNCTION payload.ensure_downloads_id_column_exists(table_name text)
-RETURNS void
+-- 12. Recreate ensure_downloads_id_column_exists function with correct signature
+CREATE FUNCTION payload.ensure_downloads_id_column_exists(table_name text)
+RETURNS boolean
 LANGUAGE plpgsql
 SET search_path = ''  -- Added explicit search_path
 AS $$
+DECLARE
+    column_exists boolean;
+    schema_name text := 'payload';
 BEGIN
     -- Check if downloads_id column exists
-    IF NOT EXISTS (
+    SELECT EXISTS (
         SELECT 1 
         FROM information_schema.columns 
-        WHERE table_schema = 'payload' 
+        WHERE table_schema = schema_name
         AND information_schema.columns.table_name = ensure_downloads_id_column_exists.table_name 
         AND column_name = 'downloads_id'
-    ) THEN
-        -- Add the column
-        EXECUTE format('ALTER TABLE payload.%I ADD COLUMN downloads_id character varying', table_name);
+    ) INTO column_exists;
+    
+    -- If column doesn't exist, add it
+    IF NOT column_exists THEN
+        BEGIN
+            EXECUTE format('ALTER TABLE %I.%I ADD COLUMN downloads_id UUID', schema_name, table_name);
+            RETURN TRUE;
+        EXCEPTION WHEN OTHERS THEN
+            -- Ignore errors (e.g., if table doesn't exist or we don't have permissions)
+            RETURN FALSE;
+        END;
     END IF;
-EXCEPTION
-    WHEN OTHERS THEN
-        -- Handle errors gracefully
-        RAISE NOTICE 'Error adding downloads_id to %: %', table_name, SQLERRM;
+    
+    RETURN TRUE;
 END;
 $$;
 
@@ -556,19 +572,21 @@ EXCEPTION
 END;
 $$;
 
--- 14. Fix fix_dynamic_table function
-CREATE OR REPLACE FUNCTION payload.fix_dynamic_table(table_name text)
-RETURNS void
+-- 14. Recreate fix_dynamic_table function with correct signature
+CREATE FUNCTION payload.fix_dynamic_table(table_name text)
+RETURNS boolean
 LANGUAGE plpgsql
 SET search_path = ''  -- Added explicit search_path
 AS $$
 BEGIN
     -- Add the path column to the dynamic table
     EXECUTE format('ALTER TABLE payload.%I ADD COLUMN IF NOT EXISTS path character varying', table_name);
+    RETURN TRUE;
 EXCEPTION
     WHEN OTHERS THEN
         -- Handle errors gracefully
         RAISE NOTICE 'Error adding path column to %: %', table_name, SQLERRM;
+        RETURN FALSE;
 END;
 $$;
 
@@ -589,9 +607,9 @@ EXCEPTION
 END;
 $$;
 
--- 16. Fix get_relationship_data function
-CREATE OR REPLACE FUNCTION payload.get_relationship_data(table_name text, id text, fallback_column text DEFAULT 'path'::text)
-RETURNS json
+-- 16. Recreate get_relationship_data function with correct signature
+CREATE FUNCTION payload.get_relationship_data(table_name text, id text, fallback_column text DEFAULT 'path'::text)
+RETURNS text
 LANGUAGE plpgsql
 SET search_path = ''  -- Added explicit search_path
 AS $$
@@ -615,22 +633,22 @@ BEGIN
     query := format('SELECT row_to_json(t) FROM (SELECT %s FROM payload.%I WHERE id = $1) t', column_list, table_name);
     EXECUTE query INTO result USING id;
     
-    RETURN result;
+    RETURN result::text;
 EXCEPTION
     WHEN undefined_table THEN
         -- Table doesn't exist, try with fallback
         BEGIN
             query := format('SELECT row_to_json(t) FROM (SELECT * FROM payload.%I WHERE %I = $1) t', table_name, fallback_column);
             EXECUTE query INTO result USING id;
-            RETURN result;
+            RETURN result::text;
         EXCEPTION
             WHEN OTHERS THEN
                 -- Return empty object on any error
-                RETURN '{}'::json;
+                RETURN '{}'::text;
         END;
     WHEN OTHERS THEN
         -- Return empty object on any other error
-        RETURN '{}'::json;
+        RETURN '{}'::text;
 END;
 $$;
 
