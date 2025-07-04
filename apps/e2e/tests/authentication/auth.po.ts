@@ -73,12 +73,18 @@ export class AuthPageObject {
 		},
 	) {
 		// Check if we're in local development with autoconfirm
+		// In test environment, we're always using local Supabase at 127.0.0.1:54321
 		const isLocal =
-			process.env.NEXT_PUBLIC_SUPABASE_URL?.includes("127.0.0.1:54321") ||
-			this.page.url().includes("localhost:3000");
+			process.env.NODE_ENV === "test" ||
+			process.env.CI === "true" ||
+			this.page.url().includes("localhost:3000") ||
+			this.page.url().includes("127.0.0.1");
 
 		if (isLocal) {
 			// In local Supabase, autoconfirm is enabled by default
+			// Wait a bit for the redirect to happen
+			await this.page.waitForTimeout(2000);
+
 			// Check if user is already logged in (redirected to onboarding)
 			const currentUrl = this.page.url();
 			if (currentUrl.includes("/onboarding") || currentUrl.includes("/home")) {
@@ -88,6 +94,15 @@ export class AuthPageObject {
 					);
 				}
 				return;
+			}
+
+			// If still on auth page, autoconfirm might not be working
+			if (currentUrl.includes("/auth/")) {
+				if (process.env.DEBUG) {
+					process.stdout.write(
+						"Warning: Still on auth page after sign-up. Autoconfirm may not be enabled.\n",
+					);
+				}
 			}
 		}
 
@@ -132,7 +147,12 @@ export class AuthPageObject {
 		});
 
 		// Check if we're in local development with autoconfirm
-		const isLocal = this.page.url().includes("localhost:3000");
+		// In test environment, we're always using local Supabase at 127.0.0.1:54321
+		const isLocal =
+			process.env.NODE_ENV === "test" ||
+			process.env.CI === "true" ||
+			this.page.url().includes("localhost:3000") ||
+			this.page.url().includes("127.0.0.1");
 
 		if (isLocal) {
 			// In local development with autoconfirm, wait for redirect after sign-up

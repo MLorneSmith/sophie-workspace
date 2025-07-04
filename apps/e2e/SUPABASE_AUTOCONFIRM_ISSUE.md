@@ -3,6 +3,7 @@
 ## Problem
 
 The E2E tests are failing because:
+
 1. Supabase local development has `GOTRUE_MAILER_AUTOCONFIRM=true` hardcoded
 2. Tests expect confirmation emails to be sent to Inbucket/Mailpit
 3. With autoconfirm enabled, no emails are sent - users are automatically confirmed
@@ -10,11 +11,13 @@ The E2E tests are failing because:
 ## Root Cause
 
 When running `npx supabase start`, the auth container is configured with:
-```
+
+```bash
 GOTRUE_MAILER_AUTOCONFIRM=true
 ```
 
 This means:
+
 - Sign-ups are automatically confirmed without sending emails
 - Users are immediately logged in after registration
 - No confirmation emails are sent to the local email testing service
