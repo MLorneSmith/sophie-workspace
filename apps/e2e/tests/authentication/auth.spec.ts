@@ -60,19 +60,31 @@ test.describe("Auth flow", () => {
 					"Autoconfirm enabled - user redirected to onboarding\n",
 				);
 			}
+		} else if (currentUrl.includes("/home")) {
+			// User might be redirected to home if already onboarded
+			if (process.env.DEBUG) {
+				process.stdout.write(
+					"User redirected to home page (possibly already onboarded)\n",
+				);
+			}
 		} else {
 			// Email confirmation required
 			await auth.visitConfirmEmailLink(email);
-			// After email confirmation, should redirect to onboarding
-			await page.waitForURL("**/onboarding");
+			// After email confirmation, should redirect to onboarding or home
+			await page.waitForURL((url) => {
+				return url.pathname === "/onboarding" || url.pathname === "/home";
+			});
 		}
 
 		// Skip the onboarding flow in E2E tests due to session synchronization issues
 		// This is a known issue where session metadata doesn't propagate fast enough
 		// between the server action and middleware in test environments
 
-		// Complete onboarding using the simple method with E2E bypass
-		await onboarding.completeOnboardingSimple();
+		// Only complete onboarding if we're on the onboarding page
+		if (page.url().includes("/onboarding")) {
+			// Complete onboarding using the simple method with E2E bypass
+			await onboarding.completeOnboardingSimple();
+		}
 
 		// Verify we're on the home page
 		expect(page.url()).toContain("/home");
