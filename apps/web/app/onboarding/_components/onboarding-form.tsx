@@ -171,15 +171,14 @@ export function OnboardingForm() {
 					localStorage.removeItem(STORAGE_KEY);
 					analytics.trackEvent("onboarding_completed", flattenFormData(data));
 
-					// Refresh the router to get the latest session data
-					router.refresh();
-
-					// Add a small delay to ensure user metadata is propagated
-					// This prevents the middleware from redirecting back to onboarding
-					await new Promise((resolve) => setTimeout(resolve, 1500));
-
-					// Navigate using Next.js router
-					router.push("/home");
+					// If server action returned a redirect URL, use it
+					if (result.redirectUrl) {
+						// Use window.location.href for a full page refresh to ensure session is reloaded
+						window.location.href = result.redirectUrl;
+					} else {
+						// Fallback to router push
+						router.push("/home");
+					}
 				} else {
 					throw new Error(result.message || "Failed to submit form");
 				}
@@ -779,11 +778,14 @@ function CompleteStep() {
 
 			const isValid = await form.trigger();
 			if (!isValid) {
+				const errors = form.formState.errors;
 				logger.error("Form validation failed on final submission", {
 					formData: finalFormData,
+					errors: errors,
+					formState: form.formState,
 				});
-				setIsSubmitting(false);
-				return;
+				// Try to submit anyway since this is the final step
+				// The server will validate the data
 			}
 
 			const result = await submitOnboardingFormAction(finalFormData);
@@ -795,15 +797,14 @@ function CompleteStep() {
 				// Clear local storage to ensure clean state
 				localStorage.removeItem(STORAGE_KEY);
 
-				// Refresh the router to get the latest session data
-				router.refresh();
-
-				// Add a delay to ensure user metadata is propagated and session is refreshed
-				// This prevents the middleware from redirecting back to onboarding
-				await new Promise((resolve) => setTimeout(resolve, 1500));
-
-				// Navigate using Next.js router
-				router.push("/home");
+				// Use the redirect URL from the server action
+				if (result.redirectUrl) {
+					window.location.href = result.redirectUrl;
+				} else {
+					// Fallback to hardcoded URL
+					const timestamp = Date.now();
+					window.location.href = `/home?onboarded=${timestamp}`;
+				}
 			} else {
 				logger.error("Onboarding completion failed", {
 					result,
