@@ -55,30 +55,47 @@ Run all available tests across the project using the correct pnpm scripts.
    If E2E tests fail with timeout or connection errors:
 
    ```bash
-   # Check for hanging server processes
-   ps aux | grep -E "(next|node)" | grep -v grep
+   # Option 1: Use the automated cleanup script
+   bash .claude/scripts/cleanup-ports.sh
+   ```
 
-   # Check which processes are using ports 3000/3020
-   ss -tlnp | grep -E ":(3000|3020)"
+   Or manually clean up:
+
+   ```bash
+   # Check for hanging server processes
+   ps aux | grep -E "(next|node|supabase)" | grep -v grep
+
+   # Check which processes are using test ports
+   ss -tlnp | grep -E ":(3000|3020|54321|54322|54323|54324)"
 
    # Kill hanging Next.js server processes
    pkill -f "next-server" || echo "No hanging servers found"
+
+   # Stop Supabase instances
+   npx supabase stop --project-id e2e
+   npx supabase stop
 
    # If specific PIDs are found, kill them directly
    kill -9 [PID_NUMBER]
 
    # Verify ports are freed
-   ss -tlnp | grep -E ":(3000|3020)" || echo "Ports are now free"
+   ss -tlnp | grep -E ":(3000|3020|543[0-9]{2})" || echo "Ports are now free"
 
    # Test manual server startup to verify they work
    timeout 15s npx next dev --turbo  # Test web server
    ```
 
    **Common server issues:**
-   - Port conflicts from previous test runs
+   - Port conflicts from previous test runs (especially Supabase ports 54321-54326)
    - Hanging processes that don't respond to requests
    - Server startup race conditions in Playwright
    - Performance issues under concurrent test load
+   - Multiple Supabase instances running with different project IDs
+
+   **Port conflict prevention:**
+   - The E2E test setup script (`apps/e2e/scripts/test-setup.sh`) now automatically checks for port conflicts
+   - It will stop existing Supabase instances and kill processes using required ports
+   - If tests still fail, run the cleanup script: `bash .claude/scripts/cleanup-ports.sh`
 
 9. Report summary of:
    - Total tests run
