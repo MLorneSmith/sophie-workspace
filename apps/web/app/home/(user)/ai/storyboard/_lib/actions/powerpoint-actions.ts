@@ -10,7 +10,7 @@ import type { StoryboardData } from "../types";
  * This runs on the server where Node.js modules are available
  */
 export const generatePowerPointAction = enhanceAction(
-	async (storyboard: StoryboardData, user) => {
+	async (storyboard: StoryboardData, _user) => {
 		try {
 			// Instantiate the generator on the server
 			const generator = new PptxGenerator();
