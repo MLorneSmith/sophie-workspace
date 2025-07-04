@@ -78,11 +78,15 @@
 			"outputs": ["node_modules/.cache/.eslintcache"]
 		},
 		"typecheck": {
-			"dependsOn": ["^topo"],
+			"dependsOn": ["^build"],
 			"outputs": ["node_modules/.cache/tsbuildinfo.json"]
 		},
 		"test": {
 			"dependsOn": ["^topo"]
+		},
+		"test:coverage": {
+			"dependsOn": ["^topo"],
+			"outputs": ["coverage/**"]
 		},
 		"clean": {
 			"cache": false

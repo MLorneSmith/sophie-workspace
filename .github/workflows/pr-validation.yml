@@ -26,6 +26,7 @@ permissions:
   pull-requests: write
   issues: write
   checks: write
+  security-events: write
 
 env:
   NODE_VERSION: '20'
