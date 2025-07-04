@@ -6,7 +6,7 @@ import { Textarea } from "@kit/ui/textarea";
 import { Trans } from "@kit/ui/trans";
 import { useId, useState } from "react";
 
-import type { SurveyQuestion } from "../../../../../../../payload/payload-types";
+import type { SurveyQuestion } from "@kit/cms-types";
 
 type TextFieldQuestionProps = {
 	question: SurveyQuestion;
