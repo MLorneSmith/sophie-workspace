@@ -22,6 +22,20 @@ export function AuthErrorAlert({
 	const DefaultError = <Trans i18nKey="auth:errors.default" />;
 	const errorCode = error instanceof Error ? error.message : error;
 
+	// Log the error in development/test for debugging
+	if (
+		process.env.NODE_ENV === "development" ||
+		process.env.NODE_ENV === "test"
+	) {
+		// biome-ignore lint/suspicious/noConsole: Debug logging for auth errors in development/test
+		console.error("[AuthErrorAlert] Authentication error:", {
+			error,
+			errorCode,
+			isError: error instanceof Error,
+			stack: error instanceof Error ? error.stack : undefined,
+		});
+	}
+
 	return (
 		<Alert variant={"destructive"}>
 			<ExclamationTriangleIcon className={"w-4"} aria-hidden="true" />
