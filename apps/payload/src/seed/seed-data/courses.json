@@ -13,8 +13,11 @@
 				"children": []
 			}
 		},
-		"downloads": [],
+		"downloads": [
+			"{ref:downloads:slide-templates}",
+			"{ref:downloads:swipe-file}"
+		],
 		"publishedAt": "2024-01-15T10:00:00Z",
 		"status": "published"
-	}	
+	}
 ]

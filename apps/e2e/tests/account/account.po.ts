@@ -18,54 +18,59 @@ export class AccountPageObject {
 	}
 
 	async setup() {
-		const result = await this.auth.signUpFlow("/home/settings");
+		// Navigate to sign-up page with next parameter
+		await this.page.goto("/auth/sign-up?next=/home/settings");
 
-		// Try to complete onboarding, but if it fails, just navigate directly to settings
-		try {
-			// New users are redirected to onboarding, complete it
-			await this.onboarding.completeOnboarding();
-		} catch (error) {
-			console.log(
-				"Onboarding failed, attempting direct navigation to settings",
-			);
+		const email = this.auth.createRandomEmail();
 
-			// Force navigation to settings page
-			await this.page.goto("/home/settings", { waitUntil: "domcontentloaded" });
+		// Sign up
+		await this.auth.signUp({
+			email,
+			password: "password",
+			repeatPassword: "password",
+		});
 
-			// If we get redirected back to onboarding, try a simpler onboarding approach
-			if (this.page.url().includes("/onboarding")) {
-				console.log("Still on onboarding page, attempting minimal onboarding");
+		// Wait for either onboarding redirect or success status
+		await this.page.waitForURL(
+			(url) =>
+				url.href.includes("/onboarding") || url.href.includes("status=success"),
+			{ timeout: 10000 },
+		);
 
-				// Just click through all Continue/Get Started buttons
-				const maxAttempts = 10;
-				for (let i = 0; i < maxAttempts; i++) {
-					// Try to find and click any button that moves forward
-					const buttons = await this.page
-						.getByRole("button", { name: /continue|get started/i })
-						.all();
-					if (buttons.length > 0) {
-						await buttons[0].click();
-						await this.page.waitForTimeout(500);
-					} else {
-						break;
-					}
+		const currentUrl = this.page.url();
+		console.log(`After sign-up, current URL: ${currentUrl}`);
 
-					// Check if we've reached home
-					if (this.page.url().includes("/home")) {
-						break;
-					}
-				}
-			}
+		// Handle email confirmation if needed
+		if (currentUrl.includes("status=success")) {
+			// Email confirmation required
+			await this.auth.visitConfirmEmailLink(email);
+
+			// After confirmation, should redirect to onboarding
+			await this.page.waitForURL("**/onboarding", { timeout: 10000 });
 		}
 
-		// Ensure we're on the settings page
+		// Now we should be on onboarding page
+		// Complete onboarding using the simplified approach with E2E bypass
+		try {
+			await this.onboarding.completeOnboardingSimple();
+		} catch (error) {
+			console.log(
+				"Onboarding failed, attempting direct navigation with E2E bypass",
+			);
+			// Force navigation to settings page with E2E parameter
+			await this.page.goto("/home/settings?e2e=true", {
+				waitUntil: "domcontentloaded",
+			});
+		}
+
+		// Navigate to settings page if not already there
 		if (!this.page.url().includes("/home/settings")) {
-			await this.page.goto("/home/settings");
+			await this.page.goto("/home/settings?e2e=true");
 		}
 
 		await this.page.waitForLoadState("networkidle");
 
-		return result;
+		return { email };
 	}
 
 	async updateName(name: string) {

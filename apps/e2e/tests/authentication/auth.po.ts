@@ -72,13 +72,45 @@ export class AuthPageObject {
 			deleteAfter: true,
 		},
 	) {
+		// Check if we're in local development with autoconfirm
+		const isLocal =
+			process.env.NEXT_PUBLIC_SUPABASE_URL?.includes("127.0.0.1:54321") ||
+			this.page.url().includes("localhost:3000");
+
+		if (isLocal) {
+			// In local Supabase, autoconfirm is enabled by default
+			// Check if user is already logged in (redirected to onboarding)
+			const currentUrl = this.page.url();
+			if (currentUrl.includes("/onboarding") || currentUrl.includes("/home")) {
+				if (process.env.DEBUG) {
+					process.stdout.write(
+						`User ${email} auto-confirmed (local Supabase)\n`,
+					);
+				}
+				return;
+			}
+		}
+
+		// Log when we start waiting for email
+		if (process.env.DEBUG) {
+			process.stdout.write(`Waiting for confirmation email for ${email}...\n`);
+		}
+
+		const startTime = Date.now();
+
 		return expect(async () => {
 			const res = await this.mailbox.visitMailbox(email, params);
 
 			expect(res).not.toBeNull();
+
+			// Log how long it took to receive the email
+			if (process.env.DEBUG) {
+				const elapsed = Date.now() - startTime;
+				process.stdout.write(`Email received after ${elapsed}ms\n`);
+			}
 		}).toPass({
-			timeout: 30000, // Increase timeout to 30 seconds
-			intervals: [1000, 2000, 5000], // Retry intervals
+			timeout: 30000, // 30 seconds should be enough for local testing
+			intervals: [500, 1000, 2000, 3000, 5000], // Start with faster retries
 		});
 	}
 
@@ -99,7 +131,111 @@ export class AuthPageObject {
 			repeatPassword: "password",
 		});
 
-		await this.visitConfirmEmailLink(email);
+		// Check if we're in local development with autoconfirm
+		const isLocal = this.page.url().includes("localhost:3000");
+
+		if (isLocal) {
+			// In local development with autoconfirm, wait for redirect after sign-up
+			if (process.env.DEBUG) {
+				process.stdout.write(
+					"Local environment detected, waiting for auto-redirect after sign-up...\n",
+				);
+			}
+
+			// Wait for navigation away from sign-up page or success status
+			await this.page
+				.waitForURL(
+					(url) =>
+						!url.href.includes("/auth/sign-up") ||
+						url.href.includes("status=success"),
+					{ timeout: 10000 },
+				)
+				.catch(() => {
+					// If redirect doesn't happen, try manual navigation
+					if (process.env.DEBUG) {
+						process.stdout.write(
+							`Redirect timeout, attempting manual navigation to ${path}\n`,
+						);
+					}
+				});
+
+			// Check current URL after sign-up
+			const currentUrl = this.page.url();
+			if (process.env.DEBUG) {
+				process.stdout.write(`After sign-up, current URL: ${currentUrl}\n`);
+			}
+
+			// If we're on sign-up page with success status, handle the confirmation flow
+			if (
+				currentUrl.includes("/auth/sign-up") &&
+				currentUrl.includes("status=success")
+			) {
+				if (process.env.DEBUG) {
+					process.stdout.write(
+						"Sign-up successful, but confirmation required. Checking for auto-login...\n",
+					);
+				}
+
+				// In local dev with autoconfirm, the user should be logged in already
+				// Try navigating directly to the target path
+				await this.page.goto(path);
+				await this.page.waitForLoadState("networkidle");
+
+				// Check if we're redirected back to auth (not logged in)
+				const afterNavUrl = this.page.url();
+				if (afterNavUrl.includes("/auth/")) {
+					// Not logged in, need to handle email confirmation
+					await this.visitConfirmEmailLink(email);
+				}
+			} else if (currentUrl.includes("/auth/sign-up")) {
+				// Still on sign-up page without success, there's an issue
+				throw new Error(
+					`Sign-up failed - still on sign-up page: ${currentUrl}`,
+				);
+			}
+		} else {
+			// Non-local environment, handle email confirmation
+			// Try to visit confirmation link with OTP expiration handling
+			const maxRetries = 2;
+			let attempt = 0;
+
+			while (attempt < maxRetries) {
+				try {
+					await this.visitConfirmEmailLink(email);
+
+					// Check if we got redirected to an error page with OTP expired
+					const currentUrl = this.page.url();
+					if (
+						currentUrl.includes("error") &&
+						currentUrl.includes("otp_expired")
+					) {
+						if (attempt < maxRetries - 1) {
+							if (process.env.DEBUG) {
+								process.stdout.write(
+									`OTP expired, requesting new one (attempt ${attempt + 2}/${maxRetries})...\n`,
+								);
+							}
+							// Go back to sign-up and request a new OTP
+							await this.page.goto(`/auth/sign-up?next=${path}`);
+							await this.signUp({
+								email,
+								password: "password",
+								repeatPassword: "password",
+							});
+							attempt++;
+							continue;
+						}
+					}
+					break; // Success or final attempt
+				} catch (error) {
+					if (attempt < maxRetries - 1) {
+						attempt++;
+						continue;
+					}
+					throw error;
+				}
+			}
+		}
 
 		return {
 			email,

@@ -32,17 +32,17 @@ export const FormSchemaShape = {
 					message: "Please select at least one goal",
 					path: ["learn"], // This will show the error on the first checkbox
 				}),
-			// Define these fields as required since they'll be conditionally validated
+			// Define these fields as optional at the schema level since they're conditionally validated
 			workDetails: z.object({
-				role: z.string().min(1, "Role is required"),
-				industry: z.string().min(1, "Industry is required"),
+				role: z.string().default(""),
+				industry: z.string().default(""),
 			}),
 			personalDetails: z.object({
-				project: z.string().min(1, "Project is required"),
+				project: z.string().default(""),
 			}),
 			schoolDetails: z.object({
-				level: z.enum(["highschool", "undergraduate", "graduate"]),
-				major: z.string().min(1, "Major is required"),
+				level: z.enum(["highschool", "undergraduate", "graduate"]).default("undergraduate"),
+				major: z.string().default(""),
 			}),
 		})
 		.refine(
