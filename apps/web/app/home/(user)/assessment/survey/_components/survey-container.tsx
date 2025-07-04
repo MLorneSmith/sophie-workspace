@@ -5,10 +5,7 @@ import { Card } from "@kit/ui/card";
 import { Progress } from "@kit/ui/progress";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
-import type {
-	Survey,
-	SurveyQuestion,
-} from "../../../../../../../payload/payload-types";
+import type { Survey, SurveyQuestion } from "@kit/cms-types";
 import {
 	completeSurveyAction,
 	saveResponseAction,

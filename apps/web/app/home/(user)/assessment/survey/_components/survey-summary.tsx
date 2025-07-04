@@ -7,7 +7,7 @@ import { Progress } from "@kit/ui/progress";
 import { Trans } from "@kit/ui/trans";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import type { Survey } from "../../../../../../../payload/payload-types";
+import type { Survey } from "@kit/cms-types";
 import { useSurveyScores } from "../../_lib/client/hooks/use-survey-scores";
 import { RadarChart } from "./radar-chart";
 

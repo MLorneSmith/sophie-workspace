@@ -5,7 +5,7 @@ import { Label } from "@kit/ui/label";
 import { RadioGroup, RadioGroupItem } from "@kit/ui/radio-group";
 import { Trans } from "@kit/ui/trans";
 import { useState } from "react";
-import type { SurveyQuestion } from "../../../../../../../payload/payload-types";
+import type { SurveyQuestion } from "@kit/cms-types";
 import { ScaleQuestion } from "./scale-question";
 import { TextFieldQuestion } from "./text-field-question";
 

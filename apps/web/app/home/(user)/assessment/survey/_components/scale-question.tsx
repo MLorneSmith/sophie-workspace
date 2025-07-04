@@ -6,7 +6,7 @@ import { RadioGroup, RadioGroupItem } from "@kit/ui/radio-group";
 import { Trans } from "@kit/ui/trans";
 import { useState } from "react";
 
-import type { SurveyQuestion } from "../../../../../../../payload/payload-types";
+import type { SurveyQuestion } from "@kit/cms-types";
 
 type ScaleQuestionProps = {
 	question: SurveyQuestion;
