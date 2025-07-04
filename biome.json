@@ -22,6 +22,7 @@
 			"!**/playwright-report/**",
 			"!**/packages/playwright-mcp/temp-playwright-mcp/**",
 			"!**/apps/payload/payload-types.ts",
+			"!**/packages/cms/types/src/payload-types.ts",
 			"!**/apps/payload/src/app/(payload)/admin/importMap.js",
 			"!**/apps/payload/src/seed/**",
 			"!**/z.docs/**",

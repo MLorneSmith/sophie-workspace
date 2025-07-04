@@ -10,34 +10,34 @@
 		Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 	--font-heading: var(--font-sans);
 
-	/* shadcn CSS Variables - HSL format for Tailwind v4 */
-	--background: 0 0% 100%; /* white */
-	--foreground: 0 0% 15%; /* dark gray for WCAG AA compliance - 15.1:1 contrast */
+	/* shadcn CSS Variables - Hex format for Tailwind v4 compatibility */
+	--background: #ffffff; /* white */
+	--foreground: #262626; /* dark gray for WCAG AA compliance - 15.1:1 contrast */
 
-	--card: 0 0% 100%; /* white */
-	--card-foreground: 0 0% 15%; /* dark gray for WCAG AA compliance - 15.1:1 contrast */
+	--card: #ffffff; /* white */
+	--card-foreground: #262626; /* dark gray for WCAG AA compliance - 15.1:1 contrast */
 
-	--popover: 0 0% 100%; /* white */
-	--popover-foreground: 0 0% 15%; /* dark gray for WCAG AA compliance - 15.1:1 contrast */
+	--popover: #ffffff; /* white */
+	--popover-foreground: #262626; /* dark gray for WCAG AA compliance - 15.1:1 contrast */
 
-	--primary: 0 0% 15%; /* dark gray for WCAG AA compliance on white - 15.1:1 contrast */
-	--primary-foreground: 0 0% 100%; /* white */
+	--primary: #262626; /* dark gray for WCAG AA compliance on white - 15.1:1 contrast */
+	--primary-foreground: #ffffff; /* white */
 
-	--secondary: 0 0% 98%; /* very light gray */
-	--secondary-foreground: 0 0% 15%; /* dark gray for contrast - 15.1:1 */
+	--secondary: #fafafa; /* very light gray */
+	--secondary-foreground: #262626; /* dark gray for contrast - 15.1:1 */
 
-	--muted: 0 0% 97%; /* light gray background */
-	--muted-foreground: 0 0% 32%; /* darker gray - 7.8:1 contrast on white */
+	--muted: #f7f7f7; /* light gray background */
+	--muted-foreground: #525252; /* darker gray - 7.8:1 contrast on white */
 
-	--accent: 0 0% 98%; /* very light gray */
-	--accent-foreground: 0 0% 15%; /* dark gray for contrast - 15.1:1 */
+	--accent: #fafafa; /* very light gray */
+	--accent-foreground: #262626; /* dark gray for contrast - 15.1:1 */
 
-	--destructive: 0 72% 51%; /* red-600 */
-	--destructive-foreground: 0 0% 100%; /* white */
+	--destructive: #dc2626; /* red-600 */
+	--destructive-foreground: #ffffff; /* white */
 
-	--border: 0 0% 90%; /* gray-200 */
-	--input: 0 0% 90%; /* gray-200 */
-	--ring: 0 0% 25%; /* dark gray */
+	--border: #e5e5e5; /* gray-200 */
+	--input: #e5e5e5; /* gray-200 */
+	--ring: #404040; /* dark gray */
 
 	--radius: 0.5rem;
 
