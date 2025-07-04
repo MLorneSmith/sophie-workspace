@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import type { Resolver } from "react-hook-form";
 import { analytics } from "@kit/analytics";
 import { Button } from "@kit/ui/button";
 import { Checkbox } from "@kit/ui/checkbox";
@@ -69,6 +70,7 @@ const logger = {
 
 // Create the client-side schema using z.object directly to avoid memory issues
 const FormSchema = z.object(FormSchemaShape);
+type FormData = z.infer<typeof FormSchema>;
 
 // Create validation function for each step
 const validation = createValidationFunction({
@@ -100,8 +102,8 @@ export function OnboardingForm() {
 	const formRef = useRef<HTMLDivElement>(null);
 
 	// Initialize form with React Hook Form
-	const form = useForm<z.infer<typeof FormSchema>>({
-		resolver: zodResolver(FormSchema),
+	const form = useForm<FormData>({
+		resolver: zodResolver(FormSchema) as Resolver<FormData>,
 		defaultValues: {
 			welcome: {},
 			profile: { name: "" },
@@ -749,7 +751,7 @@ function ThemeStep() {
 
 // Complete step component
 function CompleteStep() {
-	const router = useRouter();
+	const _router = useRouter();
 	const { form } = useMultiStepFormContext();
 	const { setTheme } = useTheme();
 	const [isSubmitting, setIsSubmitting] = useState(false);

@@ -118,16 +118,16 @@ export const submitOnboardingFormAction = enhanceAction(
 						"Failed to refresh session after onboarding",
 					);
 				}
-				
+
 				// Force a new session fetch to ensure metadata is up to date
 				const { data: sessionData } = await supabase.auth.getSession();
 				if (sessionData?.session) {
 					// Re-fetch user to confirm metadata update
 					const { data: updatedUser } = await supabase.auth.getUser();
 					logger.info(
-						{ 
-							userId: user.id, 
-							onboarded: updatedUser?.user?.user_metadata?.onboarded 
+						{
+							userId: user.id,
+							onboarded: updatedUser?.user?.user_metadata?.onboarded,
 						},
 						"Session refreshed with updated metadata",
 					);
@@ -137,7 +137,9 @@ export const submitOnboardingFormAction = enhanceAction(
 			return {
 				success: true,
 				isComplete: isFinalSubmission,
-				redirectUrl: isFinalSubmission ? `/home?onboarded=${Date.now()}` : undefined,
+				redirectUrl: isFinalSubmission
+					? `/home?onboarded=${Date.now()}`
+					: undefined,
 			};
 		} catch (error) {
 			logger.error(

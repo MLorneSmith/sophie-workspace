@@ -41,7 +41,9 @@ export const FormSchemaShape = {
 				project: z.string().default(""),
 			}),
 			schoolDetails: z.object({
-				level: z.enum(["highschool", "undergraduate", "graduate"]).default("undergraduate"),
+				level: z
+					.enum(["highschool", "undergraduate", "graduate"])
+					.default("undergraduate"),
 				major: z.string().default(""),
 			}),
 		})
