@@ -44,16 +44,16 @@ export class NewRelicMonitoringService extends MonitoringService {
 				this.newrelic = global.newrelic;
 				this.isReady = true;
 			} else if (typeof window === "undefined") {
-				// Server-side: Try to dynamically import New Relic
-				// Using eval to prevent webpack from analyzing the import
-				try {
-					// biome-ignore lint/security/noGlobalEval: Necessary to prevent webpack bundling
-					const requireFunc = eval("require");
-					this.newrelic = requireFunc("newrelic") as NewRelicAgent;
+				// Server-side: Try to check for New Relic without dynamic imports
+				// New Relic should be loaded via NODE_OPTIONS='-r newrelic' in production
+				// For Edge Runtime compatibility, we cannot use dynamic imports or eval
+				if ("newrelic" in globalThis) {
+					// biome-ignore lint/suspicious/noExplicitAny: globalThis type doesn't include newrelic
+					this.newrelic = (globalThis as any).newrelic as NewRelicAgent;
 					this.isReady = true;
-				} catch (_e) {
+				} else {
 					this.logger.warn(
-						"New Relic agent not found. Monitoring will be disabled.",
+						"New Relic agent not found. Ensure it's loaded via NODE_OPTIONS='-r newrelic'",
 					);
 				}
 			}
