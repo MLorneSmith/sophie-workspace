@@ -1,6 +1,6 @@
 {
-	"buildCommand": "cd ../.. && turbo run build --filter=web",
-	"devCommand": "cd ../.. && turbo run dev --filter=web",
+	"buildCommand": "cd ../.. && pnpm turbo run build --filter=web",
+	"devCommand": "cd ../.. && pnpm turbo run dev --filter=web",
 	"installCommand": "cd ../.. && pnpm install",
 	"outputDirectory": ".next"
 }
