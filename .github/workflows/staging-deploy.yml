@@ -77,7 +77,7 @@ jobs:
             --skip-verify --api-key "$STRIPE_SECRET_KEY" --log-level debug
 
       - name: Build application
-        run: pnpm --filter web build:test
+        run: pnpm turbo build:test --filter=web
 
       - name: Start application
         run: pnpm --filter web start:test &
