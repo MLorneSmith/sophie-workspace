@@ -4,11 +4,6 @@
 	"outputDirectory": "apps/web/.next",
 	"installCommand": "pnpm install --frozen-lockfile",
 	"framework": "nextjs",
-	"functions": {
-		"apps/web/app/api/**/route.ts": {
-			"maxDuration": 30
-		}
-	},
 	"headers": [
 		{
 			"source": "/(.*)",
