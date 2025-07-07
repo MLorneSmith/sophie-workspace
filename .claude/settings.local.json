@@ -72,7 +72,8 @@
 			"mcp__github__add_issue_comment",
 			"Bash(gh issue view:*)",
 			"Bash(pnpm supabase:web:status:*)",
-			"Bash(pnpm format:*)"
+			"Bash(pnpm format:*)",
+			"Bash(gh run view:*)"
 		],
 		"deny": []
 	},
