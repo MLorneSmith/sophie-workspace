@@ -36,6 +36,8 @@ jobs:
     environment:
       name: development
       url: ${{ steps.deploy.outputs.url }}
+    env:
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_WEB }}
     steps:
       - uses: actions/checkout@v4
 
@@ -53,15 +55,15 @@ jobs:
         run: pnpm add -g vercel@latest
 
       - name: Pull Vercel Environment Information for Web
-        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }} --project-id=${{ secrets.VERCEL_PROJECT_ID_WEB }}
+        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Build Web Project
-        run: vercel build --token=${{ secrets.VERCEL_TOKEN }} --project-id=${{ secrets.VERCEL_PROJECT_ID_WEB }}
+        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Deploy Web App to Vercel Dev
         id: deploy
         run: |
-          url=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }} --project-id=${{ secrets.VERCEL_PROJECT_ID_WEB }})
+          url=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
           echo "url=$url" >> $GITHUB_OUTPUT
           echo "Deployed to: $url"
           
@@ -102,6 +104,8 @@ jobs:
     environment:
       name: development-payload
       url: ${{ steps.deploy.outputs.url }}
+    env:
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_PAYLOAD }}
     steps:
       - uses: actions/checkout@v4
 
@@ -119,15 +123,15 @@ jobs:
         run: pnpm add -g vercel@latest
 
       - name: Pull Vercel Environment Information for Payload
-        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }} --project-id=${{ secrets.VERCEL_PROJECT_ID_PAYLOAD }}
+        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Build Payload Project
-        run: vercel build --token=${{ secrets.VERCEL_TOKEN }} --project-id=${{ secrets.VERCEL_PROJECT_ID_PAYLOAD }}
+        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Deploy Payload to Vercel Dev
         id: deploy
         run: |
-          url=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }} --project-id=${{ secrets.VERCEL_PROJECT_ID_PAYLOAD }})
+          url=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
           echo "url=$url" >> $GITHUB_OUTPUT
           echo "Deployed to: $url"
           
