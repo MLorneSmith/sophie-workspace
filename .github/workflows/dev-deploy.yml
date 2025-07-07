@@ -26,15 +26,13 @@ jobs:
     name: Validate
     uses: ./.github/workflows/pr-validation.yml
     secrets: inherit
-    # Continue even if validation fails to test deployment fix
-    continue-on-error: true
 
   # Deploy to Vercel Dev environment
   deploy:
     name: Deploy to Dev
     runs-on: ubuntu-latest
     needs: validate
-    # Always run deploy job to test our fix
+    # Always run deploy job even if validation fails (temporary for testing)
     if: always()
     environment:
       name: development
