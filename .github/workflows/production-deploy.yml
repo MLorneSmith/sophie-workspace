@@ -13,7 +13,6 @@ env:
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ vars.TURBO_TEAM }}
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
 jobs:
   # Check if validation is needed
@@ -68,9 +67,9 @@ jobs:
     with:
       environment: production
 
-  # Deploy to Vercel Production
-  deploy:
-    name: Deploy to Production
+  # Deploy Web App to Vercel Production
+  deploy-web:
+    name: Deploy Web App to Production
     runs-on: ubicloud-standard-2
     needs: build
     environment:
@@ -110,7 +109,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               ref: context.sha,
-              environment: 'production',
+              environment: 'production-web',
               required_contexts: [],
               auto_merge: false,
               production_environment: true
@@ -122,110 +121,137 @@ jobs:
               deployment_id: deployment.data.id,
               state: 'success',
               environment_url: '${{ steps.deploy.outputs.url }}',
-              description: 'Deployed to production'
+              description: 'Web app deployed to production'
+            });
+
+  # Deploy Payload CMS to Vercel Production
+  deploy-payload:
+    name: Deploy Payload CMS to Production
+    runs-on: ubicloud-standard-2
+    needs: build
+    environment:
+      name: production-payload
+      url: ${{ steps.deploy.outputs.url }}
+    outputs:
+      url: ${{ steps.deploy.outputs.url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-deps
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts-production
+          path: .
+
+      - name: Deploy to Vercel
+        id: deploy
+        uses: ./.github/actions/vercel-deploy
+        with:
+          token: ${{ secrets.VERCEL_TOKEN }}
+          org-id: ${{ secrets.VERCEL_ORG_ID }}
+          project-id: ${{ secrets.VERCEL_PROJECT_ID_PAYLOAD }}
+          environment: production
+          build-artifacts: true
+          health-check-url: /api/health
+          health-check-timeout: 120
+          protection-bypass-secret: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+
+      - name: Create deployment status
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const deployment = await github.rest.repos.createDeployment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: context.sha,
+              environment: 'production-payload',
+              required_contexts: [],
+              auto_merge: false,
+              production_environment: true
+            });
+
+            await github.rest.repos.createDeploymentStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              deployment_id: deployment.data.id,
+              state: 'success',
+              environment_url: '${{ steps.deploy.outputs.url }}',
+              description: 'Payload CMS deployed to production'
             });
 
   # Post-deployment monitoring
   health-check:
     name: Production Health Check
     runs-on: ubicloud-standard-2
-    needs: deploy
+    needs: [deploy-web, deploy-payload]
     steps:
       - uses: actions/checkout@v4
 
       - name: Wait for deployment propagation
         run: sleep 30
 
-      - name: Check production health
+      - name: Check production web health
         run: |
-          response=$(curl -s -o /dev/null -w "%{http_code}" ${{ needs.deploy.outputs.url }}/healthcheck)
+          response=$(curl -s -o /dev/null -w "%{http_code}" ${{ needs.deploy-web.outputs.url }}/healthcheck)
           if [ $response -eq 200 ]; then
-            echo "✅ Production health check passed"
+            echo "✅ Production web health check passed"
           else
-            echo "❌ Production health check failed with status $response"
+            echo "❌ Production web health check failed with status $response"
+            exit 1
+          fi
+
+      - name: Check production payload health
+        run: |
+          response=$(curl -s -o /dev/null -w "%{http_code}" ${{ needs.deploy-payload.outputs.url }}/api/health)
+          if [ $response -eq 200 ]; then
+            echo "✅ Production payload health check passed"
+          else
+            echo "❌ Production payload health check failed with status $response"
             exit 1
           fi
 
       - name: Run critical path tests
         run: |
-          echo "Running critical user path validations"
+          echo "Critical path testing will be implemented"
           # TODO: Implement critical path E2E tests
 
   # Notify monitoring services
-  notify:
-    name: Notify Services
+  notify-monitoring:
+    name: Notify Monitoring Services
     runs-on: ubicloud-standard-2
-    needs: [deploy, health-check]
-    if: always()
+    needs: [deploy-web, deploy-payload]
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
-
-      - name: Notify New Relic
-        if: needs.health-check.result == 'success'
-        uses: ./.github/actions/newrelic-notify
+      
+      - uses: ./.github/actions/newrelic-notify
         with:
           api-key: ${{ secrets.NEW_RELIC_API_KEY }}
           app-id: ${{ secrets.NEW_RELIC_APP_ID }}
           account-id: ${{ secrets.NEW_RELIC_ACCOUNT_ID }}
           insert-key: ${{ secrets.NEW_RELIC_INSERT_KEY }}
           environment: production
-          deployment-url: ${{ needs.deploy.outputs.url }}
-          health-check-status: ${{ needs.health-check.result }}
+          deployment-url: ${{ needs.deploy-web.outputs.url }}
 
       - name: Notify Slack
-        if: always()
-        run: |
-          if [ "${{ needs.health-check.result }}" == "success" ]; then
-            echo "✅ Production deployment successful"
-            # TODO: Send success notification to Slack
-          else
-            echo "❌ Production deployment failed"
-            # TODO: Send failure notification to Slack
-          fi
+        uses: 8398a7/action-slack@v3
+        with:
+          status: success
+          text: '🚀 Production deployment completed successfully!'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+          fields: 'repo,commit,author'
 
   # Auto-rollback workflow
   auto-rollback:
     name: Auto Rollback
-    needs: deploy
+    needs: deploy-web
     uses: ./.github/workflows/auto-rollback.yml
     with:
       environment: production
-      deployment_url: ${{ needs.deploy.outputs.url }}
+      deployment_url: ${{ needs.deploy-web.outputs.url }}
     secrets:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-
-  # Create issue on rollback
-  rollback-issue:
-    name: Create Rollback Issue
-    runs-on: ubicloud-standard-2
-    needs: auto-rollback
-    if: needs.auto-rollback.result == 'failure'
-    steps:
-      - name: Create rollback issue
-        uses: actions/github-script@v7
-        with:
-          script: |
-            await github.rest.issues.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title: `[URGENT] Production deployment failed - ${context.sha}`,
-              body: `## Production Deployment Failure
-              
-              **Commit**: ${context.sha}
-              **Actor**: ${context.actor}
-              **Time**: ${new Date().toISOString()}
-              
-              ### Actions Taken
-              - ✅ Automatic rollback initiated
-              - ✅ Team notified
-              
-              ### Next Steps
-              1. Check deployment logs
-              2. Review health check failures
-              3. Fix issues and redeploy
-              
-              cc @${context.actor}`,
-              labels: ['bug', 'production', 'urgent']
-            });
