@@ -230,11 +230,23 @@ jobs:
           # Install Playwright for report merging
           pnpm playwright install --with-deps
           
-          # Merge blob reports
-          find ../../merged-reports -name "*.zip" -exec unzip -o {} -d ./blob-reports/ \;
+          # Create directory for blob reports
+          mkdir -p ./blob-reports
+          
+          # Find and copy all blob report files from downloaded artifacts
+          find ../../merged-reports -path "*/blob-report/*.zip" -type f | while read zipfile; do
+            echo "Processing: $zipfile"
+            cp "$zipfile" ./blob-reports/
+          done
+          
+          # Check if any blob reports were found
+          if [ -z "$(ls -A ./blob-reports 2>/dev/null)" ]; then
+            echo "No blob reports found in merged-reports"
+            exit 1
+          fi
           
           # Create unified HTML report
-          pnpm playwright merge-reports --reporter html ./blob-reports/ || echo "Report merge completed with warnings"
+          pnpm playwright merge-reports --reporter html ./blob-reports/
 
       - name: Upload unified report
         uses: actions/upload-artifact@v4
