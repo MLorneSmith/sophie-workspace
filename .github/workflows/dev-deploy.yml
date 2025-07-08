@@ -149,7 +149,7 @@ jobs:
           project-id: ${{ secrets.VERCEL_PROJECT_ID_PAYLOAD }}
           environment: preview
           build-artifacts: true
-          protection-bypass-secret: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET_PAYLOAD }}
+          protection-bypass-secret: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
 
       - name: Create deployment status
         uses: actions/github-script@v7
