@@ -235,47 +235,16 @@ jobs:
     needs: deploy
     continue-on-error: true
     steps:
-      - name: Create New Relic deployment marker
-        run: |
-          echo "📊 Sending staging metrics to New Relic..."
-          
-          # Create deployment marker
-          curl -X POST "https://api.newrelic.com/v2/applications/${NEW_RELIC_APP_ID}/deployments.json" \
-            -H "X-Api-Key:${NEW_RELIC_API_KEY}" \
-            -H "Content-Type: application/json" \
-            -d "{
-              \"deployment\": {
-                \"revision\": \"${GITHUB_SHA}\",
-                \"user\": \"${GITHUB_ACTOR}\",
-                \"description\": \"Staging deployment from ${GITHUB_REF_NAME}\",
-                \"changelog\": \"Staging deployment via GitHub Actions\"
-              }
-            }"
-
-          # Send staging CI/CD custom event
-          curl -X POST "https://insights-collector.newrelic.com/v1/accounts/${NEW_RELIC_ACCOUNT_ID}/events" \
-            -H "Content-Type: application/json" \
-            -H "X-Insert-Key: ${NEW_RELIC_INSERT_KEY}" \
-            -d "[{
-              \"eventType\": \"CICDEvent\",
-              \"timestamp\": $(date +%s),
-              \"environment\": \"staging\",
-              \"deployment_id\": \"${GITHUB_SHA}\",
-              \"branch\": \"${GITHUB_REF_NAME}\",
-              \"workflow\": \"staging-deploy\",
-              \"actor\": \"${GITHUB_ACTOR}\",
-              \"repository\": \"${GITHUB_REPOSITORY}\",
-              \"status\": \"success\",
-              \"deployment_url\": \"${{ needs.deploy.outputs.url }}\",
-              \"commit_sha\": \"${GITHUB_SHA}\"
-            }]"
-          
-          echo "✅ Staging metrics sent successfully"
-        env:
-          NEW_RELIC_API_KEY: ${{ secrets.NEW_RELIC_API_KEY }}
-          NEW_RELIC_APP_ID: ${{ secrets.NEW_RELIC_APP_ID }}
-          NEW_RELIC_ACCOUNT_ID: ${{ secrets.NEW_RELIC_ACCOUNT_ID }}
-          NEW_RELIC_INSERT_KEY: ${{ secrets.NEW_RELIC_INSERT_KEY }}
+      - uses: actions/checkout@v4
+      
+      - uses: ./.github/actions/newrelic-notify
+        with:
+          api-key: ${{ secrets.NEW_RELIC_API_KEY }}
+          app-id: ${{ secrets.NEW_RELIC_APP_ID }}
+          account-id: ${{ secrets.NEW_RELIC_ACCOUNT_ID }}
+          insert-key: ${{ secrets.NEW_RELIC_INSERT_KEY }}
+          environment: staging
+          deployment-url: ${{ needs.deploy.outputs.url }}
 
   # Auto-rollback workflow
   auto-rollback:
