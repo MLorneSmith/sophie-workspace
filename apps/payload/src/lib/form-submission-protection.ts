@@ -1,5 +1,6 @@
 "use client";
 
+// @ts-ignore - Module resolution issue
 import { createEnvironmentLogger } from "@kit/shared/logger";
 
 type SubmissionState = "idle" | "submitting" | "success" | "error";
@@ -45,6 +46,7 @@ export class FormSubmissionProtectionManager {
 	private isInitialized = false;
 	private hydrationState: HydrationState;
 	private logger = createEnvironmentLogger("FORM-PROTECTION");
+	private hydrationTimeoutId: NodeJS.Timeout | null = null;
 
 	constructor(config?: Partial<FormSubmissionConfig>) {
 		this.config = {
@@ -147,7 +149,7 @@ export class FormSubmissionProtectionManager {
 			}
 
 			// Continue checking more frequently for better detection
-			setTimeout(checkHydration, 50);
+			this.hydrationTimeoutId = setTimeout(checkHydration, 50);
 		};
 
 		checkHydration();
@@ -200,9 +202,9 @@ export class FormSubmissionProtectionManager {
 	private scanAndTrackForms(): void {
 		for (const selector of this.config.formSelectors) {
 			const forms = document.querySelectorAll<HTMLFormElement>(selector);
-			for (const form of forms) {
+			Array.from(forms).forEach((form) => {
 				this.trackFormInMemory(form);
-			}
+			});
 		}
 	}
 
@@ -248,7 +250,7 @@ export class FormSubmissionProtectionManager {
 	private setupMutationObserver(): void {
 		const observer = new MutationObserver((mutations) => {
 			for (const mutation of mutations) {
-				for (const node of mutation.addedNodes) {
+				Array.from(mutation.addedNodes).forEach((node) => {
 					if (node.nodeType === Node.ELEMENT_NODE) {
 						const element = node as Element;
 						for (const selector of this.config.formSelectors) {
@@ -257,12 +259,12 @@ export class FormSubmissionProtectionManager {
 							}
 							const childForms =
 								element.querySelectorAll<HTMLFormElement>(selector);
-							for (const form of childForms) {
+							Array.from(childForms).forEach((form) => {
 								this.trackFormInMemory(form);
-							}
+							});
 						}
 					}
-				}
+				});
 			}
 		});
 		observer.observe(document.body, { childList: true, subtree: true });
@@ -364,12 +366,12 @@ export class FormSubmissionProtectionManager {
 			const buttons = form.querySelectorAll<
 				HTMLButtonElement | HTMLInputElement
 			>(selector);
-			for (const button of buttons) {
+			Array.from(buttons).forEach((button) => {
 				tracker.originalButtonStates.set(button, {
 					text: button.textContent || button.value || "",
 					disabled: button.disabled,
 				});
-			}
+			});
 		}
 
 		this.log("Form disabled in memory only - NO DOM CHANGES", "debug");
@@ -388,17 +390,19 @@ export class FormSubmissionProtectionManager {
 			tracker.formType === "dynamic"
 		) {
 			// Only restore button states for explicitly dynamic forms
-			for (const [button, originalState] of tracker.originalButtonStates) {
-				button.disabled = originalState.disabled;
-				if (button instanceof HTMLButtonElement) {
-					button.textContent = originalState.text;
-				} else if (
-					button instanceof HTMLInputElement &&
-					button.type === "submit"
-				) {
-					button.value = originalState.text;
-				}
-			}
+			Array.from(tracker.originalButtonStates).forEach(
+				([button, originalState]) => {
+					button.disabled = originalState.disabled;
+					if (button instanceof HTMLButtonElement) {
+						button.textContent = originalState.text;
+					} else if (
+						button instanceof HTMLInputElement &&
+						button.type === "submit"
+					) {
+						button.value = originalState.text;
+					}
+				},
+			);
 		}
 
 		tracker.originalButtonStates.clear();
@@ -468,9 +472,9 @@ export class FormSubmissionProtectionManager {
 			mode: "ULTRA-CONSERVATIVE",
 		};
 
-		for (const form of this.trackedForms) {
+		Array.from(this.trackedForms).forEach((form) => {
 			const tracker = this.formTrackers.get(form);
-			if (!tracker) continue;
+			if (!tracker) return;
 
 			if (tracker.formType === "server-rendered") status.serverRenderedForms++;
 			if (tracker.formType === "dynamic") status.dynamicForms++;
@@ -486,12 +490,18 @@ export class FormSubmissionProtectionManager {
 					status.successForms++;
 					break;
 			}
-		}
+		});
 
 		return status;
 	}
 
 	cleanup(): void {
+		// Clear hydration timeout if it exists
+		if (this.hydrationTimeoutId) {
+			clearTimeout(this.hydrationTimeoutId);
+			this.hydrationTimeoutId = null;
+		}
+
 		for (const observer of this.observers) {
 			observer.disconnect();
 		}
