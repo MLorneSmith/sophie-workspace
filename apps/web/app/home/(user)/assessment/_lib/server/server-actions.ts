@@ -12,7 +12,7 @@ const { getLogger } = createServiceLogger("HOME-(USER)");
 /**
  * Schema for saving a survey response
  */
-export const SaveResponseSchema = z.object({
+const SaveResponseSchema = z.object({
 	surveyId: z.string(),
 	questionId: z.string(),
 	questionIndex: z.number(),
@@ -196,7 +196,7 @@ export const saveResponseAction = enhanceAction(
 /**
  * Schema for completing a survey
  */
-export const CompleteSurveySchema = z.object({
+const CompleteSurveySchema = z.object({
 	surveyId: z.string(),
 	responseId: z.string(),
 	categoryScores: z.record(z.string(), z.number()),
