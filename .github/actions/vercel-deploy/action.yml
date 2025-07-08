@@ -103,9 +103,10 @@ runs:
         echo "🏥 Running health check: $url"
         
         # Set curl options based on whether protection bypass is needed
-        if [ -n "${{ inputs.protection-bypass-secret }}" ]; then
+        BYPASS_SECRET="${{ inputs.protection-bypass-secret }}"
+        if [ ! -z "$BYPASS_SECRET" ] && [ "$BYPASS_SECRET" != "" ]; then
           echo "🔐 Using protection bypass header"
-          CURL_OPTS="-H 'x-vercel-protection-bypass: ${{ inputs.protection-bypass-secret }}'"
+          CURL_OPTS="-H 'x-vercel-protection-bypass: $BYPASS_SECRET'"
         else
           echo "⚠️ No protection bypass secret provided"
           CURL_OPTS=""
