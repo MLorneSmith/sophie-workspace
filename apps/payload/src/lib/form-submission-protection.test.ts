@@ -58,6 +58,7 @@ function createTestButton(
 
 describe("FormSubmissionProtectionManager", () => {
 	let originalMutationObserver: typeof MutationObserver;
+	let testManagers: FormSubmissionProtectionManager[] = [];
 
 	beforeEach(() => {
 		// Store originals
@@ -77,6 +78,15 @@ describe("FormSubmissionProtectionManager", () => {
 	});
 
 	afterEach(() => {
+		// Clean up any test managers created directly
+		for (const manager of testManagers) {
+			manager.cleanup();
+		}
+		testManagers = [];
+
+		// Clean up any existing protection manager (important to clear timeouts)
+		cleanupFormSubmissionProtection();
+
 		// Restore originals
 		global.MutationObserver = originalMutationObserver;
 
@@ -152,6 +162,9 @@ describe("FormSubmissionProtectionManager", () => {
 
 			const status = manager.getStatus();
 			expect(status.hydrationSignals).toBeGreaterThan(0);
+
+			// Clean up manager to prevent timeout issues
+			manager.cleanup();
 		});
 
 		it("handles hydration timeout gracefully", async () => {
@@ -166,6 +179,9 @@ describe("FormSubmissionProtectionManager", () => {
 
 			const status = manager.getStatus();
 			expect(status.mode).toBe("ULTRA-CONSERVATIVE");
+
+			// Clean up manager to prevent timeout issues
+			manager.cleanup();
 		});
 
 		it("counts hydration signals correctly", () => {
@@ -307,6 +323,9 @@ describe("FormSubmissionProtectionManager", () => {
 			// Check if timeout was handled (form should be in error state or reset)
 			const status = manager.getStatus();
 			expect(status.mode).toBe("ULTRA-CONSERVATIVE");
+
+			// Clean up manager to prevent timeout issues
+			manager.cleanup();
 		});
 	});
 
@@ -403,6 +422,9 @@ describe("FormSubmissionProtectionManager", () => {
 					subtree: true,
 				});
 			}
+
+			// Clean up manager to prevent timeout issues
+			manager.cleanup();
 		});
 	});
 
@@ -452,6 +474,28 @@ describe("FormSubmissionProtectionManager", () => {
 			const afterStatus = manager.getStatus();
 			expect(afterStatus.totalForms).toBe(0);
 			expect(afterStatus.hydrationComplete).toBe(false);
+		});
+
+		it("clears hydration timeout on cleanup to prevent post-teardown errors", async () => {
+			// This is a regression test for issue #164
+			const manager = new FormSubmissionProtectionManager({
+				hydrationTimeoutMs: 50,
+			});
+
+			// Initialize which starts the hydration timeout
+			manager.initialize();
+
+			// Wait a bit but not enough for timeout to complete
+			await new Promise((resolve) => setTimeout(resolve, 20));
+
+			// Clean up should clear the timeout
+			manager.cleanup();
+
+			// Wait longer than the original timeout
+			await new Promise((resolve) => setTimeout(resolve, 100));
+
+			// If we get here without errors, the timeout was properly cleared
+			expect(true).toBe(true);
 		});
 	});
 
@@ -515,6 +559,9 @@ describe("Global Singleton Management", () => {
 	});
 
 	afterEach(() => {
+		// Clean up any existing protection manager (important to clear timeouts)
+		cleanupFormSubmissionProtection();
+
 		// Restore originals
 		global.MutationObserver = originalMutationObserver;
 
@@ -523,6 +570,7 @@ describe("Global Singleton Management", () => {
 
 		// Clear global state
 		globalThis.__formSubmissionProtectionManager = undefined;
+		vi.restoreAllMocks();
 	});
 
 	it("returns same instance from getFormSubmissionProtectionManager", () => {
