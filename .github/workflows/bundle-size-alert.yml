@@ -17,7 +17,7 @@ env:
 jobs:
   bundle-size-alert:
     name: Bundle Size Alert
-    runs-on: ubuntu-latest
+    runs-on: ubicloud-standard-2
     if: github.event_name == 'pull_request'
     env:
       BUNDLEWATCH_GITHUB_TOKEN: ${{ secrets.BUNDLEWATCH_GITHUB_TOKEN }}

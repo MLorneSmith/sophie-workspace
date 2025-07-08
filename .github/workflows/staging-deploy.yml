@@ -23,7 +23,7 @@ jobs:
   # Check if validation is needed
   check-validation:
     name: Check if validation needed
-    runs-on: ubuntu-latest
+    runs-on: ubicloud-standard-2
     outputs:
       should-validate: ${{ steps.check.outputs.should-validate }}
     steps:
@@ -63,7 +63,7 @@ jobs:
   # Run full test suite for staging
   test-full:
     name: Full Test Suite
-    runs-on: ubuntu-latest
+    runs-on: ubicloud-standard-2
     needs: [check-validation, validate]
     if: always() && !failure() && !cancelled()
     timeout-minutes: 30
@@ -127,7 +127,7 @@ jobs:
   # Deploy to Vercel Staging environment
   deploy:
     name: Deploy to Staging
-    runs-on: ubuntu-latest
+    runs-on: ubicloud-standard-2
     needs: [check-validation, validate, test-full]
     if: always() && !failure() && !cancelled()
     environment:
@@ -186,7 +186,7 @@ jobs:
   # Run smoke tests against staging
   smoke-tests:
     name: Staging Smoke Tests
-    runs-on: ubuntu-latest
+    runs-on: ubicloud-standard-2
     needs: deploy
     environment: staging
     steps:
@@ -207,7 +207,7 @@ jobs:
   # Performance testing (placeholder)
   performance-test:
     name: Performance Tests
-    runs-on: ubuntu-latest
+    runs-on: ubicloud-standard-2
     needs: deploy
     continue-on-error: true
     steps:
@@ -219,7 +219,7 @@ jobs:
   # Security scan (placeholder)
   security-scan:
     name: Security Scan
-    runs-on: ubuntu-latest
+    runs-on: ubicloud-standard-2
     needs: deploy
     continue-on-error: true
     steps:
@@ -231,7 +231,7 @@ jobs:
   # Notify New Relic of staging deployment
   notify-monitoring:
     name: Notify Monitoring
-    runs-on: ubuntu-latest
+    runs-on: ubicloud-standard-2
     needs: deploy
     continue-on-error: true
     steps:

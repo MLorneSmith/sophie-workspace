@@ -20,7 +20,7 @@ on:
 jobs:
   build:
     name: Build Application
-    runs-on: ubuntu-latest
+    runs-on: ubicloud-standard-2
     outputs:
       cache-key: ${{ steps.cache.outputs.key }}
     steps:

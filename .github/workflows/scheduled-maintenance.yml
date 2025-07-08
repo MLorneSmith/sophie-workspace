@@ -26,7 +26,7 @@ jobs:
   # Check for dependency updates
   dependency-updates:
     name: Check Dependencies
-    runs-on: ubuntu-latest
+    runs-on: ubicloud-standard-2
     if: github.event_name == 'schedule' || contains(github.event.inputs.task, 'dependencies') || contains(github.event.inputs.task, 'all')
     steps:
       - uses: actions/checkout@v4
@@ -79,7 +79,7 @@ jobs:
   # Security audit
   security-audit:
     name: Security Audit
-    runs-on: ubuntu-latest
+    runs-on: ubicloud-standard-2
     if: github.event_name == 'schedule' || contains(github.event.inputs.task, 'security') || contains(github.event.inputs.task, 'all')
     steps:
       - uses: actions/checkout@v4
@@ -160,7 +160,7 @@ jobs:
   # Clean up old artifacts and caches
   cleanup:
     name: Clean Up Resources
-    runs-on: ubuntu-latest
+    runs-on: ubicloud-standard-2
     if: github.event_name == 'schedule' || contains(github.event.inputs.task, 'cleanup') || contains(github.event.inputs.task, 'all')
     steps:
       - name: Delete old artifacts
@@ -214,7 +214,7 @@ jobs:
   # Generate maintenance report
   report:
     name: Maintenance Report
-    runs-on: ubuntu-latest
+    runs-on: ubicloud-standard-2
     needs: [dependency-updates, security-audit, cleanup]
     if: always() && github.event_name == 'schedule'
     steps:
