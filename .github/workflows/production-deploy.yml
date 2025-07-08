@@ -98,7 +98,7 @@ jobs:
           project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           environment: production
           build-artifacts: true
-          health-check-url: /api/health
+          health-check-url: /healthcheck
           health-check-timeout: 120
           protection-bypass-secret: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
 
@@ -138,7 +138,7 @@ jobs:
 
       - name: Check production health
         run: |
-          response=$(curl -s -o /dev/null -w "%{http_code}" ${{ needs.deploy.outputs.url }}/api/health)
+          response=$(curl -s -o /dev/null -w "%{http_code}" ${{ needs.deploy.outputs.url }}/healthcheck)
           if [ $response -eq 200 ]; then
             echo "✅ Production health check passed"
           else
