@@ -95,6 +95,7 @@ jobs:
           project-id: ${{ secrets.VERCEL_PROJECT_ID_WEB }}
           environment: preview
           build-artifacts: true
+          protection-bypass-secret: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
 
       - name: Create deployment status
         uses: actions/github-script@v7
