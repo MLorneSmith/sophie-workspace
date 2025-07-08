@@ -18,7 +18,7 @@ env:
 jobs:
   aikido-comprehensive-scan:
     name: Aikido Comprehensive Security Scan
-    runs-on: ubuntu-latest
+    runs-on: ubicloud-standard-2
     steps:
       - uses: actions/checkout@v4
 

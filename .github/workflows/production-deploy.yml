@@ -19,7 +19,7 @@ jobs:
   # Check if validation is needed
   check-validation:
     name: Check if validation needed
-    runs-on: ubuntu-latest
+    runs-on: ubicloud-standard-2
     outputs:
       should-validate: ${{ steps.check.outputs.should-validate }}
     steps:
@@ -45,7 +45,7 @@ jobs:
   # Final security check
   security-check:
     name: Final Security Check
-    runs-on: ubuntu-latest
+    runs-on: ubicloud-standard-2
     needs: check-validation
     if: needs.check-validation.outputs.should-validate == 'true'
     steps:
@@ -71,7 +71,7 @@ jobs:
   # Deploy to Vercel Production
   deploy:
     name: Deploy to Production
-    runs-on: ubuntu-latest
+    runs-on: ubicloud-standard-2
     needs: build
     environment:
       name: production
@@ -127,7 +127,7 @@ jobs:
   # Post-deployment monitoring
   health-check:
     name: Production Health Check
-    runs-on: ubuntu-latest
+    runs-on: ubicloud-standard-2
     needs: deploy
     steps:
       - uses: actions/checkout@v4
@@ -153,7 +153,7 @@ jobs:
   # Notify monitoring services
   notify:
     name: Notify Services
-    runs-on: ubuntu-latest
+    runs-on: ubicloud-standard-2
     needs: [deploy, health-check]
     if: always()
     steps:
@@ -198,7 +198,7 @@ jobs:
   # Create issue on rollback
   rollback-issue:
     name: Create Rollback Issue
-    runs-on: ubuntu-latest
+    runs-on: ubicloud-standard-2
     needs: auto-rollback
     if: needs.auto-rollback.result == 'failure'
     steps:
