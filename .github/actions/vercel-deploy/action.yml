@@ -26,6 +26,10 @@ inputs:
     description: 'Health check timeout in seconds'
     required: false
     default: '60'
+  protection-bypass-secret:
+    description: 'Vercel protection bypass secret for automated health checks'
+    required: false
+    default: ''
 
 outputs:
   url:
@@ -98,8 +102,15 @@ runs:
         url="${{ steps.deploy.outputs.url }}${{ inputs.health-check-url }}"
         echo "🏥 Running health check: $url"
         
+        # Set curl options based on whether protection bypass is needed
+        if [ -n "${{ inputs.protection-bypass-secret }}" ]; then
+          CURL_OPTS="-H 'x-vercel-protection-bypass: ${{ inputs.protection-bypass-secret }}'"
+        else
+          CURL_OPTS=""
+        fi
+        
         for i in {1..6}; do
-          if curl -f -s "$url" > /dev/null; then
+          if eval "curl -f -s $CURL_OPTS \"$url\"" > /dev/null; then
             echo "✅ Health check passed!"
             exit 0
           fi
