@@ -104,17 +104,26 @@ runs:
         
         # Set curl options based on whether protection bypass is needed
         if [ -n "${{ inputs.protection-bypass-secret }}" ]; then
+          echo "🔐 Using protection bypass header"
           CURL_OPTS="-H 'x-vercel-protection-bypass: ${{ inputs.protection-bypass-secret }}'"
         else
+          echo "⚠️ No protection bypass secret provided"
           CURL_OPTS=""
         fi
         
         for i in {1..6}; do
-          if eval "curl -f -s $CURL_OPTS \"$url\"" > /dev/null; then
+          response=$(eval "curl -s -w '\n%{http_code}' $CURL_OPTS \"$url\"" 2>&1)
+          http_code=$(echo "$response" | tail -n1)
+          
+          if [ "$http_code" = "200" ]; then
             echo "✅ Health check passed!"
             exit 0
+          else
+            echo "⏳ Attempt $i/6 failed with HTTP $http_code, waiting..."
+            if [ "$i" -eq 1 ]; then
+              echo "Response preview: $(echo "$response" | head -c 200)..."
+            fi
           fi
-          echo "⏳ Attempt $i/6 failed, waiting..."
           sleep 10
         done
         
