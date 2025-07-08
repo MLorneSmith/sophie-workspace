@@ -1,0 +1,130 @@
+name: 'Vercel Deploy'
+description: 'Deploy to Vercel with consistent configuration'
+inputs:
+  token:
+    description: 'Vercel authentication token'
+    required: true
+  org-id:
+    description: 'Vercel organization ID'
+    required: true
+  project-id:
+    description: 'Vercel project ID'
+    required: true
+  environment:
+    description: 'Deployment environment (preview, staging, production)'
+    required: true
+    default: 'preview'
+  build-artifacts:
+    description: 'Whether to use pre-built artifacts'
+    required: false
+    default: 'false'
+  health-check-url:
+    description: 'URL path for health check (e.g., /api/health)'
+    required: false
+    default: '/api/health'
+  health-check-timeout:
+    description: 'Health check timeout in seconds'
+    required: false
+    default: '60'
+
+outputs:
+  url:
+    description: 'The deployment URL'
+    value: ${{ steps.deploy.outputs.url }}
+  
+runs:
+  using: "composite"
+  steps:
+    - name: Install Vercel CLI
+      shell: bash
+      run: |
+        if ! command -v vercel &> /dev/null; then
+          pnpm add -g vercel@latest
+        else
+          echo "✅ Vercel CLI already installed"
+        fi
+
+    - name: Setup Vercel environment
+      shell: bash
+      env:
+        VERCEL_ORG_ID: ${{ inputs.org-id }}
+        VERCEL_PROJECT_ID: ${{ inputs.project-id }}
+      run: |
+        # Pull Vercel environment configuration
+        vercel pull --yes --environment=${{ inputs.environment }} --token=${{ inputs.token }}
+
+    - name: Build with Vercel
+      if: inputs.build-artifacts == 'false'
+      shell: bash
+      env:
+        VERCEL_ORG_ID: ${{ inputs.org-id }}
+        VERCEL_PROJECT_ID: ${{ inputs.project-id }}
+      run: |
+        if [ "${{ inputs.environment }}" = "production" ]; then
+          vercel build --prod --token=${{ inputs.token }}
+        else
+          vercel build --token=${{ inputs.token }}
+        fi
+
+    - name: Deploy to Vercel
+      id: deploy
+      shell: bash
+      env:
+        VERCEL_ORG_ID: ${{ inputs.org-id }}
+        VERCEL_PROJECT_ID: ${{ inputs.project-id }}
+      run: |
+        # Deploy based on environment
+        if [ "${{ inputs.environment }}" = "production" ]; then
+          url=$(vercel deploy --prebuilt --prod --token=${{ inputs.token }})
+        elif [ "${{ inputs.environment }}" = "staging" ]; then
+          url=$(vercel deploy --prebuilt --target=staging --token=${{ inputs.token }})
+        else
+          url=$(vercel deploy --prebuilt --token=${{ inputs.token }})
+        fi
+        
+        echo "url=$url" >> $GITHUB_OUTPUT
+        echo "✅ Deployed to: $url"
+
+    - name: Wait for deployment
+      shell: bash
+      run: |
+        echo "⏳ Waiting for deployment to be ready..."
+        sleep 10
+
+    - name: Health check
+      if: inputs.health-check-url != ''
+      shell: bash
+      run: |
+        url="${{ steps.deploy.outputs.url }}${{ inputs.health-check-url }}"
+        echo "🏥 Running health check: $url"
+        
+        for i in {1..6}; do
+          if curl -f -s "$url" > /dev/null; then
+            echo "✅ Health check passed!"
+            exit 0
+          fi
+          echo "⏳ Attempt $i/6 failed, waiting..."
+          sleep 10
+        done
+        
+        echo "❌ Health check failed after ${{ inputs.health-check-timeout }} seconds"
+        exit 1
+
+    - name: Comment deployment URL
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const url = '${{ steps.deploy.outputs.url }}';
+          const environment = '${{ inputs.environment }}';
+          const body = `🚀 **Vercel Deployment**\n\n` +
+                      `Environment: \`${environment}\`\n` +
+                      `URL: ${url}\n\n` +
+                      `[View Deployment](${url})`;
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: body
+          });

@@ -16,10 +16,38 @@ env:
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
 jobs:
+  # Check if validation is needed
+  check-validation:
+    name: Check if validation needed
+    runs-on: ubuntu-latest
+    outputs:
+      should-validate: ${{ steps.check.outputs.should-validate }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      
+      - name: Check if already validated
+        id: check
+        run: |
+          # Skip validation if this commit was already validated in staging
+          COMMIT=${{ github.sha }}
+          
+          # Check if this is a merge commit from staging
+          if git log --format=%B -n 1 | grep -q "Merge.*staging"; then
+            echo "This is a merge from staging, validation already done"
+            echo "should-validate=false" >> $GITHUB_OUTPUT
+          else
+            echo "This is a direct push to main, validation needed"
+            echo "should-validate=true" >> $GITHUB_OUTPUT
+          fi
+
   # Final security check
   security-check:
     name: Final Security Check
     runs-on: ubuntu-latest
+    needs: check-validation
+    if: needs.check-validation.outputs.should-validate == 'true'
     steps:
       - uses: actions/checkout@v4
       
@@ -31,51 +59,47 @@ jobs:
           # - Dependency vulnerabilities with Aikido Security (see issue #163)
           # - SAST with CodeQL
 
+  # Build application once
+  build:
+    name: Build Application
+    needs: [check-validation, security-check]
+    if: always() && !failure() && !cancelled()
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      environment: production
+
   # Deploy to Vercel Production
   deploy:
     name: Deploy to Production
     runs-on: ubuntu-latest
-    needs: security-check
+    needs: build
     environment:
       name: production
-      url: ${{ steps.deploy.outputs.url }}
+      url: https://slideheroes.com
     outputs:
       url: ${{ steps.deploy.outputs.url }}
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
+      - uses: ./.github/actions/setup-deps
 
-      - uses: actions/setup-node@v4
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
         with:
-          node-version: lts/*
-          cache: 'pnpm'
+          name: build-artifacts-production
+          path: .
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Install Vercel CLI
-        run: pnpm add -g vercel@latest
-
-      - name: Pull Vercel Environment Information
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
-
-      - name: Build Project with Production Optimizations
-        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
-        env:
-          NODE_ENV: production
-
-      - name: Deploy to Vercel Production
+      - name: Deploy to Vercel
         id: deploy
-        run: |
-          url=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})
-          echo "url=$url" >> $GITHUB_OUTPUT
-          echo "Deployed to: $url"
-          
-          # Production deployment should automatically use slideheroes.com domain
-          production_url="https://slideheroes.com"
-          echo "production_url=$production_url" >> $GITHUB_OUTPUT
-          echo "🚀 Production deployment complete at: $production_url"
+        uses: ./.github/actions/vercel-deploy
+        with:
+          token: ${{ secrets.VERCEL_TOKEN }}
+          org-id: ${{ secrets.VERCEL_ORG_ID }}
+          project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          environment: production
+          build-artifacts: true
+          health-check-url: /api/health
+          health-check-timeout: 120
 
       - name: Create deployment status
         uses: actions/github-script@v7
@@ -133,49 +157,19 @@ jobs:
     needs: [deploy, health-check]
     if: always()
     steps:
+      - uses: actions/checkout@v4
+
       - name: Notify New Relic
         if: needs.health-check.result == 'success'
-        run: |
-          echo "📊 Creating New Relic deployment marker for production..."
-          
-          # Create deployment marker
-          curl -X POST "https://api.newrelic.com/v2/applications/${NEW_RELIC_APP_ID}/deployments.json" \
-            -H "X-Api-Key:${NEW_RELIC_API_KEY}" \
-            -H "Content-Type: application/json" \
-            -d "{
-              \"deployment\": {
-                \"revision\": \"${GITHUB_SHA}\",
-                \"user\": \"${GITHUB_ACTOR}\",
-                \"description\": \"Production deployment from ${GITHUB_REF_NAME}\",
-                \"changelog\": \"Production release via GitHub Actions\"
-              }
-            }"
-
-          # Send production CI/CD custom event
-          curl -X POST "https://insights-collector.newrelic.com/v1/accounts/${NEW_RELIC_ACCOUNT_ID}/events" \
-            -H "Content-Type: application/json" \
-            -H "X-Insert-Key: ${NEW_RELIC_INSERT_KEY}" \
-            -d "[{
-              \"eventType\": \"CICDEvent\",
-              \"timestamp\": $(date +%s),
-              \"environment\": \"production\",
-              \"deployment_id\": \"${GITHUB_SHA}\",
-              \"branch\": \"${GITHUB_REF_NAME}\",
-              \"workflow\": \"production-deploy\",
-              \"actor\": \"${GITHUB_ACTOR}\",
-              \"repository\": \"${GITHUB_REPOSITORY}\",
-              \"status\": \"success\",
-              \"deployment_url\": \"${{ needs.deploy.outputs.url }}\",
-              \"health_check_status\": \"${{ needs.health-check.result }}\",
-              \"commit_sha\": \"${GITHUB_SHA}\"
-            }]"
-          
-          echo "✅ Production deployment marker created successfully"
-        env:
-          NEW_RELIC_API_KEY: ${{ secrets.NEW_RELIC_API_KEY }}
-          NEW_RELIC_APP_ID: ${{ secrets.NEW_RELIC_APP_ID }}
-          NEW_RELIC_ACCOUNT_ID: ${{ secrets.NEW_RELIC_ACCOUNT_ID }}
-          NEW_RELIC_INSERT_KEY: ${{ secrets.NEW_RELIC_INSERT_KEY }}
+        uses: ./.github/actions/newrelic-notify
+        with:
+          api-key: ${{ secrets.NEW_RELIC_API_KEY }}
+          app-id: ${{ secrets.NEW_RELIC_APP_ID }}
+          account-id: ${{ secrets.NEW_RELIC_ACCOUNT_ID }}
+          insert-key: ${{ secrets.NEW_RELIC_INSERT_KEY }}
+          environment: production
+          deployment-url: ${{ needs.deploy.outputs.url }}
+          health-check-status: ${{ needs.health-check.result }}
 
       - name: Notify Slack
         if: always()

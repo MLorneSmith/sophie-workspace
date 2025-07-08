@@ -1,0 +1,132 @@
+name: 'New Relic Deployment Notification'
+description: 'Notify New Relic about deployments with deployment markers and custom events'
+inputs:
+  api-key:
+    description: 'New Relic API Key'
+    required: true
+  app-id:
+    description: 'New Relic Application ID'
+    required: true
+  account-id:
+    description: 'New Relic Account ID'
+    required: true
+  insert-key:
+    description: 'New Relic Insert Key for custom events'
+    required: true
+  environment:
+    description: 'Deployment environment (development, staging, production)'
+    required: true
+  deployment-url:
+    description: 'URL of the deployment'
+    required: false
+    default: ''
+  health-check-status:
+    description: 'Health check status (for production deployments)'
+    required: false
+    default: 'not_performed'
+  description:
+    description: 'Deployment description'
+    required: false
+    default: ''
+
+runs:
+  using: "composite"
+  steps:
+    - name: Create New Relic deployment marker
+      shell: bash
+      run: |
+        echo "📊 Creating New Relic deployment marker for ${{ inputs.environment }}..."
+        
+        # Generate description if not provided
+        if [ -z "${{ inputs.description }}" ]; then
+          DESCRIPTION="Automated deployment to ${{ inputs.environment }} from ${{ github.ref_name }}"
+        else
+          DESCRIPTION="${{ inputs.description }}"
+        fi
+        
+        # Create deployment marker
+        response=$(curl -s -w "\n%{http_code}" -X POST \
+          "https://api.newrelic.com/v2/applications/${{ inputs.app-id }}/deployments.json" \
+          -H "Api-Key: ${{ inputs.api-key }}" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "deployment": {
+              "revision": "${{ github.sha }}",
+              "changelog": "'"$DESCRIPTION"'",
+              "description": "'"$DESCRIPTION"'",
+              "user": "${{ github.actor }}",
+              "timestamp": "'"$(date -u +%Y-%m-%dT%H:%M:%SZ)"'"
+            }
+          }')
+        
+        http_code=$(echo "$response" | tail -n1)
+        body=$(echo "$response" | sed '$d')
+        
+        if [ "$http_code" -ge 200 ] && [ "$http_code" -lt 300 ]; then
+          echo "✅ New Relic deployment marker created successfully"
+          echo "$body" | jq '.' 2>/dev/null || echo "$body"
+        else
+          echo "❌ Failed to create deployment marker (HTTP $http_code)"
+          echo "$body"
+          exit 1
+        fi
+
+    - name: Send custom CI/CD event to New Relic
+      shell: bash
+      run: |
+        echo "📈 Sending custom CI/CD event to New Relic Insights..."
+        
+        # Build event payload
+        EVENT_PAYLOAD=$(cat <<EOF
+        {
+          "eventType": "CICDDeployment",
+          "application": "slideheroes",
+          "environment": "${{ inputs.environment }}",
+          "deploymentUrl": "${{ inputs.deployment-url }}",
+          "commit": "${{ github.sha }}",
+          "branch": "${{ github.ref_name }}",
+          "repository": "${{ github.repository }}",
+          "workflow": "${{ github.workflow }}",
+          "actor": "${{ github.actor }}",
+          "timestamp": $(date +%s)000,
+          "status": "success",
+          "duration": 0,
+          "health_check_status": "${{ inputs.health-check-status }}",
+          "deployment_method": "github_actions",
+          "deployment_type": "automated"
+        }
+        EOF
+        )
+        
+        # Send event to New Relic
+        response=$(curl -s -w "\n%{http_code}" -X POST \
+          "https://insights-collector.newrelic.com/v1/accounts/${{ inputs.account-id }}/events" \
+          -H "Content-Type: application/json" \
+          -H "X-Insert-Key: ${{ inputs.insert-key }}" \
+          -d "$EVENT_PAYLOAD")
+        
+        http_code=$(echo "$response" | tail -n1)
+        body=$(echo "$response" | sed '$d')
+        
+        if [ "$http_code" -ge 200 ] && [ "$http_code" -lt 300 ]; then
+          echo "✅ Custom CI/CD event sent to New Relic successfully"
+        else
+          echo "⚠️ Failed to send custom event (HTTP $http_code)"
+          echo "$body"
+          # Don't fail the action for custom events
+        fi
+
+    - name: Summary
+      shell: bash
+      run: |
+        echo "## 📊 New Relic Notification Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "- **Environment**: ${{ inputs.environment }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Commit**: \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+        echo "- **Branch**: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Actor**: ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+        if [ -n "${{ inputs.deployment-url }}" ]; then
+          echo "- **Deployment URL**: ${{ inputs.deployment-url }}" >> $GITHUB_STEP_SUMMARY
+        fi
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "✅ Deployment tracking configured in New Relic" >> $GITHUB_STEP_SUMMARY
