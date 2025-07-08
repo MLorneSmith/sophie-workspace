@@ -354,67 +354,30 @@ jobs:
         if: steps.trufflehog.outcome == 'failure'
         run: exit 1
 
-  # Security scan for dependencies
-  security-scan:
-    name: Security Scan
+  # Aikido Security scan
+  aikido-security:
+    name: Aikido Security Scan
     runs-on: ubuntu-latest
     needs: changes
-    # Only run Snyk on pull requests to avoid hitting monthly limits
+    # Only run on pull requests with relevant changes
     if: (needs.changes.outputs.dependencies == 'true' || needs.changes.outputs.typescript == 'true') && github.event_name == 'pull_request'
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
+      - name: Run Aikido Security Scan
+        uses: AikidoSec/github-actions-workflow@v1.0.13
         with:
-          version: ${{ env.PNPM_VERSION }}
+          secret-key: ${{ secrets.AIKIDO_SECRET_KEY }}
+          fail-on-timeout: true
+          fail-on-dependency-scan: true
+          fail-on-sast-scan: false  # Enable when on paid plan
+          fail-on-iac-scan: false   # Enable when on paid plan
+          minimum-severity: 'HIGH'
+          timeout-seconds: 180
+          post-scan-status-comment: 'only_if_new_findings'
+          post-sast-review-comments: 'off'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Run Snyk to check for vulnerabilities
-        id: snyk_check
-        uses: snyk/actions/node@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: --severity-threshold=high --fail-on=upgradable --sarif-file-output=snyk.sarif
-
-      - name: Display Snyk Results
-        if: always()
-        run: |
-          echo "Snyk scan outcome: ${{ steps.snyk_check.outcome }}"
-          if [ -f snyk.sarif ]; then
-            echo "SARIF file generated successfully"
-            echo "File size: $(ls -lh snyk.sarif | awk '{print $5}')"
-          else
-            echo "Warning: SARIF file not generated"
-          fi
-          
-      - name: Fail if vulnerabilities found
-        if: steps.snyk_check.outcome == 'failure'
-        run: |
-          echo "❌ Snyk found high severity vulnerabilities that must be fixed"
-          echo "Check the Snyk output above for details"
-          exit 1
-
-      - name: Upload Snyk report as sarif
-        uses: github/codeql-action/upload-sarif@v3
-        if: always()
-        with:
-          sarif_file: snyk.sarif
-
-      - name: Run Snyk Code (SAST)
-        uses: snyk/actions/node@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          command: code test
-          args: --severity-threshold=high
 
   # Bundle size check
   bundle-size:
@@ -533,7 +496,7 @@ jobs:
   pr-status:
     name: PR Status Check
     runs-on: ubuntu-latest
-    needs: [lint, typecheck, test-unit, yaml-lint, markdown-lint, secret-scan, security-scan, accessibility-test]
+    needs: [lint, typecheck, test-unit, yaml-lint, markdown-lint, secret-scan, aikido-security, accessibility-test]
     if: always()
     steps:
       - name: Check status
@@ -544,7 +507,7 @@ jobs:
              [[ "${{ needs.yaml-lint.result }}" == "failure" ]] || \
              [[ "${{ needs.markdown-lint.result }}" == "failure" ]] || \
              [[ "${{ needs.secret-scan.result }}" == "failure" ]] || \
-             [[ "${{ needs.security-scan.result }}" == "failure" ]]; then
+             [[ "${{ needs.aikido-security.result }}" == "failure" ]]; then
             echo "❌ PR validation failed"
             exit 1
           elif [[ "${{ needs.accessibility-test.result }}" == "failure" ]]; then

@@ -28,7 +28,7 @@ jobs:
           echo "Running final security checks"
           # TODO: Implement comprehensive security scan
           # - Secret scanning with TruffleHog
-          # - Dependency vulnerabilities with Snyk
+          # - Dependency vulnerabilities with Aikido Security (see issue #163)
           # - SAST with CodeQL
 
   # Deploy to Vercel Production
