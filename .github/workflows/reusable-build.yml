@@ -39,11 +39,7 @@ jobs:
 
       - name: Build application
         run: |
-          if [ "${{ inputs.environment }}" = "production" ]; then
-            pnpm build
-          else
-            pnpm build:test
-          fi
+          pnpm build
         env:
           NODE_ENV: ${{ inputs.environment }}
           NEXT_PUBLIC_APP_ENV: ${{ inputs.environment }}
