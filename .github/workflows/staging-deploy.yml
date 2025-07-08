@@ -213,8 +213,8 @@ jobs:
     steps:
       - name: Run security scan
         run: |
-          echo "Security scanning will be implemented in Week 3"
-          # TODO: Implement Snyk/OWASP scanning
+          echo "Security scanning pending - Aikido Security integration in progress"
+          # TODO: Implement Aikido Security scanning (see issue #163)
 
   # Notify New Relic of staging deployment
   notify-monitoring:
