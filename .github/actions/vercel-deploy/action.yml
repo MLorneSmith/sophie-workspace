@@ -54,12 +54,12 @@ runs:
         vercel pull --yes --environment=${{ inputs.environment }} --token=${{ inputs.token }}
 
     - name: Build with Vercel
-      if: inputs.build-artifacts == 'false'
       shell: bash
       env:
         VERCEL_ORG_ID: ${{ inputs.org-id }}
         VERCEL_PROJECT_ID: ${{ inputs.project-id }}
       run: |
+        # Always build - either from scratch or using downloaded artifacts
         if [ "${{ inputs.environment }}" = "production" ]; then
           vercel build --prod --token=${{ inputs.token }}
         else
