@@ -2,7 +2,8 @@
 
 ## Overview
 
-This document outlines the Aikido Security integration for the SlideHeroes project, which replaces Snyk due to free tier limitations.
+This document outlines the Aikido Security integration for the SlideHeroes project, which replaces Snyk due to free
+tier limitations.
 
 ## Why Aikido Security?
 
