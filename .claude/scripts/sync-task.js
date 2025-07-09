@@ -13,11 +13,11 @@
  *   node sync-task.js "https://..."          # Full GitHub URL
  */
 
-import { promises as fs } from "node:fs";
-import { join, dirname } from "node:path";
 import { exec } from "node:child_process";
-import { promisify } from "node:util";
+import { promises as fs } from "node:fs";
+import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { promisify } from "node:util";
 
 const execAsync = promisify(exec);
 const __filename = fileURLToPath(import.meta.url);

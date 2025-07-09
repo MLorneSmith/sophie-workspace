@@ -1,5 +1,5 @@
-import http from "k6/http";
 import { check, sleep } from "k6";
+import http from "k6/http";
 import { Rate, Trend } from "k6/metrics";
 import { apiBaseUrl, testUserEmail, testUserPassword } from "../k6.config.js";
 
