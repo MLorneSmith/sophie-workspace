@@ -11,12 +11,12 @@ import {
 	FormMessage,
 } from "@kit/ui/form";
 import { Input } from "@kit/ui/input";
+import { toast } from "@kit/ui/sonner";
 import { Trans } from "@kit/ui/trans";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { toast } from "@kit/ui/sonner";
 
 import { TeamNameFormSchema } from "../../schema/update-team-name.schema";
 import { updateTeamAccountName } from "../../server/actions/team-details-server-actions";

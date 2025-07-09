@@ -1,8 +1,8 @@
+import { check, group, sleep } from "k6";
 import http from "k6/http";
-import { check, sleep, group } from "k6";
 import { Counter, Trend } from "k6/metrics";
 import { apiBaseUrl, testUserEmail, testUserPassword } from "../k6.config.js";
-import { login, getAuthHeaders } from "../utils/auth.js";
+import { getAuthHeaders, login } from "../utils/auth.js";
 
 // Custom metrics
 export const dashboardErrors = new Counter("dashboard_errors");

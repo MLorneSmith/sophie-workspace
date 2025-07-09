@@ -13,7 +13,7 @@
  *   - GitHub URL: https://github.com/MLorneSmith/2025slideheroes/issues/30
  */
 
-import { mkdir, stat, writeFile, readFile } from "node:fs/promises";
+import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
