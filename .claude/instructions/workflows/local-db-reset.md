@@ -42,103 +42,53 @@ Local Payload URL: http://localhost:3001
 - Always backup important development data before resetting
 - The database at port 54322 is shared across all local activities
 
-## Step 0: Quick Diagnostic Check
+## Step 1: Streamlined Supabase Reset
 
-Before proceeding with a full reset, check if your database is simply empty:
+This streamlined process handles port conflicts, starts Supabase, resets the database, and generates types in one efficient sequence:
+
+### 1.1 Port Cleanup and Supabase Reset
 
 ```bash
-# Check if database has any tables
-docker exec -i supabase_db_2025slideheroes-db psql -U postgres -d postgres -c "SELECT COUNT(*) as table_count FROM information_schema.tables WHERE table_schema = 'public';" 2>/dev/null || echo "Database container not running"
+# 1. Clean up any port conflicts and stop all services
+bash .claude/scripts/cleanup-ports.sh
 
-# Expected: ~31 tables. If 0, your database is empty and needs reset
+# 2. Start Supabase services (required for reset)
+pnpm supabase:web:start
+
+# 3. Reset Supabase database completely (⏱️ ~2-3 minutes)
+pnpm supabase:web:reset
+
+# 4. Generate TypeScript types for the reset database
+pnpm --filter web supabase:typegen
 ```
 
-## Step 1: Pre-Reset Preparation
+**What This Does**:
 
-### 1.1 Create Local Database Backup (Optional)
+- Cleans up port conflicts and stops all running services
+- Starts Supabase local development services
+- Resets the entire local Supabase instance with all migrations applied
+- Generates TypeScript types for both packages and app
 
-Create a backup of current local data if needed:
+**Important Notes**:
+
+- The reset automatically applies all migrations in `apps/web/supabase/migrations/`
+- Seeds are applied from `apps/web/supabase/seed.sql` if present
+- Container health check errors during reset are normal and can be ignored
+- If `supabase:web:reset` fails, ensure Docker is running and retry
+
+### 1.2 Optional: Create Local Database Backup
+
+If you need to backup existing data before the reset:
 
 ```bash
-# Create timestamped backup of local database
+# Create timestamped backup of local database (only if needed)
 pg_dump "postgresql://postgres:postgres@localhost:54322/postgres" > "local_backup_$(date +%Y%m%d_%H%M%S).sql"
 
 # Verify backup integrity
 pg_restore --list local_backup_*.sql | head -10
 ```
 
-### 1.2 Stop All Running Services
-
-Stop all development services to ensure clean state:
-
-```bash
-# Stop Supabase services
-pnpm supabase:web:stop
-
-# Stop Payload CMS if running
-pkill -f "payload"
-
-# Stop web app if running
-pkill -f "next-server"
-```
-
-**Note**: If you encounter port conflicts (e.g., "port is already allocated"), use the cleanup script:
-
-```bash
-# Run the comprehensive port cleanup
-bash .claude/scripts/cleanup-ports.sh
-
-# Or manually stop stubborn containers
-docker stop supabase_db_2025slideheroes-db && docker rm supabase_db_2025slideheroes-db
-```
-
-### 1.3 Verify Environment Variables
-
-Confirm local development environment variables:
-
-```bash
-echo "NEXT_PUBLIC_SUPABASE_URL: $NEXT_PUBLIC_SUPABASE_URL"
-echo "NEXT_PUBLIC_SUPABASE_ANON_KEY: $NEXT_PUBLIC_SUPABASE_ANON_KEY"
-echo "SUPABASE_SERVICE_ROLE_KEY: $SUPABASE_SERVICE_ROLE_KEY"
-echo "PAYLOAD_DATABASE_URL: $PAYLOAD_DATABASE_URL"
-echo "NODE_ENV: $NODE_ENV"
-```
-
-## Step 2: Reset Supabase Schema (Web App)
-
-### 2.1 Reset Local Supabase Database
-
-Reset the entire local Supabase instance (⏱️ ~2-3 minutes):
-
-```bash
-# Reset Supabase database completely
-# This command will automatically start Supabase if it's not running
-pnpm supabase:web:reset
-
-# Wait for services to be ready
-sleep 10
-```
-
-**Important Reset Command Behaviors**:
-
-- `pnpm supabase:web:reset` runs `supabase db reset` from the web directory
-- The reset command will FAIL if Supabase is not running
-- The reset automatically applies all migrations in `apps/web/supabase/migrations/`
-- Seeds are applied from `apps/web/supabase/seed.sql` if present
-- Container health check errors during reset are normal and can be ignored
-
-### 2.2 Generate TypeScript Types
-
-Generate TypeScript types for the reset database:
-
-```bash
-# Generate TypeScript types using workspace command
-pnpm --filter web supabase:typegen
-```
-
-**Note**: Migrations are automatically applied during the reset process. The `db push` command is only needed for remote databases.
-
-### 2.3 Verify Supabase Schema
+### 1.3 Verify Supabase Schema (Optional)
 
 Confirm Supabase schema was properly created:
 
@@ -156,7 +106,7 @@ docker exec -i supabase_db_2025slideheroes-db psql -U postgres -d postgres -c "S
 docker ps --format "table {{.Names}}" | grep -E "supabase.*db" | head -1 | xargs -I {} docker exec -i {} psql -U postgres -d postgres -c "SELECT COUNT(*) as table_count FROM information_schema.tables WHERE table_schema = 'auth';"
 ```
 
-### 2.4 Seed Initial Data (Optional)
+### 1.4 Seed Initial Data (Optional)
 
 Apply seed data for development:
 
@@ -165,9 +115,9 @@ Apply seed data for development:
 pnpm --filter web supabase db seed
 ```
 
-## Step 3: Reset Payload Schema
+## Step 2: Reset Payload Schema
 
-### 3.1 Clean Payload Migration Files
+### 2.1 Clean Payload Migration Files
 
 Remove existing Payload migration files:
 
@@ -183,7 +133,7 @@ pnpm --filter payload exec ls -la src/migrations/
 pnpm --filter payload exec sh -c "echo 'export const migrations = [];' > src/migrations/index.ts"
 ```
 
-### 3.2 Drop Existing Payload Schema
+### 2.2 Drop Existing Payload Schema
 
 ⚠️ **CRITICAL STEP**: Remove the Payload schema from local database (⏱️ ~30 seconds):
 
@@ -211,7 +161,7 @@ END \$\$;"
 
 **⚠️ WARNING**: This step is CRITICAL. Payload migrations will fail with foreign key constraint errors if existing tables have incompatible data types. Always drop the schema completely before regenerating migrations.
 
-### 3.3 Verify Payload Schema Removal
+### 2.3 Verify Payload Schema Removal
 
 Confirm the Payload schema has been completely removed:
 
@@ -225,9 +175,9 @@ docker exec -i supabase_db_2025slideheroes-db psql -U postgres -d postgres -c "S
 
 **Expected Results**: Both commands should return `(0 rows)` indicating complete removal.
 
-## Step 4: Generate Fresh Payload Migration
+## Step 3: Generate Fresh Payload Migration
 
-### 4.1 Configure Local Environment Variables
+### 3.1 Configure Local Environment Variables
 
 Environment variables for Payload local development:
 
@@ -242,7 +192,7 @@ PAYLOAD_PUBLIC_SERVER_URL="http://localhost:3001"
 
 **Note**: These variables are set inline for each command to ensure they're available in the correct context.
 
-### 4.2 Generate New Migration
+### 3.2 Generate New Migration
 
 Create a comprehensive migration for the entire Payload schema:
 
@@ -254,7 +204,7 @@ pnpm --filter payload payload migrate:create --name local_reset_schema
 pnpm --filter payload exec ls -la src/migrations/
 ```
 
-### 4.3 Verify Migration Generation
+### 3.3 Verify Migration Generation
 
 Confirm the new migration is properly generated:
 
@@ -270,9 +220,9 @@ pnpm --filter payload exec sh -c 'head -20 src/migrations/20*.ts'
 pnpm --filter payload exec sh -c 'wc -l src/migrations/20*.ts'
 ```
 
-## Step 5: Execute Payload Migration
+## Step 4: Execute Payload Migration
 
-### 5.1 Create Payload Schema
+### 4.1 Create Payload Schema
 
 Create the Payload schema before running migration:
 
@@ -281,7 +231,7 @@ Create the Payload schema before running migration:
 docker exec -i supabase_db_2025slideheroes-db psql -U postgres -d postgres -c "CREATE SCHEMA IF NOT EXISTS payload;"
 ```
 
-### 5.2 Run Fresh Migration
+### 4.2 Run Fresh Migration
 
 Execute the newly generated migration:
 
@@ -292,7 +242,7 @@ pnpm --filter payload payload migrate
 # Monitor output for success indicators
 ```
 
-### 5.3 Expected Migration Output
+### 4.3 Expected Migration Output
 
 Look for these success indicators:
 
@@ -306,9 +256,9 @@ Look for these success indicators:
 [INFO] Done.
 ```
 
-## Step 6: Comprehensive Verification
+## Step 5: Comprehensive Verification
 
-### 6.1 Verify Supabase Schema
+### 5.1 Verify Supabase Schema
 
 Check that Supabase web schema is working:
 
@@ -320,7 +270,7 @@ curl -f http://localhost:54321/rest/v1/ -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6
 docker exec -i supabase_db_2025slideheroes-db psql -U postgres -d postgres -c "SELECT COUNT(*) as table_count FROM information_schema.tables WHERE table_schema = 'public';"
 ```
 
-### 6.2 Verify Payload Schema
+### 5.2 Verify Payload Schema
 
 Check that Payload schema is working:
 
@@ -335,7 +285,7 @@ docker exec -i supabase_db_2025slideheroes-db psql -U postgres -d postgres -c "S
 docker exec -i supabase_db_2025slideheroes-db psql -U postgres -d postgres -c "SELECT * FROM payload.payload_migrations ORDER BY created_at DESC LIMIT 1;"
 ```
 
-### 6.3 Test Application Connectivity
+### 5.3 Test Application Connectivity
 
 Verify both applications can connect to the database:
 
@@ -364,9 +314,9 @@ curl -f http://localhost:3001/api/health || echo "Payload API not ready"
 kill $WEB_PID $PAYLOAD_PID 2>/dev/null || true
 ```
 
-## Step 7: Final Validation
+## Step 6: Final Validation
 
-### 7.1 Run Database Tests
+### 6.1 Run Database Tests
 
 Execute local database tests to ensure everything works:
 
@@ -378,7 +328,7 @@ pnpm --filter web supabase:test
 pnpm --filter payload test
 ```
 
-### 7.2 Generate TypeScript Types
+### 6.2 Generate TypeScript Types
 
 Ensure all TypeScript types are up to date:
 

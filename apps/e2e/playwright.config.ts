@@ -4,6 +4,16 @@ import { config as dotenvConfig } from "dotenv";
 dotenvConfig();
 dotenvConfig({ path: ".env.local" });
 
+// Load E2E specific environment variables
+process.env.SUPABASE_URL =
+	process.env.E2E_SUPABASE_URL || "http://localhost:55321";
+process.env.SUPABASE_ANON_KEY = process.env.E2E_SUPABASE_ANON_KEY || "";
+process.env.SUPABASE_SERVICE_ROLE_KEY =
+	process.env.E2E_SUPABASE_SERVICE_ROLE_KEY || "";
+process.env.DATABASE_URL =
+	process.env.E2E_DATABASE_URL ||
+	"postgresql://postgres:postgres@localhost:55322/postgres";
+
 const enableBillingTests = process.env.ENABLE_BILLING_TESTS === "true";
 const enableTeamAccountTests =
 	(process.env.ENABLE_TEAM_ACCOUNT_TESTS ?? "true") === "true";
@@ -59,7 +69,7 @@ export default defineConfig({
 		["html", { outputFolder: "playwright-report", open: "never" }],
 		["junit", { outputFile: "test-results/junit.xml" }],
 		["github"], // GitHub Actions integration
-		...(process.env.CI ? [["blob"]] : []), // Blob reporter for CI artifacts
+		...(process.env.CI ? [["blob"] as const] : []), // Blob reporter for CI artifacts
 	],
 	/* Ignore billing tests if the environment variable is not set. */
 	testIgnore,
@@ -131,7 +141,6 @@ export default defineConfig({
 					use: {
 						...devices["Desktop Chrome"],
 						colorScheme: "light",
-						reduceMotion: "reduce",
 					},
 					testMatch: /.*accessibility.*\.spec\.ts/,
 				},
@@ -147,7 +156,6 @@ export default defineConfig({
 					use: {
 						...devices["Desktop Chrome"],
 						colorScheme: "light",
-						reduceMotion: "reduce",
 					},
 					testMatch: /.*accessibility.*\.spec\.ts/,
 				},
