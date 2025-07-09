@@ -164,16 +164,15 @@ jobs:
         run: |
           cd apps/e2e
           # Start E2E Supabase instance
-          pnpm supabase start
+          supabase start
           
           # Wait for database to be ready
-          sleep 5
+          sleep 10
           
           # Run database migrations
-          pnpm supabase db reset --linked=false
+          supabase db reset --linked
           
-          # Seed test data
-          pnpm supabase db seed
+          # No need to manually seed - reset includes seed.sql
 
       - name: Run E2E tests
         run: |
