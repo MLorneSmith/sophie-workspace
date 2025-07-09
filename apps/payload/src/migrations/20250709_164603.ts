@@ -4,7 +4,11 @@ import {
 	sql,
 } from "@payloadcms/db-postgres";
 
-export async function up({ db }: MigrateUpArgs): Promise<void> {
+export async function up({
+	db,
+	payload: _payload,
+	req: _req,
+}: MigrateUpArgs): Promise<void> {
 	await db.execute(sql`
    CREATE TYPE "payload"."enum_users_role" AS ENUM('admin', 'user');
   CREATE TYPE "payload"."enum_media_type" AS ENUM('image', 'video', 'document');
@@ -1005,7 +1009,11 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
   CREATE INDEX "payload_migrations_created_at_idx" ON "payload"."payload_migrations" USING btree ("created_at");`);
 }
 
-export async function down({ db }: MigrateDownArgs): Promise<void> {
+export async function down({
+	db,
+	payload: _payload,
+	req: _req,
+}: MigrateDownArgs): Promise<void> {
 	await db.execute(sql`
    DROP TABLE "payload"."users" CASCADE;
   DROP TABLE "payload"."media_tags" CASCADE;

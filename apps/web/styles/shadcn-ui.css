@@ -10,34 +10,34 @@
 		Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 	--font-heading: var(--font-sans);
 
-	/* shadcn CSS Variables - Hex format for Tailwind v4 compatibility */
-	--background: #ffffff; /* white */
-	--foreground: #262626; /* dark gray for WCAG AA compliance - 15.1:1 contrast */
+	/* shadcn CSS Variables - Standard shadcn/ui theme colors */
+	--background: 0 0% 100%; /* white */
+	--foreground: 222.2 47.4% 11.2%; /* dark blue-gray */
 
-	--card: #ffffff; /* white */
-	--card-foreground: #262626; /* dark gray for WCAG AA compliance - 15.1:1 contrast */
+	--card: 0 0% 100%; /* white */
+	--card-foreground: 222.2 47.4% 11.2%; /* dark blue-gray */
 
-	--popover: #ffffff; /* white */
-	--popover-foreground: #262626; /* dark gray for WCAG AA compliance - 15.1:1 contrast */
+	--popover: 0 0% 100%; /* white */
+	--popover-foreground: 222.2 47.4% 11.2%; /* dark blue-gray */
 
-	--primary: #262626; /* dark gray for WCAG AA compliance on white - 15.1:1 contrast */
-	--primary-foreground: #ffffff; /* white */
+	--primary: 222.2 47.4% 11.2%; /* dark blue-gray */
+	--primary-foreground: 210 40% 98%; /* off-white */
 
-	--secondary: #fafafa; /* very light gray */
-	--secondary-foreground: #262626; /* dark gray for contrast - 15.1:1 */
+	--secondary: 210 40% 96.1%; /* light blue-gray */
+	--secondary-foreground: 222.2 47.4% 11.2%; /* dark blue-gray */
 
-	--muted: #f7f7f7; /* light gray background */
-	--muted-foreground: #525252; /* darker gray - 7.8:1 contrast on white */
+	--muted: 210 40% 96.1%; /* light blue-gray */
+	--muted-foreground: 215.4 16.3% 46.9%; /* medium blue-gray */
 
-	--accent: #fafafa; /* very light gray */
-	--accent-foreground: #262626; /* dark gray for contrast - 15.1:1 */
+	--accent: 210 40% 96.1%; /* light blue-gray */
+	--accent-foreground: 222.2 47.4% 11.2%; /* dark blue-gray */
 
-	--destructive: #dc2626; /* red-600 */
-	--destructive-foreground: #ffffff; /* white */
+	--destructive: 0 100% 50%; /* pure red */
+	--destructive-foreground: 210 40% 98%; /* off-white */
 
-	--border: #e5e5e5; /* gray-200 */
-	--input: #e5e5e5; /* gray-200 */
-	--ring: #404040; /* dark gray */
+	--border: 214.3 31.8% 91.4%; /* light blue-gray */
+	--input: 214.3 31.8% 91.4%; /* light blue-gray */
+	--ring: 215 20.2% 65.1%; /* medium blue-gray */
 
 	--radius: 0.5rem;
 
@@ -48,43 +48,43 @@
 	--chart-5: 31 97% 83%; /* orange-200 */
 
 	--sidebar-background: 0 0% 98%; /* gray-50 */
-	--sidebar-foreground: 0 0% 32%; /* gray-600 */
-	--sidebar-primary: 0 0% 20%; /* dark gray */
-	--sidebar-primary-foreground: 0 0% 100%; /* white */
-	--sidebar-accent: 0 0% 96%; /* gray-100 */
-	--sidebar-accent-foreground: 0 0% 20%; /* dark gray */
+	--sidebar-foreground: 240 5.3% 26.1%; /* gray-600 */
+	--sidebar-primary: 240 5.9% 10%; /* dark gray */
+	--sidebar-primary-foreground: 0 0% 98%; /* white */
+	--sidebar-accent: 240 4.8% 95.9%; /* gray-100 */
+	--sidebar-accent-foreground: 240 5.9% 10%; /* dark gray */
 	--sidebar-border: var(--border);
-	--sidebar-ring: 217 91% 60%; /* blue-500 */
+	--sidebar-ring: 217.2 91.2% 59.8%; /* blue-500 */
 }
 
 .dark {
-	--background: 0 0% 4%; /* very dark gray */
-	--foreground: 0 0% 98%; /* off-white */
+	--background: 224 71% 4%; /* dark blue-gray */
+	--foreground: 213 31% 91%; /* light blue-gray */
 
-	--card: 0 0% 4%; /* very dark gray */
-	--card-foreground: 0 0% 98%; /* off-white */
+	--card: 224 71% 4%; /* dark blue-gray */
+	--card-foreground: 213 31% 91%; /* light blue-gray */
 
-	--popover: 0 0% 4%; /* very dark gray */
-	--popover-foreground: 0 0% 98%; /* off-white */
+	--popover: 224 71% 4%; /* dark blue-gray */
+	--popover-foreground: 215 20.2% 65.1%; /* medium blue-gray */
 
-	--primary: 0 0% 98%; /* off-white */
-	--primary-foreground: 0 0% 4%; /* very dark gray */
+	--primary: 210 40% 98%; /* off-white */
+	--primary-foreground: 222.2 47.4% 1.2%; /* very dark blue-gray */
 
-	--secondary: 0 0% 15%; /* dark gray */
-	--secondary-foreground: 0 0% 98%; /* off-white */
+	--secondary: 222.2 47.4% 11.2%; /* dark blue-gray */
+	--secondary-foreground: 210 40% 98%; /* off-white */
 
-	--muted: 0 0% 15%; /* dark gray */
-	--muted-foreground: 0 0% 64%; /* medium gray */
+	--muted: 223 47% 11%; /* dark blue-gray */
+	--muted-foreground: 215.4 16.3% 56.9%; /* medium blue-gray */
 
-	--accent: 0 0% 15%; /* dark gray */
-	--accent-foreground: 0 0% 98%; /* off-white */
+	--accent: 216 34% 17%; /* dark blue-gray */
+	--accent-foreground: 210 40% 98%; /* off-white */
 
-	--destructive: 0 72% 51%; /* red-600 */
-	--destructive-foreground: 0 0% 98%; /* off-white */
+	--destructive: 0 63% 31%; /* darker red */
+	--destructive-foreground: 210 40% 98%; /* off-white */
 
-	--border: 0 0% 15%; /* border gray */
-	--input: 0 0% 15%; /* input gray */
-	--ring: 0 0% 83%; /* light gray */
+	--border: 216 34% 17%; /* dark blue-gray */
+	--input: 216 34% 17%; /* dark blue-gray */
+	--ring: 216 34% 17%; /* dark blue-gray */
 
 	--chart-1: 221 83% 53%; /* blue-600 */
 	--chart-2: 158 64% 52%; /* emerald-400 */
@@ -92,14 +92,14 @@
 	--chart-4: 271 91% 65%; /* purple-500 */
 	--chart-5: 330 81% 60%; /* pink-500 */
 
-	--sidebar-background: 0 0% 10%; /* very dark gray */
-	--sidebar-foreground: 0 0% 96%; /* off-white */
-	--sidebar-primary: 217 91% 60%; /* blue-500 */
-	--sidebar-primary-foreground: 0 0% 100%; /* white */
-	--sidebar-accent: 0 0% 15%; /* dark gray */
-	--sidebar-accent-foreground: 0 0% 96%; /* off-white */
+	--sidebar-background: 240 5.9% 10%; /* very dark gray */
+	--sidebar-foreground: 240 4.8% 95.9%; /* off-white */
+	--sidebar-primary: 217.2 91.2% 59.8%; /* blue-500 */
+	--sidebar-primary-foreground: 222.2 47.4% 1.2%; /* very dark */
+	--sidebar-accent: 240 3.7% 15.9%; /* dark gray */
+	--sidebar-accent-foreground: 240 4.8% 95.9%; /* off-white */
 	--sidebar-border: var(--border);
-	--sidebar-ring: 217 91% 60%; /* blue-500 */
+	--sidebar-ring: 217.2 91.2% 59.8%; /* blue-500 */
 }
 
 /* Tailwind v4 Theme Mapping - Following official shadcn/ui v4 documentation */

@@ -112,7 +112,14 @@ jobs:
       matrix:
         browser: ${{ fromJson(needs.matrix-config.outputs.browsers) }}
     env:
-      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      # E2E Database Configuration
+      E2E_SUPABASE_URL: ${{ secrets.E2E_SUPABASE_URL }}
+      E2E_SUPABASE_ANON_KEY: ${{ secrets.E2E_SUPABASE_ANON_KEY }}
+      E2E_SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.E2E_SUPABASE_SERVICE_ROLE_KEY }}
+      E2E_DATABASE_URL: ${{ secrets.E2E_DATABASE_URL }}
+      
+      # Legacy environment variables (for backward compatibility)
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.E2E_SUPABASE_SERVICE_ROLE_KEY }}
       SUPABASE_DB_WEBHOOK_SECRET: ${{ secrets.SUPABASE_DB_WEBHOOK_SECRET }}
       STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
       STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
@@ -147,6 +154,21 @@ jobs:
 
       - name: Build application
         run: pnpm build
+
+      - name: Set up E2E database
+        run: |
+          cd apps/e2e
+          # Start E2E Supabase instance
+          pnpm supabase start
+          
+          # Wait for database to be ready
+          sleep 5
+          
+          # Run database migrations
+          pnpm supabase db reset --linked=false
+          
+          # Seed test data
+          pnpm supabase db seed
 
       - name: Run E2E tests
         run: |
