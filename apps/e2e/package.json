@@ -21,7 +21,12 @@
 		"a11y:report": "playwright show-report accessibility-report",
 		"test:smoke": "playwright test tests/smoke --max-failures=1 --reporter=list",
 		"merge-reports": "playwright merge-reports --reporter html",
-		"doctor": "playwright doctor"
+		"doctor": "playwright doctor",
+		"supabase": "supabase",
+		"supabase:start": "supabase start",
+		"supabase:stop": "supabase stop",
+		"supabase:reset": "supabase db reset",
+		"supabase:seed": "supabase db seed"
 	},
 	"keywords": [],
 	"author": "",
@@ -33,6 +38,7 @@
 		"@types/node": "^24.0.4",
 		"dotenv": "16.5.0",
 		"node-html-parser": "^7.0.1",
+		"supabase": "^2.26.9",
 		"totp-generator": "^1.0.0"
 	}
 }
