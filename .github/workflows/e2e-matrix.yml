@@ -132,6 +132,11 @@ jobs:
 
       - uses: ./.github/actions/setup-deps
 
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
       - name: Install Playwright browsers
         run: |
           # Install browsers based on matrix configuration
