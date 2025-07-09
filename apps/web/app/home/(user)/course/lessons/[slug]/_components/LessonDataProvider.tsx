@@ -1,10 +1,10 @@
+import { createServiceLogger } from "@kit/shared/logger";
 import type { Database } from "@kit/supabase/database";
 /**
  * LessonDataProvider - Server component for fetching lesson-related data
  * Handles quiz, survey, and progress data for lesson display
  */
 import { updateLessonProgressAction } from "../../../_lib/server/server-actions";
-import { createServiceLogger } from "@kit/shared/logger";
 
 // Create service-scoped logger
 const { getLogger } = createServiceLogger("LESSON-DATA-PROVIDER");

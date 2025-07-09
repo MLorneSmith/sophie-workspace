@@ -1,7 +1,7 @@
+import { createServiceLogger } from "@kit/shared/logger";
 import type { Database } from "~/lib/database.types";
 // Import the server client using dynamic import to avoid issues with next/headers
 import { updateLessonProgressAction } from "../../../_lib/server/server-actions";
-import { createServiceLogger } from "@kit/shared/logger";
 
 // Create service-scoped logger
 const { getLogger } = createServiceLogger("LESSON-DATA-PROVIDER");
