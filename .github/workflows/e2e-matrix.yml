@@ -169,8 +169,8 @@ jobs:
           # Wait for database to be ready
           sleep 10
           
-          # Run database migrations
-          supabase db reset --linked
+          # Run database migrations without linking (for CI)
+          supabase db reset
           
           # No need to manually seed - reset includes seed.sql
 
