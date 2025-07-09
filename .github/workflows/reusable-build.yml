@@ -20,34 +20,13 @@ on:
 jobs:
   build:
     name: Build Application
-    runs-on: ubuntu-latest
+    runs-on: ubicloud-standard-2
     outputs:
       cache-key: ${{ steps.cache.outputs.key }}
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ inputs.node-version }}
-          cache: 'pnpm'
-
-      - name: Get pnpm store directory
-        id: pnpm-cache
-        run: |
-          echo "store-path=$(pnpm store path)" >> $GITHUB_OUTPUT
-
-      - name: Setup pnpm cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.pnpm-cache.outputs.store-path }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - uses: ./.github/actions/setup-deps
 
       - name: Cache turbo build
         uses: actions/cache@v4
@@ -60,11 +39,7 @@ jobs:
 
       - name: Build application
         run: |
-          if [ "${{ inputs.environment }}" = "production" ]; then
-            pnpm build
-          else
-            pnpm build:test
-          fi
+          pnpm build
         env:
           NODE_ENV: ${{ inputs.environment }}
           NEXT_PUBLIC_APP_ENV: ${{ inputs.environment }}
@@ -78,6 +53,7 @@ jobs:
             apps/web/public
             apps/payload/dist
             packages/*/dist
+            .turbo
           key: build-${{ inputs.environment }}-${{ github.sha }}
 
       - name: Generate build info
@@ -96,3 +72,13 @@ jobs:
           name: build-info-${{ inputs.environment }}
           path: build-info.json
           retention-days: 7
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts-${{ inputs.environment }}
+          path: |
+            apps/web/.next
+            apps/payload/dist
+            build-info.json
+          retention-days: 1

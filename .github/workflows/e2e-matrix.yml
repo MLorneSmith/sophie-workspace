@@ -50,7 +50,7 @@ jobs:
   # Determine what browser configurations to test
   matrix-config:
     name: Configure Test Matrix
-    runs-on: ubuntu-latest
+    runs-on: ubicloud-standard-2
     outputs:
       browsers: ${{ steps.config.outputs.browsers }}
       should_run: ${{ steps.config.outputs.should_run }}
@@ -103,7 +103,7 @@ jobs:
   # E2E tests with browser matrix
   e2e-tests:
     name: E2E Tests (${{ matrix.browser }})
-    runs-on: ubuntu-latest
+    runs-on: ubicloud-standard-2
     needs: matrix-config
     if: needs.matrix-config.outputs.should_run == 'true'
     strategy:
@@ -122,30 +122,7 @@ jobs:
         with:
           fetch-depth: 2
 
-      - uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
-
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-
-      - name: Setup pnpm cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - uses: ./.github/actions/setup-deps
 
       - name: Install Playwright browsers
         run: |
@@ -200,23 +177,13 @@ jobs:
   # Merge test results and create unified report
   merge-reports:
     name: Merge Test Reports
-    runs-on: ubuntu-latest
+    runs-on: ubicloud-standard-2
     needs: e2e-tests
     if: always() && needs.e2e-tests.result != 'skipped'
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - uses: ./.github/actions/setup-deps
 
       - name: Download all test results
         uses: actions/download-artifact@v4
@@ -230,11 +197,23 @@ jobs:
           # Install Playwright for report merging
           pnpm playwright install --with-deps
           
-          # Merge blob reports
-          find ../../merged-reports -name "*.zip" -exec unzip -o {} -d ./blob-reports/ \;
+          # Create directory for blob reports
+          mkdir -p ./blob-reports
+          
+          # Find and copy all blob report files from downloaded artifacts
+          find ../../merged-reports -path "*/blob-report/*.zip" -type f | while read zipfile; do
+            echo "Processing: $zipfile"
+            cp "$zipfile" ./blob-reports/
+          done
+          
+          # Check if any blob reports were found
+          if [ -z "$(ls -A ./blob-reports 2>/dev/null)" ]; then
+            echo "No blob reports found in merged-reports"
+            exit 1
+          fi
           
           # Create unified HTML report
-          pnpm playwright merge-reports --reporter html ./blob-reports/ || echo "Report merge completed with warnings"
+          pnpm playwright merge-reports --reporter html ./blob-reports/
 
       - name: Upload unified report
         uses: actions/upload-artifact@v4
@@ -291,7 +270,7 @@ jobs:
   # Final status check
   e2e-status:
     name: E2E Status Check
-    runs-on: ubuntu-latest
+    runs-on: ubicloud-standard-2
     needs: [matrix-config, e2e-tests, merge-reports]
     if: always()
     steps:

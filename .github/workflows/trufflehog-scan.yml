@@ -23,7 +23,7 @@ permissions:
 jobs:
   trufflehog:
     name: Secret Scanning
-    runs-on: ubuntu-latest
+    runs-on: ubicloud-standard-2
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -87,7 +87,7 @@ jobs:
   # Separate job for full history scan
   full-history-scan:
     name: Full History Scan
-    runs-on: ubuntu-latest
+    runs-on: ubicloud-standard-2
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     steps:
       - name: Checkout code
