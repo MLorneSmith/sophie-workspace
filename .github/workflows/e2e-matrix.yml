@@ -112,22 +112,26 @@ jobs:
       matrix:
         browser: ${{ fromJson(needs.matrix-config.outputs.browsers) }}
     env:
-      # E2E Database Configuration
-      E2E_SUPABASE_URL: ${{ secrets.E2E_SUPABASE_URL }}
-      E2E_SUPABASE_ANON_KEY: ${{ secrets.E2E_SUPABASE_ANON_KEY }}
-      E2E_SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.E2E_SUPABASE_SERVICE_ROLE_KEY }}
-      E2E_DATABASE_URL: ${{ secrets.E2E_DATABASE_URL }}
+      # E2E Database Configuration - Local Supabase instance
+      SUPABASE_URL: 'http://127.0.0.1:55321'
+      NEXT_PUBLIC_SUPABASE_URL: 'http://127.0.0.1:55321'
+      SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0'
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0'
+      SUPABASE_SERVICE_ROLE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU'
+      DATABASE_URL: 'postgresql://postgres:postgres@localhost:55322/postgres'
+      DATABASE_URI: 'postgresql://postgres:postgres@localhost:55322/postgres'
       
-      # Legacy environment variables (for backward compatibility)
-      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.E2E_SUPABASE_SERVICE_ROLE_KEY }}
-      SUPABASE_DB_WEBHOOK_SECRET: ${{ secrets.SUPABASE_DB_WEBHOOK_SECRET }}
-      STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
-      STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+      # Test environment configuration
+      SUPABASE_DB_WEBHOOK_SECRET: 'test_webhook_secret'
+      STRIPE_SECRET_KEY: 'sk_test_dummy'
+      STRIPE_WEBHOOK_SECRET: 'whsec_test_dummy'
       DO_NOT_TRACK: 1
       PLAYWRIGHT_SERVER_COMMAND: 'pnpm dev'
       
       # Required for app to start
       NEXT_PUBLIC_BILLING_PROVIDER: 'stripe'
+      PAYLOAD_PUBLIC_SERVER_URL: 'http://localhost:3020'
+      NODE_ENV: 'test'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -162,14 +166,6 @@ jobs:
 
       - name: Build application
         run: pnpm build
-        env:
-          NEXT_PUBLIC_BILLING_PROVIDER: 'stripe'
-          DATABASE_URI: 'postgresql://postgres:postgres@localhost:55322/postgres'
-          NEXT_PUBLIC_SUPABASE_URL: 'http://127.0.0.1:55321'
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0'
-          SUPABASE_SERVICE_ROLE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU'
-          PAYLOAD_PUBLIC_SERVER_URL: 'http://localhost:3020'
-          NODE_ENV: 'test'
 
       - name: Set up E2E database
         run: |
@@ -192,13 +188,6 @@ jobs:
           # The blob reporter is already configured in playwright.config.ts for CI
           pnpm playwright test --project="${{ matrix.browser }}"
         continue-on-error: false
-        env:
-          DATABASE_URI: 'postgresql://postgres:postgres@localhost:55322/postgres'
-          NEXT_PUBLIC_SUPABASE_URL: 'http://127.0.0.1:55321'
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0'
-          SUPABASE_SERVICE_ROLE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Ffcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU'
-          PAYLOAD_PUBLIC_SERVER_URL: 'http://localhost:3020'
-          NODE_ENV: 'test'
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
