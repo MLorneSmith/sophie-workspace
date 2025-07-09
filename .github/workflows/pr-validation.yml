@@ -304,20 +304,25 @@ jobs:
       - name: Build application
         run: pnpm build
 
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
       - name: Set up E2E database for accessibility tests
         run: |
           cd apps/e2e
           # Start E2E Supabase instance
-          npx supabase start
+          supabase start
           
           # Wait for database to be ready
           sleep 5
           
           # Run database migrations
-          npx supabase db reset --linked=false
+          supabase db reset --linked=false
           
           # Seed test data
-          npx supabase db seed
+          supabase db seed
 
       - name: Run accessibility tests
         run: pnpm --filter e2e a11y:test
