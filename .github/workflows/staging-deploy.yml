@@ -5,6 +5,11 @@ on:
     branches:
       - staging
 
+# Prevent multiple deployments from running simultaneously
+concurrency:
+  group: deploy-staging-${{ github.ref }}
+  cancel-in-progress: false  # Don't cancel in-progress deployments
+
 permissions:
   contents: read
   deployments: write
@@ -16,6 +21,7 @@ permissions:
 env:
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+  TURBO_REMOTE_CACHE_ENABLED: true
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
 
 jobs:
