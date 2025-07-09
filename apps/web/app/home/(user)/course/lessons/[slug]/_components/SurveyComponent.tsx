@@ -30,12 +30,12 @@ const logger = {
 	},
 };
 
+import type { SurveyQuestion } from "@kit/cms-types";
 import { Card } from "@kit/ui/card";
 import { Progress } from "@kit/ui/progress";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState, useTransition } from "react";
 import { toast } from "sonner";
-import type { SurveyQuestion } from "@kit/cms-types";
 import type { Database } from "~/lib/database.types";
 import { saveResponseAction } from "../../../../assessment/_lib/server/server-actions";
 import { QuestionCard } from "../../../../assessment/survey/_components/question-card";
