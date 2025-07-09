@@ -308,16 +308,16 @@ jobs:
         run: |
           cd apps/e2e
           # Start E2E Supabase instance
-          pnpm supabase start
+          npx supabase start
           
           # Wait for database to be ready
           sleep 5
           
           # Run database migrations
-          pnpm supabase db reset --linked=false
+          npx supabase db reset --linked=false
           
           # Seed test data
-          pnpm supabase db seed
+          npx supabase db seed
 
       - name: Run accessibility tests
         run: pnpm --filter e2e a11y:test
