@@ -66,6 +66,8 @@ runs:
         # Always build - either from scratch or using downloaded artifacts
         if [ "${{ inputs.environment }}" = "production" ]; then
           vercel build --prod --token=${{ inputs.token }}
+        elif [ "${{ inputs.environment }}" = "staging" ]; then
+          vercel build --target=staging --token=${{ inputs.token }}
         else
           vercel build --token=${{ inputs.token }}
         fi
