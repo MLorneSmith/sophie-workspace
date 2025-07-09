@@ -45,6 +45,7 @@ env:
   PNPM_VERSION: '9.12.0'
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+  TURBO_REMOTE_CACHE_ENABLED: true
 
 jobs:
   # Determine what browser configurations to test

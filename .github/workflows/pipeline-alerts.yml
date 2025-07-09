@@ -1,0 +1,252 @@
+name: Pipeline Alerts and SLO Monitoring
+
+on:
+  workflow_run:
+    workflows: ["Deploy to Production", "Deploy to Staging"]
+    types: [completed]
+  schedule:
+    - cron: '*/30 * * * *'  # Check every 30 minutes
+
+permissions:
+  contents: read
+  actions: read
+  issues: write
+
+jobs:
+  check-slos:
+    name: Check SLOs and Send Alerts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check pipeline SLOs
+        id: slo-check
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const now = new Date();
+            const hourAgo = new Date(now.getTime() - 60 * 60 * 1000);
+            
+            // Define SLOs
+            const slos = {
+              deployment_success_rate: { target: 0.95, window: '1h' },
+              deployment_duration_p95: { target: 1800, window: '1h' }, // 30 minutes
+              pr_validation_duration_p95: { target: 900, window: '1h' }, // 15 minutes
+              production_deployment_frequency: { target: 1, window: '24h' } // At least 1 per day
+            };
+            
+            const violations = [];
+            
+            // Check deployment success rate
+            const deploymentRuns = await github.paginate(github.rest.actions.listWorkflowRunsForRepo, {
+              owner,
+              repo,
+              created: `>=${hourAgo.toISOString()}`,
+              workflow_id: 'production-deploy.yml'
+            });
+            
+            if (deploymentRuns.length > 0) {
+              const successRate = deploymentRuns.filter(r => r.conclusion === 'success').length / deploymentRuns.length;
+              if (successRate < slos.deployment_success_rate.target) {
+                violations.push({
+                  slo: 'Deployment Success Rate',
+                  target: `${slos.deployment_success_rate.target * 100}%`,
+                  actual: `${Math.round(successRate * 100)}%`,
+                  severity: 'critical'
+                });
+              }
+            }
+            
+            // Check deployment duration
+            const completedDeployments = deploymentRuns.filter(r => r.conclusion && r.run_started_at && r.updated_at);
+            if (completedDeployments.length > 0) {
+              const durations = completedDeployments
+                .map(r => (new Date(r.updated_at) - new Date(r.run_started_at)) / 1000)
+                .sort((a, b) => a - b);
+              
+              const p95Duration = durations[Math.floor(durations.length * 0.95)];
+              if (p95Duration > slos.deployment_duration_p95.target) {
+                violations.push({
+                  slo: 'Deployment Duration P95',
+                  target: `${slos.deployment_duration_p95.target / 60}m`,
+                  actual: `${Math.round(p95Duration / 60)}m`,
+                  severity: 'warning'
+                });
+              }
+            }
+            
+            // Check for recent failures
+            const recentFailures = deploymentRuns.filter(r => r.conclusion === 'failure');
+            if (recentFailures.length >= 3) {
+              violations.push({
+                slo: 'Consecutive Failures',
+                target: '< 3',
+                actual: recentFailures.length,
+                severity: 'critical',
+                details: recentFailures.map(r => ({
+                  id: r.id,
+                  url: r.html_url,
+                  created_at: r.created_at
+                }))
+              });
+            }
+            
+            return violations;
+
+      - name: Check for flaky tests
+        id: flaky-check
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const dayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+            
+            // Get recent test runs
+            const testRuns = await github.paginate(github.rest.actions.listWorkflowRunsForRepo, {
+              owner,
+              repo,
+              created: `>=${dayAgo.toISOString()}`,
+              workflow_id: 'pr-validation.yml'
+            });
+            
+            // Track test failures by job
+            const testFailures = {};
+            
+            for (const run of testRuns.slice(0, 20)) { // Check last 20 runs
+              if (run.conclusion === 'failure') {
+                try {
+                  const jobs = await github.rest.actions.listJobsForWorkflowRun({
+                    owner,
+                    repo,
+                    run_id: run.id
+                  });
+                  
+                  for (const job of jobs.data.jobs) {
+                    if (job.conclusion === 'failure' && job.name.includes('Test')) {
+                      testFailures[job.name] = (testFailures[job.name] || 0) + 1;
+                    }
+                  }
+                } catch (e) {
+                  console.log('Error checking jobs for run:', run.id);
+                }
+              }
+            }
+            
+            // Identify flaky tests (failed more than 20% of the time)
+            const flakyTests = [];
+            for (const [test, failures] of Object.entries(testFailures)) {
+              if (failures >= 3) {
+                flakyTests.push({ test, failures });
+              }
+            }
+            
+            return flakyTests;
+
+      - name: Send alerts
+        if: steps.slo-check.outputs.result != '[]' || steps.flaky-check.outputs.result != '[]'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const violations = ${{ steps.slo-check.outputs.result }};
+            const flakyTests = ${{ steps.flaky-check.outputs.result }};
+            
+            if (violations.length === 0 && flakyTests.length === 0) {
+              return;
+            }
+            
+            let alertBody = `# 🚨 CI/CD Pipeline Alert
+            
+            **Time:** ${new Date().toISOString()}
+            
+            `;
+            
+            if (violations.length > 0) {
+              alertBody += `## ⚠️ SLO Violations Detected
+              
+              | SLO | Target | Actual | Severity |
+              |-----|--------|--------|----------|
+              `;
+              
+              for (const violation of violations) {
+                const icon = violation.severity === 'critical' ? '🔴' : '🟡';
+                alertBody += `| ${icon} ${violation.slo} | ${violation.target} | ${violation.actual} | ${violation.severity} |\n`;
+              }
+              
+              alertBody += `\n`;
+              
+              // Add details for critical violations
+              const criticalViolations = violations.filter(v => v.severity === 'critical');
+              if (criticalViolations.length > 0) {
+                alertBody += `### Critical Issues Requiring Immediate Attention:\n\n`;
+                for (const violation of criticalViolations) {
+                  alertBody += `- **${violation.slo}**: ${violation.actual} (target: ${violation.target})\n`;
+                  if (violation.details) {
+                    alertBody += `  Recent failures:\n`;
+                    for (const detail of violation.details.slice(0, 3)) {
+                      alertBody += `  - [Run ${detail.id}](${detail.url}) at ${detail.created_at}\n`;
+                    }
+                  }
+                }
+              }
+            }
+            
+            if (flakyTests.length > 0) {
+              alertBody += `## 🎲 Flaky Tests Detected
+              
+              The following tests have failed multiple times in the last 24 hours:
+              
+              | Test | Failures |
+              |------|----------|
+              `;
+              
+              for (const flaky of flakyTests) {
+                alertBody += `| ${flaky.test} | ${flaky.failures} |\n`;
+              }
+              
+              alertBody += `\n**Action Required:** Investigate and fix these flaky tests to improve pipeline reliability.\n`;
+            }
+            
+            alertBody += `
+            ## 📋 Recommended Actions
+            
+            1. **Investigate recent failures** in the deployment pipeline
+            2. **Review deployment logs** for error patterns
+            3. **Check monitoring dashboards** for application health
+            4. **Consider rolling back** if production is affected
+            
+            ---
+            *This alert was automatically generated. Adjust alert thresholds in \`.github/workflows/pipeline-alerts.yml\`*
+            `;
+            
+            // Create an issue for critical alerts
+            const criticalCount = violations.filter(v => v.severity === 'critical').length;
+            if (criticalCount > 0) {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `🚨 Critical CI/CD Alert: ${criticalCount} SLO Violations`,
+                body: alertBody,
+                labels: ['ci-alert', 'critical', 'automated'],
+                assignees: ['MLorneSmith'] // Assign to team lead
+              });
+            } else {
+              // For non-critical alerts, just add to summary
+              console.log('Non-critical alerts detected, logging to summary only');
+            }
+            
+            // Always add to workflow summary
+            core.summary
+              .addRaw(alertBody)
+              .write();
+
+      - name: Update metrics
+        if: always()
+        run: |
+          # Record that we checked SLOs
+          echo "SLO check completed at $(date)" >> $GITHUB_STEP_SUMMARY
+          
+          # If this was triggered by a workflow completion, record it
+          if [[ "${{ github.event_name }}" == "workflow_run" ]]; then
+            echo "Triggered by: ${{ github.event.workflow_run.name }} - ${{ github.event.workflow_run.conclusion }}" >> $GITHUB_STEP_SUMMARY
+          fi

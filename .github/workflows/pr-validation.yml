@@ -21,6 +21,11 @@ on:
       SNYK_TOKEN:
         required: false
 
+# Allow only one validation per PR at a time
+concurrency:
+  group: pr-validation-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true  # Cancel older runs when new commits are pushed
+
 permissions:
   contents: read
   pull-requests: write
@@ -33,6 +38,7 @@ env:
   PNPM_VERSION: '9.12.0'
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+  TURBO_REMOTE_CACHE_ENABLED: true
 
 jobs:
   # Check what files changed to optimize CI runs
@@ -119,18 +125,23 @@ jobs:
       - name: Run TypeScript check
         run: pnpm typecheck
 
-  # Unit tests
+  # Unit tests with sharding for better performance
   test-unit:
-    name: Unit Tests
+    name: Unit Tests (Shard ${{ matrix.shard }})
     runs-on: ubicloud-standard-2
     needs: changes  # Only depend on changes, not other jobs
     if: needs.changes.outputs.typescript == 'true'
+    strategy:
+      matrix:
+        shard: [1, 2]  # Split tests into 2 shards
+      fail-fast: false  # Continue running other shards if one fails
     env:
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
       SUPABASE_DB_WEBHOOK_SECRET: ${{ secrets.SUPABASE_DB_WEBHOOK_SECRET }}
       STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
       STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
       DO_NOT_TRACK: 1
+      JEST_SHARD: ${{ matrix.shard }}/2  # Pass shard info to test runner
     steps:
       - uses: actions/checkout@v4
         with:
@@ -142,12 +153,13 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .turbo
-          key: ${{ runner.os }}-turbo-test-${{ github.sha }}
+          key: ${{ runner.os }}-turbo-test-shard-${{ matrix.shard }}-${{ github.sha }}
           restore-keys: |
+            ${{ runner.os }}-turbo-test-shard-${{ matrix.shard }}-
             ${{ runner.os }}-turbo-test-
 
-      - name: Run unit tests with coverage
-        run: pnpm test:coverage
+      - name: Run unit tests with coverage (shard ${{ matrix.shard }})
+        run: pnpm test:coverage -- --shard=${{ matrix.shard }}/2
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4
@@ -155,8 +167,8 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           directory: ./coverage
           files: ./coverage/lcov.info
-          flags: unittests
-          name: codecov-umbrella
+          flags: unittests-shard-${{ matrix.shard }}
+          name: codecov-shard-${{ matrix.shard }}
           fail_ci_if_error: false
           verbose: true
 

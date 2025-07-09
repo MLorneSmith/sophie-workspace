@@ -36,6 +36,9 @@ yarn-error.log*
 .env
 .env.test
 packages/*/.env
+apps/*/.env
+**/.env
+*.env
 
 # MCP configuration (contains tokens)
 .mcp.json

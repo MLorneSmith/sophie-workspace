@@ -1,0 +1,268 @@
+name: Pipeline Metrics Dashboard
+
+on:
+  workflow_run:
+    workflows: ["PR Validation", "Deploy to Dev", "Deploy to Staging", "Deploy to Production"]
+    types: [completed]
+  workflow_dispatch:
+  schedule:
+    - cron: '0 8 * * 1'  # Weekly report on Monday at 8 AM
+
+permissions:
+  contents: read
+  actions: read
+  issues: write
+
+jobs:
+  collect-metrics:
+    name: Collect Pipeline Metrics
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Collect workflow metrics
+        id: metrics
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const now = new Date();
+            const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+            
+            // Collect workflow runs from the past week
+            const runs = await github.paginate(github.rest.actions.listWorkflowRunsForRepo, {
+              owner,
+              repo,
+              created: `>=${weekAgo.toISOString()}`,
+              per_page: 100
+            });
+            
+            // Calculate metrics
+            const metrics = {
+              total_runs: runs.length,
+              successful_runs: runs.filter(r => r.conclusion === 'success').length,
+              failed_runs: runs.filter(r => r.conclusion === 'failure').length,
+              cancelled_runs: runs.filter(r => r.conclusion === 'cancelled').length,
+              avg_duration: 0,
+              p95_duration: 0,
+              p99_duration: 0,
+              by_workflow: {},
+              cache_hit_rate: 0,
+              cost_estimate: 0
+            };
+            
+            // Calculate durations
+            const durations = runs
+              .filter(r => r.run_started_at && r.updated_at)
+              .map(r => new Date(r.updated_at) - new Date(r.run_started_at))
+              .sort((a, b) => a - b);
+            
+            if (durations.length > 0) {
+              metrics.avg_duration = Math.round(durations.reduce((a, b) => a + b, 0) / durations.length / 1000);
+              metrics.p95_duration = Math.round(durations[Math.floor(durations.length * 0.95)] / 1000);
+              metrics.p99_duration = Math.round(durations[Math.floor(durations.length * 0.99)] / 1000);
+            }
+            
+            // Group by workflow
+            for (const run of runs) {
+              const workflowName = run.name;
+              if (!metrics.by_workflow[workflowName]) {
+                metrics.by_workflow[workflowName] = {
+                  total: 0,
+                  success: 0,
+                  failure: 0,
+                  avg_duration: 0,
+                  durations: []
+                };
+              }
+              
+              metrics.by_workflow[workflowName].total++;
+              if (run.conclusion === 'success') metrics.by_workflow[workflowName].success++;
+              if (run.conclusion === 'failure') metrics.by_workflow[workflowName].failure++;
+              
+              if (run.run_started_at && run.updated_at) {
+                const duration = new Date(run.updated_at) - new Date(run.run_started_at);
+                metrics.by_workflow[workflowName].durations.push(duration);
+              }
+            }
+            
+            // Calculate average durations per workflow
+            for (const [name, data] of Object.entries(metrics.by_workflow)) {
+              if (data.durations.length > 0) {
+                data.avg_duration = Math.round(data.durations.reduce((a, b) => a + b, 0) / data.durations.length / 1000);
+              }
+              delete data.durations; // Remove raw data
+            }
+            
+            // Estimate costs (rough approximation)
+            // GitHub Actions: ~$0.008 per minute for Linux
+            const totalMinutes = runs.reduce((total, run) => {
+              if (run.run_started_at && run.updated_at) {
+                return total + (new Date(run.updated_at) - new Date(run.run_started_at)) / 60000;
+              }
+              return total;
+            }, 0);
+            metrics.cost_estimate = (totalMinutes * 0.008).toFixed(2);
+            
+            // Check cache hit rates from recent PR validation runs
+            const prRuns = runs.filter(r => r.name === 'PR Validation').slice(0, 10);
+            let cacheHits = 0;
+            let cacheChecks = 0;
+            
+            for (const run of prRuns) {
+              try {
+                const jobs = await github.rest.actions.listJobsForWorkflowRun({
+                  owner,
+                  repo,
+                  run_id: run.id
+                });
+                
+                for (const job of jobs.data.jobs) {
+                  for (const step of job.steps || []) {
+                    if (step.name && step.name.includes('Cache')) {
+                      cacheChecks++;
+                      if (step.conclusion === 'success' && step.name.includes('hit')) {
+                        cacheHits++;
+                      }
+                    }
+                  }
+                }
+              } catch (e) {
+                console.log('Error checking cache for run:', run.id);
+              }
+            }
+            
+            if (cacheChecks > 0) {
+              metrics.cache_hit_rate = Math.round((cacheHits / cacheChecks) * 100);
+            }
+            
+            return metrics;
+
+      - name: Generate metrics report
+        id: report
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const metrics = ${{ steps.metrics.outputs.result }};
+            const now = new Date().toISOString();
+            
+            let report = `# 📊 CI/CD Pipeline Metrics Report
+            
+            **Generated:** ${now}
+            **Period:** Last 7 days
+            
+            ## 📈 Overall Performance
+            
+            | Metric | Value |
+            |--------|-------|
+            | Total Runs | ${metrics.total_runs} |
+            | Success Rate | ${Math.round((metrics.successful_runs / metrics.total_runs) * 100)}% |
+            | Failed Runs | ${metrics.failed_runs} |
+            | Cancelled Runs | ${metrics.cancelled_runs} |
+            | Avg Duration | ${Math.floor(metrics.avg_duration / 60)}m ${metrics.avg_duration % 60}s |
+            | P95 Duration | ${Math.floor(metrics.p95_duration / 60)}m ${metrics.p95_duration % 60}s |
+            | P99 Duration | ${Math.floor(metrics.p99_duration / 60)}m ${metrics.p99_duration % 60}s |
+            | Cache Hit Rate | ${metrics.cache_hit_rate}% |
+            | Estimated Cost | $${metrics.cost_estimate} |
+            
+            ## 🔄 Workflow Breakdown
+            
+            | Workflow | Runs | Success Rate | Avg Duration |
+            |----------|------|--------------|--------------|
+            `;
+            
+            for (const [name, data] of Object.entries(metrics.by_workflow)) {
+              const successRate = Math.round((data.success / data.total) * 100);
+              const duration = data.avg_duration;
+              report += `| ${name} | ${data.total} | ${successRate}% | ${Math.floor(duration / 60)}m ${duration % 60}s |\n`;
+            }
+            
+            report += `
+            
+            ## 🎯 SLO Compliance
+            
+            | SLO | Target | Actual | Status |
+            |-----|--------|--------|--------|
+            | Success Rate | ≥ 95% | ${Math.round((metrics.successful_runs / metrics.total_runs) * 100)}% | ${metrics.successful_runs / metrics.total_runs >= 0.95 ? '✅' : '❌'} |
+            | P95 Duration | ≤ 30m | ${Math.floor(metrics.p95_duration / 60)}m | ${metrics.p95_duration <= 1800 ? '✅' : '❌'} |
+            | Cache Hit Rate | ≥ 80% | ${metrics.cache_hit_rate}% | ${metrics.cache_hit_rate >= 80 ? '✅' : '❌'} |
+            
+            ## 💡 Recommendations
+            `;
+            
+            // Add recommendations based on metrics
+            if (metrics.cache_hit_rate < 80) {
+              report += `\n- ⚠️ **Low cache hit rate (${metrics.cache_hit_rate}%)**: Review cache keys and ensure proper cache warming`;
+            }
+            
+            if (metrics.failed_runs > metrics.total_runs * 0.1) {
+              report += `\n- ⚠️ **High failure rate**: Investigate common failure patterns in the ${metrics.failed_runs} failed runs`;
+            }
+            
+            if (metrics.p95_duration > 1800) {
+              report += `\n- ⚠️ **Long pipeline duration**: Consider additional parallelization or caching strategies`;
+            }
+            
+            // Find the slowest workflow
+            let slowestWorkflow = null;
+            let slowestDuration = 0;
+            for (const [name, data] of Object.entries(metrics.by_workflow)) {
+              if (data.avg_duration > slowestDuration) {
+                slowestWorkflow = name;
+                slowestDuration = data.avg_duration;
+              }
+            }
+            
+            if (slowestWorkflow) {
+              report += `\n- 🐌 **Slowest workflow**: "${slowestWorkflow}" averaging ${Math.floor(slowestDuration / 60)}m - prioritize for optimization`;
+            }
+            
+            report += `\n\n---\n*Automated metrics report generated by Pipeline Metrics Dashboard*`;
+            
+            return report;
+
+      - name: Post metrics to issue
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const report = ${{ steps.report.outputs.result }};
+            
+            // Create or update the metrics issue
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: 'ci-metrics',
+              state: 'open'
+            });
+            
+            if (issues.data.length > 0) {
+              // Update existing issue
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issues.data[0].number,
+                body: report
+              });
+            } else {
+              // Create new issue
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: '📊 Weekly CI/CD Metrics Report',
+                body: report,
+                labels: ['ci-metrics', 'automated']
+              });
+            }
+
+      - name: Save metrics to artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pipeline-metrics-${{ github.run_id }}
+          path: |
+            metrics.json
+          retention-days: 90
+
+      - name: Add metrics to summary
+        run: |
+          echo "${{ steps.report.outputs.result }}" >> $GITHUB_STEP_SUMMARY
