@@ -131,6 +131,7 @@ jobs:
       # Required for app to start
       NEXT_PUBLIC_BILLING_PROVIDER: 'stripe'
       PAYLOAD_PUBLIC_SERVER_URL: 'http://localhost:3020'
+      PAYLOAD_SECRET: 'test_payload_secret_for_e2e_testing'
       NODE_ENV: 'test'
     steps:
       - uses: actions/checkout@v4

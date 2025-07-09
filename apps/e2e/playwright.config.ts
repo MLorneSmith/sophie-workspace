@@ -177,7 +177,8 @@ export default defineConfig({
 		{
 			cwd: "../../",
 			command:
-				process.env.PLAYWRIGHT_PAYLOAD_COMMAND || "pnpm --filter=payload dev",
+				process.env.PLAYWRIGHT_PAYLOAD_COMMAND ||
+				"pnpm --filter=payload dev:test",
 			url: "http://localhost:3020",
 			name: "Backend",
 			timeout: 90 * 1000, // Increased timeout for initial compilation
