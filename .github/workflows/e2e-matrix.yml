@@ -176,8 +176,10 @@ jobs:
 
       - name: Run E2E tests
         run: |
+          cd apps/e2e
           # Run tests for specific browser project
-          pnpm --filter e2e playwright test --project="${{ matrix.browser }}" --reporter=blob
+          # The blob reporter is already configured in playwright.config.ts for CI
+          pnpm playwright test --project="${{ matrix.browser }}"
         continue-on-error: false
 
       - name: Upload test results
