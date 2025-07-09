@@ -70,4 +70,38 @@ else
     npx supabase start
 fi
 
+# Skip migration check since we're using shared development database
+# The database should be maintained using: pnpm supabase:web:reset when needed
+
+# Verify critical tables exist
+echo "🔍 Verifying database schema..."
+cd /home/msmith/projects/2025slideheroes
+
+# Check if critical tables/views exist
+CRITICAL_OBJECTS=("user_account_workspace" "user_accounts" "testimonials" "accounts")
+MISSING_OBJECTS=()
+
+for OBJECT in "${CRITICAL_OBJECTS[@]}"; do
+    # Use docker to query the database directly
+    EXISTS=$(docker exec -i supabase_db_2025slideheroes-db psql -U postgres -d postgres -t -c "SELECT EXISTS (
+        SELECT 1 FROM information_schema.tables 
+        WHERE table_schema = 'public' AND table_name = '$OBJECT'
+        UNION
+        SELECT 1 FROM information_schema.views 
+        WHERE table_schema = 'public' AND table_name = '$OBJECT'
+    );" 2>/dev/null | tr -d ' ')
+    
+    if [ "$EXISTS" != "t" ]; then
+        MISSING_OBJECTS+=($OBJECT)
+    fi
+done
+
+if [ ${#MISSING_OBJECTS[@]} -gt 0 ]; then
+    echo "❌ Missing critical database objects: ${MISSING_OBJECTS[*]}"
+    echo "🔧 Database migration may have failed. Please check the logs above."
+    exit 1
+else
+    echo "✅ All critical database objects exist"
+fi
+
 echo "✅ Test environment ready!"
