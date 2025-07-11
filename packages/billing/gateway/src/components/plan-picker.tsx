@@ -45,6 +45,11 @@ export function PlanPicker(
     onSubmit: (data: { planId: string; productId: string }) => void;
     canStartTrial?: boolean;
     pending?: boolean;
+    value?: {
+      interval: string;
+      planId: string;
+      productId: string;
+    };
   }>,
 ) {
   const { t } = useTranslation(`billing`);
@@ -81,9 +86,9 @@ export function PlanPicker(
         ),
     ),
     defaultValues: {
-      interval: intervals[0],
-      planId: '',
-      productId: '',
+      interval: props.value?.interval ?? intervals[0],
+      planId: props.value?.planId ?? '',
+      productId: props.value?.productId ?? '',
     },
   });
 

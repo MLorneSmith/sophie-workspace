@@ -11,8 +11,8 @@ import React, {
   useState,
 } from 'react';
 
-import { Slot, Slottable } from '@radix-ui/react-slot';
 import { useMutation } from '@tanstack/react-query';
+import { Slot } from 'radix-ui';
 import { Path, UseFormReturn } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -136,11 +136,11 @@ export const MultiStepFormStep: React.FC<
     } & HTMLProps<HTMLDivElement>
   >
 > = function MultiStepFormStep({ children, asChild, ...props }) {
-  const Cmp = asChild ? Slot : 'div';
+  const Cmp = asChild ? Slot.Root : 'div';
 
   return (
     <Cmp {...props}>
-      <Slottable>{children}</Slottable>
+      <Slot.Slottable>{children}</Slot.Slottable>
     </Cmp>
   );
 };
@@ -331,11 +331,11 @@ export const MultiStepFormHeader: React.FC<
     } & HTMLProps<HTMLDivElement>
   >
 > = function MultiStepFormHeader({ children, asChild, ...props }) {
-  const Cmp = asChild ? Slot : 'div';
+  const Cmp = asChild ? Slot.Root : 'div';
 
   return (
     <Cmp {...props}>
-      <Slottable>{children}</Slottable>
+      <Slot.Slottable>{children}</Slot.Slottable>
     </Cmp>
   );
 };
@@ -347,11 +347,11 @@ export const MultiStepFormFooter: React.FC<
     } & HTMLProps<HTMLDivElement>
   >
 > = function MultiStepFormFooter({ children, asChild, ...props }) {
-  const Cmp = asChild ? Slot : 'div';
+  const Cmp = asChild ? Slot.Root : 'div';
 
   return (
     <Cmp {...props}>
-      <Slottable>{children}</Slottable>
+      <Slot.Slottable>{children}</Slot.Slottable>
     </Cmp>
   );
 };

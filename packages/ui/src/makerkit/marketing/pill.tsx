@@ -1,4 +1,4 @@
-import { Slot, Slottable } from '@radix-ui/react-slot';
+import { Slot } from 'radix-ui';
 
 import { cn } from '../../lib/utils';
 import { GradientSecondaryText } from './gradient-secondary-text';
@@ -9,7 +9,7 @@ export const Pill: React.FC<
     asChild?: boolean;
   }
 > = function PillComponent({ className, asChild, ...props }) {
-  const Comp = asChild ? Slot : 'h3';
+  const Comp = asChild ? Slot.Root : 'h3';
 
   return (
     <Comp
@@ -28,13 +28,13 @@ export const Pill: React.FC<
           {props.label}
         </span>
       )}
-      <Slottable>
+      <Slot.Slottable>
         <GradientSecondaryText
           className={'flex items-center gap-x-2 font-semibold tracking-tight'}
         >
           {props.children}
         </GradientSecondaryText>
-      </Slottable>
+      </Slot.Slottable>
     </Comp>
   );
 };
@@ -44,7 +44,7 @@ export const PillActionButton: React.FC<
     asChild?: boolean;
   }
 > = ({ asChild, ...props }) => {
-  const Comp = asChild ? Slot : 'button';
+  const Comp = asChild ? Slot.Root : 'button';
 
   return (
     <Comp

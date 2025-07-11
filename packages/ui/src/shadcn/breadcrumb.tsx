@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { ChevronRightIcon, DotsHorizontalIcon } from '@radix-ui/react-icons';
-import { Slot } from '@radix-ui/react-slot';
+import { Slot } from 'radix-ui';
 
 import { cn } from '../lib/utils';
 
@@ -42,7 +42,7 @@ const BreadcrumbLink: React.FC<
     asChild?: boolean;
   }
 > = ({ asChild, className, ...props }) => {
-  const Comp = asChild ? Slot : 'a';
+  const Comp = asChild ? Slot.Root : 'a';
 
   return (
     <Comp

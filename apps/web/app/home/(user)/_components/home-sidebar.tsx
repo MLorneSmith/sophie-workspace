@@ -35,7 +35,7 @@ export function HomeSidebar(props: HomeSidebarProps) {
             fallback={
               <AppLogo
                 className={cn(
-                  'p-2 group-data-[minimized=true]:max-w-full group-data-[minimized=true]:py-0',
+                  'p-2 group-data-[minimized=true]/sidebar:max-w-full group-data-[minimized=true]/sidebar:py-0',
                 )}
               />
             }
@@ -43,7 +43,7 @@ export function HomeSidebar(props: HomeSidebarProps) {
             <HomeAccountSelector userId={user.id} accounts={accounts} />
           </If>
 
-          <div className={'group-data-[minimized=true]:hidden'}>
+          <div className={'group-data-[minimized=true]/sidebar:hidden'}>
             <UserNotifications userId={user.id} />
           </div>
         </div>

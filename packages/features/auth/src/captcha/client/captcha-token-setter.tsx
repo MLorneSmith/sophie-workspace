@@ -9,6 +9,7 @@ import { Captcha } from './captcha-provider';
 export function CaptchaTokenSetter(props: {
   siteKey: string | undefined;
   options?: TurnstileProps;
+  nonce?: string;
 }) {
   const { setToken, setInstance } = useContext(Captcha);
 
@@ -31,6 +32,9 @@ export function CaptchaTokenSetter(props: {
       }}
       siteKey={props.siteKey}
       onSuccess={setToken}
+      scriptOptions={{
+        nonce: props.nonce,
+      }}
       {...options}
     />
   );

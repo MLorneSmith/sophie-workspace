@@ -58,7 +58,7 @@ function SidebarContainer(props: {
             accounts={accounts}
           />
 
-          <div className={'group-data-[minimized=true]:hidden'}>
+          <div className={'group-data-[minimized=true]/sidebar:hidden'}>
             <TeamAccountNotifications
               userId={userId}
               accountId={props.accountId}

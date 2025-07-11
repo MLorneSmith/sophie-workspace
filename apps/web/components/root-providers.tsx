@@ -61,7 +61,7 @@ export function RootProviders({
           <ReactQueryProvider>
             <I18nProvider settings={i18nSettings} resolver={i18nResolver}>
               <CaptchaProvider>
-                <CaptchaTokenSetter siteKey={captchaSiteKey} />
+                <CaptchaTokenSetter siteKey={captchaSiteKey} nonce={nonce} />
 
                 <AuthProvider>
                   <ThemeProvider

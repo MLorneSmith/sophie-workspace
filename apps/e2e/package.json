@@ -12,9 +12,9 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@playwright/test": "^1.53.1",
-    "@types/node": "^24.0.4",
-    "dotenv": "16.5.0",
+    "@playwright/test": "^1.54.0",
+    "@types/node": "^24.0.13",
+    "dotenv": "17.2.0",
     "node-html-parser": "^7.0.1",
     "totp-generator": "^1.0.0"
   }

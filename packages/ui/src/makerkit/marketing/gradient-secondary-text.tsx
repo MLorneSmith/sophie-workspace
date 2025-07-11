@@ -1,4 +1,4 @@
-import { Slot, Slottable } from '@radix-ui/react-slot';
+import { Slot } from 'radix-ui';
 
 import { cn } from '../../lib/utils';
 
@@ -7,7 +7,7 @@ export const GradientSecondaryText: React.FC<
     asChild?: boolean;
   }
 > = function GradientSecondaryTextComponent({ className, ...props }) {
-  const Comp = props.asChild ? Slot : 'span';
+  const Comp = props.asChild ? Slot.Root : 'span';
 
   return (
     <Comp
@@ -17,7 +17,7 @@ export const GradientSecondaryText: React.FC<
       )}
       {...props}
     >
-      <Slottable>{props.children}</Slottable>
+      <Slot.Slottable>{props.children}</Slot.Slottable>
     </Comp>
   );
 };

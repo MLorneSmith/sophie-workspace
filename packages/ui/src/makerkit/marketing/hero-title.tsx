@@ -1,4 +1,4 @@
-import { Slot, Slottable } from '@radix-ui/react-slot';
+import { Slot } from 'radix-ui';
 
 import { cn } from '../../lib/utils';
 
@@ -7,7 +7,7 @@ export const HeroTitle: React.FC<
     asChild?: boolean;
   }
 > = function HeroTitleComponent({ children, className, ...props }) {
-  const Comp = props.asChild ? Slot : 'h1';
+  const Comp = props.asChild ? Slot.Root : 'h1';
 
   return (
     <Comp
@@ -17,7 +17,7 @@ export const HeroTitle: React.FC<
       )}
       {...props}
     >
-      <Slottable>{children}</Slottable>
+      <Slot.Slottable>{children}</Slot.Slottable>
     </Comp>
   );
 };
