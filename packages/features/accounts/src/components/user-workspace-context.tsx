@@ -2,9 +2,8 @@
 
 import { createContext } from 'react';
 
-import { User } from '@supabase/supabase-js';
-
 import { Tables } from '@kit/supabase/database';
+import { JWTUserData } from '@kit/supabase/types';
 
 interface UserWorkspace {
   accounts: Array<{
@@ -20,7 +19,7 @@ interface UserWorkspace {
     subscription_status: Tables<'subscriptions'>['status'] | null;
   };
 
-  user: User;
+  user: JWTUserData;
 }
 
 export const UserWorkspaceContext = createContext<UserWorkspace>(

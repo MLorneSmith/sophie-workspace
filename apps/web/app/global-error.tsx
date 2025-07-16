@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ArrowLeft, MessageCircle } from 'lucide-react';
 
 import { useCaptureException } from '@kit/monitoring/hooks';
+import { useUser } from '@kit/supabase/hooks/use-user';
 import { Button } from '@kit/ui/button';
 import { Heading } from '@kit/ui/heading';
 import { Trans } from '@kit/ui/trans';
@@ -21,12 +22,14 @@ const GlobalErrorPage = ({
 }) => {
   useCaptureException(error);
 
+  const user = useUser();
+
   return (
     <html>
       <body>
         <RootProviders>
           <div className={'flex h-screen flex-1 flex-col'}>
-            <SiteHeader />
+            <SiteHeader user={user.data} />
 
             <div
               className={

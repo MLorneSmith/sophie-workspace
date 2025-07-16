@@ -16,6 +16,7 @@ import {
   EyeOff,
   EyeOffIcon,
   InfoIcon,
+  TriangleAlertIcon,
 } from 'lucide-react';
 import { Subject, debounceTime } from 'rxjs';
 
@@ -121,6 +122,7 @@ function EnvList({ appState }: { appState: AppEnvState }) {
   const showPrivateVars = searchParams.get('private') === 'true';
   const showOverriddenVars = searchParams.get('overridden') === 'true';
   const showInvalidVars = searchParams.get('invalid') === 'true';
+  const showDeprecatedVars = searchParams.get('deprecated') === 'true';
 
   const toggleShowValue = (key: string) => {
     setShowValues((prev) => ({
@@ -421,6 +423,35 @@ function EnvList({ appState }: { appState: AppEnvState }) {
                 </TooltipProvider>
               </Badge>
             </If>
+
+            <If condition={model?.deprecated}>
+              {(deprecated) => (
+                <Badge variant="warning">
+                  Deprecated
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <TriangleAlertIcon className="ml-2 h-3 w-3" />
+                      </TooltipTrigger>
+
+                      <TooltipContent>
+                        <div className="space-y-2">
+                          <div className="font-medium">This variable is deprecated</div>
+                          <div className="text-sm">
+                            <strong>Reason:</strong> {deprecated.reason}
+                          </div>
+                          {deprecated.alternative && (
+                            <div className="text-sm">
+                              <strong>Use instead:</strong> {deprecated.alternative}
+                            </div>
+                          )}
+                        </div>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </Badge>
+              )}
+            </If>
           </div>
         </div>
 
@@ -506,7 +537,8 @@ function EnvList({ appState }: { appState: AppEnvState }) {
       !showPublicVars &&
       !showPrivateVars &&
       !showInvalidVars &&
-      !showOverriddenVars
+      !showOverriddenVars &&
+      !showDeprecatedVars
     ) {
       return true;
     }
@@ -539,6 +571,10 @@ function EnvList({ appState }: { appState: AppEnvState }) {
       return !varState.validation.success;
     }
 
+    if (showDeprecatedVars && isInSearch) {
+      return !!model?.deprecated;
+    }
+
     return isInSearch;
   };
 
@@ -561,6 +597,7 @@ function EnvList({ appState }: { appState: AppEnvState }) {
                 overridden: showOverriddenVars,
                 private: showPrivateVars,
                 invalid: showInvalidVars,
+                deprecated: showDeprecatedVars,
               }}
             />
           </div>
@@ -640,6 +677,7 @@ function FilterSwitcher(props: {
     overridden: boolean;
     private: boolean;
     invalid: boolean;
+    deprecated: boolean;
   };
 }) {
   const secretVars = props.filters.secret;
@@ -647,6 +685,7 @@ function FilterSwitcher(props: {
   const overriddenVars = props.filters.overridden;
   const privateVars = props.filters.private;
   const invalidVars = props.filters.invalid;
+  const deprecatedVars = props.filters.deprecated;
 
   const handleFilterChange = useUpdateFilteredVariables();
 
@@ -658,6 +697,7 @@ function FilterSwitcher(props: {
     if (overriddenVars) filters.push('Overridden');
     if (privateVars) filters.push('Private');
     if (invalidVars) filters.push('Invalid');
+    if (deprecatedVars) filters.push('Deprecated');
 
     if (filters.length === 0) return 'Filter variables';
 
@@ -665,7 +705,7 @@ function FilterSwitcher(props: {
   };
 
   const allSelected =
-    !secretVars && !publicVars && !overriddenVars && !invalidVars;
+    !secretVars && !publicVars && !overriddenVars && !invalidVars && !deprecatedVars;
 
   return (
     <DropdownMenu>
@@ -731,6 +771,15 @@ function FilterSwitcher(props: {
         >
           Overridden
         </DropdownMenuCheckboxItem>
+
+        <DropdownMenuCheckboxItem
+          checked={deprecatedVars}
+          onCheckedChange={() => {
+            handleFilterChange('deprecated', !deprecatedVars);
+          }}
+        >
+          Deprecated
+        </DropdownMenuCheckboxItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
@@ -744,6 +793,12 @@ function Summary({ appState }: { appState: AppEnvState }) {
   // Find all variables with errors (including missing required and contextual validation)
   const variablesWithErrors = varsArray.filter((variable) => {
     return !variable.validation.success;
+  });
+
+  // Find deprecated variables
+  const deprecatedVariables = varsArray.filter((variable) => {
+    const model = envVariables.find((env) => env.name === variable.key);
+    return !!model?.deprecated;
   });
 
   const validVariables = varsArray.length - variablesWithErrors.length;
@@ -773,6 +828,15 @@ function Summary({ appState }: { appState: AppEnvState }) {
             {overridden.length} Overridden
           </Badge>
         </If>
+
+        <If condition={deprecatedVariables.length > 0}>
+          <Badge
+            variant={'outline'}
+            className={cn({ 'text-amber-500': deprecatedVariables.length > 0 })}
+          >
+            {deprecatedVariables.length} Deprecated
+          </Badge>
+        </If>
       </div>
 
       <div className={'flex items-center gap-x-2'}>
@@ -784,6 +848,17 @@ function Summary({ appState }: { appState: AppEnvState }) {
           >
             <EyeOffIcon className="mr-2 h-3 w-3" />
             Display Invalid only
+          </Button>
+        </If>
+
+        <If condition={deprecatedVariables.length > 0}>
+          <Button
+            size={'sm'}
+            variant={'outline'}
+            onClick={() => handleFilterChange('deprecated', true, true)}
+          >
+            <TriangleAlertIcon className="mr-2 h-3 w-3" />
+            Display Deprecated only
           </Button>
         </If>
 
@@ -860,6 +935,7 @@ function useUpdateFilteredVariables() {
       searchParams.delete('overridden');
       searchParams.delete('private');
       searchParams.delete('invalid');
+      searchParams.delete('deprecated');
     };
 
     if (reset) {

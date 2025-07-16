@@ -4,8 +4,6 @@ import { useMemo } from 'react';
 
 import Link from 'next/link';
 
-import type { User } from '@supabase/supabase-js';
-
 import {
   ChevronsUpDown,
   Home,
@@ -14,6 +12,7 @@ import {
   Shield,
 } from 'lucide-react';
 
+import { JWTUserData } from '@kit/supabase/types';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -38,7 +37,7 @@ export function PersonalAccountDropdown({
   features,
   account,
 }: {
-  user: User;
+  user: JWTUserData;
 
   account?: {
     id: string | null;
@@ -76,13 +75,10 @@ export function PersonalAccountDropdown({
     personalAccountData?.name ?? account?.name ?? user?.email ?? '';
 
   const isSuperAdmin = useMemo(() => {
-    const factors = user?.factors ?? [];
     const hasAdminRole = user?.app_metadata.role === 'super-admin';
-    const hasTotpFactor = factors.some(
-      (factor) => factor.factor_type === 'totp' && factor.status === 'verified',
-    );
+    const isAal2 = user?.aal === 'aal2';
 
-    return hasAdminRole && hasTotpFactor;
+    return hasAdminRole && isAal2;
   }, [user]);
 
   return (

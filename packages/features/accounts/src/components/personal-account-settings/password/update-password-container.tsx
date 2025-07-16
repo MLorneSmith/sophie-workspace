@@ -20,5 +20,7 @@ export function UpdatePasswordFormContainer(
     return null;
   }
 
-  return <UpdatePasswordForm callbackPath={props.callbackPath} user={user} />;
+  return (
+    <UpdatePasswordForm callbackPath={props.callbackPath} email={user.email} />
+  );
 }

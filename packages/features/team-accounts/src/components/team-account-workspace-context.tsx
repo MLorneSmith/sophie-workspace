@@ -2,14 +2,13 @@
 
 import { createContext } from 'react';
 
-import { User } from '@supabase/supabase-js';
-
 import { Database } from '@kit/supabase/database';
+import { JWTUserData } from '@kit/supabase/types';
 
 interface AccountWorkspace {
   accounts: Database['public']['Views']['user_accounts']['Row'][];
   account: Database['public']['Functions']['team_account_workspace']['Returns'][0];
-  user: User;
+  user: JWTUserData;
 }
 
 export const TeamAccountWorkspaceContext = createContext<AccountWorkspace>(

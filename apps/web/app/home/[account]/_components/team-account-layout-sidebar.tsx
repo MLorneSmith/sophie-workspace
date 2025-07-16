@@ -1,5 +1,4 @@
-import type { User } from '@supabase/supabase-js';
-
+import { JWTUserData } from '@kit/supabase/types';
 import {
   Sidebar,
   SidebarContent,
@@ -24,7 +23,7 @@ export function TeamAccountLayoutSidebar(props: {
   account: string;
   accountId: string;
   accounts: AccountModel[];
-  user: User;
+  user: JWTUserData;
 }) {
   return (
     <SidebarContainer
@@ -40,7 +39,7 @@ function SidebarContainer(props: {
   account: string;
   accountId: string;
   accounts: AccountModel[];
-  user: User;
+  user: JWTUserData;
 }) {
   const { account, accounts, user } = props;
   const userId = user.id;

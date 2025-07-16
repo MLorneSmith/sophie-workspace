@@ -4,9 +4,9 @@ import { createClient } from '@supabase/supabase-js';
 
 import { Database } from '../database.types';
 import {
-  getServiceRoleKey,
+  getSupabaseSecretKey,
   warnServiceRoleKeyUsage,
-} from '../get-service-role-key';
+} from '../get-secret-key';
 import { getSupabaseClientKeys } from '../get-supabase-client-keys';
 
 /**
@@ -17,8 +17,9 @@ export function getSupabaseServerAdminClient<GenericSchema = Database>() {
   warnServiceRoleKeyUsage();
 
   const url = getSupabaseClientKeys().url;
+  const secretKey = getSupabaseSecretKey();
 
-  return createClient<GenericSchema>(url, getServiceRoleKey(), {
+  return createClient<GenericSchema>(url, secretKey, {
     auth: {
       persistSession: false,
       detectSessionInUrl: false,

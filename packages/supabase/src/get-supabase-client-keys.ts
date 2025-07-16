@@ -10,15 +10,15 @@ export function getSupabaseClientKeys() {
         description: `This is the URL of your hosted Supabase instance. Please provide the variable NEXT_PUBLIC_SUPABASE_URL.`,
         required_error: `Please provide the variable NEXT_PUBLIC_SUPABASE_URL`,
       }),
-      anonKey: z
-        .string({
-          description: `This is the anon key provided by Supabase. It is a public key used client-side. Please provide the variable NEXT_PUBLIC_SUPABASE_ANON_KEY.`,
-          required_error: `Please provide the variable NEXT_PUBLIC_SUPABASE_ANON_KEY`,
-        })
-        .min(1),
+      publicKey: z.string({
+        description: `This is the public key provided by Supabase. It is a public key used client-side. Please provide the variable NEXT_PUBLIC_SUPABASE_PUBLIC_KEY.`,
+        required_error: `Please provide the variable NEXT_PUBLIC_SUPABASE_PUBLIC_KEY`,
+      }),
     })
     .parse({
       url: process.env.NEXT_PUBLIC_SUPABASE_URL,
-      anonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      publicKey:
+        process.env.NEXT_PUBLIC_SUPABASE_PUBLIC_KEY ||
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     });
 }

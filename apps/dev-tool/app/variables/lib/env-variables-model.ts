@@ -21,6 +21,10 @@ export type EnvVariableModel = {
   values?: Values;
   category: string;
   required?: boolean;
+  deprecated?: {
+    reason: string;
+    alternative?: string;
+  };
   validate?: ({
     value,
     variables,
@@ -409,6 +413,10 @@ export const envVariables: EnvVariableModel[] = [
     category: 'Supabase',
     required: true,
     type: 'string',
+    deprecated: {
+      reason: 'Replaced by new JWT signing key system',
+      alternative: 'NEXT_PUBLIC_SUPABASE_PUBLIC_KEY',
+    },
     validate: ({ value }) => {
       return z
         .string()
@@ -420,12 +428,34 @@ export const envVariables: EnvVariableModel[] = [
     },
   },
   {
+    name: 'NEXT_PUBLIC_SUPABASE_PUBLIC_KEY',
+    description: 'Your Supabase public API key.',
+    category: 'Supabase',
+    required: false,
+    type: 'string',
+    hint: 'Falls back to NEXT_PUBLIC_SUPABASE_ANON_KEY if not provided',
+    validate: ({ value }) => {
+      return z
+        .string()
+        .min(
+          1,
+          `The NEXT_PUBLIC_SUPABASE_PUBLIC_KEY variable must be at least 1 character`,
+        )
+        .optional()
+        .safeParse(value);
+    },
+  },
+  {
     name: 'SUPABASE_SERVICE_ROLE_KEY',
     description: 'Your Supabase service role key (keep this secret!).',
     category: 'Supabase',
     secret: true,
     required: true,
     type: 'string',
+    deprecated: {
+      reason: 'Renamed for consistency with new JWT signing key system',
+      alternative: 'SUPABASE_SECRET_KEY',
+    },
     validate: ({ value, variables }) => {
       return z
         .string()
@@ -441,6 +471,34 @@ export const envVariables: EnvVariableModel[] = [
             message: `The SUPABASE_SERVICE_ROLE_KEY variable must be different from NEXT_PUBLIC_SUPABASE_ANON_KEY`,
           },
         )
+        .safeParse(value);
+    },
+  },
+  {
+    name: 'SUPABASE_SECRET_KEY',
+    description:
+      'Your Supabase secret key (preferred over SUPABASE_SERVICE_ROLE_KEY).',
+    category: 'Supabase',
+    secret: true,
+    required: false,
+    type: 'string',
+    hint: 'Falls back to SUPABASE_SERVICE_ROLE_KEY if not provided',
+    validate: ({ value, variables }) => {
+      return z
+        .string()
+        .min(1, `The SUPABASE_SECRET_KEY variable must be at least 1 character`)
+        .refine(
+          (value) => {
+            const anonKey =
+              variables['NEXT_PUBLIC_SUPABASE_ANON_KEY'] ||
+              variables['NEXT_PUBLIC_SUPABASE_PUBLIC_KEY'];
+            return value !== anonKey;
+          },
+          {
+            message: `The SUPABASE_SECRET_KEY variable must be different from public keys`,
+          },
+        )
+        .optional()
         .safeParse(value);
     },
   },
@@ -472,6 +530,21 @@ export const envVariables: EnvVariableModel[] = [
     values: ['stripe', 'lemon-squeezy'],
     validate: ({ value }) => {
       return z.enum(['stripe', 'lemon-squeezy']).optional().safeParse(value);
+    },
+  },
+  {
+    name: 'BILLING_MODE',
+    description: 'Billing mode configuration for the application.',
+    category: 'Billing',
+    required: false,
+    type: 'enum',
+    values: ['subscription', 'one-time'],
+    deprecated: {
+      reason: 'This configuration is no longer required and billing mode is now automatically determined',
+      alternative: undefined,
+    },
+    validate: ({ value }) => {
+      return z.enum(['subscription', 'one-time']).optional().safeParse(value);
     },
   },
   {

@@ -3,13 +3,12 @@ import 'server-only';
 import { redirect } from 'next/navigation';
 import { NextRequest, NextResponse } from 'next/server';
 
-import { User } from '@supabase/supabase-js';
-
 import { z } from 'zod';
 
 import { verifyCaptchaToken } from '@kit/auth/captcha/server';
 import { requireUser } from '@kit/supabase/require-user';
 import { getSupabaseServerClient } from '@kit/supabase/server-client';
+import { JWTUserData } from '@kit/supabase/types';
 
 import { zodParseFactory } from '../utils';
 
@@ -24,7 +23,7 @@ interface HandlerParams<
   RequireAuth extends boolean | undefined,
 > {
   request: NextRequest;
-  user: RequireAuth extends false ? undefined : User;
+  user: RequireAuth extends false ? undefined : JWTUserData;
   body: Schema extends z.ZodType ? z.infer<Schema> : undefined;
   params: Record<string, string>;
 }
@@ -75,7 +74,7 @@ export const enhanceRouteHandler = <
       params: Promise<Record<string, string>>;
     },
   ) {
-    type UserParam = Params['auth'] extends false ? undefined : User;
+    type UserParam = Params['auth'] extends false ? undefined : JWTUserData;
 
     let user: UserParam = undefined as UserParam;
 

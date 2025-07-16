@@ -19,7 +19,7 @@ export function createMiddlewareClient<GenericSchema = Database>(
 ) {
   const keys = getSupabaseClientKeys();
 
-  return createServerClient<GenericSchema>(keys.url, keys.anonKey, {
+  return createServerClient<GenericSchema>(keys.url, keys.publicKey, {
     cookies: {
       getAll() {
         return request.cookies.getAll();

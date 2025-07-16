@@ -14,7 +14,7 @@ import { getSupabaseClientKeys } from '../get-supabase-client-keys';
 export function getSupabaseServerClient<GenericSchema = Database>() {
   const keys = getSupabaseClientKeys();
 
-  return createServerClient<GenericSchema>(keys.url, keys.anonKey, {
+  return createServerClient<GenericSchema>(keys.url, keys.publicKey, {
     cookies: {
       async getAll() {
         const cookieStore = await cookies();

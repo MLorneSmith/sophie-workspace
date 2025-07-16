@@ -2,6 +2,8 @@ import Link from 'next/link';
 
 import { ArrowLeft } from 'lucide-react';
 
+import { requireUser } from '@kit/supabase/require-user';
+import { getSupabaseServerClient } from '@kit/supabase/server-client';
 import { Button } from '@kit/ui/button';
 import { Heading } from '@kit/ui/heading';
 import { Trans } from '@kit/ui/trans';
@@ -20,9 +22,12 @@ export const generateMetadata = async () => {
 };
 
 const NotFoundPage = async () => {
+  const client = getSupabaseServerClient();
+  const user = await requireUser(client, { verifyMfa: false });
+
   return (
     <div className={'flex h-screen flex-1 flex-col'}>
-      <SiteHeader />
+      <SiteHeader user={user.data} />
 
       <div
         className={
