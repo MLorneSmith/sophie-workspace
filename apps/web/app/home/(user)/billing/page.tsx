@@ -35,24 +35,21 @@ export const generateMetadata = async () => {
 async function PersonalAccountBillingPage() {
   const user = await requireUserInServerComponent();
 
-  const [data, customerId] = await loadPersonalAccountBillingPageData(user.id);
+  const [subscription, order, customerId] =
+    await loadPersonalAccountBillingPageData(user.id);
 
-  let productPlan: {
-    product: ProductSchema;
-    plan: z.infer<typeof PlanSchema>;
-  } | null = null;
+  const subscriptionProductPlan = subscription
+    ? await getProductPlan(
+        subscription.items[0]?.variant_id,
+        subscription.currency,
+      )
+    : undefined;
 
-  if (data) {
-    const firstLineItem = data.items[0];
+  const orderProductPlan = order
+    ? await getProductPlan(order.items[0]?.variant_id, order.currency)
+    : undefined;
 
-    if (firstLineItem) {
-      productPlan = await resolveProductPlan(
-        billingConfig,
-        firstLineItem.variant_id,
-        data.currency,
-      );
-    }
-  }
+  const hasBillingData = subscription || order;
 
   return (
     <>
@@ -63,7 +60,7 @@ async function PersonalAccountBillingPage() {
 
       <PageBody>
         <div className={'flex flex-col space-y-4'}>
-          <If condition={!data}>
+          <If condition={!hasBillingData}>
             <PersonalAccountCheckoutForm customerId={customerId} />
 
             <If condition={customerId}>
@@ -71,32 +68,36 @@ async function PersonalAccountBillingPage() {
             </If>
           </If>
 
-          <If condition={data}>
-            {(data) => (
-              <div className={'flex w-full max-w-2xl flex-col space-y-6'}>
-                {'active' in data ? (
-                  <CurrentSubscriptionCard
-                    subscription={data}
-                    product={productPlan!.product}
-                    plan={productPlan!.plan}
-                  />
-                ) : (
-                  <CurrentLifetimeOrderCard
-                    order={data}
-                    product={productPlan!.product}
-                    plan={productPlan!.plan}
-                  />
-                )}
+          <If condition={hasBillingData}>
+            <div className={'flex w-full max-w-2xl flex-col space-y-6'}>
+              <If condition={subscription}>
+                {(subscription) => {
+                  return (
+                    <CurrentSubscriptionCard
+                      subscription={subscription}
+                      product={subscriptionProductPlan!.product}
+                      plan={subscriptionProductPlan!.plan}
+                    />
+                  );
+                }}
+              </If>
 
-                <If condition={!data}>
-                  <PersonalAccountCheckoutForm customerId={customerId} />
-                </If>
+              <If condition={order}>
+                {(order) => {
+                  return (
+                    <CurrentLifetimeOrderCard
+                      order={order}
+                      product={orderProductPlan!.product}
+                      plan={orderProductPlan!.plan}
+                    />
+                  );
+                }}
+              </If>
+            </div>
+          </If>
 
-                <If condition={customerId}>
-                  <CustomerBillingPortalForm />
-                </If>
-              </div>
-            )}
+          <If condition={customerId}>
+            <CustomerBillingPortalForm />
           </If>
         </div>
       </PageBody>
@@ -112,4 +113,21 @@ function CustomerBillingPortalForm() {
       <BillingPortalCard />
     </form>
   );
+}
+
+async function getProductPlan(
+  variantId: string | undefined,
+  currency: string,
+): Promise<
+  | {
+      product: ProductSchema;
+      plan: z.infer<typeof PlanSchema>;
+    }
+  | undefined
+> {
+  if (!variantId) {
+    return undefined;
+  }
+
+  return resolveProductPlan(billingConfig, variantId, currency);
 }

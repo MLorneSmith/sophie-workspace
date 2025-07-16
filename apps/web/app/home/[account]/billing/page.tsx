@@ -44,24 +44,21 @@ async function TeamAccountBillingPage({ params }: TeamAccountBillingPageProps) {
   const workspace = await loadTeamWorkspace(account);
   const accountId = workspace.account.id;
 
-  const [data, customerId] = await loadTeamAccountBillingPage(accountId);
+  const [subscription, order, customerId] =
+    await loadTeamAccountBillingPage(accountId);
 
-  let productPlan: {
-    product: ProductSchema;
-    plan: z.infer<typeof PlanSchema>;
-  } | null = null;
+  const subscriptionProductPlan = subscription
+    ? await getProductPlan(
+        subscription.items[0]?.variant_id,
+        subscription.currency,
+      )
+    : undefined;
 
-  if (data) {
-    const firstLineItem = data.items[0];
+  const orderProductPlan = order
+    ? await getProductPlan(order.items[0]?.variant_id, order.currency)
+    : undefined;
 
-    if (firstLineItem) {
-      productPlan = await resolveProductPlan(
-        billingConfig,
-        firstLineItem.variant_id,
-        data.currency,
-      );
-    }
-  }
+  const hasBillingData = subscription || order;
 
   const canManageBilling =
     workspace.account.permissions.includes('billing.manage');
@@ -102,33 +99,32 @@ async function TeamAccountBillingPage({ params }: TeamAccountBillingPageProps) {
       <PageBody>
         <div
           className={cn(`flex w-full flex-col space-y-4`, {
-            'max-w-2xl': data,
+            'max-w-2xl': hasBillingData,
           })}
         >
-          <If
-            condition={data}
-            fallback={
-              <div>
-                <Checkout />
-              </div>
-            }
-          >
-            {(data) => {
-              if ('active' in data) {
-                return (
-                  <CurrentSubscriptionCard
-                    subscription={data}
-                    product={productPlan!.product}
-                    plan={productPlan!.plan}
-                  />
-                );
-              }
+          <If condition={!hasBillingData}>
+            <Checkout />
+          </If>
 
+          <If condition={subscription}>
+            {(subscription) => {
+              return (
+                <CurrentSubscriptionCard
+                  subscription={subscription}
+                  product={subscriptionProductPlan!.product}
+                  plan={subscriptionProductPlan!.plan}
+                />
+              );
+            }}
+          </If>
+
+          <If condition={order}>
+            {(order) => {
               return (
                 <CurrentLifetimeOrderCard
-                  order={data}
-                  product={productPlan!.product}
-                  plan={productPlan!.plan}
+                  order={order}
+                  product={orderProductPlan!.product}
+                  plan={orderProductPlan!.plan}
                 />
               );
             }}
@@ -157,4 +153,21 @@ function CannotManageBillingAlert() {
       </AlertDescription>
     </Alert>
   );
+}
+
+async function getProductPlan(
+  variantId: string | undefined,
+  currency: string,
+): Promise<
+  | {
+      product: ProductSchema;
+      plan: z.infer<typeof PlanSchema>;
+    }
+  | undefined
+> {
+  if (!variantId) {
+    return undefined;
+  }
+
+  return resolveProductPlan(billingConfig, variantId, currency);
 }
