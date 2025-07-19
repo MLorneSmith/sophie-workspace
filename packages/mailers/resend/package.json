@@ -17,7 +17,7 @@
     "@kit/mailers-shared": "workspace:*",
     "@kit/prettier-config": "workspace:*",
     "@kit/tsconfig": "workspace:*",
-    "@types/node": "^24.0.13",
+    "@types/node": "^24.0.15",
     "zod": "^3.25.74"
   },
   "typesVersions": {

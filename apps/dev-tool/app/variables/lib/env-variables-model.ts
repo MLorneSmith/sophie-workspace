@@ -540,7 +540,8 @@ export const envVariables: EnvVariableModel[] = [
     type: 'enum',
     values: ['subscription', 'one-time'],
     deprecated: {
-      reason: 'This configuration is no longer required and billing mode is now automatically determined',
+      reason:
+        'This configuration is no longer required and billing mode is now automatically determined',
       alternative: undefined,
     },
     validate: ({ value }) => {

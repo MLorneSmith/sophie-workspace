@@ -436,13 +436,16 @@ function EnvList({ appState }: { appState: AppEnvState }) {
 
                       <TooltipContent>
                         <div className="space-y-2">
-                          <div className="font-medium">This variable is deprecated</div>
+                          <div className="font-medium">
+                            This variable is deprecated
+                          </div>
                           <div className="text-sm">
                             <strong>Reason:</strong> {deprecated.reason}
                           </div>
                           {deprecated.alternative && (
                             <div className="text-sm">
-                              <strong>Use instead:</strong> {deprecated.alternative}
+                              <strong>Use instead:</strong>{' '}
+                              {deprecated.alternative}
                             </div>
                           )}
                         </div>
@@ -705,7 +708,11 @@ function FilterSwitcher(props: {
   };
 
   const allSelected =
-    !secretVars && !publicVars && !overriddenVars && !invalidVars && !deprecatedVars;
+    !secretVars &&
+    !publicVars &&
+    !overriddenVars &&
+    !invalidVars &&
+    !deprecatedVars;
 
   return (
     <DropdownMenu>
