@@ -1,11 +1,14 @@
+import { redirect } from 'next/navigation';
+
 import { UpdatePasswordForm } from '@kit/auth/password-reset';
 import { AuthLayoutShell } from '@kit/auth/shared';
+import { requireUser } from '@kit/supabase/require-user';
+import { getSupabaseServerClient } from '@kit/supabase/server-client';
 
 import { AppLogo } from '~/components/app-logo';
 import pathsConfig from '~/config/paths.config';
 import { createI18nServerInstance } from '~/lib/i18n/i18n.server';
 import { withI18n } from '~/lib/i18n/with-i18n';
-import { requireUserInServerComponent } from '~/lib/server/require-user-in-server-component';
 
 export const generateMetadata = async () => {
   const { t } = await createI18nServerInstance();
@@ -24,7 +27,15 @@ interface UpdatePasswordPageProps {
 }
 
 async function UpdatePasswordPage(props: UpdatePasswordPageProps) {
-  await requireUserInServerComponent();
+  const client = getSupabaseServerClient();
+
+  const result = await requireUser(client, {
+    next: pathsConfig.auth.passwordUpdate,
+  });
+
+  if (result.error) {
+    return redirect(result.redirectTo);
+  }
 
   const { callback } = await props.searchParams;
   const redirectTo = callback ?? pathsConfig.app.home;
