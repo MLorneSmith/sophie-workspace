@@ -8,12 +8,12 @@
     "format": "prettier --check --write \"**/*.{js,cjs,mjs,ts,tsx,md,json}\""
   },
   "dependencies": {
-    "@ai-sdk/openai": "^1.3.23",
+    "@ai-sdk/openai": "^2.0.11",
     "@hookform/resolvers": "^5.2.1",
-    "@tanstack/react-query": "5.84.1",
-    "ai": "4.3.19",
-    "lucide-react": "^0.536.0",
-    "next": "15.4.5",
+    "@tanstack/react-query": "5.85.0",
+    "ai": "5.0.11",
+    "lucide-react": "^0.539.0",
+    "next": "15.4.6",
     "nodemailer": "^7.0.5",
     "react": "19.1.1",
     "react-dom": "19.1.1",

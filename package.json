@@ -37,7 +37,7 @@
     "env:validate": "turbo gen validate-env"
   },
   "prettier": "@kit/prettier-config",
-  "packageManager": "pnpm@9.12.0",
+  "packageManager": "pnpm@10.14.0",
   "pnpm": {
     "overrides": {
       "react-is": "19.0.0",
