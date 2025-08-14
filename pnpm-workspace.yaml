@@ -2,3 +2,8 @@ packages:
   - apps/*
   - packages/**
   - tooling/*
+
+onlyBuiltDependencies:
+  - '@tailwindcss/oxide'
+  - '@sentry/cli'
+  - supabase
