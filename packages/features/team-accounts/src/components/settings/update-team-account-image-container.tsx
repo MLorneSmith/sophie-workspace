@@ -121,7 +121,9 @@ async function uploadUserProfilePhoto(
   const extension = photoFile.name.split('.').pop();
   const fileName = await getAvatarFileName(userId, extension);
 
-  const result = await bucket.upload(fileName, bytes);
+  const result = await bucket.upload(fileName, bytes, {
+    upsert: true,
+  });
 
   if (!result.error) {
     return bucket.getPublicUrl(fileName).data.publicUrl;

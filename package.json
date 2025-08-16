@@ -46,10 +46,10 @@
   },
   "devDependencies": {
     "@manypkg/cli": "^0.25.0",
-    "@turbo/gen": "^2.5.5",
+    "@turbo/gen": "^2.5.6",
     "cross-env": "^10.0.0",
     "prettier": "^3.6.2",
-    "turbo": "2.5.5",
+    "turbo": "2.5.6",
     "typescript": "^5.9.2"
   }
 }
