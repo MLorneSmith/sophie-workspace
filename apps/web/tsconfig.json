@@ -33,7 +33,20 @@
 				"../../packages/features/auth/src/captcha/client"
 			],
 			"@kit/payload": ["../../packages/cms/payload/src"],
-			"@kit/payload/renderer": ["../../packages/cms/payload/src/renderer"]
+			"@kit/payload/renderer": ["../../packages/cms/payload/src/renderer"],
+			"@kit/cms-types": ["../../packages/cms/types/src"],
+			"@kit/testimonial/admin": [
+				"../../packages/plugins/testimonial/src/admin"
+			],
+			"@kit/testimonial/client": [
+				"../../packages/plugins/testimonial/src/client"
+			],
+			"@kit/testimonial/server": [
+				"../../packages/plugins/testimonial/src/server"
+			],
+			"@kit/testimonial/widgets": [
+				"../../packages/plugins/testimonial/src/widgets"
+			]
 		},
 		"plugins": [
 			{
