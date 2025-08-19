@@ -36,7 +36,7 @@ async function getTasks(client: TypedSupabaseClient, userId: string) {
 		userId,
 	};
 
-	logger.info(ctx, "Fetching tasks...");
+	logger.info({ ...ctx }, "Fetching tasks...");
 	try {
 		const { data, error } = await client
 			.from("tasks")
@@ -65,10 +65,10 @@ async function getTasks(client: TypedSupabaseClient, userId: string) {
 
 		if (error) throw error;
 
-		logger.info(ctx, "Tasks fetched successfully");
+		logger.info({ ...ctx }, "Tasks fetched successfully");
 		return data as Task[];
 	} catch (error) {
-		logger.error(ctx, "Failed to fetch tasks", { error });
+		logger.error({ ...ctx, error }, "Failed to fetch tasks");
 		throw error;
 	}
 }
@@ -89,17 +89,17 @@ export function useTasks() {
 					userId: user.id,
 				};
 
-				logger.info(ctx, "Creating default tasks...");
+				logger.info({ ...ctx }, "Creating default tasks...");
 
 				try {
 					for (const task of DEFAULT_TASKS) {
 						await createTaskAction(task);
 					}
 
-					logger.info(ctx, "Default tasks created successfully");
+					logger.info({ ...ctx }, "Default tasks created successfully");
 					return getTasks(client, user.id);
 				} catch (error) {
-					logger.error(ctx, "Failed to create default tasks", { error });
+					logger.error({ ...ctx, error }, "Failed to create default tasks");
 					throw error;
 				}
 			}
@@ -122,7 +122,7 @@ export function _useCreateTask() {
 				name: "create-task",
 				userId: user.id,
 			};
-			logger.info(ctx, "Task created successfully");
+			logger.info({ ...ctx }, "Task created successfully");
 			queryClient.invalidateQueries({ queryKey: ["tasks", user.id] });
 		},
 		onError: (error) => {
@@ -130,7 +130,7 @@ export function _useCreateTask() {
 				name: "create-task",
 				userId: user.id,
 			};
-			logger.error(ctx, "Failed to create task", { error });
+			logger.error({ ...ctx, error }, "Failed to create task");
 		},
 	});
 }
@@ -147,7 +147,7 @@ export function _useUpdateTask() {
 				userId: user.id,
 				taskId: variables.id,
 			};
-			logger.info(ctx, "Task updated successfully");
+			logger.info({ ...ctx }, "Task updated successfully");
 			queryClient.invalidateQueries({ queryKey: ["tasks", user.id] });
 		},
 		onError: (error, variables) => {
@@ -156,7 +156,7 @@ export function _useUpdateTask() {
 				userId: user.id,
 				taskId: variables.id,
 			};
-			logger.error(ctx, "Failed to update task", { error });
+			logger.error({ ...ctx, error }, "Failed to update task");
 		},
 	});
 }
@@ -173,7 +173,7 @@ export function _useUpdateTaskStatus() {
 				userId: user.id,
 				taskId: variables.id,
 			};
-			logger.info(ctx, "Task status updated successfully");
+			logger.info({ ...ctx }, "Task status updated successfully");
 			queryClient.invalidateQueries({ queryKey: ["tasks", user.id] });
 		},
 		onError: (error, variables) => {
@@ -182,7 +182,7 @@ export function _useUpdateTaskStatus() {
 				userId: user.id,
 				taskId: variables.id,
 			};
-			logger.error(ctx, "Failed to update task status", { error });
+			logger.error({ ...ctx, error }, "Failed to update task status");
 		},
 	});
 }
@@ -199,7 +199,7 @@ export function _useDeleteTask() {
 				userId: user.id,
 				taskId: variables.id,
 			};
-			logger.info(ctx, "Task deleted successfully");
+			logger.info({ ...ctx }, "Task deleted successfully");
 			queryClient.invalidateQueries({ queryKey: ["tasks", user.id] });
 		},
 		onError: (error, variables) => {
@@ -208,7 +208,7 @@ export function _useDeleteTask() {
 				userId: user.id,
 				taskId: variables.id,
 			};
-			logger.error(ctx, "Failed to delete task", { error });
+			logger.error({ ...ctx, error }, "Failed to delete task");
 		},
 	});
 }
@@ -266,7 +266,7 @@ export function _useResetTasks() {
 				name: "reset-tasks",
 				userId: user.id,
 			};
-			logger.info(ctx, "Tasks reset successfully");
+			logger.info({ ...ctx }, "Tasks reset successfully");
 			queryClient.invalidateQueries({ queryKey: ["tasks", user.id] });
 		},
 		onError: (error) => {
@@ -274,7 +274,7 @@ export function _useResetTasks() {
 				name: "reset-tasks",
 				userId: user.id,
 			};
-			logger.error(ctx, "Failed to reset tasks", { error });
+			logger.error({ ...ctx, error }, "Failed to reset tasks");
 		},
 	});
 }
