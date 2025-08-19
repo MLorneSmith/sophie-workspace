@@ -1,5 +1,6 @@
 "use client";
 
+import { useId } from "react";
 import { Badge } from "@kit/ui/badge";
 import {
 	Card,
@@ -499,6 +500,8 @@ function Trend(
 }
 
 export function VisitorsChart() {
+	const gradientIdDesktop = useId();
+	const gradientIdMobile = useId();
 	const chartData = useMemo(
 		() => [
 			{ date: "2024-04-01", desktop: 222, mobile: 150 },
@@ -623,7 +626,13 @@ export function VisitorsChart() {
 				<ChartContainer className={"h-64 w-full"} config={chartConfig}>
 					<AreaChart accessibilityLayer data={chartData}>
 						<defs>
-							<linearGradient id="fillDesktop" x1="0" y1="0" x2="0" y2="1">
+							<linearGradient
+								id={gradientIdDesktop}
+								x1="0"
+								y1="0"
+								x2="0"
+								y2="1"
+							>
 								<stop
 									offset="5%"
 									stopColor="var(--color-desktop)"
@@ -635,7 +644,13 @@ export function VisitorsChart() {
 									stopOpacity={0.1}
 								/>
 							</linearGradient>
-							<linearGradient id="fillMobile" x1="0" y1="0" x2="0" y2="1">
+							<linearGradient
+								id={gradientIdMobile}
+								x1="0"
+								y1="0"
+								x2="0"
+								y2="1"
+							>
 								<stop
 									offset="5%"
 									stopColor="var(--color-mobile)"
@@ -663,7 +678,7 @@ export function VisitorsChart() {
 						<Area
 							dataKey="mobile"
 							type="natural"
-							fill="url(#fillMobile)"
+							fill={`url(#${gradientIdMobile})`}
 							fillOpacity={0.4}
 							stroke="var(--color-mobile)"
 							stackId="a"
@@ -671,7 +686,7 @@ export function VisitorsChart() {
 						<Area
 							dataKey="desktop"
 							type="natural"
-							fill="url(#fillDesktop)"
+							fill={`url(#${gradientIdDesktop})`}
 							fillOpacity={0.4}
 							stroke="var(--color-desktop)"
 							stackId="a"
@@ -832,6 +847,7 @@ export function PageViewsChart() {
 						const chart = key as keyof typeof chartConfig;
 						return (
 							<button
+								type="button"
 								key={chart}
 								data-active={activeChart === chart}
 								className="data-[active=true]:bg-muted/50 relative z-30 flex flex-1 flex-col justify-center gap-1 border-t px-6 py-4 text-left even:border-l sm:border-t-0 sm:border-l sm:px-8 sm:py-6"
