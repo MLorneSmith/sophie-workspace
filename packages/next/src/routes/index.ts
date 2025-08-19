@@ -109,6 +109,7 @@ export const enhanceRouteHandler = <
 		}
 
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		// biome-ignore lint/suspicious/noExplicitAny: Body type depends on schema parsing
 		let body: any;
 
 		if (params?.schema) {
