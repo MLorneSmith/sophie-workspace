@@ -1,9 +1,8 @@
-import 'server-only';
+import "server-only";
 
-import { cache } from 'react';
-
-import { getSupabaseServerClient } from '@kit/supabase/server-client';
-import { createTeamAccountsApi } from '@kit/team-accounts/api';
+import { getSupabaseServerClient } from "@kit/supabase/server-client";
+import { createTeamAccountsApi } from "@kit/team-accounts/api";
+import { cache } from "react";
 
 /**
  * @name loadTeamAccountBillingPage
@@ -12,12 +11,12 @@ import { createTeamAccountsApi } from '@kit/team-accounts/api';
 export const loadTeamAccountBillingPage = cache(teamAccountBillingPageLoader);
 
 function teamAccountBillingPageLoader(accountId: string) {
-  const client = getSupabaseServerClient();
-  const api = createTeamAccountsApi(client);
+	const client = getSupabaseServerClient();
+	const api = createTeamAccountsApi(client);
 
-  const subscription = api.getSubscription(accountId);
-  const order = api.getOrder(accountId);
-  const customerId = api.getCustomerId(accountId);
+	const subscription = api.getSubscription(accountId);
+	const order = api.getOrder(accountId);
+	const customerId = api.getCustomerId(accountId);
 
-  return Promise.all([subscription, order, customerId]);
+	return Promise.all([subscription, order, customerId]);
 }

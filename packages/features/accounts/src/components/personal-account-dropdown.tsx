@@ -1,224 +1,221 @@
-'use client';
+"use client";
 
-import { useMemo } from 'react';
-
-import Link from 'next/link';
-
+import type { JWTUserData } from "@kit/supabase/types";
 import {
-  ChevronsUpDown,
-  Home,
-  LogOut,
-  MessageCircleQuestion,
-  Shield,
-} from 'lucide-react';
-
-import { JWTUserData } from '@kit/supabase/types';
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from "@kit/ui/dropdown-menu";
+import { If } from "@kit/ui/if";
+import { SubMenuModeToggle } from "@kit/ui/mode-toggle";
+import { ProfileAvatar } from "@kit/ui/profile-avatar";
+import { Trans } from "@kit/ui/trans";
+import { cn } from "@kit/ui/utils";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@kit/ui/dropdown-menu';
-import { If } from '@kit/ui/if';
-import { SubMenuModeToggle } from '@kit/ui/mode-toggle';
-import { ProfileAvatar } from '@kit/ui/profile-avatar';
-import { Trans } from '@kit/ui/trans';
-import { cn } from '@kit/ui/utils';
+	ChevronsUpDown,
+	Home,
+	LogOut,
+	MessageCircleQuestion,
+	Shield,
+} from "lucide-react";
+import Link from "next/link";
+import { useMemo } from "react";
 
-import { usePersonalAccountData } from '../hooks/use-personal-account-data';
+import { usePersonalAccountData } from "../hooks/use-personal-account-data";
 
 export function PersonalAccountDropdown({
-  className,
-  user,
-  signOutRequested,
-  showProfileName = true,
-  paths,
-  features,
-  account,
+	className,
+	user,
+	signOutRequested,
+	showProfileName = true,
+	paths,
+	features,
+	account,
 }: {
-  user: JWTUserData;
+	user: JWTUserData;
 
-  account?: {
-    id: string | null;
-    name: string | null;
-    picture_url: string | null;
-  };
+	account?: {
+		id: string | null;
+		name: string | null;
+		picture_url: string | null;
+	};
 
-  signOutRequested: () => unknown;
+	signOutRequested: () => unknown;
 
-  paths: {
-    home: string;
-  };
+	paths: {
+		home: string;
+	};
 
-  features: {
-    enableThemeToggle: boolean;
-  };
+	features: {
+		enableThemeToggle: boolean;
+	};
 
-  showProfileName?: boolean;
+	showProfileName?: boolean;
 
-  className?: string;
+	className?: string;
 }) {
-  const { data: personalAccountData } = usePersonalAccountData(
-    user.id,
-    account,
-  );
+	const { data: personalAccountData } = usePersonalAccountData(
+		user.id,
+		account,
+	);
 
-  const signedInAsLabel = useMemo(() => {
-    const email = user?.email ?? undefined;
-    const phone = user?.phone ?? undefined;
+	const signedInAsLabel = useMemo(() => {
+		const email = user?.email ?? undefined;
+		const phone = user?.phone ?? undefined;
 
-    return email ?? phone;
-  }, [user]);
+		return email ?? phone;
+	}, [user]);
 
-  const displayName =
-    personalAccountData?.name ?? account?.name ?? user?.email ?? '';
+	const displayName =
+		personalAccountData?.name ?? account?.name ?? user?.email ?? "";
 
-  const isSuperAdmin = useMemo(() => {
-    const hasAdminRole = user?.app_metadata.role === 'super-admin';
-    const isAal2 = user?.aal === 'aal2';
+	const isSuperAdmin = useMemo(() => {
+		const hasAdminRole = user?.app_metadata.role === "super-admin";
+		const isAal2 = user?.aal === "aal2";
 
-    return hasAdminRole && isAal2;
-  }, [user]);
+		return hasAdminRole && isAal2;
+	}, [user]);
 
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger
-        aria-label="Open your profile menu"
-        data-test={'account-dropdown-trigger'}
-        className={cn(
-          'animate-in group/trigger fade-in focus:outline-primary flex cursor-pointer items-center group-data-[minimized=true]/sidebar:px-0',
-          className ?? '',
-          {
-            ['active:bg-secondary/50 items-center gap-4 rounded-md' +
-            ' hover:bg-secondary border border-dashed p-2 transition-colors']:
-              showProfileName,
-          },
-        )}
-      >
-        <ProfileAvatar
-          className={
-            'group-hover/trigger:border-background/50 rounded-md border border-transparent transition-colors'
-          }
-          fallbackClassName={'rounded-md border'}
-          displayName={displayName ?? user?.email ?? ''}
-          pictureUrl={personalAccountData?.picture_url}
-        />
+	return (
+		<DropdownMenu>
+			<DropdownMenuTrigger
+				aria-label="Open your profile menu"
+				data-test={"account-dropdown-trigger"}
+				className={cn(
+					"animate-in group/trigger fade-in focus:outline-primary flex cursor-pointer items-center group-data-[minimized=true]/sidebar:px-0",
+					className ?? "",
+					{
+						["active:bg-secondary/50 items-center gap-4 rounded-md" +
+							" hover:bg-secondary border border-dashed p-2 transition-colors"]:
+							showProfileName,
+					},
+				)}
+			>
+				<ProfileAvatar
+					className={
+						"group-hover/trigger:border-background/50 rounded-md border border-transparent transition-colors"
+					}
+					fallbackClassName={"rounded-md border"}
+					displayName={displayName ?? user?.email ?? ""}
+					pictureUrl={personalAccountData?.picture_url}
+				/>
 
-        <If condition={showProfileName}>
-          <div
-            className={
-              'fade-in animate-in flex w-full flex-col truncate text-left group-data-[minimized=true]/sidebar:hidden'
-            }
-          >
-            <span
-              data-test={'account-dropdown-display-name'}
-              className={'truncate text-sm'}
-            >
-              {displayName}
-            </span>
+				<If condition={showProfileName}>
+					<div
+						className={
+							"fade-in animate-in flex w-full flex-col truncate text-left group-data-[minimized=true]/sidebar:hidden"
+						}
+					>
+						<span
+							data-test={"account-dropdown-display-name"}
+							className={"truncate text-sm"}
+						>
+							{displayName}
+						</span>
 
-            <span
-              data-test={'account-dropdown-email'}
-              className={'text-muted-foreground truncate text-xs'}
-            >
-              {signedInAsLabel}
-            </span>
-          </div>
+						<span
+							data-test={"account-dropdown-email"}
+							className={"text-muted-foreground truncate text-xs"}
+						>
+							{signedInAsLabel}
+						</span>
+					</div>
 
-          <ChevronsUpDown
-            className={
-              'text-muted-foreground mr-1 h-8 group-data-[minimized=true]/sidebar:hidden'
-            }
-          />
-        </If>
-      </DropdownMenuTrigger>
+					<ChevronsUpDown
+						className={
+							"text-muted-foreground mr-1 h-8 group-data-[minimized=true]/sidebar:hidden"
+						}
+					/>
+				</If>
+			</DropdownMenuTrigger>
 
-      <DropdownMenuContent className={'xl:min-w-[15rem]!'}>
-        <DropdownMenuItem className={'h-10! rounded-none'}>
-          <div
-            className={'flex flex-col justify-start truncate text-left text-xs'}
-          >
-            <div className={'text-muted-foreground'}>
-              <Trans i18nKey={'common:signedInAs'} />
-            </div>
+			<DropdownMenuContent className={"xl:min-w-[15rem]!"}>
+				<DropdownMenuItem className={"h-10! rounded-none"}>
+					<div
+						className={"flex flex-col justify-start truncate text-left text-xs"}
+					>
+						<div className={"text-muted-foreground"}>
+							<Trans i18nKey={"common:signedInAs"} />
+						</div>
 
-            <div>
-              <span className={'block truncate'}>{signedInAsLabel}</span>
-            </div>
-          </div>
-        </DropdownMenuItem>
+						<div>
+							<span className={"block truncate"}>{signedInAsLabel}</span>
+						</div>
+					</div>
+				</DropdownMenuItem>
 
-        <DropdownMenuSeparator />
+				<DropdownMenuSeparator />
 
-        <DropdownMenuItem asChild>
-          <Link
-            className={'s-full flex cursor-pointer items-center space-x-2'}
-            href={paths.home}
-          >
-            <Home className={'h-5'} />
+				<DropdownMenuItem asChild>
+					<Link
+						className={"s-full flex cursor-pointer items-center space-x-2"}
+						href={paths.home}
+					>
+						<Home className={"h-5"} />
 
-            <span>
-              <Trans i18nKey={'common:routes.home'} />
-            </span>
-          </Link>
-        </DropdownMenuItem>
+						<span>
+							<Trans i18nKey={"common:routes.home"} />
+						</span>
+					</Link>
+				</DropdownMenuItem>
 
-        <DropdownMenuSeparator />
+				<DropdownMenuSeparator />
 
-        <DropdownMenuItem asChild>
-          <Link
-            className={'s-full flex cursor-pointer items-center space-x-2'}
-            href={'/docs'}
-          >
-            <MessageCircleQuestion className={'h-5'} />
+				<DropdownMenuItem asChild>
+					<Link
+						className={"s-full flex cursor-pointer items-center space-x-2"}
+						href={"/docs"}
+					>
+						<MessageCircleQuestion className={"h-5"} />
 
-            <span>
-              <Trans i18nKey={'common:documentation'} />
-            </span>
-          </Link>
-        </DropdownMenuItem>
+						<span>
+							<Trans i18nKey={"common:documentation"} />
+						</span>
+					</Link>
+				</DropdownMenuItem>
 
-        <If condition={isSuperAdmin}>
-          <DropdownMenuSeparator />
+				<If condition={isSuperAdmin}>
+					<DropdownMenuSeparator />
 
-          <DropdownMenuItem asChild>
-            <Link
-              className={
-                's-full flex cursor-pointer items-center space-x-2 text-yellow-700 dark:text-yellow-500'
-              }
-              href={'/admin'}
-            >
-              <Shield className={'h-5'} />
+					<DropdownMenuItem asChild>
+						<Link
+							className={
+								"s-full flex cursor-pointer items-center space-x-2 text-yellow-700 dark:text-yellow-500"
+							}
+							href={"/admin"}
+						>
+							<Shield className={"h-5"} />
 
-              <span>Super Admin</span>
-            </Link>
-          </DropdownMenuItem>
-        </If>
+							<span>Super Admin</span>
+						</Link>
+					</DropdownMenuItem>
+				</If>
 
-        <DropdownMenuSeparator />
+				<DropdownMenuSeparator />
 
-        <If condition={features.enableThemeToggle}>
-          <SubMenuModeToggle />
-        </If>
+				<If condition={features.enableThemeToggle}>
+					<SubMenuModeToggle />
+				</If>
 
-        <DropdownMenuSeparator />
+				<DropdownMenuSeparator />
 
-        <DropdownMenuItem
-          data-test={'account-dropdown-sign-out'}
-          role={'button'}
-          className={'cursor-pointer'}
-          onClick={signOutRequested}
-        >
-          <span className={'flex w-full items-center space-x-2'}>
-            <LogOut className={'h-5'} />
+				<DropdownMenuItem
+					data-test={"account-dropdown-sign-out"}
+					role={"button"}
+					className={"cursor-pointer"}
+					onClick={signOutRequested}
+				>
+					<span className={"flex w-full items-center space-x-2"}>
+						<LogOut className={"h-5"} />
 
-            <span>
-              <Trans i18nKey={'auth:signOut'} />
-            </span>
-          </span>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
+						<span>
+							<Trans i18nKey={"auth:signOut"} />
+						</span>
+					</span>
+				</DropdownMenuItem>
+			</DropdownMenuContent>
+		</DropdownMenu>
+	);
 }
