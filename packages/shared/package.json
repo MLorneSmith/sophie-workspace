@@ -4,6 +4,7 @@
 	"version": "0.1.0",
 	"type": "module",
 	"scripts": {
+		"build": "tsc",
 		"clean": "git clean -xdf .turbo node_modules",
 		"format": "prettier --check \"**/*.{ts,tsx}\"",
 		"lint": "eslint .",
