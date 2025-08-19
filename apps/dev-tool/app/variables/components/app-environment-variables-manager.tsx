@@ -488,8 +488,7 @@ function EnvList({ appState }: { appState: AppEnvState }) {
 														• Requires valid {dep.variable.toUpperCase()} when{" "}
 														{dep.message}
 													</div>
-												),
-												)}
+												))}
 											</div>
 										)}
 									</div>
@@ -919,10 +918,13 @@ function getEffectiveVariablesValue(
 ): Record<string, string> {
 	const varsArray = Object.values(appState.variables);
 
-	return varsArray.reduce((acc, variable) => {
-		acc[variable.key] = variable.effectiveValue;
-		return acc;
-	}, {} as Record<string, string>);
+	return varsArray.reduce(
+		(acc, variable) => {
+			acc[variable.key] = variable.effectiveValue;
+			return acc;
+		},
+		{} as Record<string, string>,
+	);
 }
 
 function useUpdateFilteredVariables() {

@@ -1,6 +1,5 @@
 "use client";
 
-import { useId } from "react";
 import { Badge } from "@kit/ui/badge";
 import {
 	Card,
@@ -25,7 +24,7 @@ import {
 	TableRow,
 } from "@kit/ui/table";
 import { ArrowDown, ArrowUp, Menu, TrendingUp } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useId, useMemo, useState } from "react";
 import {
 	Area,
 	AreaChart,
@@ -644,13 +643,7 @@ export function VisitorsChart() {
 									stopOpacity={0.1}
 								/>
 							</linearGradient>
-							<linearGradient
-								id={gradientIdMobile}
-								x1="0"
-								y1="0"
-								x2="0"
-								y2="1"
-							>
+							<linearGradient id={gradientIdMobile} x1="0" y1="0" x2="0" y2="1">
 								<stop
 									offset="5%"
 									stopColor="var(--color-mobile)"
