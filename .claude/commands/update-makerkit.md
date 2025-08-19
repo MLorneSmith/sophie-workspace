@@ -24,31 +24,23 @@ If there are uncommitted changes, either:
 - Commit them: `git add . && git commit -m "WIP: Save work before makerkit update"`
 - Stash them: `git stash push -m "Stashing before makerkit update"`
 
-### 2. Fetch latest upstream changes
+### 2. Create a backup branch (recommended)
 
-Fetch the latest changes from upstream without merging:
-
-```bash
-git fetch upstream main
-```
-
-### 3. Create a backup branch (optional but recommended)
-
-Create a backup of your current state:
+Create a backup of your current state before making any changes:
 
 ```bash
 git branch backup-before-makerkit-update-$(date +%Y%m%d-%H%M%S)
 ```
 
-### 4. Pull upstream changes
+### 3. Pull upstream changes
 
-Pull the latest changes from the Makerkit upstream:
+Pull the latest changes from the Makerkit upstream (this will fetch and merge):
 
 ```bash
 git pull upstream main
 ```
 
-### 5. Handle merge conflicts (if any)
+### 4. Handle merge conflicts (if any)
 
 If merge conflicts occur, you'll see a message like "Automatic merge failed; fix conflicts and then commit the result."
 
@@ -116,7 +108,7 @@ Once all conflicts are resolved:
 git commit -m "Merge upstream makerkit updates - $(date +%Y-%m-%d)"
 ```
 
-### 6. Verify the update
+### 5. Verify the update
 
 After successful merge:
 
@@ -137,7 +129,7 @@ pnpm test
 pnpm dev
 ```
 
-### 7. Clean up (if you created a backup)
+### 6. Clean up (if you created a backup)
 
 If everything works correctly and you created a backup branch:
 
@@ -189,7 +181,7 @@ git remote -v
 ## Best practices
 
 1. **Always backup before updating**: Create a branch or at least stash your changes
-2. **Review changes first**: Use `git fetch upstream main && git log HEAD..upstream/main` to preview changes
+2. **Review changes first (optional)**: Use `git fetch upstream main && git log HEAD..upstream/main` to preview changes before pulling
 3. **Update regularly**: Frequent small updates are easier than infrequent large ones
 4. **Document customizations**: Keep track of your modifications to make conflict resolution easier
 5. **Test thoroughly**: After updating, test all critical paths in your application
