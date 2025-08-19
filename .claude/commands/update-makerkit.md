@@ -47,11 +47,13 @@ git branch backup-before-makerkit-update-$(date +%Y%m%d-%H%M%S)
 
 ### 4. Pull upstream changes
 
-Pull the latest changes from the Makerkit upstream (this will fetch and merge):
+Pull the latest changes from the Makerkit upstream (this automatically fetches and merges in one command):
 
 ```bash
 git pull upstream main
 ```
+
+> **Note:** `git pull` is equivalent to `git fetch` followed by `git merge`. There's no need to run fetch separately.
 
 ### 5. Handle merge conflicts (if any)
 
@@ -193,11 +195,10 @@ git remote -v
 
 ## Best practices
 
-1. **Always backup before updating**: Create a branch or at least stash your changes
-2. **Review changes first (optional)**: Use `git fetch upstream main && git log HEAD..upstream/main` to preview changes before pulling
-3. **Update regularly**: Frequent small updates are easier than infrequent large ones
-4. **Document customizations**: Keep track of your modifications to make conflict resolution easier
-5. **Test thoroughly**: After updating, test all critical paths in your application
+1. **Always backup before updating**: Create a branch or at least stash your changes/clearwhy do
+2. **Update regularly**: Frequent small updates are easier than infrequent large ones
+3. **Document customizations**: Keep track of your modifications to make conflict resolution easier
+4. **Test thoroughly**: After updating, test all critical paths in your application
 
 ## Quick command summary
 
