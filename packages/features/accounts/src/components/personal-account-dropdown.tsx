@@ -203,7 +203,6 @@ export function PersonalAccountDropdown({
 
 				<DropdownMenuItem
 					data-test={"account-dropdown-sign-out"}
-					role={"button"}
 					className={"cursor-pointer"}
 					onClick={signOutRequested}
 				>

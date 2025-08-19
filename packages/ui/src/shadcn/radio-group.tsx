@@ -44,6 +44,7 @@ const RadioGroupItemLabel = (
 	}>,
 ) => {
 	return (
+		// biome-ignore lint/a11y/noLabelWithoutControl: Radio input is handled by parent RadioGroup context
 		<label
 			className={cn(
 				props.className,

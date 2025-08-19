@@ -412,6 +412,7 @@ function FactorNameForm(
 function QrImage({ src }: { src: string }) {
 	return (
 		// eslint-disable-next-line @next/next/no-img-element
+		// biome-ignore lint/performance/noImgElement: QR code needs to be a regular img tag
 		<img
 			alt={"QR Code"}
 			src={src}

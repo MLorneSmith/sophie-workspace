@@ -59,6 +59,7 @@ const BreadcrumbPage: React.FC<React.ComponentPropsWithoutRef<"span">> = ({
 	className,
 	...props
 }) => (
+	// biome-ignore lint/a11y/useFocusableInteractive: Disabled breadcrumb item doesn't need to be focusable
 	<span
 		role="link"
 		aria-disabled="true"
