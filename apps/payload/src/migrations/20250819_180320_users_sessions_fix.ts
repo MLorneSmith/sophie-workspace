@@ -4,7 +4,7 @@ import {
 	sql,
 } from "@payloadcms/db-postgres";
 
-export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
+export async function up({ db }: MigrateUpArgs): Promise<void> {
 	await db.execute(sql`
    CREATE TABLE "payload"."users_sessions" (
   	"_order" integer NOT NULL,
@@ -19,11 +19,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX "users_sessions_parent_id_idx" ON "payload"."users_sessions" USING btree ("_parent_id");`);
 }
 
-export async function down({
-	db,
-	payload,
-	req,
-}: MigrateDownArgs): Promise<void> {
+export async function down({ db }: MigrateDownArgs): Promise<void> {
 	await db.execute(sql`
    DROP TABLE "payload"."users_sessions" CASCADE;`);
 }
