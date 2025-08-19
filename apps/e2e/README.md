@@ -2,7 +2,8 @@
 
 ## Overview
 
-This E2E test suite uses a **dedicated Supabase instance** specifically for testing, completely isolated from the development database. This ensures:
+This E2E test suite uses a **dedicated Supabase instance** specifically for testing, completely isolated from the
+development database. This ensures:
 
 - ✅ No port conflicts between development and E2E databases
 - ✅ Consistent test data across test runs
@@ -28,15 +29,15 @@ pnpm test       # Run all tests
 
 The E2E database runs on **different ports** than the development database to allow both to run simultaneously:
 
-| Service | Development Ports | E2E Ports | Purpose |
-|---------|------------------|-----------|---------|
-| API Gateway | 54321 | **55321** | Main Supabase API endpoint |
-| Database | 54322 | **55322** | PostgreSQL database |
-| Studio | 54323 | **55323** | Supabase Studio UI |
-| Inbucket Web | 54324 | **55324** | Email testing interface |
-| Inbucket SMTP | 54325 | **55325** | SMTP server for emails |
-| Inbucket POP3 | 54326 | **55326** | POP3 email retrieval |
-| Analytics | 54327 | **55327** | Analytics service |
+| Service       | Development Ports | E2E Ports | Purpose                    |
+| ------------- | ----------------- | --------- | -------------------------- |
+| API Gateway   | 54321             | **55321** | Main Supabase API endpoint |
+| Database      | 54322             | **55322** | PostgreSQL database        |
+| Studio        | 54323             | **55323** | Supabase Studio UI         |
+| Inbucket Web  | 54324             | **55324** | Email testing interface    |
+| Inbucket SMTP | 54325             | **55325** | SMTP server for emails     |
+| Inbucket POP3 | 54326             | **55326** | POP3 email retrieval       |
+| Analytics     | 54327             | **55327** | Analytics service          |
 
 ### Environment Variables
 
@@ -74,7 +75,7 @@ pnpm supabase status
 The E2E database includes pre-configured test users that match the web application:
 
 - `test1@slideheroes.com` - Standard test user
-- `test2@slideheroes.com` - Secondary test user  
+- `test2@slideheroes.com` - Secondary test user
 - `michael@slideheroes.com` - Admin test user
 
 Test data is automatically seeded when running `pnpm supabase db reset`.
@@ -92,6 +93,7 @@ Test data is automatically seeded when running `pnpm supabase db reset`.
 ### Automatic Setup
 
 The `test:auth` script automatically:
+
 1. Checks for port conflicts and cleans up if needed
 2. Starts the E2E Supabase instance if not running
 3. Verifies database schema and test data
@@ -179,7 +181,7 @@ E2E_DATABASE_URL: postgresql://postgres:[PASSWORD]@db.your-e2e-project.supabase.
 
 ### File Structure
 
-```
+```text
 apps/e2e/
 ├── supabase/           # E2E-specific Supabase configuration
 │   ├── config.toml     # Port configuration (55321-55327)
@@ -210,17 +212,18 @@ apps/e2e/
 
 ## Common Issues and Solutions
 
-| Issue | Solution |
-|-------|----------|
-| "Port already in use" | Stop existing E2E Supabase: `pnpm supabase stop` |
-| "Table does not exist" | Reset database: `pnpm supabase db reset` |
-| "Emails not arriving" | Check Inbucket at http://127.0.0.1:55324 |
-| "Tests timeout" | Verify E2E Supabase is running: `pnpm supabase status` |
-| "Permission denied" | Check service role key in `.env.local` |
+| Issue                  | Solution                                               |
+| ---------------------- | ------------------------------------------------------ |
+| "Port already in use"  | Stop existing E2E Supabase: `pnpm supabase stop`       |
+| "Table does not exist" | Reset database: `pnpm supabase db reset`               |
+| "Emails not arriving"  | Check Inbucket at `http://127.0.0.1:55324`             |
+| "Tests timeout"        | Verify E2E Supabase is running: `pnpm supabase status` |
+| "Permission denied"    | Check service role key in `.env.local`                 |
 
 ## Support
 
 For issues specific to E2E testing setup, check:
+
 - This README for troubleshooting steps
 - GitHub Issues with label `e2e`
 - Supabase logs: `pnpm supabase logs`
