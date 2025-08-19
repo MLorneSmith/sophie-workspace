@@ -22,8 +22,8 @@
 		"@kit/tsconfig": "workspace:*",
 		"@tanstack/react-query": "5.81.2",
 		"next": "15.3.4",
-		"react": "19.1.0",
-		"react-dom": "19.1.0",
+		"react": "19.1.1",
+		"react-dom": "19.1.1",
 		"react-i18next": "^15.5.3"
 	},
 	"dependencies": {
