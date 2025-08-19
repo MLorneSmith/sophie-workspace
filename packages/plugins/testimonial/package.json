@@ -29,7 +29,7 @@
 		"@tanstack/react-query": "5.81.2",
 		"@tanstack/react-table": "^8.21.3",
 		"@types/react": "19.1.8",
-		"@types/react-dom": "19.1.6",
+		"@types/react-dom": "19.1.7",
 		"lucide-react": "^0.523.0",
 		"next": "15.3.4",
 		"react": "19.1.0",

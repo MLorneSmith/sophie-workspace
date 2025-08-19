@@ -1,44 +1,21 @@
 {
-	"name": "web-e2e",
-	"version": "1.0.0",
-	"description": "",
-	"main": "index.js",
-	"scripts": {
-		"pretest": "bash scripts/test-setup.sh",
-		"report": "playwright show-report",
-		"test": "playwright test --max-failures=20",
-		"test:auth": "bash scripts/test-setup.sh && playwright test tests/authentication --reporter=list",
-		"test:quick": "playwright test --max-failures=1 --reporter=list",
-		"test:ui": "playwright test --ui",
-		"test:matrix": "playwright test --max-failures=3",
-		"test:desktop": "playwright test --project=chromium --project=firefox --project=webkit",
-		"test:mobile": "playwright test --project=\"Mobile Chrome\" --project=\"Mobile Safari\" --project=\"Mobile Firefox\"",
-		"test:tablet": "playwright test --project=\"Tablet Chrome\" --project=\"Tablet Safari\"",
-		"test:chrome": "playwright test --project=chromium",
-		"test:firefox": "playwright test --project=firefox",
-		"test:safari": "playwright test --project=webkit",
-		"a11y:test": "playwright test tests/accessibility --reporter=html",
-		"a11y:report": "playwright show-report accessibility-report",
-		"test:smoke": "playwright test tests/smoke --max-failures=1 --reporter=list",
-		"merge-reports": "playwright merge-reports --reporter html",
-		"doctor": "playwright doctor",
-		"supabase": "supabase",
-		"supabase:start": "supabase start",
-		"supabase:stop": "supabase stop",
-		"supabase:reset": "supabase db reset",
-		"supabase:seed": "supabase db seed"
-	},
-	"keywords": [],
-	"author": "",
-	"license": "ISC",
-	"devDependencies": {
-		"@axe-core/playwright": "^4.10.2",
-		"@playwright/test": "^1.53.1",
-		"@types/axe-core": "^3.0.6",
-		"@types/node": "^24.0.4",
-		"dotenv": "16.5.0",
-		"node-html-parser": "^7.0.1",
-		"supabase": "^2.26.9",
-		"totp-generator": "^1.0.0"
-	}
+  "name": "web-e2e",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "report": "playwright show-report",
+    "test": "playwright test --max-failures=1",
+    "test:ui": "playwright test --ui"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.54.2",
+    "@types/node": "^24.0.4",
+    "dotenv": "17.2.1",
+    "node-html-parser": "^7.0.1",
+    "totp-generator": "^1.0.0"
+  }
 }

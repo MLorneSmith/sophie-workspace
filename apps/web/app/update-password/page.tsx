@@ -1,39 +1,50 @@
-import { UpdatePasswordForm } from "@kit/auth/password-reset";
-import { AuthLayoutShell } from "@kit/auth/shared";
+import { redirect } from 'next/navigation';
 
-import { AppLogo } from "~/components/app-logo";
-import pathsConfig from "~/config/paths.config";
-import { createI18nServerInstance } from "~/lib/i18n/i18n.server";
-import { withI18n } from "~/lib/i18n/with-i18n";
-import { requireUserInServerComponent } from "~/lib/server/require-user-in-server-component";
+import { UpdatePasswordForm } from '@kit/auth/password-reset';
+import { AuthLayoutShell } from '@kit/auth/shared';
+import { requireUser } from '@kit/supabase/require-user';
+import { getSupabaseServerClient } from '@kit/supabase/server-client';
+
+import { AppLogo } from '~/components/app-logo';
+import pathsConfig from '~/config/paths.config';
+import { createI18nServerInstance } from '~/lib/i18n/i18n.server';
+import { withI18n } from '~/lib/i18n/with-i18n';
 
 export const generateMetadata = async () => {
-	const { t } = await createI18nServerInstance();
+  const { t } = await createI18nServerInstance();
 
-	return {
-		title: t("auth:updatePassword"),
-	};
+  return {
+    title: t('auth:updatePassword'),
+  };
 };
 
-const Logo = () => <AppLogo href={""} />;
+const Logo = () => <AppLogo href={''} />;
 
 interface UpdatePasswordPageProps {
-	searchParams: Promise<{
-		callback?: string;
-	}>;
+  searchParams: Promise<{
+    callback?: string;
+  }>;
 }
 
 async function UpdatePasswordPage(props: UpdatePasswordPageProps) {
-	await requireUserInServerComponent();
+  const client = getSupabaseServerClient();
 
-	const { callback } = await props.searchParams;
-	const redirectTo = callback ?? pathsConfig.app.home;
+  const result = await requireUser(client, {
+    next: pathsConfig.auth.passwordUpdate,
+  });
 
-	return (
-		<AuthLayoutShell Logo={Logo}>
-			<UpdatePasswordForm redirectTo={redirectTo} />
-		</AuthLayoutShell>
-	);
+  if (result.error) {
+    return redirect(result.redirectTo);
+  }
+
+  const { callback } = await props.searchParams;
+  const redirectTo = callback ?? pathsConfig.app.home;
+
+  return (
+    <AuthLayoutShell Logo={Logo}>
+      <UpdatePasswordForm redirectTo={redirectTo} />
+    </AuthLayoutShell>
+  );
 }
 
 export default withI18n(UpdatePasswordPage);

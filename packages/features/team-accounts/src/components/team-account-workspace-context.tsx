@@ -1,26 +1,26 @@
-"use client";
+'use client';
 
-import type { Database } from "@kit/supabase/database";
+import { createContext } from 'react';
 
-import type { User } from "@supabase/supabase-js";
-import { createContext } from "react";
+import { Database } from '@kit/supabase/database';
+import { JWTUserData } from '@kit/supabase/types';
 
 interface AccountWorkspace {
-	accounts: Database["public"]["Views"]["user_accounts"]["Row"][];
-	account: Database["public"]["Functions"]["team_account_workspace"]["Returns"][0];
-	user: User;
+  accounts: Database['public']['Views']['user_accounts']['Row'][];
+  account: Database['public']['Functions']['team_account_workspace']['Returns'][0];
+  user: JWTUserData;
 }
 
 export const TeamAccountWorkspaceContext = createContext<AccountWorkspace>(
-	{} as AccountWorkspace,
+  {} as AccountWorkspace,
 );
 
 export function TeamAccountWorkspaceContextProvider(
-	props: React.PropsWithChildren<{ value: AccountWorkspace }>,
+  props: React.PropsWithChildren<{ value: AccountWorkspace }>,
 ) {
-	return (
-		<TeamAccountWorkspaceContext.Provider value={props.value}>
-			{props.children}
-		</TeamAccountWorkspaceContext.Provider>
-	);
+  return (
+    <TeamAccountWorkspaceContext.Provider value={props.value}>
+      {props.children}
+    </TeamAccountWorkspaceContext.Provider>
+  );
 }

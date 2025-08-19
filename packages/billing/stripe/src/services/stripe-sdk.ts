@@ -1,22 +1,22 @@
-import "server-only";
+import 'server-only';
 
-import { StripeServerEnvSchema } from "../schema/stripe-server-env.schema";
+import { StripeServerEnvSchema } from '../schema/stripe-server-env.schema';
 
-const STRIPE_API_VERSION = "2025-06-30.basil";
+const STRIPE_API_VERSION = '2025-07-30.basil';
 
 /**
  * @description returns a Stripe instance
  */
 export async function createStripeClient() {
-	const { default: Stripe } = await import("stripe");
+  const { default: Stripe } = await import('stripe');
 
-	// Parse the environment variables and validate them
-	const stripeServerEnv = StripeServerEnvSchema.parse({
-		secretKey: process.env.STRIPE_SECRET_KEY,
-		webhooksSecret: process.env.STRIPE_WEBHOOK_SECRET,
-	});
+  // Parse the environment variables and validate them
+  const stripeServerEnv = StripeServerEnvSchema.parse({
+    secretKey: process.env.STRIPE_SECRET_KEY,
+    webhooksSecret: process.env.STRIPE_WEBHOOK_SECRET,
+  });
 
-	return new Stripe(stripeServerEnv.secretKey, {
-		apiVersion: STRIPE_API_VERSION,
-	});
+  return new Stripe(stripeServerEnv.secretKey, {
+    apiVersion: STRIPE_API_VERSION,
+  });
 }

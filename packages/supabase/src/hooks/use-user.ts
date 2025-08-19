@@ -1,35 +1,30 @@
-import type { User } from "@supabase/supabase-js";
+import { useQuery } from '@tanstack/react-query';
 
-import { useQuery } from "@tanstack/react-query";
+import { requireUser } from '../require-user';
+import { JWTUserData } from '../types';
+import { useSupabase } from './use-supabase';
 
-import { useSupabase } from "./use-supabase";
+const queryKey = ['supabase:user'];
 
-const queryKey = ["supabase:user"];
+export function useUser(initialData?: JWTUserData | null) {
+  const client = useSupabase();
 
-export function useUser(initialData?: User | null) {
-	const client = useSupabase();
+  const queryFn = async () => {
+    const response = await requireUser(client);
 
-	const queryFn = async () => {
-		const response = await client.auth.getUser();
+    if (response.error) {
+      return undefined;
+    }
 
-		// this is most likely a session error or the user is not logged in
-		if (response.error) {
-			return undefined;
-		}
+    return response.data;
+  };
 
-		if (response.data?.user) {
-			return response.data.user;
-		}
-
-		return Promise.reject(new Error("Unexpected result format"));
-	};
-
-	return useQuery({
-		queryFn,
-		queryKey,
-		initialData,
-		refetchInterval: false,
-		refetchOnMount: false,
-		refetchOnWindowFocus: false,
-	});
+  return useQuery({
+    queryFn,
+    queryKey,
+    initialData,
+    refetchInterval: false,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+  });
 }

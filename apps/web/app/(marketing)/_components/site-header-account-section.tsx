@@ -1,105 +1,88 @@
-"use client";
+'use client';
 
-import { PersonalAccountDropdown } from "@kit/accounts/personal-account-dropdown";
-import { useSignOut } from "@kit/supabase/hooks/use-sign-out";
-import { Button } from "@kit/ui/button";
-import { If } from "@kit/ui/if";
-import { Trans } from "@kit/ui/trans";
-import type { Session } from "@supabase/supabase-js";
-import dynamic from "next/dynamic";
-import Link from "next/link";
-import { useState } from "react";
+import dynamic from 'next/dynamic';
+import Link from 'next/link';
 
-import featuresFlagConfig from "~/config/feature-flags.config";
-import pathsConfig from "~/config/paths.config";
+import { PersonalAccountDropdown } from '@kit/accounts/personal-account-dropdown';
+import { useSignOut } from '@kit/supabase/hooks/use-sign-out';
+import { JWTUserData } from '@kit/supabase/types';
+import { Button } from '@kit/ui/button';
+import { If } from '@kit/ui/if';
+import { Trans } from '@kit/ui/trans';
 
-import { BookDemoOverlay } from "./book-demo-overlay";
+import featuresFlagConfig from '~/config/feature-flags.config';
+import pathsConfig from '~/config/paths.config';
 
 const ModeToggle = dynamic(() =>
-	import("@kit/ui/mode-toggle").then((mod) => ({
-		default: mod.ModeToggle,
-	})),
+  import('@kit/ui/mode-toggle').then((mod) => ({
+    default: mod.ModeToggle,
+  })),
 );
 
 const MobileModeToggle = dynamic(() =>
-	import("@kit/ui/mobile-mode-toggle").then((mod) => ({
-		default: mod.MobileModeToggle,
-	})),
+  import('@kit/ui/mobile-mode-toggle').then((mod) => ({
+    default: mod.MobileModeToggle,
+  })),
 );
 
 const paths = {
-	home: pathsConfig.app.home,
+  home: pathsConfig.app.home,
 };
 
 const features = {
-	enableThemeToggle: featuresFlagConfig.enableThemeToggle,
+  enableThemeToggle: featuresFlagConfig.enableThemeToggle,
 };
 
-interface SiteHeaderAccountSectionProps {
-	session: Session | null;
-}
-
 export function SiteHeaderAccountSection({
-	session,
-}: SiteHeaderAccountSectionProps) {
-	if (session) {
-		return <AuthenticatedSection session={session} />;
-	}
+  user,
+}: {
+  user: JWTUserData | null;
+}) {
+  const signOut = useSignOut();
 
-	return <AuthButtons />;
-}
+  if (user) {
+    return (
+      <PersonalAccountDropdown
+        showProfileName={false}
+        paths={paths}
+        features={features}
+        user={user}
+        signOutRequested={() => signOut.mutateAsync()}
+      />
+    );
+  }
 
-function AuthenticatedSection({ session }: { session: Session }) {
-	const signOut = useSignOut();
-
-	return (
-		<PersonalAccountDropdown
-			showProfileName={false}
-			paths={paths}
-			features={features}
-			user={session.user}
-			signOutRequested={() => signOut.mutateAsync()}
-		/>
-	);
+  return <AuthButtons />;
 }
 
 function AuthButtons() {
-	const [isBookDemoOpen, setIsBookDemoOpen] = useState(false);
+  return (
+    <div className={'animate-in fade-in flex gap-x-2.5 duration-500'}>
+      <div className={'hidden md:flex'}>
+        <If condition={features.enableThemeToggle}>
+          <ModeToggle />
+        </If>
+      </div>
 
-	return (
-		<>
-			<div className={"md:hidden"}>
-				<If condition={features.enableThemeToggle}>
-					<MobileModeToggle />
-				</If>
-			</div>
+      <div className={'md:hidden'}>
+        <If condition={features.enableThemeToggle}>
+          <MobileModeToggle />
+        </If>
+      </div>
 
-			<div className={"animate-in fade-in flex gap-x-2.5 duration-500"}>
-				<div className={"hidden md:flex"}>
-					<If condition={features.enableThemeToggle}>
-						<ModeToggle />
-					</If>
-				</div>
+      <div className={'flex gap-x-2.5'}>
+        <Button className={'hidden md:block'} asChild variant={'ghost'}>
+          <Link href={pathsConfig.auth.signIn}>
+            <Trans i18nKey={'auth:signIn'} />
+          </Link>
+        </Button>
 
-				<Button
-					variant={"outline"}
-					className="font-medium"
-					onClick={() => setIsBookDemoOpen(true)}
-				>
-					<Trans i18nKey={"common:bookDemo"} defaults="Book a demo" />
-				</Button>
-
-				<Button asChild variant={"default"}>
-					<Link href={pathsConfig.auth.signIn}>
-						<Trans i18nKey={"auth:signIn"} />
-					</Link>
-				</Button>
-			</div>
-
-			<BookDemoOverlay
-				isOpen={isBookDemoOpen}
-				onClose={() => setIsBookDemoOpen(false)}
-			/>
-		</>
-	);
+        <Button asChild className="text-xs md:text-sm" variant={'default'}>
+          <Link href={pathsConfig.auth.signUp}>
+            <Trans i18nKey={'auth:signUp'} />
+          </Link>
+        </Button>
+      </div>
+    </div>
+  );
 }

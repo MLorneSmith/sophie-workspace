@@ -1,63 +1,35 @@
 {
-	"name": "@kit/shared",
-	"private": true,
-	"version": "0.1.0",
-	"type": "module",
-	"scripts": {
-		"build": "tsc && node scripts/fix-esm-imports.js",
-		"clean": "git clean -xdf .turbo node_modules dist",
-		"format": "prettier --check \"**/*.{ts,tsx}\"",
-		"lint": "eslint .",
-		"typecheck": "tsc --noEmit",
-		"test": "vitest",
-		"test:run": "vitest run",
-		"test:watch": "vitest watch",
-		"test:coverage": "vitest run --coverage"
-	},
-	"prettier": "@kit/prettier-config",
-	"exports": {
-		"./logger": {
-			"types": "./dist/logger/index.d.ts",
-			"import": "./dist/logger/index.js",
-			"default": "./dist/logger/index.js"
-		},
-		"./utils": {
-			"types": "./dist/utils.d.ts",
-			"import": "./dist/utils.js",
-			"default": "./dist/utils.js"
-		},
-		"./hooks": {
-			"types": "./dist/hooks/index.d.ts",
-			"import": "./dist/hooks/index.js",
-			"default": "./dist/hooks/index.js"
-		},
-		"./events": {
-			"types": "./dist/events/index.d.ts",
-			"import": "./dist/events/index.jsx",
-			"default": "./dist/events/index.jsx"
-		},
-		"./registry": {
-			"types": "./dist/registry/index.d.ts",
-			"import": "./dist/registry/index.js",
-			"default": "./dist/registry/index.js"
-		}
-	},
-	"devDependencies": {
-		"@kit/eslint-config": "workspace:*",
-		"@kit/prettier-config": "workspace:*",
-		"@kit/tsconfig": "workspace:*",
-		"@types/react": "19.1.8"
-	},
-	"dependencies": {
-		"@kit/monitoring-core": "workspace:*",
-		"pino": "^9.6.0",
-		"zod": "^3.25.67"
-	},
-	"typesVersions": {
-		"*": {
-			"*": [
-				"src/*"
-			]
-		}
-	}
+  "name": "@kit/shared",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "clean": "git clean -xdf .turbo node_modules",
+    "format": "prettier --check \"**/*.{ts,tsx}\"",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit"
+  },
+  "prettier": "@kit/prettier-config",
+  "exports": {
+    "./logger": "./src/logger/index.ts",
+    "./utils": "./src/utils.ts",
+    "./hooks": "./src/hooks/index.ts",
+    "./events": "./src/events/index.tsx",
+    "./registry": "./src/registry/index.ts"
+  },
+  "devDependencies": {
+    "@kit/eslint-config": "workspace:*",
+    "@kit/prettier-config": "workspace:*",
+    "@kit/tsconfig": "workspace:*",
+    "@types/react": "19.1.8"
+  },
+  "dependencies": {
+    "pino": "^9.8.0"
+  },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "src/*"
+      ]
+    }
+  }
 }

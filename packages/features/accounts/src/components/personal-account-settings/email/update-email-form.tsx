@@ -1,152 +1,146 @@
-"use client";
+'use client';
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useUpdateUser } from "@kit/supabase/hooks/use-update-user-mutation";
-import { Alert, AlertDescription, AlertTitle } from "@kit/ui/alert";
-import { Button } from "@kit/ui/button";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { CheckIcon } from '@radix-ui/react-icons';
+import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+
+import { useUpdateUser } from '@kit/supabase/hooks/use-update-user-mutation';
+import { Alert, AlertDescription, AlertTitle } from '@kit/ui/alert';
+import { Button } from '@kit/ui/button';
 import {
-	Form,
-	FormControl,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage,
-} from "@kit/ui/form";
-import { If } from "@kit/ui/if";
-import { Input } from "@kit/ui/input";
-import { toast } from "@kit/ui/sonner";
-import { Trans } from "@kit/ui/trans";
-import { CheckIcon } from "@radix-ui/react-icons";
-import type { User } from "@supabase/supabase-js";
-import { useForm } from "react-hook-form";
-import { useTranslation } from "react-i18next";
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@kit/ui/form';
+import { If } from '@kit/ui/if';
+import { Input } from '@kit/ui/input';
+import { toast } from '@kit/ui/sonner';
+import { Trans } from '@kit/ui/trans';
 
-import { UpdateEmailSchema } from "../../../schema/update-email.schema";
+import { UpdateEmailSchema } from '../../../schema/update-email.schema';
 
 function createEmailResolver(currentEmail: string, errorMessage: string) {
-	return zodResolver(
-		UpdateEmailSchema.withTranslation(errorMessage).refine((schema) => {
-			return schema.email !== currentEmail;
-		}),
-	);
+  return zodResolver(
+    UpdateEmailSchema.withTranslation(errorMessage).refine((schema) => {
+      return schema.email !== currentEmail;
+    }),
+  );
 }
 
 export function UpdateEmailForm({
-	user,
-	callbackPath,
+  email,
+  callbackPath,
 }: {
-	user: User;
-	callbackPath: string;
+  email: string;
+  callbackPath: string;
 }) {
-	const { t } = useTranslation("account");
-	const updateUserMutation = useUpdateUser();
+  const { t } = useTranslation('account');
+  const updateUserMutation = useUpdateUser();
 
-	const _updateEmail = ({ email }: { email: string }) => {
-		// then, we update the user's email address
-		const promise = async () => {
-			const redirectTo = new URL(
-				callbackPath,
-				window.location.origin,
-			).toString();
+  const updateEmail = ({ email }: { email: string }) => {
+    // then, we update the user's email address
+    const promise = async () => {
+      const redirectTo = new URL(
+        callbackPath,
+        window.location.origin,
+      ).toString();
 
-			await updateUserMutation.mutateAsync({ email, redirectTo });
-		};
+      await updateUserMutation.mutateAsync({ email, redirectTo });
+    };
 
-		toast.promise(promise, {
-			success: t("updateEmailSuccess"),
-			loading: t("updateEmailLoading"),
-			error: t("updateEmailError"),
-		});
-	};
+    toast.promise(promise, {
+      success: t(`updateEmailSuccess`),
+      loading: t(`updateEmailLoading`),
+      error: t(`updateEmailError`),
+    });
+  };
 
-	const currentEmail = user.email;
+  const form = useForm({
+    resolver: createEmailResolver(email, t('emailNotMatching')),
+    defaultValues: {
+      email: '',
+      repeatEmail: '',
+    },
+  });
 
-	if (!currentEmail) {
-		throw new Error("User email is required for email update form");
-	}
+  return (
+    <Form {...form}>
+      <form
+        className={'flex flex-col space-y-4'}
+        data-test={'account-email-form'}
+        onSubmit={form.handleSubmit(updateEmail)}
+      >
+        <If condition={updateUserMutation.data}>
+          <Alert variant={'success'}>
+            <CheckIcon className={'h-4'} />
 
-	const form = useForm({
-		resolver: createEmailResolver(currentEmail, t("emailNotMatching")),
-		defaultValues: {
-			email: "",
-			repeatEmail: "",
-		},
-	});
+            <AlertTitle>
+              <Trans i18nKey={'account:updateEmailSuccess'} />
+            </AlertTitle>
 
-	return (
-		<Form {...form}>
-			<form
-				className={"flex flex-col space-y-4"}
-				data-test={"account-email-form"}
-				onSubmit={form.handleSubmit(_updateEmail)}
-			>
-				<If condition={updateUserMutation.data}>
-					<Alert variant={"success"}>
-						<CheckIcon className={"h-4"} />
+            <AlertDescription>
+              <Trans i18nKey={'account:updateEmailSuccessMessage'} />
+            </AlertDescription>
+          </Alert>
+        </If>
 
-						<AlertTitle>
-							<Trans i18nKey={"account:updateEmailSuccess"} />
-						</AlertTitle>
+        <div className={'flex flex-col space-y-4'}>
+          <FormField
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  <Trans i18nKey={'account:newEmail'} />
+                </FormLabel>
 
-						<AlertDescription>
-							<Trans i18nKey={"account:updateEmailSuccessMessage"} />
-						</AlertDescription>
-					</Alert>
-				</If>
+                <FormControl>
+                  <Input
+                    data-test={'account-email-form-email-input'}
+                    required
+                    type={'email'}
+                    placeholder={''}
+                    {...field}
+                  />
+                </FormControl>
 
-				<div className={"flex flex-col space-y-4"}>
-					<FormField
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>
-									<Trans i18nKey={"account:newEmail"} />
-								</FormLabel>
+                <FormMessage />
+              </FormItem>
+            )}
+            name={'email'}
+          />
 
-								<FormControl>
-									<Input
-										data-test={"account-email-form-email-input"}
-										required
-										type={"email"}
-										placeholder={""}
-										{...field}
-									/>
-								</FormControl>
+          <FormField
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  <Trans i18nKey={'account:repeatEmail'} />
+                </FormLabel>
 
-								<FormMessage />
-							</FormItem>
-						)}
-						name={"email"}
-					/>
+                <FormControl>
+                  <Input
+                    {...field}
+                    data-test={'account-email-form-repeat-email-input'}
+                    required
+                    type={'email'}
+                  />
+                </FormControl>
 
-					<FormField
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>
-									<Trans i18nKey={"account:repeatEmail"} />
-								</FormLabel>
+                <FormMessage />
+              </FormItem>
+            )}
+            name={'repeatEmail'}
+          />
 
-								<FormControl>
-									<Input
-										{...field}
-										data-test={"account-email-form-repeat-email-input"}
-										required
-										type={"email"}
-									/>
-								</FormControl>
-
-								<FormMessage />
-							</FormItem>
-						)}
-						name={"repeatEmail"}
-					/>
-
-					<div>
-						<Button disabled={updateUserMutation.isPending}>
-							<Trans i18nKey={"account:updateEmailSubmitLabel"} />
-						</Button>
-					</div>
-				</div>
-			</form>
-		</Form>
-	);
+          <div>
+            <Button disabled={updateUserMutation.isPending}>
+              <Trans i18nKey={'account:updateEmailSubmitLabel'} />
+            </Button>
+          </div>
+        </div>
+      </form>
+    </Form>
+  );
 }
