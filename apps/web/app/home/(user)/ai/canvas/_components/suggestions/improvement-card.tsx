@@ -1,6 +1,6 @@
 "use client";
 
-import type { BaseImprovement } from "@kit/ai-gateway/src/prompts/types/improvements";
+import type { BaseImprovement } from "@kit/ai-gateway";
 import { Button } from "@kit/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@kit/ui/card";
 import { Check, X } from "lucide-react";
@@ -45,7 +45,7 @@ export function ImprovementCard({
 						{improvement.implementedSummaryPoint}
 					</p>
 					<ul className="mt-2 space-y-1">
-						{improvement.implementedSupportingPoints.map((point) => (
+						{improvement.implementedSupportingPoints.map((point: string) => (
 							<li key={point} className="text-muted-foreground text-xs">
 								• {point}
 							</li>
