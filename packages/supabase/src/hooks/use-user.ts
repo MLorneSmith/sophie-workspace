@@ -1,30 +1,30 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery } from "@tanstack/react-query";
 
-import { requireUser } from '../require-user';
-import { JWTUserData } from '../types';
-import { useSupabase } from './use-supabase';
+import { requireUser } from "../require-user";
+import type { JWTUserData } from "../types";
+import { useSupabase } from "./use-supabase";
 
-const queryKey = ['supabase:user'];
+const queryKey = ["supabase:user"];
 
 export function useUser(initialData?: JWTUserData | null) {
-  const client = useSupabase();
+	const client = useSupabase();
 
-  const queryFn = async () => {
-    const response = await requireUser(client);
+	const queryFn = async () => {
+		const response = await requireUser(client);
 
-    if (response.error) {
-      return undefined;
-    }
+		if (response.error) {
+			return null;
+		}
 
-    return response.data;
-  };
+		return response.data;
+	};
 
-  return useQuery({
-    queryFn,
-    queryKey,
-    initialData,
-    refetchInterval: false,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-  });
+	return useQuery({
+		queryFn,
+		queryKey,
+		initialData,
+		refetchInterval: false,
+		refetchOnMount: false,
+		refetchOnWindowFocus: false,
+	});
 }
