@@ -1,7 +1,9 @@
 {
-	"extends": "@kit/tsconfig/base.json",
+	"extends": "../../tooling/typescript/base.json",
 	"compilerOptions": {
 		"baseUrl": ".",
+		"lib": ["dom", "dom.iterable", "esnext", "ES2017"],
+		"types": ["node"],
 		"paths": {
 			"~/*": ["./app/*"],
 			"~/config/*": ["./config/*"],
