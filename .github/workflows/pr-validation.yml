@@ -41,10 +41,92 @@ env:
   TURBO_REMOTE_CACHE_ENABLED: true
 
 jobs:
+  # Check if we should skip validation for promotion PRs
+  check-skip:
+    name: Check Skip Conditions
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    outputs:
+      should-skip: ${{ steps.check.outputs.skip }}
+      skip-reason: ${{ steps.check.outputs.reason }}
+    steps:
+      - name: Check if validation can be skipped
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Skip validation for promotion PRs if source branch recently passed
+          if [[ "${{ github.base_ref }}" == "staging" && "${{ github.head_ref }}" == "dev" ]]; then
+            echo "🔍 Checking if dev branch recently passed validation..."
+            
+            # Get most recent successful workflow run on dev
+            RECENT_RUN=$(gh api \
+              "/repos/${{ github.repository }}/actions/runs?branch=dev&status=success&per_page=1" \
+              --jq '.workflow_runs[0] | select(.conclusion == "success") | {created_at: .created_at}')
+            
+            if [ ! -z "$RECENT_RUN" ]; then
+              RUN_TIME=$(echo $RECENT_RUN | jq -r '.created_at')
+              RUN_AGE=$(( $(date +%s) - $(date -d "$RUN_TIME" +%s) ))
+              
+              # Skip if successful run was less than 30 minutes ago
+              if [ $RUN_AGE -lt 1800 ]; then
+                echo "skip=true" >> $GITHUB_OUTPUT
+                echo "reason=✅ Dev branch passed all checks $((RUN_AGE/60)) minutes ago" >> $GITHUB_OUTPUT
+                exit 0
+              fi
+            fi
+          fi
+          
+          # Similar check for staging->main promotion
+          if [[ "${{ github.base_ref }}" == "main" && "${{ github.head_ref }}" == "staging" ]]; then
+            echo "🔍 Checking if staging branch recently passed validation..."
+            
+            RECENT_RUN=$(gh api \
+              "/repos/${{ github.repository }}/actions/runs?branch=staging&status=success&per_page=1" \
+              --jq '.workflow_runs[0] | select(.conclusion == "success") | {created_at: .created_at}')
+            
+            if [ ! -z "$RECENT_RUN" ]; then
+              RUN_TIME=$(echo $RECENT_RUN | jq -r '.created_at')
+              RUN_AGE=$(( $(date +%s) - $(date -d "$RUN_TIME" +%s) ))
+              
+              if [ $RUN_AGE -lt 1800 ]; then
+                echo "skip=true" >> $GITHUB_OUTPUT
+                echo "reason=✅ Staging branch passed all checks $((RUN_AGE/60)) minutes ago" >> $GITHUB_OUTPUT
+                exit 0
+              fi
+            fi
+          fi
+          
+          echo "skip=false" >> $GITHUB_OUTPUT
+          echo "reason=Full validation required" >> $GITHUB_OUTPUT
+
+      - name: Comment skip status on PR
+        if: steps.check.outputs.skip == 'true' && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const comment = `## ✅ Validation Skipped - Promotion PR
+            
+            **Reason**: ${{ steps.check.outputs.reason }}
+            
+            Since the source branch recently passed all validation checks, we're skipping redundant tests for this promotion PR.
+            
+            ✨ **This saves ~15 minutes of CI time!**
+            
+            You can safely merge this PR once any required reviews are complete.`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
   # Check what files changed to optimize CI runs
   changes:
     name: Detect Changes
     runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    needs: check-skip
+    if: needs.check-skip.outputs.should-skip != 'true'
     outputs:
       typescript: ${{ steps.filter.outputs.typescript }}
       markdown: ${{ steps.filter.outputs.markdown }}
@@ -78,7 +160,8 @@ jobs:
   lint:
     name: Lint & Format
     runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
-    needs: changes
+    needs: [check-skip, changes]
+    if: needs.check-skip.outputs.should-skip != 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -99,8 +182,8 @@ jobs:
   typecheck:
     name: TypeScript Check
     runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
-    needs: changes  # Only depend on changes, not other jobs
-    if: needs.changes.outputs.typescript == 'true'
+    needs: [check-skip, changes]
+    if: needs.check-skip.outputs.should-skip != 'true' && needs.changes.outputs.typescript == 'true'
     env:
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
       SUPABASE_DB_WEBHOOK_SECRET: ${{ secrets.SUPABASE_DB_WEBHOOK_SECRET }}
@@ -129,8 +212,8 @@ jobs:
   test-unit:
     name: Unit Tests
     runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
-    needs: changes  # Only depend on changes, not other jobs
-    if: needs.changes.outputs.typescript == 'true'
+    needs: [check-skip, changes]
+    if: needs.check-skip.outputs.should-skip != 'true' && needs.changes.outputs.typescript == 'true'
     env:
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
       SUPABASE_DB_WEBHOOK_SECRET: ${{ secrets.SUPABASE_DB_WEBHOOK_SECRET }}
@@ -170,8 +253,8 @@ jobs:
   yaml-lint:
     name: YAML Lint
     runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
-    needs: changes  # Only depend on changes, not other jobs
-    if: needs.changes.outputs.yaml == 'true'
+    needs: [check-skip, changes]
+    if: needs.check-skip.outputs.should-skip != 'true' && needs.changes.outputs.yaml == 'true'
     steps:
       - uses: actions/checkout@v4
 
@@ -184,8 +267,8 @@ jobs:
   markdown-lint:
     name: Markdown Lint
     runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
-    needs: changes  # Only depend on changes, not other jobs
-    if: needs.changes.outputs.markdown == 'true'
+    needs: [check-skip, changes]
+    if: needs.check-skip.outputs.should-skip != 'true' && needs.changes.outputs.markdown == 'true'
     steps:
       - uses: actions/checkout@v4
 
@@ -275,8 +358,8 @@ jobs:
   accessibility-test:
     name: Accessibility Tests
     runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
-    needs: changes  # Only depend on changes, not other jobs
-    if: needs.changes.outputs.typescript == 'true'
+    needs: [check-skip, changes]
+    if: needs.check-skip.outputs.should-skip != 'true' && needs.changes.outputs.typescript == 'true'
     continue-on-error: true  # Non-blocking for now - E2E database setup issues
     env:
       # E2E Database Configuration
@@ -379,11 +462,19 @@ jobs:
   pr-status:
     name: PR Status Check
     runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
-    needs: [lint, typecheck, test-unit, yaml-lint, markdown-lint, aikido-security, accessibility-test]
+    needs: [check-skip, lint, typecheck, test-unit, yaml-lint, markdown-lint, aikido-security, accessibility-test]
     if: always()
     steps:
       - name: Check status
         run: |
+          # If validation was skipped, report success
+          if [[ "${{ needs.check-skip.outputs.should-skip }}" == "true" ]]; then
+            echo "✅ Validation skipped - promotion PR with recent successful checks"
+            echo "${{ needs.check-skip.outputs.skip-reason }}"
+            exit 0
+          fi
+          
+          # Otherwise, check individual job results
           if [[ "${{ needs.lint.result }}" == "failure" ]] || \
              [[ "${{ needs.typecheck.result }}" == "failure" ]] || \
              [[ "${{ needs.test-unit.result }}" == "failure" ]] || \

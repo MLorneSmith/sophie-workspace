@@ -86,7 +86,6 @@
 			"biome lint --write"
 		],
 		"**/*.{md,mdx}": [
-			"prettier --write",
 			"bash -c 'if ! echo \"$0\" | grep -qE \"(\\.claude|\\.mcp-servers|\\.roo)/\"; then markdownlint-cli2 --fix \"$0\"; fi'"
 		],
 		"**/*.{yaml,yml}": [

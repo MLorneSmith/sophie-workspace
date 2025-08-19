@@ -5,9 +5,10 @@ Read:
 2.  .claude/context/systems/cicd-pipeline.md  
 
 Current status:
-1. We have been running into numerous issues and have not yet been able to push an update from dev all the way to the main branch.
-2. We have numerous outstanding PRs with unknown statuses
-3. We have existing workflows that create PRs to movbe the code from dev to staging to production (main)
+1. We have been running into numerous issues and have not yet been able to push an update from dev all the way to the main production branch.
+2. We have outstanding PRs with unknown statuses
+3. The deploy to dev workflow is consistently failing
+
 
 I want you to:
 1. Conduct an audit of the status of the cicd pipeline development
