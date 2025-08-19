@@ -4,10 +4,12 @@
 	"description": "SlideHeroes Playwright MCP server using official Cloudflare implementation",
 	"main": "dist/index.js",
 	"scripts": {
-		"build": "tsc",
+		"build": "echo 'Skipping tsc build for Cloudflare Worker - use wrangler for deployment'",
+		"build:worker": "wrangler deploy --dry-run --outdir dist",
 		"dev": "wrangler dev",
-		"deploy": "npm run build && wrangler deploy",
-		"type-check": "tsc --noEmit"
+		"deploy": "wrangler deploy",
+		"type-check": "tsc --noEmit",
+		"types": "wrangler types"
 	},
 	"dependencies": {
 		"@cloudflare/playwright": "^0.0.11",

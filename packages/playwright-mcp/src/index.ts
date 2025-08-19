@@ -1,9 +1,9 @@
 import { env } from "cloudflare:workers";
+import type { BrowserEndpoint } from "@cloudflare/playwright";
 import { createMcpAgent } from "@cloudflare/playwright-mcp";
 
-// Type import from @cloudflare/playwright causes build issues in CI
-// Using any for now as the runtime behavior is correct
-// biome-ignore lint/suspicious/noExplicitAny: Temporary workaround for CI build issues
-export const PlaywrightMCP = createMcpAgent(env.BROWSER as any);
+// Note: This package is built with wrangler, not tsc
+// The cloudflare:workers import is resolved at runtime by Cloudflare
+export const PlaywrightMCP = createMcpAgent(env.BROWSER as BrowserEndpoint);
 
 export default PlaywrightMCP.mount("/sse");
