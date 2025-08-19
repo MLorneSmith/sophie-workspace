@@ -1,38 +1,39 @@
-import "server-only";
+import 'server-only';
 
-import { createServerClient } from "@supabase/ssr";
-import { cookies } from "next/headers";
+import { cookies } from 'next/headers';
 
-import type { Database } from "../database.types";
-import { getSupabaseClientKeys } from "../get-supabase-client-keys";
+import { createServerClient } from '@supabase/ssr';
+
+import { Database } from '../database.types';
+import { getSupabaseClientKeys } from '../get-supabase-client-keys';
 
 /**
  * @name getSupabaseServerClient
  * @description Creates a Supabase client for use in the Server.
  */
 export function getSupabaseServerClient<GenericSchema = Database>() {
-	const keys = getSupabaseClientKeys();
+  const keys = getSupabaseClientKeys();
 
-	return createServerClient<GenericSchema>(keys.url, keys.anonKey, {
-		cookies: {
-			async getAll() {
-				const cookieStore = await cookies();
+  return createServerClient<GenericSchema>(keys.url, keys.publicKey, {
+    cookies: {
+      async getAll() {
+        const cookieStore = await cookies();
 
-				return cookieStore.getAll();
-			},
-			async setAll(cookiesToSet) {
-				const cookieStore = await cookies();
+        return cookieStore.getAll();
+      },
+      async setAll(cookiesToSet) {
+        const cookieStore = await cookies();
 
-				try {
-					for (const { name, value, options } of cookiesToSet) {
-						cookieStore.set(name, value, options);
-					}
-				} catch {
-					// The `setAll` method was called from a Server Component.
-					// This can be ignored if you have middleware refreshing
-					// user sessions.
-				}
-			},
-		},
-	});
+        try {
+          cookiesToSet.forEach(({ name, value, options }) =>
+            cookieStore.set(name, value, options),
+          );
+        } catch {
+          // The `setAll` method was called from a Server Component.
+          // This can be ignored if you have middleware refreshing
+          // user sessions.
+        }
+      },
+    },
+  });
 }
