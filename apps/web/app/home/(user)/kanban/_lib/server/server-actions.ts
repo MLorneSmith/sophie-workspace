@@ -47,7 +47,7 @@ const createTaskAction = enhanceAction(
 			userId: user.id,
 		};
 
-		logger.info(ctx, "Creating new task...");
+		logger.info({ ...ctx }, "Creating new task...");
 
 		const client = getSupabaseServerClient();
 		const { subtasks, image, ...taskData } = data;
@@ -87,12 +87,12 @@ const createTaskAction = enhanceAction(
 				if (subtasksError) throw subtasksError;
 			}
 
-			logger.info(ctx, "Task created successfully");
+			logger.info({ ...ctx }, "Task created successfully");
 			revalidatePath("/home/kanban");
 
 			return { success: true, data: task };
 		} catch (error) {
-			logger.error(ctx, "Failed to create task", { error });
+			logger.error({ ...ctx, error }, "Failed to create task");
 			return { success: false, error: "Failed to create task" };
 		}
 	},
@@ -110,7 +110,7 @@ const updateTaskAction = enhanceAction(
 			taskId: data.id,
 		};
 
-		logger.info(ctx, "Updating task...");
+		logger.info({ ...ctx }, "Updating task...");
 
 		const client = getSupabaseServerClient();
 		const { subtasks, image, ...taskData } = data;
@@ -170,12 +170,12 @@ const updateTaskAction = enhanceAction(
 				}
 			}
 
-			logger.info(ctx, "Task updated successfully");
+			logger.info({ ...ctx }, "Task updated successfully");
 			revalidatePath("/home/kanban");
 
 			return { success: true };
 		} catch (error) {
-			logger.error(ctx, "Failed to update task", { error });
+			logger.error({ ...ctx, error }, "Failed to update task");
 			return { success: false, error: "Failed to update task" };
 		}
 	},
@@ -193,7 +193,7 @@ const updateTaskStatusAction = enhanceAction(
 			taskId: data.id,
 		};
 
-		logger.info(ctx, "Updating task status...");
+		logger.info({ ...ctx }, "Updating task status...");
 
 		const client = getSupabaseServerClient();
 
@@ -206,12 +206,12 @@ const updateTaskStatusAction = enhanceAction(
 
 			if (error) throw error;
 
-			logger.info(ctx, "Task status updated successfully");
+			logger.info({ ...ctx }, "Task status updated successfully");
 			revalidatePath("/home/kanban");
 
 			return { success: true };
 		} catch (error) {
-			logger.error(ctx, "Failed to update task status", { error });
+			logger.error({ ...ctx, error }, "Failed to update task status");
 			return { success: false, error: "Failed to update task status" };
 		}
 	},
@@ -229,7 +229,7 @@ const deleteTaskAction = enhanceAction(
 			taskId: data.id,
 		};
 
-		logger.info(ctx, "Deleting task...");
+		logger.info({ ...ctx }, "Deleting task...");
 
 		const client = getSupabaseServerClient();
 
@@ -255,12 +255,12 @@ const deleteTaskAction = enhanceAction(
 				await deleteTaskImageAction({ url: task.image_url });
 			}
 
-			logger.info(ctx, "Task deleted successfully");
+			logger.info({ ...ctx }, "Task deleted successfully");
 			revalidatePath("/home/kanban");
 
 			return { success: true };
 		} catch (error) {
-			logger.error(ctx, "Failed to delete task", { error });
+			logger.error({ ...ctx, error }, "Failed to delete task");
 			return { success: false, error: "Failed to delete task" };
 		}
 	},
@@ -280,7 +280,7 @@ const updateSubtaskAction = enhanceAction(
 			subtaskId: data.id,
 		};
 
-		logger.info(ctx, "Updating subtask...");
+		logger.info({ ...ctx }, "Updating subtask...");
 
 		const client = getSupabaseServerClient();
 
@@ -305,7 +305,7 @@ const updateSubtaskAction = enhanceAction(
 
 			if (error) throw error;
 
-			logger.info(ctx, "Subtask updated successfully");
+			logger.info({ ...ctx }, "Subtask updated successfully");
 			revalidatePath("/home/kanban");
 
 			return {
@@ -318,7 +318,7 @@ const updateSubtaskAction = enhanceAction(
 				},
 			};
 		} catch (error) {
-			logger.error(ctx, "Failed to update subtask", { error });
+			logger.error({ ...ctx, error }, "Failed to update subtask");
 			return { success: false, error: "Failed to update subtask" };
 		}
 	},
@@ -338,7 +338,7 @@ const resetTasksAction = enhanceAction(
 			userId: user.id,
 		};
 
-		logger.info(ctx, "Resetting tasks to default...");
+		logger.info({ ...ctx }, "Resetting tasks to default...");
 
 		const client = getSupabaseServerClient();
 
@@ -398,12 +398,12 @@ const resetTasksAction = enhanceAction(
 				}
 			}
 
-			logger.info(ctx, "Tasks reset successfully");
+			logger.info({ ...ctx }, "Tasks reset successfully");
 			revalidatePath("/home/kanban");
 
 			return { success: true };
 		} catch (error) {
-			logger.error(ctx, "Failed to reset tasks", { error });
+			logger.error({ ...ctx, error }, "Failed to reset tasks");
 			return { success: false, error: "Failed to reset tasks" };
 		}
 	},
