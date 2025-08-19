@@ -1,6 +1,6 @@
 import {
-	type MigrateUpArgs,
 	type MigrateDownArgs,
+	type MigrateUpArgs,
 	sql,
 } from "@payloadcms/db-postgres";
 

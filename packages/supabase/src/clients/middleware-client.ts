@@ -1,11 +1,10 @@
-import 'server-only';
+import "server-only";
 
-import { type NextRequest, NextResponse } from 'next/server';
+import { createServerClient } from "@supabase/ssr";
+import type { NextRequest, NextResponse } from "next/server";
 
-import { createServerClient } from '@supabase/ssr';
-
-import { Database } from '../database.types';
-import { getSupabaseClientKeys } from '../get-supabase-client-keys';
+import type { Database } from "../database.types";
+import { getSupabaseClientKeys } from "../get-supabase-client-keys";
 
 /**
  * Creates a middleware client for Supabase.
@@ -14,25 +13,25 @@ import { getSupabaseClientKeys } from '../get-supabase-client-keys';
  * @param {NextResponse} response - The Next.js response object.
  */
 export function createMiddlewareClient<GenericSchema = Database>(
-  request: NextRequest,
-  response: NextResponse,
+	request: NextRequest,
+	response: NextResponse,
 ) {
-  const keys = getSupabaseClientKeys();
+	const keys = getSupabaseClientKeys();
 
-  return createServerClient<GenericSchema>(keys.url, keys.publicKey, {
-    cookies: {
-      getAll() {
-        return request.cookies.getAll();
-      },
-      setAll(cookiesToSet) {
-        cookiesToSet.forEach(({ name, value }) =>
-          request.cookies.set(name, value),
-        );
+	return createServerClient<GenericSchema>(keys.url, keys.publicKey, {
+		cookies: {
+			getAll() {
+				return request.cookies.getAll();
+			},
+			setAll(cookiesToSet) {
+				cookiesToSet.forEach(({ name, value }) =>
+					request.cookies.set(name, value),
+				);
 
-        cookiesToSet.forEach(({ name, value, options }) =>
-          response.cookies.set(name, value, options),
-        );
-      },
-    },
-  });
+				cookiesToSet.forEach(({ name, value, options }) =>
+					response.cookies.set(name, value, options),
+				);
+			},
+		},
+	});
 }
