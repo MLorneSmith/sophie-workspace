@@ -1,5 +1,5 @@
-import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import { expect, test } from "@playwright/test";
 
 test.describe("Color Contrast Test", () => {
 	test("Check color contrast specifically", async ({ page }) => {
