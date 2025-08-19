@@ -15,7 +15,7 @@ permissions:
 jobs:
   build-and-push:
     name: Build and Push CI Image
-    runs-on: ubuntu-latest
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     steps:
       - uses: actions/checkout@v4
 

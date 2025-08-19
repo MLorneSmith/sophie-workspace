@@ -44,7 +44,7 @@ jobs:
   # Check what files changed to optimize CI runs
   changes:
     name: Detect Changes
-    runs-on: ubicloud-standard-2
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     outputs:
       typescript: ${{ steps.filter.outputs.typescript }}
       markdown: ${{ steps.filter.outputs.markdown }}
@@ -77,7 +77,7 @@ jobs:
   # Lint and format check
   lint:
     name: Lint & Format
-    runs-on: ubicloud-standard-2
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: changes
     steps:
       - uses: actions/checkout@v4
@@ -98,7 +98,7 @@ jobs:
   # TypeScript type checking
   typecheck:
     name: TypeScript Check
-    runs-on: ubicloud-standard-2
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: changes  # Only depend on changes, not other jobs
     if: needs.changes.outputs.typescript == 'true'
     env:
@@ -128,7 +128,7 @@ jobs:
   # Unit tests 
   test-unit:
     name: Unit Tests
-    runs-on: ubicloud-standard-2
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: changes  # Only depend on changes, not other jobs
     if: needs.changes.outputs.typescript == 'true'
     env:
@@ -169,7 +169,7 @@ jobs:
   # YAML linting
   yaml-lint:
     name: YAML Lint
-    runs-on: ubicloud-standard-2
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: changes  # Only depend on changes, not other jobs
     if: needs.changes.outputs.yaml == 'true'
     steps:
@@ -183,7 +183,7 @@ jobs:
   # Markdown linting
   markdown-lint:
     name: Markdown Lint
-    runs-on: ubicloud-standard-2
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: changes  # Only depend on changes, not other jobs
     if: needs.changes.outputs.markdown == 'true'
     steps:
@@ -200,7 +200,7 @@ jobs:
   # Aikido Security scan
   aikido-security:
     name: Aikido Security Scan
-    runs-on: ubicloud-standard-2
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: changes
     # Only run on pull requests with relevant changes
     if: (needs.changes.outputs.dependencies == 'true' || needs.changes.outputs.typescript == 'true') && github.event_name == 'pull_request'
@@ -225,7 +225,7 @@ jobs:
   # Bundle size check
   bundle-size:
     name: Bundle Size Check
-    runs-on: ubicloud-standard-2
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: changes
     if: needs.changes.outputs.typescript == 'true'
     continue-on-error: true # Non-blocking for now
@@ -274,7 +274,7 @@ jobs:
   # Accessibility testing
   accessibility-test:
     name: Accessibility Tests
-    runs-on: ubicloud-standard-2
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: changes  # Only depend on changes, not other jobs
     if: needs.changes.outputs.typescript == 'true'
     env:
@@ -377,7 +377,7 @@ jobs:
   # Final status check
   pr-status:
     name: PR Status Check
-    runs-on: ubicloud-standard-2
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: [lint, typecheck, test-unit, yaml-lint, markdown-lint, aikido-security, accessibility-test]
     if: always()
     steps:
