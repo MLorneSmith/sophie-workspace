@@ -2,6 +2,7 @@
   "name": "@kit/shared",
   "private": true,
   "version": "0.1.0",
+  "type": "module",
   "scripts": {
     "clean": "git clean -xdf .turbo node_modules",
     "format": "prettier --check \"**/*.{ts,tsx}\"",
@@ -23,7 +24,9 @@
     "@types/react": "19.1.8"
   },
   "dependencies": {
-    "pino": "^9.8.0"
+    "@kit/monitoring-core": "workspace:*",
+    "pino": "^9.8.0",
+    "zod": "^3.25.67"
   },
   "typesVersions": {
     "*": {

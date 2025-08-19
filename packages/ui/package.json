@@ -114,7 +114,13 @@
     "./empty-state": "./src/makerkit/empty-state.tsx",
     "./marketing": "./src/makerkit/marketing/index.tsx",
     "./oauth-provider-logo-image": "./src/makerkit/oauth-provider-logo-image.tsx",
-    "./file-uploader": "./src/makerkit/file-uploader.tsx"
+    "./file-uploader": "./src/makerkit/file-uploader.tsx",
+    "./progress": "./src/shadcn/progress.tsx",
+    "./container-scroll-animation": "./src/aceternity/container-scroll-animation.tsx",
+    "./placeholders-and-vanish-input": "./src/aceternity/placeholders-and-vanish-input.tsx",
+    "./logo-marquee": "./src/aceternity/logo-marquee.tsx",
+    "./sticky-scroll-reveal": "./src/aceternity/sticky-scroll-reveal.tsx",
+    "./resizable": "./src/shadcn/resizable.tsx"
   },
   "typesVersions": {
     "*": {
