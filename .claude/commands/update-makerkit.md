@@ -11,9 +11,22 @@ Updates the codebase with the latest changes from the Makerkit upstream reposito
 
 ## Steps
 
-### 1. Check for uncommitted changes
+### 1. Ensure you're on the dev branch
 
-First, ensure there are no uncommitted changes in your working directory:
+Before updating, make sure you're on the dev branch where updates should be performed:
+
+```bash
+git checkout dev
+```
+
+If you're on a different branch, either:
+
+- Merge your changes to dev first: `git checkout dev && git merge <your-branch>`
+- Or complete your work and then switch to dev
+
+### 2. Check for uncommitted changes
+
+Ensure there are no uncommitted changes in your working directory:
 
 ```bash
 git status --porcelain
@@ -24,7 +37,7 @@ If there are uncommitted changes, either:
 - Commit them: `git add . && git commit -m "WIP: Save work before makerkit update"`
 - Stash them: `git stash push -m "Stashing before makerkit update"`
 
-### 2. Create a backup branch (recommended)
+### 3. Create a backup branch (recommended)
 
 Create a backup of your current state before making any changes:
 
@@ -32,7 +45,7 @@ Create a backup of your current state before making any changes:
 git branch backup-before-makerkit-update-$(date +%Y%m%d-%H%M%S)
 ```
 
-### 3. Pull upstream changes
+### 4. Pull upstream changes
 
 Pull the latest changes from the Makerkit upstream (this will fetch and merge):
 
@@ -40,7 +53,7 @@ Pull the latest changes from the Makerkit upstream (this will fetch and merge):
 git pull upstream main
 ```
 
-### 4. Handle merge conflicts (if any)
+### 5. Handle merge conflicts (if any)
 
 If merge conflicts occur, you'll see a message like "Automatic merge failed; fix conflicts and then commit the result."
 
@@ -108,7 +121,7 @@ Once all conflicts are resolved:
 git commit -m "Merge upstream makerkit updates - $(date +%Y-%m-%d)"
 ```
 
-### 5. Verify the update
+### 6. Verify the update
 
 After successful merge:
 
@@ -129,7 +142,7 @@ pnpm test
 pnpm dev
 ```
 
-### 6. Clean up (if you created a backup)
+### 7. Clean up (if you created a backup)
 
 If everything works correctly and you created a backup branch:
 
@@ -191,6 +204,9 @@ git remote -v
 For experienced users, here's the essential flow:
 
 ```bash
+# Ensure on dev branch
+git checkout dev
+
 # Ensure clean state
 git status --porcelain || echo "Working directory clean"
 
