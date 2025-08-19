@@ -55,8 +55,10 @@ vi.mock("../_components/editor/tiptap/utils/format-conversion", () => ({
 	lexicalToTiptap: vi.fn(),
 }));
 
-import { getChatCompletion } from "@kit/ai-gateway";
-import { createQualityOptimizedConfig } from "@kit/ai-gateway/src/configs/templates";
+import {
+	getChatCompletion,
+	createQualityOptimizedConfig,
+} from "@kit/ai-gateway";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
 import { lexicalToTiptap } from "../_components/editor/tiptap/utils/format-conversion";
 // Import after mocks

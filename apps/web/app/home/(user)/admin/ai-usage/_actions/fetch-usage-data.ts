@@ -1,14 +1,10 @@
 "use server";
 
-import type { User } from "@supabase/supabase-js";
-
-import { z } from "zod";
-
-// Import User type
-
 import { enhanceAction } from "@kit/next/actions";
 import { createServiceLogger } from "@kit/shared/logger";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
+import type { JWTUserData } from "@kit/supabase/types";
+import { z } from "zod";
 
 const { getLogger } = createServiceLogger("FETCH-USAGE-DATA");
 
@@ -23,7 +19,7 @@ const UsageDataQuerySchema = z.object({
 type UsageDataQuery = z.infer<typeof UsageDataQuerySchema>; // Define type for data
 
 export const fetchUsageDataAction = enhanceAction(
-	async (data: UsageDataQuery, user: User | null) => {
+	async (data: UsageDataQuery, user: JWTUserData | null) => {
 		// Explicitly type data and user
 		try {
 			// Check if user is authenticated and has admin role
@@ -253,7 +249,7 @@ function groupLogsByField<T extends AiRequestLog>(
 }
 
 // Check if user has admin role
-function hasAdminRole(user: User): boolean {
+function hasAdminRole(user: JWTUserData): boolean {
 	// Implement your admin role check logic here
 	// This is a placeholder - you should replace with your actual admin role check
 	return user.email?.endsWith("@slideheroes.com") || false;

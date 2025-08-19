@@ -1,6 +1,6 @@
 "use client";
 
-import type { BaseImprovement } from "@kit/ai-gateway/src/prompts/types/improvements";
+import type { BaseImprovement } from "@kit/ai-gateway";
 import { useSupabase } from "@kit/supabase/hooks/use-supabase";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Bold from "@tiptap/extension-bold";

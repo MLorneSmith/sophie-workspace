@@ -5,11 +5,11 @@ import {
 	type ChatMessage,
 	ConfigManager,
 	getChatCompletion,
+	createBalancedOptimizedConfig,
+	createAudienceSuggestionsConfig,
+	createTitleSuggestionsConfig,
+	PromptManager,
 } from "@kit/ai-gateway";
-import { createBalancedOptimizedConfig } from "@kit/ai-gateway/src/configs/templates/balanced-optimized";
-import { createAudienceSuggestionsConfig } from "@kit/ai-gateway/src/configs/use-cases/audience-suggestions/config";
-import { createTitleSuggestionsConfig } from "@kit/ai-gateway/src/configs/use-cases/title-suggestions/config";
-import { PromptManager } from "@kit/ai-gateway/src/prompts/prompt-manager";
 import { enhanceAction } from "@kit/next/actions";
 import { createServiceLogger } from "@kit/shared/logger";
 import { z } from "zod";

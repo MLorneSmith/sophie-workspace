@@ -1,6 +1,6 @@
 "use server";
 
-import type { Config } from "@kit/ai-gateway/src/configs/types";
+import type { Config } from "@kit/ai-gateway";
 import { requireUser } from "@kit/supabase/require-user";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
 
