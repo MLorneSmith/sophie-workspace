@@ -768,7 +768,11 @@ export function SidebarNavigation({
 				const isLast = index === config.routes.length - 1;
 
 				if ("divider" in item) {
-					return <SidebarSeparator key={`divider-${index}`} />;
+					return (
+						<SidebarSeparator
+							key={`divider-${index}-${config.routes.length}`}
+						/>
+					);
 				}
 
 				if ("children" in item) {
@@ -796,7 +800,7 @@ export function SidebarNavigation({
 					};
 
 					return (
-						<Container key={`collapsible-${index}`}>
+						<Container key={`collapsible-${item.label || index}`}>
 							<SidebarGroup key={item.label}>
 								<If
 									condition={item.collapsible}
@@ -934,7 +938,11 @@ export function SidebarNavigation({
 												};
 
 												return (
-													<Container key={`group-${index}-${childIndex}`}>
+													<Container
+														key={`group-${item.label}-${
+															"label" in child ? child.label : childIndex
+														}`}
+													>
 														<SidebarMenuItem>
 															<TriggerItem />
 
