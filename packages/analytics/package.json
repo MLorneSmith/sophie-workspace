@@ -13,6 +13,9 @@
     ".": "./src/index.ts",
     "./server": "./src/server.ts"
   },
+  "dependencies": {
+    "@kit/shared": "workspace:*"
+  },
   "devDependencies": {
     "@kit/eslint-config": "workspace:*",
     "@kit/prettier-config": "workspace:*",
