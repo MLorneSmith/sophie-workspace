@@ -69,11 +69,17 @@ export function ImageUploader(
 
   return (
     <div className={'flex items-center space-x-4'}>
-      <label className={'animate-in fade-in zoom-in-50 relative h-20 w-20'}>
+      <label
+        className={
+          'animate-in fade-in zoom-in-50 group/label relative h-20 w-20 cursor-pointer'
+        }
+      >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           decoding="async"
-          className={'h-20 w-20 rounded-full object-cover'}
+          className={
+            'h-20 w-20 rounded-full object-cover transition-all duration-300 group-hover/label:opacity-80'
+          }
           src={image}
           alt={''}
         />
