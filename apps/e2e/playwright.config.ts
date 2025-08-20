@@ -59,11 +59,12 @@ export default defineConfig({
 	fullyParallel: !!process.env.CI,
 	/* Fail the build on CI if you accidentally left test.only in the source code. */
 	forbidOnly: !!process.env.CI,
-	retries: process.env.CI ? 3 : 1,
+	/* Reduced retries to speed up CI - only retry truly flaky tests */
+	retries: process.env.CI ? 1 : 0,
 	/* Increase max failures for debugging */
 	maxFailures: process.env.CI ? 10 : 50,
-	/* Configure parallel execution - optimize for CI vs local */
-	workers: process.env.CI ? 2 : 1, // Reduced to 1 for local to avoid resource contention
+	/* Configure parallel execution - increased for better CI performance */
+	workers: process.env.CI ? 4 : 1, // Increased to 4 workers for CI (8-core runners)
 	/* Enhanced reporting for matrix testing */
 	reporter: [
 		["html", { outputFolder: "playwright-report", open: "never" }],
@@ -90,16 +91,16 @@ export default defineConfig({
 		/* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
 		trace: "on-first-retry",
 
-		/* Increased timeouts for matrix testing across different devices */
+		/* Optimized timeouts for faster test execution */
 		navigationTimeout:
-			Number(process.env.PLAYWRIGHT_NAVIGATION_TIMEOUT) || 30000, // Increased for server startup and concurrent load
-		actionTimeout: Number(process.env.PLAYWRIGHT_ACTION_TIMEOUT) || 15000, // More time for interactions under load
+			Number(process.env.PLAYWRIGHT_NAVIGATION_TIMEOUT) || 20000, // Balanced for CI performance
+		actionTimeout: Number(process.env.PLAYWRIGHT_ACTION_TIMEOUT) || 10000, // Faster failure detection
 	},
-	// test timeout increased to 3 minutes for better stability with authentication flows
-	timeout: 180 * 1000,
+	// test timeout optimized for parallel execution
+	timeout: 90 * 1000, // 90 seconds per test
 	expect: {
-		// expect timeout set to 30 seconds for email confirmation
-		timeout: 30 * 1000,
+		// expect timeout optimized for faster feedback
+		timeout: 15 * 1000, // 15 seconds
 	},
 	/* Configure projects for major browsers - reduced for local development */
 	projects: process.env.CI

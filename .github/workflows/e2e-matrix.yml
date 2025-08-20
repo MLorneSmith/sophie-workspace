@@ -101,9 +101,9 @@ jobs:
           echo "browsers=$BROWSERS" >> $GITHUB_OUTPUT
           echo "should_run=true" >> $GITHUB_OUTPUT
 
-  # E2E tests with browser matrix
+  # E2E tests with browser matrix and sharding
   e2e-tests:
-    name: E2E Tests (${{ matrix.browser }})
+    name: E2E Tests (${{ matrix.browser }} - Shard ${{ matrix.shard }}/${{ strategy.job-total }})
     runs-on: runs-on=${{ github.run_id }}/runner=8cpu-linux-x64
     needs: matrix-config
     if: needs.matrix-config.outputs.should_run == 'true'
@@ -111,6 +111,7 @@ jobs:
       fail-fast: false
       matrix:
         browser: ${{ fromJson(needs.matrix-config.outputs.browsers) }}
+        shard: [1, 2]  # Split tests into 2 shards for parallel execution
     env:
       # E2E Database Configuration - Local Supabase instance
       SUPABASE_URL: 'http://127.0.0.1:55321'
@@ -166,50 +167,82 @@ jobs:
             pnpm --filter web-e2e exec playwright install --with-deps
           fi
 
+      - name: Cache build outputs
+        uses: actions/cache@v4
+        with:
+          path: |
+            apps/web/.next
+            apps/payload/dist
+            packages/*/dist
+            .turbo
+          key: ${{ runner.os }}-build-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-build-
+
       - name: Build application
-        run: pnpm build
+        run: |
+          # Use Turbo cache for faster builds
+          pnpm build --cache-dir=.turbo
+
+      - name: Cache Supabase Docker images
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.docker
+            ~/Library/Containers/com.docker.docker/Data
+          key: ${{ runner.os }}-supabase-docker-${{ hashFiles('apps/e2e/supabase/config.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-supabase-docker-
 
       - name: Set up E2E database
         run: |
           cd apps/e2e
-          # Start E2E Supabase instance
-          supabase start
+          # Start E2E Supabase instance (uses cached Docker images)
+          echo "Starting Supabase..."
+          supabase start --ignore-health-check
           
-          # Wait for database to be ready with proper checks
-          echo "Waiting for database to be ready..."
-          for i in {1..30}; do
+          # Quick health check with timeout
+          echo "Checking database health..."
+          for i in {1..15}; do
             if supabase status 2>/dev/null | grep -q "API URL"; then
-              echo "Database is ready"
+              echo "✓ Database is ready after $i checks"
               break
             fi
-            echo "Waiting for database... ($i/30)"
-            sleep 2
+            if [ $i -eq 15 ]; then
+              echo "⚠️ Database health check timeout, proceeding anyway"
+            fi
+            sleep 1
           done
           
-          # Run database migrations without linking (for CI)
-          supabase db reset
+          # Run migrations in parallel with health check
+          echo "Applying migrations..."
+          supabase db reset --no-seed
           
-          # Verify database is accessible
-          echo "Verifying database connection..."
-          supabase status
+          # Quick seed if needed
+          if [ -f "./supabase/seed.sql" ]; then
+            supabase db seed
+          fi
 
       - name: Run E2E tests
         run: |
           cd apps/e2e
-          # Run tests for specific browser project with increased timeout
+          # Run tests for specific browser project with sharding
           # The blob reporter is already configured in playwright.config.ts for CI
-          pnpm playwright test --project="${{ matrix.browser }}" --timeout=240000
+          echo "Running shard ${{ matrix.shard }} of 2 for ${{ matrix.browser }}"
+          pnpm playwright test --project="${{ matrix.browser }}" --shard=${{ matrix.shard }}/2
         continue-on-error: false
         env:
-          # Increase Playwright timeouts for CI
-          PLAYWRIGHT_NAVIGATION_TIMEOUT: 60000
-          PLAYWRIGHT_ACTION_TIMEOUT: 30000
+          # Optimized Playwright timeouts for CI
+          PLAYWRIGHT_NAVIGATION_TIMEOUT: 30000
+          PLAYWRIGHT_ACTION_TIMEOUT: 15000
+          # Enable parallel test execution
+          PLAYWRIGHT_WORKERS: 4
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: e2e-results-${{ matrix.browser }}-${{ github.run_id }}
+          name: e2e-results-${{ matrix.browser }}-shard-${{ matrix.shard }}-${{ github.run_id }}
           path: |
             apps/e2e/test-results/
             apps/e2e/playwright-report/
@@ -220,7 +253,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: e2e-artifacts-${{ matrix.browser }}-${{ github.run_id }}
+          name: e2e-artifacts-${{ matrix.browser }}-shard-${{ matrix.shard }}-${{ github.run_id }}
           path: |
             apps/e2e/test-results/
             apps/e2e/playwright-report/
@@ -241,7 +274,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: merged-reports
-          pattern: e2e-results-*-${{ github.run_id }}
+          pattern: e2e-results-*-shard-*-${{ github.run_id }}
 
       - name: Merge Playwright reports
         run: |
