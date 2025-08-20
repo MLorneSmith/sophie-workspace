@@ -63,18 +63,15 @@ runs:
         VERCEL_ORG_ID: ${{ inputs.org-id }}
         VERCEL_PROJECT_ID: ${{ inputs.project-id }}
       run: |
-        # Only build if not using pre-built artifacts
-        if [ "${{ inputs.build-artifacts }}" != "true" ]; then
-          echo "🔨 Building with Vercel..."
-          if [ "${{ inputs.environment }}" = "production" ]; then
-            vercel build --prod --token=${{ inputs.token }}
-          elif [ "${{ inputs.environment }}" = "staging" ]; then
-            vercel build --target=staging --token=${{ inputs.token }}
-          else
-            vercel build --token=${{ inputs.token }}
-          fi
+        # Always build with Vercel to create .vercel/output directory
+        # This uses the artifacts downloaded from the build job if build-artifacts=true
+        echo "🔨 Building with Vercel..."
+        if [ "${{ inputs.environment }}" = "production" ]; then
+          vercel build --prod --token=${{ inputs.token }}
+        elif [ "${{ inputs.environment }}" = "staging" ]; then
+          vercel build --target=staging --token=${{ inputs.token }}
         else
-          echo "📦 Skipping build - using pre-built artifacts from CI"
+          vercel build --token=${{ inputs.token }}
         fi
 
     - name: Deploy to Vercel
@@ -84,26 +81,14 @@ runs:
         VERCEL_ORG_ID: ${{ inputs.org-id }}
         VERCEL_PROJECT_ID: ${{ inputs.project-id }}
       run: |
-        # Deploy based on whether we have pre-built artifacts
-        if [ "${{ inputs.build-artifacts }}" = "true" ]; then
-          echo "🚀 Deploying pre-built artifacts..."
-          # Deploy without --prebuilt flag since we have artifacts
-          if [ "${{ inputs.environment }}" = "production" ]; then
-            url=$(vercel deploy --prod --token=${{ inputs.token }} apps/web)
-          elif [ "${{ inputs.environment }}" = "staging" ]; then
-            url=$(vercel deploy --target=staging --token=${{ inputs.token }} apps/web)
-          else
-            url=$(vercel deploy --token=${{ inputs.token }} apps/web)
-          fi
+        # Deploy using --prebuilt flag since we just ran vercel build
+        echo "🚀 Deploying to Vercel..."
+        if [ "${{ inputs.environment }}" = "production" ]; then
+          url=$(vercel deploy --prebuilt --prod --token=${{ inputs.token }})
+        elif [ "${{ inputs.environment }}" = "staging" ]; then
+          url=$(vercel deploy --prebuilt --target=staging --token=${{ inputs.token }})
         else
-          # Deploy with --prebuilt flag after build
-          if [ "${{ inputs.environment }}" = "production" ]; then
-            url=$(vercel deploy --prebuilt --prod --token=${{ inputs.token }})
-          elif [ "${{ inputs.environment }}" = "staging" ]; then
-            url=$(vercel deploy --prebuilt --target=staging --token=${{ inputs.token }})
-          else
-            url=$(vercel deploy --prebuilt --token=${{ inputs.token }})
-          fi
+          url=$(vercel deploy --prebuilt --token=${{ inputs.token }})
         fi
         
         echo "url=$url" >> $GITHUB_OUTPUT
