@@ -17,3 +17,13 @@ I want you to:
 2. Debug the pipeline
 3. Fix the deploy to dev workflow
 4. Push changes through the pipeline to get to a point where the main branch is the same as the dev branch
+
+## Debugging Session
+
+Started debugging at: 2025-08-20 18:50 UTC
+
+### Initial Findings
+- Multiple Deploy to Dev workflow failures in recent history
+- All builds failing at the "Build Application" step
+- Local builds and typecheck pass successfully
+- All required secrets and variables are configured in GitHub
