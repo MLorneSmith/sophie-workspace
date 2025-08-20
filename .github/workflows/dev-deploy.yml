@@ -17,6 +17,7 @@ permissions:
   pull-requests: write
   issues: write
   checks: write
+  actions: read
 
 env:
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
@@ -65,9 +66,11 @@ jobs:
   build:
     name: Build Application
     needs: check-validation
+    # Run if validation was skipped or succeeded
     if: |
       always() && 
-      (needs.check-validation.result == 'success')
+      !cancelled() &&
+      needs.check-validation.result == 'success'
     uses: ./.github/workflows/reusable-build.yml
     with:
       environment: development
