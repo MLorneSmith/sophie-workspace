@@ -36,7 +36,7 @@ jobs:
   # Deploy Web App to Vercel Dev environment
   deploy-web:
     name: Deploy Web App to Dev
-    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }}/runner=8cpu-linux-x64
     needs: build
     environment:
       name: development
@@ -92,7 +92,7 @@ jobs:
   # Deploy Payload CMS to Vercel Dev environment
   deploy-payload:
     name: Deploy Payload CMS to Dev
-    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }}/runner=8cpu-linux-x64
     needs: build
     environment:
       name: development-payload
@@ -148,7 +148,7 @@ jobs:
   # Run E2E tests against dev environment
   e2e-smoke:
     name: E2E Smoke Tests
-    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }}/runner=8cpu-linux-x64
     needs: deploy-web
     environment: development
     continue-on-error: true # Non-blocking for now
@@ -171,7 +171,7 @@ jobs:
   # Notify New Relic of deployment
   notify-monitoring:
     name: Notify Monitoring
-    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }}/runner=8cpu-linux-x64
     needs: [deploy-web, deploy-payload]
     continue-on-error: true
     steps:
