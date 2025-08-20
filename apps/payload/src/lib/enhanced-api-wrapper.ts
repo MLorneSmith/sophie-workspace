@@ -18,7 +18,6 @@ type LogData =
 	| null
 	| undefined;
 
-
 interface APIMetrics {
 	totalRequests: number;
 	successfulRequests: number;
@@ -85,13 +84,13 @@ class EnhancedAPIManager {
 	createEnhancedHandler(
 		originalHandler: (
 			request: Request,
-			args: { params: Promise<{ slug: string[]; }>; },
+			args: { params: Promise<{ slug: string[] }> },
 		) => Promise<Response>,
 		method: string,
 	) {
 		return async (
 			request: NextRequest,
-			args: { params: Promise<{ slug: string[]; }>; },
+			args: { params: Promise<{ slug: string[] }> },
 		): Promise<NextResponse> => {
 			const requestId = this.generateRequestId();
 			const startTime = Date.now();
@@ -360,7 +359,7 @@ export function getEnhancedAPIManager(): EnhancedAPIManager {
  * Create enhanced versions of Payload API handlers
  * Note: This function is currently not used due to type compatibility issues
  * with newer Payload versions. The config parameter type has changed.
- * 
+ *
  * Commented out to avoid TypeScript errors in CI/CD builds.
  * TODO: Update this function when Payload types are resolved.
  */
