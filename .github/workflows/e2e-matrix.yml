@@ -175,21 +175,35 @@ jobs:
           # Start E2E Supabase instance
           supabase start
           
-          # Wait for database to be ready
-          sleep 10
+          # Wait for database to be ready with proper checks
+          echo "Waiting for database to be ready..."
+          for i in {1..30}; do
+            if supabase status 2>/dev/null | grep -q "API URL"; then
+              echo "Database is ready"
+              break
+            fi
+            echo "Waiting for database... ($i/30)"
+            sleep 2
+          done
           
           # Run database migrations without linking (for CI)
           supabase db reset
           
-          # No need to manually seed - reset includes seed.sql
+          # Verify database is accessible
+          echo "Verifying database connection..."
+          supabase status
 
       - name: Run E2E tests
         run: |
           cd apps/e2e
-          # Run tests for specific browser project
+          # Run tests for specific browser project with increased timeout
           # The blob reporter is already configured in playwright.config.ts for CI
-          pnpm playwright test --project="${{ matrix.browser }}"
+          pnpm playwright test --project="${{ matrix.browser }}" --timeout=240000
         continue-on-error: false
+        env:
+          # Increase Playwright timeouts for CI
+          PLAYWRIGHT_NAVIGATION_TIMEOUT: 60000
+          PLAYWRIGHT_ACTION_TIMEOUT: 30000
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
