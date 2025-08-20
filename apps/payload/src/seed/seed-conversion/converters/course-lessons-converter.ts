@@ -143,7 +143,8 @@ export async function convertCourseLessons(
 
 			// Add to reference manager
 			referenceManager.addMapping({
-				type: "course-lessons",
+				type: "collection",
+				collection: "course-lessons",
 				originalId: lessonId,
 				identifier: lessonId,
 			});
