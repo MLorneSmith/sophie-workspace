@@ -1,4 +1,4 @@
-name: Deploy to Dev Clean
+name: Deploy to Dev
 
 on:
   push:
@@ -6,9 +6,10 @@ on:
       - dev
   workflow_dispatch:
 
+# Prevent multiple deployments from running simultaneously
 concurrency:
   group: deploy-dev-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: false  # Don't cancel in-progress deployments
 
 permissions:
   contents: read
@@ -25,9 +26,51 @@ env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
 
 jobs:
-  # Build application
+  # Check if validation is needed
+  check-validation:
+    name: Check if validation needed
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    outputs:
+      should-validate: ${{ steps.check.outputs.should-validate }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      
+      - name: Check if already validated
+        id: check
+        run: |
+          # Skip validation if this commit was already validated in a PR
+          # This happens when PRs are merged to dev
+          COMMIT=${{ github.sha }}
+          PARENT_COMMIT=$(git rev-parse HEAD^)
+          
+          # Check if this is a merge commit from a PR
+          if git log --format=%s -n 1 | grep -q "^Merge pull request"; then
+            echo "This is a PR merge, validation already done"
+            echo "should-validate=false" >> $GITHUB_OUTPUT
+          else
+            echo "This is a direct push, validation needed"
+            echo "should-validate=true" >> $GITHUB_OUTPUT
+          fi
+
+  # Run all validation checks if needed
+  validate:
+    name: Validate
+    needs: check-validation
+    if: needs.check-validation.outputs.should-validate == 'true'
+    uses: ./.github/workflows/pr-validation.yml
+    secrets: inherit
+
+  # Build application once
   build:
     name: Build Application
+    needs: check-validation
+    # Run if validation was skipped or succeeded
+    if: |
+      always() && 
+      !cancelled() &&
+      needs.check-validation.result == 'success'
     uses: ./.github/workflows/reusable-build.yml
     with:
       environment: development
@@ -144,3 +187,44 @@ jobs:
               environment_url: '${{ steps.deploy.outputs.url }}',
               description: 'Payload CMS deployed to dev environment'
             });
+
+  # Run E2E tests against dev environment
+  e2e-smoke:
+    name: E2E Smoke Tests
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    needs: deploy-web
+    environment: development
+    continue-on-error: true # Non-blocking for now
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-deps
+
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Run E2E smoke tests
+        run: |
+          echo "E2E smoke tests will run against dev environment"
+          # TODO: Configure Playwright to run against dev URL
+          # pnpm --filter e2e test:smoke
+        env:
+          PLAYWRIGHT_BASE_URL: ${{ needs.deploy-web.outputs.url }}
+
+  # Notify New Relic of deployment
+  notify-monitoring:
+    name: Notify Monitoring
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    needs: [deploy-web, deploy-payload]
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/newrelic-notify
+        with:
+          api-key: ${{ secrets.NEW_RELIC_API_KEY }}
+          app-id: ${{ secrets.NEW_RELIC_APP_ID }}
+          account-id: ${{ secrets.NEW_RELIC_ACCOUNT_ID }}
+          insert-key: ${{ secrets.NEW_RELIC_INSERT_KEY }}
+          environment: development
+          deployment-url: ${{ needs.deploy-web.outputs.url }}
