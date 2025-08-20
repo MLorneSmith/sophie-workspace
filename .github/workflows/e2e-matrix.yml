@@ -149,20 +149,20 @@ jobs:
         run: |
           # Install browsers based on matrix configuration
           if [[ "${{ matrix.browser }}" == "chromium" ]]; then
-            pnpm --filter e2e playwright install chromium --with-deps
+            pnpm --filter e2e exec playwright install chromium --with-deps
           elif [[ "${{ matrix.browser }}" == "firefox" ]]; then
-            pnpm --filter e2e playwright install firefox --with-deps
+            pnpm --filter e2e exec playwright install firefox --with-deps
           elif [[ "${{ matrix.browser }}" == "webkit" ]]; then
-            pnpm --filter e2e playwright install webkit --with-deps
+            pnpm --filter e2e exec playwright install webkit --with-deps
           elif [[ "${{ matrix.browser }}" == *"Mobile"* ]] || [[ "${{ matrix.browser }}" == *"Tablet"* ]]; then
             # Mobile and tablet tests use chromium or webkit engines
             if [[ "${{ matrix.browser }}" == *"Safari"* ]]; then
-              pnpm --filter e2e playwright install webkit --with-deps
+              pnpm --filter e2e exec playwright install webkit --with-deps
             else
-              pnpm --filter e2e playwright install chromium --with-deps
+              pnpm --filter e2e exec playwright install chromium --with-deps
             fi
           else
-            pnpm --filter e2e playwright install --with-deps
+            pnpm --filter e2e exec playwright install --with-deps
           fi
 
       - name: Build application
@@ -232,7 +232,7 @@ jobs:
         run: |
           cd apps/e2e
           # Install Playwright for report merging
-          pnpm playwright install --with-deps
+          pnpm exec playwright install --with-deps
           
           # Create directory for blob reports
           mkdir -p ./blob-reports
