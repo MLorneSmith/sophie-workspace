@@ -78,10 +78,12 @@ export async function convertCourseLessons(
 			const lessonMeta: LessonMeta = {
 				title: String(frontmatter.title || file.replace(".mdoc", "")),
 				description: String(frontmatter.description || ""),
-				videoID: frontmatter.videoID || frontmatter.video_id,
-				videoPlatform:
-					frontmatter.videoPlatform || frontmatter.video_platform || "bunny",
-				quizID: frontmatter.quizID || frontmatter.quiz_id,
+				videoID: frontmatter.videoID ? String(frontmatter.videoID) : 
+					frontmatter.video_id ? String(frontmatter.video_id) : undefined,
+				videoPlatform: frontmatter.videoPlatform ? String(frontmatter.videoPlatform) :
+					frontmatter.video_platform ? String(frontmatter.video_platform) : "bunny",
+				quizID: frontmatter.quizID ? String(frontmatter.quizID) :
+					frontmatter.quiz_id ? String(frontmatter.quiz_id) : undefined,
 				duration: frontmatter.duration
 					? parseInt(String(frontmatter.duration))
 					: undefined,

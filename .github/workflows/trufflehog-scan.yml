@@ -5,9 +5,6 @@ on:
   pull_request:
     branches: [main, staging, dev]
     types: [opened, synchronize, reopened]
-  # Run on push to protected branches
-  push:
-    branches: [main, staging, dev]
   # Allow manual trigger
   workflow_dispatch:
   # Run on schedule for full history scan
