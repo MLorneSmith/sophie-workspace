@@ -47,3 +47,4 @@ jobs:
       uses: github/codeql-action/analyze@v3
       with:
         category: "/language:${{matrix.language}}"
+      continue-on-error: true  # Temporary: Allow failure until code scanning is enabled in repo settings
