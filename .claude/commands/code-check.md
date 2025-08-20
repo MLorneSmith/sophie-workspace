@@ -18,7 +18,15 @@ Check and fix TypeScript, linting, formatting, YAML, and Markdown errors across 
    pnpm typecheck
    ```
 
-3. Run linting:
+3. Check Payload app build (catches build-time TypeScript errors):
+   ```bash
+   echo "Checking Payload app build for TypeScript errors..."
+   cd apps/payload && pnpm build --dry-run 2>&1 | grep -E "error|Error|Type error" || echo "✓ Payload build check passed"
+   cd ../..
+   ```
+   Note: This performs a dry-run build to catch TypeScript errors that only appear during Next.js compilation
+
+4. Run linting:
    ```bash
    pnpm lint
    ```
