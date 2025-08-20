@@ -244,6 +244,41 @@ jobs:
           echo "Critical path testing will be implemented"
           # TODO: Implement critical path E2E tests
 
+  # Production DAST security scan (informational only)
+  production-security-scan:
+    name: Production Security Monitoring
+    runs-on: ubuntu-latest
+    needs: [deploy-web, deploy-payload, health-check]
+    continue-on-error: true  # Never block production
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+      
+      - name: Run Nuclei quick scan
+        uses: ./.github/actions/nuclei-scan
+        with:
+          target: ${{ needs.deploy-web.outputs.url }}
+          scan-type: 'quick'  # Quick scan only for production
+          severity: 'critical,high'
+          fail-on-severity: 'none'  # Never fail production
+      
+      - name: Log security metrics
+        if: always()
+        run: |
+          echo "📊 Production Security Scan Metrics"
+          echo "Critical: ${VULN_CRITICAL:-0}"
+          echo "High: ${VULN_HIGH:-0}"
+          
+          # Send metrics to monitoring (when configured)
+          # TODO: Send to DataDog/New Relic/CloudWatch
+
   # Notify monitoring services
   notify-monitoring:
     name: Notify Monitoring Services
