@@ -51,34 +51,45 @@ jobs:
           RUN_ALL=false
           TEST_PATTERN=""
           
-          # Check for specific module changes
-          if echo "$CHANGED_FILES" | grep -qE "(apps/web|packages)/.*(auth|sign-in|sign-up)"; then
+          # Check for specific APP CODE changes (not test changes)
+          if echo "$CHANGED_FILES" | grep -qE "apps/web/.*(auth|sign-in|sign-up)|packages/auth|packages/supabase/.*auth"; then
             RUN_AUTH=true
-            TEST_PATTERN="${TEST_PATTERN}auth|"
+            TEST_PATTERN="${TEST_PATTERN}authentication|"
           fi
           
-          if echo "$CHANGED_FILES" | grep -qE "(apps/web|packages)/.*(billing|stripe|payment|subscription)"; then
+          if echo "$CHANGED_FILES" | grep -qE "apps/web/.*(billing|stripe|payment|subscription)|packages/billing|packages/stripe"; then
             RUN_BILLING=true
-            TEST_PATTERN="${TEST_PATTERN}billing|"
+            TEST_PATTERN="${TEST_PATTERN}billing|subscription|"
           fi
           
-          if echo "$CHANGED_FILES" | grep -qE "(apps/web|packages)/.*(account|profile|settings)"; then
+          if echo "$CHANGED_FILES" | grep -qE "apps/web/.*(account|profile|settings)|packages/accounts|apps/web/app/home/settings"; then
             RUN_ACCOUNT=true
             TEST_PATTERN="${TEST_PATTERN}account|"
           fi
           
-          # If E2E test files changed or major changes, run all tests
-          if echo "$CHANGED_FILES" | grep -qE "apps/e2e/.*\.spec\.ts|packages/supabase|packages/shared"; then
+          # Run ALL tests if:
+          # 1. Core packages that affect everything are changed
+          # 2. Database/infrastructure changes
+          # 3. Major configuration changes
+          if echo "$CHANGED_FILES" | grep -qE "packages/supabase|packages/shared|packages/ui|apps/web/app/layout|apps/web/middleware|turbo\.json|package\.json|pnpm-lock\.yaml|\.env|supabase/migrations"; then
             RUN_ALL=true
             TEST_PATTERN=".*"
           fi
           
+          # Only skip tests if ONLY test files or docs changed
+          if [ -z "$TEST_PATTERN" ]; then
+            if echo "$CHANGED_FILES" | grep -vE "\.md$|\.yml$|apps/e2e/.*\.spec\.ts$|\.github/workflows" | grep -q "."; then
+              # There are non-test, non-doc changes, so run all tests
+              RUN_ALL=true
+              TEST_PATTERN=".*"
+            else
+              # Only test/doc changes, safe to skip
+              TEST_PATTERN="skip"
+            fi
+          fi
+          
           # Clean up pattern
           TEST_PATTERN=${TEST_PATTERN%|}
-          if [ -z "$TEST_PATTERN" ]; then
-            TEST_PATTERN=".*"
-            RUN_ALL=true
-          fi
           
           echo "auth=$RUN_AUTH" >> $GITHUB_OUTPUT
           echo "billing=$RUN_BILLING" >> $GITHUB_OUTPUT
@@ -86,14 +97,32 @@ jobs:
           echo "all=$RUN_ALL" >> $GITHUB_OUTPUT
           echo "pattern=$TEST_PATTERN" >> $GITHUB_OUTPUT
           
-          echo "Changed files detected. Test pattern: $TEST_PATTERN"
+          # Print summary
+          echo "========================================="
+          echo "E2E Smart Test Detection Summary:"
+          echo "========================================="
+          echo "Changed files: $(echo "$CHANGED_FILES" | wc -l) files"
+          echo "Auth tests needed: $RUN_AUTH"
+          echo "Billing tests needed: $RUN_BILLING"
+          echo "Account tests needed: $RUN_ACCOUNT"
+          echo "Run all tests: $RUN_ALL"
+          echo "Test pattern: $TEST_PATTERN"
+          echo "========================================="
+          
+          if [ "$TEST_PATTERN" = "skip" ]; then
+            echo "✅ Only test/doc files changed - E2E tests can be skipped"
+          elif [ "$RUN_ALL" = "true" ]; then
+            echo "⚠️ Core changes detected - Full E2E test suite will run"
+          else
+            echo "🎯 Targeted testing - Will run tests matching: $TEST_PATTERN"
+          fi
 
   # Quick smoke test for targeted changes
   quick-test:
     name: Quick E2E Test (${{ needs.detect-changes.outputs.test_pattern }})
     runs-on: runs-on=${{ github.run_id }}/runner=8cpu-linux-x64
     needs: detect-changes
-    if: needs.detect-changes.outputs.run_all != 'true'
+    if: needs.detect-changes.outputs.test_pattern != 'skip' && needs.detect-changes.outputs.run_all != 'true'
     env:
       SUPABASE_URL: 'http://127.0.0.1:55321'
       NEXT_PUBLIC_SUPABASE_URL: 'http://127.0.0.1:55321'
@@ -148,13 +177,26 @@ jobs:
     steps:
       - name: Check test status
         run: |
-          if [[ "${{ needs.quick-test.result }}" == "failure" ]]; then
-            echo "❌ Smart E2E tests failed"
+          TEST_PATTERN="${{ needs.detect-changes.outputs.test_pattern }}"
+          RUN_ALL="${{ needs.detect-changes.outputs.run_all }}"
+          
+          if [[ "$TEST_PATTERN" == "skip" ]]; then
+            echo "✅ E2E tests skipped - Only test/doc files changed"
+            exit 0
+          elif [[ "$RUN_ALL" == "true" ]]; then
+            echo "⚠️ Full E2E test suite needed - Check main E2E workflow"
+            echo "Core changes detected that require comprehensive testing"
+            exit 0
+          elif [[ "${{ needs.quick-test.result }}" == "failure" ]]; then
+            echo "❌ Smart E2E tests failed for pattern: $TEST_PATTERN"
             exit 1
           elif [[ "${{ needs.quick-test.result }}" == "success" ]]; then
-            echo "✅ Smart E2E tests passed for changed files"
+            echo "✅ Smart E2E tests passed for pattern: $TEST_PATTERN"
+            exit 0
+          elif [[ "${{ needs.quick-test.result }}" == "skipped" ]]; then
+            echo "⏭️ Quick tests skipped - Full suite will run"
             exit 0
           else
-            echo "⚠️ Smart E2E tests skipped or incomplete"
+            echo "⚠️ Smart E2E test status unclear"
             exit 0
           fi
