@@ -32,6 +32,7 @@ permissions:
   issues: write
   checks: write
   security-events: write
+  actions: read
 
 env:
   NODE_VERSION: '20'
