@@ -20,7 +20,8 @@ on:
 env:
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ vars.TURBO_TEAM }}
-  TURBO_REMOTE_CACHE_ENABLED: true
+  TURBO_REMOTE_CACHE_ENABLED: ${{ secrets.TURBO_TOKEN != '' && 'true' || 'false' }}
+  TURBO_REMOTE_CACHE_SIGNATURE_KEY: ${{ secrets.TURBO_REMOTE_CACHE_SIGNATURE_KEY || '' }}
 
 jobs:
   build:
@@ -58,13 +59,18 @@ jobs:
           npx turbo build --dry-run --summarize | head -20 || true
           echo "::endgroup::"
           
-          # Run build with remote cache and verbose logging
+          # Run build with appropriate cache settings
           echo "::group::Build Output"
-          pnpm build --cache-dir=.turbo --verbose || {
-            echo "::error::Build failed. Attempting build without cache..."
-            # Try build without cache in case of cache issues
-            pnpm build --force --cache-dir=.turbo
-          }
+          if [ -n "$TURBO_TOKEN" ]; then
+            echo "Building with remote cache enabled"
+            pnpm build --cache-dir=.turbo || {
+              echo "::warning::Build with remote cache failed. Retrying without remote cache..."
+              TURBO_REMOTE_CACHE_ENABLED=false pnpm build --cache-dir=.turbo --force
+            }
+          else
+            echo "Building without remote cache (no TURBO_TOKEN)"
+            TURBO_REMOTE_CACHE_ENABLED=false pnpm build --cache-dir=.turbo
+          fi
           echo "::endgroup::"
         env:
           NODE_ENV: ${{ inputs.environment }}
