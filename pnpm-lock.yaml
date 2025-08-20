@@ -166,6 +166,9 @@ importers:
 
   apps/e2e:
     devDependencies:
+      '@axe-core/playwright':
+        specifier: ^4.10.2
+        version: 4.10.2(playwright-core@1.54.2)
       '@playwright/test':
         specifier: ^1.54.2
         version: 1.54.2
@@ -2310,6 +2313,11 @@ packages:
     resolution: {integrity: sha512-QBAKaeCWpegkPr5OoA0BJ5rXh8wcGtPXViE9T1OgmPeSf1YCPOz+6ccrOF4h68Y4djCMpFqb9nm3/fpjKoQJQg==}
     engines: {node: '>=8'}
     hasBin: true
+
+  '@axe-core/playwright@4.10.2':
+    resolution: {integrity: sha512-6/b5BJjG6hDaRNtgzLIfKr5DfwyiLHO4+ByTLB0cJgWSM8Ll7KqtdblIS6bEkwSF642/Ex91vNqIl3GLXGlceg==}
+    peerDependencies:
+      playwright-core: '>= 1.0.0'
 
   '@axe-core/webdriverjs@4.10.2':
     resolution: {integrity: sha512-ppnc7+xG4KEQ0cnKOOB7B4+ACrB13O0BPVhzJpDSQ1LlBNrWdMlfdJujMhnE0v6gsOV0YxnbZQnokaGOaaFIjQ==}
@@ -8061,8 +8069,8 @@ packages:
     resolution: {integrity: sha512-rNjApaLzuwaOTjCiT8lSDdGN1APCiqkChLMJxJPWLunPAt5fy8xgU9/jNOchV84wfIxrA0lRQB7oCT8jrn/wrQ==}
     engines: {node: '>=6.0'}
 
-  chromedriver@139.0.1:
-    resolution: {integrity: sha512-K16mpBWhVMY/85k+1pf2ZuCOCDNJxSfr/OuIh7YbWoVIT+baNlyB6OvVh2WQw+MYQK2fg7CS0rMUE8GvMY6oCA==}
+  chromedriver@139.0.2:
+    resolution: {integrity: sha512-GEq1PM9unQBQ79iNxlsJPvMFzcw/LKIusxC39RVD+8noh1JqURNTqbhPGU887VpGUsCFJ0SCSpr+6waK/yWHRA==}
     engines: {node: '>=20'}
     hasBin: true
 
@@ -14449,7 +14457,7 @@ snapshots:
     dependencies:
       '@axe-core/webdriverjs': 4.10.2(selenium-webdriver@4.22.0)
       axe-core: 4.10.3
-      chromedriver: 139.0.1
+      chromedriver: 139.0.2
       colors: 1.4.0
       commander: 9.5.0
       dotenv: 16.5.0
@@ -14459,6 +14467,11 @@ snapshots:
       - debug
       - supports-color
       - utf-8-validate
+
+  '@axe-core/playwright@4.10.2(playwright-core@1.54.2)':
+    dependencies:
+      axe-core: 4.10.3
+      playwright-core: 1.54.2
 
   '@axe-core/webdriverjs@4.10.2(selenium-webdriver@4.22.0)':
     dependencies:
@@ -21279,7 +21292,7 @@ snapshots:
 
   chrome-trace-event@1.0.4: {}
 
-  chromedriver@139.0.1:
+  chromedriver@139.0.2:
     dependencies:
       '@testim/chrome-version': 1.1.4
       axios: 1.11.0

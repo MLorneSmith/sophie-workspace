@@ -12,6 +12,7 @@
 	"author": "",
 	"license": "ISC",
 	"devDependencies": {
+		"@axe-core/playwright": "^4.10.2",
 		"@playwright/test": "^1.54.2",
 		"@types/node": "^24.0.4",
 		"dotenv": "17.2.1",
