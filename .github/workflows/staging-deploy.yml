@@ -283,17 +283,66 @@ jobs:
           echo "Performance testing will be implemented in Week 3"
           # TODO: Implement Lighthouse CI / k6 load testing
 
-  # Security scan (placeholder)
-  security-scan:
-    name: Security Scan
-    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
-    needs: deploy-web
-    continue-on-error: true
+  # Dynamic Application Security Testing with Nuclei
+  dast-security-scan:
+    name: DAST Security Scan (Nuclei)
+    runs-on: ubuntu-latest  # Nuclei requires standard Ubuntu runner
+    needs: [deploy-web, deploy-payload]
+    continue-on-error: true  # Don't block deployment on security findings initially
+    permissions:
+      contents: read
+      issues: write
+      security-events: write
     steps:
-      - name: Run security scan
-        run: |
-          echo "Security scanning pending - Aikido Security integration in progress"
-          # TODO: Implement Aikido Security scanning (see issue #163)
+      - uses: actions/checkout@v4
+      
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+      
+      - name: Run Nuclei DAST scan
+        uses: ./.github/actions/nuclei-scan
+        with:
+          target: ${{ needs.deploy-web.outputs.url }}
+          scan-type: 'standard'
+          severity: 'low,medium,high,critical'
+          fail-on-severity: 'none'  # Don't fail staging deploys initially
+      
+      - name: Create security issue if critical findings
+        if: env.VULN_CRITICAL > 0
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const criticalCount = process.env.VULN_CRITICAL;
+            const highCount = process.env.VULN_HIGH;
+            
+            const issue = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `🚨 Critical Security Vulnerabilities Found in Staging`,
+              body: `## Security Scan Alert
+              
+              The DAST security scan found critical vulnerabilities in the staging deployment.
+              
+              **Scan Results:**
+              - 🔴 Critical: ${criticalCount}
+              - 🟠 High: ${highCount}
+              
+              **Deployment:** ${context.sha}
+              **Environment:** Staging
+              **URL:** ${{ needs.deploy-web.outputs.url }}
+              
+              **Action Required:**
+              1. Download the scan artifacts from the [workflow run](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})
+              2. Review the vulnerabilities in detail
+              3. Fix critical issues before promoting to production
+              
+              cc @${context.actor}`,
+              labels: ['security', 'critical', 'staging']
+            });
+            
+            console.log(`Created security issue #${issue.data.number}`);
 
   # Notify New Relic of staging deployment
   notify-monitoring:
