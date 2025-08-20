@@ -17,7 +17,6 @@ permissions:
   pull-requests: write
   issues: write
   checks: write
-  security-events: write
 
 env:
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
@@ -65,8 +64,10 @@ jobs:
   # Build application once
   build:
     name: Build Application
-    needs: [check-validation, validate]
-    if: always() && !failure() && !cancelled()
+    needs: check-validation
+    if: |
+      always() && 
+      (needs.check-validation.result == 'success')
     uses: ./.github/workflows/reusable-build.yml
     with:
       environment: development
