@@ -44,10 +44,17 @@ jobs:
 
       - name: Build application
         run: |
-          pnpm build
+          # Show Turbo cache status
+          echo "::group::Turbo Cache Status"
+          npx turbo build --dry-run --summarize | head -20
+          echo "::endgroup::"
+          
+          # Run build with remote cache
+          pnpm build --cache-dir=.turbo
         env:
           NODE_ENV: ${{ inputs.environment }}
           NEXT_PUBLIC_APP_ENV: ${{ inputs.environment }}
+          TURBO_FORCE: ${{ github.event.inputs.force_build == 'true' && '1' || '' }}
 
       - name: Cache build artifacts
         uses: actions/cache@v4
