@@ -33,7 +33,7 @@ jobs:
           fail-on-timeout: false  # Don't fail weekly scans on timeout
           fail-on-dependency-scan: false  # Report but don't fail
           fail-on-sast-scan: false
-          fail-on-iac-scan: false
+          fail-on-iac-scan: true  # Enable IaC scanning
           minimum-severity: 'LOW'  # Report all severities
           timeout-seconds: 300  # 5 minutes for comprehensive scan
           post-scan-status-comment: 'off'  # No PR comments for scheduled scans
