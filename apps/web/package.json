@@ -10,6 +10,7 @@
 		"build:test": "NODE_ENV=test next build --turbopack",
 		"clean": "git clean -xdf .next .turbo node_modules",
 		"dev": "next dev --turbo | pino-pretty -c",
+		"dev:test": "NODE_ENV=test next dev --turbo",
 		"lint": "eslint .",
 		"lint:fix": "next lint --fix",
 		"format": "prettier --check \"**/*.{js,cjs,mjs,ts,tsx,md,json}\"",
