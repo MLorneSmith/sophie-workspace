@@ -57,23 +57,6 @@ runs:
         # Pull Vercel environment configuration
         vercel pull --yes --environment=${{ inputs.environment }} --token=${{ inputs.token }}
 
-    - name: Build with Vercel
-      shell: bash
-      env:
-        VERCEL_ORG_ID: ${{ inputs.org-id }}
-        VERCEL_PROJECT_ID: ${{ inputs.project-id }}
-      run: |
-        # Always build with Vercel to create .vercel/output directory
-        # This uses the artifacts downloaded from the build job if build-artifacts=true
-        echo "🔨 Building with Vercel..."
-        if [ "${{ inputs.environment }}" = "production" ]; then
-          vercel build --prod --token=${{ inputs.token }}
-        elif [ "${{ inputs.environment }}" = "staging" ]; then
-          vercel build --target=staging --token=${{ inputs.token }}
-        else
-          vercel build --token=${{ inputs.token }}
-        fi
-
     - name: Deploy to Vercel
       id: deploy
       shell: bash
@@ -81,14 +64,16 @@ runs:
         VERCEL_ORG_ID: ${{ inputs.org-id }}
         VERCEL_PROJECT_ID: ${{ inputs.project-id }}
       run: |
-        # Deploy using --prebuilt flag since we just ran vercel build
+        # Deploy to Vercel
         echo "🚀 Deploying to Vercel..."
+        # Note: We always let Vercel handle the build process
+        # Even with pre-built artifacts, Vercel needs to run its build for proper deployment
         if [ "${{ inputs.environment }}" = "production" ]; then
-          url=$(vercel deploy --prebuilt --prod --token=${{ inputs.token }})
+          url=$(vercel deploy --prod --token=${{ inputs.token }} --yes)
         elif [ "${{ inputs.environment }}" = "staging" ]; then
-          url=$(vercel deploy --prebuilt --target=staging --token=${{ inputs.token }})
+          url=$(vercel deploy --target=staging --token=${{ inputs.token }} --yes)
         else
-          url=$(vercel deploy --prebuilt --token=${{ inputs.token }})
+          url=$(vercel deploy --token=${{ inputs.token }} --yes)
         fi
         
         echo "url=$url" >> $GITHUB_OUTPUT
