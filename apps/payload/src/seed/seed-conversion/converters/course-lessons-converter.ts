@@ -169,7 +169,9 @@ export async function convertCourseLessons(
 function determineCourseFromLesson(filename: string, frontmatter: Record<string, unknown>): string {
 	// Check if course is explicitly set in frontmatter
 	if (frontmatter.course || frontmatter.courseId) {
-		return frontmatter.course || frontmatter.courseId;
+		const courseValue = frontmatter.course || frontmatter.courseId;
+		// Ensure it's a string before returning
+		return typeof courseValue === 'string' ? courseValue : String(courseValue);
 	}
 
 	// Try to determine from lesson numbering pattern
