@@ -12,8 +12,5 @@ branch=$(git -c core.preloadindex=false -c gc.auto=0 branch --show-current 2>/de
 # Get current working directory (basename only for brevity)
 working_dir=$(basename "$PWD")
 
-# Get current time in a nice format
-current_time=$(date "+%H:%M")
-
 # Output the status line
-printf "%s | ⎇ %s | %s | %s" "$model" "$branch" "$working_dir" "$current_time"
+printf "%s | ⎇ %s | %s" "$model" "$branch" "$working_dir"
