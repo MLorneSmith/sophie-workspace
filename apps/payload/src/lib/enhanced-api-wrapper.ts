@@ -18,8 +18,6 @@ type LogData =
 	| null
 	| undefined;
 
-// Type for Payload API route arguments (commonly params like { collection: string })
-type PayloadRouteArgs = Record<string, string | string[]> | undefined;
 
 interface APIMetrics {
 	totalRequests: number;
@@ -87,13 +85,13 @@ class EnhancedAPIManager {
 	createEnhancedHandler(
 		originalHandler: (
 			request: Request,
-			args: PayloadRouteArgs,
+			args: { params: Promise<{ slug: string[]; }>; },
 		) => Promise<Response>,
 		method: string,
 	) {
 		return async (
 			request: NextRequest,
-			args?: PayloadRouteArgs,
+			args: { params: Promise<{ slug: string[]; }>; },
 		): Promise<NextResponse> => {
 			const requestId = this.generateRequestId();
 			const startTime = Date.now();
@@ -115,7 +113,7 @@ class EnhancedAPIManager {
 
 			try {
 				// Execute the original handler
-				const response = await originalHandler(request, args || {});
+				const response = await originalHandler(request, args);
 
 				// Calculate response time
 				const responseTime = Date.now() - startTime;
