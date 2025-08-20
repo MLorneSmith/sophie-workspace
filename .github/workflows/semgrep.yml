@@ -3,10 +3,8 @@ name: Semgrep
 on:
   pull_request:
     branches: [ main, staging, dev ]
-  push:
-    branches: [ main, staging, dev ]
   schedule:
-    # Run weekly on Sundays at 2:00 AM UTC
+    # Run weekly on Sundays at 2:00 AM UTC for comprehensive scanning
     - cron: '0 2 * * 0'
   workflow_dispatch: # Allow manual triggers
 
