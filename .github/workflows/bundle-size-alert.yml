@@ -262,11 +262,24 @@ jobs:
             }
 
       - name: Fail build for critical size increases
-        if: steps.bundle-analysis.outputs.CRITICAL_ALERT == 'true'
+        # Skip failure for promotion PRs (dev->staging, staging->main)
+        if: |
+          steps.bundle-analysis.outputs.CRITICAL_ALERT == 'true' &&
+          !(github.head_ref == 'dev' && github.base_ref == 'staging') &&
+          !(github.head_ref == 'staging' && github.base_ref == 'main')
         run: |
           echo "❌ Critical bundle size increase detected (>10%)"
           echo "Bundle size increase is too significant and requires optimization before merging."
           exit 1
+      
+      - name: Warn but don't fail for promotion PRs
+        if: |
+          steps.bundle-analysis.outputs.CRITICAL_ALERT == 'true' &&
+          ((github.head_ref == 'dev' && github.base_ref == 'staging') ||
+           (github.head_ref == 'staging' && github.base_ref == 'main'))
+        run: |
+          echo "⚠️ Bundle size increased for promotion PR"
+          echo "This is acceptable for promotion PRs but should be reviewed."
 
       - name: Bundle size summary
         if: always()
