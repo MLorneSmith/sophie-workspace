@@ -69,9 +69,13 @@ jobs:
           NODE_ENV: ${{ inputs.environment }}
           NEXT_PUBLIC_APP_ENV: ${{ inputs.environment }}
           TURBO_FORCE: ${{ github.event.inputs.force_build == 'true' && '1' || '' }}
-          # Add database URL for payload build
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
+          # Add required environment variables for payload build
+          # These are needed at build time for type generation
+          DATABASE_URL: ${{ secrets.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/postgres' }}
+          PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET || 'development-secret-key' }}
+          PAYLOAD_PUBLIC_SERVER_URL: ${{ secrets.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3001' }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'http://localhost:54321' }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key' }}
 
       - name: Cache build artifacts
         uses: actions/cache@v4
