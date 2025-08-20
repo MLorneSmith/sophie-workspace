@@ -1,0 +1,77 @@
+name: 'Trivy Container Security Scan'
+description: 'Scan Docker images for vulnerabilities using Trivy'
+inputs:
+  image-ref:
+    description: 'Docker image reference to scan'
+    required: true
+  severity:
+    description: 'Comma-separated list of severities to check'
+    required: false
+    default: 'CRITICAL,HIGH'
+  exit-code:
+    description: 'Exit code when vulnerabilities are found (0 = warn, 1 = fail)'
+    required: false
+    default: '1'
+  format:
+    description: 'Output format (table, json, sarif)'
+    required: false
+    default: 'table'
+  upload-sarif:
+    description: 'Upload results to GitHub Security tab'
+    required: false
+    default: 'true'
+  dockerfile-path:
+    description: 'Path to Dockerfile for misconfiguration scanning'
+    required: false
+    default: ''
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@0.28.0
+      with:
+        image-ref: ${{ inputs.image-ref }}
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+        severity: ${{ inputs.severity }}
+        exit-code: '0'  # Don't fail here, we'll handle it later
+        vuln-type: 'os,library'
+        scanners: 'vuln,secret,misconfig'
+        timeout: '10m'
+
+    - name: Upload Trivy results to GitHub Security
+      if: inputs.upload-sarif == 'true' && always()
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: 'trivy-results.sarif'
+        category: 'container-security'
+
+    - name: Generate summary report
+      if: always()
+      shell: bash
+      run: |
+        echo "## 🔒 Container Security Scan Results" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Image**: \`${{ inputs.image-ref }}\`" >> $GITHUB_STEP_SUMMARY
+        echo "**Severity Threshold**: ${{ inputs.severity }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+
+    - name: Display scan results
+      uses: aquasecurity/trivy-action@0.28.0
+      with:
+        image-ref: ${{ inputs.image-ref }}
+        format: ${{ inputs.format }}
+        severity: ${{ inputs.severity }}
+        exit-code: ${{ inputs.exit-code }}
+        vuln-type: 'os,library'
+        scanners: 'vuln,secret,misconfig'
+
+    - name: Scan Dockerfile for misconfigurations
+      if: inputs.dockerfile-path != ''
+      uses: aquasecurity/trivy-action@0.28.0
+      with:
+        scan-type: 'config'
+        scan-ref: ${{ inputs.dockerfile-path }}
+        format: 'table'
+        exit-code: '0'  # Warning only for Dockerfile issues
