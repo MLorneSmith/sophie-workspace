@@ -1,14 +1,7 @@
 name: E2E Test Matrix
 
 on:
-  pull_request:
-    branches: [main, staging, dev]
-    types: [opened, synchronize, reopened]
-    paths:
-      - 'apps/web/**'
-      - 'apps/e2e/**'
-      - 'packages/**'
-      - '.github/workflows/e2e-matrix.yml'
+  # Only run on pushes to main branches, not on PRs (smart tests handle PRs)
   push:
     branches: [main, staging]
     paths:
@@ -59,6 +52,9 @@ jobs:
       - name: Configure matrix
         id: config
         run: |
+          echo "E2E Matrix Test triggered by: ${{ github.event_name }}"
+          echo "Branch: ${{ github.ref_name }}"
+          
           # Default browser matrix for different triggers
           if [[ "${{ github.event_name }}" == "schedule" ]]; then
             BROWSERS='["chromium", "firefox", "webkit", "Mobile Chrome", "Mobile Safari", "Tablet Chrome"]'
@@ -308,9 +304,23 @@ jobs:
           path: apps/e2e/playwright-report/
           retention-days: 30
 
-      - name: Comment on PR with test results
+      - name: Create test summary
+        if: always()
+        run: |
+          echo "## 🎭 E2E Test Matrix Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Event**: ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Branch**: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Test Execution Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- Full browser matrix tested (Desktop & Mobile)" >> $GITHUB_STEP_SUMMARY
+          echo "- Sharding enabled for parallel execution" >> $GITHUB_STEP_SUMMARY
+          echo "- Download artifacts for detailed results" >> $GITHUB_STEP_SUMMARY
+
+      - name: Comment on PR with test results  
         uses: actions/github-script@v7
-        if: always() && github.event_name == 'pull_request'
+        if: false  # Disabled - PRs now use smart tests instead
         with:
           script: |
             const fs = require('fs');
