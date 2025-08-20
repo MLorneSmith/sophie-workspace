@@ -126,7 +126,8 @@ jobs:
       STRIPE_SECRET_KEY: 'sk_test_dummy'
       STRIPE_WEBHOOK_SECRET: 'whsec_test_dummy'
       DO_NOT_TRACK: 1
-      PLAYWRIGHT_SERVER_COMMAND: 'pnpm dev'
+      PLAYWRIGHT_WEB_COMMAND: 'pnpm --filter=web dev:test'
+      PLAYWRIGHT_PAYLOAD_COMMAND: 'pnpm --filter=payload dev:test'
       
       # Required for app to start
       NEXT_PUBLIC_BILLING_PROVIDER: 'stripe'

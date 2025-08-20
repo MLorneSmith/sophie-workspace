@@ -70,6 +70,7 @@ jobs:
     uses: ./.github/workflows/reusable-build.yml
     with:
       environment: development
+    secrets: inherit
 
   # Deploy Web App to Vercel Dev environment
   deploy-web:
