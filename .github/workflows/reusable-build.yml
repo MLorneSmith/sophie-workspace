@@ -72,6 +72,8 @@ jobs:
           TURBO_FORCE: ${{ github.event.inputs.force_build == 'true' && '1' || '' }}
           # Add required environment variables for payload build
           # These are needed at build time for type generation
+          # Note: Payload uses DATABASE_URI, not DATABASE_URL
+          DATABASE_URI: ${{ secrets.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/postgres' }}
           DATABASE_URL: ${{ secrets.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/postgres' }}
           PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET || 'development-secret-key' }}
           PAYLOAD_PUBLIC_SERVER_URL: ${{ secrets.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3001' }}
