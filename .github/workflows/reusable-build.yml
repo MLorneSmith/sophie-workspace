@@ -25,7 +25,7 @@ env:
 jobs:
   build:
     name: Build Application
-    runs-on: runs-on=${{ github.run_id }}/runner=8cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
     outputs:
       cache-key: ${{ steps.cache.outputs.key }}
     steps:
@@ -44,17 +44,34 @@ jobs:
 
       - name: Build application
         run: |
-          # Show Turbo cache status
-          echo "::group::Turbo Cache Status"
-          npx turbo build --dry-run --summarize | head -20
+          # Debug environment
+          echo "::group::Environment Info"
+          echo "Node version: $(node --version)"
+          echo "pnpm version: $(pnpm --version)"
+          echo "Working directory: $(pwd)"
+          echo "Environment: ${{ inputs.environment }}"
           echo "::endgroup::"
           
-          # Run build with remote cache
-          pnpm build --cache-dir=.turbo
+          # Show Turbo cache status
+          echo "::group::Turbo Cache Status"
+          npx turbo build --dry-run --summarize | head -20 || true
+          echo "::endgroup::"
+          
+          # Run build with remote cache and verbose logging
+          echo "::group::Build Output"
+          pnpm build --cache-dir=.turbo --verbose || {
+            echo "::error::Build failed. Attempting build without cache..."
+            # Try build without cache in case of cache issues
+            pnpm build --force --cache-dir=.turbo
+          }
+          echo "::endgroup::"
         env:
           NODE_ENV: ${{ inputs.environment }}
           NEXT_PUBLIC_APP_ENV: ${{ inputs.environment }}
           TURBO_FORCE: ${{ github.event.inputs.force_build == 'true' && '1' || '' }}
+          # Add database URL for payload build
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
 
       - name: Cache build artifacts
         uses: actions/cache@v4
