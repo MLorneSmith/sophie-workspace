@@ -76,16 +76,16 @@ export async function convertCourseLessons(
 
 			// Extract lesson metadata
 			const lessonMeta: LessonMeta = {
-				title: frontmatter.title || file.replace(".mdoc", ""),
-				description: frontmatter.description || "",
+				title: String(frontmatter.title || file.replace(".mdoc", "")),
+				description: String(frontmatter.description || ""),
 				videoID: frontmatter.videoID || frontmatter.video_id,
 				videoPlatform:
 					frontmatter.videoPlatform || frontmatter.video_platform || "bunny",
 				quizID: frontmatter.quizID || frontmatter.quiz_id,
 				duration: frontmatter.duration
-					? parseInt(frontmatter.duration)
+					? parseInt(String(frontmatter.duration))
 					: undefined,
-				order: frontmatter.order ? parseInt(frontmatter.order) : undefined,
+				order: frontmatter.order ? parseInt(String(frontmatter.order)) : undefined,
 				sourceFile: file,
 			};
 
