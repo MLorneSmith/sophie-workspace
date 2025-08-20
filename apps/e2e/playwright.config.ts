@@ -91,8 +91,9 @@ export default defineConfig({
 		trace: "on-first-retry",
 
 		/* Increased timeouts for matrix testing across different devices */
-		navigationTimeout: 30000, // Increased for server startup and concurrent load
-		actionTimeout: 15000, // More time for interactions under load
+		navigationTimeout:
+			Number(process.env.PLAYWRIGHT_NAVIGATION_TIMEOUT) || 30000, // Increased for server startup and concurrent load
+		actionTimeout: Number(process.env.PLAYWRIGHT_ACTION_TIMEOUT) || 15000, // More time for interactions under load
 	},
 	// test timeout increased to 3 minutes for better stability with authentication flows
 	timeout: 180 * 1000,

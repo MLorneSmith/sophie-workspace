@@ -1,4 +1,4 @@
-name: Deploy to Dev Clean
+name: Deploy to Dev
 
 on:
   push:
@@ -25,9 +25,57 @@ env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
 
 jobs:
+  # Check if we should skip deployment (e.g., if recently deployed)
+  check-skip:
+    name: Check Skip Deployment
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    outputs:
+      should_deploy: ${{ steps.check.outputs.should_deploy }}
+    steps:
+      - name: Check recent deployments
+        id: check
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // Skip if this is a PR merge and we recently deployed successfully
+            const isPRMerge = context.payload.head_commit?.message?.includes('Merge pull request');
+            
+            if (!isPRMerge) {
+              console.log('Not a PR merge, proceeding with deployment');
+              core.setOutput('should_deploy', 'true');
+              return;
+            }
+            
+            // Check if we have a successful deployment in the last 30 minutes
+            const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
+            
+            const runs = await github.rest.actions.listWorkflowRuns({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'dev-deploy.yml',
+              branch: 'dev',
+              status: 'success',
+              per_page: 5
+            });
+            
+            const recentSuccessful = runs.data.workflow_runs.find(run => 
+              new Date(run.created_at) > thirtyMinutesAgo && 
+              run.conclusion === 'success'
+            );
+            
+            if (recentSuccessful) {
+              console.log(`Found recent successful deployment from ${recentSuccessful.created_at}, skipping`);
+              core.setOutput('should_deploy', 'false');
+            } else {
+              console.log('No recent successful deployment found, proceeding');
+              core.setOutput('should_deploy', 'true');
+            }
+
   # Build application
   build:
     name: Build Application
+    needs: check-skip
+    if: needs.check-skip.outputs.should_deploy == 'true'
     uses: ./.github/workflows/reusable-build.yml
     with:
       environment: development
@@ -37,7 +85,8 @@ jobs:
   deploy-web:
     name: Deploy Web App to Dev
     runs-on: runs-on=${{ github.run_id }}/runner=8cpu-linux-x64
-    needs: build
+    needs: [check-skip, build]
+    if: needs.check-skip.outputs.should_deploy == 'true'
     environment:
       name: development
       url: ${{ steps.deploy.outputs.url }}
@@ -93,7 +142,8 @@ jobs:
   deploy-payload:
     name: Deploy Payload CMS to Dev
     runs-on: runs-on=${{ github.run_id }}/runner=8cpu-linux-x64
-    needs: build
+    needs: [check-skip, build]
+    if: needs.check-skip.outputs.should_deploy == 'true'
     environment:
       name: development-payload
       url: ${{ steps.deploy.outputs.url }}
@@ -149,7 +199,8 @@ jobs:
   e2e-smoke:
     name: E2E Smoke Tests
     runs-on: runs-on=${{ github.run_id }}/runner=8cpu-linux-x64
-    needs: deploy-web
+    needs: [check-skip, deploy-web]
+    if: needs.check-skip.outputs.should_deploy == 'true'
     environment: development
     continue-on-error: true # Non-blocking for now
     steps:
@@ -172,7 +223,8 @@ jobs:
   notify-monitoring:
     name: Notify Monitoring
     runs-on: runs-on=${{ github.run_id }}/runner=8cpu-linux-x64
-    needs: [deploy-web, deploy-payload]
+    needs: [check-skip, deploy-web, deploy-payload]
+    if: needs.check-skip.outputs.should_deploy == 'true'
     continue-on-error: true
     steps:
       - uses: actions/checkout@v4
