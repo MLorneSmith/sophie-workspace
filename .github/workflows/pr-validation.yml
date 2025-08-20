@@ -296,7 +296,7 @@ jobs:
           fail-on-timeout: true
           fail-on-dependency-scan: true
           fail-on-sast-scan: false  # Enable when on paid plan
-          fail-on-iac-scan: false   # Enable when on paid plan
+          fail-on-iac-scan: true    # IaC scanning enabled
           minimum-severity: 'HIGH'
           timeout-seconds: 180
           post-scan-status-comment: 'only_if_new_findings'
