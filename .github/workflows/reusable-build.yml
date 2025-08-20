@@ -73,7 +73,7 @@ jobs:
           fi
           echo "::endgroup::"
         env:
-          NODE_ENV: ${{ inputs.environment }}
+          NODE_ENV: production
           NEXT_PUBLIC_APP_ENV: ${{ inputs.environment }}
           TURBO_FORCE: ${{ github.event.inputs.force_build == 'true' && '1' || '' }}
           # Add required environment variables for payload build

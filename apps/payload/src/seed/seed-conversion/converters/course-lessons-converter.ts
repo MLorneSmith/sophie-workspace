@@ -265,6 +265,7 @@ function convertToSimpleLexical(markdown: string): {
 			return {
 				type: "heading",
 				tag: `h${Math.min(level, 6)}`,
+				version: 1,
 				children: [{ type: "text", text }],
 			};
 		} else if (paragraph.includes("{% bunny")) {
@@ -274,6 +275,7 @@ function convertToSimpleLexical(markdown: string): {
 				return {
 					type: "bunny-video",
 					videoId: videoMatch[1].trim(),
+					version: 1,
 					children: [{ type: "text", text: "" }],
 				};
 			}
@@ -284,6 +286,7 @@ function convertToSimpleLexical(markdown: string): {
 				return {
 					type: "highlight",
 					content: highlightMatch[1].trim(),
+					version: 1,
 					children: [{ type: "text", text: highlightMatch[1].trim() }],
 				};
 			}
@@ -292,6 +295,7 @@ function convertToSimpleLexical(markdown: string): {
 		// Regular paragraph
 		return {
 			type: "paragraph",
+			version: 1,
 			children: [{ type: "text", text: paragraph }],
 		};
 	});
@@ -302,6 +306,7 @@ function convertToSimpleLexical(markdown: string): {
 			format: "",
 			indent: 0,
 			version: 1,
+			direction: null,
 			children,
 		},
 	};
