@@ -139,7 +139,8 @@ export async function convertSurveys(
 
 			// Add to reference manager
 			referenceManager.addMapping({
-				type: "surveys",
+				type: "collection",
+				collection: "surveys",
 				originalId: surveyId,
 				identifier: surveyId,
 			});
