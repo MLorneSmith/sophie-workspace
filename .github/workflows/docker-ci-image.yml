@@ -11,10 +11,11 @@ on:
 permissions:
   packages: write
   contents: read
+  security-events: write  # For Trivy SARIF upload
 
 jobs:
-  build-and-push:
-    name: Build and Push CI Image
+  build-scan-push:
+    name: Build, Scan and Push CI Image
     runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     steps:
       - uses: actions/checkout@v4
@@ -42,7 +43,29 @@ jobs:
             type=raw,value=latest,enable={{is_default_branch}}
             type=sha,prefix={{date 'YYYYMMDD'}}-
 
-      - name: Build and push Docker image
+      - name: Build Docker image for scanning
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./.github/docker/Dockerfile.ci
+          push: false  # Don't push yet
+          load: true   # Load into Docker for scanning
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64  # Single platform for scanning
+
+      - name: Scan Docker image with Trivy
+        uses: ./.github/actions/trivy-scan
+        with:
+          image-ref: ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
+          severity: 'CRITICAL,HIGH,MEDIUM'
+          exit-code: '1'  # Fail on vulnerabilities
+          dockerfile-path: '.github/docker/Dockerfile.ci'
+
+      - name: Push Docker image if scan passes
+        if: success()
         uses: docker/build-push-action@v5
         with:
           context: .
