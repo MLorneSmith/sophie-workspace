@@ -25,7 +25,7 @@ env:
 jobs:
   build:
     name: Build Application
-    runs-on: ubuntu-latest
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     outputs:
       cache-key: ${{ steps.cache.outputs.key }}
     steps:

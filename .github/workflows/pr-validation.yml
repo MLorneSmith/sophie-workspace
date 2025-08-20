@@ -43,7 +43,7 @@ jobs:
   # Check if we should skip validation for promotion PRs
   check-skip:
     name: Check Skip Conditions
-    runs-on: ubuntu-latest
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     outputs:
       should-skip: ${{ steps.check.outputs.skip }}
       skip-reason: ${{ steps.check.outputs.reason }}
@@ -123,7 +123,7 @@ jobs:
   # Check what files changed to optimize CI runs
   changes:
     name: Detect Changes
-    runs-on: ubuntu-latest
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: check-skip
     if: needs.check-skip.outputs.should-skip != 'true'
     outputs:
@@ -158,7 +158,7 @@ jobs:
   # Lint and format check
   lint:
     name: Lint & Format
-    runs-on: ubuntu-latest
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: [check-skip, changes]
     if: needs.check-skip.outputs.should-skip != 'true'
     steps:
@@ -180,7 +180,7 @@ jobs:
   # TypeScript type checking
   typecheck:
     name: TypeScript Check
-    runs-on: ubuntu-latest
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: [check-skip, changes]
     if: needs.check-skip.outputs.should-skip != 'true' && needs.changes.outputs.typescript == 'true'
     env:
@@ -210,7 +210,7 @@ jobs:
   # Unit tests 
   test-unit:
     name: Unit Tests
-    runs-on: ubuntu-latest
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: [check-skip, changes]
     if: needs.check-skip.outputs.should-skip != 'true' && needs.changes.outputs.typescript == 'true'
     env:
@@ -251,7 +251,7 @@ jobs:
   # YAML linting
   yaml-lint:
     name: YAML Lint
-    runs-on: ubuntu-latest
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: [check-skip, changes]
     if: needs.check-skip.outputs.should-skip != 'true' && needs.changes.outputs.yaml == 'true'
     steps:
@@ -265,7 +265,7 @@ jobs:
   # Markdown linting
   markdown-lint:
     name: Markdown Lint
-    runs-on: ubuntu-latest
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: [check-skip, changes]
     if: needs.check-skip.outputs.should-skip != 'true' && needs.changes.outputs.markdown == 'true'
     steps:
@@ -282,7 +282,7 @@ jobs:
   # Aikido Security scan
   aikido-security:
     name: Aikido Security Scan
-    runs-on: ubuntu-latest
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: changes
     # Only run on pull requests with relevant changes
     if: (needs.changes.outputs.dependencies == 'true' || needs.changes.outputs.typescript == 'true') && github.event_name == 'pull_request'
@@ -307,7 +307,7 @@ jobs:
   # Bundle size check
   bundle-size:
     name: Bundle Size Check
-    runs-on: ubuntu-latest
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: changes
     if: needs.changes.outputs.typescript == 'true'
     continue-on-error: true # Non-blocking for now
@@ -356,7 +356,7 @@ jobs:
   # Accessibility testing
   accessibility-test:
     name: Accessibility Tests
-    runs-on: ubuntu-latest
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: [check-skip, changes]
     if: needs.check-skip.outputs.should-skip != 'true' && needs.changes.outputs.typescript == 'true'
     continue-on-error: true  # Non-blocking for now - E2E database setup issues
@@ -460,7 +460,7 @@ jobs:
   # Final status check
   pr-status:
     name: PR Status Check
-    runs-on: ubuntu-latest
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: [check-skip, lint, typecheck, test-unit, yaml-lint, markdown-lint, aikido-security, accessibility-test]
     if: always()
     steps:
