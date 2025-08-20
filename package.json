@@ -88,7 +88,7 @@
 			"bash -c 'if [[ \"$0\" != *\"pnpm-lock.yaml\"* ]]; then npx yamllint \"$0\"; fi'"
 		],
 		"**/*.{ts,tsx}": [
-			"bash -c 'echo \"🔍 Type checking $0...\"; tsc --noEmit --skipLibCheck --pretty \"$0\"'"
+			"bash ./scripts/type-check-staged.sh"
 		]
 	},
 	"pnpm": {
