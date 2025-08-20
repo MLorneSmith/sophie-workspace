@@ -72,13 +72,13 @@ jobs:
           TURBO_FORCE: ${{ github.event.inputs.force_build == 'true' && '1' || '' }}
           # Add required environment variables for payload build
           # These are needed at build time for type generation
-          # Note: Payload uses DATABASE_URI, not DATABASE_URL
-          DATABASE_URI: ${{ secrets.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/postgres' }}
-          DATABASE_URL: ${{ secrets.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/postgres' }}
-          PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET || 'development-secret-key' }}
-          PAYLOAD_PUBLIC_SERVER_URL: ${{ secrets.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3001' }}
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'http://localhost:54321' }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key' }}
+          # Note: Both DATABASE_URI and DATABASE_URL are set for compatibility
+          DATABASE_URI: ${{ secrets.DATABASE_URI }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
+          PAYLOAD_PUBLIC_SERVER_URL: ${{ vars.PAYLOAD_PUBLIC_SERVER_URL }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
 
       - name: Cache build artifacts
         uses: actions/cache@v4
