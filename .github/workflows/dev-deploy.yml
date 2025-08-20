@@ -84,7 +84,7 @@ jobs:
   # Deploy Web App to Vercel Dev environment
   deploy-web:
     name: Deploy Web App to Dev
-    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    runs-on: ubuntu-latest
     needs: [check-skip, build]
     if: needs.check-skip.outputs.should_deploy == 'true'
     environment:
@@ -141,7 +141,7 @@ jobs:
   # Deploy Payload CMS to Vercel Dev environment
   deploy-payload:
     name: Deploy Payload CMS to Dev
-    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    runs-on: ubuntu-latest
     needs: [check-skip, build]
     if: needs.check-skip.outputs.should_deploy == 'true'
     environment:
@@ -198,7 +198,7 @@ jobs:
   # Run E2E tests against dev environment
   e2e-smoke:
     name: E2E Smoke Tests
-    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    runs-on: ubuntu-latest
     needs: [check-skip, deploy-web]
     if: needs.check-skip.outputs.should_deploy == 'true'
     environment: development
