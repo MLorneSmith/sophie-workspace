@@ -221,6 +221,12 @@ jobs:
           PLAYWRIGHT_BASE_URL: ${{ needs.deploy-web.outputs.url }}
           E2E_TEST_EMAIL: ${{ secrets.E2E_TEST_EMAIL }}
           E2E_TEST_PASSWORD: ${{ secrets.E2E_TEST_PASSWORD }}
+          # Provide deployed environment URLs
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          # Skip local server startup
+          CI: true
 
   # Notify New Relic of deployment
   notify-monitoring:
