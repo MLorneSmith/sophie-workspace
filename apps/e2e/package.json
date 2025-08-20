@@ -6,7 +6,8 @@
 	"scripts": {
 		"report": "playwright show-report",
 		"test": "playwright test --max-failures=1",
-		"test:ui": "playwright test --ui"
+		"test:ui": "playwright test --ui",
+		"test:smoke": "playwright test --grep @smoke --project=chromium --retries=2"
 	},
 	"keywords": [],
 	"author": "",

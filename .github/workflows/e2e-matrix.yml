@@ -1,9 +1,9 @@
 name: E2E Test Matrix
 
 on:
-  # Only run on pushes to main branches, not on PRs (smart tests handle PRs)
+  # Run on push to staging for pre-production validation
   push:
-    branches: [main, staging]
+    branches: [staging]
     paths:
       - 'apps/web/**'
       - 'apps/e2e/**'

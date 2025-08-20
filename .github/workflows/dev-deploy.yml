@@ -202,7 +202,8 @@ jobs:
     needs: [check-skip, deploy-web]
     if: needs.check-skip.outputs.should_deploy == 'true'
     environment: development
-    continue-on-error: true # Non-blocking for now
+    continue-on-error: false # Make it blocking to catch issues early
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
 
@@ -213,11 +214,12 @@ jobs:
 
       - name: Run E2E smoke tests
         run: |
-          echo "E2E smoke tests will run against dev environment"
-          # TODO: Configure Playwright to run against dev URL
-          # pnpm --filter web-e2e test:smoke
+          # Run only critical path tests for fast feedback
+          pnpm --filter web-e2e test:smoke
         env:
           PLAYWRIGHT_BASE_URL: ${{ needs.deploy-web.outputs.url }}
+          E2E_TEST_EMAIL: ${{ secrets.E2E_TEST_EMAIL }}
+          E2E_TEST_PASSWORD: ${{ secrets.E2E_TEST_PASSWORD }}
 
   # Notify New Relic of deployment
   notify-monitoring:
