@@ -16,7 +16,7 @@ permissions:
 jobs:
   build-scan-push:
     name: Build, Scan and Push CI Image
-    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
     steps:
       - uses: actions/checkout@v4
 

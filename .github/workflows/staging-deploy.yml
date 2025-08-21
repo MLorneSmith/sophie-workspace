@@ -28,7 +28,7 @@ jobs:
   # Check if validation is needed
   check-validation:
     name: Check if validation needed
-    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
     outputs:
       should-validate: ${{ steps.check.outputs.should-validate }}
     steps:
@@ -68,7 +68,7 @@ jobs:
   # Run full test suite for staging
   test-full:
     name: Full Test Suite
-    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
     needs: [check-validation, validate]
     if: always() && !failure() && !cancelled()
     timeout-minutes: 30
@@ -141,7 +141,7 @@ jobs:
   # Deploy Web App to Vercel Staging environment
   deploy-web:
     name: Deploy Web App to Staging
-    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
     needs: build
     environment:
       name: staging
@@ -197,7 +197,7 @@ jobs:
   # Deploy Payload CMS to Vercel Staging environment
   deploy-payload:
     name: Deploy Payload CMS to Staging
-    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
     needs: build
     environment:
       name: staging-payload
@@ -253,7 +253,7 @@ jobs:
   # Run smoke tests against staging
   smoke-tests:
     name: Staging Smoke Tests
-    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
     needs: deploy-web
     environment: staging
     steps:
@@ -274,7 +274,7 @@ jobs:
   # Performance testing (placeholder)
   performance-test:
     name: Performance Tests
-    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
     needs: deploy-web
     continue-on-error: true
     steps:
@@ -286,7 +286,7 @@ jobs:
   # Dynamic Application Security Testing with Nuclei
   dast-security-scan:
     name: DAST Security Scan (Nuclei)
-    runs-on: ubuntu-latest  # Nuclei requires standard Ubuntu runner
+    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64  # Nuclei requires standard Ubuntu runner
     needs: [deploy-web, deploy-payload]
     continue-on-error: true  # Don't block deployment on security findings initially
     permissions:
@@ -347,7 +347,7 @@ jobs:
   # Notify New Relic of staging deployment
   notify-monitoring:
     name: Notify Monitoring
-    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
     needs: [deploy-web, deploy-payload]
     continue-on-error: true
     steps:

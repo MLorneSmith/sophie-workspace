@@ -17,7 +17,7 @@ env:
 jobs:
   bundle-size-alert:
     name: Bundle Size Alert
-    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
     if: github.event_name == 'pull_request'
     env:
       BUNDLEWATCH_GITHUB_TOKEN: ${{ secrets.BUNDLEWATCH_GITHUB_TOKEN }}

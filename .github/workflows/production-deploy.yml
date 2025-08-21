@@ -24,7 +24,7 @@ jobs:
   # Check if validation is needed
   check-validation:
     name: Check if validation needed
-    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
     outputs:
       should-validate: ${{ steps.check.outputs.should-validate }}
     steps:
@@ -50,7 +50,7 @@ jobs:
   # Final security check
   security-check:
     name: Final Security Check
-    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
     needs: check-validation
     if: needs.check-validation.outputs.should-validate == 'true'
     steps:
@@ -93,7 +93,7 @@ jobs:
   # Deploy Web App to Vercel Production
   deploy-web:
     name: Deploy Web App to Production
-    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
     needs: build
     environment:
       name: production
@@ -154,7 +154,7 @@ jobs:
   # Deploy Payload CMS to Vercel Production
   deploy-payload:
     name: Deploy Payload CMS to Production
-    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
     needs: build
     environment:
       name: production-payload
@@ -211,7 +211,7 @@ jobs:
   # Post-deployment monitoring
   health-check:
     name: Production Health Check
-    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
     needs: [deploy-web, deploy-payload]
     steps:
       - uses: actions/checkout@v4
@@ -282,7 +282,7 @@ jobs:
   # Notify monitoring services
   notify-monitoring:
     name: Notify Monitoring Services
-    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
     needs: [deploy-web, deploy-payload]
     continue-on-error: true
     steps:
