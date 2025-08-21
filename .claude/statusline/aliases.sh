@@ -61,8 +61,13 @@ claude-clear-status() {
     echo "Cleared all Claude statusline status files"
 }
 
+# Convenience function to clear PR cache for faster refresh
+claude-refresh-pr() {
+    "$CLAUDE_STATUSLINE_DIR/clear-pr-cache.sh"
+}
+
 echo "Claude statusline aliases loaded. Available commands:"
 echo "  Test:      ctest, cpnpm-test, cvitest, cjest"
 echo "  Codecheck: ccodecheck, ccode-check, cpnpm-codecheck (combines lint+typecheck)"
 echo "  Build:     cbuild, cpnpm-build"
-echo "  Utils:     claude-run <command>, claude-clear-status"
+echo "  Utils:     claude-run <command>, claude-clear-status, claude-refresh-pr"

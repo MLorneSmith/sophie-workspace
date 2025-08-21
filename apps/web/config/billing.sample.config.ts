@@ -7,9 +7,12 @@ import { BillingProviderSchema, createBillingSchema } from "@kit/billing";
 // The billing provider to use. This should be set in the environment variables
 // and should match the provider in the database. We also add it here so we can validate
 // your configuration against the selected provider at build time.
-const provider = BillingProviderSchema.parse(
-	process.env.NEXT_PUBLIC_BILLING_PROVIDER,
-);
+const providerValue = process.env.NEXT_PUBLIC_BILLING_PROVIDER || "stripe";
+
+if (!process.env.NEXT_PUBLIC_BILLING_PROVIDER) {
+}
+
+const provider = BillingProviderSchema.parse(providerValue);
 
 export default createBillingSchema({
 	// also update config.billing_provider in the DB to match the selected
