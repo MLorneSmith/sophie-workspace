@@ -6,12 +6,12 @@ input=$(cat)
 # Extract model display name and convert to lowercase
 model=$(echo "$input" | jq -r '.model.display_name' | tr '[:upper:]' '[:lower:]')
 
-# Age indicators using symbols instead of colors
-# Since colors might not work in all terminals, use symbols to indicate freshness
-# 🟢 = Fresh (< 4 hours)
-# 🟡 = Recent (< 8 hours)  
-# 🔴 = Stale (> 8 hours)
-# ⚪ = Not run
+# Status indicators using symbols
+# 🟢 = Success, fresh (< 4 hours)
+# 🟡 = Success, but old (4+ hours) OR CI/CD running
+# 🔴 = Error/failure (regardless of time) OR CI/CD failed  
+# ⚪ = Not run/cancelled/unknown
+# ⟳ = Currently running
 
 # Get git repository root (used for consistent status file paths)
 GIT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo "$PWD")
@@ -41,15 +41,6 @@ elif [ -f "$build_log_file" ]; then
         current_time=$(date +%s)
         time_diff=$((current_time - build_time))
         
-        # Determine freshness indicator based on age
-        if [ $time_diff -lt 14400 ]; then  # Less than 4 hours
-            age_indicator="🟢"
-        elif [ $time_diff -lt 28800 ]; then  # Less than 8 hours
-            age_indicator="🟡"
-        else  # Older than 8 hours
-            age_indicator="🔴"
-        fi
-        
         # Format time ago
         if [ $time_diff -lt 60 ]; then
             time_ago="${time_diff}s"
@@ -62,8 +53,14 @@ elif [ -f "$build_log_file" ]; then
         fi
         
         if [ "$build_result" = "success" ]; then
-            build_status="${age_indicator} build (${time_ago})"
+            # Success: Green < 4h, Yellow after 4h
+            if [ $time_diff -lt 14400 ]; then  # Less than 4 hours
+                build_status="🟢 build (${time_ago})"
+            else  # 4+ hours old
+                build_status="🟡 build (${time_ago})"
+            fi
         elif [ "$build_result" = "failed" ]; then
+            # Failed: Always Red regardless of time
             if [ -n "$errors" ] && [ "$errors" != "0" ]; then
                 build_status="🔴 build:$errors (${time_ago})"
             else
@@ -103,15 +100,6 @@ elif [ -f "$test_log_file" ]; then
         current_time=$(date +%s)
         time_diff=$((current_time - test_time))
         
-        # Determine freshness indicator based on age
-        if [ $time_diff -lt 1800 ]; then  # Less than 30 minutes
-            age_indicator="🟢"
-        elif [ $time_diff -lt 7200 ]; then  # Less than 2 hours
-            age_indicator="🟡"
-        else  # Older than 2 hours
-            age_indicator="🔴"
-        fi
-        
         # Format time ago
         if [ $time_diff -lt 60 ]; then
             time_ago="${time_diff}s"
@@ -124,8 +112,14 @@ elif [ -f "$test_log_file" ]; then
         fi
         
         if [ "$test_result" = "success" ]; then
-            test_status="${age_indicator} test (${time_ago})"
+            # Success: Green < 4h, Yellow after 4h
+            if [ $time_diff -lt 14400 ]; then  # Less than 4 hours
+                test_status="🟢 test (${time_ago})"
+            else  # 4+ hours old
+                test_status="🟡 test (${time_ago})"
+            fi
         elif [ "$test_result" = "failed" ]; then
+            # Failed: Always Red regardless of time
             if [ -n "$failed" ] && [ "$failed" != "0" ]; then
                 test_status="🔴 test:$failed (${time_ago})"
             else
@@ -170,15 +164,6 @@ elif [ -f "$codecheck_log_file" ]; then
         current_time=$(date +%s)
         time_diff=$((current_time - check_time))
         
-        # Determine freshness indicator based on age
-        if [ $time_diff -lt 14400 ]; then  # Less than 4 hours
-            age_indicator="🟢"
-        elif [ $time_diff -lt 28800 ]; then  # Less than 8 hours
-            age_indicator="🟡"
-        else  # Older than 8 hours
-            age_indicator="🔴"
-        fi
-        
         # Format time ago
         if [ $time_diff -lt 60 ]; then
             time_ago="${time_diff}s"
@@ -191,8 +176,14 @@ elif [ -f "$codecheck_log_file" ]; then
         fi
         
         if [ "$check_result" = "success" ]; then
-            codecheck_status="${age_indicator} codecheck (${time_ago})"
+            # Success: Green < 4h, Yellow after 4h
+            if [ $time_diff -lt 14400 ]; then  # Less than 4 hours
+                codecheck_status="🟢 codecheck (${time_ago})"
+            else  # 4+ hours old
+                codecheck_status="🟡 codecheck (${time_ago})"
+            fi
         elif [ "$check_result" = "failed" ]; then
+            # Failed: Always Red regardless of time
             if [ -n "$errors" ] && [ "$errors" != "0" ]; then
                 if [ -n "$warnings" ] && [ "$warnings" != "0" ]; then
                     codecheck_status="🔴 codecheck:$errors/$warnings (${time_ago})"
@@ -219,15 +210,6 @@ elif [ -f "$lint_log_file" ]; then
         current_time=$(date +%s)
         time_diff=$((current_time - lint_time))
         
-        # Determine freshness indicator based on age
-        if [ $time_diff -lt 14400 ]; then  # Less than 4 hours
-            age_indicator="🟢"
-        elif [ $time_diff -lt 28800 ]; then  # Less than 8 hours
-            age_indicator="🟡"
-        else  # Older than 8 hours
-            age_indicator="🔴"
-        fi
-        
         # Format time ago
         if [ $time_diff -lt 60 ]; then
             time_ago="${time_diff}s"
@@ -240,8 +222,14 @@ elif [ -f "$lint_log_file" ]; then
         fi
         
         if [ "$lint_result" = "success" ]; then
-            codecheck_status="${age_indicator} codecheck (${time_ago})"
+            # Success: Green < 4h, Yellow after 4h
+            if [ $time_diff -lt 14400 ]; then  # Less than 4 hours
+                codecheck_status="🟢 codecheck (${time_ago})"
+            else  # 4+ hours old
+                codecheck_status="🟡 codecheck (${time_ago})"
+            fi
         elif [ "$lint_result" = "failed" ]; then
+            # Failed: Always Red regardless of time
             if [ -n "$errors" ] && [ "$errors" != "0" ]; then
                 if [ -n "$warnings" ] && [ "$warnings" != "0" ]; then
                     codecheck_status="🔴 codecheck:$errors/$warnings (${time_ago})"
@@ -320,23 +308,18 @@ if command -v gh &> /dev/null && [ -d "${GIT_ROOT}/.github/workflows" ]; then
                         time_ago="$((time_diff / 86400))d"
                     fi
                     
-                    # Determine freshness indicator
-                    if [ $time_diff -lt 1800 ]; then  # Less than 30 minutes
-                        age_indicator="🟢"
-                    elif [ $time_diff -lt 7200 ]; then  # Less than 2 hours
-                        age_indicator="🟡"
-                    else  # Older than 2 hours
-                        age_indicator="🔴"
-                    fi
+                    # Note: CI/CD status is based on workflow result, not time
+                    # CI/CD follows the pattern: Red=failure, Yellow=running, Green=success
                 fi
             fi
             
-            # Determine status indicator
+            # Determine status indicator (status-based, not time-based)
             if [ "$run_status" = "in_progress" ] || [ "$run_status" = "queued" ] || [ "$run_status" = "pending" ]; then
-                ci_status="⟳ cicd"
+                ci_status="🟡 cicd:running"
+                [ -n "$time_ago" ] && ci_status="$ci_status ($time_ago)"
             elif [ "$run_status" = "completed" ]; then
                 if [ "$run_conclusion" = "success" ]; then
-                    ci_status="${age_indicator:-🟢} cicd"
+                    ci_status="🟢 cicd"
                     [ -n "$time_ago" ] && ci_status="$ci_status ($time_ago)"
                 elif [ "$run_conclusion" = "failure" ]; then
                     ci_status="🔴 cicd:fail"
