@@ -322,16 +322,16 @@ if command -v gh &> /dev/null && [ -d ".github/workflows" ]; then
             
             # Determine status indicator
             if [ "$run_status" = "in_progress" ] || [ "$run_status" = "queued" ]; then
-                ci_status="⟳ CI"
+                ci_status="⟳ cicd"
             elif [ "$run_status" = "completed" ]; then
                 if [ "$run_conclusion" = "success" ]; then
-                    ci_status="${age_indicator:-🟢} CI"
+                    ci_status="${age_indicator:-🟢} cicd"
                     [ -n "$time_ago" ] && ci_status="$ci_status ($time_ago)"
                 elif [ "$run_conclusion" = "failure" ]; then
-                    ci_status="🔴 CI:fail"
+                    ci_status="🔴 cicd:fail"
                     [ -n "$time_ago" ] && ci_status="$ci_status ($time_ago)"
                 elif [ "$run_conclusion" = "cancelled" ]; then
-                    ci_status="⚪ CI:cancel"
+                    ci_status="⚪ cicd:cancel"
                     [ -n "$time_ago" ] && ci_status="$ci_status ($time_ago)"
                 fi
             fi
@@ -339,6 +339,69 @@ if command -v gh &> /dev/null && [ -d ".github/workflows" ]; then
             # Cache the status
             [ -n "$ci_status" ] && echo "$ci_status" > "$ci_cache_file"
         fi
+    fi
+fi
+
+# Check PR status (open PRs that need review)
+pr_status=""
+if command -v gh &> /dev/null && [ -d ".git" ]; then
+    # Cache PR status for 5 minutes
+    pr_cache_file="/tmp/.claude_pr_status_${PWD//\//_}"
+    current_time=$(date +%s)
+    
+    # Check if cache exists and is fresh (less than 5 minutes old)
+    if [ -f "$pr_cache_file" ]; then
+        cache_time=$(stat -c %Y "$pr_cache_file" 2>/dev/null || stat -f %m "$pr_cache_file" 2>/dev/null || echo 0)
+        cache_age=$((current_time - cache_time))
+        
+        if [ $cache_age -lt 300 ]; then  # Less than 5 minutes
+            pr_status=$(cat "$pr_cache_file" 2>/dev/null)
+        fi
+    fi
+    
+    # If no cached status or cache is stale, fetch new status
+    if [ -z "$pr_status" ]; then
+        # Get open PRs for current branch or PRs awaiting review
+        current_branch=$(git branch --show-current 2>/dev/null)
+        
+        # Check if current branch has an open PR
+        branch_pr=$(gh pr list --head "$current_branch" --json number,state,reviewDecision,isDraft --limit 1 2>/dev/null)
+        
+        if [ -n "$branch_pr" ] && [ "$branch_pr" != "[]" ]; then
+            pr_number=$(echo "$branch_pr" | jq -r '.[0].number' 2>/dev/null)
+            pr_state=$(echo "$branch_pr" | jq -r '.[0].state' 2>/dev/null)
+            pr_review=$(echo "$branch_pr" | jq -r '.[0].reviewDecision' 2>/dev/null)
+            pr_draft=$(echo "$branch_pr" | jq -r '.[0].isDraft' 2>/dev/null)
+            
+            if [ "$pr_state" = "OPEN" ]; then
+                if [ "$pr_draft" = "true" ]; then
+                    pr_status="📝 PR:draft"
+                elif [ "$pr_review" = "APPROVED" ]; then
+                    pr_status="✅ PR:approved"
+                elif [ "$pr_review" = "CHANGES_REQUESTED" ]; then
+                    pr_status="🔄 PR:changes"
+                elif [ "$pr_review" = "null" ] || [ -z "$pr_review" ]; then
+                    pr_status="👀 PR:review"
+                fi
+                
+                # Add PR number if available
+                [ -n "$pr_number" ] && [ "$pr_number" != "null" ] && pr_status="$pr_status #$pr_number"
+            fi
+        else
+            # Check if there are PRs awaiting your review
+            review_prs=$(gh pr list --json number --search "review-requested:@me" 2>/dev/null | jq 'length' 2>/dev/null)
+            
+            if [ -n "$review_prs" ] && [ "$review_prs" -gt 0 ]; then
+                if [ "$review_prs" -eq 1 ]; then
+                    pr_status="🔍 PR:1 needs review"
+                else
+                    pr_status="🔍 PR:$review_prs need review"
+                fi
+            fi
+        fi
+        
+        # Cache the status (or empty string if no PR)
+        echo "$pr_status" > "$pr_cache_file"
     fi
 fi
 
@@ -356,6 +419,9 @@ output="$model | ⎇ $branch | $working_dir"
 
 # Add CI status
 [ -n "$ci_status" ] && output="$output | $ci_status"
+
+# Add PR status
+[ -n "$pr_status" ] && output="$output | $pr_status"
 
 # Output the status line
 printf "%s" "$output"

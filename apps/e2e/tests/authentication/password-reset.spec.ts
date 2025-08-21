@@ -4,7 +4,7 @@ import { AuthPageObject } from "./auth.po";
 
 const newPassword = (Math.random() * 10000).toString();
 
-test.describe("Password Reset Flow", () => {
+test.describe("Password Reset Flow @integration", () => {
 	test("will reset the password and sign in with new one", async ({ page }) => {
 		const auth = new AuthPageObject(page);
 
