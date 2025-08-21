@@ -1,0 +1,78 @@
+name: Track Performance
+description: Track workflow performance metrics and add to summary
+
+inputs:
+  step-name:
+    description: 'Name of the step being tracked'
+    required: true
+  start-time:
+    description: 'Start time of the step (ISO format)'
+    required: false
+  cache-key:
+    description: 'Cache key used (if applicable)'
+    required: false
+  cache-hit:
+    description: 'Whether cache was hit'
+    required: false
+    default: 'false'
+
+outputs:
+  duration:
+    description: 'Duration of the step in seconds'
+    value: ${{ steps.calculate.outputs.duration }}
+  start-time:
+    description: 'Start time for this step'
+    value: ${{ steps.timer.outputs.start-time }}
+
+runs:
+  using: composite
+  steps:
+    - name: Record start time
+      id: timer
+      shell: bash
+      run: |
+        if [[ -n "${{ inputs.start-time }}" ]]; then
+          echo "start-time=${{ inputs.start-time }}" >> $GITHUB_OUTPUT
+        else
+          echo "start-time=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Calculate duration
+      id: calculate
+      if: inputs.start-time != ''
+      shell: bash
+      run: |
+        start_time="${{ inputs.start-time }}"
+        end_time="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+        
+        # Convert to epoch seconds
+        start_epoch=$(date -d "$start_time" +%s 2>/dev/null || date -j -f "%Y-%m-%dT%H:%M:%SZ" "$start_time" +%s)
+        end_epoch=$(date -d "$end_time" +%s 2>/dev/null || date -j -f "%Y-%m-%dT%H:%M:%SZ" "$end_time" +%s)
+        
+        duration=$((end_epoch - start_epoch))
+        echo "duration=$duration" >> $GITHUB_OUTPUT
+        
+        # Add to summary
+        echo "### ⏱️ Performance: ${{ inputs.step-name }}" >> $GITHUB_STEP_SUMMARY
+        echo "- Duration: ${duration}s" >> $GITHUB_STEP_SUMMARY
+        
+        if [[ -n "${{ inputs.cache-key }}" ]]; then
+          echo "- Cache Key: \`${{ inputs.cache-key }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- Cache Hit: ${{ inputs.cache-hit }}" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        # Add performance hints
+        if [[ "${{ inputs.cache-hit }}" == "false" ]] && [[ -n "${{ inputs.cache-key }}" ]]; then
+          echo "- 💡 **Tip:** Cache miss detected. This added ~${duration}s to the build time." >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        if [[ $duration -gt 300 ]]; then
+          echo "- ⚠️ **Warning:** This step took more than 5 minutes. Consider optimization." >> $GITHUB_STEP_SUMMARY
+        fi
+
+    - name: Report metrics
+      if: always()
+      shell: bash
+      run: |
+        # Log structured data for later analysis
+        echo "::notice title=Performance Metric::step=${{ inputs.step-name }},duration=${{ steps.calculate.outputs.duration }},cache_hit=${{ inputs.cache-hit }}"
