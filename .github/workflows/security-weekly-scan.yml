@@ -16,9 +16,84 @@ env:
   PNPM_VERSION: '9.12.0'
 
 jobs:
+  # Scan container images for vulnerabilities
+  container-security-scan:
+    name: Container Security Scan
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    outputs:
+      container_critical: ${{ steps.container_summary.outputs.container_critical }}
+      container_high: ${{ steps.container_summary.outputs.container_high }}
+    permissions:
+      contents: read
+      packages: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Scan CI Docker image
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: 'ghcr.io/${{ github.repository }}/ci:latest'
+          format: 'sarif'
+          output: 'ci-trivy-results.sarif'
+          severity: 'CRITICAL,HIGH,MEDIUM,LOW'
+          vuln-type: 'os,library'
+          scanners: 'vuln,secret,misconfig'
+        continue-on-error: true
+
+      - name: Upload CI image scan results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'ci-trivy-results.sarif'
+          category: 'ci-container-weekly'
+
+      - name: Generate container scan summary
+        id: container_summary
+        run: |
+          echo "## Container Security Summary" > container-report.md
+          echo "" >> container-report.md
+          
+          # Scan CI image and capture results
+          trivy image ghcr.io/${{ github.repository }}/ci:latest --format json > ci-scan.json || true
+          
+          if [ -f ci-scan.json ] && [ -s ci-scan.json ]; then
+            CRITICAL=$(cat ci-scan.json | jq '[.Results[].Vulnerabilities[]? | select(.Severity=="CRITICAL")] | length')
+            HIGH=$(cat ci-scan.json | jq '[.Results[].Vulnerabilities[]? | select(.Severity=="HIGH")] | length')
+            MEDIUM=$(cat ci-scan.json | jq '[.Results[].Vulnerabilities[]? | select(.Severity=="MEDIUM")] | length')
+            LOW=$(cat ci-scan.json | jq '[.Results[].Vulnerabilities[]? | select(.Severity=="LOW")] | length')
+            
+            echo "container_critical=$CRITICAL" >> $GITHUB_OUTPUT
+            echo "container_high=$HIGH" >> $GITHUB_OUTPUT
+            echo "container_medium=$MEDIUM" >> $GITHUB_OUTPUT
+            echo "container_low=$LOW" >> $GITHUB_OUTPUT
+            
+            echo "### CI Image Vulnerabilities" >> container-report.md
+            echo "- Critical: $CRITICAL" >> container-report.md
+            echo "- High: $HIGH" >> container-report.md
+            echo "- Medium: $MEDIUM" >> container-report.md
+            echo "- Low: $LOW" >> container-report.md
+          else
+            echo "No container scan results available" >> container-report.md
+            echo "container_critical=0" >> $GITHUB_OUTPUT
+            echo "container_high=0" >> $GITHUB_OUTPUT
+          fi
+        continue-on-error: true
+
   aikido-comprehensive-scan:
     name: Aikido Comprehensive Security Scan
-    runs-on: ubicloud-standard-2
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    outputs:
+      container_critical: ${{ needs.container-security-scan.outputs.container_critical }}
+      container_high: ${{ needs.container-security-scan.outputs.container_high }}
+    needs: [container-security-scan]
     steps:
       - uses: actions/checkout@v4
 
@@ -33,7 +108,7 @@ jobs:
           fail-on-timeout: false  # Don't fail weekly scans on timeout
           fail-on-dependency-scan: false  # Report but don't fail
           fail-on-sast-scan: false
-          fail-on-iac-scan: false
+          fail-on-iac-scan: true  # Enable IaC scanning
           minimum-severity: 'LOW'  # Report all severities
           timeout-seconds: 300  # 5 minutes for comprehensive scan
           post-scan-status-comment: 'off'  # No PR comments for scheduled scans
@@ -74,8 +149,11 @@ jobs:
             const npmModerate = ${{ steps.npm_audit.outputs.vulnerabilities_moderate || 0 }};
             const npmLow = ${{ steps.npm_audit.outputs.vulnerabilities_low || 0 }};
             
-            const hasIssues = aikidoOutcome === 'failure' || npmTotal > 0;
-            const hasHighCritical = (npmCritical + npmHigh) > 0;
+            const containerCritical = ${{ needs.container-security-scan.outputs.container_critical || 0 }};
+            const containerHigh = ${{ needs.container-security-scan.outputs.container_high || 0 }};
+            
+            const hasIssues = aikidoOutcome === 'failure' || npmTotal > 0 || containerCritical > 0 || containerHigh > 0;
+            const hasHighCritical = (npmCritical + npmHigh + containerCritical + containerHigh) > 0;
             const priority = hasHighCritical ? 'high-priority' : 'medium-priority';
             const urgency = hasHighCritical ? '🚨 URGENT' : '⚠️ Review Required';
             
@@ -104,6 +182,14 @@ jobs:
               body += `- **High:** ${npmHigh}\n`;
               body += `- **Moderate:** ${npmModerate}\n`;
               body += `- **Low:** ${npmLow}\n\n`;
+            }
+            
+            if (containerCritical > 0 || containerHigh > 0) {
+              body += `### Container Security Results\n`;
+              body += `**Docker Image Vulnerabilities:**\n`;
+              body += `- **Critical:** ${containerCritical}\n`;
+              body += `- **High:** ${containerHigh}\n\n`;
+              body += `⚠️ Container vulnerabilities require updating base images or system packages.\n\n`;
             }
             
             body += `## Action Required\n`;

@@ -19,7 +19,6 @@ import { Label } from "@kit/ui/label";
 import { toast } from "@kit/ui/sonner";
 import { Trans } from "@kit/ui/trans";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
-import type { User } from "@supabase/supabase-js";
 import { Check } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -28,17 +27,17 @@ import { useTranslation } from "react-i18next";
 import { PasswordUpdateSchema } from "../../../schema/update-password.schema";
 
 export const UpdatePasswordForm = ({
-	user,
+	email,
 	callbackPath,
 }: {
-	user: User;
+	email: string;
 	callbackPath: string;
 }) => {
 	const { t } = useTranslation("account");
 	const updateUserMutation = useUpdateUser();
 	const [needsReauthentication, setNeedsReauthentication] = useState(false);
 
-	const _updatePasswordFromCredential = (password: string) => {
+	const updatePasswordFromCredential = (password: string) => {
 		const redirectTo = [window.location.origin, callbackPath].join("");
 
 		const promise = updateUserMutation
@@ -66,15 +65,13 @@ export const UpdatePasswordForm = ({
 	}: {
 		newPassword: string;
 	}) => {
-		const email = user.email;
-
 		// if the user does not have an email assigned, it's possible they
 		// don't have an email/password factor linked, and the UI is out of sync
 		if (!email) {
 			return Promise.reject(t("cannotUpdatePassword"));
 		}
 
-		_updatePasswordFromCredential(newPassword);
+		updatePasswordFromCredential(newPassword);
 	};
 
 	const form = useForm({

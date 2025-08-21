@@ -17,7 +17,6 @@ import { Input } from "@kit/ui/input";
 import { toast } from "@kit/ui/sonner";
 import { Trans } from "@kit/ui/trans";
 import { CheckIcon } from "@radix-ui/react-icons";
-import type { User } from "@supabase/supabase-js";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
@@ -32,16 +31,16 @@ function createEmailResolver(currentEmail: string, errorMessage: string) {
 }
 
 export function UpdateEmailForm({
-	user,
+	email,
 	callbackPath,
 }: {
-	user: User;
+	email: string;
 	callbackPath: string;
 }) {
 	const { t } = useTranslation("account");
 	const updateUserMutation = useUpdateUser();
 
-	const _updateEmail = ({ email }: { email: string }) => {
+	const updateEmail = ({ email }: { email: string }) => {
 		// then, we update the user's email address
 		const promise = async () => {
 			const redirectTo = new URL(
@@ -59,14 +58,8 @@ export function UpdateEmailForm({
 		});
 	};
 
-	const currentEmail = user.email;
-
-	if (!currentEmail) {
-		throw new Error("User email is required for email update form");
-	}
-
 	const form = useForm({
-		resolver: createEmailResolver(currentEmail, t("emailNotMatching")),
+		resolver: createEmailResolver(email, t("emailNotMatching")),
 		defaultValues: {
 			email: "",
 			repeatEmail: "",
@@ -78,7 +71,7 @@ export function UpdateEmailForm({
 			<form
 				className={"flex flex-col space-y-4"}
 				data-test={"account-email-form"}
-				onSubmit={form.handleSubmit(_updateEmail)}
+				onSubmit={form.handleSubmit(updateEmail)}
 			>
 				<If condition={updateUserMutation.data}>
 					<Alert variant={"success"}>

@@ -23,7 +23,7 @@ on:
 jobs:
   health-check:
     name: Health Check
-    runs-on: ubicloud-standard-2
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     outputs:
       health_status: ${{ steps.health.outputs.status }}
     steps:
@@ -42,7 +42,7 @@ jobs:
 
   smoke-tests:
     name: Smoke Tests
-    runs-on: ubicloud-standard-2
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: health-check
     if: needs.health-check.outputs.health_status == 'healthy'
     outputs:
@@ -76,7 +76,7 @@ jobs:
 
   monitor-errors:
     name: Monitor Error Rate
-    runs-on: ubicloud-standard-2
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: [health-check, smoke-tests]
     if: needs.health-check.outputs.health_status == 'healthy' && needs.smoke-tests.outputs.smoke_status == 'passed'
     outputs:
@@ -117,7 +117,7 @@ jobs:
 
   rollback:
     name: Rollback Deployment
-    runs-on: ubicloud-standard-2
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: [health-check, smoke-tests, monitor-errors]
     if: |
       always() && (
@@ -168,7 +168,7 @@ jobs:
 
   notify-success:
     name: Notify Success
-    runs-on: ubicloud-standard-2
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: [health-check, smoke-tests, monitor-errors]
     if: |
       needs.health-check.outputs.health_status == 'healthy' &&

@@ -1,7 +1,6 @@
 "use client";
 
-import type * as LabelPrimitive from "@radix-ui/react-label";
-import { Slot } from "@radix-ui/react-slot";
+import { type Label as LabelPrimitive, Slot } from "radix-ui";
 import * as React from "react";
 import type { ControllerProps, FieldPath, FieldValues } from "react-hook-form";
 import { Controller, FormProvider, useFormContext } from "react-hook-form";
@@ -96,14 +95,14 @@ const FormLabel: React.FC<
 };
 FormLabel.displayName = "FormLabel";
 
-const FormControl: React.FC<React.ComponentPropsWithoutRef<typeof Slot>> = ({
-	...props
-}) => {
+const FormControl: React.FC<
+	React.ComponentPropsWithoutRef<typeof Slot.Root>
+> = ({ ...props }) => {
 	const { error, formItemId, formDescriptionId, formMessageId } =
 		useFormField();
 
 	return (
-		<Slot
+		<Slot.Root
 			id={formItemId}
 			aria-describedby={
 				!error

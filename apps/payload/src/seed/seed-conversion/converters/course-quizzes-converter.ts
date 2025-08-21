@@ -170,7 +170,8 @@ export async function convertCourseQuizzes(
 
 			// Add to reference manager
 			referenceManager.addMapping({
-				type: "course-quizzes",
+				type: "collection",
+				collection: "course-quizzes",
 				originalId: quizId,
 				identifier: quizId,
 			});

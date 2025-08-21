@@ -1,5 +1,5 @@
 import http from "k6/http";
-import { Rate, Trend, Counter } from "k6/metrics";
+import { Counter, Rate, Trend } from "k6/metrics";
 
 // New Relic configuration
 const NEW_RELIC_LICENSE_KEY = __ENV.NEW_RELIC_LICENSE_KEY || "";

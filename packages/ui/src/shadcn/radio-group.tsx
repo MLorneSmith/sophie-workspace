@@ -1,7 +1,7 @@
 "use client";
 
 import { CheckIcon } from "@radix-ui/react-icons";
-import * as RadioGroupPrimitive from "@radix-ui/react-radio-group";
+import { RadioGroup as RadioGroupPrimitive } from "radix-ui";
 import type * as React from "react";
 
 import { cn } from "../lib/utils";
@@ -44,7 +44,7 @@ const RadioGroupItemLabel = (
 	}>,
 ) => {
 	return (
-		// biome-ignore lint/a11y/noLabelWithoutControl: This is a wrapper component that contains RadioGroupItem as a child
+		// biome-ignore lint/a11y/noLabelWithoutControl: Radio input is handled by parent RadioGroup context
 		<label
 			className={cn(
 				props.className,

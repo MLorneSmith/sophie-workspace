@@ -114,7 +114,8 @@ export async function convertDocumentation(
 
 			// Add to reference manager
 			referenceManager.addMapping({
-				type: "documentation",
+				type: "collection",
+				collection: "documentation",
 				originalId: docId,
 				identifier: docId,
 			});

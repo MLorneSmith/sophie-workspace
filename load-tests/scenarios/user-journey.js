@@ -1,9 +1,9 @@
-import http from "k6/http";
-import { check, sleep, group } from "k6";
+import { check, group, sleep } from "k6";
 import { SharedArray } from "k6/data";
+import http from "k6/http";
 import { Rate, Trend } from "k6/metrics";
 import { apiBaseUrl, testUserEmail, testUserPassword } from "../k6.config.js";
-import { login, getAuthHeaders } from "../utils/auth.js";
+import { getAuthHeaders, login } from "../utils/auth.js";
 
 // Custom metrics
 export const journeyCompletionRate = new Rate("journey_completion");

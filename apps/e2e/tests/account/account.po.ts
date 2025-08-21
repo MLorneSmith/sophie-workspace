@@ -1,8 +1,8 @@
 import { expect, type Page } from "@playwright/test";
 
 import { AuthPageObject } from "../authentication/auth.po";
-import { OtpPo } from "../utils/otp.po";
 import { OnboardingPageObject } from "../onboarding/onboarding.po";
+import { OtpPo } from "../utils/otp.po";
 
 export class AccountPageObject {
 	private readonly page: Page;

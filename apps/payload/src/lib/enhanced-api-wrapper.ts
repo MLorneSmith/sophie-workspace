@@ -18,9 +18,6 @@ type LogData =
 	| null
 	| undefined;
 
-// Type for Payload API route arguments (commonly params like { collection: string })
-type PayloadRouteArgs = Record<string, string | string[]> | undefined;
-
 interface APIMetrics {
 	totalRequests: number;
 	successfulRequests: number;
@@ -87,13 +84,13 @@ class EnhancedAPIManager {
 	createEnhancedHandler(
 		originalHandler: (
 			request: Request,
-			args: PayloadRouteArgs,
+			args: { params: Promise<{ slug: string[] }> },
 		) => Promise<Response>,
 		method: string,
 	) {
 		return async (
 			request: NextRequest,
-			args?: PayloadRouteArgs,
+			args: { params: Promise<{ slug: string[] }> },
 		): Promise<NextResponse> => {
 			const requestId = this.generateRequestId();
 			const startTime = Date.now();
@@ -115,7 +112,7 @@ class EnhancedAPIManager {
 
 			try {
 				// Execute the original handler
-				const response = await originalHandler(request, args || {});
+				const response = await originalHandler(request, args);
 
 				// Calculate response time
 				const responseTime = Date.now() - startTime;
@@ -348,35 +345,39 @@ export function getEnhancedAPIManager(): EnhancedAPIManager {
 /**
  * Create enhanced versions of Payload API handlers
  */
-import {
-	REST_DELETE,
-	REST_GET,
-	REST_OPTIONS,
-	REST_PATCH,
-	REST_POST,
-	REST_PUT,
-} from "@payloadcms/next/routes";
+// Temporarily commented out - unused due to createEnhancedPayloadHandlers being disabled
+// import {
+// 	REST_DELETE,
+// 	REST_GET,
+// 	REST_OPTIONS,
+// 	REST_PATCH,
+// 	REST_POST,
+// 	REST_PUT,
+// } from "@payloadcms/next/routes";
 
 /**
  * Create enhanced versions of Payload API handlers
  * Note: This function is currently not used due to type compatibility issues
  * with newer Payload versions. The config parameter type has changed.
+ *
+ * Commented out to avoid TypeScript errors in CI/CD builds.
+ * TODO: Update this function when Payload types are resolved.
  */
-export function createEnhancedPayloadHandlers(config: unknown) {
-	const manager = getEnhancedAPIManager();
+// export function createEnhancedPayloadHandlers(config: unknown) {
+// 	const manager = getEnhancedAPIManager();
 
-	// Create enhanced handlers
-	const enhancedHandlers = {
-		GET: manager.createEnhancedHandler(REST_GET(config), "GET"),
-		POST: manager.createEnhancedHandler(REST_POST(config), "POST"),
-		DELETE: manager.createEnhancedHandler(REST_DELETE(config), "DELETE"),
-		PATCH: manager.createEnhancedHandler(REST_PATCH(config), "PATCH"),
-		PUT: manager.createEnhancedHandler(REST_PUT(config), "PUT"),
-		OPTIONS: manager.createEnhancedHandler(REST_OPTIONS(config), "OPTIONS"),
-	};
+// 	// Create enhanced handlers
+// 	const enhancedHandlers = {
+// 		GET: manager.createEnhancedHandler(REST_GET(config), "GET"),
+// 		POST: manager.createEnhancedHandler(REST_POST(config), "POST"),
+// 		DELETE: manager.createEnhancedHandler(REST_DELETE(config), "DELETE"),
+// 		PATCH: manager.createEnhancedHandler(REST_PATCH(config), "PATCH"),
+// 		PUT: manager.createEnhancedHandler(REST_PUT(config), "PUT"),
+// 		OPTIONS: manager.createEnhancedHandler(REST_OPTIONS(config), "OPTIONS"),
+// 	};
 
-	return enhancedHandlers;
-}
+// 	return enhancedHandlers;
+// }
 
 /**
  * Get API metrics for monitoring

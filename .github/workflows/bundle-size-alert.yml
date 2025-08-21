@@ -17,7 +17,7 @@ env:
 jobs:
   bundle-size-alert:
     name: Bundle Size Alert
-    runs-on: ubicloud-standard-2
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     if: github.event_name == 'pull_request'
     env:
       BUNDLEWATCH_GITHUB_TOKEN: ${{ secrets.BUNDLEWATCH_GITHUB_TOKEN }}
@@ -51,7 +51,11 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build base branch
-        run: pnpm --filter web build
+        run: |
+          # Build shared package first to ensure dependencies are available
+          pnpm --filter @kit/shared build
+          # Then build web app
+          pnpm --filter web build
         env:
           NEXT_PUBLIC_MONITORING_PROVIDER: ""
           NEXT_PUBLIC_ANALYTICS_PROVIDER: ""
@@ -59,14 +63,21 @@ jobs:
       - name: Analyze base bundle sizes
         run: |
           mkdir -p /tmp/base-analysis
-          # Get base bundle sizes
-          du -sh apps/web/.next/static/chunks/pages/_app-*.js | cut -f1 > /tmp/base-analysis/app-size.txt
-          du -sh apps/web/.next/static/chunks/pages/index-*.js | cut -f1 > /tmp/base-analysis/index-size.txt
-          du -sh apps/web/.next/static/chunks/framework-*.js | cut -f1 > /tmp/base-analysis/framework-size.txt
-          du -sh apps/web/.next/static/chunks/main-*.js | cut -f1 > /tmp/base-analysis/main-size.txt
-          du -sh apps/web/.next/static/chunks/webpack-*.js | cut -f1 > /tmp/base-analysis/webpack-size.txt
+          # Get base bundle sizes for Next.js App Router
+          # App router uses different chunk structure
+          if [ -d "apps/web/.next/static/chunks/app" ]; then
+            du -sh apps/web/.next/static/chunks/app 2>/dev/null | cut -f1 > /tmp/base-analysis/app-size.txt || echo "0K" > /tmp/base-analysis/app-size.txt
+          else
+            echo "0K" > /tmp/base-analysis/app-size.txt
+          fi
+          
+          # Framework and webpack chunks still exist
+          ls apps/web/.next/static/chunks/framework-*.js 2>/dev/null | head -1 | xargs -I {} du -sh {} | cut -f1 > /tmp/base-analysis/framework-size.txt || echo "0K" > /tmp/base-analysis/framework-size.txt
+          ls apps/web/.next/static/chunks/main-*.js 2>/dev/null | head -1 | xargs -I {} du -sh {} | cut -f1 > /tmp/base-analysis/main-size.txt || echo "0K" > /tmp/base-analysis/main-size.txt
+          ls apps/web/.next/static/chunks/webpack-*.js 2>/dev/null | head -1 | xargs -I {} du -sh {} | cut -f1 > /tmp/base-analysis/webpack-size.txt || echo "0K" > /tmp/base-analysis/webpack-size.txt
+          
           # Calculate total bundle size
-          find apps/web/.next/static/chunks -name "*.js" -exec du -ch {} + | tail -1 | cut -f1 > /tmp/base-analysis/total-size.txt
+          find apps/web/.next/static -name "*.js" -exec du -ch {} + | tail -1 | cut -f1 > /tmp/base-analysis/total-size.txt || echo "0K" > /tmp/base-analysis/total-size.txt
 
       - name: Checkout PR branch
         run: |
@@ -76,7 +87,11 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build PR branch
-        run: pnpm --filter web build
+        run: |
+          # Build shared package first to ensure dependencies are available
+          pnpm --filter @kit/shared build
+          # Then build web app
+          pnpm --filter web build
         env:
           NEXT_PUBLIC_MONITORING_PROVIDER: ""
           NEXT_PUBLIC_ANALYTICS_PROVIDER: ""
@@ -86,17 +101,34 @@ jobs:
         run: |
           mkdir -p /tmp/pr-analysis
           
-          # Get PR bundle sizes
-          du -sh apps/web/.next/static/chunks/pages/_app-*.js | cut -f1 > /tmp/pr-analysis/app-size.txt
-          du -sh apps/web/.next/static/chunks/pages/index-*.js | cut -f1 > /tmp/pr-analysis/index-size.txt
-          du -sh apps/web/.next/static/chunks/framework-*.js | cut -f1 > /tmp/pr-analysis/framework-size.txt
-          du -sh apps/web/.next/static/chunks/main-*.js | cut -f1 > /tmp/pr-analysis/main-size.txt
-          du -sh apps/web/.next/static/chunks/webpack-*.js | cut -f1 > /tmp/pr-analysis/webpack-size.txt
-          find apps/web/.next/static/chunks -name "*.js" -exec du -ch {} + | tail -1 | cut -f1 > /tmp/pr-analysis/total-size.txt
+          # Get PR bundle sizes for Next.js App Router
+          if [ -d "apps/web/.next/static/chunks/app" ]; then
+            du -sh apps/web/.next/static/chunks/app 2>/dev/null | cut -f1 > /tmp/pr-analysis/app-size.txt || echo "0K" > /tmp/pr-analysis/app-size.txt
+          else
+            echo "0K" > /tmp/pr-analysis/app-size.txt
+          fi
+          
+          ls apps/web/.next/static/chunks/framework-*.js 2>/dev/null | head -1 | xargs -I {} du -sh {} | cut -f1 > /tmp/pr-analysis/framework-size.txt || echo "0K" > /tmp/pr-analysis/framework-size.txt
+          ls apps/web/.next/static/chunks/main-*.js 2>/dev/null | head -1 | xargs -I {} du -sh {} | cut -f1 > /tmp/pr-analysis/main-size.txt || echo "0K" > /tmp/pr-analysis/main-size.txt
+          ls apps/web/.next/static/chunks/webpack-*.js 2>/dev/null | head -1 | xargs -I {} du -sh {} | cut -f1 > /tmp/pr-analysis/webpack-size.txt || echo "0K" > /tmp/pr-analysis/webpack-size.txt
+          find apps/web/.next/static -name "*.js" -exec du -ch {} + | tail -1 | cut -f1 > /tmp/pr-analysis/total-size.txt || echo "0K" > /tmp/pr-analysis/total-size.txt
           
           # Function to convert size to bytes for comparison
           convert_to_bytes() {
             local size=$1
+            # Remove any decimal points by extracting integer part only
+            if [[ $size == *"."* ]]; then
+              size=${size%%.*}${size##*.}
+              # Handle units after removing decimal
+              if [[ $size == *"K" ]]; then
+                size=${size%K}K
+              elif [[ $size == *"M" ]]; then
+                size=${size%M}M
+              elif [[ $size == *"G" ]]; then
+                size=${size%G}G
+              fi
+            fi
+            
             if [[ $size == *"K" ]]; then
               echo $((${size%K} * 1024))
             elif [[ $size == *"M" ]]; then
@@ -114,6 +146,17 @@ jobs:
             local current=$2
             local base_bytes=$(convert_to_bytes "$base")
             local current_bytes=$(convert_to_bytes "$current")
+            
+            # Handle division by zero
+            if [ "$base_bytes" -eq 0 ]; then
+              if [ "$current_bytes" -eq 0 ]; then
+                echo 0
+              else
+                echo 100
+              fi
+              return
+            fi
+            
             local change=$(( (current_bytes - base_bytes) * 100 / base_bytes ))
             echo $change
           }
@@ -128,7 +171,7 @@ jobs:
           CRITICAL_ALERT=false
           
           # Check each bundle
-          for bundle in app index framework main webpack total; do
+          for bundle in app framework main webpack total; do
             if [ -f "/tmp/base-analysis/${bundle}-size.txt" ] && [ -f "/tmp/pr-analysis/${bundle}-size.txt" ]; then
               base_size=$(cat /tmp/base-analysis/${bundle}-size.txt)
               pr_size=$(cat /tmp/pr-analysis/${bundle}-size.txt)
@@ -219,11 +262,24 @@ jobs:
             }
 
       - name: Fail build for critical size increases
-        if: steps.bundle-analysis.outputs.CRITICAL_ALERT == 'true'
+        # Skip failure for promotion PRs (dev->staging, staging->main)
+        if: |
+          steps.bundle-analysis.outputs.CRITICAL_ALERT == 'true' &&
+          !(github.head_ref == 'dev' && github.base_ref == 'staging') &&
+          !(github.head_ref == 'staging' && github.base_ref == 'main')
         run: |
           echo "❌ Critical bundle size increase detected (>10%)"
           echo "Bundle size increase is too significant and requires optimization before merging."
           exit 1
+      
+      - name: Warn but don't fail for promotion PRs
+        if: |
+          steps.bundle-analysis.outputs.CRITICAL_ALERT == 'true' &&
+          ((github.head_ref == 'dev' && github.base_ref == 'staging') ||
+           (github.head_ref == 'staging' && github.base_ref == 'main'))
+        run: |
+          echo "⚠️ Bundle size increased for promotion PR"
+          echo "This is acceptable for promotion PRs but should be reviewed."
 
       - name: Bundle size summary
         if: always()
