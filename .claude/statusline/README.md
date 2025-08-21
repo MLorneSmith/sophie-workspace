@@ -1,29 +1,57 @@
 # Claude Statusline Enhancements
 
 ## Overview
-Enhanced statusline for Claude Code that tracks build, test, and lint status in real-time.
+Enhanced statusline for Claude Code that tracks build, test, lint, and CI/CD status in real-time.
+
+### Requirements
+- **CI/CD Status**: Requires `gh` CLI to be installed and authenticated (`gh auth login`)
 
 ## Status Indicators
 
+### Freshness Indicators
+All status indicators use emojis to show how recent the results are:
+- `🟢` - Fresh (less than 30 minutes old)
+- `🟡` - Recent (30 minutes to 2 hours old)
+- `🔴` - Stale (more than 2 hours old) or Failed
+- `⚪` - Not run yet
+- `⟳` - Currently running
+
 ### Build Status
 - `⟳ building` - Build is currently running
-- `✓ build (Xs ago)` - Last build succeeded
-- `✗ build (X errors)` - Last build failed with X errors
-- `─ build` - Build artifacts exist but no recent build info
-- `─ no build` - No build artifacts found
+- `🟢 build (Xm)` - Build succeeded recently (< 30 min)
+- `🟡 build (Xh)` - Build succeeded (30 min - 2 hours ago)
+- `🔴 build (Xd)` - Build succeeded but stale (> 2 hours)
+- `🔴 build:X (Xh)` - Build failed with X errors
+- `⚪ build` - Build artifacts exist but hasn't been run
+- `⚪ no build` - No build artifacts found
 
 ### Test Status
 - `⟳ test` - Tests are currently running
-- `✓ test` - All tests passed
-- `✗ test:X` - X tests failed
-- No indicator - No recent test runs
+- `🟢 test (Xm)` - Tests passed recently (< 30 min)
+- `🟡 test (Xh)` - Tests passed (30 min - 2 hours ago)
+- `🔴 test (Xd)` - Tests passed but stale (> 2 hours)
+- `🔴 test:X (Xh)` - X tests failed
+- `⚪ test` - Test configuration found but tests haven't been run
+- `⚪ no test` - No test configuration found
 
-### Lint Status
-- `⟳ lint` - Linting is currently running
-- `✓ lint` - No lint issues
-- `✗ lint:X` - X lint errors
-- `✗ lint:X/Y` - X errors, Y warnings
-- No indicator - No recent lint runs
+### Codecheck Status (Combines Lint + TypeCheck)
+- `⟳ codecheck` - Code checking is currently running
+- `🟢 codecheck (Xm)` - Code check passed recently (< 30 min)
+- `🟡 codecheck (Xh)` - Code check passed (30 min - 2 hours ago)
+- `🔴 codecheck (Xd)` - Code check passed but stale (> 2 hours)
+- `🔴 codecheck:X (Xh)` - X total errors found
+- `🔴 codecheck:X/Y (Xh)` - X errors, Y warnings
+- `⚪ codecheck` - Code check configuration found but hasn't been run
+- `⚪ no codecheck` - No lint or TypeScript configuration found
+
+### CI/CD Status (GitHub Actions)
+- `⟳ CI` - Workflow is currently running or queued
+- `🟢 CI (Xm)` - CI passed recently (< 30 min)
+- `🟡 CI (Xh)` - CI passed (30 min - 2 hours ago)
+- `🔴 CI (Xd)` - CI passed but stale (> 2 hours)
+- `🔴 CI:fail (Xh)` - CI failed
+- `⚪ CI:cancel (Xh)` - CI was cancelled
+- No indicator - No GitHub Actions configured or gh CLI not available
 
 ## Using the Wrappers
 
@@ -32,8 +60,10 @@ Enhanced statusline for Claude Code that tracks build, test, and lint status in 
 # Run tests with tracking
 .claude/statusline/test-wrapper.sh pnpm test
 
-# Run linting with tracking
-.claude/statusline/lint-wrapper.sh pnpm lint
+# Run code checking (lint + typecheck) with tracking
+.claude/statusline/codecheck-wrapper.sh pnpm code-check
+.claude/statusline/codecheck-wrapper.sh pnpm lint
+.claude/statusline/codecheck-wrapper.sh pnpm typecheck
 
 # Run build with tracking
 .claude/statusline/build-wrapper.sh pnpm build
@@ -46,13 +76,14 @@ source .claude/statusline/aliases.sh
 
 # Use convenient aliases
 ctest           # Run tests with wrapper
-clint           # Run lint with wrapper
+ccodecheck      # Run code-check with wrapper
+ccode-check     # Alternate alias for code-check
 cbuild          # Run build with wrapper
 
 # Or use specific commands
-cpnpm-test      # pnpm test with wrapper
-cpnpm-lint      # pnpm lint with wrapper
-cpnpm-build     # pnpm build with wrapper
+cpnpm-test        # pnpm test with wrapper
+cpnpm-codecheck   # pnpm code-check with wrapper
+cpnpm-build       # pnpm build with wrapper
 ```
 
 ### Method 3: CI/CD Integration
@@ -63,8 +94,8 @@ In your CI/CD pipeline, use the wrappers directly:
 - name: Run tests
   run: .claude/statusline/test-wrapper.sh pnpm test
 
-- name: Run linting
-  run: .claude/statusline/lint-wrapper.sh pnpm lint
+- name: Run code checks (lint + typecheck)
+  run: .claude/statusline/codecheck-wrapper.sh pnpm code-check
 ```
 
 ### Method 4: Package.json Scripts
@@ -74,7 +105,7 @@ Update your package.json to use wrappers:
 {
   "scripts": {
     "test:tracked": ".claude/statusline/test-wrapper.sh pnpm test",
-    "lint:tracked": ".claude/statusline/lint-wrapper.sh pnpm lint",
+    "codecheck:tracked": ".claude/statusline/codecheck-wrapper.sh pnpm code-check",
     "build:tracked": ".claude/statusline/build-wrapper.sh pnpm build"
   }
 }
@@ -88,7 +119,8 @@ claude-clear-status
 
 # Run any command with appropriate wrapper
 claude-run test
-claude-run lint
+claude-run code-check
+claude-run codecheck
 claude-run build
 ```
 
@@ -102,13 +134,14 @@ claude-run build
 ## File Structure
 ```
 .claude/statusline/
-├── statusline.sh        # Main statusline script
-├── build-wrapper.sh     # Build command wrapper
-├── test-wrapper.sh      # Test command wrapper
-├── lint-wrapper.sh      # Lint command wrapper
-├── typecheck-wrapper.sh # TypeCheck wrapper
-├── aliases.sh          # Shell aliases for convenience
-└── README.md           # This file
+├── statusline.sh          # Main statusline script
+├── build-wrapper.sh       # Build command wrapper
+├── test-wrapper.sh        # Test command wrapper
+├── codecheck-wrapper.sh   # Combined lint+typecheck wrapper
+├── lint-wrapper.sh        # Legacy lint wrapper (still works)
+├── typecheck-wrapper.sh   # Legacy typecheck wrapper
+├── aliases.sh            # Shell aliases for convenience
+└── README.md             # This file
 ```
 
 ## Troubleshooting
