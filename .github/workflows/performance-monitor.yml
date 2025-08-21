@@ -26,7 +26,7 @@ permissions:
 jobs:
   monitor-performance:
     name: Monitor Performance Metrics
-    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
     if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
     steps:
       - uses: actions/checkout@v4
@@ -200,7 +200,7 @@ jobs:
   # Generate weekly performance report
   weekly-report:
     name: Generate Weekly Performance Report
-    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
     if: github.event_name == 'schedule' && github.event.schedule == '0 2 * * 1'
     steps:
       - uses: actions/checkout@v4

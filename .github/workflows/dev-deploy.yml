@@ -39,7 +39,7 @@ jobs:
   # Check if we should skip deployment (e.g., if recently deployed)
   check-skip:
     name: Check Skip Deployment
-    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
     outputs:
       should_deploy: ${{ steps.check.outputs.should_deploy }}
     steps:
@@ -85,7 +85,7 @@ jobs:
   # Pre-deployment validation (quick checks before deploying)
   validate:
     name: Pre-deployment Validation
-    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64  # Reduced CPUs - sufficient for lint/typecheck
+    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64  # Reduced CPUs - sufficient for lint/typecheck
     needs: check-skip
     if: needs.check-skip.outputs.should_deploy == 'true'
     steps:
@@ -139,7 +139,7 @@ jobs:
   # Deploy Web App to Vercel Dev environment (let Vercel handle the build)
   deploy-web:
     name: Deploy Web App to Dev
-    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64  # Increased CPUs for faster Vercel operations
+    runs-on: runs-on=${{ github.run_id }},runner=4cpu-linux-x64  # Increased CPUs for faster Vercel operations
     needs: [check-skip, validate]
     if: needs.check-skip.outputs.should_deploy == 'true'
     environment:
@@ -195,7 +195,7 @@ jobs:
   # Deploy Payload CMS to Vercel Dev environment (let Vercel handle the build)
   deploy-payload:
     name: Deploy Payload CMS to Dev
-    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64  # Increased CPUs for faster Vercel operations
+    runs-on: runs-on=${{ github.run_id }},runner=4cpu-linux-x64  # Increased CPUs for faster Vercel operations
     needs: [check-skip, validate]
     if: needs.check-skip.outputs.should_deploy == 'true'
     environment:
@@ -251,7 +251,7 @@ jobs:
   # Notify New Relic of deployment
   notify-monitoring:
     name: Notify Monitoring
-    runs-on: runs-on=${{ github.run_id }}/runner=1cpu-linux-x64  # Minimal runner for notification
+    runs-on: runs-on=${{ github.run_id }},runner=1cpu-linux-x64  # Minimal runner for notification
     needs: [check-skip, deploy-web, deploy-payload]
     if: needs.check-skip.outputs.should_deploy == 'true'
     continue-on-error: true
