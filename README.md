@@ -3,6 +3,8 @@
 SlideHeroes is a SaaS platform for learning how to write board-level business presentations
 and accelerating presentation creation with AI-powered tools.
 
+<!-- Test RunsOn integration -->
+
 ## Build Status
 
 [![PR Validation](https://github.com/MLorneSmith/2025slideheroes/actions/workflows/pr-validation.yml/badge.svg)](https://github.com/MLorneSmith/2025slideheroes/actions/workflows/pr-validation.yml)
