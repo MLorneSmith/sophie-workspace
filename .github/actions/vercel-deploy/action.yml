@@ -46,6 +46,7 @@ runs:
           # Try npm first (more reliable for global installs)
           npm install -g vercel@latest || {
             # Fallback to pnpm if npm fails
+            export SHELL=/bin/bash
             export PNPM_HOME="$HOME/.local/share/pnpm"
             export PATH="$PNPM_HOME:$PATH"
             pnpm setup

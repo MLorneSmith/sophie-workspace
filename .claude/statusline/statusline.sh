@@ -8,9 +8,9 @@ model=$(echo "$input" | jq -r '.model.display_name' | tr '[:upper:]' '[:lower:]'
 
 # Age indicators using symbols instead of colors
 # Since colors might not work in all terminals, use symbols to indicate freshness
-# 🟢 = Fresh (< 30 min)
-# 🟡 = Recent (< 2 hours)  
-# 🔴 = Stale (> 2 hours)
+# 🟢 = Fresh (< 4 hours)
+# 🟡 = Recent (< 8 hours)  
+# 🔴 = Stale (> 8 hours)
 # ⚪ = Not run
 
 # Get git repository root (used for consistent status file paths)
@@ -42,11 +42,11 @@ elif [ -f "$build_log_file" ]; then
         time_diff=$((current_time - build_time))
         
         # Determine freshness indicator based on age
-        if [ $time_diff -lt 1800 ]; then  # Less than 30 minutes
+        if [ $time_diff -lt 14400 ]; then  # Less than 4 hours
             age_indicator="🟢"
-        elif [ $time_diff -lt 7200 ]; then  # Less than 2 hours
+        elif [ $time_diff -lt 28800 ]; then  # Less than 8 hours
             age_indicator="🟡"
-        else  # Older than 2 hours
+        else  # Older than 8 hours
             age_indicator="🔴"
         fi
         
@@ -171,11 +171,11 @@ elif [ -f "$codecheck_log_file" ]; then
         time_diff=$((current_time - check_time))
         
         # Determine freshness indicator based on age
-        if [ $time_diff -lt 1800 ]; then  # Less than 30 minutes
+        if [ $time_diff -lt 14400 ]; then  # Less than 4 hours
             age_indicator="🟢"
-        elif [ $time_diff -lt 7200 ]; then  # Less than 2 hours
+        elif [ $time_diff -lt 28800 ]; then  # Less than 8 hours
             age_indicator="🟡"
-        else  # Older than 2 hours
+        else  # Older than 8 hours
             age_indicator="🔴"
         fi
         
@@ -220,11 +220,11 @@ elif [ -f "$lint_log_file" ]; then
         time_diff=$((current_time - lint_time))
         
         # Determine freshness indicator based on age
-        if [ $time_diff -lt 1800 ]; then  # Less than 30 minutes
+        if [ $time_diff -lt 14400 ]; then  # Less than 4 hours
             age_indicator="🟢"
-        elif [ $time_diff -lt 7200 ]; then  # Less than 2 hours
+        elif [ $time_diff -lt 28800 ]; then  # Less than 8 hours
             age_indicator="🟡"
-        else  # Older than 2 hours
+        else  # Older than 8 hours
             age_indicator="🔴"
         fi
         
