@@ -7,42 +7,42 @@ Run all available tests across the project using the correct pnpm scripts.
 1. Run all tests (unit + E2E):
 
    ```bash
-   # Run unit tests first
-   pnpm test
+   # Run unit tests first (with statusline tracking)
+   /home/msmith/projects/2025slideheroes/.claude/statusline/test-wrapper.sh pnpm test
 
    # Then run E2E tests (includes server orchestration)
-   pnpm test:e2e
+   /home/msmith/projects/2025slideheroes/.claude/statusline/test-wrapper.sh pnpm test:e2e
    ```
 
 2. Run only unit tests (no dev server needed):
 
    ```bash
-   pnpm test
+   /home/msmith/projects/2025slideheroes/.claude/statusline/test-wrapper.sh pnpm test
    ```
 
 3. Run only E2E tests (includes server startup):
 
    ```bash
    # Run E2E tests
-   pnpm test:e2e
+   /home/msmith/projects/2025slideheroes/.claude/statusline/test-wrapper.sh pnpm test:e2e
    ```
 
 4. Run tests for a specific workspace:
 
    ```bash
-   pnpm turbo test --filter=@slideheroes/[workspace-name]
+   /home/msmith/projects/2025slideheroes/.claude/statusline/test-wrapper.sh pnpm turbo test --filter=@slideheroes/[workspace-name]
    ```
 
 5. Run tests with coverage:
 
    ```bash
-   pnpm turbo test -- --coverage
+   /home/msmith/projects/2025slideheroes/.claude/statusline/test-wrapper.sh pnpm turbo test -- --coverage
    ```
 
 6. Run tests in watch mode:
 
    ```bash
-   pnpm turbo test -- --watch
+   /home/msmith/projects/2025slideheroes/.claude/statusline/test-wrapper.sh pnpm turbo test -- --watch
    ```
 
 7. If tests fail:
