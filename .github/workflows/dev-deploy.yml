@@ -149,21 +149,12 @@ jobs:
       url: ${{ steps.deploy.outputs.url }}
     steps:
       - uses: actions/checkout@v4
-        with:
-          sparse-checkout: |
-            .github/actions/vercel-deploy
-            vercel.json
-            .vercelignore
 
-      - name: Setup minimal deps for deployment
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        
+      - name: Install Vercel CLI
         run: |
-          # Install pnpm and vercel CLI only, not all project dependencies
-          npm install -g pnpm@latest
-          export SHELL=/bin/bash
-          export PNPM_HOME="$HOME/.local/share/pnpm"
-          export PATH="$PNPM_HOME:$PATH"
-          pnpm setup
-          source ~/.bashrc 2>/dev/null || true
           pnpm add -g vercel@latest
 
       - name: Deploy to Vercel
@@ -214,21 +205,12 @@ jobs:
       url: ${{ steps.deploy.outputs.url }}
     steps:
       - uses: actions/checkout@v4
-        with:
-          sparse-checkout: |
-            .github/actions/vercel-deploy
-            vercel.json
-            .vercelignore
 
-      - name: Setup minimal deps for deployment
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        
+      - name: Install Vercel CLI
         run: |
-          # Install pnpm and vercel CLI only, not all project dependencies
-          npm install -g pnpm@latest
-          export SHELL=/bin/bash
-          export PNPM_HOME="$HOME/.local/share/pnpm"
-          export PATH="$PNPM_HOME:$PATH"
-          pnpm setup
-          source ~/.bashrc 2>/dev/null || true
           pnpm add -g vercel@latest
 
       - name: Deploy to Vercel
