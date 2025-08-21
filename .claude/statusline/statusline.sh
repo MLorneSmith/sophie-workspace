@@ -274,18 +274,26 @@ if command -v gh &> /dev/null && [ -d "${GIT_ROOT}/.github/workflows" ]; then
     ci_cache_file="/tmp/.claude_ci_status_${GIT_ROOT//\//_}"
     current_time=$(date +%s)
     
-    # Check if cache exists and is fresh (less than 5 minutes old)
+    # Check if cache exists and is fresh
     if [ -f "$ci_cache_file" ]; then
         cache_time=$(stat -c %Y "$ci_cache_file" 2>/dev/null || stat -f %m "$ci_cache_file" 2>/dev/null || echo 0)
         cache_age=$((current_time - cache_time))
+        ci_status=$(cat "$ci_cache_file" 2>/dev/null)
         
-        if [ $cache_age -lt 300 ]; then  # Less than 5 minutes
-            ci_status=$(cat "$ci_cache_file" 2>/dev/null)
+        # For in-progress status, use shorter cache time (30 seconds)
+        # For other statuses, use normal cache time (5 minutes)
+        if [[ "$ci_status" == *"⟳"* ]]; then
+            if [ $cache_age -ge 30 ]; then  # Refresh in-progress after 30 seconds
+                ci_status=""
+            fi
+        elif [ $cache_age -ge 300 ]; then  # Refresh others after 5 minutes
+            ci_status=""
         fi
     fi
     
     # If no cached status or cache is stale, fetch new status
-    if [ -z "$ci_status" ]; then
+    # Also refresh if cached status is "in_progress" to avoid stale running states
+    if [ -z "$ci_status" ] || [[ "$ci_status" == *"⟳"* ]]; then
         # Get the latest workflow run status
         latest_run=$(gh run list --limit 1 --json status,conclusion,createdAt 2>/dev/null)
         
