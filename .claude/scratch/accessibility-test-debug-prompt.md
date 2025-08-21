@@ -114,4 +114,4 @@ This seems to be related to github issues #115 and #124
 
 # Your Task
 1. run the /log-issue command to create a github issue for this problem
-2. include reference to the error and past related github issues
+2. include reference to the error and past related github issueslog-task to 
