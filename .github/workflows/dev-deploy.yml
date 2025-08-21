@@ -247,6 +247,7 @@ jobs:
             pnpm-lock.yaml
             pnpm-workspace.yaml
             .npmrc
+            .github/actions/setup-deps
 
       - uses: ./.github/actions/setup-deps
 
