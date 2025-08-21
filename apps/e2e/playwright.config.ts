@@ -79,6 +79,14 @@ export default defineConfig({
 		/* Base URL to use in actions like `await page.goto('/')`. */
 		baseURL: process.env.PLAYWRIGHT_BASE_URL || "http://localhost:3000",
 
+		/* Extra HTTP headers for Vercel preview protection bypass */
+		extraHTTPHeaders: process.env.VERCEL_AUTOMATION_BYPASS_SECRET
+			? {
+					"x-vercel-protection-bypass":
+						process.env.VERCEL_AUTOMATION_BYPASS_SECRET,
+				}
+			: undefined,
+
 		/* Enhanced screenshot configuration for matrix testing */
 		screenshot: {
 			mode: "only-on-failure",
