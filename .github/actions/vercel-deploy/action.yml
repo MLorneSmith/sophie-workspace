@@ -66,8 +66,15 @@ runs:
       run: |
         # Deploy to Vercel
         echo "🚀 Deploying to Vercel..."
-        # Note: We always let Vercel handle the build process
-        # Even with pre-built artifacts, Vercel needs to run its build for proper deployment
+        
+        # When build-artifacts is false, Vercel handles the entire build process
+        # This is the optimized path for CI/CD deployments
+        if [ "${{ inputs.build-artifacts }}" = "false" ]; then
+          echo "📦 Letting Vercel handle the build process (optimized path)"
+        else
+          echo "⚠️ Using pre-built artifacts (legacy path - consider removing)"
+        fi
+        
         if [ "${{ inputs.environment }}" = "production" ]; then
           url=$(vercel deploy --prod --token=${{ inputs.token }} --yes)
         elif [ "${{ inputs.environment }}" = "staging" ]; then
