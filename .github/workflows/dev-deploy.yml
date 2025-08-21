@@ -4,6 +4,16 @@ on:
   push:
     branches:
       - dev
+    paths-ignore:
+      - '**.md'
+      - '**.mdx'
+      - 'docs/**'
+      - '.github/**.md'
+      - '.claude/**'
+      - '.vscode/**'
+      - 'LICENSE'
+      - '.gitignore'
+      - '.env.example'
   workflow_dispatch:
 
 concurrency:
@@ -83,13 +93,39 @@ jobs:
 
       - uses: ./.github/actions/setup-deps
 
-      - name: TypeScript check
-        run: pnpm typecheck
-        continue-on-error: false
-
-      - name: Lint check
-        run: pnpm lint
-        continue-on-error: false
+      - name: Run validation checks in parallel
+        run: |
+          # Run typecheck and lint in parallel for faster feedback
+          pnpm typecheck &
+          TYPECHECK_PID=$!
+          
+          pnpm lint &
+          LINT_PID=$!
+          
+          # Wait for both to complete and capture exit codes
+          wait $TYPECHECK_PID
+          TYPECHECK_EXIT=$?
+          
+          wait $LINT_PID
+          LINT_EXIT=$?
+          
+          # Report results
+          if [ $TYPECHECK_EXIT -ne 0 ]; then
+            echo "❌ TypeScript check failed"
+          else
+            echo "✅ TypeScript check passed"
+          fi
+          
+          if [ $LINT_EXIT -ne 0 ]; then
+            echo "❌ Lint check failed"
+          else
+            echo "✅ Lint check passed"
+          fi
+          
+          # Exit with failure if either check failed
+          if [ $TYPECHECK_EXIT -ne 0 ] || [ $LINT_EXIT -ne 0 ]; then
+            exit 1
+          fi
 
   # Deploy Web App to Vercel Dev environment (let Vercel handle the build)
   deploy-web:
@@ -201,19 +237,50 @@ jobs:
     if: needs.check-skip.outputs.should_deploy == 'true'
     environment: development
     continue-on-error: false # Make it blocking to catch issues early
-    timeout-minutes: 10
+    timeout-minutes: 8 # Reduced from 10 for faster feedback
     steps:
       - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            apps/e2e
+            package.json
+            pnpm-lock.yaml
+            pnpm-workspace.yaml
+            .npmrc
 
       - uses: ./.github/actions/setup-deps
 
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
+
       - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: pnpm --filter web-e2e exec playwright install --with-deps chromium
+
+      - name: Ensure Playwright dependencies
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: pnpm --filter web-e2e exec playwright install-deps chromium
+
+      - name: Wait for deployment to stabilize
+        run: |
+          echo "⏳ Waiting for deployment to stabilize..."
+          sleep 5
+          # Quick health check before running tests
+          curl -f -s -o /dev/null -w "%{http_code}" \
+            -H "x-vercel-protection-bypass: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" \
+            "${{ needs.deploy-web.outputs.url }}/healthcheck" || true
 
       - name: Run E2E smoke tests
         run: |
           # Run only critical path tests for fast feedback
-          pnpm --filter web-e2e test:smoke
+          # Reduced retries from 2 to 1 for faster feedback
+          pnpm --filter web-e2e exec playwright test --grep @smoke --project=chromium --retries=1
         env:
           PLAYWRIGHT_BASE_URL: ${{ needs.deploy-web.outputs.url }}
           E2E_TEST_EMAIL: ${{ secrets.E2E_TEST_EMAIL }}
@@ -226,6 +293,8 @@ jobs:
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
           # Skip local server startup
           CI: true
+          # Optimize Playwright for CI
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
 
   # Notify New Relic of deployment
   notify-monitoring:
