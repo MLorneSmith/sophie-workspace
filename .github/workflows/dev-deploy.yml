@@ -39,7 +39,7 @@ jobs:
   # Check if we should skip deployment (e.g., if recently deployed)
   check-skip:
     name: Check Skip Deployment
-    runs-on: ubuntu-latest
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     outputs:
       should_deploy: ${{ steps.check.outputs.should_deploy }}
     steps:
@@ -85,7 +85,7 @@ jobs:
   # Pre-deployment validation (quick checks before deploying)
   validate:
     name: Pre-deployment Validation
-    runs-on: ubuntu-latest
+    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
     needs: check-skip
     if: needs.check-skip.outputs.should_deploy == 'true'
     steps:
@@ -130,7 +130,7 @@ jobs:
   # Deploy Web App to Vercel Dev environment (let Vercel handle the build)
   deploy-web:
     name: Deploy Web App to Dev
-    runs-on: ubuntu-latest
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: [check-skip, validate]
     if: needs.check-skip.outputs.should_deploy == 'true'
     environment:
@@ -181,7 +181,7 @@ jobs:
   # Deploy Payload CMS to Vercel Dev environment (let Vercel handle the build)
   deploy-payload:
     name: Deploy Payload CMS to Dev
-    runs-on: ubuntu-latest
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: [check-skip, validate]
     if: needs.check-skip.outputs.should_deploy == 'true'
     environment:
@@ -232,7 +232,7 @@ jobs:
   # Run E2E tests against dev environment
   e2e-smoke:
     name: E2E Smoke Tests
-    runs-on: ubuntu-latest
+    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
     needs: [check-skip, deploy-web]
     if: needs.check-skip.outputs.should_deploy == 'true'
     environment: development
@@ -300,7 +300,7 @@ jobs:
   # Notify New Relic of deployment
   notify-monitoring:
     name: Notify Monitoring
-    runs-on: ubuntu-latest
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: [check-skip, deploy-web, deploy-payload]
     if: needs.check-skip.outputs.should_deploy == 'true'
     continue-on-error: true
