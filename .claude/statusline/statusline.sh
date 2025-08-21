@@ -3,8 +3,8 @@
 # Read JSON input from stdin
 input=$(cat)
 
-# Extract model display name
-model=$(echo "$input" | jq -r '.model.display_name')
+# Extract model display name and convert to lowercase
+model=$(echo "$input" | jq -r '.model.display_name' | tr '[:upper:]' '[:lower:]')
 
 # Age indicators using symbols instead of colors
 # Since colors might not work in all terminals, use symbols to indicate freshness
@@ -324,7 +324,7 @@ if command -v gh &> /dev/null && [ -d "${GIT_ROOT}/.github/workflows" ]; then
             fi
             
             # Determine status indicator
-            if [ "$run_status" = "in_progress" ] || [ "$run_status" = "queued" ]; then
+            if [ "$run_status" = "in_progress" ] || [ "$run_status" = "queued" ] || [ "$run_status" = "pending" ]; then
                 ci_status="⟳ cicd"
             elif [ "$run_status" = "completed" ]; then
                 if [ "$run_conclusion" = "success" ]; then
@@ -378,13 +378,13 @@ if command -v gh &> /dev/null && [ -d "${GIT_ROOT}/.git" ]; then
             
             if [ "$pr_state" = "OPEN" ]; then
                 if [ "$pr_draft" = "true" ]; then
-                    pr_status="📝 PR:draft"
+                    pr_status="📝 pr:draft"
                 elif [ "$pr_review" = "APPROVED" ]; then
-                    pr_status="✅ PR:approved"
+                    pr_status="✅ pr:approved"
                 elif [ "$pr_review" = "CHANGES_REQUESTED" ]; then
-                    pr_status="🔄 PR:changes"
+                    pr_status="🔄 pr:changes"
                 elif [ "$pr_review" = "REVIEW_REQUIRED" ] || [ "$pr_review" = "null" ] || [ -z "$pr_review" ]; then
-                    pr_status="👀 PR:review"
+                    pr_status="👀 pr:review"
                 fi
                 
                 # Add PR number if available
@@ -396,9 +396,9 @@ if command -v gh &> /dev/null && [ -d "${GIT_ROOT}/.git" ]; then
             
             if [ -n "$review_prs" ] && [ "$review_prs" -gt 0 ]; then
                 if [ "$review_prs" -eq 1 ]; then
-                    pr_status="🔍 PR:1 needs review"
+                    pr_status="🔍 pr:1 needs review"
                 else
-                    pr_status="🔍 PR:$review_prs need review"
+                    pr_status="🔍 pr:$review_prs need review"
                 fi
             fi
         fi
