@@ -113,13 +113,23 @@ test.describe('Admin', () => {
       // Try with invalid confirmation
       await page.fill('[placeholder="Type CONFIRM to confirm"]', 'WRONG');
       await page.getByRole('button', { name: 'Ban User' }).click();
+
       await expect(
         page.getByRole('heading', { name: 'Ban User' }),
       ).toBeVisible(); // Dialog should still be open
 
       // Confirm with correct text
       await page.fill('[placeholder="Type CONFIRM to confirm"]', 'CONFIRM');
-      await page.getByRole('button', { name: 'Ban User' }).click();
+
+      await Promise.all([
+        page.getByRole('button', { name: 'Ban User' }).click(),
+        page.waitForResponse(
+          (response) =>
+            response.url().includes('/admin/accounts') &&
+            response.status() === 200,
+        ),
+      ]);
+
       await expect(page.getByText('Banned')).toBeVisible();
 
       await page.context().clearCookies();
@@ -156,7 +166,15 @@ test.describe('Admin', () => {
       ).toBeVisible();
 
       await page.fill('[placeholder="Type CONFIRM to confirm"]', 'CONFIRM');
-      await page.getByRole('button', { name: 'Reactivate User' }).click();
+
+      await Promise.all([
+        page.getByRole('button', { name: 'Reactivate User' }).click(),
+        page.waitForResponse(
+          (response) =>
+            response.url().includes('/admin/accounts') &&
+            response.status() === 200,
+        ),
+      ]);
 
       // Verify ban badge is removed
       await expect(page.getByText('Banned')).not.toBeVisible();
@@ -192,26 +210,31 @@ test.describe('Admin', () => {
 
     test('delete user flow', async ({ page }) => {
       await page.getByTestId('admin-delete-account-button').click();
+
       await expect(
         page.getByRole('heading', { name: 'Delete User' }),
       ).toBeVisible();
 
       // Try with invalid confirmation
       await page.fill('[placeholder="Type CONFIRM to confirm"]', 'WRONG');
+
       await page.getByRole('button', { name: 'Delete' }).click();
+
       await expect(
         page.getByRole('heading', { name: 'Delete User' }),
       ).toBeVisible(); // Dialog should still be open
 
       // Confirm with correct text
       await page.fill('[placeholder="Type CONFIRM to confirm"]', 'CONFIRM');
+
       await page.getByRole('button', { name: 'Delete' }).click();
 
       // Should redirect to admin dashboard
-      await expect(page).toHaveURL('/admin/accounts');
+      await page.waitForURL('/admin/accounts');
 
       // Log out
       await page.context().clearCookies();
+      await page.waitForURL('/');
 
       // Verify user can't log in
       await page.goto('/auth/sign-in');
@@ -231,7 +254,10 @@ test.describe('Admin', () => {
   });
 
   test.describe('Team Account Management', () => {
-    test.skip(process.env.ENABLE_TEAM_ACCOUNT_TESTS !== 'true', 'Team account tests are disabled');
+    test.skip(
+      process.env.ENABLE_TEAM_ACCOUNT_TESTS !== 'true',
+      'Team account tests are disabled',
+    );
 
     let testUserEmail: string;
     let teamName: string;
@@ -358,6 +384,7 @@ async function createUser(
 async function filterAccounts(page: Page, email: string) {
   await page
     .locator('[data-test="admin-accounts-table-filter-input"]')
+    .first()
     .fill(email);
 
   await page.keyboard.press('Enter');
@@ -366,4 +393,6 @@ async function filterAccounts(page: Page, email: string) {
 
 async function selectAccount(page: Page, email: string) {
   await page.getByRole('link', { name: email.split('@')[0] }).click();
+  await page.waitForURL(new RegExp(`/admin/accounts/[a-z0-9-]+`));
+  await page.waitForTimeout(500);
 }

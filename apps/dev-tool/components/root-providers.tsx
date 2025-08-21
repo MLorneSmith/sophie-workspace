@@ -4,10 +4,18 @@ import { useState } from 'react';
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
+import { I18nProvider } from '@kit/i18n/provider';
 import { Toaster } from '@kit/ui/sonner';
 
-export function RootProviders({ children }: React.PropsWithChildren) {
-  return <ReactQueryProvider>{children}</ReactQueryProvider>;
+import { i18nResolver } from '../lib/i18n/i18n.resolver';
+import { getI18nSettings } from '../lib/i18n/i18n.settings';
+
+export function RootProviders(props: React.PropsWithChildren) {
+  return (
+    <I18nProvider settings={getI18nSettings('en')} resolver={i18nResolver}>
+      <ReactQueryProvider>{props.children}</ReactQueryProvider>
+    </I18nProvider>
+  );
 }
 
 function ReactQueryProvider(props: React.PropsWithChildren) {

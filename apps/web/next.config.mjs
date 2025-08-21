@@ -52,6 +52,7 @@ const config = {
   experimental: {
     mdxRs: true,
     reactCompiler: ENABLE_REACT_COMPILER,
+    clientSegmentCache: true,
     optimizePackageImports: [
       'recharts',
       'lucide-react',

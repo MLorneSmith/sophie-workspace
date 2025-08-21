@@ -63,13 +63,15 @@ export function AdminAccountsTable(
         <AccountsTableFilters filters={props.filters} />
       </div>
 
-      <DataTable
-        pageSize={props.pageSize}
-        pageIndex={props.page - 1}
-        pageCount={props.pageCount}
-        data={props.data}
-        columns={getColumns()}
-      />
+      <div className={'rounded-lg border p-2'}>
+        <DataTable
+          pageSize={props.pageSize}
+          pageIndex={props.page - 1}
+          pageCount={props.pageCount}
+          data={props.data}
+          columns={getColumns()}
+        />
+      </div>
     </div>
   );
 }

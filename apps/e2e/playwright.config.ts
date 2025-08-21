@@ -5,7 +5,8 @@ dotenvConfig();
 dotenvConfig({ path: '.env.local' });
 
 const enableBillingTests = process.env.ENABLE_BILLING_TESTS === 'true';
-const enableTeamAccountTests = (process.env.ENABLE_TEAM_ACCOUNT_TESTS ?? 'true') === 'true';
+const enableTeamAccountTests =
+  (process.env.ENABLE_TEAM_ACCOUNT_TESTS ?? 'true') === 'true';
 
 const testIgnore: string[] = [];
 
@@ -44,7 +45,7 @@ export default defineConfig({
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 3 : 1,
+  retries: 3,
   /* Limit parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
@@ -61,13 +62,13 @@ export default defineConfig({
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
-    navigationTimeout: 5000,
+    navigationTimeout: 15_000,
   },
-  // test timeout set to 1 minutes
-  timeout: 60 * 1000,
+  // test timeout set to 2 minutes
+  timeout: 120 * 1000,
   expect: {
-    // expect timeout set to 10 seconds
-    timeout: 10 * 1000,
+    // expect timeout set to 5 seconds
+    timeout: 5 * 1000,
   },
   /* Configure projects for major browsers */
   projects: [

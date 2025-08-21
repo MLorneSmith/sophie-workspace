@@ -2,6 +2,8 @@
 
 import { useState, useTransition } from 'react';
 
+import { isRedirectError } from 'next/dist/client/components/redirect-error';
+
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 
@@ -71,9 +73,14 @@ export function AdminDeleteUserDialog(
               startTransition(async () => {
                 try {
                   await deleteUserAction(data);
+
                   setError(false);
                 } catch {
-                  setError(true);
+                  if (isRedirectError(error)) {
+                    // Do nothing
+                  } else {
+                    setError(true);
+                  }
                 }
               });
             })}

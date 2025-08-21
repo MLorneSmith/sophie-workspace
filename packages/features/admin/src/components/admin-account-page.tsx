@@ -151,7 +151,7 @@ async function PersonalAccountPage(props: { account: Account }) {
           <div className={'divider-divider-x flex flex-col gap-y-2.5'}>
             <Heading level={6}>Teams</Heading>
 
-            <div>
+            <div className={'rounded-lg border p-2'}>
               <AdminMembershipsTable memberships={memberships} />
             </div>
           </div>
@@ -216,7 +216,9 @@ async function TeamAccountPage(props: {
             <div className={'flex flex-col gap-y-2.5'}>
               <Heading level={6}>Team Members</Heading>
 
-              <AdminMembersTable members={members} />
+              <div className={'rounded-lg border p-2'}>
+                <AdminMembersTable members={members} />
+              </div>
             </div>
           </div>
         </div>
