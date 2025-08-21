@@ -76,7 +76,8 @@
 			"Bash(gh run view:*)",
 			"Bash(gh api:*)"
 		],
-		"deny": []
+		"deny": [],
+		"additionalDirectories": ["/home/msmith"]
 	},
 	"enableAllProjectMcpServers": true,
 	"enabledMcpjsonServers": [
