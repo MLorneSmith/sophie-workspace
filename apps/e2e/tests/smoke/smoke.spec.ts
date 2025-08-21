@@ -1,15 +1,15 @@
 import { expect, test } from "@playwright/test";
 
-test.describe("Smoke Tests", () => {
+test.describe("Smoke Tests @smoke", () => {
 	test.describe.configure({ mode: "parallel" });
 
-	test("homepage loads successfully", async ({ page }) => {
+	test("homepage loads successfully @smoke", async ({ page }) => {
 		await page.goto("/");
 		await expect(page).toHaveTitle(/SlideHeroes/);
 		await expect(page.locator("h1")).toBeVisible();
 	});
 
-	test("health check endpoint responds", async ({ request }) => {
+	test("health check endpoint responds @smoke", async ({ request }) => {
 		const response = await request.get("/healthcheck");
 		expect(response.status()).toBe(200);
 
@@ -23,7 +23,7 @@ test.describe("Smoke Tests", () => {
 		);
 	});
 
-	test("sign in page loads", async ({ page }) => {
+	test("sign in page loads @smoke", async ({ page }) => {
 		await page.goto("/auth/sign-in");
 		const signInForm = page.locator('[data-testid="auth-sign-in-form"]');
 		await expect(signInForm).toBeVisible();
@@ -31,7 +31,7 @@ test.describe("Smoke Tests", () => {
 		await expect(signInForm.locator('input[name="password"]')).toBeVisible();
 	});
 
-	test("sign up page loads", async ({ page }) => {
+	test("sign up page loads @smoke", async ({ page }) => {
 		await page.goto("/auth/sign-up");
 		const signUpForm = page.locator('[data-testid="auth-sign-up-form"]');
 		await expect(signUpForm).toBeVisible();
@@ -39,7 +39,7 @@ test.describe("Smoke Tests", () => {
 		await expect(signUpForm.locator('input[name="password"]')).toBeVisible();
 	});
 
-	test("API health endpoint responds", async ({ request }) => {
+	test("API health endpoint responds @smoke", async ({ request }) => {
 		const response = await request.get("/api/health");
 
 		// Allow 200 or 404 since the endpoint might not exist yet
@@ -51,7 +51,7 @@ test.describe("Smoke Tests", () => {
 		}
 	});
 
-	test("navigation menu works", async ({ page }) => {
+	test("navigation menu works @smoke", async ({ page }) => {
 		await page.goto("/");
 
 		// Check main navigation exists
@@ -65,12 +65,12 @@ test.describe("Smoke Tests", () => {
 		}
 	});
 
-	test("404 page handles unknown routes", async ({ page }) => {
+	test("404 page handles unknown routes @smoke", async ({ page }) => {
 		const response = await page.goto("/non-existent-page");
 		expect(response?.status()).toBe(404);
 	});
 
-	test("CSS and JavaScript load properly", async ({ page }) => {
+	test("CSS and JavaScript load properly @smoke", async ({ page }) => {
 		await page.goto("/");
 
 		// Check that styles are loaded
@@ -119,7 +119,7 @@ test.describe("Smoke Tests", () => {
 		expect(hasReact).toBe(true);
 	});
 
-	test("security headers are present", async ({ page }) => {
+	test("security headers are present @smoke", async ({ page }) => {
 		const response = await page.goto("/");
 		const headers = response?.headers() || {};
 
