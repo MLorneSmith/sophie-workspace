@@ -1,7 +1,6 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { Resolver } from "react-hook-form";
 import { analytics } from "@kit/analytics";
 import { Button } from "@kit/ui/button";
 import { Checkbox } from "@kit/ui/checkbox";
@@ -16,7 +15,6 @@ import {
 } from "@kit/ui/form";
 import { Input } from "@kit/ui/input";
 import {
-	createValidationFunction,
 	MultiStepForm,
 	MultiStepFormContextProvider,
 	MultiStepFormHeader,
@@ -31,13 +29,11 @@ import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import type { Resolver } from "react-hook-form";
 import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
-import {
-	FormSchemaShape,
-	validateGoalsStep,
-} from "../_lib/onboarding-form.schema";
+import { FormSchemaShape } from "../_lib/onboarding-form.schema";
 import { submitOnboardingFormAction } from "../_lib/server/server-actions";
 
 // Client-safe logger wrapper for development logging
@@ -72,17 +68,17 @@ const logger = {
 const FormSchema = z.object(FormSchemaShape);
 type FormData = z.infer<typeof FormSchema>;
 
-// Create validation function for each step
-const validation = createValidationFunction({
-	welcome: () => true, // Welcome step has no validation
-	profile: (data) => {
-		return Boolean(data.name && data.name.trim().length >= 2);
-	},
-	goals: (data) => {
-		return validateGoalsStep({ goals: data });
-	},
-	theme: () => true, // Theme step has no validation (has default)
-});
+// Validation functions for each step (not used in current implementation)
+// const _validation = {
+// 	welcome: () => true, // Welcome step has no validation
+// 	profile: (data: FormData) => {
+// 		return Boolean(data.profile?.name && data.profile.name.trim().length >= 2);
+// 	},
+// 	goals: (data: FormData) => {
+// 		return validateGoalsStep({ goals: data.goals });
+// 	},
+// 	theme: () => true, // Theme step has no validation (has default)
+// };
 
 // Dynamically import the Confetti component to avoid SSR issues
 const Confetti = dynamic(() => import("react-confetti"), { ssr: false });
@@ -242,7 +238,7 @@ export function OnboardingForm() {
 			<MultiStepForm
 				className="animate-in fade-in-90 zoom-in-95 slide-in-from-bottom-12 mx-auto w-full max-w-3xl space-y-8 rounded-lg border p-4 shadow-sm duration-500 sm:p-6 lg:p-8"
 				form={form}
-				validation={validation}
+				schema={FormSchema}
 				onSubmit={onSubmit}
 			>
 				<MultiStepFormHeader>

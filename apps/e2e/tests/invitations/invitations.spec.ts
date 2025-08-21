@@ -2,7 +2,7 @@ import { expect, type Page, test } from "@playwright/test";
 
 import { InvitationsPageObject } from "./invitations.po";
 
-test.describe("Invitations", () => {
+test.describe("Invitations @integration", () => {
 	let page: Page;
 	let invitations: InvitationsPageObject;
 

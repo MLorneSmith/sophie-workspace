@@ -13,7 +13,7 @@ import { getSupabaseClientKeys } from "../get-supabase-client-keys";
 export function getSupabaseServerClient<GenericSchema = Database>() {
 	const keys = getSupabaseClientKeys();
 
-	return createServerClient<GenericSchema>(keys.url, keys.anonKey, {
+	return createServerClient<GenericSchema>(keys.url, keys.publicKey, {
 		cookies: {
 			async getAll() {
 				const cookieStore = await cookies();
@@ -24,9 +24,9 @@ export function getSupabaseServerClient<GenericSchema = Database>() {
 				const cookieStore = await cookies();
 
 				try {
-					for (const { name, value, options } of cookiesToSet) {
-						cookieStore.set(name, value, options);
-					}
+					cookiesToSet.forEach(({ name, value, options }) =>
+						cookieStore.set(name, value, options),
+					);
 				} catch {
 					// The `setAll` method was called from a Server Component.
 					// This can be ignored if you have middleware refreshing

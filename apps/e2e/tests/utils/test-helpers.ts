@@ -1,10 +1,9 @@
-import { createBrowserClient } from "@supabase/ssr";
-
 /**
  * Marks a user as onboarded by updating their user metadata
  * This is useful for tests that need to bypass the onboarding flow
  */
 import type { Page } from "@playwright/test";
+import { createBrowserClient } from "@supabase/ssr";
 
 export async function markUserAsOnboarded(page: Page, userId: string) {
 	// Execute in browser context to update user metadata

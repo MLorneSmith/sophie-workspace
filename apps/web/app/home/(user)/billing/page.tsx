@@ -15,9 +15,9 @@ import { requireUserInServerComponent } from "~/lib/server/require-user-in-serve
 
 // local imports
 import { HomeLayoutPageHeader } from "../_components/home-page-header";
+import { createPersonalAccountBillingPortalSession } from "../billing/_lib/server/server-actions";
 import { PersonalAccountCheckoutForm } from "./_components/personal-account-checkout-form";
 import { loadPersonalAccountBillingPageData } from "./_lib/server/personal-account-billing-page.loader";
-import { createPersonalAccountBillingPortalSession } from "./_lib/server/server-actions";
 
 export const generateMetadata = async () => {
 	const i18n = await createI18nServerInstance();
@@ -31,7 +31,10 @@ export const generateMetadata = async () => {
 async function PersonalAccountBillingPage() {
 	const user = await requireUserInServerComponent();
 
-	const [data, customerId] = await loadPersonalAccountBillingPageData(user.id);
+	const [subscription, order, customerId] =
+		await loadPersonalAccountBillingPageData(user.id);
+
+	const hasBillingData = subscription || order;
 
 	return (
 		<>
@@ -42,37 +45,42 @@ async function PersonalAccountBillingPage() {
 
 			<PageBody>
 				<div className={"flex flex-col space-y-4"}>
-					<If
-						condition={data}
-						fallback={
-							<div className={"flex w-full max-w-2xl flex-col space-y-6"}>
-								<PersonalAccountCheckoutForm customerId={customerId} />
+					<If condition={!hasBillingData}>
+						<PersonalAccountCheckoutForm customerId={customerId} />
 
-								<If condition={customerId}>
-									<CustomerBillingPortalForm />
-								</If>
-							</div>
-						}
-					>
-						{(data) => (
-							<div className={"flex w-full max-w-2xl flex-col space-y-6"}>
-								{"active" in data ? (
-									<CurrentSubscriptionCard
-										subscription={data}
-										config={billingConfig}
-									/>
-								) : (
-									<CurrentLifetimeOrderCard
-										order={data}
-										config={billingConfig}
-									/>
-								)}
+						<If condition={customerId}>
+							<CustomerBillingPortalForm />
+						</If>
+					</If>
 
-								<If condition={customerId}>
-									<CustomerBillingPortalForm />
-								</If>
-							</div>
-						)}
+					<If condition={hasBillingData}>
+						<div className={"flex w-full max-w-2xl flex-col space-y-6"}>
+							<If condition={subscription}>
+								{(subscription) => {
+									return (
+										<CurrentSubscriptionCard
+											subscription={subscription}
+											config={billingConfig}
+										/>
+									);
+								}}
+							</If>
+
+							<If condition={order}>
+								{(order) => {
+									return (
+										<CurrentLifetimeOrderCard
+											order={order}
+											config={billingConfig}
+										/>
+									);
+								}}
+							</If>
+						</div>
+					</If>
+
+					<If condition={customerId}>
+						<CustomerBillingPortalForm />
 					</If>
 				</div>
 			</PageBody>

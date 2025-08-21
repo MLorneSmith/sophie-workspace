@@ -1,7 +1,7 @@
 "use client";
 
-import { Slot, Slottable } from "@radix-ui/react-slot";
 import { useMutation } from "@tanstack/react-query";
+import { Slot } from "radix-ui";
 import React, {
 	createContext,
 	type HTMLProps,
@@ -12,19 +12,17 @@ import React, {
 	useRef,
 	useState,
 } from "react";
-import type { UseFormReturn } from "react-hook-form";
+import type { Path, UseFormReturn } from "react-hook-form";
+import { z } from "zod";
 
 import { cn } from "../lib/utils";
 
-interface MultiStepFormProps {
-	// biome-ignore lint/suspicious/noExplicitAny: Required to avoid TypeScript memory exhaustion from complex generic constraints
-	form: UseFormReturn<any>;
-	// biome-ignore lint/suspicious/noExplicitAny: Required to avoid TypeScript memory exhaustion from complex generic constraints
-	onSubmit: (data: any) => void;
+interface MultiStepFormProps<T extends z.ZodType> {
+	schema: T;
+	form: UseFormReturn<z.infer<T>>;
+	onSubmit: (data: z.infer<T>) => void;
 	useStepTransition?: boolean;
 	className?: string;
-	// biome-ignore lint/suspicious/noExplicitAny: Required to avoid TypeScript memory exhaustion from complex generic constraints
-	validation?: (stepName: string, data: any) => boolean;
 }
 
 type StepProps = React.PropsWithChildren<
@@ -48,13 +46,13 @@ const MultiStepFormContext = createContext<ReturnType<
  * @param className
  * @constructor
  */
-export function MultiStepForm({
+export function MultiStepForm<T extends z.ZodType>({
+	schema,
 	form,
 	onSubmit,
 	children,
 	className,
-	validation,
-}: React.PropsWithChildren<MultiStepFormProps>) {
+}: React.PropsWithChildren<MultiStepFormProps<T>>) {
 	const steps = useMemo(
 		() =>
 			React.Children.toArray(children).filter(
@@ -79,7 +77,7 @@ export function MultiStepForm({
 	}, [children]);
 
 	const stepNames = steps.map((step) => step.props.name);
-	const multiStepForm = useMultiStepForm(form, stepNames, onSubmit, validation);
+	const multiStepForm = useMultiStepForm(schema, form, stepNames, onSubmit);
 
 	return (
 		<MultiStepFormContext.Provider value={multiStepForm}>
@@ -137,17 +135,19 @@ export const MultiStepFormStep: React.FC<
 		} & HTMLProps<HTMLDivElement>
 	>
 > = function MultiStepFormStep({ children, asChild, ...props }) {
-	const Cmp = asChild ? Slot : "div";
+	const Cmp = asChild ? Slot.Root : "div";
 
 	return (
 		<Cmp {...props}>
-			<Slottable>{children}</Slottable>
+			<Slot.Slottable>{children}</Slot.Slottable>
 		</Cmp>
 	);
 };
 
-export function useMultiStepFormContext() {
-	const context = useContext(MultiStepFormContext);
+export function useMultiStepFormContext<Schema extends z.ZodType>() {
+	const context = useContext(MultiStepFormContext) as ReturnType<
+		typeof useMultiStepForm<Schema>
+	>;
 
 	if (!context) {
 		throw new Error(
@@ -166,14 +166,11 @@ export function useMultiStepFormContext() {
  * @param stepNames
  * @param onSubmit
  */
-export function useMultiStepForm(
-	// biome-ignore lint/suspicious/noExplicitAny: Required to avoid TypeScript memory exhaustion from complex generic constraints
-	form: UseFormReturn<any>,
+export function useMultiStepForm<Schema extends z.ZodType>(
+	schema: Schema,
+	form: UseFormReturn<z.infer<Schema>>,
 	stepNames: string[],
-	// biome-ignore lint/suspicious/noExplicitAny: Required to avoid TypeScript memory exhaustion from complex generic constraints
-	onSubmit: (data: any) => void,
-	// biome-ignore lint/suspicious/noExplicitAny: Required to avoid TypeScript memory exhaustion from complex generic constraints
-	validation?: (stepName: string, data: any) => boolean,
+	onSubmit: (data: z.infer<Schema>) => void,
 ) {
 	const [state, setState] = useState({
 		currentStepIndex: 0,
@@ -181,22 +178,27 @@ export function useMultiStepForm(
 	});
 
 	const isStepValid = useCallback(() => {
-		const currentStepName = stepNames[state.currentStepIndex];
+		const currentStepName = stepNames[state.currentStepIndex] as Path<
+			z.TypeOf<Schema>
+		>;
 
-		if (!currentStepName) {
-			return false;
+		if (schema instanceof z.ZodObject) {
+			const currentStepSchema = schema.shape[currentStepName] as z.ZodType;
+
+			// the user may not want to validate the current step
+			// or the step doesn't contain any form field
+			if (!currentStepSchema) {
+				return true;
+			}
+
+			const currentStepData = form.getValues(currentStepName) ?? {};
+			const result = currentStepSchema.safeParse(currentStepData);
+
+			return result.success;
 		}
 
-		// Use custom validation function if provided
-		if (validation) {
-			// biome-ignore lint/suspicious/noExplicitAny: Required to avoid TypeScript memory exhaustion from complex generic constraints
-			const currentStepData = form.getValues(currentStepName as any) ?? {};
-			return validation(currentStepName, currentStepData);
-		}
-
-		// Default to form validation state
-		return !form.formState.errors[currentStepName];
-	}, [validation, form, stepNames, state.currentStepIndex]);
+		throw new Error(`Unsupported schema type: ${schema.constructor.name}`);
+	}, [schema, form, stepNames, state.currentStepIndex]);
 
 	const nextStep = useCallback(
 		<Ev extends React.SyntheticEvent>(e: Ev) => {
@@ -207,13 +209,28 @@ export function useMultiStepForm(
 			const isValid = isStepValid();
 
 			if (!isValid) {
-				// Trigger validation for the current step
-				const currentStepName = stepNames[state.currentStepIndex];
-				if (currentStepName) {
-					// biome-ignore lint/suspicious/noExplicitAny: Required to avoid TypeScript memory exhaustion from complex generic constraints
-					void form.trigger(currentStepName as any);
+				const currentStepName = stepNames[state.currentStepIndex] as Path<
+					z.TypeOf<Schema>
+				>;
+
+				if (schema instanceof z.ZodObject) {
+					const currentStepSchema = schema.shape[currentStepName] as z.ZodType;
+
+					if (currentStepSchema) {
+						const fields = Object.keys(
+							(currentStepSchema as z.ZodObject<never>).shape,
+						);
+
+						const keys = fields.map((field) => `${currentStepName}.${field}`);
+
+						// trigger validation for all fields in the current step
+						for (const key of keys) {
+							void form.trigger(key as Path<z.TypeOf<Schema>>);
+						}
+
+						return;
+					}
 				}
-				return;
 			}
 
 			if (isValid && state.currentStepIndex < stepNames.length - 1) {
@@ -226,7 +243,7 @@ export function useMultiStepForm(
 				});
 			}
 		},
-		[state.currentStepIndex, stepNames, form, isStepValid],
+		[isStepValid, state.currentStepIndex, stepNames, schema, form],
 	);
 
 	const prevStep = useCallback(
@@ -261,7 +278,7 @@ export function useMultiStepForm(
 				});
 			}
 		},
-		[stepNames.length, isStepValid],
+		[isStepValid, stepNames.length],
 	);
 
 	const isValid = form.formState.isValid;
@@ -299,8 +316,8 @@ export function useMultiStepForm(
 			nextStep,
 			prevStep,
 			goToStep,
-			isValid,
 			isStepValid,
+			isValid,
 			errors,
 		],
 	);
@@ -313,11 +330,11 @@ export const MultiStepFormHeader: React.FC<
 		} & HTMLProps<HTMLDivElement>
 	>
 > = function MultiStepFormHeader({ children, asChild, ...props }) {
-	const Cmp = asChild ? Slot : "div";
+	const Cmp = asChild ? Slot.Root : "div";
 
 	return (
 		<Cmp {...props}>
-			<Slottable>{children}</Slottable>
+			<Slot.Slottable>{children}</Slot.Slottable>
 		</Cmp>
 	);
 };
@@ -329,30 +346,24 @@ export const MultiStepFormFooter: React.FC<
 		} & HTMLProps<HTMLDivElement>
 	>
 > = function MultiStepFormFooter({ children, asChild, ...props }) {
-	const Cmp = asChild ? Slot : "div";
+	const Cmp = asChild ? Slot.Root : "div";
 
 	return (
 		<Cmp {...props}>
-			<Slottable>{children}</Slottable>
+			<Slot.Slottable>{children}</Slot.Slottable>
 		</Cmp>
 	);
 };
 
 /**
- * @name createValidationFunction
- * @description Create a validation function for a multi-step form
- * @param validators - Object mapping step names to validation functions
+ * @name createStepSchema
+ * @description Create a schema for a multi-step form
+ * @param steps
  */
-export function createValidationFunction(
-	// biome-ignore lint/suspicious/noExplicitAny: Required to avoid TypeScript memory exhaustion from complex generic constraints
-	validators: Record<string, (data: any) => boolean>,
-	// biome-ignore lint/suspicious/noExplicitAny: Required to avoid TypeScript memory exhaustion from complex generic constraints
-): (stepName: string, data: any) => boolean {
-	// biome-ignore lint/suspicious/noExplicitAny: Required to avoid TypeScript memory exhaustion from complex generic constraints
-	return (stepName: string, data: any) => {
-		const validator = validators[stepName];
-		return validator ? validator(data) : true;
-	};
+export function createStepSchema<T extends Record<string, z.ZodType>>(
+	steps: T,
+) {
+	return z.object(steps);
 }
 
 interface AnimatedStepProps {

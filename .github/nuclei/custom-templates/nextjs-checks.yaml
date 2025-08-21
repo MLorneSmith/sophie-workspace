@@ -1,0 +1,54 @@
+id: nextjs-security-checks
+info:
+  name: Next.js Security Configuration Check
+  author: SlideHeroes Security
+  severity: medium
+  description: Checks for Next.js misconfigurations and exposed API routes
+  tags: nextjs,api,config,exposure
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/_next/static/chunks/"
+      - "{{BaseURL}}/api/"
+      - "{{BaseURL}}/api/health"
+      - "{{BaseURL}}/api/auth/"
+      - "{{BaseURL}}/.env"
+      - "{{BaseURL}}/.env.local"
+      - "{{BaseURL}}/.env.production"
+      - "{{BaseURL}}/_error"
+      - "{{BaseURL}}/api/preview"
+      
+    matchers-condition: or
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "NEXT_PUBLIC_"
+          - "DATABASE_URL"
+          - "API_KEY"
+          - "SECRET"
+          - "development build"
+          - "webpack://"
+          - "__NEXT_DATA__"
+        condition: or
+        
+      - type: word
+        part: body
+        words:
+          - "Cannot GET /api/"
+          - "Method Not Allowed"
+        negative: true
+        condition: and
+        
+      - type: regex
+        part: body
+        regex:
+          - '(?i)(stripe|supabase|github|slack)[\w\s]*[_-]?(api|key|token|secret)'
+          
+    extractors:
+      - type: regex
+        part: body
+        regex:
+          - 'NEXT_PUBLIC_[A-Z_]+=[^\\s]+'
+          - '"buildId":\s*"([^"]+)"'

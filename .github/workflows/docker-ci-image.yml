@@ -1,0 +1,78 @@
+name: Build CI Docker Image
+
+on:
+  push:
+    paths:
+      - '.github/docker/Dockerfile.ci'
+  workflow_dispatch:
+  schedule:
+    - cron: '0 2 * * 0'  # Weekly on Sunday at 2 AM
+
+permissions:
+  packages: write
+  contents: read
+  security-events: write  # For Trivy SARIF upload
+
+jobs:
+  build-scan-push:
+    name: Build, Scan and Push CI Image
+    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}/ci
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=sha,prefix={{date 'YYYYMMDD'}}-
+
+      - name: Build Docker image for scanning
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./.github/docker/Dockerfile.ci
+          push: false  # Don't push yet
+          load: true   # Load into Docker for scanning
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64  # Single platform for scanning
+
+      - name: Scan Docker image with Trivy
+        uses: ./.github/actions/trivy-scan
+        with:
+          image-ref: ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
+          severity: 'CRITICAL,HIGH,MEDIUM'
+          exit-code: '1'  # Fail on vulnerabilities
+          dockerfile-path: '.github/docker/Dockerfile.ci'
+
+      - name: Push Docker image if scan passes
+        if: success()
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./.github/docker/Dockerfile.ci
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64,linux/arm64

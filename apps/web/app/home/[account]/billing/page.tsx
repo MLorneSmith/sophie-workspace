@@ -35,12 +35,59 @@ export const generateMetadata = async () => {
 	};
 };
 
+// Extract components outside of the page component
+const CheckoutSection = ({
+	canManageBilling,
+	customerId,
+	accountId,
+}: {
+	canManageBilling: boolean;
+	customerId: string | undefined;
+	accountId: string;
+}) => {
+	if (!canManageBilling) {
+		return <CannotManageBillingAlert />;
+	}
+
+	return (
+		<TeamAccountCheckoutForm customerId={customerId} accountId={accountId} />
+	);
+};
+
+const BillingPortalSection = ({
+	canManageBilling,
+	customerId,
+	accountId,
+	account,
+}: {
+	canManageBilling: boolean;
+	customerId: string | undefined;
+	accountId: string;
+	account: string;
+}) => {
+	if (!canManageBilling || !customerId) {
+		return null;
+	}
+
+	return (
+		<form action={createBillingPortalSession}>
+			<input type="hidden" name={"accountId"} value={accountId} />
+			<input type="hidden" name={"slug"} value={account} />
+
+			<BillingPortalCard />
+		</form>
+	);
+};
+
 async function TeamAccountBillingPage({ params }: TeamAccountBillingPageProps) {
 	const account = (await params).account;
 	const workspace = await loadTeamWorkspace(account);
 	const accountId = workspace.account.id;
 
-	const [data, customerId] = await loadTeamAccountBillingPage(accountId);
+	const [subscription, order, customerId] =
+		await loadTeamAccountBillingPage(accountId);
+
+	const hasBillingData = subscription || order;
 
 	const canManageBilling =
 		workspace.account.permissions.includes("billing.manage");
@@ -56,48 +103,45 @@ async function TeamAccountBillingPage({ params }: TeamAccountBillingPageProps) {
 			<PageBody>
 				<div
 					className={cn("flex w-full flex-col space-y-4", {
-						"max-w-2xl": data,
+						"max-w-2xl": hasBillingData,
 					})}
 				>
-					<If
-						condition={data}
-						fallback={
-							<div>
-								{!canManageBilling ? (
-									<CannotManageBillingAlert />
-								) : (
-									<TeamAccountCheckoutForm
-										customerId={customerId}
-										accountId={accountId}
-									/>
-								)}
-							</div>
-						}
-					>
-						{(data) => {
-							if ("active" in data) {
-								return (
-									<CurrentSubscriptionCard
-										subscription={data}
-										config={billingConfig}
-									/>
-								);
-							}
+					<If condition={!hasBillingData}>
+						<CheckoutSection
+							canManageBilling={canManageBilling}
+							customerId={customerId}
+							accountId={accountId}
+						/>
+					</If>
 
+					<If condition={subscription}>
+						{(subscription) => {
 							return (
-								<CurrentLifetimeOrderCard order={data} config={billingConfig} />
+								<CurrentSubscriptionCard
+									subscription={subscription}
+									config={billingConfig}
+								/>
 							);
 						}}
 					</If>
 
-					{canManageBilling && customerId && (
-						<form action={createBillingPortalSession}>
-							<input type="hidden" name={"accountId"} value={accountId} />
-							<input type="hidden" name={"slug"} value={account} />
+					<If condition={order}>
+						{(order) => {
+							return (
+								<CurrentLifetimeOrderCard
+									order={order}
+									config={billingConfig}
+								/>
+							);
+						}}
+					</If>
 
-							<BillingPortalCard />
-						</form>
-					)}
+					<BillingPortalSection
+						canManageBilling={canManageBilling}
+						customerId={customerId}
+						accountId={accountId}
+						account={account}
+					/>
 				</div>
 			</PageBody>
 		</>

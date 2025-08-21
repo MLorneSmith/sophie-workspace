@@ -73,9 +73,11 @@
 			"Bash(gh issue view:*)",
 			"Bash(pnpm supabase:web:status:*)",
 			"Bash(pnpm format:*)",
-			"Bash(gh run view:*)"
+			"Bash(gh run view:*)",
+			"Bash(gh api:*)"
 		],
-		"deny": []
+		"deny": [],
+		"additionalDirectories": ["/home/msmith"]
 	},
 	"enableAllProjectMcpServers": true,
 	"enabledMcpjsonServers": [

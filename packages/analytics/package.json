@@ -10,14 +10,14 @@
 	},
 	"prettier": "@kit/prettier-config",
 	"exports": {
-		".": "./src/index.ts"
+		".": "./src/index.ts",
+		"./server": "./src/server.ts"
 	},
 	"dependencies": {
 		"@kit/shared": "workspace:*"
 	},
 	"devDependencies": {
 		"@kit/eslint-config": "workspace:*",
-		"@kit/posthog": "workspace:^",
 		"@kit/prettier-config": "workspace:*",
 		"@kit/tsconfig": "workspace:*",
 		"@types/node": "^24.0.4"

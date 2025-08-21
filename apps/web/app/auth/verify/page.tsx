@@ -24,11 +24,9 @@ export const generateMetadata = async () => {
 async function VerifyPage(props: Props) {
 	const client = getSupabaseServerClient();
 
-	const {
-		data: { user },
-	} = await client.auth.getUser();
+	const { data } = await client.auth.getClaims();
 
-	if (!user) {
+	if (!data?.claims) {
 		redirect(pathsConfig.auth.signIn);
 	}
 
@@ -43,7 +41,7 @@ async function VerifyPage(props: Props) {
 
 	return (
 		<MultiFactorChallengeContainer
-			userId={user.id}
+			userId={data.claims.sub}
 			paths={{
 				redirectPath,
 			}}

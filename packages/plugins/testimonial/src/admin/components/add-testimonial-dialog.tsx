@@ -22,7 +22,6 @@ import {
 } from "@kit/ui/form";
 import { Input } from "@kit/ui/input";
 import {
-	createValidationFunction,
 	MultiStepForm,
 	MultiStepFormContextProvider,
 	MultiStepFormHeader,
@@ -92,30 +91,13 @@ function AddTestimonialForm(props: { onSubmit: () => void }) {
 	});
 
 	// Create validation function for each step
-	const validation = createValidationFunction({
-		customer: (data) => {
-			return Boolean(data.name && data.name.trim().length > 0);
-		},
-		source: (data) => {
-			return Boolean(data.source && data.source.trim().length > 0);
-		},
-		content: (data) => {
-			return Boolean(
-				data.text &&
-					data.text.trim().length >= 30 &&
-					data.rating >= 1 &&
-					data.rating <= 5,
-			);
-		},
-	});
-
 	return (
 		<MultiStepForm
 			className={"space-y-6 p-0.5"}
 			form={form}
-			validation={validation}
-			onSubmit={async (data) => {
-				await addManualTestimonialAction(data as AddManualTestimonialData);
+			schema={AddManualTestimonialSchema}
+			onSubmit={async (data: AddManualTestimonialData) => {
+				await addManualTestimonialAction(data);
 				props.onSubmit();
 			}}
 		>

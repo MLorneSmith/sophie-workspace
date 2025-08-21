@@ -4,10 +4,10 @@ import {
 	type ChatCompletionOptions,
 	type ChatMessage,
 	getChatCompletion,
+	createReasoningOptimizedConfig,
+	PromptManager,
+	textSimplificationTemplate,
 } from "@kit/ai-gateway";
-import { createReasoningOptimizedConfig } from "@kit/ai-gateway/src/configs/templates";
-import { PromptManager } from "@kit/ai-gateway/src/prompts/prompt-manager";
-import { textSimplificationTemplate } from "@kit/ai-gateway/src/prompts/templates/text-simplification";
 import { enhanceAction } from "@kit/next/actions";
 import { getLogger } from "@kit/shared/logger";
 import { z } from "zod";

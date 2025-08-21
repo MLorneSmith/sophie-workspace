@@ -1,6 +1,6 @@
 "use client";
 
-import type { BaseImprovement } from "@kit/ai-gateway/src/prompts/types/improvements";
+import type { BaseImprovement } from "@kit/ai-gateway";
 import { useSupabase } from "@kit/supabase/hooks/use-supabase";
 import {
 	ResizableHandle,
@@ -106,7 +106,7 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
 					implementedSupportingPoints.length > 0
 				) {
 					const bulletList = `<ul>${implementedSupportingPoints
-						.map((point) => `<li>${point}</li>`)
+						.map((point: string) => `<li>${point}</li>`)
 						.join("")}</ul>`;
 					editorRef.current.insertContent(bulletList);
 				}

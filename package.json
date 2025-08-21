@@ -1,6 +1,6 @@
 {
 	"name": "slideheroes",
-	"version": "2.11.0",
+	"version": "2.12.3",
 	"private": true,
 	"sideEffects": false,
 	"engines": {
@@ -13,8 +13,9 @@
 	"scripts": {
 		"turbo": "turbo",
 		"preinstall": "pnpm run --filter scripts requirements",
-		"postinstall": "node scripts/postinstall.js",
-		"build": "turbo build --cache-dir=.turbo",
+		"postinstall": "manypkg fix",
+		"build": "./.claude/statusline/build-wrapper.sh",
+		"build:raw": "turbo build --cache-dir=.turbo",
 		"clean": "git clean -xdf node_modules dist .next",
 		"clean:workspaces": "turbo clean",
 		"dev": "cross-env FORCE_COLOR=1 turbo dev --parallel --filter=!@slideheroes/playwright-mcp",
@@ -23,9 +24,10 @@
 		"lint": "biome lint . && manypkg check && pnpm lint:yaml && pnpm lint:md",
 		"lint:fix": "biome lint --write . && manypkg fix && pnpm lint:md:fix",
 		"lint:yaml": "npx yaml-lint '**/*.{yml,yaml}' --ignore='**/node_modules/**' --ignore='**/.next/**' --ignore='**/dist/**'",
-		"lint:md": "markdownlint-cli2 '**/*.md' '!node_modules' '!**/node_modules' '!.claude/**' '!.mcp-servers/**' '!.roo/**'",
-		"lint:md:fix": "markdownlint-cli2 --fix '**/*.md' '!node_modules' '!**/node_modules' '!.claude/**' '!.mcp-servers/**' '!.roo/**'",
-		"typecheck": "turbo typecheck --affected --cache-dir=.turbo",
+		"lint:md": "markdownlint-cli2 '**/*.md' '!node_modules' '!**/node_modules' '!.claude/**' '!.mcp-servers/**' '!.roo/**' '!**/playwright-report/**'",
+		"lint:md:fix": "markdownlint-cli2 --fix '**/*.md' '!node_modules' '!**/node_modules' '!.claude/**' '!.mcp-servers/**' '!.roo/**' '!**/playwright-report/**'",
+		"typecheck": "./.claude/statusline/typecheck-wrapper.sh",
+		"typecheck:raw": "turbo typecheck --affected --cache-dir=.turbo",
 		"test": "turbo test --cache-dir=.turbo --filter=!web-e2e",
 		"test:unit": "turbo test --cache-dir=.turbo --filter=!web-e2e",
 		"test:coverage": "turbo test:coverage --cache-dir=.turbo --filter=!web-e2e",
@@ -56,13 +58,7 @@
 		"knip:workspace": "knip --workspace",
 		"knip:fix": "knip --fix",
 		"a11y:test": "turbo a11y:test",
-		"a11y:report": "turbo a11y:report",
-		"audit": "snyk test --all-projects --severity-threshold=high",
-		"audit:code": "snyk code test",
-		"audit:fix": "snyk wizard",
-		"audit:monitor": "snyk monitor --all-projects",
-		"audit:auth": "snyk auth",
-		"audit:debug": "DEBUG=snyk* snyk test --all-projects --severity-threshold=high --debug"
+		"a11y:report": "turbo a11y:report"
 	},
 	"config": {
 		"commitizen": {
@@ -70,7 +66,7 @@
 		}
 	},
 	"prettier": "@kit/prettier-config",
-	"packageManager": "pnpm@9.12.0",
+	"packageManager": "pnpm@10.14.0",
 	"lint-staged": {
 		"*": [
 			"bash ./scripts/trufflehog-scan.sh"
@@ -86,14 +82,13 @@
 			"biome lint --write"
 		],
 		"**/*.{md,mdx}": [
-			"prettier --write",
 			"bash -c 'if ! echo \"$0\" | grep -qE \"(\\.claude|\\.mcp-servers|\\.roo)/\"; then markdownlint-cli2 --fix \"$0\"; fi'"
 		],
 		"**/*.{yaml,yml}": [
 			"bash -c 'if [[ \"$0\" != *\"pnpm-lock.yaml\"* ]]; then npx yamllint \"$0\"; fi'"
 		],
 		"**/*.{ts,tsx}": [
-			"bash -c 'echo \"🔍 Type checking $0...\"; tsc --noEmit --skipLibCheck --pretty \"$0\"'"
+			"bash ./scripts/type-check-staged.sh"
 		]
 	},
 	"pnpm": {
@@ -110,22 +105,21 @@
 		"@biomejs/biome": "2.0.0",
 		"@commitlint/cli": "^19.8.1",
 		"@commitlint/config-conventional": "^19.8.1",
-		"@manypkg/cli": "^0.24.0",
-		"@playwright/test": "^1.53.1",
-		"@turbo/gen": "^2.5.4",
+		"@manypkg/cli": "^0.25.0",
+		"@playwright/test": "^1.54.2",
+		"@turbo/gen": "^2.5.6",
 		"@vitest/coverage-v8": "^3.1.2",
 		"commitizen": "^4.3.1",
-		"cross-env": "^7.0.3",
+		"cross-env": "^10.0.0",
 		"cz-conventional-changelog": "^3.3.0",
 		"husky": "^9.1.7",
 		"knip": "^5.61.0",
 		"lint-staged": "^16.1.0",
 		"markdownlint-cli2": "^0.18.1",
-		"prettier": "^3.6.1",
-		"snyk": "^1.1297.3",
+		"prettier": "^3.6.2",
 		"tailwind-merge": "^3.3.1",
-		"turbo": "2.5.4",
-		"typescript": "^5.8.3",
+		"turbo": "2.5.6",
+		"typescript": "^5.9.2",
 		"vitest": "^3.1.2",
 		"yaml-lint": "^1.7.0"
 	}

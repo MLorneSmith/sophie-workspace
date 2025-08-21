@@ -1,6 +1,7 @@
 // Simple test to verify k6 setup and configuration
-import http from "k6/http";
+
 import { check, sleep } from "k6";
+import http from "k6/http";
 import { apiBaseUrl } from "./k6.config.js";
 
 export const options = {

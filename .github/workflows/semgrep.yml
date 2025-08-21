@@ -3,17 +3,15 @@ name: Semgrep
 on:
   pull_request:
     branches: [ main, staging, dev ]
-  push:
-    branches: [ main, staging, dev ]
   schedule:
-    # Run weekly on Sundays at 2:00 AM UTC
+    # Run weekly on Sundays at 2:00 AM UTC for comprehensive scanning
     - cron: '0 2 * * 0'
   workflow_dispatch: # Allow manual triggers
 
 jobs:
   semgrep:
     name: Scan
-    runs-on: ubuntu-latest
+    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
     timeout-minutes: 30
     permissions:
       contents: read
@@ -22,7 +20,7 @@ jobs:
       actions: read
     
     container:
-      image: semgrep/semgrep
+      image: semgrep/semgrep:1.45.0
 
     steps:
       - name: Checkout repository

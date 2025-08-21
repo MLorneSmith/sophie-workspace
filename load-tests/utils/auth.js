@@ -1,5 +1,5 @@
-import http from "k6/http";
 import { check } from "k6";
+import http from "k6/http";
 
 export function login(email, password, baseUrl) {
 	const loginUrl = `${baseUrl}/auth/sign-in`;

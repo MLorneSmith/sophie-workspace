@@ -13,9 +13,9 @@ import type {
 	StoryboardData,
 } from "../../types";
 
+export type { PositionMap } from "../../constants/layout-positions";
 // Re-export layout positions for backward compatibility
 export { LAYOUT_POSITIONS } from "../../constants/layout-positions";
-export type { PositionMap } from "../../constants/layout-positions";
 
 // Removed unused types - ChartType, ChartData, and ChartOptions were not being used
 

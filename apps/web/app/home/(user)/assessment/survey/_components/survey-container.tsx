@@ -1,11 +1,11 @@
 "use client";
 
+import type { Survey, SurveyQuestion } from "@kit/cms-types";
 import { useSupabase } from "@kit/supabase/hooks/use-supabase";
 import { Card } from "@kit/ui/card";
 import { Progress } from "@kit/ui/progress";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
-import type { Survey, SurveyQuestion } from "@kit/cms-types";
 import {
 	completeSurveyAction,
 	saveResponseAction,

@@ -36,7 +36,7 @@ permissions:
 jobs:
   validate-request:
     name: Validate Request
-    runs-on: ubuntu-latest
+    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
     outputs:
       proceed: ${{ steps.check.outputs.proceed }}
     steps:
@@ -92,7 +92,7 @@ jobs:
   # Deploy to selected environment
   deploy:
     name: Deploy to ${{ github.event.inputs.environment }}
-    runs-on: ubuntu-latest
+    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
     needs: [validate-request, test]
     if: |
       always() && 
@@ -106,15 +106,7 @@ jobs:
         with:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
-      - uses: pnpm/action-setup@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: lts/*
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - uses: ./.github/actions/setup-deps
 
       - name: Install Vercel CLI
         run: pnpm add -g vercel@latest
@@ -188,7 +180,7 @@ jobs:
   # Post-deployment validation
   validate-deployment:
     name: Validate Deployment
-    runs-on: ubuntu-latest
+    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
     needs: deploy
     if: success()
     steps:
