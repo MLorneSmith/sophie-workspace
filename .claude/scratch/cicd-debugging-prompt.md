@@ -9,8 +9,7 @@ Review these commands:
 2.  .claude/commands/promote-to-production.md
 
 Current status:
-1. We have been running into numerous issues and have not yet been able to push an update from dev all the way to the main production branch.
-2. The deploy to dev workflow is failing. Specifically, the E2E smoke tests
+1. We have OPTIMIZED THE DEPLOY TO DEV WORKFLOW
 
 I want you to:
 1. Conduct an audit of the status of the cicd pipeline development

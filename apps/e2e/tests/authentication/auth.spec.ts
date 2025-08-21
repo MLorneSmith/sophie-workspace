@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { OnboardingPageObject } from "../onboarding/onboarding.po";
 import { AuthPageObject } from "./auth.po";
 
-test.describe("Auth flow", () => {
+test.describe("Auth flow @integration", () => {
 	test.describe.configure({ mode: "serial" });
 
 	// Use test.use to properly share state between serial tests

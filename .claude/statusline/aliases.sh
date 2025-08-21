@@ -13,12 +13,17 @@ alias cnpm-test="$CLAUDE_STATUSLINE_DIR/test-wrapper.sh npm test"
 alias cvitest="$CLAUDE_STATUSLINE_DIR/test-wrapper.sh pnpm vitest"
 alias cjest="$CLAUDE_STATUSLINE_DIR/test-wrapper.sh pnpm jest"
 
-# Lint wrapper aliases
-alias clint="$CLAUDE_STATUSLINE_DIR/lint-wrapper.sh"
-alias cpnpm-lint="$CLAUDE_STATUSLINE_DIR/lint-wrapper.sh pnpm lint"
-alias cnpm-lint="$CLAUDE_STATUSLINE_DIR/lint-wrapper.sh npm run lint"
-alias cbiome="$CLAUDE_STATUSLINE_DIR/lint-wrapper.sh pnpm biome"
-alias ceslint="$CLAUDE_STATUSLINE_DIR/lint-wrapper.sh pnpm eslint"
+# Codecheck wrapper aliases (combines lint + typecheck)
+alias ccodecheck="$CLAUDE_STATUSLINE_DIR/codecheck-wrapper.sh"
+alias ccode-check="$CLAUDE_STATUSLINE_DIR/codecheck-wrapper.sh"
+alias cpnpm-codecheck="$CLAUDE_STATUSLINE_DIR/codecheck-wrapper.sh pnpm code-check"
+
+# Legacy lint wrapper aliases (still work but use codecheck wrapper)
+alias clint="$CLAUDE_STATUSLINE_DIR/codecheck-wrapper.sh"
+alias cpnpm-lint="$CLAUDE_STATUSLINE_DIR/codecheck-wrapper.sh pnpm lint"
+alias cnpm-lint="$CLAUDE_STATUSLINE_DIR/codecheck-wrapper.sh npm run lint"
+alias cbiome="$CLAUDE_STATUSLINE_DIR/codecheck-wrapper.sh pnpm biome"
+alias ceslint="$CLAUDE_STATUSLINE_DIR/codecheck-wrapper.sh pnpm eslint"
 
 # Build wrapper aliases (using existing build-wrapper.sh)
 alias cbuild="$CLAUDE_STATUSLINE_DIR/build-wrapper.sh"
@@ -38,18 +43,11 @@ claude-run() {
         test|vitest|jest)
             "$CLAUDE_STATUSLINE_DIR/test-wrapper.sh" "$@"
             ;;
-        lint|eslint|biome)
-            "$CLAUDE_STATUSLINE_DIR/lint-wrapper.sh" "$@"
+        code-check|codecheck|lint|eslint|biome|typecheck|tsc)
+            "$CLAUDE_STATUSLINE_DIR/codecheck-wrapper.sh" "$@"
             ;;
         build)
             "$CLAUDE_STATUSLINE_DIR/build-wrapper.sh" "$@"
-            ;;
-        typecheck|tsc)
-            if [ -f "$CLAUDE_STATUSLINE_DIR/typecheck-wrapper.sh" ]; then
-                "$CLAUDE_STATUSLINE_DIR/typecheck-wrapper.sh" "$@"
-            else
-                "$@"
-            fi
             ;;
         *)
             "$@"
@@ -64,7 +62,7 @@ claude-clear-status() {
 }
 
 echo "Claude statusline aliases loaded. Available commands:"
-echo "  Test:  ctest, cpnpm-test, cvitest, cjest"
-echo "  Lint:  clint, cpnpm-lint, cbiome, ceslint"
-echo "  Build: cbuild, cpnpm-build"
-echo "  Utils: claude-run <command>, claude-clear-status"
+echo "  Test:      ctest, cpnpm-test, cvitest, cjest"
+echo "  Codecheck: ccodecheck, ccode-check, cpnpm-codecheck (combines lint+typecheck)"
+echo "  Build:     cbuild, cpnpm-build"
+echo "  Utils:     claude-run <command>, claude-clear-status"
