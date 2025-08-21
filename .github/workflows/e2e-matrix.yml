@@ -44,7 +44,7 @@ jobs:
   # Determine what browser configurations to test
   matrix-config:
     name: Configure Test Matrix
-    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
     outputs:
       browsers: ${{ steps.config.outputs.browsers }}
       should_run: ${{ steps.config.outputs.should_run }}
@@ -100,7 +100,7 @@ jobs:
   # E2E tests with browser matrix and sharding
   e2e-tests:
     name: E2E Tests (${{ matrix.browser }} - Shard ${{ matrix.shard }}/${{ strategy.job-total }})
-    runs-on: runs-on=${{ github.run_id }}/runner=8cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }},runner=8cpu-linux-x64
     needs: matrix-config
     if: needs.matrix-config.outputs.should_run == 'true'
     strategy:
@@ -258,7 +258,7 @@ jobs:
   # Merge test results and create unified report
   merge-reports:
     name: Merge Test Reports
-    runs-on: runs-on=${{ github.run_id }}/runner=8cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }},runner=8cpu-linux-x64
     needs: e2e-tests
     if: always() && needs.e2e-tests.result != 'skipped'
     steps:
@@ -365,7 +365,7 @@ jobs:
   # Final status check
   e2e-status:
     name: E2E Status Check
-    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
     needs: [matrix-config, e2e-tests, merge-reports]
     if: always()
     steps:
