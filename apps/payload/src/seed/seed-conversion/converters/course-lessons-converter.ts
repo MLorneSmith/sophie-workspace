@@ -76,16 +76,18 @@ export async function convertCourseLessons(
 
 			// Extract lesson metadata
 			const lessonMeta: LessonMeta = {
-				title: frontmatter.title || file.replace(".mdoc", ""),
-				description: frontmatter.description || "",
-				videoID: frontmatter.videoID || frontmatter.video_id,
-				videoPlatform:
-					frontmatter.videoPlatform || frontmatter.video_platform || "bunny",
-				quizID: frontmatter.quizID || frontmatter.quiz_id,
+				title: String(frontmatter.title || file.replace(".mdoc", "")),
+				description: String(frontmatter.description || ""),
+				videoID: frontmatter.videoID ? String(frontmatter.videoID) : 
+					frontmatter.video_id ? String(frontmatter.video_id) : undefined,
+				videoPlatform: frontmatter.videoPlatform ? String(frontmatter.videoPlatform) :
+					frontmatter.video_platform ? String(frontmatter.video_platform) : "bunny",
+				quizID: frontmatter.quizID ? String(frontmatter.quizID) :
+					frontmatter.quiz_id ? String(frontmatter.quiz_id) : undefined,
 				duration: frontmatter.duration
-					? parseInt(frontmatter.duration)
+					? parseInt(String(frontmatter.duration))
 					: undefined,
-				order: frontmatter.order ? parseInt(frontmatter.order) : undefined,
+				order: frontmatter.order ? parseInt(String(frontmatter.order)) : undefined,
 				sourceFile: file,
 			};
 
@@ -141,7 +143,8 @@ export async function convertCourseLessons(
 
 			// Add to reference manager
 			referenceManager.addMapping({
-				type: "course-lessons",
+				type: "collection",
+				collection: "course-lessons",
 				originalId: lessonId,
 				identifier: lessonId,
 			});
@@ -166,7 +169,9 @@ export async function convertCourseLessons(
 function determineCourseFromLesson(filename: string, frontmatter: Record<string, unknown>): string {
 	// Check if course is explicitly set in frontmatter
 	if (frontmatter.course || frontmatter.courseId) {
-		return frontmatter.course || frontmatter.courseId;
+		const courseValue = frontmatter.course || frontmatter.courseId;
+		// Ensure it's a string before returning
+		return typeof courseValue === 'string' ? courseValue : String(courseValue);
 	}
 
 	// Try to determine from lesson numbering pattern
@@ -260,6 +265,7 @@ function convertToSimpleLexical(markdown: string): {
 			return {
 				type: "heading",
 				tag: `h${Math.min(level, 6)}`,
+				version: 1,
 				children: [{ type: "text", text }],
 			};
 		} else if (paragraph.includes("{% bunny")) {
@@ -269,6 +275,7 @@ function convertToSimpleLexical(markdown: string): {
 				return {
 					type: "bunny-video",
 					videoId: videoMatch[1].trim(),
+					version: 1,
 					children: [{ type: "text", text: "" }],
 				};
 			}
@@ -279,6 +286,7 @@ function convertToSimpleLexical(markdown: string): {
 				return {
 					type: "highlight",
 					content: highlightMatch[1].trim(),
+					version: 1,
 					children: [{ type: "text", text: highlightMatch[1].trim() }],
 				};
 			}
@@ -287,6 +295,7 @@ function convertToSimpleLexical(markdown: string): {
 		// Regular paragraph
 		return {
 			type: "paragraph",
+			version: 1,
 			children: [{ type: "text", text: paragraph }],
 		};
 	});
@@ -297,6 +306,7 @@ function convertToSimpleLexical(markdown: string): {
 			format: "",
 			indent: 0,
 			version: 1,
+			direction: null,
 			children,
 		},
 	};

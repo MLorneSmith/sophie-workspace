@@ -69,7 +69,7 @@ async function setupTeamWithMember(page: Page, memberRole = "member") {
 	return { invitations, teamAccounts, ownerEmail, memberEmail, slug };
 }
 
-test.describe("Team Accounts", () => {
+test.describe("Team Accounts @integration", () => {
 	let page: Page;
 	let teamAccounts: TeamAccountsPageObject;
 

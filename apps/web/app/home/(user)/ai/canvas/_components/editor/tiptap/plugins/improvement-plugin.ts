@@ -1,4 +1,4 @@
-import type { BaseImprovement } from "@kit/ai-gateway/src/prompts/types/improvements";
+import type { BaseImprovement } from "@kit/ai-gateway";
 import type { Editor } from "@tiptap/react";
 
 /**
@@ -30,7 +30,7 @@ export function insertImprovement(
 		// Create a bullet list with all supporting points
 		const bulletListContent = {
 			type: "bulletList",
-			content: improvement.implementedSupportingPoints.map((point) => ({
+			content: improvement.implementedSupportingPoints.map((point: string) => ({
 				type: "listItem",
 				content: [
 					{

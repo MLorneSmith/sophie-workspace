@@ -1,10 +1,10 @@
+import type { JWTUserData } from "@kit/supabase/types";
 import {
 	Sidebar,
 	SidebarContent,
 	SidebarFooter,
 	SidebarHeader,
 } from "@kit/ui/shadcn-sidebar";
-import type { User } from "@supabase/supabase-js";
 
 import { ProfileAccountDropdownContainer } from "~/components//personal-account-dropdown-container";
 import { getTeamAccountSidebarConfig } from "~/config/team-account-navigation.config";
@@ -23,7 +23,7 @@ export function TeamAccountLayoutSidebar(props: {
 	account: string;
 	accountId: string;
 	accounts: AccountModel[];
-	user: User;
+	user: JWTUserData;
 }) {
 	return (
 		<SidebarContainer
@@ -39,7 +39,7 @@ function SidebarContainer(props: {
 	account: string;
 	accountId: string;
 	accounts: AccountModel[];
-	user: User;
+	user: JWTUserData;
 }) {
 	const { account, accounts, user } = props;
 	const userId = user.id;
@@ -57,7 +57,7 @@ function SidebarContainer(props: {
 						accounts={accounts}
 					/>
 
-					<div className={"group-data-[minimized=true]:hidden"}>
+					<div className={"group-data-[minimized=true]/sidebar:hidden"}>
 						<TeamAccountNotifications
 							userId={userId}
 							accountId={props.accountId}

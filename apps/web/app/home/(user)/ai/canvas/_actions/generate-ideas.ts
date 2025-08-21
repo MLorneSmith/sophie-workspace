@@ -6,12 +6,14 @@ import {
 	ConfigManager,
 	getChatCompletion,
 } from "@kit/ai-gateway";
-import { createOpenAIOnlyConfig } from "@kit/ai-gateway/src/configs/templates/openai-only";
-import { ideasCreatorSystem } from "@kit/ai-gateway/src/prompts/messages/system/ideas-creator";
-import { baseInstructions } from "@kit/ai-gateway/src/prompts/partials/base-instructions";
-import { improvementFormat } from "@kit/ai-gateway/src/prompts/partials/improvement-format";
-import { presentationContext } from "@kit/ai-gateway/src/prompts/partials/presentation-context";
-import { parseImprovements } from "@kit/ai-gateway/src/utils/parse-improvements";
+import {
+	createOpenAIOnlyConfig,
+	ideasCreatorSystem,
+	baseInstructions,
+	improvementFormat,
+	presentationContext,
+	parseImprovements,
+} from "@kit/ai-gateway";
 import { enhanceAction } from "@kit/next/actions";
 import { getLogger } from "@kit/shared/logger";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";

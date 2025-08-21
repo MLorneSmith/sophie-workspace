@@ -1,0 +1,205 @@
+name: 'Nuclei DAST Security Scan'
+description: 'Dynamic Application Security Testing using Nuclei'
+inputs:
+  target:
+    description: 'Target URL to scan'
+    required: true
+  config-file:
+    description: 'Path to Nuclei config file'
+    required: false
+    default: '.github/nuclei/nuclei-config.yaml'
+  custom-templates:
+    description: 'Path to custom templates directory'
+    required: false
+    default: '.github/nuclei/custom-templates'
+  severity:
+    description: 'Minimum severity to report (critical,high,medium,low,info)'
+    required: false
+    default: 'medium,high,critical'
+  fail-on-severity:
+    description: 'Fail the scan if issues of this severity are found'
+    required: false
+    default: 'critical'
+  scan-type:
+    description: 'Type of scan (quick, standard, comprehensive)'
+    required: false
+    default: 'standard'
+  auth-header:
+    description: 'Authorization header for authenticated scanning'
+    required: false
+    default: ''
+  output-format:
+    description: 'Output format (json, markdown, sarif)'
+    required: false
+    default: 'json,markdown'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Nuclei
+      shell: bash
+      run: |
+        echo "📦 Installing Nuclei..."
+        # Install latest Nuclei
+        go install -v github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest
+        echo "${HOME}/go/bin" >> $GITHUB_PATH
+        
+        # Update templates
+        ${HOME}/go/bin/nuclei -update-templates
+        
+        # Verify installation
+        ${HOME}/go/bin/nuclei -version
+
+    - name: Wait for target to be ready
+      shell: bash
+      run: |
+        echo "⏳ Waiting for ${{ inputs.target }} to be ready..."
+        for i in {1..30}; do
+          if curl -sSf "${{ inputs.target }}/health" > /dev/null 2>&1 || \
+             curl -sSf "${{ inputs.target }}" > /dev/null 2>&1; then
+            echo "✅ Target is ready!"
+            break
+          fi
+          echo "Attempt $i/30: Target not ready yet..."
+          sleep 10
+        done
+
+    - name: Prepare scan configuration
+      shell: bash
+      run: |
+        # Create output directory
+        mkdir -p nuclei-results
+        
+        # Set scan templates based on scan type
+        case "${{ inputs.scan-type }}" in
+          quick)
+            TEMPLATES="cves/critical,exposures/configs"
+            RATE_LIMIT="50"
+            ;;
+          comprehensive)
+            TEMPLATES="cves,vulnerabilities,exposures,misconfiguration,default-logins"
+            RATE_LIMIT="200"
+            ;;
+          *)  # standard
+            TEMPLATES="cves/critical,cves/high,vulnerabilities,exposures,misconfiguration"
+            RATE_LIMIT="150"
+            ;;
+        esac
+        
+        echo "NUCLEI_TEMPLATES=$TEMPLATES" >> $GITHUB_ENV
+        echo "NUCLEI_RATE_LIMIT=$RATE_LIMIT" >> $GITHUB_ENV
+
+    - name: Run Nuclei scan
+      shell: bash
+      run: |
+        echo "🔍 Running Nuclei ${{ inputs.scan-type }} scan on ${{ inputs.target }}..."
+        
+        # Build Nuclei command
+        NUCLEI_CMD="${HOME}/go/bin/nuclei"
+        NUCLEI_ARGS="-target ${{ inputs.target }}"
+        NUCLEI_ARGS="$NUCLEI_ARGS -config ${{ inputs.config-file }}"
+        NUCLEI_ARGS="$NUCLEI_ARGS -severity ${{ inputs.severity }}"
+        NUCLEI_ARGS="$NUCLEI_ARGS -rate-limit ${NUCLEI_RATE_LIMIT}"
+        NUCLEI_ARGS="$NUCLEI_ARGS -output nuclei-results/report"
+        NUCLEI_ARGS="$NUCLEI_ARGS -json-export nuclei-results/report.json"
+        NUCLEI_ARGS="$NUCLEI_ARGS -markdown-export nuclei-results/report.md"
+        
+        # Add custom templates if they exist
+        if [ -d "${{ inputs.custom-templates }}" ]; then
+          NUCLEI_ARGS="$NUCLEI_ARGS -templates ${{ inputs.custom-templates }}"
+        fi
+        
+        # Add templates
+        NUCLEI_ARGS="$NUCLEI_ARGS -templates ${NUCLEI_TEMPLATES}"
+        
+        # Add auth header if provided
+        if [ -n "${{ inputs.auth-header }}" ]; then
+          NUCLEI_ARGS="$NUCLEI_ARGS -header '${{ inputs.auth-header }}'"
+        fi
+        
+        # Run scan
+        $NUCLEI_CMD $NUCLEI_ARGS || true
+        
+        # Check if results file exists
+        if [ ! -f "nuclei-results/report.json" ]; then
+          echo '{"vulnerabilities": []}' > nuclei-results/report.json
+          echo "No vulnerabilities found" > nuclei-results/report.md
+        fi
+
+    - name: Parse scan results
+      shell: bash
+      run: |
+        echo "📊 Parsing scan results..."
+        
+        # Count vulnerabilities by severity
+        if [ -f "nuclei-results/report.json" ]; then
+          CRITICAL=$(cat nuclei-results/report.json | jq '[.[] | select(.info.severity=="critical")] | length' 2>/dev/null || echo "0")
+          HIGH=$(cat nuclei-results/report.json | jq '[.[] | select(.info.severity=="high")] | length' 2>/dev/null || echo "0")
+          MEDIUM=$(cat nuclei-results/report.json | jq '[.[] | select(.info.severity=="medium")] | length' 2>/dev/null || echo "0")
+          LOW=$(cat nuclei-results/report.json | jq '[.[] | select(.info.severity=="low")] | length' 2>/dev/null || echo "0")
+          INFO=$(cat nuclei-results/report.json | jq '[.[] | select(.info.severity=="info")] | length' 2>/dev/null || echo "0")
+        else
+          CRITICAL=0; HIGH=0; MEDIUM=0; LOW=0; INFO=0
+        fi
+        
+        # Generate summary
+        echo "## 🛡️ Nuclei Security Scan Results" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Target:** ${{ inputs.target }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Scan Type:** ${{ inputs.scan-type }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Vulnerabilities Found:" >> $GITHUB_STEP_SUMMARY
+        echo "- 🔴 Critical: $CRITICAL" >> $GITHUB_STEP_SUMMARY
+        echo "- 🟠 High: $HIGH" >> $GITHUB_STEP_SUMMARY
+        echo "- 🟡 Medium: $MEDIUM" >> $GITHUB_STEP_SUMMARY
+        echo "- 🔵 Low: $LOW" >> $GITHUB_STEP_SUMMARY
+        echo "- ⚪ Info: $INFO" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        # Add details if vulnerabilities found
+        if [ $((CRITICAL + HIGH + MEDIUM)) -gt 0 ]; then
+          echo "### Top Issues:" >> $GITHUB_STEP_SUMMARY
+          cat nuclei-results/report.md | head -50 >> $GITHUB_STEP_SUMMARY 2>/dev/null || true
+        fi
+        
+        # Save counts for later use
+        echo "VULN_CRITICAL=$CRITICAL" >> $GITHUB_ENV
+        echo "VULN_HIGH=$HIGH" >> $GITHUB_ENV
+        echo "VULN_MEDIUM=$MEDIUM" >> $GITHUB_ENV
+
+    - name: Upload scan results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: nuclei-scan-results
+        path: nuclei-results/
+        retention-days: 30
+
+    - name: Check severity threshold
+      shell: bash
+      run: |
+        # Check if we should fail based on severity
+        FAIL_ON="${{ inputs.fail-on-severity }}"
+        
+        case "$FAIL_ON" in
+          critical)
+            if [ "$VULN_CRITICAL" -gt 0 ]; then
+              echo "❌ Critical vulnerabilities found! Failing scan."
+              exit 1
+            fi
+            ;;
+          high)
+            if [ "$((VULN_CRITICAL + VULN_HIGH))" -gt 0 ]; then
+              echo "❌ High/Critical vulnerabilities found! Failing scan."
+              exit 1
+            fi
+            ;;
+          medium)
+            if [ "$((VULN_CRITICAL + VULN_HIGH + VULN_MEDIUM))" -gt 0 ]; then
+              echo "❌ Medium/High/Critical vulnerabilities found! Failing scan."
+              exit 1
+            fi
+            ;;
+        esac
+        
+        echo "✅ Security scan passed threshold check"

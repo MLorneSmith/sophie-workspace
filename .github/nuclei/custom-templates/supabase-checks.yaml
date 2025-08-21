@@ -1,0 +1,46 @@
+id: supabase-security-checks
+info:
+  name: Supabase Security Configuration Check
+  author: SlideHeroes Security
+  severity: high
+  description: Checks for common Supabase misconfigurations and exposed endpoints
+  tags: supabase,api,config
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/rest/v1/"
+      - "{{BaseURL}}/.supabase/"
+      - "{{BaseURL}}/auth/v1/settings"
+      - "{{BaseURL}}/storage/v1/bucket"
+      - "{{BaseURL}}/realtime/v1"
+      
+    matchers-condition: or
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "anon_key"
+          - "service_role_key"
+          - "jwt_secret"
+          - "\"buckets\":"
+        condition: or
+        
+      - type: status
+        status:
+          - 200
+        condition: and
+        
+      - type: word
+        part: header
+        words:
+          - "x-supabase"
+          - "apikey"
+        condition: or
+        
+    extractors:
+      - type: regex
+        part: body
+        regex:
+          - 'anon_key["\s]*:["\s]*([^"]+)'
+          - 'apikey["\s]*:["\s]*([^"]+)'

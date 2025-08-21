@@ -17,10 +17,17 @@ on:
         description: 'Cache key for build artifacts'
         value: ${{ jobs.build.outputs.cache-key }}
 
+env:
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+  TURBO_REMOTE_CACHE_ENABLED: ${{ secrets.TURBO_TOKEN != '' && 'true' || 'false' }}
+  TURBO_REMOTE_CACHE_SIGNATURE_KEY: ${{ secrets.TURBO_REMOTE_CACHE_SIGNATURE_KEY || '' }}
+
 jobs:
   build:
     name: Build Application
-    runs-on: ubicloud-standard-2
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
     outputs:
       cache-key: ${{ steps.cache.outputs.key }}
     steps:
@@ -39,10 +46,45 @@ jobs:
 
       - name: Build application
         run: |
-          pnpm build
+          # Debug environment
+          echo "::group::Environment Info"
+          echo "Node version: $(node --version)"
+          echo "pnpm version: $(pnpm --version)"
+          echo "Working directory: $(pwd)"
+          echo "Environment: ${{ inputs.environment }}"
+          echo "::endgroup::"
+          
+          # Show Turbo cache status
+          echo "::group::Turbo Cache Status"
+          npx turbo build --dry-run --summarize | head -20 || true
+          echo "::endgroup::"
+          
+          # Run build with appropriate cache settings
+          echo "::group::Build Output"
+          if [ -n "$TURBO_TOKEN" ]; then
+            echo "Building with remote cache enabled"
+            pnpm build --cache-dir=.turbo || {
+              echo "::warning::Build with remote cache failed. Retrying without remote cache..."
+              TURBO_REMOTE_CACHE_ENABLED=false pnpm build --cache-dir=.turbo --force
+            }
+          else
+            echo "Building without remote cache (no TURBO_TOKEN)"
+            TURBO_REMOTE_CACHE_ENABLED=false pnpm build --cache-dir=.turbo
+          fi
+          echo "::endgroup::"
         env:
-          NODE_ENV: ${{ inputs.environment }}
+          NODE_ENV: production
           NEXT_PUBLIC_APP_ENV: ${{ inputs.environment }}
+          TURBO_FORCE: ${{ github.event.inputs.force_build == 'true' && '1' || '' }}
+          # Add required environment variables for payload build
+          # These are needed at build time for type generation
+          # Note: Both DATABASE_URI and DATABASE_URL are set for compatibility
+          DATABASE_URI: ${{ secrets.DATABASE_URI }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
+          PAYLOAD_PUBLIC_SERVER_URL: ${{ vars.PAYLOAD_PUBLIC_SERVER_URL }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
 
       - name: Cache build artifacts
         uses: actions/cache@v4

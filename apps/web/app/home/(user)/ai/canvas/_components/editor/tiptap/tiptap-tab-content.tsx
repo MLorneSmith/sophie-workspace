@@ -38,6 +38,7 @@ const logger = {
 		}
 	},
 };
+
 import { normalizeEditorContent } from "../../../_lib/utils/normalize-editor-content";
 import type { EditorContentTypes } from "../../../_types/editor-types";
 import {

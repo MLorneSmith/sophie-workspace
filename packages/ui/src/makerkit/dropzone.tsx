@@ -1,13 +1,12 @@
 "use client";
 
+import { CheckCircle, File, Loader2, Upload, X } from "lucide-react";
 import {
-	type PropsWithChildren,
 	createContext,
+	type PropsWithChildren,
 	useCallback,
 	useContext,
 } from "react";
-
-import { CheckCircle, File, Loader2, Upload, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import type { UseSupabaseUploadReturn } from "../hooks/use-supabase-upload";

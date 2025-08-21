@@ -23,6 +23,7 @@ Run all available tests across the project using the correct pnpm scripts.
 3. Run only E2E tests (includes server startup):
 
    ```bash
+   # Run E2E tests
    pnpm test:e2e
    ```
 
@@ -52,14 +53,7 @@ Run all available tests across the project using the correct pnpm scripts.
 
 8. **Troubleshooting Server Issues** (E2E tests):
 
-   If E2E tests fail with timeout or connection errors:
-
-   ```bash
-   # Option 1: Use the automated cleanup script
-   bash .claude/scripts/cleanup-ports.sh
-   ```
-
-   Or manually clean up:
+   If E2E tests fail with timeout or connection errors, manually clean up:
 
    ```bash
    # Check for hanging server processes
@@ -95,7 +89,6 @@ Run all available tests across the project using the correct pnpm scripts.
    **Port conflict prevention:**
    - The E2E test setup script (`apps/e2e/scripts/test-setup.sh`) now automatically checks for port conflicts
    - It will stop existing Supabase instances and kill processes using required ports
-   - If tests still fail, run the cleanup script: `bash .claude/scripts/cleanup-ports.sh`
 
 9. Report summary of:
    - Total tests run

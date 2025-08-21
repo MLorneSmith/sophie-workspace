@@ -2,11 +2,11 @@
 
 import { useSupabase } from "@kit/supabase/hooks/use-supabase";
 import { ImageUploader } from "@kit/ui/image-uploader";
+import { toast } from "@kit/ui/sonner";
 import { Trans } from "@kit/ui/trans";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { toast } from "@kit/ui/sonner";
 
 const AVATARS_BUCKET = "account_image";
 
@@ -76,7 +76,7 @@ export function UpdateTeamAccountImage(props: {
 				createToaster(promise);
 			}
 		},
-		[props, client, createToaster],
+		[client, createToaster, props],
 	);
 
 	return (
@@ -115,24 +115,23 @@ async function uploadUserProfilePhoto(
 ) {
 	const bytes = await photoFile.arrayBuffer();
 	const bucket = client.storage.from(AVATARS_BUCKET);
-	const extension = photoFile.name.split(".").pop();
-	const fileName = await getAvatarFileName(userId, extension);
+	const fileName = getAvatarFileName(userId);
+	const { nanoid } = await import("nanoid");
+	const cacheBuster = nanoid(16);
 
-	const result = await bucket.upload(fileName, bytes);
+	const result = await bucket.upload(fileName, bytes, {
+		contentType: photoFile.type,
+		upsert: true,
+	});
 
 	if (!result.error) {
-		return bucket.getPublicUrl(fileName).data.publicUrl;
+		const url = bucket.getPublicUrl(userId).data.publicUrl;
+		return `${url}?v=${cacheBuster}`;
 	}
 
 	throw result.error;
 }
 
-async function getAvatarFileName(
-	userId: string,
-	extension: string | undefined,
-) {
-	const { nanoid } = await import("nanoid");
-	const uniqueId = nanoid(16);
-
-	return `${userId}.${extension}?v=${uniqueId}`;
+function getAvatarFileName(userId: string) {
+	return userId;
 }

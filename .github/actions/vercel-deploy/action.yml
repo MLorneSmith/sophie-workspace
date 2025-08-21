@@ -43,7 +43,15 @@ runs:
       shell: bash
       run: |
         if ! command -v vercel &> /dev/null; then
-          pnpm add -g vercel@latest
+          # Try npm first (more reliable for global installs)
+          npm install -g vercel@latest || {
+            # Fallback to pnpm if npm fails
+            export SHELL=/bin/bash
+            export PNPM_HOME="$HOME/.local/share/pnpm"
+            export PATH="$PNPM_HOME:$PATH"
+            pnpm setup
+            pnpm add -g vercel@latest
+          }
         else
           echo "✅ Vercel CLI already installed"
         fi
@@ -57,21 +65,6 @@ runs:
         # Pull Vercel environment configuration
         vercel pull --yes --environment=${{ inputs.environment }} --token=${{ inputs.token }}
 
-    - name: Build with Vercel
-      shell: bash
-      env:
-        VERCEL_ORG_ID: ${{ inputs.org-id }}
-        VERCEL_PROJECT_ID: ${{ inputs.project-id }}
-      run: |
-        # Always build - either from scratch or using downloaded artifacts
-        if [ "${{ inputs.environment }}" = "production" ]; then
-          vercel build --prod --token=${{ inputs.token }}
-        elif [ "${{ inputs.environment }}" = "staging" ]; then
-          vercel build --target=staging --token=${{ inputs.token }}
-        else
-          vercel build --token=${{ inputs.token }}
-        fi
-
     - name: Deploy to Vercel
       id: deploy
       shell: bash
@@ -79,23 +72,51 @@ runs:
         VERCEL_ORG_ID: ${{ inputs.org-id }}
         VERCEL_PROJECT_ID: ${{ inputs.project-id }}
       run: |
-        # Deploy based on environment
-        if [ "${{ inputs.environment }}" = "production" ]; then
-          url=$(vercel deploy --prebuilt --prod --token=${{ inputs.token }})
-        elif [ "${{ inputs.environment }}" = "staging" ]; then
-          url=$(vercel deploy --prebuilt --target=staging --token=${{ inputs.token }})
+        # Deploy to Vercel
+        echo "🚀 Deploying to Vercel..."
+        
+        # When build-artifacts is false, Vercel handles the entire build process
+        # This is the optimized path for CI/CD deployments
+        if [ "${{ inputs.build-artifacts }}" = "false" ]; then
+          echo "📦 Letting Vercel handle the build process (optimized path)"
         else
-          url=$(vercel deploy --prebuilt --token=${{ inputs.token }})
+          echo "⚠️ Using pre-built artifacts (legacy path - consider removing)"
+        fi
+        
+        if [ "${{ inputs.environment }}" = "production" ]; then
+          url=$(vercel deploy --prod --token=${{ inputs.token }} --yes)
+        elif [ "${{ inputs.environment }}" = "staging" ]; then
+          url=$(vercel deploy --target=staging --token=${{ inputs.token }} --yes)
+        else
+          url=$(vercel deploy --token=${{ inputs.token }} --yes)
         fi
         
         echo "url=$url" >> $GITHUB_OUTPUT
         echo "✅ Deployed to: $url"
 
-    - name: Wait for deployment
+    - name: Wait for deployment readiness
       shell: bash
       run: |
-        echo "⏳ Waiting for deployment to be ready..."
-        sleep 10
+        echo "⏳ Checking deployment readiness..."
+        # Instead of arbitrary sleep, do a quick readiness check
+        url="${{ steps.deploy.outputs.url }}"
+        max_attempts=20
+        attempt=0
+        
+        while [ $attempt -lt $max_attempts ]; do
+          if curl -f -s -o /dev/null -w "%{http_code}" \
+             -H "x-vercel-protection-bypass: ${{ inputs.protection-bypass-secret }}" \
+             "$url" 2>/dev/null; then
+            echo "✅ Deployment is ready"
+            break
+          fi
+          
+          attempt=$((attempt + 1))
+          if [ $attempt -lt $max_attempts ]; then
+            echo "Attempt $attempt/$max_attempts - waiting 2s..."
+            sleep 2
+          fi
+        done
 
     - name: Health check
       if: inputs.health-check-url != ''

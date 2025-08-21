@@ -1,9 +1,6 @@
 "use client";
 
-import type {
-	BaseImprovement,
-	ImprovementType,
-} from "@kit/ai-gateway/src/prompts/types/improvements";
+import type { BaseImprovement, ImprovementType } from "@kit/ai-gateway";
 import { Button } from "@kit/ui/button";
 import { Spinner } from "@kit/ui/spinner";
 import { useCallback, useEffect, useState } from "react";

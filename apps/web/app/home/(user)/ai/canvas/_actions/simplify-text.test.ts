@@ -52,9 +52,11 @@ vi.mock("@kit/next/actions", () => ({
 }));
 
 // Import after mocks are set up
-import { getChatCompletion } from "@kit/ai-gateway";
-import { createReasoningOptimizedConfig } from "@kit/ai-gateway/src/configs/templates";
-import { PromptManager } from "@kit/ai-gateway/src/prompts/prompt-manager";
+import {
+	getChatCompletion,
+	createReasoningOptimizedConfig,
+	PromptManager,
+} from "@kit/ai-gateway";
 import { expectError } from "../../../../../../test/test-helpers";
 import { simplifyTextAction } from "./simplify-text";
 

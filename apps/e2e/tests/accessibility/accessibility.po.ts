@@ -1,5 +1,5 @@
-import type { Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import type { Page } from "@playwright/test";
 import type { AxeResults } from "axe-core";
 
 /**

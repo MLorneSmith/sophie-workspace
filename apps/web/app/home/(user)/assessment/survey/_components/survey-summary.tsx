@@ -1,13 +1,13 @@
 "use client";
 
 import { useUserWorkspace } from "@kit/accounts/hooks/use-user-workspace";
+import type { Survey } from "@kit/cms-types";
 import { Button } from "@kit/ui/button";
 import { Card } from "@kit/ui/card";
 import { Progress } from "@kit/ui/progress";
 import { Trans } from "@kit/ui/trans";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import type { Survey } from "@kit/cms-types";
 import { useSurveyScores } from "../../_lib/client/hooks/use-survey-scores";
 import { RadarChart } from "./radar-chart";
 
