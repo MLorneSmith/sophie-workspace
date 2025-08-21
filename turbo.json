@@ -2,7 +2,6 @@
 	"$schema": "https://turborepo.org/schema.json",
 	"globalDependencies": ["**/.env"],
 	"ui": "stream",
-	"_comment": "Test RunsOn integration",
 	"remoteCache": {
 		"enabled": true,
 		"signature": true
