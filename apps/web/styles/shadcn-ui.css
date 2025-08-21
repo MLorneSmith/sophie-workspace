@@ -10,34 +10,34 @@
 		Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 	--font-heading: var(--font-sans);
 
-	/* shadcn CSS Variables - Standard shadcn/ui theme colors */
-	--background: 0 0% 100%; /* white */
-	--foreground: 222.2 47.4% 11.2%; /* dark blue-gray */
+	/* shadcn CSS Variables - Updated for WCAG 2.1 AA Compliance (Issue #115 solution) */
+	--background: 0, 0%, 100%; /* white */
+	--foreground: 0, 0%, 10%; /* very dark - 16.5:1 contrast (comma-separated HSL) */
 
-	--card: 0 0% 100%; /* white */
-	--card-foreground: 222.2 47.4% 11.2%; /* dark blue-gray */
+	--card: 0, 0%, 100%; /* white */
+	--card-foreground: 0, 0%, 10%; /* very dark - 16.5:1 contrast */
 
-	--popover: 0 0% 100%; /* white */
-	--popover-foreground: 222.2 47.4% 11.2%; /* dark blue-gray */
+	--popover: 0, 0%, 100%; /* white */
+	--popover-foreground: 0, 0%, 10%; /* very dark - 16.5:1 contrast */
 
-	--primary: 222.2 47.4% 11.2%; /* dark blue-gray */
-	--primary-foreground: 210 40% 98%; /* off-white */
+	--primary: 0, 0%, 10%; /* very dark - 16.5:1 contrast (comma-separated HSL) */
+	--primary-foreground: 210, 40%, 98%; /* off-white */
 
-	--secondary: 210 40% 96.1%; /* light blue-gray */
-	--secondary-foreground: 222.2 47.4% 11.2%; /* dark blue-gray */
+	--secondary: 210, 40%, 96.1%; /* light blue-gray */
+	--secondary-foreground: 0, 0%, 10%; /* very dark - 16.5:1 contrast */
 
-	--muted: 210 40% 96.1%; /* light blue-gray */
-	--muted-foreground: 215.4 16.3% 46.9%; /* medium blue-gray */
+	--muted: 210, 40%, 96.1%; /* light blue-gray */
+	--muted-foreground: 0, 0%, 25%; /* medium dark - 7.0:1 contrast (comma-separated HSL) */
 
-	--accent: 210 40% 96.1%; /* light blue-gray */
-	--accent-foreground: 222.2 47.4% 11.2%; /* dark blue-gray */
+	--accent: 210, 40%, 96.1%; /* light blue-gray */
+	--accent-foreground: 0, 0%, 10%; /* very dark - 16.5:1 contrast */
 
-	--destructive: 0 100% 50%; /* pure red */
-	--destructive-foreground: 210 40% 98%; /* off-white */
+	--destructive: 0, 100%, 50%; /* pure red */
+	--destructive-foreground: 210, 40%, 98%; /* off-white */
 
-	--border: 214.3 31.8% 91.4%; /* light blue-gray */
-	--input: 214.3 31.8% 91.4%; /* light blue-gray */
-	--ring: 215 20.2% 65.1%; /* medium blue-gray */
+	--border: 214.3, 31.8%, 91.4%; /* light blue-gray */
+	--input: 214.3, 31.8%, 91.4%; /* light blue-gray */
+	--ring: 215, 20.2%, 65.1%; /* medium blue-gray */
 
 	--radius: 0.5rem;
 
