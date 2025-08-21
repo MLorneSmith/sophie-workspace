@@ -5,8 +5,8 @@
  * Collects and sends CI/CD metrics to New Relic
  */
 
-import https from "node:https";
 import { execSync } from "node:child_process";
+import https from "node:https";
 
 // Environment variables
 const NEW_RELIC_ACCOUNT_ID = process.env.NEW_RELIC_ACCOUNT_ID;
@@ -155,9 +155,9 @@ async function main() {
 	}
 }
 
+import { dirname } from "node:path";
 // Run main function if this is the main module
 import { fileURLToPath } from "node:url";
-import { dirname } from "node:path";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

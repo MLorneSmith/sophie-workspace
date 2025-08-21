@@ -4,7 +4,21 @@ on:
   push:
     branches:
       - dev
+    paths-ignore:
+      - '**.md'
+      - '**.mdx'
+      - 'docs/**'
+      - '.github/**.md'
+      - '.claude/**'
+      - '.vscode/**'
+      - 'LICENSE'
+      - '.gitignore'
+      - '.env.example'
   workflow_dispatch:
+
+concurrency:
+  group: deploy-dev-${{ github.ref }}
+  cancel-in-progress: false
 
 permissions:
   contents: read
@@ -12,63 +26,148 @@ permissions:
   pull-requests: write
   issues: write
   checks: write
-  security-events: write
+  actions: read
 
 env:
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+  TURBO_REMOTE_CACHE_ENABLED: ${{ secrets.TURBO_TOKEN != '' && 'true' || 'false' }}
+  TURBO_REMOTE_CACHE_SIGNATURE_KEY: ${{ secrets.TURBO_REMOTE_CACHE_SIGNATURE_KEY || '' }}
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
 
 jobs:
-  # Run all validation checks first
-  validate:
-    name: Validate
-    uses: ./.github/workflows/pr-validation.yml
-    secrets: inherit
+  # Check if we should skip deployment (e.g., if recently deployed)
+  check-skip:
+    name: Check Skip Deployment
+    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
+    outputs:
+      should_deploy: ${{ steps.check.outputs.should_deploy }}
+    steps:
+      - name: Check recent deployments
+        id: check
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // Skip if this is a PR merge and we recently deployed successfully
+            const isPRMerge = context.payload.head_commit?.message?.includes('Merge pull request');
+            
+            if (!isPRMerge) {
+              console.log('Not a PR merge, proceeding with deployment');
+              core.setOutput('should_deploy', 'true');
+              return;
+            }
+            
+            // Check if we have a successful deployment in the last 30 minutes
+            const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
+            
+            const runs = await github.rest.actions.listWorkflowRuns({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'dev-deploy.yml',
+              branch: 'dev',
+              status: 'success',
+              per_page: 5
+            });
+            
+            const recentSuccessful = runs.data.workflow_runs.find(run => 
+              new Date(run.created_at) > thirtyMinutesAgo && 
+              run.conclusion === 'success'
+            );
+            
+            if (recentSuccessful) {
+              console.log(`Found recent successful deployment from ${recentSuccessful.created_at}, skipping`);
+              core.setOutput('should_deploy', 'false');
+            } else {
+              console.log('No recent successful deployment found, proceeding');
+              core.setOutput('should_deploy', 'true');
+            }
 
-  # Deploy Web App to Vercel Dev environment
-  deploy-web:
-    name: Deploy Web App to Dev
-    runs-on: ubuntu-latest
-    needs: validate
-    environment:
-      name: development
-      url: ${{ steps.deploy.outputs.url }}
-    env:
-      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_WEB }}
+  # Pre-deployment validation (quick checks before deploying)
+  validate:
+    name: Pre-deployment Validation
+    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64  # Reduced CPUs - sufficient for lint/typecheck
+    needs: check-skip
+    if: needs.check-skip.outputs.should_deploy == 'true'
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
+      - uses: ./.github/actions/setup-deps
 
-      - uses: actions/setup-node@v4
+      - name: Setup Turbo cache
+        uses: actions/cache@v4
         with:
-          node-version: lts/*
-          cache: 'pnpm'
+          path: .turbo
+          key: ${{ runner.os }}-turbo-validate-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-validate-
+            ${{ runner.os }}-turbo-
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Install Vercel CLI
-        run: pnpm add -g vercel@latest
-
-      - name: Pull Vercel Environment Information for Web
-        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
-
-      - name: Build Web Project
-        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
-
-      - name: Deploy Web App to Vercel Dev
-        id: deploy
+      - name: Run validation checks in parallel
         run: |
-          url=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
-          echo "url=$url" >> $GITHUB_OUTPUT
-          echo "Deployed to: $url"
+          # Run typecheck and lint in parallel for faster feedback
+          pnpm typecheck &
+          TYPECHECK_PID=$!
           
-          # Note: Custom domains are automatically configured via Vercel project settings
-          # dev.slideheroes.com should be configured in Vercel dashboard
-          echo "🔨 Web app deployment complete. Custom domain routes automatically if configured."
+          pnpm lint &
+          LINT_PID=$!
+          
+          # Wait for both to complete and capture exit codes
+          wait $TYPECHECK_PID
+          TYPECHECK_EXIT=$?
+          
+          wait $LINT_PID
+          LINT_EXIT=$?
+          
+          # Report results
+          if [ $TYPECHECK_EXIT -ne 0 ]; then
+            echo "❌ TypeScript check failed"
+          else
+            echo "✅ TypeScript check passed"
+          fi
+          
+          if [ $LINT_EXIT -ne 0 ]; then
+            echo "❌ Lint check failed"
+          else
+            echo "✅ Lint check passed"
+          fi
+          
+          # Exit with failure if either check failed
+          if [ $TYPECHECK_EXIT -ne 0 ] || [ $LINT_EXIT -ne 0 ]; then
+            exit 1
+          fi
+
+  # Deploy Web App to Vercel Dev environment (let Vercel handle the build)
+  deploy-web:
+    name: Deploy Web App to Dev
+    runs-on: runs-on=${{ github.run_id }},runner=4cpu-linux-x64  # Increased CPUs for faster Vercel operations
+    needs: [check-skip, validate]
+    if: needs.check-skip.outputs.should_deploy == 'true'
+    environment:
+      name: development
+      url: ${{ steps.deploy.outputs.url }}
+    outputs:
+      url: ${{ steps.deploy.outputs.url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        
+      - name: Install Vercel CLI
+        run: |
+          pnpm add -g vercel@latest
+
+      - name: Deploy to Vercel
+        id: deploy
+        uses: ./.github/actions/vercel-deploy
+        with:
+          token: ${{ secrets.VERCEL_TOKEN }}
+          org-id: ${{ secrets.VERCEL_ORG_ID }}
+          project-id: ${{ secrets.VERCEL_PROJECT_ID_WEB }}
+          environment: preview
+          build-artifacts: false  # Let Vercel handle the build
+          protection-bypass-secret: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+          health-check-url: /healthcheck
 
       - name: Create deployment status
         uses: actions/github-script@v7
@@ -93,49 +192,38 @@ jobs:
               description: 'Web app deployed to dev environment'
             });
 
-  # Deploy Payload CMS to Vercel Dev environment
+  # Deploy Payload CMS to Vercel Dev environment (let Vercel handle the build)
   deploy-payload:
     name: Deploy Payload CMS to Dev
-    runs-on: ubuntu-latest
-    needs: validate
+    runs-on: runs-on=${{ github.run_id }},runner=4cpu-linux-x64  # Increased CPUs for faster Vercel operations
+    needs: [check-skip, validate]
+    if: needs.check-skip.outputs.should_deploy == 'true'
     environment:
       name: development-payload
       url: ${{ steps.deploy.outputs.url }}
-    env:
-      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_PAYLOAD }}
+    outputs:
+      url: ${{ steps.deploy.outputs.url }}
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: lts/*
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        
       - name: Install Vercel CLI
-        run: pnpm add -g vercel@latest
-
-      - name: Pull Vercel Environment Information for Payload
-        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
-
-      - name: Build Payload Project
-        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
-
-      - name: Deploy Payload to Vercel Dev
-        id: deploy
         run: |
-          url=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
-          echo "url=$url" >> $GITHUB_OUTPUT
-          echo "Deployed to: $url"
-          
-          # Note: Custom domains are automatically configured via Vercel project settings
-          # dev-cms.slideheroes.com should be configured in Vercel dashboard
-          echo "🔨 Payload CMS deployment complete. Custom domain routes automatically if configured."
+          pnpm add -g vercel@latest
+
+      - name: Deploy to Vercel
+        id: deploy
+        uses: ./.github/actions/vercel-deploy
+        with:
+          token: ${{ secrets.VERCEL_TOKEN }}
+          org-id: ${{ secrets.VERCEL_ORG_ID }}
+          project-id: ${{ secrets.VERCEL_PROJECT_ID_PAYLOAD }}
+          environment: preview
+          build-artifacts: false  # Let Vercel handle the build
+          protection-bypass-secret: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+          health-check-url: /api/health
 
       - name: Create deployment status
         uses: actions/github-script@v7
@@ -160,83 +248,24 @@ jobs:
               description: 'Payload CMS deployed to dev environment'
             });
 
-  # Run E2E tests against dev environment
-  e2e-smoke:
-    name: E2E Smoke Tests
-    runs-on: ubuntu-latest
-    needs: deploy-web
-    environment: development
-    continue-on-error: true # Non-blocking for now
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: pnpm/action-setup@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: lts/*
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Install Playwright browsers
-        run: pnpm exec playwright install --with-deps chromium
-
-      - name: Run E2E smoke tests
-        run: |
-          echo "E2E smoke tests will run against dev environment"
-          # TODO: Configure Playwright to run against dev URL
-          # pnpm --filter e2e test:smoke
-        env:
-          PLAYWRIGHT_BASE_URL: ${{ needs.deploy-web.outputs.url }}
-
   # Notify New Relic of deployment
   notify-monitoring:
     name: Notify Monitoring
-    runs-on: ubuntu-latest
-    needs: [deploy-web, deploy-payload]
+    runs-on: runs-on=${{ github.run_id }},runner=1cpu-linux-x64  # Minimal runner for notification
+    needs: [check-skip, deploy-web, deploy-payload]
+    if: needs.check-skip.outputs.should_deploy == 'true'
     continue-on-error: true
     steps:
-      - name: Create New Relic deployment marker
-        run: |
-          echo "📊 Sending CI/CD metrics to New Relic..."
-          
-          # Create deployment marker
-          curl -X POST "https://api.newrelic.com/v2/applications/${NEW_RELIC_APP_ID}/deployments.json" \
-            -H "X-Api-Key:${NEW_RELIC_API_KEY}" \
-            -H "Content-Type: application/json" \
-            -d "{
-              \"deployment\": {
-                \"revision\": \"${GITHUB_SHA}\",
-                \"user\": \"${GITHUB_ACTOR}\",
-                \"description\": \"Development deployment from ${GITHUB_REF_NAME}\",
-                \"changelog\": \"Automated deployment via GitHub Actions\"
-              }
-            }"
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .github/actions/newrelic-notify
 
-          # Send CI/CD custom event
-          curl -X POST "https://insights-collector.newrelic.com/v1/accounts/${NEW_RELIC_ACCOUNT_ID}/events" \
-            -H "Content-Type: application/json" \
-            -H "X-Insert-Key: ${NEW_RELIC_INSERT_KEY}" \
-            -d "[{
-              \"eventType\": \"CICDEvent\",
-              \"timestamp\": $(date +%s),
-              \"environment\": \"development\",
-              \"deployment_id\": \"${GITHUB_SHA}\",
-              \"branch\": \"${GITHUB_REF_NAME}\",
-              \"workflow\": \"dev-deploy\",
-              \"actor\": \"${GITHUB_ACTOR}\",
-              \"repository\": \"${GITHUB_REPOSITORY}\",
-              \"status\": \"success\",
-              \"deployment_url\": \"${{ needs.deploy-web.outputs.url }}\",
-              \"build_duration_seconds\": \"${{ job.duration || 0 }}\",
-              \"commit_sha\": \"${GITHUB_SHA}\"
-            }]"
-          
-          echo "✅ New Relic metrics sent successfully"
-        env:
-          NEW_RELIC_API_KEY: ${{ secrets.NEW_RELIC_API_KEY }}
-          NEW_RELIC_APP_ID: ${{ secrets.NEW_RELIC_APP_ID }}
-          NEW_RELIC_ACCOUNT_ID: ${{ secrets.NEW_RELIC_ACCOUNT_ID }}
-          NEW_RELIC_INSERT_KEY: ${{ secrets.NEW_RELIC_INSERT_KEY }}
+      - uses: ./.github/actions/newrelic-notify
+        with:
+          api-key: ${{ secrets.NEW_RELIC_API_KEY }}
+          app-id: ${{ secrets.NEW_RELIC_APP_ID }}
+          account-id: ${{ secrets.NEW_RELIC_ACCOUNT_ID }}
+          insert-key: ${{ secrets.NEW_RELIC_INSERT_KEY }}
+          environment: development
+          deployment-url: ${{ needs.deploy-web.outputs.url }}

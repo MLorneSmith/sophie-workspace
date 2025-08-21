@@ -1,5 +1,5 @@
+import type { Json } from "@kit/supabase/database";
 import { useSupabase } from "@kit/supabase/hooks/use-supabase";
-
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 
@@ -9,6 +9,7 @@ export function usePersonalAccountData(
 		id: string | null;
 		name: string | null;
 		picture_url: string | null;
+		public_data?: Json;
 	},
 ) {
 	const client = useSupabase();
@@ -25,7 +26,8 @@ export function usePersonalAccountData(
 				`
         id,
         name,
-        picture_url
+        picture_url,
+        public_data
     `,
 			)
 			.eq("primary_owner_user_id", userId)
@@ -50,6 +52,7 @@ export function usePersonalAccountData(
 					id: partialAccount.id,
 					name: partialAccount.name,
 					picture_url: partialAccount.picture_url,
+					public_data: partialAccount.public_data,
 				}
 			: undefined,
 	});

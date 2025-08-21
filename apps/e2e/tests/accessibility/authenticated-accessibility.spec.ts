@@ -1,6 +1,6 @@
-import { test, expect } from "@playwright/test";
-import { AccessibilityPO } from "./accessibility.po";
+import { expect, test } from "@playwright/test";
 import { AuthPageObject } from "../authentication/auth.po";
+import { AccessibilityPO } from "./accessibility.po";
 
 /**
  * Authenticated Accessibility Tests

@@ -1,0 +1,49 @@
+name: 'Setup Dependencies'
+description: 'Setup Node, pnpm, and install dependencies with caching'
+runs:
+  using: "composite"
+  steps:
+    - name: Install pnpm
+      uses: pnpm/action-setup@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version-file: '.nvmrc'
+        cache: 'pnpm'
+
+    - name: Get pnpm store directory
+      id: pnpm-cache
+      shell: bash
+      run: |
+        echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+    - name: Setup pnpm cache
+      uses: actions/cache@v4
+      with:
+        path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+        key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-pnpm-store-
+
+    - name: Install dependencies
+      shell: bash
+      run: |
+        pnpm install --frozen-lockfile
+        echo "✅ Dependencies installed successfully"
+
+    - name: Verify turbo installation
+      shell: bash
+      run: |
+        pnpm turbo --version || echo "⚠️ Turbo not available"
+
+    - name: Cache Next.js build
+      uses: actions/cache@v4
+      with:
+        path: |
+          ${{ github.workspace }}/.next/cache
+          ${{ github.workspace }}/apps/web/.next/cache
+        key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
+        restore-keys: |
+          ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
+          ${{ runner.os }}-nextjs-

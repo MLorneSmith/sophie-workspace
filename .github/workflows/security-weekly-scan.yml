@@ -16,175 +16,212 @@ env:
   PNPM_VERSION: '9.12.0'
 
 jobs:
-  security-audit:
-    name: Weekly Security Audit
-    runs-on: ubuntu-latest
+  # Scan container images for vulnerabilities
+  container-security-scan:
+    name: Container Security Scan
+    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
+    outputs:
+      container_critical: ${{ steps.container_summary.outputs.container_critical }}
+      container_high: ${{ steps.container_summary.outputs.container_high }}
+    permissions:
+      contents: read
+      packages: read
+      security-events: write
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
         with:
-          version: ${{ env.PNPM_VERSION }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/setup-node@v4
+      - name: Scan CI Docker image
+        uses: aquasecurity/trivy-action@0.28.0
         with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Run comprehensive Snyk scan
-        uses: snyk/actions/node@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: --all-projects --detection-depth=6 --skip-unresolved
-
-      - name: Generate Snyk HTML report
-        uses: snyk/actions/node@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: --all-projects --detection-depth=6 --skip-unresolved --format=json --json-file-output=snyk-report.json
+          image-ref: 'ghcr.io/${{ github.repository }}/ci:latest'
+          format: 'sarif'
+          output: 'ci-trivy-results.sarif'
+          severity: 'CRITICAL,HIGH,MEDIUM,LOW'
+          vuln-type: 'os,library'
+          scanners: 'vuln,secret,misconfig'
         continue-on-error: true
 
-      - name: Run Snyk Code analysis
-        uses: snyk/actions/node@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          command: code test
-          args: --format=json --json-file-output=snyk-code-report.json
-        continue-on-error: true
-
-      - name: Run Snyk Infrastructure as Code scan
-        uses: snyk/actions/iac@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: --format=json --json-file-output=snyk-iac-report.json
-        continue-on-error: true
-
-      - name: Upload SARIF reports to GitHub Security tab
+      - name: Upload CI image scan results
         uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
-          sarif_file: snyk.sarif
+          sarif_file: 'ci-trivy-results.sarif'
+          category: 'ci-container-weekly'
+
+      - name: Generate container scan summary
+        id: container_summary
+        run: |
+          echo "## Container Security Summary" > container-report.md
+          echo "" >> container-report.md
+          
+          # Scan CI image and capture results
+          trivy image ghcr.io/${{ github.repository }}/ci:latest --format json > ci-scan.json || true
+          
+          if [ -f ci-scan.json ] && [ -s ci-scan.json ]; then
+            CRITICAL=$(cat ci-scan.json | jq '[.Results[].Vulnerabilities[]? | select(.Severity=="CRITICAL")] | length')
+            HIGH=$(cat ci-scan.json | jq '[.Results[].Vulnerabilities[]? | select(.Severity=="HIGH")] | length')
+            MEDIUM=$(cat ci-scan.json | jq '[.Results[].Vulnerabilities[]? | select(.Severity=="MEDIUM")] | length')
+            LOW=$(cat ci-scan.json | jq '[.Results[].Vulnerabilities[]? | select(.Severity=="LOW")] | length')
+            
+            echo "container_critical=$CRITICAL" >> $GITHUB_OUTPUT
+            echo "container_high=$HIGH" >> $GITHUB_OUTPUT
+            echo "container_medium=$MEDIUM" >> $GITHUB_OUTPUT
+            echo "container_low=$LOW" >> $GITHUB_OUTPUT
+            
+            echo "### CI Image Vulnerabilities" >> container-report.md
+            echo "- Critical: $CRITICAL" >> container-report.md
+            echo "- High: $HIGH" >> container-report.md
+            echo "- Medium: $MEDIUM" >> container-report.md
+            echo "- Low: $LOW" >> container-report.md
+          else
+            echo "No container scan results available" >> container-report.md
+            echo "container_critical=0" >> $GITHUB_OUTPUT
+            echo "container_high=0" >> $GITHUB_OUTPUT
+          fi
         continue-on-error: true
 
-      - name: Process and create issue if vulnerabilities found
+  aikido-comprehensive-scan:
+    name: Aikido Comprehensive Security Scan
+    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
+    outputs:
+      container_critical: ${{ needs.container-security-scan.outputs.container_critical }}
+      container_high: ${{ needs.container-security-scan.outputs.container_high }}
+    needs: [container-security-scan]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-deps
+
+      # Run comprehensive Aikido scan for the main branch
+      - name: Run Aikido Security Scan
+        id: aikido_scan
+        uses: AikidoSec/github-actions-workflow@v1.0.13
+        with:
+          secret-key: ${{ secrets.AIKIDO_SECRET_KEY }}
+          fail-on-timeout: false  # Don't fail weekly scans on timeout
+          fail-on-dependency-scan: false  # Report but don't fail
+          fail-on-sast-scan: false
+          fail-on-iac-scan: true  # Enable IaC scanning
+          minimum-severity: 'LOW'  # Report all severities
+          timeout-seconds: 300  # 5 minutes for comprehensive scan
+          post-scan-status-comment: 'off'  # No PR comments for scheduled scans
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+
+      # Temporary: Also run npm audit for comparison
+      - name: Run npm audit
+        id: npm_audit
+        run: |
+          echo "Running npm audit for security vulnerabilities..."
+          pnpm audit --json > audit-report.json || true
+          
+          # Parse results
+          VULNERABILITIES=$(cat audit-report.json | jq '.metadata.vulnerabilities // {}')
+          HIGH=$(echo $VULNERABILITIES | jq '.high // 0')
+          CRITICAL=$(echo $VULNERABILITIES | jq '.critical // 0')
+          MODERATE=$(echo $VULNERABILITIES | jq '.moderate // 0')
+          LOW=$(echo $VULNERABILITIES | jq '.low // 0')
+          TOTAL=$((HIGH + CRITICAL + MODERATE + LOW))
+          
+          echo "vulnerabilities_total=$TOTAL" >> $GITHUB_OUTPUT
+          echo "vulnerabilities_high=$HIGH" >> $GITHUB_OUTPUT
+          echo "vulnerabilities_critical=$CRITICAL" >> $GITHUB_OUTPUT
+          echo "vulnerabilities_moderate=$MODERATE" >> $GITHUB_OUTPUT
+          echo "vulnerabilities_low=$LOW" >> $GITHUB_OUTPUT
+        continue-on-error: true
+
+      - name: Create comprehensive security report
+        if: always()
         uses: actions/github-script@v7
         with:
           script: |
-            const fs = require('fs');
+            const aikidoOutcome = '${{ steps.aikido_scan.outcome }}';
+            const npmTotal = ${{ steps.npm_audit.outputs.vulnerabilities_total || 0 }};
+            const npmCritical = ${{ steps.npm_audit.outputs.vulnerabilities_critical || 0 }};
+            const npmHigh = ${{ steps.npm_audit.outputs.vulnerabilities_high || 0 }};
+            const npmModerate = ${{ steps.npm_audit.outputs.vulnerabilities_moderate || 0 }};
+            const npmLow = ${{ steps.npm_audit.outputs.vulnerabilities_low || 0 }};
             
-            let vulnerabilities = [];
-            let hasHighCritical = false;
+            const containerCritical = ${{ needs.container-security-scan.outputs.container_critical || 0 }};
+            const containerHigh = ${{ needs.container-security-scan.outputs.container_high || 0 }};
             
-            // Process dependency vulnerabilities
-            try {
-              if (fs.existsSync('snyk-report.json')) {
-                const report = JSON.parse(fs.readFileSync('snyk-report.json', 'utf8'));
-                const depVulns = report.vulnerabilities || [];
-                vulnerabilities.push({
-                  type: 'Dependencies',
-                  count: depVulns.length,
-                  high: depVulns.filter(v => v.severity === 'high').length,
-                  critical: depVulns.filter(v => v.severity === 'critical').length
-                });
-                hasHighCritical = hasHighCritical || depVulns.some(v => ['high', 'critical'].includes(v.severity));
-              }
-            } catch (e) {
-              console.log('Could not process dependency scan results');
+            const hasIssues = aikidoOutcome === 'failure' || npmTotal > 0 || containerCritical > 0 || containerHigh > 0;
+            const hasHighCritical = (npmCritical + npmHigh + containerCritical + containerHigh) > 0;
+            const priority = hasHighCritical ? 'high-priority' : 'medium-priority';
+            const urgency = hasHighCritical ? '🚨 URGENT' : '⚠️ Review Required';
+            
+            if (!hasIssues) {
+              console.log('No security issues found in weekly scan');
+              return;
             }
             
-            // Process code vulnerabilities
-            try {
-              if (fs.existsSync('snyk-code-report.json')) {
-                const report = JSON.parse(fs.readFileSync('snyk-code-report.json', 'utf8'));
-                const codeVulns = report.runs?.[0]?.results || [];
-                vulnerabilities.push({
-                  type: 'Code',
-                  count: codeVulns.length,
-                  high: codeVulns.filter(v => v.level === 'error').length,
-                  critical: 0 // Snyk Code uses different severity levels
-                });
-                hasHighCritical = hasHighCritical || codeVulns.some(v => v.level === 'error');
-              }
-            } catch (e) {
-              console.log('Could not process code scan results');
-            }
+            let body = `# ${urgency}: Weekly Security Scan Results\n\n`;
+            body += `## Summary\n`;
+            body += `Scan Date: ${new Date().toISOString()}\n\n`;
             
-            // Process IaC vulnerabilities
-            try {
-              if (fs.existsSync('snyk-iac-report.json')) {
-                const report = JSON.parse(fs.readFileSync('snyk-iac-report.json', 'utf8'));
-                const iacVulns = report.vulnerabilities || [];
-                vulnerabilities.push({
-                  type: 'Infrastructure',
-                  count: iacVulns.length,
-                  high: iacVulns.filter(v => v.severity === 'high').length,
-                  critical: iacVulns.filter(v => v.severity === 'critical').length
-                });
-                hasHighCritical = hasHighCritical || iacVulns.some(v => ['high', 'critical'].includes(v.severity));
-              }
-            } catch (e) {
-              console.log('Could not process IaC scan results');
-            }
-            
-            // Create issue if vulnerabilities found
-            const totalVulns = vulnerabilities.reduce((sum, v) => sum + v.count, 0);
-            
-            if (totalVulns > 0) {
-              const priority = hasHighCritical ? 'high-priority' : 'medium-priority';
-              const urgency = hasHighCritical ? '🚨 URGENT' : '⚠️ Review Required';
-              
-              let body = `# ${urgency}: Weekly Security Scan Results\n\n`;
-              body += `## Summary\n`;
-              body += `**Total vulnerabilities found:** ${totalVulns}\n\n`;
-              
-              vulnerabilities.forEach(v => {
-                if (v.count > 0) {
-                  body += `### ${v.type} Vulnerabilities\n`;
-                  body += `- **Total:** ${v.count}\n`;
-                  body += `- **High:** ${v.high}\n`;
-                  body += `- **Critical:** ${v.critical}\n\n`;
-                }
-              });
-              
-              body += `## Action Required\n`;
-              if (hasHighCritical) {
-                body += `⚠️ **High/Critical vulnerabilities detected** - immediate action required.\n`;
-                body += `1. Review the detailed Snyk reports\n`;
-                body += `2. Update vulnerable dependencies where possible\n`;
-                body += `3. Apply security patches or workarounds\n`;
-                body += `4. Test thoroughly after updates\n\n`;
-              } else {
-                body += `✅ No high/critical vulnerabilities, but review recommended.\n`;
-                body += `1. Review the detailed Snyk reports when convenient\n`;
-                body += `2. Consider updates during next maintenance window\n\n`;
-              }
-              
-              body += `## Resources\n`;
-              body += `- [Snyk Dashboard](https://app.snyk.io/)\n`;
-              body += `- [SlideHeroes Security Policy](https://github.com/MLorneSmith/2025slideheroes/blob/main/docs/SECURITY.md)\n`;
-              body += `- [GitHub Security Advisories](https://github.com/MLorneSmith/2025slideheroes/security/advisories)\n\n`;
-              body += `---\n`;
-              body += `*Generated by automated weekly security scan on ${new Date().toISOString()}*`;
-              
-              await github.rest.issues.create({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                title: `Weekly Security Scan: ${totalVulns} vulnerabilities found`,
-                body: body,
-                labels: ['security', priority, 'automated']
-              });
-              
-              console.log(`Created security issue for ${totalVulns} vulnerabilities`);
+            body += `### Aikido Security Scan\n`;
+            if (aikidoOutcome === 'success') {
+              body += `✅ No issues detected by Aikido\n\n`;
+            } else if (aikidoOutcome === 'failure') {
+              body += `❌ Issues detected - [View detailed results in Aikido Dashboard](https://app.aikido.dev/)\n\n`;
             } else {
-              console.log('No vulnerabilities found in weekly scan');
+              body += `⚠️ Scan completed with warnings or timeout\n\n`;
             }
+            
+            if (npmTotal > 0) {
+              body += `### NPM Audit Results\n`;
+              body += `**Total vulnerabilities:** ${npmTotal}\n`;
+              body += `- **Critical:** ${npmCritical}\n`;
+              body += `- **High:** ${npmHigh}\n`;
+              body += `- **Moderate:** ${npmModerate}\n`;
+              body += `- **Low:** ${npmLow}\n\n`;
+            }
+            
+            if (containerCritical > 0 || containerHigh > 0) {
+              body += `### Container Security Results\n`;
+              body += `**Docker Image Vulnerabilities:**\n`;
+              body += `- **Critical:** ${containerCritical}\n`;
+              body += `- **High:** ${containerHigh}\n\n`;
+              body += `⚠️ Container vulnerabilities require updating base images or system packages.\n\n`;
+            }
+            
+            body += `## Action Required\n`;
+            if (hasHighCritical) {
+              body += `⚠️ **High/Critical vulnerabilities detected** - immediate action required.\n`;
+              body += `1. Review the Aikido dashboard for detailed vulnerability information\n`;
+              body += `2. Update vulnerable dependencies where possible\n`;
+              body += `3. Apply security patches or workarounds\n`;
+              body += `4. Test thoroughly after updates\n\n`;
+            } else {
+              body += `✅ No high/critical vulnerabilities, but review recommended.\n`;
+              body += `1. Review the detailed reports when convenient\n`;
+              body += `2. Consider updates during next maintenance window\n\n`;
+            }
+            
+            body += `## Resources\n`;
+            body += `- [Aikido Dashboard](https://app.aikido.dev/)\n`;
+            body += `- [SlideHeroes Security Policy](https://github.com/MLorneSmith/2025slideheroes/blob/main/docs/SECURITY.md)\n`;
+            body += `- [GitHub Security Advisories](https://github.com/MLorneSmith/2025slideheroes/security/advisories)\n`;
+            body += `- [Dependabot Alerts](https://github.com/MLorneSmith/2025slideheroes/security/dependabot)\n\n`;
+            body += `---\n`;
+            body += `*Generated by automated weekly security scan on ${new Date().toISOString()}*`;
+            
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Weekly Security Scan: Issues Detected`,
+              body: body,
+              labels: ['security', priority, 'automated']
+            });
+            
+            console.log(`Created security issue for weekly scan`);
 
       - name: Upload scan reports as artifacts
         uses: actions/upload-artifact@v4
@@ -192,8 +229,5 @@ jobs:
         with:
           name: security-scan-reports
           path: |
-            snyk-report.json
-            snyk-code-report.json
-            snyk-iac-report.json
-            snyk.sarif
+            audit-report.json
           retention-days: 90

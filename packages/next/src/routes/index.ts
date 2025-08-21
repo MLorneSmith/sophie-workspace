@@ -3,7 +3,7 @@ import "server-only";
 import { verifyCaptchaToken } from "@kit/auth/captcha/server";
 import { requireUser } from "@kit/supabase/require-user";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
-import type { User } from "@supabase/supabase-js";
+import type { JWTUserData } from "@kit/supabase/types";
 import { redirect } from "next/navigation";
 import type { NextRequest, NextResponse } from "next/server";
 import type { z } from "zod";
@@ -21,7 +21,7 @@ interface HandlerParams<
 	RequireAuth extends boolean | undefined,
 > {
 	request: NextRequest;
-	user: RequireAuth extends false ? undefined : User;
+	user: RequireAuth extends false ? undefined : JWTUserData;
 	body: Schema extends z.ZodType ? z.infer<Schema> : undefined;
 	params: Record<string, string>;
 }
@@ -72,7 +72,7 @@ export const enhanceRouteHandler = <
 			params: Promise<Record<string, string>>;
 		},
 	) {
-		type UserParam = Params["auth"] extends false ? undefined : User;
+		type UserParam = Params["auth"] extends false ? undefined : JWTUserData;
 
 		let user: UserParam = undefined as UserParam;
 
@@ -108,22 +108,21 @@ export const enhanceRouteHandler = <
 			user = auth.data as UserParam;
 		}
 
-		let body: Body | undefined;
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		// biome-ignore lint/suspicious/noExplicitAny: Body type depends on schema parsing
+		let body: any;
 
 		if (params?.schema) {
 			// clone the request to read the body
 			// so that we can pass it to the handler safely
 			const json = await request.clone().json();
 
-			body = zodParseFactory(params.schema)(json) as Body;
+			body = zodParseFactory(params.schema)(json);
 		}
 
 		return handler({
 			request,
-			// biome-ignore lint/suspicious/noExplicitAny: ZodType requires three type parameters, any is appropriate here
-			body: body as Params["schema"] extends z.ZodType<any, z.ZodTypeDef, any>
-				? z.TypeOf<Params["schema"]>
-				: undefined,
+			body,
 			user,
 			params: await routeParams.params,
 		});

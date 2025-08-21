@@ -3,7 +3,7 @@
  * Tests cost calculation, state management, and API integration
  */
 
-import type { User } from "@supabase/supabase-js";
+import type { JWTUserData } from "@kit/supabase/types";
 import type { UseQueryResult } from "@tanstack/react-query";
 import {
 	act,
@@ -57,20 +57,18 @@ function TestWrapper({ children }: { children: ReactNode }) {
 	return <CostTrackingProvider>{children}</CostTrackingProvider>;
 }
 
-// Helper function to create a complete User mock
-function createMockUser(overrides: Partial<User> = {}): User {
+// Helper function to create a complete JWTUserData mock
+function createMockUser(overrides: Partial<JWTUserData> = {}): JWTUserData {
 	return {
 		id: "user-123",
 		email: "test@example.com",
-		aud: "authenticated",
-		role: "authenticated",
-		created_at: "2023-01-01T00:00:00.000Z",
-		updated_at: "2023-01-01T00:00:00.000Z",
+		is_anonymous: false,
+		aal: "aal1" as const,
+		phone: "",
 		app_metadata: {},
 		user_metadata: {},
-		identities: [],
 		...overrides,
-	} as User;
+	};
 }
 
 // Helper function to create a proper UseQueryResult mock

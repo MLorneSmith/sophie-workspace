@@ -27,7 +27,7 @@ permissions:
 jobs:
   lighthouse:
     name: Run Lighthouse CI
-    runs-on: ubuntu-latest
+    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
     outputs:
       report-url: ${{ steps.lighthouse.outputs.report-url }}
       performance-score: ${{ steps.lighthouse.outputs.performance-score }}

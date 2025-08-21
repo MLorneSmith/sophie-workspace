@@ -3,7 +3,7 @@ import "server-only";
 import { verifyCaptchaToken } from "@kit/auth/captcha/server";
 import { requireUser } from "@kit/supabase/require-user";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
-import type { User } from "@supabase/supabase-js";
+import type { JWTUserData } from "@kit/supabase/types";
 import { redirect } from "next/navigation";
 import type { ZodType, z } from "zod";
 
@@ -27,14 +27,14 @@ export function enhanceAction<
 >(
 	fn: (
 		params: Config["schema"] extends ZodType ? z.infer<Config["schema"]> : Args,
-		user: Config["auth"] extends false ? undefined : User,
+		user: Config["auth"] extends false ? undefined : JWTUserData,
 	) => Response | Promise<Response>,
 	config: Config,
 ) {
 	return async (
 		params: Config["schema"] extends ZodType ? z.infer<Config["schema"]> : Args,
 	) => {
-		type UserParam = Config["auth"] extends false ? undefined : User;
+		type UserParam = Config["auth"] extends false ? undefined : JWTUserData;
 
 		const requireAuth = config.auth ?? true;
 		let user: UserParam = undefined as UserParam;

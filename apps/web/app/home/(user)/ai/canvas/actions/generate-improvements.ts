@@ -1,18 +1,18 @@
 "use server";
 
 import {
+	baseInstructions,
 	type ChatCompletionOptions,
 	type ChatMessage,
 	ConfigManager,
+	createBalancedOptimizedConfig,
 	getChatCompletion,
+	improvementFormat,
+	improvementProcess,
+	parseImprovements,
+	presentationContext,
+	sectionAnalysis,
 } from "@kit/ai-gateway";
-import { createBalancedOptimizedConfig } from "@kit/ai-gateway/src/configs/templates/balanced-optimized";
-import { baseInstructions } from "@kit/ai-gateway/src/prompts/partials/base-instructions";
-import { improvementFormat } from "@kit/ai-gateway/src/prompts/partials/improvement-format";
-import { improvementProcess } from "@kit/ai-gateway/src/prompts/partials/improvement-process";
-import { presentationContext } from "@kit/ai-gateway/src/prompts/partials/presentation-context";
-import { sectionAnalysis } from "@kit/ai-gateway/src/prompts/partials/section-analysis";
-import { parseImprovements } from "@kit/ai-gateway/src/utils/parse-improvements";
 import { enhanceAction } from "@kit/next/actions";
 import { createServiceLogger } from "@kit/shared/logger";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";

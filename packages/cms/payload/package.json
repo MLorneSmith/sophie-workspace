@@ -1,6 +1,6 @@
 {
 	"name": "@kit/payload",
-	"version": "3.43.0",
+	"version": "3.52.0",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
 	"scripts": {
@@ -12,13 +12,13 @@
 		"@kit/shared": "workspace:*",
 		"@kit/supabase": "workspace:*",
 		"@supabase/supabase-js": "2.50.2",
-		"payload": "3.43.0",
-		"react": "19.1.0"
+		"payload": "3.52.0",
+		"react": "19.1.1"
 	},
 	"devDependencies": {
 		"@types/node": "^24.0.4",
 		"@types/react": "19.1.8",
-		"typescript": "^5.8.3"
+		"typescript": "^5.9.2"
 	},
 	"exports": {
 		".": {

@@ -1,0 +1,307 @@
+name: Dev Integration Tests
+
+on:
+  workflow_run:
+    workflows: ["Deploy to Dev"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      deployment_url:
+        description: 'Dev deployment URL to test'
+        required: false
+        default: 'https://dev.slideheroes.com'
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+  checks: write
+
+env:
+  DEPLOYMENT_URL: ${{ github.event.inputs.deployment_url || 'https://dev.slideheroes.com' }}
+
+jobs:
+  # Only run if the deployment was successful
+  check-should-run:
+    name: Check if tests should run
+    runs-on: ubuntu-latest
+    outputs:
+      should_run: ${{ steps.check.outputs.should_run }}
+      deployment_url: ${{ steps.check.outputs.deployment_url }}
+    steps:
+      - name: Determine if we should run
+        id: check
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "should_run=true" >> $GITHUB_OUTPUT
+            echo "deployment_url=${{ env.DEPLOYMENT_URL }}" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.event.workflow_run.conclusion }}" == "success" ]]; then
+            echo "should_run=true" >> $GITHUB_OUTPUT
+            echo "deployment_url=https://dev.slideheroes.com" >> $GITHUB_OUTPUT
+          else
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            echo "Skipping: Deploy to Dev workflow did not succeed"
+          fi
+
+  # API Contract Testing
+  api-contract-tests:
+    name: API Contract Tests
+    needs: check-should-run
+    if: needs.check-should-run.outputs.should_run == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-deps
+
+      - name: Run API contract tests
+        run: |
+          # Test all API endpoints are responding correctly
+          echo "🔍 Testing API endpoints at ${{ needs.check-should-run.outputs.deployment_url }}"
+          
+          # Health check endpoints
+          curl -f -s -o /dev/null -w "✅ Health check: %{http_code}\n" \
+            "${{ needs.check-should-run.outputs.deployment_url }}/healthcheck" || exit 1
+          
+          curl -f -s -o /dev/null -w "✅ API health: %{http_code}\n" \
+            "${{ needs.check-should-run.outputs.deployment_url }}/api/health" || exit 1
+          
+          # TODO: Add more comprehensive API testing
+          # - Authentication endpoints
+          # - User management endpoints
+          # - Billing endpoints
+          # - Content management endpoints
+
+      - name: Test GraphQL endpoint
+        run: |
+          # Test GraphQL introspection
+          RESPONSE=$(curl -s -X POST \
+            -H "Content-Type: application/json" \
+            -d '{"query":"{ __schema { queryType { name } } }"}' \
+            "${{ needs.check-should-run.outputs.deployment_url }}/api/graphql")
+          
+          if echo "$RESPONSE" | grep -q "queryType"; then
+            echo "✅ GraphQL endpoint responding correctly"
+          else
+            echo "❌ GraphQL endpoint not responding correctly"
+            echo "$RESPONSE"
+            exit 1
+          fi
+
+  # Integration Tests
+  integration-tests:
+    name: Integration Tests
+    needs: check-should-run
+    if: needs.check-should-run.outputs.should_run == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            apps/e2e
+            packages
+            package.json
+            pnpm-lock.yaml
+            pnpm-workspace.yaml
+            .npmrc
+            .github/actions/setup-deps
+            tsconfig.json
+
+      - uses: ./.github/actions/setup-deps
+
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('**/pnpm-lock.yaml') }}
+
+      - name: Install Playwright
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: pnpm --filter web-e2e exec playwright install --with-deps chromium
+
+      - name: Run integration test suite
+        run: |
+          # Run integration tests (not just smoke tests)
+          pnpm --filter web-e2e test:integration
+        env:
+          PLAYWRIGHT_BASE_URL: ${{ needs.check-should-run.outputs.deployment_url }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+          CI: true
+
+  # Security Quick Scan
+  security-scan:
+    name: Security Quick Scan
+    needs: check-should-run
+    if: needs.check-should-run.outputs.should_run == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    continue-on-error: true  # Don't block on security issues initially
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run security headers check
+        run: |
+          echo "🔒 Checking security headers..."
+          
+          # Check for essential security headers
+          HEADERS=$(curl -s -I "${{ needs.check-should-run.outputs.deployment_url }}")
+          
+          # Check for X-Frame-Options
+          if echo "$HEADERS" | grep -qi "X-Frame-Options"; then
+            echo "✅ X-Frame-Options header present"
+          else
+            echo "⚠️  X-Frame-Options header missing"
+          fi
+          
+          # Check for Content-Security-Policy
+          if echo "$HEADERS" | grep -qi "Content-Security-Policy"; then
+            echo "✅ Content-Security-Policy header present"
+          else
+            echo "⚠️  Content-Security-Policy header missing"
+          fi
+          
+          # Check for X-Content-Type-Options
+          if echo "$HEADERS" | grep -qi "X-Content-Type-Options"; then
+            echo "✅ X-Content-Type-Options header present"
+          else
+            echo "⚠️  X-Content-Type-Options header missing"
+          fi
+
+      - name: Check for exposed sensitive paths
+        run: |
+          echo "🔍 Checking for exposed sensitive paths..."
+          
+          # Check that sensitive paths return 404 or 403
+          PATHS=("/.env" "/.git" "/config.json" "/package.json" "/.github")
+          
+          for path in "${PATHS[@]}"; do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+              "${{ needs.check-should-run.outputs.deployment_url }}$path")
+            
+            if [[ "$STATUS" == "404" ]] || [[ "$STATUS" == "403" ]]; then
+              echo "✅ $path properly protected (HTTP $STATUS)"
+            else
+              echo "❌ $path may be exposed (HTTP $STATUS)"
+              exit 1
+            fi
+          done
+
+  # Performance Baseline
+  performance-baseline:
+    name: Capture Performance Baseline
+    needs: check-should-run
+    if: needs.check-should-run.outputs.should_run == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Lighthouse performance test
+        uses: treosh/lighthouse-ci-action@v11
+        with:
+          urls: |
+            ${{ needs.check-should-run.outputs.deployment_url }}
+            ${{ needs.check-should-run.outputs.deployment_url }}/pricing
+            ${{ needs.check-should-run.outputs.deployment_url }}/templates
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+
+      - name: Store performance metrics
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // Store metrics for comparison in promotion readiness
+            const metrics = {
+              timestamp: new Date().toISOString(),
+              environment: 'dev',
+              deployment_sha: '${{ github.sha }}',
+              // Lighthouse scores would be parsed here
+            };
+            
+            console.log('Performance baseline captured:', metrics);
+            
+            // TODO: Store in artifact or external service for comparison
+
+  # Aggregate Results
+  integration-summary:
+    name: Integration Test Summary
+    needs: [api-contract-tests, integration-tests, security-scan, performance-baseline]
+    if: always() && needs.check-should-run.outputs.should_run == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate test summary
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const jobs = {
+              'API Contract Tests': '${{ needs.api-contract-tests.result }}',
+              'Integration Tests': '${{ needs.integration-tests.result }}',
+              'Security Scan': '${{ needs.security-scan.result }}',
+              'Performance Baseline': '${{ needs.performance-baseline.result }}'
+            };
+            
+            let summary = `## 🧪 Dev Integration Test Results\n\n`;
+            summary += `| Test Suite | Status |\n`;
+            summary += `|------------|--------|\n`;
+            
+            let allPassed = true;
+            for (const [name, status] of Object.entries(jobs)) {
+              const emoji = status === 'success' ? '✅' : 
+                           status === 'failure' ? '❌' : '⚠️';
+              summary += `| ${name} | ${emoji} ${status} |\n`;
+              
+              if (status === 'failure') {
+                allPassed = false;
+              }
+            }
+            
+            summary += `\n### Overall Status: ${allPassed ? '✅ Ready for Promotion' : '❌ Issues Found'}\n`;
+            
+            if (allPassed) {
+              summary += `\nDev environment is stable and ready for staging promotion.\n`;
+              summary += `Next step: Review and approve the automated promotion PR.\n`;
+            } else {
+              summary += `\nDev environment has issues that need to be resolved before promotion.\n`;
+              summary += `Check the failed jobs above for details.\n`;
+            }
+            
+            // Write to summary
+            await core.summary
+              .addRaw(summary)
+              .write();
+            
+            // Set output for next workflow
+            core.setOutput('all_passed', allPassed);
+            
+            // Create comment on commit
+            if (context.eventName === 'workflow_run') {
+              const sha = context.payload.workflow_run.head_sha;
+              await github.rest.repos.createCommitComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                commit_sha: sha,
+                body: summary
+              });
+            }
+
+      - name: Trigger promotion readiness if all passed
+        if: steps.summary.outputs.all_passed == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // Trigger the promotion readiness workflow
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'dev-promotion-readiness.yml',
+              ref: 'dev',
+              inputs: {
+                integration_test_run_id: context.runId.toString()
+              }
+            });
+            
+            console.log('✅ Triggered promotion readiness assessment');
