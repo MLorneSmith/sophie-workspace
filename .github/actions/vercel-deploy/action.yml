@@ -43,7 +43,14 @@ runs:
       shell: bash
       run: |
         if ! command -v vercel &> /dev/null; then
-          pnpm add -g vercel@latest
+          # Try npm first (more reliable for global installs)
+          npm install -g vercel@latest || {
+            # Fallback to pnpm if npm fails
+            export PNPM_HOME="$HOME/.local/share/pnpm"
+            export PATH="$PNPM_HOME:$PATH"
+            pnpm setup
+            pnpm add -g vercel@latest
+          }
         else
           echo "✅ Vercel CLI already installed"
         fi
