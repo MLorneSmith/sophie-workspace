@@ -280,20 +280,20 @@ if command -v gh &> /dev/null && [ -d "${GIT_ROOT}/.github/workflows" ]; then
         cache_age=$((current_time - cache_time))
         ci_status=$(cat "$ci_cache_file" 2>/dev/null)
         
-        # For in-progress status, use shorter cache time (30 seconds)
-        # For other statuses, use normal cache time (5 minutes)
+        # Use shorter cache times to detect new workflows quickly:
+        # - 30 seconds for in-progress status
+        # - 60 seconds for completed statuses (to detect new runs)
         if [[ "$ci_status" == *"⟳"* ]]; then
             if [ $cache_age -ge 30 ]; then  # Refresh in-progress after 30 seconds
                 ci_status=""
             fi
-        elif [ $cache_age -ge 300 ]; then  # Refresh others after 5 minutes
+        elif [ $cache_age -ge 60 ]; then  # Refresh completed statuses after 60 seconds
             ci_status=""
         fi
     fi
     
     # If no cached status or cache is stale, fetch new status
-    # Also refresh if cached status is "in_progress" to avoid stale running states
-    if [ -z "$ci_status" ] || [[ "$ci_status" == *"⟳"* ]]; then
+    if [ -z "$ci_status" ]; then
         # Get the latest workflow run status
         latest_run=$(gh run list --limit 1 --json status,conclusion,createdAt 2>/dev/null)
         
