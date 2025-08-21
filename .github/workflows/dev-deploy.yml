@@ -85,13 +85,22 @@ jobs:
   # Pre-deployment validation (quick checks before deploying)
   validate:
     name: Pre-deployment Validation
-    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64  # Reduced CPUs - sufficient for lint/typecheck
     needs: check-skip
     if: needs.check-skip.outputs.should_deploy == 'true'
     steps:
       - uses: actions/checkout@v4
 
       - uses: ./.github/actions/setup-deps
+
+      - name: Setup Turbo cache
+        uses: actions/cache@v4
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-validate-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-validate-
+            ${{ runner.os }}-turbo-
 
       - name: Run validation checks in parallel
         run: |
@@ -130,7 +139,7 @@ jobs:
   # Deploy Web App to Vercel Dev environment (let Vercel handle the build)
   deploy-web:
     name: Deploy Web App to Dev
-    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64  # Increased CPUs for faster Vercel operations
     needs: [check-skip, validate]
     if: needs.check-skip.outputs.should_deploy == 'true'
     environment:
@@ -140,8 +149,17 @@ jobs:
       url: ${{ steps.deploy.outputs.url }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .github/actions/vercel-deploy
+            vercel.json
+            .vercelignore
 
-      - uses: ./.github/actions/setup-deps
+      - name: Setup minimal deps for deployment
+        run: |
+          # Install pnpm and vercel CLI only, not all project dependencies
+          npm install -g pnpm@latest
+          pnpm add -g vercel@latest
 
       - name: Deploy to Vercel
         id: deploy
@@ -181,7 +199,7 @@ jobs:
   # Deploy Payload CMS to Vercel Dev environment (let Vercel handle the build)
   deploy-payload:
     name: Deploy Payload CMS to Dev
-    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64  # Increased CPUs for faster Vercel operations
     needs: [check-skip, validate]
     if: needs.check-skip.outputs.should_deploy == 'true'
     environment:
@@ -191,8 +209,17 @@ jobs:
       url: ${{ steps.deploy.outputs.url }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .github/actions/vercel-deploy
+            vercel.json
+            .vercelignore
 
-      - uses: ./.github/actions/setup-deps
+      - name: Setup minimal deps for deployment
+        run: |
+          # Install pnpm and vercel CLI only, not all project dependencies
+          npm install -g pnpm@latest
+          pnpm add -g vercel@latest
 
       - name: Deploy to Vercel
         id: deploy
@@ -233,7 +260,7 @@ jobs:
   e2e-smoke:
     name: E2E Smoke Tests
     runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
-    needs: [check-skip, deploy-web]
+    needs: [check-skip, deploy-web, deploy-payload]  # Wait for both deployments
     if: needs.check-skip.outputs.should_deploy == 'true'
     environment: development
     continue-on-error: false # Make it blocking to catch issues early
@@ -243,22 +270,24 @@ jobs:
         with:
           sparse-checkout: |
             apps/e2e
-            packages
             package.json
             pnpm-lock.yaml
             pnpm-workspace.yaml
             .npmrc
-            .github/actions/setup-deps
             tsconfig.json
 
-      - uses: ./.github/actions/setup-deps
+      - name: Setup E2E dependencies
+        run: |
+          # Install only what's needed for E2E tests
+          npm install -g pnpm@latest
+          pnpm install --frozen-lockfile --filter web-e2e...
 
       - name: Cache Playwright browsers
         id: playwright-cache
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-playwright-${{ hashFiles('apps/e2e/package.json') }}
           restore-keys: |
             ${{ runner.os }}-playwright-
 
@@ -270,14 +299,27 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit == 'true'
         run: pnpm --filter web-e2e exec playwright install-deps chromium
 
-      - name: Wait for deployment to stabilize
+      - name: Verify deployments are ready
         run: |
-          echo "⏳ Waiting for deployment to stabilize..."
-          sleep 5
-          # Quick health check before running tests
-          curl -f -s -o /dev/null -w "%{http_code}" \
+          echo "🔍 Verifying deployments are accessible..."
+          
+          # Check web deployment
+          if ! curl -f -s -o /dev/null -w "Web: %{http_code}\n" \
             -H "x-vercel-protection-bypass: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" \
-            "${{ needs.deploy-web.outputs.url }}/healthcheck" || true
+            "${{ needs.deploy-web.outputs.url }}/healthcheck"; then
+            echo "❌ Web deployment not ready"
+            exit 1
+          fi
+          
+          # Check payload deployment
+          if ! curl -f -s -o /dev/null -w "Payload: %{http_code}\n" \
+            -H "x-vercel-protection-bypass: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" \
+            "${{ needs.deploy-payload.outputs.url }}/api/health"; then
+            echo "❌ Payload deployment not ready"
+            exit 1
+          fi
+          
+          echo "✅ Both deployments are ready"
 
       - name: Run E2E smoke tests
         run: |
@@ -300,12 +342,15 @@ jobs:
   # Notify New Relic of deployment
   notify-monitoring:
     name: Notify Monitoring
-    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }}/runner=1cpu-linux-x64  # Minimal runner for notification
     needs: [check-skip, deploy-web, deploy-payload]
     if: needs.check-skip.outputs.should_deploy == 'true'
     continue-on-error: true
     steps:
       - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .github/actions/newrelic-notify
 
       - uses: ./.github/actions/newrelic-notify
         with:
