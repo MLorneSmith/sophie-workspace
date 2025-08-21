@@ -356,16 +356,17 @@ fi
 # Check PR status (open PRs that need review)
 pr_status=""
 if command -v gh &> /dev/null && [ -d "${GIT_ROOT}/.git" ]; then
-    # Cache PR status for 5 minutes
-    pr_cache_file="/tmp/.claude_pr_status_${GIT_ROOT//\//_}"
+    current_branch=$(git branch --show-current 2>/dev/null)
+    # Include branch in cache file name to invalidate on branch switch
+    pr_cache_file="/tmp/.claude_pr_status_${GIT_ROOT//\//_}_${current_branch//\//_}"
     current_time=$(date +%s)
     
-    # Check if cache exists and is fresh (less than 5 minutes old)
+    # Check if cache exists and is fresh (reduced to 2 minutes for better responsiveness)
     if [ -f "$pr_cache_file" ]; then
         cache_time=$(stat -c %Y "$pr_cache_file" 2>/dev/null || stat -f %m "$pr_cache_file" 2>/dev/null || echo 0)
         cache_age=$((current_time - cache_time))
         
-        if [ $cache_age -lt 300 ]; then  # Less than 5 minutes
+        if [ $cache_age -lt 120 ]; then  # Less than 2 minutes
             pr_status=$(cat "$pr_cache_file" 2>/dev/null)
         fi
     fi
@@ -373,7 +374,6 @@ if command -v gh &> /dev/null && [ -d "${GIT_ROOT}/.git" ]; then
     # If no cached status or cache is stale, fetch new status
     if [ -z "$pr_status" ]; then
         # Get open PRs for current branch or PRs awaiting review
-        current_branch=$(git branch --show-current 2>/dev/null)
         
         # Check if current branch has an open PR
         branch_pr=$(gh pr list --head "$current_branch" --json number,state,reviewDecision,isDraft --limit 1 2>/dev/null)
