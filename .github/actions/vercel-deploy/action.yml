@@ -86,11 +86,29 @@ runs:
         echo "url=$url" >> $GITHUB_OUTPUT
         echo "✅ Deployed to: $url"
 
-    - name: Wait for deployment
+    - name: Wait for deployment readiness
       shell: bash
       run: |
-        echo "⏳ Waiting for deployment to be ready..."
-        sleep 10
+        echo "⏳ Checking deployment readiness..."
+        # Instead of arbitrary sleep, do a quick readiness check
+        url="${{ steps.deploy.outputs.url }}"
+        max_attempts=20
+        attempt=0
+        
+        while [ $attempt -lt $max_attempts ]; do
+          if curl -f -s -o /dev/null -w "%{http_code}" \
+             -H "x-vercel-protection-bypass: ${{ inputs.protection-bypass-secret }}" \
+             "$url" 2>/dev/null; then
+            echo "✅ Deployment is ready"
+            break
+          fi
+          
+          attempt=$((attempt + 1))
+          if [ $attempt -lt $max_attempts ]; then
+            echo "Attempt $attempt/$max_attempts - waiting 2s..."
+            sleep 2
+          fi
+        done
 
     - name: Health check
       if: inputs.health-check-url != ''
