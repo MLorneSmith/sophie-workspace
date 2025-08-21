@@ -13,6 +13,9 @@ model=$(echo "$input" | jq -r '.model.display_name')
 # 🔴 = Stale (> 2 hours)
 # ⚪ = Not run
 
+# Get git repository root (used for consistent status file paths)
+GIT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo "$PWD")
+
 # Get current git branch (skip locks for performance)
 branch=$(git -c core.preloadindex=false -c gc.auto=0 branch --show-current 2>/dev/null || echo "no-git")
 
@@ -21,7 +24,7 @@ working_dir=$(basename "$PWD")
 
 # Check build status
 build_status=""
-build_log_file="/tmp/.claude_build_status_${PWD//\//_}"
+build_log_file="/tmp/.claude_build_status_${GIT_ROOT//\//_}"
 
 # Check if build is currently running
 if pgrep -f "pnpm (run )?build" > /dev/null 2>&1 || pgrep -f "npm run build" > /dev/null 2>&1; then
@@ -82,7 +85,7 @@ fi
 
 # Check test status
 test_status=""
-test_log_file="/tmp/.claude_test_status_${PWD//\//_}"
+test_log_file="/tmp/.claude_test_status_${GIT_ROOT//\//_}"
 
 # Check if tests are currently running (exclude LSP/watch modes, look for actual test execution)
 if pgrep -f "pnpm test|npm test|yarn test|vitest run|jest --run|mocha|pytest" | grep -v "watch" | grep -v "lsp" > /dev/null 2>&1; then
@@ -146,9 +149,9 @@ fi
 
 # Check codecheck status (combines lint + typecheck)
 codecheck_status=""
-codecheck_log_file="/tmp/.claude_codecheck_status_${PWD//\//_}"
+codecheck_log_file="/tmp/.claude_codecheck_status_${GIT_ROOT//\//_}"
 # Also check old lint status file for backwards compatibility
-lint_log_file="/tmp/.claude_lint_status_${PWD//\//_}"
+lint_log_file="/tmp/.claude_lint_status_${GIT_ROOT//\//_}"
 
 # Check if codecheck/lint/typecheck is currently running (exclude LSP servers)
 if pgrep -f "code-check|codecheck|pnpm lint|npm run lint|yarn lint|pnpm typecheck|tsc --noEmit|pnpm.*biome check|eslint .*\.(js|ts|jsx|tsx)" | grep -v "lsp" | grep -v "__run_server" > /dev/null 2>&1; then
@@ -266,9 +269,9 @@ fi
 
 # Check CI/CD status (GitHub Actions)
 ci_status=""
-if command -v gh &> /dev/null && [ -d ".github/workflows" ]; then
+if command -v gh &> /dev/null && [ -d "${GIT_ROOT}/.github/workflows" ]; then
     # Cache CI status for 5 minutes to avoid too many API calls
-    ci_cache_file="/tmp/.claude_ci_status_${PWD//\//_}"
+    ci_cache_file="/tmp/.claude_ci_status_${GIT_ROOT//\//_}"
     current_time=$(date +%s)
     
     # Check if cache exists and is fresh (less than 5 minutes old)
@@ -344,9 +347,9 @@ fi
 
 # Check PR status (open PRs that need review)
 pr_status=""
-if command -v gh &> /dev/null && [ -d ".git" ]; then
+if command -v gh &> /dev/null && [ -d "${GIT_ROOT}/.git" ]; then
     # Cache PR status for 5 minutes
-    pr_cache_file="/tmp/.claude_pr_status_${PWD//\//_}"
+    pr_cache_file="/tmp/.claude_pr_status_${GIT_ROOT//\//_}"
     current_time=$(date +%s)
     
     # Check if cache exists and is fresh (less than 5 minutes old)
@@ -380,7 +383,7 @@ if command -v gh &> /dev/null && [ -d ".git" ]; then
                     pr_status="✅ PR:approved"
                 elif [ "$pr_review" = "CHANGES_REQUESTED" ]; then
                     pr_status="🔄 PR:changes"
-                elif [ "$pr_review" = "null" ] || [ -z "$pr_review" ]; then
+                elif [ "$pr_review" = "REVIEW_REQUIRED" ] || [ "$pr_review" = "null" ] || [ -z "$pr_review" ]; then
                     pr_status="👀 PR:review"
                 fi
                 
