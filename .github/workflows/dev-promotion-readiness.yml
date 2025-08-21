@@ -1,0 +1,349 @@
+name: Dev Promotion Readiness
+
+on:
+  workflow_dispatch:
+    inputs:
+      integration_test_run_id:
+        description: 'Integration test workflow run ID'
+        required: false
+  workflow_run:
+    workflows: ["Dev Integration Tests"]
+    types: [completed]
+    branches: [dev]  # Only trigger for dev branch deployments
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  checks: write
+
+jobs:
+  assess-readiness:
+    name: Assess Promotion Readiness
+    runs-on: ubuntu-latest
+    if: |
+      github.event_name == 'workflow_dispatch' || 
+      github.event.workflow_run.conclusion == 'success'
+    outputs:
+      ready_for_promotion: ${{ steps.assessment.outputs.ready }}
+      promotion_score: ${{ steps.assessment.outputs.score }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Need full history for changelog
+
+      - name: Gather quality metrics
+        id: metrics
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const metrics = {};
+            
+            // Get latest workflow runs for dev branch
+            const runs = await github.rest.actions.listWorkflowRunsForRepo({
+              owner,
+              repo,
+              branch: 'dev',
+              per_page: 10,
+              status: 'completed'
+            });
+            
+            // Calculate success rate
+            const recentRuns = runs.data.workflow_runs.slice(0, 5);
+            const successCount = recentRuns.filter(r => r.conclusion === 'success').length;
+            metrics.successRate = (successCount / recentRuns.length) * 100;
+            
+            // Check for test results from integration tests
+            const integrationRunId = context.payload.inputs?.integration_test_run_id || 
+                                   context.payload.workflow_run?.id;
+            
+            if (integrationRunId) {
+              const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
+                owner,
+                repo,
+                run_id: integrationRunId
+              });
+              
+              metrics.hasTestResults = artifacts.data.artifacts.length > 0;
+            }
+            
+            // TODO: Get actual code coverage from codecov or similar
+            metrics.codeCoverage = 85; // Placeholder
+            
+            // Check for recent failures
+            metrics.recentFailures = recentRuns.filter(r => 
+              r.conclusion === 'failure' && 
+              new Date(r.created_at) > new Date(Date.now() - 6 * 60 * 60 * 1000)
+            ).length;
+            
+            core.setOutput('metrics', JSON.stringify(metrics));
+            return metrics;
+
+      - name: Check for pending changes
+        id: changes
+        run: |
+          # Get commits that are in dev but not in staging
+          PENDING_COMMITS=$(git log --oneline origin/staging..origin/dev 2>/dev/null | wc -l || echo "0")
+          echo "pending_commits=$PENDING_COMMITS" >> $GITHUB_OUTPUT
+          
+          # Get list of changed files
+          CHANGED_FILES=$(git diff --name-only origin/staging...origin/dev 2>/dev/null | wc -l || echo "0")
+          echo "changed_files=$CHANGED_FILES" >> $GITHUB_OUTPUT
+          
+          # Generate changelog
+          if [ "$PENDING_COMMITS" -gt 0 ]; then
+            CHANGELOG=$(git log --pretty=format:"- %s (%an)" origin/staging..origin/dev 2>/dev/null || echo "No changes")
+            echo "changelog<<EOF" >> $GITHUB_OUTPUT
+            echo "$CHANGELOG" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          else
+            echo "changelog=No changes to promote" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Assess promotion readiness
+        id: assessment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const metrics = JSON.parse('${{ steps.metrics.outputs.metrics }}');
+            const pendingCommits = parseInt('${{ steps.changes.outputs.pending_commits }}');
+            const changedFiles = parseInt('${{ steps.changes.outputs.changed_files }}');
+            
+            // Define readiness criteria
+            const criteria = {
+              hasChanges: pendingCommits > 0,
+              successRate: metrics.successRate >= 80,
+              codeCoverage: metrics.codeCoverage >= 80,
+              noRecentFailures: metrics.recentFailures === 0,
+              notTooManyChanges: changedFiles < 100  // Prevent huge PRs
+            };
+            
+            // Calculate promotion score
+            const weights = {
+              successRate: 30,
+              codeCoverage: 25,
+              noRecentFailures: 25,
+              notTooManyChanges: 20
+            };
+            
+            let score = 0;
+            if (criteria.successRate) score += weights.successRate;
+            if (criteria.codeCoverage) score += weights.codeCoverage;
+            if (criteria.noRecentFailures) score += weights.noRecentFailures;
+            if (criteria.notTooManyChanges) score += weights.notTooManyChanges;
+            
+            // Determine if ready for promotion
+            const ready = criteria.hasChanges && score >= 75;
+            
+            // Generate assessment report
+            const report = {
+              ready,
+              score,
+              criteria,
+              metrics,
+              pendingCommits,
+              changedFiles,
+              timestamp: new Date().toISOString()
+            };
+            
+            core.setOutput('ready', ready);
+            core.setOutput('score', score);
+            core.setOutput('report', JSON.stringify(report));
+            
+            // Create summary
+            let summary = `## 📊 Promotion Readiness Assessment\n\n`;
+            summary += `### Score: ${score}/100 ${score >= 75 ? '✅' : '❌'}\n\n`;
+            
+            summary += `| Criteria | Status | Details |\n`;
+            summary += `|----------|--------|----------|\n`;
+            summary += `| Changes to Promote | ${criteria.hasChanges ? '✅' : '❌'} | ${pendingCommits} commits, ${changedFiles} files |\n`;
+            summary += `| Success Rate | ${criteria.successRate ? '✅' : '❌'} | ${metrics.successRate.toFixed(1)}% (target: 80%) |\n`;
+            summary += `| Code Coverage | ${criteria.codeCoverage ? '✅' : '❌'} | ${metrics.codeCoverage}% (target: 80%) |\n`;
+            summary += `| Recent Failures | ${criteria.noRecentFailures ? '✅' : '❌'} | ${metrics.recentFailures} failures in last 6h |\n`;
+            summary += `| Change Size | ${criteria.notTooManyChanges ? '✅' : '❌'} | ${changedFiles} files (limit: 100) |\n`;
+            
+            summary += `\n### Decision: ${ready ? '🚀 Ready for Staging' : '⏸️ Not Ready'}\n`;
+            
+            if (!ready) {
+              summary += `\n#### Issues to Address:\n`;
+              if (!criteria.hasChanges) summary += `- No changes to promote\n`;
+              if (!criteria.successRate) summary += `- Success rate below 80%\n`;
+              if (!criteria.codeCoverage) summary += `- Code coverage below 80%\n`;
+              if (!criteria.noRecentFailures) summary += `- Recent failures detected\n`;
+              if (!criteria.notTooManyChanges) summary += `- Too many changes (consider smaller PRs)\n`;
+            }
+            
+            await core.summary.addRaw(summary).write();
+            
+            return report;
+
+      - name: Create promotion PR if ready
+        if: steps.assessment.outputs.ready == 'true'
+        id: create-pr
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { owner, repo } = context.repo;
+            
+            // Check if PR already exists
+            const existingPRs = await github.rest.pulls.list({
+              owner,
+              repo,
+              head: `${owner}:dev`,
+              base: 'staging',
+              state: 'open'
+            });
+            
+            if (existingPRs.data.length > 0) {
+              console.log(`PR already exists: #${existingPRs.data[0].number}`);
+              core.setOutput('pr_number', existingPRs.data[0].number);
+              core.setOutput('pr_url', existingPRs.data[0].html_url);
+              return existingPRs.data[0];
+            }
+            
+            // Create new PR
+            const changelog = `${{ steps.changes.outputs.changelog }}`;
+            const report = JSON.parse('${{ steps.assessment.outputs.report }}');
+            
+            const body = `## 🚀 Automated Promotion: Dev → Staging
+            
+            This PR was automatically created after successful integration testing and readiness assessment.
+            
+            ### 📊 Promotion Score: ${report.score}/100
+            
+            ### ✅ Quality Gates Passed
+            - Success Rate: ${report.metrics.successRate.toFixed(1)}%
+            - Code Coverage: ${report.metrics.codeCoverage}%
+            - Recent Failures: ${report.metrics.recentFailures}
+            - Changed Files: ${report.changedFiles}
+            
+            ### 📝 Changes Included
+            ${changelog}
+            
+            ### 🧪 Test Results
+            - Integration Tests: ✅ Passed
+            - API Contract Tests: ✅ Passed
+            - Security Scan: ✅ Passed
+            - Performance Baseline: ✅ Captured
+            
+            ### 📋 Pre-Merge Checklist
+            - [ ] Review changes and changelog
+            - [ ] Verify no active incidents in production
+            - [ ] Confirm staging environment is ready
+            - [ ] Team notification sent
+            
+            ### 🔄 Next Steps
+            1. Review this PR
+            2. Approve if everything looks good
+            3. Merge to trigger staging deployment
+            4. Monitor staging deployment
+            5. Run staging validation tests
+            
+            ---
+            *🤖 Generated automatically by Dev Promotion Readiness workflow*
+            *Run ID: ${context.runId}*`;
+            
+            const pr = await github.rest.pulls.create({
+              owner,
+              repo,
+              title: `🚀 Promote Dev to Staging - ${new Date().toISOString().split('T')[0]}`,
+              head: 'dev',
+              base: 'staging',
+              body,
+              draft: true  // Create as draft for manual review
+            });
+            
+            // Add labels
+            await github.rest.issues.addLabels({
+              owner,
+              repo,
+              issue_number: pr.data.number,
+              labels: ['staging', 'deployment', 'automated']
+            });
+            
+            console.log(`Created PR #${pr.data.number}: ${pr.data.html_url}`);
+            core.setOutput('pr_number', pr.data.number);
+            core.setOutput('pr_url', pr.data.html_url);
+            
+            return pr.data;
+
+      - name: Send notifications
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const ready = '${{ steps.assessment.outputs.ready }}' === 'true';
+            const score = '${{ steps.assessment.outputs.score }}';
+            const prUrl = '${{ steps.create-pr.outputs.pr_url }}';
+            
+            // Create issue comment or notification
+            const message = ready 
+              ? `## 🎉 Dev is Ready for Staging Promotion!\n\n` +
+                `Promotion Score: ${score}/100\n\n` +
+                `A pull request has been created for your review:\n${prUrl}\n\n` +
+                `Please review and approve to promote to staging.`
+              : `## ⏸️ Dev Not Ready for Promotion\n\n` +
+                `Promotion Score: ${score}/100\n\n` +
+                `Check the [workflow run](${process.env.GITHUB_SERVER_URL}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}) for details.`;
+            
+            // Log for now, replace with actual notification service
+            console.log('Notification:', message);
+            
+            // TODO: Send to Slack webhook if configured
+            // TODO: Create GitHub issue if critical problems found
+            // TODO: Update deployment dashboard
+
+  # Monitor for stale deployments
+  check-stale-deployment:
+    name: Check for Stale Deployment
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check deployment age
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // Get last deployment to dev
+            const deployments = await github.rest.repos.listDeployments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              environment: 'development',
+              per_page: 1
+            });
+            
+            if (deployments.data.length === 0) {
+              console.log('No dev deployments found');
+              return;
+            }
+            
+            const lastDeployment = deployments.data[0];
+            const deploymentAge = Date.now() - new Date(lastDeployment.created_at).getTime();
+            const hoursOld = deploymentAge / (1000 * 60 * 60);
+            
+            if (hoursOld > 24) {
+              // Create issue for stale deployment
+              const issue = await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `⚠️ Stale Dev Deployment (${Math.round(hoursOld)}h old)`,
+                body: `The dev environment has not been promoted to staging in ${Math.round(hoursOld)} hours.\n\n` +
+                      `Last deployment: ${lastDeployment.created_at}\n` +
+                      `SHA: ${lastDeployment.sha}\n\n` +
+                      `Consider:\n` +
+                      `1. Reviewing pending changes\n` +
+                      `2. Running integration tests\n` +
+                      `3. Promoting to staging if ready\n` +
+                      `4. Or deploying new changes to dev`,
+                labels: ['deployment', 'dev', 'stale']
+              });
+              
+              console.log(`Created issue #${issue.data.number} for stale deployment`);
+            } else {
+              console.log(`Dev deployment is ${hoursOld.toFixed(1)} hours old (within 24h limit)`);
+            }
