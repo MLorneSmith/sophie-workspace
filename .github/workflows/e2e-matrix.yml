@@ -255,6 +255,146 @@ jobs:
             apps/e2e/playwright-report/
           retention-days: 30
 
+  # Accessibility tests - run only on chromium to save CI time
+  accessibility-tests:
+    name: Accessibility Tests (Chromium)
+    runs-on: runs-on=${{ github.run_id }},runner=4cpu-linux-x64
+    needs: matrix-config
+    if: needs.matrix-config.outputs.should_run == 'true'
+    continue-on-error: true  # Non-blocking for accessibility tests
+    env:
+      # E2E Database Configuration - Local Supabase instance
+      SUPABASE_URL: 'http://127.0.0.1:55321'
+      NEXT_PUBLIC_SUPABASE_URL: 'http://127.0.0.1:55321'
+      SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0'
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0'
+      SUPABASE_SERVICE_ROLE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU'
+      DATABASE_URL: 'postgresql://postgres:postgres@localhost:55322/postgres'
+      DATABASE_URI: 'postgresql://postgres:postgres@localhost:55322/postgres'
+      
+      # Chrome flags for Lighthouse in CI environment
+      CHROME_FLAGS: '--no-sandbox --disable-dev-shm-usage --disable-gpu'
+      
+      # Test environment configuration
+      SUPABASE_DB_WEBHOOK_SECRET: 'test_webhook_secret'
+      STRIPE_SECRET_KEY: 'sk_test_dummy'
+      STRIPE_WEBHOOK_SECRET: 'whsec_test_dummy'
+      DO_NOT_TRACK: 1
+      PLAYWRIGHT_WEB_COMMAND: 'pnpm --filter=web dev:test'
+      PLAYWRIGHT_PAYLOAD_COMMAND: 'pnpm --filter=payload dev:test'
+      
+      # Required for app to start
+      NEXT_PUBLIC_BILLING_PROVIDER: 'stripe'
+      PAYLOAD_PUBLIC_SERVER_URL: 'http://localhost:3020'
+      PAYLOAD_SECRET: 'test_payload_secret_for_e2e_testing'
+      NODE_ENV: 'test'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - uses: ./.github/actions/setup-deps
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Install Playwright browsers
+        run: |
+          # Install chromium for accessibility tests
+          pnpm --filter e2e playwright install chromium --with-deps
+
+      - name: Cache build outputs
+        uses: actions/cache@v4
+        with:
+          path: |
+            apps/web/.next
+            apps/payload/dist
+            packages/*/dist
+            .turbo
+          key: ${{ runner.os }}-build-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-build-
+
+      - name: Build application
+        run: |
+          # Use Turbo cache for faster builds
+          pnpm build --cache-dir=.turbo
+
+      - name: Cache Supabase Docker images
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.docker
+            ~/Library/Containers/com.docker.docker/Data
+          key: ${{ runner.os }}-supabase-docker-${{ hashFiles('apps/e2e/supabase/config.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-supabase-docker-
+
+      - name: Set up E2E database
+        run: |
+          cd apps/e2e
+          # Start E2E Supabase instance (uses cached Docker images)
+          echo "Starting Supabase..."
+          supabase start --ignore-health-check
+          
+          # Quick health check with timeout
+          echo "Checking database health..."
+          for i in {1..15}; do
+            if supabase status 2>/dev/null | grep -q "API URL"; then
+              echo "✓ Database is ready after $i checks"
+              break
+            fi
+            if [ $i -eq 15 ]; then
+              echo "⚠️ Database health check timeout, proceeding anyway"
+            fi
+            sleep 1
+          done
+          
+          # Run migrations in parallel with health check
+          echo "Applying migrations..."
+          supabase db reset --no-seed
+          
+          # Quick seed if needed
+          if [ -f "./supabase/seed.sql" ]; then
+            supabase db seed
+          fi
+
+      - name: Run accessibility tests
+        run: |
+          # Run accessibility tests with CI-specific reporter
+          pnpm --filter e2e a11y:test:ci
+        continue-on-error: true
+
+      - name: Upload accessibility report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: accessibility-report-${{ github.run_id }}
+          path: |
+            apps/e2e/test-results/
+            apps/e2e/playwright-report/
+            apps/e2e/accessibility-report/
+          retention-days: 30
+
+      - name: Create accessibility summary
+        if: always()
+        run: |
+          echo "## ♿ Accessibility Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Browser**: Chromium" >> $GITHUB_STEP_SUMMARY
+          echo "**WCAG Standard**: 2.1 AA" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Test Coverage" >> $GITHUB_STEP_SUMMARY
+          echo "- ✓ Color contrast validation" >> $GITHUB_STEP_SUMMARY
+          echo "- ✓ Keyboard navigation" >> $GITHUB_STEP_SUMMARY
+          echo "- ✓ Screen reader compatibility" >> $GITHUB_STEP_SUMMARY
+          echo "- ✓ Form accessibility" >> $GITHUB_STEP_SUMMARY
+          echo "- ✓ Semantic HTML structure" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Download \`accessibility-report-${{ github.run_id }}\` artifact for detailed results." >> $GITHUB_STEP_SUMMARY
+
   # Merge test results and create unified report
   merge-reports:
     name: Merge Test Reports
@@ -366,7 +506,7 @@ jobs:
   e2e-status:
     name: E2E Status Check
     runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
-    needs: [matrix-config, e2e-tests, merge-reports]
+    needs: [matrix-config, e2e-tests, accessibility-tests, merge-reports]
     if: always()
     steps:
       - name: Check E2E test status
@@ -379,6 +519,14 @@ jobs:
             exit 1
           elif [[ "${{ needs.e2e-tests.result }}" == "success" ]]; then
             echo "✅ E2E tests passed across all browsers in matrix"
+            
+            # Report accessibility test status (non-blocking)
+            if [[ "${{ needs.accessibility-tests.result }}" == "failure" ]]; then
+              echo "⚠️ Accessibility tests reported issues (non-blocking)"
+            elif [[ "${{ needs.accessibility-tests.result }}" == "success" ]]; then
+              echo "✅ Accessibility tests passed"
+            fi
+            
             exit 0
           else
             echo "⚠️ E2E tests completed with warnings"

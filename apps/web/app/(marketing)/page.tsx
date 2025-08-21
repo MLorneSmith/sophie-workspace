@@ -67,13 +67,15 @@ function Home() {
 					>
 						<div className={`${containerBase} ${widths.focused} text-center`}>
 							<Hero
-								title=<span className="text-display leading-tight tracking-tight">
-									{homepageContentConfig.hero.title}{" "}
-									<i className="relative inline-block">
-										faster
-										<span className="animate-highlight absolute -bottom-2 left-0 h-3 w-full -rotate-1 bg-[#24a9e0]/40 [mask-image:linear-gradient(to_right,transparent,white_4%,white_96%,transparent)]" />
-									</i>
-								</span>
+								title={
+									<span className="text-display leading-tight tracking-tight">
+										{homepageContentConfig.hero.title}{" "}
+										<i className="relative inline-block">
+											faster
+											<span className="animate-highlight absolute -bottom-2 left-0 h-3 w-full -rotate-1 bg-[#24a9e0]/40 [mask-image:linear-gradient(to_right,transparent,white_4%,white_96%,transparent)]" />
+										</i>
+									</span>
+								}
 								subtitle={
 									<span className="text-body sm:text-body-lg leading-relaxed text-muted-foreground dark:text-muted-foreground">
 										{homepageContentConfig.hero.subtitle}

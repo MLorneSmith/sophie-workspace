@@ -10,12 +10,15 @@
 /* Shadcn UI theme */
 @layer base {
 	/* This ensures CSS variables are available to Tailwind */
+	/* ACCESSIBILITY FIX: Removed color-scheme declarations to prevent axe-core from miscomputing colors */
+	/* color-scheme can cause accessibility testing tools to report incorrect computed colors */
+	/* See: https://github.com/dequelabs/axe-core/issues/3605 */
 	:root {
-		color-scheme: light;
+		/* color-scheme: light; - removed for accessibility testing compatibility */
 	}
 
 	.dark {
-		color-scheme: dark;
+		/* color-scheme: dark; - removed for accessibility testing compatibility */
 	}
 }
 

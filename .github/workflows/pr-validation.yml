@@ -372,6 +372,9 @@ jobs:
       E2E_SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.E2E_SUPABASE_SERVICE_ROLE_KEY }}
       E2E_DATABASE_URL: ${{ secrets.E2E_DATABASE_URL }}
       
+      # Chrome flags for Lighthouse in CI environment
+      CHROME_FLAGS: '--no-sandbox --disable-dev-shm-usage --disable-gpu'
+      
       # Legacy environment variables (for backward compatibility)
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.E2E_SUPABASE_SERVICE_ROLE_KEY }}
       SUPABASE_DB_WEBHOOK_SECRET: ${{ secrets.SUPABASE_DB_WEBHOOK_SECRET }}
@@ -413,7 +416,7 @@ jobs:
           supabase db seed
 
       - name: Run accessibility tests
-        run: pnpm --filter e2e a11y:test
+        run: pnpm --filter e2e a11y:test:ci  # Use CI-specific script with JUnit reporter
         continue-on-error: true
 
       - name: Upload accessibility report

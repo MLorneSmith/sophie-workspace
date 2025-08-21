@@ -8,16 +8,20 @@
 		"test": "playwright test --max-failures=1",
 		"test:ui": "playwright test --ui",
 		"test:smoke": "playwright test --grep @smoke --project=chromium --retries=2",
-		"test:integration": "playwright test --grep @integration --project=chromium --retries=1"
+		"test:integration": "playwright test --grep @integration --project=chromium --retries=1",
+		"a11y:test": "playwright test tests/accessibility/accessibility-hybrid-simple.spec.ts --project=chromium --reporter=html,list",
+		"a11y:test:ci": "playwright test tests/accessibility/accessibility-hybrid-simple.spec.ts --project=chromium --reporter=junit,html",
+		"a11y:test:quick": "playwright test tests/accessibility/accessibility-hybrid-simple.spec.ts --project=chromium --reporter=list"
 	},
 	"keywords": [],
 	"author": "",
 	"license": "ISC",
 	"devDependencies": {
-		"@axe-core/playwright": "^4.10.2",
 		"@playwright/test": "^1.54.2",
 		"@types/node": "^24.0.4",
+		"chrome-launcher": "^1.2.0",
 		"dotenv": "17.2.1",
+		"lighthouse": "^12.8.1",
 		"node-html-parser": "^7.0.1",
 		"totp-generator": "^1.0.0"
 	}
