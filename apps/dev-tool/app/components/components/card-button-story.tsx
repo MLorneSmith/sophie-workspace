@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 
 import {
 	Calendar,
@@ -123,39 +123,44 @@ export function CardButtonStory() {
 		</div>
 	);
 
+	const clickableId = useId();
+	const showArrowId = useId();
+	const showBadgeId = useId();
+	const showFooterId = useId();
+
 	const renderControls = () => (
 		<>
 			<div className="flex items-center justify-between">
-				<Label htmlFor="clickable">Clickable</Label>
+				<Label htmlFor={clickableId}>Clickable</Label>
 				<Switch
-					id="clickable"
+					id={clickableId}
 					checked={controls.clickable}
 					onCheckedChange={(checked) => updateControl("clickable", checked)}
 				/>
 			</div>
 
 			<div className="flex items-center justify-between">
-				<Label htmlFor="showArrow">Show Arrow</Label>
+				<Label htmlFor={showArrowId}>Show Arrow</Label>
 				<Switch
-					id="showArrow"
+					id={showArrowId}
 					checked={controls.showArrow}
 					onCheckedChange={(checked) => updateControl("showArrow", checked)}
 				/>
 			</div>
 
 			<div className="flex items-center justify-between">
-				<Label htmlFor="showBadge">Show Badge</Label>
+				<Label htmlFor={showBadgeId}>Show Badge</Label>
 				<Switch
-					id="showBadge"
+					id={showBadgeId}
 					checked={controls.showBadge}
 					onCheckedChange={(checked) => updateControl("showBadge", checked)}
 				/>
 			</div>
 
 			<div className="flex items-center justify-between">
-				<Label htmlFor="showFooter">Show Footer</Label>
+				<Label htmlFor={showFooterId}>Show Footer</Label>
 				<Switch
-					id="showFooter"
+					id={showFooterId}
 					checked={controls.showFooter}
 					onCheckedChange={(checked) => updateControl("showFooter", checked)}
 				/>

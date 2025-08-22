@@ -82,6 +82,16 @@
 			}
 		},
 		{
+			"includes": ["apps/dev-tool/app/components/components/*-story.tsx"],
+			"linter": {
+				"rules": {
+					"nursery": {
+						"useUniqueElementIds": "off"
+					}
+				}
+			}
+		},
+		{
 			"includes": [
 				"**/tests/**/*.ts",
 				"**/tests/**/*.tsx",
