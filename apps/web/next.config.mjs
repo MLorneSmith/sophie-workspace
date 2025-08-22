@@ -5,6 +5,7 @@ const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const ENABLE_REACT_COMPILER = process.env.ENABLE_REACT_COMPILER === "true";
 
 // New Relic configuration - conditionally load based on environment
+// Skip loading in test environments to prevent compilation errors
 let nrExternals;
 
 // Skip NewRelic in test environments to avoid compilation errors
