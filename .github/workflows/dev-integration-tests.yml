@@ -1,5 +1,10 @@
 name: Dev Integration Tests
 
+# This workflow runs integration tests against the dev deployment
+# Note: This workflow runs from the main branch but tests the dev deployment
+# The setup-deps action handles dependency mismatches gracefully since
+# dev branch is typically ahead of main with newer dependencies
+
 on:
   workflow_run:
     workflows: ["Deploy to Dev"]
