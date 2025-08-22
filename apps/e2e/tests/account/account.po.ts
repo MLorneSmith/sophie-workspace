@@ -18,8 +18,8 @@ export class AccountPageObject {
 	}
 
 	async setup() {
-		// Navigate to sign-up page with next parameter
-		await this.page.goto("/auth/sign-up?next=/home/settings");
+		// Navigate to sign-up page first without next parameter to allow onboarding
+		await this.page.goto("/auth/sign-up");
 
 		const email = this.auth.createRandomEmail();
 
@@ -30,45 +30,32 @@ export class AccountPageObject {
 			repeatPassword: "password",
 		});
 
-		// Wait for either onboarding redirect or success status
+		// With autoconfirm enabled, wait for redirect to either onboarding or home
 		await this.page.waitForURL(
-			(url) =>
-				url.href.includes("/onboarding") || url.href.includes("status=success"),
+			(url) => url.href.includes("/onboarding") || url.href.includes("/home"),
 			{ timeout: 10000 },
 		);
 
 		const currentUrl = this.page.url();
 		console.log(`After sign-up, current URL: ${currentUrl}`);
 
-		// Handle email confirmation if needed
-		if (currentUrl.includes("status=success")) {
-			// Email confirmation required
-			await this.auth.visitConfirmEmailLink(email);
-
-			// After confirmation, should redirect to onboarding
-			await this.page.waitForURL("**/onboarding", { timeout: 10000 });
+		// If on onboarding page, complete it
+		if (currentUrl.includes("/onboarding")) {
+			try {
+				await this.onboarding.completeOnboardingSimple();
+				// After onboarding, should be on home page
+				await this.page.waitForURL("**/home/**", { timeout: 5000 });
+			} catch (error) {
+				console.log("Onboarding failed, using E2E bypass");
+			}
 		}
 
-		// Now we should be on onboarding page
-		// Complete onboarding using the simplified approach with E2E bypass
-		try {
-			await this.onboarding.completeOnboardingSimple();
-		} catch (error) {
-			console.log(
-				"Onboarding failed, attempting direct navigation with E2E bypass",
-			);
-			// Force navigation to settings page with E2E parameter
-			await this.page.goto("/home/settings?e2e=true", {
-				waitUntil: "domcontentloaded",
-			});
-		}
-
-		// Navigate to settings page if not already there
-		if (!this.page.url().includes("/home/settings")) {
-			await this.page.goto("/home/settings?e2e=true");
-		}
-
+		// Navigate to settings page
+		await this.page.goto("/home/settings");
 		await this.page.waitForLoadState("networkidle");
+
+		// Verify we're on the settings page
+		await expect(this.page).toHaveURL(/\/home\/settings/);
 
 		return { email };
 	}

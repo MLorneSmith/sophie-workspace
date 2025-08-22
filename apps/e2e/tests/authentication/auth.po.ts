@@ -28,9 +28,9 @@ export class AuthPageObject {
 	async signIn(params: { email: string; password: string }) {
 		await this.page.waitForTimeout(500);
 
-		await this.page.fill('input[name="email"]', params.email);
-		await this.page.fill('input[name="password"]', params.password);
-		await this.page.click('button[type="submit"]');
+		await this.page.fill('[data-test="email-input"]', params.email);
+		await this.page.fill('[data-test="password-input"]', params.password);
+		await this.page.click('[data-test="auth-submit-button"]');
 	}
 
 	async signUp(params: {
@@ -40,11 +40,14 @@ export class AuthPageObject {
 	}) {
 		await this.page.waitForTimeout(500);
 
-		await this.page.fill('input[name="email"]', params.email);
-		await this.page.fill('input[name="password"]', params.password);
-		await this.page.fill('input[name="repeatPassword"]', params.repeatPassword);
+		await this.page.fill('[data-test="email-input"]', params.email);
+		await this.page.fill('[data-test="password-input"]', params.password);
+		await this.page.fill(
+			'[data-test="repeat-password-input"]',
+			params.repeatPassword,
+		);
 
-		await this.page.click('button[type="submit"]');
+		await this.page.click('[data-test="auth-submit-button"]');
 	}
 
 	async submitMFAVerification(key: string) {
