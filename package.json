@@ -1,6 +1,6 @@
 {
 	"name": "slideheroes",
-	"version": "2.12.3",
+	"version": "2.13.0",
 	"private": true,
 	"sideEffects": false,
 	"engines": {
@@ -107,7 +107,7 @@
 		"@commitlint/cli": "^19.8.1",
 		"@commitlint/config-conventional": "^19.8.1",
 		"@manypkg/cli": "^0.25.0",
-		"@playwright/test": "^1.54.2",
+		"@playwright/test": "^1.55.0",
 		"@turbo/gen": "^2.5.6",
 		"@vitest/coverage-v8": "^3.1.2",
 		"commitizen": "^4.3.1",
