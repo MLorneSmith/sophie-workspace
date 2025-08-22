@@ -166,7 +166,7 @@ jobs:
           project-id: ${{ secrets.VERCEL_PROJECT_ID_WEB }}
           environment: preview
           build-artifacts: false  # Let Vercel handle the build
-          protection-bypass-secret: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET_WEB }}
+          protection-bypass-secret: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
           health-check-url: /healthcheck
 
       - name: Create deployment status
