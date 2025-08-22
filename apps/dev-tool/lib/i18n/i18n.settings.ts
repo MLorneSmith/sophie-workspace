@@ -37,7 +37,6 @@ export function getI18nSettings(
 	let lng = language ?? defaultLanguage;
 
 	if (!languages.includes(lng)) {
-
 		lng = defaultLanguage;
 	}
 
