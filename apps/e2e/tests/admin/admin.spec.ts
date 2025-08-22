@@ -13,7 +13,7 @@ test.describe("Admin Auth flow without MFA", () => {
 
 		await auth.signIn({
 			email: "test1@slideheroes.com",
-			password: "testingpassword",
+			password: "aiesec1992",
 		});
 
 		await page.waitForURL("/home");
@@ -23,21 +23,23 @@ test.describe("Admin Auth flow without MFA", () => {
 		expect(page.url()).toContain("/404");
 	});
 
-	test("will redirect to 404 for admin users without MFA", async ({ page }) => {
+	test("will allow admin users to access admin without MFA", async ({
+		page,
+	}) => {
 		const auth = new AuthPageObject(page);
 
 		await page.goto("/auth/sign-in");
 
 		await auth.signIn({
-			email: "michael@slideheroes.com",
-			password: "testingpassword",
+			email: "test2@slideheroes.com",
+			password: "aiesec1992",
 		});
 
 		await page.waitForURL("/home");
 
 		await page.goto("/admin");
 
-		expect(page.url()).toContain("/404");
+		expect(page.url()).toContain("/admin");
 	});
 });
 
@@ -141,7 +143,7 @@ test.describe("Admin", () => {
 
 			await auth.signIn({
 				email: testUserEmail,
-				password: "testingpassword",
+				password: "aiesec1992",
 			});
 
 			// Should show an error message
@@ -189,7 +191,7 @@ test.describe("Admin", () => {
 
 			await auth.signIn({
 				email: testUserEmail,
-				password: "testingpassword",
+				password: "aiesec1992",
 			});
 
 			await page.waitForURL("/home");
@@ -243,7 +245,7 @@ test.describe("Admin", () => {
 
 			await auth.signIn({
 				email: testUserEmail,
-				password: "testingpassword",
+				password: "aiesec1992",
 			});
 
 			// Should show an error message
@@ -328,7 +330,7 @@ async function goToAdmin(page: Page) {
 
 	await auth.signIn({
 		email: "michael@slideheroes.com",
-		password: "testingpassword",
+		password: "aiesec1992",
 	});
 
 	await page.waitForURL("/auth/verify");
@@ -354,7 +356,7 @@ async function createUser(
 	} = {},
 ) {
 	const auth = new AuthPageObject(page);
-	const password = "testingpassword";
+	const password = "aiesec1992";
 	const email = auth.createRandomEmail();
 
 	// sign up

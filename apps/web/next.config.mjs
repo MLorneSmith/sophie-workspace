@@ -4,12 +4,21 @@ const IS_PRODUCTION = process.env.NODE_ENV === "production";
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const ENABLE_REACT_COMPILER = process.env.ENABLE_REACT_COMPILER === "true";
 
-// New Relic configuration for local development
+// New Relic configuration - conditionally load based on environment
 let nrExternals;
-try {
-	nrExternals = require("newrelic/load-externals");
-} catch (_err) {
-	// New Relic not available (e.g., in build without agent)
+
+// Skip NewRelic in test environments to avoid compilation errors
+const isTestEnvironment = process.env.NODE_ENV === "test" || process.env.CI === "true";
+
+if (!isTestEnvironment) {
+	try {
+		nrExternals = require("newrelic/load-externals");
+	} catch (_err) {
+		// New Relic not available (e.g., in build without agent)
+		nrExternals = () => {};
+	}
+} else {
+	// In test environments, use noop function to avoid loading NewRelic
 	nrExternals = () => {};
 }
 
@@ -59,7 +68,7 @@ const config = {
 			fullUrl: true,
 		},
 	},
-	serverExternalPackages: ["newrelic"],
+	serverExternalPackages: isTestEnvironment ? [] : ["newrelic"],
 	webpack: (config) => {
 		// Configure New Relic externals for proper agent loading
 		nrExternals(config);
