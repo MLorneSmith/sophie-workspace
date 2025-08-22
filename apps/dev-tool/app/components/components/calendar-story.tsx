@@ -7,6 +7,7 @@ import { CalendarIcon } from "lucide-react";
 import { Button } from "@kit/ui/button";
 import { Calendar } from "@kit/ui/calendar";
 import { Card, CardContent } from "@kit/ui/card";
+import { Label } from "@kit/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@kit/ui/popover";
 import {
 	Select,
@@ -53,13 +54,13 @@ export default function CalendarStory() {
 		to?: Date;
 	}>({});
 
-	const handleDateChange = (date: any) => {
+	const handleDateChange = (date: Date | Date[] | { from?: Date; to?: Date } | undefined) => {
 		if (controls.mode === "single") {
-			setSelectedDate(date);
+			setSelectedDate(date as Date | undefined);
 		} else if (controls.mode === "multiple") {
-			setSelectedDates(date || []);
+			setSelectedDates((date as Date[]) || []);
 		} else if (controls.mode === "range") {
-			setSelectedRange(date || {});
+			setSelectedRange((date as { from?: Date; to?: Date }) || {});
 		}
 	};
 
@@ -80,7 +81,7 @@ export default function CalendarStory() {
 	const controlsContent = (
 		<div className="space-y-4">
 			<div>
-				<label className="mb-2 block text-sm font-medium">Mode</label>
+				<Label className="mb-2 block text-sm font-medium">Mode</Label>
 				<Select
 					value={controls.mode}
 					onValueChange={(value: CalendarStoryControls["mode"]) =>
@@ -99,7 +100,7 @@ export default function CalendarStory() {
 			</div>
 
 			<div>
-				<label className="mb-2 block text-sm font-medium">Caption Layout</label>
+				<Label className="mb-2 block text-sm font-medium">Caption Layout</Label>
 				<Select
 					value={controls.captionLayout}
 					onValueChange={(value: CalendarStoryControls["captionLayout"]) =>
@@ -119,7 +120,7 @@ export default function CalendarStory() {
 			</div>
 
 			<div>
-				<label className="mb-2 block text-sm font-medium">Button Variant</label>
+				<Label className="mb-2 block text-sm font-medium">Button Variant</Label>
 				<Select
 					value={controls.buttonVariant}
 					onValueChange={(value: CalendarStoryControls["buttonVariant"]) =>
@@ -138,9 +139,9 @@ export default function CalendarStory() {
 			</div>
 
 			<div>
-				<label className="mb-2 block text-sm font-medium">
+				<Label className="mb-2 block text-sm font-medium">
 					Number of Months
-				</label>
+				</Label>
 				<Select
 					value={controls.numberOfMonths.toString()}
 					onValueChange={(value: string) =>
