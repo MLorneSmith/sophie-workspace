@@ -15,8 +15,7 @@ alias cjest="$CLAUDE_STATUSLINE_DIR/test-wrapper.sh pnpm jest"
 
 # Codecheck wrapper aliases (combines lint + typecheck)
 alias ccodecheck="$CLAUDE_STATUSLINE_DIR/codecheck-wrapper.sh"
-alias ccode-check="$CLAUDE_STATUSLINE_DIR/codecheck-wrapper.sh"
-alias cpnpm-codecheck="$CLAUDE_STATUSLINE_DIR/codecheck-wrapper.sh pnpm code-check"
+alias cpnpm-codecheck="$CLAUDE_STATUSLINE_DIR/codecheck-wrapper.sh pnpm codecheck"
 
 # Legacy lint wrapper aliases (still work but use codecheck wrapper)
 alias clint="$CLAUDE_STATUSLINE_DIR/codecheck-wrapper.sh"
@@ -68,6 +67,6 @@ claude-refresh-pr() {
 
 echo "Claude statusline aliases loaded. Available commands:"
 echo "  Test:      ctest, cpnpm-test, cvitest, cjest"
-echo "  Codecheck: ccodecheck, ccode-check, cpnpm-codecheck (combines lint+typecheck)"
+echo "  Codecheck: ccodecheck, cpnpm-codecheck (combines lint+typecheck)"
 echo "  Build:     cbuild, cpnpm-build"
 echo "  Utils:     claude-run <command>, claude-clear-status, claude-refresh-pr"
