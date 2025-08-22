@@ -157,7 +157,7 @@ export default function SonnerStory() {
 			<CardContent className="space-y-4">
 				<div className="grid grid-cols-2 gap-4">
 					<div>
-						<label className="mb-2 block text-sm font-medium">Position</label>
+						<Label className="mb-2 block text-sm font-medium">Position</Label>
 						<Select
 							value={controls.position}
 							onValueChange={(value: SonnerStoryControls["position"]) =>
@@ -179,7 +179,7 @@ export default function SonnerStory() {
 					</div>
 
 					<div>
-						<label className="mb-2 block text-sm font-medium">Variant</label>
+						<Label className="mb-2 block text-sm font-medium">Variant</Label>
 						<Select
 							value={controls.variant}
 							onValueChange={(value: SonnerStoryControls["variant"]) =>
@@ -202,9 +202,9 @@ export default function SonnerStory() {
 				</div>
 
 				<div>
-					<label className="mb-2 block text-sm font-medium">
+					<Label className="mb-2 block text-sm font-medium">
 						Duration (ms): {controls.duration}
-					</label>
+					</Label>
 					<input
 						type="range"
 						min="1000"

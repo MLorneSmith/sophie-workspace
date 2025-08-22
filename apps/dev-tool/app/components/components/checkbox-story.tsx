@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 import {
 	Bell,
@@ -360,30 +360,33 @@ const examples = [
 				},
 			});
 
-			const updateParentState = (
-				category:
-					| keyof typeof selections.documents
-					| keyof typeof selections.media
-					| keyof typeof selections.settings,
-			) => {
-				const categoryData = selections[
-					category as keyof typeof selections
-				] as {
-					parent: boolean | "indeterminate";
-					children: Record<string, boolean>;
-				};
-				const children = Object.values(categoryData.children);
-				const checkedCount = children.filter(Boolean).length;
+			const updateParentState = useCallback(
+				(
+					category:
+						| keyof typeof selections.documents
+						| keyof typeof selections.media
+						| keyof typeof selections.settings,
+				) => {
+					const categoryData = selections[
+						category as keyof typeof selections
+					] as {
+						parent: boolean | "indeterminate";
+						children: Record<string, boolean>;
+					};
+					const children = Object.values(categoryData.children);
+					const checkedCount = children.filter(Boolean).length;
 
-				let parentState: boolean | "indeterminate";
-				if (checkedCount === 0) parentState = false;
-				else if (checkedCount === children.length) parentState = true;
-				else parentState = "indeterminate";
+					let parentState: boolean | "indeterminate";
+					if (checkedCount === 0) parentState = false;
+					else if (checkedCount === children.length) parentState = true;
+					else parentState = "indeterminate";
 
-				return parentState;
-			};
+					return parentState;
+				},
+				[selections],
+			);
 
-			const updateAllState = () => {
+			const updateAllState = useCallback(() => {
 				const allCategories = [
 					selections.documents,
 					selections.media,
@@ -400,7 +403,7 @@ const examples = [
 				if (trueCount === allCategories.length) return true;
 				if (trueCount === 0 && indeterminateCount === 0) return false;
 				return "indeterminate";
-			};
+			}, [selections]);
 
 			const handleChildChange = (
 				category: "documents" | "media" | "settings",
@@ -408,7 +411,11 @@ const examples = [
 				checked: boolean,
 			) => {
 				const newSelections = { ...selections };
-				(newSelections[category].children as any)[child] = checked;
+				const categoryChildren = newSelections[category].children as Record<
+					string,
+					boolean
+				>;
+				categoryChildren[child] = checked;
 				newSelections[category].parent = updateParentState(category);
 				newSelections.all = updateAllState();
 				setSelections(newSelections);
@@ -423,8 +430,12 @@ const examples = [
 				const newSelections = { ...selections };
 				newSelections[category].parent = checked;
 
-				Object.keys(newSelections[category].children).forEach((key) => {
-					(newSelections[category].children as any)[key] = checked;
+				const categoryChildren = newSelections[category].children as Record<
+					string,
+					boolean
+				>;
+				Object.keys(categoryChildren).forEach((key) => {
+					categoryChildren[key] = checked;
 				});
 
 				newSelections.all = updateAllState();
@@ -439,8 +450,12 @@ const examples = [
 
 				(["documents", "media", "settings"] as const).forEach((category) => {
 					newSelections[category].parent = checked;
-					Object.keys(newSelections[category].children).forEach((key) => {
-						(newSelections[category].children as any)[key] = checked;
+					const categoryChildren = newSelections[category].children as Record<
+						string,
+						boolean
+					>;
+					Object.keys(categoryChildren).forEach((key) => {
+						categoryChildren[key] = checked;
 					});
 				});
 
@@ -1264,8 +1279,8 @@ export default function CheckboxStory() {
 			generatedCode={generateCode()}
 			examples={
 				<div className="space-y-8">
-					{examples.map((example, index) => (
-						<div key={index}>
+					{examples.map((example) => (
+						<div key={example.title}>
 							<h3 className="mb-4 text-lg font-semibold">{example.title}</h3>
 							<p className="text-muted-foreground mb-4 text-sm">
 								{example.description}
@@ -1296,11 +1311,13 @@ export default function CheckboxStory() {
 									</tr>
 								</thead>
 								<tbody className="text-sm">
-									{apiReference.props.map((prop, index) => (
-										<tr key={index} className="border-border/50 border-b">
+									{apiReference.props.map((prop) => (
+										<tr key={prop.name} className="border-border/50 border-b">
 											<td className="p-2 font-mono">{prop.name}</td>
 											<td className="p-2 font-mono">{prop.type}</td>
-											<td className="p-2">{(prop as any).default || "-"}</td>
+											<td className="p-2">
+												{"default" in prop && prop.default ? prop.default : "-"}
+											</td>
 											<td className="p-2">{prop.description}</td>
 										</tr>
 									))}
@@ -1311,8 +1328,8 @@ export default function CheckboxStory() {
 
 					<div className="space-y-6">
 						<h3 className="text-lg font-semibold">Code Examples</h3>
-						{apiReference.examples.map((example, index) => (
-							<div key={index}>
+						{apiReference.examples.map((example) => (
+							<div key={example.title}>
 								<h4 className="mb-2 text-base font-medium">{example.title}</h4>
 								<div className="bg-muted/50 rounded-lg p-4">
 									<pre className="overflow-x-auto text-sm">
@@ -1335,12 +1352,12 @@ export default function CheckboxStory() {
 						</p>
 					</div>
 
-					{usageGuidelines.guidelines.map((section, index) => (
-						<div key={index}>
+					{usageGuidelines.guidelines.map((section) => (
+						<div key={section.title}>
 							<h4 className="mb-3 text-base font-semibold">{section.title}</h4>
 							<ul className="space-y-1 text-sm">
-								{section.items.map((item, itemIndex) => (
-									<li key={itemIndex} className="flex items-start">
+								{section.items.map((item) => (
+									<li key={item} className="flex items-start">
 										<span className="mt-1.5 mr-2 h-1 w-1 flex-shrink-0 rounded-full bg-current" />
 										<span>{item}</span>
 									</li>

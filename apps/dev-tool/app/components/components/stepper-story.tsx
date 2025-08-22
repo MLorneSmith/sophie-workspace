@@ -100,7 +100,9 @@ export function StepperStory() {
 				<Label htmlFor="variant">Variant</Label>
 				<SimpleStorySelect
 					value={controls.variant}
-					onValueChange={(value) => updateControl("variant", value as any)}
+					onValueChange={(value) =>
+						updateControl("variant", value as StepperControls["variant"])
+					}
 					options={variantOptions}
 				/>
 			</div>
@@ -126,7 +128,7 @@ export function StepperStory() {
 				<div className="flex flex-wrap gap-1">
 					{Array.from({ length: controls.stepCount }, (_, i) => (
 						<Button
-							key={i}
+							key={i.toString()}
 							size="sm"
 							variant={controls.currentStep === i ? "default" : "outline"}
 							onClick={() => updateControl("currentStep", i)}

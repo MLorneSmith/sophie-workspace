@@ -59,7 +59,9 @@ export function SpinnerStory() {
 				<Label htmlFor="size">Size</Label>
 				<SimpleStorySelect
 					value={controls.size}
-					onValueChange={(value) => updateControl("size", value as any)}
+					onValueChange={(value) =>
+						updateControl("size", value as SpinnerControls["size"])
+					}
 					options={sizeOptions}
 				/>
 			</div>
@@ -105,7 +107,10 @@ export function SpinnerStory() {
 				<CardContent className="space-y-4">
 					<div className="space-y-2">
 						<h4 className="text-sm font-semibold">Button Loading</h4>
-						<button className="bg-primary text-primary-foreground inline-flex items-center rounded-md px-4 py-2">
+						<button
+							type="button"
+							className="bg-primary text-primary-foreground inline-flex items-center rounded-md px-4 py-2"
+						>
 							<Spinner className="mr-2 h-4 w-4" />
 							Loading...
 						</button>

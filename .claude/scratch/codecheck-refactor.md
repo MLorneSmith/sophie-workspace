@@ -14,14 +14,16 @@ This is not adding much. We can remove this
 
 3. Fix code issues as they are found, rather than at the end. Use each individual agent to fix them
 
-4. Use the 
+4. Format the codecheck file based on the YAML Structured output style
 
-4. Fix the claude code statusline 
-The claude code statusline has a codecheck component that is meant to display the status of the codecheck. It is not updating correctly. The time since a last update is not updating. When tereh are errors, the color is not changing
+5. Fix the claude code statusline 
+The claude code statusline has a codecheck component that is meant to display the status of the codecheck. 
+- It is not updating correctly. The time since a last update is not updating. When there are errors, the color is not changing
+- I would also like to show the number of errors, similar to how we do it with the test component
 
 ## Your Task
 
-1. Create a new command file /codecheck based on the old /code-check
+1. Create a new command file /codecheck based on the old /code-check using the YAML Structured output syle
 2. Create new agents to help with code check. Make a recommendation on the agents we should create and solicite feedback from the user on what agents to create
 3. Identify the issue with the claude code statusline to determine if there is anything in the new /codecheck we need to include to ensure it works. Pay specific attention to what commands we are running to conduct each code review
 4. Create /codecheck based on the requirements above
