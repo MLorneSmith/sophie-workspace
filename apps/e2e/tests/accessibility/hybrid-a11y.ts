@@ -1,5 +1,4 @@
 import type { Page } from "@playwright/test";
-import lighthouse from "lighthouse";
 import { launch } from "chrome-launcher";
 
 export interface RGB {
@@ -164,6 +163,8 @@ export class HybridAccessibilityTester {
 				disableStorageReset: true,
 			};
 
+			// Dynamic import for ES module compatibility
+			const { default: lighthouse } = await import("lighthouse");
 			const runnerResult = await lighthouse(url, options);
 
 			if (!runnerResult?.lhr?.categories?.accessibility) {
