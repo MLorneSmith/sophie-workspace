@@ -20,6 +20,7 @@ import {
 	BreadcrumbSeparator,
 } from "@kit/ui/breadcrumb";
 import { Card, CardContent } from "@kit/ui/card";
+import { Label } from "@kit/ui/label";
 import {
 	Select,
 	SelectContent,
@@ -99,7 +100,7 @@ export default function BreadcrumbStory() {
 	const controlsContent = (
 		<div className="space-y-4">
 			<div>
-				<label className="mb-2 block text-sm font-medium">Separator</label>
+				<Label className="mb-2 block text-sm font-medium">Separator</Label>
 				<Select
 					value={controls.separator}
 					onValueChange={(value: BreadcrumbStoryControls["separator"]) =>
@@ -118,7 +119,7 @@ export default function BreadcrumbStory() {
 			</div>
 
 			<div>
-				<label className="mb-2 block text-sm font-medium">Max Items</label>
+				<Label className="mb-2 block text-sm font-medium">Max Items</Label>
 				<Select
 					value={controls.maxItems.toString()}
 					onValueChange={(value: string) =>

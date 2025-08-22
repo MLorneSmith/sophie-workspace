@@ -23,7 +23,11 @@ import { SimpleStorySelect } from "./story-select";
 const createMockSupabaseClient = () => ({
 	storage: {
 		from: (bucket: string) => ({
-			upload: async (path: string, _file: File, _options: { upsert?: boolean; cacheControl?: string }) => {
+			upload: async (
+				path: string,
+				_file: File,
+				_options: { upsert?: boolean; cacheControl?: string },
+			) => {
 				// Simulate upload delay
 				await new Promise((resolve) =>
 					setTimeout(resolve, 1000 + Math.random() * 2000),
@@ -177,9 +181,9 @@ ${formattedProps}
 				<div className="bg-muted/20 mt-6 rounded-lg border p-4">
 					<h4 className="mb-2 font-semibold">Successfully Uploaded Files:</h4>
 					<ul className="space-y-1">
-						{uploadedFiles.map((file, index) => (
+						{uploadedFiles.map((file) => (
 							<li
-								key={index}
+								key={file}
 								className="text-muted-foreground flex items-center text-sm"
 							>
 								<span className="mr-2 inline-block h-2 w-2 rounded-full bg-green-500"></span>
@@ -219,7 +223,10 @@ ${formattedProps}
 				<SimpleStorySelect
 					value={controls.allowedMimeTypes}
 					onValueChange={(value) =>
-						updateControl("allowedMimeTypes", value as "images" | "documents" | "all")
+						updateControl(
+							"allowedMimeTypes",
+							value as "images" | "documents" | "all",
+						)
 					}
 					options={mimeTypeOptions}
 				/>

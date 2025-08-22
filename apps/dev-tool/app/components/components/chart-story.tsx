@@ -256,8 +256,8 @@ export default function ChartStory() {
 							outerRadius={120}
 							dataKey="value"
 						>
-							{pieData.map((entry, index) => (
-								<Cell key={`cell-${index}`} fill={entry.fill} />
+							{pieData.map((entry) => (
+								<Cell key={entry.name} fill={entry.fill} />
 							))}
 						</Pie>
 					</PieChart>
@@ -297,7 +297,7 @@ export default function ChartStory() {
 			<CardContent className="space-y-4">
 				<div className="grid grid-cols-1 gap-4">
 					<div>
-						<label className="mb-2 block text-sm font-medium">Chart Type</label>
+						<Label className="mb-2 block text-sm font-medium">Chart Type</Label>
 						<Select
 							value={controls.chartType}
 							onValueChange={(value: ChartStoryControls["chartType"]) =>
@@ -456,8 +456,8 @@ export default function ChartStory() {
 												outerRadius={100}
 												dataKey="value"
 											>
-												{pieData.map((entry, index) => (
-													<Cell key={`cell-${index}`} fill={entry.fill} />
+												{pieData.map((entry) => (
+													<Cell key={entry.name} fill={entry.fill} />
 												))}
 											</Pie>
 										</PieChart>
