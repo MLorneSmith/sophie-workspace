@@ -23,7 +23,7 @@ import { SimpleStorySelect } from "./story-select";
 const createMockSupabaseClient = () => ({
 	storage: {
 		from: (bucket: string) => ({
-			upload: async (path: string, _file: File, _options: any) => {
+			upload: async (path: string, _file: File, _options: { upsert?: boolean; cacheControl?: string }) => {
 				// Simulate upload delay
 				await new Promise((resolve) =>
 					setTimeout(resolve, 1000 + Math.random() * 2000),
@@ -169,7 +169,7 @@ ${formattedProps}
 				path="user-files"
 				allowedMimeTypes={getMimeTypes(controls.allowedMimeTypes)}
 				maxFileSize={controls.maxFileSize * 1024 * 1024} // Convert MB to bytes
-				client={mockClient as any}
+				client={mockClient as Parameters<typeof FileUploader>[0]["client"]}
 				onUploadSuccess={handleUploadSuccess}
 			/>
 
@@ -219,7 +219,7 @@ ${formattedProps}
 				<SimpleStorySelect
 					value={controls.allowedMimeTypes}
 					onValueChange={(value) =>
-						updateControl("allowedMimeTypes", value as any)
+						updateControl("allowedMimeTypes", value as "images" | "documents" | "all")
 					}
 					options={mimeTypeOptions}
 				/>
@@ -255,7 +255,7 @@ ${formattedProps}
 						bucketName="images"
 						allowedMimeTypes={["image/*"]}
 						maxFileSize={5 * 1024 * 1024} // 5MB
-						client={mockClient as any}
+						client={mockClient as Parameters<typeof FileUploader>[0]["client"]}
 						onUploadSuccess={(_files) => toast.success("Image uploaded!")}
 					/>
 				</CardContent>
@@ -280,7 +280,7 @@ ${formattedProps}
 							"text/plain",
 						]}
 						maxFileSize={10 * 1024 * 1024} // 10MB
-						client={mockClient as any}
+						client={mockClient as Parameters<typeof FileUploader>[0]["client"]}
 						onUploadSuccess={(files) =>
 							toast.success(`${files.length} documents uploaded!`)
 						}
@@ -301,7 +301,7 @@ ${formattedProps}
 						bucketName="general"
 						allowedMimeTypes={[]} // No restrictions
 						maxFileSize={50 * 1024 * 1024} // 50MB
-						client={mockClient as any}
+						client={mockClient as Parameters<typeof FileUploader>[0]["client"]}
 						onUploadSuccess={(files) =>
 							toast.success(`Batch upload complete: ${files.length} files`)
 						}
