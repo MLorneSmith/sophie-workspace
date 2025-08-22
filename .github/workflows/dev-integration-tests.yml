@@ -43,11 +43,55 @@ jobs:
             echo "Skipping: Deploy to Dev workflow did not succeed"
           fi
 
+  # Wait for deployment to be ready
+  wait-for-deployment:
+    name: Wait for Deployment Ready
+    needs: check-should-run
+    if: needs.check-should-run.outputs.should_run == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      deployment_ready: ${{ steps.wait.outputs.ready }}
+    steps:
+      - name: Wait for deployment to be ready
+        id: wait
+        run: |
+          echo "⏳ Waiting for deployment to be ready at ${{ needs.check-should-run.outputs.deployment_url }}"
+          
+          MAX_WAIT_TIME=300  # 5 minutes
+          CHECK_INTERVAL=10
+          elapsed=0
+          
+          while [ $elapsed -lt $MAX_WAIT_TIME ]; do
+            echo "Checking deployment status (${elapsed}s elapsed)..."
+            
+            # Try to get a response from the main page
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 \
+              "${{ needs.check-should-run.outputs.deployment_url }}")
+            
+            if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "304" ]; then
+              echo "✅ Deployment is ready (HTTP $HTTP_CODE)"
+              echo "ready=true" >> $GITHUB_OUTPUT
+              exit 0
+            elif [ "$HTTP_CODE" = "522" ] || [ "$HTTP_CODE" = "521" ] || [ "$HTTP_CODE" = "523" ]; then
+              echo "⚠️ Cloudflare error $HTTP_CODE. Waiting ${CHECK_INTERVAL}s..."
+            else
+              echo "⚠️ Got HTTP $HTTP_CODE. Waiting ${CHECK_INTERVAL}s..."
+            fi
+            
+            sleep $CHECK_INTERVAL
+            elapsed=$((elapsed + CHECK_INTERVAL))
+          done
+          
+          echo "❌ Deployment not ready after ${MAX_WAIT_TIME}s"
+          echo "ready=false" >> $GITHUB_OUTPUT
+          exit 1
+
   # API Contract Testing
   api-contract-tests:
     name: API Contract Tests
-    needs: check-should-run
-    if: needs.check-should-run.outputs.should_run == 'true'
+    needs: [check-should-run, wait-for-deployment]
+    if: needs.check-should-run.outputs.should_run == 'true' && needs.wait-for-deployment.outputs.deployment_ready == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -60,12 +104,41 @@ jobs:
           # Test all API endpoints are responding correctly
           echo "🔍 Testing API endpoints at ${{ needs.check-should-run.outputs.deployment_url }}"
           
-          # Health check endpoints
-          curl -f -s -o /dev/null -w "✅ Health check: %{http_code}\n" \
-            "${{ needs.check-should-run.outputs.deployment_url }}/healthcheck" || exit 1
+          # Add retry logic for health checks
+          MAX_RETRIES=5
+          RETRY_DELAY=10
           
-          curl -f -s -o /dev/null -w "✅ API health: %{http_code}\n" \
-            "${{ needs.check-should-run.outputs.deployment_url }}/api/health" || exit 1
+          # Function to test endpoint with retries
+          test_endpoint() {
+            local url=$1
+            local name=$2
+            local retries=0
+            
+            while [ $retries -lt $MAX_RETRIES ]; do
+              echo "Attempt $((retries + 1))/$MAX_RETRIES for $name..."
+              
+              HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 "$url")
+              
+              if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "204" ]; then
+                echo "✅ $name: HTTP $HTTP_CODE"
+                return 0
+              elif [ "$HTTP_CODE" = "522" ] || [ "$HTTP_CODE" = "521" ] || [ "$HTTP_CODE" = "523" ]; then
+                echo "⚠️ Cloudflare error $HTTP_CODE for $name. Retrying in ${RETRY_DELAY}s..."
+                sleep $RETRY_DELAY
+                retries=$((retries + 1))
+              else
+                echo "❌ $name returned HTTP $HTTP_CODE"
+                return 1
+              fi
+            done
+            
+            echo "❌ $name failed after $MAX_RETRIES attempts"
+            return 1
+          }
+          
+          # Test health endpoints with retry logic
+          test_endpoint "${{ needs.check-should-run.outputs.deployment_url }}/healthcheck" "Health check" || exit 1
+          test_endpoint "${{ needs.check-should-run.outputs.deployment_url }}/api/health" "API health" || exit 1
           
           # TODO: Add more comprehensive API testing
           # - Authentication endpoints
@@ -75,25 +148,47 @@ jobs:
 
       - name: Test GraphQL endpoint
         run: |
-          # Test GraphQL introspection
-          RESPONSE=$(curl -s -X POST \
-            -H "Content-Type: application/json" \
-            -d '{"query":"{ __schema { queryType { name } } }"}' \
-            "${{ needs.check-should-run.outputs.deployment_url }}/api/graphql")
+          # Test GraphQL introspection with retry logic
+          MAX_RETRIES=5
+          RETRY_DELAY=10
+          retries=0
           
-          if echo "$RESPONSE" | grep -q "queryType"; then
-            echo "✅ GraphQL endpoint responding correctly"
-          else
-            echo "❌ GraphQL endpoint not responding correctly"
-            echo "$RESPONSE"
-            exit 1
-          fi
+          while [ $retries -lt $MAX_RETRIES ]; do
+            echo "Attempt $((retries + 1))/$MAX_RETRIES for GraphQL endpoint..."
+            
+            RESPONSE=$(curl -s -X POST \
+              -H "Content-Type: application/json" \
+              -d '{"query":"{ __schema { queryType { name } } }"}' \
+              --max-time 30 \
+              "${{ needs.check-should-run.outputs.deployment_url }}/api/graphql")
+            
+            # Check for Cloudflare error pages
+            if echo "$RESPONSE" | grep -q "Cloudflare\|522\|521\|523"; then
+              echo "⚠️ Cloudflare error detected. Retrying in ${RETRY_DELAY}s..."
+              sleep $RETRY_DELAY
+              retries=$((retries + 1))
+              continue
+            fi
+            
+            # Check for successful response
+            if echo "$RESPONSE" | grep -q "queryType"; then
+              echo "✅ GraphQL endpoint responding correctly"
+              exit 0
+            else
+              echo "❌ GraphQL endpoint not responding correctly"
+              echo "Response: $RESPONSE"
+              exit 1
+            fi
+          done
+          
+          echo "❌ GraphQL endpoint failed after $MAX_RETRIES attempts"
+          exit 1
 
   # Integration Tests
   integration-tests:
     name: Integration Tests
-    needs: check-should-run
-    if: needs.check-should-run.outputs.should_run == 'true'
+    needs: [check-should-run, wait-for-deployment]
+    if: needs.check-should-run.outputs.should_run == 'true' && needs.wait-for-deployment.outputs.deployment_ready == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -106,8 +201,11 @@ jobs:
             pnpm-lock.yaml
             pnpm-workspace.yaml
             .npmrc
+            .nvmrc
             .github/actions/setup-deps
             tsconfig.json
+            scripts
+            tooling/scripts
 
       - uses: ./.github/actions/setup-deps
 
@@ -134,8 +232,8 @@ jobs:
   # Security Quick Scan
   security-scan:
     name: Security Quick Scan
-    needs: check-should-run
-    if: needs.check-should-run.outputs.should_run == 'true'
+    needs: [check-should-run, wait-for-deployment]
+    if: needs.check-should-run.outputs.should_run == 'true' && needs.wait-for-deployment.outputs.deployment_ready == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     continue-on-error: true  # Don't block on security issues initially
@@ -178,22 +276,44 @@ jobs:
           PATHS=("/.env" "/.git" "/config.json" "/package.json" "/.github")
           
           for path in "${PATHS[@]}"; do
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-              "${{ needs.check-should-run.outputs.deployment_url }}$path")
+            # Retry logic for Cloudflare errors
+            MAX_RETRIES=3
+            RETRY_DELAY=5
+            retries=0
             
-            if [[ "$STATUS" == "404" ]] || [[ "$STATUS" == "403" ]]; then
-              echo "✅ $path properly protected (HTTP $STATUS)"
-            else
-              echo "❌ $path may be exposed (HTTP $STATUS)"
-              exit 1
+            while [ $retries -lt $MAX_RETRIES ]; do
+              STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 \
+                "${{ needs.check-should-run.outputs.deployment_url }}$path")
+              
+              # Check if it's a Cloudflare error that needs retry
+              if [[ "$STATUS" == "522" ]] || [[ "$STATUS" == "521" ]] || [[ "$STATUS" == "523" ]]; then
+                echo "⚠️ Cloudflare error $STATUS for $path. Retrying in ${RETRY_DELAY}s..."
+                sleep $RETRY_DELAY
+                retries=$((retries + 1))
+                continue
+              fi
+              
+              # Check if properly protected
+              if [[ "$STATUS" == "404" ]] || [[ "$STATUS" == "403" ]]; then
+                echo "✅ $path properly protected (HTTP $STATUS)"
+                break
+              else
+                echo "❌ $path may be exposed (HTTP $STATUS)"
+                exit 1
+              fi
+            done
+            
+            # If we exhausted retries with Cloudflare errors, skip this check
+            if [ $retries -eq $MAX_RETRIES ]; then
+              echo "⚠️ Skipping $path check due to persistent Cloudflare errors"
             fi
           done
 
   # Performance Baseline
   performance-baseline:
     name: Capture Performance Baseline
-    needs: check-should-run
-    if: needs.check-should-run.outputs.should_run == 'true'
+    needs: [check-should-run, wait-for-deployment]
+    if: needs.check-should-run.outputs.should_run == 'true' && needs.wait-for-deployment.outputs.deployment_ready == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     continue-on-error: true
@@ -229,7 +349,7 @@ jobs:
   # Aggregate Results
   integration-summary:
     name: Integration Test Summary
-    needs: [api-contract-tests, integration-tests, security-scan, performance-baseline]
+    needs: [wait-for-deployment, api-contract-tests, integration-tests, security-scan, performance-baseline]
     if: always() && needs.check-should-run.outputs.should_run == 'true'
     runs-on: ubuntu-latest
     steps:

@@ -406,11 +406,11 @@ output="$model | ⎇ $branch | $working_dir"
 # Add build status
 [ -n "$build_status" ] && output="$output | $build_status"
 
-# Add test status
-[ -n "$test_status" ] && output="$output | $test_status"
-
 # Add codecheck status
 [ -n "$codecheck_status" ] && output="$output | $codecheck_status"
+
+# Add test status
+[ -n "$test_status" ] && output="$output | $test_status"
 
 # Add CI status
 [ -n "$ci_status" ] && output="$output | $ci_status"
