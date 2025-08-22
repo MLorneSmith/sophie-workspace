@@ -173,9 +173,9 @@ export default function RadioGroupStory() {
 			<CardContent className="space-y-4">
 				<div className="grid grid-cols-2 gap-4">
 					<div>
-						<label className="mb-2 block text-sm font-medium">
+						<Label className="mb-2 block text-sm font-medium">
 							Orientation
-						</label>
+						</Label>
 						<Select
 							value={controls.orientation}
 							onValueChange={(value: RadioGroupStoryControls["orientation"]) =>
@@ -193,7 +193,7 @@ export default function RadioGroupStory() {
 					</div>
 
 					<div>
-						<label className="mb-2 block text-sm font-medium">Size</label>
+						<Label className="mb-2 block text-sm font-medium">Size</Label>
 						<Select
 							value={controls.size}
 							onValueChange={(value: RadioGroupStoryControls["size"]) =>

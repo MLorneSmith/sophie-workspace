@@ -13,6 +13,7 @@ import {
 	InputOTPSeparator,
 	InputOTPSlot,
 } from "@kit/ui/input-otp";
+import { Label } from "@kit/ui/label";
 import {
 	Select,
 	SelectContent,
@@ -164,7 +165,7 @@ export default function InputOTPStory() {
 			<CardContent className="space-y-4">
 				<div className="grid grid-cols-2 gap-4">
 					<div>
-						<label className="mb-2 block text-sm font-medium">Max Length</label>
+						<Label className="mb-2 block text-sm font-medium">Max Length</Label>
 						<Select
 							value={controls.maxLength.toString()}
 							onValueChange={(value) =>
@@ -184,7 +185,7 @@ export default function InputOTPStory() {
 					</div>
 
 					<div>
-						<label className="mb-2 block text-sm font-medium">Pattern</label>
+						<Label className="mb-2 block text-sm font-medium">Pattern</Label>
 						<Select
 							value={controls.pattern}
 							onValueChange={(value: InputOTPStoryControls["pattern"]) =>
@@ -203,7 +204,7 @@ export default function InputOTPStory() {
 					</div>
 
 					<div>
-						<label className="mb-2 block text-sm font-medium">Group Size</label>
+						<Label className="mb-2 block text-sm font-medium">Group Size</Label>
 						<Select
 							value={controls.groupSize.toString()}
 							onValueChange={(value) =>
