@@ -20,6 +20,7 @@ import {
 	FormMessage,
 } from "@kit/ui/form";
 import { Input } from "@kit/ui/input";
+import { Label } from "@kit/ui/label";
 import { RadioGroup, RadioGroupItem } from "@kit/ui/radio-group";
 import {
 	Select,
@@ -100,7 +101,10 @@ export default function FormStory() {
 		disabled: false,
 	});
 
-	const [submissionResult, setSubmissionResult] = useState<any>(null);
+	const [submissionResult, setSubmissionResult] = useState<Record<
+		string,
+		unknown
+	> | null>(null);
 
 	const generateCode = () => {
 		const formComponents = [
@@ -193,7 +197,7 @@ export default function FormStory() {
 		},
 	});
 
-	const onSubmit = (values: any) => {
+	const onSubmit = (values: Record<string, unknown>) => {
 		setSubmissionResult(values);
 		setTimeout(() => setSubmissionResult(null), 5000);
 	};
@@ -704,7 +708,7 @@ export default function FormStory() {
 			</CardHeader>
 			<CardContent className="space-y-4">
 				<div>
-					<label className="mb-2 block text-sm font-medium">Form Type</label>
+					<Label className="mb-2 block text-sm font-medium">Form Type</Label>
 					<Select
 						value={controls.formType}
 						onValueChange={(value: FormStoryControls["formType"]) =>

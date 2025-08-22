@@ -100,7 +100,7 @@ export default function TextareaStory() {
 			<CardContent className="space-y-4">
 				<div className="grid grid-cols-2 gap-4">
 					<div>
-						<label className="mb-2 block text-sm font-medium">Resize</label>
+						<Label className="mb-2 block text-sm font-medium">Resize</Label>
 						<Select
 							value={controls.resize}
 							onValueChange={(value: TextareaStoryControls["resize"]) =>
@@ -120,7 +120,7 @@ export default function TextareaStory() {
 					</div>
 
 					<div>
-						<label className="mb-2 block text-sm font-medium">Size</label>
+						<Label className="mb-2 block text-sm font-medium">Size</Label>
 						<Select
 							value={controls.size}
 							onValueChange={(value: TextareaStoryControls["size"]) =>
@@ -140,9 +140,9 @@ export default function TextareaStory() {
 				</div>
 
 				<div>
-					<label className="mb-2 block text-sm font-medium">
+					<Label className="mb-2 block text-sm font-medium">
 						Max Length: {controls.maxLength}
-					</label>
+					</Label>
 					<input
 						type="range"
 						min="50"
@@ -413,7 +413,7 @@ export default function TextareaStory() {
 									<div>
 										<Label htmlFor="rating">Rating</Label>
 										<div className="mt-1 flex items-center space-x-2">
-											{Array.from({ length: 5 }).map((_, i) => (
+											{[0, 1, 2, 3, 4].map((i) => (
 												<StarIcon
 													key={i}
 													className="h-5 w-5 fill-yellow-400 text-yellow-400"
