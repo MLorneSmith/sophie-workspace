@@ -7,11 +7,11 @@ We want to improve it.
 ## Requirements
 
 1. Use agents
-We should create individual agents to conduct each of the different types of code checks
+We should create individual claude code agents to conduct each of the different types of code checks.
 
 2. Fix the claude code statusline 
 
-The claude code statusline has a codeckech component that is meant to display the status of the codecheck. It is not updating correctly
+The claude code statusline has a codecheck component that is meant to display the status of the codecheck. It is not updating correctly. The time since a last update 
 
 3. Stop tracking the fix history on github issue #101
 This is not adding much. We can remove this

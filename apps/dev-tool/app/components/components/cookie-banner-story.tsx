@@ -22,6 +22,59 @@ interface CookieBannerControls {
 	position: "bottom-left" | "bottom-center" | "bottom-right";
 }
 
+interface DemoCookieBannerProps {
+	demoConsent: "unknown" | "accepted" | "rejected";
+	setDemoConsent: (value: "unknown" | "accepted" | "rejected") => void;
+	controls: CookieBannerControls;
+}
+
+const DemoCookieBanner = ({
+	demoConsent,
+	setDemoConsent,
+	controls,
+}: DemoCookieBannerProps) => {
+	if (demoConsent !== "unknown" || !controls.showBanner) {
+		return null;
+	}
+
+	return (
+		<div
+			className={`bg-background animate-in fade-in zoom-in-95 slide-in-from-bottom-16 fixed z-50 w-full max-w-lg border p-6 shadow-2xl ${
+				controls.position === "bottom-left"
+					? "bottom-4 left-4 rounded-lg"
+					: controls.position === "bottom-center"
+						? "bottom-0 left-1/2 -translate-x-1/2 transform lg:bottom-4 lg:rounded-lg"
+						: "right-4 bottom-4 rounded-lg"
+			}`}
+		>
+			<div className="flex flex-col space-y-4">
+				<div>
+					<h3 className="text-lg font-semibold">We use cookies</h3>
+				</div>
+
+				<div className="text-gray-500 dark:text-gray-400">
+					<p className="text-sm">
+						We use cookies to enhance your experience on our site, analyze site
+						usage, and assist in our marketing efforts.
+					</p>
+				</div>
+
+				<div className="flex justify-end space-x-2.5">
+					<Button variant="ghost" onClick={() => setDemoConsent("rejected")}>
+						Reject
+					</Button>
+					<Button
+						variant="secondary"
+						onClick={() => setDemoConsent("accepted")}
+					>
+						Accept
+					</Button>
+				</div>
+			</div>
+		</div>
+	);
+};
+
 export function CookieBannerStory() {
 	const { controls, updateControl } = useStoryControls<CookieBannerControls>({
 		showBanner: true,
@@ -55,47 +108,6 @@ function App() {
 }`;
 	};
 
-	const DemoCookieBanner = () => {
-		if (demoConsent !== "unknown" || !controls.showBanner) {
-			return null;
-		}
-
-		return (
-			<div
-				className={`bg-background animate-in fade-in zoom-in-95 slide-in-from-bottom-16 fixed z-50 w-full max-w-lg border p-6 shadow-2xl ${
-					controls.position === "bottom-left"
-						? "bottom-4 left-4 rounded-lg"
-						: controls.position === "bottom-center"
-							? "bottom-0 left-1/2 -translate-x-1/2 transform lg:bottom-4 lg:rounded-lg"
-							: "right-4 bottom-4 rounded-lg"
-				}`}
-			>
-				<div className="flex flex-col space-y-4">
-					<div>
-						<h3 className="text-lg font-semibold">We use cookies</h3>
-					</div>
-
-					<div className="text-gray-500 dark:text-gray-400">
-						<p className="text-sm">
-							We use cookies to enhance your experience on our site, analyze
-							site usage, and assist in our marketing efforts.
-						</p>
-					</div>
-
-					<div className="flex justify-end space-x-2.5">
-						<Button variant="ghost" onClick={() => setDemoConsent("rejected")}>
-							Reject
-						</Button>
-
-						<Button autoFocus onClick={() => setDemoConsent("accepted")}>
-							Accept
-						</Button>
-					</div>
-				</div>
-			</div>
-		);
-	};
-
 	const renderPreview = () => (
 		<div className="bg-muted/20 relative h-64 overflow-hidden rounded-lg border">
 			<div className="p-4">
@@ -127,7 +139,11 @@ function App() {
 				</div>
 			</div>
 
-			<DemoCookieBanner />
+			<DemoCookieBanner
+				demoConsent={demoConsent}
+				setDemoConsent={setDemoConsent}
+				controls={controls}
+			/>
 		</div>
 	);
 
@@ -156,13 +172,22 @@ function App() {
 						{ value: "bottom-right", label: "Bottom Right" },
 					].map((option) => (
 						<button
+							type="button"
 							key={option.value}
 							className={`rounded border p-2 text-sm ${
 								controls.position === option.value
 									? "bg-primary text-primary-foreground"
 									: "bg-background hover:bg-muted"
 							}`}
-							onClick={() => updateControl("position", option.value as any)}
+							onClick={() =>
+								updateControl(
+									"position",
+									option.value as
+										| "bottom-left"
+										| "bottom-center"
+										| "bottom-right",
+								)
+							}
 						>
 							{option.label}
 						</button>
