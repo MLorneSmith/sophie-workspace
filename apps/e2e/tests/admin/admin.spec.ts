@@ -393,6 +393,6 @@ async function filterAccounts(page: Page, email: string) {
 
 async function selectAccount(page: Page, email: string) {
 	await page.getByRole("link", { name: email.split("@")[0] }).click();
-	await page.waitForURL(new RegExp(`/admin/accounts/[a-z0-9-]+`));
+	await page.waitForURL(/\/admin\/accounts\/[a-z0-9-]+/);
 	await page.waitForTimeout(500);
 }
