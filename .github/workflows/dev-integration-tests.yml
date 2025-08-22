@@ -129,10 +129,16 @@ jobs:
             local name=$2
             local retries=0
             
+            # Add Vercel protection bypass header if available
+            CURL_OPTS=""
+            if [ ! -z "${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" ]; then
+              CURL_OPTS="-H 'x-vercel-protection-bypass: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}'"
+            fi
+            
             while [ $retries -lt $MAX_RETRIES ]; do
               echo "Attempt $((retries + 1))/$MAX_RETRIES for $name..."
               
-              HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 "$url")
+              HTTP_CODE=$(eval "curl -s -o /dev/null -w \"%{http_code}\" --max-time 30 $CURL_OPTS \"$url\"")
               
               if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "204" ]; then
                 echo "✅ $name: HTTP $HTTP_CODE"
@@ -171,14 +177,20 @@ jobs:
           RETRY_DELAY=10
           retries=0
           
+          # Add Vercel protection bypass header if available
+          CURL_HEADERS="-H \"Content-Type: application/json\""
+          if [ ! -z "${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" ]; then
+            CURL_HEADERS="$CURL_HEADERS -H \"x-vercel-protection-bypass: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}\""
+          fi
+          
           while [ $retries -lt $MAX_RETRIES ]; do
             echo "Attempt $((retries + 1))/$MAX_RETRIES for GraphQL endpoint..."
             
-            RESPONSE=$(curl -s -X POST \
-              -H "Content-Type: application/json" \
-              -d '{"query":"{ __schema { queryType { name } } }"}' \
+            RESPONSE=$(eval "curl -s -X POST \
+              $CURL_HEADERS \
+              -d '{\"query\":\"{ __schema { queryType { name } } }\"}' \
               --max-time 30 \
-              "${{ needs.check-should-run.outputs.deployment_url }}/api/graphql")
+              \"${{ needs.check-should-run.outputs.deployment_url }}/api/graphql\"")
             
             # Check for Cloudflare error pages
             if echo "$RESPONSE" | grep -q "Cloudflare\|522\|521\|523"; then
@@ -215,6 +227,7 @@ jobs:
           sparse-checkout: |
             apps/e2e
             packages
+            tooling
             package.json
             pnpm-lock.yaml
             pnpm-workspace.yaml
@@ -223,7 +236,6 @@ jobs:
             .github/actions/setup-deps
             tsconfig.json
             scripts
-            tooling/scripts
 
       - uses: ./.github/actions/setup-deps
 
@@ -262,8 +274,14 @@ jobs:
         run: |
           echo "🔒 Checking security headers..."
           
+          # Add Vercel protection bypass header if available
+          CURL_OPTS=""
+          if [ ! -z "${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" ]; then
+            CURL_OPTS="-H 'x-vercel-protection-bypass: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}'"
+          fi
+          
           # Check for essential security headers
-          HEADERS=$(curl -s -I "${{ needs.check-should-run.outputs.deployment_url }}")
+          HEADERS=$(eval "curl -s -I $CURL_OPTS \"${{ needs.check-should-run.outputs.deployment_url }}\"")
           
           # Check for X-Frame-Options
           if echo "$HEADERS" | grep -qi "X-Frame-Options"; then
@@ -293,6 +311,12 @@ jobs:
           # Check that sensitive paths return 404 or 403
           PATHS=("/.env" "/.git" "/config.json" "/package.json" "/.github")
           
+          # Add Vercel protection bypass header if available
+          CURL_OPTS=""
+          if [ ! -z "${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" ]; then
+            CURL_OPTS="-H 'x-vercel-protection-bypass: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}'"
+          fi
+          
           for path in "${PATHS[@]}"; do
             # Retry logic for Cloudflare errors
             MAX_RETRIES=3
@@ -300,8 +324,8 @@ jobs:
             retries=0
             
             while [ $retries -lt $MAX_RETRIES ]; do
-              STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 \
-                "${{ needs.check-should-run.outputs.deployment_url }}$path")
+              STATUS=$(eval "curl -s -o /dev/null -w \"%{http_code}\" --max-time 30 $CURL_OPTS \
+                \"${{ needs.check-should-run.outputs.deployment_url }}$path\"")
               
               # Check if it's a Cloudflare error that needs retry
               if [[ "$STATUS" == "522" ]] || [[ "$STATUS" == "521" ]] || [[ "$STATUS" == "523" ]]; then
