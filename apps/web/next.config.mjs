@@ -80,6 +80,7 @@ const config = {
 	experimental: {
 		mdxRs: true,
 		reactCompiler: ENABLE_REACT_COMPILER,
+		clientSegmentCache: true,
 		optimizePackageImports: [
 			"recharts",
 			"lucide-react",
@@ -126,10 +127,6 @@ const config = {
 						key: "X-Content-Type-Options",
 						value: "nosniff",
 					},
-					{
-						key: "Referrer-Policy",
-						value: "strict-origin-when-cross-origin",
-					},
 				],
 			},
 		];
@@ -141,90 +138,78 @@ export default withBundleAnalyzer({
 })(config);
 
 function getRemotePatterns() {
-	/** @type {import('next').NextConfig['remotePatterns']} */
-	const remotePatterns = [];
-
-	if (SUPABASE_URL) {
-		const hostname = new URL(SUPABASE_URL).hostname;
-
-		remotePatterns.push({
-			protocol: "https",
-			hostname,
-		});
+	if (!SUPABASE_URL) {
+		return [];
 	}
 
-	return IS_PRODUCTION
-		? remotePatterns
-		: [
-				{
-					protocol: "http",
-					hostname: "127.0.0.1",
-				},
-				{
-					protocol: "http",
-					hostname: "localhost",
-				},
-			];
-}
+	const { hostname } = new URL(SUPABASE_URL);
 
-async function getRedirects() {
 	return [
 		{
-			source: "/server-sitemap.xml",
-			destination: "/sitemap.xml",
-			permanent: true,
+			protocol: "https",
+			hostname,
 		},
 	];
 }
 
-/**
- * @description Aliases modules based on the environment variables
- * This will speed up the development server by not loading the modules that are not needed
- * @returns {Record<string, string>}
- */
+async function getRedirects() {
+	// Add your redirects here
+	return [];
+}
+
 function getModulesAliases() {
-	if (process.env.NODE_ENV !== "development") {
-		return {};
+	if (!IS_PRODUCTION) {
+		return {
+			"@kit/ui": {
+				"@kit/ui/*": "../../../packages/ui/src/*",
+			},
+			"@kit/shared": {
+				"@kit/shared/*": "../../../packages/shared/src/*",
+			},
+			"@kit/cms": {
+				"@kit/cms/*": "../../../packages/cms/src/*",
+			},
+			"@kit/auth": {
+				"@kit/auth/*": "../../../packages/features/auth/src/*",
+			},
+			"@kit/admin": {
+				"@kit/admin/*": "../../../packages/features/admin/src/*",
+			},
+			"@kit/accounts": {
+				"@kit/accounts/*": "../../../packages/features/accounts/src/*",
+			},
+			"@kit/team-accounts": {
+				"@kit/team-accounts/*": "../../../packages/features/team-accounts/src/*",
+			},
+			"@kit/notifications": {
+				"@kit/notifications/*": "../../../packages/features/notifications/src/*",
+			},
+			"@kit/billing-gateway": {
+				"@kit/billing-gateway/*": "../../../packages/billing/gateway/src/*",
+			},
+			"@kit/database-webhooks": {
+				"@kit/database-webhooks/*": "../../../packages/database-webhooks/src/*",
+			},
+			"@kit/email-templates": {
+				"@kit/email-templates/*": "../../../packages/email-templates/src/*",
+			},
+			"@kit/supabase": {
+				"@kit/supabase/*": "../../../packages/supabase/src/*",
+			},
+			"@kit/mailers": {
+				"@kit/mailers/*": "../../../packages/mailers/src/*",
+			},
+			"@kit/i18n": {
+				"@kit/i18n/*": "../../../packages/i18n/src/*",
+			},
+			"@kit/monitoring": {
+				"@kit/monitoring/*": "../../../packages/monitoring/src/*",
+			},
+			"@kit/next": {
+				"@kit/next/*": "../../../packages/next/src/*",
+			},
+		};
 	}
 
-	const monitoringProvider = process.env.NEXT_PUBLIC_MONITORING_PROVIDER;
-	const billingProvider = process.env.NEXT_PUBLIC_BILLING_PROVIDER;
-	const mailerProvider = process.env.MAILER_PROVIDER;
-	const captchaProvider = process.env.NEXT_PUBLIC_CAPTCHA_SITE_KEY;
-
-	// exclude the modules that are not needed
-	const excludeSentry = monitoringProvider !== "sentry";
-	const excludeBaselime = monitoringProvider !== "baselime";
-	const excludeStripe = billingProvider !== "stripe";
-	const excludeNodemailer = mailerProvider !== "nodemailer";
-	const excludeTurnstile = !captchaProvider;
-
-	/** @type {Record<string, string>} */
-	const aliases = {};
-
-	// the path to the noop module
-	const noopPath = "~/lib/dev-mock-modules";
-
-	if (excludeSentry) {
-		aliases["@sentry/nextjs"] = noopPath;
-	}
-
-	if (excludeBaselime) {
-		aliases["@baselime/react-rum"] = noopPath;
-	}
-
-	if (excludeStripe) {
-		aliases.stripe = noopPath;
-		aliases["@stripe/stripe-js"] = noopPath;
-	}
-
-	if (excludeNodemailer) {
-		aliases.nodemailer = noopPath;
-	}
-
-	if (excludeTurnstile) {
-		aliases["@marsidev/react-turnstile"] = noopPath;
-	}
-
-	return aliases;
+	return {};
 }
