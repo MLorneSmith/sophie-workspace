@@ -11,7 +11,8 @@ We should create individual claude code agents to conduct each of the different 
 
 2. Format the /test file based on the YAML Structured output style
 
-3. E2E tests take a long time. Identify a strategy to manage this.
+3. E2E tests take a long time. Identify a strategy to manage this. Perhaps we can run multiple agents in parallel?
+   
 4. Ensure the claude code statusline test componenet is working
 The claude code statusline has a test component that is meant to display the status of the tests.
 - Make sure it is updating correctly. It should show the status (pass/ fail) as a red or green circle, the number of errors, and the time since the /test command was last run.
