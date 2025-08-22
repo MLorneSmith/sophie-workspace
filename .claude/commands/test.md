@@ -52,10 +52,10 @@ orchestrator:
   agent: "test-orchestrator"
   role: "Coordinate all test execution"
   responsibilities:
-    - "Manage parallel execution"
-    - "Monitor agent progress"
-    - "Aggregate results"
-    - "Update statusline"
+    - "Delegate to unit-test-agent and e2e-parallel-agent"
+    - "Track progress with TodoWrite"
+    - "Aggregate results from both test types"
+    - "Update statusline with real counts"
 ```
 
 ### 3. Test Execution Phases
@@ -64,10 +64,10 @@ orchestrator:
 ```yaml
 unit_test_phase:
   agent: "unit-test-agent"
-  parallel: false
+  parallel: true  # Uses Turbo for parallel workspace execution
   commands:
-    - "pnpm test"  # Excludes E2E tests
-  expected_duration: "45s"
+    - "pnpm test:unit"  # Runs via Turbo, excludes E2E
+  expected_duration: "2-3m"
   workspaces:
     - "web"
     - "payload"
@@ -75,52 +75,58 @@ unit_test_phase:
   status_tracking: true
 ```
 
-#### Phase 2: E2E Tests (Parallel Groups)
+#### Phase 2: E2E Tests (Parallel Shards)
 ```yaml
 e2e_test_phase:
   coordinator: "e2e-parallel-agent"
-  parallel_groups: 4
-  total_duration_estimate: "3-4m"
+  parallel_shards: 9
+  total_duration_estimate: "10-15m"
   
-  groups:
+  shards:
     - id: 1
-      name: "Quick Tests"
-      agent: "e2e-runner-agent"
-      port: 3000
-      tests:
-        - "tests/smoke"
-        - "tests/healthcheck.spec.ts"
-        - "tests/authentication"
-      duration: "2m"
+      name: "Accessibility Large"
+      command: "pnpm --filter web-e2e test:shard1"
+      tests: 13
       
     - id: 2
-      name: "User Flows"
-      agent: "e2e-runner-agent"
-      port: 3001
-      tests:
-        - "tests/account"
-        - "tests/onboarding"
-        - "tests/invitations"
-      duration: "3m"
+      name: "Authentication"
+      command: "pnpm --filter web-e2e test:shard2"
+      tests: 10
       
     - id: 3
-      name: "Billing"
-      agent: "e2e-runner-agent"
-      port: 3002
-      tests:
-        - "tests/team-billing"
-        - "tests/user-billing"
-        - "tests/team-accounts"
-      duration: "3m"
+      name: "Admin"
+      command: "pnpm --filter web-e2e test:shard3"
+      tests: 9
       
     - id: 4
-      name: "Admin & A11y"
-      agent: "e2e-runner-agent"
-      port: 3003
-      tests:
-        - "tests/admin"
-        - "tests/accessibility"
-      duration: "2m"
+      name: "Smoke"
+      command: "pnpm --filter web-e2e test:shard4"
+      tests: 9
+      
+    - id: 5
+      name: "Accessibility Simple"
+      command: "pnpm --filter web-e2e test:shard5"
+      tests: 6
+      
+    - id: 6
+      name: "Team Accounts"
+      command: "pnpm --filter web-e2e test:shard6"
+      tests: 6
+      
+    - id: 7
+      name: "Account + Invitations"
+      command: "pnpm --filter web-e2e test:shard7"
+      tests: 8
+      
+    - id: 8
+      name: "Quick Tests"
+      command: "pnpm --filter web-e2e test:shard8"
+      tests: 3
+      
+    - id: 9
+      name: "Billing"
+      command: "pnpm --filter web-e2e test:shard9"
+      tests: 2
 ```
 
 ### 4. Status Updates
@@ -147,45 +153,48 @@ task:
   subagent_type: "test-orchestrator"
   description: "Coordinate comprehensive test execution"
   prompt: |
-    Execute comprehensive test suite with real commands and proper statusline updates:
+    Coordinate test execution by delegating to specialized agents:
     
-    1. **Initialize Environment**
+    1. **Initialize TodoWrite**
+       - Create todos for Unit Tests and E2E Tests phases
+       - Track progress throughout execution
+    
+    2. **Delegate Unit Tests to unit-test-agent**
+       Instructions for unit-test-agent:
+       - Execute: pnpm test:unit
+       - Use Turbo for parallel workspace execution
+       - Parse output for actual test counts
+       - Return pass/fail statistics
+       - Target: 2-3 minutes completion
+    
+    3. **Delegate E2E Tests to e2e-parallel-agent** (if unit tests pass)
+       Instructions for e2e-parallel-agent:
+       - Execute 9 shards using pnpm --filter web-e2e test:shard[1-9]
+       - Run shards in parallel with run_in_background: true
+       - Monitor progress with BashOutput
+       - Update todos in real-time
+       - Return consolidated results
+       - Target: 10-15 minutes completion
+    
+    4. **Aggregate Results**
+       - Combine unit test results from unit-test-agent
+       - Combine E2E results from e2e-parallel-agent
+       - Calculate total statistics
+    
+    5. **Update Statusline**
        - Set GIT_ROOT=$(git rev-parse --show-toplevel)
        - Set TEST_STATUS_FILE="/tmp/.claude_test_status_${GIT_ROOT//\//_}"
-       - Run cleanup if ports 3000-3003 or 54321-54326 are in use
-    
-    2. **Run Unit Tests** (IMPORTANT: Use actual commands)
-       - Mark status as running: echo "running|$(date +%s)|0|0|0" > "$TEST_STATUS_FILE"
-       - Execute: cd $GIT_ROOT && pnpm test 2>&1 | tee /tmp/unit_test_output.log
-       - Parse ACTUAL output for test counts (look for "Test Files" or test count patterns)
-       - Update status file with real counts
-    
-    3. **Run E2E Tests** (IMPORTANT: Use actual Playwright commands)
-       - Change to E2E directory: cd $GIT_ROOT/apps/e2e
-       - Start Supabase if needed: npx supabase start --project-id e2e
-       - Execute ALL E2E tests: npx playwright test --reporter=list 2>&1 | tee /tmp/e2e_output.log
-       - Parse ACTUAL Playwright output for test counts
-       - Look for patterns like "X passed", "X failed", "X skipped"
-    
-    4. **Parse Real Test Results**
-       - Unit tests: Extract from Vitest output (Test Files: X passed, Y failed)
-       - E2E tests: Extract from Playwright output (X passed, Y failed, Z skipped)
-       - Calculate totals: passed, failed, skipped
-    
-    5. **Update Statusline** (CRITICAL)
        - Format: "status|timestamp|passed|failed|total"
-       - If all pass: echo "success|$(date +%s)|$PASSED|0|$TOTAL" > "$TEST_STATUS_FILE"
-       - If failures: echo "failed|$(date +%s)|$PASSED|$FAILED|$TOTAL" > "$TEST_STATUS_FILE"
-       - MUST use actual test counts from command output
+       - Update with actual aggregated counts
     
-    6. **Generate Report**
-       - Show actual test counts (not estimates)
-       - Include both unit and E2E results
-       - List any failures with details
+    6. **Generate Final Report**
+       - Show unit test results
+       - Show E2E test results (by shard)
+       - Total test statistics
+       - Any failure details
     
-    IMPORTANT: You MUST run actual test commands and parse real output.
-    Do NOT use placeholder or estimated numbers.
-    The statusline file MUST be updated with real test counts.
+    IMPORTANT: You coordinate and delegate. The subagents execute.
+    Use TodoWrite to track all phases and provide visibility.
 ```
 
 ### Unit Test Agent Task
@@ -194,26 +203,30 @@ task:
   subagent_type: "unit-test-agent"
   description: "Execute unit tests across all workspaces"
   prompt: |
-    Run ACTUAL unit tests and parse real output:
+    Execute unit tests using Turbo-optimized parallel execution:
     
     1. **Setup**
        - Set GIT_ROOT=$(git rev-parse --show-toplevel)
-       - Set TEST_STATUS_FILE="/tmp/.claude_test_status_${GIT_ROOT//\//_}"
+       - Kill any existing vitest processes: pkill -f vitest || true
     
-    2. **Execute Tests** (MUST use actual commands)
-       - Run: cd $GIT_ROOT && pnpm test 2>&1 | tee /tmp/unit_output.log
+    2. **Execute Tests**
+       - Run: cd $GIT_ROOT && pnpm test:unit 2>&1 | tee /tmp/unit_output.log
+       - This uses Turbo to run tests in parallel across workspaces
        - Wait for completion (timeout 5 minutes)
     
-    3. **Parse REAL Output**
-       - Look for Vitest patterns: "Test Files: X passed, Y failed"
-       - Alternative: "X passed", "Y failed", "Z skipped"
-       - Extract actual numbers from output
+    3. **Parse Output**
+       - Look for Vitest patterns per workspace
+       - Extract: "Test Files: X passed, Y failed"
+       - Sum totals across all workspaces
     
-    4. **Update Status File**
-       - During: echo "running|$(date +%s)|0|0|0" > "$TEST_STATUS_FILE"
-       - After: echo "status|$(date +%s)|$PASSED|$FAILED|$TOTAL" > "$TEST_STATUS_FILE"
+    4. **Return Results**
+       - Total tests run
+       - Total passed
+       - Total failed
+       - Duration
+       - Any failure details
     
-    Return actual test counts, not estimates.
+    Return actual test counts from Vitest/Turbo output.
 ```
 
 ### E2E Parallel Agent Task
@@ -222,65 +235,42 @@ task:
   subagent_type: "e2e-parallel-agent"
   description: "Coordinate parallel E2E test execution"
   prompt: |
-    Run ACTUAL E2E tests with Playwright:
+    Execute E2E tests using 9 parallel shards:
     
     1. **Setup**
        - Set GIT_ROOT=$(git rev-parse --show-toplevel)
-       - cd $GIT_ROOT/apps/e2e
+       - Kill existing test processes: pkill -f "playwright|3000|3001" || true
+       - Initialize TodoWrite with 9 shard tasks
     
-    2. **Start Infrastructure**
-       - Run: npx supabase start --project-id e2e
-       - Wait for Supabase to be ready
+    2. **Launch All Shards in Parallel**
+       - Execute each with run_in_background: true:
+         - pnpm --filter web-e2e test:shard1
+         - pnpm --filter web-e2e test:shard2
+         - pnpm --filter web-e2e test:shard3
+         - pnpm --filter web-e2e test:shard4
+         - pnpm --filter web-e2e test:shard5
+         - pnpm --filter web-e2e test:shard6
+         - pnpm --filter web-e2e test:shard7
+         - pnpm --filter web-e2e test:shard8
+         - pnpm --filter web-e2e test:shard9
     
-    3. **Execute E2E Tests** (MUST use actual command)
-       - Run: npx playwright test --reporter=list 2>&1 | tee /tmp/e2e_output.log
-       - Alternative for parallel: npx playwright test --workers=4
+    3. **Monitor Progress**
+       - Use BashOutput to check each shard's output
+       - Update todos as shards complete
+       - Parse Playwright output: "X passed", "Y failed"
     
-    4. **Parse REAL Playwright Output**
-       - Look for: "X passed", "Y failed", "Z skipped"
-       - Extract actual test counts
-       - Count individual test cases, not just files
+    4. **Aggregate Results**
+       - Sum results from all 9 shards
+       - Total: 85 tests expected
+       - Report by shard and overall
     
-    5. **Cleanup**
-       - Stop test servers
-       - npx supabase stop --project-id e2e
-    
-    Return actual E2E test counts from Playwright output.
+    5. **Return Consolidated Results**
+       - Total tests: sum of all shards
+       - Total passed/failed/skipped
+       - Duration per shard
+       - Any failure details
 ```
 
-### E2E Runner Agent Tasks (per group)
-```yaml
-task_template:
-  subagent_type: "e2e-runner-agent"
-  description: "Run E2E test group {GROUP_ID}"
-  environment:
-    GROUP_ID: "{1-4}"
-    PORT: "{3000-3003}"
-    TEST_PATHS: "{group_specific_tests}"
-  prompt: |
-    Execute E2E test group {GROUP_ID}:
-    1. Start Next.js server on port {PORT}
-    2. Wait for server readiness
-    3. Run Playwright tests: {TEST_PATHS}
-    4. Parse test results
-    5. Save to $TEST_RESULTS_DIR/e2e_group{GROUP_ID}.json
-    6. Cleanup server and resources
-```
-
-### Cleanup Agent Task
-```yaml
-task:
-  subagent_type: "test-cleanup-agent"
-  description: "Clean test environment"
-  prompt: |
-    Ensure clean test environment:
-    1. Kill processes on ports 3000-3003, 54321-54326
-    2. Stop any Supabase instances
-    3. Terminate zombie test processes
-    4. Clean test artifacts older than 1 day
-    5. Verify all ports are free
-    6. Report cleanup status
-```
 
 ## Output Format
 
@@ -313,29 +303,26 @@ test_results:
       
   e2e_tests:
     status: "success"
-    total: 117  # From Playwright output (actual E2E test count)
-    passed: 117
+    total: 85  # From Playwright output (actual E2E test count)
+    passed: 85
     failed: 0
-    parallel_groups: 4
-    duration: "3m 30s"
+    parallel_shards: 9
+    duration: "12m 30s"
     
-    by_group:
-      group_1:
-        name: "Quick Tests"
-        passed: 15
-        duration: "2m 05s"
-      group_2:
-        name: "User Flows"
-        passed: 22
+    by_shard:
+      shard_1:
+        name: "Accessibility Large"
+        passed: 13
+        duration: "3m 05s"
+      shard_2:
+        name: "Authentication"
+        passed: 10
         duration: "2m 50s"
-      group_3:
-        name: "Billing"
-        passed: 18
-        duration: "3m 10s"
-      group_4:
-        name: "Admin & A11y"
-        passed: 8
-        duration: "1m 55s"
+      shard_3:
+        name: "Admin"
+        passed: 9
+        duration: "2m 10s"
+      # ... remaining shards
         
   next_steps:
     - "All tests passing - ready for deployment"
