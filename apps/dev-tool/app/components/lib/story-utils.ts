@@ -7,7 +7,7 @@ import { toast } from "@kit/ui/sonner";
 /**
  * Generic hook for managing component story controls
  */
-export function useStoryControls<T extends Record<string, any>>(
+export function useStoryControls<T extends Record<string, unknown>>(
 	initialState: T,
 ) {
 	const [controls, setControls] = useState<T>(initialState);
@@ -54,8 +54,8 @@ export function useCopyCode() {
  * Utility to generate props string from control values
  */
 export function generatePropsString(
-	controls: Record<string, any>,
-	defaults: Record<string, any> = {},
+	controls: Record<string, unknown>,
+	defaults: Record<string, unknown> = {},
 	excludeKeys: string[] = [],
 ): string {
 	const props: string[] = [];

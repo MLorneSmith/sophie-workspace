@@ -23,8 +23,7 @@ The claude code statusline has a codecheck component that is meant to display th
 
 ## Your Task
 
-1. Create a new command file /codecheck based on the old /code-check using the YAML Structured output syle
-2. Create new agents to help with code check. Make a recommendation on the agents we should create and solicite feedback from the user on what agents to create
-3. Identify the issue with the claude code statusline to determine if there is anything in the new /codecheck we need to include to ensure it works. Pay specific attention to what commands we are running to conduct each code review
-4. Create /codecheck based on the requirements above
-5. Fix the claude code statusline issue. Review how the other comoponents of the statusline are implemented (the test component works properly for example)
+1. Create new agents to help with code check. Make a recommendation on the agents we should create and solicite feedback from the user on what agents to create
+2. Identify the issue with the claude code statusline to determine if there is anything in the new /codecheck we need to include to ensure it works. Pay specific attention to what commands we are running to conduct each code review
+3. Create a new command file /codecheck based on the old /code-check using the YAML Structured output syle. Incorporate the requirements above
+4. Fix the claude code statusline issue. Review how the other comoponents of the statusline are implemented (the test component works properly for example)
