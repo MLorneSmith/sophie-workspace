@@ -88,7 +88,17 @@ runs:
         elif [ "${{ inputs.environment }}" = "staging" ]; then
           url=$(vercel deploy --target=staging --token=${{ inputs.token }} --yes)
         else
+          # Preview environment deployment
           url=$(vercel deploy --token=${{ inputs.token }} --yes)
+          
+          # For dev branch, assign the dev.slideheroes.com alias
+          if [ "$GITHUB_REF_NAME" = "dev" ] || [ "${{ github.ref }}" = "refs/heads/dev" ]; then
+            echo "📌 Assigning dev.slideheroes.com alias to this deployment..."
+            # Use vercel alias to point dev.slideheroes.com to this deployment
+            vercel alias set "$url" dev.slideheroes.com --token=${{ inputs.token }} --yes --scope=${{ inputs.org-id }} || {
+              echo "⚠️ Failed to set alias. Make sure dev.slideheroes.com is added as a domain in Vercel project settings"
+            }
+          fi
         fi
         
         echo "url=$url" >> $GITHUB_OUTPUT
