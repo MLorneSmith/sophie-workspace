@@ -95,7 +95,7 @@ runs:
           if [ "$GITHUB_REF_NAME" = "dev" ] || [ "${{ github.ref }}" = "refs/heads/dev" ]; then
             echo "📌 Assigning dev.slideheroes.com alias to this deployment..."
             # Use vercel alias to point dev.slideheroes.com to this deployment
-            vercel alias set "$url" dev.slideheroes.com --token=${{ inputs.token }} --yes --scope=${{ inputs.org-id }} || {
+            vercel alias set "$url" dev.slideheroes.com --token=${{ inputs.token }} --scope=${{ inputs.org-id }} || {
               echo "⚠️ Failed to set alias. Make sure dev.slideheroes.com is added as a domain in Vercel project settings"
             }
           fi
