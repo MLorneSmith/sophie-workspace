@@ -965,8 +965,8 @@ export default function CommandStory() {
 			generatedCode={generateCode()}
 			examples={
 				<div className="space-y-8">
-					{examples.map((example, index) => (
-						<div key={index}>
+					{examples.map((example) => (
+						<div key={example.title}>
 							<h3 className="mb-4 text-lg font-semibold">{example.title}</h3>
 							<p className="text-muted-foreground mb-4 text-sm">
 								{example.description}
@@ -997,11 +997,13 @@ export default function CommandStory() {
 									</tr>
 								</thead>
 								<tbody className="text-sm">
-									{apiReference.props.map((prop, index) => (
-										<tr key={index} className="border-border/50 border-b">
+									{apiReference.props.map((prop) => (
+										<tr key={prop.name} className="border-border/50 border-b">
 											<td className="p-2 font-mono">{prop.name}</td>
 											<td className="p-2 font-mono">{prop.type}</td>
-											<td className="p-2">{"default" in prop ? prop.default : "-"}</td>
+											<td className="p-2">
+												{"default" in prop ? prop.default : "-"}
+											</td>
 											<td className="p-2">{prop.description}</td>
 										</tr>
 									))}
@@ -1012,8 +1014,8 @@ export default function CommandStory() {
 
 					<div className="space-y-6">
 						<h3 className="text-lg font-semibold">Code Examples</h3>
-						{apiReference.examples.map((example, index) => (
-							<div key={index}>
+						{apiReference.examples.map((example) => (
+							<div key={example.title}>
 								<h4 className="mb-2 text-base font-medium">{example.title}</h4>
 								<div className="bg-muted/50 rounded-lg p-4">
 									<pre className="overflow-x-auto text-sm">
@@ -1036,12 +1038,15 @@ export default function CommandStory() {
 						</p>
 					</div>
 
-					{usageGuidelines.guidelines.map((section, index) => (
-						<div key={index}>
+					{usageGuidelines.guidelines.map((section) => (
+						<div key={section.title}>
 							<h4 className="mb-3 text-base font-semibold">{section.title}</h4>
 							<ul className="space-y-1 text-sm">
-								{section.items.map((item, itemIndex) => (
-									<li key={itemIndex} className="flex items-start">
+								{section.items.map((item) => (
+									<li
+										key={`${section.title}-${item.substring(0, 20)}`}
+										className="flex items-start"
+									>
 										<span className="mt-1.5 mr-2 h-1 w-1 flex-shrink-0 rounded-full bg-current" />
 										<span>{item}</span>
 									</li>
