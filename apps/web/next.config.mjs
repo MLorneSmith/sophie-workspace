@@ -179,10 +179,12 @@ function getModulesAliases() {
 				"@kit/accounts/*": "../../../packages/features/accounts/src/*",
 			},
 			"@kit/team-accounts": {
-				"@kit/team-accounts/*": "../../../packages/features/team-accounts/src/*",
+				"@kit/team-accounts/*":
+					"../../../packages/features/team-accounts/src/*",
 			},
 			"@kit/notifications": {
-				"@kit/notifications/*": "../../../packages/features/notifications/src/*",
+				"@kit/notifications/*":
+					"../../../packages/features/notifications/src/*",
 			},
 			"@kit/billing-gateway": {
 				"@kit/billing-gateway/*": "../../../packages/billing/gateway/src/*",

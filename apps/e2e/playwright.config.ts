@@ -92,13 +92,13 @@ export default defineConfig({
 			mode: "only-on-failure",
 			fullPage: true,
 		},
-		
+
 		/* Enhanced video recording for CI debugging */
 		video: process.env.CI ? "retain-on-failure" : "off",
-		
+
 		/* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
 		trace: "on-first-retry",
-		
+
 		/* Optimized timeouts for faster test execution */
 		navigationTimeout:
 			Number(process.env.PLAYWRIGHT_NAVIGATION_TIMEOUT) || 20000, // Balanced for CI performance

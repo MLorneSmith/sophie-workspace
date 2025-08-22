@@ -1,60 +1,58 @@
-'use client';
+"use client";
 
-import { Check, Copy } from 'lucide-react';
+import { Check, Copy } from "lucide-react";
 
-import { Button } from '@kit/ui/button';
+import { Button } from "@kit/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@kit/ui/card';
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@kit/ui/card";
 
-import { useCopyCode } from '../lib/story-utils';
+import { useCopyCode } from "../lib/story-utils";
 
 interface CodeCardProps {
-  title?: string;
-  description?: string;
-  code: string;
-  language?: 'tsx' | 'jsx' | 'javascript' | 'typescript';
-  className?: string;
+	title?: string;
+	description?: string;
+	code: string;
+	className?: string;
 }
 
 export function CodeCard({
-  title = 'Generated Code',
-  description = 'Copy and paste this code into your project',
-  code,
-  language = 'tsx',
-  className,
+	title = "Generated Code",
+	description = "Copy and paste this code into your project",
+	code,
+	className,
 }: CodeCardProps) {
-  const { copiedCode, copyCode } = useCopyCode();
+	const { copiedCode, copyCode } = useCopyCode();
 
-  return (
-    <Card className={className}>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle>{title}</CardTitle>
-            <CardDescription>{description}</CardDescription>
-          </div>
+	return (
+		<Card className={className}>
+			<CardHeader>
+				<div className="flex items-center justify-between">
+					<div>
+						<CardTitle>{title}</CardTitle>
+						<CardDescription>{description}</CardDescription>
+					</div>
 
-          <Button onClick={() => copyCode(code)} size="sm" variant="outline">
-            {copiedCode ? (
-              <Check className="mr-2 h-4 w-4" />
-            ) : (
-              <Copy className="mr-2 h-4 w-4" />
-            )}
+					<Button onClick={() => copyCode(code)} size="sm" variant="outline">
+						{copiedCode ? (
+							<Check className="mr-2 h-4 w-4" />
+						) : (
+							<Copy className="mr-2 h-4 w-4" />
+						)}
 
-            {copiedCode ? 'Copied!' : 'Copy'}
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <pre className="bg-muted overflow-x-auto rounded-lg p-4 text-sm">
-          <code>{code}</code>
-        </pre>
-      </CardContent>
-    </Card>
-  );
+						{copiedCode ? "Copied!" : "Copy"}
+					</Button>
+				</div>
+			</CardHeader>
+			<CardContent>
+				<pre className="bg-muted overflow-x-auto rounded-lg p-4 text-sm">
+					<code>{code}</code>
+				</pre>
+			</CardContent>
+		</Card>
+	);
 }

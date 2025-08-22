@@ -13,7 +13,9 @@ export function useSignInWithOtp() {
 			if (shouldIgnoreError(result.error.message)) {
 				if (process.env.NODE_ENV === "development") {
 					// biome-ignore lint/suspicious/noConsole: Development warning for SMS provider setup
-					console.warn(`Ignoring error during development: ${result.error.message}`);
+					console.warn(
+						`Ignoring error during development: ${result.error.message}`,
+					);
 				}
 
 				return {} as never;

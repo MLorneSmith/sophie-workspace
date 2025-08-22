@@ -1,568 +1,568 @@
-'use client';
+"use client";
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 
 import {
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from '@tanstack/react-table';
+	flexRender,
+	getCoreRowModel,
+	useReactTable,
+} from "@tanstack/react-table";
 import type {
-  ColumnDef,
-  ColumnFiltersState,
-  ColumnPinningState,
-  PaginationState,
-  Table as ReactTable,
-  Row,
-  SortingState,
-  VisibilityState,
-} from '@tanstack/react-table';
+	ColumnDef,
+	ColumnFiltersState,
+	ColumnPinningState,
+	PaginationState,
+	Table as ReactTable,
+	Row,
+	SortingState,
+	VisibilityState,
+} from "@tanstack/react-table";
 import {
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
-} from 'lucide-react';
+	ChevronLeft,
+	ChevronRight,
+	ChevronsLeft,
+	ChevronsRight,
+} from "lucide-react";
 
-import { cn } from '../lib/utils/cn';
-import { Button } from '../shadcn/button';
+import { cn } from "../lib/utils/cn";
+import { Button } from "../shadcn/button";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '../shadcn/table';
-import { If } from './if';
-import { Trans } from './trans';
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "../shadcn/table";
+import { If } from "./if";
+import { Trans } from "./trans";
 
 type DataItem = Record<string, unknown> | object;
 
-export {
-  ColumnDef,
-  ColumnFiltersState,
-  ColumnPinningState,
-  PaginationState,
-  Row,
-  SortingState,
-  VisibilityState,
+export type {
+	ColumnDef,
+	ColumnFiltersState,
+	ColumnPinningState,
+	PaginationState,
+	Row,
+	SortingState,
+	VisibilityState,
 };
 
 interface ReactTableProps<T extends DataItem> {
-  data: T[];
-  columns: ColumnDef<T>[];
-  renderSubComponent?: (props: { row: Row<T> }) => React.ReactElement;
-  pageIndex?: number;
-  className?: string;
-  pageSize?: number;
-  pageCount?: number;
-  sorting?: SortingState;
-  columnVisibility?: VisibilityState;
-  columnPinning?: ColumnPinningState;
-  rowSelection?: Record<string, boolean>;
-  getRowId?: (row: T) => string;
-  onPaginationChange?: (pagination: PaginationState) => void;
-  onSortingChange?: (sorting: SortingState) => void;
-  onColumnVisibilityChange?: (visibility: VisibilityState) => void;
-  onColumnPinningChange?: (pinning: ColumnPinningState) => void;
-  onRowSelectionChange?: (selection: Record<string, boolean>) => void;
-  onClick?: (row: Row<T>) => void;
-  tableProps?: React.ComponentProps<typeof Table> &
-    Record<`data-${string}`, string>;
-  sticky?: boolean;
-  renderRow?: (props: {
-    row: Row<T>;
-    onClick?: (row: Row<T>) => void;
-    className?: string;
-  }) => (props: React.PropsWithChildren<object>) => React.ReactNode;
-  noResultsMessage?: React.ReactNode;
-  forcePagination?: boolean; // Force pagination to show even when pageCount <= 1
+	data: T[];
+	columns: ColumnDef<T>[];
+	renderSubComponent?: (props: { row: Row<T> }) => React.ReactElement;
+	pageIndex?: number;
+	className?: string;
+	pageSize?: number;
+	pageCount?: number;
+	sorting?: SortingState;
+	columnVisibility?: VisibilityState;
+	columnPinning?: ColumnPinningState;
+	rowSelection?: Record<string, boolean>;
+	getRowId?: (row: T) => string;
+	onPaginationChange?: (pagination: PaginationState) => void;
+	onSortingChange?: (sorting: SortingState) => void;
+	onColumnVisibilityChange?: (visibility: VisibilityState) => void;
+	onColumnPinningChange?: (pinning: ColumnPinningState) => void;
+	onRowSelectionChange?: (selection: Record<string, boolean>) => void;
+	onClick?: (row: Row<T>) => void;
+	tableProps?: React.ComponentProps<typeof Table> &
+		Record<`data-${string}`, string>;
+	sticky?: boolean;
+	renderRow?: (props: {
+		row: Row<T>;
+		onClick?: (row: Row<T>) => void;
+		className?: string;
+	}) => (props: React.PropsWithChildren<object>) => React.ReactNode;
+	noResultsMessage?: React.ReactNode;
+	forcePagination?: boolean; // Force pagination to show even when pageCount <= 1
 }
 
 export function DataTable<RecordData extends DataItem>({
-  data,
-  columns,
-  pageIndex,
-  pageSize,
-  pageCount,
-  getRowId,
-  onPaginationChange,
-  onSortingChange,
-  onColumnVisibilityChange,
-  onColumnPinningChange,
-  onRowSelectionChange,
-  onClick,
-  tableProps,
-  className,
-  renderRow,
-  noResultsMessage,
-  sorting: controlledSorting,
-  columnVisibility: controlledColumnVisibility,
-  columnPinning: controlledColumnPinning,
-  rowSelection: controlledRowSelection,
-  sticky = false,
-  forcePagination = false,
+	data,
+	columns,
+	pageIndex,
+	pageSize,
+	pageCount,
+	getRowId,
+	onPaginationChange,
+	onSortingChange,
+	onColumnVisibilityChange,
+	onColumnPinningChange,
+	onRowSelectionChange,
+	onClick,
+	tableProps,
+	className,
+	renderRow,
+	noResultsMessage,
+	sorting: controlledSorting,
+	columnVisibility: controlledColumnVisibility,
+	columnPinning: controlledColumnPinning,
+	rowSelection: controlledRowSelection,
+	sticky = false,
+	forcePagination = false,
 }: ReactTableProps<RecordData>) {
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: pageIndex ?? 0,
-    pageSize: pageSize ?? 15,
-  });
+	const [pagination, setPagination] = useState<PaginationState>({
+		pageIndex: pageIndex ?? 0,
+		pageSize: pageSize ?? 15,
+	});
 
-  const [sorting, setSorting] = useState<SortingState>(controlledSorting ?? []);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+	const [sorting, setSorting] = useState<SortingState>(controlledSorting ?? []);
+	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
-  // Internal states for uncontrolled mode
-  const [internalColumnVisibility, setInternalColumnVisibility] =
-    useState<VisibilityState>(controlledColumnVisibility ?? {});
+	// Internal states for uncontrolled mode
+	const [internalColumnVisibility, setInternalColumnVisibility] =
+		useState<VisibilityState>(controlledColumnVisibility ?? {});
 
-  const [internalColumnPinning, setInternalColumnPinning] =
-    useState<ColumnPinningState>(
-      controlledColumnPinning ?? { left: [], right: [] },
-    );
+	const [internalColumnPinning, setInternalColumnPinning] =
+		useState<ColumnPinningState>(
+			controlledColumnPinning ?? { left: [], right: [] },
+		);
 
-  const [internalRowSelection, setInternalRowSelection] = useState(
-    controlledRowSelection ?? {},
-  );
+	const [internalRowSelection, setInternalRowSelection] = useState(
+		controlledRowSelection ?? {},
+	);
 
-  // Use props if provided (controlled mode), otherwise use internal state (uncontrolled mode)
-  const columnVisibility =
-    controlledColumnVisibility ?? internalColumnVisibility;
+	// Use props if provided (controlled mode), otherwise use internal state (uncontrolled mode)
+	const columnVisibility =
+		controlledColumnVisibility ?? internalColumnVisibility;
 
-  const columnPinning = controlledColumnPinning ?? internalColumnPinning;
-  const rowSelection = controlledRowSelection ?? internalRowSelection;
+	const columnPinning = controlledColumnPinning ?? internalColumnPinning;
+	const rowSelection = controlledRowSelection ?? internalRowSelection;
 
-  if (pagination.pageIndex !== pageIndex && pageIndex !== undefined) {
-    setPagination({
-      pageIndex,
-      pageSize: pagination.pageSize,
-    });
-  }
+	if (pagination.pageIndex !== pageIndex && pageIndex !== undefined) {
+		setPagination({
+			pageIndex,
+			pageSize: pagination.pageSize,
+		});
+	}
 
-  const navigateToPage = useNavigateToNewPage();
+	const navigateToPage = useNavigateToNewPage();
 
-  const table = useReactTable({
-    data,
-    getRowId,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    enableColumnPinning: true,
-    enableRowSelection: true,
-    manualPagination: true,
-    manualSorting: true,
-    onColumnFiltersChange: setColumnFilters,
-    onColumnVisibilityChange: (updater) => {
-      if (typeof updater === 'function') {
-        const nextState = updater(columnVisibility);
+	const table = useReactTable({
+		data,
+		getRowId,
+		columns,
+		getCoreRowModel: getCoreRowModel(),
+		enableColumnPinning: true,
+		enableRowSelection: true,
+		manualPagination: true,
+		manualSorting: true,
+		onColumnFiltersChange: setColumnFilters,
+		onColumnVisibilityChange: (updater) => {
+			if (typeof updater === "function") {
+				const nextState = updater(columnVisibility);
 
-        // If controlled mode (callback provided), call it
-        if (onColumnVisibilityChange) {
-          onColumnVisibilityChange(nextState);
-        } else {
-          // Otherwise update internal state (uncontrolled mode)
-          setInternalColumnVisibility(nextState);
-        }
-      } else {
-        // If controlled mode (callback provided), call it
-        if (onColumnVisibilityChange) {
-          onColumnVisibilityChange(updater);
-        } else {
-          // Otherwise update internal state (uncontrolled mode)
-          setInternalColumnVisibility(updater);
-        }
-      }
-    },
-    onColumnPinningChange: (updater) => {
-      if (typeof updater === 'function') {
-        const nextState = updater(columnPinning);
+				// If controlled mode (callback provided), call it
+				if (onColumnVisibilityChange) {
+					onColumnVisibilityChange(nextState);
+				} else {
+					// Otherwise update internal state (uncontrolled mode)
+					setInternalColumnVisibility(nextState);
+				}
+			} else {
+				// If controlled mode (callback provided), call it
+				if (onColumnVisibilityChange) {
+					onColumnVisibilityChange(updater);
+				} else {
+					// Otherwise update internal state (uncontrolled mode)
+					setInternalColumnVisibility(updater);
+				}
+			}
+		},
+		onColumnPinningChange: (updater) => {
+			if (typeof updater === "function") {
+				const nextState = updater(columnPinning);
 
-        // If controlled mode (callback provided), call it
-        if (onColumnPinningChange) {
-          onColumnPinningChange(nextState);
-        } else {
-          // Otherwise update internal state (uncontrolled mode)
-          setInternalColumnPinning(nextState);
-        }
-      } else {
-        // If controlled mode (callback provided), call it
-        if (onColumnPinningChange) {
-          onColumnPinningChange(updater);
-        } else {
-          // Otherwise update internal state (uncontrolled mode)
-          setInternalColumnPinning(updater);
-        }
-      }
-    },
-    onRowSelectionChange: (updater) => {
-      if (typeof updater === 'function') {
-        const nextState = updater(rowSelection);
+				// If controlled mode (callback provided), call it
+				if (onColumnPinningChange) {
+					onColumnPinningChange(nextState);
+				} else {
+					// Otherwise update internal state (uncontrolled mode)
+					setInternalColumnPinning(nextState);
+				}
+			} else {
+				// If controlled mode (callback provided), call it
+				if (onColumnPinningChange) {
+					onColumnPinningChange(updater);
+				} else {
+					// Otherwise update internal state (uncontrolled mode)
+					setInternalColumnPinning(updater);
+				}
+			}
+		},
+		onRowSelectionChange: (updater) => {
+			if (typeof updater === "function") {
+				const nextState = updater(rowSelection);
 
-        // If controlled mode (callback provided), call it
-        if (onRowSelectionChange) {
-          onRowSelectionChange(nextState);
-        } else {
-          // Otherwise update internal state (uncontrolled mode)
-          setInternalRowSelection(nextState);
-        }
-      } else {
-        // If controlled mode (callback provided), call it
-        if (onRowSelectionChange) {
-          onRowSelectionChange(updater);
-        } else {
-          // Otherwise update internal state (uncontrolled mode)
-          setInternalRowSelection(updater);
-        }
-      }
-    },
-    pageCount,
-    state: {
-      pagination,
-      sorting,
-      columnFilters,
-      columnVisibility,
-      columnPinning,
-      rowSelection,
-    },
-    onSortingChange: (updater) => {
-      if (typeof updater === 'function') {
-        const nextState = updater(sorting);
+				// If controlled mode (callback provided), call it
+				if (onRowSelectionChange) {
+					onRowSelectionChange(nextState);
+				} else {
+					// Otherwise update internal state (uncontrolled mode)
+					setInternalRowSelection(nextState);
+				}
+			} else {
+				// If controlled mode (callback provided), call it
+				if (onRowSelectionChange) {
+					onRowSelectionChange(updater);
+				} else {
+					// Otherwise update internal state (uncontrolled mode)
+					setInternalRowSelection(updater);
+				}
+			}
+		},
+		pageCount,
+		state: {
+			pagination,
+			sorting,
+			columnFilters,
+			columnVisibility,
+			columnPinning,
+			rowSelection,
+		},
+		onSortingChange: (updater) => {
+			if (typeof updater === "function") {
+				const nextState = updater(sorting);
 
-        setSorting(nextState);
+				setSorting(nextState);
 
-        if (onSortingChange) {
-          onSortingChange(nextState);
-        }
-      } else {
-        setSorting(updater);
+				if (onSortingChange) {
+					onSortingChange(nextState);
+				}
+			} else {
+				setSorting(updater);
 
-        if (onSortingChange) {
-          onSortingChange(updater);
-        }
-      }
-    },
-    onPaginationChange: (updater) => {
-      const navigate = (page: number) => setTimeout(() => navigateToPage(page));
+				if (onSortingChange) {
+					onSortingChange(updater);
+				}
+			}
+		},
+		onPaginationChange: (updater) => {
+			const navigate = (page: number) => setTimeout(() => navigateToPage(page));
 
-      if (typeof updater === 'function') {
-        setPagination((prevState) => {
-          const nextState = updater(prevState);
+			if (typeof updater === "function") {
+				setPagination((prevState) => {
+					const nextState = updater(prevState);
 
-          if (onPaginationChange) {
-            onPaginationChange(nextState);
-          } else {
-            navigate(nextState.pageIndex);
-          }
+					if (onPaginationChange) {
+						onPaginationChange(nextState);
+					} else {
+						navigate(nextState.pageIndex);
+					}
 
-          return nextState;
-        });
-      } else {
-        setPagination(updater);
+					return nextState;
+				});
+			} else {
+				setPagination(updater);
 
-        if (onPaginationChange) {
-          onPaginationChange(updater);
-        } else {
-          navigate(updater.pageIndex);
-        }
-      }
-    },
-  });
+				if (onPaginationChange) {
+					onPaginationChange(updater);
+				} else {
+					navigate(updater.pageIndex);
+				}
+			}
+		},
+	});
 
-  // Force table to update column pinning when controlled prop changes
-  useEffect(() => {
-    if (controlledColumnPinning) {
-      // Use the table's setColumnPinning method to force an update
-      table.setColumnPinning(controlledColumnPinning);
-    }
-  }, [controlledColumnPinning, table]);
+	// Force table to update column pinning when controlled prop changes
+	useEffect(() => {
+		if (controlledColumnPinning) {
+			// Use the table's setColumnPinning method to force an update
+			table.setColumnPinning(controlledColumnPinning);
+		}
+	}, [controlledColumnPinning, table]);
 
-  // Force table to update column visibility when controlled prop changes
-  useEffect(() => {
-    if (controlledColumnVisibility) {
-      table.setColumnVisibility(controlledColumnVisibility);
-    }
-  }, [controlledColumnVisibility, table]);
+	// Force table to update column visibility when controlled prop changes
+	useEffect(() => {
+		if (controlledColumnVisibility) {
+			table.setColumnVisibility(controlledColumnVisibility);
+		}
+	}, [controlledColumnVisibility, table]);
 
-  // Force table to update row selection when controlled prop changes
-  useEffect(() => {
-    if (controlledRowSelection) {
-      table.setRowSelection(controlledRowSelection);
-    }
-  }, [controlledRowSelection, table]);
+	// Force table to update row selection when controlled prop changes
+	useEffect(() => {
+		if (controlledRowSelection) {
+			table.setRowSelection(controlledRowSelection);
+		}
+	}, [controlledRowSelection, table]);
 
-  const rows = table.getRowModel().rows;
+	const rows = table.getRowModel().rows;
 
-  const displayPagination =
-    rows.length > 0 && pageCount && (pageCount > 1 || forcePagination);
+	const displayPagination =
+		rows.length > 0 && pageCount && (pageCount > 1 || forcePagination);
 
-  return (
-    <div className="flex h-full flex-1 flex-col">
-      <Table
-        data-testid="data-table"
-        {...tableProps}
-        className={cn(
-          'bg-background border-separate border-spacing-0',
-          className,
-          {
-            'h-full': data.length === 0,
-          },
-        )}
-      >
-        <TableHeader
-          className={cn('', {
-            ['bg-background/20 outline-border sticky top-[0px] z-10 outline backdrop-blur-sm transition-all duration-300']:
-              sticky,
-          })}
-        >
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header, index) => {
-                const isPinned = header.column.getIsPinned();
-                const size = header.column.getSize();
+	return (
+		<div className="flex h-full flex-1 flex-col">
+			<Table
+				data-testid="data-table"
+				{...tableProps}
+				className={cn(
+					"bg-background border-separate border-spacing-0",
+					className,
+					{
+						"h-full": data.length === 0,
+					},
+				)}
+			>
+				<TableHeader
+					className={cn("", {
+						["bg-background/20 outline-border sticky top-[0px] z-10 outline backdrop-blur-sm transition-all duration-300"]:
+							sticky,
+					})}
+				>
+					{table.getHeaderGroups().map((headerGroup) => (
+						<TableRow key={headerGroup.id}>
+							{headerGroup.headers.map((header, index) => {
+								const isPinned = header.column.getIsPinned();
+								const size = header.column.getSize();
 
-                // Calculate proper left offset for left-pinned columns
-                const left =
-                  isPinned === 'left'
-                    ? headerGroup.headers
-                        .slice(0, index)
-                        .filter((h) => h.column.getIsPinned() === 'left')
-                        .reduce((acc, h) => acc + h.column.getSize(), 0)
-                    : undefined;
+								// Calculate proper left offset for left-pinned columns
+								const left =
+									isPinned === "left"
+										? headerGroup.headers
+												.slice(0, index)
+												.filter((h) => h.column.getIsPinned() === "left")
+												.reduce((acc, h) => acc + h.column.getSize(), 0)
+										: undefined;
 
-                // Calculate right offset for right-pinned columns
-                const right =
-                  isPinned === 'right'
-                    ? headerGroup.headers
-                        .slice(index + 1)
-                        .filter((h) => h.column.getIsPinned() === 'right')
-                        .reduce((acc, h) => acc + h.column.getSize(), 0)
-                    : undefined;
+								// Calculate right offset for right-pinned columns
+								const right =
+									isPinned === "right"
+										? headerGroup.headers
+												.slice(index + 1)
+												.filter((h) => h.column.getIsPinned() === "right")
+												.reduce((acc, h) => acc + h.column.getSize(), 0)
+										: undefined;
 
-                return (
-                  <TableHead
-                    className={cn(
-                      'text-muted-foreground bg-background/80 border-transparent font-sans font-medium',
-                      {
-                        ['border-r-background sticky top-0 z-10 border-r opacity-95 backdrop-blur-sm']:
-                          isPinned === 'left',
-                        ['border-l-background sticky top-0 z-10 border-l opacity-95 backdrop-blur-sm']:
-                          isPinned === 'right',
-                        ['relative z-0']: !isPinned,
-                      },
-                    )}
-                    colSpan={header.colSpan}
-                    style={{
-                      width: `${size}px`,
-                      minWidth: `${size}px`,
-                      left: left !== undefined ? `${left}px` : undefined,
-                      right: right !== undefined ? `${right}px` : undefined,
-                    }}
-                    key={header.id}
-                  >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
-                  </TableHead>
-                );
-              })}
-            </TableRow>
-          ))}
-        </TableHeader>
+								return (
+									<TableHead
+										className={cn(
+											"text-muted-foreground bg-background/80 border-transparent font-sans font-medium",
+											{
+												["border-r-background sticky top-0 z-10 border-r opacity-95 backdrop-blur-sm"]:
+													isPinned === "left",
+												["border-l-background sticky top-0 z-10 border-l opacity-95 backdrop-blur-sm"]:
+													isPinned === "right",
+												["relative z-0"]: !isPinned,
+											},
+										)}
+										colSpan={header.colSpan}
+										style={{
+											width: `${size}px`,
+											minWidth: `${size}px`,
+											left: left !== undefined ? `${left}px` : undefined,
+											right: right !== undefined ? `${right}px` : undefined,
+										}}
+										key={header.id}
+									>
+										{header.isPlaceholder
+											? null
+											: flexRender(
+													header.column.columnDef.header,
+													header.getContext(),
+												)}
+									</TableHead>
+								);
+							})}
+						</TableRow>
+					))}
+				</TableHeader>
 
-        <TableBody>
-          {rows.map((row) => {
-            const RowWrapper = renderRow
-              ? renderRow({ row, onClick })
-              : TableRow;
+				<TableBody>
+					{rows.map((row) => {
+						const RowWrapper = renderRow
+							? renderRow({ row, onClick })
+							: TableRow;
 
-            const children = row.getVisibleCells().map((cell, index) => {
-              const isPinned = cell.column.getIsPinned();
-              const size = cell.column.getSize();
+						const children = row.getVisibleCells().map((cell, index) => {
+							const isPinned = cell.column.getIsPinned();
+							const size = cell.column.getSize();
 
-              // Calculate proper left offset for left-pinned columns
-              const left =
-                isPinned === 'left'
-                  ? row
-                      .getVisibleCells()
-                      .slice(0, index)
-                      .filter((c) => c.column.getIsPinned() === 'left')
-                      .reduce((acc, c) => acc + c.column.getSize(), 0)
-                  : undefined;
+							// Calculate proper left offset for left-pinned columns
+							const left =
+								isPinned === "left"
+									? row
+											.getVisibleCells()
+											.slice(0, index)
+											.filter((c) => c.column.getIsPinned() === "left")
+											.reduce((acc, c) => acc + c.column.getSize(), 0)
+									: undefined;
 
-              // Calculate right offset for right-pinned columns
-              const right =
-                isPinned === 'right'
-                  ? row
-                      .getVisibleCells()
-                      .slice(index + 1)
-                      .filter((c) => c.column.getIsPinned() === 'right')
-                      .reduce((acc, c) => acc + c.column.getSize(), 0)
-                  : undefined;
+							// Calculate right offset for right-pinned columns
+							const right =
+								isPinned === "right"
+									? row
+											.getVisibleCells()
+											.slice(index + 1)
+											.filter((c) => c.column.getIsPinned() === "right")
+											.reduce((acc, c) => acc + c.column.getSize(), 0)
+									: undefined;
 
-              const className = cn(
-                (cell.column.columnDef?.meta as { className?: string })
-                  ?.className,
-                [],
-                'border-transparent',
-                {
-                  ['bg-background/90 border-r-border group-hover/row:bg-muted/50 sticky z-[1] border-r opacity-95 backdrop-blur-sm']:
-                    isPinned === 'left',
-                  ['bg-background/90 border-l-border group-hover/row:bg-muted/50 sticky z-[1] border-l opacity-95 backdrop-blur-sm']:
-                    isPinned === 'right',
-                  ['relative z-0']: !isPinned,
-                },
-              );
+							const className = cn(
+								(cell.column.columnDef?.meta as { className?: string })
+									?.className,
+								[],
+								"border-transparent",
+								{
+									["bg-background/90 border-r-border group-hover/row:bg-muted/50 sticky z-[1] border-r opacity-95 backdrop-blur-sm"]:
+										isPinned === "left",
+									["bg-background/90 border-l-border group-hover/row:bg-muted/50 sticky z-[1] border-l opacity-95 backdrop-blur-sm"]:
+										isPinned === "right",
+									["relative z-0"]: !isPinned,
+								},
+							);
 
-              return (
-                <TableCell
-                  style={{
-                    left: left !== undefined ? `${left}px` : undefined,
-                    right: right !== undefined ? `${right}px` : undefined,
-                    width: `${size}px`,
-                    minWidth: `${size}px`,
-                  }}
-                  key={cell.id}
-                  className={className}
-                >
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </TableCell>
-              );
-            });
+							return (
+								<TableCell
+									style={{
+										left: left !== undefined ? `${left}px` : undefined,
+										right: right !== undefined ? `${right}px` : undefined,
+										width: `${size}px`,
+										minWidth: `${size}px`,
+									}}
+									key={cell.id}
+									className={className}
+								>
+									{flexRender(cell.column.columnDef.cell, cell.getContext())}
+								</TableCell>
+							);
+						});
 
-            return (
-              <RowWrapper
-                className={cn('active:bg-accent bg-background/80', {
-                  ['hover:bg-accent/60 cursor-pointer']: !row.getIsSelected(),
-                })}
-                onClick={() => onClick && onClick(row)}
-                key={row.id}
-                data-state={row.getIsSelected() && 'selected'}
-              >
-                {children}
-              </RowWrapper>
-            );
-          })}
-        </TableBody>
-      </Table>
+						return (
+							<RowWrapper
+								className={cn("active:bg-accent bg-background/80", {
+									["hover:bg-accent/60 cursor-pointer"]: !row.getIsSelected(),
+								})}
+								onClick={() => onClick && onClick(row)}
+								key={row.id}
+								data-state={row.getIsSelected() && "selected"}
+							>
+								{children}
+							</RowWrapper>
+						);
+					})}
+				</TableBody>
+			</Table>
 
-      <If condition={rows.length === 0}>
-        <div className={'flex flex-1 flex-col items-center p-8'}>
-          <span className="text-muted-foreground text-center text-sm">
-            {noResultsMessage || <Trans i18nKey={'common:noData'} />}
-          </span>
-        </div>
-      </If>
+			<If condition={rows.length === 0}>
+				<div className={"flex flex-1 flex-col items-center p-8"}>
+					<span className="text-muted-foreground text-center text-sm">
+						{noResultsMessage || <Trans i18nKey={"common:noData"} />}
+					</span>
+				</div>
+			</If>
 
-      <If condition={displayPagination}>
-        <div
-          className={cn(
-            'bg-background/80 outline-border sticky bottom-0 z-10 border-b outline backdrop-blur-sm',
-            {
-              ['sticky bottom-0 z-10 max-w-full rounded-none']: sticky,
-            },
-          )}
-        >
-          <div>
-            <div className={'px-2.5 py-1.5'}>
-              <Pagination table={table} />
-            </div>
-          </div>
-        </div>
-      </If>
-    </div>
-  );
+			<If condition={displayPagination}>
+				<div
+					className={cn(
+						"bg-background/80 outline-border sticky bottom-0 z-10 border-b outline backdrop-blur-sm",
+						{
+							["sticky bottom-0 z-10 max-w-full rounded-none"]: sticky,
+						},
+					)}
+				>
+					<div>
+						<div className={"px-2.5 py-1.5"}>
+							<Pagination table={table} />
+						</div>
+					</div>
+				</div>
+			</If>
+		</div>
+	);
 }
 
 function Pagination<T>({
-  table,
+	table,
 }: React.PropsWithChildren<{
-  table: ReactTable<T>;
+	table: ReactTable<T>;
 }>) {
-  return (
-    <div className="flex items-center space-x-4">
-      <span className="text-muted-foreground flex items-center text-xs">
-        <Trans
-          i18nKey={'common:pageOfPages'}
-          values={{
-            page: table.getState().pagination.pageIndex + 1,
-            total: table.getPageCount(),
-          }}
-        />
-      </span>
+	return (
+		<div className="flex items-center space-x-4">
+			<span className="text-muted-foreground flex items-center text-xs">
+				<Trans
+					i18nKey={"common:pageOfPages"}
+					values={{
+						page: table.getState().pagination.pageIndex + 1,
+						total: table.getPageCount(),
+					}}
+				/>
+			</span>
 
-      <div className="flex items-center space-x-1">
-        <Button
-          type="button"
-          className={'h-6 w-6'}
-          size={'icon'}
-          variant={'outline'}
-          onClick={() => table.setPageIndex(0)}
-          disabled={!table.getCanPreviousPage()}
-        >
-          <ChevronsLeft className={'h-4'} />
-        </Button>
+			<div className="flex items-center space-x-1">
+				<Button
+					type="button"
+					className={"h-6 w-6"}
+					size={"icon"}
+					variant={"outline"}
+					onClick={() => table.setPageIndex(0)}
+					disabled={!table.getCanPreviousPage()}
+				>
+					<ChevronsLeft className={"h-4"} />
+				</Button>
 
-        <Button
-          type="button"
-          className={'h-6 w-6'}
-          size={'icon'}
-          variant={'outline'}
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          <ChevronLeft className={'h-4'} />
-        </Button>
+				<Button
+					type="button"
+					className={"h-6 w-6"}
+					size={"icon"}
+					variant={"outline"}
+					onClick={() => table.previousPage()}
+					disabled={!table.getCanPreviousPage()}
+				>
+					<ChevronLeft className={"h-4"} />
+				</Button>
 
-        <Button
-          type="button"
-          className={'h-6 w-6'}
-          size={'icon'}
-          variant={'outline'}
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          <ChevronRight className={'h-4'} />
-        </Button>
+				<Button
+					type="button"
+					className={"h-6 w-6"}
+					size={"icon"}
+					variant={"outline"}
+					onClick={() => table.nextPage()}
+					disabled={!table.getCanNextPage()}
+				>
+					<ChevronRight className={"h-4"} />
+				</Button>
 
-        <Button
-          type="button"
-          className={'h-6 w-6'}
-          size={'icon'}
-          variant={'outline'}
-          onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-          disabled={!table.getCanNextPage()}
-        >
-          <ChevronsRight className={'h-4'} />
-        </Button>
-      </div>
-    </div>
-  );
+				<Button
+					type="button"
+					className={"h-6 w-6"}
+					size={"icon"}
+					variant={"outline"}
+					onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+					disabled={!table.getCanNextPage()}
+				>
+					<ChevronsRight className={"h-4"} />
+				</Button>
+			</div>
+		</div>
+	);
 }
 
 /**
  * Navigates to a new page using the provided page index and optional page parameter.
  */
 function useNavigateToNewPage(
-  props: { pageParam?: string } = {
-    pageParam: 'page',
-  },
+	props: { pageParam?: string } = {
+		pageParam: "page",
+	},
 ) {
-  const router = useRouter();
-  const param = props.pageParam ?? 'page';
+	const router = useRouter();
+	const param = props.pageParam ?? "page";
 
-  return useCallback(
-    (pageIndex: number) => {
-      const url = new URL(window.location.href);
-      url.searchParams.set(param, String(pageIndex + 1));
+	return useCallback(
+		(pageIndex: number) => {
+			const url = new URL(window.location.href);
+			url.searchParams.set(param, String(pageIndex + 1));
 
-      router.push(url.pathname + url.search);
-    },
-    [param, router],
-  );
+			router.push(url.pathname + url.search);
+		},
+		[param, router],
+	);
 }
 
 /**
@@ -585,87 +585,87 @@ function useNavigateToNewPage(
  * ```
  */
 export function useColumnPinning({
-  defaultPinning,
-  onPinningChange,
+	defaultPinning,
+	onPinningChange,
 }: {
-  defaultPinning?: ColumnPinningState;
-  onPinningChange?: (pinning: ColumnPinningState) => void;
+	defaultPinning?: ColumnPinningState;
+	onPinningChange?: (pinning: ColumnPinningState) => void;
 }) {
-  const [columnPinning, setColumnPinning] = useState<ColumnPinningState>(
-    defaultPinning ?? { left: [], right: [] },
-  );
+	const [columnPinning, setColumnPinning] = useState<ColumnPinningState>(
+		defaultPinning ?? { left: [], right: [] },
+	);
 
-  const toggleColumnPin = useCallback(
-    (columnId: string, side?: 'left' | 'right') => {
-      setColumnPinning((prev) => {
-        const newPinning = { ...prev };
-        const leftColumns = [...(newPinning.left || [])];
-        const rightColumns = [...(newPinning.right || [])];
+	const toggleColumnPin = useCallback(
+		(columnId: string, side?: "left" | "right") => {
+			setColumnPinning((prev) => {
+				const newPinning = { ...prev };
+				const leftColumns = [...(newPinning.left || [])];
+				const rightColumns = [...(newPinning.right || [])];
 
-        // Remove column from both sides first
-        const leftIndex = leftColumns.indexOf(columnId);
-        const rightIndex = rightColumns.indexOf(columnId);
+				// Remove column from both sides first
+				const leftIndex = leftColumns.indexOf(columnId);
+				const rightIndex = rightColumns.indexOf(columnId);
 
-        if (leftIndex > -1) leftColumns.splice(leftIndex, 1);
-        if (rightIndex > -1) rightColumns.splice(rightIndex, 1);
+				if (leftIndex > -1) leftColumns.splice(leftIndex, 1);
+				if (rightIndex > -1) rightColumns.splice(rightIndex, 1);
 
-        // Add to the specified side if provided
-        if (side === 'left') {
-          leftColumns.push(columnId);
-        } else if (side === 'right') {
-          rightColumns.push(columnId);
-        }
+				// Add to the specified side if provided
+				if (side === "left") {
+					leftColumns.push(columnId);
+				} else if (side === "right") {
+					rightColumns.push(columnId);
+				}
 
-        const updated = {
-          left: leftColumns,
-          right: rightColumns,
-        };
+				const updated = {
+					left: leftColumns,
+					right: rightColumns,
+				};
 
-        if (onPinningChange) {
-          onPinningChange(updated);
-        }
+				if (onPinningChange) {
+					onPinningChange(updated);
+				}
 
-        return updated;
-      });
-    },
-    [onPinningChange],
-  );
+				return updated;
+			});
+		},
+		[onPinningChange],
+	);
 
-  const isColumnPinned = useCallback(
-    (columnId: string): 'left' | 'right' | false => {
-      if (columnPinning.left?.includes(columnId)) return 'left';
-      if (columnPinning.right?.includes(columnId)) return 'right';
+	const isColumnPinned = useCallback(
+		(columnId: string): "left" | "right" | false => {
+			if (columnPinning.left?.includes(columnId)) return "left";
+			if (columnPinning.right?.includes(columnId)) return "right";
 
-      return false;
-    },
-    [columnPinning],
-  );
+			return false;
+		},
+		[columnPinning],
+	);
 
-  const resetPinning = useCallback(() => {
-    const defaultState = defaultPinning ?? { left: [], right: [] };
-    setColumnPinning(defaultState);
+	const resetPinning = useCallback(() => {
+		const defaultState = defaultPinning ?? { left: [], right: [] };
+		setColumnPinning(defaultState);
 
-    if (onPinningChange) {
-      onPinningChange(defaultState);
-    }
-  }, [defaultPinning, onPinningChange]);
+		if (onPinningChange) {
+			onPinningChange(defaultState);
+		}
+	}, [defaultPinning, onPinningChange]);
 
-  return useMemo(
-    () => ({
-      columnPinning,
-      setColumnPinning,
-      toggleColumnPin,
-      isColumnPinned,
-      resetPinning,
-    }),
-    [
-      columnPinning,
-      setColumnPinning,
-      toggleColumnPin,
-      isColumnPinned,
-      resetPinning,
-    ],
-  );
+	return useMemo(
+		() => ({
+			columnPinning,
+			setColumnPinning,
+			toggleColumnPin,
+			isColumnPinned,
+			resetPinning,
+		}),
+		[
+			columnPinning,
+			setColumnPinning,
+			toggleColumnPin,
+			isColumnPinned,
+			resetPinning,
+		],
+	);
 }
 
 /**
@@ -685,86 +685,86 @@ export function useColumnPinning({
  * ```
  */
 export function useColumnVisibility({
-  defaultVisibility,
-  onVisibilityChange,
+	defaultVisibility,
+	onVisibilityChange,
 }: {
-  defaultVisibility?: VisibilityState;
-  onVisibilityChange?: (visibility: VisibilityState) => void;
+	defaultVisibility?: VisibilityState;
+	onVisibilityChange?: (visibility: VisibilityState) => void;
 }) {
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
-    defaultVisibility ?? {},
-  );
+	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
+		defaultVisibility ?? {},
+	);
 
-  const toggleColumnVisibility = useCallback(
-    (columnId: string) => {
-      setColumnVisibility((prev) => {
-        const updated = {
-          ...prev,
-          [columnId]: !prev[columnId],
-        };
+	const toggleColumnVisibility = useCallback(
+		(columnId: string) => {
+			setColumnVisibility((prev) => {
+				const updated = {
+					...prev,
+					[columnId]: !prev[columnId],
+				};
 
-        if (onVisibilityChange) {
-          onVisibilityChange(updated);
-        }
+				if (onVisibilityChange) {
+					onVisibilityChange(updated);
+				}
 
-        return updated;
-      });
-    },
-    [onVisibilityChange],
-  );
+				return updated;
+			});
+		},
+		[onVisibilityChange],
+	);
 
-  const isColumnVisible = useCallback(
-    (columnId: string): boolean => {
-      return columnVisibility[columnId] !== false;
-    },
-    [columnVisibility],
-  );
+	const isColumnVisible = useCallback(
+		(columnId: string): boolean => {
+			return columnVisibility[columnId] !== false;
+		},
+		[columnVisibility],
+	);
 
-  const setColumnVisible = useCallback(
-    (columnId: string, visible: boolean) => {
-      setColumnVisibility((prev) => {
-        const updated = {
-          ...prev,
-          [columnId]: visible,
-        };
+	const setColumnVisible = useCallback(
+		(columnId: string, visible: boolean) => {
+			setColumnVisibility((prev) => {
+				const updated = {
+					...prev,
+					[columnId]: visible,
+				};
 
-        if (onVisibilityChange) {
-          onVisibilityChange(updated);
-        }
+				if (onVisibilityChange) {
+					onVisibilityChange(updated);
+				}
 
-        return updated;
-      });
-    },
-    [onVisibilityChange],
-  );
+				return updated;
+			});
+		},
+		[onVisibilityChange],
+	);
 
-  const resetVisibility = useCallback(() => {
-    const defaultState = defaultVisibility ?? {};
-    setColumnVisibility(defaultState);
+	const resetVisibility = useCallback(() => {
+		const defaultState = defaultVisibility ?? {};
+		setColumnVisibility(defaultState);
 
-    if (onVisibilityChange) {
-      onVisibilityChange(defaultState);
-    }
-  }, [defaultVisibility, onVisibilityChange]);
+		if (onVisibilityChange) {
+			onVisibilityChange(defaultState);
+		}
+	}, [defaultVisibility, onVisibilityChange]);
 
-  return useMemo(
-    () => ({
-      columnVisibility,
-      setColumnVisibility,
-      toggleColumnVisibility,
-      isColumnVisible,
-      setColumnVisible,
-      resetVisibility,
-    }),
-    [
-      columnVisibility,
-      setColumnVisibility,
-      toggleColumnVisibility,
-      isColumnVisible,
-      setColumnVisible,
-      resetVisibility,
-    ],
-  );
+	return useMemo(
+		() => ({
+			columnVisibility,
+			setColumnVisibility,
+			toggleColumnVisibility,
+			isColumnVisible,
+			setColumnVisible,
+			resetVisibility,
+		}),
+		[
+			columnVisibility,
+			setColumnVisibility,
+			toggleColumnVisibility,
+			isColumnVisible,
+			setColumnVisible,
+			resetVisibility,
+		],
+	);
 }
 
 /**
@@ -788,51 +788,51 @@ export function useColumnVisibility({
  * ```
  */
 export function useColumnManagement({
-  defaultVisibility,
-  defaultPinning,
-  onVisibilityChange,
-  onPinningChange,
+	defaultVisibility,
+	defaultPinning,
+	onVisibilityChange,
+	onPinningChange,
 }: {
-  defaultVisibility?: VisibilityState;
-  defaultPinning?: ColumnPinningState;
-  onVisibilityChange?: (visibility: VisibilityState) => void;
-  onPinningChange?: (pinning: ColumnPinningState) => void;
+	defaultVisibility?: VisibilityState;
+	defaultPinning?: ColumnPinningState;
+	onVisibilityChange?: (visibility: VisibilityState) => void;
+	onPinningChange?: (pinning: ColumnPinningState) => void;
 }) {
-  const visibility = useColumnVisibility({
-    defaultVisibility,
-    onVisibilityChange,
-  });
+	const visibility = useColumnVisibility({
+		defaultVisibility,
+		onVisibilityChange,
+	});
 
-  const pinning = useColumnPinning({
-    defaultPinning,
-    onPinningChange,
-  });
+	const pinning = useColumnPinning({
+		defaultPinning,
+		onPinningChange,
+	});
 
-  const resetPreferences = useCallback(() => {
-    visibility.resetVisibility();
-    pinning.resetPinning();
-  }, [visibility, pinning]);
+	const resetPreferences = useCallback(() => {
+		visibility.resetVisibility();
+		pinning.resetPinning();
+	}, [visibility, pinning]);
 
-  return useMemo(
-    () => ({
-      // Visibility state
-      columnVisibility: visibility.columnVisibility,
-      setColumnVisibility: visibility.setColumnVisibility,
-      toggleColumnVisibility: visibility.toggleColumnVisibility,
-      isColumnVisible: visibility.isColumnVisible,
-      setColumnVisible: visibility.setColumnVisible,
+	return useMemo(
+		() => ({
+			// Visibility state
+			columnVisibility: visibility.columnVisibility,
+			setColumnVisibility: visibility.setColumnVisibility,
+			toggleColumnVisibility: visibility.toggleColumnVisibility,
+			isColumnVisible: visibility.isColumnVisible,
+			setColumnVisible: visibility.setColumnVisible,
 
-      // Pinning state
-      columnPinning: pinning.columnPinning,
-      setColumnPinning: pinning.setColumnPinning,
-      toggleColumnPin: pinning.toggleColumnPin,
-      isColumnPinned: pinning.isColumnPinned,
+			// Pinning state
+			columnPinning: pinning.columnPinning,
+			setColumnPinning: pinning.setColumnPinning,
+			toggleColumnPin: pinning.toggleColumnPin,
+			isColumnPinned: pinning.isColumnPinned,
 
-      // Combined actions
-      resetPreferences,
-    }),
-    [visibility, pinning, resetPreferences],
-  );
+			// Combined actions
+			resetPreferences,
+		}),
+		[visibility, pinning, resetPreferences],
+	);
 }
 
 /**
@@ -867,167 +867,167 @@ export function useColumnManagement({
  * ```
  */
 export function useBatchSelection<T>(
-  items: T[],
-  getItemId: (item: T) => string,
-  options?: {
-    maxSelectable?: number;
-    onSelectionChange?: (selectedRecords: Map<string, T>) => void;
-  },
+	items: T[],
+	getItemId: (item: T) => string,
+	options?: {
+		maxSelectable?: number;
+		onSelectionChange?: (selectedRecords: Map<string, T>) => void;
+	},
 ) {
-  const [selectedRecords, setSelectedRecords] = useState<Map<string, T>>(
-    new Map(),
-  );
+	const [selectedRecords, setSelectedRecords] = useState<Map<string, T>>(
+		new Map(),
+	);
 
-  const selectedIds = useMemo(
-    () => new Set(selectedRecords.keys()),
-    [selectedRecords],
-  );
+	const selectedIds = useMemo(
+		() => new Set(selectedRecords.keys()),
+		[selectedRecords],
+	);
 
-  const toggleSelection = useCallback(
-    (id: string) => {
-      setSelectedRecords((prev) => {
-        const newMap = new Map(prev);
+	const toggleSelection = useCallback(
+		(id: string) => {
+			setSelectedRecords((prev) => {
+				const newMap = new Map(prev);
 
-        if (newMap.has(id)) {
-          newMap.delete(id);
-        } else {
-          if (options?.maxSelectable && newMap.size >= options.maxSelectable) {
-            return prev;
-          }
+				if (newMap.has(id)) {
+					newMap.delete(id);
+				} else {
+					if (options?.maxSelectable && newMap.size >= options.maxSelectable) {
+						return prev;
+					}
 
-          // Find the item in the current items array
-          const item = items.find((item) => getItemId(item) === id);
+					// Find the item in the current items array
+					const item = items.find((item) => getItemId(item) === id);
 
-          if (item) {
-            newMap.set(id, item);
-          }
-        }
+					if (item) {
+						newMap.set(id, item);
+					}
+				}
 
-        if (options?.onSelectionChange) {
-          options.onSelectionChange(newMap);
-        }
+				if (options?.onSelectionChange) {
+					options.onSelectionChange(newMap);
+				}
 
-        return newMap;
-      });
-    },
-    [items, getItemId, options],
-  );
+				return newMap;
+			});
+		},
+		[items, getItemId, options],
+	);
 
-  const toggleSelectAll = useCallback(
-    (selectAll: boolean) => {
-      setSelectedRecords((prev) => {
-        const newMap = new Map(prev);
+	const toggleSelectAll = useCallback(
+		(selectAll: boolean) => {
+			setSelectedRecords((prev) => {
+				const newMap = new Map(prev);
 
-        if (selectAll) {
-          if (options?.maxSelectable && items.length > options.maxSelectable) {
-            return prev;
-          }
+				if (selectAll) {
+					if (options?.maxSelectable && items.length > options.maxSelectable) {
+						return prev;
+					}
 
-          // Add all current items to selection
-          items.forEach((item) => {
-            const id = getItemId(item);
-            newMap.set(id, item);
-          });
-        } else {
-          // Remove only current page items from selection
-          items.forEach((item) => {
-            const id = getItemId(item);
-            newMap.delete(id);
-          });
-        }
+					// Add all current items to selection
+					items.forEach((item) => {
+						const id = getItemId(item);
+						newMap.set(id, item);
+					});
+				} else {
+					// Remove only current page items from selection
+					items.forEach((item) => {
+						const id = getItemId(item);
+						newMap.delete(id);
+					});
+				}
 
-        if (options?.onSelectionChange) {
-          options.onSelectionChange(newMap);
-        }
+				if (options?.onSelectionChange) {
+					options.onSelectionChange(newMap);
+				}
 
-        return newMap;
-      });
-    },
-    [items, getItemId, options],
-  );
+				return newMap;
+			});
+		},
+		[items, getItemId, options],
+	);
 
-  const clearSelection = useCallback(() => {
-    const newMap = new Map<string, T>();
-    setSelectedRecords(newMap);
+	const clearSelection = useCallback(() => {
+		const newMap = new Map<string, T>();
+		setSelectedRecords(newMap);
 
-    if (options?.onSelectionChange) {
-      options.onSelectionChange(newMap);
-    }
-  }, [options]);
+		if (options?.onSelectionChange) {
+			options.onSelectionChange(newMap);
+		}
+	}, [options]);
 
-  const isSelected = useCallback(
-    (id: string) => selectedRecords.has(id),
-    [selectedRecords],
-  );
+	const isSelected = useCallback(
+		(id: string) => selectedRecords.has(id),
+		[selectedRecords],
+	);
 
-  const isAllSelected = useMemo(() => {
-    if (items.length === 0) {
-      return false;
-    }
+	const isAllSelected = useMemo(() => {
+		if (items.length === 0) {
+			return false;
+		}
 
-    return items.every((item) => selectedRecords.has(getItemId(item)));
-  }, [items, selectedRecords, getItemId]);
+		return items.every((item) => selectedRecords.has(getItemId(item)));
+	}, [items, selectedRecords, getItemId]);
 
-  const isAnySelected = useMemo(() => {
-    if (items.length === 0) {
-      return false;
-    }
+	const isAnySelected = useMemo(() => {
+		if (items.length === 0) {
+			return false;
+		}
 
-    return items.some((item) => selectedRecords.has(getItemId(item)));
-  }, [items, selectedRecords, getItemId]);
+		return items.some((item) => selectedRecords.has(getItemId(item)));
+	}, [items, selectedRecords, getItemId]);
 
-  const isSomeSelected = useMemo(() => {
-    if (items.length === 0) {
-      return false;
-    }
+	const isSomeSelected = useMemo(() => {
+		if (items.length === 0) {
+			return false;
+		}
 
-    const currentPageSelectedCount = items.filter((item) =>
-      selectedRecords.has(getItemId(item)),
-    ).length;
+		const currentPageSelectedCount = items.filter((item) =>
+			selectedRecords.has(getItemId(item)),
+		).length;
 
-    return (
-      currentPageSelectedCount > 0 && currentPageSelectedCount < items.length
-    );
-  }, [items, selectedRecords, getItemId]);
+		return (
+			currentPageSelectedCount > 0 && currentPageSelectedCount < items.length
+		);
+	}, [items, selectedRecords, getItemId]);
 
-  const selectedCount = selectedRecords.size;
+	const selectedCount = selectedRecords.size;
 
-  // Get array of selected records
-  const getSelectedRecords = useCallback(() => {
-    return Array.from(selectedRecords.values());
-  }, [selectedRecords]);
+	// Get array of selected records
+	const getSelectedRecords = useCallback(() => {
+		return Array.from(selectedRecords.values());
+	}, [selectedRecords]);
 
-  return useMemo(
-    () => ({
-      selectedIds,
-      selectedRecords,
-      selectedCount,
-      isSelected,
-      isAnySelected,
-      isAllSelected,
-      isSomeSelected,
-      toggleSelection,
-      toggleSelectAll,
-      clearSelection,
-      getSelectedRecords,
-      setSelectedRecords,
-    }),
-    [
-      selectedIds,
-      selectedRecords,
-      selectedCount,
-      isSelected,
-      isAnySelected,
-      isAllSelected,
-      isSomeSelected,
-      toggleSelection,
-      toggleSelectAll,
-      clearSelection,
-      getSelectedRecords,
-    ],
-  );
+	return useMemo(
+		() => ({
+			selectedIds,
+			selectedRecords,
+			selectedCount,
+			isSelected,
+			isAnySelected,
+			isAllSelected,
+			isSomeSelected,
+			toggleSelection,
+			toggleSelectAll,
+			clearSelection,
+			getSelectedRecords,
+			setSelectedRecords,
+		}),
+		[
+			selectedIds,
+			selectedRecords,
+			selectedCount,
+			isSelected,
+			isAnySelected,
+			isAllSelected,
+			isSomeSelected,
+			toggleSelection,
+			toggleSelectAll,
+			clearSelection,
+			getSelectedRecords,
+		],
+	);
 }
 
 export type BatchSelection<T = unknown> = ReturnType<
-  typeof useBatchSelection<T>
+	typeof useBatchSelection<T>
 >;
