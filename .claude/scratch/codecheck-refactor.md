@@ -18,7 +18,7 @@ This is not adding much. We can remove this
 
 5. Fix the claude code statusline 
 The claude code statusline has a codecheck component that is meant to display the status of the codecheck. 
-- It is not updating correctly. The time since a last update is not updating. When there are errors, the color is not changing
+- It It is not updating correctly. The time since a last update is not updating. When there are errors, the color is not changing
 - I would also like to show the number of errors, similar to how we do it with the test component
 
 ## Your Task
