@@ -74,7 +74,8 @@
 			"Bash(pnpm supabase:web:status:*)",
 			"Bash(pnpm format:*)",
 			"Bash(gh run view:*)",
-			"Bash(gh api:*)"
+			"Bash(gh api:*)",
+			"Bash(claude agent test:*)"
 		],
 		"deny": [],
 		"additionalDirectories": ["/home/msmith"]
