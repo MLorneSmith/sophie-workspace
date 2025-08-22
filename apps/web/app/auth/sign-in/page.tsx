@@ -40,7 +40,7 @@ async function SignInPage({ searchParams }: SignInPageProps) {
 	return (
 		<>
 			<div className={"flex flex-col items-center gap-1"}>
-				<Heading level={4} className={"tracking-tight"}>
+				<Heading level={1} className={"tracking-tight text-lg lg:text-xl"}>
 					<Trans i18nKey={"auth:signInHeading"} />
 				</Heading>
 
