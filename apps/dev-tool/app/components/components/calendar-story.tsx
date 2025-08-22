@@ -54,7 +54,9 @@ export default function CalendarStory() {
 		to?: Date;
 	}>({});
 
-	const handleDateChange = (date: Date | Date[] | { from?: Date; to?: Date } | undefined) => {
+	const handleDateChange = (
+		date: Date | Date[] | { from?: Date; to?: Date } | undefined,
+	) => {
 		if (controls.mode === "single") {
 			setSelectedDate(date as Date | undefined);
 		} else if (controls.mode === "multiple") {

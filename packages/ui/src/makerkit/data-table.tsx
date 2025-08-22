@@ -311,7 +311,7 @@ export function DataTable<RecordData extends DataItem>({
 			>
 				<TableHeader
 					className={cn("", {
-						["bg-background/20 outline-border sticky top-[0px] z-10 outline backdrop-blur-sm transition-all duration-300"]:
+						"bg-background/20 outline-border sticky top-[0px] z-10 outline backdrop-blur-sm transition-all duration-300":
 							sticky,
 					})}
 				>
@@ -344,11 +344,11 @@ export function DataTable<RecordData extends DataItem>({
 										className={cn(
 											"text-muted-foreground bg-background/80 border-transparent font-sans font-medium",
 											{
-												["border-r-background sticky top-0 z-10 border-r opacity-95 backdrop-blur-sm"]:
+												"border-r-background sticky top-0 z-10 border-r opacity-95 backdrop-blur-sm":
 													isPinned === "left",
-												["border-l-background sticky top-0 z-10 border-l opacity-95 backdrop-blur-sm"]:
+												"border-l-background sticky top-0 z-10 border-l opacity-95 backdrop-blur-sm":
 													isPinned === "right",
-												["relative z-0"]: !isPinned,
+												"relative z-0": !isPinned,
 											},
 										)}
 										colSpan={header.colSpan}
@@ -409,11 +409,11 @@ export function DataTable<RecordData extends DataItem>({
 								[],
 								"border-transparent",
 								{
-									["bg-background/90 border-r-border group-hover/row:bg-muted/50 sticky z-[1] border-r opacity-95 backdrop-blur-sm"]:
+									"bg-background/90 border-r-border group-hover/row:bg-muted/50 sticky z-[1] border-r opacity-95 backdrop-blur-sm":
 										isPinned === "left",
-									["bg-background/90 border-l-border group-hover/row:bg-muted/50 sticky z-[1] border-l opacity-95 backdrop-blur-sm"]:
+									"bg-background/90 border-l-border group-hover/row:bg-muted/50 sticky z-[1] border-l opacity-95 backdrop-blur-sm":
 										isPinned === "right",
-									["relative z-0"]: !isPinned,
+									"relative z-0": !isPinned,
 								},
 							);
 
@@ -436,9 +436,9 @@ export function DataTable<RecordData extends DataItem>({
 						return (
 							<RowWrapper
 								className={cn("active:bg-accent bg-background/80", {
-									["hover:bg-accent/60 cursor-pointer"]: !row.getIsSelected(),
+									"hover:bg-accent/60 cursor-pointer": !row.getIsSelected(),
 								})}
-								onClick={() => onClick && onClick(row)}
+								onClick={() => onClick?.(row)}
 								key={row.id}
 								data-state={row.getIsSelected() && "selected"}
 							>
@@ -462,7 +462,7 @@ export function DataTable<RecordData extends DataItem>({
 					className={cn(
 						"bg-background/80 outline-border sticky bottom-0 z-10 border-b outline backdrop-blur-sm",
 						{
-							["sticky bottom-0 z-10 max-w-full rounded-none"]: sticky,
+							"sticky bottom-0 z-10 max-w-full rounded-none": sticky,
 						},
 					)}
 				>
@@ -658,13 +658,7 @@ export function useColumnPinning({
 			isColumnPinned,
 			resetPinning,
 		}),
-		[
-			columnPinning,
-			setColumnPinning,
-			toggleColumnPin,
-			isColumnPinned,
-			resetPinning,
-		],
+		[columnPinning, toggleColumnPin, isColumnPinned, resetPinning],
 	);
 }
 
@@ -758,7 +752,6 @@ export function useColumnVisibility({
 		}),
 		[
 			columnVisibility,
-			setColumnVisibility,
 			toggleColumnVisibility,
 			isColumnVisible,
 			setColumnVisible,
