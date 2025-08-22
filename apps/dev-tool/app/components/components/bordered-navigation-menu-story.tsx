@@ -116,6 +116,7 @@ const pathname = usePathname();
 				<div className="flex flex-wrap gap-2">
 					{navigationItems.map((item) => (
 						<button
+							type="button"
 							key={item.path}
 							onClick={() => setActiveTab(item.path)}
 							className={`rounded px-3 py-1 text-sm ${
