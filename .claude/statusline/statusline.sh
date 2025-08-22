@@ -27,7 +27,7 @@ build_status=""
 build_log_file="/tmp/.claude_build_status_${GIT_ROOT//\//_}"
 
 # Check if build is currently running
-if pgrep -f "pnpm (run )?build" > /dev/null 2>&1 || pgrep -f "npm run build" > /dev/null 2>&1; then
+if pgrep -f "pnpm (run )?build|npm run build|yarn build|next build|vite build|webpack" > /dev/null 2>&1; then
     build_status="⟳ building"
 elif [ -f "$build_log_file" ]; then
     # Read last build status from temp file
@@ -148,7 +148,8 @@ codecheck_log_file="/tmp/.claude_codecheck_status_${GIT_ROOT//\//_}"
 lint_log_file="/tmp/.claude_lint_status_${GIT_ROOT//\//_}"
 
 # Check if codecheck/lint/typecheck is currently running (exclude LSP servers)
-if pgrep -f "code-check|codecheck|pnpm lint|npm run lint|yarn lint|pnpm typecheck|tsc --noEmit|pnpm.*biome check|eslint .*\.(js|ts|jsx|tsx)" | grep -v "lsp" | grep -v "__run_server" > /dev/null 2>&1; then
+# Also check for individual pnpm commands that might be running from /code-check command
+if pgrep -f "code-check|codecheck|pnpm (run )?(lint|typecheck|format|biome)|npm run (lint|typecheck)|yarn (lint|typecheck)|tsc --noEmit|eslint .*\.(js|ts|jsx|tsx)|biome check" | grep -v "lsp" | grep -v "__run_server" > /dev/null 2>&1; then
     codecheck_status="⟳ codecheck"
 elif [ -f "$codecheck_log_file" ]; then
     # Read last codecheck status from temp file
