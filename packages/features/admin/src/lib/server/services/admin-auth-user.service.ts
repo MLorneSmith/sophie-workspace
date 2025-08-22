@@ -15,6 +15,7 @@ export function createAdminAuthUserService(
  * @name AdminAuthUserService
  * @description Service for performing admin actions on users in the system.
  * This service only interacts with the Supabase Auth Admin API.
+ * Test change to trigger workflow validation for issue #224.
  */
 class AdminAuthUserService {
 	constructor(
