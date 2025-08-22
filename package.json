@@ -1,6 +1,6 @@
 {
-	"name": "SlideHeroes",
-	"version": "2.11.0",
+	"name": "slideheroes",
+	"version": "2.13.0",
 	"private": true,
 	"sideEffects": false,
 	"engines": {
@@ -22,11 +22,16 @@
 		"format:fix": "biome format --write .",
 		"lint": "biome lint . && manypkg check && pnpm lint:yaml && pnpm lint:md",
 		"lint:fix": "biome lint --write . && manypkg fix && pnpm lint:md:fix",
-		"lint:yaml": "npx yaml-lint '**/*.{yml,yaml}'",
-		"lint:md": "markdownlint-cli2 '**/*.md' '!node_modules' '!**/node_modules' '!z.plan/**' '!z.instructions/**' '!z.docs/**' '!z.todo/**' '!z.context/**' '!.claude/**' '!.mcp-servers/**' '!.roo/**'",
-		"lint:md:fix": "markdownlint-cli2 --fix '**/*.md' '!node_modules' '!**/node_modules' '!z.plan/**' '!z.instructions/**' '!z.docs/**' '!z.todo/**' '!z.context/**' '!.claude/**' '!.mcp-servers/**' '!.roo/**'",
-		"typecheck": "turbo typecheck --affected --cache-dir=.turbo",
-		"test": "turbo test --cache-dir=.turbo",
+		"lint:yaml": "npx yaml-lint '**/*.{yml,yaml}' --ignore='**/node_modules/**' --ignore='**/.next/**' --ignore='**/dist/**'",
+		"lint:md": "markdownlint-cli2 '**/*.md' '!node_modules' '!**/node_modules' '!.claude/**' '!.mcp-servers/**' '!.roo/**' '!**/playwright-report/**'",
+		"lint:md:fix": "markdownlint-cli2 --fix '**/*.md' '!node_modules' '!**/node_modules' '!.claude/**' '!.mcp-servers/**' '!.roo/**' '!**/playwright-report/**'",
+		"codecheck": "./.claude/statusline/codecheck-wrapper.sh \"pnpm typecheck; pnpm lint; pnpm format\"",
+		"typecheck": "./.claude/statusline/typecheck-wrapper.sh",
+		"typecheck:raw": "turbo typecheck --affected --cache-dir=.turbo",
+		"test": "turbo test --cache-dir=.turbo --filter=!web-e2e",
+		"test:unit": "turbo test --cache-dir=.turbo --filter=!web-e2e",
+		"test:coverage": "turbo test:coverage --cache-dir=.turbo --filter=!web-e2e",
+		"test:e2e": "turbo test --filter=web-e2e",
 		"update": "pnpm update -r",
 		"syncpack:list": "pnpm dlx syncpack list-mismatches",
 		"syncpack:fix": "pnpm dlx syncpack fix-mismatches",
@@ -34,6 +39,9 @@
 		"supabase:web:stop": "pnpm --filter web supabase:stop",
 		"supabase:web:typegen": "pnpm --filter web supabase:typegen",
 		"supabase:web:reset": "pnpm --filter web supabase:reset",
+		"ci-metrics:collect": "node scripts/collect-ci-metrics.js",
+		"ci-metrics:deployment": "node scripts/send-deployment-metrics.js",
+		"ci-metrics:weekly": "node scripts/weekly-ci-report.js",
 		"supabase:web:test": "pnpm --filter web supabase:test",
 		"stripe:listen": "pnpm --filter '@kit/stripe' start",
 		"env:generate": "turbo gen env",
@@ -48,7 +56,9 @@
 		"knip": "knip",
 		"knip:production": "knip --production",
 		"knip:workspace": "knip --workspace",
-		"knip:fix": "knip --fix"
+		"knip:fix": "knip --fix",
+		"a11y:test": "turbo a11y:test",
+		"a11y:report": "turbo a11y:report"
 	},
 	"config": {
 		"commitizen": {
@@ -56,27 +66,29 @@
 		}
 	},
 	"prettier": "@kit/prettier-config",
-	"packageManager": "pnpm@9.12.0",
+	"packageManager": "pnpm@10.14.0",
 	"lint-staged": {
+		"*": [
+			"bash ./scripts/trufflehog-scan.sh"
+		],
 		"apps/payload/**/*.{js,jsx,ts,tsx,json}": [
-			"cd apps/payload && pnpm lint --fix"
+			"bash -c 'cd apps/payload && pnpm lint'"
 		],
 		"packages/**/*.{js,jsx,ts,tsx,json}": [
-			"bash -c 'package_dir=$(dirname \"$0\" | cut -d/ -f1-2); if [ -f \"$package_dir/package.json\" ] && grep -q '\"lint\"' \"$package_dir/package.json\"; then cd \"$package_dir\" && pnpm lint --fix; fi'"
+			"bash -c 'package_dir=$(dirname \"$0\" | cut -d/ -f1-2); if [ -f \"$package_dir/package.json\" ] && grep -q \"\\\"lint\\\"\" \"$package_dir/package.json\"; then cd \"$package_dir\" && pnpm lint --fix; fi'"
 		],
 		"!(apps/payload|packages)/**/*.{js,jsx,ts,tsx,json,css}": [
 			"biome format --write",
 			"biome lint --write"
 		],
 		"**/*.{md,mdx}": [
-			"prettier --write",
-			"bash -c 'if ! echo \"$0\" | grep -qE \"^(z\\.(plan|instructions|docs|todo|context)|\\.claude|\\.mcp-servers|\\.roo)/\"; then markdownlint-cli2 --fix \"$0\"; fi'"
+			"bash -c 'if ! echo \"$0\" | grep -qE \"(\\.claude|\\.mcp-servers|\\.roo)/\"; then markdownlint-cli2 --fix \"$0\"; fi'"
 		],
 		"**/*.{yaml,yml}": [
-			"yaml-lint"
+			"bash -c 'if [[ \"$0\" != *\"pnpm-lock.yaml\"* ]]; then npx yamllint \"$0\"; fi'"
 		],
 		"**/*.{ts,tsx}": [
-			"bash -c 'echo \"🔍 Type checking $0...\"; tsc --noEmit --skipLibCheck --pretty \"$0\" 2>/dev/null || echo \"⚠️ Type check failed for $0\"'"
+			"bash ./scripts/type-check-staged.sh"
 		]
 	},
 	"pnpm": {
@@ -89,24 +101,25 @@
 		]
 	},
 	"devDependencies": {
+		"@axe-core/cli": "^4.10.2",
 		"@biomejs/biome": "2.0.0",
 		"@commitlint/cli": "^19.8.1",
 		"@commitlint/config-conventional": "^19.8.1",
-		"@manypkg/cli": "^0.24.0",
-		"@playwright/test": "^1.52.0",
-		"@turbo/gen": "^2.5.4",
+		"@manypkg/cli": "^0.25.0",
+		"@playwright/test": "^1.55.0",
+		"@turbo/gen": "^2.5.6",
 		"@vitest/coverage-v8": "^3.1.2",
 		"commitizen": "^4.3.1",
-		"cross-env": "^7.0.3",
+		"cross-env": "^10.0.0",
 		"cz-conventional-changelog": "^3.3.0",
 		"husky": "^9.1.7",
 		"knip": "^5.61.0",
 		"lint-staged": "^16.1.0",
 		"markdownlint-cli2": "^0.18.1",
-		"prettier": "^3.5.3",
+		"prettier": "^3.6.2",
 		"tailwind-merge": "^3.3.1",
-		"turbo": "2.5.4",
-		"typescript": "^5.8.3",
+		"turbo": "2.5.6",
+		"typescript": "^5.9.2",
 		"vitest": "^3.1.2",
 		"yaml-lint": "^1.7.0"
 	}
