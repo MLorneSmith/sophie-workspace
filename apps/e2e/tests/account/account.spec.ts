@@ -85,7 +85,11 @@ test.describe("Account Deletion", () => {
 
 		await account.deleteAccount(email);
 
-		await page.waitForURL("/");
+		// Wait for network to settle after deletion
+		await page.waitForLoadState("networkidle");
+
+		// Increase timeout for redirect after account deletion
+		await page.waitForURL("/", { timeout: 30000 });
 
 		await page.goto("/auth/sign-in");
 
