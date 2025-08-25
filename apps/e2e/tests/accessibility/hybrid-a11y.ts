@@ -1,5 +1,4 @@
 import type { Page } from "@playwright/test";
-import { launch } from "chrome-launcher";
 
 export interface RGB {
 	r: number;
@@ -139,6 +138,9 @@ export class HybridAccessibilityTester {
 		let chrome = null;
 
 		try {
+			// Dynamic import for ESM compatibility
+			const { launch } = await import("chrome-launcher");
+
 			// Launch Chrome with debugging port
 			chrome = await launch({
 				chromeFlags: [
