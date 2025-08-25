@@ -17,7 +17,7 @@ on:
         default: 'https://dev.slideheroes.com'
 
 permissions:
-  contents: read
+  contents: write  # Changed from read to write to allow commit comments
   issues: write
   pull-requests: write
   checks: write
@@ -439,15 +439,21 @@ jobs:
             // Set output for next workflow
             core.setOutput('all_passed', allPassed);
             
-            // Create comment on commit
+            // Create comment on commit (with error handling)
             if (context.eventName === 'workflow_run') {
-              const sha = context.payload.workflow_run.head_sha;
-              await github.rest.repos.createCommitComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                commit_sha: sha,
-                body: summary
-              });
+              try {
+                const sha = context.payload.workflow_run.head_sha;
+                await github.rest.repos.createCommitComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  commit_sha: sha,
+                  body: summary
+                });
+                console.log('✅ Posted test results as commit comment');
+              } catch (error) {
+                console.log('⚠️ Could not create commit comment:', error.message);
+                console.log('Test results are available in the workflow summary above');
+              }
             }
 
       - name: Trigger promotion readiness if all passed
