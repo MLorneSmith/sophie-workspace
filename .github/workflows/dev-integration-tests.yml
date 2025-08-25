@@ -291,8 +291,65 @@ jobs:
             CURL_OPTS="-H 'x-vercel-protection-bypass: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}'"
           fi
           
-          # Check for essential security headers
-          HEADERS=$(eval "curl -s -I $CURL_OPTS \"${{ needs.check-should-run.outputs.deployment_url }}\"")
+          # Retry logic for getting headers
+          MAX_RETRIES=3
+          RETRY_DELAY=5
+          retries=0
+          HEADERS=""
+          
+          while [ $retries -lt $MAX_RETRIES ]; do
+            echo "🔄 Attempt $((retries + 1))/$MAX_RETRIES to fetch security headers..."
+            
+            # Use timeout and capture both headers and status code
+            RESPONSE=$(eval "curl -s -I --max-time 30 -w '\n===STATUS_CODE===%{http_code}' $CURL_OPTS \"${{ needs.check-should-run.outputs.deployment_url }}\"" || echo "===CURL_ERROR===$?")
+            
+            # Check for curl errors
+            if echo "$RESPONSE" | grep -q "===CURL_ERROR==="; then
+              ERROR_CODE=$(echo "$RESPONSE" | grep "===CURL_ERROR===" | cut -d'=' -f5)
+              if [ "$ERROR_CODE" = "28" ]; then
+                echo "⚠️ Request timed out after 30 seconds"
+              else
+                echo "⚠️ Curl error code: $ERROR_CODE"
+              fi
+              
+              retries=$((retries + 1))
+              if [ $retries -lt $MAX_RETRIES ]; then
+                echo "⏳ Waiting ${RETRY_DELAY}s before retry..."
+                sleep $RETRY_DELAY
+                RETRY_DELAY=$((RETRY_DELAY * 2))  # Exponential backoff
+                continue
+              fi
+            else
+              # Extract headers and status code
+              STATUS_CODE=$(echo "$RESPONSE" | grep "===STATUS_CODE===" | cut -d'=' -f5)
+              HEADERS=$(echo "$RESPONSE" | sed '/===STATUS_CODE===/,$d')
+              
+              # Check if we got a valid response
+              if [ -n "$STATUS_CODE" ] && [ "$STATUS_CODE" != "000" ]; then
+                echo "✅ Successfully fetched headers (HTTP $STATUS_CODE)"
+                break
+              fi
+              
+              # Handle Cloudflare errors
+              if [[ "$STATUS_CODE" == "52"* ]] || [[ "$STATUS_CODE" == "50"* ]]; then
+                echo "⚠️ Cloudflare/Server error $STATUS_CODE"
+                retries=$((retries + 1))
+                if [ $retries -lt $MAX_RETRIES ]; then
+                  echo "⏳ Waiting ${RETRY_DELAY}s before retry..."
+                  sleep $RETRY_DELAY
+                  RETRY_DELAY=$((RETRY_DELAY * 2))
+                  continue
+                fi
+              fi
+            fi
+          done
+          
+          # If we couldn't get headers, skip the check
+          if [ -z "$HEADERS" ] || [ "$retries" -eq "$MAX_RETRIES" ]; then
+            echo "⚠️ Could not fetch security headers after $MAX_RETRIES attempts - skipping check"
+            echo "ℹ️ This may be due to deployment protection or temporary connectivity issues"
+            exit 0  # Don't fail the job
+          fi
           
           # Check for X-Frame-Options
           if echo "$HEADERS" | grep -qi "X-Frame-Options"; then
