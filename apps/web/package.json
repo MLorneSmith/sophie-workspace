@@ -47,6 +47,7 @@
 		"@kit/email-templates": "workspace:*",
 		"@kit/i18n": "workspace:*",
 		"@kit/mailers": "workspace:*",
+		"@kit/mailers-shared": "workspace:*",
 		"@kit/monitoring": "workspace:*",
 		"@kit/next": "workspace:*",
 		"@kit/notifications": "workspace:*",

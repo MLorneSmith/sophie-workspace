@@ -11,6 +11,7 @@
 			"~/lib/*": ["./lib/*"],
 			"@/test/*": ["./test/*"],
 			"@kit/*": ["../../packages/*/src"],
+			"@kit/mailers-shared": ["../../packages/mailers/shared/src"],
 			"@kit/supabase/server-client": [
 				"../../packages/supabase/src/clients/server-client.ts"
 			],
