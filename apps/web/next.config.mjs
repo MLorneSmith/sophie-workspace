@@ -71,7 +71,7 @@ const config = {
 		},
 	},
 	serverExternalPackages: isTestEnvironment ? [] : ["newrelic"],
-	webpack: (config, { isServer }) => {
+	webpack: (config) => {
 		// Configure New Relic externals for proper agent loading
 		nrExternals(config);
 

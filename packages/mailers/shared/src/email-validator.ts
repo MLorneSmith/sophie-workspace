@@ -18,7 +18,7 @@ export const EmailSchema = z
 		];
 
 		const domain = email.split("@")[1]?.toLowerCase();
-		return !blockedDomains.includes(domain);
+		return domain ? !blockedDomains.includes(domain) : false;
 	}, "Invalid email domain - test domains not allowed")
 	.refine((email) => {
 		// Block common test email patterns
