@@ -1,4 +1,5 @@
 import type { Database } from "@kit/supabase/database";
+import { getSupabaseServerAdminClient } from "@kit/supabase/server-admin-client";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 /**
@@ -129,9 +130,12 @@ export class TestBillingGateway {
 
 	private async createTestSubscription(accountId: string, sessionId: string) {
 		try {
+			// Use admin client for operations requiring service_role permissions
+			const adminClient = getSupabaseServerAdminClient<Database>();
+
 			// First create or get billing customer
 			const customerId = `test_customer_${accountId}`;
-			const { data: billingCustomer } = await this.client
+			const { data: billingCustomer } = await adminClient
 				.from("billing_customers")
 				.upsert(
 					{
@@ -153,7 +157,7 @@ export class TestBillingGateway {
 
 			// Create subscription directly in the database
 			const subscriptionId = `test_sub_${sessionId}`;
-			const { data: subscription, error } = await this.client
+			const { data: subscription, error } = await adminClient
 				.from("subscriptions")
 				.upsert(
 					{
@@ -185,12 +189,12 @@ export class TestBillingGateway {
 				console.log("Test subscription created successfully:", subscription);
 
 				// Create subscription item
-				await this.client.from("subscription_items").upsert(
+				await adminClient.from("subscription_items").upsert(
 					{
 						id: "test_line_item_1",
 						subscription_id: subscriptionId,
 						product_id: "starter",
-						variant_id: "starter-monthly",
+						variant_id: "price_1S05jtS8mvjG8zYVqE8gnumz",
 						type: "flat",
 						price_amount: 999,
 						quantity: 1,
