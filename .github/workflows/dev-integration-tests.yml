@@ -111,6 +111,8 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: dev  # Explicitly checkout dev branch to match deployment
 
       - uses: ./.github/actions/setup-deps
 
@@ -235,6 +237,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: dev  # Explicitly checkout dev branch to match deployment
           sparse-checkout: |
             apps/e2e
             packages
@@ -280,6 +283,8 @@ jobs:
     continue-on-error: true  # Don't block on security issues initially
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: dev  # Explicitly checkout dev branch to match deployment
 
       - name: Run security headers check
         run: |
