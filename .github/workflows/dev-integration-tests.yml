@@ -285,12 +285,6 @@ jobs:
         run: |
           echo "🔒 Checking security headers..."
           
-          # Add Vercel protection bypass header if available
-          CURL_OPTS=""
-          if [ ! -z "${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" ]; then
-            CURL_OPTS="-H 'x-vercel-protection-bypass: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}'"
-          fi
-          
           # Retry logic for getting headers
           MAX_RETRIES=3
           RETRY_DELAY=5
@@ -301,7 +295,14 @@ jobs:
             echo "🔄 Attempt $((retries + 1))/$MAX_RETRIES to fetch security headers..."
             
             # Use timeout and capture both headers and status code
-            RESPONSE=$(eval "curl -s -I --max-time 30 -w '\n===STATUS_CODE===%{http_code}' $CURL_OPTS \"${{ needs.check-should-run.outputs.deployment_url }}\"" || echo "===CURL_ERROR===$?")
+            if [ ! -z "${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" ]; then
+              RESPONSE=$(curl -s -I --max-time 30 -w '\n===STATUS_CODE===%{http_code}' \
+                -H "x-vercel-protection-bypass: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" \
+                "${{ needs.check-should-run.outputs.deployment_url }}" 2>&1 || echo "===CURL_ERROR===$?")
+            else
+              RESPONSE=$(curl -s -I --max-time 30 -w '\n===STATUS_CODE===%{http_code}' \
+                "${{ needs.check-should-run.outputs.deployment_url }}" 2>&1 || echo "===CURL_ERROR===$?")
+            fi
             
             # Check for curl errors
             if echo "$RESPONSE" | grep -q "===CURL_ERROR==="; then
@@ -379,12 +380,6 @@ jobs:
           # Check that sensitive paths return 404 or 403
           PATHS=("/.env" "/.git" "/config.json" "/package.json" "/.github")
           
-          # Add Vercel protection bypass header if available
-          CURL_OPTS=""
-          if [ ! -z "${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" ]; then
-            CURL_OPTS="-H 'x-vercel-protection-bypass: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}'"
-          fi
-          
           for path in "${PATHS[@]}"; do
             # Retry logic for Cloudflare errors
             MAX_RETRIES=3
@@ -392,8 +387,14 @@ jobs:
             retries=0
             
             while [ $retries -lt $MAX_RETRIES ]; do
-              STATUS=$(eval "curl -s -o /dev/null -w \"%{http_code}\" --max-time 30 $CURL_OPTS \
-                \"${{ needs.check-should-run.outputs.deployment_url }}$path\"")
+              if [ ! -z "${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" ]; then
+                STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 \
+                  -H "x-vercel-protection-bypass: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" \
+                  "${{ needs.check-should-run.outputs.deployment_url }}$path" 2>&1 || echo "000")
+              else
+                STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 \
+                  "${{ needs.check-should-run.outputs.deployment_url }}$path" 2>&1 || echo "000")
+              fi
               
               # Check if it's a Cloudflare error that needs retry
               if [[ "$STATUS" == "522" ]] || [[ "$STATUS" == "521" ]] || [[ "$STATUS" == "523" ]]; then
