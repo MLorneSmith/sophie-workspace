@@ -76,6 +76,11 @@
 			"env": ["NODE_ENV"],
 			"cache": true
 		},
+		"@kit/ai-gateway#build": {
+			"dependsOn": ["^build"],
+			"outputs": [],
+			"cache": true
+		},
 		"build:test": {
 			"dependsOn": ["^build"],
 			"outputs": [
