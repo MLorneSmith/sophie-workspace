@@ -146,6 +146,17 @@ jobs:
               elif [ "$HTTP_CODE" = "401" ]; then
                 echo "⚠️ $name: HTTP 401 (deployment protection) - considering as ready"
                 return 0  # Consider protected deployment as ready
+              elif [ "$HTTP_CODE" = "404" ]; then
+                # 404 might mean Vercel protection with incorrect bypass header
+                # Try without bypass header to confirm
+                HTTP_CODE_NO_HEADER=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$url")
+                if [ "$HTTP_CODE_NO_HEADER" = "401" ]; then
+                  echo "⚠️ $name: HTTP 404 with bypass header, 401 without - deployment protected, considering as ready"
+                  return 0
+                else
+                  echo "❌ $name returned HTTP 404 (route not found)"
+                  return 1
+                fi
               elif [ "$HTTP_CODE" = "522" ] || [ "$HTTP_CODE" = "521" ] || [ "$HTTP_CODE" = "523" ]; then
                 echo "⚠️ Cloudflare error $HTTP_CODE for $name. Retrying in ${RETRY_DELAY}s..."
                 sleep $RETRY_DELAY
