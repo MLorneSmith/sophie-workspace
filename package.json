@@ -95,7 +95,9 @@
 	"pnpm": {
 		"overrides": {
 			"react-is": "19.0.0",
-			"require-in-the-middle": "7.5.2"
+			"require-in-the-middle": "7.5.2",
+			"esbuild": ">=0.25.0",
+			"tmp": ">=0.2.4"
 		},
 		"onlyBuiltDependencies": [
 			"sharp"
