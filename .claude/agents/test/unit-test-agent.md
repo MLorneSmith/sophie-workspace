@@ -62,38 +62,27 @@ pnpm --filter "@kit/*" test
 1. **Pre-execution Cleanup**
    ```bash
    # Kill any existing test processes
-   pkill -f vitest || true
+   pkill vitest || echo "✅ No vitest processes found"
    
-   # Check for debug mode
-   if [ "$DEBUG_TEST" = "true" ]; then
-       echo "🔍 DEBUG MODE: Verbose unit test output enabled"
-       export VITEST_REPORTER=verbose
-   fi
+   # Check for debug mode (simplified)
+   echo "Unit test debug mode check"
+   export VITEST_REPORTER=basic
    ```
 
-2. **Test Execution with Enhanced Progress Tracking**
+2. **Test Execution with Simplified Commands**
    ```bash
-   # Track start time for ETA calculation
-   START_TIME=$(date +%s)
-   TOTAL_WORKSPACES=21  # Known workspace count
-   COMPLETED_WORKSPACES=0
+   # Set up environment variables (separate commands for reliability)
+   export VITEST_REPORTER=verbose
+   export NODE_OPTIONS="--max-old-space-size=2048"
    
-   # Run with detailed output for parsing
-   pnpm test:unit --reporter=verbose 2>&1 | while IFS= read -r line; do
-       # Parse workspace completion
-       if echo "$line" | grep -q "Test Files.*passed"; then
-           COMPLETED_WORKSPACES=$((COMPLETED_WORKSPACES + 1))
-           ELAPSED=$(($(date +%s) - START_TIME))
-           RATE=$((ELAPSED / COMPLETED_WORKSPACES))
-           ETA=$((RATE * (TOTAL_WORKSPACES - COMPLETED_WORKSPACES)))
-           
-           echo "📊 Progress: $COMPLETED_WORKSPACES/$TOTAL_WORKSPACES workspaces"
-           echo "⏱️  ETA: ${ETA}s remaining"
-       fi
-       
-       # Output the line
-       echo "$line"
-   done
+   # Track start time
+   START_TIME=$(date +%s)
+   echo "Unit test execution started"
+   echo "Start time: $START_TIME"
+   
+   # Run unit tests (simplified)
+   echo "Starting unit test execution..."
+   pnpm test:unit
    ```
 
 3. **Real-time Monitoring with TodoWrite**
@@ -108,17 +97,11 @@ pnpm --filter "@kit/*" test
    ⏱️ Elapsed: 45s | ETA: 1m 15s
    ```
 
-4. **Result Aggregation**
-   ```
-   Unit Test Results:
-   ==================
-   ✅ Web: 45/45 tests passed
-   ✅ Payload: 8/8 tests passed  
-   ✅ Packages: 12/12 tests passed
-   
-   📊 Total: 65/65 tests passed
-   ⏱️  Duration: 2.3 minutes
-   📈 Coverage: 78.5%
+4. **Simplified Result Calculation**
+   ```bash
+   # Report completion
+   echo "Unit test execution completed"
+   echo "All tests processed"
    ```
 
 ## Output Parsing Patterns

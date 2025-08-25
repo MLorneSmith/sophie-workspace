@@ -10,7 +10,11 @@ Review these commands:
 
 Current status:
 1. We have been running into numerous issues and have not yet been able to push an update from dev all the way to the main production branch.
-2. We have optimized the initial 'deploy to dev' workflow. This workflow has been failing. We have a commit that needs to be pushed to the dev branch at origin to hopefully fix the issue
+2. We have optimized the initial 'deploy to dev' and 'dev integration tests' workflows. It appears that these workflows are working without errors (although it is unclear what branch the 'dev integration tests' workflow that was successful ran on)
+
+Current Issue:
+1. IIt is unclear if the 'dev integration tests' workflow is in fact working on dev
+2. Once the 'dev integration tests' workflow completes, nothing happens. It is not clear to me what the correct next steps is
 
 I want you to:
 1. Conduct an audit of the status of the cicd pipeline development
