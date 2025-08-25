@@ -51,7 +51,7 @@ test.describe("Team Invitation with MFA Flow", () => {
 		);
 		await expect(invitationRow).toBeVisible();
 
-		// Sign out test@makerkit.dev
+		// Sign out test user
 		await auth.signOut();
 		await page.waitForURL("/");
 
