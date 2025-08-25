@@ -75,7 +75,19 @@
 			"Bash(pnpm format:*)",
 			"Bash(gh run view:*)",
 			"Bash(gh api:*)",
-			"Bash(claude agent test:*)"
+			"Bash(claude agent test:*)",
+			"Bash(if [ \"$DEBUG_TEST\" = \"true\" ])",
+			"Bash(then echo \"   ✅ DEBUG MODE ENABLED - Verbose output activated\")",
+			"Bash(else echo \"   📝 Standard mode (set DEBUG_TEST=true for verbose output)\")",
+			"Bash(fi)",
+			"Bash(if pgrep -f 'playwright|vitest|next-server')",
+			"Bash(/dev/null)",
+			"Bash(then pkill -f playwright)",
+			"Bash(else echo \"   ✅ No stuck processes found\")",
+			"Bash(if [ -f apps/web/.env.test ])",
+			"Bash(then echo \"   ✅ apps/web/.env.test exists\")",
+			"Bash(else echo \"   ⚠️  apps/web/.env.test missing - creating from example...\")",
+			"Bash(cp:*)"
 		],
 		"deny": [],
 		"additionalDirectories": ["/home/msmith"]
