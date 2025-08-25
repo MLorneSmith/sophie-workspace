@@ -295,10 +295,16 @@ jobs:
             echo "🔄 Attempt $((retries + 1))/$MAX_RETRIES to fetch security headers..."
             
             # Use timeout and capture both headers and status code
+            # Build curl command with proper handling
             if [ ! -z "${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" ]; then
-              RESPONSE=$(curl -s -I --max-time 30 -w '\n===STATUS_CODE===%{http_code}' -H "x-vercel-protection-bypass: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" "${{ needs.check-should-run.outputs.deployment_url }}" 2>&1 || echo "===CURL_ERROR===$?")
+              RESPONSE=$(curl -s -I --max-time 30 \
+                -w '\n===STATUS_CODE===%{http_code}' \
+                -H "x-vercel-protection-bypass: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" \
+                "${{ needs.check-should-run.outputs.deployment_url }}" 2>&1) || RESPONSE="===CURL_ERROR===$?"
             else
-              RESPONSE=$(curl -s -I --max-time 30 -w '\n===STATUS_CODE===%{http_code}' "${{ needs.check-should-run.outputs.deployment_url }}" 2>&1 || echo "===CURL_ERROR===$?")
+              RESPONSE=$(curl -s -I --max-time 30 \
+                -w '\n===STATUS_CODE===%{http_code}' \
+                "${{ needs.check-should-run.outputs.deployment_url }}" 2>&1) || RESPONSE="===CURL_ERROR===$?"
             fi
             
             # Check for curl errors
@@ -385,9 +391,12 @@ jobs:
             
             while [ $retries -lt $MAX_RETRIES ]; do
               if [ ! -z "${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" ]; then
-                STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 -H "x-vercel-protection-bypass: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" "${{ needs.check-should-run.outputs.deployment_url }}$path" 2>&1 || echo "000")
+                STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 \
+                  -H "x-vercel-protection-bypass: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" \
+                  "${{ needs.check-should-run.outputs.deployment_url }}$path" 2>/dev/null) || STATUS="000"
               else
-                STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 "${{ needs.check-should-run.outputs.deployment_url }}$path" 2>&1 || echo "000")
+                STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 \
+                  "${{ needs.check-should-run.outputs.deployment_url }}$path" 2>/dev/null) || STATUS="000"
               fi
               
               # Check if it's a Cloudflare error that needs retry
