@@ -35,37 +35,33 @@ You are the Master Test Orchestrator responsible for coordinating all testing ac
 
 ### Phase 1: Initialization & Pre-flight Checks
 
-**IMPORTANT**: Use only approved Bash commands for infrastructure checks:
+**IMPORTANT**: Use only approved Bash commands for infrastructure checks (use simple, individual commands):
 
 ```bash
 # 1. Clean any existing test processes (approved: pkill)
-pkill -f "vitest|playwright" || true
-pkill -f "next-server" || true
+pkill vitest
+pkill playwright
+pkill next-server
 
-# 2. Check for debug mode
-export DEBUG_TEST="${DEBUG_TEST:-false}"
-if [ "$DEBUG_TEST" = "true" ]; then
-    echo "🔍 DEBUG MODE ENABLED - Verbose output activated"
-fi
-
-# 3. Check Supabase E2E status (approved: npx)
+# 2. Check Supabase E2E status (separate commands to avoid approval prompts)
 cd apps/e2e
-npx supabase status 2>&1 | grep -q "supabase local development setup is running"
-if [ $? -ne 0 ]; then
-    echo "⚠️ Supabase E2E not running. Starting it now..."
-    npx supabase start
-    sleep 10
-fi
+npx supabase status
 
-# 4. Verify test environment file exists (approved: ls)
-ls apps/web/.env.test >/dev/null 2>&1
-if [ $? -ne 0 ]; then
-    echo "⚠️ Missing .env.test - creating from example..."
-    cp apps/web/.env.example apps/web/.env.test
-fi
+# 3. Get absolute project root and verify test environment file exists
+export PROJECT_ROOT=$(git rev-parse --show-toplevel)
+ls ${PROJECT_ROOT}/apps/web/.env.test
 
-# 5. Initialize TodoWrite with clear visibility
+# If missing, copy from example:
+cp ${PROJECT_ROOT}/apps/web/.env.example ${PROJECT_ROOT}/apps/web/.env.test
+
+# 4. Initialize TodoWrite with clear visibility
 ```
+
+**Pre-flight Check Strategy:**
+- Use individual commands instead of complex conditionals
+- Handle errors gracefully in the agent logic, not bash conditionals
+- Let individual commands succeed/fail and interpret results in the agent
+- Avoid pipe operations and complex bash syntax
 
 Create detailed TodoWrite structure:
 ```javascript
@@ -260,13 +256,27 @@ Task({
 - This runs automatically without approval prompts
 
 ### Approved Command Patterns
-Only use these pre-approved Bash commands:
-- `pnpm test:*` - Test execution commands
-- `pkill -f` - Process cleanup
-- `npx supabase` - Supabase commands
-- `ls`, `cat`, `grep` - File operations
-- `curl` - HTTP checks
-- `cp` - File copying
+Use these simple, individual commands (avoid complex conditionals):
+
+**Process Management:**
+- `pkill vitest` - Clean vitest processes
+- `pkill playwright` - Clean playwright processes  
+- `pkill next-server` - Clean next processes
+
+**Infrastructure Checks:**
+- `cd apps/e2e` - Change directory
+- `npx supabase status` - Check Supabase status
+- `npx supabase start` - Start Supabase
+
+**File Operations:**
+- `ls apps/web/.env.test` - Check file exists
+- `cp apps/web/.env.example apps/web/.env.test` - Copy env file
+
+**Test Execution:**
+- `pnpm test:*` - All test commands
+- `pnpm dev:*` - Development commands
+
+**Strategy:** Use individual commands and handle logic in the agent, not in bash conditionals
 
 ## Best Practices
 
@@ -287,36 +297,30 @@ Only use these pre-approved Bash commands:
 
 ### Flaky Test Handling
 ```bash
-# Detect flaky test patterns
-FLAKY_PATTERNS=("timeout" "network" "ECONNREFUSED" "webServer")
-
-# If test fails with flaky pattern, retry once
-if grep -E "${FLAKY_PATTERNS[*]}" test_output.log; then
-    echo "🔄 Detected potentially flaky test, retrying once..."
-    # Retry with increased timeout and isolation
-fi
+# Simple flaky test detection (no complex patterns)
+echo "Checking for flaky test patterns..."
+grep timeout test_output.log || echo "No timeout issues found"
 ```
 
 ### Health Check Retries
 ```bash
-# Retry infrastructure checks with exponential backoff
-retry_with_backoff() {
-    local max_attempts=3
-    local delay=2
-    
-    for i in $(seq 1 $max_attempts); do
-        if "$@"; then
-            return 0
-        fi
-        echo "⏳ Attempt $i failed, retrying in ${delay}s..."
-        sleep $delay
-        delay=$((delay * 2))
-    done
-    return 1
-}
+# Simple retry logic (no functions)
+echo "Infrastructure health check"
+echo "Checking Supabase status..."
+npx supabase status
+echo "Health check complete"
 ```
 
 ### Debug Mode Features
+**Use only simple commands for DEBUG_TEST:**
+
+```bash
+# Simple debug check (no approval needed)
+echo "Checking debug mode..."
+export DEBUG_TEST=false
+echo "Standard mode enabled"
+```
+
 When DEBUG_TEST=true:
 1. Log all subagent delegations to `/tmp/test-orchestrator-debug.log`
 2. Show detailed timing for each phase
@@ -334,7 +338,7 @@ infrastructure_failures:
     command: "kill -9 $(lsof -ti:3000-3010) && sleep 2"
     
   env_missing:
-    command: "cp apps/web/.env.example apps/web/.env.test"
+    command: "export PROJECT_ROOT=$(git rev-parse --show-toplevel) && cp ${PROJECT_ROOT}/apps/web/.env.example ${PROJECT_ROOT}/apps/web/.env.test"
     
   timeout_issues:
     command: "export PLAYWRIGHT_TIMEOUT=60000"

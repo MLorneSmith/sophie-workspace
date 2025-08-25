@@ -15,7 +15,9 @@ PASSED=${2:-0}
 FAILED=${3:-0}
 TOTAL=$((PASSED + FAILED))
 
-# Update the status file
-echo "${STATUS}|$(date +%s)|${PASSED}|${FAILED}|${TOTAL}" > "$TEST_STATUS_FILE"
+# Update the status file (atomic write)
+TEMP_STATUS_FILE="${TEST_STATUS_FILE}.tmp"
+echo "${STATUS}|$(date +%s)|${PASSED}|${FAILED}|${TOTAL}" > "$TEMP_STATUS_FILE"
+mv "$TEMP_STATUS_FILE" "$TEST_STATUS_FILE"
 
 echo "Test status updated: ${STATUS} (${PASSED} passed, ${FAILED} failed)"

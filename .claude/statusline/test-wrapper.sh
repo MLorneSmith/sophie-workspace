@@ -8,8 +8,10 @@ GIT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo "$PWD")
 TEST_STATUS_FILE="/tmp/.claude_test_status_${GIT_ROOT//\//_}"
 TEMP_OUTPUT="/tmp/test_output_$$"
 
-# Mark test as running
-echo "running|$(date +%s)|0|0|0" > "$TEST_STATUS_FILE"
+# Mark test as running (atomic write)
+TEMP_STATUS_FILE="${TEST_STATUS_FILE}.tmp"
+echo "running|$(date +%s)|0|0|0" > "$TEMP_STATUS_FILE"
+mv "$TEMP_STATUS_FILE" "$TEST_STATUS_FILE"
 
 # Run the actual test command and capture output
 "$@" 2>&1 | tee "$TEMP_OUTPUT"
@@ -23,7 +25,8 @@ if [ $TEST_EXIT_CODE -eq 0 ]; then
     FAILED="0"
     SKIPPED=$(grep -E "([0-9]+) (skipped|skip)" "$TEMP_OUTPUT" 2>/dev/null | grep -oE "[0-9]+" | tail -1 || echo "0")
     TOTAL="$PASSED"
-    echo "success|$(date +%s)|$PASSED|$FAILED|$TOTAL" > "$TEST_STATUS_FILE"
+    echo "success|$(date +%s)|$PASSED|$FAILED|$TOTAL" > "$TEMP_STATUS_FILE"
+    mv "$TEMP_STATUS_FILE" "$TEST_STATUS_FILE"
 else
     # Try to extract failure counts - check for various test framework output patterns
     # Playwright pattern: "X failed"
@@ -43,7 +46,8 @@ else
     
     PASSED=$(grep -E "([0-9]+) (passed|passing|pass)" "$TEMP_OUTPUT" 2>/dev/null | grep -oE "[0-9]+" | tail -1 || echo "0")
     TOTAL=$((PASSED + FAILED))
-    echo "failed|$(date +%s)|$PASSED|$FAILED|$TOTAL" > "$TEST_STATUS_FILE"
+    echo "failed|$(date +%s)|$PASSED|$FAILED|$TOTAL" > "$TEMP_STATUS_FILE"
+    mv "$TEMP_STATUS_FILE" "$TEST_STATUS_FILE"
 fi
 
 # Clean up temp file if it exists

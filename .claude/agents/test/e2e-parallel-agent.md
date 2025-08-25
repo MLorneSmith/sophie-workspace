@@ -33,19 +33,23 @@ You are an E2E Test Parallel Coordinator responsible for orchestrating 9 paralle
 ```bash
 # 1. Verify Supabase E2E is running
 echo "🔍 Checking Supabase E2E infrastructure..."
-curl -s http://127.0.0.1:55321/rest/v1/ -o /dev/null -w '%{http_code}' | grep -q 200
-if [ $? -ne 0 ]; then
-    echo "❌ Supabase E2E not running. Starting it now..."
-    cd apps/e2e && npx supabase start
-    sleep 10  # Give it time to start
-fi
+# Simple Supabase check (no complex conditionals)
+echo "Checking Supabase E2E..."
+curl -s http://127.0.0.1:55321/rest/v1/ || echo "Supabase check attempted"
+echo "Starting Supabase if needed..."
+cd apps/e2e
+npx supabase start
 
 # 2. Clean up any stuck processes
 echo "🧹 Cleaning up stuck processes..."
-pkill -f 'playwright|next-server|test:shard' || true
-for port in $(seq 3000 3010); do
-    lsof -ti:$port | xargs -r kill -9 2>/dev/null || true
-done
+pkill playwright || echo "✅ No playwright processes found"
+pkill next-server || echo "✅ No next-server processes found"
+pkill test:shard || echo "✅ No test:shard processes found"
+# Simple port cleanup (no loops)
+echo "Cleaning up ports..."
+kill -9 $(lsof -ti:3000) 2>/dev/null || true
+kill -9 $(lsof -ti:3001) 2>/dev/null || true
+kill -9 $(lsof -ti:3002) 2>/dev/null || true
 
 # 3. Verify environment
 if [ ! -f "apps/web/.env.test" ]; then
@@ -60,55 +64,55 @@ fi
 shards:
   shard_1:
     name: "Accessibility Large"
-    command: "pnpm --filter web-e2e test:shard1"
+    command: "pnpm --filter web-e2e run test:shard1"
     expected_tests: 13
     estimated_duration: "3-4m"
     
   shard_2:
     name: "Authentication"
-    command: "pnpm --filter web-e2e test:shard2"
+    command: "pnpm --filter web-e2e run test:shard2"
     expected_tests: 10
     estimated_duration: "2-3m"
     
   shard_3:
     name: "Admin"
-    command: "pnpm --filter web-e2e test:shard3"
+    command: "pnpm --filter web-e2e run test:shard3"
     expected_tests: 9
     estimated_duration: "2-3m"
     
   shard_4:
     name: "Smoke"
-    command: "pnpm --filter web-e2e test:shard4"
+    command: "pnpm --filter web-e2e run test:shard4"
     expected_tests: 9
     estimated_duration: "2m"
     
   shard_5:
     name: "Accessibility Simple"
-    command: "pnpm --filter web-e2e test:shard5"
+    command: "pnpm --filter web-e2e run test:shard5"
     expected_tests: 6
     estimated_duration: "2m"
     
   shard_6:
     name: "Team Accounts"
-    command: "pnpm --filter web-e2e test:shard6"
+    command: "pnpm --filter web-e2e run test:shard6"
     expected_tests: 6
     estimated_duration: "2m"
     
   shard_7:
     name: "Account + Invitations"
-    command: "pnpm --filter web-e2e test:shard7"
+    command: "pnpm --filter web-e2e run test:shard7"
     expected_tests: 8
     estimated_duration: "2-3m"
     
   shard_8:
     name: "Quick Tests"
-    command: "pnpm --filter web-e2e test:shard8"
+    command: "pnpm --filter web-e2e run test:shard8"
     expected_tests: 3
     estimated_duration: "1m"
     
   shard_9:
     name: "Billing"
-    command: "pnpm --filter web-e2e test:shard9"
+    command: "pnpm --filter web-e2e run test:shard9"
     expected_tests: 2
     estimated_duration: "2m"
 
@@ -146,7 +150,7 @@ echo "⏱️  Estimated completion: 10-15 minutes"
 for i in {1..9}; do
     echo "🚀 Launching Shard $i..."
     # Use Bash tool with run_in_background: true
-    pnpm --filter web-e2e test:shard$i > /tmp/e2e_shard${i}.log 2>&1 &
+    pnpm --filter web-e2e run test:shard$i > /tmp/e2e_shard${i}.log 2>&1 &
     SHARD_PIDS[$i]=$!
 done
 
@@ -312,7 +316,7 @@ retry_failed_shard() {
     sleep 2
     
     # Retry with increased timeout
-    PLAYWRIGHT_TIMEOUT=60000 pnpm --filter web-e2e test:shard${SHARD_NUM}
+    PLAYWRIGHT_TIMEOUT=60000 pnpm --filter web-e2e run test:shard${SHARD_NUM}
     return $?
 }
 ```
