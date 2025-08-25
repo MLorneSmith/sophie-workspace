@@ -6,6 +6,10 @@ type BillingProvider = Enums<"billing_provider">;
 
 const Fallback = <LoadingOverlay fullPage={false} />;
 
+// Check if we're in test mode
+const isTestMode =
+	process.env.NODE_ENV === "test" || process.env.NEXT_PUBLIC_CI === "true";
+
 export function EmbeddedCheckout(
 	props: React.PropsWithChildren<{
 		checkoutToken: string;
@@ -13,10 +17,19 @@ export function EmbeddedCheckout(
 		onClose?: () => void;
 	}>,
 ) {
-	const CheckoutComponent = useMemo(
-		() => loadCheckoutComponent(props.provider),
-		[props.provider],
-	);
+	const CheckoutComponent = useMemo(() => {
+		// Use test checkout in test mode
+		if (isTestMode) {
+			return buildLazyComponent(() => {
+				return import("./test-checkout").then(({ TestCheckout }) => {
+					return {
+						default: TestCheckout,
+					};
+				});
+			});
+		}
+		return loadCheckoutComponent(props.provider);
+	}, [props.provider]);
 
 	return (
 		<>
