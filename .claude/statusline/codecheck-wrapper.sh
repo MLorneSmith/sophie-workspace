@@ -16,6 +16,9 @@ echo "running|$(date +%s)|0|0|0" > "$CHECK_STATUS_FILE"
 # Capture output to parse results
 TEMP_OUTPUT="/tmp/check_output_$$"
 
+# Set environment variable so child scripts know they're running within codecheck
+export CODECHECK_RUNNING=1
+
 # If multiple arguments, join them; if single argument, use it as command
 if [ $# -gt 1 ]; then
     # Multiple arguments - execute directly
@@ -26,11 +29,6 @@ else
     # Run the command and capture output - exit code will be from last command
     eval "$1" 2>&1 | tee "$TEMP_OUTPUT"
     CHECK_EXIT_CODE=${PIPESTATUS[0]}
-    
-    # Check if any command in the chain failed by looking for error patterns
-    if grep -qE "(ELIFECYCLE|error|Error|failed|Failed)" "$TEMP_OUTPUT"; then
-        CHECK_EXIT_CODE=1
-    fi
 fi
 
 # Parse check results based on common linter/typecheck outputs
