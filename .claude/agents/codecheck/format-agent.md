@@ -31,8 +31,8 @@ CODECHECK_STATUS_FILE="/tmp/.claude_codecheck_status_${GIT_ROOT//\//_}"
 # Mark as running
 echo "running|$(date +%s)|0|0|0" > "$CODECHECK_STATUS_FILE"
 
-# Run format check
-pnpm format 2>&1 | tee /tmp/format_output.txt
+# Run format check with --force flag to bypass cache for accurate results
+pnpm format --force 2>&1 | tee /tmp/format_output.txt
 FORMAT_EXIT_CODE=${PIPESTATUS[0]}
 ```
 
@@ -48,11 +48,11 @@ Parse output to find:
 
 ### 3. Apply Formatting
 ```bash
-# Apply automatic formatting
-pnpm format:fix 2>&1 | tee /tmp/format_fix_output.txt
+# Apply automatic formatting with --force
+pnpm format:fix --force 2>&1 | tee /tmp/format_fix_output.txt
 
-# Verify formatting is complete
-pnpm format 2>&1 | tee /tmp/format_verify.txt
+# Verify formatting is complete with --force
+pnpm format --force 2>&1 | tee /tmp/format_verify.txt
 VERIFY_EXIT_CODE=${PIPESTATUS[0]}
 ```
 

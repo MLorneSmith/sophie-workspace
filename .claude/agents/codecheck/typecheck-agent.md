@@ -35,8 +35,8 @@ CODECHECK_STATUS_FILE="/tmp/.claude_codecheck_status_${GIT_ROOT//\//_}"
 # Mark as running
 echo "running|$(date +%s)|0|0|0" > "$CODECHECK_STATUS_FILE"
 
-# Run typecheck with proper output capture
-pnpm typecheck 2>&1 | tee /tmp/typecheck_output.txt
+# Run typecheck with --force flag to bypass cache for accurate results
+pnpm typecheck --force 2>&1 | tee /tmp/typecheck_output.txt
 TYPECHECK_EXIT_CODE=${PIPESTATUS[0]}
 ```
 
@@ -69,8 +69,8 @@ Parse TypeScript errors to identify:
 ### 4. Validation
 After applying fixes:
 ```bash
-# Re-run typecheck to verify fixes
-pnpm typecheck 2>&1 | tee /tmp/typecheck_verify.txt
+# Re-run typecheck with --force to verify fixes
+pnpm typecheck --force 2>&1 | tee /tmp/typecheck_verify.txt
 VERIFY_EXIT_CODE=${PIPESTATUS[0]}
 ```
 
