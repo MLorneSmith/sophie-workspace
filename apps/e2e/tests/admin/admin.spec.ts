@@ -33,9 +33,7 @@ test.describe("Admin Auth flow without MFA", () => {
 		expect(page.url()).toContain("/404");
 	});
 
-	test.skip("will allow admin users to access admin without MFA", async ({
-		page,
-	}) => {
+	test.skip("will allow admin users to access admin without MFA", async () => {
 		// Skip this test as it requires admin user setup
 		// This would need a seed script or admin user creation capability
 	});
