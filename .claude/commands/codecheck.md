@@ -56,7 +56,7 @@ orchestrator:
 typecheck_phase:
   agent: "typecheck-agent"
   commands:
-    - "pnpm typecheck --force"
+    - "pnpm typecheck:raw --force"
   fixes:
     - "Add missing type imports"
     - "Fix nullable property access"
@@ -70,7 +70,7 @@ typecheck_phase:
 lint_phase:
   agent: "lint-agent"
   commands:
-    - "pnpm lint --force"
+    - "pnpm lint"
     - "pnpm lint:yaml"
     - "pnpm lint:md"
   fixes:
@@ -78,7 +78,7 @@ lint_phase:
     - "Fix accessibility issues"
     - "Correct YAML indentation"
     - "Fix Markdown formatting"
-  auto_fix_command: "pnpm lint:fix --force"
+  auto_fix_command: "pnpm lint:fix"
   cache_bypass: true
 ```
 
@@ -87,8 +87,8 @@ lint_phase:
 format_phase:
   agent: "format-agent"
   commands:
-    - "pnpm format --force"
-  auto_fix_command: "pnpm format:fix --force"
+    - "pnpm format"
+  auto_fix_command: "pnpm format:fix"
   validates:
     - "Indentation consistency"
     - "Line length compliance"
@@ -117,12 +117,12 @@ task:
   description: "TypeScript type checking and fixes"
   prompt: |
     Perform comprehensive TypeScript type checking with cache bypass:
-    1. Run pnpm typecheck --force to bypass Turbo cache
+    1. Run pnpm typecheck:raw --force to bypass Turbo cache
     2. Analyze and categorize type errors
     3. Apply automatic fixes where safe
     4. Update codecheck status file with results
     5. Return structured results in YAML format
-    Note: Always use --force flag to ensure fresh, accurate results
+    Note: Use typecheck:raw --force to bypass Turbo cache for accurate results
 ```
 
 ### Lint Agent Task
@@ -132,13 +132,13 @@ task:
   description: "Comprehensive linting with Biome"
   prompt: |
     Perform comprehensive linting with cache bypass:
-    1. Run pnpm lint --force for JavaScript/TypeScript
+    1. Run pnpm lint for JavaScript/TypeScript
     2. Run pnpm lint:yaml for YAML files
     3. Run pnpm lint:md for Markdown files
-    4. Apply automatic fixes with pnpm lint:fix --force
+    4. Apply automatic fixes with pnpm lint:fix
     5. Update codecheck status file
     6. Return structured results
-    Note: Always use --force flag to ensure fresh, accurate results
+    Note: Use typecheck:raw --force to bypass Turbo cache for accurate results
 ```
 
 ### Format Agent Task
@@ -148,12 +148,12 @@ task:
   description: "Code formatting with Biome"
   prompt: |
     Check and fix code formatting with cache bypass:
-    1. Run pnpm format --force to check current state
-    2. Apply pnpm format:fix --force if needed
-    3. Verify all files are properly formatted with --force
+    1. Run pnpm format to check current state
+    2. Apply pnpm format:fix if needed
+    3. Verify all files are properly formatted
     4. Update codecheck status file
     5. Return structured results
-    Note: Always use --force flag to ensure fresh, accurate results
+    Note: Use typecheck:raw --force to bypass Turbo cache for accurate results
 ```
 
 ## Output Format
@@ -287,7 +287,7 @@ statusline:
 - Runs three specialized agents in optimal order
 - Updates statusline in real-time during execution
 - Preserves uncommitted changes
-- **Uses --force flag to bypass Turbo cache for accurate results**
+- **Uses typecheck:raw --force to bypass Turbo cache for typecheck accuracy**
 - **Ensures consistency between local and CI environments**
 - Integrates with existing build pipeline
 - Prioritizes accuracy over speed for pre-deployment validation

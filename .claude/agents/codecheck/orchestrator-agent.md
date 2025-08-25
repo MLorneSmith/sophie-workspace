@@ -122,14 +122,14 @@ TOTAL_FIXED=$((TYPE_ERRORS + LINT_ERRORS + FORMAT_CHANGES))
 # Run all checks one more time to verify
 echo "✅ Verifying all fixes..."
 
-# Quick verification run with --force to ensure fresh results
-pnpm typecheck --force >/dev/null 2>&1
+# Quick verification run to ensure all checks pass
+pnpm typecheck:raw --force >/dev/null 2>&1
 TYPECHECK_CLEAN=$?
 
-pnpm lint --force >/dev/null 2>&1
+pnpm lint >/dev/null 2>&1
 LINT_CLEAN=$?
 
-pnpm format --force >/dev/null 2>&1
+pnpm format >/dev/null 2>&1
 FORMAT_CLEAN=$?
 
 # Determine final status
