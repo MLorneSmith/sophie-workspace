@@ -7,6 +7,7 @@ Your `supabase/config.toml` changes will handle CI/CD pipeline issues without re
 ## **Environment Separation**
 
 ### **1. Local Development & CI/CD (Ports 55321-55327)**
+
 ```toml
 # supabase/config.toml
 [auth.email]
@@ -14,12 +15,14 @@ enable_confirmations = false  # ✅ Already configured
 ```
 
 **Uses:**
+
 - Local Supabase instance via `supabase start`
 - InBucket for email testing (port 54325)
 - No real emails sent = no bounces
 - Fast E2E tests (2-3 minutes)
 
 ### **2. Production (ldebzombxtszzcgnylgq)**
+
 ```bash
 # Production environment variables (to be set)
 MAILER_PROVIDER=resend
@@ -28,6 +31,7 @@ EMAIL_SENDER=noreply@slideheroes.com
 ```
 
 **Uses:**
+
 - Hosted Supabase project
 - Resend for email delivery
 - `enable_confirmations = true` (security)
@@ -36,6 +40,7 @@ EMAIL_SENDER=noreply@slideheroes.com
 ## **How CI/CD Will Work**
 
 ### **Pipeline Flow:**
+
 1. **Test Environment Starts**: `supabase start` uses config.toml
 2. **Email Confirmations**: Disabled automatically
 3. **E2E Tests Run**: Fast auth flows, no email delays
@@ -43,6 +48,7 @@ EMAIL_SENDER=noreply@slideheroes.com
 5. **Deploy to Production**: Uses separate Supabase project with Resend
 
 ### **Key Benefits:**
+
 - ✅ No manual dashboard toggling
 - ✅ Environment-specific behavior
 - ✅ Production security maintained
@@ -61,11 +67,13 @@ EMAIL_SENDER=noreply@slideheroes.com
 
 1. **Sign up for Resend**: Get API key
 2. **Set Environment Variables**:
+
    ```bash
    MAILER_PROVIDER=resend
    RESEND_API_KEY=re_your_api_key
    EMAIL_SENDER=noreply@slideheroes.com
    ```
+
 3. **Configure Supabase Auth SMTP**: Point to Resend
 4. **Keep Production Confirmations Enabled**: For security
 
@@ -86,7 +94,7 @@ pnpm --filter e2e test:auth
 
 ## **Architecture Diagram**
 
-```
+```text
 ┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
 │   Development   │    │     CI/CD        │    │   Production    │
 │                 │    │                  │    │                 │

@@ -344,9 +344,7 @@ class E2ETestRunner {
 		log(`   Passed: ${totals.passed}`);
 		log(`   Failed: ${totals.failed}`);
 		if (totals.infrastructureFailures > 0) {
-			log(
-				`   ⚠️ Infrastructure failures: ${totals.infrastructureFailures}`,
-			);
+			log(`   ⚠️ Infrastructure failures: ${totals.infrastructureFailures}`);
 		}
 
 		return totals;
@@ -433,10 +431,16 @@ class E2ETestRunner {
 		}
 
 		// Check for server startup or infrastructure issues
-		const hasServerStartup = output.includes("Next.js") || output.includes("Local:") || output.includes("Network:");
-		const hasWebServerTimeout = output.includes("WebServer") && output.includes("Timed out");
-		const hasConnectionError = output.includes("ECONNREFUSED") || output.includes("net::ERR_CONNECTION_REFUSED");
-		
+		const hasServerStartup =
+			output.includes("Next.js") ||
+			output.includes("Local:") ||
+			output.includes("Network:");
+		const hasWebServerTimeout =
+			output.includes("WebServer") && output.includes("Timed out");
+		const hasConnectionError =
+			output.includes("ECONNREFUSED") ||
+			output.includes("net::ERR_CONNECTION_REFUSED");
+
 		// If no test results found, only assume failure if we have clear error indicators
 		// Don't fail if we're just seeing server startup logs
 		if (result.passed === 0 && result.failed === 0 && output.length > 0) {
@@ -603,13 +607,9 @@ class TestController {
 			// Provide fix suggestions
 			if (e2e.infrastructureFailures > 0) {
 				log("\n💡 Suggested fixes:");
-				log(
-					"   1. Restart Supabase: cd apps/e2e && npx supabase start",
-				);
+				log("   1. Restart Supabase: cd apps/e2e && npx supabase start");
 				log('   2. Clear ports: pkill -f "playwright|next-server"');
-				log(
-					"   3. Retry tests: node .claude/scripts/test-controller.cjs",
-				);
+				log("   3. Retry tests: node .claude/scripts/test-controller.cjs");
 			}
 		}
 

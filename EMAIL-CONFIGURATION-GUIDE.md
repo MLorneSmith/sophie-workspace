@@ -1,10 +1,13 @@
 # Email Configuration Guide - Supabase Email Bounce Resolution
 
 ## Overview
+
 This guide provides the complete solution for resolving Supabase email bouncing issues by implementing custom SMTP providers.
 
 ## Problem Summary
+
 Supabase project `ldebzombxtszzcgnylgq` experienced high bounce rates due to:
+
 - Using shared Supabase email infrastructure
 - Test email addresses in code (`test@example.com`)
 - No custom SMTP configuration
@@ -14,12 +17,14 @@ Supabase project `ldebzombxtszzcgnylgq` experienced high bounce rates due to:
 ### Option 1: Resend (Recommended)
 
 #### Step 1: Set up Resend Account
+
 1. Go to [resend.com](https://resend.com)
 2. Sign up and verify your account
 3. Add and verify your domain
 4. Generate an API key
 
 #### Step 2: Environment Variables
+
 Add these to your production environment:
 
 ```bash
@@ -33,13 +38,16 @@ CONTACT_EMAIL=contact@yourdomain.com
 ### Option 2: Custom SMTP (Alternative)
 
 #### Step 1: Choose SMTP Provider
+
 Popular options:
+
 - AWS SES
 - SendGrid
 - Mailgun
 - Gmail SMTP (for testing only)
 
-#### Step 2: Environment Variables
+#### Step 2: SMTP Environment Variables
+
 ```bash
 # SMTP Configuration
 MAILER_PROVIDER=nodemailer
@@ -55,6 +63,7 @@ CONTACT_EMAIL=contact@yourdomain.com
 ## Current Environment Files
 
 ### Development (.env.local)
+
 ```bash
 # Use local InBucket for development
 MAILER_PROVIDER=nodemailer
@@ -66,6 +75,7 @@ CONTACT_EMAIL=test@makerkit.dev
 ```
 
 ### Test (.env.test) - Already Configured ✅
+
 ```bash
 EMAIL_SENDER=test@makerkit.dev
 EMAIL_PORT=54325
@@ -76,11 +86,13 @@ EMAIL_PASSWORD=password
 ```
 
 ### Production - NEEDS CONFIGURATION ⚠️
+
 Choose either Resend or SMTP configuration above.
 
 ## Supabase Configuration
 
 ### Update Auth Settings
+
 1. Go to Supabase Dashboard → Authentication → Settings
 2. Scroll to "SMTP Settings"
 3. Enable "Enable custom SMTP"
@@ -89,21 +101,24 @@ Choose either Resend or SMTP configuration above.
    - **Port**: 587
    - **Username**: resend (for Resend) or your SMTP username
    - **Password**: Your Resend API key or SMTP password
-   - **Sender email**: noreply@yourdomain.com
+   - **Sender email**: <noreply@yourdomain.com>
 
 ## Code Improvements Implemented ✅
 
 ### 1. Email Validation
+
 - Created `email-validator.ts` with strict validation
 - Blocks test domains (`example.com`, `test.com`, etc.)
 - Environment-specific routing
 
 ### 2. Environment Detection
+
 - Automatic detection of development/test/production
 - Skips email sending in test environments
 - Uses appropriate SMTP configuration per environment
 
 ### 3. Enhanced Contact Form
+
 - Added email validation before sending
 - Better error handling
 - Environment-aware email routing
@@ -111,6 +126,7 @@ Choose either Resend or SMTP configuration above.
 ## Testing Instructions
 
 ### 1. Development Testing
+
 ```bash
 # Start local Supabase (includes InBucket)
 pnpm supabase:web:start
@@ -120,6 +136,7 @@ pnpm supabase:web:start
 ```
 
 ### 2. Production Testing
+
 ```bash
 # Test with a real email address
 # Check deliverability with tools like:
@@ -130,12 +147,14 @@ pnpm supabase:web:start
 ## Monitoring and Maintenance
 
 ### Email Deliverability Best Practices
+
 1. **Domain Authentication**: Set up SPF, DKIM, DMARC records
 2. **Bounce Handling**: Monitor and handle bounced emails
 3. **List Hygiene**: Remove invalid email addresses
 4. **Content Quality**: Avoid spammy content
 
 ### Monitoring Tools
+
 - Resend Dashboard (if using Resend)
 - Your SMTP provider's analytics
 - Email deliverability testing tools
@@ -145,20 +164,24 @@ pnpm supabase:web:start
 ### Common Issues
 
 #### "Invalid email domain" error
+
 - Check that you're not using test domains in production
 - Verify the email validation logic
 
 #### Emails not sending
+
 - Check environment variables are set correctly
 - Verify SMTP credentials
 - Check firewall/network restrictions
 
 #### Still getting bounces
+
 - Verify domain authentication (SPF/DKIM)
 - Check email content for spam indicators
 - Monitor bounce reasons in your email provider
 
 ### Debug Commands
+
 ```bash
 # Check current mailer provider
 echo $MAILER_PROVIDER
@@ -190,6 +213,7 @@ transporter.verify().then(console.log).catch(console.error);
 7. ⚠️ **Monitor deliverability**
 
 ## Success Metrics
+
 - Zero bounced emails from Supabase
 - Improved email deliverability rates
 - No test emails in production
