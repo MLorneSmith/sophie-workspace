@@ -33,7 +33,7 @@ export default createBillingSchema({
 					interval: "month",
 					lineItems: [
 						{
-							id: "price_1NNwYHI1i3VnbZTqI2UzaHIe",
+							id: "price_1S05jtS8mvjG8zYVqE8gnumz",
 							name: "Starter",
 							cost: 9.99,
 							type: "flat" as const,
@@ -47,7 +47,7 @@ export default createBillingSchema({
 					interval: "year",
 					lineItems: [
 						{
-							id: "starter-yearly",
+							id: "price_starter_yearly_placeholder",
 							name: "Base",
 							cost: 99.99,
 							type: "flat" as const,
@@ -72,7 +72,7 @@ export default createBillingSchema({
 					interval: "month",
 					lineItems: [
 						{
-							id: "price_1PGOAVI1i3VnbZTqc69xaypm",
+							id: "price_1S05l0S8mvjG8zYVSb0uCmtz",
 							name: "Base",
 							cost: 19.99,
 							type: "flat",
@@ -86,7 +86,7 @@ export default createBillingSchema({
 					interval: "year",
 					lineItems: [
 						{
-							id: "price_pro_yearly",
+							id: "price_pro_yearly_placeholder",
 							name: "Base",
 							cost: 199.99,
 							type: "flat",

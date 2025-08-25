@@ -3,6 +3,7 @@ import "server-only";
 import type { Database } from "@kit/supabase/database";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+import { TestBillingGateway } from "../../../test-billing-gateway";
 import { createBillingGatewayService } from "./billing-gateway.service";
 
 /**
@@ -13,6 +14,14 @@ import { createBillingGatewayService } from "./billing-gateway.service";
 export async function getBillingGatewayProvider(
 	client: SupabaseClient<Database>,
 ) {
+	// In test mode, return test billing gateway
+	if (
+		process.env.NODE_ENV === "test" ||
+		process.env.NEXT_PUBLIC_CI === "true"
+	) {
+		return new TestBillingGateway(client);
+	}
+
 	const provider = await getBillingProvider(client);
 
 	return createBillingGatewayService(provider);
