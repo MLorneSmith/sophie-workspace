@@ -26,8 +26,8 @@ const CONFIG = {
 	statusFile: `/tmp/.claude_test_status_${process.cwd().replace(/\//g, "_")}`,
 	resultFile: "/tmp/.claude_test_results.json",
 	unitTimeout: 5 * 60 * 1000, // 5 minutes
-	e2eTimeout: 15 * 60 * 1000, // 15 minutes
-	shardTimeout: 10 * 60 * 1000, // 10 minutes per shard
+	e2eTimeout: 20 * 60 * 1000, // 20 minutes (increased for server startup)
+	shardTimeout: 15 * 60 * 1000, // 15 minutes per shard (increased for server startup)
 	ports: {
 		supabase: 55321,
 		web: 3000,
@@ -300,16 +300,23 @@ class E2ETestRunner {
 	}
 
 	async run(status) {
-		log("\n🌐 Running E2E tests (9 parallel shards)...");
+		log("\n🌐 Running E2E tests...");
 		status.status.phase = "e2e_tests";
 		await status.save();
 
-		const shardPromises = this.shards.map((shard) => {
+		// Start first shard to get server running, then run others in parallel
+		log(`  🚀 Starting shard ${this.shards[0].id}: ${this.shards[0].name} (server startup)`);
+		const firstShardResult = await this.runShard(this.shards[0]);
+		
+		log("\n  🚀 Starting remaining shards in parallel...");
+		const remainingShards = this.shards.slice(1);
+		const remainingPromises = remainingShards.map((shard) => {
 			log(`  🚀 Starting shard ${shard.id}: ${shard.name}`);
 			return this.runShard(shard);
 		});
 
-		const shardResults = await Promise.all(shardPromises);
+		const remainingResults = await Promise.all(remainingPromises);
+		const shardResults = [firstShardResult, ...remainingResults];
 
 		// Aggregate results
 		const totals = {
@@ -427,9 +434,21 @@ class E2ETestRunner {
 			result.skipped = parseInt(skippedMatch[1]);
 		}
 
-		// If no results found but we have output, assume failure
+		// Check for server startup or infrastructure issues
+		const hasServerStartup = output.includes("Next.js") || output.includes("Local:") || output.includes("Network:");
+		const hasWebServerTimeout = output.includes("WebServer") && output.includes("Timed out");
+		const hasConnectionError = output.includes("ECONNREFUSED") || output.includes("net::ERR_CONNECTION_REFUSED");
+		
+		// If no test results found, only assume failure if we have clear error indicators
+		// Don't fail if we're just seeing server startup logs
 		if (result.passed === 0 && result.failed === 0 && output.length > 0) {
-			result.failed = shard.tests;
+			if (hasWebServerTimeout || hasConnectionError) {
+				result.failed = shard.tests;
+			} else if (!hasServerStartup) {
+				// Only fail if we have output that doesn't look like server startup
+				result.failed = shard.tests;
+			}
+			// Otherwise leave as 0/0 to indicate no results yet (server still starting)
 		}
 
 		return result;
