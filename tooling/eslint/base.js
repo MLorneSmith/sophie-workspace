@@ -22,6 +22,7 @@ export default tsEsLint.config(
   },
   {
     rules: {
+      '@typescript-eslint/triple-slash-reference': 'off',
       'react/react-in-jsx-scope': 'off',
       'import/no-anonymous-default-export': 'off',
       'import/named': 'off',

@@ -45,6 +45,7 @@
   "skip": "Skip",
   "signedInAs": "Signed in as",
   "pageOfPages": "Page {{page}} of {{total}}",
+  "showingRecordCount": "Showing {{pageSize}} of {{totalCount}} rows",
   "noData": "No data available",
   "pageNotFoundHeading": "Ouch! :|",
   "errorPageHeading": "Ouch! :|",
