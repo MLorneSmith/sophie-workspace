@@ -63,18 +63,50 @@ pnpm --filter "@kit/*" test
    ```bash
    # Kill any existing test processes
    pkill -f vitest || true
+   
+   # Check for debug mode
+   if [ "$DEBUG_TEST" = "true" ]; then
+       echo "🔍 DEBUG MODE: Verbose unit test output enabled"
+       export VITEST_REPORTER=verbose
+   fi
    ```
 
-2. **Test Execution with Progress Tracking**
+2. **Test Execution with Enhanced Progress Tracking**
    ```bash
+   # Track start time for ETA calculation
+   START_TIME=$(date +%s)
+   TOTAL_WORKSPACES=21  # Known workspace count
+   COMPLETED_WORKSPACES=0
+   
    # Run with detailed output for parsing
-   pnpm test:unit --reporter=verbose
+   pnpm test:unit --reporter=verbose 2>&1 | while IFS= read -r line; do
+       # Parse workspace completion
+       if echo "$line" | grep -q "Test Files.*passed"; then
+           COMPLETED_WORKSPACES=$((COMPLETED_WORKSPACES + 1))
+           ELAPSED=$(($(date +%s) - START_TIME))
+           RATE=$((ELAPSED / COMPLETED_WORKSPACES))
+           ETA=$((RATE * (TOTAL_WORKSPACES - COMPLETED_WORKSPACES)))
+           
+           echo "📊 Progress: $COMPLETED_WORKSPACES/$TOTAL_WORKSPACES workspaces"
+           echo "⏱️  ETA: ${ETA}s remaining"
+       fi
+       
+       # Output the line
+       echo "$line"
+   done
    ```
 
-3. **Real-time Monitoring**
-   - Parse output for test completion: `✓ test name (Xms)`
-   - Track suite completion: `Test Files  X passed`
-   - Capture failures immediately: `✗ test name`
+3. **Real-time Monitoring with TodoWrite**
+   ```
+   📝 Unit Test Progress:
+   ✅ @kit/ui: 12/12 passed (5s)
+   ✅ @kit/auth: 8/8 passed (3s)
+   ⏳ web: 15/45 running... [30% complete]
+   ⏳ payload: Waiting...
+   ⏳ @kit/cms: Waiting...
+   
+   ⏱️ Elapsed: 45s | ETA: 1m 15s
+   ```
 
 4. **Result Aggregation**
    ```
@@ -124,22 +156,104 @@ Use TodoWrite to track workspace-level progress:
 - ⏳ @kit/auth: Waiting...
 ```
 
-## Error Handling
+## Error Handling & Reliability
 
-1. **Configuration Issues**
-   - Check for vitest.config.ts files
-   - Verify test scripts in package.json
-   - Ensure dependencies are installed
+### 1. Configuration Issues
+```bash
+# Pre-flight validation
+validate_test_setup() {
+    # Check for test configuration
+    if [ ! -f "vitest.config.ts" ] && [ ! -f "vite.config.ts" ]; then
+        echo "⚠️ No Vitest config found, using defaults"
+    fi
+    
+    # Verify dependencies
+    if ! pnpm list vitest > /dev/null 2>&1; then
+        echo "📦 Installing missing test dependencies..."
+        pnpm install
+    fi
+}
+```
 
-2. **Test Failures**
-   - Capture full error stack traces
-   - Group failures by workspace
-   - Prioritize by impact
+### 2. Automatic Retry for Flaky Tests
+```bash
+# Retry logic for connection/timeout failures
+retry_flaky_tests() {
+    local FAILED_TESTS=$1
+    local RETRY_COUNT=0
+    local MAX_RETRIES=2
+    
+    for test in $FAILED_TESTS; do
+        if grep -E "ECONNREFUSED|timeout|socket hang up" <<< "$test"; then
+            echo "🔄 Retrying potentially flaky test: $test"
+            RETRY_COUNT=$((RETRY_COUNT + 1))
+            
+            if [ $RETRY_COUNT -le $MAX_RETRIES ]; then
+                # Retry with increased timeout
+                VITEST_TIMEOUT=10000 pnpm test "$test"
+            fi
+        fi
+    done
+}
+```
 
-3. **Performance Issues**
-   - Flag tests taking >1000ms
-   - Identify potential memory leaks
-   - Suggest test optimization
+### 3. Performance Monitoring
+```bash
+# Track slow tests
+SLOW_TEST_THRESHOLD=1000  # ms
+
+parse_performance() {
+    while IFS= read -r line; do
+        if [[ $line =~ \(([0-9]+)ms\) ]]; then
+            DURATION=${BASH_REMATCH[1]}
+            if [ $DURATION -gt $SLOW_TEST_THRESHOLD ]; then
+                echo "⚠️ Slow test detected (${DURATION}ms): $line"
+            fi
+        fi
+    done
+}
+```
+
+### 4. Resource Management
+```bash
+# Monitor and manage memory usage
+check_resources() {
+    # Check available memory
+    MEM_AVAILABLE=$(free -m | awk 'NR==2{print $7}')
+    if [ $MEM_AVAILABLE -lt 500 ]; then
+        echo "⚠️ Low memory detected. Clearing cache..."
+        pnpm store prune
+        echo 3 > /proc/sys/vm/drop_caches 2>/dev/null || true
+    fi
+    
+    # Limit Node memory for tests
+    export NODE_OPTIONS="--max-old-space-size=2048"
+}
+```
+
+### 5. Failure Recovery
+```bash
+# Smart failure handling
+handle_test_failure() {
+    local EXIT_CODE=$1
+    
+    case $EXIT_CODE in
+        137)
+            echo "❌ Tests killed (likely OOM). Retrying with limited parallelization..."
+            pnpm test:unit --pool=forks --poolOptions.forks.singleFork
+            ;;
+        134)
+            echo "❌ SIGABRT detected. Check for assertion failures."
+            ;;
+        1)
+            echo "❌ Test failures detected. Check output above."
+            ;;
+        *)
+            echo "❌ Unexpected exit code: $EXIT_CODE"
+            ;;
+    esac
+}
+```
 
 ## Command Examples
 
