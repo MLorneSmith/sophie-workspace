@@ -9,7 +9,8 @@ const ENABLE_REACT_COMPILER = process.env.ENABLE_REACT_COMPILER === "true";
 let nrExternals;
 
 // Skip NewRelic in test environments to avoid compilation errors
-const isTestEnvironment = process.env.NODE_ENV === "test" || process.env.CI === "true";
+const isTestEnvironment =
+	process.env.NODE_ENV === "test" || process.env.CI === "true";
 
 if (!isTestEnvironment) {
 	try {
@@ -70,9 +71,35 @@ const config = {
 		},
 	},
 	serverExternalPackages: isTestEnvironment ? [] : ["newrelic"],
-	webpack: (config) => {
+	webpack: (config, { isServer }) => {
 		// Configure New Relic externals for proper agent loading
 		nrExternals(config);
+
+		// Suppress warnings that don't affect production builds
+		config.ignoreWarnings = [
+			...(config.ignoreWarnings || []),
+			// Critical dependency warnings from OpenTelemetry (dynamic requires for instrumentation)
+			{
+				module: /@opentelemetry\/instrumentation/,
+				message: /Critical dependency/,
+			},
+			{
+				module: /@baselime\/node-opentelemetry/,
+				message: /Critical dependency/,
+			},
+			// Edge Runtime compatibility warnings for Supabase (polyfilled at runtime)
+			{
+				module: /@supabase\/supabase-js/,
+				message:
+					/Node\.js API.*process\.version.*not supported in.*Edge Runtime/,
+			},
+			{
+				module: /@supabase\/realtime-js/,
+				message:
+					/Node\.js API.*process\.versions.*not supported in.*Edge Runtime/,
+			},
+		];
+
 		return config;
 	},
 	// needed for supporting dynamic imports for local content
