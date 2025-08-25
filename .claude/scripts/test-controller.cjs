@@ -300,23 +300,17 @@ class E2ETestRunner {
 	}
 
 	async run(status) {
-		log("\n🌐 Running E2E tests...");
+		log("\n🌐 Running E2E tests (9 parallel shards)...");
 		status.status.phase = "e2e_tests";
 		await status.save();
 
-		// Start first shard to get server running, then run others in parallel
-		log(`  🚀 Starting shard ${this.shards[0].id}: ${this.shards[0].name} (server startup)`);
-		const firstShardResult = await this.runShard(this.shards[0]);
-		
-		log("\n  🚀 Starting remaining shards in parallel...");
-		const remainingShards = this.shards.slice(1);
-		const remainingPromises = remainingShards.map((shard) => {
+		// Run all shards in parallel - Playwright will handle server reuse
+		const shardPromises = this.shards.map((shard) => {
 			log(`  🚀 Starting shard ${shard.id}: ${shard.name}`);
 			return this.runShard(shard);
 		});
 
-		const remainingResults = await Promise.all(remainingPromises);
-		const shardResults = [firstShardResult, ...remainingResults];
+		const shardResults = await Promise.all(shardPromises);
 
 		// Aggregate results
 		const totals = {
@@ -370,6 +364,10 @@ class E2ETestRunner {
 					cwd: process.cwd(),
 					stdio: ["inherit", "pipe", "pipe"],
 					shell: true,
+					env: {
+						...process.env,
+						PLAYWRIGHT_PARALLEL: "true",
+					},
 				},
 			);
 
