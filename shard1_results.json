@@ -1,384 +1,372 @@
 {
-  "config": {
-    "rootDir": "/home/msmith/projects/2025slideheroes",
-    "forbidOnly": false,
-    "fullyParallel": false,
-    "globalSetup": null,
-    "globalTeardown": null,
-    "globalTimeout": 0,
-    "grep": {},
-    "grepInvert": null,
-    "maxFailures": 0,
-    "metadata": {
-      "actualWorkers": 4
-    },
-    "preserveOutput": "always",
-    "reporter": [
-      [
-        "json"
-      ]
-    ],
-    "reportSlowTests": {
-      "max": 5,
-      "threshold": 300000
-    },
-    "quiet": false,
-    "projects": [
-      {
-        "outputDir": "/home/msmith/projects/2025slideheroes/test-results",
-        "repeatEach": 1,
-        "retries": 0,
-        "metadata": {
-          "actualWorkers": 4
-        },
-        "id": "",
-        "name": "",
-        "testDir": "/home/msmith/projects/2025slideheroes",
-        "testIgnore": [],
-        "testMatch": [
-          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
-        ],
-        "timeout": 30000
-      }
-    ],
-    "shard": null,
-    "updateSnapshots": "missing",
-    "updateSourceMethod": "patch",
-    "version": "1.55.0",
-    "workers": 12,
-    "webServer": null
-  },
-  "suites": [
-    {
-      "title": "apps/e2e/tests/authentication/password-reset.spec.ts",
-      "file": "apps/e2e/tests/authentication/password-reset.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "Password Reset Flow @integration",
-          "file": "apps/e2e/tests/authentication/password-reset.spec.ts",
-          "line": 7,
-          "column": 6,
-          "specs": [
-            {
-              "title": "will reset the password and sign in with new one",
-              "ok": false,
-              "tags": [
-                "integration"
-              ],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "",
-                  "projectName": "",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 28994,
-                      "error": {
-                        "message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/auth/sign-up\", waiting until \"load\"\u001b[22m\n\n\nCall Log:\n- Test timeout of 30000ms exceeded",
-                        "stack": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/auth/sign-up\", waiting until \"load\"\u001b[22m\n\n\nCall Log:\n- Test timeout of 30000ms exceeded\n    at /home/msmith/projects/2025slideheroes/apps/e2e/tests/authentication/password-reset.spec.ts:55:6",
-                        "location": {
-                          "file": "/home/msmith/projects/2025slideheroes/apps/e2e/tests/authentication/password-reset.spec.ts",
-                          "column": 6,
-                          "line": 55
-                        },
-                        "snippet": "  53 |\n  54 | \t\t\tawait page.waitForURL(\"/home\");\n> 55 | \t\t}).toPass();\n     | \t\t   ^\n  56 |\n  57 | \t\tawait auth.signOut();\n  58 |"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "/home/msmith/projects/2025slideheroes/apps/e2e/tests/authentication/password-reset.spec.ts",
-                            "column": 6,
-                            "line": 55
-                          },
-                          "message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/auth/sign-up\", waiting until \"load\"\u001b[22m\n\n\nCall Log:\n- Test timeout of 30000ms exceeded\n\n  53 |\n  54 | \t\t\tawait page.waitForURL(\"/home\");\n> 55 | \t\t}).toPass();\n     | \t\t   ^\n  56 |\n  57 | \t\tawait auth.signOut();\n  58 |\n    at /home/msmith/projects/2025slideheroes/apps/e2e/tests/authentication/password-reset.spec.ts:55:6"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "steps": [
-                        {
-                          "title": "Expect \"toPass\"",
-                          "duration": 30939,
-                          "error": {
-                            "message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/auth/sign-up\", waiting until \"load\"\u001b[22m\n\n\nCall Log:\n- Test timeout of 30000ms exceeded",
-                            "stack": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/auth/sign-up\", waiting until \"load\"\u001b[22m\n\n\nCall Log:\n- Test timeout of 30000ms exceeded\n    at /home/msmith/projects/2025slideheroes/apps/e2e/tests/authentication/password-reset.spec.ts:55:6",
-                            "location": {
-                              "file": "/home/msmith/projects/2025slideheroes/apps/e2e/tests/authentication/password-reset.spec.ts",
-                              "column": 6,
-                              "line": 55
-                            },
-                            "snippet": "  53 |\n  54 | \t\t\tawait page.waitForURL(\"/home\");\n> 55 | \t\t}).toPass();\n     | \t\t   ^\n  56 |\n  57 | \t\tawait auth.signOut();\n  58 |"
-                          }
-                        }
-                      ],
-                      "startTime": "2025-08-22T21:52:52.646Z",
-                      "annotations": [],
-                      "attachments": [],
-                      "errorLocation": {
-                        "file": "/home/msmith/projects/2025slideheroes/apps/e2e/tests/authentication/password-reset.spec.ts",
-                        "column": 6,
-                        "line": 55
-                      }
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "fcbc29fc1f34d7b69ce2-497406a4f8bec2380024",
-              "file": "apps/e2e/tests/authentication/password-reset.spec.ts",
-              "line": 8,
-              "column": 6
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "apps/e2e/tests/healthcheck.spec.ts",
-      "file": "apps/e2e/tests/healthcheck.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "Healthcheck endpoint",
-          "file": "apps/e2e/tests/healthcheck.spec.ts",
-          "line": 5,
-          "column": 6,
-          "specs": [
-            {
-              "title": "returns healthy status",
-              "ok": false,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "",
-                  "projectName": "",
-                  "results": [
-                    {
-                      "workerIndex": 1,
-                      "parallelIndex": 1,
-                      "status": "failed",
-                      "duration": 13,
-                      "error": {
-                        "message": "TypeError: apiRequestContext.get: Invalid URL",
-                        "stack": "TypeError: apiRequestContext.get: Invalid URL\n    at /home/msmith/projects/2025slideheroes/apps/e2e/tests/healthcheck.spec.ts:7:34",
-                        "location": {
-                          "file": "/home/msmith/projects/2025slideheroes/apps/e2e/tests/healthcheck.spec.ts",
-                          "column": 34,
-                          "line": 7
-                        },
-                        "snippet": "   5 | test.describe(\"Healthcheck endpoint\", () => {\n   6 | \ttest(\"returns healthy status\", async ({ request }) => {\n>  7 | \t\tconst response = await request.get(\"/healthcheck\");\n     | \t\t                               ^\n   8 |\n   9 | \t\texpect(response.status()).toBe(200);\n  10 |"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "/home/msmith/projects/2025slideheroes/apps/e2e/tests/healthcheck.spec.ts",
-                            "column": 34,
-                            "line": 7
-                          },
-                          "message": "TypeError: apiRequestContext.get: Invalid URL\n\n   5 | test.describe(\"Healthcheck endpoint\", () => {\n   6 | \ttest(\"returns healthy status\", async ({ request }) => {\n>  7 | \t\tconst response = await request.get(\"/healthcheck\");\n     | \t\t                               ^\n   8 |\n   9 | \t\texpect(response.status()).toBe(200);\n  10 |\n    at /home/msmith/projects/2025slideheroes/apps/e2e/tests/healthcheck.spec.ts:7:34"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-08-22T21:52:52.598Z",
-                      "annotations": [],
-                      "attachments": [],
-                      "errorLocation": {
-                        "file": "/home/msmith/projects/2025slideheroes/apps/e2e/tests/healthcheck.spec.ts",
-                        "column": 34,
-                        "line": 7
-                      }
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "dfee8d237029c29a7b3f-b7f8fadebc371104e224",
-              "file": "apps/e2e/tests/healthcheck.spec.ts",
-              "line": 6,
-              "column": 6
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "apps/e2e/tests/team-billing/team-billing.spec.ts",
-      "file": "apps/e2e/tests/team-billing/team-billing.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "Team Billing @integration",
-          "file": "apps/e2e/tests/team-billing/team-billing.spec.ts",
-          "line": 5,
-          "column": 6,
-          "specs": [
-            {
-              "title": "a team can subscribe to a plan",
-              "ok": false,
-              "tags": [
-                "integration"
-              ],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "",
-                  "projectName": "",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "parallelIndex": 2,
-                      "status": "failed",
-                      "duration": 16,
-                      "error": {
-                        "message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/auth/sign-up?next=/home\", waiting until \"load\"\u001b[22m\n",
-                        "stack": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/auth/sign-up?next=/home\", waiting until \"load\"\u001b[22m\n\n    at AuthPageObject.signUpFlow (/home/msmith/projects/2025slideheroes/apps/e2e/tests/authentication/auth.po.ts:144:19)\n    at TeamAccountsPageObject.setup (/home/msmith/projects/2025slideheroes/apps/e2e/tests/team-accounts/team-accounts.po.ts:18:37)\n    at TeamBillingPageObject.setup (/home/msmith/projects/2025slideheroes/apps/e2e/tests/team-billing/team-billing.po.ts:16:28)\n    at /home/msmith/projects/2025slideheroes/apps/e2e/tests/team-billing/team-billing.spec.ts:15:12",
-                        "location": {
-                          "file": "/home/msmith/projects/2025slideheroes/apps/e2e/tests/authentication/auth.po.ts",
-                          "column": 19,
-                          "line": 144
-                        },
-                        "snippet": "\u001b[90m   at \u001b[39mapps/e2e/tests/authentication/auth.po.ts:144\n\n  142 | \t\tconst email = this.createRandomEmail();\n  143 |\n> 144 | \t\tawait this.page.goto(`/auth/sign-up?next=${path}`);\n      | \t\t                ^\n  145 |\n  146 | \t\tawait this.signUp({\n  147 | \t\t\temail,"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "/home/msmith/projects/2025slideheroes/apps/e2e/tests/authentication/auth.po.ts",
-                            "column": 19,
-                            "line": 144
-                          },
-                          "message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/auth/sign-up?next=/home\", waiting until \"load\"\u001b[22m\n\n\n   at apps/e2e/tests/authentication/auth.po.ts:144\n\n  142 | \t\tconst email = this.createRandomEmail();\n  143 |\n> 144 | \t\tawait this.page.goto(`/auth/sign-up?next=${path}`);\n      | \t\t                ^\n  145 |\n  146 | \t\tawait this.signUp({\n  147 | \t\t\temail,\n    at AuthPageObject.signUpFlow (/home/msmith/projects/2025slideheroes/apps/e2e/tests/authentication/auth.po.ts:144:19)\n    at TeamAccountsPageObject.setup (/home/msmith/projects/2025slideheroes/apps/e2e/tests/team-accounts/team-accounts.po.ts:18:37)\n    at TeamBillingPageObject.setup (/home/msmith/projects/2025slideheroes/apps/e2e/tests/team-billing/team-billing.po.ts:16:28)\n    at /home/msmith/projects/2025slideheroes/apps/e2e/tests/team-billing/team-billing.spec.ts:15:12"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-08-22T21:52:52.669Z",
-                      "annotations": [],
-                      "attachments": [],
-                      "errorLocation": {
-                        "file": "/home/msmith/projects/2025slideheroes/apps/e2e/tests/authentication/auth.po.ts",
-                        "column": 19,
-                        "line": 144
-                      }
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "3449a12a1d19d4641de4-3099c6c3e9578d1edb33",
-              "file": "apps/e2e/tests/team-billing/team-billing.spec.ts",
-              "line": 14,
-              "column": 6
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "apps/e2e/tests/user-billing/user-billing.spec.ts",
-      "file": "apps/e2e/tests/user-billing/user-billing.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "User Billing @integration",
-          "file": "apps/e2e/tests/user-billing/user-billing.spec.ts",
-          "line": 5,
-          "column": 6,
-          "specs": [
-            {
-              "title": "user can subscribe to a plan",
-              "ok": false,
-              "tags": [
-                "integration"
-              ],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "",
-                  "projectName": "",
-                  "results": [
-                    {
-                      "workerIndex": 3,
-                      "parallelIndex": 3,
-                      "status": "failed",
-                      "duration": 0,
-                      "error": {
-                        "message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/auth/sign-up?next=/home/billing\", waiting until \"load\"\u001b[22m\n",
-                        "stack": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/auth/sign-up?next=/home/billing\", waiting until \"load\"\u001b[22m\n\n    at AuthPageObject.signUpFlow (/home/msmith/projects/2025slideheroes/apps/e2e/tests/authentication/auth.po.ts:144:19)\n    at UserBillingPageObject.setup (/home/msmith/projects/2025slideheroes/apps/e2e/tests/user-billing/user-billing.po.ts:15:19)\n    at /home/msmith/projects/2025slideheroes/apps/e2e/tests/user-billing/user-billing.spec.ts:13:12",
-                        "location": {
-                          "file": "/home/msmith/projects/2025slideheroes/apps/e2e/tests/authentication/auth.po.ts",
-                          "column": 19,
-                          "line": 144
-                        },
-                        "snippet": "\u001b[90m   at \u001b[39mapps/e2e/tests/authentication/auth.po.ts:144\n\n  142 | \t\tconst email = this.createRandomEmail();\n  143 |\n> 144 | \t\tawait this.page.goto(`/auth/sign-up?next=${path}`);\n      | \t\t                ^\n  145 |\n  146 | \t\tawait this.signUp({\n  147 | \t\t\temail,"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "/home/msmith/projects/2025slideheroes/apps/e2e/tests/authentication/auth.po.ts",
-                            "column": 19,
-                            "line": 144
-                          },
-                          "message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/auth/sign-up?next=/home/billing\", waiting until \"load\"\u001b[22m\n\n\n   at apps/e2e/tests/authentication/auth.po.ts:144\n\n  142 | \t\tconst email = this.createRandomEmail();\n  143 |\n> 144 | \t\tawait this.page.goto(`/auth/sign-up?next=${path}`);\n      | \t\t                ^\n  145 |\n  146 | \t\tawait this.signUp({\n  147 | \t\t\temail,\n    at AuthPageObject.signUpFlow (/home/msmith/projects/2025slideheroes/apps/e2e/tests/authentication/auth.po.ts:144:19)\n    at UserBillingPageObject.setup (/home/msmith/projects/2025slideheroes/apps/e2e/tests/user-billing/user-billing.po.ts:15:19)\n    at /home/msmith/projects/2025slideheroes/apps/e2e/tests/user-billing/user-billing.spec.ts:13:12"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-08-22T21:52:52.648Z",
-                      "annotations": [],
-                      "attachments": [],
-                      "errorLocation": {
-                        "file": "/home/msmith/projects/2025slideheroes/apps/e2e/tests/authentication/auth.po.ts",
-                        "column": 19,
-                        "line": 144
-                      }
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "f8ded3fbc4090d9bfcdb-fd1b8833065bfe6ed424",
-              "file": "apps/e2e/tests/user-billing/user-billing.spec.ts",
-              "line": 16,
-              "column": 6
-            }
-          ]
-        }
-      ]
-    }
-  ],
-  "errors": [],
-  "stats": {
-    "startTime": "2025-08-22T21:52:50.817Z",
-    "duration": 30950.078999999998,
-    "expected": 0,
-    "skipped": 0,
-    "unexpected": 4,
-    "flaky": 0
-  }
+	"config": {
+		"rootDir": "/home/msmith/projects/2025slideheroes",
+		"forbidOnly": false,
+		"fullyParallel": false,
+		"globalSetup": null,
+		"globalTeardown": null,
+		"globalTimeout": 0,
+		"grep": {},
+		"grepInvert": null,
+		"maxFailures": 0,
+		"metadata": {
+			"actualWorkers": 4
+		},
+		"preserveOutput": "always",
+		"reporter": [["json"]],
+		"reportSlowTests": {
+			"max": 5,
+			"threshold": 300000
+		},
+		"quiet": false,
+		"projects": [
+			{
+				"outputDir": "/home/msmith/projects/2025slideheroes/test-results",
+				"repeatEach": 1,
+				"retries": 0,
+				"metadata": {
+					"actualWorkers": 4
+				},
+				"id": "",
+				"name": "",
+				"testDir": "/home/msmith/projects/2025slideheroes",
+				"testIgnore": [],
+				"testMatch": ["**/*.@(spec|test).?(c|m)[jt]s?(x)"],
+				"timeout": 30000
+			}
+		],
+		"shard": null,
+		"updateSnapshots": "missing",
+		"updateSourceMethod": "patch",
+		"version": "1.55.0",
+		"workers": 12,
+		"webServer": null
+	},
+	"suites": [
+		{
+			"title": "apps/e2e/tests/authentication/password-reset.spec.ts",
+			"file": "apps/e2e/tests/authentication/password-reset.spec.ts",
+			"column": 0,
+			"line": 0,
+			"specs": [],
+			"suites": [
+				{
+					"title": "Password Reset Flow @integration",
+					"file": "apps/e2e/tests/authentication/password-reset.spec.ts",
+					"line": 7,
+					"column": 6,
+					"specs": [
+						{
+							"title": "will reset the password and sign in with new one",
+							"ok": false,
+							"tags": ["integration"],
+							"tests": [
+								{
+									"timeout": 30000,
+									"annotations": [],
+									"expectedStatus": "passed",
+									"projectId": "",
+									"projectName": "",
+									"results": [
+										{
+											"workerIndex": 0,
+											"parallelIndex": 0,
+											"status": "failed",
+											"duration": 28994,
+											"error": {
+												"message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/auth/sign-up\", waiting until \"load\"\u001b[22m\n\n\nCall Log:\n- Test timeout of 30000ms exceeded",
+												"stack": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/auth/sign-up\", waiting until \"load\"\u001b[22m\n\n\nCall Log:\n- Test timeout of 30000ms exceeded\n    at /home/msmith/projects/2025slideheroes/apps/e2e/tests/authentication/password-reset.spec.ts:55:6",
+												"location": {
+													"file": "/home/msmith/projects/2025slideheroes/apps/e2e/tests/authentication/password-reset.spec.ts",
+													"column": 6,
+													"line": 55
+												},
+												"snippet": "  53 |\n  54 | \t\t\tawait page.waitForURL(\"/home\");\n> 55 | \t\t}).toPass();\n     | \t\t   ^\n  56 |\n  57 | \t\tawait auth.signOut();\n  58 |"
+											},
+											"errors": [
+												{
+													"location": {
+														"file": "/home/msmith/projects/2025slideheroes/apps/e2e/tests/authentication/password-reset.spec.ts",
+														"column": 6,
+														"line": 55
+													},
+													"message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/auth/sign-up\", waiting until \"load\"\u001b[22m\n\n\nCall Log:\n- Test timeout of 30000ms exceeded\n\n  53 |\n  54 | \t\t\tawait page.waitForURL(\"/home\");\n> 55 | \t\t}).toPass();\n     | \t\t   ^\n  56 |\n  57 | \t\tawait auth.signOut();\n  58 |\n    at /home/msmith/projects/2025slideheroes/apps/e2e/tests/authentication/password-reset.spec.ts:55:6"
+												}
+											],
+											"stdout": [],
+											"stderr": [],
+											"retry": 0,
+											"steps": [
+												{
+													"title": "Expect \"toPass\"",
+													"duration": 30939,
+													"error": {
+														"message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/auth/sign-up\", waiting until \"load\"\u001b[22m\n\n\nCall Log:\n- Test timeout of 30000ms exceeded",
+														"stack": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/auth/sign-up\", waiting until \"load\"\u001b[22m\n\n\nCall Log:\n- Test timeout of 30000ms exceeded\n    at /home/msmith/projects/2025slideheroes/apps/e2e/tests/authentication/password-reset.spec.ts:55:6",
+														"location": {
+															"file": "/home/msmith/projects/2025slideheroes/apps/e2e/tests/authentication/password-reset.spec.ts",
+															"column": 6,
+															"line": 55
+														},
+														"snippet": "  53 |\n  54 | \t\t\tawait page.waitForURL(\"/home\");\n> 55 | \t\t}).toPass();\n     | \t\t   ^\n  56 |\n  57 | \t\tawait auth.signOut();\n  58 |"
+													}
+												}
+											],
+											"startTime": "2025-08-22T21:52:52.646Z",
+											"annotations": [],
+											"attachments": [],
+											"errorLocation": {
+												"file": "/home/msmith/projects/2025slideheroes/apps/e2e/tests/authentication/password-reset.spec.ts",
+												"column": 6,
+												"line": 55
+											}
+										}
+									],
+									"status": "unexpected"
+								}
+							],
+							"id": "fcbc29fc1f34d7b69ce2-497406a4f8bec2380024",
+							"file": "apps/e2e/tests/authentication/password-reset.spec.ts",
+							"line": 8,
+							"column": 6
+						}
+					]
+				}
+			]
+		},
+		{
+			"title": "apps/e2e/tests/healthcheck.spec.ts",
+			"file": "apps/e2e/tests/healthcheck.spec.ts",
+			"column": 0,
+			"line": 0,
+			"specs": [],
+			"suites": [
+				{
+					"title": "Healthcheck endpoint",
+					"file": "apps/e2e/tests/healthcheck.spec.ts",
+					"line": 5,
+					"column": 6,
+					"specs": [
+						{
+							"title": "returns healthy status",
+							"ok": false,
+							"tags": [],
+							"tests": [
+								{
+									"timeout": 30000,
+									"annotations": [],
+									"expectedStatus": "passed",
+									"projectId": "",
+									"projectName": "",
+									"results": [
+										{
+											"workerIndex": 1,
+											"parallelIndex": 1,
+											"status": "failed",
+											"duration": 13,
+											"error": {
+												"message": "TypeError: apiRequestContext.get: Invalid URL",
+												"stack": "TypeError: apiRequestContext.get: Invalid URL\n    at /home/msmith/projects/2025slideheroes/apps/e2e/tests/healthcheck.spec.ts:7:34",
+												"location": {
+													"file": "/home/msmith/projects/2025slideheroes/apps/e2e/tests/healthcheck.spec.ts",
+													"column": 34,
+													"line": 7
+												},
+												"snippet": "   5 | test.describe(\"Healthcheck endpoint\", () => {\n   6 | \ttest(\"returns healthy status\", async ({ request }) => {\n>  7 | \t\tconst response = await request.get(\"/healthcheck\");\n     | \t\t                               ^\n   8 |\n   9 | \t\texpect(response.status()).toBe(200);\n  10 |"
+											},
+											"errors": [
+												{
+													"location": {
+														"file": "/home/msmith/projects/2025slideheroes/apps/e2e/tests/healthcheck.spec.ts",
+														"column": 34,
+														"line": 7
+													},
+													"message": "TypeError: apiRequestContext.get: Invalid URL\n\n   5 | test.describe(\"Healthcheck endpoint\", () => {\n   6 | \ttest(\"returns healthy status\", async ({ request }) => {\n>  7 | \t\tconst response = await request.get(\"/healthcheck\");\n     | \t\t                               ^\n   8 |\n   9 | \t\texpect(response.status()).toBe(200);\n  10 |\n    at /home/msmith/projects/2025slideheroes/apps/e2e/tests/healthcheck.spec.ts:7:34"
+												}
+											],
+											"stdout": [],
+											"stderr": [],
+											"retry": 0,
+											"startTime": "2025-08-22T21:52:52.598Z",
+											"annotations": [],
+											"attachments": [],
+											"errorLocation": {
+												"file": "/home/msmith/projects/2025slideheroes/apps/e2e/tests/healthcheck.spec.ts",
+												"column": 34,
+												"line": 7
+											}
+										}
+									],
+									"status": "unexpected"
+								}
+							],
+							"id": "dfee8d237029c29a7b3f-b7f8fadebc371104e224",
+							"file": "apps/e2e/tests/healthcheck.spec.ts",
+							"line": 6,
+							"column": 6
+						}
+					]
+				}
+			]
+		},
+		{
+			"title": "apps/e2e/tests/team-billing/team-billing.spec.ts",
+			"file": "apps/e2e/tests/team-billing/team-billing.spec.ts",
+			"column": 0,
+			"line": 0,
+			"specs": [],
+			"suites": [
+				{
+					"title": "Team Billing @integration",
+					"file": "apps/e2e/tests/team-billing/team-billing.spec.ts",
+					"line": 5,
+					"column": 6,
+					"specs": [
+						{
+							"title": "a team can subscribe to a plan",
+							"ok": false,
+							"tags": ["integration"],
+							"tests": [
+								{
+									"timeout": 30000,
+									"annotations": [],
+									"expectedStatus": "passed",
+									"projectId": "",
+									"projectName": "",
+									"results": [
+										{
+											"workerIndex": 2,
+											"parallelIndex": 2,
+											"status": "failed",
+											"duration": 16,
+											"error": {
+												"message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/auth/sign-up?next=/home\", waiting until \"load\"\u001b[22m\n",
+												"stack": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/auth/sign-up?next=/home\", waiting until \"load\"\u001b[22m\n\n    at AuthPageObject.signUpFlow (/home/msmith/projects/2025slideheroes/apps/e2e/tests/authentication/auth.po.ts:144:19)\n    at TeamAccountsPageObject.setup (/home/msmith/projects/2025slideheroes/apps/e2e/tests/team-accounts/team-accounts.po.ts:18:37)\n    at TeamBillingPageObject.setup (/home/msmith/projects/2025slideheroes/apps/e2e/tests/team-billing/team-billing.po.ts:16:28)\n    at /home/msmith/projects/2025slideheroes/apps/e2e/tests/team-billing/team-billing.spec.ts:15:12",
+												"location": {
+													"file": "/home/msmith/projects/2025slideheroes/apps/e2e/tests/authentication/auth.po.ts",
+													"column": 19,
+													"line": 144
+												},
+												"snippet": "\u001b[90m   at \u001b[39mapps/e2e/tests/authentication/auth.po.ts:144\n\n  142 | \t\tconst email = this.createRandomEmail();\n  143 |\n> 144 | \t\tawait this.page.goto(`/auth/sign-up?next=${path}`);\n      | \t\t                ^\n  145 |\n  146 | \t\tawait this.signUp({\n  147 | \t\t\temail,"
+											},
+											"errors": [
+												{
+													"location": {
+														"file": "/home/msmith/projects/2025slideheroes/apps/e2e/tests/authentication/auth.po.ts",
+														"column": 19,
+														"line": 144
+													},
+													"message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/auth/sign-up?next=/home\", waiting until \"load\"\u001b[22m\n\n\n   at apps/e2e/tests/authentication/auth.po.ts:144\n\n  142 | \t\tconst email = this.createRandomEmail();\n  143 |\n> 144 | \t\tawait this.page.goto(`/auth/sign-up?next=${path}`);\n      | \t\t                ^\n  145 |\n  146 | \t\tawait this.signUp({\n  147 | \t\t\temail,\n    at AuthPageObject.signUpFlow (/home/msmith/projects/2025slideheroes/apps/e2e/tests/authentication/auth.po.ts:144:19)\n    at TeamAccountsPageObject.setup (/home/msmith/projects/2025slideheroes/apps/e2e/tests/team-accounts/team-accounts.po.ts:18:37)\n    at TeamBillingPageObject.setup (/home/msmith/projects/2025slideheroes/apps/e2e/tests/team-billing/team-billing.po.ts:16:28)\n    at /home/msmith/projects/2025slideheroes/apps/e2e/tests/team-billing/team-billing.spec.ts:15:12"
+												}
+											],
+											"stdout": [],
+											"stderr": [],
+											"retry": 0,
+											"startTime": "2025-08-22T21:52:52.669Z",
+											"annotations": [],
+											"attachments": [],
+											"errorLocation": {
+												"file": "/home/msmith/projects/2025slideheroes/apps/e2e/tests/authentication/auth.po.ts",
+												"column": 19,
+												"line": 144
+											}
+										}
+									],
+									"status": "unexpected"
+								}
+							],
+							"id": "3449a12a1d19d4641de4-3099c6c3e9578d1edb33",
+							"file": "apps/e2e/tests/team-billing/team-billing.spec.ts",
+							"line": 14,
+							"column": 6
+						}
+					]
+				}
+			]
+		},
+		{
+			"title": "apps/e2e/tests/user-billing/user-billing.spec.ts",
+			"file": "apps/e2e/tests/user-billing/user-billing.spec.ts",
+			"column": 0,
+			"line": 0,
+			"specs": [],
+			"suites": [
+				{
+					"title": "User Billing @integration",
+					"file": "apps/e2e/tests/user-billing/user-billing.spec.ts",
+					"line": 5,
+					"column": 6,
+					"specs": [
+						{
+							"title": "user can subscribe to a plan",
+							"ok": false,
+							"tags": ["integration"],
+							"tests": [
+								{
+									"timeout": 30000,
+									"annotations": [],
+									"expectedStatus": "passed",
+									"projectId": "",
+									"projectName": "",
+									"results": [
+										{
+											"workerIndex": 3,
+											"parallelIndex": 3,
+											"status": "failed",
+											"duration": 0,
+											"error": {
+												"message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/auth/sign-up?next=/home/billing\", waiting until \"load\"\u001b[22m\n",
+												"stack": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/auth/sign-up?next=/home/billing\", waiting until \"load\"\u001b[22m\n\n    at AuthPageObject.signUpFlow (/home/msmith/projects/2025slideheroes/apps/e2e/tests/authentication/auth.po.ts:144:19)\n    at UserBillingPageObject.setup (/home/msmith/projects/2025slideheroes/apps/e2e/tests/user-billing/user-billing.po.ts:15:19)\n    at /home/msmith/projects/2025slideheroes/apps/e2e/tests/user-billing/user-billing.spec.ts:13:12",
+												"location": {
+													"file": "/home/msmith/projects/2025slideheroes/apps/e2e/tests/authentication/auth.po.ts",
+													"column": 19,
+													"line": 144
+												},
+												"snippet": "\u001b[90m   at \u001b[39mapps/e2e/tests/authentication/auth.po.ts:144\n\n  142 | \t\tconst email = this.createRandomEmail();\n  143 |\n> 144 | \t\tawait this.page.goto(`/auth/sign-up?next=${path}`);\n      | \t\t                ^\n  145 |\n  146 | \t\tawait this.signUp({\n  147 | \t\t\temail,"
+											},
+											"errors": [
+												{
+													"location": {
+														"file": "/home/msmith/projects/2025slideheroes/apps/e2e/tests/authentication/auth.po.ts",
+														"column": 19,
+														"line": 144
+													},
+													"message": "Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL\nCall log:\n\u001b[2m  - navigating to \"/auth/sign-up?next=/home/billing\", waiting until \"load\"\u001b[22m\n\n\n   at apps/e2e/tests/authentication/auth.po.ts:144\n\n  142 | \t\tconst email = this.createRandomEmail();\n  143 |\n> 144 | \t\tawait this.page.goto(`/auth/sign-up?next=${path}`);\n      | \t\t                ^\n  145 |\n  146 | \t\tawait this.signUp({\n  147 | \t\t\temail,\n    at AuthPageObject.signUpFlow (/home/msmith/projects/2025slideheroes/apps/e2e/tests/authentication/auth.po.ts:144:19)\n    at UserBillingPageObject.setup (/home/msmith/projects/2025slideheroes/apps/e2e/tests/user-billing/user-billing.po.ts:15:19)\n    at /home/msmith/projects/2025slideheroes/apps/e2e/tests/user-billing/user-billing.spec.ts:13:12"
+												}
+											],
+											"stdout": [],
+											"stderr": [],
+											"retry": 0,
+											"startTime": "2025-08-22T21:52:52.648Z",
+											"annotations": [],
+											"attachments": [],
+											"errorLocation": {
+												"file": "/home/msmith/projects/2025slideheroes/apps/e2e/tests/authentication/auth.po.ts",
+												"column": 19,
+												"line": 144
+											}
+										}
+									],
+									"status": "unexpected"
+								}
+							],
+							"id": "f8ded3fbc4090d9bfcdb-fd1b8833065bfe6ed424",
+							"file": "apps/e2e/tests/user-billing/user-billing.spec.ts",
+							"line": 16,
+							"column": 6
+						}
+					]
+				}
+			]
+		}
+	],
+	"errors": [],
+	"stats": {
+		"startTime": "2025-08-22T21:52:50.817Z",
+		"duration": 30950.078999999998,
+		"expected": 0,
+		"skipped": 0,
+		"unexpected": 4,
+		"flaky": 0
+	}
 }

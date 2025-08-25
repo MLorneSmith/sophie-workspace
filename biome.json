@@ -99,12 +99,15 @@
 				"**/*.test.tsx",
 				"**/*.spec.ts",
 				"**/*.spec.tsx",
-				"**/load-tests/**/*.js"
+				"**/load-tests/**/*.js",
+				"**/test-*.ts",
+				"**/test-*.tsx"
 			],
 			"linter": {
 				"rules": {
 					"suspicious": {
-						"noConsole": "off"
+						"noConsole": "off",
+						"noExplicitAny": "off"
 					},
 					"complexity": {
 						"useDateNow": "off"
