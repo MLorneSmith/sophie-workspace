@@ -33,8 +33,8 @@ CODECHECK_STATUS_FILE="/tmp/.claude_codecheck_status_${GIT_ROOT//\//_}"
 # Mark as running
 echo "running|$(date +%s)|0|0|0" > "$CODECHECK_STATUS_FILE"
 
-# Run lint with detailed output
-pnpm lint 2>&1 | tee /tmp/lint_output.txt
+# Run lint with --force flag to bypass cache for accurate results
+pnpm lint --force 2>&1 | tee /tmp/lint_output.txt
 LINT_EXIT_CODE=${PIPESTATUS[0]}
 ```
 
@@ -50,10 +50,10 @@ Parse lint output to identify:
 ### 3. Automatic Fix Application
 ```bash
 # Apply automatic fixes where safe
-pnpm lint:fix 2>&1 | tee /tmp/lint_fix_output.txt
+pnpm lint:fix --force 2>&1 | tee /tmp/lint_fix_output.txt
 
-# Re-run to check remaining issues
-pnpm lint 2>&1 | tee /tmp/lint_remaining.txt
+# Re-run with --force to check remaining issues
+pnpm lint --force 2>&1 | tee /tmp/lint_remaining.txt
 REMAINING_EXIT_CODE=${PIPESTATUS[0]}
 ```
 
