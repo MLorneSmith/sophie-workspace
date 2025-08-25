@@ -55,8 +55,8 @@ if (!enableTeamAccountTests) {
  */
 export default defineConfig({
 	testDir: "./tests",
-	/* Run tests in files in parallel - disabled for local stability */
-	fullyParallel: !!process.env.CI,
+	/* Run tests in files in parallel - enabled for test runner */
+	fullyParallel: !!process.env.CI || process.env.PLAYWRIGHT_PARALLEL === "true",
 	/* Fail the build on CI if you accidentally left test.only in the source code. */
 	forbidOnly: !!process.env.CI,
 	/* Reduced retries to speed up CI - only retry truly flaky tests */
@@ -64,7 +64,11 @@ export default defineConfig({
 	/* Increase max failures for debugging */
 	maxFailures: process.env.CI ? 10 : 50,
 	/* Configure parallel execution - increased for better CI performance */
-	workers: process.env.CI ? 4 : 1, // Increased to 4 workers for CI (8-core runners)
+	workers: process.env.CI
+		? 4
+		: process.env.PLAYWRIGHT_PARALLEL === "true"
+			? 4
+			: 1, // Allow parallel for test runner
 	/* Enhanced reporting for matrix testing */
 	reporter: [
 		["html", { outputFolder: "playwright-report", open: "never" }],
