@@ -17,6 +17,7 @@ export class TestBillingGateway {
 			return {
 				status: "complete" as const,
 				isSessionOpen: false,
+				checkoutToken: null,
 				customer: {
 					email: "test@example.com",
 				},
@@ -76,6 +77,17 @@ export class TestBillingGateway {
 			active: true,
 			image: null,
 			marketing_features: [],
+		};
+	}
+
+	async getPlanById(planId: string) {
+		return {
+			id: planId,
+			name: `Test Plan ${planId}`,
+			description: `Test plan for ${planId}`,
+			amount: 999,
+			interval: "month" as const,
+			type: "subscription" as const,
 		};
 	}
 
