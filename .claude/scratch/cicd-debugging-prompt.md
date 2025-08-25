@@ -23,3 +23,4 @@ I want you to:
 4. Fix the deploy to dev workflow
 5. Push changes through the pipeline to get to a point where the main branch is the same as the dev branch
 
+we should not be using the domain merkeit

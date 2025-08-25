@@ -134,8 +134,21 @@ export class AuthPageObject {
 
 	createRandomEmail() {
 		const value = Math.random() * 10000000000000;
+		const timestamp = Date.now();
 
-		return `${value.toFixed(0)}@makerkit.dev`;
+		// Check if we're in a test environment that supports auto-confirm
+		const baseUrl = this.page.url() || process.env.BASE_URL || "";
+		const isLocalTest =
+			baseUrl.includes("localhost") || baseUrl.includes("127.0.0.1");
+
+		if (isLocalTest) {
+			// For local testing with InBucket, emails don't actually bounce
+			return `test-${timestamp}-${value.toFixed(0)}@slideheroes.com`;
+		} else {
+			// For deployed environments, use a pattern that won't bounce
+			// This requires either email autoconfirm or a valid test inbox
+			return `e2e-test-${timestamp}@slideheroes.com`;
+		}
 	}
 
 	async signUpFlow(path: string) {
