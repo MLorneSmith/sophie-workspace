@@ -15,6 +15,7 @@ permissions:
   pull-requests: write
   issues: write
   checks: write
+  actions: read  # Add read permission for actions API
 
 jobs:
   assess-readiness:
@@ -29,6 +30,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: dev  # Checkout dev branch to assess current state
           fetch-depth: 0  # Need full history for changelog
 
       - name: Gather quality metrics
