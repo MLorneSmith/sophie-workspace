@@ -82,10 +82,15 @@ expected: ~245 tests across 21 workspaces
 
 ### Phase 3: E2E Tests
 ```yaml
-executor: 9 parallel shards
+executor: 9 parallel shards (individual Bash commands)
+execution_method: |
+  Each shard runs as separate Bash tool call with:
+  - run_in_background: true
+  - timeout: 600000 (10 minutes)
+  - BashOutput polling for completion
 commands:
   - pnpm --filter web-e2e test:shard1  # 13 tests
-  - pnpm --filter web-e2e test:shard2  # 10 tests
+  - pnpm --filter web-e2e test:shard2  # 10 tests  
   - pnpm --filter web-e2e test:shard3  # 9 tests
   - pnpm --filter web-e2e test:shard4  # 9 tests
   - pnpm --filter web-e2e test:shard5  # 6 tests
@@ -93,8 +98,9 @@ commands:
   - pnpm --filter web-e2e test:shard7  # 8 tests
   - pnpm --filter web-e2e test:shard8  # 3 tests
   - pnpm --filter web-e2e test:shard9  # 2 tests
-timeout: 10 minutes per shard
+timeout: 10 minutes per shard (vs 2 minute bash timeout)
 total_expected: 66 E2E tests
+timeout_fix: "Individual Bash commands avoid 2-minute bash session limits"
 ```
 
 ### Phase 4: Result Aggregation
@@ -125,17 +131,49 @@ task:
     - --unit: Run only unit tests
     - --e2e: Run only E2E tests  
     - --all: Run both (default)
-    - --debug: Enable debug mode
+    - --debug: Enable debug mode with OpenTelemetry logging
     - --continue: Continue on failures
     
     Follow your test execution protocol:
     1. Initialize and perform pre-flight checks
     2. If unit tests requested: Delegate to unit-test-agent
-    3. If E2E tests requested: Delegate to e2e-parallel-agent
+    3. If E2E tests requested: Delegate to e2e-parallel-agent (with timeout fixes)
     4. Aggregate results and provide comprehensive report
     5. Update TodoWrite throughout execution
     
+    CRITICAL TIMEOUT FIXES IMPLEMENTED:
+    - E2E shards run as individual Bash commands (not bash loops)
+    - Each shard: run_in_background=true, timeout=600000 (10min)
+    - BashOutput polling replaces wait loops
+    - Native OpenTelemetry logging via hooks (no custom TypeScript logging)
+    
     Execute tests according to the options provided.
+```
+
+## Native Logging with OpenTelemetry + Hooks
+
+**REPLACED COMPLEX CUSTOM SYSTEM**: The previous TypeScript-based logging system has been replaced with Claude Code's native capabilities:
+
+### What Was Removed
+- ❌ `.claude/utils/agent-logger.ts` (580 lines of custom logging)
+- ❌ `.claude/utils/agent-task-logger.ts` (complex Task tool wrapping)  
+- ❌ `.claude/utils/agent-execution-wrapper.ts` (execution tracking)
+- ❌ `.claude/utils/agent-log-viewer.ts` (custom log analysis)
+- ❌ TypeScript initialization complexity that failed to work
+
+### What Was Added
+- ✅ `.claude/hooks/post-tool-use.py` (simple Python hook)
+- ✅ Native OpenTelemetry environment variable configuration
+- ✅ Claude Code's built-in tracing and logging capabilities
+
+### Usage
+```bash
+# Enable debug mode with native logging
+DEBUG_TEST=true /test
+
+# OpenTelemetry will be configured automatically via environment variables
+# Task delegation logging captured via post-tool-use.py hook
+# All logging flows through Claude Code's native systems
 ```
 
 The script will:

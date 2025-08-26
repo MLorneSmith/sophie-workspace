@@ -148,62 +148,138 @@ total_estimated_duration: "10-15m parallel (vs 45m sequential)"
 - [ ] 📊 Result aggregation
 ```
 
-### 2. Launch All Shards in Parallel with Visibility
+### 2. Launch All Shards in Parallel with Individual Bash Commands
 
-```bash
-echo "🎯 Starting 9 parallel E2E test shards..."
-echo "⏱️  Estimated completion: 10-15 minutes"
+**CRITICAL FIX**: Use individual Bash tool calls with `run_in_background: true` and 10-minute timeouts to avoid the 2-minute timeout issue.
 
-# Update TodoWrite: "Launching all 9 shards in parallel..."
+Launch each shard as a separate Bash command:
 
-# Launch all shards with background execution
-for i in {1..9}; do
-    echo "🚀 Launching Shard $i..."
-    # Use Bash tool with run_in_background: true
-    pnpm --filter web-e2e test:shard$i > /tmp/e2e_shard${i}.log 2>&1 &
-    SHARD_PIDS[$i]=$!
-done
+```javascript
+// Launch Shard 1 
+Bash({
+  command: "pnpm --filter web-e2e test:shard1",
+  run_in_background: true,
+  timeout: 600000, // 10 minutes
+  description: "E2E Shard 1: Accessibility Large (13 tests)"
+})
 
-echo "✅ All 9 shards launched and running in parallel"
+// Launch Shard 2
+Bash({
+  command: "pnpm --filter web-e2e test:shard2", 
+  run_in_background: true,
+  timeout: 600000,
+  description: "E2E Shard 2: Authentication (10 tests)"
+})
+
+// Launch Shard 3
+Bash({
+  command: "pnpm --filter web-e2e test:shard3",
+  run_in_background: true,
+  timeout: 600000,
+  description: "E2E Shard 3: Admin (9 tests)"
+})
+
+// Launch Shard 4
+Bash({
+  command: "pnpm --filter web-e2e test:shard4",
+  run_in_background: true, 
+  timeout: 600000,
+  description: "E2E Shard 4: Smoke (9 tests)"
+})
+
+// Launch Shard 5
+Bash({
+  command: "pnpm --filter web-e2e test:shard5",
+  run_in_background: true,
+  timeout: 600000,
+  description: "E2E Shard 5: Accessibility Simple (6 tests)"
+})
+
+// Launch Shard 6
+Bash({
+  command: "pnpm --filter web-e2e test:shard6",
+  run_in_background: true,
+  timeout: 600000,
+  description: "E2E Shard 6: Team Accounts (6 tests)"
+})
+
+// Launch Shard 7
+Bash({
+  command: "pnpm --filter web-e2e test:shard7",
+  run_in_background: true,
+  timeout: 600000,
+  description: "E2E Shard 7: Account + Invitations (8 tests)"
+})
+
+// Launch Shard 8
+Bash({
+  command: "pnpm --filter web-e2e test:shard8",
+  run_in_background: true,
+  timeout: 600000,
+  description: "E2E Shard 8: Quick Tests (3 tests)"
+})
+
+// Launch Shard 9
+Bash({
+  command: "pnpm --filter web-e2e test:shard9",
+  run_in_background: true,
+  timeout: 600000,
+  description: "E2E Shard 9: Billing (2 tests)"
+})
 ```
 
-### 3. Real-Time Progress Monitoring
+### 3. Real-Time Progress Monitoring with BashOutput Tool
 
-```bash
-# Monitor shards and update TodoWrite in real-time
-COMPLETED_SHARDS=0
-FAILED_SHARDS=()
-START_TIME=$(date +%s)
+**CRITICAL FIX**: Replace wait loops with BashOutput polling approach to avoid timeout issues.
 
-while [ $COMPLETED_SHARDS -lt 9 ]; do
-    for i in {1..9}; do
-        if [ -n "${SHARD_PIDS[$i]}" ]; then
-            if ! kill -0 ${SHARD_PIDS[$i]} 2>/dev/null; then
-                # Shard completed
-                wait ${SHARD_PIDS[$i]}
-                EXIT_CODE=$?
-                
-                if [ $EXIT_CODE -eq 0 ]; then
-                    echo "✅ Shard $i completed successfully"
-                    # Update TodoWrite: mark shard as completed
-                else
-                    echo "❌ Shard $i failed with exit code $EXIT_CODE"
-                    FAILED_SHARDS+=($i)
-                    # Update TodoWrite: mark shard as failed
-                fi
-                
-                unset SHARD_PIDS[$i]
-                COMPLETED_SHARDS=$((COMPLETED_SHARDS + 1))
-                
-                # Calculate and show progress
-                ELAPSED=$(($(date +%s) - START_TIME))
-                PROGRESS=$((COMPLETED_SHARDS * 100 / 9))
-                echo "📊 Progress: $COMPLETED_SHARDS/9 shards complete ($PROGRESS%) - ${ELAPSED}s elapsed"
-            fi
-        fi
-    done
-    sleep 2
-done
+Use BashOutput tool to monitor completion of each background shard:
+
+```javascript
+// Monitor all background shards using BashOutput tool
+// Get shell IDs from the Bash commands above, then poll for completion
+
+const shardStatus = new Map();
+const completedShards = [];
+
+// Poll each shard status using BashOutput
+function pollShardStatus(shardId, bashId) {
+  const output = BashOutput({ bash_id: bashId });
+  
+  // Check if shard completed (look for Playwright completion patterns)
+  if (output.includes("passed") || output.includes("failed") || output.includes("done")) {
+    const passed = (output.match(/(\d+) passed/)?.[1] || 0);
+    const failed = (output.match(/(\d+) failed/)?.[1] || 0);
+    
+    shardStatus.set(shardId, {
+      status: failed > 0 ? 'failed' : 'passed',
+      passed: parseInt(passed),
+      failed: parseInt(failed),
+      completed: true
+    });
+    
+    completedShards.push(shardId);
+    
+    // Update TodoWrite with shard completion
+    updateShardProgress(shardId, shardStatus.get(shardId));
+  }
+}
+
+// Poll all shards every 10 seconds until all complete
+function monitorAllShards() {
+  for (let i = 1; i <= 9; i++) {
+    if (!completedShards.includes(i)) {
+      pollShardStatus(i, shardBashIds[i]);
+    }
+  }
+  
+  // Continue polling if not all shards are complete
+  if (completedShards.length < 9) {
+    setTimeout(monitorAllShards, 10000); // Poll every 10 seconds
+  } else {
+    // All shards complete - proceed to aggregation
+    aggregateResults();
+  }
+}
 ```
 
 ### 4. Parse Results from Each Shard
