@@ -354,6 +354,7 @@ class E2ETestRunner {
 		return new Promise((resolve) => {
 			const startTime = Date.now();
 			let output = "";
+			let hasServerStartupDetected = false;
 
 			const proc = spawn(
 				"pnpm",
@@ -370,12 +371,18 @@ class E2ETestRunner {
 			);
 
 			const timeout = setTimeout(() => {
-				logError(`❌ Shard ${shard.id} timed out`);
+				logError(`❌ Shard ${shard.id} timed out after ${CONFIG.shardTimeout / 1000}s`);
 				proc.kill("SIGKILL");
 			}, CONFIG.shardTimeout);
 
 			proc.stdout.on("data", (data) => {
-				output += data.toString();
+				const chunk = data.toString();
+				output += chunk;
+				
+				// Detect server startup
+				if (chunk.includes("Next.js") || chunk.includes("Local:") || chunk.includes("Ready in")) {
+					hasServerStartupDetected = true;
+				}
 			});
 
 			proc.stderr.on("data", (data) => {
@@ -390,15 +397,22 @@ class E2ETestRunner {
 				const result = this.parsePlaywrightOutput(output, shard);
 				result.duration = `${duration}s`;
 				result.exitCode = code;
+				result.hasServerStartup = hasServerStartupDetected;
 
 				// Check for infrastructure failures
 				if (output.includes("WebServer") && output.includes("Timed out")) {
 					result.infrastructureFailure = true;
 				}
 
+				// Early exit detection (likely server startup issues)
+				if (duration <= 5 && code !== 0 && !hasServerStartupDetected) {
+					result.infrastructureFailure = true;
+					logError(`  ⚠️ Shard ${shard.id} exited early (${duration}s, code ${code}) - likely server startup issue`);
+				}
+
 				const statusIcon = result.failed > 0 ? "❌" : "✅";
 				log(
-					`  ${statusIcon} Shard ${shard.id} (${shard.name}): ${result.passed}/${result.total} in ${duration}s`,
+					`  ${statusIcon} Shard ${shard.id} (${shard.name}): ${result.passed}/${result.total} in ${duration}s (exit: ${code})`
 				);
 
 				resolve(result);
