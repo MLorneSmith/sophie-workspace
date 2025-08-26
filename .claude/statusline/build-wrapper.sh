@@ -5,6 +5,18 @@
 
 TRACK_SCRIPT="$(dirname "$0")/track-build.sh"
 
+# Load environment variables from .env if it exists
+# Use a safer approach to load only the TURBO_REMOTE_CACHE_SIGNATURE_KEY
+if [ -f .env ]; then
+    export TURBO_REMOTE_CACHE_SIGNATURE_KEY=$(grep "^TURBO_REMOTE_CACHE_SIGNATURE_KEY=" .env | cut -d'=' -f2-)
+fi
+
+# Set GIT_HASH environment variable for the build process
+# This prevents warnings about missing git hash in production builds
+if [ -z "$GIT_HASH" ] && command -v git &> /dev/null; then
+    export GIT_HASH=$(git log --pretty=format:"%h" -n1 2>/dev/null || echo "")
+fi
+
 # Run the actual build command (turbo build with cache)
 turbo build --cache-dir=.turbo
 
