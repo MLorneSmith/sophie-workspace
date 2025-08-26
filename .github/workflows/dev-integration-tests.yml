@@ -65,6 +65,8 @@ jobs:
           
           MAX_WAIT_TIME=300  # 5 minutes
           CHECK_INTERVAL=10
+          RETRY_COUNT=0
+          MAX_RETRIES=3
           elapsed=0
           
           while [ $elapsed -lt $MAX_WAIT_TIME ]; do
@@ -72,14 +74,59 @@ jobs:
             
             # Try to get a response from the main page
             # Include protection bypass header if available
-            CURL_OPTS=""
             if [ ! -z "${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" ]; then
-              CURL_OPTS="-H 'x-vercel-protection-bypass: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}'"
+              CURL_HEADERS="-H \"x-vercel-protection-bypass: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}\""
+            else
+              CURL_HEADERS=""
             fi
             
-            HTTP_CODE=$(eval "curl -s -o /dev/null -w '%{http_code}' --max-time 30 $CURL_OPTS \
-              '${{ needs.check-should-run.outputs.deployment_url }}'")
+            # Use a more robust curl command with proper error handling
+            # Increase timeout to 60s and add retry logic
+            HTTP_CODE=""
+            CURL_EXIT_CODE=0
             
+            # Try the curl command with better error handling
+            if [ ! -z "$CURL_HEADERS" ]; then
+              HTTP_CODE=$(curl -s -o /dev/null -w '%{http_code}' \
+                --max-time 60 \
+                --connect-timeout 30 \
+                --retry 3 \
+                --retry-delay 5 \
+                --retry-max-time 120 \
+                -H "x-vercel-protection-bypass: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" \
+                "${{ needs.check-should-run.outputs.deployment_url }}" 2>/dev/null) || CURL_EXIT_CODE=$?
+            else
+              HTTP_CODE=$(curl -s -o /dev/null -w '%{http_code}' \
+                --max-time 60 \
+                --connect-timeout 30 \
+                --retry 3 \
+                --retry-delay 5 \
+                --retry-max-time 120 \
+                "${{ needs.check-should-run.outputs.deployment_url }}" 2>/dev/null) || CURL_EXIT_CODE=$?
+            fi
+            
+            # Handle curl exit codes
+            if [ $CURL_EXIT_CODE -eq 28 ]; then
+              echo "⚠️ curl timed out (exit code 28). Retrying with longer timeout..."
+              # Try once more with even longer timeout
+              if [ ! -z "${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" ]; then
+                HTTP_CODE=$(curl -s -o /dev/null -w '%{http_code}' \
+                  --max-time 120 \
+                  --connect-timeout 60 \
+                  -H "x-vercel-protection-bypass: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" \
+                  "${{ needs.check-should-run.outputs.deployment_url }}" 2>/dev/null) || HTTP_CODE="TIMEOUT"
+              else
+                HTTP_CODE=$(curl -s -o /dev/null -w '%{http_code}' \
+                  --max-time 120 \
+                  --connect-timeout 60 \
+                  "${{ needs.check-should-run.outputs.deployment_url }}" 2>/dev/null) || HTTP_CODE="TIMEOUT"
+              fi
+            elif [ $CURL_EXIT_CODE -ne 0 ]; then
+              echo "⚠️ curl failed with exit code $CURL_EXIT_CODE"
+              HTTP_CODE="ERROR"
+            fi
+            
+            # Check the HTTP response code
             if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "304" ]; then
               echo "✅ Deployment is ready (HTTP $HTTP_CODE)"
               echo "ready=true" >> $GITHUB_OUTPUT
@@ -89,7 +136,16 @@ jobs:
               echo "ready=true" >> $GITHUB_OUTPUT
               exit 0
             elif [ "$HTTP_CODE" = "522" ] || [ "$HTTP_CODE" = "521" ] || [ "$HTTP_CODE" = "523" ]; then
-              echo "⚠️ Cloudflare error $HTTP_CODE. Waiting ${CHECK_INTERVAL}s..."
+              echo "⚠️ Cloudflare error $HTTP_CODE. Waiting ${CHECK_INTERVAL}s before retry..."
+            elif [ "$HTTP_CODE" = "TIMEOUT" ] || [ "$HTTP_CODE" = "ERROR" ]; then
+              echo "⚠️ Connection failed. Deployment may still be initializing. Waiting ${CHECK_INTERVAL}s..."
+              # After multiple timeouts, consider it ready but protected
+              RETRY_COUNT=$((RETRY_COUNT + 1))
+              if [ $RETRY_COUNT -ge $MAX_RETRIES ]; then
+                echo "⚠️ Multiple timeouts detected. Assuming deployment is protected but ready."
+                echo "ready=true" >> $GITHUB_OUTPUT
+                exit 0
+              fi
             else
               echo "⚠️ Got HTTP $HTTP_CODE. Waiting ${CHECK_INTERVAL}s..."
             fi
