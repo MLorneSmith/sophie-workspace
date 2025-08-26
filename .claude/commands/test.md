@@ -112,26 +112,30 @@ files:
 
 ## Implementation
 
-When the `/test` command is invoked, use the Task tool to execute the deterministic script:
+When the `/test` command is invoked, use the Task tool to execute tests via the test-orchestrator agent:
 
 ```yaml
 task:
-  subagent_type: "general-purpose"
+  subagent_type: "test-orchestrator"
   description: "Execute comprehensive test suite"
   prompt: |
-    Execute the deterministic test runner script with the provided options:
+    Execute comprehensive testing based on the user's options:
     
-    1. Run .claude/scripts/test-runner.sh with appropriate flags
-    2. Parse options from the user request:
-       - --unit: Run only unit tests
-       - --e2e: Run only E2E tests  
-       - --all: Run both (default)
-       - --debug: Enable debug mode
-       - --continue: Continue on failures
-    3. Monitor execution and report results
-    4. No LLM decision-making - just execute the script
+    Options from user request:
+    - --unit: Run only unit tests
+    - --e2e: Run only E2E tests  
+    - --all: Run both (default)
+    - --debug: Enable debug mode
+    - --continue: Continue on failures
     
-    Execute: .claude/scripts/test-runner.sh [parsed_options]
+    Follow your test execution protocol:
+    1. Initialize and perform pre-flight checks
+    2. If unit tests requested: Delegate to unit-test-agent
+    3. If E2E tests requested: Delegate to e2e-parallel-agent
+    4. Aggregate results and provide comprehensive report
+    5. Update TodoWrite throughout execution
+    
+    Execute tests according to the options provided.
 ```
 
 The script will:
