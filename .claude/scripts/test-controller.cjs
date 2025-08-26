@@ -284,7 +284,7 @@ class UnitTestRunner {
 	}
 }
 
-// E2E test runner
+// E2E test runner with queue-based execution
 class E2ETestRunner {
 	constructor() {
 		this.shards = [
@@ -298,20 +298,26 @@ class E2ETestRunner {
 			{ id: 8, name: "Quick Tests", tests: 3 },
 			{ id: 9, name: "Billing", tests: 2 },
 		];
+		
+		// Calculate optimal concurrency based on system resources
+		const cpuCount = os.cpus().length;
+		// Use 75% of CPU cores for optimal performance without overload
+		// But cap at 6 for safety even on high-core machines
+		this.maxConcurrentShards = Math.min(6, Math.floor(cpuCount * 0.75));
+		
+		log(`🖥️  System has ${cpuCount} CPU cores`);
+		log(`🔧 Using ${this.maxConcurrentShards} concurrent shards for optimal performance`);
 	}
 
 	async run(status) {
-		log("\n🌐 Running E2E tests (9 parallel shards)...");
+		log(`\n🌐 Running E2E tests (9 shards, max ${this.maxConcurrentShards} concurrent)...`);
 		status.status.phase = "e2e_tests";
 		await status.save();
 
-		// Run all shards in parallel - Playwright will handle server reuse
-		const shardPromises = this.shards.map((shard) => {
-			log(`  🚀 Starting shard ${shard.id}: ${shard.name}`);
-			return this.runShard(shard);
-		});
-
-		const shardResults = await Promise.all(shardPromises);
+		const startTime = Date.now();
+		
+		// Queue-based execution with concurrency limit
+		const shardResults = await this.runShardsWithQueue(status);
 
 		// Aggregate results
 		const totals = {
@@ -322,8 +328,8 @@ class E2ETestRunner {
 			infrastructureFailures: 0,
 		};
 
-		shardResults.forEach((result, index) => {
-			const shard = this.shards[index];
+		shardResults.forEach((result) => {
+			const shard = this.shards.find(s => s.id === result.shardId);
 			status.status.e2e.shards[`shard_${shard.id}`] = {
 				name: shard.name,
 				...result,
@@ -338,7 +344,8 @@ class E2ETestRunner {
 			}
 		});
 
-		status.status.e2e = { ...status.status.e2e, ...totals };
+		const totalDuration = Math.round((Date.now() - startTime) / 1000);
+		status.status.e2e = { ...status.status.e2e, ...totals, duration: `${totalDuration}s` };
 
 		log("\n📊 E2E tests completed");
 		log(`   Total: ${totals.total}`);
@@ -347,8 +354,86 @@ class E2ETestRunner {
 		if (totals.infrastructureFailures > 0) {
 			log(`   ⚠️ Infrastructure failures: ${totals.infrastructureFailures}`);
 		}
+		log(`   ⏱️ Total duration: ${totalDuration}s`);
 
 		return totals;
+	}
+
+	async runShardsWithQueue(status) {
+		const shardQueue = [...this.shards];
+		const runningShards = new Map(); // Map of shardId -> Promise
+		const results = [];
+		const failedShards = []; // Track shards that failed for potential retry
+
+		// Helper to wait for next shard to complete
+		const waitForNextCompletion = async () => {
+			if (runningShards.size === 0) return null;
+			
+			const promises = Array.from(runningShards.entries()).map(async ([shardId, promise]) => {
+				const result = await promise;
+				return { shardId, result };
+			});
+			
+			const completed = await Promise.race(promises);
+			runningShards.delete(completed.shardId);
+			return completed.result;
+		};
+
+		// Process queue with concurrency limit
+		while (shardQueue.length > 0 || runningShards.size > 0) {
+			// Start new shards up to the concurrency limit
+			while (runningShards.size < this.maxConcurrentShards && shardQueue.length > 0) {
+				const shard = shardQueue.shift();
+				log(`  🚀 Starting shard ${shard.id}: ${shard.name} (${runningShards.size + 1}/${this.maxConcurrentShards} concurrent)`);
+				
+				const shardPromise = this.runShardWithRetry(shard, 1);
+				runningShards.set(shard.id, shardPromise);
+			}
+
+			// Wait for at least one shard to complete if we're at capacity
+			if (runningShards.size > 0) {
+				const result = await waitForNextCompletion();
+				if (result) {
+					results.push(result);
+					
+					// Track failed shards for potential retry logic
+					if (result.failed > 0 || result.infrastructureFailure) {
+						failedShards.push(result.shardId);
+					}
+
+					// Update status in real-time
+					await status.save();
+				}
+			}
+		}
+
+		// Log completion summary
+		log(`\n✅ All ${this.shards.length} shards completed`);
+		if (failedShards.length > 0) {
+			log(`   ⚠️ Shards with failures: ${failedShards.join(', ')}`);
+		}
+
+		return results;
+	}
+
+	async runShardWithRetry(shard, attempt = 1) {
+		const maxRetries = 2;
+		const result = await this.runShard(shard, attempt);
+		
+		// Add shardId to result for tracking
+		result.shardId = shard.id;
+		
+		// Retry logic for infrastructure failures
+		if (result.infrastructureFailure && attempt < maxRetries) {
+			log(`  🔄 Retrying shard ${shard.id} (attempt ${attempt + 1}/${maxRetries})...`);
+			
+			// Wait a bit before retry to let resources settle
+			await new Promise(resolve => setTimeout(resolve, 3000));
+			
+			return this.runShardWithRetry(shard, attempt + 1);
+		}
+		
+		return result;
 	}
 
 	async runShard(shard) {
