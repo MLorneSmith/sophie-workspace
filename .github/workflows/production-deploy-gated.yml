@@ -35,8 +35,30 @@ permissions:
   checks: read
 
 jobs:
+  validate-trigger:
+    name: Validate Trigger Event
+    runs-on: ubuntu-latest
+    outputs:
+      should_proceed: ${{ steps.check.outputs.proceed }}
+    steps:
+      - name: Check if properly triggered
+        id: check
+        run: |
+          if [ "${{ github.event_name }}" != "workflow_dispatch" ]; then
+            echo "⚠️ This workflow should only be triggered manually via workflow_dispatch"
+            echo "Detected event: ${{ github.event_name }}"
+            echo "This appears to be a GitHub Actions platform bug (Issue #250)"
+            echo "The workflow will exit gracefully without deploying anything."
+            echo "proceed=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          echo "✅ Properly triggered via workflow_dispatch"
+          echo "proceed=true" >> $GITHUB_OUTPUT
+
   safety-checks:
     name: Pre-Deployment Safety Checks
+    needs: validate-trigger
+    if: needs.validate-trigger.outputs.should_proceed == 'true'
     runs-on: ubuntu-latest
     outputs:
       checks_passed: ${{ steps.checks.outputs.passed }}
@@ -140,8 +162,8 @@ jobs:
   # Add a deliberate pause to allow cancellation
   confirmation-pause:
     name: Final Confirmation Window
-    needs: safety-checks
-    if: needs.safety-checks.outputs.checks_passed == 'true'
+    needs: [validate-trigger, safety-checks]
+    if: needs.validate-trigger.outputs.should_proceed == 'true' && needs.safety-checks.outputs.checks_passed == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Display deployment plan
@@ -173,8 +195,8 @@ jobs:
 
   trigger-production-deploy:
     name: Execute Production Deployment
-    needs: [safety-checks, confirmation-pause]
-    if: needs.safety-checks.outputs.checks_passed == 'true'
+    needs: [validate-trigger, safety-checks, confirmation-pause]
+    if: needs.validate-trigger.outputs.should_proceed == 'true' && needs.safety-checks.outputs.checks_passed == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Create deployment record
