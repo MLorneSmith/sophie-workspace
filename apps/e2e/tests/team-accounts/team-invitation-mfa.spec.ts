@@ -69,13 +69,21 @@ test.describe("Team Invitation with MFA Flow", () => {
 			password: "testingpassword",
 		});
 
-		// Complete MFA verification
+		// Complete MFA verification with better error handling
+		await page.waitForSelector("[data-input-otp]", { timeout: 5000 });
+		await page.waitForTimeout(500); // Ensure form is ready
+
 		await expect(async () => {
 			await auth.submitMFAVerification(MFA_KEY);
+			// Wait for successful MFA verification
+			await page.waitForURL((url) => url.pathname === "/home", {
+				timeout: 10000,
+			});
 		}).toPass({
+			timeout: 60000,
 			intervals: [
-				500, 2500, 5000, 7500, 10_000, 15_000, 20_000, 25_000, 30_000, 35_000,
-				40_000, 45_000, 50_000,
+				500, 1000, 2000, 3000, 5000, 7500, 10_000, 15_000, 20_000, 25_000,
+				30_000,
 			],
 		});
 

@@ -70,7 +70,7 @@ export class InvitationsPageObject {
 				.click();
 
 			await this.page.waitForURL("**/home/*/members");
-		}).toPass();
+		}).toPass({ timeout: 15000 });
 	}
 
 	async openInviteForm() {
@@ -78,7 +78,7 @@ export class InvitationsPageObject {
 			await this.page.click('[data-test="invite-members-form-trigger"]');
 
 			return await expect(this.getInviteForm()).toBeVisible();
-		}).toPass();
+		}).toPass({ timeout: 15000 });
 	}
 
 	getInvitations() {
@@ -123,18 +123,38 @@ export class InvitationsPageObject {
 			process.stdout.write("Accepting invitation...\n");
 		}
 
-		const click = this.page
-			.locator('[data-test="join-team-form"] button[type="submit"]')
-			.click();
-
-		const response = this.page.waitForResponse((response) => {
-			return (
-				response.url().includes("/join") &&
-				response.request().method() === "POST"
-			);
+		// Wait for page to be fully loaded before interaction
+		await this.page.waitForLoadState("networkidle");
+		await this.page.waitForSelector('[data-test="join-team-form"]', {
+			state: "visible",
+			timeout: 10000,
 		});
 
-		await Promise.all([click, response]);
+		const submitButton = this.page.locator(
+			'[data-test="join-team-form"] button[type="submit"]',
+		);
+
+		// Ensure button is enabled before clicking
+		await expect(submitButton).toBeEnabled({ timeout: 5000 });
+
+		// Use Promise.all with proper error handling
+		const [response] = await Promise.all([
+			this.page.waitForResponse((response) => {
+				return (
+					response.url().includes("/join") &&
+					response.request().method() === "POST" &&
+					response.status() === 200
+				);
+			}),
+			submitButton.click(),
+		]);
+
+		// Wait for redirect after successful join
+		await this.page.waitForURL("**/home/**", { timeout: 10000 });
+
+		if (process.env.DEBUG) {
+			process.stdout.write(`Join response status: ${response.status()}\n`);
+		}
 	}
 
 	private getInviteForm() {

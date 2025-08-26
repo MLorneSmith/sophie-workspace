@@ -13,6 +13,19 @@ test.describe("Invitations @integration", () => {
 		await invitations.setup();
 	});
 
+	test.beforeEach(async () => {
+		// Ensure clean state for each test
+		await page.waitForLoadState("networkidle");
+	});
+
+	test.afterEach(async () => {
+		// Clean up any lingering state
+		if (page.url().includes("/members")) {
+			await page.reload();
+			await page.waitForLoadState("networkidle");
+		}
+	});
+
 	test("users can delete invites", async () => {
 		await invitations.navigateToMembers();
 		await invitations.openInviteForm();
@@ -96,6 +109,17 @@ test.describe("Full Invitation Flow", () => {
 		invitations = new InvitationsPageObject(page);
 
 		await invitations.setup();
+	});
+
+	test.beforeEach(async () => {
+		// Ensure clean state for each test
+		await page.waitForLoadState("networkidle");
+	});
+
+	test.afterEach(async () => {
+		// Clear cookies and state after each test to avoid cross-test pollution
+		await page.context().clearCookies();
+		await page.context().clearPermissions();
 	});
 
 	test("should invite users and let users accept an invite", async () => {
