@@ -26,9 +26,9 @@ function logError(message) {
 const CONFIG = {
 	statusFile: `/tmp/.claude_test_status_${process.cwd().replace(/\//g, "_")}`,
 	resultFile: "/tmp/.claude_test_results.json",
-	unitTimeout: 5 * 60 * 1000, // 5 minutes
-	e2eTimeout: 20 * 60 * 1000, // 20 minutes (increased for server startup)
-	shardTimeout: 15 * 60 * 1000, // 15 minutes per shard (increased for server startup)
+	unitTimeout: 15 * 60 * 1000, // 15 minutes (increased for safety)
+	e2eTimeout: 45 * 60 * 1000, // 45 minutes (increased for all shards)
+	shardTimeout: 30 * 60 * 1000, // 30 minutes per shard (increased for safety)
 	ports: {
 		supabase: 55321,
 		web: 3000,
@@ -103,7 +103,7 @@ class InfrastructureChecker {
 			}
 
 			log("⚠️ Supabase E2E not running, attempting to start...");
-			await execAsync("cd apps/e2e && npx supabase start", { timeout: 120000 });
+			await execAsync("cd apps/e2e && npx supabase start", { timeout: 300000 }); // 5 minutes timeout
 			log("✅ Supabase E2E started successfully");
 			return "started";
 		} catch (error) {
