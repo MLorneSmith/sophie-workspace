@@ -9,6 +9,7 @@ const { spawn, exec } = require("node:child_process");
 const fs = require("node:fs").promises;
 const path = require("node:path");
 const { promisify } = require("node:util");
+const os = require("node:os");
 const execAsync = promisify(exec);
 
 // Simple logging utility to replace console statements
@@ -371,16 +372,22 @@ class E2ETestRunner {
 			);
 
 			const timeout = setTimeout(() => {
-				logError(`❌ Shard ${shard.id} timed out after ${CONFIG.shardTimeout / 1000}s`);
+				logError(
+					`❌ Shard ${shard.id} timed out after ${CONFIG.shardTimeout / 1000}s`,
+				);
 				proc.kill("SIGKILL");
 			}, CONFIG.shardTimeout);
 
 			proc.stdout.on("data", (data) => {
 				const chunk = data.toString();
 				output += chunk;
-				
+
 				// Detect server startup
-				if (chunk.includes("Next.js") || chunk.includes("Local:") || chunk.includes("Ready in")) {
+				if (
+					chunk.includes("Next.js") ||
+					chunk.includes("Local:") ||
+					chunk.includes("Ready in")
+				) {
 					hasServerStartupDetected = true;
 				}
 			});
@@ -407,12 +414,14 @@ class E2ETestRunner {
 				// Early exit detection (likely server startup issues)
 				if (duration <= 5 && code !== 0 && !hasServerStartupDetected) {
 					result.infrastructureFailure = true;
-					logError(`  ⚠️ Shard ${shard.id} exited early (${duration}s, code ${code}) - likely server startup issue`);
+					logError(
+						`  ⚠️ Shard ${shard.id} exited early (${duration}s, code ${code}) - likely server startup issue`,
+					);
 				}
 
 				const statusIcon = result.failed > 0 ? "❌" : "✅";
 				log(
-					`  ${statusIcon} Shard ${shard.id} (${shard.name}): ${result.passed}/${result.total} in ${duration}s (exit: ${code})`
+					`  ${statusIcon} Shard ${shard.id} (${shard.name}): ${result.passed}/${result.total} in ${duration}s (exit: ${code})`,
 				);
 
 				resolve(result);
