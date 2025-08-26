@@ -1,0 +1,410 @@
+name: Visual Regression Testing
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+        description: 'Environment to test (staging or production)'
+      base_url:
+        required: true
+        type: string
+        description: 'Base URL of the application to test'
+      update_snapshots:
+        required: false
+        type: boolean
+        default: false
+        description: 'Whether to update baseline snapshots'
+      test_suite:
+        required: false
+        type: string
+        default: 'critical'
+        description: 'Test suite to run (critical, full, or custom path)'
+      fail_on_diff:
+        required: false
+        type: boolean
+        default: true
+        description: 'Whether to fail the workflow if visual differences are detected'
+    outputs:
+      has_differences:
+        description: 'Whether visual differences were detected'
+        value: ${{ jobs.visual-test.outputs.has_differences }}
+      report_url:
+        description: 'URL to the visual regression report'
+        value: ${{ jobs.visual-test.outputs.report_url }}
+
+jobs:
+  visual-test:
+    name: Visual Regression - ${{ inputs.environment }}
+    runs-on: runs-on=${{ github.run_id }},runner=4cpu-linux-x64
+    outputs:
+      has_differences: ${{ steps.test.outputs.has_differences }}
+      report_url: ${{ steps.upload.outputs.report_url }}
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: ./.github/actions/setup-deps
+      
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-visual-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+      
+      - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: |
+          cd apps/e2e
+          pnpm exec playwright install --with-deps chromium
+      
+      - name: Download baseline snapshots
+        uses: actions/cache@v4
+        id: baseline-cache
+        with:
+          path: apps/e2e/visual-snapshots
+          key: visual-snapshots-${{ inputs.environment }}-${{ hashFiles('apps/e2e/tests/visual/**/*.ts') }}
+          restore-keys: |
+            visual-snapshots-${{ inputs.environment }}-
+      
+      - name: Create visual regression tests
+        if: steps.baseline-cache.outputs.cache-hit != 'true'
+        run: |
+          # Create visual regression test structure
+          mkdir -p apps/e2e/tests/visual
+          
+          # Create critical UI components test
+          cat > apps/e2e/tests/visual/critical-components.spec.ts << 'EOF'
+          import { test, expect } from '@playwright/test';
+          
+          const criticalPages = [
+            { name: 'Homepage', path: '/', viewport: { width: 1920, height: 1080 } },
+            { name: 'Homepage Mobile', path: '/', viewport: { width: 375, height: 667 } },
+            { name: 'Dashboard', path: '/dashboard', viewport: { width: 1920, height: 1080 }, auth: true },
+            { name: 'Pricing', path: '/pricing', viewport: { width: 1920, height: 1080 } },
+            { name: 'Login', path: '/sign-in', viewport: { width: 1920, height: 1080 } },
+            { name: 'Sign Up', path: '/sign-up', viewport: { width: 1920, height: 1080 } }
+          ];
+          
+          test.describe('Visual Regression - Critical Components', () => {
+            for (const page of criticalPages) {
+              test(`${page.name} - Visual Snapshot`, async ({ page: playwrightPage, context }) => {
+                // Set viewport
+                await playwrightPage.setViewportSize(page.viewport);
+                
+                // Handle authentication if needed
+                if (page.auth) {
+                  // Set auth cookies or login
+                  // This would use your existing auth setup
+                  await context.addCookies([
+                    {
+                      name: 'sb-access-token',
+                      value: process.env.TEST_USER_TOKEN || '',
+                      domain: new URL(process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000').hostname,
+                      path: '/'
+                    }
+                  ]);
+                }
+                
+                // Navigate to page
+                await playwrightPage.goto(page.path, { waitUntil: 'networkidle' });
+                
+                // Wait for animations to complete
+                await playwrightPage.waitForTimeout(1000);
+                
+                // Hide dynamic content that changes frequently
+                await playwrightPage.evaluate(() => {
+                  // Hide timestamps, user-specific data
+                  document.querySelectorAll('[data-testid*="timestamp"]').forEach(el => {
+                    (el as HTMLElement).style.visibility = 'hidden';
+                  });
+                  document.querySelectorAll('[data-testid*="user-id"]').forEach(el => {
+                    (el as HTMLElement).textContent = 'USER_ID';
+                  });
+                });
+                
+                // Take screenshot
+                await expect(playwrightPage).toHaveScreenshot(`${page.name.toLowerCase().replace(/ /g, '-')}.png`, {
+                  fullPage: true,
+                  animations: 'disabled',
+                  mask: [
+                    // Mask dynamic content areas if any
+                    playwrightPage.locator('[data-testid="dynamic-content"]')
+                  ].filter(Boolean),
+                  maxDiffPixels: 100,
+                  threshold: 0.2 // 20% difference threshold
+                });
+              });
+            }
+          });
+          EOF
+          
+          # Create component-specific visual tests
+          cat > apps/e2e/tests/visual/components.spec.ts << 'EOF'
+          import { test, expect } from '@playwright/test';
+          
+          test.describe('Visual Regression - UI Components', () => {
+            test.beforeEach(async ({ page }) => {
+              // Navigate to component showcase or storybook if available
+              await page.goto('/components', { waitUntil: 'networkidle' });
+            });
+            
+            test('Button variations', async ({ page }) => {
+              const buttons = page.locator('[data-testid^="button-"]');
+              const count = await buttons.count();
+              
+              for (let i = 0; i < count; i++) {
+                const button = buttons.nth(i);
+                const testId = await button.getAttribute('data-testid');
+                
+                // Capture normal state
+                await expect(button).toHaveScreenshot(`button-${testId}-normal.png`);
+                
+                // Capture hover state
+                await button.hover();
+                await expect(button).toHaveScreenshot(`button-${testId}-hover.png`);
+                
+                // Capture focus state
+                await button.focus();
+                await expect(button).toHaveScreenshot(`button-${testId}-focus.png`);
+              }
+            });
+            
+            test('Form components', async ({ page }) => {
+              const forms = page.locator('form[data-testid]');
+              const count = await forms.count();
+              
+              for (let i = 0; i < count; i++) {
+                const form = forms.nth(i);
+                const testId = await form.getAttribute('data-testid');
+                await expect(form).toHaveScreenshot(`form-${testId}.png`);
+              }
+            });
+            
+            test('Card layouts', async ({ page }) => {
+              const cards = page.locator('[data-testid^="card-"]');
+              const count = await cards.count();
+              
+              for (let i = 0; i < Math.min(count, 10); i++) {
+                const card = cards.nth(i);
+                const testId = await card.getAttribute('data-testid');
+                await expect(card).toHaveScreenshot(`card-${testId}.png`);
+              }
+            });
+          });
+          EOF
+          
+          # Create configuration for visual tests
+          cat > apps/e2e/playwright.visual.config.ts << 'EOF'
+          import { defineConfig } from '@playwright/test';
+          import baseConfig from './playwright.config';
+          
+          export default defineConfig({
+            ...baseConfig,
+            use: {
+              ...baseConfig.use,
+              // Visual regression specific settings
+              ignoreHTTPSErrors: true,
+              screenshot: 'only-on-failure',
+              video: 'retain-on-failure',
+              trace: 'retain-on-failure',
+            },
+            projects: [
+              {
+                name: 'visual-chromium',
+                use: {
+                  ...baseConfig.use,
+                  browserName: 'chromium',
+                  // Ensure consistent rendering
+                  deviceScaleFactor: 1,
+                  hasTouch: false,
+                  isMobile: false,
+                  javaScriptEnabled: true,
+                  colorScheme: 'light',
+                  // Disable animations for consistent snapshots
+                  launchOptions: {
+                    args: [
+                      '--disable-blink-features=AutomationControlled',
+                      '--disable-web-security',
+                      '--disable-features=IsolateOrigins,site-per-process',
+                      '--disable-blink-features=AutomationControlled',
+                      '--no-sandbox',
+                      '--disable-setuid-sandbox',
+                      '--disable-dev-shm-usage',
+                      '--disable-accelerated-2d-canvas',
+                      '--no-first-run',
+                      '--no-zygote',
+                      '--single-process',
+                      '--disable-gpu',
+                      '--force-color-profile=srgb'
+                    ],
+                  },
+                },
+              },
+            ],
+            reporter: [
+              ['html', { outputFolder: 'playwright-report/visual' }],
+              ['json', { outputFile: 'test-results/visual-results.json' }],
+              ['list'],
+            ],
+            outputDir: 'test-results/visual',
+            snapshotDir: 'visual-snapshots',
+            snapshotPathTemplate: '{snapshotDir}/{testFileDir}/{testFileName}-snapshots/{arg}{-projectName}{-snapshotSuffix}{ext}',
+            updateSnapshots: process.env.UPDATE_SNAPSHOTS === 'true' ? 'all' : 'none',
+          });
+          EOF
+      
+      - name: Run visual regression tests
+        id: test
+        env:
+          PLAYWRIGHT_BASE_URL: ${{ inputs.base_url }}
+          UPDATE_SNAPSHOTS: ${{ inputs.update_snapshots }}
+          CI: true
+        run: |
+          cd apps/e2e
+          
+          # Determine which tests to run
+          TEST_PATTERN=""
+          case "${{ inputs.test_suite }}" in
+            "critical")
+              TEST_PATTERN="tests/visual/critical-components.spec.ts"
+              ;;
+            "full")
+              TEST_PATTERN="tests/visual/**/*.spec.ts"
+              ;;
+            *)
+              TEST_PATTERN="${{ inputs.test_suite }}"
+              ;;
+          esac
+          
+          # Run tests
+          if [ "${{ inputs.update_snapshots }}" = "true" ]; then
+            echo "📸 Updating visual snapshots..."
+            pnpm exec playwright test $TEST_PATTERN --config=playwright.visual.config.ts --update-snapshots || true
+            echo "has_differences=false" >> $GITHUB_OUTPUT
+          else
+            echo "🔍 Running visual regression tests..."
+            if pnpm exec playwright test $TEST_PATTERN --config=playwright.visual.config.ts; then
+              echo "✅ No visual differences detected"
+              echo "has_differences=false" >> $GITHUB_OUTPUT
+            else
+              echo "⚠️ Visual differences detected"
+              echo "has_differences=true" >> $GITHUB_OUTPUT
+              
+              if [ "${{ inputs.fail_on_diff }}" = "true" ]; then
+                exit 1
+              fi
+            fi
+          fi
+      
+      - name: Upload updated snapshots
+        if: inputs.update_snapshots
+        uses: actions/cache@v4
+        with:
+          path: apps/e2e/visual-snapshots
+          key: visual-snapshots-${{ inputs.environment }}-${{ github.sha }}
+      
+      - name: Generate diff report
+        if: steps.test.outputs.has_differences == 'true'
+        run: |
+          cd apps/e2e
+          
+          # Create a summary of differences
+          cat > visual-diff-summary.md << 'EOF'
+          # Visual Regression Report
+          
+          **Environment:** ${{ inputs.environment }}
+          **URL:** ${{ inputs.base_url }}
+          **Test Suite:** ${{ inputs.test_suite }}
+          
+          ## ⚠️ Visual Differences Detected
+          
+          Visual differences were found in the following components. Please review the diff images in the artifacts.
+          
+          ### Next Steps:
+          1. Download the visual-regression-report artifact
+          2. Review the diff images
+          3. If changes are intentional, re-run with `update_snapshots: true`
+          4. If changes are unintentional, investigate and fix the UI regression
+          EOF
+          
+          # List failed tests
+          if [ -f test-results/visual-results.json ]; then
+            echo -e "\n### Failed Tests:\n" >> visual-diff-summary.md
+            jq -r '.suites[].suites[].specs[] | select(.tests[].results[].status == "failed") | "- " + .title' test-results/visual-results.json >> visual-diff-summary.md || true
+          fi
+      
+      - name: Upload test results
+        if: always()
+        id: upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-regression-report-${{ github.run_id }}
+          path: |
+            apps/e2e/playwright-report/visual/
+            apps/e2e/test-results/visual/
+            apps/e2e/visual-diff-summary.md
+            apps/e2e/visual-snapshots/**/*-diff.png
+            apps/e2e/visual-snapshots/**/*-actual.png
+          retention-days: 30
+      
+      - name: Comment on PR
+        if: github.event_name == 'pull_request' && steps.test.outputs.has_differences == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let comment = `## 🎨 Visual Regression Test Results\n\n`;
+            
+            if ('${{ steps.test.outputs.has_differences }}' === 'true') {
+              comment += `### ⚠️ Visual differences detected!\n\n`;
+              comment += `Visual changes were found in the ${{ inputs.environment }} environment.\n\n`;
+              comment += `**Actions required:**\n`;
+              comment += `1. [Download the visual regression report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})\n`;
+              comment += `2. Review the differences\n`;
+              comment += `3. If changes are intentional, approve this PR and merge\n`;
+              comment += `4. If changes are unintentional, fix the regression\n\n`;
+              
+              // Add summary if available
+              try {
+                const summary = fs.readFileSync('apps/e2e/visual-diff-summary.md', 'utf8');
+                comment += `<details>\n<summary>View detailed report</summary>\n\n${summary}\n</details>`;
+              } catch (e) {
+                // Summary not available
+              }
+            } else {
+              comment += `### ✅ No visual differences detected\n\n`;
+              comment += `All visual regression tests passed for the ${{ inputs.environment }} environment.`;
+            }
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: comment
+            });
+      
+      - name: Create GitHub Check
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const hasDiff = '${{ steps.test.outputs.has_differences }}' === 'true';
+            const conclusion = hasDiff && '${{ inputs.fail_on_diff }}' === 'true' ? 'failure' : 'success';
+            
+            await github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'Visual Regression / ${{ inputs.environment }}',
+              head_sha: context.sha,
+              status: 'completed',
+              conclusion: conclusion,
+              output: {
+                title: `Visual Regression Test - ${{ inputs.test_suite }}`,
+                summary: hasDiff ? 
+                  'Visual differences detected. Please review the changes.' : 
+                  'No visual differences detected.',
+                text: 'Download the artifacts to view detailed results.'
+              }
+            });
