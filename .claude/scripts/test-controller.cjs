@@ -34,6 +34,9 @@ const CONFIG = {
 		web: 3000,
 		payload: 3020,
 	},
+	// Override with env var TEST_MAX_CONCURRENT_SHARDS if set
+	maxConcurrentShards: process.env.TEST_MAX_CONCURRENT_SHARDS ? 
+		parseInt(process.env.TEST_MAX_CONCURRENT_SHARDS) : null,
 };
 
 // Test status tracking
@@ -301,12 +304,19 @@ class E2ETestRunner {
 		
 		// Calculate optimal concurrency based on system resources
 		const cpuCount = os.cpus().length;
-		// Use 75% of CPU cores for optimal performance without overload
-		// But cap at 6 for safety even on high-core machines
-		this.maxConcurrentShards = Math.min(6, Math.floor(cpuCount * 0.75));
+		
+		// Check if there's a configured override
+		if (CONFIG.maxConcurrentShards) {
+			this.maxConcurrentShards = CONFIG.maxConcurrentShards;
+			log(`🔧 Using configured concurrency: ${this.maxConcurrentShards} shards`);
+		} else {
+			// Use 75% of CPU cores for optimal performance without overload
+			// But cap at 6 for safety even on high-core machines
+			this.maxConcurrentShards = Math.min(6, Math.floor(cpuCount * 0.75));
+		}
 		
 		log(`🖥️  System has ${cpuCount} CPU cores`);
-		log(`🔧 Using ${this.maxConcurrentShards} concurrent shards for optimal performance`);
+		log(`⚙️  Max concurrent shards: ${this.maxConcurrentShards}`);
 	}
 
 	async run(status) {
@@ -436,7 +446,7 @@ class E2ETestRunner {
 		return result;
 	}
 
-	async runShard(shard) {
+	async runShard(shard, attempt = 1) {
 		return new Promise((resolve) => {
 			const startTime = Date.now();
 			let output = "";
@@ -505,8 +515,9 @@ class E2ETestRunner {
 				}
 
 				const statusIcon = result.failed > 0 ? "❌" : "✅";
+				const attemptInfo = attempt > 1 ? ` [attempt ${attempt}]` : "";
 				log(
-					`  ${statusIcon} Shard ${shard.id} (${shard.name}): ${result.passed}/${result.total} in ${duration}s (exit: ${code})`,
+					`  ${statusIcon} Shard ${shard.id} (${shard.name}): ${result.passed}/${result.total} in ${duration}s (exit: ${code})${attemptInfo}`,
 				);
 
 				resolve(result);
@@ -717,7 +728,8 @@ class TestController {
 				log("\n💡 Suggested fixes:");
 				log("   1. Restart Supabase: cd apps/e2e && npx supabase start");
 				log('   2. Clear ports: pkill -f "playwright|next-server"');
-				log("   3. Retry tests: node .claude/scripts/test-controller.cjs");
+				log("   3. Reduce concurrency: TEST_MAX_CONCURRENT_SHARDS=4 node .claude/scripts/test-controller.cjs");
+				log("   4. Retry tests: node .claude/scripts/test-controller.cjs");
 			}
 		}
 
