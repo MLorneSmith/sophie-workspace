@@ -389,6 +389,9 @@ class E2ETestRunner {
 			return completed.result;
 		};
 
+		// Track if this is the first shard (needs to start servers)
+		let isFirstShard = true;
+		
 		// Process queue with concurrency limit
 		while (shardQueue.length > 0 || runningShards.size > 0) {
 			// Start new shards up to the concurrency limit
@@ -398,6 +401,17 @@ class E2ETestRunner {
 				
 				const shardPromise = this.runShardWithRetry(shard, 1);
 				runningShards.set(shard.id, shardPromise);
+				
+				// Add a small delay after the first shard to allow server startup
+				// This prevents race conditions where multiple shards try to start servers
+				if (isFirstShard) {
+					isFirstShard = false;
+					log("  ⏳ Waiting 5s for initial server startup...");
+					await new Promise(resolve => setTimeout(resolve, 5000));
+				} else {
+					// Small delay between subsequent shards to avoid overwhelming the system
+					await new Promise(resolve => setTimeout(resolve, 500));
+				}
 			}
 
 			// Wait for at least one shard to complete if we're at capacity
@@ -452,6 +466,13 @@ class E2ETestRunner {
 			let output = "";
 			let hasServerStartupDetected = false;
 
+			// Create clean environment for shard execution
+			const shardEnv = { ...process.env };
+			// Remove CI variable to enable reuseExistingServer
+			delete shardEnv.CI;
+			// Set parallel mode
+			shardEnv.PLAYWRIGHT_PARALLEL = "true";
+			
 			const proc = spawn(
 				"pnpm",
 				["--filter", "web-e2e", `test:shard${shard.id}`],
@@ -459,10 +480,7 @@ class E2ETestRunner {
 					cwd: process.cwd(),
 					stdio: ["inherit", "pipe", "pipe"],
 					shell: true,
-					env: {
-						...process.env,
-						PLAYWRIGHT_PARALLEL: "true",
-					},
+					env: shardEnv,
 				},
 			);
 
@@ -506,12 +524,28 @@ class E2ETestRunner {
 					result.infrastructureFailure = true;
 				}
 
-				// Early exit detection (likely server startup issues)
-				if (duration <= 5 && code !== 0 && !hasServerStartupDetected) {
-					result.infrastructureFailure = true;
-					logError(
-						`  ⚠️ Shard ${shard.id} exited early (${duration}s, code ${code}) - likely server startup issue`,
-					);
+				// Early exit detection - but give more time for server startup
+				// Playwright can exit early with code 1 if the server isn't ready yet
+				// We should only consider it an infrastructure failure if:
+				// 1. Exit happens very quickly (< 2 seconds) 
+				// 2. There's no test output at all
+				// 3. And we see specific error patterns
+				if (duration <= 2 && code !== 0 && result.passed === 0 && result.failed === 0) {
+					// Check for specific error patterns that indicate real failures
+					if (output.includes("ECONNREFUSED") || 
+					    output.includes("Cannot find module") ||
+					    output.includes("SyntaxError") ||
+					    output.includes("TypeError")) {
+						result.infrastructureFailure = true;
+						logError(
+							`  ⚠️ Shard ${shard.id} failed immediately (${duration}s, code ${code}) - infrastructure issue`,
+						);
+					} else {
+						// Might just be slow server startup, don't mark as infrastructure failure
+						log(
+							`  ⚠️ Shard ${shard.id} exited quickly (${duration}s, code ${code}) - checking output for test results`,
+						);
+					}
 				}
 
 				const statusIcon = result.failed > 0 ? "❌" : "✅";
