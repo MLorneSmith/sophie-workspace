@@ -60,7 +60,9 @@ jobs:
     steps:
       - name: Wait for deployment to be ready
         id: wait
+        shell: bash {0}  # Prevent shell from auto-failing on non-zero exit
         run: |
+          set +e  # Don't exit on error - handle it explicitly
           echo "⏳ Waiting for deployment to be ready at ${{ needs.check-should-run.outputs.deployment_url }}"
           
           MAX_WAIT_TIME=300  # 5 minutes
