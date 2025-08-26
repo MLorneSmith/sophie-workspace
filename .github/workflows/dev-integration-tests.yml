@@ -271,6 +271,8 @@ jobs:
         env:
           PLAYWRIGHT_BASE_URL: ${{ needs.check-should-run.outputs.deployment_url }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+          ENABLE_BILLING_TESTS: true  # Enable billing integration tests
+          ENABLE_TEAM_ACCOUNT_TESTS: true  # Enable team account integration tests
           CI: true
 
   # Security Quick Scan
