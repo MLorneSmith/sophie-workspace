@@ -3,6 +3,7 @@
 ## 📦 Build Tools & Package Management
 
 ### Core Build System
+
 - **Turbo** (v2.5.6) - Monorepo build orchestration with caching
   - Remote caching enabled
   - Turbo generators for scaffolding (`turbo gen`)
@@ -10,6 +11,7 @@
 - **Node.js** (>=v18.18.0) - Runtime environment
 
 ### Frameworks
+
 - **Next.js** (v15.5.0) - React framework for web app
 - **Payload CMS** - Content management system
 - **React** (v19.1.1) - UI library
@@ -17,18 +19,20 @@
 ## 🧪 Testing Frameworks & Tools
 
 ### Unit & Integration Testing
+
 - **Vitest** (v3.1.2) - Fast unit test framework
   - Coverage reporting with `@vitest/coverage-v8`
   - **Codecov** integration for coverage reporting (uploads to codecov.com)
   - Test files: `*.test.ts`, `*.test.tsx`
   - Scripts: `test`, `test:unit`, `test:coverage`
-  
+
 - **Testing Library** - React testing utilities
   - `@testing-library/react` (v16.3.0)
   - `@testing-library/user-event` (v14.6.1)
   - `@testing-library/jest-dom` (v6.7.0)
-  
+
 ### E2E Testing
+
 - **Playwright** (v1.55.0) - Cross-browser E2E testing
   - 9-shard parallel execution strategy
   - Smoke & integration test suites
@@ -41,11 +45,13 @@
     - `node-html-parser` (v7.0.1) - HTML parsing in tests
 
 ### Load Testing
+
 - **K6** - Performance and load testing
   - Configuration in `load-tests/k6.config.js`
   - Thresholds: p95 < 500ms, p99 < 1s, error rate < 5%
 
 ### Accessibility Testing
+
 - **Custom Hybrid Accessibility Tester** - WCAG validation with accurate contrast calculations
   - Replaced axe-core with custom solution (see issue #218)
   - Uses Lighthouse (v12.8.1) and chrome-launcher (v1.2.0) in E2E tests
@@ -56,28 +62,31 @@
 ## 🔍 Code Quality Tools
 
 ### Linting & Formatting
+
 - **Biome** (v2.0.0) - Fast formatter and linter
   - Configuration: `biome.json`
   - Scripts: `lint`, `lint:fix`, `format`, `format:fix`
-  
+
 - **Markdownlint-cli2** (v0.18.1) - Markdown linting
   - Script: `lint:md`, `lint:md:fix`
-  
+
 - **YAML-lint** (v1.7.0) - YAML file validation
   - Script: `lint:yaml`
 
 ### Type Checking
+
 - **TypeScript** (v5.9.2) - Static type checking
   - Script: `typecheck`
   - Turbo cached with tsbuildinfo
 
 ### Dependency Management
+
 - **Manypkg** (v0.25.0) - Monorepo package consistency
   - Scripts: `manypkg:check`, `manypkg:fix`
-  
+
 - **Syncpack** - Package version synchronization
   - Scripts: `syncpack:list`, `syncpack:fix`
-  
+
 - **Knip** (v5.61.0) - Find unused dependencies and exports
   - Configuration: `knip.json`
   - Scripts: `knip`, `knip:production`, `knip:fix`
@@ -85,6 +94,7 @@
 ## 🔒 Security Tools
 
 ### Vulnerability Scanning
+
 - **Aikido Security** (v1.0.13) - Comprehensive security platform
   - Replaces Snyk (see issue #163)
   - SCA (dependencies), SAST (code), secrets, IaC, and malware detection
@@ -111,6 +121,7 @@
 ## 📊 Monitoring & Analytics
 
 ### Performance Monitoring
+
 - **Lighthouse CI** - Web performance metrics
   - Automated performance budgets
   - GitHub workflow: `lighthouse-ci.yml`
@@ -120,12 +131,14 @@
   - GitHub workflow: `bundle-size-alert.yml`
 
 ### Application Monitoring (Multiple Providers)
+
 - **Sentry** - Error tracking
 - **New Relic** - APM and monitoring
 - **Baselime** - Observability platform
 - **Vercel OTEL** (v1.13.0) - OpenTelemetry integration
 
 ### UI & Utility Libraries
+
 - **@tanstack/react-query** (v5.85.5) - Data fetching and caching
 - **@tanstack/react-table** (v8.21.3) - Table components
 - **Pino** (v9.8.0) - Logging with pino-pretty
@@ -137,20 +150,22 @@
 ## 🚀 Deployment & Infrastructure
 
 ### Deployment Platforms
+
 - **Vercel** - Primary hosting platform
   - Vercel CLI used in manual deployments
   - Environment variables configuration
   - Preview deployments for PRs
-  
+
 - **Cloudflare Pages** - Alternative deployment option
   - Wrangler CLI support (via Turbo generator templates)
-  
+
 - **Supabase** - Database and auth backend
   - Supabase CLI (`supabase/setup-cli` action)
   - Scripts: `supabase:*` commands
   - Migrations, type generation, local development
 
 ### Container & Infrastructure
+
 - **Docker** - Containerization
   - Docker Buildx for multi-platform builds
   - GitHub Container Registry integration
@@ -158,11 +173,13 @@
   - Docker Compose for local Supabase
 
 ### Security Scanning
+
 - **Nuclei** - Security vulnerability scanner
   - Custom GitHub action (`.github/actions/nuclei-scan`)
   - Used in staging and production deployments
 
 ### Payment Processing
+
 - **Stripe** - Payment integration
   - Webhook support
   - Test and production environments
@@ -171,17 +188,19 @@
 ## 🔄 CI/CD Workflows
 
 ### GitHub Actions Workflows
+
 1. **PR Validation** (`pr-validation.yml`)
    - Runs on all PRs
    - Type checking, linting, unit tests
    - Security scanning
 
-2. **E2E Testing** 
+2. **E2E Testing**
    - `e2e-sharded.yml` - Parallel sharded execution
    - `e2e-smart.yml` - Smart test selection
    - `e2e-matrix.yml` - Matrix strategy
 
 3. **Deployment Pipelines**
+
    - `dev-deploy.yml` - Development environment
    - `staging-deploy.yml` - Staging environment
    - `production-deploy.yml` - Production deployment
@@ -193,6 +212,7 @@
    - `auto-rollback.yml` - Automatic rollback on failures
 
 5. **Performance & Metrics**
+
    - `performance-monitor.yml` - Performance tracking
    - `pipeline-metrics.yml` - CI/CD metrics collection
    - `pipeline-alerts.yml` - Alert notifications
@@ -200,6 +220,7 @@
 ## 🔧 GitHub Actions Tools
 
 ### Workflow Utilities
+
 - **actions/github-script** (v7) - GitHub API automation
   - Used for PR comments, issue creation, workflow coordination
 - **actions/cache** (v4) - Build and dependency caching
@@ -210,6 +231,7 @@
 - **actions/checkout** (v4) - Repository checkout
 
 ### Third-party Actions
+
 - **github/codeql-action** - Upload security scan results
 - **docker/setup-buildx-action** (v3) - Docker build setup
 - **docker/login-action** (v3) - Container registry login
@@ -219,6 +241,7 @@
 ## 🎣 Git Hooks (Husky + lint-staged)
 
 ### Pre-commit
+
 - TruffleHog secret scanning
 - Biome formatting and linting  
 - TypeScript type checking for staged files
@@ -226,12 +249,14 @@
 - Payload-specific linting for `apps/payload`
 
 ### Commit-msg
+
 - Commitlint with conventional commits
 - Commitizen support (`pnpm commit`)
 
 ## 📝 Available NPM Scripts (Root)
 
 ### Core Commands
+
 - `build` - Build all packages
 - `dev` - Start development servers
 - `test` - Run all tests
@@ -240,6 +265,7 @@
 - `format` - Format all code
 
 ### Specialized Commands
+
 - `codecheck` - Combined typecheck + lint + format
 - `test:e2e` - Run E2E tests
 - `test:coverage` - Generate coverage reports
@@ -271,6 +297,7 @@
 ## 🏷️ Environment Management
 
 ### Required Environment Variables
+
 - Supabase credentials
 - Stripe/payment keys
 - Email service configuration
@@ -279,6 +306,7 @@
 - R2/S3 storage credentials
 
 ### Environment Validation
+
 - Scripts for generating and validating env vars
 - Turbo global environment configuration
 - Multiple provider support for services
