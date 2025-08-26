@@ -5,6 +5,8 @@ name: Production Deploy (Solo Developer)
 # GitHub Pro doesn't support environment protection for private repos
 
 on:
+  push:
+    branches: [dev, staging, main]  # Allow push triggers to prevent GitHub Actions bug from failing workflow
   workflow_dispatch:
     inputs:
       deploy_web:
