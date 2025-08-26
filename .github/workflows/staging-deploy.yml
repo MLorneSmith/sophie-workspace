@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - staging
+  schedule:
+    # Run weekly load tests every Sunday at 2 AM UTC
+    - cron: '0 2 * * 0'
 
 # Prevent multiple deployments from running simultaneously
 concurrency:
@@ -175,110 +178,17 @@ jobs:
           path: apps/e2e/playwright-report/
           retention-days: 7
 
-  # Build application inline (without reusable workflow)
+  # Build application with artifact sharing
   build:
     name: Build Application
-    runs-on: runs-on=${{ github.run_id }},runner=4cpu-linux-x64
     needs: [check-validation, validate, test-full]
     if: always() && !failure() && !cancelled()
-    environment: staging
-    outputs:
-      cache-key: ${{ steps.cache.outputs.key }}
-    env:
-      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
-      TURBO_REMOTE_CACHE_ENABLED: ${{ secrets.TURBO_TOKEN != '' && 'true' || 'false' }}
-      TURBO_REMOTE_CACHE_SIGNATURE_KEY: ${{ secrets.TURBO_REMOTE_CACHE_SIGNATURE_KEY || '' }}
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: ./.github/actions/setup-deps
-
-      - name: Cache turbo build
-        uses: actions/cache@v4
-        id: turbo-cache
-        with:
-          path: .turbo
-          key: ${{ runner.os }}-turbo-staging-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-turbo-staging-
-
-      - name: Build application
-        run: |
-          # Debug environment
-          echo "::group::Environment Info"
-          echo "Node version: $(node --version)"
-          echo "pnpm version: $(pnpm --version)"
-          echo "Working directory: $(pwd)"
-          echo "Environment: staging"
-          echo "::endgroup::"
-          
-          # Show Turbo cache status
-          echo "::group::Turbo Cache Status"
-          npx turbo build --dry-run --summarize | head -20 || true
-          echo "::endgroup::"
-          
-          # Run build with appropriate cache settings
-          echo "::group::Build Output"
-          if [ -n "$TURBO_TOKEN" ]; then
-            echo "Building with remote cache enabled"
-            pnpm build --cache-dir=.turbo || {
-              echo "::warning::Build with remote cache failed. Retrying without remote cache..."
-              TURBO_REMOTE_CACHE_ENABLED=false pnpm build --cache-dir=.turbo --force
-            }
-          else
-            echo "Building without remote cache (no TURBO_TOKEN)"
-            TURBO_REMOTE_CACHE_ENABLED=false pnpm build --cache-dir=.turbo
-          fi
-          echo "::endgroup::"
-        env:
-          NODE_ENV: production
-          NEXT_PUBLIC_APP_ENV: staging
-          DATABASE_URI: ${{ secrets.DATABASE_URI }}
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
-          PAYLOAD_PUBLIC_SERVER_URL: ${{ vars.PAYLOAD_PUBLIC_SERVER_URL }}
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-
-      - name: Cache build artifacts
-        uses: actions/cache@v4
-        id: cache
-        with:
-          path: |
-            apps/web/.next
-            apps/web/public
-            apps/payload/dist
-            packages/*/dist
-            .turbo
-          key: build-staging-${{ github.sha }}
-
-      - name: Generate build info
-        run: |
-          echo "{
-            \"commit\": \"${{ github.sha }}\",
-            \"branch\": \"${{ github.ref_name }}\",
-            \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",
-            \"environment\": \"staging\",
-            \"actor\": \"${{ github.actor }}\"
-          }" > build-info.json
-
-      - name: Upload build info
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-info-staging
-          path: build-info.json
-          retention-days: 7
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-artifacts-staging
-          path: |
-            apps/web/.next
-            apps/payload/dist
-            build-info.json
-          retention-days: 1
+    uses: ./.github/workflows/artifact-sharing.yml
+    with:
+      environment: staging
+      commit_sha: ${{ github.sha }}
+      force_rebuild: false
+    secrets: inherit
 
   # Deploy Web App to Vercel Staging environment
   deploy-web:
@@ -298,7 +208,7 @@ jobs:
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
-          name: build-artifacts-staging
+          name: build-artifacts-staging-${{ github.sha }}
           path: .
 
       - name: Deploy to Vercel
@@ -354,7 +264,7 @@ jobs:
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
-          name: build-artifacts-staging
+          name: build-artifacts-staging-${{ github.sha }}
           path: .
 
       - name: Deploy to Vercel
@@ -413,17 +323,65 @@ jobs:
         env:
           PLAYWRIGHT_BASE_URL: ${{ needs.deploy-web.outputs.url }}
 
-  # Performance testing (placeholder)
-  performance-test:
-    name: Performance Tests
-    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
-    needs: deploy-web
-    continue-on-error: true
-    steps:
-      - name: Run performance tests
-        run: |
-          echo "Performance testing will be implemented in Week 3"
-          # TODO: Implement Lighthouse CI / k6 load testing
+  # K6 Load Testing
+  k6-load-test:
+    name: K6 Load Testing
+    needs: [deploy-web, deploy-payload]
+    uses: ./.github/workflows/k6-load-test.yml
+    with:
+      environment: staging
+      base_url: ${{ needs.deploy-web.outputs.url }}
+      test_scenario: user-journey
+      duration: '5m'
+      vus: 50
+      fail_on_threshold: false  # Don't block staging deploys on performance
+    secrets:
+      K6_CLOUD_TOKEN: ${{ secrets.K6_CLOUD_TOKEN }}
+      NEW_RELIC_API_KEY: ${{ secrets.NEW_RELIC_API_KEY }}
+      NEW_RELIC_ACCOUNT_ID: ${{ secrets.NEW_RELIC_ACCOUNT_ID }}
+  
+  # Weekly scheduled load test with higher load
+  schedule-load-test:
+    name: Weekly Load Test
+    if: github.event_name == 'schedule'  # Only run on schedule
+    needs: [deploy-web, deploy-payload]
+    uses: ./.github/workflows/k6-load-test.yml
+    with:
+      environment: staging
+      base_url: ${{ needs.deploy-web.outputs.url }}
+      test_scenario: user-journey
+      duration: '15m'
+      vus: 200  # Higher load for weekly stress test
+      fail_on_threshold: false
+    secrets:
+      K6_CLOUD_TOKEN: ${{ secrets.K6_CLOUD_TOKEN }}
+      NEW_RELIC_API_KEY: ${{ secrets.NEW_RELIC_API_KEY }}
+      NEW_RELIC_ACCOUNT_ID: ${{ secrets.NEW_RELIC_ACCOUNT_ID }}
+  
+  # Visual Regression Testing
+  visual-regression:
+    name: Visual Regression Testing
+    needs: [deploy-web, deploy-payload]
+    uses: ./.github/workflows/visual-regression.yml
+    with:
+      environment: staging
+      base_url: ${{ needs.deploy-web.outputs.url }}
+      test_suite: critical
+      update_snapshots: false
+      fail_on_diff: false  # Don't block staging on visual differences
+  
+  # Container Security Scanning
+  container-security:
+    name: Container Security Scan
+    needs: build
+    if: always() && !failure() && !cancelled()
+    uses: ./.github/workflows/container-security.yml
+    with:
+      dockerfile_path: 'apps/payload/Dockerfile'
+      scan_type: 'all'
+      severity: 'UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL'
+      fail_on_severity: 'CRITICAL'
+      ignore_unfixed: false
 
   # Dynamic Application Security Testing with Nuclei
   dast-security-scan:
