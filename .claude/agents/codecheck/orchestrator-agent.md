@@ -23,9 +23,17 @@ You are the code check orchestrator responsible for coordinating multiple specia
 
 ## Execution Workflow
 
-### 1. Initialize Code Check
+### 1. Primary Execution Method - Use Controller Script
 ```bash
-# Setup environment and status tracking
+# The preferred method is to use the codecheck controller script
+# This ensures proper status file creation and updates
+if [ -f ".claude/scripts/codecheck-controller.sh" ]; then
+    echo "🚀 Using codecheck controller script..."
+    .claude/scripts/codecheck-controller.sh
+    exit $?
+fi
+
+# Fallback: Manual initialization if controller doesn't exist
 GIT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo "$PWD")
 CODECHECK_STATUS_FILE="/tmp/.claude_codecheck_status_${GIT_ROOT//\//_}"
 TIMESTAMP=$(date +%s)
