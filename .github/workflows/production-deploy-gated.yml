@@ -1,0 +1,251 @@
+name: Production Deploy (Solo Developer)
+
+# Production deployment with safety checks for solo developers
+# Provides multiple confirmation steps and safety checks since
+# GitHub Pro doesn't support environment protection for private repos
+
+on:
+  workflow_dispatch:
+    inputs:
+      deploy_web:
+        description: 'Deploy Web App to Production'
+        type: boolean
+        default: true
+      deploy_payload:
+        description: 'Deploy Payload CMS to Production'
+        type: boolean
+        default: true
+      confirm_deployment:
+        description: 'Type "DEPLOY TO PRODUCTION" to confirm'
+        required: true
+        type: string
+      deployment_reason:
+        description: 'Reason for deployment (e.g., "Fix critical bug", "New feature X")'
+        required: true
+        type: string
+      run_safety_checks:
+        description: 'Run pre-deployment safety checks'
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+  deployments: write
+  actions: read
+  checks: read
+
+jobs:
+  safety-checks:
+    name: Pre-Deployment Safety Checks
+    runs-on: ubuntu-latest
+    outputs:
+      checks_passed: ${{ steps.checks.outputs.passed }}
+      staging_healthy: ${{ steps.staging.outputs.healthy }}
+    steps:
+      - name: Validate confirmation
+        id: confirm
+        run: |
+          if [ "${{ github.event.inputs.confirm_deployment }}" != "DEPLOY TO PRODUCTION" ]; then
+            echo "❌ Confirmation text doesn't match. Type exactly: DEPLOY TO PRODUCTION"
+            exit 1
+          fi
+          echo "✅ Deployment confirmed"
+      
+      - uses: actions/checkout@v4
+        
+      - name: Check recent commits
+        id: commits
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // Check if main branch has recent untested commits
+            const { data: commits } = await github.rest.repos.listCommits({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: 'main',
+              per_page: 5
+            });
+            
+            console.log(`📝 Last 5 commits on main:`);
+            commits.forEach(c => {
+              const date = new Date(c.commit.author.date);
+              const age = (Date.now() - date) / 1000 / 60; // minutes
+              console.log(`  - ${c.sha.substring(0,7)}: ${c.commit.message.split('\n')[0]} (${Math.round(age)} min ago)`);
+            });
+            
+            // Warn if deploying very recent commits
+            const lastCommit = new Date(commits[0].commit.author.date);
+            const minutesSinceLastCommit = (Date.now() - lastCommit) / 1000 / 60;
+            
+            if (minutesSinceLastCommit < 30) {
+              console.log(`⚠️ Warning: Last commit was only ${Math.round(minutesSinceLastCommit)} minutes ago`);
+              console.log(`Consider waiting for CI/CD checks to complete`);
+            }
+            
+      - name: Check staging health
+        id: staging
+        continue-on-error: true
+        run: |
+          # Check if staging is healthy (you can customize this)
+          echo "🔍 Checking staging environment health..."
+          
+          # Example: ping staging URLs
+          if curl -f -s -o /dev/null -w "%{http_code}" https://staging.slideheroes.com/healthcheck; then
+            echo "✅ Staging web app is healthy"
+            echo "healthy=true" >> $GITHUB_OUTPUT
+          else
+            echo "⚠️ Staging web app health check failed"
+            echo "healthy=false" >> $GITHUB_OUTPUT
+          fi
+          
+      - name: Safety checks summary
+        id: checks
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const skipChecks = '${{ github.event.inputs.run_safety_checks }}' === 'false';
+            
+            if (skipChecks) {
+              console.log('⚠️ Safety checks skipped by user request');
+              core.setOutput('passed', 'true');
+              return;
+            }
+            
+            // Check last successful staging deployment
+            const runs = await github.rest.actions.listWorkflowRuns({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'staging-deploy.yml',
+              branch: 'staging',
+              status: 'success',
+              per_page: 1
+            });
+            
+            let stagingDeployAge = 'unknown';
+            if (runs.data.workflow_runs.length > 0) {
+              const lastDeploy = new Date(runs.data.workflow_runs[0].created_at);
+              const hours = (Date.now() - lastDeploy) / 1000 / 60 / 60;
+              stagingDeployAge = `${Math.round(hours)} hours ago`;
+            }
+            
+            console.log(`📊 Safety Check Results:`);
+            console.log(`  - Confirmation: ✅ Valid`);
+            console.log(`  - Last staging deploy: ${stagingDeployAge}`);
+            console.log(`  - Staging health: ${{ steps.staging.outputs.healthy === 'true' && '✅' || '⚠️' }}`);
+            console.log(`  - Deployment reason: ${{ github.event.inputs.deployment_reason }}`);
+            
+            core.setOutput('passed', 'true');
+
+  
+  # Add a deliberate pause to allow cancellation
+  confirmation-pause:
+    name: Final Confirmation Window
+    needs: safety-checks
+    if: needs.safety-checks.outputs.checks_passed == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Display deployment plan
+        run: |
+          echo "## 🚨 PRODUCTION DEPLOYMENT ABOUT TO START" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Deployment Details:" >> $GITHUB_STEP_SUMMARY
+          echo "- **Deploy Web**: ${{ github.event.inputs.deploy_web }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Deploy Payload**: ${{ github.event.inputs.deploy_payload }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Reason**: ${{ github.event.inputs.deployment_reason }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Initiated by**: ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Staging Health**: ${{ needs.safety-checks.outputs.staging_healthy == 'true' && '✅ Healthy' || '⚠️ Issues detected' }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### ⏱️ 30-Second Cancellation Window" >> $GITHUB_STEP_SUMMARY
+          echo "You have 30 seconds to cancel this deployment if needed." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "To cancel: Click the 'Cancel workflow' button in the Actions tab" >> $GITHUB_STEP_SUMMARY
+          
+      - name: Countdown timer
+        run: |
+          echo "⏳ Starting 30-second cancellation window..."
+          echo "To cancel this deployment, click 'Cancel workflow' now!"
+          echo ""
+          for i in {30..1}; do
+            echo "Deploying in $i seconds... (Press Ctrl+C or cancel workflow to abort)"
+            sleep 1
+          done
+          echo "✅ Proceeding with deployment..."
+
+  trigger-production-deploy:
+    name: Execute Production Deployment
+    needs: [safety-checks, confirmation-pause]
+    if: needs.safety-checks.outputs.checks_passed == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create deployment record
+        id: deployment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const deployment = await github.rest.repos.createDeployment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: 'main',
+              environment: 'production',
+              description: '${{ github.event.inputs.deployment_reason }}',
+              required_contexts: [],
+              auto_merge: false,
+              production_environment: true,
+              payload: {
+                deploy_web: ${{ github.event.inputs.deploy_web }},
+                deploy_payload: ${{ github.event.inputs.deploy_payload }},
+                initiated_by: '${{ github.actor }}',
+                reason: '${{ github.event.inputs.deployment_reason }}'
+              }
+            });
+            
+            core.setOutput('deployment_id', deployment.data.id);
+            console.log(`Created deployment #${deployment.data.id}`);
+            
+      - name: Trigger production deployment workflow
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            // Trigger the actual production deployment workflow
+            const result = await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'production-deploy.yml',
+              ref: 'main',
+              inputs: {
+                deploy_web: '${{ github.event.inputs.deploy_web }}',
+                deploy_payload: '${{ github.event.inputs.deploy_payload }}'
+              }
+            });
+            
+            console.log('✅ Production deployment workflow triggered successfully');
+            
+            // Update deployment status
+            await github.rest.repos.createDeploymentStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              deployment_id: ${{ steps.deployment.outputs.deployment_id }},
+              state: 'in_progress',
+              description: 'Production deployment started',
+              environment: 'production',
+              auto_inactive: false
+            });
+            
+      - name: Generate deployment summary
+        run: |
+          echo "## 🚀 Production Deployment Triggered" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Deployment Information:" >> $GITHUB_STEP_SUMMARY
+          echo "- **Deployment ID**: #${{ steps.deployment.outputs.deployment_id }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Deploy Web**: ${{ github.event.inputs.deploy_web }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Deploy Payload**: ${{ github.event.inputs.deploy_payload }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Reason**: ${{ github.event.inputs.deployment_reason }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Initiated by**: ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Timestamp**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📊 Monitor Progress:" >> $GITHUB_STEP_SUMMARY
+          echo "[View deployment progress →](https://github.com/${{ github.repository }}/actions/workflows/production-deploy.yml)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🔄 Rollback Instructions:" >> $GITHUB_STEP_SUMMARY
+          echo "If issues arise, trigger the rollback workflow or redeploy the previous version from staging." >> $GITHUB_STEP_SUMMARY
