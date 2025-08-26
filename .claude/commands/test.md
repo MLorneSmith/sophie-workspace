@@ -112,11 +112,26 @@ files:
 
 ## Implementation
 
-When the `/test` command is invoked, execute the deterministic script:
+When the `/test` command is invoked, use the Task tool to execute the deterministic script:
 
-```bash
-# Direct script execution - no LLM agents involved
-.claude/scripts/test-runner.sh [options]
+```yaml
+task:
+  subagent_type: "general-purpose"
+  description: "Execute comprehensive test suite"
+  prompt: |
+    Execute the deterministic test runner script with the provided options:
+    
+    1. Run .claude/scripts/test-runner.sh with appropriate flags
+    2. Parse options from the user request:
+       - --unit: Run only unit tests
+       - --e2e: Run only E2E tests  
+       - --all: Run both (default)
+       - --debug: Enable debug mode
+       - --continue: Continue on failures
+    3. Monitor execution and report results
+    4. No LLM decision-making - just execute the script
+    
+    Execute: .claude/scripts/test-runner.sh [parsed_options]
 ```
 
 The script will:
