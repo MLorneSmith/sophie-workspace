@@ -3,8 +3,73 @@ description: 'Setup Node, pnpm, and install dependencies with caching'
 runs:
   using: "composite"
   steps:
+    - name: Install pnpm with fallback
+      shell: bash
+      run: |
+        # Primary method: Try to use the action with specified version
+        echo "📦 Installing pnpm version 10.14.0..."
+        
+        # Create a marker file to track if pnpm is installed
+        touch .pnpm-install-marker
+        
+        # Check if pnpm is already available (from cache or previous run)
+        if command -v pnpm &> /dev/null; then
+          CURRENT_VERSION=$(pnpm --version)
+          if [ "$CURRENT_VERSION" = "10.14.0" ]; then
+            echo "✅ pnpm 10.14.0 is already installed"
+            rm .pnpm-install-marker
+            exit 0
+          else
+            echo "⚠️ Found pnpm $CURRENT_VERSION, need 10.14.0"
+          fi
+        fi
+        
+        # If the marker exists after action, we need fallback
+        rm .pnpm-install-marker 2>/dev/null || true
+    
     - name: Install pnpm
       uses: pnpm/action-setup@v4
+      with:
+        version: 10.14.0
+      continue-on-error: true
+      id: pnpm-install
+
+    - name: Fallback pnpm installation
+      if: steps.pnpm-install.outcome == 'failure'
+      shell: bash
+      run: |
+        echo "⚠️ Primary pnpm installation failed, using fallback method..."
+        
+        # Method 1: Try npm install with retries
+        install_with_npm() {
+          local attempts=0
+          while [ $attempts -lt 3 ]; do
+            if npm install -g pnpm@10.14.0; then
+              echo "✅ pnpm installed via npm"
+              return 0
+            fi
+            attempts=$((attempts + 1))
+            [ $attempts -lt 3 ] && sleep 10
+          done
+          return 1
+        }
+        
+        # Method 2: Direct download from GitHub releases
+        install_from_github() {
+          echo "📥 Downloading pnpm from GitHub releases..."
+          curl -fsSL https://github.com/pnpm/pnpm/releases/download/v10.14.0/pnpm-linux-x64 -o /tmp/pnpm
+          chmod +x /tmp/pnpm
+          sudo mv /tmp/pnpm /usr/local/bin/pnpm
+          echo "✅ pnpm installed from GitHub"
+        }
+        
+        # Try npm first, then GitHub
+        if ! install_with_npm; then
+          install_from_github
+        fi
+        
+        # Verify installation
+        pnpm --version
 
     - name: Setup Node.js
       uses: actions/setup-node@v4
