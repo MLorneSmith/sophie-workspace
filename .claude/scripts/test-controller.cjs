@@ -371,7 +371,7 @@ class E2ETestRunner {
 					log("✅ Servers are ready!");
 					return true;
 				}
-			} catch (e) {
+			} catch (_e) {
 				// Server not ready yet
 			}
 			
