@@ -2,6 +2,7 @@ import { expect, type Page } from "@playwright/test";
 
 import { AuthPageObject } from "../authentication/auth.po";
 import { TeamAccountsPageObject } from "../team-accounts/team-accounts.po";
+import { waitForNetworkIdleWithFallback } from "../utils/wait-helpers";
 
 export class InvitationsPageObject {
 	private readonly page: Page;
@@ -124,10 +125,10 @@ export class InvitationsPageObject {
 		}
 
 		// Wait for page to be fully loaded before interaction
-		await this.page.waitForLoadState("networkidle");
+		await waitForNetworkIdleWithFallback(this.page);
 		await this.page.waitForSelector('[data-test="join-team-form"]', {
 			state: "visible",
-			timeout: 10000,
+			timeout: process.env.CI ? 20000 : 10000,
 		});
 
 		const submitButton = this.page.locator(

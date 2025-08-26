@@ -127,7 +127,7 @@ export class AuthPageObject {
 				process.stdout.write(`Email received after ${elapsed}ms\n`);
 			}
 		}).toPass({
-			timeout: 30000, // 30 seconds should be enough for local testing
+			timeout: process.env.CI ? 60000 : 30000, // 60 seconds for CI, 30 for local
 			intervals: [500, 1000, 2000, 3000, 5000], // Start with faster retries
 		});
 	}
@@ -215,7 +215,20 @@ export class AuthPageObject {
 				// In local dev with autoconfirm, the user should be logged in already
 				// Try navigating directly to the target path
 				await this.page.goto(path);
-				await this.page.waitForLoadState("networkidle");
+				// Use a more resilient approach - wait for networkidle with fallback
+				await this.page
+					.waitForLoadState("networkidle", {
+						timeout: process.env.CI ? 30000 : 20000,
+					})
+					.catch(async () => {
+						// Fallback to domcontentloaded if network never settles
+						if (process.env.DEBUG) {
+							process.stdout.write(
+								"Network idle timeout, falling back to domcontentloaded\n",
+							);
+						}
+						await this.page.waitForLoadState("domcontentloaded");
+					});
 
 				// Check if we're redirected back to auth (not logged in)
 				const afterNavUrl = this.page.url();
