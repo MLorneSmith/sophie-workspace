@@ -1,0 +1,279 @@
+name: E2E Tests (Sharded)
+
+on:
+  workflow_dispatch:
+    inputs:
+      max_parallel:
+        description: 'Maximum parallel shards'
+        required: false
+        default: '6'
+        type: choice
+        options:
+          - '3'
+          - '4'
+          - '5'
+          - '6'
+          - '7'
+          - '8'
+          - '9'
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'apps/web/**'
+      - 'apps/e2e/**'
+      - 'packages/**'
+      - '.github/workflows/e2e-sharded.yml'
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+  checks: write
+
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '10.14.0'
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+  TURBO_REMOTE_CACHE_ENABLED: true
+
+jobs:
+  # Single server setup job that runs once
+  setup-server:
+    name: Setup Test Server
+    runs-on: ubuntu-latest
+    outputs:
+      cache-key: ${{ steps.cache.outputs.cache-key }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-deps
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Cache Supabase Docker images
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.docker
+            ~/Library/Containers/com.docker.docker/Data
+          key: ${{ runner.os }}-supabase-docker-${{ hashFiles('apps/e2e/supabase/config.toml') }}-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-supabase-docker-
+
+      - name: Start E2E Supabase
+        run: |
+          cd apps/e2e
+          echo "Starting Supabase for E2E tests..."
+          supabase start --ignore-health-check
+          
+          # Verify it's running
+          supabase status
+          
+          echo "✅ Supabase E2E environment ready"
+
+      - name: Build application
+        run: |
+          # Build with Turbo cache
+          pnpm build --cache-dir=.turbo
+
+      - name: Cache build and server state
+        uses: actions/cache@v4
+        with:
+          path: |
+            apps/web/.next
+            apps/payload/dist
+            packages/*/dist
+            .turbo
+            apps/e2e/supabase/.tmp
+          key: e2e-build-${{ github.sha }}-${{ github.run_id }}
+
+  # Sharded E2E test execution with matrix
+  e2e-shards:
+    name: E2E Shard ${{ matrix.shard }}
+    needs: setup-server
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      # Control concurrency with max-parallel
+      max-parallel: ${{ github.event.inputs.max_parallel || 6 }}
+      matrix:
+        shard: [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    env:
+      # E2E Database Configuration - Local Supabase instance
+      SUPABASE_URL: 'http://127.0.0.1:55321'
+      NEXT_PUBLIC_SUPABASE_URL: 'http://127.0.0.1:55321'
+      SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0'
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0'
+      SUPABASE_SERVICE_ROLE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU'
+      DATABASE_URL: 'postgresql://postgres:postgres@localhost:55322/postgres'
+      DATABASE_URI: 'postgresql://postgres:postgres@localhost:55322/postgres'
+      
+      # Test environment configuration
+      SUPABASE_DB_WEBHOOK_SECRET: 'test_webhook_secret'
+      STRIPE_SECRET_KEY: 'sk_test_dummy'
+      STRIPE_WEBHOOK_SECRET: 'whsec_test_dummy'
+      DO_NOT_TRACK: 1
+      PLAYWRIGHT_WEB_COMMAND: 'pnpm --filter=web dev:test'
+      PLAYWRIGHT_PAYLOAD_COMMAND: 'pnpm --filter=payload dev:test'
+      
+      # Required for app to start
+      NEXT_PUBLIC_BILLING_PROVIDER: 'stripe'
+      PAYLOAD_PUBLIC_SERVER_URL: 'http://localhost:3020'
+      PAYLOAD_SECRET: 'test_payload_secret_for_e2e_testing'
+      NODE_ENV: 'test'
+      
+      # Enable Playwright parallelism
+      PLAYWRIGHT_PARALLEL: 'true'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-deps
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Restore build and server state
+        uses: actions/cache@v4
+        with:
+          path: |
+            apps/web/.next
+            apps/payload/dist
+            packages/*/dist
+            .turbo
+            apps/e2e/supabase/.tmp
+          key: e2e-build-${{ github.sha }}-${{ github.run_id }}
+          restore-keys: |
+            e2e-build-${{ github.sha }}-
+
+      - name: Install Playwright browsers
+        run: |
+          pnpm --filter web-e2e exec playwright install chromium --with-deps
+
+      - name: Start local Supabase
+        run: |
+          cd apps/e2e
+          # Start Supabase (will reuse existing if setup-server ran on same runner)
+          supabase start --ignore-health-check || true
+          
+          # Quick health check
+          for i in {1..10}; do
+            if supabase status 2>/dev/null | grep -q "API URL"; then
+              echo "✓ Supabase ready after $i checks"
+              break
+            fi
+            sleep 2
+          done
+          
+          # Run migrations
+          supabase db reset --no-seed || true
+
+      - name: Run E2E tests for shard ${{ matrix.shard }}
+        run: |
+          echo "🚀 Running E2E test shard ${{ matrix.shard }} of 9"
+          
+          # Run the specific shard
+          pnpm --filter web-e2e test:shard${{ matrix.shard }}
+        timeout-minutes: 15
+        continue-on-error: false
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-results-shard-${{ matrix.shard }}-${{ github.run_id }}
+          path: |
+            apps/e2e/test-results/
+            apps/e2e/playwright-report/
+          retention-days: 7
+
+  # Aggregate results from all shards
+  e2e-report:
+    name: E2E Test Report
+    needs: e2e-shards
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-deps
+
+      - name: Download all shard results
+        uses: actions/download-artifact@v4
+        with:
+          path: shard-results
+          pattern: e2e-results-shard-*-${{ github.run_id }}
+
+      - name: Generate consolidated report
+        run: |
+          echo "## 🎭 E2E Test Results (Sharded)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Configuration" >> $GITHUB_STEP_SUMMARY
+          echo "- **Total Shards**: 9" >> $GITHUB_STEP_SUMMARY
+          echo "- **Max Parallel**: ${{ github.event.inputs.max_parallel || 6 }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          echo "### Shard Results" >> $GITHUB_STEP_SUMMARY
+          echo "| Shard | Tests | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| 1 | Accessibility Large (13) | Check artifacts |" >> $GITHUB_STEP_SUMMARY
+          echo "| 2 | Authentication (10) | Check artifacts |" >> $GITHUB_STEP_SUMMARY
+          echo "| 3 | Admin (9) | Check artifacts |" >> $GITHUB_STEP_SUMMARY
+          echo "| 4 | Smoke (9) | Check artifacts |" >> $GITHUB_STEP_SUMMARY
+          echo "| 5 | Accessibility Simple (6) | Check artifacts |" >> $GITHUB_STEP_SUMMARY
+          echo "| 6 | Team Accounts (6) | Check artifacts |" >> $GITHUB_STEP_SUMMARY
+          echo "| 7 | Account + Invitations (8) | Check artifacts |" >> $GITHUB_STEP_SUMMARY
+          echo "| 8 | Quick Tests (3) | Check artifacts |" >> $GITHUB_STEP_SUMMARY
+          echo "| 9 | Billing (2) | Check artifacts |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Check overall status
+          if [[ "${{ needs.e2e-shards.result }}" == "success" ]]; then
+            echo "### ✅ All shards completed successfully!" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### ❌ Some shards failed - review artifacts for details" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Comment on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const status = '${{ needs.e2e-shards.result }}';
+            const icon = status === 'success' ? '✅' : '❌';
+            
+            const comment = `## ${icon} E2E Test Results (Sharded)
+            
+            **Execution Strategy**: 9 shards with max ${{ github.event.inputs.max_parallel || 6 }} parallel
+            **Overall Status**: ${status}
+            
+            ### Test Coverage by Shard:
+            1. **Accessibility Large** - 13 tests
+            2. **Authentication** - 10 tests  
+            3. **Admin** - 9 tests
+            4. **Smoke** - 9 tests
+            5. **Accessibility Simple** - 6 tests
+            6. **Team Accounts** - 6 tests
+            7. **Account + Invitations** - 8 tests
+            8. **Quick Tests** - 3 tests
+            9. **Billing** - 2 tests
+            
+            **Total**: 66 tests across 9 shards
+            
+            ${status !== 'success' ? '⚠️ Please review the failing shards before merging.' : '🎉 All tests passed! Ready for merge.'}
+            
+            [View detailed results in workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
