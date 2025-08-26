@@ -311,8 +311,8 @@ class E2ETestRunner {
 			log(`🔧 Using configured concurrency: ${this.maxConcurrentShards} shards`);
 		} else {
 			// Use 75% of CPU cores for optimal performance without overload
-			// But cap at 6 for safety even on high-core machines
-			this.maxConcurrentShards = Math.min(6, Math.floor(cpuCount * 0.75));
+			// But cap at 3 for memory safety with concurrent Playwright processes
+			this.maxConcurrentShards = Math.min(3, Math.floor(cpuCount * 0.75));
 		}
 		
 		log(`🖥️  System has ${cpuCount} CPU cores`);
@@ -400,9 +400,20 @@ class E2ETestRunner {
 
 		const startTime = Date.now();
 		
-		// Don't pre-start servers - let Playwright manage them
-		// The first shard will start servers, subsequent shards will reuse them
-		// This is simpler and more reliable based on testing
+		// Pre-start servers when PLAYWRIGHT_PARALLEL=true since webServer management is disabled
+		// This ensures all shards can connect to running servers immediately
+		try {
+			await this.startTestServers();
+		} catch (error) {
+			logError(`❌ Failed to start test servers: ${error.message}`);
+			return {
+				total: 66,
+				passed: 0, 
+				failed: 66,
+				skipped: 0,
+				infrastructureFailures: 9
+			};
+		}
 		
 		// Queue-based execution with concurrency limit
 		const shardResults = await this.runShardsWithQueue(status);
@@ -434,6 +445,9 @@ class E2ETestRunner {
 
 		const totalDuration = Math.round((Date.now() - startTime) / 1000);
 		status.status.e2e = { ...status.status.e2e, ...totals, duration: `${totalDuration}s` };
+
+		// Cleanup test servers
+		await this.stopTestServers();
 
 		log("\n📊 E2E tests completed");
 		log(`   Total: ${totals.total}`);

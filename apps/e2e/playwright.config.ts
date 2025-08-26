@@ -176,32 +176,35 @@ export default defineConfig({
 			],
 
 	/* Run your local dev server before starting the tests */
-	// Skip webServer when testing against deployed environment
+	// Skip webServer when testing against deployed environment or for local sharding
 	webServer: process.env.PLAYWRIGHT_BASE_URL
 		? undefined
-		: [
-				{
-					cwd: "../../",
-					command:
-						process.env.PLAYWRIGHT_WEB_COMMAND || "pnpm --filter=web dev:test",
-					url: "http://localhost:3000",
-					name: "Frontend",
-					timeout: 90 * 1000, // Increased timeout for initial compilation
-					reuseExistingServer: !process.env.CI,
-					stdout: "pipe",
-					stderr: "pipe",
-				},
-				{
-					cwd: "../../",
-					command:
-						process.env.PLAYWRIGHT_PAYLOAD_COMMAND ||
-						"pnpm --filter=payload dev:test",
-					url: "http://localhost:3020",
-					name: "Backend",
-					timeout: 90 * 1000, // Increased timeout for initial compilation
-					reuseExistingServer: !process.env.CI,
-					stdout: "pipe",
-					stderr: "pipe",
-				},
-			],
+		: process.env.PLAYWRIGHT_PARALLEL === "true"
+			? undefined // Disable webServer for sharded runs to avoid coordination issues
+			: [
+					{
+						cwd: "../../",
+						command:
+							process.env.PLAYWRIGHT_WEB_COMMAND ||
+							"pnpm --filter=web dev:test",
+						url: "http://localhost:3000",
+						name: "Frontend",
+						timeout: 90 * 1000, // Increased timeout for initial compilation
+						reuseExistingServer: !process.env.CI,
+						stdout: "pipe",
+						stderr: "pipe",
+					},
+					{
+						cwd: "../../",
+						command:
+							process.env.PLAYWRIGHT_PAYLOAD_COMMAND ||
+							"pnpm --filter=payload dev:test",
+						url: "http://localhost:3020",
+						name: "Backend",
+						timeout: 90 * 1000, // Increased timeout for initial compilation
+						reuseExistingServer: !process.env.CI,
+						stdout: "pipe",
+						stderr: "pipe",
+					},
+				],
 });
