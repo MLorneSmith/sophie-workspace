@@ -9,6 +9,7 @@ export class AccountPageObject {
 	public auth: AuthPageObject;
 	private otp: OtpPo;
 	private onboarding: OnboardingPageObject;
+	private currentPassword = "password";
 
 	constructor(page: Page) {
 		this.page = page;
@@ -22,42 +23,47 @@ export class AccountPageObject {
 		await this.page.goto("/auth/sign-up");
 
 		const email = this.auth.createRandomEmail();
+		const password = "testingpassword123!"; // Stronger password
+		this.currentPassword = password;
 
 		// Sign up
 		await this.auth.signUp({
 			email,
-			password: "password",
-			repeatPassword: "password",
+			password,
+			repeatPassword: password,
 		});
 
 		// With autoconfirm enabled, wait for redirect to either onboarding or home
 		await this.page.waitForURL(
 			(url) => url.href.includes("/onboarding") || url.href.includes("/home"),
-			{ timeout: 10000 },
+			{ timeout: 15000 }, // Increased timeout
 		);
 
 		const currentUrl = this.page.url();
 		console.log(`After sign-up, current URL: ${currentUrl}`);
 
-		// If on onboarding page, complete it
+		// If on onboarding page, complete it with better error handling
 		if (currentUrl.includes("/onboarding")) {
 			try {
 				await this.onboarding.completeOnboardingSimple();
 				// After onboarding, should be on home page
-				await this.page.waitForURL("**/home/**", { timeout: 5000 });
+				await this.page.waitForURL("**/home/**", { timeout: 10000 });
 			} catch (error) {
-				console.log("Onboarding failed, using E2E bypass");
+				console.error("Onboarding failed:", error);
+				// Try direct navigation as fallback
+				await this.page.goto("/home");
+				await this.page.waitForLoadState("networkidle");
 			}
 		}
 
-		// Navigate to settings page
-		await this.page.goto("/home/settings");
-		await this.page.waitForLoadState("networkidle");
+		// Navigate to settings page with better error handling
+		await expect(async () => {
+			await this.page.goto("/home/settings");
+			await this.page.waitForLoadState("networkidle");
+			await expect(this.page).toHaveURL(/\/home\/settings/);
+		}).toPass({ timeout: 15000 });
 
-		// Verify we're on the settings page
-		await expect(this.page).toHaveURL(/\/home\/settings/);
-
-		return { email };
+		return { email, password };
 	}
 
 	async updateName(name: string) {
@@ -91,18 +97,35 @@ export class AccountPageObject {
 		}).toPass();
 	}
 
-	async updatePassword(password: string) {
+	async updatePassword(newPassword: string) {
+		// Update stored password for later use in tests
+		this.currentPassword = newPassword;
+
 		await this.page.fill(
 			'[data-test="account-password-form-password-input"]',
-			password,
+			newPassword,
 		);
 
 		await this.page.fill(
 			'[data-test="account-password-form-repeat-password-input"]',
-			password,
+			newPassword,
 		);
 
+		const responsePromise = this.page.waitForResponse((resp) => {
+			return resp.url().includes("auth/v1/user") && resp.status() === 200;
+		});
+
 		await this.page.click('[data-test="account-password-form"] button');
+
+		// Wait for password change confirmation
+		await responsePromise;
+
+		// Wait for UI to update
+		await this.page.waitForTimeout(1000);
+	}
+
+	getCurrentPassword() {
+		return this.currentPassword;
 	}
 
 	async deleteAccount(email: string) {

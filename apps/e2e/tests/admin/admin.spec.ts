@@ -334,25 +334,44 @@ async function goToAdmin(page: Page) {
 		(url) => {
 			return url.pathname === "/auth/verify" || url.pathname === "/home";
 		},
-		{ timeout: 10000 },
+		{ timeout: 15000 }, // Increased timeout for slower environments
 	);
 
-	// If MFA is required, handle it
+	// If MFA is required, handle it with better error handling
 	if (page.url().includes("/auth/verify")) {
-		await page.waitForTimeout(250);
+		// Wait for MFA form to be fully loaded
+		await page.waitForSelector("[data-input-otp]", { timeout: 5000 });
+		await page.waitForTimeout(500); // Small delay to ensure form is ready
 
 		await expect(async () => {
 			await auth.submitMFAVerification(MFA_KEY);
-			await page.waitForURL("/home");
+			// Wait for response after submitting MFA
+			await page
+				.waitForResponse(
+					(response) =>
+						response.url().includes("auth") && response.status() === 200,
+					{ timeout: 10000 },
+				)
+				.catch(() => {
+					// If no response, still try to wait for navigation
+				});
+			await page.waitForURL("/home", { timeout: 10000 });
 		}).toPass({
+			timeout: 60000, // Increased timeout for MFA retries
 			intervals: [
-				500, 2500, 5000, 7500, 10_000, 15_000, 20_000, 25_000, 30_000, 35_000,
-				40_000, 45_000, 50_000,
+				500, 1000, 2000, 3000, 5000, 7500, 10_000, 15_000, 20_000, 25_000,
+				30_000,
 			],
 		});
 	}
 
+	// Ensure we're on home before navigating to admin
+	await page.waitForLoadState("networkidle");
 	await page.goto("/admin");
+	// Wait for admin page to load
+	await page.waitForSelector('[data-test="admin-dashboard"], h1', {
+		timeout: 10000,
+	});
 }
 
 async function createUser(

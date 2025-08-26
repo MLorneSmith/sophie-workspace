@@ -6,12 +6,21 @@ import { AccountPageObject } from "./account.po";
 test.describe("Account Settings", () => {
 	let page: Page;
 	let account: AccountPageObject;
+	let testEmail: string;
 
 	test.beforeAll(async ({ browser }) => {
 		page = await browser.newPage();
 		account = new AccountPageObject(page);
 
-		await account.setup();
+		const setupResult = await account.setup();
+		testEmail = setupResult.email;
+	});
+
+	test.beforeEach(async () => {
+		// Ensure we're on the settings page for each test
+		await page.goto("/home/settings");
+		await page.waitForLoadState("networkidle");
+		await expect(page).toHaveURL(/\/home\/settings/);
 	});
 
 	test("user can update their profile name", async () => {
@@ -60,19 +69,26 @@ test.describe("Account Settings", () => {
 	});
 
 	test("user can update their password", async () => {
-		const password = (Math.random() * 100000).toString();
+		const newPassword = `newpass${Math.random() * 100000}!`;
 
-		const request = account.updatePassword(password);
+		await account.updatePassword(newPassword);
 
-		const response = page.waitForResponse((resp) => {
-			return resp.url().includes("auth/v1/user");
+		// Clear cookies and reload to test new password
+		await page.context().clearCookies();
+		await page.reload();
+
+		// Wait for redirect to auth page
+		await page.waitForURL(/\/auth\/sign-in/, { timeout: 10000 });
+
+		// Sign in with the NEW password using stored email
+		const auth = new AuthPageObject(page);
+		await auth.signIn({
+			email: testEmail,
+			password: newPassword, // Use NEW password (this was the bug!)
 		});
 
-		await Promise.all([request, response]);
-
-		await page.context().clearCookies();
-
-		await page.reload();
+		// Should successfully navigate to home
+		await page.waitForURL(/\/home/, { timeout: 10000 });
 	});
 });
 
@@ -81,7 +97,7 @@ test.describe("Account Deletion", () => {
 		const account = new AccountPageObject(page);
 		const auth = new AuthPageObject(page);
 
-		const { email } = await account.setup();
+		const { email, password } = await account.setup();
 
 		await account.deleteAccount(email);
 
@@ -93,10 +109,10 @@ test.describe("Account Deletion", () => {
 
 		await page.goto("/auth/sign-in");
 
-		// sign in will now fail
+		// sign in will now fail - use the actual password from setup
 		await auth.signIn({
 			email,
-			password: "testingpassword",
+			password, // Use actual password from setup, not hardcoded value
 		});
 
 		await expect(
