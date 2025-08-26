@@ -103,16 +103,20 @@ export default defineConfig({
 		/* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
 		trace: "on-first-retry",
 
-		/* Optimized timeouts for faster test execution */
+		/* Optimized timeouts for faster test execution 
+		   CI timeouts increased to handle network latency and deployment protection layers */
 		navigationTimeout:
-			Number(process.env.PLAYWRIGHT_NAVIGATION_TIMEOUT) || 20000, // Balanced for CI performance
-		actionTimeout: Number(process.env.PLAYWRIGHT_ACTION_TIMEOUT) || 10000, // Faster failure detection
+			Number(process.env.PLAYWRIGHT_NAVIGATION_TIMEOUT) ||
+			(process.env.CI ? 30000 : 20000), // Increased for CI to handle network latency
+		actionTimeout:
+			Number(process.env.PLAYWRIGHT_ACTION_TIMEOUT) ||
+			(process.env.CI ? 15000 : 10000), // Increased for CI reliability
 	},
 	// test timeout set to 2 minutes
 	timeout: 120 * 1000,
 	expect: {
-		// expect timeout set to 5 seconds
-		timeout: 5 * 1000,
+		// expect timeout set to 10 seconds for CI, 5 for local
+		timeout: process.env.CI ? 10 * 1000 : 5 * 1000,
 	},
 	/* Configure projects for major browsers - reduced for local development */
 	projects: process.env.CI

@@ -1,6 +1,7 @@
 import { expect, type Page, test } from "@playwright/test";
 
 import { InvitationsPageObject } from "./invitations.po";
+import { waitForNetworkIdleWithFallback } from "../utils/wait-helpers";
 
 test.describe("Invitations @integration", () => {
 	let page: Page;
@@ -15,14 +16,14 @@ test.describe("Invitations @integration", () => {
 
 	test.beforeEach(async () => {
 		// Ensure clean state for each test
-		await page.waitForLoadState("networkidle");
+		await waitForNetworkIdleWithFallback(page);
 	});
 
 	test.afterEach(async () => {
 		// Clean up any lingering state
 		if (page.url().includes("/members")) {
 			await page.reload();
-			await page.waitForLoadState("networkidle");
+			await waitForNetworkIdleWithFallback(page);
 		}
 	});
 
@@ -113,7 +114,7 @@ test.describe("Full Invitation Flow", () => {
 
 	test.beforeEach(async () => {
 		// Ensure clean state for each test
-		await page.waitForLoadState("networkidle");
+		await waitForNetworkIdleWithFallback(page);
 	});
 
 	test.afterEach(async () => {
