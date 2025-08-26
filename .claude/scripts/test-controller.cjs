@@ -317,6 +317,80 @@ class E2ETestRunner {
 		
 		log(`🖥️  System has ${cpuCount} CPU cores`);
 		log(`⚙️  Max concurrent shards: ${this.maxConcurrentShards}`);
+		
+		this.serverProcess = null;
+	}
+	
+	async startTestServers() {
+		log("🚀 Starting test servers (Frontend & Backend)...");
+		
+		// Start servers in background
+		this.serverProcess = spawn(
+			"pnpm",
+			["--filter", "web", "dev:test"],
+			{
+				cwd: process.cwd(),
+				stdio: ["ignore", "pipe", "pipe"],
+				detached: false,
+				shell: true,
+				env: {
+					...process.env,
+					NODE_ENV: "test",
+				},
+			},
+		);
+		
+		// Start backend server too
+		this.backendProcess = spawn(
+			"pnpm",
+			["--filter", "payload", "dev:test"],
+			{
+				cwd: process.cwd(),
+				stdio: ["ignore", "pipe", "pipe"],
+				detached: false,
+				shell: true,
+				env: {
+					...process.env,
+					NODE_ENV: "test",
+				},
+			},
+		);
+		
+		// Wait for servers to be ready
+		log("⏳ Waiting for servers to be ready...");
+		const maxRetries = 30;
+		let retries = 0;
+		
+		while (retries < maxRetries) {
+			try {
+				// Check if frontend is ready
+				const frontendResponse = await fetch("http://127.0.0.1:3000").catch(() => null);
+				const backendResponse = await fetch("http://127.0.0.1:3020").catch(() => null);
+				
+				if (frontendResponse && backendResponse) {
+					log("✅ Servers are ready!");
+					return true;
+				}
+			} catch (e) {
+				// Server not ready yet
+			}
+			
+			retries++;
+			await new Promise(resolve => setTimeout(resolve, 2000));
+		}
+		
+		throw new Error("Servers failed to start within timeout");
+	}
+	
+	async stopTestServers() {
+		if (this.serverProcess) {
+			this.serverProcess.kill("SIGTERM");
+			this.serverProcess = null;
+		}
+		if (this.backendProcess) {
+			this.backendProcess.kill("SIGTERM");
+			this.backendProcess = null;
+		}
 	}
 
 	async run(status) {
@@ -325,6 +399,10 @@ class E2ETestRunner {
 		await status.save();
 
 		const startTime = Date.now();
+		
+		// Don't pre-start servers - let Playwright manage them
+		// The first shard will start servers, subsequent shards will reuse them
+		// This is simpler and more reliable based on testing
 		
 		// Queue-based execution with concurrency limit
 		const shardResults = await this.runShardsWithQueue(status);
@@ -389,7 +467,7 @@ class E2ETestRunner {
 			return completed.result;
 		};
 
-		// Track if this is the first shard (needs to start servers)
+		// Track if this is the first shard (will start servers)
 		let isFirstShard = true;
 		
 		// Process queue with concurrency limit
@@ -402,14 +480,14 @@ class E2ETestRunner {
 				const shardPromise = this.runShardWithRetry(shard, 1);
 				runningShards.set(shard.id, shardPromise);
 				
-				// Add a small delay after the first shard to allow server startup
-				// This prevents race conditions where multiple shards try to start servers
+				// Delay after first shard to allow servers to start
+				// Subsequent shards will reuse the servers
 				if (isFirstShard) {
 					isFirstShard = false;
-					log("  ⏳ Waiting 5s for initial server startup...");
-					await new Promise(resolve => setTimeout(resolve, 5000));
-				} else {
-					// Small delay between subsequent shards to avoid overwhelming the system
+					log("  ⏳ Waiting 10s for first shard to start servers...");
+					await new Promise(resolve => setTimeout(resolve, 10000));
+				} else if (runningShards.size < this.maxConcurrentShards) {
+					// Small delay between subsequent shards
 					await new Promise(resolve => setTimeout(resolve, 500));
 				}
 			}
@@ -472,6 +550,8 @@ class E2ETestRunner {
 			delete shardEnv.CI;
 			// Set parallel mode
 			shardEnv.PLAYWRIGHT_PARALLEL = "true";
+			// Force reuseExistingServer by ensuring we're not in CI mode
+			shardEnv.NODE_ENV = "test";
 			
 			const proc = spawn(
 				"pnpm",
