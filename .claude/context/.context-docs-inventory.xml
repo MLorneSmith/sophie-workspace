@@ -70,6 +70,20 @@
     </document>
   </category>
 
+  <!-- Design Documentation -->
+  <category id="design" name="Design Documentation">
+    <document path="design/cicd-pipeline-updated-design.md">
+      <name>CI/CD Pipeline Updated Design</name>
+      <description>Updated design document for the CI/CD pipeline architecture, incorporating lessons learned and target improvements.</description>
+      <topics>
+        <topic>Pipeline Architecture</topic>
+        <topic>Implementation Status</topic>
+        <topic>Security Design</topic>
+        <topic>Performance Optimization</topic>
+      </topics>
+    </document>
+  </category>
+
   <!-- Roles -->
   <category id="roles" name="Role Definitions">
     <document path="roles/.roles-summary.xml">
@@ -197,6 +211,47 @@
         <topic>Test Coverage</topic>
       </topics>
     </document>
+    <document path="roles/comprehensive-test-writer.md">
+      <name>Comprehensive Test Writer Role</name>
+      <description>Expert test engineer specializing in comprehensive testing strategies across multiple test types.</description>
+      <topics>
+        <topic>Unit Testing</topic>
+        <topic>End-to-End Testing</topic>
+        <topic>Accessibility Testing</topic>
+        <topic>Integration Testing</topic>
+        <topic>Performance Testing</topic>
+      </topics>
+    </document>
+    <document path="roles/implementation-engineer.md">
+      <name>Implementation Engineer Role</name>
+      <description>Meticulous software engineer who excels at turning specifications into working code while maintaining high quality standards.</description>
+      <topics>
+        <topic>Specification Implementation</topic>
+        <topic>Code Quality</topic>
+        <topic>Pattern Consistency</topic>
+        <topic>Progress Tracking</topic>
+      </topics>
+    </document>
+    <document path="roles/pr-reviewer.md">
+      <name>PR Reviewer Role</name>
+      <description>Pull request review specialist focused on code quality, security, and best practices.</description>
+      <topics>
+        <topic>Code Review</topic>
+        <topic>Quality Assessment</topic>
+        <topic>Security Analysis</topic>
+        <topic>Best Practices</topic>
+      </topics>
+    </document>
+    <document path="roles/task-planner.md">
+      <name>Task Planner Role</name>
+      <description>Strategic task planning and project management specialist for development workflows.</description>
+      <topics>
+        <topic>Task Planning</topic>
+        <topic>Project Management</topic>
+        <topic>Workflow Optimization</topic>
+        <topic>Development Strategy</topic>
+      </topics>
+    </document>
   </category>
 
   <!-- Standards -->
@@ -223,22 +278,44 @@
 
   <!-- Systems -->
   <category id="systems" name="System Documentation">
-    <document path="systems/cicd-pipeline-design.md">
-      <name>CI/CD Pipeline Design</name>
-      <description>Continuous integration and deployment pipeline design documentation.</description>
+    <document path="systems/cicd/CI_CD_INVENTORY.md">
+      <name>CI/CD Inventory</name>
+      <description>Complete inventory and documentation of CI/CD pipeline components and configurations.</description>
       <topics>
-        <topic>Pipeline Architecture</topic>
-        <topic>Deployment Strategy</topic>
-        <topic>CI/CD Best Practices</topic>
+        <topic>Pipeline Components</topic>
+        <topic>Configuration Inventory</topic>
+        <topic>CI/CD Architecture</topic>
+        <topic>Implementation Status</topic>
       </topics>
     </document>
-    <document path="systems/cicd-pipeline.md">
-      <name>CI/CD Pipeline</name>
-      <description>CI/CD pipeline implementation and configuration.</description>
+    <document path="systems/cicd/PRODUCTION_PROTECTION_PRIVATE_REPO.md">
+      <name>Production Protection Private Repo</name>
+      <description>Production protection strategies and implementation for private repositories.</description>
       <topics>
-        <topic>Pipeline Configuration</topic>
-        <topic>Build Process</topic>
-        <topic>Deployment Process</topic>
+        <topic>Production Security</topic>
+        <topic>Access Control</topic>
+        <topic>Deployment Protection</topic>
+        <topic>Private Repository Management</topic>
+      </topics>
+    </document>
+    <document path="systems/cicd/cicd-llm-context.md">
+      <name>CI/CD LLM Context</name>
+      <description>Context documentation for LLM integration within CI/CD pipelines.</description>
+      <topics>
+        <topic>LLM Integration</topic>
+        <topic>AI-Powered CI/CD</topic>
+        <topic>Automated Analysis</topic>
+        <topic>Pipeline Intelligence</topic>
+      </topics>
+    </document>
+    <document path="systems/enhanced-logger.md">
+      <name>Enhanced Logger</name>
+      <description>Enhanced logging system design and implementation for improved observability.</description>
+      <topics>
+        <topic>Logging Architecture</topic>
+        <topic>Observability</topic>
+        <topic>Error Tracking</topic>
+        <topic>Performance Monitoring</topic>
       </topics>
     </document>
     <document path="systems/portkey-implementation.md">
