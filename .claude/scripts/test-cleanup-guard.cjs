@@ -1,0 +1,264 @@
+#!/usr/bin/env node
+
+/**
+ * Test Cleanup Guard
+ * Ensures proper cleanup of test processes even on unexpected exits
+ */
+
+const { exec } = require("node:child_process");
+const { promisify } = require("node:util");
+const execAsync = promisify(exec);
+
+class TestCleanupGuard {
+	constructor() {
+		this.registeredProcesses = new Set();
+		this.cleanupHandlers = [];
+		this.isCleaningUp = false;
+
+		// Register exit handlers
+		this.registerExitHandlers();
+	}
+
+	/**
+	 * Register all possible exit handlers to ensure cleanup
+	 */
+	registerExitHandlers() {
+		const events = [
+			"exit",
+			"SIGINT",
+			"SIGTERM",
+			"SIGQUIT",
+			"uncaughtException",
+			"unhandledRejection",
+		];
+
+		events.forEach((event) => {
+			process.on(event, async (codeOrSignal) => {
+				if (!this.isCleaningUp) {
+					this.isCleaningUp = true;
+					console.log(`\n🧹 Cleanup guard triggered by ${event}`);
+					await this.executeCleanup();
+
+					// Exit with appropriate code
+					if (event === "uncaughtException" || event === "unhandledRejection") {
+						console.error(`Fatal error: ${codeOrSignal}`);
+						process.exit(1);
+					} else if (event !== "exit") {
+						process.exit(0);
+					}
+				}
+			});
+		});
+	}
+
+	/**
+	 * Register a process to be tracked and cleaned up
+	 * @param {number} pid - Process ID
+	 * @param {string} name - Process name for logging
+	 */
+	registerProcess(pid, name) {
+		this.registeredProcesses.add({ pid, name });
+		console.log(`📝 Registered process: ${name} (PID: ${pid})`);
+	}
+
+	/**
+	 * Add a custom cleanup handler
+	 * @param {Function} handler - Async cleanup function
+	 */
+	addCleanupHandler(handler) {
+		this.cleanupHandlers.push(handler);
+	}
+
+	/**
+	 * Execute all cleanup operations
+	 */
+	async executeCleanup() {
+		console.log("🧹 Executing comprehensive test cleanup...");
+
+		// Execute custom cleanup handlers
+		for (const handler of this.cleanupHandlers) {
+			try {
+				await handler();
+			} catch (error) {
+				console.error(`Cleanup handler failed: ${error.message}`);
+			}
+		}
+
+		// Kill registered processes
+		for (const proc of this.registeredProcesses) {
+			try {
+				process.kill(proc.pid, "SIGTERM");
+				console.log(`✅ Killed process: ${proc.name} (PID: ${proc.pid})`);
+			} catch (error) {
+				if (error.code !== "ESRCH") {
+					// Process doesn't exist
+					console.error(`Failed to kill ${proc.name}: ${error.message}`);
+				}
+			}
+		}
+
+		// General cleanup commands
+		const cleanupCommands = [
+			// Kill test-related processes
+			'pkill -f "playwright" || true',
+			'pkill -f "vitest" || true',
+			'pkill -f "next-server" || true',
+			'pkill -f "dev:test" || true',
+			'pkill -f "test:shard" || true',
+
+			// Clean up ports
+			"lsof -ti:3000-3020 | xargs kill -9 2>/dev/null || true",
+			"lsof -ti:55321-55327 | xargs kill -9 2>/dev/null || true",
+
+			// Clean up zombie processes
+			'pkill -f "zombie" || true',
+			'pkill -f "defunct" || true',
+
+			// Clean up lock files
+			"rm -rf /tmp/.claude_test_locks/* 2>/dev/null || true",
+
+			// Clean up temp test files
+			"rm -f /tmp/.claude_test_status_* 2>/dev/null || true",
+			"rm -f /tmp/.claude_test_results.json 2>/dev/null || true",
+		];
+
+		for (const cmd of cleanupCommands) {
+			try {
+				await execAsync(cmd);
+			} catch (error) {
+				// Ignore errors in cleanup
+			}
+		}
+
+		console.log("✅ Cleanup completed");
+	}
+
+	/**
+	 * Perform a health check and cleanup if needed
+	 */
+	async healthCheck() {
+		try {
+			// Check for stuck processes
+			const { stdout: playwrightProcs } = await execAsync(
+				"pgrep -f playwright || true",
+			);
+			const { stdout: vitestProcs } = await execAsync(
+				"pgrep -f vitest || true",
+			);
+
+			if (playwrightProcs || vitestProcs) {
+				console.log("⚠️ Found stuck test processes, cleaning up...");
+				await this.executeCleanup();
+				return false;
+			}
+
+			// Check for blocked ports
+			const criticalPorts = [3000, 3020];
+			for (const port of criticalPorts) {
+				try {
+					const { stdout } = await execAsync(`lsof -ti:${port}`);
+					if (stdout.trim()) {
+						console.log(`⚠️ Port ${port} is blocked, cleaning up...`);
+						await execAsync(
+							`lsof -ti:${port} | xargs kill -9 2>/dev/null || true`,
+						);
+						return false;
+					}
+				} catch (e) {
+					// Port is free
+				}
+			}
+
+			return true;
+		} catch (error) {
+			console.error(`Health check failed: ${error.message}`);
+			return false;
+		}
+	}
+
+	/**
+	 * Pre-test cleanup to ensure clean state
+	 */
+	async preTestCleanup() {
+		console.log("🔧 Pre-test cleanup starting...");
+
+		// Kill any existing test processes
+		const killCommands = [
+			'pkill -f "playwright|vitest|next-server|dev:test|test:shard" || true',
+			"lsof -ti:3000-3020,55321-55327 | xargs kill -9 2>/dev/null || true",
+		];
+
+		for (const cmd of killCommands) {
+			await execAsync(cmd).catch(() => {});
+		}
+
+		// Clean up old lock files
+		await execAsync(
+			'find /tmp -name ".claude_test_*" -mtime +1 -delete 2>/dev/null || true',
+		).catch(() => {});
+
+		// Wait for processes to terminate
+		await new Promise((resolve) => setTimeout(resolve, 2000));
+
+		console.log("✅ Pre-test cleanup completed");
+	}
+
+	/**
+	 * Monitor and restart stuck processes
+	 */
+	async monitorProcesses() {
+		const checkInterval = 30000; // 30 seconds
+
+		setInterval(async () => {
+			const healthy = await this.healthCheck();
+			if (!healthy) {
+				console.log("🔄 Restarting unhealthy test infrastructure...");
+			}
+		}, checkInterval);
+	}
+}
+
+// Export for use in other modules
+module.exports = { TestCleanupGuard };
+
+// CLI interface
+if (require.main === module) {
+	const command = process.argv[2];
+	const guard = new TestCleanupGuard();
+
+	(async () => {
+		switch (command) {
+			case "clean":
+				await guard.executeCleanup();
+				break;
+
+			case "pre-test":
+				await guard.preTestCleanup();
+				break;
+
+			case "health": {
+				const healthy = await guard.healthCheck();
+				console.log(
+					healthy ? "✅ System is healthy" : "⚠️ System needs cleanup",
+				);
+				process.exit(healthy ? 0 : 1);
+				break;
+			}
+
+			case "monitor":
+				console.log("👁️ Starting process monitor...");
+				guard.monitorProcesses();
+				// Keep process alive
+				setInterval(() => {}, 1000);
+				break;
+
+			default:
+				console.log("Usage: test-cleanup-guard.cjs <command>");
+				console.log("Commands:");
+				console.log("  clean     - Execute full cleanup");
+				console.log("  pre-test  - Pre-test cleanup");
+				console.log("  health    - Check system health");
+				console.log("  monitor   - Start process monitor");
+		}
+	})();
+}

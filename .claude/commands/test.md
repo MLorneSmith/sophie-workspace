@@ -131,8 +131,10 @@ task:
     - --unit: Run only unit tests
     - --e2e: Run only E2E tests  
     - --all: Run both (default)
-    - --debug: Enable debug mode with OpenTelemetry logging
+    - --debug: Enable debug mode with verbose output (sets DEBUG_TEST=true)
     - --continue: Continue on failures
+    
+    IMPORTANT: If --debug is specified, set DEBUG_TEST=true environment variable
     
     Follow your test execution protocol:
     1. Initialize and perform pre-flight checks
