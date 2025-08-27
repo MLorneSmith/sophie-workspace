@@ -6,12 +6,17 @@
 export abstract class MonitoringService {
   /**
    * Capture an exception
-   * @param error
-   * @param extra
+   * @param error - The error to capture
+   * @param extra - Extra information to capture with the error and be passed along to the capture event
+   * @param config - Options to pass along to the service for additional configuration
    */
-  abstract captureException<Extra extends object>(
+  abstract captureException<
+    Extra extends Record<string, unknown>,
+    Config extends Record<string, unknown>,
+  >(
     error: Error & { digest?: string },
     extra?: Extra,
+    config?: Config,
   ): unknown;
 
   /**

@@ -18,13 +18,26 @@ export async function register() {
  * @name onRequestError
  * @description This function is called when an error occurs during the request lifecycle.
  * It is used to capture the error and send it to the monitoring service.
- * @param err
  */
-export const onRequestError: Instrumentation.onRequestError = async (err) => {
+export const onRequestError: Instrumentation.onRequestError = async (
+  err,
+  request,
+  context,
+) => {
   const { getServerMonitoringService } = await import('@kit/monitoring/server');
 
   const service = await getServerMonitoringService();
 
   await service.ready();
-  await service.captureException(err as Error);
+
+  await service.captureException(
+    err as Error,
+    {},
+    {
+      path: request.path,
+      headers: request.headers,
+      method: request.method,
+      routePath: context.routePath,
+    },
+  );
 };
