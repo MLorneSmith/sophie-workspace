@@ -121,7 +121,9 @@
 		{
 			"includes": [
 				"**/.claude/scripts/**/*.js",
+				"**/.claude/scripts/**/*.cjs",
 				"**/scripts/**/*.js",
+				"**/scripts/**/*.cjs",
 				"**/scripts/**/*.ts"
 			],
 			"linter": {
