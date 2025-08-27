@@ -35,26 +35,36 @@ initialization:
   status_file: "/tmp/.claude_codecheck_status_${GIT_ROOT//\//_}"
 ```
 
-### 2. Launch Orchestrator Agent
+### 2. Execute Direct Check Script
+```yaml
+execution:
+  method: "direct_script"
+  script: ".claude/scripts/codecheck-direct.sh"
+  alternative: "codecheck-orchestrator agent with Bash tool"
+  note: "Direct script execution ensures actual commands are run"
+```
+
+### Alternative: Launch Orchestrator Agent
 ```yaml
 orchestrator:
   agent: "codecheck-orchestrator"
-  role: "Coordinate all code quality checks"
+  role: "Execute all checks directly using Bash tool"
+  important: "Agent MUST use Bash tool to run actual commands"
   phases:
     - name: "TypeScript Check"
-      agent: "typecheck-agent"
+      command: "pnpm typecheck:raw --force"
       blocking: true
     - name: "Parallel Checks"
-      agents:
-        - "lint-agent"
-        - "format-agent"
+      commands:
+        - "pnpm lint"
+        - "pnpm format"
       parallel: true
 ```
 
-### 3. TypeScript Phase
+### 3. TypeScript Phase (Direct Execution)
 ```yaml
 typecheck_phase:
-  agent: "typecheck-agent"
+  method: "direct_bash_command"
   commands:
     - "pnpm typecheck:raw --force"
   fixes:
@@ -63,6 +73,7 @@ typecheck_phase:
     - "Add return type annotations"
   status_update: true
   cache_bypass: true
+  important: "Must run actual command, not simulation"
 ```
 
 ### 4. Linting Phase
@@ -108,21 +119,27 @@ status_reporting:
     failed: "🔴 codecheck:errors"
 ```
 
-## Agent Task Definitions
+## Execution Methods
 
-### TypeCheck Agent Task
+### Method 1: Direct Script (Recommended)
+```bash
+# Run the direct execution script
+.claude/scripts/codecheck-direct.sh
+```
+
+### Method 2: Agent with Bash Tool
 ```yaml
 task:
-  subagent_type: "typecheck-agent"
-  description: "TypeScript type checking and fixes"
+  subagent_type: "codecheck-orchestrator"
+  description: "Run all checks directly"
   prompt: |
-    Perform comprehensive TypeScript type checking with cache bypass:
-    1. Run pnpm typecheck:raw --force to bypass Turbo cache
-    2. Analyze and categorize type errors
+    Execute comprehensive code checks using Bash tool:
+    1. Run pnpm typecheck:raw --force directly
+    2. Run pnpm lint and pnpm format in parallel
     3. Apply automatic fixes where safe
-    4. Update codecheck status file with results
-    5. Return structured results in YAML format
-    Note: Use typecheck:raw --force to bypass Turbo cache for accurate results
+    4. CRITICAL: Update /tmp/.claude_codecheck_status_ file
+    5. Use Bash tool for ALL commands - do not simulate
+    6. Return structured results
 ```
 
 ### Lint Agent Task

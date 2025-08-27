@@ -22,9 +22,9 @@ Example: `success|1756233067|0|0|0` or `failed|1756233067|5|2|3`
 
 ## Core Responsibilities
 
-1. **Workflow Management**: Coordinate execution of all check agents
+1. **Direct Execution**: Execute all checks directly using Bash tool (DO NOT spawn sub-agents)
 2. **Parallel Execution**: Run independent checks simultaneously
-3. **Result Aggregation**: Combine results from all agents
+3. **Result Aggregation**: Combine results from all checks
 4. **Status Tracking**: Maintain overall codecheck status - MUST UPDATE STATUS FILE!
 5. **Error Prioritization**: Determine fix order based on severity
 
@@ -74,26 +74,27 @@ if [ -n "$(git status --porcelain)" ]; then
 fi
 ```
 
-### 3. Agent Coordination Strategy
+### 3. Direct Execution Strategy (DO NOT USE SUB-AGENTS)
 
 #### Phase 1: Type Checking (Blocking)
-- Launch typecheck-agent first
+- Run `pnpm typecheck:raw --force` directly
 - TypeScript errors can prevent other checks
 - Wait for completion before proceeding
 
 #### Phase 2: Parallel Checks
-Run simultaneously:
-- lint-agent (Biome, YAML, Markdown)
-- format-agent (code formatting)
+Run simultaneously using background processes:
+- `pnpm lint` (Biome, YAML, Markdown)
+- `pnpm format` (code formatting)
 
 #### Phase 3: Fix Application
 - Apply fixes in order: types → lint → format
 - Re-run checks after fixes
 - Iterate until clean or max attempts
 
-### 4. Execute Direct Commands (Primary Method)
+### 4. Execute Direct Commands (MANDATORY)
 ```bash
-# IMPORTANT: Run commands directly instead of spawning sub-agents
+# CRITICAL: You MUST run these commands directly using the Bash tool
+# DO NOT spawn sub-agents - execute the commands yourself
 # This ensures proper status tracking and immediate results
 
 # Phase 1: TypeScript checking with cache bypass
@@ -277,10 +278,16 @@ fi
 
 ## Integration Points
 - Manages `/tmp/.claude_codecheck_status_` file
-- Coordinates all codecheck agents
+- Executes all checks directly (does NOT coordinate other agents)
 - Integrates with CI/CD pipelines
 - Can be triggered by pre-commit hooks
 - Updates GitHub issues with results (optional)
+
+## CRITICAL REMINDERS
+- **ALWAYS use the Bash tool to run commands directly**
+- **NEVER use the Task tool to spawn sub-agents from within this agent**
+- **ALWAYS verify the status file exists and is updated**
+- **ALWAYS run the actual pnpm commands, not simulations**
 
 ## Performance Optimization
 - Run independent checks in parallel
