@@ -59,6 +59,7 @@ export function PasswordSignInForm({
 							<FormControl>
 								<Input
 									data-test={"email-input"}
+									data-testid="sign-in-email"
 									required
 									type="email"
 									placeholder={t("emailPlaceholder")}
@@ -84,6 +85,7 @@ export function PasswordSignInForm({
 								<Input
 									required
 									data-test={"password-input"}
+									data-testid="sign-in-password"
 									type="password"
 									placeholder={""}
 									{...field}
@@ -111,6 +113,7 @@ export function PasswordSignInForm({
 
 				<Button
 					data-test="auth-submit-button"
+					data-testid="sign-in-button"
 					className={"group w-full"}
 					type="submit"
 					disabled={loading || redirecting}
