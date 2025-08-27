@@ -8,7 +8,7 @@ export async function GET() {
 	const dbStatus = dbConnected ? "connected" : "disconnected";
 
 	return NextResponse.json({
-		status: dbConnected ? "healthy" : "unhealthy",
+		status: dbConnected ? "ready" : "unhealthy", // Changed "healthy" to "ready" for consistency
 		timestamp: now.toISOString(),
 		database: {
 			status: dbStatus,

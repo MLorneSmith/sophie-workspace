@@ -10,7 +10,7 @@ export async function GET() {
 	const isDbHealthy = await getSupabaseHealthCheck();
 
 	return NextResponse.json({
-		status: "ok",
+		status: "ready", // Changed from "ok" to "ready" for consistency with test controller expectations
 		timestamp: new Date().toISOString(),
 		services: {
 			database: isDbHealthy,
