@@ -72,6 +72,7 @@ export function PasswordSignUpForm({
 							<FormControl>
 								<Input
 									data-test={"email-input"}
+									data-testid="sign-up-email"
 									required
 									type="email"
 									placeholder={t("emailPlaceholder")}
@@ -97,6 +98,7 @@ export function PasswordSignUpForm({
 								<Input
 									required
 									data-test={"password-input"}
+									data-testid="sign-up-password"
 									type="password"
 									autoComplete="new-password"
 									placeholder={""}
@@ -143,6 +145,7 @@ export function PasswordSignUpForm({
 
 				<Button
 					data-test={"auth-submit-button"}
+					data-testid="sign-up-button"
 					className={"w-full"}
 					type="submit"
 					disabled={loading}

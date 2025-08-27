@@ -83,6 +83,7 @@ export function PersonalAccountDropdown({
 			<DropdownMenuTrigger
 				aria-label="Open your profile menu"
 				data-test={"account-dropdown-trigger"}
+				data-testid="account-dropdown"
 				className={cn(
 					"animate-in group/trigger fade-in focus:outline-primary flex cursor-pointer items-center group-data-[minimized=true]/sidebar:px-0",
 					className ?? "",

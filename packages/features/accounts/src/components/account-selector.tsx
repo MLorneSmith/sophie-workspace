@@ -94,6 +94,7 @@ export function AccountSelector({
 				<PopoverTrigger asChild>
 					<Button
 						data-test={"account-selector-trigger"}
+						data-testid="team-selector"
 						size={collapsed ? "icon" : "default"}
 						variant="ghost"
 						aria-expanded={open}

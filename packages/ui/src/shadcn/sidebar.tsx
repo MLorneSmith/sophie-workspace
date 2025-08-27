@@ -918,6 +918,15 @@ export function SidebarNavigation({
 																	"mx-auto w-full gap-0! [&>svg]:flex-1": !open,
 																})}
 																href={path}
+																data-testid={
+																	child.label === "common:routes.home"
+																		? "home-link"
+																		: child.label === "common:routes.profile"
+																			? "settings-link"
+																			: child.label === "common:routes.kanban"
+																				? "dashboard-link"
+																				: undefined
+																}
 															>
 																{child.Icon}
 																<span
