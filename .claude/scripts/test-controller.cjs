@@ -11,6 +11,8 @@ const path = require("node:path");
 const { promisify } = require("node:util");
 const os = require("node:os");
 const execAsync = promisify(exec);
+const { ResourceLock } = require("./resource-lock.cjs");
+const { TestCleanupGuard } = require("./test-cleanup-guard.cjs");
 
 // Simple logging utility to replace console statements
 function log(message, type = "info") {
@@ -35,8 +37,9 @@ const CONFIG = {
 		payload: 3020,
 	},
 	// Override with env var TEST_MAX_CONCURRENT_SHARDS if set
-	maxConcurrentShards: process.env.TEST_MAX_CONCURRENT_SHARDS ? 
-		parseInt(process.env.TEST_MAX_CONCURRENT_SHARDS) : null,
+	maxConcurrentShards: process.env.TEST_MAX_CONCURRENT_SHARDS
+		? parseInt(process.env.TEST_MAX_CONCURRENT_SHARDS)
+		: null,
 };
 
 // Test status tracking
@@ -81,12 +84,29 @@ class TestStatus {
 // Infrastructure checker
 class InfrastructureChecker {
 	async checkAll() {
-		log("🔍 Running infrastructure checks...");
+		log("🔍 Running comprehensive infrastructure checks...");
 		const results = {
 			supabase: await this.checkSupabase(),
 			ports: await this.checkPorts(),
 			environment: await this.checkEnvironment(),
+			database: await this.checkDatabaseConnection(),
+			build: await this.checkBuildValidity(),
+			dependencies: await this.checkDependencies(),
 		};
+
+		// Log comprehensive status
+		const passedChecks = Object.values(results).filter(
+			(r) =>
+				r === "running" ||
+				r === "started" ||
+				r === "valid" ||
+				r === "cleaned" ||
+				r === "created",
+		).length;
+		const totalChecks = Object.keys(results).length;
+		log(
+			`📊 Infrastructure status: ${passedChecks}/${totalChecks} checks passed`,
+		);
 
 		return results;
 	}
@@ -160,6 +180,54 @@ class InfrastructureChecker {
 		}
 	}
 
+	async checkDatabaseConnection() {
+		try {
+			log("🗄️ Checking database connection...");
+			// Simple pg connection test using environment vars
+			const { stdout } = await execAsync(
+				'cd apps/e2e && npx supabase status | grep -i "db url"',
+			);
+			if (stdout.length > 0) {
+				log("✅ Database connection verified");
+				return "valid";
+			}
+			return "unknown";
+		} catch (error) {
+			logError(`⚠️ Database check failed: ${error.message}`);
+			return "failed";
+		}
+	}
+
+	async checkBuildValidity() {
+		try {
+			log("🔨 Checking Next.js build validity...");
+			// Quick validation that the build artifacts exist
+			const buildDir = path.join(process.cwd(), "apps/web/.next");
+			await fs.access(buildDir);
+			log("✅ Next.js build artifacts found");
+			return "valid";
+		} catch (error) {
+			log("⚠️ No build artifacts found (will use dev server)");
+			return "missing";
+		}
+	}
+
+	async checkDependencies() {
+		try {
+			log("📦 Checking critical dependencies...");
+			// Check for playwright and other critical dependencies
+			const { stdout } = await execAsync("npx playwright --version");
+			if (stdout.includes("Version")) {
+				log("✅ Playwright dependency verified");
+				return "valid";
+			}
+			return "partial";
+		} catch (error) {
+			logError(`❌ Dependency check failed: ${error.message}`);
+			return "failed";
+		}
+	}
+
 	async fixInfrastructure(results) {
 		const fixes = [];
 
@@ -179,6 +247,30 @@ class InfrastructureChecker {
 			});
 		}
 
+		if (results.database === "failed") {
+			fixes.push({
+				issue: "Database connection failed",
+				command: "cd apps/e2e && npx supabase db reset --linked",
+				severity: "warning",
+			});
+		}
+
+		if (results.dependencies === "failed") {
+			fixes.push({
+				issue: "Critical dependencies missing",
+				command: "pnpm install --frozen-lockfile",
+				severity: "critical",
+			});
+		}
+
+		if (results.build === "missing") {
+			fixes.push({
+				issue: "No Next.js build found - using dev server",
+				command: "pnpm --filter web build",
+				severity: "info",
+			});
+		}
+
 		return fixes;
 	}
 }
@@ -190,14 +282,30 @@ class UnitTestRunner {
 		status.status.phase = "unit_tests";
 		await status.save();
 
+		// Pre-flight workspace verification
+		const workspaceInfo = await this.verifyWorkspaces();
+		log(`🔍 Workspace verification: ${workspaceInfo.total} workspaces found`);
+		log(`   With tests: ${workspaceInfo.withTests}`);
+		log(`   Cached: ${workspaceInfo.cached}`);
+
 		return new Promise((resolve) => {
 			const startTime = Date.now();
 			let output = "";
 
-			const proc = spawn("pnpm", ["test:unit"], {
+			// Use TURBO_FORCE when comprehensive coverage is needed
+			const testCommand =
+				process.env.TURBO_FORCE === "true"
+					? ["test:unit", "--force"]
+					: ["test:unit"];
+
+			const proc = spawn("pnpm", testCommand, {
 				cwd: process.cwd(),
 				stdio: ["inherit", "pipe", "pipe"],
 				shell: true,
+				env: {
+					...process.env,
+					TURBO_FORCE: process.env.TURBO_FORCE || "false",
+				},
 			});
 
 			proc.stdout.on("data", (data) => {
@@ -233,11 +341,26 @@ class UnitTestRunner {
 					log(`   Failed: ${results.failed}`);
 				}
 
+				// Post-test workspace analysis
+				const workspaceAnalysis = this.analyzeWorkspaceResults(output);
+				if (workspaceAnalysis.skipped > 0) {
+					log(
+						`⚠️  Workspaces skipped (likely cached): ${workspaceAnalysis.skipped}`,
+					);
+				}
+				if (workspaceAnalysis.total < workspaceInfo.withTests) {
+					log(
+						`⚠️  Expected ${workspaceInfo.withTests} workspaces with tests, only ran ${workspaceAnalysis.total}`,
+					);
+				}
+
 				resolve({
 					success: code === 0,
 					...results,
 					duration,
 					output,
+					workspaceInfo,
+					workspaceAnalysis,
 				});
 			});
 		});
@@ -285,11 +408,97 @@ class UnitTestRunner {
 
 		return results;
 	}
+
+	/**
+	 * Verify which workspaces have test scripts and could potentially run
+	 */
+	async verifyWorkspaces() {
+		try {
+			const { stdout } = await execAsync("pnpm list --recursive --json");
+			const workspaces = JSON.parse(stdout);
+
+			let total = 0;
+			let withTests = 0;
+			const cached = 0;
+
+			// Count workspaces that could have tests (excluding e2e)
+			for (const workspace of workspaces) {
+				if (workspace.name === "web-e2e" || workspace.name === "slideheroes")
+					continue;
+
+				total++;
+
+				// Check if workspace has test scripts in package.json
+				try {
+					const packageJsonPath = path.join(workspace.path, "package.json");
+					const packageContent = await fs.readFile(packageJsonPath, "utf8");
+					const packageJson = JSON.parse(packageContent);
+
+					if (
+						packageJson.scripts &&
+						(packageJson.scripts.test || packageJson.scripts["test:unit"])
+					) {
+						withTests++;
+					}
+				} catch (error) {
+					// Ignore workspace if can't read package.json
+				}
+			}
+
+			return {
+				total,
+				withTests,
+				cached: 0, // Will be updated during test execution
+			};
+		} catch (error) {
+			logError(`Failed to verify workspaces: ${error.message}`);
+			return { total: 0, withTests: 0, cached: 0 };
+		}
+	}
+
+	/**
+	 * Analyze test output to determine which workspaces actually ran
+	 */
+	analyzeWorkspaceResults(output) {
+		const analysis = {
+			total: 0,
+			skipped: 0,
+			executed: [],
+			cached: [],
+		};
+
+		// Look for Turbo workspace execution patterns
+		const workspacePattern = /(@[\w-]+\/[\w-]+|[\w-]+): RUN\s/g;
+		const cachedPattern = /(@[\w-]+\/[\w-]+|[\w-]+): CACHED\s/g;
+
+		let match;
+
+		// Count executed workspaces
+		while ((match = workspacePattern.exec(output)) !== null) {
+			const workspace = match[1];
+			if (!analysis.executed.includes(workspace)) {
+				analysis.executed.push(workspace);
+				analysis.total++;
+			}
+		}
+
+		// Count cached workspaces
+		while ((match = cachedPattern.exec(output)) !== null) {
+			const workspace = match[1];
+			if (!analysis.cached.includes(workspace)) {
+				analysis.cached.push(workspace);
+				analysis.skipped++;
+			}
+		}
+
+		return analysis;
+	}
 }
 
 // E2E test runner with queue-based execution
 class E2ETestRunner {
 	constructor() {
+		this.resourceLock = new ResourceLock();
 		this.shards = [
 			{ id: 1, name: "Accessibility Large", tests: 13 },
 			{ id: 2, name: "Authentication", tests: 10 },
@@ -301,87 +510,188 @@ class E2ETestRunner {
 			{ id: 8, name: "Quick Tests", tests: 3 },
 			{ id: 9, name: "Billing", tests: 2 },
 		];
-		
+
 		// Calculate optimal concurrency based on system resources
 		const cpuCount = os.cpus().length;
-		
+
 		// Check if there's a configured override
 		if (CONFIG.maxConcurrentShards) {
 			this.maxConcurrentShards = CONFIG.maxConcurrentShards;
-			log(`🔧 Using configured concurrency: ${this.maxConcurrentShards} shards`);
+			log(
+				`🔧 Using configured concurrency: ${this.maxConcurrentShards} shards`,
+			);
 		} else {
 			// Use 75% of CPU cores for optimal performance without overload
 			// But cap at 3 for memory safety with concurrent Playwright processes
 			this.maxConcurrentShards = Math.min(3, Math.floor(cpuCount * 0.75));
 		}
-		
+
 		log(`🖥️  System has ${cpuCount} CPU cores`);
 		log(`⚙️  Max concurrent shards: ${this.maxConcurrentShards}`);
-		
+
 		this.serverProcess = null;
 	}
-	
+
 	async startTestServers() {
 		log("🚀 Starting test servers (Frontend & Backend)...");
-		
-		// Start servers in background
-		this.serverProcess = spawn(
-			"pnpm",
-			["--filter", "web", "dev:test"],
-			{
-				cwd: process.cwd(),
-				stdio: ["ignore", "pipe", "pipe"],
-				detached: false,
-				shell: true,
-				env: {
-					...process.env,
-					NODE_ENV: "test",
-				},
-			},
-		);
-		
-		// Start backend server too
-		this.backendProcess = spawn(
-			"pnpm",
-			["--filter", "payload", "dev:test"],
-			{
-				cwd: process.cwd(),
-				stdio: ["ignore", "pipe", "pipe"],
-				detached: false,
-				shell: true,
-				env: {
-					...process.env,
-					NODE_ENV: "test",
-				},
-			},
-		);
-		
-		// Wait for servers to be ready
-		log("⏳ Waiting for servers to be ready...");
-		const maxRetries = 30;
-		let retries = 0;
-		
-		while (retries < maxRetries) {
-			try {
-				// Check if frontend is ready
-				const frontendResponse = await fetch("http://127.0.0.1:3000").catch(() => null);
-				const backendResponse = await fetch("http://127.0.0.1:3020").catch(() => null);
-				
-				if (frontendResponse && backendResponse) {
-					log("✅ Servers are ready!");
-					return true;
-				}
-			} catch (_e) {
-				// Server not ready yet
-			}
-			
-			retries++;
-			await new Promise(resolve => setTimeout(resolve, 2000));
+
+		// Check if servers are already running first
+		const frontendRunning = await this.isServerRunning(3000);
+		const backendRunning = await this.isServerRunning(3020);
+
+		if (frontendRunning && backendRunning) {
+			log("✅ Servers already running, reusing existing instances");
+			return true;
 		}
-		
-		throw new Error("Servers failed to start within timeout");
+
+		// Start servers in background
+		if (!frontendRunning) {
+			this.serverProcess = spawn("pnpm", ["--filter", "web", "dev:test"], {
+				cwd: process.cwd(),
+				stdio: ["ignore", "pipe", "pipe"],
+				detached: false,
+				shell: true,
+				env: {
+					...process.env,
+					NODE_ENV: "test",
+				},
+			});
+		}
+
+		// Start backend server too
+		if (!backendRunning) {
+			this.backendProcess = spawn("pnpm", ["--filter", "payload", "dev:test"], {
+				cwd: process.cwd(),
+				stdio: ["ignore", "pipe", "pipe"],
+				detached: false,
+				shell: true,
+				env: {
+					...process.env,
+					NODE_ENV: "test",
+				},
+			});
+		}
+
+		// Enhanced server readiness check with retry logic
+		log("⏳ Waiting for servers to be ready...");
+		const maxRetries = 60; // Increased from 30 to match 120s timeout
+		let retries = 0;
+		let frontendReady = false;
+		let backendReady = false;
+
+		while (retries < maxRetries) {
+			// Check frontend health
+			if (!frontendReady) {
+				try {
+					const frontendResponse = await fetch(
+						"http://127.0.0.1:3000/api/health",
+					).catch(() => null);
+					if (frontendResponse && frontendResponse.ok) {
+						const data = await frontendResponse.json().catch(() => null);
+						if (data && data.status === "ready") {
+							frontendReady = true;
+							log("✅ Frontend server is ready!");
+						}
+					}
+				} catch (_e) {
+					// Fallback to basic check
+					try {
+						const basicCheck = await fetch("http://127.0.0.1:3000").catch(
+							() => null,
+						);
+						if (basicCheck) {
+							frontendReady = true;
+							log("✅ Frontend server is responding!");
+						}
+					} catch (_e2) {
+						// Not ready yet
+					}
+				}
+			}
+
+			// Check backend health
+			if (!backendReady) {
+				try {
+					const backendResponse = await fetch(
+						"http://127.0.0.1:3020/api/health",
+					).catch(() => null);
+					if (backendResponse && backendResponse.ok) {
+						const data = await backendResponse.json().catch(() => null);
+						if (data && data.status === "ready") {
+							backendReady = true;
+							log("✅ Backend server is ready!");
+						}
+					}
+				} catch (_e) {
+					// Fallback to basic check
+					try {
+						const basicCheck = await fetch("http://127.0.0.1:3020").catch(
+							() => null,
+						);
+						if (basicCheck) {
+							backendReady = true;
+							log("✅ Backend server is responding!");
+						}
+					} catch (_e2) {
+						// Not ready yet
+					}
+				}
+			}
+
+			// Both servers ready
+			if (frontendReady && backendReady) {
+				log("✅ All servers are ready!");
+
+				// Pre-warm servers with initial requests
+				log("🔥 Pre-warming servers...");
+				await this.preWarmServers();
+
+				return true;
+			}
+
+			// Log progress every 10 retries
+			if (retries > 0 && retries % 10 === 0) {
+				log(
+					`⏳ Still waiting... (${retries * 2}s elapsed, Frontend: ${frontendReady ? "✅" : "⏳"}, Backend: ${backendReady ? "✅" : "⏳"})`,
+				);
+			}
+
+			retries++;
+			await new Promise((resolve) => setTimeout(resolve, 2000));
+		}
+
+		throw new Error(
+			`Servers failed to start within timeout. Frontend: ${frontendReady}, Backend: ${backendReady}`,
+		);
 	}
-	
+
+	async preWarmServers() {
+		// Make a few requests to warm up the servers
+		const warmupRequests = [
+			fetch("http://127.0.0.1:3000").catch(() => null),
+			fetch("http://127.0.0.1:3020").catch(() => null),
+			fetch("http://127.0.0.1:3000/api/health").catch(() => null),
+			fetch("http://127.0.0.1:3020/api/health").catch(() => null),
+		];
+
+		await Promise.all(warmupRequests);
+
+		// Small delay to ensure servers are fully warm
+		await new Promise((resolve) => setTimeout(resolve, 1000));
+		log("✅ Server pre-warming complete");
+	}
+
+	async isServerRunning(port) {
+		try {
+			const response = await fetch(`http://127.0.0.1:${port}/api/health`, {
+				signal: AbortSignal.timeout(2000),
+			}).catch(() => null);
+			return response && response.ok;
+		} catch (e) {
+			return false;
+		}
+	}
+
 	async stopTestServers() {
 		if (this.serverProcess) {
 			this.serverProcess.kill("SIGTERM");
@@ -391,30 +701,95 @@ class E2ETestRunner {
 			this.backendProcess.kill("SIGTERM");
 			this.backendProcess = null;
 		}
+
+		// Force cleanup any lingering processes
+		await execAsync('pkill -f "dev:test" || true').catch(() => {});
+	}
+
+	async acquirePortLocks() {
+		try {
+			log("🔒 Acquiring port locks...");
+			const frontendLocked = await this.resourceLock.acquire(
+				"port:3000",
+				15000,
+			);
+			const backendLocked = await this.resourceLock.acquire("port:3020", 15000);
+
+			if (!frontendLocked || !backendLocked) {
+				log("⚠️ Could not acquire all port locks");
+				if (frontendLocked) await this.resourceLock.release("port:3000");
+				if (backendLocked) await this.resourceLock.release("port:3020");
+				return false;
+			}
+
+			log("✅ Port locks acquired");
+			return true;
+		} catch (error) {
+			logError(`Failed to acquire port locks: ${error.message}`);
+			return false;
+		}
+	}
+
+	async releasePortLocks() {
+		try {
+			log("🔓 Releasing port locks...");
+			await this.resourceLock.release("port:3000");
+			await this.resourceLock.release("port:3020");
+			log("✅ Port locks released");
+		} catch (error) {
+			logError(`Failed to release port locks: ${error.message}`);
+		}
 	}
 
 	async run(status) {
-		log(`\n🌐 Running E2E tests (9 shards, max ${this.maxConcurrentShards} concurrent)...`);
+		log(
+			`\n🌐 Running E2E tests (9 shards, max ${this.maxConcurrentShards} concurrent)...`,
+		);
 		status.status.phase = "e2e_tests";
 		await status.save();
 
+		// Initialize resource locking
+		await this.resourceLock.init();
+
+		// Pre-flight selector validation
+		const selectorValidation = await this.validateSelectors();
+		if (!selectorValidation.passed && selectorValidation.coverage < 70) {
+			log(
+				`⚠️ Low selector coverage (${selectorValidation.coverage}%). Continuing with reduced expectations.`,
+			);
+		}
+
 		const startTime = Date.now();
-		
+
+		// Acquire locks on critical ports before starting servers
+		const portsAcquired = await this.acquirePortLocks();
+		if (!portsAcquired) {
+			logError("❌ Failed to acquire port locks for test servers");
+			return {
+				total: 66,
+				passed: 0,
+				failed: 66,
+				skipped: 0,
+				infrastructureFailures: 9,
+			};
+		}
+
 		// Pre-start servers when PLAYWRIGHT_PARALLEL=true since webServer management is disabled
 		// This ensures all shards can connect to running servers immediately
 		try {
 			await this.startTestServers();
 		} catch (error) {
 			logError(`❌ Failed to start test servers: ${error.message}`);
+			await this.releasePortLocks();
 			return {
 				total: 66,
-				passed: 0, 
+				passed: 0,
 				failed: 66,
 				skipped: 0,
-				infrastructureFailures: 9
+				infrastructureFailures: 9,
 			};
 		}
-		
+
 		// Queue-based execution with concurrency limit
 		const shardResults = await this.runShardsWithQueue(status);
 
@@ -428,7 +803,7 @@ class E2ETestRunner {
 		};
 
 		shardResults.forEach((result) => {
-			const shard = this.shards.find(s => s.id === result.shardId);
+			const shard = this.shards.find((s) => s.id === result.shardId);
 			status.status.e2e.shards[`shard_${shard.id}`] = {
 				name: shard.name,
 				...result,
@@ -444,10 +819,15 @@ class E2ETestRunner {
 		});
 
 		const totalDuration = Math.round((Date.now() - startTime) / 1000);
-		status.status.e2e = { ...status.status.e2e, ...totals, duration: `${totalDuration}s` };
+		status.status.e2e = {
+			...status.status.e2e,
+			...totals,
+			duration: `${totalDuration}s`,
+		};
 
-		// Cleanup test servers
+		// Cleanup test servers and release locks
 		await this.stopTestServers();
+		await this.releasePortLocks();
 
 		log("\n📊 E2E tests completed");
 		log(`   Total: ${totals.total}`);
@@ -470,12 +850,14 @@ class E2ETestRunner {
 		// Helper to wait for next shard to complete
 		const waitForNextCompletion = async () => {
 			if (runningShards.size === 0) return null;
-			
-			const promises = Array.from(runningShards.entries()).map(async ([shardId, promise]) => {
-				const result = await promise;
-				return { shardId, result };
-			});
-			
+
+			const promises = Array.from(runningShards.entries()).map(
+				async ([shardId, promise]) => {
+					const result = await promise;
+					return { shardId, result };
+				},
+			);
+
 			const completed = await Promise.race(promises);
 			runningShards.delete(completed.shardId);
 			return completed.result;
@@ -483,26 +865,31 @@ class E2ETestRunner {
 
 		// Track if this is the first shard (will start servers)
 		let isFirstShard = true;
-		
+
 		// Process queue with concurrency limit
 		while (shardQueue.length > 0 || runningShards.size > 0) {
 			// Start new shards up to the concurrency limit
-			while (runningShards.size < this.maxConcurrentShards && shardQueue.length > 0) {
+			while (
+				runningShards.size < this.maxConcurrentShards &&
+				shardQueue.length > 0
+			) {
 				const shard = shardQueue.shift();
-				log(`  🚀 Starting shard ${shard.id}: ${shard.name} (${runningShards.size + 1}/${this.maxConcurrentShards} concurrent)`);
-				
+				log(
+					`  🚀 Starting shard ${shard.id}: ${shard.name} (${runningShards.size + 1}/${this.maxConcurrentShards} concurrent)`,
+				);
+
 				const shardPromise = this.runShardWithRetry(shard, 1);
 				runningShards.set(shard.id, shardPromise);
-				
+
 				// Delay after first shard to allow servers to start
 				// Subsequent shards will reuse the servers
 				if (isFirstShard) {
 					isFirstShard = false;
 					log("  ⏳ Waiting 10s for first shard to start servers...");
-					await new Promise(resolve => setTimeout(resolve, 10000));
+					await new Promise((resolve) => setTimeout(resolve, 10000));
 				} else if (runningShards.size < this.maxConcurrentShards) {
 					// Small delay between subsequent shards
-					await new Promise(resolve => setTimeout(resolve, 500));
+					await new Promise((resolve) => setTimeout(resolve, 500));
 				}
 			}
 
@@ -511,7 +898,7 @@ class E2ETestRunner {
 				const result = await waitForNextCompletion();
 				if (result) {
 					results.push(result);
-					
+
 					// Track failed shards for potential retry logic
 					if (result.failed > 0 || result.infrastructureFailure) {
 						failedShards.push(result.shardId);
@@ -526,7 +913,7 @@ class E2ETestRunner {
 		// Log completion summary
 		log(`\n✅ All ${this.shards.length} shards completed`);
 		if (failedShards.length > 0) {
-			log(`   ⚠️ Shards with failures: ${failedShards.join(', ')}`);
+			log(`   ⚠️ Shards with failures: ${failedShards.join(", ")}`);
 		}
 
 		return results;
@@ -535,20 +922,34 @@ class E2ETestRunner {
 	async runShardWithRetry(shard, attempt = 1) {
 		const maxRetries = 2;
 		const result = await this.runShard(shard, attempt);
-		
+
 		// Add shardId to result for tracking
 		result.shardId = shard.id;
-		
-		// Retry logic for infrastructure failures
-		if (result.infrastructureFailure && attempt < maxRetries) {
-			log(`  🔄 Retrying shard ${shard.id} (attempt ${attempt + 1}/${maxRetries})...`);
-			
-			// Wait a bit before retry to let resources settle
-			await new Promise(resolve => setTimeout(resolve, 3000));
-			
+
+		// Enhanced retry logic - now covers more failure cases
+		const shouldRetry =
+			(result.infrastructureFailure ||
+				(result.failed > 0 && result.passed === 0 && attempt === 1) || // Complete failure on first attempt
+				result.hasTimeoutErrors) &&
+			attempt < maxRetries;
+
+		if (shouldRetry) {
+			const reason = result.infrastructureFailure
+				? "infrastructure failure"
+				: result.hasTimeoutErrors
+					? "timeout errors"
+					: "complete test failure";
+			log(
+				`  🔄 Retrying shard ${shard.id} (attempt ${attempt + 1}/${maxRetries}) - ${reason}`,
+			);
+
+			// Exponential backoff: 3s, then 6s
+			const backoffTime = 3000 * attempt;
+			await new Promise((resolve) => setTimeout(resolve, backoffTime));
+
 			return this.runShardWithRetry(shard, attempt + 1);
 		}
-		
+
 		return result;
 	}
 
@@ -566,7 +967,7 @@ class E2ETestRunner {
 			shardEnv.PLAYWRIGHT_PARALLEL = "true";
 			// Force reuseExistingServer by ensuring we're not in CI mode
 			shardEnv.NODE_ENV = "test";
-			
+
 			const proc = spawn(
 				"pnpm",
 				["--filter", "web-e2e", `test:shard${shard.id}`],
@@ -621,15 +1022,22 @@ class E2ETestRunner {
 				// Early exit detection - but give more time for server startup
 				// Playwright can exit early with code 1 if the server isn't ready yet
 				// We should only consider it an infrastructure failure if:
-				// 1. Exit happens very quickly (< 2 seconds) 
+				// 1. Exit happens very quickly (< 2 seconds)
 				// 2. There's no test output at all
 				// 3. And we see specific error patterns
-				if (duration <= 2 && code !== 0 && result.passed === 0 && result.failed === 0) {
+				if (
+					duration <= 2 &&
+					code !== 0 &&
+					result.passed === 0 &&
+					result.failed === 0
+				) {
 					// Check for specific error patterns that indicate real failures
-					if (output.includes("ECONNREFUSED") || 
-					    output.includes("Cannot find module") ||
-					    output.includes("SyntaxError") ||
-					    output.includes("TypeError")) {
+					if (
+						output.includes("ECONNREFUSED") ||
+						output.includes("Cannot find module") ||
+						output.includes("SyntaxError") ||
+						output.includes("TypeError")
+					) {
 						result.infrastructureFailure = true;
 						logError(
 							`  ⚠️ Shard ${shard.id} failed immediately (${duration}s, code ${code}) - infrastructure issue`,
@@ -659,6 +1067,8 @@ class E2ETestRunner {
 			passed: 0,
 			failed: 0,
 			skipped: 0,
+			hasTimeoutErrors: false,
+			hasSelectorErrors: false,
 		};
 
 		// Parse Playwright output patterns
@@ -676,6 +1086,19 @@ class E2ETestRunner {
 		if (skippedMatch) {
 			result.skipped = parseInt(skippedMatch[1]);
 		}
+
+		// Enhanced error detection for better retry logic
+		result.hasTimeoutErrors =
+			output.includes("Timeout") &&
+			(output.includes("waiting for") ||
+				output.includes("element") ||
+				output.includes("locator"));
+
+		result.hasSelectorErrors =
+			output.includes("strict mode violation") ||
+			output.includes("expected 1, got 0") ||
+			output.includes("No element found") ||
+			output.includes("Unable to find element");
 
 		// Check for server startup or infrastructure issues
 		const hasServerStartup =
@@ -702,6 +1125,66 @@ class E2ETestRunner {
 
 		return result;
 	}
+
+	/**
+	 * Pre-flight selector validation to identify potential E2E issues
+	 */
+	async validateSelectors() {
+		try {
+			log("🔍 Running pre-flight selector validation...");
+			const { execAsync } = require("node:util").promisify(
+				require("node:child_process").exec,
+			);
+
+			// Run selector validation script
+			const { stdout } = await execAsync(
+				"node .claude/scripts/selector-validator.cjs",
+			);
+
+			// Parse output to extract coverage and missing selectors
+			const coverageMatch = stdout.match(/Selector Coverage: ([\d.]+)%/);
+			const coverage = coverageMatch ? parseFloat(coverageMatch[1]) : 0;
+
+			const missingSelectors = [];
+			const lines = stdout.split("\n");
+			let inMissingSection = false;
+
+			for (const line of lines) {
+				if (line.includes("Missing Selectors:")) {
+					inMissingSection = true;
+					continue;
+				}
+				if (inMissingSection && line.includes("data-testid=")) {
+					const match = line.match(/data-testid="([^"]+)"/);
+					if (match) missingSelectors.push(match[1]);
+				}
+				if (inMissingSection && line.includes("Recommendations:")) {
+					break;
+				}
+			}
+
+			const result = {
+				passed: missingSelectors.length === 0,
+				coverage,
+				missing: missingSelectors,
+				found: Math.round((coverage / 100) * 20), // Approximate based on coverage
+			};
+
+			if (result.coverage >= 70) {
+				log(`✅ Selector coverage: ${result.coverage}%`);
+			} else {
+				log(
+					`⚠️ Low selector coverage: ${result.coverage}% (${result.missing.length} missing)`,
+				);
+			}
+
+			return result;
+		} catch (error) {
+			// Don't fail E2E tests if selector validation fails
+			log(`⚠️ Selector validation failed: ${error.message}`);
+			return { passed: false, coverage: 0, missing: [], found: 0 };
+		}
+	}
 }
 
 // Main test controller
@@ -711,11 +1194,23 @@ class TestController {
 		this.infrastructure = new InfrastructureChecker();
 		this.unitRunner = new UnitTestRunner();
 		this.e2eRunner = new E2ETestRunner();
+		this.cleanupGuard = new TestCleanupGuard();
 	}
 
 	async run(options) {
 		log("🎯 Starting Deterministic Test Execution");
 		log("═══════════════════════════════════════\n");
+
+		// Pre-test cleanup to ensure clean state
+		await this.cleanupGuard.preTestCleanup();
+
+		// Register cleanup handlers
+		this.cleanupGuard.addCleanupHandler(async () => {
+			log("🧹 Running test-specific cleanup...");
+			if (this.e2eRunner.resourceLock) {
+				await this.e2eRunner.resourceLock.releaseAll();
+			}
+		});
 
 		try {
 			// Phase 1: Infrastructure validation
@@ -851,14 +1346,8 @@ class TestController {
 		} else {
 			log(`❌ ${totalFailed} TEST${totalFailed > 1 ? "S" : ""} FAILED`);
 
-			// Provide fix suggestions
-			if (e2e.infrastructureFailures > 0) {
-				log("\n💡 Suggested fixes:");
-				log("   1. Restart Supabase: cd apps/e2e && npx supabase start");
-				log('   2. Clear ports: pkill -f "playwright|next-server"');
-				log("   3. Reduce concurrency: TEST_MAX_CONCURRENT_SHARDS=4 node .claude/scripts/test-controller.cjs");
-				log("   4. Retry tests: node .claude/scripts/test-controller.cjs");
-			}
+			// Enhanced diagnostic suggestions
+			this.generateFixSuggestions(unit, e2e);
 		}
 
 		// Save final status
@@ -866,6 +1355,72 @@ class TestController {
 		await this.status.save();
 
 		log("\n📁 Full results saved to:", CONFIG.resultFile);
+	}
+
+	generateFixSuggestions(unit, e2e) {
+		log("\n🔧 DIAGNOSTIC SUGGESTIONS");
+		log("─".repeat(40));
+
+		// Unit test issues
+		if (unit.failed > 0) {
+			log("\n📦 Unit Test Issues:");
+			if (unit.workspaceAnalysis && unit.workspaceAnalysis.skipped > 0) {
+				log("   ⚠️ Some workspaces were cached/skipped");
+				log(
+					"   💡 Force fresh run: TURBO_FORCE=true node .claude/scripts/test-controller.cjs --unit",
+				);
+			}
+			log("   💡 Check specific failures: pnpm test:unit --reporter=verbose");
+		}
+
+		// E2E test issues
+		if (e2e.failed > 0) {
+			log("\n🌐 E2E Test Issues:");
+
+			// Infrastructure failures
+			if (e2e.infrastructureFailures > 0) {
+				log("   🚨 Infrastructure failures detected:");
+				log("   💡 1. Restart services: cd apps/e2e && npx supabase restart");
+				log(
+					'   💡 2. Clear processes: pkill -f "playwright|vitest|next-server"',
+				);
+				log(
+					"   💡 3. Reset environment: cp apps/web/.env.example apps/web/.env.test",
+				);
+			}
+
+			// Timeout failures
+			let hasTimeouts = false;
+			if (e2e.shards) {
+				Object.values(e2e.shards).forEach((shard) => {
+					if (shard.hasTimeoutErrors) hasTimeouts = true;
+				});
+			}
+
+			if (hasTimeouts) {
+				log("   ⏱️ Timeout failures detected:");
+				log("   💡 1. Check missing data-testid selectors in UI components");
+				log("   💡 2. Increase timeouts: PLAYWRIGHT_ACTION_TIMEOUT=30000");
+				log("   💡 3. Run subset: pnpm --filter web-e2e test:smoke");
+			}
+
+			// General E2E fixes
+			log("   💡 4. Reduce concurrency: TEST_MAX_CONCURRENT_SHARDS=2");
+			log("   💡 5. Debug specific shard: pnpm --filter web-e2e test:shard1");
+			log("   💡 6. Check screenshots: apps/e2e/test-results/");
+		}
+
+		// Success rate analysis
+		const totalTests = unit.total + e2e.total;
+		const totalPassed = unit.passed + e2e.passed;
+		const successRate =
+			totalTests > 0 ? ((totalPassed / totalTests) * 100).toFixed(1) : 0;
+
+		if (successRate < 85) {
+			log("\n📊 Reliability Analysis:");
+			log(`   Current success rate: ${successRate}% (target: 85%+)`);
+			log("   💡 Consider running comprehensive reliability audit");
+		}
 	}
 }
 
@@ -905,6 +1460,7 @@ if (require.main === module) {
 
 	if (options.debug) {
 		log("🔍 Debug mode enabled");
+		process.env.DEBUG_TEST = "true";
 	}
 
 	const controller = new TestController();

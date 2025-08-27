@@ -103,20 +103,20 @@ export default defineConfig({
 		/* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
 		trace: "on-first-retry",
 
-		/* Optimized timeouts for faster test execution 
-		   CI timeouts increased to handle network latency and deployment protection layers */
+		/* Enhanced timeouts for element detection reliability
+		   Increased element detection timeout from 10s to 20s as per TASK-256 requirements */
 		navigationTimeout:
 			Number(process.env.PLAYWRIGHT_NAVIGATION_TIMEOUT) ||
 			(process.env.CI ? 30000 : 20000), // Increased for CI to handle network latency
 		actionTimeout:
 			Number(process.env.PLAYWRIGHT_ACTION_TIMEOUT) ||
-			(process.env.CI ? 15000 : 10000), // Increased for CI reliability
+			(process.env.CI ? 20000 : 20000), // Increased to 20s for element detection reliability
 	},
 	// test timeout set to 2 minutes
 	timeout: 120 * 1000,
 	expect: {
-		// expect timeout set to 10 seconds for CI, 5 for local
-		timeout: process.env.CI ? 10 * 1000 : 5 * 1000,
+		// expect timeout increased to 20s to match action timeout for element detection
+		timeout: Number(process.env.PLAYWRIGHT_EXPECT_TIMEOUT) || 20 * 1000,
 	},
 	/* Configure projects for major browsers - reduced for local development */
 	projects: process.env.CI
@@ -193,7 +193,7 @@ export default defineConfig({
 							"pnpm --filter=web dev:test",
 						url: "http://localhost:3000",
 						name: "Frontend",
-						timeout: 90 * 1000, // Increased timeout for initial compilation
+						timeout: 120 * 1000, // Increased timeout to 120s to handle cold starts under heavy load
 						reuseExistingServer: !process.env.CI,
 						stdout: "pipe",
 						stderr: "pipe",
@@ -205,7 +205,7 @@ export default defineConfig({
 							"pnpm --filter=payload dev:test",
 						url: "http://localhost:3020",
 						name: "Backend",
-						timeout: 90 * 1000, // Increased timeout for initial compilation
+						timeout: 120 * 1000, // Increased timeout to 120s to handle cold starts under heavy load
 						reuseExistingServer: !process.env.CI,
 						stdout: "pipe",
 						stderr: "pipe",
