@@ -201,7 +201,7 @@ class ResourceLock {
 	 * Wait for a resource to become available
 	 * @param {string} resource - Resource identifier
 	 * @param {number} timeout - Timeout in ms
-	 * @returns {boolean} - True if resource became available
+	 * @returns {Promise<boolean>} - True if resource became available
 	 */
 	async waitForResource(resource, timeout = 30000) {
 		const lockFile = path.join(
@@ -226,7 +226,7 @@ class ResourceLock {
 
 	/**
 	 * Get all currently held locks
-	 * @returns {Array} - Array of lock information
+	 * @returns {Promise<Array>} - Array of lock information
 	 */
 	async getCurrentLocks() {
 		const locks = [];

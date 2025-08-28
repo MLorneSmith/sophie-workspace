@@ -284,7 +284,8 @@ class TestReliabilityValidator {
 			`Average Duration: ${this.results.averageDuration.toFixed(0)}s`,
 		);
 		const totalTime = Math.round(
-			(new Date(this.results.endTime) - new Date(this.results.startTime)) /
+			(new Date(this.results.endTime).getTime() -
+				new Date(this.results.startTime).getTime()) /
 				1000,
 		);
 		report.push(`Total Time: ${totalTime}s`);

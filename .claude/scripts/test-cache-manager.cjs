@@ -441,16 +441,18 @@ class TestCacheManager {
 		}
 
 		if (totalTests > 0) {
-			stats.successRate = ((passedTests / totalTests) * 100).toFixed(1) + "%";
+			stats.successRate = Number(((passedTests / totalTests) * 100).toFixed(1));
 		}
 
 		// Format cache size
-		if (stats.cacheSize > 1024 * 1024) {
-			stats.cacheSize = (stats.cacheSize / (1024 * 1024)).toFixed(2) + " MB";
-		} else if (stats.cacheSize > 1024) {
-			stats.cacheSize = (stats.cacheSize / 1024).toFixed(2) + " KB";
+		const cacheSizeBytes = stats.cacheSize;
+		if (cacheSizeBytes > 1024 * 1024) {
+			stats.cacheSizeFormatted =
+				(cacheSizeBytes / (1024 * 1024)).toFixed(2) + " MB";
+		} else if (cacheSizeBytes > 1024) {
+			stats.cacheSizeFormatted = (cacheSizeBytes / 1024).toFixed(2) + " KB";
 		} else {
-			stats.cacheSize = stats.cacheSize + " bytes";
+			stats.cacheSizeFormatted = cacheSizeBytes + " bytes";
 		}
 
 		return stats;
