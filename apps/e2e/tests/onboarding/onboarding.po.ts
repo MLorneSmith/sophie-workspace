@@ -1,4 +1,5 @@
 import type { Page } from "@playwright/test";
+import { waitForPageReady } from "../utils/wait-helpers";
 
 export class OnboardingPageObject {
 	constructor(private readonly page: Page) {}
@@ -78,7 +79,10 @@ export class OnboardingPageObject {
 		}
 
 		await this.page.goto("/home?e2e=true");
-		await this.page.waitForLoadState("networkidle");
+		await waitForPageReady(this.page, {
+			timeout: 10000,
+			debug: process.env.DEBUG === "true"
+		});
 
 		// Verify we're on the home page
 		const currentUrl = this.page.url();
@@ -203,7 +207,10 @@ export class OnboardingPageObject {
 			);
 			// Navigate to the root page first to force middleware to re-evaluate
 			await this.page.goto("/");
-			await this.page.waitForLoadState("networkidle");
+			await waitForPageReady(this.page, {
+				timeout: 10000,
+				debug: process.env.DEBUG === "true"
+			});
 			// Now navigate to home, which should work with refreshed session
 			await this.page.goto("/home");
 			await this.page.waitForURL("**/home", { timeout: 10000 });

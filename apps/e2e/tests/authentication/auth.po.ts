@@ -2,6 +2,7 @@ import { expect, type Page } from "@playwright/test";
 import { TOTP } from "totp-generator";
 
 import { Mailbox } from "../utils/mailbox";
+import { waitForPageReady } from "../utils/wait-helpers";
 
 export class AuthPageObject {
 	private readonly page: Page;
@@ -259,20 +260,11 @@ export class AuthPageObject {
 				// In local dev with autoconfirm, the user should be logged in already
 				// Try navigating directly to the target path
 				await this.page.goto(path);
-				// Use a more resilient approach - wait for networkidle with fallback
-				await this.page
-					.waitForLoadState("networkidle", {
-						timeout: process.env.CI ? 30000 : 20000,
-					})
-					.catch(async () => {
-						// Fallback to domcontentloaded if network never settles
-						if (process.env.DEBUG) {
-							process.stdout.write(
-								"Network idle timeout, falling back to domcontentloaded\n",
-							);
-						}
-						await this.page.waitForLoadState("domcontentloaded");
-					});
+				// Use the safer waitForPageReady instead of networkidle
+				await waitForPageReady(this.page, {
+					timeout: 10000,
+					debug: process.env.DEBUG === "true"
+				});
 
 				// Check if we're redirected back to auth (not logged in)
 				const afterNavUrl = this.page.url();

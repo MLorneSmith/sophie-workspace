@@ -1,9 +1,60 @@
 import type { Page } from "@playwright/test";
 
 /**
+ * Waits for page to be ready without relying on networkidle.
+ * This prevents indefinite hangs caused by continuous network activity
+ * (analytics, websockets, polling, etc).
+ * 
+ * @param page - The Playwright page object
+ * @param options - Optional configuration
+ * @returns Promise that resolves when page is ready
+ */
+export async function waitForPageReady(
+	page: Page,
+	options: {
+		timeout?: number;
+		waitForSelector?: string;
+		debug?: boolean;
+	} = {},
+): Promise<void> {
+	const { 
+		timeout = 10000, 
+		waitForSelector = null,
+		debug = process.env.DEBUG === "true"
+	} = options;
+
+	try {
+		// First wait for DOM to be ready
+		await page.waitForLoadState("domcontentloaded", { timeout });
+		
+		// If a specific selector is provided, wait for it
+		if (waitForSelector) {
+			await page.waitForSelector(waitForSelector, { 
+				timeout: Math.min(timeout / 2, 5000),
+				state: "visible"
+			}).catch(() => {
+				if (debug) {
+					console.warn(`Optional selector '${waitForSelector}' not found, continuing...`);
+				}
+			});
+		}
+		
+		// Small delay only in debug mode for visual debugging
+		if (debug) {
+			await page.waitForTimeout(500);
+		}
+	} catch (error) {
+		if (debug) {
+			console.warn("Page load timeout, continuing anyway:", error);
+		}
+		// Don't throw - allow test to continue
+	}
+}
+
+/**
  * Waits for network idle with a fallback to domcontentloaded if network never settles.
  * This is useful for CI environments where network conditions may be unreliable.
- *
+ * @deprecated Use waitForPageReady instead to avoid indefinite hangs
  * @param page - The Playwright page object
  * @param options - Optional configuration
  * @returns Promise that resolves when load state is reached
