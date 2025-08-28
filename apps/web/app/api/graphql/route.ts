@@ -17,16 +17,38 @@ export async function POST(request: NextRequest) {
 		const { query } = body;
 
 		// Handle introspection query for integration tests
-		if (query?.includes("__schema")) {
-			return NextResponse.json({
-				data: {
-					__schema: {
-						queryType: {
-							name: "Query",
+		// Check for secret header to bypass Vercel WAF restrictions
+		if (query?.includes("__schema") || query?.includes("__type")) {
+			const allowHeader = request.headers.get("x-allow-introspection");
+			const expectedSecret =
+				process.env.INTROSPECTION_SECRET || "dev-test-secret";
+
+			// Only allow introspection with correct secret header or in development
+			if (
+				process.env.NODE_ENV !== "production" ||
+				allowHeader === expectedSecret
+			) {
+				return NextResponse.json({
+					data: {
+						__schema: {
+							queryType: {
+								name: "Query",
+							},
 						},
 					},
-				},
-			});
+				});
+			} else {
+				// Return the same error format as Vercel WAF for consistency
+				return NextResponse.json({
+					errors: [
+						{
+							message:
+								"GraphQL introspection is not allowed, but the query contained __schema or __type",
+							locations: [{ line: 1, column: 3 }],
+						},
+					],
+				});
+			}
 		}
 
 		// Handle health query
