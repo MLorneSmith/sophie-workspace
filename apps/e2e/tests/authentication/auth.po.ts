@@ -75,12 +75,12 @@ export class AuthPageObject {
 		await this.page.fill('[data-testid="sign-up-password"]', params.password);
 
 		// Wait for repeat password input
-		await this.page.waitForSelector('[data-testid="sign-up-password"]', {
+		await this.page.waitForSelector('[data-testid="sign-up-repeat-password"]', {
 			timeout: 10000,
 			state: "visible",
 		});
 		await this.page.fill(
-			'[data-testid="sign-up-password"]',
+			'[data-testid="sign-up-repeat-password"]',
 			params.repeatPassword,
 		);
 

@@ -32,18 +32,22 @@ test.describe("Smoke Tests @smoke", () => {
 
 	test("sign in page loads @smoke", async ({ page }) => {
 		await page.goto("/auth/sign-in");
-		const signInForm = page.locator('[data-testid="auth-sign-in-form"]');
-		await expect(signInForm).toBeVisible();
-		await expect(signInForm.locator('input[name="email"]')).toBeVisible();
-		await expect(signInForm.locator('input[name="password"]')).toBeVisible();
+		// Use the actual selectors that exist in the auth components
+		await expect(page.locator('[data-testid="sign-in-email"]')).toBeVisible();
+		await expect(
+			page.locator('[data-testid="sign-in-password"]'),
+		).toBeVisible();
+		await expect(page.locator('[data-testid="sign-in-button"]')).toBeVisible();
 	});
 
 	test("sign up page loads @smoke", async ({ page }) => {
 		await page.goto("/auth/sign-up");
-		const signUpForm = page.locator('[data-testid="auth-sign-up-form"]');
-		await expect(signUpForm).toBeVisible();
-		await expect(signUpForm.locator('input[name="email"]')).toBeVisible();
-		await expect(signUpForm.locator('input[name="password"]')).toBeVisible();
+		// Use the actual selectors that exist in the auth components
+		await expect(page.locator('[data-testid="sign-up-email"]')).toBeVisible();
+		await expect(
+			page.locator('[data-testid="sign-up-password"]'),
+		).toBeVisible();
+		await expect(page.locator('[data-testid="sign-up-button"]')).toBeVisible();
 	});
 
 	test("API health endpoint responds @smoke", async ({ request }) => {
