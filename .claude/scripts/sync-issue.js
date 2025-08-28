@@ -43,6 +43,10 @@ async function loadEnvLocal() {
 			});
 	} catch (error) {
 		// Silently fail if .env.local doesn't exist - it's optional
+		console.debug(
+			"No .env.local file found:",
+			error instanceof Error ? error.message : String(error),
+		);
 	}
 }
 
@@ -59,12 +63,18 @@ const CACHE_DURATION_MS = 3600000; // 1 hour
 
 /**
  * Ensures the issues directory exists
+ * @returns {Promise<void>}
  */
 async function ensureIssuesDirectory() {
 	try {
 		await stat(ISSUES_DIR);
 	} catch (error) {
-		if (error.code === "ENOENT") {
+		if (
+			error &&
+			typeof error === "object" &&
+			"code" in error &&
+			error.code === "ENOENT"
+		) {
 			await mkdir(ISSUES_DIR, { recursive: true });
 			process.stdout.write(`📁 Created issues directory: ${ISSUES_DIR}\n`);
 		} else {
@@ -75,6 +85,8 @@ async function ensureIssuesDirectory() {
 
 /**
  * Parses various issue reference formats into issue number
+ * @param {string} reference - The issue reference to parse
+ * @returns {number | null} The parsed issue number or null if invalid
  */
 function parseIssueReference(reference) {
 	// Plain number: "123"
@@ -134,8 +146,9 @@ async function fetchGitHubIssue(issueNumber) {
 
 		return await response.json();
 	} catch (error) {
+		const errorMessage = error instanceof Error ? error.message : String(error);
 		process.stderr.write(
-			`❌ Failed to fetch issue #${issueNumber}: ${error.message}\n`,
+			`❌ Failed to fetch issue #${issueNumber}: ${errorMessage}\n`,
 		);
 		throw error;
 	}
@@ -143,9 +156,11 @@ async function fetchGitHubIssue(issueNumber) {
 
 /**
  * Converts GitHub issue to local markdown format
+ * @param {any} issue - The GitHub issue object
+ * @returns {string} Formatted markdown content
  */
 function convertToLocalFormat(issue) {
-	const labels = issue.labels.map((l) => l.name).join(", ");
+	const labels = issue.labels.map((/** @type {any} */ l) => l.name).join(", ");
 
 	return `# Issue: ${issue.title}
 
@@ -170,6 +185,9 @@ ${issue.body || "No description provided."}
 
 /**
  * Gets the local file path for an issue
+ * @param {number} issueNumber - The issue number
+ * @param {string} createdAt - The creation date string
+ * @returns {string} The local file path
  */
 function getLocalFilePath(issueNumber, createdAt) {
 	const datePrefix = new Date(createdAt).toISOString().split("T")[0];
@@ -178,12 +196,17 @@ function getLocalFilePath(issueNumber, createdAt) {
 
 /**
  * Checks if local cache exists and is fresh
+ * @param {number} issueNumber - The issue number to check
+ * @returns {Promise<{exists: boolean, path?: string, fresh?: boolean, age?: number}>} Cache status
  */
 async function checkLocalCache(issueNumber) {
 	try {
 		// Try to find existing file
-		const files = await require("node:fs").promises.readdir(ISSUES_DIR);
-		const issueFile = files.find((f) => f.includes(`ISSUE-${issueNumber}.md`));
+		const { readdir } = await import("node:fs/promises");
+		const files = await readdir(ISSUES_DIR);
+		const issueFile = files.find((/** @type {string} */ f) =>
+			f.includes(`ISSUE-${issueNumber}.md`),
+		);
 
 		if (!issueFile) {
 			return { exists: false };
@@ -206,6 +229,8 @@ async function checkLocalCache(issueNumber) {
 
 /**
  * Main sync function
+ * @param {string} issueReference - The issue reference to sync
+ * @returns {Promise<{success: boolean, localPath: string | undefined, source: string, issueNumber: number}>} Sync result
  */
 async function syncIssue(issueReference) {
 	// Parse issue reference
@@ -222,7 +247,7 @@ async function syncIssue(issueReference) {
 	// Check local cache
 	const cache = await checkLocalCache(issueNumber);
 
-	if (cache.exists && cache.fresh) {
+	if (cache.exists && cache.fresh && cache.path) {
 		process.stdout.write(
 			`✅ Using cached file (${cache.age} minutes old): ${cache.path}\n`,
 		);
@@ -258,7 +283,7 @@ async function syncIssue(issueReference) {
 		};
 	} catch (error) {
 		// If fetch fails but we have stale cache, use it
-		if (cache.exists) {
+		if (cache.exists && cache.path) {
 			process.stdout.write(
 				`⚠️  GitHub fetch failed, using stale cache: ${cache.path}\n`,
 			);
@@ -275,6 +300,7 @@ async function syncIssue(issueReference) {
 
 /**
  * CLI interface
+ * @returns {Promise<void>}
  */
 async function main() {
 	const args = process.argv.slice(2);
@@ -320,7 +346,8 @@ Output:
 		// Exit successfully
 		process.exit(0);
 	} catch (error) {
-		process.stderr.write(`\n❌ Error: ${error.message}\n`);
+		const errorMessage = error instanceof Error ? error.message : String(error);
+		process.stderr.write(`\n❌ Error: ${errorMessage}\n`);
 		process.exit(1);
 	}
 }

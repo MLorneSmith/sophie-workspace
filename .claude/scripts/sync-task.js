@@ -11,6 +11,7 @@
  *   node sync-task.js TASK-124               # TASK-124 format
  *   node sync-task.js "#124"                 # Hash format
  *   node sync-task.js "https://..."          # Full GitHub URL
+ * @fileoverview TypeScript-checked JavaScript with proper types
  */
 
 import { exec } from "node:child_process";
@@ -23,7 +24,10 @@ const execAsync = promisify(exec);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Load environment variables from .env.local
+/**
+ * Load environment variables from .env.local
+ * @returns {Promise<void>}
+ */
 async function loadEnvLocal() {
 	try {
 		const envPath = join(__dirname, "../../.env.local");
@@ -31,8 +35,10 @@ async function loadEnvLocal() {
 
 		envContent
 			.split("\n")
-			.filter((line) => line.trim() && !line.startsWith("#"))
-			.forEach((line) => {
+			.filter(
+				(/** @type {string} */ line) => line.trim() && !line.startsWith("#"),
+			)
+			.forEach((/** @type {string} */ line) => {
 				const [key, ...valueParts] = line.split("=");
 				if (key && valueParts.length > 0) {
 					const value = valueParts.join("=").trim();
@@ -44,6 +50,10 @@ async function loadEnvLocal() {
 			});
 	} catch (error) {
 		// Silently fail if .env.local doesn't exist - it's optional
+		console.debug(
+			"No .env.local file found:",
+			error instanceof Error ? error.message : String(error),
+		);
 	}
 }
 
@@ -53,16 +63,26 @@ const GITHUB_REPO = "2025slideheroes";
 const TASKS_DIR = join(__dirname, "../../.claude/z.archive/tasks");
 const CACHE_DURATION = 60 * 60 * 1000; // 1 hour in milliseconds
 
-// Ensure tasks directory exists
+/**
+ * Ensure tasks directory exists
+ * @returns {Promise<void>}
+ */
 async function ensureTasksDir() {
 	try {
 		await fs.mkdir(TASKS_DIR, { recursive: true });
 	} catch (error) {
-		console.error("Failed to create tasks directory:", error);
+		console.error(
+			"Failed to create tasks directory:",
+			error instanceof Error ? error.message : String(error),
+		);
 	}
 }
 
-// Parse various input formats to extract issue number
+/**
+ * Parse various input formats to extract issue number
+ * @param {string} input - The task reference input
+ * @returns {number} The parsed issue number
+ */
 function parseTaskReference(input) {
 	if (!input) {
 		throw new Error("No task reference provided");
@@ -102,13 +122,19 @@ function parseTaskReference(input) {
 	throw new Error(`Invalid task reference format: ${input}`);
 }
 
-// Check if local cache exists and is fresh
+/**
+ * Check if local cache exists and is fresh
+ * @param {number} issueNumber - The issue number to check
+ * @returns {Promise<{exists: boolean, path?: string, fresh?: boolean, age?: number}>} Cache status
+ */
 async function checkLocalCache(issueNumber) {
 	try {
 		// Find files matching the pattern
 		const files = await fs.readdir(TASKS_DIR);
 		const pattern = new RegExp(`-TASK-${issueNumber}\\.md$`);
-		const matchingFile = files.find((f) => pattern.test(f));
+		const matchingFile = files.find((/** @type {string} */ f) =>
+			pattern.test(f),
+		);
 
 		if (!matchingFile) {
 			return { exists: false };
@@ -125,11 +151,19 @@ async function checkLocalCache(issueNumber) {
 			age: Math.floor(age / 1000 / 60), // age in minutes
 		};
 	} catch (error) {
+		console.debug(
+			"Cache check failed:",
+			error instanceof Error ? error.message : String(error),
+		);
 		return { exists: false };
 	}
 }
 
-// Fetch task from GitHub
+/**
+ * Fetch task from GitHub
+ * @param {number} issueNumber - The issue number to fetch
+ * @returns {Promise<{issue: any, comments: any}>} The issue and comments data
+ */
 async function fetchFromGitHub(issueNumber) {
 	console.log(`📥 Fetching task #${issueNumber} from GitHub...`);
 
@@ -150,18 +184,25 @@ async function fetchFromGitHub(issueNumber) {
 
 		return { issue, comments };
 	} catch (error) {
-		throw new Error(`Failed to fetch task from GitHub: ${error.message}`);
+		const errorMessage = error instanceof Error ? error.message : String(error);
+		throw new Error(`Failed to fetch task from GitHub: ${errorMessage}`);
 	}
 }
 
-// Convert GitHub issue to task format
+/**
+ * Convert GitHub issue to task format
+ * @param {any} issue - The GitHub issue object
+ * @param {any} comments - The issue comments array
+ * @returns {string} Formatted task content
+ */
 function formatAsTask(issue, comments) {
-	const labels = issue.labels.map((l) => l.name);
+	const labels = issue.labels.map((/** @type {any} */ l) => l.name);
 	const priority =
-		labels.find((l) => ["critical", "high", "medium", "low"].includes(l)) ||
-		"medium";
+		labels.find((/** @type {string} */ l) =>
+			["critical", "high", "medium", "low"].includes(l),
+		) || "medium";
 	const taskType =
-		labels.find((l) =>
+		labels.find((/** @type {string} */ l) =>
 			[
 				"feature",
 				"enhancement",
@@ -178,7 +219,7 @@ function formatAsTask(issue, comments) {
 
 	// Look for progress updates in comments
 	const progressComments = comments.filter(
-		(c) =>
+		(/** @type {any} */ c) =>
 			c.body.includes("IMPLEMENTATION PROGRESS UPDATE") ||
 			c.body.includes("Phase Completed"),
 	);
@@ -208,10 +249,12 @@ ${body}`;
 	// Add all comments for reference
 	if (comments.length > 0) {
 		content += "\n\n## 💬 GitHub Comments\n\n";
-		comments.forEach((comment, index) => {
-			content += `### Comment ${index + 1} by @${comment.author.login} (${comment.createdAt})\n\n`;
-			content += comment.body + "\n\n";
-		});
+		comments.forEach(
+			(/** @type {any} */ comment, /** @type {number} */ index) => {
+				content += `### Comment ${index + 1} by @${comment.author.login} (${comment.createdAt})\n\n`;
+				content += comment.body + "\n\n";
+			},
+		);
 	}
 
 	// Add sync metadata
@@ -223,11 +266,17 @@ ${body}`;
 	return content;
 }
 
-// Extract sections from issue body
+/**
+ * Extract sections from issue body
+ * @param {string} body - The issue body text
+ * @returns {{[key: string]: string}} Object with section names as keys
+ */
 function extractSections(body) {
+	/** @type {{[key: string]: string}} */
 	const sections = {};
 	const sectionRegex = /^##\s+(.+)$/gm;
 	let match;
+	/** @type {string | null} */
 	let lastSection = null;
 	let lastIndex = 0;
 
@@ -246,7 +295,12 @@ function extractSections(body) {
 	return sections;
 }
 
-// Save task to local file
+/**
+ * Save task to local file
+ * @param {number} issueNumber - The issue number
+ * @param {string} content - The task content
+ * @returns {Promise<string>} The file path
+ */
 async function saveToLocal(issueNumber, content) {
 	const date = new Date().toISOString().split("T")[0];
 	const filename = `${date}-TASK-${issueNumber}.md`;
@@ -258,12 +312,18 @@ async function saveToLocal(issueNumber, content) {
 	return filepath;
 }
 
-// Clean up old cache files for the same task
+/**
+ * Clean up old cache files for the same task
+ * @param {number} issueNumber - The issue number
+ * @returns {Promise<void>}
+ */
 async function cleanupOldCache(issueNumber) {
 	try {
 		const files = await fs.readdir(TASKS_DIR);
 		const pattern = new RegExp(`-TASK-${issueNumber}\\.md$`);
-		const matchingFiles = files.filter((f) => pattern.test(f));
+		const matchingFiles = files.filter((/** @type {string} */ f) =>
+			pattern.test(f),
+		);
 
 		// Sort by date (newest first)
 		matchingFiles.sort().reverse();
@@ -275,11 +335,18 @@ async function cleanupOldCache(issueNumber) {
 			console.log(`🗑️  Removed old cache: ${matchingFiles[i]}`);
 		}
 	} catch (error) {
-		console.error("Error cleaning up old cache:", error);
+		console.error(
+			"Error cleaning up old cache:",
+			error instanceof Error ? error.message : String(error),
+		);
 	}
 }
 
-// Main sync function
+/**
+ * Main sync function
+ * @param {string} taskReference - The task reference to sync
+ * @returns {Promise<string>} The local file path
+ */
 async function syncTask(taskReference) {
 	// Load environment variables first
 	await loadEnvLocal();
@@ -325,14 +392,17 @@ async function syncTask(taskReference) {
 
 		console.log("✅ Task synced successfully!");
 		console.log(`📋 Title: ${issue.title}`);
-		console.log(`🏷️  Labels: ${issue.labels.map((l) => l.name).join(", ")}`);
+		console.log(
+			`🏷️  Labels: ${issue.labels.map((/** @type {any} */ l) => l.name).join(", ")}`,
+		);
 		console.log(`💬 Comments: ${comments.length}`);
 
 		return filepath;
 	} catch (error) {
-		console.error("❌ Sync failed:", error.message);
+		const errorMessage = error instanceof Error ? error.message : String(error);
+		console.error("❌ Sync failed:", errorMessage);
 
-		if (cache.exists) {
+		if (cache.exists && cache.path) {
 			console.log(`⚠️  Using stale cache: ${cache.path}`);
 			return cache.path;
 		}
