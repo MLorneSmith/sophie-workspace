@@ -30,7 +30,8 @@ export function PasswordSignInContainer({
 				if (onSignIn) {
 					const userId = data?.user?.id;
 
-					onSignIn(userId);
+					// Wait for the mutation to fully complete and session to be established
+					await onSignIn(userId);
 				}
 			} catch {
 				// wrong credentials, do nothing

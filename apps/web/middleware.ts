@@ -147,10 +147,23 @@ function getPatterns() {
 				const isVerifyMfa = req.nextUrl.pathname === pathsConfig.auth.verifyMfa;
 
 				// If user is logged in and does not need to verify MFA,
-				// redirect to home page.
+				// check onboarding status and redirect appropriately
 				if (!isVerifyMfa) {
-					const nextPath =
-						req.nextUrl.searchParams.get("next") ?? pathsConfig.app.home;
+					const supabase = createMiddlewareClient(req, res);
+					const { data: userData } = await supabase.auth.getUser();
+					const isOnboarded = userData?.user?.user_metadata?.onboarded === true;
+					
+					// Determine the redirect path
+					let nextPath = req.nextUrl.searchParams.get("next");
+					
+					// If no explicit next path or if not onboarded, handle accordingly
+					if (!isOnboarded) {
+						// New users should go to onboarding
+						nextPath = "/onboarding";
+					} else if (!nextPath) {
+						// Onboarded users without a next path go to home
+						nextPath = pathsConfig.app.home;
+					}
 
 					return NextResponse.redirect(
 						new URL(nextPath, req.nextUrl.origin).href,
@@ -176,6 +189,17 @@ function getPatterns() {
 
 				const supabase = createMiddlewareClient(req, res);
 
+				// Check if user has completed onboarding
+				const { data: userData } = await supabase.auth.getUser();
+				const isOnboarded = userData?.user?.user_metadata?.onboarded === true;
+
+				// If user hasn't completed onboarding, redirect to onboarding page
+				if (!isOnboarded) {
+					return NextResponse.redirect(
+						new URL("/onboarding", origin).href,
+					);
+				}
+
 				const requiresMultiFactorAuthentication =
 					await checkRequiresMultiFactorAuthentication(supabase);
 
@@ -185,6 +209,34 @@ function getPatterns() {
 						new URL(pathsConfig.auth.verifyMfa, origin).href,
 					);
 				}
+			},
+		},
+		{
+			pattern: new URLPattern({ pathname: "/onboarding" }),
+			handler: async (req: NextRequest, res: NextResponse) => {
+				const { data } = await getUser(req, res);
+				const origin = req.nextUrl.origin;
+
+				// If user is not logged in, redirect to sign in page.
+				if (!data?.claims) {
+					const signIn = pathsConfig.auth.signIn;
+					return NextResponse.redirect(new URL(signIn, origin).href);
+				}
+
+				// Check if user has already completed onboarding
+				const supabase = createMiddlewareClient(req, res);
+				const { data: userData } = await supabase.auth.getUser();
+				const isOnboarded = userData?.user?.user_metadata?.onboarded === true;
+
+				// If user has already completed onboarding, redirect to home
+				if (isOnboarded) {
+					return NextResponse.redirect(
+						new URL(pathsConfig.app.home, origin).href,
+					);
+				}
+
+				// User is logged in and needs onboarding - allow access to onboarding page
+				return res;
 			},
 		},
 	];
