@@ -19,6 +19,7 @@ const CRITICAL_SELECTORS = [
 	'[data-testid="sign-in-button"]',
 	'[data-testid="sign-up-email"]',
 	'[data-testid="sign-up-password"]',
+	'[data-testid="sign-up-repeat-password"]',
 	'[data-testid="sign-up-button"]',
 
 	// Common UI selectors
@@ -139,10 +140,11 @@ class SelectorValidator {
 			}
 		}
 
-		this.results.coverage = (
-			(this.results.found.length / CRITICAL_SELECTORS.length) *
-			100
-		).toFixed(1);
+		this.results.coverage = Number(
+			((this.results.found.length / CRITICAL_SELECTORS.length) * 100).toFixed(
+				1,
+			),
+		);
 	}
 
 	generateReport() {
