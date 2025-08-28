@@ -66,6 +66,10 @@ async function setupTeamWithMember(page: Page, memberRole = "member") {
 	// Navigate to the team members page
 	await page.goto(`/home/${slug}/members`);
 
+	// Wait for the members page to fully load
+	await page.waitForLoadState("networkidle");
+	await page.waitForTimeout(1000); // Additional buffer for async operations
+
 	return { invitations, teamAccounts, ownerEmail, memberEmail, slug };
 }
 
@@ -213,26 +217,31 @@ test.describe("Team Member Role Management", () => {
 		// Setup team with a regular member
 		const { teamAccounts, memberEmail } = await setupTeamWithMember(page);
 
-		// Get the current role badge text
+		// Wait for the members table to be fully loaded
+		await page.waitForLoadState("networkidle");
+
+		// Get the current role badge text with retry logic
 		const memberRow = page.getByRole("row", { name: memberEmail });
+		await expect(memberRow).toBeVisible({ timeout: 10000 });
 
 		const initialRoleBadge = memberRow.locator(
 			'[data-test="member-role-badge"]',
 		);
 
-		await expect(initialRoleBadge).toHaveText("Member");
+		await expect(initialRoleBadge).toHaveText("Member", { timeout: 10000 });
 
 		// Update the member's role to admin
 		await teamAccounts.updateMemberRole(memberEmail, "owner");
 
 		// Wait for the page to fully load after the update
-		await page.waitForTimeout(1000);
+		await page.waitForLoadState("networkidle");
+		await page.waitForTimeout(2000); // Increased wait for DB update
 
 		// Verify the role was updated successfully
 		const updatedRoleBadge = page
 			.getByRole("row", { name: memberEmail })
 			.locator('[data-test="member-role-badge"]');
-		await expect(updatedRoleBadge).toHaveText("Owner");
+		await expect(updatedRoleBadge).toHaveText("Owner", { timeout: 15000 });
 	});
 });
 

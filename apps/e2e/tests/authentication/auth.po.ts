@@ -21,16 +21,35 @@ export class AuthPageObject {
 	}
 
 	async signOut() {
-		await this.page.click('[data-test="account-dropdown-trigger"]');
+		await this.page.click('[data-testid="account-dropdown"]');
 		await this.page.click('[data-test="account-dropdown-sign-out"]');
 	}
 
 	async signIn(params: { email: string; password: string }) {
 		await this.page.waitForTimeout(500);
 
-		await this.page.fill('[data-test="email-input"]', params.email);
-		await this.page.fill('[data-test="password-input"]', params.password);
-		await this.page.click('[data-test="auth-submit-button"]');
+		// Wait for email input with increased timeout and visibility check
+		await this.page.waitForSelector('[data-testid="sign-in-email"]', {
+			timeout: 30000,
+			state: "visible",
+		});
+		await this.page.fill('[data-testid="sign-in-email"]', params.email);
+
+		// Wait for password input to ensure form is fully loaded
+		await this.page.waitForSelector('[data-testid="sign-in-password"]', {
+			timeout: 10000,
+			state: "visible",
+		});
+		await this.page.fill('[data-testid="sign-in-password"]', params.password);
+
+		// Wait for submit button to be enabled
+		await this.page.waitForSelector(
+			'[data-testid="sign-in-button"]:not([disabled])',
+			{
+				timeout: 10000,
+			},
+		);
+		await this.page.click('[data-testid="sign-in-button"]');
 	}
 
 	async signUp(params: {
@@ -40,14 +59,39 @@ export class AuthPageObject {
 	}) {
 		await this.page.waitForTimeout(500);
 
-		await this.page.fill('[data-test="email-input"]', params.email);
-		await this.page.fill('[data-test="password-input"]', params.password);
+		// Wait for email input with increased timeout and visibility check
+		await this.page.waitForSelector('[data-testid="sign-up-email"]', {
+			timeout: 30000,
+			state: "visible",
+		});
+
+		await this.page.fill('[data-testid="sign-up-email"]', params.email);
+
+		// Wait for password input to ensure form is fully loaded
+		await this.page.waitForSelector('[data-testid="sign-up-password"]', {
+			timeout: 10000,
+			state: "visible",
+		});
+		await this.page.fill('[data-testid="sign-up-password"]', params.password);
+
+		// Wait for repeat password input
+		await this.page.waitForSelector('[data-testid="sign-up-password"]', {
+			timeout: 10000,
+			state: "visible",
+		});
 		await this.page.fill(
-			'[data-test="repeat-password-input"]',
+			'[data-testid="sign-up-password"]',
 			params.repeatPassword,
 		);
 
-		await this.page.click('[data-test="auth-submit-button"]');
+		// Wait for submit button to be enabled
+		await this.page.waitForSelector(
+			'[data-testid="sign-up-button"]:not([disabled])',
+			{
+				timeout: 10000,
+			},
+		);
+		await this.page.click('[data-testid="sign-up-button"]');
 	}
 
 	async submitMFAVerification(key: string) {
