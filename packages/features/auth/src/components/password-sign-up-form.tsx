@@ -124,6 +124,7 @@ export function PasswordSignUpForm({
 								<Input
 									required
 									data-test={"repeat-password-input"}
+									data-testid="sign-up-repeat-password"
 									type="password"
 									placeholder={""}
 									{...field}
