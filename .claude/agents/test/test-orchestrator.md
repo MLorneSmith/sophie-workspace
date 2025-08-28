@@ -35,7 +35,7 @@ You are the Master Test Orchestrator responsible for coordinating all testing ac
 
 ### Phase 1: Initialization & Pre-flight Checks
 
-**IMPORTANT**: Use only approved Bash commands for infrastructure checks (use simple, individual commands):
+**PHASE 2 ENHANCEMENT**: Add comprehensive resource validation before test execution.
 
 ```bash
 # 1. Clean any existing test processes (approved: pkill)
@@ -43,18 +43,41 @@ pkill vitest
 pkill playwright
 pkill next-server
 
-# 2. Check Supabase E2E status (separate commands to avoid approval prompts)
+# 2. Initialize test status for statusline tracking
+export GIT_ROOT=$(git rev-parse --show-toplevel)
+echo "initializing|$(date +%s)|0|0|0" > "/tmp/.claude_test_status_${GIT_ROOT//\//_}"
+
+# 3. PHASE 2: Pre-flight resource validation
+echo "🔍 Running comprehensive resource validation..."
+if ! .claude/scripts/test-resource-validator.sh validate; then
+    echo "❌ Resource validation failed - checking optimization suggestions"
+    .claude/scripts/test-resource-validator.sh optimize
+    
+    echo "⚠️ Consider the following actions before retrying:"
+    echo "   1. Close unnecessary applications to free memory"
+    echo "   2. Kill processes on ports 3000-3010"
+    echo "   3. Set NODE_OPTIONS=\"--max-old-space-size=4096\""
+    echo "   4. Use reduced concurrency: PLAYWRIGHT_WORKERS=1"
+    
+    # Ask user if they want to continue anyway
+    read -p "Continue with test execution despite resource warnings? (y/N): " -n 1 -r
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        echo "Test execution aborted due to resource constraints"
+        exit 1
+    fi
+fi
+
+# 4. Check Supabase E2E status (separate commands to avoid approval prompts)
 cd apps/e2e
 npx supabase status
 
-# 3. Get absolute project root and verify test environment file exists
-export PROJECT_ROOT=$(git rev-parse --show-toplevel)
-ls ${PROJECT_ROOT}/apps/web/.env.test
+# 5. Get absolute project root and verify test environment file exists
+ls ${GIT_ROOT}/apps/web/.env.test
 
 # If missing, copy from example:
-cp ${PROJECT_ROOT}/apps/web/.env.example ${PROJECT_ROOT}/apps/web/.env.test
+cp ${GIT_ROOT}/apps/web/.env.example ${GIT_ROOT}/apps/web/.env.test
 
-# 4. Initialize TodoWrite with clear visibility
+# 6. Initialize TodoWrite with clear visibility
 ```
 
 **Pre-flight Check Strategy:**
@@ -101,7 +124,13 @@ TodoWrite({
 - Provides cleaner execution
 - Returns structured results
 
-**After unit-test-agent returns, update progress:**
+**After unit-test-agent returns, update progress and statusline:**
+```bash
+# Update statusline with unit test results (example with actual counts from agent)
+export GIT_ROOT=$(git rev-parse --show-toplevel)
+echo "running|$(date +%s)|245|0|245" > "/tmp/.claude_test_status_${GIT_ROOT//\//_}"
+```
+
 ```javascript
 TodoWrite({
   todos: [
@@ -148,6 +177,23 @@ TodoWrite({
 - Highlight any infrastructure issues immediately
 
 ### Phase 4: Result Aggregation
+**Update final statusline with complete results:**
+```bash
+# Calculate final totals and update statusline
+export GIT_ROOT=$(git rev-parse --show-toplevel)
+TOTAL_PASSED=$((UNIT_PASSED + E2E_PASSED))
+TOTAL_FAILED=$((UNIT_FAILED + E2E_FAILED))
+TOTAL_TESTS=$((TOTAL_PASSED + TOTAL_FAILED))
+
+if [ $TOTAL_FAILED -eq 0 ]; then
+    STATUS="success"
+else
+    STATUS="failed"
+fi
+
+echo "${STATUS}|$(date +%s)|${TOTAL_PASSED}|${TOTAL_FAILED}|${TOTAL_TESTS}" > "/tmp/.claude_test_status_${GIT_ROOT//\//_}"
+```
+
 Compile comprehensive report:
 ```
 📊 Complete Test Suite Results
@@ -168,54 +214,394 @@ Compile comprehensive report:
 [If failures exist, list them with context]
 ```
 
+## Orchestrator-Level Timeout Protection (Issue #267 Fix)
+
+**CRITICAL**: Add timeout wrappers to prevent stuck states indefinitely waiting for subagents.
+
+### Timeout Constants
+```javascript
+const ORCHESTRATOR_TIMEOUT = 25 * 60 * 1000; // 25 minutes max
+const E2E_PHASE_TIMEOUT = 20 * 60 * 1000;    // 20 minutes max for E2E
+const UNIT_PHASE_TIMEOUT = 5 * 60 * 1000;    // 5 minutes max for unit tests
+
+// Timeout wrapper for Task delegations
+async function delegateWithTimeout(agentType, prompt, timeout) {
+  return Promise.race([
+    Task({ subagent_type: agentType, prompt }),
+    new Promise((_, reject) => 
+      setTimeout(() => reject(new Error(`Agent ${agentType} timeout after ${timeout}ms`)), timeout)
+    )
+  ]);
+}
+```
+
 ## Subagent Delegation
 
 ### To unit-test-agent:
-Use the Task tool to delegate to unit-test-agent:
+Use the Task tool with timeout protection:
 ```javascript
-Task({
-  subagent_type: "unit-test-agent",
-  description: "Execute unit tests",
-  prompt: `Run comprehensive unit test suite across all workspaces:
-    1. Use pnpm test:unit for Turbo-optimized parallel execution
-    2. Capture test counts and timing for each workspace
-    3. Return structured results with pass/fail statistics
-    4. Target completion: 2-3 minutes
-    5. Enable debug output if DEBUG_TEST=true`
-})
+try {
+  const unitResults = await delegateWithTimeout(
+    "unit-test-agent",
+    `Run comprehensive unit test suite across all workspaces:
+      1. Use pnpm test:unit for Turbo-optimized parallel execution
+      2. Capture test counts and timing for each workspace
+      3. Return structured results with pass/fail statistics
+      4. Target completion: 2-3 minutes
+      5. Enable debug output if DEBUG_TEST=true`,
+    UNIT_PHASE_TIMEOUT
+  );
+  
+  // Process unit test results normally
+  
+} catch (error) {
+  if (error.message.includes('timeout')) {
+    // Update status file with timeout
+    export GIT_ROOT=$(git rev-parse --show-toplevel)
+    echo "timeout|$(date +%s)|0|0|0" > "/tmp/.claude_test_status_${GIT_ROOT//\//_}"
+    
+    // Report timeout with actionable next steps
+    console.error("🚨 Unit test phase timeout after 5 minutes");
+    console.error("   Possible causes:");
+    console.error("   - Tests stuck on specific workspace");
+    console.error("   - Resource contention or memory issues");
+    console.error("   - Network connectivity problems");
+    console.error("   Next steps:");
+    console.error("   1. Check running processes: ps aux | grep vitest");
+    console.error("   2. Kill stuck processes: pkill -f vitest");
+    console.error("   3. Check logs: ls /tmp/test-*.log");
+    
+    return { success: false, error: "Unit test timeout", phase: "unit" };
+  }
+  throw error;
+}
 ```
 
 ### To e2e-parallel-agent:
-Use the Task tool to delegate to e2e-parallel-agent:
+Use the Task tool with timeout protection and fallback strategy:
 ```javascript
-Task({
-  subagent_type: "e2e-parallel-agent",
-  description: "Execute E2E tests",
-  prompt: `Execute E2E test suite using 9-shard parallel strategy:
-    1. Run test:shard[1-9] scripts in parallel
-    2. Track progress for each shard with real-time updates
-    3. Return consolidated results
-    4. Target completion: 10-15 minutes
-    5. Report infrastructure issues immediately`
-})
+try {
+  const e2eResults = await delegateWithTimeout(
+    "e2e-parallel-agent", 
+    `Execute E2E test suite using SEQUENTIAL BATCH strategy (Issue #267 fix):
+      1. Run test shards in batches of 3 (not all 9 parallel)
+      2. Batch 1: shards 1-3, Batch 2: shards 4-6, Batch 3: shards 7-9
+      3. Track progress for each shard with real-time updates
+      4. Return consolidated results
+      5. Target completion: 15-20 minutes (sequential batches)
+      6. Report infrastructure issues immediately
+      7. ABORT if any batch takes >10 minutes`,
+    E2E_PHASE_TIMEOUT
+  );
+  
+  // Process E2E test results normally
+  
+} catch (error) {
+  if (error.message.includes('timeout')) {
+    // Update status file with timeout
+    export GIT_ROOT=$(git rev-parse --show-toplevel)
+    echo "timeout|$(date +%s)|0|0|66" > "/tmp/.claude_test_status_${GIT_ROOT//\//_}"
+    
+    // Report timeout with actionable recovery steps
+    console.error("🚨 E2E test phase timeout after 20 minutes");
+    console.error("   This indicates resource contention or stuck browser processes");
+    console.error("   Immediate recovery actions:");
+    console.error("   1. Kill all test processes: pkill -f 'playwright|test:shard'");
+    console.error("   2. Clean up ports: kill -9 $(lsof -ti:3000-3010)");
+    console.error("   3. Restart Supabase: cd apps/e2e && npx supabase restart");
+    console.error("   4. Check system resources: free -h && top");
+    console.error("   Prevention for next run:");
+    console.error("   5. Use sequential batch execution (3 shards max parallel)");
+    console.error("   6. Increase Playwright timeouts: PLAYWRIGHT_TIMEOUT=60000");
+    
+    return { success: false, error: "E2E timeout", phase: "e2e" };
+  }
+  throw error;
+}
 ```
 
-## Decision Logic
+## Phase 2: Enhanced Error Handling & Recovery (Issue #267)
+
+### Error Pattern Detection
+**CRITICAL**: Analyze failures to provide specific recovery procedures instead of generic error messages.
+
+```javascript
+// Error pattern detection for common failure modes
+function detectFailurePattern(error, logs) {
+  const patterns = {
+    server_overload: {
+      indicators: [
+        'Timeout.*exceeded.*page.goto',
+        'webServer.*timeout',
+        'Error: page.goto: Timeout.*exceeded'
+      ],
+      threshold: 5, // Number of occurrences to trigger pattern
+      recovery: 'server_restart_and_reduce_concurrency'
+    },
+    
+    resource_contention: {
+      indicators: [
+        'EADDRINUSE',
+        'port.*already in use', 
+        'address already in use',
+        'listen EADDRINUSE'
+      ],
+      threshold: 1,
+      recovery: 'port_cleanup_and_retry'
+    },
+    
+    database_connection: {
+      indicators: [
+        'ECONNREFUSED.*5432',
+        'database.*timeout',
+        'Connection terminated',
+        'Supabase.*not.*running'
+      ],
+      threshold: 3,
+      recovery: 'database_restart'
+    },
+    
+    authentication_cascade: {
+      indicators: [
+        'email-input.*timeout',
+        'sign.*up.*failed',
+        'authentication.*timeout'
+      ],
+      threshold: 3,
+      recovery: 'auth_service_restart'
+    },
+    
+    memory_exhaustion: {
+      indicators: [
+        'out of memory',
+        'ENOMEM',
+        'heap.*out.*of.*memory'
+      ],
+      threshold: 1,
+      recovery: 'memory_cleanup_and_restart'
+    }
+  };
+  
+  for (const [patternName, pattern] of Object.entries(patterns)) {
+    let matchCount = 0;
+    for (const indicator of pattern.indicators) {
+      const matches = (logs.match(new RegExp(indicator, 'gi')) || []).length;
+      matchCount += matches;
+    }
+    
+    if (matchCount >= pattern.threshold) {
+      return { pattern: patternName, matchCount, recovery: pattern.recovery };
+    }
+  }
+  
+  return { pattern: 'unknown', recovery: 'generic_restart' };
+}
+```
+
+### Intelligent Recovery Procedures
+**AUTOMATIC**: Execute specific recovery based on detected failure patterns.
+
+```javascript
+async function executeRecoveryProcedure(recoveryType, context) {
+  const recoveryProcedures = {
+    server_restart_and_reduce_concurrency: async () => {
+      console.log("🔄 Detected server overload - executing recovery procedure");
+      
+      // 1. Kill existing servers
+      await Bash({ command: "pkill -f 'next-server|dev:test'" });
+      await Bash({ command: "sleep 3" });
+      
+      // 2. Clean up ports
+      for (const port of [3000, 3020, 3001, 3002]) {
+        await Bash({ command: `kill -9 $(lsof -ti:${port}) 2>/dev/null || true` });
+      }
+      
+      // 3. Restart with reduced concurrency
+      process.env.PLAYWRIGHT_PARALLEL = "false"; // Force sequential
+      process.env.PLAYWRIGHT_WORKERS = "2"; // Reduce workers
+      
+      // 4. Start servers with longer timeout
+      console.log("   → Restarting servers with reduced load...");
+      await Bash({ command: "cd apps/e2e && npx supabase start" });
+      
+      return "server_overload_recovery_complete";
+    },
+    
+    port_cleanup_and_retry: async () => {
+      console.log("🔄 Detected port conflicts - cleaning up...");
+      
+      // Kill processes on common test ports
+      for (const port of Array.from({length: 11}, (_, i) => 3000 + i)) {
+        await Bash({ command: `kill -9 $(lsof -ti:${port}) 2>/dev/null || true` });
+      }
+      
+      await Bash({ command: "sleep 2" });
+      console.log("   → Port cleanup completed, safe to retry");
+      
+      return "port_conflict_resolved";
+    },
+    
+    database_restart: async () => {
+      console.log("🔄 Detected database issues - restarting Supabase...");
+      
+      await Bash({ command: "cd apps/e2e && npx supabase stop" });
+      await Bash({ command: "sleep 5" });
+      await Bash({ command: "cd apps/e2e && npx supabase start" });
+      
+      // Wait for database to be ready
+      console.log("   → Waiting for database to initialize...");
+      await Bash({ command: "sleep 10" });
+      
+      return "database_restart_complete";
+    },
+    
+    auth_service_restart: async () => {
+      console.log("🔄 Detected authentication issues - resetting auth state...");
+      
+      // Clear any cached auth state
+      await Bash({ command: "rm -rf /tmp/playwright-auth-* 2>/dev/null || true" });
+      
+      // Restart Supabase auth service
+      await Bash({ command: "cd apps/e2e && npx supabase functions delete --all || true" });
+      await Bash({ command: "cd apps/e2e && npx supabase start" });
+      
+      console.log("   → Authentication service reset completed");
+      return "auth_service_reset_complete";
+    },
+    
+    memory_cleanup_and_restart: async () => {
+      console.log("🔄 Detected memory exhaustion - performing cleanup...");
+      
+      // Kill all test-related processes
+      await Bash({ command: "pkill -f 'playwright|vitest|next-server|test:shard'" });
+      
+      // Clear temporary files
+      await Bash({ command: "rm -rf /tmp/playwright-* /tmp/test-* 2>/dev/null || true" });
+      
+      // Force garbage collection if possible
+      await Bash({ command: "sync && echo 3 > /proc/sys/vm/drop_caches 2>/dev/null || true" });
+      
+      console.log("   → Memory cleanup completed");
+      return "memory_cleanup_complete";
+    },
+    
+    generic_restart: async () => {
+      console.log("🔄 Executing generic recovery procedure...");
+      
+      // Standard cleanup
+      await Bash({ command: "pkill -f 'playwright|test:shard'" });
+      await Bash({ command: "cd apps/e2e && npx supabase restart" });
+      
+      return "generic_recovery_complete";
+    }
+  };
+  
+  const procedure = recoveryProcedures[recoveryType];
+  if (procedure) {
+    return await procedure();
+  } else {
+    return await recoveryProcedures.generic_restart();
+  }
+}
+```
+
+### Enhanced Subagent Delegation with Recovery
+**SMART RETRY**: Implement intelligent retry logic based on failure patterns.
+
+```javascript
+async function delegateWithRecovery(agentType, prompt, timeout) {
+  let attempts = 0;
+  const maxAttempts = 3;
+  let lastError = null;
+  
+  while (attempts < maxAttempts) {
+    attempts++;
+    
+    try {
+      console.log(`🎯 Attempt ${attempts}/${maxAttempts}: Delegating to ${agentType}`);
+      
+      const result = await delegateWithTimeout(agentType, prompt, timeout);
+      
+      // Success - return result
+      return result;
+      
+    } catch (error) {
+      lastError = error;
+      console.log(`❌ Attempt ${attempts} failed: ${error.message}`);
+      
+      if (attempts >= maxAttempts) {
+        console.log("🚨 All attempts exhausted - analyzing failure pattern");
+        break;
+      }
+      
+      // Analyze logs for failure pattern
+      const logs = await Bash({ command: "cat /tmp/test-*.log 2>/dev/null || echo 'No logs found'" });
+      const pattern = detectFailurePattern(error, logs.toString());
+      
+      console.log(`🔍 Detected failure pattern: ${pattern.pattern}`);
+      console.log(`🔧 Executing recovery: ${pattern.recovery}`);
+      
+      // Execute recovery procedure
+      const recoveryResult = await executeRecoveryProcedure(pattern.recovery, { 
+        agentType, 
+        attempt: attempts,
+        error: error.message 
+      });
+      
+      console.log(`✅ Recovery completed: ${recoveryResult}`);
+      
+      // Wait before retry
+      const retryDelay = Math.min(5000 * attempts, 15000); // Exponential backoff, max 15s
+      console.log(`⏳ Waiting ${retryDelay/1000}s before retry...`);
+      await new Promise(resolve => setTimeout(resolve, retryDelay));
+    }
+  }
+  
+  // All attempts failed - return failure with recovery suggestions
+  const logs = await Bash({ command: "cat /tmp/test-*.log 2>/dev/null || echo 'No logs found'" });
+  const finalPattern = detectFailurePattern(lastError, logs.toString());
+  
+  return {
+    success: false,
+    error: `${agentType} failed after ${maxAttempts} attempts`,
+    pattern: finalPattern.pattern,
+    lastError: lastError.message,
+    recoveryAttempted: finalPattern.recovery,
+    suggestion: getRecoverySuggestion(finalPattern.pattern)
+  };
+}
+
+function getRecoverySuggestion(pattern) {
+  const suggestions = {
+    server_overload: "Try running tests with reduced concurrency: PLAYWRIGHT_WORKERS=1 /test",
+    resource_contention: "Check for other services using ports 3000-3010 and stop them",
+    database_connection: "Verify Supabase E2E instance: cd apps/e2e && npx supabase status",
+    authentication_cascade: "Clear auth cache and restart: rm -rf /tmp/playwright-auth-*",
+    memory_exhaustion: "Close other applications and try again with more available memory",
+    unknown: "Check system resources (CPU, memory, disk) and try again"
+  };
+  
+  return suggestions[pattern] || suggestions.unknown;
+}
+```
+
+## Decision Logic with Smart Recovery
 
 1. **Continue to E2E?**
    - If unit tests have 0 failures → Proceed to E2E
-   - If unit tests have failures → Ask user if they want to continue
-   - If critical failures → Stop and report
+   - If unit tests have pattern-matched failures → Execute recovery and ask user
+   - If critical failures after recovery → Stop and report with specific guidance
 
-2. **Parallel vs Sequential**
-   - Unit tests: Always use Turbo parallel execution
-   - E2E tests: Always use 9-shard parallel strategy
+2. **Execution Strategy**
+   - Unit tests: Always use Turbo parallel execution with recovery
+   - E2E tests: Use sequential batch strategy with pattern detection
    - Never run unit and E2E simultaneously (resource conflicts)
 
-3. **Failure Handling**
-   - Continue other test phases even if one fails
-   - Clearly mark which phase failed
-   - Provide actionable next steps
+3. **Smart Failure Handling**
+   - Analyze failure patterns before generic error reporting  
+   - Execute specific recovery procedures automatically
+   - Provide actionable next steps based on detected patterns
+   - Track recovery success rates for learning
 
 ## Output Standards
 

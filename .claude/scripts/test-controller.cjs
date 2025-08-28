@@ -14,6 +14,19 @@ const execAsync = promisify(exec);
 const { ResourceLock } = require("./resource-lock.cjs");
 const { TestCleanupGuard } = require("./test-cleanup-guard.cjs");
 
+// Import optimization modules if available
+let TestCacheManager, ShardOptimizer;
+try {
+	({ TestCacheManager } = require("./test-cache-manager.cjs"));
+} catch (e) {
+	// Cache manager not available
+}
+try {
+	({ ShardOptimizer } = require("./test-shard-optimizer.cjs"));
+} catch (e) {
+	// Shard optimizer not available
+}
+
 // Simple logging utility to replace console statements
 function log(message, type = "info") {
 	const timestamp = new Date().toISOString();
@@ -499,6 +512,10 @@ class UnitTestRunner {
 class E2ETestRunner {
 	constructor() {
 		this.resourceLock = new ResourceLock();
+		this.cacheManager = TestCacheManager ? new TestCacheManager() : null;
+		this.shardOptimizer = ShardOptimizer ? new ShardOptimizer() : null;
+
+		// Default shards (can be optimized dynamically)
 		this.shards = [
 			{ id: 1, name: "Accessibility Large", tests: 13 },
 			{ id: 2, name: "Authentication", tests: 10 },
@@ -510,6 +527,38 @@ class E2ETestRunner {
 			{ id: 8, name: "Quick Tests", tests: 3 },
 			{ id: 9, name: "Billing", tests: 2 },
 		];
+
+		// Smart retry patterns
+		this.retryPatterns = {
+			timeout: {
+				patterns: ["Timeout", "waiting for", "element"],
+				maxRetries: 2,
+				backoff: 1000,
+				description: "Element timeout errors",
+			},
+			element_not_found: {
+				patterns: [
+					"strict mode violation",
+					"expected 1, got 0",
+					"No element found",
+				],
+				maxRetries: 1,
+				backoff: 500,
+				description: "Element not found errors",
+			},
+			connection_refused: {
+				patterns: ["ECONNREFUSED", "net::ERR_CONNECTION_REFUSED"],
+				maxRetries: 3,
+				backoff: 2000,
+				description: "Connection errors",
+			},
+			webserver_timeout: {
+				patterns: ["WebServer", "Timed out"],
+				maxRetries: 2,
+				backoff: 3000,
+				description: "WebServer startup timeout",
+			},
+		};
 
 		// Calculate optimal concurrency based on system resources
 		const cpuCount = os.cpus().length;
@@ -541,7 +590,8 @@ class E2ETestRunner {
 
 		if (frontendRunning && backendRunning) {
 			log("✅ Servers already running, reusing existing instances");
-			return true;
+			// Still perform health checks to ensure they're truly ready
+			return await this.ensureServersHealthy();
 		}
 
 		// Start servers in background
@@ -681,6 +731,76 @@ class E2ETestRunner {
 		log("✅ Server pre-warming complete");
 	}
 
+	async ensureServersHealthy() {
+		log("🔍 Performing comprehensive health checks...");
+
+		// Check frontend health with multiple endpoints
+		const frontendChecks = await Promise.all([
+			this.checkEndpoint("http://127.0.0.1:3000", "Frontend root"),
+			this.checkEndpoint(
+				"http://127.0.0.1:3000/api/health",
+				"Frontend health API",
+			),
+		]);
+
+		// Check backend health
+		const backendChecks = await Promise.all([
+			this.checkEndpoint("http://127.0.0.1:3020", "Backend root"),
+			this.checkEndpoint(
+				"http://127.0.0.1:3020/api/health",
+				"Backend health API",
+			),
+		]);
+
+		const allChecks = [...frontendChecks, ...backendChecks];
+		const passedChecks = allChecks.filter((c) => c).length;
+
+		if (passedChecks === allChecks.length) {
+			log(`✅ All health checks passed (${passedChecks}/${allChecks.length})`);
+			return true;
+		} else if (passedChecks >= 2) {
+			log(
+				`⚠️ Some health checks failed (${passedChecks}/${allChecks.length}), but minimum requirements met`,
+			);
+			return true;
+		} else {
+			throw new Error(
+				`Health checks failed: only ${passedChecks}/${allChecks.length} passed`,
+			);
+		}
+	}
+
+	async checkEndpoint(url, name) {
+		try {
+			const response = await fetch(url, {
+				signal: AbortSignal.timeout(5000),
+			});
+
+			if (response.ok) {
+				log(`  ✅ ${name}: OK (status: ${response.status})`);
+
+				// For health endpoints, check the response body
+				if (url.includes("/api/health")) {
+					try {
+						const data = await response.json();
+						if (data.status === "ready") {
+							log("    → Health status: ready");
+						}
+					} catch (e) {
+						// JSON parsing failed, but endpoint responded
+					}
+				}
+				return true;
+			} else {
+				log(`  ⚠️ ${name}: Responded with status ${response.status}`);
+				return false;
+			}
+		} catch (error) {
+			log(`  ❌ ${name}: Failed - ${error.message}`);
+			return false;
+		}
+	}
+
 	async isServerRunning(port) {
 		try {
 			const response = await fetch(`http://127.0.0.1:${port}/api/health`, {
@@ -751,6 +871,36 @@ class E2ETestRunner {
 		// Initialize resource locking
 		await this.resourceLock.init();
 
+		// Initialize cache manager if available
+		if (this.cacheManager && process.env.USE_TEST_CACHE !== "false") {
+			try {
+				await this.cacheManager.init();
+				log("📦 Test cache system initialized");
+
+				// Check for cached results if running in quick mode
+				if (process.env.QUICK_TEST === "true") {
+					const cachedSummary = await this.checkCachedResults();
+					if (cachedSummary.allCached) {
+						log(
+							"✅ All tests have valid cached results, skipping E2E execution",
+						);
+						return cachedSummary.totals;
+					}
+				}
+			} catch (error) {
+				log(`⚠️ Cache initialization failed: ${error.message}`);
+			}
+		}
+
+		// Optimize shard distribution if available
+		if (this.shardOptimizer && process.env.OPTIMIZE_SHARDS !== "false") {
+			try {
+				await this.optimizeShardDistribution();
+			} catch (error) {
+				log(`⚠️ Shard optimization failed: ${error.message}`);
+			}
+		}
+
 		// Pre-flight selector validation
 		const selectorValidation = await this.validateSelectors();
 		if (!selectorValidation.passed && selectorValidation.coverage < 70) {
@@ -778,6 +928,13 @@ class E2ETestRunner {
 		// This ensures all shards can connect to running servers immediately
 		try {
 			await this.startTestServers();
+
+			// Additional explicit health check before starting shards
+			log("🔍 Final health verification before E2E tests...");
+			const healthCheck = await this.ensureServersHealthy();
+			if (!healthCheck) {
+				throw new Error("Server health checks failed after startup");
+			}
 		} catch (error) {
 			logError(`❌ Failed to start test servers: ${error.message}`);
 			await this.releasePortLocks();
@@ -828,6 +985,9 @@ class E2ETestRunner {
 		// Cleanup test servers and release locks
 		await this.stopTestServers();
 		await this.releasePortLocks();
+
+		// Cache test results for future runs
+		await this.cacheTestResults(shardResults);
 
 		log("\n📊 E2E tests completed");
 		log(`   Total: ${totals.total}`);
@@ -920,37 +1080,82 @@ class E2ETestRunner {
 	}
 
 	async runShardWithRetry(shard, attempt = 1) {
-		const maxRetries = 2;
 		const result = await this.runShard(shard, attempt);
 
 		// Add shardId to result for tracking
 		result.shardId = shard.id;
 
-		// Enhanced retry logic - now covers more failure cases
-		const shouldRetry =
-			(result.infrastructureFailure ||
-				(result.failed > 0 && result.passed === 0 && attempt === 1) || // Complete failure on first attempt
-				result.hasTimeoutErrors) &&
-			attempt < maxRetries;
+		// Analyze failure patterns for smart retry
+		const retryStrategy = this.analyzeRetryStrategy(result);
 
-		if (shouldRetry) {
-			const reason = result.infrastructureFailure
-				? "infrastructure failure"
-				: result.hasTimeoutErrors
-					? "timeout errors"
-					: "complete test failure";
+		if (retryStrategy && attempt <= retryStrategy.maxRetries) {
 			log(
-				`  🔄 Retrying shard ${shard.id} (attempt ${attempt + 1}/${maxRetries}) - ${reason}`,
+				`  🔄 Smart retry for shard ${shard.id} (attempt ${attempt}/${retryStrategy.maxRetries})`,
 			);
+			log(`     Reason: ${retryStrategy.description}`);
+			log(`     Backoff: ${retryStrategy.backoff}ms`);
 
-			// Exponential backoff: 3s, then 6s
-			const backoffTime = 3000 * attempt;
+			// Apply backoff with jitter to avoid thundering herd
+			const jitter = Math.random() * 500; // 0-500ms random jitter
+			const backoffTime = retryStrategy.backoff + jitter;
 			await new Promise((resolve) => setTimeout(resolve, backoffTime));
+
+			// Increase timeout for retries
+			if (attempt > 1) {
+				process.env.PLAYWRIGHT_ACTION_TIMEOUT = String(
+					(30 + attempt * 10) * 1000,
+				);
+			}
 
 			return this.runShardWithRetry(shard, attempt + 1);
 		}
 
+		// Reset timeout after retries
+		delete process.env.PLAYWRIGHT_ACTION_TIMEOUT;
+
 		return result;
+	}
+
+	/**
+	 * Analyze test output to determine optimal retry strategy
+	 */
+	analyzeRetryStrategy(result) {
+		// Don't retry if tests passed
+		if (result.failed === 0) return null;
+
+		// Don't retry if we got partial success (some tests passed)
+		if (result.passed > 0 && result.failed < result.total / 2) return null;
+
+		// Check output against retry patterns
+		for (const [key, strategy] of Object.entries(this.retryPatterns)) {
+			const matchesAllPatterns = strategy.patterns.every(
+				(pattern) => result.output && result.output.includes(pattern),
+			);
+
+			if (matchesAllPatterns) {
+				return strategy;
+			}
+		}
+
+		// Infrastructure failure gets default retry
+		if (result.infrastructureFailure) {
+			return {
+				maxRetries: 2,
+				backoff: 3000,
+				description: "Infrastructure failure",
+			};
+		}
+
+		// Complete failure on first attempt
+		if (result.passed === 0 && result.attempt === 1) {
+			return {
+				maxRetries: 1,
+				backoff: 2000,
+				description: "Complete test failure",
+			};
+		}
+
+		return null;
 	}
 
 	async runShard(shard, attempt = 1) {
@@ -1013,6 +1218,8 @@ class E2ETestRunner {
 				result.duration = `${duration}s`;
 				result.exitCode = code;
 				result.hasServerStartup = hasServerStartupDetected;
+				result.output = output; // Include output for retry analysis
+				result.attempt = attempt; // Track attempt number
 
 				// Check for infrastructure failures
 				if (output.includes("WebServer") && output.includes("Timed out")) {
@@ -1127,17 +1334,109 @@ class E2ETestRunner {
 	}
 
 	/**
+	 * Check for cached test results
+	 */
+	async checkCachedResults() {
+		// Get test files using find command
+		const { execSync } = require("child_process");
+		const result = execSync(
+			`find apps/e2e/tests -name "*.spec.ts" 2>/dev/null`,
+			{ encoding: "utf8" },
+		);
+		const testFiles = result.split("\n").filter(Boolean);
+		const summary = await this.cacheManager.determineTestsToRun(testFiles);
+
+		const totals = {
+			total: 0,
+			passed: 0,
+			failed: 0,
+			skipped: 0,
+			allCached: summary.toRun === 0,
+		};
+
+		// Aggregate cached results
+		for (const cached of summary.cachedTests) {
+			if (cached.result.passed) {
+				totals.passed += cached.result.testCount || 1;
+			} else {
+				totals.failed += cached.result.testCount || 1;
+			}
+			totals.total += cached.result.testCount || 1;
+		}
+
+		return { totals, summary };
+	}
+
+	/**
+	 * Optimize shard distribution based on test metrics
+	 */
+	async optimizeShardDistribution() {
+		log("🔧 Optimizing shard distribution...");
+
+		await this.shardOptimizer.loadMetrics();
+		const config = await this.shardOptimizer.generateShardConfig({
+			strategy: process.env.SHARD_STRATEGY || "balanced",
+			shardCount: this.shards.length,
+			maxTestsPerShard: 20, // More realistic maximum
+			minTestsPerShard: 2, // More realistic minimum
+		});
+
+		if (config.validation.valid) {
+			log("✅ Optimized shard configuration generated");
+			log(`   Strategy: ${config.strategy}`);
+			log(
+				`   Max deviation: ${config.validation.stats.maxDeviation.toFixed(1)}%`,
+			);
+
+			// Update shards with optimized configuration
+			this.shards = config.shards.map((shard, index) => ({
+				id: shard.id,
+				name: shard.name,
+				tests: shard.totalTests,
+				estimatedTime: shard.estimatedTime,
+				files: shard.tests,
+			}));
+		} else {
+			log("⚠️ Shard optimization validation failed, using defaults");
+		}
+	}
+
+	/**
+	 * Store test results in cache
+	 */
+	async cacheTestResults(shardResults) {
+		if (!this.cacheManager) return;
+
+		try {
+			for (const result of shardResults) {
+				if (result.files && result.files.length > 0) {
+					for (const file of result.files) {
+						await this.cacheManager.cacheTestResult(file, {
+							passed: result.passed > 0,
+							testCount: Math.ceil(result.passed / result.files.length),
+							duration: result.duration,
+						});
+					}
+				}
+			}
+
+			await this.cacheManager.saveCache();
+			log("📦 Test results cached successfully");
+		} catch (error) {
+			log(`⚠️ Failed to cache results: ${error.message}`);
+		}
+	}
+
+	/**
 	 * Pre-flight selector validation to identify potential E2E issues
 	 */
 	async validateSelectors() {
 		try {
 			log("🔍 Running pre-flight selector validation...");
-			const { execAsync } = require("node:util").promisify(
-				require("node:child_process").exec,
-			);
+			const selectorExecAsync = promisify(require("node:child_process").exec);
 
 			// Run selector validation script
-			const { stdout } = await execAsync(
+			const { stdout } = await selectorExecAsync(
 				"node .claude/scripts/selector-validator.cjs",
 			);
 
@@ -1195,6 +1494,35 @@ class TestController {
 		this.unitRunner = new UnitTestRunner();
 		this.e2eRunner = new E2ETestRunner();
 		this.cleanupGuard = new TestCleanupGuard();
+
+		// Progressive test stages
+		this.testStages = {
+			smoke: {
+				name: "Smoke Tests",
+				description: "Quick validation of critical paths",
+				timeout: 30, // seconds
+				patterns: ["**/smoke/*.spec.ts", "**/healthcheck.spec.ts"],
+				failFast: true,
+			},
+			critical: {
+				name: "Critical Path Tests",
+				description: "Core functionality validation",
+				timeout: 120, // seconds
+				patterns: [
+					"**/auth*.spec.ts",
+					"**/admin*.spec.ts",
+					"**/account*.spec.ts",
+				],
+				failFast: true,
+			},
+			full: {
+				name: "Full Test Suite",
+				description: "Comprehensive test coverage",
+				timeout: 600, // seconds
+				patterns: ["**/*.spec.ts"],
+				failFast: false,
+			},
+		};
 	}
 
 	async run(options) {
