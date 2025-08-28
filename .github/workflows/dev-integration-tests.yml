@@ -248,8 +248,18 @@ jobs:
           RETRY_DELAY=10
           retries=0
           
-          # Add Vercel protection bypass header if available
+          # Add headers for GraphQL introspection and Vercel protection bypass
           CURL_HEADERS="-H \"Content-Type: application/json\""
+          
+          # Add GraphQL introspection secret header
+          if [ ! -z "${{ secrets.INTROSPECTION_SECRET }}" ]; then
+            CURL_HEADERS="$CURL_HEADERS -H \"x-allow-introspection: ${{ secrets.INTROSPECTION_SECRET }}\""
+          else
+            # Use default dev secret if not set
+            CURL_HEADERS="$CURL_HEADERS -H \"x-allow-introspection: dev-test-secret\""
+          fi
+          
+          # Add Vercel protection bypass header if available
           if [ ! -z "${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" ]; then
             CURL_HEADERS="$CURL_HEADERS -H \"x-vercel-protection-bypass: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}\""
           fi
