@@ -75,6 +75,15 @@ importers:
         specifier: ^1.7.0
         version: 1.7.0
 
+  .claude/scripts:
+    devDependencies:
+      '@types/node':
+        specifier: ^24.0.4
+        version: 24.3.0
+      typescript:
+        specifier: ^5.9.2
+        version: 5.9.2
+
   apps/dev-tool:
     dependencies:
       '@ai-sdk/openai':
