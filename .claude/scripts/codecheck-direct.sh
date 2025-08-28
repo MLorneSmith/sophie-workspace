@@ -7,14 +7,20 @@ set -euo pipefail
 # Initialize status tracking
 GIT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo "$PWD")
 CODECHECK_STATUS_FILE="/tmp/.claude_codecheck_status_${GIT_ROOT//\//_}"
+STATUS_UPDATE_SCRIPT="${GIT_ROOT}/.claude/statusline/update-codecheck-status.sh"
 TIMESTAMP=$(date +%s)
 WORK_DIR="/tmp/codecheck_${TIMESTAMP}"
 
 # Ensure work directory exists
 mkdir -p "$WORK_DIR"
 
-# Initialize status file
-echo "running|$TIMESTAMP|0|0|0" > "$CODECHECK_STATUS_FILE"
+# Initialize status file using robust updater
+if [ -f "$STATUS_UPDATE_SCRIPT" ]; then
+    "$STATUS_UPDATE_SCRIPT" running 0 0 0
+else
+    # Fallback if script not found
+    echo "running|$TIMESTAMP|0|0|0" > "$CODECHECK_STATUS_FILE"
+fi
 echo "✅ Status file initialized: $CODECHECK_STATUS_FILE"
 
 # Set up cleanup trap
@@ -22,7 +28,11 @@ cleanup() {
     local exit_code=$?
     if [ $exit_code -ne 0 ] && [ -f "$CODECHECK_STATUS_FILE" ]; then
         if grep -q "running" "$CODECHECK_STATUS_FILE"; then
-            echo "failed|$(date +%s)|1|0|0" > "$CODECHECK_STATUS_FILE"
+            if [ -f "$STATUS_UPDATE_SCRIPT" ]; then
+                "$STATUS_UPDATE_SCRIPT" failed 1 0 0
+            else
+                echo "failed|$(date +%s)|1|0|0" > "$CODECHECK_STATUS_FILE"
+            fi
         fi
     fi
 }
@@ -154,15 +164,22 @@ main() {
     
     local total_errors=$((type_errors + lint_errors))
     
-    # Update final status
-    local current_time=$(date +%s)
+    # Update final status using robust updater
     if [ $type_status -eq 0 ] && [ $lint_status -eq 0 ] && [ $format_status -eq 0 ]; then
-        echo "success|$current_time|0|0|0" > "$CODECHECK_STATUS_FILE"
+        if [ -f "$STATUS_UPDATE_SCRIPT" ]; then
+            "$STATUS_UPDATE_SCRIPT" success 0 0 0
+        else
+            echo "success|$(date +%s)|0|0|0" > "$CODECHECK_STATUS_FILE"
+        fi
         echo ""
         echo "✅ ALL CHECKS PASSED"
         local overall_status="success"
     else
-        echo "failed|$current_time|$total_errors|$lint_warnings|$type_errors" > "$CODECHECK_STATUS_FILE"
+        if [ -f "$STATUS_UPDATE_SCRIPT" ]; then
+            "$STATUS_UPDATE_SCRIPT" failed "$total_errors" "$lint_warnings" "$type_errors"
+        else
+            echo "failed|$(date +%s)|$total_errors|$lint_warnings|$type_errors" > "$CODECHECK_STATUS_FILE"
+        fi
         echo ""
         echo "⚠️ SOME CHECKS FAILED"
         local overall_status="failed"

@@ -3,8 +3,10 @@
 /**
  * Pre-flight Selector Validation Tool
  * Validates critical data-testid selectors exist before running E2E tests
+ * @fileoverview TypeScript-checked CommonJS module
  */
 
+// @ts-check
 const fs = require("node:fs").promises;
 const path = require("node:path");
 

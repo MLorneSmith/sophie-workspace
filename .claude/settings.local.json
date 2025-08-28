@@ -1,4 +1,8 @@
 {
+	"env": {
+		"BASH_DEFAULT_TIMEOUT_MS": "900000",
+		"BASH_MAX_TIMEOUT_MS": "1800000"
+	},
 	"permissions": {
 		"allow": [
 			"Bash(ls:*)",
@@ -263,7 +267,13 @@
 			"Bash(DEBUG_TEST=true pnpm --filter web-e2e test:shard6)",
 			"Bash(DEBUG_TEST=true pnpm --filter web-e2e test:shard7)",
 			"Bash(DEBUG_TEST=true pnpm --filter web-e2e test:shard8)",
-			"Bash(DEBUG_TEST=true pnpm --filter web-e2e test:shard9)"
+			"Bash(DEBUG_TEST=true pnpm --filter web-e2e test:shard9)",
+			"Bash(node .claude/scripts/test-controller.cjs*)",
+			"Bash(DEBUG_TEST=true node .claude/scripts/test-controller.cjs*)",
+			"Read(/tmp/**)",
+			"mcp__github__search_issues",
+			"Bash(.claude/scripts/codecheck-direct.sh:*)",
+			"Bash(DEBUG_TEST=true node .claude/scripts/test-controller.cjs --debug)"
 		],
 		"deny": [],
 		"additionalDirectories": ["/home/msmith"]
