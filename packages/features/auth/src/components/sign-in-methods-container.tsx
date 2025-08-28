@@ -1,6 +1,7 @@
 "use client";
 
 import { isBrowser } from "@kit/shared/utils";
+import { useSupabase } from "@kit/supabase/hooks/use-supabase";
 import { If } from "@kit/ui/if";
 import { Separator } from "@kit/ui/separator";
 import { Trans } from "@kit/ui/trans";
@@ -35,11 +36,43 @@ export function SignInMethodsContainer(props: {
 		: "";
 
 	const onSignIn = async () => {
-		// Add a delay to ensure the session is properly established
+		// Wait for session establishment by checking if we have a valid session
 		// This prevents a race condition where the client redirects before
-		// the auth cookies are set, causing the middleware to not recognize
+		// the auth cookies are properly set and the middleware can recognize
 		// the authenticated state
-		await new Promise((resolve) => setTimeout(resolve, 1000));
+		
+		// Import useSupabase hook dynamically to avoid client-side import issues
+		const { useSupabase } = await import("@kit/supabase/hooks/use-supabase");
+		const supabase = useSupabase();
+		
+		// Poll for session establishment with timeout
+		const maxAttempts = 20; // 10 seconds max wait (20 * 500ms)
+		let attempts = 0;
+		let session = null;
+		
+		while (attempts < maxAttempts && !session) {
+			const { data } = await supabase.auth.getSession();
+			if (data?.session?.user) {
+				session = data.session;
+				break;
+			}
+			await new Promise(resolve => setTimeout(resolve, 500));
+			attempts++;
+		}
+		
+		if (!session) {
+			// If we still don't have a session after waiting, log error but proceed
+			if (process.env.NODE_ENV === "development" || process.env.NODE_ENV === "test") {
+				console.error("[Auth Debug] Session not established after sign-in, proceeding with redirect anyway");
+			}
+		} else {
+			if (process.env.NODE_ENV === "development" || process.env.NODE_ENV === "test") {
+				console.log("[Auth Debug] Session established successfully:", {
+					userId: session.user.id,
+					attempts: attempts + 1
+				});
+			}
+		}
 
 		// Force a hard navigation to ensure cookies are properly sent
 		// Using window.location instead of router.replace ensures the browser
@@ -51,10 +84,16 @@ export function SignInMethodsContainer(props: {
 
 			const joinTeamPath = `${props.paths.joinTeam}?${searchParams.toString()}`;
 
+			if (process.env.NODE_ENV === "development" || process.env.NODE_ENV === "test") {
+				console.log("[Auth Debug] Redirecting to join team:", joinTeamPath);
+			}
 			window.location.href = joinTeamPath;
 		} else {
 			const returnPath = props.paths.returnPath || "/home";
 
+			if (process.env.NODE_ENV === "development" || process.env.NODE_ENV === "test") {
+				console.log("[Auth Debug] Redirecting to return path:", returnPath);
+			}
 			// Use window.location for a hard navigation to ensure cookies are sent
 			window.location.href = returnPath;
 		}

@@ -81,7 +81,7 @@ export class OnboardingPageObject {
 		await this.page.goto("/home?e2e=true");
 		await waitForPageReady(this.page, {
 			timeout: 10000,
-			debug: process.env.DEBUG === "true"
+			debug: process.env.DEBUG === "true",
 		});
 
 		// Verify we're on the home page
@@ -209,7 +209,7 @@ export class OnboardingPageObject {
 			await this.page.goto("/");
 			await waitForPageReady(this.page, {
 				timeout: 10000,
-				debug: process.env.DEBUG === "true"
+				debug: process.env.DEBUG === "true",
 			});
 			// Now navigate to home, which should work with refreshed session
 			await this.page.goto("/home");
