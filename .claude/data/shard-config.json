@@ -1,0 +1,129 @@
+{
+	"strategy": "balanced",
+	"shardCount": 9,
+	"totalTests": 62,
+	"generated": "2025-08-28T13:13:09.252Z",
+	"shards": [
+		{
+			"id": 1,
+			"name": "Accessibility Tests",
+			"tests": ["accessibility-hybrid.spec.ts"],
+			"totalTests": 12,
+			"totalComplexity": 253,
+			"estimatedTime": 25,
+			"categories": ["accessibility"]
+		},
+		{
+			"id": 2,
+			"name": "Admin Tests",
+			"tests": ["admin.spec.ts"],
+			"totalTests": 7,
+			"totalComplexity": 213,
+			"estimatedTime": 21,
+			"categories": ["admin"]
+		},
+		{
+			"id": 3,
+			"name": "Authentication Tests",
+			"tests": ["auth.spec.ts"],
+			"totalTests": 10,
+			"totalComplexity": 176,
+			"estimatedTime": 18,
+			"categories": ["authentication"]
+		},
+		{
+			"id": 4,
+			"name": "Smoke Tests",
+			"tests": ["smoke.spec.ts"],
+			"totalTests": 9,
+			"totalComplexity": 136,
+			"estimatedTime": 14,
+			"categories": ["smoke"]
+		},
+		{
+			"id": 5,
+			"name": "Accessibility Tests",
+			"tests": ["accessibility-hybrid-simple.spec.ts"],
+			"totalTests": 5,
+			"totalComplexity": 129,
+			"estimatedTime": 13,
+			"categories": ["accessibility"]
+		},
+		{
+			"id": 6,
+			"name": "Team-accounts Tests",
+			"tests": ["team-accounts.spec.ts"],
+			"totalTests": 6,
+			"totalComplexity": 120,
+			"estimatedTime": 12,
+			"categories": ["team-accounts"]
+		},
+		{
+			"id": 7,
+			"name": "account + general",
+			"tests": ["account.spec.ts", "healthcheck.spec.ts"],
+			"totalTests": 5,
+			"totalComplexity": 99,
+			"estimatedTime": 10,
+			"categories": ["account", "general"]
+		},
+		{
+			"id": 8,
+			"name": "invitations + team-billing",
+			"tests": ["invitations.spec.ts", "team-billing.spec.ts"],
+			"totalTests": 5,
+			"totalComplexity": 100,
+			"estimatedTime": 10,
+			"categories": ["invitations", "team-billing"]
+		},
+		{
+			"id": 9,
+			"name": "Light Tests (Shard 9)",
+			"tests": [
+				"team-invitation-mfa.spec.ts",
+				"password-reset.spec.ts",
+				"user-billing.spec.ts"
+			],
+			"totalTests": 3,
+			"totalComplexity": 89,
+			"estimatedTime": 9,
+			"categories": ["team-accounts", "authentication", "user-billing"]
+		}
+	],
+	"validation": {
+		"valid": true,
+		"issues": [],
+		"stats": {
+			"avgTests": 7,
+			"avgComplexity": 146,
+			"avgTime": 15,
+			"maxDeviation": 66.66666666666666
+		}
+	},
+	"profiles": {
+		"light": {
+			"shards": 3,
+			"testsPerShard": 21,
+			"description": "Quick validation (3 shards)",
+			"estimatedTime": "2-3 minutes"
+		},
+		"normal": {
+			"shards": 6,
+			"testsPerShard": 11,
+			"description": "Standard testing (6 shards)",
+			"estimatedTime": "3-4 minutes"
+		},
+		"heavy": {
+			"shards": 9,
+			"testsPerShard": 7,
+			"description": "Full parallel execution (9 shards)",
+			"estimatedTime": "2-3 minutes"
+		},
+		"sequential": {
+			"shards": 1,
+			"testsPerShard": 62,
+			"description": "Sequential execution (1 shard)",
+			"estimatedTime": "10-15 minutes"
+		}
+	}
+}
