@@ -30,7 +30,7 @@
 		"typecheck": "./.claude/statusline/typecheck-wrapper.sh",
 		"typecheck:raw": "turbo typecheck --affected --cache-dir=.turbo",
 		"test": "turbo test --cache-dir=.turbo --filter=!web-e2e",
-		"test:unit": "turbo test --cache-dir=.turbo --filter=!web-e2e",
+		"test:unit": "turbo test --cache-dir=.turbo --filter=!web-e2e --continue",
 		"test:coverage": "turbo test:coverage --cache-dir=.turbo --filter=!web-e2e",
 		"test:e2e": "turbo test --filter=web-e2e",
 		"update": "pnpm update -r",
