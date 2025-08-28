@@ -1,5 +1,5 @@
-import { execSync } from "child_process";
-import path from "path";
+import { execSync } from "node:child_process";
+import path from "node:path";
 
 /**
  * Clean up test data before running E2E tests
@@ -15,10 +15,10 @@ export async function cleanupTestData(): Promise<void> {
 		// Execute cleanup SQL using psql through Supabase
 		// Use the E2E database instance on port 55322
 		const command = `PGPASSWORD=postgres psql -h 127.0.0.1 -p 55322 -U postgres -d postgres -f ${cleanupSqlPath} 2>&1 || true`;
-		
+
 		// Try using npx supabase db execute if psql is not available
-		const supabaseCommand = `cd apps/e2e && npx supabase db execute -f scripts/cleanup-test-data.sql 2>&1 || true`;
-		
+		const supabaseCommand = "cd apps/e2e && npx supabase db execute -f scripts/cleanup-test-data.sql 2>&1 || true";
+
 		try {
 			// Try psql first
 			execSync(command, { stdio: "pipe" });
@@ -45,7 +45,7 @@ export async function cleanupTestUsers(emailPattern: string): Promise<void> {
 	try {
 		const query = `DELETE FROM auth.users WHERE email LIKE '${emailPattern}'`;
 		const command = `echo "${query}" | PGPASSWORD=postgres psql -h 127.0.0.1 -p 55322 -U postgres -d postgres 2>&1 || true`;
-		
+
 		execSync(command, { stdio: "pipe" });
 		console.log(`✅ Cleaned up users matching: ${emailPattern}`);
 	} catch (error) {

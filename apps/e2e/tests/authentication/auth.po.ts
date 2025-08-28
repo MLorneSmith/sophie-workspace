@@ -263,7 +263,7 @@ export class AuthPageObject {
 				// Use the safer waitForPageReady instead of networkidle
 				await waitForPageReady(this.page, {
 					timeout: 10000,
-					debug: process.env.DEBUG === "true"
+					debug: process.env.DEBUG === "true",
 				});
 
 				// Check if we're redirected back to auth (not logged in)

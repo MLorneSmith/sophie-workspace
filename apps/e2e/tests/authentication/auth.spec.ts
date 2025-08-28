@@ -49,7 +49,7 @@ test.describe("Auth flow @integration", () => {
 		// Wait for page to stabilize after auth response
 		// Use domcontentloaded instead of networkidle to avoid hanging
 		await page.waitForLoadState("domcontentloaded", { timeout: 10000 });
-		
+
 		// Only add delay in debug mode for troubleshooting
 		if (process.env.DEBUG) {
 			await page.waitForTimeout(1000);

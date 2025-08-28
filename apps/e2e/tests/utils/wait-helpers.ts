@@ -4,7 +4,7 @@ import type { Page } from "@playwright/test";
  * Waits for page to be ready without relying on networkidle.
  * This prevents indefinite hangs caused by continuous network activity
  * (analytics, websockets, polling, etc).
- * 
+ *
  * @param page - The Playwright page object
  * @param options - Optional configuration
  * @returns Promise that resolves when page is ready
@@ -17,28 +17,32 @@ export async function waitForPageReady(
 		debug?: boolean;
 	} = {},
 ): Promise<void> {
-	const { 
-		timeout = 10000, 
+	const {
+		timeout = 10000,
 		waitForSelector = null,
-		debug = process.env.DEBUG === "true"
+		debug = process.env.DEBUG === "true",
 	} = options;
 
 	try {
 		// First wait for DOM to be ready
 		await page.waitForLoadState("domcontentloaded", { timeout });
-		
+
 		// If a specific selector is provided, wait for it
 		if (waitForSelector) {
-			await page.waitForSelector(waitForSelector, { 
-				timeout: Math.min(timeout / 2, 5000),
-				state: "visible"
-			}).catch(() => {
-				if (debug) {
-					console.warn(`Optional selector '${waitForSelector}' not found, continuing...`);
-				}
-			});
+			await page
+				.waitForSelector(waitForSelector, {
+					timeout: Math.min(timeout / 2, 5000),
+					state: "visible",
+				})
+				.catch(() => {
+					if (debug) {
+						console.warn(
+							`Optional selector '${waitForSelector}' not found, continuing...`,
+						);
+					}
+				});
 		}
-		
+
 		// Small delay only in debug mode for visual debugging
 		if (debug) {
 			await page.waitForTimeout(500);

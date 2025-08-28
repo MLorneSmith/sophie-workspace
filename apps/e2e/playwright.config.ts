@@ -64,7 +64,7 @@ export default defineConfig({
 	/* Reduced retries to speed up CI - only retry truly flaky tests */
 	retries: process.env.CI ? 1 : 0,
 	/* Continue running tests even after failures for complete visibility */
-	maxFailures: process.env.FAIL_FAST === 'true' ? 1 : 0, // 0 means no limit - run all tests
+	maxFailures: process.env.FAIL_FAST === "true" ? 1 : 0, // 0 means no limit - run all tests
 	/* Configure parallel execution - balanced for Issue #267 resource contention fix */
 	workers: process.env.CI
 		? 4
