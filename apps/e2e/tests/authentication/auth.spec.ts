@@ -47,8 +47,13 @@ test.describe("Auth flow @integration", () => {
 		await Promise.all([signUp, response]);
 
 		// Wait for page to stabilize after auth response
-		await page.waitForLoadState("networkidle");
-		await page.waitForTimeout(3000); // Increased wait for auth processing
+		// Use domcontentloaded instead of networkidle to avoid hanging
+		await page.waitForLoadState("domcontentloaded", { timeout: 10000 });
+		
+		// Only add delay in debug mode for troubleshooting
+		if (process.env.DEBUG) {
+			await page.waitForTimeout(1000);
+		}
 
 		// Check if we're redirected to onboarding (autoconfirm) or need email confirmation
 		const currentUrl = page.url();

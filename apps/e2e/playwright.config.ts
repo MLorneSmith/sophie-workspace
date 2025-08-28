@@ -55,24 +55,28 @@ if (!enableTeamAccountTests) {
  */
 export default defineConfig({
 	testDir: "./tests",
+	/* Global setup for test data cleanup */
+	globalSetup: require.resolve("./global-setup"),
 	/* Run tests in files in parallel - enabled for test runner */
 	fullyParallel: !!process.env.CI || process.env.PLAYWRIGHT_PARALLEL === "true",
 	/* Fail the build on CI if you accidentally left test.only in the source code. */
 	forbidOnly: !!process.env.CI,
 	/* Reduced retries to speed up CI - only retry truly flaky tests */
 	retries: process.env.CI ? 1 : 0,
-	/* Increase max failures for debugging */
-	maxFailures: process.env.CI ? 10 : 50,
+	/* Continue running tests even after failures for complete visibility */
+	maxFailures: process.env.FAIL_FAST === 'true' ? 1 : 0, // 0 means no limit - run all tests
 	/* Configure parallel execution - balanced for Issue #267 resource contention fix */
 	workers: process.env.CI
 		? 4
 		: process.env.PLAYWRIGHT_PARALLEL === "true"
 			? 3 // Reduced from 4 to 3 workers per shard to prevent resource contention
 			: 1, // Sequential for local development
-	/* Enhanced reporting for matrix testing */
+	/* Enhanced reporting for matrix testing with complete failure visibility */
 	reporter: [
 		["html", { outputFolder: "playwright-report", open: "never" }],
 		["junit", { outputFile: "test-results/junit.xml" }],
+		["list"], // Shows all test results as they run for better visibility
+		["./reporters/failure-reporter.ts"], // Custom reporter for failure analysis
 		["github"], // GitHub Actions integration
 		...(process.env.CI ? [["blob"] as const] : []), // Blob reporter for CI artifacts
 	],
