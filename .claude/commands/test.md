@@ -1,4 +1,4 @@
-# /newtest Command
+# /test Command
 
 Runs tests using the deterministic test controller script directly, bypassing agent timeouts.
 
@@ -6,24 +6,30 @@ Runs tests using the deterministic test controller script directly, bypassing ag
 
 ```bash
 # Run all tests (default)
-/newtest
+/test
+
+# Run quick smoke tests only (2-3 minutes)
+/test --quick
 
 # Run only unit tests
-/newtest --unit
+/test --unit
 
 # Run only E2E tests  
-/newtest --e2e
+/test --e2e
 
 # Enable debug mode
-/newtest --debug
+/test --debug
 
 # Continue on failures
-/newtest --continue
+/test --continue
+
+# Combine flags for specific scenarios
+/test --quick --debug  # Quick smoke tests with debug output
 ```
 
 ## Implementation
 
-When the `/newtest` command is invoked, execute the test controller script directly with proper argument handling:
+When the `/test` command is invoked, execute the test controller script directly with proper argument handling:
 
 ```bash
 # Parse arguments from user request
@@ -32,14 +38,17 @@ When the `/newtest` command is invoked, execute the test controller script direc
 ```
 
 Example execution:
-- `/newtest --debug` → `DEBUG_TEST=true node .claude/scripts/test-controller.cjs --debug`
-- `/newtest --unit` → `node .claude/scripts/test-controller.cjs --unit`
-- `/newtest --e2e --debug` → `DEBUG_TEST=true node .claude/scripts/test-controller.cjs --e2e --debug`
+- `/test --quick` → `node .claude/scripts/test-controller.cjs --quick`
+- `/test --debug` → `DEBUG_TEST=true node .claude/scripts/test-controller.cjs --debug`
+- `/test --unit` → `node .claude/scripts/test-controller.cjs --unit`
+- `/test --e2e --debug` → `DEBUG_TEST=true node .claude/scripts/test-controller.cjs --e2e --debug`
+- `/test --quick --debug` → `DEBUG_TEST=true node .claude/scripts/test-controller.cjs --quick --debug`
 
 This bypasses the 2-minute Bash timeout limitation that was causing the original `/test` command to fail.
 
 ## Arguments
 
+- `--quick`: Run quick smoke tests only (2-3 minutes)
 - `--unit`: Run only unit tests
 - `--e2e`: Run only E2E tests  
 - `--debug`: Enable debug mode (sets DEBUG_TEST=true)

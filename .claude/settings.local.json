@@ -273,7 +273,8 @@
 			"Read(/tmp/**)",
 			"mcp__github__search_issues",
 			"Bash(.claude/scripts/codecheck-direct.sh:*)",
-			"Bash(DEBUG_TEST=true node .claude/scripts/test-controller.cjs --debug)"
+			"Bash(DEBUG_TEST=true node .claude/scripts/test-controller.cjs --debug)",
+			"Bash(DEBUG_TEST=true node .claude/scripts/test-controller.cjs --quick --debug)"
 		],
 		"deny": [],
 		"additionalDirectories": ["/home/msmith"]
