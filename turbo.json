@@ -136,6 +136,12 @@
 		},
 		"license#dev": {
 			"outputLogs": "errors-only"
+		},
+		"@kit/monitoring-newrelic#test": {
+			"dependsOn": ["^topo"],
+			"outputs": [],
+			"cache": true,
+			"env": ["NODE_ENV"]
 		}
 	}
 }
