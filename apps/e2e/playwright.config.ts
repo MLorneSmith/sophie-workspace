@@ -63,12 +63,12 @@ export default defineConfig({
 	retries: process.env.CI ? 1 : 0,
 	/* Increase max failures for debugging */
 	maxFailures: process.env.CI ? 10 : 50,
-	/* Configure parallel execution - increased for better CI performance */
+	/* Configure parallel execution - balanced for Issue #267 resource contention fix */
 	workers: process.env.CI
 		? 4
 		: process.env.PLAYWRIGHT_PARALLEL === "true"
-			? 4
-			: 1, // Allow parallel for test runner
+			? 3 // Reduced from 4 to 3 workers per shard to prevent resource contention
+			: 1, // Sequential for local development
 	/* Enhanced reporting for matrix testing */
 	reporter: [
 		["html", { outputFolder: "playwright-report", open: "never" }],
@@ -104,19 +104,20 @@ export default defineConfig({
 		trace: "on-first-retry",
 
 		/* Enhanced timeouts for element detection reliability
-		   Increased element detection timeout from 10s to 20s as per TASK-256 requirements */
+		   Increased timeouts for complex E2E flows with concurrent execution */
 		navigationTimeout:
 			Number(process.env.PLAYWRIGHT_NAVIGATION_TIMEOUT) ||
-			(process.env.CI ? 30000 : 20000), // Increased for CI to handle network latency
+			(process.env.CI ? 45000 : 30000), // Increased for concurrent shard execution
 		actionTimeout:
 			Number(process.env.PLAYWRIGHT_ACTION_TIMEOUT) ||
-			(process.env.CI ? 20000 : 20000), // Increased to 20s for element detection reliability
+			(process.env.CI ? 30000 : 30000), // Increased to 30s for complex team operations
 	},
-	// test timeout set to 2 minutes
-	timeout: 120 * 1000,
+	// Test timeout increased for Issue #267 fix (resource contention)
+	// Individual test timeout increased from 2 to 5 minutes to handle server delays
+	timeout: Number(process.env.PLAYWRIGHT_TIMEOUT) || 300 * 1000, // 5 minutes per test
 	expect: {
-		// expect timeout increased to 20s to match action timeout for element detection
-		timeout: Number(process.env.PLAYWRIGHT_EXPECT_TIMEOUT) || 20 * 1000,
+		// expect timeout increased to 45s to handle concurrent shard execution delays
+		timeout: Number(process.env.PLAYWRIGHT_EXPECT_TIMEOUT) || 45 * 1000,
 	},
 	/* Configure projects for major browsers - reduced for local development */
 	projects: process.env.CI
@@ -193,7 +194,7 @@ export default defineConfig({
 							"pnpm --filter=web dev:test",
 						url: "http://localhost:3000",
 						name: "Frontend",
-						timeout: 120 * 1000, // Increased timeout to 120s to handle cold starts under heavy load
+						timeout: 180 * 1000, // Increased to 180s for Issue #267 (resource contention during batch execution)
 						reuseExistingServer: !process.env.CI,
 						stdout: "pipe",
 						stderr: "pipe",
@@ -205,7 +206,7 @@ export default defineConfig({
 							"pnpm --filter=payload dev:test",
 						url: "http://localhost:3020",
 						name: "Backend",
-						timeout: 120 * 1000, // Increased timeout to 120s to handle cold starts under heavy load
+						timeout: 180 * 1000, // Increased to 180s for Issue #267 (resource contention during batch execution)
 						reuseExistingServer: !process.env.CI,
 						stdout: "pipe",
 						stderr: "pipe",
