@@ -16,7 +16,7 @@ Executes comprehensive test suites using deterministic bash/Node.js scripts for 
 
 ## Quick Start
 
-The `/test` command now uses a deterministic script-based approach:
+The `/test` command now uses a script-based approach:
 
 ```bash
 # Run all tests (default)

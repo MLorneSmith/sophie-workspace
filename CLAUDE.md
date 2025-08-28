@@ -27,4 +27,67 @@ This file provides core guidance to Claude when working with code in this reposi
 - Use server-side actions to handle token-based requests
 - Rotate tokens periodically for security
 
-[Rest of the content remains the same...]
+## Testing and Development Commands
+
+### Pre-approved Commands
+
+The following commands can be executed without user approval during testing and development:
+
+#### Git Commands
+
+- `git rev-parse --show-toplevel` - Get repository root
+- `git status --porcelain` - Check working directory status  
+- `git log --oneline -10` - View recent commits
+- `git diff --name-only` - Show changed files
+- `git branch --show-current` - Show current branch
+
+#### Environment Setup
+
+- `export PROJECT_ROOT=$(git rev-parse --show-toplevel)` - Set project root variable
+- `export GIT_ROOT=$(git rev-parse --show-toplevel)` - Set git root variable
+- `cp ${PROJECT_ROOT}/apps/web/.env.example ${PROJECT_ROOT}/apps/web/.env.test` - Copy environment file
+- `cp apps/web/.env.example apps/web/.env.test` - Copy environment file (relative path)
+
+#### Test Commands
+
+- `pnpm --filter web-e2e test:shard*` - Run E2E test shards
+- `pnpm --filter web test:*` - Run web package tests
+- `pnpm test:unit` - Run unit tests
+- `pnpm test:e2e` - Run E2E tests
+- `pnpm test:shard*` - Run test shards
+
+#### Development Server Commands
+
+- `pnpm --filter web dev:test` - Start development server for testing
+- `pnpm dev` - Start development server
+- `npx supabase status` - Check Supabase status
+- `npx supabase start` - Start Supabase
+- `npx supabase stop` - Stop Supabase
+
+#### Process Management
+
+- `pkill -f "playwright|vitest|next-server"` - Kill test processes
+- `lsof -ti:3000-3020` - Find processes on test ports
+- `ps aux | grep -E "(playwright|vitest)"` - List test processes
+
+#### File Operations for Testing
+
+- `mkdir -p /tmp` - Create temp directory
+- `echo "*" > /tmp/*` - Write to temp files for test status
+- `cat /tmp/.claude_test_*` - Read test status files
+- `touch /tmp/.claude_test_*` - Create test status files
+
+## Commands and Scripts
+
+### Test Execution
+
+- Use `/test` command for comprehensive testing
+- Use `/test --debug` for verbose output  
+- Use `/test --unit` for unit tests only
+- Use `/test --e2e` for E2E tests only
+
+### Development Workflow
+
+- Always run `pnpm lint` and `pnpm typecheck` before committing
+- Use server actions for external API calls
+- Follow existing code patterns and conventions

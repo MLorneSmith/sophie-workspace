@@ -4,13 +4,18 @@
  * Resource Lock Manager for Test Infrastructure
  * Provides exclusive locks on ports and other shared resources
  * to prevent test conflicts during parallel execution
+ * @fileoverview TypeScript-checked CommonJS module
  */
 
+// @ts-check
 const fs = require("node:fs").promises;
 const path = require("node:path");
 const os = require("node:os");
 
 class ResourceLock {
+	/**
+	 * @param {string} [lockDir] - Directory for lock files
+	 */
 	constructor(lockDir = "/tmp/.claude_test_locks") {
 		this.lockDir = lockDir;
 		this.locks = new Map();
@@ -18,21 +23,27 @@ class ResourceLock {
 		this.hostname = os.hostname();
 	}
 
+	/**
+	 * Initialize the lock manager
+	 * @returns {Promise<void>}
+	 */
 	async init() {
 		try {
 			await fs.mkdir(this.lockDir, { recursive: true });
 			// Clean up stale locks on initialization
 			await this.cleanStaleLocks();
 		} catch (error) {
-			console.error(`Failed to initialize lock directory: ${error.message}`);
+			console.error(
+				`Failed to initialize lock directory: ${error instanceof Error ? error.message : String(error)}`,
+			);
 		}
 	}
 
 	/**
 	 * Acquire a lock on a resource (e.g., port)
 	 * @param {string} resource - Resource identifier (e.g., "port:3000")
-	 * @param {number} timeout - Timeout in ms to wait for lock
-	 * @returns {boolean} - True if lock acquired, false otherwise
+	 * @param {number} [timeout] - Timeout in ms to wait for lock
+	 * @returns {Promise<boolean>} - True if lock acquired, false otherwise
 	 */
 	async acquire(resource, timeout = 30000) {
 		const lockFile = path.join(
@@ -58,7 +69,12 @@ class ResourceLock {
 				console.log(`✅ Lock acquired for ${resource} by PID ${this.pid}`);
 				return true;
 			} catch (error) {
-				if (error.code === "EEXIST") {
+				if (
+					error &&
+					typeof error === "object" &&
+					"code" in error &&
+					error.code === "EEXIST"
+				) {
 					// Lock file exists, check if it's stale
 					const isStale = await this.isLockStale(lockFile);
 					if (isStale) {
@@ -67,7 +83,9 @@ class ResourceLock {
 					}
 
 					// Wait and retry
-					await new Promise((resolve) => setTimeout(resolve, 1000));
+					await new Promise((/** @type {(value: unknown) => void} */ resolve) =>
+						setTimeout(resolve, 1000),
+					);
 				} else {
 					console.error(
 						`Failed to acquire lock for ${resource}: ${error.message}`,
@@ -116,7 +134,7 @@ class ResourceLock {
 	/**
 	 * Check if a lock is stale (process no longer exists)
 	 * @param {string} lockFile - Path to lock file
-	 * @returns {boolean} - True if lock is stale
+	 * @returns {Promise<boolean>} - True if lock is stale
 	 */
 	async isLockStale(lockFile) {
 		try {
