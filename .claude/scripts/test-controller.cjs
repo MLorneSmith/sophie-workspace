@@ -100,22 +100,117 @@ class TestStatus {
 	}
 }
 
-// Infrastructure checker
+// Infrastructure checker with smart pre-flight validation
 class InfrastructureChecker {
 	async checkAll() {
-		log("🔍 Running comprehensive infrastructure checks...");
+		log("🔍 Running smart pre-flight infrastructure validation...");
+		
+		// Phase 1: Quick health checks (< 2 seconds)
+		const healthResults = await this.runHealthChecks();
+		
+		// Phase 2: Only run startup procedures if health checks fail
+		// This includes Phase 3: Re-verification after any setup
+		const results = await this.runConditionalSetup(healthResults);
+		
+		return results;
+	}
+	
+	/**
+	 * Fast health checks to determine if infrastructure is already running correctly
+	 * Only tests connectivity/availability, doesn't perform any setup
+	 */
+	async runHealthChecks() {
+		log("⚡ Running fast health checks...");
 		const results = {
-			supabase: await this.checkSupabase(),
-			ports: await this.checkPorts(),
-			environment: await this.checkEnvironment(),
-			database: await this.checkDatabaseConnection(),
-			build: await this.checkBuildValidity(),
-			dependencies: await this.checkDependencies(),
+			supabase: await this.healthCheckSupabase(),
+			environment: await this.healthCheckEnvironment(),
+			database: await this.healthCheckDatabase(),
+			build: await this.healthCheckBuild(),
+			dependencies: await this.healthCheckDependencies(),
+		};
+		
+		const healthyCount = Object.values(results).filter(r => r === 'healthy').length;
+		const totalChecks = Object.keys(results).length;
+		
+		if (healthyCount === totalChecks) {
+			log(`✅ All infrastructure healthy (${healthyCount}/${totalChecks}) - skipping setup`);
+		} else {
+			log(`⚠️ Infrastructure needs setup (${healthyCount}/${totalChecks} healthy)`);
+		}
+		
+		return results;
+	}
+	
+	/**
+	 * Conditionally run setup procedures only for unhealthy services
+	 */
+	async runConditionalSetup(healthResults) {
+		const setupResults = { ...healthResults };
+		let needsVerification = false;
+		
+		// Only fix services that failed health checks
+		if (healthResults.supabase !== 'healthy') {
+			log("🚀 Setting up Supabase...");
+			setupResults.supabase = await this.setupSupabase();
+			needsVerification = true;
+		}
+		
+		if (healthResults.environment !== 'healthy') {
+			log("🔧 Setting up environment...");
+			setupResults.environment = await this.setupEnvironment();
+			needsVerification = true;
+		}
+		
+		if (healthResults.database !== 'healthy') {
+			log("🗄️ Setting up database...");
+			setupResults.database = await this.setupDatabase();
+			needsVerification = true;
+		}
+		
+		// Always clean ports as this is lightweight and prevents conflicts
+		setupResults.ports = await this.cleanupPorts();
+		
+		// CRITICAL: Re-verify health after setup to ensure everything is running
+		if (needsVerification) {
+			log("\n🔍 Verifying infrastructure after setup...");
+			const verificationResults = await this.runHealthChecks();
+			
+			// Check if all critical services are now healthy
+			const criticalServices = ['supabase', 'environment', 'database'];
+			const allHealthy = criticalServices.every(service => 
+				verificationResults[service] === 'healthy'
+			);
+			
+			if (!allHealthy) {
+				logError("⚠️ Some services failed to start properly:");
+				for (const service of criticalServices) {
+					if (verificationResults[service] !== 'healthy') {
+						logError(`   ❌ ${service}: ${verificationResults[service]}`);
+					}
+				}
+				// Update setup results with verification results
+				Object.assign(setupResults, verificationResults);
+			} else {
+				log("✅ All critical services verified and running correctly");
+				// Update with successful verification results
+				Object.assign(setupResults, verificationResults);
+			}
+		}
+		
+		// Final status summary
+		const results = {
+			supabase: setupResults.supabase,
+			ports: setupResults.ports,
+			environment: setupResults.environment,
+			database: setupResults.database,
+			build: setupResults.build,
+			dependencies: setupResults.dependencies,
 		};
 
 		// Log comprehensive status
 		const passedChecks = Object.values(results).filter(
 			(r) =>
+				r === "healthy" ||
 				r === "running" ||
 				r === "started" ||
 				r === "valid" ||
@@ -129,45 +224,187 @@ class InfrastructureChecker {
 
 		return results;
 	}
-
-	async checkSupabase() {
+	
+	// =============================================================================
+	// HEALTH CHECK METHODS (Fast, read-only validation)
+	// =============================================================================
+	
+	/**
+	 * Quick check if Supabase is responding (no restart)
+	 */
+	async healthCheckSupabase() {
 		try {
-			// Check if Supabase is running
+			// Fast status check without full output parsing
 			const { stdout } = await execAsync(
-				"cd apps/e2e && npx supabase status 2>&1",
+				"cd apps/e2e && npx supabase status --output json 2>/dev/null || echo '{}'",
+				{ timeout: 3000 }
 			);
-			if (stdout.includes("RUNNING") || stdout.includes("Started")) {
-				log("✅ Supabase E2E is running");
-				return "running";
+			
+			// Simple check - if we get JSON response, services are likely running
+			if (stdout.includes('"Status"') || stdout.includes('"RUNNING"')) {
+				log("✅ Supabase E2E: Healthy");
+				return 'healthy';
 			}
-
-			log("⚠️ Supabase E2E not running, attempting to start...");
-			await execAsync("cd apps/e2e && npx supabase start", { timeout: 300000 }); // 5 minutes timeout
-			log("✅ Supabase E2E started successfully");
+			
+			log("⚠️ Supabase E2E: Needs setup");
+			return 'unhealthy';
+		} catch (error) {
+			log("⚠️ Supabase E2E: Needs setup");
+			return 'unhealthy';
+		}
+	}
+	
+	/**
+	 * Check if .env.test exists and has required variables
+	 */
+	async healthCheckEnvironment() {
+		try {
+			const envPath = path.join(process.cwd(), "apps/web/.env.test");
+			await fs.access(envPath);
+			
+			// Quick validation of critical env vars
+			const content = await fs.readFile(envPath, 'utf8');
+			const requiredVars = ['NEXT_PUBLIC_AUTH_PASSWORD', 'NEXT_PUBLIC_PRODUCT_NAME'];
+			const hasRequired = requiredVars.every(v => content.includes(v));
+			
+			if (hasRequired) {
+				log("✅ Environment: Healthy");
+				return 'healthy';
+			}
+			
+			log("⚠️ Environment: Missing critical variables");
+			return 'unhealthy';
+		} catch {
+			log("⚠️ Environment: .env.test missing");
+			return 'unhealthy';
+		}
+	}
+	
+	/**
+	 * Quick database connectivity test
+	 */
+	async healthCheckDatabase() {
+		try {
+			// Quick connectivity test to Supabase local
+			const response = await fetch('http://127.0.0.1:55321/rest/v1/', {
+				signal: AbortSignal.timeout(2000),
+				headers: {
+					'apikey': 'test-key-placeholder'
+				}
+			});
+			
+			if (response.status === 401 || response.status === 200) {
+				// 401 is expected without proper auth, means DB is responding
+				log("✅ Database: Healthy");
+				return 'healthy';
+			}
+			
+			log("⚠️ Database: Needs setup");
+			return 'unhealthy';
+		} catch (error) {
+			log("⚠️ Database: Needs setup");
+			return 'unhealthy';
+		}
+	}
+	
+	/**
+	 * Check if Next.js build artifacts exist
+	 */
+	async healthCheckBuild() {
+		try {
+			const buildPath = path.join(process.cwd(), "apps/web/.next");
+			await fs.access(buildPath);
+			log("✅ Build: Healthy");
+			return 'healthy';
+		} catch {
+			log("⚠️ Build: Needs verification");
+			return 'unhealthy';
+		}
+	}
+	
+	/**
+	 * Quick check if Playwright is available
+	 */
+	async healthCheckDependencies() {
+		try {
+			await execAsync('npx playwright --version', { timeout: 2000 });
+			log("✅ Dependencies: Healthy");
+			return 'healthy';
+		} catch {
+			log("⚠️ Dependencies: Needs verification");
+			return 'unhealthy';
+		}
+	}
+	
+	// =============================================================================
+	// SETUP METHODS (Only called when health checks fail)
+	// =============================================================================
+	
+	/**
+	 * Start Supabase only if health check failed
+	 */
+	async setupSupabase() {
+		try {
+			await execAsync("cd apps/e2e && npx supabase start", { timeout: 300000 });
+			// Wait a moment for services to stabilize
+			await new Promise(resolve => setTimeout(resolve, 2000));
 			return "started";
 		} catch (error) {
-			logError(`❌ Supabase check failed: ${error.message}`);
+			logError(`❌ Supabase setup failed: ${error.message}`);
 			return "failed";
 		}
 	}
-
-	async checkPorts() {
+	
+	/**
+	 * Create/update .env.test if needed
+	 */
+	async setupEnvironment() {
 		try {
-			// Kill processes on test ports
+			const examplePath = path.join(process.cwd(), "apps/web/.env.example");
+			const envPath = path.join(process.cwd(), "apps/web/.env.test");
+			
+			const content = await fs.readFile(examplePath, "utf8");
+			await fs.writeFile(envPath, content);
+			return "created";
+		} catch (error) {
+			logError(`❌ Environment setup failed: ${error.message}`);
+			return "failed";
+		}
+	}
+	
+	/**
+	 * Verify database connection if health check failed
+	 */
+	async setupDatabase() {
+		try {
+			// Database setup is usually handled by Supabase start
+			// This is a placeholder for any additional DB setup needed
+			return "verified";
+		} catch (error) {
+			logError(`❌ Database setup failed: ${error.message}`);
+			return "failed";
+		}
+	}
+	
+	/**
+	 * Lightweight port cleanup (always runs)
+	 */
+	async cleanupPorts() {
+		try {
 			log("🔧 Cleaning up test ports...");
+			// Lightweight cleanup - only target specific test processes
 			const killCommands = [
-				'pkill -f "playwright" || true',
-				'pkill -f "vitest" || true',
-				'pkill -f "next-server" || true',
-				"lsof -ti:3000-3020 | xargs kill -9 2>/dev/null || true",
+				'pkill -f "vitest.*test" || true',  // Only vitest test processes
+				'pkill -f "playwright.*test" || true',  // Only playwright test processes
+				// Skip broad process killing to avoid disrupting running services
 			];
 
 			for (const cmd of killCommands) {
 				await execAsync(cmd).catch(() => {}); // Ignore errors
 			}
 
-			// Wait for processes to die
-			await new Promise((resolve) => setTimeout(resolve, 2000));
+			// Shorter wait time
+			await new Promise((resolve) => setTimeout(resolve, 1000));
 
 			log("✅ Ports cleaned");
 			return "cleaned";
@@ -177,26 +414,24 @@ class InfrastructureChecker {
 		}
 	}
 
+	// Legacy method - replaced by smart health checks above
+	async checkSupabase() {
+		return await this.setupSupabase();
+	}
+
+	// Legacy method - replaced by smart cleanup above
+	async checkPorts() {
+		return await this.cleanupPorts();
+	}
+
+	// Legacy method - replaced by smart health checks above
 	async checkEnvironment() {
-		try {
-			const envPath = path.join(process.cwd(), "apps/web/.env.test");
-			await fs.access(envPath);
-			log("✅ Test environment file exists");
-			return "valid";
-		} catch {
-			log("⚠️ Creating .env.test from example...");
-			try {
-				const examplePath = path.join(process.cwd(), "apps/web/.env.example");
-				const content = await fs.readFile(examplePath, "utf8");
-				const envPath = path.join(process.cwd(), "apps/web/.env.test");
-				await fs.writeFile(envPath, content);
-				log("✅ Created .env.test");
-				return "created";
-			} catch (error) {
-				logError(`❌ Failed to create .env.test: ${error.message}`);
-				return "failed";
-			}
+		const health = await this.healthCheckEnvironment();
+		if (health === 'healthy') {
+			return 'valid';
 		}
+		return await this.setupEnvironment();
+	}
 	}
 
 	async checkDatabaseConnection() {
