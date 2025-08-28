@@ -6,22 +6,13 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ActionResult } from "@/test/test-types";
 
-// Setup mocks
+// Setup mocks - all exports from the main module
 vi.mock("@kit/ai-gateway", () => ({
 	getChatCompletion: vi.fn(),
-}));
-
-vi.mock("@kit/ai-gateway/src/configs/templates", () => ({
 	createReasoningOptimizedConfig: vi.fn(),
-}));
-
-vi.mock("@kit/ai-gateway/src/prompts/prompt-manager", () => ({
 	PromptManager: {
 		compileTemplate: vi.fn(),
 	},
-}));
-
-vi.mock("@kit/ai-gateway/src/prompts/templates/text-simplification", () => ({
 	textSimplificationTemplate: [
 		{
 			role: "system",

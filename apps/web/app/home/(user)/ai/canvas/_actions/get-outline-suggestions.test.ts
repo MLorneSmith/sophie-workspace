@@ -6,24 +6,12 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createMockSupabaseClient } from "@/test/test-helpers";
 import type { ActionResult } from "@/test/test-types";
 
-// Mock AI Gateway
+// Mock AI Gateway - all exports should come from the main module
 vi.mock("@kit/ai-gateway", () => ({
 	getChatCompletion: vi.fn(),
-}));
-
-vi.mock("@kit/ai-gateway/src/configs/templates", () => ({
 	createQualityOptimizedConfig: vi.fn(),
-}));
-
-vi.mock("@kit/ai-gateway/src/prompts/partials/base-instructions", () => ({
 	baseInstructions: "Base instructions for AI",
-}));
-
-vi.mock("@kit/ai-gateway/src/prompts/partials/improvement-format", () => ({
 	improvementFormat: "Improvement format guidelines",
-}));
-
-vi.mock("@kit/ai-gateway/src/prompts/partials/outline-rewrite", () => ({
 	outlineRewriteInstructions: "Outline rewrite instructions",
 }));
 
