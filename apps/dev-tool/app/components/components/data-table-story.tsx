@@ -68,6 +68,101 @@ interface DataTableControls {
   enableColumnVisibility: boolean;
 }
 
+// Server-side sorting example component
+function ServerSideSortingExample({
+  data,
+  compact = false,
+}: {
+  data: User[];
+  compact?: boolean;
+}) {
+  const [sorting, setSorting] = useState<{ id: string; desc: boolean }[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [lastSortAction, setLastSortAction] = useState<string>('');
+
+  const handleSortingChange = (newSorting: { id: string; desc: boolean }[]) => {
+    setSorting(newSorting);
+    setIsLoading(true);
+
+    // Simulate server request
+    const sortInfo =
+      newSorting.length > 0
+        ? `${newSorting[0].id} ${newSorting[0].desc ? 'DESC' : 'ASC'}`
+        : 'No sorting';
+
+    setLastSortAction(`Server request would be: ORDER BY ${sortInfo}`);
+
+    // Simulate loading delay
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 800);
+  };
+
+  const columns: ColumnDef<User>[] = [
+    {
+      accessorKey: 'name',
+      header: 'Name',
+      enableSorting: true,
+    },
+    {
+      accessorKey: 'department',
+      header: 'Department',
+      enableSorting: true,
+    },
+    {
+      accessorKey: 'salary',
+      header: 'Salary',
+      enableSorting: true,
+      cell: ({ row }) => {
+        const salary = row.getValue('salary') as number;
+        return new Intl.NumberFormat('en-US', {
+          style: 'currency',
+          currency: 'USD',
+          minimumFractionDigits: 0,
+        }).format(salary);
+      },
+    },
+  ];
+
+  return (
+    <div className="space-y-3">
+      {!compact && (
+        <div className="space-y-2 text-xs">
+          <div className="flex items-center gap-2">
+            <span className="font-semibold">Current Sort State:</span>
+            <code className="rounded bg-slate-100 px-2 py-1 text-xs">
+              {sorting.length > 0
+                ? `${sorting[0].id}: ${sorting[0].desc ? 'desc' : 'asc'}`
+                : 'none'}
+            </code>
+            {isLoading && (
+              <span className="animate-pulse text-blue-600">⏳ Loading...</span>
+            )}
+          </div>
+          {lastSortAction && (
+            <div className="text-xs text-slate-600">🔍 {lastSortAction}</div>
+          )}
+        </div>
+      )}
+
+      <div className={compact ? 'h-full' : 'h-64 rounded border'}>
+        <DataTable
+          columns={columns}
+          data={data}
+          pageSize={data.length}
+          pageCount={1}
+          getRowId={(row) => row.id}
+          manualSorting={true} // This is the key difference!
+          sorting={sorting}
+          onSortingChange={handleSortingChange}
+          sticky={!compact}
+          className={isLoading ? 'opacity-50' : ''}
+        />
+      </div>
+    </div>
+  );
+}
+
 export function DataTableStory() {
   const { controls, updateControl } = useStoryControls<DataTableControls>({
     dataCount: 50,
@@ -291,6 +386,7 @@ export function DataTableStory() {
             pageCount={Math.ceil(data.length / controls.pageSize)}
             sticky={controls.stickyHeader}
             forcePagination={true}
+            manualSorting={false} // Enable client-side sorting for demo
             columnVisibility={
               controls.enableColumnVisibility
                 ? columnManagement.columnVisibility
@@ -1394,6 +1490,154 @@ export function DataTableStory() {
                   stories)
                 </li>
               </ul>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Server-Side Sorting (Manual Sorting)</CardTitle>
+            <CardDescription>
+              Demonstrates server-side sorting with manualSorting=true. Click
+              headers to see sorting state, but data doesn't change (would
+              require server integration).
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="rounded-lg border border-blue-200 bg-blue-50 p-3">
+                <p className="text-sm text-blue-800">
+                  <strong>Server-Side Mode:</strong> This table has
+                  manualSorting=true (default). Clicking column headers triggers
+                  onSortingChange callback where you would fetch sorted data
+                  from your server. The table shows current sort state but
+                  doesn't modify data locally.
+                </p>
+              </div>
+
+              <ServerSideSortingExample data={data.slice(0, 10)} />
+
+              <div className="text-muted-foreground space-y-2 text-xs">
+                <p>💡 Server-side sorting pattern:</p>
+                <ul className="ml-4 list-disc space-y-1">
+                  <li>
+                    Use onSortingChange to detect sort column/direction changes
+                  </li>
+                  <li>Send sorting parameters to your API endpoint</li>
+                  <li>Update data state with sorted results from server</li>
+                  <li>Show loading states during sort operations</li>
+                  <li>
+                    Handle sort state in URL for bookmarkable sorted views
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Client-Side vs Server-Side Sorting Comparison</CardTitle>
+            <CardDescription>
+              Side-by-side comparison of client-side and server-side sorting
+              approaches
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-6">
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-3">
+                  <h4 className="text-sm font-semibold text-green-700">
+                    Client-Side Sorting (manualSorting=false)
+                  </h4>
+                  <div className="h-48 rounded border">
+                    <DataTable
+                      columns={[
+                        {
+                          accessorKey: 'name',
+                          header: 'Name',
+                          enableSorting: true,
+                        },
+                        {
+                          accessorKey: 'department',
+                          header: 'Department',
+                          enableSorting: true,
+                        },
+                        {
+                          accessorKey: 'salary',
+                          header: 'Salary',
+                          enableSorting: true,
+                          cell: ({ row }) => {
+                            const salary = row.getValue('salary') as number;
+                            return new Intl.NumberFormat('en-US', {
+                              style: 'currency',
+                              currency: 'USD',
+                              minimumFractionDigits: 0,
+                            }).format(salary);
+                          },
+                        },
+                      ]}
+                      data={data.slice(0, 8)}
+                      pageSize={8}
+                      pageCount={1}
+                      getRowId={(row) => row.id}
+                      manualSorting={false}
+                      sticky={true}
+                    />
+                  </div>
+                  <p className="text-xs text-green-600">
+                    ✅ Data sorts immediately when headers are clicked
+                  </p>
+                </div>
+
+                <div className="space-y-3">
+                  <h4 className="text-sm font-semibold text-blue-700">
+                    Server-Side Sorting (manualSorting=true - default)
+                  </h4>
+                  <div className="h-48 rounded border">
+                    <ServerSideSortingExample
+                      data={data.slice(0, 8)}
+                      compact={true}
+                    />
+                  </div>
+                  <p className="text-xs text-blue-600">
+                    ℹ️ Headers show sort state but data unchanged (awaits
+                    server)
+                  </p>
+                </div>
+              </div>
+
+              <div className="rounded-lg border bg-slate-50 p-4">
+                <h4 className="mb-3 text-sm font-semibold">
+                  When to use each approach:
+                </h4>
+                <div className="grid gap-4 text-xs md:grid-cols-2">
+                  <div>
+                    <h5 className="mb-2 font-semibold text-green-700">
+                      Client-Side (manualSorting=false)
+                    </h5>
+                    <ul className="ml-4 list-disc space-y-1">
+                      <li>Small to medium datasets (&lt;1000 rows)</li>
+                      <li>All data already loaded</li>
+                      <li>Instant sorting feedback</li>
+                      <li>Works offline</li>
+                      <li>Simpler implementation</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h5 className="mb-2 font-semibold text-blue-700">
+                      Server-Side (manualSorting=true - default)
+                    </h5>
+                    <ul className="ml-4 list-disc space-y-1">
+                      <li>Large datasets (&gt;1000 rows)</li>
+                      <li>Paginated data loading</li>
+                      <li>Database-level sorting performance</li>
+                      <li>Memory efficient</li>
+                      <li>Required for real-world applications</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>

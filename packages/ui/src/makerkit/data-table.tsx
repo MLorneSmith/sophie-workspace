@@ -8,6 +8,7 @@ import {
   Cell,
   flexRender,
   getCoreRowModel,
+  getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
 import type {
@@ -21,8 +22,10 @@ import type {
   VisibilityState,
 } from '@tanstack/react-table';
 import {
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
+  ChevronUp,
   ChevronsLeft,
   ChevronsRight,
 } from 'lucide-react';
@@ -87,6 +90,7 @@ interface ReactTableProps<T extends DataItem> {
   }) => (props: React.PropsWithChildren<object>) => React.ReactNode;
   noResultsMessage?: React.ReactNode;
   forcePagination?: boolean; // Force pagination to show even when pageCount <= 1
+  manualSorting?: boolean; // Default true for server-side sorting, set false for client-side sorting
 }
 
 export function DataTable<RecordData extends DataItem>({
@@ -115,6 +119,7 @@ export function DataTable<RecordData extends DataItem>({
   rowSelection: controlledRowSelection,
   sticky = false,
   forcePagination = false,
+  manualSorting = true,
 }: ReactTableProps<RecordData>) {
   // TODO: remove when https://github.com/TanStack/table/issues/5567 gets fixed
   'use no memo';
@@ -149,10 +154,11 @@ export function DataTable<RecordData extends DataItem>({
     getRowId,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
     enableColumnPinning: true,
     enableRowSelection: true,
     manualPagination: true,
-    manualSorting: true,
+    manualSorting,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: (updater) => {
       if (typeof updater === 'function') {
@@ -350,12 +356,42 @@ export function DataTable<RecordData extends DataItem>({
                     }}
                     key={header.id}
                   >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
+                    {header.isPlaceholder ? null : (
+                      <div
+                        className={cn(
+                          'flex items-center gap-2',
+                          header.column.getCanSort()
+                            ? 'hover:bg-accent/50 -mx-3 cursor-pointer rounded px-3 py-1 select-none'
+                            : '',
+                        )}
+                        onClick={header.column.getToggleSortingHandler()}
+                      >
+                        {flexRender(
                           header.column.columnDef.header,
                           header.getContext(),
                         )}
+                        {header.column.getCanSort() && (
+                          <div className="flex flex-col">
+                            <ChevronUp
+                              className={cn(
+                                'h-3 w-3',
+                                header.column.getIsSorted() === 'asc'
+                                  ? 'text-foreground'
+                                  : 'text-muted-foreground/50',
+                              )}
+                            />
+                            <ChevronDown
+                              className={cn(
+                                '-mt-1 h-3 w-3',
+                                header.column.getIsSorted() === 'desc'
+                                  ? 'text-foreground'
+                                  : 'text-muted-foreground/50',
+                              )}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </TableHead>
                 );
               })}
