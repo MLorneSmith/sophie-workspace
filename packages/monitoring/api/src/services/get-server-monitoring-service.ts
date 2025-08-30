@@ -15,15 +15,6 @@ const serverMonitoringRegistry = createRegistry<
   NonNullable<MonitoringProvider>
 >();
 
-// Register the 'baselime' monitoring service
-serverMonitoringRegistry.register('baselime', async () => {
-  const { BaselimeServerMonitoringService } = await import(
-    '@kit/baselime/server'
-  );
-
-  return new BaselimeServerMonitoringService();
-});
-
 // Register the 'sentry' monitoring service
 serverMonitoringRegistry.register('sentry', async () => {
   const { SentryMonitoringService } = await import('@kit/sentry');
@@ -45,6 +36,7 @@ export async function getServerMonitoringService() {
     console.info(
       `No instrumentation provider specified. Returning console service...`,
     );
+
     return new ConsoleMonitoringService();
   }
 

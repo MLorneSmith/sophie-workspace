@@ -17,7 +17,6 @@
     "./components": "./src/components/index.ts"
   },
   "devDependencies": {
-    "@kit/baselime": "workspace:*",
     "@kit/eslint-config": "workspace:*",
     "@kit/monitoring-core": "workspace:*",
     "@kit/prettier-config": "workspace:*",

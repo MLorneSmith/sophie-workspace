@@ -16,15 +16,6 @@ const instrumentationRegistry = createRegistry<
   NonNullable<MonitoringProvider>
 >();
 
-// Register the 'baselime' instrumentation provider
-instrumentationRegistry.register('baselime', async () => {
-  const { registerInstrumentation } = await import(
-    '@kit/baselime/instrumentation'
-  );
-
-  return { register: registerInstrumentation };
-});
-
 // Register the 'sentry' instrumentation provider with a no-op registration, since Sentry v8 sets up automatically
 instrumentationRegistry.register('sentry', () => {
   return {

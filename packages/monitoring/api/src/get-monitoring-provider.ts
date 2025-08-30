@@ -1,7 +1,13 @@
 import { z } from 'zod';
 
+const MONITORING_PROVIDERS = [
+  'sentry',
+  '',
+  // Add more providers here
+] as const;
+
 export const MONITORING_PROVIDER = z
-  .enum(['baselime', 'sentry', ''])
+  .enum(MONITORING_PROVIDERS)
   .optional()
   .transform((value) => value || undefined);
 

@@ -26,19 +26,6 @@ const monitoringProviderRegistry = createRegistry<
   NonNullable<MonitoringProviderType>
 >();
 
-// Register the Baselime provider
-monitoringProviderRegistry.register('baselime', async () => {
-  const { BaselimeProvider } = await import('@kit/baselime/provider');
-
-  return {
-    default: function BaselimeProviderWrapper({
-      children,
-    }: React.PropsWithChildren) {
-      return <BaselimeProvider enableWebVitals>{children}</BaselimeProvider>;
-    },
-  };
-});
-
 // Register the Sentry provider
 monitoringProviderRegistry.register('sentry', async () => {
   const { SentryProvider } = await import('@kit/sentry/provider');
