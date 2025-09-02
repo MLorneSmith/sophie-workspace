@@ -34,6 +34,7 @@ services:
       - NEXT_TELEMETRY_DISABLED=1
       - TURBO_TELEMETRY_DISABLED=1
       - EDITOR=code --wait
+      - HOME=/home/node
     networks:
       - slideheroes
     ports:
@@ -69,6 +70,7 @@ services:
       - TERM=xterm-256color
       - PLAYWRIGHT_BROWSERS_PATH=/home/node/.cache/ms-playwright
       - CI=false
+      - HOME=/home/node
     networks:
       - slideheroes
     depends_on:
@@ -90,6 +92,7 @@ services:
     environment:
       - NODE_ENV=development
       - MCP_SERVERS_PATH=/workspace/.mcp-servers
+      - HOME=/home/node
     networks:
       - slideheroes
     ports:

@@ -12,9 +12,6 @@
 			"enableNonRootDocker": "true",
 			"moby": "true"
 		},
-		"ghcr.io/devcontainers-contrib/features/pnpm:2": {
-			"version": "latest"
-		},
 		"ghcr.io/devcontainers-contrib/features/supabase-cli:1": {
 			"version": "latest"
 		}
