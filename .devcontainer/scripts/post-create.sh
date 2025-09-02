@@ -37,6 +37,20 @@ fi
 log_info "Installing Node.js dependencies with pnpm..."
 cd /workspace
 
+# Fix permissions for workspace and node_modules directory
+log_info "Setting up workspace permissions..."
+sudo chown -R node:node /workspace 2>/dev/null || true
+sudo chmod -R 755 /workspace 2>/dev/null || true
+
+# Ensure node_modules directory exists with correct permissions
+mkdir -p /workspace/node_modules 2>/dev/null || true
+sudo chown -R node:node /workspace/node_modules 2>/dev/null || true
+sudo chmod -R 755 /workspace/node_modules 2>/dev/null || true
+
+# Create .pnpm directory with correct permissions
+mkdir -p /workspace/node_modules/.pnpm 2>/dev/null || true
+sudo chown -R node:node /workspace/node_modules/.pnpm 2>/dev/null || true
+
 # Set up pnpm
 export PNPM_HOME="/home/node/.local/share/pnpm"
 export PATH="$PNPM_HOME:$PATH"
