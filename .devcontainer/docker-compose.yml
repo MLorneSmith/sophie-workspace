@@ -102,7 +102,7 @@ services:
 
   # PostgreSQL for Supabase
   postgres:
-    image: supabase/postgres:15.1.0.117
+    image: supabase/postgres:15.6.1.78
     environment:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
