@@ -88,6 +88,12 @@ setup_minimal_environment() {
         git config --global user.email "${GIT_USER_EMAIL:-node@localhost}" 2>/dev/null || true
     fi
     
+    # Fix Git tracking issues in Codespaces
+    if [ "$CODESPACES" = "true" ] && [ -f /workspace/.devcontainer/scripts/fix-git-tracking.sh ]; then
+        log_info "Fixing Git tracking for Codespaces..."
+        bash /workspace/.devcontainer/scripts/fix-git-tracking.sh
+    fi
+    
     # Setup pnpm
     export PNPM_HOME="/home/node/.local/share/pnpm"
     export PATH="$PNPM_HOME:$PATH"
