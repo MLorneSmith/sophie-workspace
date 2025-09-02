@@ -18,14 +18,17 @@ log_warning() {
 
 # 1. Ensure Docker is running (for Docker-in-Docker)
 if command -v docker &> /dev/null; then
-    # Wait for Docker daemon to be ready
-    timeout=30
+    # Wait for Docker daemon to be ready (extended timeout for Codespaces)
+    timeout=60
     while ! docker info > /dev/null 2>&1; do
         if [ $timeout -le 0 ]; then
-            log_warning "Docker daemon not ready after 30 seconds"
+            log_warning "Docker daemon not ready after 60 seconds"
+            log_warning "Docker may still be starting. You can check with: docker ps"
             break
         fi
-        echo "Waiting for Docker daemon..."
+        if [ $((timeout % 10)) -eq 0 ]; then
+            echo "Waiting for Docker daemon... ($timeout seconds remaining)"
+        fi
         sleep 1
         ((timeout--))
     done
