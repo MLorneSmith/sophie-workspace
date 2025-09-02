@@ -184,18 +184,49 @@ Billing is handled by Stripe.
 
 ## Getting Started
 
-### Prerequisites
+### 🚀 Quick Start with GitHub Codespaces (Recommended)
 
-- Node.js 18+
-- pnpm
-- Docker
+The fastest way to get started is using GitHub Codespaces, which provides a fully configured cloud development environment:
+
+1. Click the green "Code" button on this repository
+2. Select the "Codespaces" tab
+3. Click "Create codespace on main"
+4. Wait ~3-5 minutes for the environment to build
+5. Start developing immediately - all dependencies are pre-installed!
+
+[Learn more about our devcontainer setup](.devcontainer/README.md)
+
+### Local Development Setup
+
+#### Prerequisites
+
+- Node.js 18+ (v20 recommended)
+- pnpm 8+
+- Docker Desktop
 - GitHub CLI (`gh`) - for automation and repository management
-- Stripe account
-- Supabase account
-- Portkey account
-- OpenAI account
+- Stripe account (for payments)
+- Supabase account (for database)
+- Portkey account (for AI features)
+- OpenAI account (for AI features)
 
-### Installation
+#### VS Code with Dev Containers
+
+For a consistent local development experience, use VS Code with our devcontainer:
+
+1. Install [Docker Desktop](https://www.docker.com/products/docker-desktop)
+2. Install [VS Code](https://code.visualstudio.com/)
+3. Install the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+4. Clone this repository and open in VS Code
+5. When prompted, click "Reopen in Container"
+
+The devcontainer includes:
+- Pre-configured Node.js 20 environment
+- All required VS Code extensions (including Claude Code)
+- Supabase local development setup
+- Database tools and debugging configurations
+- Automated environment setup
+
+### Traditional Installation
 
 ```bash
 # Install dependencies
