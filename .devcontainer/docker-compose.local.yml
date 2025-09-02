@@ -1,0 +1,99 @@
+# Local development specific configuration
+# This file provides overrides for local development with enhanced features
+# To use: Add this file to dockerComposeFile array in devcontainer.json for local dev
+
+version: '3.8'
+
+services:
+  app:
+    # Additional volumes for local development
+    volumes:
+      - ..:/workspace:cached
+      - /var/run/docker.sock:/var/run/docker.sock
+      - node_modules:/workspace/node_modules
+      - pnpm_store:/home/node/.pnpm-store
+      - next_cache:/workspace/.next
+      - turbo_cache:/workspace/.turbo
+      - supabase_data:/workspace/apps/web/.supabase
+      - command_history:/home/node/.zsh_history
+      - claude_config:/home/node/.claude
+      # Mount local configuration files
+      - ~/.gitconfig:/home/node/.gitconfig:ro,cached
+      - ~/.ssh:/home/node/.ssh:ro,cached
+      - ~/.config/gh:/home/node/.config/gh:ro,cached
+      - ~/.npmrc:/home/node/.npmrc:ro,cached
+      - ~/.aws:/home/node/.aws:ro,cached
+      # Additional local caches
+      - ~/.cache/typescript:/home/node/.cache/typescript:cached
+      - ~/.cache/eslint:/home/node/.cache/eslint:cached
+    environment:
+      # Local development environment variables
+      - CODESPACES=false
+      - LOCAL_DEV=true
+      - DISPLAY=${DISPLAY:-}
+      - GITHUB_USER=${GITHUB_USER:-}
+      - GITHUB_TOKEN=${GITHUB_TOKEN:-}
+      # Use host network for database connections if needed
+      - DATABASE_URL=${DATABASE_URL:-}
+      - REDIS_URL=${REDIS_URL:-}
+    # Additional capabilities for local debugging
+    cap_add:
+      - SYS_ADMIN
+      - NET_ADMIN
+      - NET_RAW
+      - SYS_PTRACE
+    privileged: true
+
+  e2e:
+    # E2E container with display support for local debugging
+    environment:
+      - DISPLAY=${DISPLAY:-}
+      - PLAYWRIGHT_HEADLESS=${PLAYWRIGHT_HEADLESS:-false}
+      - BASE_URL=http://app:3000
+      - LOCAL_DEV=true
+    volumes:
+      # Mount X11 socket for GUI debugging (Linux)
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+    # Allow network access to host for debugging
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  mcp-servers:
+    # MCP servers with additional local tools
+    volumes:
+      - ~/.config/mcp:/home/node/.config/mcp:ro,cached
+      - ~/.local/share/mcp:/home/node/.local/share/mcp:cached
+    environment:
+      - LOCAL_DEV=true
+      - MCP_DEBUG=${MCP_DEBUG:-false}
+
+# Additional services for local development
+  # Adminer for database management (optional)
+  adminer:
+    image: adminer:latest
+    ports:
+      - "8080:8080"
+    networks:
+      - slideheroes
+    environment:
+      - ADMINER_DEFAULT_SERVER=postgres
+    profiles:
+      - tools
+
+  # Grafana for monitoring (optional)
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3005:3000"
+    networks:
+      - slideheroes
+    volumes:
+      - grafana_data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_INSTALL_PLUGINS=redis-datasource
+    profiles:
+      - monitoring
+
+volumes:
+  grafana_data:

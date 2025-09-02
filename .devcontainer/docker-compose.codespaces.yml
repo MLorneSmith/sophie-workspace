@@ -1,0 +1,95 @@
+# GitHub Codespaces specific configuration
+# This file provides overrides for running in GitHub Codespaces
+# To use: Add this file to dockerComposeFile array in devcontainer.json when in Codespaces
+
+version: '3.8'
+
+services:
+  app:
+    # Remove Docker socket mount in Codespaces (not needed/available)
+    volumes:
+      - ..:/workspace:cached
+      - node_modules:/workspace/node_modules
+      - pnpm_store:/home/node/.pnpm-store
+      - next_cache:/workspace/.next
+      - turbo_cache:/workspace/.turbo
+      - supabase_data:/workspace/apps/web/.supabase
+      - command_history:/home/node/.zsh_history
+      - claude_config:/home/node/.claude
+      # No Docker socket or host mounts in Codespaces
+    environment:
+      # Codespaces-specific environment variables
+      - CODESPACES=true
+      - CODESPACE_NAME=${CODESPACE_NAME:-}
+      - GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN=${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN:-}
+      - GITHUB_USER=${GITHUB_USER:-}
+      - GITHUB_TOKEN=${GITHUB_TOKEN:-}
+      # Disable host checking for forwarded ports
+      - NEXT_PUBLIC_BASE_URL=https://${CODESPACE_NAME}-3000.${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}
+      - NEXTAUTH_URL=https://${CODESPACE_NAME}-3000.${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}
+    # Resource limits for Codespaces
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+        reservations:
+          cpus: '1'
+          memory: 2G
+
+  e2e:
+    # E2E container adjustments for Codespaces
+    environment:
+      - CODESPACES=true
+      - PLAYWRIGHT_HEADLESS=true
+      - BASE_URL=http://app:3000
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 1G
+
+  mcp-servers:
+    # MCP servers container adjustments for Codespaces
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 1G
+        reservations:
+          cpus: '0.25'
+          memory: 512M
+
+  # Database services with resource limits
+  postgres:
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  redis:
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 256M
+        reservations:
+          cpus: '0.1'
+          memory: 128M
+
+  mailhog:
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 256M
+        reservations:
+          cpus: '0.1'
+          memory: 128M

@@ -1,0 +1,19 @@
+# This file provides default overrides for local development
+# It's automatically loaded by Docker Compose alongside docker-compose.yml
+# For GitHub Codespaces, these settings will be overridden by Codespaces runtime
+
+version: '3.8'
+
+services:
+  app:
+    # Mount git config and SSH keys from host for local development
+    # These mounts are conditional - they won't fail if files don't exist
+    volumes:
+      - ~/.gitconfig:/home/node/.gitconfig:ro,cached
+      - ~/.ssh:/home/node/.ssh:ro,cached
+      - ~/.config/gh:/home/node/.config/gh:ro,cached
+    environment:
+      # Local development specific environment variables
+      - CODESPACES=${CODESPACES:-false}
+      - GITHUB_USER=${GITHUB_USER:-}
+      - GITHUB_TOKEN=${GITHUB_TOKEN:-}
