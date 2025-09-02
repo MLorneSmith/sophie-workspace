@@ -32,6 +32,19 @@ sudo chown -R node:node /workspace || true
 mkdir -p /workspace/node_modules/.pnpm /home/node/.pnpm-store 2>/dev/null || true
 sudo chown -R node:node /workspace/node_modules /home/node/.pnpm-store || true
 
+# 2.5. Configure Git to ignore volume-mounted directories
+log_info "Configuring Git excludes for Codespaces..."
+if [ "$CODESPACES" = "true" ]; then
+    # Add volume-mounted directories to git exclude
+    echo "node_modules/" >> /workspace/.git/info/exclude 2>/dev/null || true
+    echo ".pnpm-store/" >> /workspace/.git/info/exclude 2>/dev/null || true
+    echo ".next/" >> /workspace/.git/info/exclude 2>/dev/null || true
+    echo ".turbo/" >> /workspace/.git/info/exclude 2>/dev/null || true
+    
+    # Mark node_modules as assumed unchanged to prevent Git from scanning it
+    git config core.excludesFile /workspace/.git/info/exclude 2>/dev/null || true
+fi
+
 # 3. Essential: Set up pnpm (quick)
 export PNPM_HOME="/home/node/.local/share/pnpm"
 export PATH="$PNPM_HOME:$PATH"
