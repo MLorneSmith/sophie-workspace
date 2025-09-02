@@ -33,8 +33,8 @@ RUN useradd -m -s /bin/zsh -u 1000 node \
 WORKDIR /workspace
 
 # Copy package files for caching
-COPY --chown=node:node ../package.json ../pnpm-lock.yaml* ./
-COPY --chown=node:node ../apps/e2e/package.json ./apps/e2e/
+COPY --chown=node:node package.json pnpm-lock.yaml* ./
+COPY --chown=node:node apps/e2e/package.json ./apps/e2e/
 
 # Install dependencies
 RUN pnpm install --frozen-lockfile --prefer-offline
