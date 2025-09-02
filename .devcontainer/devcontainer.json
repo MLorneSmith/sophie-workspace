@@ -176,10 +176,11 @@
 	"postAttachCommand": "bash /workspace/.devcontainer/scripts/post-attach.sh",
 
 	// GitHub Codespaces configuration
+	// Request more storage to handle large monorepo dependencies
 	"hostRequirements": {
 		"cpus": 4,
 		"memory": "8gb",
-		"storage": "32gb"
+		"storage": "64gb"
 	},
 
 	// Codespaces-specific settings

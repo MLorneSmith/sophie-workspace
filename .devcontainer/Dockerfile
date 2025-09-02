@@ -6,7 +6,8 @@ ENV TZ=$TZ
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # Install base dependencies required for Claude Code security features
-RUN apt-get update && apt-get install -y \
+# Note: We install many tools in the Dockerfile, but clean up after to save space
+RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     zsh \
     sudo \
@@ -38,7 +39,8 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     python3 \
     python3-pip \
-    && rm -rf /var/lib/apt/lists/*
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Install GitHub CLI
 RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
