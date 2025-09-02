@@ -41,8 +41,12 @@ cd /workspace
 export PNPM_HOME="/home/node/.local/share/pnpm"
 export PATH="$PNPM_HOME:$PATH"
 
-# Install dependencies
-pnpm install --frozen-lockfile || pnpm install
+# Ensure Corepack doesn't prompt for confirmation
+export COREPACK_ENABLE_AUTO_PIN=0
+export COREPACK_ENABLE_STRICT=0
+
+# Install dependencies (non-interactive)
+CI=true pnpm install --frozen-lockfile || CI=true pnpm install
 
 # 3. Set up environment files
 log_info "Setting up environment files..."
