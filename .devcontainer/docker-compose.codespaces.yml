@@ -4,6 +4,10 @@
 
 services:
   app:
+    # Use optimized Dockerfile for Codespaces
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile.codespaces
     # Override volumes to remove problematic host mounts in Codespaces
     volumes:
       - ..:/workspace:cached
