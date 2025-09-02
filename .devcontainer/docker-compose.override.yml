@@ -2,8 +2,6 @@
 # It's automatically loaded by Docker Compose alongside docker-compose.yml
 # For GitHub Codespaces, these settings will be overridden by Codespaces runtime
 
-version: '3.8'
-
 services:
   app:
     # Mount git config and SSH keys from host for local development

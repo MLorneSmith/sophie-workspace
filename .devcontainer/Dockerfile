@@ -76,10 +76,27 @@ RUN usermod -s /bin/zsh node \
     && echo "node ALL=(ALL) NOPASSWD: /usr/bin/apt-get" >> /etc/sudoers.d/node \
     && chmod 0440 /etc/sudoers.d/node
 
+# Install global npm packages and enable pnpm (as root)
+RUN npm install -g \
+    @biomejs/biome \
+    turbo \
+    npm-check-updates \
+    serve \
+    concurrently \
+    wait-on \
+    cross-env \
+    dotenv-cli \
+    tsx \
+    @modelcontextprotocol/sdk \
+    @anthropic-ai/sdk \
+    && corepack enable \
+    && corepack prepare pnpm@latest --activate
+
 # Create necessary directories and copy zsh config to node user
 RUN mkdir -p /home/node/.zsh_history_dir \
     && mkdir -p /home/node/.claude \
     && mkdir -p /workspace \
+    && mkdir -p /home/node/.npm-global \
     && cp -r /root/.oh-my-zsh /home/node/ 2>/dev/null || true \
     && cp /root/.zshrc /home/node/ 2>/dev/null || true \
     && cp -r /root/.p10k.zsh /home/node/ 2>/dev/null || true \
@@ -120,31 +137,11 @@ RUN echo '# SlideHeroes Development Aliases' >> ~/.zshrc \
     && echo 'alias gp="git push"' >> ~/.zshrc \
     && echo 'alias gl="git log --oneline -10"' >> ~/.zshrc
 
-# Configure git
+# Configure git and npm for node user
 RUN git config --global core.editor "code --wait" \
     && git config --global init.defaultBranch main \
-    && git config --global safe.directory /workspace
-
-# Set up npm global directory
-RUN mkdir -p ~/.npm-global \
+    && git config --global safe.directory /workspace \
     && npm config set prefix ~/.npm-global
-
-# Install global npm packages
-RUN npm install -g \
-    @biomejs/biome \
-    turbo \
-    npm-check-updates \
-    serve \
-    concurrently \
-    wait-on \
-    cross-env \
-    dotenv-cli \
-    tsx \
-    @modelcontextprotocol/sdk \
-    @anthropic-ai/sdk
-
-# Enable pnpm
-RUN corepack enable && corepack prepare pnpm@latest --activate
 
 # Configure bat (better cat)
 RUN mkdir -p ~/.config/bat \
