@@ -13,8 +13,7 @@ async function globalSetup(config: FullConfig) {
 				stdio: "ignore",
 			},
 		);
-	} catch (_error) {
-	}
+	} catch (_error) {}
 
 	// Warm up the application by visiting the home page
 	if (!process.env.SKIP_WARMUP) {
