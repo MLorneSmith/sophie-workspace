@@ -104,30 +104,25 @@ services:
 
   # PostgreSQL for Supabase
   postgres:
-    image: postgres:15-alpine
+    image: supabase/postgres:17.5.1.021-orioledb
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
       POSTGRES_HOST_AUTH_METHOD: trust
-      # Explicit PGDATA path for consistency
-      PGDATA: /var/lib/postgresql/data/pgdata
+      # Supabase-specific environment variables
+      JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-token-with-at-least-32-characters-long}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
     volumes:
-      # Use named volume with subpath to avoid permission issues
+      # Use named volume for data persistence
       - postgres_data:/var/lib/postgresql/data
+      # Add initialization scripts if needed
+      - ./init-scripts:/docker-entrypoint-initdb.d:ro
     networks:
       - slideheroes
     ports:
       - "54322:5432"
-    # Simplified command for better compatibility
-    command: 
-      - postgres
-      - -c
-      - shared_preload_libraries=pg_stat_statements
-      - -c
-      - log_statement=all
-      - -c
-      - log_connections=on
+    # Supabase PostgreSQL already includes optimized settings
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d postgres || exit 1"]
       interval: 10s
@@ -138,8 +133,6 @@ services:
     restart: unless-stopped
     # Add init flag for proper signal handling
     init: true
-    # Ensure container runs with proper user permissions
-    user: "999:999"
 
   # Supabase Studio
   studio:

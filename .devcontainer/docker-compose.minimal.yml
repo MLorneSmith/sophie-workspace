@@ -1,5 +1,6 @@
 # Minimal configuration for faster Codespace startup
 # Only includes essential services for development
+# Optional: Add postgres service if needed for database development
 
 services:
   # Main development container only
