@@ -4,7 +4,15 @@
 		"BASH_MAX_TIMEOUT_MS": "1800000"
 	},
 	"permissions": {
-		"allow": ["WebSearch", "Bash(pnpm build:*)"],
+		"allow": [
+			"WebSearch",
+			"Bash(pnpm build:*)",
+			"Bash(DEBUG_TEST=true node .claude/scripts/test/test-controller.cjs --quick --debug)",
+			"Read(/tmp/claudekit-repo/src/commands/spec/**)",
+			"mcp__code-reasoning__code-reasoning",
+			"Read(/tmp/claudekit-repo/src/commands/**)",
+			"mcp__exa__exa_search"
+		],
 		"deny": [],
 		"ask": [],
 		"additionalDirectories": ["/home/msmith"]
