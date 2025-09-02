@@ -11,7 +11,8 @@
 			"Read(/tmp/claudekit-repo/src/commands/spec/**)",
 			"mcp__code-reasoning__code-reasoning",
 			"Read(/tmp/claudekit-repo/src/commands/**)",
-			"mcp__exa__exa_search"
+			"mcp__exa__exa_search",
+			"mcp__perplexity-ask__perplexity_ask"
 		],
 		"deny": [],
 		"ask": [],
