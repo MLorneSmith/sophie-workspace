@@ -1,0 +1,38 @@
+{
+	"name": "SlideHeroes Minimal Dev (Fast Startup)",
+	"dockerComposeFile": ["docker-compose.minimal.yml"],
+	"service": "app",
+	"workspaceFolder": "/workspace",
+	"remoteUser": "node",
+	"features": {
+		"ghcr.io/devcontainers-contrib/features/supabase-cli:1": {
+			"version": "latest"
+		}
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"Anthropic.claude-code",
+				"dbaeumer.vscode-eslint",
+				"esbenp.prettier-vscode",
+				"biomejs.biome",
+				"bradlc.vscode-tailwindcss"
+			],
+			"settings": {
+				"terminal.integrated.defaultProfile.linux": "zsh",
+				"terminal.integrated.profiles.linux": {
+					"zsh": {
+						"path": "/bin/zsh"
+					}
+				}
+			}
+		}
+	},
+	"postCreateCommand": "bash /workspace/.devcontainer/scripts/robust-startup.sh --minimal",
+	"postStartCommand": "echo '✓ Minimal Codespace ready - run pnpm dev to start'",
+	"hostRequirements": {
+		"cpus": 2,
+		"memory": "4gb",
+		"storage": "16gb"
+	}
+}

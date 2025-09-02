@@ -168,10 +168,10 @@
 	// Setup commands optimized for speed
 	// initializeCommand runs on the host before containers are created
 	"initializeCommand": "bash .devcontainer/scripts/setup-compose-files.sh || true",
-	// postCreateCommand - use quick setup for Codespaces, full setup for local
-	"postCreateCommand": "if [ \"$CODESPACES\" = \"true\" ]; then bash /workspace/.devcontainer/scripts/quick-setup.sh; else bash /workspace/.devcontainer/scripts/post-create.sh; fi",
-	// postStartCommand runs each time container starts
-	"postStartCommand": "bash /workspace/.devcontainer/scripts/post-start.sh",
+	// postCreateCommand - use robust startup with minimal mode for Codespaces
+	"postCreateCommand": "if [ \"$CODESPACES\" = \"true\" ]; then bash /workspace/.devcontainer/scripts/robust-startup.sh --minimal; else bash /workspace/.devcontainer/scripts/post-create.sh; fi",
+	// postStartCommand - skip heavy operations in Codespaces
+	"postStartCommand": "if [ \"$CODESPACES\" = \"true\" ]; then echo '✓ Codespace ready - run pnpm dev to start'; else bash /workspace/.devcontainer/scripts/post-start.sh; fi",
 	// postAttachCommand runs when VS Code attaches
 	"postAttachCommand": "bash /workspace/.devcontainer/scripts/post-attach.sh",
 
