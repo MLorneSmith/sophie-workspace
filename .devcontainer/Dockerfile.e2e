@@ -25,9 +25,12 @@ RUN apt-get update && apt-get install -y \
 # Install pnpm
 RUN npm install -g pnpm@latest
 
-# Create node user for consistency
-RUN useradd -m -s /bin/zsh -u 1000 node \
-    && echo "node ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+# Use existing user or create node user for consistency
+# The Playwright image may already have a user with UID 1000, so we handle this gracefully
+RUN id -u node 2>/dev/null || useradd -m -s /bin/zsh node \
+    && echo "node ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
+    && mkdir -p /home/node \
+    && chown -R node:node /home/node
 
 # Set up working directory
 WORKDIR /workspace
