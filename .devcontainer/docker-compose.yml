@@ -102,11 +102,13 @@ services:
 
   # PostgreSQL for Supabase
   postgres:
-    image: supabase/postgres:15.8.1.060
+    image: postgres:15-alpine
     environment:
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
       POSTGRES_HOST_AUTH_METHOD: trust
+      PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -119,6 +121,7 @@ services:
       timeout: 5s
       retries: 5
     hostname: slideheroes-db
+    restart: unless-stopped
 
   # Supabase Studio
   studio:
