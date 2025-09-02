@@ -35,6 +35,8 @@ services:
       - TURBO_TELEMETRY_DISABLED=1
       - EDITOR=code --wait
       - HOME=/home/node
+      - COREPACK_ENABLE_AUTO_PIN=0
+      - COREPACK_ENABLE_STRICT=0
     networks:
       - slideheroes
     ports:
