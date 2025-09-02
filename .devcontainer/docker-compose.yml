@@ -108,18 +108,22 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
       POSTGRES_HOST_AUTH_METHOD: trust
-      PGDATA: /var/lib/postgresql/data/pgdata
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+      # Remove PGDATA to use default location
+    # Temporarily comment out volume mount to debug permission issues
+    # volumes:
+    #   - postgres_data:/var/lib/postgresql/data
     networks:
       - slideheroes
     ports:
       - "54322:5432"
+    # Add command to ensure PostgreSQL starts with proper logging
+    command: postgres -c logging_collector=on -c log_destination=stderr -c log_statement=all
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 30s
     hostname: slideheroes-db
     restart: unless-stopped
 

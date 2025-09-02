@@ -65,6 +65,13 @@ services:
 
   # Database services with resource limits
   postgres:
+    # Override for Codespaces to help with debugging
+    environment:
+      # Ensure these are set even if parent doesn't have them
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+      POSTGRES_HOST_AUTH_METHOD: trust
     deploy:
       resources:
         limits:
