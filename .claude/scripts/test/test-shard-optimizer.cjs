@@ -575,7 +575,7 @@ class ShardOptimizer {
 						action: "rebalance",
 						reason: `${imbalance.toFixed(1)}% imbalance detected`,
 						command:
-							"node .claude/scripts/test-shard-optimizer.cjs --rebalance",
+							"node .claude/scripts/test/test-shard-optimizer.cjs --rebalance",
 					});
 				}
 

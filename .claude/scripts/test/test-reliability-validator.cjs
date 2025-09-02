@@ -105,7 +105,7 @@ class TestReliabilityValidator {
 		};
 
 		// Build test command
-		const testArgs = ["node", ".claude/scripts/test-controller.cjs"];
+		const testArgs = ["node", ".claude/scripts/test/test-controller.cjs"];
 		if (testType === "unit") testArgs.push("--unit");
 		else if (testType === "e2e") testArgs.push("--e2e");
 

@@ -34,15 +34,15 @@ When the `/test` command is invoked, execute the test controller script directly
 ```bash
 # Parse arguments from user request
 # If --debug is specified, set DEBUG_TEST=true environment variable
-# Then execute: node .claude/scripts/test-controller.cjs [args]
+# Then execute: node .claude/scripts/test/test-controller.cjs [args]
 ```
 
 Example execution:
-- `/test --quick` → `node .claude/scripts/test-controller.cjs --quick`
-- `/test --debug` → `DEBUG_TEST=true node .claude/scripts/test-controller.cjs --debug`
-- `/test --unit` → `node .claude/scripts/test-controller.cjs --unit`
-- `/test --e2e --debug` → `DEBUG_TEST=true node .claude/scripts/test-controller.cjs --e2e --debug`
-- `/test --quick --debug` → `DEBUG_TEST=true node .claude/scripts/test-controller.cjs --quick --debug`
+- `/test --quick` → `node .claude/scripts/test/test-controller.cjs --quick`
+- `/test --debug` → `DEBUG_TEST=true node .claude/scripts/test/test-controller.cjs --debug`
+- `/test --unit` → `node .claude/scripts/test/test-controller.cjs --unit`
+- `/test --e2e --debug` → `DEBUG_TEST=true node .claude/scripts/test/test-controller.cjs --e2e --debug`
+- `/test --quick --debug` → `DEBUG_TEST=true node .claude/scripts/test/test-controller.cjs --quick --debug`
 
 This bypasses the 2-minute Bash timeout limitation that was causing the original `/test` command to fail.
 
