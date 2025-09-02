@@ -1,0 +1,52 @@
+FROM node:20-slim
+
+# Set timezone
+ARG TZ=America/Los_Angeles
+ENV TZ=$TZ
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+# Install base dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    zsh \
+    sudo \
+    curl \
+    wget \
+    jq \
+    python3 \
+    python3-pip \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install pnpm
+RUN npm install -g pnpm@latest
+
+# Install MCP server dependencies
+RUN npm install -g \
+    @modelcontextprotocol/server-memory \
+    @modelcontextprotocol/server-filesystem \
+    @modelcontextprotocol/server-sqlite \
+    @modelcontextprotocol/server-postgres \
+    @modelcontextprotocol/server-github \
+    @modelcontextprotocol/server-slack \
+    @modelcontextprotocol/server-gitlab
+
+# Configure node user (already exists in node:20)
+RUN usermod -s /bin/zsh node \
+    && echo "node ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+# Set up MCP servers directory
+RUN mkdir -p /workspace/.mcp-servers /home/node/.mcp \
+    && chown -R node:node /workspace/.mcp-servers /home/node/.mcp
+
+# Switch to node user
+USER node
+
+# Set working directory
+WORKDIR /workspace
+
+# Environment variables for MCP
+ENV MCP_SERVERS_PATH=/workspace/.mcp-servers
+ENV NODE_ENV=development
+
+# Keep container running
+CMD ["sleep", "infinity"]
