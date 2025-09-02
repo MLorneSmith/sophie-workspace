@@ -1,9 +1,8 @@
 {
 	"name": "SlideHeroes Multi-Container Dev Environment",
 	// Docker Compose configuration
-	// For Codespaces: both docker-compose.yml and docker-compose.codespaces.yml are loaded
-	// For local dev: only docker-compose.yml (can manually add docker-compose.local-override.yml if needed)
-	"dockerComposeFile": ["docker-compose.yml", "docker-compose.codespaces.yml"],
+	// Using simplified setup for better Codespaces compatibility
+	"dockerComposeFile": ["docker-compose.yml"],
 	"service": "app",
 	"workspaceFolder": "/workspace",
 	"remoteUser": "node",

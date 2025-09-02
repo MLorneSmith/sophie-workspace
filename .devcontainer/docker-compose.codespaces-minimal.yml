@@ -1,0 +1,27 @@
+# Ultra-minimal Codespaces configuration - no database containers
+# This removes PostgreSQL entirely to avoid startup issues
+
+services:
+  # Disable PostgreSQL in Codespaces
+  postgres:
+    deploy:
+      replicas: 0
+    command: echo "PostgreSQL disabled in minimal mode"
+    
+  # Disable Supabase Studio (requires PostgreSQL)
+  studio:
+    deploy:
+      replicas: 0
+    command: echo "Studio disabled in minimal mode"
+    
+  # Disable Redis (optional)
+  redis:
+    deploy:
+      replicas: 0
+    command: echo "Redis disabled in minimal mode"
+    
+  # Keep only essential services
+  app:
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@localhost:5432/postgres
+      - MINIMAL_MODE=true

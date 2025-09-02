@@ -102,37 +102,42 @@ services:
     command: sleep infinity
     hostname: slideheroes-mcp
 
-  # PostgreSQL for Supabase
+  # PostgreSQL for Supabase - Simplified for Codespaces
   postgres:
-    image: supabase/postgres:17.5.1.021-orioledb
+    # Use standard PostgreSQL for better Codespaces compatibility
+    # Switch to supabase/postgres:17.5.1.021-orioledb for full features locally
+    image: postgres:17-alpine
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
       POSTGRES_HOST_AUTH_METHOD: trust
-      # Supabase-specific environment variables
-      JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-token-with-at-least-32-characters-long}
-      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+      # Reduce memory usage for Codespaces
+      POSTGRES_SHARED_BUFFERS: 128MB
+      POSTGRES_WORK_MEM: 4MB
     volumes:
       # Use named volume for data persistence
       - postgres_data:/var/lib/postgresql/data
-      # Add initialization scripts if needed
-      - ./init-scripts:/docker-entrypoint-initdb.d:ro
     networks:
       - slideheroes
     ports:
       - "54322:5432"
-    # Supabase PostgreSQL already includes optimized settings
+    command:
+      - postgres
+      - -c
+      - shared_preload_libraries=pg_stat_statements
+      - -c
+      - max_connections=100
+      - -c
+      - shared_buffers=128MB
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-      start_period: 60s
+      test: ["CMD-SHELL", "pg_isready -U postgres || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 120s  # Give more time to start in Codespaces
     hostname: slideheroes-db
     restart: unless-stopped
-    # Add init flag for proper signal handling
-    init: true
 
   # Supabase Studio
   studio:
