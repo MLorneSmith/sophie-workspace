@@ -53,25 +53,7 @@ RUN wget -q https://github.com/dandavison/delta/releases/download/$GIT_DELTA_VER
     && dpkg -i git-delta_${GIT_DELTA_VERSION}_amd64.deb \
     && rm git-delta_${GIT_DELTA_VERSION}_amd64.deb
 
-# Set up the node user (already exists in node:20 image)
-RUN usermod -s /bin/zsh node \
-    && echo "node ALL=(ALL) NOPASSWD: /workspace/.devcontainer/init-firewall.sh" >> /etc/sudoers.d/node \
-    && echo "node ALL=(ALL) NOPASSWD: /usr/sbin/iptables" >> /etc/sudoers.d/node \
-    && echo "node ALL=(ALL) NOPASSWD: /usr/sbin/ipset" >> /etc/sudoers.d/node \
-    && echo "node ALL=(ALL) NOPASSWD: /usr/bin/apt-get" >> /etc/sudoers.d/node \
-    && chmod 0440 /etc/sudoers.d/node
-
-# Create necessary directories
-RUN mkdir -p /home/node/.zsh_history_dir \
-    && mkdir -p /home/node/.claude \
-    && mkdir -p /workspace \
-    && chown -R node:node /home/node /workspace
-
-# Switch to node user
-USER node
-WORKDIR /home/node
-
-# Install Oh My Zsh with Powerlevel10k theme
+# Install Oh My Zsh with Powerlevel10k theme (as root)
 ARG ZSH_IN_DOCKER_VERSION=1.2.0
 RUN sh -c "$(wget -qO- https://github.com/deluan/zsh-in-docker/releases/download/v${ZSH_IN_DOCKER_VERSION}/zsh-in-docker.sh)" -- \
     -t https://github.com/romkatv/powerlevel10k \
@@ -85,6 +67,27 @@ RUN sh -c "$(wget -qO- https://github.com/deluan/zsh-in-docker/releases/download
     -p zsh-syntax-highlighting \
     -p zsh-completions \
     -p history-substring-search
+
+# Set up the node user (already exists in node:20 image)
+RUN usermod -s /bin/zsh node \
+    && echo "node ALL=(ALL) NOPASSWD: /workspace/.devcontainer/init-firewall.sh" >> /etc/sudoers.d/node \
+    && echo "node ALL=(ALL) NOPASSWD: /usr/sbin/iptables" >> /etc/sudoers.d/node \
+    && echo "node ALL=(ALL) NOPASSWD: /usr/sbin/ipset" >> /etc/sudoers.d/node \
+    && echo "node ALL=(ALL) NOPASSWD: /usr/bin/apt-get" >> /etc/sudoers.d/node \
+    && chmod 0440 /etc/sudoers.d/node
+
+# Create necessary directories and copy zsh config to node user
+RUN mkdir -p /home/node/.zsh_history_dir \
+    && mkdir -p /home/node/.claude \
+    && mkdir -p /workspace \
+    && cp -r /root/.oh-my-zsh /home/node/ 2>/dev/null || true \
+    && cp /root/.zshrc /home/node/ 2>/dev/null || true \
+    && cp -r /root/.p10k.zsh /home/node/ 2>/dev/null || true \
+    && chown -R node:node /home/node /workspace
+
+# Switch to node user
+USER node
+WORKDIR /home/node
 
 # Configure shell and environment
 RUN echo 'export PATH="/workspace/node_modules/.bin:$HOME/.npm-global/bin:$PATH"' >> ~/.zshrc \
