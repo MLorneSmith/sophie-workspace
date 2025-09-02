@@ -17,7 +17,8 @@ export async function cleanupTestData(): Promise<void> {
 		const command = `PGPASSWORD=postgres psql -h 127.0.0.1 -p 55322 -U postgres -d postgres -f ${cleanupSqlPath} 2>&1 || true`;
 
 		// Try using npx supabase db execute if psql is not available
-		const supabaseCommand = "cd apps/e2e && npx supabase db execute -f scripts/cleanup-test-data.sql 2>&1 || true";
+		const supabaseCommand =
+			"cd apps/e2e && npx supabase db execute -f scripts/cleanup-test-data.sql 2>&1 || true";
 
 		try {
 			// Try psql first

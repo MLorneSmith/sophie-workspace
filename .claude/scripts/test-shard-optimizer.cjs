@@ -5,12 +5,12 @@
  * Dynamically analyzes and distributes tests across shards for optimal performance
  */
 
-const fs = require("fs").promises;
-const path = require("path");
-const { execSync } = require("child_process");
+const fs = require("node:fs").promises;
+const path = require("node:path");
+const { execSync } = require("node:child_process");
 
 // Helper function to glob files
-async function glob(pattern) {
+async function glob(_pattern) {
 	try {
 		const result = execSync(
 			`find apps/e2e/tests -name "*.spec.ts" 2>/dev/null`,
@@ -219,7 +219,6 @@ class ShardOptimizer {
 			case "complexity":
 				shards = this.distributeByComplexity(activeTests, shardCount);
 				break;
-			case "balanced":
 			default:
 				shards = this.distributeBalanced(activeTests, shardCount);
 				break;
@@ -537,7 +536,7 @@ class ShardOptimizer {
 			};
 
 			// Analyze E2E shards
-			if (results.e2e && results.e2e.shards) {
+			if (results.e2e?.shards) {
 				const shardTimes = [];
 				const shardFailures = [];
 

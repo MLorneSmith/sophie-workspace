@@ -152,10 +152,10 @@ function getPatterns() {
 					const supabase = createMiddlewareClient(req, res);
 					const { data: userData } = await supabase.auth.getUser();
 					const isOnboarded = userData?.user?.user_metadata?.onboarded === true;
-					
+
 					// Determine the redirect path
 					let nextPath = req.nextUrl.searchParams.get("next");
-					
+
 					// If no explicit next path or if not onboarded, handle accordingly
 					if (!isOnboarded) {
 						// New users should go to onboarding
@@ -195,9 +195,7 @@ function getPatterns() {
 
 				// If user hasn't completed onboarding, redirect to onboarding page
 				if (!isOnboarded) {
-					return NextResponse.redirect(
-						new URL("/onboarding", origin).href,
-					);
+					return NextResponse.redirect(new URL("/onboarding", origin).href);
 				}
 
 				const requiresMultiFactorAuthentication =

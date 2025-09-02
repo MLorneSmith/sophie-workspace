@@ -87,7 +87,6 @@ class FailureReporter implements Reporter {
 
 		// Failure summary if any
 		if (this.failures.length > 0) {
-
 			// Group failures by file for better organization
 			const failuresByFile = new Map<string, typeof this.failures>();
 			this.failures.forEach((failure) => {
@@ -99,8 +98,7 @@ class FailureReporter implements Reporter {
 
 			// Display failures grouped by file
 			failuresByFile.forEach((failures, _file) => {
-				failures.forEach((_failure, _index) => {
-				});
+				failures.forEach((_failure, _index) => {});
 			});
 
 			// Pattern detection for common issues
@@ -149,8 +147,7 @@ class FailureReporter implements Reporter {
 		});
 
 		if (patterns.size > 0) {
-			patterns.forEach((_count, _pattern) => {
-			});
+			patterns.forEach((_count, _pattern) => {});
 		}
 	}
 }

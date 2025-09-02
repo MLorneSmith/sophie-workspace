@@ -5,15 +5,15 @@
  * Implements intelligent test result caching with hash-based change detection
  */
 
-const crypto = require("crypto");
-const fs = require("fs").promises;
-const path = require("path");
-const { execSync } = require("child_process");
+const crypto = require("node:crypto");
+const fs = require("node:fs").promises;
+const path = require("node:path");
+const { execSync } = require("node:child_process");
 
 // Helper function to glob files
 async function glob(pattern) {
 	try {
-		if (pattern && pattern.includes("**/*.spec.ts")) {
+		if (pattern?.includes("**/*.spec.ts")) {
 			const result = execSync(
 				`find apps/e2e/tests -name "*.spec.ts" 2>/dev/null`,
 				{ encoding: "utf8" },

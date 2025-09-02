@@ -125,6 +125,7 @@ class InfrastructureChecker {
 			supabase: await this.healthCheckSupabase(),
 			environment: await this.healthCheckEnvironment(),
 			database: await this.healthCheckDatabase(),
+			testUsers: await this.healthCheckTestUsers(),
 			build: await this.healthCheckBuild(),
 			dependencies: await this.healthCheckDependencies(),
 		};
@@ -173,6 +174,12 @@ class InfrastructureChecker {
 			needsVerification = true;
 		}
 
+		if (healthResults.testUsers !== "healthy") {
+			log("👤 Setting up test users...");
+			setupResults.testUsers = await this.setupTestUsers();
+			needsVerification = true;
+		}
+
 		// Always clean ports as this is lightweight and prevents conflicts
 		setupResults.ports = await this.cleanupPorts();
 
@@ -182,7 +189,12 @@ class InfrastructureChecker {
 			const verificationResults = await this.runHealthChecks();
 
 			// Check if all critical services are now healthy
-			const criticalServices = ["supabase", "environment", "database"];
+			const criticalServices = [
+				"supabase",
+				"environment",
+				"database",
+				"testUsers",
+			];
 			const allHealthy = criticalServices.every(
 				(service) => verificationResults[service] === "healthy",
 			);
@@ -209,6 +221,7 @@ class InfrastructureChecker {
 			ports: setupResults.ports,
 			environment: setupResults.environment,
 			database: setupResults.database,
+			testUsers: setupResults.testUsers,
 			build: setupResults.build,
 			dependencies: setupResults.dependencies,
 		};
@@ -244,7 +257,8 @@ class InfrastructureChecker {
 			const response = await fetch("http://127.0.0.1:55321/rest/v1/", {
 				signal: AbortSignal.timeout(2000),
 				headers: {
-					apikey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0",
+					apikey:
+						"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0",
 				},
 			});
 
@@ -313,7 +327,8 @@ class InfrastructureChecker {
 			const response = await fetch("http://127.0.0.1:55321/rest/v1/", {
 				signal: AbortSignal.timeout(2000),
 				headers: {
-					apikey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0",
+					apikey:
+						"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0",
 				},
 			});
 
@@ -347,6 +362,64 @@ class InfrastructureChecker {
 	}
 
 	/**
+	 * Quick check if required test users exist in database
+	 */
+	async healthCheckTestUsers() {
+		try {
+			log("👤 Checking test users...");
+
+			// Query the onboarding table which has entries for our test users
+			// This is accessible via the public API and confirms users are properly seeded
+			const response = await fetch(
+				"http://127.0.0.1:55321/rest/v1/onboarding?select=user_id",
+				{
+					signal: AbortSignal.timeout(3000),
+					headers: {
+						apikey:
+							"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU",
+						Authorization:
+							"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU",
+						"Content-Type": "application/json",
+					},
+				},
+			);
+
+			if (response.status === 200) {
+				const onboardingRecords = await response.json();
+				const expectedUserIds = [
+					"f47ac10b-58cc-4372-a567-0e02b2c3d479", // test2@slideheroes.com
+					"31a03e74-1639-45b6-bfa7-77447f1a4762", // test1@slideheroes.com
+					"5c064f1b-78ee-4e1c-ac3b-e99aa97c99bf", // michael@slideheroes.com
+				];
+
+				const foundUserIds = onboardingRecords.map((r) => r.user_id);
+				const missingUsers = expectedUserIds.filter(
+					(id) => !foundUserIds.includes(id),
+				);
+
+				if (missingUsers.length === 0) {
+					log("✅ Test users: Healthy (all 3 users found)");
+					return "healthy";
+				} else {
+					log(
+						`⚠️ Test users: Missing ${missingUsers.length} users, needs seeding`,
+					);
+					return "unhealthy";
+				}
+			} else {
+				// If we can't query, it might be a permissions issue or Supabase isn't ready
+				log(
+					`⚠️ Test users: Cannot query (API returned ${response.status}), needs seeding`,
+				);
+				return "unhealthy";
+			}
+		} catch (error) {
+			log(`⚠️ Test users: Check failed (${error.message}), needs seeding`);
+			return "unhealthy";
+		}
+	}
+
+	/**
 	 * Quick check if Playwright is available
 	 */
 	async healthCheckDependencies() {
@@ -372,14 +445,16 @@ class InfrastructureChecker {
 		for (let attempt = 1; attempt <= maxAttempts; attempt++) {
 			try {
 				log(`🔄 Starting Supabase E2E (attempt ${attempt}/${maxAttempts})...`);
-				
+
 				// First, try to stop any existing instances
 				if (attempt > 1) {
 					log("🛑 Stopping existing Supabase instances...");
-					await execAsync("cd apps/e2e && npx supabase stop", { timeout: 30000 }).catch(() => {});
-					await new Promise(resolve => setTimeout(resolve, 3000));
+					await execAsync("cd apps/e2e && npx supabase stop", {
+						timeout: 30000,
+					}).catch(() => {});
+					await new Promise((resolve) => setTimeout(resolve, 3000));
 				}
-				
+
 				// Check if Docker is running (required for Supabase)
 				try {
 					await execAsync("docker info", { timeout: 5000 });
@@ -388,39 +463,40 @@ class InfrastructureChecker {
 					log("   Please ensure Docker is installed and running");
 					return "failed";
 				}
-				
+
 				// Start Supabase with proper timeout
 				const { stdout } = await execAsync(
-					"cd apps/e2e && npx supabase start", 
-					{ timeout: attempt === 1 ? 180000 : 300000 } // 3min first attempt, 5min for retries
+					"cd apps/e2e && npx supabase start",
+					{ timeout: attempt === 1 ? 180000 : 300000 }, // 3min first attempt, 5min for retries
 				);
-				
+
 				// Verify it actually started
 				log("🔍 Verifying Supabase startup...");
-				await new Promise(resolve => setTimeout(resolve, 5000)); // Wait for services to stabilize
-				
-				const health = await this.healthCheckSupabaseE2E();
+				await new Promise((resolve) => setTimeout(resolve, 5000)); // Wait for services to stabilize
+
+				const health = await this.healthCheckSupabase();
 				if (health === "healthy") {
 					log("✅ Supabase E2E started successfully!");
 					return "started";
 				}
-				
+
 				// If health check failed, it might need more time
 				if (attempt < maxAttempts) {
 					log("⏳ Supabase started but not healthy yet. Waiting...");
-					await new Promise(resolve => setTimeout(resolve, 10000));
-					
+					await new Promise((resolve) => setTimeout(resolve, 10000));
+
 					// Check health again
-					const secondHealth = await this.healthCheckSupabaseE2E();
+					const secondHealth = await this.healthCheckSupabase();
 					if (secondHealth === "healthy") {
 						log("✅ Supabase E2E is now healthy!");
 						return "started";
 					}
 				}
-				
 			} catch (error) {
-				logError(`❌ Supabase setup attempt ${attempt} failed: ${error.message}`);
-				
+				logError(
+					`❌ Supabase setup attempt ${attempt} failed: ${error.message}`,
+				);
+
 				if (attempt === maxAttempts) {
 					log("\n📋 Troubleshooting steps:");
 					log("   1. Check Docker is running: docker info");
@@ -430,13 +506,13 @@ class InfrastructureChecker {
 					log("   5. Check logs: cd apps/e2e && npx supabase logs");
 					return "failed";
 				}
-				
+
 				// Wait before retry
-				log(`⏳ Waiting 10s before retry...`);
-				await new Promise(resolve => setTimeout(resolve, 10000));
+				log("⏳ Waiting 10s before retry...");
+				await new Promise((resolve) => setTimeout(resolve, 10000));
 			}
 		}
-		
+
 		return "failed";
 	}
 
@@ -469,6 +545,112 @@ class InfrastructureChecker {
 			logError(`❌ Database setup failed: ${error.message}`);
 			return "failed";
 		}
+	}
+
+	/**
+	 * Setup required test users by running the seed file
+	 */
+	async setupTestUsers() {
+		const maxAttempts = 2;
+		for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+			try {
+				log(`🌱 Seeding test users (attempt ${attempt}/${maxAttempts})...`);
+				log(
+					"   Creating test users: test1@slideheroes.com, test2@slideheroes.com, michael@slideheroes.com",
+				);
+
+				// Run database reset which applies migrations and runs seed files
+				// This ensures clean, consistent test data for E2E tests
+				const { stdout, stderr } = await execAsync(
+					"cd apps/e2e && npx supabase db reset --local",
+					{ timeout: 60000 }, // Longer timeout for reset operation
+				);
+
+				if (stdout) {
+					// Check if the seed output mentions successful user creation
+					const lines = stdout.split("\n");
+					const successIndicators = lines.filter(
+						(line) =>
+							line.includes("INSERT") ||
+							line.includes("Auth Users") ||
+							line.includes("Onboarding") ||
+							line.includes("row"),
+					);
+
+					if (successIndicators.length > 0) {
+						log("📊 Seed output indicates success:");
+						successIndicators
+							.slice(0, 3)
+							.forEach((line) => log(`   ${line.trim()}`));
+					}
+				}
+
+				if (stderr && !stderr.includes("warning")) {
+					logError(`⚠️ Seed stderr: ${stderr.split("\n")[0]}`);
+				}
+
+				// Verify the seeding worked by checking users again
+				log("🔍 Verifying test users were seeded...");
+				await new Promise((resolve) => setTimeout(resolve, 3000)); // Wait for DB consistency
+
+				const verificationResult = await this.healthCheckTestUsers();
+				if (verificationResult === "healthy") {
+					log("✅ Test users seeded and verified successfully!");
+					log("   ✓ test1@slideheroes.com");
+					log("   ✓ test2@slideheroes.com");
+					log("   ✓ michael@slideheroes.com");
+					return "seeded";
+				}
+
+				if (attempt < maxAttempts) {
+					log("⏳ Verification failed, will retry...");
+					await new Promise((resolve) => setTimeout(resolve, 5000));
+				}
+			} catch (error) {
+				logError(
+					`❌ Test user seeding attempt ${attempt} failed: ${error.message}`,
+				);
+
+				if (error.message.includes("ECONNREFUSED")) {
+					logError(
+						"   Database connection refused - ensure Supabase is running",
+					);
+				}
+
+				if (error.message.includes("already exists")) {
+					log(
+						"   Note: Some users may already exist, attempting verification...",
+					);
+					const verificationResult = await this.healthCheckTestUsers();
+					if (verificationResult === "healthy") {
+						log("✅ Test users already exist and are healthy!");
+						return "seeded";
+					}
+				}
+
+				if (attempt === maxAttempts) {
+					log("\n📋 Test user seeding troubleshooting:");
+					log(
+						"   1. Check Supabase is running: cd apps/e2e && npx supabase status",
+					);
+					log(
+						"   2. Check seed file exists: ls -la apps/e2e/supabase/seeds/01-e2e-test-data.sql",
+					);
+					log("   3. Try manual seeding: cd apps/e2e && npx supabase db seed");
+					log("   4. Check database logs: cd apps/e2e && npx supabase logs db");
+					log(
+						"   5. Verify migrations: cd apps/e2e && npx supabase migration list",
+					);
+					return "failed";
+				}
+
+				// Wait before retry
+				log("⏳ Waiting 5s before retry...");
+				await new Promise((resolve) => setTimeout(resolve, 5000));
+			}
+		}
+
+		return "failed";
 	}
 
 	/**
@@ -597,6 +779,14 @@ class InfrastructureChecker {
 			fixes.push({
 				issue: "Critical dependencies missing",
 				command: "pnpm install --frozen-lockfile",
+				severity: "critical",
+			});
+		}
+
+		if (results.testUsers === "failed") {
+			fixes.push({
+				issue: "Required test users missing from database",
+				command: "cd apps/e2e && npx supabase db seed",
 				severity: "critical",
 			});
 		}
@@ -985,9 +1175,12 @@ class E2ETestRunner {
 		try {
 			log("🧹 Cleaning up any existing server processes...");
 			await execAsync(`pkill -9 -f "next-server" 2>/dev/null || true`);
-			await execAsync(`pkill -9 -f "pnpm.*dev:test" 2>/dev/null || true`);
-			await execAsync(`lsof -ti:3000,3010,3020 | xargs -r kill -9 2>/dev/null || true`);
-			await new Promise(resolve => setTimeout(resolve, 2000));
+			// FIXED: Don't kill our own dev:test processes - only kill orphaned ones
+			// await execAsync(`pkill -9 -f "pnpm.*dev:test" 2>/dev/null || true`);
+			await execAsync(
+				"lsof -ti:3000,3010,3020 | xargs -r kill -9 2>/dev/null || true",
+			);
+			await new Promise((resolve) => setTimeout(resolve, 2000));
 		} catch (e) {
 			// Ignore cleanup errors
 		}
@@ -1017,33 +1210,41 @@ class E2ETestRunner {
 					FORCE_COLOR: "0",
 				},
 			});
-			
+
 			// Don't unref - we want to keep the process alive
 			// this.serverProcess.unref();
-			
+
 			// Capture stdout/stderr for debugging
-			this.serverProcess.stdout.on('data', (data) => {
+			this.serverProcess.stdout.on("data", (data) => {
 				const output = data.toString();
-				if (output.includes('Local:') || output.includes('ready') || output.includes('error')) {
+				if (
+					output.includes("Local:") ||
+					output.includes("ready") ||
+					output.includes("error")
+				) {
 					log(`📡 Frontend: ${output.trim()}`);
 				}
 			});
-			
-			this.serverProcess.stderr.on('data', (data) => {
+
+			this.serverProcess.stderr.on("data", (data) => {
 				const output = data.toString();
 				log(`📡 Frontend stderr: ${output.trim()}`);
 			});
-			
+
 			// Add error handlers
-			this.serverProcess.on('error', (err) => {
+			this.serverProcess.on("error", (err) => {
 				logError(`Frontend server error: ${err.message}`);
 			});
-			
-			this.serverProcess.on('exit', (code, signal) => {
-				logError(`🚨 Frontend server EXITED with code ${code} (signal: ${signal})`);
+
+			this.serverProcess.on("exit", (code, signal) => {
+				logError(
+					`🚨 Frontend server EXITED with code ${code} (signal: ${signal})`,
+				);
 				if (signal) {
 					logError(`   Signal received: ${signal}`);
-					logError(`   This indicates the server was terminated by signal propagation!`);
+					logError(
+						"   This indicates the server was terminated by signal propagation!",
+					);
 				}
 				this.serverProcess = null;
 			});
@@ -1064,33 +1265,41 @@ class E2ETestRunner {
 					FORCE_COLOR: "0",
 				},
 			});
-			
+
 			// Don't unref - we want to keep the process alive
 			// this.backendProcess.unref();
-			
+
 			// Capture stdout/stderr for debugging
-			this.backendProcess.stdout.on('data', (data) => {
+			this.backendProcess.stdout.on("data", (data) => {
 				const output = data.toString();
-				if (output.includes('Local:') || output.includes('ready') || output.includes('error')) {
+				if (
+					output.includes("Local:") ||
+					output.includes("ready") ||
+					output.includes("error")
+				) {
 					log(`🔧 Backend: ${output.trim()}`);
 				}
 			});
-			
-			this.backendProcess.stderr.on('data', (data) => {
+
+			this.backendProcess.stderr.on("data", (data) => {
 				const output = data.toString();
 				log(`🔧 Backend stderr: ${output.trim()}`);
 			});
-			
+
 			// Add error handlers
-			this.backendProcess.on('error', (err) => {
+			this.backendProcess.on("error", (err) => {
 				logError(`Backend server error: ${err.message}`);
 			});
-			
-			this.backendProcess.on('exit', (code, signal) => {
-				logError(`🚨 Backend server EXITED with code ${code} (signal: ${signal})`);
+
+			this.backendProcess.on("exit", (code, signal) => {
+				logError(
+					`🚨 Backend server EXITED with code ${code} (signal: ${signal})`,
+				);
 				if (signal) {
 					logError(`   Signal received: ${signal}`);
-					logError(`   This indicates the server was terminated by signal propagation!`);
+					logError(
+						"   This indicates the server was terminated by signal propagation!",
+					);
 				}
 				this.backendProcess = null;
 			});
@@ -1113,19 +1322,36 @@ class E2ETestRunner {
 			if (retries >= maxRetries && (!frontendReady || !backendReady)) {
 				if (currentRecovery < recoveryAttempts) {
 					currentRecovery++;
-					log(`⚠️ Servers not ready after ${retries * 2}s. Attempting recovery (${currentRecovery}/${recoveryAttempts})...`);
-					
+					log(
+						`⚠️ Servers not ready after ${retries * 2}s. Attempting recovery (${currentRecovery}/${recoveryAttempts})...`,
+					);
+
 					// Step 1: Kill stuck processes more aggressively
 					log("🔧 Killing stuck processes...");
 					try {
 						// Kill all Node/Next.js related processes
 						await execAsync(`pkill -9 -f "next-server" 2>/dev/null || true`);
-						await execAsync(`pkill -9 -f "playwright|vitest" 2>/dev/null || true`);
-						await execAsync(`pkill -9 -f "pnpm.*dev:test" 2>/dev/null || true`);
-						await execAsync(`pkill -9 -f "node.*dev:test" 2>/dev/null || true`);
+						await execAsync(
+							`pkill -9 -f "playwright|vitest" 2>/dev/null || true`,
+						);
+						// Don't kill our own dev:test servers during recovery - they might just be slow to start
+						// Only kill if we're sure they're dead (check PIDs)
+						if (this.serverProcess?.pid) {
+							// Kill dev:test processes except our known server PIDs
+							await execAsync(
+								`pgrep -f "pnpm.*dev:test" | grep -v ${this.serverProcess.pid} | xargs -r kill -9 2>/dev/null || true`,
+							);
+						}
+						if (this.backendProcess?.pid) {
+							await execAsync(
+								`pgrep -f "pnpm.*dev:test" | grep -v ${this.backendProcess.pid} | xargs -r kill -9 2>/dev/null || true`,
+							);
+						}
 						// Force kill anything on our test ports
-						await execAsync(`lsof -ti:3000,3010,3020 | xargs -r kill -9 2>/dev/null || true`);
-						await new Promise(resolve => setTimeout(resolve, 3000)); // Give more time for processes to die
+						await execAsync(
+							"lsof -ti:3000,3010,3020 | xargs -r kill -9 2>/dev/null || true",
+						);
+						await new Promise((resolve) => setTimeout(resolve, 3000)); // Give more time for processes to die
 						log("✅ Processes killed");
 					} catch (e) {
 						log("⚠️ Process cleanup warning: " + e.message);
@@ -1134,14 +1360,19 @@ class E2ETestRunner {
 					// Step 2: Check and restart Supabase if needed
 					log("🔧 Checking Supabase status...");
 					try {
-						const { stdout } = await execAsync(`npx supabase status 2>/dev/null || echo "not running"`);
-						if (stdout.includes("not running") || stdout.includes("unhealthy")) {
+						const { stdout } = await execAsync(
+							`npx supabase status 2>/dev/null || echo "not running"`,
+						);
+						if (
+							stdout.includes("not running") ||
+							stdout.includes("unhealthy")
+						) {
 							log("⚠️ Supabase not running or unhealthy. Restarting...");
-							await execAsync(`npx supabase stop`);
-							await new Promise(resolve => setTimeout(resolve, 3000));
-							await execAsync(`npx supabase start`);
+							await execAsync("npx supabase stop");
+							await new Promise((resolve) => setTimeout(resolve, 3000));
+							await execAsync("npx supabase start");
 							log("✅ Supabase restarted");
-							await new Promise(resolve => setTimeout(resolve, 5000)); // Wait for Supabase to initialize
+							await new Promise((resolve) => setTimeout(resolve, 5000)); // Wait for Supabase to initialize
 						}
 					} catch (e) {
 						log("⚠️ Supabase check warning: " + e.message);
@@ -1149,12 +1380,12 @@ class E2ETestRunner {
 
 					// Step 3: Try to start servers again with different approaches
 					log("🔄 Restarting test servers...");
-					
+
 					// Kill any existing server processes first
 					if (this.serverProcess) {
 						try {
 							// Kill process group for detached processes
-							process.kill(-this.serverProcess.pid, 'SIGKILL');
+							process.kill(-this.serverProcess.pid, "SIGKILL");
 						} catch (e) {
 							// Process might already be dead
 						}
@@ -1163,7 +1394,7 @@ class E2ETestRunner {
 					if (this.backendProcess) {
 						try {
 							// Kill process group for detached processes
-							process.kill(-this.backendProcess.pid, 'SIGKILL');
+							process.kill(-this.backendProcess.pid, "SIGKILL");
 						} catch (e) {
 							// Process might already be dead
 						}
@@ -1171,45 +1402,55 @@ class E2ETestRunner {
 					}
 
 					// Extra cleanup to ensure ports are free
-					await execAsync(`lsof -ti:3000,3020 | xargs -r kill -9 2>/dev/null || true`);
-					await new Promise(resolve => setTimeout(resolve, 2000));
+					await execAsync(
+						"lsof -ti:3000,3020 | xargs -r kill -9 2>/dev/null || true",
+					);
+					await new Promise((resolve) => setTimeout(resolve, 2000));
 
 					// Try different approach based on recovery attempt
 					if (currentRecovery === 1) {
 						// First recovery: Use spawn with more explicit settings
 						if (!frontendReady) {
 							log("🌐 Starting frontend with spawn (recovery mode)...");
-							this.serverProcess = spawn("pnpm", ["--filter", "web", "dev:test"], {
-								cwd: process.cwd(),
-								stdio: ["ignore", "pipe", "pipe"],
-								detached: true, // Keep detached in recovery mode
-								shell: true,
-								env: {
-									...process.env,
-									NODE_ENV: "test",
-									PORT: "3000",
-									FORCE_COLOR: "0",
+							this.serverProcess = spawn(
+								"pnpm",
+								["--filter", "web", "dev:test"],
+								{
+									cwd: process.cwd(),
+									stdio: ["ignore", "pipe", "pipe"],
+									detached: true, // Keep detached in recovery mode
+									shell: true,
+									env: {
+										...process.env,
+										NODE_ENV: "test",
+										PORT: "3000",
+										FORCE_COLOR: "0",
+									},
 								},
-							});
+							);
 							// Don't unref - we want to keep the process alive
 							// this.serverProcess.unref();
 						}
 
 						if (!backendReady) {
 							log("🔧 Starting backend with spawn (recovery mode)...");
-							this.backendProcess = spawn("pnpm", ["--filter", "payload", "dev:test"], {
-								cwd: process.cwd(),
-								stdio: ["ignore", "pipe", "pipe"],
-								detached: true, // Keep detached in recovery mode
-								shell: true,
-								env: {
-									...process.env,
-									NODE_ENV: "test",
-									PORT: "3020",
-									FORCE_COLOR: "0",
+							this.backendProcess = spawn(
+								"pnpm",
+								["--filter", "payload", "dev:test"],
+								{
+									cwd: process.cwd(),
+									stdio: ["ignore", "pipe", "pipe"],
+									detached: true, // Keep detached in recovery mode
+									shell: true,
+									env: {
+										...process.env,
+										NODE_ENV: "test",
+										PORT: "3020",
+										FORCE_COLOR: "0",
+									},
 								},
-							});
-							// Don't unref - we want to keep the process alive  
+							);
+							// Don't unref - we want to keep the process alive
 							// this.backendProcess.unref();
 						}
 					} else {
@@ -1220,7 +1461,7 @@ class E2ETestRunner {
 								// Start in background with nohup
 								await execAsync(
 									`cd ${process.cwd()} && PORT=3000 NODE_ENV=test nohup pnpm --filter web dev:test > /tmp/frontend.log 2>&1 &`,
-									{ timeout: 5000 }
+									{ timeout: 5000 },
 								);
 								log("🌐 Frontend server started with exec");
 							} catch (e) {
@@ -1234,16 +1475,16 @@ class E2ETestRunner {
 								// Start in background with nohup
 								await execAsync(
 									`cd ${process.cwd()} && PORT=3020 NODE_ENV=test nohup pnpm --filter payload dev:test > /tmp/backend.log 2>&1 &`,
-									{ timeout: 5000 }
+									{ timeout: 5000 },
 								);
 								log("🔧 Backend server started with exec");
 							} catch (e) {
 								log("⚠️ Backend exec start warning: " + e.message);
 							}
 						}
-						
+
 						// Give extra time for exec-started processes
-						await new Promise(resolve => setTimeout(resolve, 5000));
+						await new Promise((resolve) => setTimeout(resolve, 5000));
 					}
 
 					// Reset retry counter for another attempt
@@ -1254,18 +1495,18 @@ class E2ETestRunner {
 					break;
 				}
 			}
-			
+
 			// Check frontend health with detailed error tracking
 			if (!frontendReady) {
 				try {
 					const frontendResponse = await fetch(
 						"http://127.0.0.1:3000/api/health",
-						{ signal: AbortSignal.timeout(3000) }
+						{ signal: AbortSignal.timeout(3000) },
 					).catch((err) => {
 						lastFrontendError = err.message;
 						return null;
 					});
-					if (frontendResponse && frontendResponse.ok) {
+					if (frontendResponse?.ok) {
 						const data = await frontendResponse.json().catch(() => null);
 						if (data && data.status === "ready") {
 							frontendReady = true;
@@ -1276,10 +1517,9 @@ class E2ETestRunner {
 					lastFrontendError = error.message;
 					// Fallback to basic check
 					try {
-						const basicCheck = await fetch(
-							"http://127.0.0.1:3000",
-							{ signal: AbortSignal.timeout(3000) }
-						).catch((err) => {
+						const basicCheck = await fetch("http://127.0.0.1:3000", {
+							signal: AbortSignal.timeout(3000),
+						}).catch((err) => {
 							lastFrontendError = err.message;
 							return null;
 						});
@@ -1298,12 +1538,12 @@ class E2ETestRunner {
 				try {
 					const backendResponse = await fetch(
 						"http://127.0.0.1:3020/api/health",
-						{ signal: AbortSignal.timeout(3000) }
+						{ signal: AbortSignal.timeout(3000) },
 					).catch((err) => {
 						lastBackendError = err.message;
 						return null;
 					});
-					if (backendResponse && backendResponse.ok) {
+					if (backendResponse?.ok) {
 						const data = await backendResponse.json().catch(() => null);
 						if (data && data.status === "ready") {
 							backendReady = true;
@@ -1314,10 +1554,9 @@ class E2ETestRunner {
 					lastBackendError = error.message;
 					// Fallback to basic check
 					try {
-						const basicCheck = await fetch(
-							"http://127.0.0.1:3020",
-							{ signal: AbortSignal.timeout(3000) }
-						).catch((err) => {
+						const basicCheck = await fetch("http://127.0.0.1:3020", {
+							signal: AbortSignal.timeout(3000),
+						}).catch((err) => {
 							lastBackendError = err.message;
 							return null;
 						});
@@ -1348,7 +1587,7 @@ class E2ETestRunner {
 				log(
 					`⏳ Still waiting... (${elapsed}s elapsed, Frontend: ${frontendReady ? "✅" : "⏳"}, Backend: ${backendReady ? "✅" : "⏳"})`,
 				);
-				
+
 				// Log errors if servers aren't responding after 20s
 				if (elapsed > 20) {
 					if (!frontendReady && lastFrontendError) {
@@ -1357,13 +1596,13 @@ class E2ETestRunner {
 					if (!backendReady && lastBackendError) {
 						log(`   Backend issue: ${lastBackendError}`);
 					}
-					
+
 					// Check if server processes are still alive
-					if (this.serverProcess && this.serverProcess.killed) {
-						log(`   ⚠️ Frontend process died unexpectedly`);
+					if (this.serverProcess?.killed) {
+						log("   ⚠️ Frontend process died unexpectedly");
 					}
-					if (this.backendProcess && this.backendProcess.killed) {
-						log(`   ⚠️ Backend process died unexpectedly`);
+					if (this.backendProcess?.killed) {
+						log("   ⚠️ Backend process died unexpectedly");
 					}
 				}
 			}
@@ -1375,18 +1614,20 @@ class E2ETestRunner {
 		// If we've exhausted all attempts (including recovery), throw an error
 		if (!frontendReady || !backendReady) {
 			const errorDetails = [];
-			if (!frontendReady) errorDetails.push("Frontend (port 3000) not responding");
-			if (!backendReady) errorDetails.push("Backend (port 3020) not responding");
-			
+			if (!frontendReady)
+				errorDetails.push("Frontend (port 3000) not responding");
+			if (!backendReady)
+				errorDetails.push("Backend (port 3020) not responding");
+
 			log("\n❌ Server startup failed after all recovery attempts");
 			log("   Issues:");
-			errorDetails.forEach(detail => log(`   - ${detail}`));
+			errorDetails.forEach((detail) => log(`   - ${detail}`));
 			log("\n   Troubleshooting steps:");
 			log("   1. Check if ports 3000 and 3020 are in use: lsof -ti:3000,3020");
 			log("   2. Ensure Supabase is running: npx supabase status");
 			log("   3. Check for Node/npm issues: node --version && npm --version");
 			log("   4. Try manual server start: pnpm --filter web dev:test");
-			
+
 			throw new Error(
 				`Servers failed to start after ${recoveryAttempts} recovery attempts. ${errorDetails.join(", ")}`,
 			);
@@ -1484,7 +1725,7 @@ class E2ETestRunner {
 			const response = await fetch(`http://127.0.0.1:${port}/api/health`, {
 				signal: AbortSignal.timeout(2000),
 			}).catch(() => null);
-			return response && response.ok;
+			return response?.ok;
 		} catch (e) {
 			return false;
 		}
@@ -1492,12 +1733,12 @@ class E2ETestRunner {
 
 	async stopTestServers() {
 		log("🛑 Stopping test servers gracefully...");
-		
+
 		// For detached processes, we need to handle cleanup differently
 		if (this.serverProcess && !this.serverProcess.killed) {
 			try {
 				// Send SIGTERM to the process group since it's detached
-				process.kill(-this.serverProcess.pid, 'SIGTERM');
+				process.kill(-this.serverProcess.pid, "SIGTERM");
 				log("  📡 Frontend server SIGTERM sent");
 			} catch (e) {
 				// Process might already be dead
@@ -1505,11 +1746,11 @@ class E2ETestRunner {
 			}
 			this.serverProcess = null;
 		}
-		
+
 		if (this.backendProcess && !this.backendProcess.killed) {
 			try {
 				// Send SIGTERM to the process group since it's detached
-				process.kill(-this.backendProcess.pid, 'SIGTERM');
+				process.kill(-this.backendProcess.pid, "SIGTERM");
 				log("  🔧 Backend server SIGTERM sent");
 			} catch (e) {
 				// Process might already be dead
@@ -1519,14 +1760,16 @@ class E2ETestRunner {
 		}
 
 		// Give servers time to shut down gracefully
-		await new Promise(resolve => setTimeout(resolve, 2000));
+		await new Promise((resolve) => setTimeout(resolve, 2000));
 
 		// Force cleanup any lingering processes
 		log("🧹 Cleaning up any remaining dev:test processes...");
 		await execAsync('pkill -f "dev:test" || true').catch(() => {});
-		
+
 		// Also clean up by port to be thorough
-		await execAsync('lsof -ti:3000,3020 | xargs -r kill -TERM 2>/dev/null || true').catch(() => {});
+		await execAsync(
+			"lsof -ti:3000,3020 | xargs -r kill -TERM 2>/dev/null || true",
+		).catch(() => {});
 	}
 
 	async acquirePortLocks() {
@@ -1567,7 +1810,7 @@ class E2ETestRunner {
 	async run(status, options = {}) {
 		// If quick mode, only run smoke tests (shard 4)
 		if (options.quick) {
-			log(`\n🏃 Running quick smoke tests only...`);
+			log("\n🏃 Running quick smoke tests only...");
 			this.shards = [{ id: 4, name: "Smoke", tests: 9 }];
 		} else {
 			// Reset to all shards for full run
@@ -1884,8 +2127,8 @@ class E2ETestRunner {
 
 		// Check output against retry patterns
 		for (const [key, strategy] of Object.entries(this.retryPatterns)) {
-			const matchesAllPatterns = strategy.patterns.every(
-				(pattern) => result.output && result.output.includes(pattern),
+			const matchesAllPatterns = strategy.patterns.every((pattern) =>
+				result.output?.includes(pattern),
 			);
 
 			if (matchesAllPatterns) {
@@ -1940,7 +2183,7 @@ class E2ETestRunner {
 					env: shardEnv,
 				},
 			);
-			
+
 			// Don't unref shard processes - we need to monitor them
 			// proc.unref();
 
@@ -1950,7 +2193,7 @@ class E2ETestRunner {
 				);
 				try {
 					// For detached processes, kill the process group
-					process.kill(-proc.pid, 'SIGKILL');
+					process.kill(-proc.pid, "SIGKILL");
 				} catch (e) {
 					// Fallback to killing just the process
 					proc.kill("SIGKILL");
@@ -2104,7 +2347,7 @@ class E2ETestRunner {
 	 */
 	async checkCachedResults() {
 		// Get test files using find command
-		const { execSync } = require("child_process");
+		const { execSync } = require("node:child_process");
 		const result = execSync(
 			`find apps/e2e/tests -name "*.spec.ts" 2>/dev/null`,
 			{ encoding: "utf8" },
@@ -2155,7 +2398,7 @@ class E2ETestRunner {
 			);
 
 			// Update shards with optimized configuration
-			this.shards = config.shards.map((shard, index) => ({
+			this.shards = config.shards.map((shard, _index) => ({
 				id: shard.id,
 				name: shard.name,
 				tests: shard.totalTests,
