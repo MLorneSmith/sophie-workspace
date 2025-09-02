@@ -26,9 +26,11 @@ if [ ! -f /home/node/.gitconfig ]; then
     git config --global user.email "${GIT_USER_EMAIL:-node@localhost}"
 fi
 
-# 2. Essential: Create workspace directories (quick)
-log_info "Creating workspace directories..."
-mkdir -p /workspace/node_modules /workspace/.pnpm-store 2>/dev/null || true
+# 2. Essential: Fix permissions and create workspace directories (quick)
+log_info "Fixing permissions and creating workspace directories..."
+sudo chown -R node:node /workspace || true
+mkdir -p /workspace/node_modules/.pnpm /home/node/.pnpm-store 2>/dev/null || true
+sudo chown -R node:node /workspace/node_modules /home/node/.pnpm-store || true
 
 # 3. Essential: Set up pnpm (quick)
 export PNPM_HOME="/home/node/.local/share/pnpm"
