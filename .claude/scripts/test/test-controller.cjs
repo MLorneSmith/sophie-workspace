@@ -1347,10 +1347,22 @@ class E2ETestRunner {
 								`pgrep -f "pnpm.*dev:test" | grep -v ${this.backendProcess.pid} | xargs -r kill -9 2>/dev/null || true`,
 							);
 						}
-						// Force kill anything on our test ports
-						await execAsync(
-							"lsof -ti:3000,3010,3020 | xargs -r kill -9 2>/dev/null || true",
-						);
+						// Force kill anything on our test ports EXCEPT our managed servers
+						// Get PIDs on ports but exclude our managed server PIDs
+						if (this.serverProcess?.pid || this.backendProcess?.pid) {
+							const pidsToExclude = [];
+							if (this.serverProcess?.pid) pidsToExclude.push(this.serverProcess.pid);
+							if (this.backendProcess?.pid) pidsToExclude.push(this.backendProcess.pid);
+							const excludePattern = pidsToExclude.join('\\|');
+							await execAsync(
+								`lsof -ti:3000,3010,3020 | grep -v "${excludePattern}" | xargs -r kill -9 2>/dev/null || true`,
+							);
+						} else {
+							// No managed servers, safe to kill all processes on ports
+							await execAsync(
+								"lsof -ti:3000,3010,3020 | xargs -r kill -9 2>/dev/null || true",
+							);
+						}
 						await new Promise((resolve) => setTimeout(resolve, 3000)); // Give more time for processes to die
 						log("✅ Processes killed");
 					} catch (e) {
@@ -1401,10 +1413,10 @@ class E2ETestRunner {
 						this.backendProcess = null;
 					}
 
-					// Extra cleanup to ensure ports are free
-					await execAsync(
-						"lsof -ti:3000,3020 | xargs -r kill -9 2>/dev/null || true",
-					);
+					// Extra cleanup to ensure ports are free, but preserve any active managed servers
+					// Note: At this point we've already killed the server processes above if they were dead
+					// So we shouldn't kill anything that's legitimately running
+					// Skip port cleanup here as it's redundant with the cleanup above
 					await new Promise((resolve) => setTimeout(resolve, 2000));
 
 					// Try different approach based on recovery attempt
@@ -1734,6 +1746,10 @@ class E2ETestRunner {
 	async stopTestServers() {
 		log("🛑 Stopping test servers gracefully...");
 
+		// Store PIDs before clearing references
+		const serverPid = this.serverProcess?.pid;
+		const backendPid = this.backendProcess?.pid;
+
 		// For detached processes, we need to handle cleanup differently
 		if (this.serverProcess && !this.serverProcess.killed) {
 			try {
@@ -1762,14 +1778,40 @@ class E2ETestRunner {
 		// Give servers time to shut down gracefully
 		await new Promise((resolve) => setTimeout(resolve, 2000));
 
-		// Force cleanup any lingering processes
-		log("🧹 Cleaning up any remaining dev:test processes...");
-		await execAsync('pkill -f "dev:test" || true').catch(() => {});
+		// Force cleanup any lingering processes EXCEPT our tracked servers
+		// This is called when we're intentionally shutting down, so we only
+		// want to clean up orphaned processes, not kill active test servers
+		log("🧹 Cleaning up any orphaned dev:test processes...");
+		
+		// Build exclusion list for PIDs we're managing
+		const excludePids = [];
+		if (serverPid) excludePids.push(serverPid);
+		if (backendPid) excludePids.push(backendPid);
+		
+		if (excludePids.length > 0) {
+			// Only kill dev:test processes that aren't our managed servers
+			const excludePattern = excludePids.join('\\|');
+			await execAsync(
+				`pgrep -f "dev:test" | grep -v "${excludePattern}" | xargs -r kill -TERM 2>/dev/null || true`
+			).catch(() => {});
+		} else {
+			// No managed servers, safe to kill all dev:test processes
+			await execAsync('pkill -f "dev:test" || true').catch(() => {});
+		}
 
-		// Also clean up by port to be thorough
-		await execAsync(
-			"lsof -ti:3000,3020 | xargs -r kill -TERM 2>/dev/null || true",
-		).catch(() => {});
+		// Also clean up by port to be thorough, but exclude our managed servers
+		// This handles cases where processes might be on ports but not matching dev:test pattern
+		if (excludePids.length > 0) {
+			const excludePattern = excludePids.join('\\|');
+			await execAsync(
+				`lsof -ti:3000,3020 | grep -v "${excludePattern}" | xargs -r kill -TERM 2>/dev/null || true`,
+			).catch(() => {});
+		} else {
+			// No managed servers, safe to kill all processes on ports
+			await execAsync(
+				"lsof -ti:3000,3020 | xargs -r kill -TERM 2>/dev/null || true",
+			).catch(() => {});
+		}
 	}
 
 	async acquirePortLocks() {
@@ -1958,6 +2000,7 @@ class E2ETestRunner {
 	async runShardsWithQueue(status) {
 		const shardQueue = [...this.shards];
 		const runningShards = new Map(); // Map of shardId -> Promise
+		const currentTests = new Map(); // Map of shardId -> current test info
 		const results = [];
 		const failedShards = []; // Track shards that failed for potential retry
 
@@ -1997,6 +2040,15 @@ class E2ETestRunner {
 			if (runningNames) {
 				log(`     Running: ${runningNames}`);
 			}
+			
+			// Display current tests for each running shard
+			Array.from(currentTests.entries()).forEach(([shardId, testInfo]) => {
+				if (testInfo && testInfo.testName) {
+					const shardName = this.shards.find((s) => s.id === shardId)?.name || `Shard ${shardId}`;
+					log(`       └─ ${shardName}: ${testInfo.testName}`);
+				}
+			});
+			
 			log(
 				`     Elapsed: ${Math.floor(elapsed / 60)}m ${elapsed % 60}s | ETA: ${eta}`,
 			);
@@ -2015,6 +2067,7 @@ class E2ETestRunner {
 
 			const completed = await Promise.race(promises);
 			runningShards.delete(completed.shardId);
+			currentTests.delete(completed.shardId); // Clean up current test tracking
 			return completed.result;
 		};
 
@@ -2033,8 +2086,9 @@ class E2ETestRunner {
 					`  🚀 Starting shard ${shard.id}: ${shard.name} (${runningShards.size + 1}/${this.maxConcurrentShards} concurrent)`,
 				);
 
-				const shardPromise = this.runShardWithRetry(shard, 1);
+				const shardPromise = this.runShardWithRetry(shard, 1, currentTests);
 				runningShards.set(shard.id, shardPromise);
+				currentTests.set(shard.id, { testName: "Starting..." });
 
 				// Delay after first shard to allow servers to start
 				// Subsequent shards will reuse the servers
@@ -2078,8 +2132,8 @@ class E2ETestRunner {
 		return results;
 	}
 
-	async runShardWithRetry(shard, attempt = 1) {
-		const result = await this.runShard(shard, attempt);
+	async runShardWithRetry(shard, attempt = 1, currentTests = null) {
+		const result = await this.runShard(shard, attempt, currentTests);
 
 		// Add shardId to result for tracking
 		result.shardId = shard.id;
@@ -2106,7 +2160,7 @@ class E2ETestRunner {
 				);
 			}
 
-			return this.runShardWithRetry(shard, attempt + 1);
+			return this.runShardWithRetry(shard, attempt + 1, currentTests);
 		}
 
 		// Reset timeout after retries
@@ -2157,11 +2211,12 @@ class E2ETestRunner {
 		return null;
 	}
 
-	async runShard(shard, attempt = 1) {
+	async runShard(shard, attempt = 1, currentTests = null) {
 		return new Promise((resolve) => {
 			const startTime = Date.now();
 			let output = "";
 			let hasServerStartupDetected = false;
+			let lastTestName = null;
 
 			// Create clean environment for shard execution
 			const shardEnv = { ...process.env };
@@ -2212,6 +2267,42 @@ class E2ETestRunner {
 				) {
 					hasServerStartupDetected = true;
 				}
+
+				// Parse current test name from Playwright output
+				// Playwright shows tests like: " [chromium] › test-file.spec.ts:123:5 › Test description"
+				// Or: "  ✓  1 [1:1] › Authentication › Login Flow › should login successfully"
+				// Or: "  ✘  1 [1:1] › Authentication › Login Flow › should handle errors"
+				// Or: "  -  1 [1:1] › Test description (skipped)"
+				const testPatterns = [
+					// Running test pattern
+					/\[.*?\]\s+›\s+(.+\.spec\.ts.*?›\s+.+?)(?:\s+\(\d+(?:\.\d+)?s\))?$/m,
+					// Test with status
+					/[✓✘-]\s+\d+\s+\[.*?\]\s+›\s+(.+?)(?:\s+\(\d+(?:\.\d+)?s\))?$/m,
+					// Simple test pattern
+					/›\s+([^›]+?)(?:\s+\(\d+(?:\.\d+)?s\))?$/m
+				];
+
+				for (const pattern of testPatterns) {
+					const match = chunk.match(pattern);
+					if (match) {
+						lastTestName = match[1].trim();
+						// Update current test for this shard
+						if (currentTests) {
+							currentTests.set(shard.id, { 
+								testName: lastTestName,
+								timestamp: Date.now()
+							});
+						}
+						break;
+					}
+				}
+
+				// Also detect when tests are starting
+				if (chunk.includes("Running") && chunk.includes("test")) {
+					if (currentTests) {
+						currentTests.set(shard.id, { testName: "Initializing tests..." });
+					}
+				}
 			});
 
 			proc.stderr.on("data", (data) => {
@@ -2221,6 +2312,11 @@ class E2ETestRunner {
 			proc.on("close", (code) => {
 				clearTimeout(timeout);
 				const duration = Math.round((Date.now() - startTime) / 1000);
+				
+				// Clear current test for this shard
+				if (currentTests) {
+					currentTests.delete(shard.id);
+				}
 
 				// Parse Playwright output
 				const result = this.parsePlaywrightOutput(output, shard);
@@ -2708,7 +2804,7 @@ class TestController {
 			if (unit.workspaceAnalysis && unit.workspaceAnalysis.skipped > 0) {
 				log("   ⚠️ Some workspaces were cached/skipped");
 				log(
-					"   💡 Force fresh run: TURBO_FORCE=true node .claude/scripts/test-controller.cjs --unit",
+					"   💡 Force fresh run: TURBO_FORCE=true node .claude/scripts/test/test-controller.cjs --unit",
 				);
 			}
 			log("   💡 Check specific failures: pnpm test:unit --reporter=verbose");
