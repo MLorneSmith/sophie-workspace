@@ -163,9 +163,9 @@
 	},
 
 	// Run firewall initialization and project setup
-	"postStartCommand": "/workspace/.devcontainer/scripts/post-start.sh",
-	"postCreateCommand": "/workspace/.devcontainer/scripts/post-create.sh",
-	"postAttachCommand": "/workspace/.devcontainer/scripts/post-attach.sh",
+	"postStartCommand": "bash /workspace/.devcontainer/scripts/post-start.sh",
+	"postCreateCommand": "bash /workspace/.devcontainer/scripts/post-create.sh",
+	"postAttachCommand": "bash /workspace/.devcontainer/scripts/post-attach.sh",
 
 	// GitHub Codespaces configuration
 	"hostRequirements": {
