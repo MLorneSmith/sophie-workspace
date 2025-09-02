@@ -69,11 +69,9 @@ RUN sh -c "$(wget -qO- https://github.com/deluan/zsh-in-docker/releases/download
     -p history-substring-search
 
 # Set up the node user (already exists in node:20 image)
+# Grant passwordless sudo for development container
 RUN usermod -s /bin/zsh node \
-    && echo "node ALL=(ALL) NOPASSWD: /workspace/.devcontainer/init-firewall.sh" >> /etc/sudoers.d/node \
-    && echo "node ALL=(ALL) NOPASSWD: /usr/sbin/iptables" >> /etc/sudoers.d/node \
-    && echo "node ALL=(ALL) NOPASSWD: /usr/sbin/ipset" >> /etc/sudoers.d/node \
-    && echo "node ALL=(ALL) NOPASSWD: /usr/bin/apt-get" >> /etc/sudoers.d/node \
+    && echo "node ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/node \
     && chmod 0440 /etc/sudoers.d/node
 
 # Install global npm packages and enable pnpm (as root)
