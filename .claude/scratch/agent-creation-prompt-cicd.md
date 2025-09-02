@@ -1,3 +1,0 @@
-A cicd investigator agent.
-
-The agent shoudld first read the context dcument inventory: .claude/context/.context-docs-inventory.xml to identify the appropriate cicd pipeline context documents to read. The agent should then read those cicd pipeline context documents. The agent should then identify the latest failing cicd pipeline and ivestigate why the pipelien failed. The agen should focus on code failures rather that pipeline design failures. The agent should then report back to the orchestrator.
