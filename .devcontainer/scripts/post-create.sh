@@ -22,6 +22,14 @@ log_error() {
     echo -e "${RED}✗${NC} $1"
 }
 
+# 0. Optimize disk space in Codespaces
+if [ "$CODESPACES" = "true" ]; then
+    log_info "Running disk space optimization for Codespaces..."
+    if [ -f /workspace/.devcontainer/scripts/optimize-disk-space.sh ]; then
+        bash /workspace/.devcontainer/scripts/optimize-disk-space.sh || log_warning "Disk optimization completed with warnings"
+    fi
+fi
+
 # 1. Set up Git configuration
 log_info "Configuring Git..."
 if [ -f /home/node/.gitconfig ]; then
@@ -59,8 +67,33 @@ export PATH="$PNPM_HOME:$PATH"
 export COREPACK_ENABLE_AUTO_PIN=0
 export COREPACK_ENABLE_STRICT=0
 
-# Install dependencies (non-interactive)
-CI=true pnpm install --frozen-lockfile || CI=true pnpm install
+# Configure pnpm for disk space efficiency in Codespaces
+if [ "$CODESPACES" = "true" ]; then
+    log_info "Configuring pnpm for limited disk space..."
+    # Use smaller store and disable symlinks to save space
+    pnpm config set store-dir /workspace/.pnpm-store
+    pnpm config set package-import-method copy
+    pnpm config set prefer-frozen-lockfile true
+    pnpm config set virtual-store-dir /workspace/node_modules/.pnpm
+    # Clear any existing store to start fresh
+    pnpm store prune || true
+fi
+
+# Install dependencies with disk-space optimizations
+log_info "Installing dependencies (this may take a few minutes)..."
+if [ "$CODESPACES" = "true" ]; then
+    # In Codespaces, use more conservative installation
+    CI=true pnpm install --frozen-lockfile --prefer-offline --no-optional || {
+        log_warning "First install attempt failed, retrying with cleanup..."
+        # Clean and retry if first attempt fails
+        rm -rf node_modules
+        pnpm store prune
+        CI=true pnpm install --frozen-lockfile --prefer-offline --no-optional
+    }
+else
+    # Local development can use standard installation
+    CI=true pnpm install --frozen-lockfile || CI=true pnpm install
+fi
 
 # 3. Set up environment files
 log_info "Setting up environment files..."
