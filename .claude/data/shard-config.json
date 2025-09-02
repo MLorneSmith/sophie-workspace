@@ -1,8 +1,8 @@
 {
 	"strategy": "balanced",
 	"shardCount": 1,
-	"totalTests": 73,
-	"generated": "2025-08-31T16:10:35.562Z",
+	"totalTests": 74,
+	"generated": "2025-09-02T16:28:58.351Z",
 	"shards": [
 		{
 			"id": 1,
@@ -23,9 +23,9 @@
 				"team-billing.spec.ts",
 				"healthcheck.spec.ts"
 			],
-			"totalTests": 73,
-			"totalComplexity": 1450,
-			"estimatedTime": 145,
+			"totalTests": 74,
+			"totalComplexity": 1472,
+			"estimatedTime": 147,
 			"categories": [
 				"accessibility",
 				"admin",
@@ -42,11 +42,11 @@
 	],
 	"validation": {
 		"valid": false,
-		"issues": ["Shard 1 has too many tests (73 > 20)"],
+		"issues": ["Shard 1 has too many tests (74 > 20)"],
 		"stats": {
-			"avgTests": 73,
-			"avgComplexity": 1450,
-			"avgTime": 145,
+			"avgTests": 74,
+			"avgComplexity": 1472,
+			"avgTime": 147,
 			"maxDeviation": 0
 		}
 	},
@@ -71,7 +71,7 @@
 		},
 		"sequential": {
 			"shards": 1,
-			"testsPerShard": 73,
+			"testsPerShard": 74,
 			"description": "Sequential execution (1 shard)",
 			"estimatedTime": "10-15 minutes"
 		}
