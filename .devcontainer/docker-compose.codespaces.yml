@@ -2,8 +2,6 @@
 # This file provides overrides for running in GitHub Codespaces
 # To use: Add this file to dockerComposeFile array in devcontainer.json when in Codespaces
 
-version: '3.8'
-
 services:
   app:
     # Remove Docker socket mount in Codespaces (not needed/available)
