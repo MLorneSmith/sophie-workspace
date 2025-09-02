@@ -1,0 +1,54 @@
+# Optimized Dockerfile for GitHub Codespaces
+# Uses minimal layers and defers non-essential installations
+
+FROM node:20-slim
+
+# Set timezone
+ARG TZ=America/Los_Angeles
+ENV TZ=$TZ
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+# Install only essential tools in one layer
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    zsh \
+    sudo \
+    curl \
+    ca-certificates \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Set up the node user with passwordless sudo
+RUN usermod -s /bin/zsh node \
+    && echo "node ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/node \
+    && chmod 0440 /etc/sudoers.d/node
+
+# Install pnpm globally (fast)
+RUN corepack enable \
+    && corepack prepare pnpm@latest --activate
+
+# Create workspace directory
+WORKDIR /workspace
+RUN chown -R node:node /workspace
+
+# Switch to node user
+USER node
+
+# Set up basic shell (minimal config)
+RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended \
+    && echo 'export PNPM_HOME="/home/node/.local/share/pnpm"' >> ~/.zshrc \
+    && echo 'export PATH="$PNPM_HOME:$PATH"' >> ~/.zshrc
+
+# Copy package files for dependency caching
+COPY --chown=node:node package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY --chown=node:node apps/*/package.json ./apps/
+COPY --chown=node:node packages/*/package.json ./packages/
+
+# Pre-install dependencies (this layer gets cached)
+RUN pnpm install --frozen-lockfile --prefer-offline --no-optional || true
+
+# Copy the rest of the application
+COPY --chown=node:node . .
+
+# The container will stay running
+CMD ["sleep", "infinity"]
