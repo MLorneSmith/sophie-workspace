@@ -4,7 +4,7 @@
 
 services:
   app:
-    # Remove Docker socket mount in Codespaces (not needed/available)
+    # Override volumes to remove problematic host mounts in Codespaces
     volumes:
       - ..:/workspace:cached
       - node_modules:/workspace/node_modules
@@ -14,7 +14,9 @@ services:
       - supabase_data:/workspace/apps/web/.supabase
       - command_history:/home/node/.zsh_history
       - claude_config:/home/node/.claude
-      # No Docker socket or host mounts in Codespaces
+      # Explicitly exclude host mounts that cause issues in Codespaces
+      # No .gitconfig, .ssh, or .config/gh mounts
+      # No Docker socket mount
     environment:
       # Codespaces-specific environment variables
       - CODESPACES=true
