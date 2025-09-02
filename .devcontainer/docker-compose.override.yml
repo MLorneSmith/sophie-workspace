@@ -7,9 +7,9 @@ services:
     # Mount git config and SSH keys from host for local development
     # These mounts are conditional - they won't fail if files don't exist
     volumes:
-      - ~/.gitconfig:/home/node/.gitconfig:ro,cached
-      - ~/.ssh:/home/node/.ssh:ro,cached
-      - ~/.config/gh:/home/node/.config/gh:ro,cached
+      - ${HOME}/.gitconfig:/home/node/.gitconfig:ro,cached
+      - ${HOME}/.ssh:/home/node/.ssh:ro,cached
+      - ${HOME}/.config/gh:/home/node/.config/gh:ro,cached
     environment:
       # Local development specific environment variables
       - CODESPACES=${CODESPACES:-false}

@@ -122,7 +122,7 @@ services:
 
   # Supabase Studio
   studio:
-    image: supabase/studio:20240101.01
+    image: supabase/studio:latest
     environment:
       STUDIO_PG_META_URL: http://postgres:5432/postgres
       SUPABASE_URL: http://kong:8000
