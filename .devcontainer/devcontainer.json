@@ -1,6 +1,9 @@
 {
 	"name": "SlideHeroes Multi-Container Dev Environment",
-	"dockerComposeFile": ["docker-compose.yml"],
+	// Docker Compose configuration
+	// For Codespaces: both docker-compose.yml and docker-compose.codespaces.yml are loaded
+	// For local dev: only docker-compose.yml (can manually add docker-compose.local-override.yml if needed)
+	"dockerComposeFile": ["docker-compose.yml", "docker-compose.codespaces.yml"],
 	"service": "app",
 	"workspaceFolder": "/workspace",
 	"remoteUser": "node",
@@ -162,9 +165,14 @@
 		}
 	},
 
-	// Run firewall initialization and project setup
-	"postStartCommand": "bash /workspace/.devcontainer/scripts/post-start.sh",
+	// Setup commands with proper sequencing
+	// initializeCommand runs on the host before containers are created
+	"initializeCommand": "bash .devcontainer/scripts/setup-compose-files.sh || true",
+	// postCreateCommand runs after container is created
 	"postCreateCommand": "bash /workspace/.devcontainer/scripts/post-create.sh",
+	// postStartCommand runs each time container starts
+	"postStartCommand": "bash /workspace/.devcontainer/scripts/post-start.sh",
+	// postAttachCommand runs when VS Code attaches
 	"postAttachCommand": "bash /workspace/.devcontainer/scripts/post-attach.sh",
 
 	// GitHub Codespaces configuration

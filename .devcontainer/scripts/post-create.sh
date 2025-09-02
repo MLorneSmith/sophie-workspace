@@ -116,9 +116,20 @@ EOF
     log_info "Codespaces environment configured"
 fi
 
-# 4. Initialize Supabase (if Docker is available)
+# 4. Initialize PostgreSQL container
+log_info "Initializing PostgreSQL container..."
+if [ -f /workspace/.devcontainer/scripts/init-postgres.sh ]; then
+    bash /workspace/.devcontainer/scripts/init-postgres.sh || log_warning "PostgreSQL initialization failed - will retry"
+else
+    log_warning "PostgreSQL init script not found"
+fi
+
+# 5. Initialize Supabase (if Docker is available)
 if command -v docker &> /dev/null; then
     log_info "Starting Supabase services..."
+    
+    # Wait a bit for PostgreSQL to be fully ready
+    sleep 5
     
     # Start Supabase
     cd /workspace/apps/web
@@ -135,7 +146,7 @@ else
     log_warning "Docker not available yet - Supabase will be started in post-start script"
 fi
 
-# 5. Set up MCP servers
+# 6. Set up MCP servers
 log_info "Setting up MCP servers..."
 
 # Ensure MCP servers directory exists
@@ -150,7 +161,7 @@ if [ -d /workspace/.mcp-servers ]; then
     done
 fi
 
-# 6. Set up database tools
+# 7. Set up database tools
 log_info "Setting up database tools..."
 
 # Install database client tools
@@ -188,7 +199,7 @@ export SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhY
 
 EOF
 
-# 7. Install additional development tools
+# 8. Install additional development tools
 log_info "Installing additional development tools..."
 
 # Install useful CLI tools
@@ -205,7 +216,7 @@ sudo apt-get install -qq -y \
 mkdir -p /home/node/.config/bat
 echo '--theme="Visual Studio Dark+"' > /home/node/.config/bat/config
 
-# 8. Set up VS Code workspace settings
+# 9. Set up VS Code workspace settings
 log_info "Configuring VS Code workspace..."
 
 # Ensure .vscode directory exists
@@ -241,7 +252,7 @@ EOF
     log_info "Created VS Code workspace settings"
 fi
 
-# 9. Prebuild optimization
+# 10. Prebuild optimization
 log_info "Running prebuild optimizations..."
 
 # Build the project to cache dependencies
@@ -250,7 +261,7 @@ pnpm build || log_warning "Initial build failed - this is normal for first setup
 # Generate TypeScript types
 pnpm --filter web supabase:typegen || log_warning "TypeScript generation failed - database may not be ready"
 
-# 10. Create welcome message
+# 11. Create welcome message
 cat > /workspace/.devcontainer/WELCOME.md << 'EOF'
 # 🚀 Welcome to SlideHeroes Development Container!
 

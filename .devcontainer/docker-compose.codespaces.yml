@@ -65,13 +65,20 @@ services:
 
   # Database services with resource limits
   postgres:
-    # Override for Codespaces to help with debugging
+    # Override for Codespaces to handle rootless Docker environment
     environment:
       # Ensure these are set even if parent doesn't have them
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
       POSTGRES_HOST_AUTH_METHOD: trust
+      PGDATA: /var/lib/postgresql/data/pgdata
+    # Remove user override for Codespaces (runs as default postgres user)
+    user: ""
+    # Simplified volume configuration for Codespaces
+    volumes:
+      # Use anonymous volume in Codespaces to avoid permission issues
+      - /var/lib/postgresql/data
     deploy:
       resources:
         limits:
