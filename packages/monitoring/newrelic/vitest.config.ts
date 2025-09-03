@@ -7,7 +7,8 @@ import { defineProject } from "vitest/config";
 
 export default defineProject({
 	test: {
-		// Node.js environment for server-side testing
+		// Project-specific configuration only
+		name: "monitoring-newrelic",
 		environment: "node",
 		globals: true,
 
@@ -20,10 +21,9 @@ export default defineProject({
 			"**/coverage/**",
 		],
 
-		// Performance settings
+		// Project-specific performance settings
 		testTimeout: 10000,
 		hookTimeout: 5000,
-		teardownTimeout: 2000,
 	},
 
 	// Path resolution
