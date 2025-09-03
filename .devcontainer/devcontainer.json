@@ -109,14 +109,7 @@
 				"git.enableSmartCommit": true,
 				"git.confirmSync": false,
 				// Vitest configuration for monorepo with projects support
-				"vitest.enable": true,
-				"vitest.commandLine": "pnpm test:unit",
-				"vitest.workspaceConfig": "./vitest.workspace.ts",
-				"vitest.ignoreWorkspace": true,
-				"vitest.configSearchPatternExclude": ["**"],
-				"vitest.disableWorkspaceWarning": true,
-				"vitest.configSearchPattern": "",
-				"vitest.rootConfig": "./vitest.workspace.ts"
+				"vitest.enable": false
 			}
 		},
 		"codespaces": {
