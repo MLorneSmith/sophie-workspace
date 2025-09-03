@@ -1351,9 +1351,11 @@ class E2ETestRunner {
 						// Get PIDs on ports but exclude our managed server PIDs
 						if (this.serverProcess?.pid || this.backendProcess?.pid) {
 							const pidsToExclude = [];
-							if (this.serverProcess?.pid) pidsToExclude.push(this.serverProcess.pid);
-							if (this.backendProcess?.pid) pidsToExclude.push(this.backendProcess.pid);
-							const excludePattern = pidsToExclude.join('\\|');
+							if (this.serverProcess?.pid)
+								pidsToExclude.push(this.serverProcess.pid);
+							if (this.backendProcess?.pid)
+								pidsToExclude.push(this.backendProcess.pid);
+							const excludePattern = pidsToExclude.join("\\|");
 							await execAsync(
 								`lsof -ti:3000,3010,3020 | grep -v "${excludePattern}" | xargs -r kill -9 2>/dev/null || true`,
 							);
@@ -1782,17 +1784,17 @@ class E2ETestRunner {
 		// This is called when we're intentionally shutting down, so we only
 		// want to clean up orphaned processes, not kill active test servers
 		log("🧹 Cleaning up any orphaned dev:test processes...");
-		
+
 		// Build exclusion list for PIDs we're managing
 		const excludePids = [];
 		if (serverPid) excludePids.push(serverPid);
 		if (backendPid) excludePids.push(backendPid);
-		
+
 		if (excludePids.length > 0) {
 			// Only kill dev:test processes that aren't our managed servers
-			const excludePattern = excludePids.join('\\|');
+			const excludePattern = excludePids.join("\\|");
 			await execAsync(
-				`pgrep -f "dev:test" | grep -v "${excludePattern}" | xargs -r kill -TERM 2>/dev/null || true`
+				`pgrep -f "dev:test" | grep -v "${excludePattern}" | xargs -r kill -TERM 2>/dev/null || true`,
 			).catch(() => {});
 		} else {
 			// No managed servers, safe to kill all dev:test processes
@@ -1802,7 +1804,7 @@ class E2ETestRunner {
 		// Also clean up by port to be thorough, but exclude our managed servers
 		// This handles cases where processes might be on ports but not matching dev:test pattern
 		if (excludePids.length > 0) {
-			const excludePattern = excludePids.join('\\|');
+			const excludePattern = excludePids.join("\\|");
 			await execAsync(
 				`lsof -ti:3000,3020 | grep -v "${excludePattern}" | xargs -r kill -TERM 2>/dev/null || true`,
 			).catch(() => {});
@@ -2040,15 +2042,17 @@ class E2ETestRunner {
 			if (runningNames) {
 				log(`     Running: ${runningNames}`);
 			}
-			
+
 			// Display current tests for each running shard
 			Array.from(currentTests.entries()).forEach(([shardId, testInfo]) => {
-				if (testInfo && testInfo.testName) {
-					const shardName = this.shards.find((s) => s.id === shardId)?.name || `Shard ${shardId}`;
+				if (testInfo?.testName) {
+					const shardName =
+						this.shards.find((s) => s.id === shardId)?.name ||
+						`Shard ${shardId}`;
 					log(`       └─ ${shardName}: ${testInfo.testName}`);
 				}
 			});
-			
+
 			log(
 				`     Elapsed: ${Math.floor(elapsed / 60)}m ${elapsed % 60}s | ETA: ${eta}`,
 			);
@@ -2279,7 +2283,7 @@ class E2ETestRunner {
 					// Test with status
 					/[✓✘-]\s+\d+\s+\[.*?\]\s+›\s+(.+?)(?:\s+\(\d+(?:\.\d+)?s\))?$/m,
 					// Simple test pattern
-					/›\s+([^›]+?)(?:\s+\(\d+(?:\.\d+)?s\))?$/m
+					/›\s+([^›]+?)(?:\s+\(\d+(?:\.\d+)?s\))?$/m,
 				];
 
 				for (const pattern of testPatterns) {
@@ -2288,9 +2292,9 @@ class E2ETestRunner {
 						lastTestName = match[1].trim();
 						// Update current test for this shard
 						if (currentTests) {
-							currentTests.set(shard.id, { 
+							currentTests.set(shard.id, {
 								testName: lastTestName,
-								timestamp: Date.now()
+								timestamp: Date.now(),
 							});
 						}
 						break;
@@ -2312,7 +2316,7 @@ class E2ETestRunner {
 			proc.on("close", (code) => {
 				clearTimeout(timeout);
 				const duration = Math.round((Date.now() - startTime) / 1000);
-				
+
 				// Clear current test for this shard
 				if (currentTests) {
 					currentTests.delete(shard.id);
