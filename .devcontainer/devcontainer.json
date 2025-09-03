@@ -112,19 +112,11 @@
 				"vitest.enable": true,
 				"vitest.commandLine": "pnpm test:unit",
 				"vitest.workspaceConfig": "./vitest.workspace.ts",
-				"vitest.ignoreWorkspace": false,
-				"vitest.configSearchPatternExclude": [
-					"**/node_modules/**",
-					"**/workspace/**",
-					"**/dist/**",
-					"**/coverage/**",
-					"**/packages/**",
-					"packages/**",
-					"**/apps/**",
-					"apps/**"
-				],
+				"vitest.ignoreWorkspace": true,
+				"vitest.configSearchPatternExclude": ["**"],
 				"vitest.disableWorkspaceWarning": true,
-				"vitest.configSearchPattern": ""
+				"vitest.configSearchPattern": "",
+				"vitest.rootConfig": "./vitest.workspace.ts"
 			}
 		},
 		"codespaces": {
