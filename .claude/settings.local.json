@@ -13,7 +13,8 @@
 			"Read(/tmp/claudekit-repo/src/commands/**)",
 			"mcp__exa__exa_search",
 			"mcp__perplexity-ask__perplexity_ask",
-			"mcp__context7__get-library-docs"
+			"mcp__context7__get-library-docs",
+			"Bash(~/.local/bin/codespace-manager.sh:*)"
 		],
 		"deny": [],
 		"ask": [],
