@@ -106,40 +106,65 @@ services:
   postgres:
     image: supabase/postgres:17.5.1.021-orioledb
     environment:
+      # Required Supabase environment variables
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       POSTGRES_DB: postgres
       POSTGRES_HOST_AUTH_METHOD: trust
-      # Supabase-specific environment variables
+      # Supabase-specific settings
       JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-token-with-at-least-32-characters-long}
-      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+      JWT_EXP: 3600
+      # Performance tuning for Codespaces
+      POSTGRES_MAX_CONNECTIONS: 100
+      POSTGRES_SHARED_BUFFERS: 256MB
+      POSTGRES_EFFECTIVE_CACHE_SIZE: 1GB
+      POSTGRES_MAINTENANCE_WORK_MEM: 64MB
+      POSTGRES_WORK_MEM: 4MB
+      # Disable OrioleDB by default in Codespaces (can cause issues)
+      POSTGRES_ORIOLEDB_ENABLED: "false"
     volumes:
       # Use named volume for data persistence
       - postgres_data:/var/lib/postgresql/data
-      # Add initialization scripts if needed
-      - ./init-scripts:/docker-entrypoint-initdb.d:ro
     networks:
       - slideheroes
     ports:
       - "54322:5432"
-    # Supabase PostgreSQL already includes optimized settings
+    # Command without OrioleDB
+    command: >
+      postgres
+      -c shared_preload_libraries=pg_stat_statements,pg_net,pgsodium,pgaudit
+      -c log_statement=none
+      -c log_min_messages=warning
+      -c max_connections=100
+      -c shared_buffers=256MB
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres || exit 1"]
-      interval: 10s
-      timeout: 5s
+      test: ["CMD-SHELL", "pg_isready -q -U postgres || exit 1"]
+      interval: 30s
+      timeout: 10s
       retries: 10
-      start_period: 60s
+      start_period: 180s  # Give Supabase PostgreSQL 3 minutes to start
     hostname: slideheroes-db
     restart: unless-stopped
-    # Add init flag for proper signal handling
-    init: true
+    # Resource limits for Codespaces
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
 
-  # Supabase Studio
+  # Supabase Studio (optional - comment out if not needed)
   studio:
     image: supabase/studio:latest
     environment:
-      STUDIO_PG_META_URL: http://postgres:5432/postgres
-      SUPABASE_URL: http://kong:8000
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      DEFAULT_ORGANIZATION: "Default Organization"
+      DEFAULT_PROJECT: "Default Project"
+      STUDIO_PG_META_URL: postgresql://postgres:postgres@postgres:5432/postgres
+      SUPABASE_URL: ${SUPABASE_URL:-http://localhost:8000}
+      SUPABASE_PUBLIC_URL: ${SUPABASE_PUBLIC_URL:-http://localhost:8000}
       SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY:-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0}
       SUPABASE_SERVICE_KEY: ${SUPABASE_SERVICE_KEY:-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2UiLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0}
     networks:
@@ -148,8 +173,9 @@ services:
       - "54321:3000"
     depends_on:
       postgres:
-        condition: service_healthy
+        condition: service_started  # Changed from service_healthy to avoid blocking
     hostname: slideheroes-studio
+    restart: unless-stopped
 
   # Redis cache
   redis:
