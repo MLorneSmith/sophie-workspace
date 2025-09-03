@@ -1,6 +1,6 @@
 ---
 name: codecheck
-description: Comprehensive code quality check using specialized agents
+description: Comprehensive code quality check using direct script execution
 usage: /codecheck [options]
 options:
   - fix: Apply automatic fixes (default true)
@@ -10,7 +10,7 @@ options:
 
 # Code Check Command
 
-Performs comprehensive code quality checks using specialized agents for TypeScript, linting, and formatting.
+Performs comprehensive code quality checks using direct script execution for TypeScript, linting, and formatting.
 
 ## Command Structure
 
@@ -40,25 +40,7 @@ initialization:
 execution:
   method: "direct_script"
   script: ".claude/scripts/codecheck-direct.sh"
-  alternative: "codecheck-orchestrator agent with Bash tool"
   note: "Direct script execution ensures actual commands are run"
-```
-
-### Alternative: Launch Orchestrator Agent
-```yaml
-orchestrator:
-  agent: "codecheck-orchestrator"
-  role: "Execute all checks directly using Bash tool"
-  important: "Agent MUST use Bash tool to run actual commands"
-  phases:
-    - name: "TypeScript Check"
-      command: "pnpm typecheck:raw --force"
-      blocking: true
-    - name: "Parallel Checks"
-      commands:
-        - "pnpm lint"
-        - "pnpm format"
-      parallel: true
 ```
 
 ### 3. TypeScript Phase (Direct Execution)
@@ -79,7 +61,7 @@ typecheck_phase:
 ### 4. Linting Phase
 ```yaml
 lint_phase:
-  agent: "lint-agent"
+  method: "direct_script"
   commands:
     - "pnpm lint"
     - "pnpm lint:yaml"
@@ -96,7 +78,7 @@ lint_phase:
 ### 5. Formatting Phase
 ```yaml
 format_phase:
-  agent: "format-agent"
+  method: "direct_script"
   commands:
     - "pnpm format"
   auto_fix_command: "pnpm format:fix"
@@ -119,59 +101,20 @@ status_reporting:
     failed: "🔴 codecheck:errors"
 ```
 
-## Execution Methods
+## Execution Method
 
-### Method 1: Direct Script (Recommended)
+### Direct Script Execution
 ```bash
 # Run the direct execution script
 .claude/scripts/codecheck-direct.sh
 ```
 
-### Method 2: Agent with Bash Tool
-```yaml
-task:
-  subagent_type: "codecheck-orchestrator"
-  description: "Run all checks directly"
-  prompt: |
-    Execute comprehensive code checks using Bash tool:
-    1. Run pnpm typecheck:raw --force directly
-    2. Run pnpm lint and pnpm format in parallel
-    3. Apply automatic fixes where safe
-    4. CRITICAL: Update /tmp/.claude_codecheck_status_ file
-    5. Use Bash tool for ALL commands - do not simulate
-    6. Return structured results
-```
-
-### Lint Agent Task
-```yaml
-task:
-  subagent_type: "lint-agent"
-  description: "Comprehensive linting with Biome"
-  prompt: |
-    Perform comprehensive linting with cache bypass:
-    1. Run pnpm lint for JavaScript/TypeScript
-    2. Run pnpm lint:yaml for YAML files
-    3. Run pnpm lint:md for Markdown files
-    4. Apply automatic fixes with pnpm lint:fix
-    5. Update codecheck status file
-    6. Return structured results
-    Note: Use typecheck:raw --force to bypass Turbo cache for accurate results
-```
-
-### Format Agent Task
-```yaml
-task:
-  subagent_type: "format-agent"
-  description: "Code formatting with Biome"
-  prompt: |
-    Check and fix code formatting with cache bypass:
-    1. Run pnpm format to check current state
-    2. Apply pnpm format:fix if needed
-    3. Verify all files are properly formatted
-    4. Update codecheck status file
-    5. Return structured results
-    Note: Use typecheck:raw --force to bypass Turbo cache for accurate results
-```
+This script handles all phases of the code check process:
+1. TypeScript checking with cache bypass
+2. Parallel linting and formatting checks
+3. Automatic fix application where safe
+4. Status file updates for statusline integration
+5. Comprehensive result reporting
 
 ## Output Format
 
@@ -301,11 +244,10 @@ statusline:
 
 ## Notes
 
-- Runs three specialized agents in optimal order
+- Uses direct script execution for reliable performance
 - Updates statusline in real-time during execution
 - Preserves uncommitted changes
 - **Uses typecheck:raw --force to bypass Turbo cache for typecheck accuracy**
 - **Ensures consistency between local and CI environments**
 - Integrates with existing build pipeline
 - Prioritizes accuracy over speed for pre-deployment validation
-- No longer tracks GitHub issue #101
