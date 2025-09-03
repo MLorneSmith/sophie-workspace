@@ -12,7 +12,8 @@
 			"mcp__code-reasoning__code-reasoning",
 			"Read(/tmp/claudekit-repo/src/commands/**)",
 			"mcp__exa__exa_search",
-			"mcp__perplexity-ask__perplexity_ask"
+			"mcp__perplexity-ask__perplexity_ask",
+			"mcp__context7__get-library-docs"
 		],
 		"deny": [],
 		"ask": [],
