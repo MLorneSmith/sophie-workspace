@@ -16,6 +16,9 @@
 		},
 		"ghcr.io/devcontainers-contrib/features/supabase-cli:1": {
 			"version": "latest"
+		},
+		"ghcr.io/devcontainers/features/sshd:1": {
+			"version": "latest"
 		}
 	},
 
@@ -134,6 +137,7 @@
 
 	// Port forwarding for SlideHeroes services
 	"forwardPorts": [
+		22, // SSH server
 		3000, // Next.js development server
 		3001, // Next.js HMR
 		54321, // Supabase Studio
@@ -153,6 +157,10 @@
 	],
 
 	"portsAttributes": {
+		"22": {
+			"label": "SSH Server",
+			"onAutoForward": "silent"
+		},
 		"3000": {
 			"label": "Next.js App",
 			"onAutoForward": "notify",
