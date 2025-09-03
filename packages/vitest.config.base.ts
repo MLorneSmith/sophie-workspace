@@ -4,10 +4,10 @@
  */
 
 import { resolve } from "node:path";
-import { defineConfig } from "vitest/config";
+import { defineProject } from "vitest/config";
 
 export const createPackageConfig = (packageDir: string) => {
-	return defineConfig({
+	return defineProject({
 		test: {
 			// Node.js environment for most packages
 			environment: "node",

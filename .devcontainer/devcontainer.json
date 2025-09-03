@@ -105,14 +105,11 @@
 				},
 				"git.enableSmartCommit": true,
 				"git.confirmSync": false,
-				// Vitest configuration for monorepo
+				// Vitest configuration for monorepo with projects support
 				"vitest.enable": true,
 				"vitest.commandLine": "pnpm test:unit",
-				"vitest.nodeExecutable": "node",
-				"vitest.packageManager": "pnpm",
-				// Explicitly set root path for Vitest extension
-				"vitest.rootPath": "/workspace",
-				// Disable automatic discovery to prevent scanning individual packages
+				"vitest.rootConfig": "./vitest.config.ts",
+				"vitest.workspaceConfig": "./vitest.config.ts",
 				"vitest.disableWorkspaceWarning": true
 			}
 		},
