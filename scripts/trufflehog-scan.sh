@@ -35,11 +35,18 @@ fi
 
 # Run TruffleHog using the recommended approach from documentation
 # Scan from HEAD to check staged changes
+# Use exclusion file if it exists
+EXCLUDE_ARGS=""
+if [ -f ".trufflehogexclude" ]; then
+    EXCLUDE_ARGS="--exclude-paths .trufflehogexclude"
+fi
+
 trufflehog git file://. \
     --since-commit HEAD \
     --results=verified,unknown \
     --fail \
-    --no-update 2>&1 | while IFS= read -r line; do
+    --no-update \
+    $EXCLUDE_ARGS 2>&1 | while IFS= read -r line; do
     # Check if it's a finding
     if echo "$line" | grep -q "Found verified result" || echo "$line" | grep -q "Found unverified result"; then
         echo -e "${RED}$line${NC}"
