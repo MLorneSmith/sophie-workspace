@@ -119,7 +119,9 @@
 					"**/dist/**",
 					"**/coverage/**",
 					"**/packages/**",
-					"packages/**"
+					"packages/**",
+					"**/apps/**",
+					"apps/**"
 				],
 				"vitest.disableWorkspaceWarning": true,
 				"vitest.configSearchPattern": ""
