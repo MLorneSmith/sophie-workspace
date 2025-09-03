@@ -220,6 +220,7 @@ For a consistent local development experience, use VS Code with our devcontainer
 5. When prompted, click "Reopen in Container"
 
 The devcontainer includes:
+
 - Pre-configured Node.js 20 environment
 - All required VS Code extensions (including Claude Code)
 - Supabase local development setup

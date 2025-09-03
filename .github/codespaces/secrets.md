@@ -50,7 +50,7 @@ These secrets are personal to each developer and should be configured at the use
 
 - **`GITHUB_TOKEN`**: Personal access token for GitHub API
   - Required scopes: `repo`, `workflow`, `read:org`
-  - Generate at: https://github.com/settings/tokens
+  - Generate at: <https://github.com/settings/tokens>
 
 - **`NPM_TOKEN`**: NPM authentication token (if using private packages)
 
@@ -65,7 +65,7 @@ These secrets are personal to each developer and should be configured at the use
 
 ### For User Secrets
 
-1. Go to https://github.com/settings/codespaces
+1. Go to <https://github.com/settings/codespaces>
 2. Click "New secret"
 3. Select the repository (MLorneSmith/2025slideheroes)
 4. Add your personal secret
@@ -79,7 +79,8 @@ These secrets are personal to each developer and should be configured at the use
 
 ## Environment Variables in Codespaces
 
-When a Codespace starts, secrets are automatically injected as environment variables. They can be accessed in your application code:
+When a Codespace starts, secrets are automatically injected as environment variables.
+They can be accessed in your application code:
 
 ```javascript
 // Node.js/Next.js

@@ -12,6 +12,7 @@ Complete guide for setting up and using GitHub Codespaces with the 2025slidehero
 4. Click "Create codespace on main"
 
 The Codespace will automatically:
+
 - Build all three containers (app, e2e, mcp-servers)
 - Install dependencies
 - Configure networking
@@ -39,7 +40,7 @@ pnpm dev
 
 Our Codespaces environment uses a multi-container architecture:
 
-```
+```text
 ┌─────────────────────────────────────────────────┐
 │                GitHub Codespaces                 │
 ├─────────────────────────────────────────────────┤
@@ -66,10 +67,11 @@ Our Codespaces environment uses a multi-container architecture:
 ### Container Details
 
 #### Main App Container (`app`)
+
 - **Purpose**: Primary development environment
 - **Base Image**: Node.js 20
 - **Ports**: 3000-3001, 6006, 9229
-- **Features**: 
+- **Features**:
   - pnpm package manager
   - Supabase CLI
   - GitHub CLI
@@ -77,12 +79,14 @@ Our Codespaces environment uses a multi-container architecture:
   - ESLint/Prettier
 
 #### E2E Test Container (`e2e`)
+
 - **Purpose**: End-to-end testing with Playwright
 - **Base Image**: Playwright official image
 - **Environment**: Headless browsers pre-installed
 - **Usage**: Run E2E tests without affecting main app
 
 #### MCP Servers Container (`mcp-servers`)
+
 - **Purpose**: Model Context Protocol servers
 - **Services**: Various MCP implementations
 - **Ports**: 3010-3020
@@ -208,6 +212,7 @@ docker compose -f docker-compose.yml -f docker-compose.override.yml up
 ### Container Issues
 
 #### Container won't start
+
 ```bash
 # Check logs
 docker compose logs app
@@ -218,6 +223,7 @@ docker compose up -d app
 ```
 
 #### Port already in use
+
 ```bash
 # Find process using port
 lsof -i :3000
@@ -231,6 +237,7 @@ kill -9 <PID>
 ### Network Issues
 
 #### Containers can't communicate
+
 ```bash
 # Verify network
 docker network ls
@@ -243,6 +250,7 @@ docker compose up -d
 ```
 
 #### Can't access forwarded ports
+
 1. Check port forwarding in Codespaces settings
 2. Ensure service is running: `docker compose ps`
 3. Check firewall rules in container
@@ -250,6 +258,7 @@ docker compose up -d
 ### Performance Issues
 
 #### Slow performance
+
 ```bash
 # Check resource usage
 docker stats
@@ -259,6 +268,7 @@ docker stats
 ```
 
 #### Out of disk space
+
 ```bash
 # Clean up Docker
 docker system prune -a
@@ -274,6 +284,7 @@ rm -rf .next/cache
 ### Database Issues
 
 #### Can't connect to database
+
 ```bash
 # Check PostgreSQL is running
 docker compose ps postgres
@@ -288,11 +299,13 @@ docker compose logs postgres
 ## 📊 Resource Requirements
 
 ### Minimum Requirements
+
 - **Machine Type**: 4-core
 - **RAM**: 8GB
 - **Storage**: 32GB
 
 ### Recommended Requirements
+
 - **Machine Type**: 8-core
 - **RAM**: 16GB
 - **Storage**: 64GB
