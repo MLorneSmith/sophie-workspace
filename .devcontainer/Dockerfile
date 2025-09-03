@@ -49,11 +49,12 @@ RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | s
     && apt-get install -y gh \
     && rm -rf /var/lib/apt/lists/*
 
-# Install git-delta for better git diffs
+# Install git-delta for better git diffs (architecture-aware)
 ARG GIT_DELTA_VERSION=0.18.2
-RUN wget -q https://github.com/dandavison/delta/releases/download/$GIT_DELTA_VERSION/git-delta_${GIT_DELTA_VERSION}_amd64.deb \
-    && dpkg -i git-delta_${GIT_DELTA_VERSION}_amd64.deb \
-    && rm git-delta_${GIT_DELTA_VERSION}_amd64.deb
+RUN ARCH=$(dpkg --print-architecture) \
+    && wget -q https://github.com/dandavison/delta/releases/download/$GIT_DELTA_VERSION/git-delta_${GIT_DELTA_VERSION}_${ARCH}.deb \
+    && dpkg -i git-delta_${GIT_DELTA_VERSION}_${ARCH}.deb \
+    && rm git-delta_${GIT_DELTA_VERSION}_${ARCH}.deb
 
 # Install Oh My Zsh with Powerlevel10k theme (as root)
 ARG ZSH_IN_DOCKER_VERSION=1.2.0
