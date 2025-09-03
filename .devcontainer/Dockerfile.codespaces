@@ -39,16 +39,18 @@ RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master
     && echo 'export PNPM_HOME="/home/node/.local/share/pnpm"' >> ~/.zshrc \
     && echo 'export PATH="$PNPM_HOME:$PATH"' >> ~/.zshrc
 
-# Copy package files for dependency caching
-COPY --chown=node:node package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY --chown=node:node apps/*/package.json ./apps/
-COPY --chown=node:node packages/*/package.json ./packages/
+# Copy package files for dependency caching (with error handling)
+COPY --chown=node:node package.json* pnpm-lock.yaml* pnpm-workspace.yaml* ./
 
-# Pre-install dependencies (this layer gets cached)
-RUN pnpm install --frozen-lockfile --prefer-offline --no-optional || true
+# Create app directories if they don't exist and copy package.json files if available
+RUN mkdir -p apps packages
+COPY --chown=node:node apps/ ./apps/ 2>/dev/null || true
+COPY --chown=node:node packages/ ./packages/ 2>/dev/null || true
 
-# Copy the rest of the application
-COPY --chown=node:node . .
+# Pre-install dependencies if package.json exists (this layer gets cached)
+RUN if [ -f "package.json" ]; then \
+      pnpm install --frozen-lockfile --prefer-offline --no-optional || echo "Dependency install failed, continuing..."; \
+    fi
 
 # The container will stay running
 CMD ["sleep", "infinity"]
