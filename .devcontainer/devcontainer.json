@@ -108,11 +108,13 @@
 				// Vitest configuration for monorepo with projects support
 				"vitest.enable": true,
 				"vitest.commandLine": "pnpm test:unit",
-				"vitest.rootConfig": "./vitest.config.ts",
-				"vitest.ignoreWorkspace": true,
+				"vitest.workspaceConfig": "./vitest.workspace.ts",
+				"vitest.ignoreWorkspace": false,
 				"vitest.configSearchPatternExclude": [
+					"**/node_modules/**",
 					"**/workspace/**",
-					"**/node_modules/**"
+					"**/dist/**",
+					"**/coverage/**"
 				],
 				"vitest.disableWorkspaceWarning": true
 			}
