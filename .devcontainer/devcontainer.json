@@ -117,9 +117,12 @@
 					"**/node_modules/**",
 					"**/workspace/**",
 					"**/dist/**",
-					"**/coverage/**"
+					"**/coverage/**",
+					"**/packages/**",
+					"packages/**"
 				],
-				"vitest.disableWorkspaceWarning": true
+				"vitest.disableWorkspaceWarning": true,
+				"vitest.configSearchPattern": ""
 			}
 		},
 		"codespaces": {
