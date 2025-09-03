@@ -28,6 +28,12 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+      
+      # Convert repository name to lowercase for Docker tags
+      - name: Set lowercase repository name
+        id: repo
+        run: |
+          echo "name=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
@@ -40,7 +46,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository }}/devcontainer
+          images: ghcr.io/${{ steps.repo.outputs.name }}/devcontainer
           tags: |
             type=ref,event=branch
             type=ref,event=pr
@@ -67,7 +73,7 @@ jobs:
           docker run --rm \
             -v ${{ github.workspace }}:/workspace \
             -w /workspace \
-            ghcr.io/${{ github.repository }}/devcontainer:latest \
+            ghcr.io/${{ steps.repo.outputs.name }}/devcontainer:latest \
             bash -c "
               # Install pnpm dependencies
               pnpm install --frozen-lockfile
@@ -86,7 +92,7 @@ jobs:
             "build": {
               "dockerfile": "Dockerfile",
               "context": "..",
-              "cacheFrom": "ghcr.io/${{ github.repository }}/devcontainer:latest"
+              "cacheFrom": "ghcr.io/${{ steps.repo.outputs.name }}/devcontainer:latest"
             }
           }
           EOF
