@@ -107,13 +107,13 @@
 				"git.confirmSync": false,
 				// Vitest configuration for monorepo
 				"vitest.enable": true,
-				"vitest.commandLine": "pnpm exec vitest",
+				"vitest.commandLine": "pnpm test:unit",
 				"vitest.nodeExecutable": "node",
 				"vitest.packageManager": "pnpm",
-				// Disable vitest extension in individual package folders to avoid conflicts
-				"[packages]": {
-					"vitest.enable": false
-				}
+				// Explicitly set root path for Vitest extension
+				"vitest.rootPath": "/workspace",
+				// Disable automatic discovery to prevent scanning individual packages
+				"vitest.disableWorkspaceWarning": true
 			}
 		},
 		"codespaces": {
