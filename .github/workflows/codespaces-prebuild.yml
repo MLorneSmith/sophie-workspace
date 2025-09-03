@@ -5,6 +5,12 @@ on:
     branches:
       - main
       - dev
+    paths:
+      - '.devcontainer/**'
+      - 'docker-compose*.yml'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/codespaces-prebuild.yml'
   schedule:
     # Run daily at 2 AM UTC to keep prebuilds fresh
     - cron: '0 2 * * *'
