@@ -104,7 +104,16 @@
 					"*.css": "tailwindcss"
 				},
 				"git.enableSmartCommit": true,
-				"git.confirmSync": false
+				"git.confirmSync": false,
+				// Vitest configuration for monorepo
+				"vitest.enable": true,
+				"vitest.commandLine": "pnpm exec vitest",
+				"vitest.nodeExecutable": "node",
+				"vitest.packageManager": "pnpm",
+				// Disable vitest extension in individual package folders to avoid conflicts
+				"[packages]": {
+					"vitest.enable": false
+				}
 			}
 		},
 		"codespaces": {
@@ -172,7 +181,7 @@
 	// postStartCommand - skip heavy operations in Codespaces
 	"postStartCommand": "if [ \"$CODESPACES\" = \"true\" ]; then echo '✓ Codespace ready - run pnpm dev to start'; else bash /workspace/.devcontainer/scripts/post-start.sh; fi",
 	// postAttachCommand runs when VS Code attaches
-	"postAttachCommand": "bash /workspace/.devcontainer/scripts/post-attach.sh",
+	"postAttachCommand": "bash /workspace/.devcontainer/scripts/post-attach.sh && (pnpm install --frozen-lockfile --prefer-offline > /dev/null 2>&1 || true)",
 
 	// GitHub Codespaces configuration
 	// Request more storage to handle large monorepo dependencies
