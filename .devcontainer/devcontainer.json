@@ -179,9 +179,9 @@
 	// initializeCommand runs on the host before containers are created
 	"initializeCommand": "bash .devcontainer/scripts/setup-compose-files.sh || true",
 	// postCreateCommand - use robust startup with minimal mode for Codespaces
-	"postCreateCommand": "if [ \"$CODESPACES\" = \"true\" ]; then bash /workspace/.devcontainer/scripts/robust-startup.sh --minimal; else bash /workspace/.devcontainer/scripts/post-create.sh; fi && npm install -g @anthropic-ai/claude-code@1.0.102",
+	"postCreateCommand": "if [ \"$CODESPACES\" = \"true\" ]; then bash /workspace/.devcontainer/scripts/robust-startup.sh --minimal; else bash /workspace/.devcontainer/scripts/post-create.sh; fi",
 	// postStartCommand - skip heavy operations in Codespaces
-	"postStartCommand": "if [ \"$CODESPACES\" = \"true\" ]; then echo '✓ Codespace ready - run pnpm dev to start'; else bash /workspace/.devcontainer/scripts/post-start.sh; fi",
+	"postStartCommand": "if [ \"$CODESPACES\" = \"true\" ]; then echo '✓ Codespace ready - run pnpm dev to start' && (sudo npm install -g @anthropic-ai/claude-code@1.0.102 >/dev/null 2>&1 || echo 'Claude Code CLI update skipped'); else bash /workspace/.devcontainer/scripts/post-start.sh; fi",
 	// postAttachCommand runs when VS Code attaches
 	"postAttachCommand": "bash /workspace/.devcontainer/scripts/post-attach.sh && (pnpm install --frozen-lockfile --prefer-offline > /dev/null 2>&1 || true)",
 
