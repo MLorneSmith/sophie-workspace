@@ -1,8 +1,8 @@
 {
 	"strategy": "balanced",
 	"shardCount": 1,
-	"totalTests": 74,
-	"generated": "2025-09-02T16:28:58.351Z",
+	"totalTests": 70,
+	"generated": "2025-09-04T14:48:31.688Z",
 	"shards": [
 		{
 			"id": 1,
@@ -23,9 +23,9 @@
 				"team-billing.spec.ts",
 				"healthcheck.spec.ts"
 			],
-			"totalTests": 74,
-			"totalComplexity": 1472,
-			"estimatedTime": 147,
+			"totalTests": 70,
+			"totalComplexity": 1452,
+			"estimatedTime": 145,
 			"categories": [
 				"accessibility",
 				"admin",
@@ -42,36 +42,36 @@
 	],
 	"validation": {
 		"valid": false,
-		"issues": ["Shard 1 has too many tests (74 > 20)"],
+		"issues": ["Shard 1 has too many tests (70 > 20)"],
 		"stats": {
-			"avgTests": 74,
-			"avgComplexity": 1472,
-			"avgTime": 147,
+			"avgTests": 70,
+			"avgComplexity": 1452,
+			"avgTime": 145,
 			"maxDeviation": 0
 		}
 	},
 	"profiles": {
 		"light": {
 			"shards": 3,
-			"testsPerShard": 25,
+			"testsPerShard": 24,
 			"description": "Quick validation (3 shards)",
 			"estimatedTime": "2-3 minutes"
 		},
 		"normal": {
 			"shards": 6,
-			"testsPerShard": 13,
+			"testsPerShard": 12,
 			"description": "Standard testing (6 shards)",
 			"estimatedTime": "3-4 minutes"
 		},
 		"heavy": {
 			"shards": 9,
-			"testsPerShard": 9,
+			"testsPerShard": 8,
 			"description": "Full parallel execution (9 shards)",
 			"estimatedTime": "2-3 minutes"
 		},
 		"sequential": {
 			"shards": 1,
-			"testsPerShard": 74,
+			"testsPerShard": 70,
 			"description": "Sequential execution (1 shard)",
 			"estimatedTime": "10-15 minutes"
 		}
