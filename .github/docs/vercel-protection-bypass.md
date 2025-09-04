@@ -33,14 +33,19 @@ Automation" feature to solve this problem.
 
 ⚠️ **Important**: Regenerating the secret invalidates all previous deployments. You'll need to redeploy after regeneration.
 
-### 2. Add Secret to GitHub
+### 2. Add Secrets to GitHub
+
+Since we have two Vercel projects (Web and Payload), you need to add both secrets:
 
 1. Go to your GitHub repository
 2. Navigate to **Settings → Secrets and variables → Actions**
-3. Click **New repository secret**
-4. Name: `VERCEL_AUTOMATION_BYPASS_SECRET`
-5. Value: Paste the secret from Vercel
-6. Click **Add secret**
+3. Add the Web project secret:
+   - Name: `VERCEL_AUTOMATION_BYPASS_SECRET`
+   - Value: Paste the secret from Web Vercel project
+4. Add the Payload project secret:
+   - Name: `VERCEL_AUTOMATION_BYPASS_SECRET_PAYLOAD`
+   - Value: Paste the secret from Payload Vercel project
+5. Click **Add secret** for each
 
 ### 3. Verify Configuration
 
@@ -97,7 +102,8 @@ These environment variables are used in our CI/CD pipeline:
 
 | Variable | Description | Where Used |
 |----------|-------------|------------|
-| `VERCEL_AUTOMATION_BYPASS_SECRET` | The bypass secret from Vercel | GitHub Actions, Playwright |
+| `VERCEL_AUTOMATION_BYPASS_SECRET` | The bypass secret from Web Vercel project | GitHub Actions, Playwright |
+| `VERCEL_AUTOMATION_BYPASS_SECRET_PAYLOAD` | The bypass secret from Payload Vercel project | GitHub Actions, API tests |
 | `PLAYWRIGHT_BASE_URL` | The deployment URL to test against | Playwright tests |
 | `PLAYWRIGHT_API_URL` | The API/GraphQL endpoint URL | API tests |
 
