@@ -1,8 +1,8 @@
 {
 	"strategy": "balanced",
 	"shardCount": 1,
-	"totalTests": 70,
-	"generated": "2025-09-04T14:48:31.688Z",
+	"totalTests": 64,
+	"generated": "2025-09-04T15:34:20.922Z",
 	"shards": [
 		{
 			"id": 1,
@@ -10,7 +10,6 @@
 			"tests": [
 				"accessibility-hybrid.spec.ts",
 				"admin.spec.ts",
-				"auth.spec.ts",
 				"smoke.spec.ts",
 				"test-configuration-verification.spec.ts",
 				"accessibility-hybrid-simple.spec.ts",
@@ -21,20 +20,21 @@
 				"password-reset.spec.ts",
 				"user-billing.spec.ts",
 				"team-billing.spec.ts",
+				"auth.spec.ts",
 				"healthcheck.spec.ts"
 			],
-			"totalTests": 70,
-			"totalComplexity": 1452,
-			"estimatedTime": 145,
+			"totalTests": 64,
+			"totalComplexity": 1294,
+			"estimatedTime": 129,
 			"categories": [
 				"accessibility",
 				"admin",
-				"authentication",
 				"smoke",
 				"general",
 				"team-accounts",
 				"account",
 				"invitations",
+				"authentication",
 				"user-billing",
 				"team-billing"
 			]
@@ -42,24 +42,24 @@
 	],
 	"validation": {
 		"valid": false,
-		"issues": ["Shard 1 has too many tests (70 > 20)"],
+		"issues": ["Shard 1 has too many tests (64 > 20)"],
 		"stats": {
-			"avgTests": 70,
-			"avgComplexity": 1452,
-			"avgTime": 145,
+			"avgTests": 64,
+			"avgComplexity": 1294,
+			"avgTime": 129,
 			"maxDeviation": 0
 		}
 	},
 	"profiles": {
 		"light": {
 			"shards": 3,
-			"testsPerShard": 24,
+			"testsPerShard": 22,
 			"description": "Quick validation (3 shards)",
 			"estimatedTime": "2-3 minutes"
 		},
 		"normal": {
 			"shards": 6,
-			"testsPerShard": 12,
+			"testsPerShard": 11,
 			"description": "Standard testing (6 shards)",
 			"estimatedTime": "3-4 minutes"
 		},
@@ -71,7 +71,7 @@
 		},
 		"sequential": {
 			"shards": 1,
-			"testsPerShard": 70,
+			"testsPerShard": 64,
 			"description": "Sequential execution (1 shard)",
 			"estimatedTime": "10-15 minutes"
 		}
