@@ -18,6 +18,23 @@ const enableBillingTests = process.env.ENABLE_BILLING_TESTS === "true";
 const enableTeamAccountTests =
 	(process.env.ENABLE_TEAM_ACCOUNT_TESTS ?? "true") === "true";
 
+// Log Vercel protection bypass configuration in CI
+if (process.env.CI && process.env.DEBUG) {
+	process.stdout.write(
+		`Vercel protection bypass configured: ${
+			process.env.VERCEL_AUTOMATION_BYPASS_SECRET ? "YES" : "NO"
+		}\n`,
+	);
+	if (process.env.VERCEL_AUTOMATION_BYPASS_SECRET) {
+		process.stdout.write(
+			`Bypass secret length: ${process.env.VERCEL_AUTOMATION_BYPASS_SECRET.length} chars\n`,
+		);
+	}
+	process.stdout.write(
+		`Base URL: ${process.env.PLAYWRIGHT_BASE_URL || "http://localhost:3000"}\n`,
+	);
+}
+
 const testIgnore: string[] = [];
 
 if (!enableBillingTests) {
@@ -92,6 +109,8 @@ export default defineConfig({
 			? {
 					"x-vercel-protection-bypass":
 						process.env.VERCEL_AUTOMATION_BYPASS_SECRET,
+					// Set bypass cookie for browser-based tests
+					"x-vercel-set-bypass-cookie": "true",
 				}
 			: undefined,
 
