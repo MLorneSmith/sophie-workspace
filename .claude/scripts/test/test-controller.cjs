@@ -1922,8 +1922,8 @@ class E2ETestRunner {
 			};
 		}
 
-		// Pre-start servers when PLAYWRIGHT_PARALLEL=true since webServer management is disabled
-		// This ensures all shards can connect to running servers immediately
+		// Pre-start servers for test execution
+		// Servers are managed centrally by the test controller
 		try {
 			await this.startTestServers();
 
@@ -2226,8 +2226,9 @@ class E2ETestRunner {
 			const shardEnv = { ...process.env };
 			// Remove CI variable to enable reuseExistingServer
 			delete shardEnv.CI;
-			// Set parallel mode
-			shardEnv.PLAYWRIGHT_PARALLEL = "true";
+			// Disable parallel mode - tests are more reliable in serial execution
+			// See GitHub issue #286 for details on parallel execution failures
+			shardEnv.PLAYWRIGHT_PARALLEL = "false";
 			// Force reuseExistingServer by ensuring we're not in CI mode
 			shardEnv.NODE_ENV = "test";
 
