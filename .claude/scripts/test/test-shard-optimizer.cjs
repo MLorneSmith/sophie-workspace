@@ -389,18 +389,19 @@ class ShardOptimizer {
 	 * Generate a descriptive name for a shard based on its contents
 	 */
 	generateShardName(shard) {
+		// Include shard ID with descriptive name for uniqueness and clarity
 		if (shard.categories.size === 1) {
 			const category = Array.from(shard.categories)[0];
-			return `${category.charAt(0).toUpperCase() + category.slice(1)} Tests`;
+			return `${category.charAt(0).toUpperCase() + category.slice(1)} Tests #${shard.id}`;
 		} else if (shard.categories.size === 2) {
 			const cats = Array.from(shard.categories);
-			return `${cats[0]} + ${cats[1]}`;
+			return `${cats[0]} + ${cats[1]} #${shard.id}`;
 		} else if (shard.totalComplexity > 200) {
-			return `Heavy Tests (Shard ${shard.id})`;
+			return `Heavy Tests #${shard.id}`;
 		} else if (shard.totalComplexity < 100) {
-			return `Light Tests (Shard ${shard.id})`;
+			return `Light Tests #${shard.id}`;
 		} else {
-			return `Mixed Tests (Shard ${shard.id})`;
+			return `Mixed Tests #${shard.id}`;
 		}
 	}
 

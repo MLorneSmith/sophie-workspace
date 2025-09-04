@@ -1099,18 +1099,20 @@ class E2ETestRunner {
 		this.resourceLock = new ResourceLock();
 		this.cacheManager = TestCacheManager ? new TestCacheManager() : null;
 		this.shardOptimizer = ShardOptimizer ? new ShardOptimizer() : null;
+		this.intentionalShutdown = false; // Track when we're intentionally stopping servers
 
-		// Default shards (can be optimized dynamically)
+		// Default shards (dynamically determined by Playwright's distribution)
+		// Note: These names are approximations - actual content varies
 		this.allShards = [
-			{ id: 1, name: "Accessibility Large", tests: 13 },
-			{ id: 2, name: "Authentication", tests: 10 },
-			{ id: 3, name: "Admin", tests: 9 },
-			{ id: 4, name: "Smoke", tests: 9 },
-			{ id: 5, name: "Accessibility Simple", tests: 6 },
-			{ id: 6, name: "Team Accounts", tests: 6 },
-			{ id: 7, name: "Account + Invitations", tests: 8 },
-			{ id: 8, name: "Quick Tests", tests: 3 },
-			{ id: 9, name: "Billing", tests: 2 },
+			{ id: 1, name: "Shard 1", tests: 21 },
+			{ id: 2, name: "Shard 2 (Empty)", tests: 0 },
+			{ id: 3, name: "Shard 3", tests: 12 },
+			{ id: 4, name: "Auth/Invitations", tests: 7 },  // Actually contains auth, password reset, healthcheck, invitations
+			{ id: 5, name: "Smoke Tests", tests: 15 },      // Actually contains ALL smoke tests + team account tests
+			{ id: 6, name: "Shard 6", tests: 13 },
+			{ id: 7, name: "Shard 7", tests: 8 },
+			{ id: 8, name: "Shard 8", tests: 14 },
+			{ id: 9, name: "Shard 9 (Empty)", tests: 0 },
 		];
 		this.shards = [...this.allShards];
 
@@ -1170,6 +1172,9 @@ class E2ETestRunner {
 
 	async startTestServers() {
 		log("🚀 Starting test servers (Frontend & Backend)...");
+		
+		// Reset the intentional shutdown flag
+		this.intentionalShutdown = false;
 
 		// Always kill any existing processes first to ensure clean start
 		try {
@@ -1237,14 +1242,20 @@ class E2ETestRunner {
 			});
 
 			this.serverProcess.on("exit", (code, signal) => {
-				logError(
-					`🚨 Frontend server EXITED with code ${code} (signal: ${signal})`,
-				);
-				if (signal) {
-					logError(`   Signal received: ${signal}`);
+				// Only log as error if it wasn't an intentional shutdown
+				if (!this.intentionalShutdown) {
 					logError(
-						"   This indicates the server was terminated by signal propagation!",
+						`🚨 Frontend server EXITED with code ${code} (signal: ${signal})`,
 					);
+					if (signal) {
+						logError(`   Signal received: ${signal}`);
+						logError(
+							"   This indicates the server was terminated by signal propagation!",
+						);
+					}
+				} else if (signal === "SIGTERM") {
+					// Expected graceful shutdown
+					log(`📡 Frontend server stopped gracefully (SIGTERM)`);
 				}
 				this.serverProcess = null;
 			});
@@ -1292,14 +1303,20 @@ class E2ETestRunner {
 			});
 
 			this.backendProcess.on("exit", (code, signal) => {
-				logError(
-					`🚨 Backend server EXITED with code ${code} (signal: ${signal})`,
-				);
-				if (signal) {
-					logError(`   Signal received: ${signal}`);
+				// Only log as error if it wasn't an intentional shutdown
+				if (!this.intentionalShutdown) {
 					logError(
-						"   This indicates the server was terminated by signal propagation!",
+						`🚨 Backend server EXITED with code ${code} (signal: ${signal})`,
 					);
+					if (signal) {
+						logError(`   Signal received: ${signal}`);
+						logError(
+							"   This indicates the server was terminated by signal propagation!",
+						);
+					}
+				} else if (signal === "SIGTERM") {
+					// Expected graceful shutdown
+					log(`🔧 Backend server stopped gracefully (SIGTERM)`);
 				}
 				this.backendProcess = null;
 			});
@@ -1747,6 +1764,9 @@ class E2ETestRunner {
 
 	async stopTestServers() {
 		log("🛑 Stopping test servers gracefully...");
+		
+		// Mark this as an intentional shutdown
+		this.intentionalShutdown = true;
 
 		// Store PIDs before clearing references
 		const serverPid = this.serverProcess?.pid;
@@ -2011,52 +2031,84 @@ class E2ETestRunner {
 		let completedShards = 0;
 		const startTime = Date.now();
 
-		// Start progress reporter that updates every 5 seconds
-		const progressInterval = setInterval(() => {
+		// Smart hybrid progress reporting - tracks both tests and shards efficiently
+		let testStats = { passed: 0, failed: 0, skipped: 0, total: 0 };
+		let lastProgressUpdate = 0;
+		let lastTestUpdate = Date.now();
+		let testBuffer = { passed: 0, failed: 0 }; // Buffer for batching test updates
+		
+		// Smart progress reporter - balances feedback with performance
+		const reportProgress = (event, details = {}) => {
 			const elapsed = Math.round((Date.now() - startTime) / 1000);
-			const progress = Math.round((completedShards / totalShards) * 100);
-			const progressBar =
-				"█".repeat(Math.floor(progress / 5)) +
-				"░".repeat(20 - Math.floor(progress / 5));
-
-			// Calculate ETA based on average time per shard
-			let eta = "calculating...";
-			if (completedShards > 0) {
-				const avgTimePerShard = elapsed / completedShards;
-				const remainingShards = totalShards - completedShards;
-				const remainingSeconds = Math.round(avgTimePerShard * remainingShards);
-				const minutes = Math.floor(remainingSeconds / 60);
-				const seconds = remainingSeconds % 60;
-				eta = `${minutes}m ${seconds}s`;
+			const timeStr = `${Math.floor(elapsed / 60)}m ${elapsed % 60}s`;
+			const now = Date.now();
+			
+			switch(event) {
+				case 'shard-start':
+					// Only log shard start in debug mode
+					if (process.env.DEBUG_TEST) {
+						log(`  ▶️  Starting shard ${details.shardId} (${details.shardName})`);
+					}
+					break;
+					
+				case 'test-complete':
+					// Buffer test completions to reduce output frequency
+					testBuffer.passed += details.passed || 0;
+					testBuffer.failed += details.failed || 0;
+					testStats.passed += details.passed || 0;
+					testStats.failed += details.failed || 0;
+					testStats.total += (details.passed || 0) + (details.failed || 0);
+					
+					// Report buffered tests every 3 seconds OR every 10 tests
+					const timeSinceLastUpdate = (now - lastTestUpdate) / 1000;
+					const bufferedTests = testBuffer.passed + testBuffer.failed;
+					
+					if (timeSinceLastUpdate >= 3 || bufferedTests >= 10) {
+						// Show cumulative totals, not incremental buffer values
+						const status = testStats.failed > 0 
+							? `⚡ ${testStats.passed} passed, ${testStats.failed} failed`
+							: `⚡ ${testStats.passed} passed`;
+						log(`  ${status} (${testStats.total} total, ${timeStr})`);
+						
+						testBuffer = { passed: 0, failed: 0 };
+						lastTestUpdate = now;
+					}
+					break;
+					
+				case 'shard-complete':
+					// Show cumulative totals when shard completes
+					if (testStats.total > 0) {
+						const status = testStats.failed > 0 
+							? `⚡ ${testStats.passed} passed, ${testStats.failed} failed`
+							: `⚡ ${testStats.passed} passed`;
+						log(`  ${status} (${testStats.total} total, ${timeStr})`);
+						testBuffer = { passed: 0, failed: 0 };
+					}
+					
+					// Log shard completion
+					const shardInfo = details.failed > 0
+						? `${details.passed}/${details.total} passed, ${details.failed} failed`
+						: `${details.passed}/${details.total} passed`;
+					log(`  ✅ Shard ${details.shardId} complete: ${shardInfo} (${completedShards}/${totalShards} done, ${timeStr})`);
+					break;
+					
+				case 'milestone':
+					// Report at 25%, 50%, 75% completion based on tests, not shards
+					const progress = Math.round((testStats.total / 90) * 100); // Assuming ~90 total tests
+					const milestone = Math.floor(progress / 25) * 25;
+					if (milestone > lastProgressUpdate && milestone > 0) {
+						lastProgressUpdate = milestone;
+						const summary = testStats.failed > 0
+							? `${testStats.passed} passed, ${testStats.failed} failed`
+							: `${testStats.passed} passed`;
+						log(`  📊 ${milestone}% complete (${summary}, ${timeStr})`);
+					}
+					break;
 			}
-
-			// Get current running shard names
-			const runningNames = Array.from(runningShards.keys())
-				.map(
-					(id) => this.shards.find((s) => s.id === id)?.name || `Shard ${id}`,
-				)
-				.join(", ");
-
-			log(`\n  📊 E2E Progress: [${progressBar}] ${progress}%`);
-			log(`     Completed: ${completedShards}/${totalShards} shards`);
-			if (runningNames) {
-				log(`     Running: ${runningNames}`);
-			}
-
-			// Display current tests for each running shard
-			Array.from(currentTests.entries()).forEach(([shardId, testInfo]) => {
-				if (testInfo?.testName) {
-					const shardName =
-						this.shards.find((s) => s.id === shardId)?.name ||
-						`Shard ${shardId}`;
-					log(`       └─ ${shardName}: ${testInfo.testName}`);
-				}
-			});
-
-			log(
-				`     Elapsed: ${Math.floor(elapsed / 60)}m ${elapsed % 60}s | ETA: ${eta}`,
-			);
-		}, 5000); // Update every 5 seconds
+		};
+		
+		// No interval timer - we'll update on shard completion events only
+		const progressInterval = null;
 
 		// Helper to wait for next shard to complete
 		const waitForNextCompletion = async () => {
@@ -2086,13 +2138,17 @@ class E2ETestRunner {
 				shardQueue.length > 0
 			) {
 				const shard = shardQueue.shift();
-				log(
-					`  🚀 Starting shard ${shard.id}: ${shard.name} (${runningShards.size + 1}/${this.maxConcurrentShards} concurrent)`,
-				);
+				
+				// Use the new event-driven reporter
+				reportProgress('shard-start', {
+					shardId: shard.id,
+					shardName: shard.name
+				});
 
-				const shardPromise = this.runShardWithRetry(shard, 1, currentTests);
+				const shardPromise = this.runShardWithRetry(shard, 1, currentTests, reportProgress);
 				runningShards.set(shard.id, shardPromise);
-				currentTests.set(shard.id, { testName: "Starting..." });
+				// Remove individual test tracking - we don't need it anymore
+				// currentTests.set(shard.id, { testName: "Starting..." });
 
 				// Delay after first shard to allow servers to start
 				// Subsequent shards will reuse the servers
@@ -2112,6 +2168,17 @@ class E2ETestRunner {
 				if (result) {
 					results.push(result);
 					completedShards++; // Update progress counter
+					
+					// Report shard completion
+					reportProgress('shard-complete', {
+						shardId: result.shardId,
+						passed: result.passed || 0,
+						failed: result.failed || 0,
+						total: (result.passed || 0) + (result.failed || 0)
+					});
+					
+					// Check for milestone progress
+					reportProgress('milestone');
 
 					// Track failed shards for potential retry logic
 					if (result.failed > 0 || result.infrastructureFailure) {
@@ -2124,8 +2191,8 @@ class E2ETestRunner {
 			}
 		}
 
-		// Clear the progress interval
-		clearInterval(progressInterval);
+		// No interval to clear since we're event-driven now
+		// clearInterval(progressInterval);
 
 		// Log completion summary
 		log(`\n✅ All ${this.shards.length} shards completed`);
@@ -2136,8 +2203,8 @@ class E2ETestRunner {
 		return results;
 	}
 
-	async runShardWithRetry(shard, attempt = 1, currentTests = null) {
-		const result = await this.runShard(shard, attempt, currentTests);
+	async runShardWithRetry(shard, attempt = 1, currentTests = null, reportProgress = null) {
+		const result = await this.runShard(shard, attempt, currentTests, reportProgress);
 
 		// Add shardId to result for tracking
 		result.shardId = shard.id;
@@ -2164,7 +2231,7 @@ class E2ETestRunner {
 				);
 			}
 
-			return this.runShardWithRetry(shard, attempt + 1, currentTests);
+			return this.runShardWithRetry(shard, attempt + 1, currentTests, reportProgress);
 		}
 
 		// Reset timeout after retries
@@ -2215,7 +2282,7 @@ class E2ETestRunner {
 		return null;
 	}
 
-	async runShard(shard, attempt = 1, currentTests = null) {
+	async runShard(shard, attempt = 1, currentTests = null, reportProgress = null) {
 		return new Promise((resolve) => {
 			const startTime = Date.now();
 			let output = "";
@@ -2231,10 +2298,24 @@ class E2ETestRunner {
 			shardEnv.PLAYWRIGHT_PARALLEL = "false";
 			// Force reuseExistingServer by ensuring we're not in CI mode
 			shardEnv.NODE_ENV = "test";
+			// Set a flag to indicate we're running in shard mode (for test skipping)
+			shardEnv.TEST_SHARD_MODE = "true";
+			// Tell Playwright to use our already-running servers
+			shardEnv.PLAYWRIGHT_BASE_URL = "http://localhost:3000";
 
+			// Check if shard has specific test files (standard mode) or is using generic shard distribution (quick mode)
+			let playwrightArgs;
+			
+			// For now, always use the original shard-based distribution
+			// The custom file approach needs more work to handle server connectivity
+			playwrightArgs = [
+				"--filter", "web-e2e", 
+				`test:shard${shard.id}`
+			];
+			
 			const proc = spawn(
 				"pnpm",
-				["--filter", "web-e2e", `test:shard${shard.id}`],
+				playwrightArgs,
 				{
 					cwd: process.cwd(),
 					stdio: ["inherit", "pipe", "pipe"],
@@ -2273,38 +2354,51 @@ class E2ETestRunner {
 					hasServerStartupDetected = true;
 				}
 
-				// Parse current test name from Playwright output
-				// Playwright shows tests like: " [chromium] › test-file.spec.ts:123:5 › Test description"
-				// Or: "  ✓  1 [1:1] › Authentication › Login Flow › should login successfully"
-				// Or: "  ✘  1 [1:1] › Authentication › Login Flow › should handle errors"
-				// Or: "  -  1 [1:1] › Test description (skipped)"
-				const testPatterns = [
-					// Running test pattern
-					/\[.*?\]\s+›\s+(.+\.spec\.ts.*?›\s+.+?)(?:\s+\(\d+(?:\.\d+)?s\))?$/m,
-					// Test with status
-					/[✓✘-]\s+\d+\s+\[.*?\]\s+›\s+(.+?)(?:\s+\(\d+(?:\.\d+)?s\))?$/m,
-					// Simple test pattern
-					/›\s+([^›]+?)(?:\s+\(\d+(?:\.\d+)?s\))?$/m,
-				];
-
-				for (const pattern of testPatterns) {
-					const match = chunk.match(pattern);
-					if (match) {
-						lastTestName = match[1].trim();
-						// Update current test for this shard
-						if (currentTests) {
-							currentTests.set(shard.id, {
-								testName: lastTestName,
-								timestamp: Date.now(),
-							});
+				// Parse test completions for progress reporting
+				// Look for: "  ✓  1 [chromium] › test.spec.ts:10:1 › test name (100ms)"
+				// Or: "  ✘  1 [chromium] › test.spec.ts:20:1 › failed test (50ms)"
+				const lines = chunk.split('\n');
+				for (const line of lines) {
+					// Check for completed test with ✓ (passed) or ✘ (failed)
+					if (line.includes('✓')) {
+						// Report test completion to the progress reporter
+						if (reportProgress) {
+							reportProgress('test-complete', { passed: 1, failed: 0 });
 						}
-						break;
+					} else if (line.includes('✘')) {
+						// Report test failure to the progress reporter
+						if (reportProgress) {
+							reportProgress('test-complete', { passed: 0, failed: 1 });
+						}
+					}
+					
+					// Still track test names for debugging if needed
+					const testPatterns = [
+						// Test with status
+						/[✓✘-]\s+\d+\s+\[.*?\]\s+›\s+(.+?)(?:\s+\(\d+(?:\.\d+)?(?:ms|s)\))?$/,
+						// Running test pattern
+						/\[.*?\]\s+›\s+(.+\.spec\.ts.*?›\s+.+?)(?:\s+\(\d+(?:\.\d+)?(?:ms|s)\))?$/,
+					];
+					
+					for (const pattern of testPatterns) {
+						const match = line.match(pattern);
+						if (match) {
+							lastTestName = match[1].trim();
+							// Only update in debug mode to reduce overhead
+							if (currentTests && process.env.DEBUG_TEST) {
+								currentTests.set(shard.id, {
+									testName: lastTestName,
+									timestamp: Date.now(),
+								});
+							}
+							break;
+						}
 					}
 				}
 
-				// Also detect when tests are starting
+				// Detect when tests are starting
 				if (chunk.includes("Running") && chunk.includes("test")) {
-					if (currentTests) {
+					if (currentTests && process.env.DEBUG_TEST) {
 						currentTests.set(shard.id, { testName: "Initializing tests..." });
 					}
 				}
@@ -2484,6 +2578,13 @@ class E2ETestRunner {
 		log("🔧 Optimizing shard distribution...");
 
 		await this.shardOptimizer.loadMetrics();
+		
+		// Skip optimization for single shard configurations (quick mode)
+		if (this.shards.length === 1) {
+			log("✅ Single shard mode - using default configuration");
+			return;
+		}
+		
 		const config = await this.shardOptimizer.generateShardConfig({
 			strategy: process.env.SHARD_STRATEGY || "balanced",
 			shardCount: this.shards.length,
