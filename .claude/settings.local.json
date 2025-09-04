@@ -17,7 +17,8 @@
 			"Bash(~/.local/bin/codespace-manager.sh:*)",
 			"mcp__context7__resolve-library-id",
 			"Bash(.claude/scripts/codecheck-direct.sh:*)",
-			"Bash(DEBUG_TEST=true node .claude/scripts/test/test-controller.cjs --quick --debug)"
+			"Bash(DEBUG_TEST=true node .claude/scripts/test/test-controller.cjs --quick --debug)",
+			"Bash(DEBUG_TEST=true node .claude/scripts/test/test-controller.cjs --debug)"
 		],
 		"deny": [],
 		"ask": [],
