@@ -4,9 +4,7 @@
 	"private": true,
 	"type": "module",
 	"description": "Claude development scripts and utilities",
-	"main": "sync-issue.js",
 	"scripts": {
-		"sync": "node sync-issue.js",
 		"typecheck": "tsc --noEmit",
 		"lint": "biome lint .",
 		"format": "biome format .",

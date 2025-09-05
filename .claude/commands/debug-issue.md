@@ -24,68 +24,104 @@ Load the debugging mindset:
 
 Load and analyze the issue before determining what context documentation to read:
 
-### 2.1 Auto-Sync and Locate Issue
+### 2.1 Fetch Issue from GitHub
 
-Use the auto-sync service to fetch/cache issues automatically:
+Fetch the issue directly from GitHub using the gh CLI:
 
 ```bash
-# Run sync to ensure we have the latest issue data
-node .claude/scripts/sync-issue.js ${issue_reference}
+# Parse the issue reference
+if [[ "$issue_reference" =~ ^[0-9]+$ ]]; then
+  issue_number=$issue_reference
+elif [[ "$issue_reference" =~ ^ISSUE-([0-9]+)$ ]]; then
+  issue_number=${BASH_REMATCH[1]}
+elif [[ "$issue_reference" =~ ^#([0-9]+)$ ]]; then
+  issue_number=${BASH_REMATCH[1]}
+elif [[ "$issue_reference" =~ github\.com/.*/issues/([0-9]+) ]]; then
+  issue_number=${BASH_REMATCH[1]}
+else
+  # Legacy local format
+  issue_id=$issue_reference
+fi
 
-# The script will:
-# 1. Detect if it's a GitHub issue (number, ISSUE-123, #123, URL)
-# 2. Check local cache (1 hour freshness)
-# 3. Auto-fetch from GitHub if needed
-# 4. Create/update local cache file
-# 5. Handle fallbacks gracefully
+# Fetch issue details from GitHub
+if [ -n "$issue_number" ]; then
+  gh issue view $issue_number --json number,title,body,state,labels,assignees,createdAt,updatedAt > /tmp/issue-$issue_number.json
+  
+  if [ $? -ne 0 ]; then
+    echo "❌ Failed to fetch issue #$issue_number from GitHub"
+    exit 1
+  fi
+  
+  echo "✅ Fetched issue #$issue_number from GitHub"
+fi
 ```
 
 ### 2.2 Parse Issue Reference
 
-The auto-sync service handles all reference formats:
+The command supports multiple reference formats:
 
 ```bash
 # Examples of supported formats:
-node .claude/scripts/sync-issue.js 30              # GitHub issue #30
-node .claude/scripts/sync-issue.js ISSUE-30        # ISSUE-30 format
-node .claude/scripts/sync-issue.js "#30"           # Hash format
-node .claude/scripts/sync-issue.js "https://github.com/MLorneSmith/2025slideheroes/issues/30"  # Full URL
+/debug-issue 30              # GitHub issue #30
+/debug-issue ISSUE-30        # ISSUE-30 format  
+/debug-issue "#30"           # Hash format
+/debug-issue "https://github.com/MLorneSmith/2025slideheroes/issues/30"  # Full URL
+/debug-issue ISSUE-1234567-abc  # Legacy local-only format
 ```
 
-### 2.3 Load Synced Issue
+### 2.3 Load Issue Content
 
-After auto-sync completes, read the local file:
+Load the issue content from GitHub or local file:
 
 ```bash
-# Auto-sync creates files in format: YYYY-MM-DD-ISSUE-{number}.md
-# Find the synced file
-issue_file=$(find .claude/z.archive/issues -name "*-ISSUE-${issue_number}.md" | head -1)
-
-if [ -z "$issue_file" ]; then
-  echo "❌ Issue file not found after auto-sync"
-  exit 1
+if [ -n "$issue_number" ]; then
+  # Extract content from GitHub issue JSON
+  issue_title=$(jq -r '.title' /tmp/issue-$issue_number.json)
+  issue_body=$(jq -r '.body' /tmp/issue-$issue_number.json)
+  issue_state=$(jq -r '.state' /tmp/issue-$issue_number.json)
+  issue_labels=$(jq -r '.labels[].name' /tmp/issue-$issue_number.json | tr '\n' ' ')
+  
+  echo "📋 Issue #$issue_number: $issue_title"
+  echo "📊 State: $issue_state"
+  echo "🏷️ Labels: $issue_labels"
+else
+  # For legacy local-only issues
+  issue_file=$(find .claude/z.archive/issues -name "*-${issue_id}.md" | head -1)
+  
+  if [ -z "$issue_file" ]; then
+    echo "❌ Local issue file not found: $issue_id"
+    exit 1
+  fi
+  
+  echo "📁 Using local issue file: $issue_file"
 fi
-
-echo "📁 Using issue file: $issue_file"
 ```
 
 ### 2.4 Read and Parse Issue
 
 ```typescript
-// Read the issue specification
-const issueContent = await readFile(issuePath);
-const issue = parseIssueSpecification(issueContent);
-
-// Extract key information
-const {
-  id,
-  severity,
-  type,
-  affectedFiles,
-  diagnosticData,
-  reproductionSteps,
-  suggestedAreas,
-} = issue;
+// For GitHub issues
+if (issueNumber) {
+  const issueJson = JSON.parse(await readFile(`/tmp/issue-${issueNumber}.json`));
+  const issue = {
+    id: `ISSUE-${issueNumber}`,
+    title: issueJson.title,
+    body: issueJson.body,
+    state: issueJson.state,
+    labels: issueJson.labels.map(l => l.name),
+    // Parse additional fields from the body
+    severity: extractSeverity(issueJson.body),
+    type: extractType(issueJson.labels),
+    affectedFiles: extractAffectedFiles(issueJson.body),
+    diagnosticData: extractDiagnosticData(issueJson.body),
+    reproductionSteps: extractReproductionSteps(issueJson.body),
+    suggestedAreas: extractSuggestedAreas(issueJson.body),
+  };
+} else {
+  // For legacy local files
+  const issueContent = await readFile(issuePath);
+  const issue = parseIssueSpecification(issueContent);
+}
 ```
 
 ### 2.5 Review GitHub Issue Comments (Critical Step)

@@ -3151,7 +3151,7 @@ class E2ETestRunner {
 
 	parsePlaywrightOutput(output, shard) {
 		const result = {
-			total: shard.tests,
+			total: 0, // Will be calculated from passed + failed + skipped
 			passed: 0,
 			failed: 0,
 			skipped: 0,
@@ -3227,14 +3227,20 @@ class E2ETestRunner {
 			output.includes("ECONNREFUSED") ||
 			output.includes("net::ERR_CONNECTION_REFUSED");
 
+		// Calculate the total from the parsed results
+		result.total = result.passed + result.failed + result.skipped;
+
 		// If no test results found, only assume failure if we have clear error indicators
 		// Don't fail if we're just seeing server startup logs
 		if (result.passed === 0 && result.failed === 0 && output.length > 0) {
+			const expectedTests = shard.expectedTests || shard.tests || 1;
 			if (hasWebServerTimeout || hasConnectionError) {
-				result.failed = shard.tests;
+				result.failed = expectedTests;
+				result.total = expectedTests;
 			} else if (!hasServerStartup) {
 				// Only fail if we have output that doesn't look like server startup
-				result.failed = shard.tests;
+				result.failed = expectedTests;
+				result.total = expectedTests;
 			}
 			// Otherwise leave as 0/0 to indicate no results yet (server still starting)
 		}
