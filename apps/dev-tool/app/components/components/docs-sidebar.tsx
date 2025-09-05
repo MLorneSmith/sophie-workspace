@@ -1,11 +1,5 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-
-import { useRouter } from "next/navigation";
-
-import { Code2, FileText, Search } from "lucide-react";
-
 import { Badge } from "@kit/ui/badge";
 import { Input } from "@kit/ui/input";
 import { ScrollArea } from "@kit/ui/scroll-area";
@@ -17,6 +11,9 @@ import {
 	SelectValue,
 } from "@kit/ui/select";
 import { cn } from "@kit/ui/utils";
+import { Code2, FileText, Search } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 
 import type { ComponentInfo } from "../lib/components-data";
 import {

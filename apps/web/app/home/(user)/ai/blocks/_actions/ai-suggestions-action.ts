@@ -4,10 +4,10 @@ import {
 	type ChatCompletionOptions,
 	type ChatMessage,
 	ConfigManager,
-	getChatCompletion,
-	createBalancedOptimizedConfig,
 	createAudienceSuggestionsConfig,
+	createBalancedOptimizedConfig,
 	createTitleSuggestionsConfig,
+	getChatCompletion,
 	PromptManager,
 } from "@kit/ai-gateway";
 import { enhanceAction } from "@kit/next/actions";

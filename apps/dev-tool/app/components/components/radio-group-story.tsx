@@ -1,14 +1,5 @@
 "use client";
 
-import { useState } from "react";
-
-import {
-	CreditCardIcon,
-	PlaneIcon,
-	SmartphoneIcon,
-	TruckIcon,
-} from "lucide-react";
-
 import { Badge } from "@kit/ui/badge";
 import { Button } from "@kit/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@kit/ui/card";
@@ -26,6 +17,13 @@ import {
 	SelectValue,
 } from "@kit/ui/select";
 import { Switch } from "@kit/ui/switch";
+import {
+	CreditCardIcon,
+	PlaneIcon,
+	SmartphoneIcon,
+	TruckIcon,
+} from "lucide-react";
+import { useState } from "react";
 
 import {
 	generateImportStatement,

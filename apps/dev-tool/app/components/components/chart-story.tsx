@@ -1,24 +1,5 @@
 "use client";
 
-import { useState } from "react";
-
-import {
-	Area,
-	AreaChart,
-	Bar,
-	BarChart,
-	CartesianGrid,
-	Cell,
-	Line,
-	LineChart,
-	Pie,
-	PieChart,
-	RadialBar,
-	RadialBarChart,
-	XAxis,
-	YAxis,
-} from "recharts";
-
 import { Badge } from "@kit/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@kit/ui/card";
 import {
@@ -37,6 +18,23 @@ import {
 	SelectValue,
 } from "@kit/ui/select";
 import { Switch } from "@kit/ui/switch";
+import { useState } from "react";
+import {
+	Area,
+	AreaChart,
+	Bar,
+	BarChart,
+	CartesianGrid,
+	Cell,
+	Line,
+	LineChart,
+	Pie,
+	PieChart,
+	RadialBar,
+	RadialBarChart,
+	XAxis,
+	YAxis,
+} from "recharts";
 
 import {
 	generateImportStatement,

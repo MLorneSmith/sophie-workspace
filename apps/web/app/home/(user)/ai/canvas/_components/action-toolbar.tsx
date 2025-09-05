@@ -1,8 +1,11 @@
 "use client";
 
 import { useUserWorkspace } from "@kit/accounts/hooks/use-user-workspace";
-import type { BaseImprovement, ImprovementType } from "@kit/ai-gateway";
-import type { SimplifiedContent } from "@kit/ai-gateway";
+import type {
+	BaseImprovement,
+	ImprovementType,
+	SimplifiedContent,
+} from "@kit/ai-gateway";
 import { Button } from "@kit/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@kit/ui/tooltip";
 import { FileText, LayoutTemplate, Lightbulb, RotateCcw } from "lucide-react";

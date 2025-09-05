@@ -1,21 +1,5 @@
 "use client";
 
-import { useState } from "react";
-
-import {
-	BarChart3,
-	Bell,
-	Calendar,
-	Code2,
-	CreditCard,
-	FileText,
-	Globe,
-	Mail,
-	Settings,
-	Shield,
-	User,
-} from "lucide-react";
-
 import { Badge } from "@kit/ui/badge";
 import { Button } from "@kit/ui/button";
 import {
@@ -37,6 +21,20 @@ import {
 import { Switch } from "@kit/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@kit/ui/tabs";
 import { Textarea } from "@kit/ui/textarea";
+import {
+	BarChart3,
+	Bell,
+	Calendar,
+	Code2,
+	CreditCard,
+	FileText,
+	Globe,
+	Mail,
+	Settings,
+	Shield,
+	User,
+} from "lucide-react";
+import { useState } from "react";
 
 import {
 	generateImportStatement,

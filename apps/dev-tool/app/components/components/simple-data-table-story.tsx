@@ -1,10 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
-
 import { faker } from "@faker-js/faker";
-import { MoreHorizontal } from "lucide-react";
-
 import { Badge } from "@kit/ui/badge";
 import { Button } from "@kit/ui/button";
 import {
@@ -32,6 +28,8 @@ import {
 	TableHeader,
 	TableRow,
 } from "@kit/ui/table";
+import { MoreHorizontal } from "lucide-react";
+import { useMemo } from "react";
 
 import { useStoryControls } from "../lib/story-utils";
 import { ComponentStoryLayout } from "./story-layout";

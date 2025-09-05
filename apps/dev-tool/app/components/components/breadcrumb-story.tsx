@@ -1,15 +1,5 @@
 "use client";
 
-import { useState } from "react";
-
-import {
-	ChevronRightIcon,
-	FileTextIcon,
-	FolderIcon,
-	HomeIcon,
-	SlashIcon,
-} from "lucide-react";
-
 import {
 	Breadcrumb,
 	BreadcrumbEllipsis,
@@ -29,6 +19,14 @@ import {
 	SelectValue,
 } from "@kit/ui/select";
 import { Switch } from "@kit/ui/switch";
+import {
+	ChevronRightIcon,
+	FileTextIcon,
+	FolderIcon,
+	HomeIcon,
+	SlashIcon,
+} from "lucide-react";
+import { useState } from "react";
 
 import { generateImportStatement } from "../lib/story-utils";
 import { ComponentStoryLayout } from "./story-layout";

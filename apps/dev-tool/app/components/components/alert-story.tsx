@@ -1,15 +1,5 @@
 "use client";
 
-import {
-	AlertCircle,
-	AlertTriangle,
-	CheckCircle,
-	Info,
-	Lightbulb,
-	Terminal,
-	XCircle,
-} from "lucide-react";
-
 import { Alert, AlertDescription, AlertTitle } from "@kit/ui/alert";
 import {
 	Card,
@@ -23,6 +13,15 @@ import { Label } from "@kit/ui/label";
 import { Separator } from "@kit/ui/separator";
 import { Switch } from "@kit/ui/switch";
 import { Textarea } from "@kit/ui/textarea";
+import {
+	AlertCircle,
+	AlertTriangle,
+	CheckCircle,
+	Info,
+	Lightbulb,
+	Terminal,
+	XCircle,
+} from "lucide-react";
 
 import { generatePropsString, useStoryControls } from "../lib/story-utils";
 import { ComponentStoryLayout } from "./story-layout";

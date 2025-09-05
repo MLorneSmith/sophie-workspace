@@ -1,21 +1,5 @@
 "use client";
 
-import { useState } from "react";
-
-import {
-	AlertCircle,
-	CheckCircle,
-	Copy,
-	Download,
-	Heart,
-	HelpCircle,
-	Info,
-	Settings,
-	Share,
-	Star,
-	User,
-} from "lucide-react";
-
 import { Button } from "@kit/ui/button";
 import {
 	Card,
@@ -35,6 +19,20 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from "@kit/ui/tooltip";
+import {
+	AlertCircle,
+	CheckCircle,
+	Copy,
+	Download,
+	Heart,
+	HelpCircle,
+	Info,
+	Settings,
+	Share,
+	Star,
+	User,
+} from "lucide-react";
+import { useState } from "react";
 
 import { generatePropsString, useStoryControls } from "../lib/story-utils";
 import { ComponentStoryLayout } from "./story-layout";

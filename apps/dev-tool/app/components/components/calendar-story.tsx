@@ -1,9 +1,5 @@
 "use client";
 
-import { useState } from "react";
-
-import { CalendarIcon } from "lucide-react";
-
 import { Button } from "@kit/ui/button";
 import { Calendar } from "@kit/ui/calendar";
 import { Card, CardContent } from "@kit/ui/card";
@@ -17,6 +13,8 @@ import {
 	SelectValue,
 } from "@kit/ui/select";
 import { Switch } from "@kit/ui/switch";
+import { CalendarIcon } from "lucide-react";
+import { useState } from "react";
 
 import {
 	generateImportStatement,

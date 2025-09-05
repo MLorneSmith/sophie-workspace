@@ -1,19 +1,5 @@
 "use client";
 
-import { useState } from "react";
-
-import {
-	Calendar,
-	CreditCard,
-	Eye,
-	EyeOff,
-	Lock,
-	Mail,
-	Phone,
-	Search,
-	User,
-} from "lucide-react";
-
 import { Button } from "@kit/ui/button";
 import {
 	Card,
@@ -27,6 +13,18 @@ import { Label } from "@kit/ui/label";
 import { Separator } from "@kit/ui/separator";
 import { Switch } from "@kit/ui/switch";
 import { cn } from "@kit/ui/utils";
+import {
+	Calendar,
+	CreditCard,
+	Eye,
+	EyeOff,
+	Lock,
+	Mail,
+	Phone,
+	Search,
+	User,
+} from "lucide-react";
+import { useState } from "react";
 
 import { generatePropsString, useStoryControls } from "../lib/story-utils";
 import { ComponentStoryLayout } from "./story-layout";

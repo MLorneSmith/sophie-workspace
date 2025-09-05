@@ -1,7 +1,5 @@
 "use client";
 
-import { useState } from "react";
-
 import {
 	Card,
 	CardContent,
@@ -14,6 +12,7 @@ import { Label } from "@kit/ui/label";
 import { Separator } from "@kit/ui/separator";
 import { toast } from "@kit/ui/sonner";
 import { Switch } from "@kit/ui/switch";
+import { useState } from "react";
 
 import { generatePropsString, useStoryControls } from "../lib/story-utils";
 import { ComponentStoryLayout } from "./story-layout";

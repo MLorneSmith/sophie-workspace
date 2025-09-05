@@ -1,7 +1,7 @@
 "use server";
 
 import { getMailer } from "@kit/mailers";
-import { validateEmailForSending, getSenderEmail } from "@kit/mailers-shared";
+import { getSenderEmail, validateEmailForSending } from "@kit/mailers-shared";
 import { enhanceAction } from "@kit/next/actions";
 import { z } from "zod";
 

@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
-
 import { toast } from "@kit/ui/sonner";
+import { useState } from "react";
 
 /**
  * Generic hook for managing component story controls

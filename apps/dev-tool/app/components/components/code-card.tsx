@@ -1,7 +1,5 @@
 "use client";
 
-import { Check, Copy } from "lucide-react";
-
 import { Button } from "@kit/ui/button";
 import {
 	Card,
@@ -10,6 +8,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@kit/ui/card";
+import { Check, Copy } from "lucide-react";
 
 import { useCopyCode } from "../lib/story-utils";
 

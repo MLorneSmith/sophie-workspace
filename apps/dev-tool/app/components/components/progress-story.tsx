@@ -1,9 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
-import { Download, Pause, Play, RotateCcw, Upload, Zap } from "lucide-react";
-
 import { Button } from "@kit/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@kit/ui/card";
 import { Input } from "@kit/ui/input";
@@ -18,6 +14,8 @@ import {
 } from "@kit/ui/select";
 import { Slider } from "@kit/ui/slider";
 import { Switch } from "@kit/ui/switch";
+import { Download, Pause, Play, RotateCcw, Upload, Zap } from "lucide-react";
+import { useEffect, useState } from "react";
 
 import {
 	generateImportStatement,
