@@ -2522,6 +2522,81 @@ class E2ETestRunner {
 		return results;
 	}
 
+	async runShardFilesSequentially(
+		shard,
+		attempt = 1,
+		currentTests = null,
+		reportProgress = null,
+	) {
+		// Run each file in the shard separately to avoid hanging issues
+		const results = {
+			total: 0,
+			passed: 0,
+			failed: 0,
+			skipped: 0,
+			intentionalFailures: 0,
+			infrastructureFailure: false,
+			exitCode: 0,
+			duration: "0s",
+			output: "",
+		};
+
+		const startTime = Date.now();
+
+		for (const file of shard.files) {
+			log(
+				`   📄 Processing file ${shard.files.indexOf(file) + 1}/${shard.files.length}: ${file}`,
+			);
+
+			// Create a modified shard object with just this file
+			const fileShard = {
+				...shard,
+				currentFile: file,
+				files: [file],
+			};
+
+			// Run this single file
+			const fileResult = await this.runShard(
+				fileShard,
+				attempt,
+				currentTests,
+				reportProgress,
+			);
+
+			// Aggregate results
+			results.total += fileResult.total || 0;
+			results.passed += fileResult.passed || 0;
+			results.failed += fileResult.failed || 0;
+			results.skipped += fileResult.skipped || 0;
+			results.intentionalFailures += fileResult.intentionalFailures || 0;
+			results.output += `\n--- File: ${file} ---\n${fileResult.output}`;
+
+			// If any file has infrastructure failure, mark the whole shard as failed
+			if (fileResult.infrastructureFailure) {
+				results.infrastructureFailure = true;
+			}
+
+			// Use the worst exit code
+			if (fileResult.exitCode !== 0) {
+				results.exitCode = fileResult.exitCode;
+			}
+
+			// If a file fails critically, optionally stop (for now, continue)
+			if (
+				fileResult.failed > 0 &&
+				fileResult.failed !== fileResult.intentionalFailures
+			) {
+				log(`   ⚠️ File ${file} had ${fileResult.failed} failures`);
+			}
+		}
+
+		const duration = Math.round((Date.now() - startTime) / 1000);
+		results.duration = `${duration}s`;
+		results.shardId = shard.id;
+
+		return results;
+	}
+
 	async runShardWithRetry(
 		shard,
 		attempt = 1,
@@ -2622,6 +2697,20 @@ class E2ETestRunner {
 		currentTests = null,
 		reportProgress = null,
 	) {
+		// CRITICAL FIX for Issue #300: Run each test file separately to avoid hanging
+		// When multiple files are run together, Playwright can hang between file transitions
+		if (shard.files && shard.files.length > 1) {
+			log(
+				`📁 Running test group ${shard.id} (${shard.name}) with ${shard.files.length} files sequentially`,
+			);
+			return this.runShardFilesSequentially(
+				shard,
+				attempt,
+				currentTests,
+				reportProgress,
+			);
+		}
+
 		return new Promise((resolve) => {
 			const startTime = Date.now();
 			let output = "";
@@ -2648,12 +2737,20 @@ class E2ETestRunner {
 			if (shard.files && shard.files.length > 0) {
 				// New file-based approach for test groups
 				command = "npx";
-				args = ["playwright", "test", ...shard.files];
+				// For single file or when called from runShardFilesSequentially
+				const filesToRun = shard.currentFile
+					? [shard.currentFile]
+					: shard.files;
+				args = ["playwright", "test", ...filesToRun];
 				// CRITICAL FIX: Run Playwright tests from the e2e directory where the test files exist
 				cwd = path.join(process.cwd(), "apps", "e2e");
-				log(
-					`📁 Running test group ${shard.id} (${shard.name}) with files: ${shard.files.join(", ")}`,
-				);
+				if (shard.currentFile) {
+					log(`   📄 Running file: ${shard.currentFile}`);
+				} else {
+					log(
+						`📁 Running test group ${shard.id} (${shard.name}) with files: ${filesToRun.join(", ")}`,
+					);
+				}
 			} else {
 				// Fallback to old shard-based approach (shouldn't happen with new groups)
 				command = "pnpm";
