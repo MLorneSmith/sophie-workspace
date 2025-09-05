@@ -98,11 +98,13 @@ We use a structured 3-stage workflow for feature development with GitHub integra
 
 ### Workflow Stages
 
-1. **Feature Specification** → 2. **Implementation Plan** → 3. **Task Decomposition** → 4. **GitHub Sync** → 5. **Parallel Execution**
+1. **Feature Specification** → 2. **Implementation Plan** → 3. **Task Decomposition** →
+   4. **GitHub Sync** → 5. **Parallel Execution**
 
 ### Available Commands
 
 #### Feature Specification & Planning
+
 - `/feature:spec <name>` - Create comprehensive feature specification
 - `/feature:plan <name>` - Convert specification to technical implementation plan
 - `/feature:decompose <name>` - Break implementation into executable tasks
@@ -131,7 +133,7 @@ We use a structured 3-stage workflow for feature development with GitHub integra
 
 ### File Organization
 
-```
+```text
 .claude/
 ├── specs/                    # Feature specifications
 │   └── user-auth.md
@@ -148,6 +150,7 @@ We use a structured 3-stage workflow for feature development with GitHub integra
 ### Parallel Execution
 
 When using `/feature:start`, the system:
+
 1. Analyzes task dependencies
 2. Identifies parallelizable work streams
 3. Spawns multiple agents using the Task tool
@@ -155,6 +158,7 @@ When using `/feature:start`, the system:
 5. Consolidates results when complete
 
 **Key Principles:**
+
 - Agents work in the SAME branch (feature/name)
 - File-level parallelism prevents conflicts
 - Git handles synchronization
@@ -163,6 +167,7 @@ When using `/feature:start`, the system:
 ### GitHub Integration
 
 After `/feature:sync`:
+
 - Feature becomes parent issue with `feature` label
 - Tasks become sub-issues (or linked issues) with `task` label
 - Task files renamed from `001.md` → `{issue-number}.md`
@@ -174,6 +179,7 @@ After `/feature:sync`:
 **When tests fail, fix the code, not the test.**
 
 Key principles:
+
 - **Tests should be meaningful** - Avoid tests that always pass regardless of behavior
 - **Test actual functionality** - Call the functions being tested, don't just check side effects
 - **Failing tests are valuable** - They reveal bugs or missing features
@@ -184,10 +190,12 @@ Key principles:
 ## Directory Structure & File Organization
 
 ### Reports Directory
+
 ALL project reports and documentation should be saved to the `/reports/` directory with proper organization:
 
 **Directory Structure**:
-```
+
+```text
 /reports/
 ├── YYYY-MM-DD/           # Daily reports for quick access
 │   └── [report-type]/    # Optional categorization for busy days
@@ -201,6 +209,7 @@ ALL project reports and documentation should be saved to the `/reports/` directo
 **Naming Convention**: `[type]-[scope]-[date].md` (lowercase with hyphens)
 
 **Report Types**:
+
 - Implementation reports: `feature-[name]-implementation.md`
 - Test results: `test-results-[scope].md`  
 - Performance analysis: `performance-analysis-[scenario].md`
@@ -211,11 +220,13 @@ ALL project reports and documentation should be saved to the `/reports/` directo
 - Research: `research-[topic]-[date].md`
 
 **Examples**:
+
 - `/reports/2025-01-05/code-review-auth-components.md`
 - `/reports/features/auth/feature-auth-implementation.md`
 - `/reports/research/webrtc/research-webrtc-security-2025-01-05.md`
 
 **Guidelines**:
+
 - Always save reports to `/reports/` with appropriate subdirectory
 - Include dates in `YYYY-MM-DD` format for time-sensitive reports
 - Use lowercase with hyphens for readability and consistency
@@ -223,15 +234,18 @@ ALL project reports and documentation should be saved to the `/reports/` directo
 - For daily reports, use date folders; for feature/research reports, use topic folders
 
 ### Temporary Files & Debugging
+
 All temporary files, debugging scripts, and test artifacts should be organized in a `/temp` folder:
 
 **Temporary File Organization**:
+
 - Debug scripts: `temp/debug-*.js`, `temp/analyze-*.py`
 - Test artifacts: `temp/test-results/`, `temp/coverage/`
 - Generated files: `temp/generated/`, `temp/build-artifacts/`
 - Logs: `temp/logs/debug.log`, `temp/logs/error.log`
 
 **Guidelines**:
+
 - Never commit files from `/temp` directory
 - Use `/temp` for all debugging and analysis scripts created during development
 - Clean up `/temp` directory regularly or use automated cleanup
@@ -240,9 +254,11 @@ All temporary files, debugging scripts, and test artifacts should be organized i
 ## Agent Delegation & Parallel Execution
 
 ### Always Delegate to Specialists
+
 **When specialized agents are available, you MUST use them instead of attempting tasks yourself.**
 
 Available specialized agents in `.claude/agents/`:
+
 - **typescript/** - TypeScript specialists (3 agents)
 - **testing/** - Testing experts for Jest, Vitest, general (3 agents)
 - **database/** - PostgreSQL, MongoDB, general database experts (3 agents)
@@ -252,16 +268,19 @@ Available specialized agents in `.claude/agents/`:
 - **build-tools/** - Webpack and Vite experts (2 agents)
 - Plus: code-quality, devops, documentation, e2e, framework, git, nodejs, refactoring agents
 
-### Why Agent Delegation Matters:
+### Why Agent Delegation Matters
+
 - Specialists have deeper, more focused knowledge
 - They're aware of edge cases and subtle bugs
 - They follow established patterns and best practices
 - They provide more comprehensive solutions
 
 ### Parallel Tool Execution
+
 **CRITICAL: Send all tool calls in a single message to execute them in parallel for optimal performance.**
 
 **Always use parallel execution for**:
+
 - Multiple file searches or reads
 - Different grep patterns
 - Multiple agent delegations
@@ -274,6 +293,7 @@ Available specialized agents in `.claude/agents/`:
 ## Key Development Patterns (from AGENTS.md)
 
 ### Performance Optimization - Parallel Data Fetching
+
 When fetching multiple data sources, always use parallel patterns:
 
 ```typescript
@@ -291,9 +311,11 @@ const comments = await fetchComments();
 ```
 
 ### Server Actions Implementation
+
 Always use `enhanceAction` from @packages/next/src/actions/index.ts for all server actions.
 
 ### Error Handling & Logging
+
 Use structured logging with proper context:
 
 ```typescript
@@ -316,6 +338,7 @@ async function myServerAction() {
 ## Database Security Reminders
 
 ### Critical Security Guidelines
+
 - **Always enable RLS** on new tables unless explicitly instructed otherwise
 - **NEVER use SECURITY DEFINER functions** without explicit access controls
 - **Always use security_invoker=true for views** to maintain proper access control
@@ -324,15 +347,18 @@ async function myServerAction() {
 ## Code Quality Standards
 
 ### TypeScript
+
 - **No `any` types** - Always define proper interfaces
 - Use strict TypeScript configuration
 - Prefer type inference where appropriate
 
 ### Component Organization
+
 - Route-specific components: Use `_components/` directories
 - Route utilities: Use `_lib/` for client, `_lib/server/` for server-side
 - Global components: Root-level directories
 
 ### Validation
+
 - **Always validate input** - Use Zod schemas everywhere
 - Validate at boundaries (API routes, server actions)
