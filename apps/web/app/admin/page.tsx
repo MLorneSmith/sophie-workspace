@@ -5,7 +5,7 @@ import { PageBody, PageHeader } from "@kit/ui/page";
 function AdminPage() {
 	return (
 		<>
-			<PageHeader description={"Super Admin"} />
+			<PageHeader title="Admin Dashboard" description={"Super Admin"} />
 
 			<PageBody>
 				<AdminDashboard />
