@@ -109,7 +109,7 @@ test.describe("Authentication - Simple Tests @auth", () => {
 		await expect(errorElement).toBeVisible();
 	});
 
-	test("sign out clears session", async ({ page, context }) => {
+	test("sign out clears session", async ({ page }) => {
 		const auth = new AuthPageObject(page);
 
 		// First sign in

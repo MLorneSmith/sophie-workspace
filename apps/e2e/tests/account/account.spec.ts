@@ -90,7 +90,7 @@ if (SKIP_ACCOUNT_SETTINGS) {
 		});
 
 		/* ORIGINAL TEST - DO NOT UNCOMMENT UNTIL PORTAL RENDERING FIXED
-	test("user can update their password", async () => {
+		test("user can update their password", async () => {
 		const newPassword = `newpass${Math.random() * 100000}!`;
 
 		await account.updatePassword(newPassword);
@@ -111,8 +111,8 @@ if (SKIP_ACCOUNT_SETTINGS) {
 
 		// Should successfully navigate to home
 		await page.waitForURL(/\/home/, { timeout: 10000 });
-	});
-	*/
+		});
+		*/
 	});
 } // End of else block for SKIP_ACCOUNT_SETTINGS
 

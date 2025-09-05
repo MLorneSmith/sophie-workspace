@@ -2,11 +2,13 @@
 
 ## Overview
 
-This guide explains how to use Git worktrees to run multiple independent Claude Code sessions simultaneously, enabling parallel development on different features without branch switching or conflicts.
+This guide explains how to use Git worktrees to run multiple independent Claude Code sessions
+simultaneously, enabling parallel development on different features without branch switching or conflicts.
 
 ## What are Git Worktrees?
 
 Git worktrees allow you to have multiple working directories attached to a single Git repository. Each worktree:
+
 - Has its own working directory and index
 - Can check out a different branch
 - Shares the same Git database (`.git` directory)
@@ -86,18 +88,21 @@ Repeat for each worktree you created.
 Open separate terminal windows/tabs for each worktree:
 
 **Terminal 1 - Authentication Feature:**
+
 ```bash
 cd /home/msmith/projects/2025slideheroes-auth
 claude
 ```
 
 **Terminal 2 - API Development:**
+
 ```bash
 cd /home/msmith/projects/2025slideheroes-api
 claude
 ```
 
 **Terminal 3 - UI Components:**
+
 ```bash
 cd /home/msmith/projects/2025slideheroes-ui
 claude
@@ -106,17 +111,21 @@ claude
 ## Common Worktree Commands
 
 ### List All Worktrees
+
 ```bash
 git worktree list
 ```
+
 Example output:
-```
+
+```text
 /home/msmith/projects/2025slideheroes      abc1234 [dev]
 /home/msmith/projects/2025slideheroes-auth def5678 [feature/authentication]
 /home/msmith/projects/2025slideheroes-api  ghi9012 [feature/api-routes]
 ```
 
 ### Remove a Worktree
+
 ```bash
 # First, exit Claude Code in that worktree
 # Then remove the worktree
@@ -127,6 +136,7 @@ git worktree remove --force ../2025slideheroes-auth
 ```
 
 ### Clean Up Stale Worktrees
+
 ```bash
 # Remove references to deleted worktrees
 git worktree prune
@@ -134,7 +144,7 @@ git worktree prune
 
 ## Recommended Directory Structure
 
-```
+```text
 /home/msmith/projects/
 ├── 2025slideheroes/              # Dev branch - main development
 ├── 2025slideheroes-auth/         # Authentication feature (from dev)
@@ -148,6 +158,7 @@ git worktree prune
 ### Example 1: Parallel Feature Development
 
 1. **Morning Setup:**
+
 ```bash
 # Ensure you're on dev branch
 git checkout dev
@@ -158,12 +169,14 @@ git worktree add ../2025slideheroes-stripe -b feature/stripe-integration dev
 git worktree add ../2025slideheroes-tests -b feature/add-tests dev
 ```
 
-2. **Work in Parallel:**
+1. **Work in Parallel:**
+
 - Terminal 1: Claude working on Stripe integration
 - Terminal 2: Claude adding test coverage
 - Terminal 3: Dev branch for code reviews
 
-3. **End of Day:**
+1. **End of Day:**
+
 ```bash
 # Push changes from each worktree
 cd ../2025slideheroes-stripe && git push -u origin feature/stripe-integration
@@ -209,11 +222,13 @@ git worktree add ../2025slideheroes-approach2 -b experiment/approach2 dev
 ## Best Practices
 
 ### 1. Naming Conventions
+
 - Use descriptive names that match the branch purpose
 - Include the project name prefix for clarity
 - Examples: `2025slideheroes-auth`, `2025slideheroes-payment`
 
 ### 2. Dependency Management
+
 ```bash
 # Create a setup script for new worktrees
 cat > setup-worktree.sh << 'EOF'
@@ -229,17 +244,20 @@ chmod +x setup-worktree.sh
 ```
 
 ### 3. Avoiding Conflicts
+
 - Don't modify the same files in multiple worktrees
 - Coordinate package.json changes
 - Use feature flags for conditional code
 - Communicate which files each Claude session should focus on
 
 ### 4. Token Usage Management
+
 - Be aware that multiple sessions consume tokens faster (2-3x normal rate)
 - Prioritize critical features when running multiple sessions
 - Consider time-boxing each session
 
 ### 5. Regular Maintenance
+
 ```bash
 # Weekly cleanup routine
 git worktree list
@@ -251,17 +269,20 @@ git branch -d $(git branch --merged | grep -v -E "main|dev")
 ## Limitations and Considerations
 
 ### Claude Code Limitations
+
 - Cannot navigate between worktrees within a single session
 - Each session must be started from its worktree directory
 - No shared context between different Claude sessions
 - Security restrictions prevent parent directory access
 
 ### Git Limitations
+
 - Cannot check out the same branch in multiple worktrees
 - All worktrees depend on the main `.git` directory
 - Deleting the main repository affects all worktrees
 
 ### Performance Considerations
+
 - Each worktree needs its own `node_modules` (disk space)
 - Multiple development servers may conflict on ports
 - System resources divided among multiple Claude sessions
@@ -269,6 +290,7 @@ git branch -d $(git branch --merged | grep -v -E "main|dev")
 ## Troubleshooting
 
 ### Problem: "Branch already checked out"
+
 ```bash
 # Find which worktree has the branch
 git worktree list | grep branch-name
@@ -278,6 +300,7 @@ git worktree add ../2025slideheroes-feature -b feature/new-branch-name
 ```
 
 ### Problem: Port Conflicts
+
 ```bash
 # Use different ports for each worktree's dev server
 # Worktree 1
@@ -291,6 +314,7 @@ PORT=3002 pnpm dev
 ```
 
 ### Problem: Worktree Not Removable
+
 ```bash
 # Force removal if necessary
 git worktree remove --force ../2025slideheroes-feature
@@ -301,6 +325,7 @@ git worktree prune
 ```
 
 ### Problem: Environment Variables Not Working
+
 ```bash
 # Ensure each worktree has its own .env files
 for worktree in ../2025slideheroes-*; do
@@ -356,6 +381,7 @@ sh-claude() {
 ```
 
 Usage:
+
 ```bash
 # Create new worktree from dev branch (default) and start Claude
 sh-worktree feature/new-auth auth
@@ -381,6 +407,7 @@ sh-remove auth
 4. **Experiment Branches**: Use worktrees from dev to test different approaches
 
 ### Daily Workflow
+
 ```bash
 # Morning: Ensure dev branch is up to date
 git checkout dev
@@ -400,15 +427,19 @@ git worktree remove ../2025slideheroes-profiles
 ## Summary
 
 Git worktrees with Claude Code enable powerful parallel development workflows. By following this guide, you can:
+
 - Develop multiple features simultaneously
 - Respond quickly to urgent issues
 - Test different implementations
 - Maximize productivity with Claude Code
 
 Remember to:
+
 - Start each Claude session from its worktree directory
 - Manage token usage across multiple sessions
 - Clean up worktrees when features are complete
 - Coordinate file changes to avoid conflicts
 
-This setup is particularly valuable for the SlideHeroes project where you might need to work on authentication, API routes, UI components, and bug fixes simultaneously without the overhead of branch switching or stashing changes.
+This setup is particularly valuable for the SlideHeroes project where you might need to work on
+authentication, API routes, UI components, and bug fixes simultaneously without the overhead of
+branch switching or stashing changes.
