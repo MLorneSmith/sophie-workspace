@@ -69,9 +69,35 @@ run_lint() {
         echo "✅ Lint checks passed"
         return 0
     else
+        # Parse lint errors from output
+        local lint_errors=0
+        local lint_warnings=0
+        
+        # Check for markdownlint-cli2 errors (e.g., "Summary: 43 error(s)")
+        if grep -q "Summary:.*error" "$output_file"; then
+            local md_count=$(grep "Summary:" "$output_file" | sed -n 's/Summary: \([0-9]*\) error.*/\1/p' | head -1)
+            if [ -n "$md_count" ] && [ "$md_count" -gt 0 ]; then
+                lint_errors=$md_count
+            fi
+        fi
+        
         # Check for Biome lint errors
-        local lint_errors=$(grep -c "lint/correctness" "$output_file" 2>/dev/null || echo "0")
-        local lint_warnings=$(grep -c "⚠" "$output_file" 2>/dev/null || echo "0")
+        local biome_count=$(grep -c "lint/correctness" "$output_file" 2>/dev/null || true)
+        if [ -n "$biome_count" ] && [ "$biome_count" -gt 0 ]; then
+            lint_errors=$((lint_errors + biome_count))
+        fi
+        
+        # Check for warnings
+        local warning_count=$(grep -c "⚠" "$output_file" 2>/dev/null || true)
+        if [ -n "$warning_count" ] && [ "$warning_count" -gt 0 ]; then
+            lint_warnings=$warning_count
+        fi
+        
+        # If we still found no errors but the command failed, count it as 1 error
+        if [ $lint_errors -eq 0 ] && [ $lint_warnings -eq 0 ]; then
+            lint_errors=1
+        fi
+        
         echo "status: failed" > "$WORK_DIR/lint_result.yaml"
         echo "errors_found: $lint_errors" >> "$WORK_DIR/lint_result.yaml"
         echo "warnings_found: $lint_warnings" >> "$WORK_DIR/lint_result.yaml"

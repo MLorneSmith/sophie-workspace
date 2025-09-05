@@ -2558,6 +2558,7 @@ class E2ETestRunner {
 			};
 
 			let fileResult;
+			let fileTimedOut = false;
 			try {
 				// Run this single file with a timeout wrapper
 				const filePromise = this.runShard(
@@ -2570,6 +2571,12 @@ class E2ETestRunner {
 				// Create a timeout promise for individual file execution
 				const timeoutPromise = new Promise((_, reject) => {
 					setTimeout(() => {
+						fileTimedOut = true;
+						// Aggressively kill any hanging Playwright processes for this file
+						const fileName = path.basename(file);
+						execAsync(
+							`pkill -9 -f "playwright.*${fileName}" 2>/dev/null || true`,
+						).catch(() => {});
 						reject(
 							new Error(
 								`File ${file} timed out after ${CONFIG.fileTimeout / 1000}s`,
@@ -2592,7 +2599,7 @@ class E2ETestRunner {
 					infrastructureFailure: true,
 					exitCode: 1,
 					output: `File ${file} failed: ${error.message}\n`,
-					timedOut: true,
+					timedOut: fileTimedOut,
 				};
 				// Continue with other files even if this one fails
 				log("   ⚠️ Continuing with remaining files after failure...");
@@ -2826,16 +2833,34 @@ class E2ETestRunner {
 				? `File ${shard.currentFile}`
 				: `Shard ${shard.id}`;
 
-			const timeout = setTimeout(() => {
+			let timeoutOccurred = false;
+			const timeout = setTimeout(async () => {
+				timeoutOccurred = true;
 				logError(
 					`❌ ${timeoutLabel} timed out after ${timeoutDuration / 1000}s`,
 				);
+
+				// More aggressive process cleanup for hanging tests
 				try {
-					// For detached processes, kill the process group
+					// Kill the process group
 					process.kill(-proc.pid, "SIGKILL");
 				} catch (e) {
 					// Fallback to killing just the process
 					proc.kill("SIGKILL");
+				}
+
+				// Also kill any orphaned Playwright processes
+				try {
+					await execAsync(
+						`pkill -9 -f "playwright.*${shard.currentFile || shard.id}" 2>/dev/null || true`,
+					);
+				} catch (e) {
+					// Ignore errors
+				}
+
+				// Force resolution of the promise with timeout error
+				if (!proc.killed) {
+					proc.emit("exit", 124, "TIMEOUT");
 				}
 			}, timeoutDuration);
 
@@ -2906,7 +2931,7 @@ class E2ETestRunner {
 				output += data.toString();
 			});
 
-			proc.on("close", (code) => {
+			proc.on("close", (code, signal) => {
 				clearTimeout(timeout);
 				const duration = Math.round((Date.now() - startTime) / 1000);
 
@@ -2922,6 +2947,16 @@ class E2ETestRunner {
 				result.hasServerStartup = hasServerStartupDetected;
 				result.output = output; // Include output for retry analysis
 				result.attempt = attempt; // Track attempt number
+
+				// Handle timeout case specifically
+				if (timeoutOccurred || signal === "TIMEOUT" || code === 124) {
+					result.timedOut = true;
+					result.infrastructureFailure = true;
+					result.failed = result.total > 0 ? result.total : 1;
+					log(
+						`  ⏱️ ${shard.isIndividualFile ? "File" : "Shard"} was terminated due to timeout`,
+					);
+				}
 
 				// Check for infrastructure failures
 				if (output.includes("WebServer") && output.includes("Timed out")) {
