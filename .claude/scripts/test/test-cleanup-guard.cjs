@@ -182,38 +182,42 @@ class TestCleanupGuard {
 	async cleanupTestPorts() {
 		const testPorts = [3000, 3001, 3010, 3020];
 		console.log("🔧 Cleaning up test ports:", testPorts.join(", "));
-		
+
 		for (const port of testPorts) {
 			try {
 				// Get PIDs using the port
 				const { stdout: pids } = await execAsync(
-					`lsof -ti:${port} 2>/dev/null || true`
+					`lsof -ti:${port} 2>/dev/null || true`,
 				);
-				
+
 				if (pids.trim()) {
 					console.log(`   Found process on port ${port}, terminating...`);
-					
+
 					// Try graceful termination first (SIGTERM)
-					await execAsync(`lsof -ti:${port} | xargs -r kill -15 2>/dev/null || true`);
-					await new Promise(resolve => setTimeout(resolve, 500));
-					
+					await execAsync(
+						`lsof -ti:${port} | xargs -r kill -15 2>/dev/null || true`,
+					);
+					await new Promise((resolve) => setTimeout(resolve, 500));
+
 					// Check if still running and force kill if needed
 					const { stdout: stillRunning } = await execAsync(
-						`lsof -ti:${port} 2>/dev/null || true`
+						`lsof -ti:${port} 2>/dev/null || true`,
 					);
-					
+
 					if (stillRunning.trim()) {
 						console.log(`   Force killing process on port ${port}...`);
-						await execAsync(`lsof -ti:${port} | xargs -r kill -9 2>/dev/null || true`);
+						await execAsync(
+							`lsof -ti:${port} | xargs -r kill -9 2>/dev/null || true`,
+						);
 					}
 				}
 			} catch (e) {
 				// Port might already be free
 			}
 		}
-		
+
 		// Wait for ports to be released
-		await new Promise(resolve => setTimeout(resolve, 1000));
+		await new Promise((resolve) => setTimeout(resolve, 1000));
 	}
 
 	/**
