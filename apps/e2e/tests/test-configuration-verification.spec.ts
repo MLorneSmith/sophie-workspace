@@ -4,7 +4,9 @@ import { test, expect } from "@playwright/test";
  * Test file to verify that Playwright continues running all tests despite failures.
  * This file contains intentional failures to test the configuration from Issue #275.
  *
- * Expected behavior: ALL 10 tests should run, regardless of failures.
+ * Expected behavior: ALL 11 tests should run, regardless of failures.
+ * - 8 tests should PASS
+ * - 3 tests should FAIL (intentionally - Tests 2, 4, and 7)
  */
 
 test.describe("Configuration Verification - Continue on Failure", () => {
@@ -62,9 +64,9 @@ test.describe("Summary Verification", () => {
     previous suite were executed (including Test 10),
     then the configuration is working correctly!
     
-    Expected: 10 tests total
-    - 6 passing tests
-    - 4 failing tests
+    Expected: 11 tests total (10 in main suite + 1 verification)
+    - 8 passing tests
+    - 3 failing tests (intentional)
     
     All tests should have run despite the failures.
     =====================================================

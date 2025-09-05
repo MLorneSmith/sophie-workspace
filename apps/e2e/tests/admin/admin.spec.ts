@@ -5,24 +5,13 @@ import { TeamAccountsPageObject } from "../team-accounts/team-accounts.po";
 
 const MFA_KEY = "NHOHJVGPO3R3LKVPRMNIYLCDMBHUM2SE";
 
-// Debug logging to verify environment variable
-console.log("[ADMIN TEST] TEST_SHARD_MODE:", process.env.TEST_SHARD_MODE);
-console.log(
-	"[ADMIN TEST] Running in shard mode?",
-	process.env.TEST_SHARD_MODE === "true",
-);
-
-// CRITICAL: Admin tests fail in shard mode - GitHub issue #286
-// Admin tests require:
-// 1. Hardcoded admin account (michael@slideheroes.com) that may not exist in test DB
-// 2. MFA verification which doesn't work well in shard execution
-// 3. Serial execution mode which conflicts with shard parallelization
+// Admin tests now run separately from shard execution - GitHub issue #294
+// These tests require:
+// 1. Admin account (michael@slideheroes.com) - should be seeded in test DB
+// 2. MFA verification - runs in serial mode for reliability
+// 3. Serial execution mode - configured in test controller
 //
-// Skip all tests in this file when in shard mode
-test.skip(
-	() => process.env.TEST_SHARD_MODE === "true",
-	"Admin tests disabled in shard mode",
-);
+// Note: Admin tests are excluded from shard configuration and run after all shards complete
 
 test.describe("Admin Auth flow without MFA", () => {
 	test("will return a 404 for non-admin users", async ({ page }) => {
