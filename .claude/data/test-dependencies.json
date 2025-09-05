@@ -1,0 +1,127 @@
+{
+	"testGroupDependencies": {
+		"Smoke Tests": {
+			"id": 1,
+			"requires": [],
+			"providesFor": [],
+			"description": "Basic smoke tests to verify application is running"
+		},
+		"Authentication": {
+			"id": 2,
+			"requires": [],
+			"providesFor": ["Account Management", "Admin & Invitations", "Billing"],
+			"description": "Authentication flow including login, signup, and password reset"
+		},
+		"Account Management": {
+			"id": 3,
+			"requires": ["Authentication"],
+			"providesFor": ["Admin & Invitations", "Billing"],
+			"description": "User account and team account management"
+		},
+		"Admin & Invitations": {
+			"id": 4,
+			"requires": ["Authentication", "Account Management"],
+			"providesFor": [],
+			"description": "Admin functionality and team invitations"
+		},
+		"Billing": {
+			"id": 5,
+			"requires": ["Authentication", "Account Management"],
+			"providesFor": [],
+			"description": "User and team billing functionality"
+		},
+		"Accessibility": {
+			"id": 6,
+			"requires": [],
+			"providesFor": [],
+			"description": "Accessibility compliance tests"
+		},
+		"Configuration & Health": {
+			"id": 7,
+			"requires": [],
+			"providesFor": [],
+			"description": "Test configuration verification and health checks"
+		}
+	},
+	"testFiles": {
+		"tests/smoke/smoke.spec.ts": {
+			"group": "Smoke Tests",
+			"critical": true
+		},
+		"tests/authentication/auth.spec.ts": {
+			"group": "Authentication",
+			"critical": true,
+			"creates": [
+				"test-user@example.com",
+				"test-user-2@example.com",
+				"test-user-3@example.com"
+			]
+		},
+		"tests/authentication/password-reset.spec.ts": {
+			"group": "Authentication",
+			"critical": false
+		},
+		"tests/account/account.spec.ts": {
+			"group": "Account Management",
+			"critical": true,
+			"requires": ["test-user@example.com"]
+		},
+		"tests/team-accounts/team-accounts.spec.ts": {
+			"group": "Account Management",
+			"critical": true,
+			"requires": ["test-user@example.com"],
+			"creates": ["test-team-1"]
+		},
+		"tests/team-accounts/team-invitation-mfa.spec.ts": {
+			"group": "Account Management",
+			"critical": false,
+			"requires": ["test-team-1", "test-user-2@example.com"]
+		},
+		"tests/admin/admin.spec.ts": {
+			"group": "Admin & Invitations",
+			"critical": true,
+			"requires": ["admin-user@example.com"]
+		},
+		"tests/invitations/invitations.spec.ts": {
+			"group": "Admin & Invitations",
+			"critical": false,
+			"requires": ["test-team-1"]
+		},
+		"tests/user-billing/user-billing.spec.ts": {
+			"group": "Billing",
+			"critical": false,
+			"requires": ["test-user@example.com"]
+		},
+		"tests/team-billing/team-billing.spec.ts": {
+			"group": "Billing",
+			"critical": false,
+			"requires": ["test-team-1"]
+		},
+		"tests/accessibility/accessibility-hybrid.spec.ts": {
+			"group": "Accessibility",
+			"critical": false
+		},
+		"tests/accessibility/accessibility-hybrid-simple.spec.ts": {
+			"group": "Accessibility",
+			"critical": false
+		},
+		"tests/test-configuration-verification.spec.ts": {
+			"group": "Configuration & Health",
+			"critical": false,
+			"intentionalFailures": 3
+		},
+		"tests/healthcheck.spec.ts": {
+			"group": "Configuration & Health",
+			"critical": false
+		}
+	},
+	"executionOrder": [
+		"Smoke Tests",
+		"Authentication",
+		"Account Management",
+		"Admin & Invitations",
+		"Billing",
+		"Accessibility",
+		"Configuration & Health"
+	]
+}
