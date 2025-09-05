@@ -37,7 +37,7 @@ on:
 jobs:
   visual-test:
     name: Visual Regression - ${{ inputs.environment }}
-    runs-on: runs-on=${{ github.run_id }},runner=4cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
     outputs:
       has_differences: ${{ steps.test.outputs.has_differences }}
       report_url: ${{ steps.upload.outputs.report_url }}

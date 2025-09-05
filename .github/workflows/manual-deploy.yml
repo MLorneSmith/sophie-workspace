@@ -36,7 +36,7 @@ permissions:
 jobs:
   validate-request:
     name: Validate Request
-    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     outputs:
       proceed: ${{ steps.check.outputs.proceed }}
     steps:
@@ -92,7 +92,7 @@ jobs:
   # Deploy to selected environment
   deploy:
     name: Deploy to ${{ github.event.inputs.environment }}
-    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: [validate-request, test]
     if: |
       always() && 
@@ -180,7 +180,7 @@ jobs:
   # Post-deployment validation
   validate-deployment:
     name: Validate Deployment
-    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: deploy
     if: success()
     steps:
