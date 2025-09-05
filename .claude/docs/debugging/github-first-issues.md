@@ -61,11 +61,17 @@ grep "Status: open" .claude/issues/*.md
 
 ## Technical Implementation
 
-### Auto-Sync Service
+### GitHub CLI Integration
 
-Location: `.claude/scripts/`
+Issues are fetched directly using GitHub CLI (`gh`) commands:
 
-- **sync-issue.js** - Consolidated sync script for GitHub issues
+```bash
+# Fetch issue details
+gh issue view [issue_number] --json number,title,body,state,labels
+
+# View with comments
+gh issue view [issue_number] --comments
+```
 
 ### Authentication
 
@@ -129,14 +135,14 @@ Auto-synced files include:
 
 ### Common Issues
 
-**Auto-sync fails:**
+**GitHub fetch fails:**
 
 ```bash
 # Check authentication
-echo $GITHUB_TOKEN
+gh auth status
 
-# Manual sync test
-node .claude/scripts/sync-issue.js 30
+# Manual fetch test
+gh issue view 30 --json number,title,body,state
 
 # Fallback: Use direct local files
 /debug-issue .claude/issues/2025-06-13-ISSUE-30.md
@@ -159,7 +165,6 @@ node .claude/scripts/sync-issue.js 30
 ```
 .claude/
 ├── scripts/
-│   ├── sync-issue.js       # GitHub issue sync service
 │   └── package.json        # Dependencies
 ├── issues/
 │   ├── sync-metadata.json  # Sync tracking

@@ -19,7 +19,8 @@
       "Bash(.claude/scripts/codecheck-direct.sh:*)",
       "Bash(DEBUG_TEST=true node .claude/scripts/test/test-controller.cjs --quick --debug)",
       "Bash(DEBUG_TEST=true node .claude/scripts/test/test-controller.cjs --debug)",
-      "WebFetch(domain:docs.warp.dev)"
+      "WebFetch(domain:docs.warp.dev)",
+      "Bash(pnpm lint:*)"
     ],
     "deny": [],
     "ask": [],

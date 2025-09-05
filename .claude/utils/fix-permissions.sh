@@ -12,8 +12,6 @@ find "$CLAUDE_DIR" -name "*.sh" -type f -exec chmod +x {} \; 2>/dev/null
 echo "✓ Fixed .sh files"
 
 # Fix JavaScript executables
-chmod +x "$CLAUDE_DIR/scripts/sync-issue.js" 2>/dev/null
-chmod +x "$CLAUDE_DIR/scripts/sync-task.js" 2>/dev/null
 chmod +x "$CLAUDE_DIR/scripts/test-controller.cjs" 2>/dev/null
 echo "✓ Fixed .js/.cjs executables"
 

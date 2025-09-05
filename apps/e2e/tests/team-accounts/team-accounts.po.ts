@@ -1,39 +1,41 @@
 import { expect, type Page } from "@playwright/test";
 
 import { AuthPageObject } from "../authentication/auth.po";
+import { OnboardingPageObject } from "../onboarding/onboarding.po";
 import { OtpPo } from "../utils/otp.po";
 
 export class TeamAccountsPageObject {
 	private readonly page: Page;
 	public auth: AuthPageObject;
 	public otp: OtpPo;
+	private onboarding: OnboardingPageObject;
 
 	constructor(page: Page) {
 		this.page = page;
 		this.auth = new AuthPageObject(page);
 		this.otp = new OtpPo(page);
+		this.onboarding = new OnboardingPageObject(page);
 	}
 
 	async setup(params = this.createTeamName()) {
 		const { email } = await this.auth.signUpFlow("/home");
 
 		// Wait for the page to be ready after sign up
-		// Check if we're on an onboarding page and skip it if necessary
+		// Check if we're on an onboarding page and complete it if necessary
 		const currentUrl = this.page.url();
 		if (currentUrl.includes("/onboarding")) {
-			console.log("Detected onboarding page, waiting for navigation...");
-			// Wait for navigation to home page or handle onboarding
-			await this.page.waitForURL("**/home/**", { timeout: 10000 }).catch(() => {
-				console.log(
-					"Failed to navigate from onboarding, checking current page...",
-				);
-			});
+			console.log("Detected onboarding page, completing onboarding flow...");
+			// Complete the onboarding flow properly
+			await this.onboarding.completeOnboardingSimple();
+			console.log("Onboarding completed, now on home page");
 		}
 
-		// Ensure we're on the home page before trying to create a team
+		// Verify we're on the home page before trying to create a team
 		if (!this.page.url().includes("/home")) {
 			console.log(`Not on home page, current URL: ${this.page.url()}`);
+			// Try to navigate to home if we're not there
 			await this.page.goto("/home");
+			await this.page.waitForURL("**/home/**", { timeout: 10000 });
 		}
 
 		await this.createTeam(params);
