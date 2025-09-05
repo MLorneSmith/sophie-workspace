@@ -217,6 +217,36 @@ const supabaseLogs = await mcp__supabase__get_logs({
 
 ## 4. Issue Specification Creation
 
+### 4.0 Related Issue Discovery
+
+Before creating the issue, search for and document all related issues:
+
+```typescript
+// Search for related issues using multiple strategies
+const relatedIssues = await findRelatedIssues({
+  keywords: extractKeywords(issueTitle, issueDescription),
+  component: identifyComponent(issueDescription),
+  errorPattern: extractErrorPattern(errorMessage),
+  affectedFiles: extractAffectedFiles(issueDescription)
+});
+
+// Categorize found issues
+const categorized = {
+  directPredecessors: [], // Same problem, previously closed
+  infrastructureIssues: [], // Related setup/config problems
+  similarSymptoms: [], // Similar errors or behaviors
+  sameComponent: [], // Same files/components affected
+  possibleRegressions: [] // Previously fixed, might have returned
+};
+```
+
+Search strategies to use:
+1. **Component search**: `repo:owner/repo is:issue [component_name]`
+2. **Error pattern search**: `repo:owner/repo is:issue "[error_message]"`
+3. **File-based search**: `repo:owner/repo is:issue "[file_path]"`
+4. **Regression search**: `repo:owner/repo is:issue is:closed [keywords]`
+5. **Label-based search**: `repo:owner/repo label:[relevant_labels]`
+
 ### 4.1 Standard Issue Format
 
 Create a structured issue document:
@@ -304,6 +334,28 @@ Create a structured issue document:
   - [file2.tsx]
 - **Recent Changes**: [git commits affecting these files]
 - **Suspected Functions**: [specific functions/components]
+
+## Related Issues & Context
+
+### Direct Predecessors
+[Issues that describe the same/very similar problem, especially if closed]
+- #[number] ([STATUS]): "[Title]" - [Brief description of similarity]
+
+### Related Infrastructure Issues
+[Issues affecting the same infrastructure/setup]
+- #[number]: "[Title]" - [How it relates]
+
+### Similar Symptoms
+[Issues with similar error patterns or behaviors]
+- #[number]: "[Title]" - [Common symptoms]
+
+### Same Component
+[Issues affecting the same files/components]
+- #[number]: "[Title]" - [Affected areas]
+
+### Historical Context
+[Summary of pattern if multiple related issues found]
+[Note if this appears to be a regression of a previously fixed issue]
 
 ## Initial Analysis
 [Automated analysis based on diagnostic data]

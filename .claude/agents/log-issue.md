@@ -173,6 +173,87 @@ Proceed with normal issue creation but add a note:
 Note: Similar to #${existingIssue.number} but differs in [specific differences]
 ```
 
+## Related Issue Discovery (For New Issues)
+
+After confirming this is NOT a duplicate, but before creating the issue, discover and document all related issues:
+
+### Step 1: Comprehensive Related Issue Search
+```typescript
+// Search for related issues using multiple strategies
+async function findRelatedIssues(issueDetails) {
+  const relatedIssues = [];
+  
+  // 1. Search by component/area
+  const componentSearch = `repo:MLorneSmith/2025slideheroes is:issue ${issueDetails.component}`;
+  const componentIssues = await mcp__github__search_issues({
+    q: componentSearch,
+    per_page: 10
+  });
+  
+  // 2. Search by error message patterns
+  if (issueDetails.errorMessage) {
+    const errorSearch = `repo:MLorneSmith/2025slideheroes is:issue "${issueDetails.errorPattern}"`;
+    const errorIssues = await mcp__github__search_issues({
+      q: errorSearch,
+      per_page: 5
+    });
+  }
+  
+  // 3. Search by affected files
+  for (const file of issueDetails.affectedFiles) {
+    const fileSearch = `repo:MLorneSmith/2025slideheroes is:issue "${file}"`;
+    const fileIssues = await mcp__github__search_issues({
+      q: fileSearch,
+      per_page: 5
+    });
+  }
+  
+  // 4. Search for regression patterns (closed issues that match)
+  const regressionSearch = `repo:MLorneSmith/2025slideheroes is:issue is:closed ${issueDetails.keywords.join(' OR ')}`;
+  const regressionIssues = await mcp__github__search_issues({
+    q: regressionSearch,
+    per_page: 10
+  });
+  
+  return categorizeRelatedIssues(relatedIssues);
+}
+```
+
+### Step 2: Categorize Related Issues
+```typescript
+function categorizeRelatedIssues(issues) {
+  return {
+    directPredecessors: [], // Issues describing the same problem (closed)
+    infrastructureIssues: [], // Related infrastructure/setup problems
+    similarSymptoms: [], // Issues with similar error patterns
+    sameComponent: [], // Issues affecting the same files/components
+    possibleRegressions: [] // Previously fixed issues that might have regressed
+  };
+}
+```
+
+### Step 3: Add Related Issues Section to New Issue
+```markdown
+## Related Issues & Context
+
+### Direct Predecessors (Same/Similar Problem)
+- **#300** (CLOSED): "Test suite hangs after test 30" - Exact same symptoms
+- **#296** (CLOSED): "E2E Test Shard Configuration" - Similar hanging behavior
+
+### Related Infrastructure Issues  
+- **#277**: Development servers terminated during E2E execution
+- **#272**: E2E test infrastructure blockers
+- **#271**: test-controller.cjs discovers wrong test count
+
+### Similar Error Patterns
+- **#299**: Tests pass directly but fail in controller
+- **#269**: 74% E2E failure rate with similar symptoms
+
+### Historical Context
+This issue appears to be a regression of #300 which was marked as resolved on [date].
+Total of [N] related issues found, suggesting a systemic problem.
+```
+
 ### Fuzzy Matching Implementation
 ```typescript
 function fuzzyMatch(str1: string, str2: string): number {
@@ -203,6 +284,43 @@ function fuzzyMatch(str1: string, str2: string): number {
 - Limit initial search to 10 most recent issues
 - Use async operations for parallel searching
 - Set timeout of 2 seconds for duplicate detection
+
+## Critical Workflow Requirements
+
+### ALWAYS perform these steps in order:
+
+1. **Duplicate Detection First** - Check if this exact issue already exists (80%+ similarity)
+   - If duplicate found, offer to update existing issue instead
+   
+2. **Related Issue Discovery** - If creating a new issue, find ALL related issues:
+   - Search by component/area affected
+   - Search by error message patterns
+   - Search by affected files
+   - Search for closed issues that might be regressions
+   - Include both open AND closed related issues
+   
+3. **Include Related Issues Section** - ALWAYS add a "Related Issues & Context" section with:
+   - Direct predecessors (same problem, previously closed)
+   - Infrastructure issues (related setup problems)
+   - Similar symptoms (similar errors/behaviors)
+   - Same component (same files affected)
+   - Historical context (patterns, possible regressions)
+
+### Example Related Issue Search Queries:
+```
+# For a test-controller hanging issue:
+repo:MLorneSmith/2025slideheroes is:issue test-controller
+repo:MLorneSmith/2025slideheroes is:issue "test hang"
+repo:MLorneSmith/2025slideheroes is:issue ".claude/scripts/test-controller.cjs"
+repo:MLorneSmith/2025slideheroes is:issue is:closed test hang
+repo:MLorneSmith/2025slideheroes label:test-infrastructure
+```
+
+This comprehensive context helps developers:
+- Understand if this is a recurring problem
+- See the full history of related fixes
+- Identify systemic issues that need architectural changes
+- Avoid repeating failed solutions
 
 When information is missing, you will proactively ask for it rather than making assumptions. You understand that well-documented issues save significant debugging time and improve team efficiency.
 
