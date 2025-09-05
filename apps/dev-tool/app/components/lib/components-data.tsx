@@ -1,9 +1,5 @@
 "use client";
 
-import type React from "react";
-
-import dynamic from "next/dynamic";
-
 import {
 	AlertCircle,
 	AlertTriangle,
@@ -34,6 +30,9 @@ import {
 	Type,
 	Upload,
 } from "lucide-react";
+
+import dynamic from "next/dynamic";
+import type React from "react";
 
 import { LoadingFallback } from "../components/loading-fallback";
 

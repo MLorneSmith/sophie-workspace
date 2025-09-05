@@ -1,6 +1,6 @@
-import { chromium, type FullConfig } from "@playwright/test";
 import { execSync } from "node:child_process";
 import path from "node:path";
+import { chromium, type FullConfig } from "@playwright/test";
 import { cleanupTestData } from "./tests/helpers/cleanup";
 
 async function globalSetup(config: FullConfig) {

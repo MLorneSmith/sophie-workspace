@@ -48,6 +48,20 @@ apps/*/.env
 
 # MCP configuration (contains tokens)
 .mcp.json
+.mcp.local.json
+
+# Claude Code local files
+CLAUDE.local.md
+.claude/settings.local.json
+
+# Temporary and debug files
+temp/
+temp-*/
+test-*/
+debug-*.js
+test-*.js
+*-test.js
+*-debug.js
 
 # vercel
 .vercel

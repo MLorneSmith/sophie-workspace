@@ -1,33 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
-import {
-	Archive,
-	AtSign,
-	BookOpen,
-	Code,
-	Command as CommandIcon,
-	Copy,
-	CreditCard,
-	Database,
-	Download,
-	Edit,
-	File,
-	Folder,
-	Mail,
-	MessageSquare,
-	Phone,
-	Plus,
-	Search,
-	Settings,
-	Share,
-	Star,
-	Trash,
-	Upload,
-	User,
-} from "lucide-react";
-
 import { Avatar, AvatarFallback } from "@kit/ui/avatar";
 import { Badge } from "@kit/ui/badge";
 import { Button } from "@kit/ui/button";
@@ -53,6 +25,32 @@ import { Input } from "@kit/ui/input";
 import { Label } from "@kit/ui/label";
 import { Switch } from "@kit/ui/switch";
 import { cn } from "@kit/ui/utils";
+import {
+	Archive,
+	AtSign,
+	BookOpen,
+	Code,
+	Command as CommandIcon,
+	Copy,
+	CreditCard,
+	Database,
+	Download,
+	Edit,
+	File,
+	Folder,
+	Mail,
+	MessageSquare,
+	Phone,
+	Plus,
+	Search,
+	Settings,
+	Share,
+	Star,
+	Trash,
+	Upload,
+	User,
+} from "lucide-react";
+import { useEffect, useState } from "react";
 
 import {
 	generateImportStatement,

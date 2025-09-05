@@ -1,18 +1,5 @@
 "use client";
 
-import { useState } from "react";
-
-import {
-	Bell,
-	Eye,
-	Lock,
-	Mail,
-	Moon,
-	Shield,
-	Volume2,
-	Wifi,
-} from "lucide-react";
-
 import {
 	Card,
 	CardContent,
@@ -25,6 +12,17 @@ import { Label } from "@kit/ui/label";
 import { Separator } from "@kit/ui/separator";
 import { Switch } from "@kit/ui/switch";
 import { cn } from "@kit/ui/utils";
+import {
+	Bell,
+	Eye,
+	Lock,
+	Mail,
+	Moon,
+	Shield,
+	Volume2,
+	Wifi,
+} from "lucide-react";
+import { useState } from "react";
 
 import { generatePropsString, useStoryControls } from "../lib/story-utils";
 import { ComponentStoryLayout } from "./story-layout";
