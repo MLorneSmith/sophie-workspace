@@ -1,16 +1,14 @@
 import { test } from "@playwright/test";
 
-// CRITICAL: Auth tests cause hanging in E2E execution - GitHub issue #286
-// Portal-based UI components (Radix UI dropdowns) and localStorage manipulation
-// cause tests to hang indefinitely in headless browser automation
-//
-// WORKAROUND: Only register a simple placeholder test
-// Original tests are completely commented out to prevent ANY evaluation
+// CRITICAL: Auth tests have been moved to auth-simple.spec.ts
+// The new simplified tests avoid portal-based UI components that cause hanging
+// See GitHub issue #286 for details about the portal rendering issues
 
 test.describe("Auth flow @integration", () => {
-	test("temporarily disabled to prevent hanging - see issue #286", () => {
-		// Placeholder test - auth tests disabled until portal rendering is fixed
-		// This test will pass immediately without any browser interactions
+	test("auth tests moved to auth-simple.spec.ts - see issue #298", () => {
+		// Authentication tests have been re-implemented in auth-simple.spec.ts
+		// The new tests avoid portal UI components and focus on core functionality
+		// This placeholder ensures the test group is recognized but directs to the new tests
 	});
 });
 
