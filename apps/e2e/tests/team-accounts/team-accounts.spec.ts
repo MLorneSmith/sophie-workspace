@@ -74,15 +74,8 @@ async function setupTeamWithMember(page: Page, memberRole = "member") {
 }
 
 test.describe("Team Accounts @integration", () => {
-	let page: Page;
-	let teamAccounts: TeamAccountsPageObject;
-
-	test.beforeAll(async ({ browser }) => {
-		page = await browser.newPage();
-		teamAccounts = new TeamAccountsPageObject(page);
-	});
-
-	test("user can update their team name (and slug)", async () => {
+	test("user can update their team name (and slug)", async ({ page }) => {
+		const teamAccounts = new TeamAccountsPageObject(page);
 		await teamAccounts.setup();
 
 		const { teamName, slug } = teamAccounts.createTeamName();
