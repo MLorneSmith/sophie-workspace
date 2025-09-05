@@ -20,7 +20,7 @@ permissions:
 jobs:
   trufflehog:
     name: Secret Scanning
-    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -84,7 +84,7 @@ jobs:
   # Separate job for full history scan
   full-history-scan:
     name: Full History Scan
-    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     steps:
       - name: Checkout code

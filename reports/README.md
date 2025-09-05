@@ -1,7 +1,7 @@
 # Reports Directory
 
-This directory contains ALL project reports including validation, testing, analysis, performance benchmarks,
-and any other documentation generated during development.
+This directory contains ALL project reports including validation, testing, analysis, performance benchmarks, and any
+other documentation generated during development.
 
 ## Report Categories
 

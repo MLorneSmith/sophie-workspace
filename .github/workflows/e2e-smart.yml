@@ -26,7 +26,7 @@ jobs:
   # Detect which tests need to run based on changed files
   detect-changes:
     name: Detect Test Scope
-    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     outputs:
       run_auth: ${{ steps.detect.outputs.auth }}
       run_billing: ${{ steps.detect.outputs.billing }}
@@ -120,7 +120,7 @@ jobs:
   # Quick smoke test for targeted changes
   quick-test:
     name: Quick E2E Test (${{ needs.detect-changes.outputs.test_pattern }})
-    runs-on: runs-on=${{ github.run_id }},runner=8cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }}/runner=8cpu-linux-x64
     needs: detect-changes
     if: needs.detect-changes.outputs.test_pattern != 'skip' && needs.detect-changes.outputs.run_all != 'true'
     env:
@@ -171,7 +171,7 @@ jobs:
   # Status check for PR
   smart-test-status:
     name: Smart Test Status
-    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: [detect-changes, quick-test]
     if: always()
     steps:

@@ -1,6 +1,10 @@
 # TruffleHog exclusion patterns
 # These are regex patterns that exclude file paths from secret scanning
 
+# Claude backup files
+.*\.claude-backup-.*\.tar\.gz
+.*\.tar\.gz
+
 # Development environment files with local credentials
 .*\.devcontainer/docker-compose\.yml
 .*\.devcontainer/docker-compose.*\.yml
