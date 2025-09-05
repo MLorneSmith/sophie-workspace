@@ -35,39 +35,42 @@ These reports serve as:
 3. **Knowledge preservation** - Capture decisions and findings
 4. **Audit trail** - Historical record of project evolution
 
-## Naming Conventions
+## Naming Conventions (Updated)
 
-- Use descriptive names: `[TYPE]_[SCOPE]_[DATE].md`
+**Use lowercase with hyphens for better readability:**
+- Format: `[type]-[scope]-[date].md`
 - Include dates in `YYYY-MM-DD` format for time-sensitive reports
-- Group with prefixes: `TEST_`, `PERFORMANCE_`, `SECURITY_`, `FEATURE_`
 - All reports should use Markdown format (`.md`)
 
 ### Examples:
-- `FEATURE_EMAIL_IMPLEMENTATION_REPORT.md`
-- `TEST_RESULTS_2025-01-05.md`
-- `PERFORMANCE_ANALYSIS_DASHBOARD.md`
-- `SECURITY_SCAN_2025-01-05.md`
-- `API_COMPATIBILITY_REPORT.md`
+- `feature-auth-implementation.md`
+- `test-results-2025-01-05.md`
+- `performance-analysis-dashboard.md`
+- `security-scan-2025-01-05.md`
+- `code-review-auth-components.md`
+- `research-webrtc-security-2025-01-05.md`
 
 ## Directory Structure
 
 ```
 reports/
-├── README.md                           # This file
-├── Implementation/                     # Feature and phase completion reports
-│   ├── PHASE_X_VALIDATION_REPORT.md
-│   └── FEATURE_[NAME]_REPORT.md
-├── Testing/                           # Test results and coverage
-│   ├── TEST_RESULTS_[DATE].md
-│   └── COVERAGE_REPORT_[DATE].md
-├── Performance/                       # Performance analyses
-│   ├── bundle-analysis.html
-│   └── PERFORMANCE_ANALYSIS_[SCENARIO].md
-├── Security/                          # Security scans and audits
-│   └── SECURITY_SCAN_[DATE].md
-└── Documentation/                     # Guides and architecture docs
-    ├── API_COMPATIBILITY_REPORT.md
-    └── MIGRATION_GUIDE.md
+├── README.md                          # This file
+├── YYYY-MM-DD/                       # Daily reports (most recent work)
+│   ├── code-review-*.md
+│   ├── test-results-*.md
+│   └── performance-*.md
+├── features/                         # Feature-specific documentation
+│   ├── auth/
+│   │   └── feature-auth-implementation.md
+│   ├── payments/
+│   └── [feature-name]/
+├── research/                         # Research and investigation reports
+│   ├── libraries/
+│   ├── architecture/
+│   └── [topic]/
+│       └── research-[topic]-[date].md
+└── _archive/                         # Reports older than 30 days
+    └── YYYY-MM/
 ```
 
 ## Version Control
