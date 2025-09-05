@@ -177,15 +177,58 @@ class TestCleanupGuard {
 	}
 
 	/**
+	 * Comprehensive cleanup of test ports
+	 */
+	async cleanupTestPorts() {
+		const testPorts = [3000, 3001, 3010, 3020];
+		console.log("🔧 Cleaning up test ports:", testPorts.join(", "));
+		
+		for (const port of testPorts) {
+			try {
+				// Get PIDs using the port
+				const { stdout: pids } = await execAsync(
+					`lsof -ti:${port} 2>/dev/null || true`
+				);
+				
+				if (pids.trim()) {
+					console.log(`   Found process on port ${port}, terminating...`);
+					
+					// Try graceful termination first (SIGTERM)
+					await execAsync(`lsof -ti:${port} | xargs -r kill -15 2>/dev/null || true`);
+					await new Promise(resolve => setTimeout(resolve, 500));
+					
+					// Check if still running and force kill if needed
+					const { stdout: stillRunning } = await execAsync(
+						`lsof -ti:${port} 2>/dev/null || true`
+					);
+					
+					if (stillRunning.trim()) {
+						console.log(`   Force killing process on port ${port}...`);
+						await execAsync(`lsof -ti:${port} | xargs -r kill -9 2>/dev/null || true`);
+					}
+				}
+			} catch (e) {
+				// Port might already be free
+			}
+		}
+		
+		// Wait for ports to be released
+		await new Promise(resolve => setTimeout(resolve, 1000));
+	}
+
+	/**
 	 * Pre-test cleanup to ensure clean state
 	 */
 	async preTestCleanup() {
 		console.log("🔧 Pre-test cleanup starting...");
 
+		// First clean up ports to prevent conflicts
+		await this.cleanupTestPorts();
+
 		// Kill any existing test processes
 		const killCommands = [
 			'pkill -f "playwright|vitest|next-server|dev:test|test:shard" || true',
-			"lsof -ti:3000-3020,55321-55327 | xargs kill -9 2>/dev/null || true",
+			// Don't kill ports again - already handled by cleanupTestPorts
 		];
 
 		for (const cmd of killCommands) {

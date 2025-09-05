@@ -13,6 +13,7 @@
 
 const { spawn, exec } = require("node:child_process");
 const fs = require("node:fs").promises;
+const fsSync = require("node:fs");
 const path = require("node:path");
 const { promisify } = require("node:util");
 const os = require("node:os");
@@ -21,16 +22,11 @@ const { ResourceLock } = require("./resource-lock.cjs");
 const { TestCleanupGuard } = require("./test-cleanup-guard.cjs");
 
 // Import optimization modules if available
-let TestCacheManager, ShardOptimizer;
+let TestCacheManager;
 try {
 	({ TestCacheManager } = require("./test-cache-manager.cjs"));
 } catch (e) {
 	// Cache manager not available
-}
-try {
-	({ ShardOptimizer } = require("./test-shard-optimizer.cjs"));
-} catch (e) {
-	// Shard optimizer not available
 }
 
 // Simple logging utility to replace console statements
@@ -78,6 +74,7 @@ class TestStatus {
 				passed: 0,
 				failed: 0,
 				skipped: 0,
+				intentionalFailures: 0,
 				shards: {},
 			},
 			infrastructure: {
@@ -1098,23 +1095,83 @@ class E2ETestRunner {
 	constructor() {
 		this.resourceLock = new ResourceLock();
 		this.cacheManager = TestCacheManager ? new TestCacheManager() : null;
-		this.shardOptimizer = ShardOptimizer ? new ShardOptimizer() : null;
 		this.intentionalShutdown = false; // Track when we're intentionally stopping servers
+		
+		// Load test dependencies if available
+		this.testDependencies = null;
+		this.loadTestDependencies();
 
-		// Default shards (dynamically determined by Playwright's distribution)
-		// Note: These names are approximations - actual content varies
-		this.allShards = [
-			{ id: 1, name: "Shard 1", tests: 21 },
-			{ id: 2, name: "Shard 2 (Empty)", tests: 0 },
-			{ id: 3, name: "Shard 3", tests: 12 },
-			{ id: 4, name: "Auth/Invitations", tests: 7 },  // Actually contains auth, password reset, healthcheck, invitations
-			{ id: 5, name: "Smoke Tests", tests: 15 },      // Actually contains ALL smoke tests + team account tests
-			{ id: 6, name: "Shard 6", tests: 13 },
-			{ id: 7, name: "Shard 7", tests: 8 },
-			{ id: 8, name: "Shard 8", tests: 14 },
-			{ id: 9, name: "Shard 9 (Empty)", tests: 0 },
+		// File-based test groups for sequential execution
+		// Each group contains related test files that should run together
+		this.testGroups = [
+			{ 
+				id: 1, 
+				name: "Smoke Tests", 
+				files: ["tests/smoke/smoke.spec.ts"],
+				expectedTests: 10 
+			},
+			{ 
+				id: 2, 
+				name: "Authentication", 
+				files: [
+					"tests/authentication/auth-simple.spec.ts",
+					"tests/authentication/auth.spec.ts",
+					"tests/authentication/password-reset.spec.ts"
+				],
+				expectedTests: 12  // Updated: 10 from auth-simple + 1 placeholder + 1 password-reset
+			},
+			{ 
+				id: 3, 
+				name: "Account Management", 
+				files: [
+					"tests/account/account-simple.spec.ts",
+					"tests/account/account.spec.ts",
+					"tests/team-accounts/team-accounts.spec.ts",
+					"tests/team-accounts/team-invitation-mfa.spec.ts"
+				],
+				expectedTests: 25  // Updated: 9 from account-simple + 1 placeholder + 15 from team tests
+			},
+			{ 
+				id: 4, 
+				name: "Admin & Invitations", 
+				files: [
+					"tests/admin/admin.spec.ts",
+					"tests/invitations/invitations.spec.ts"
+				],
+				expectedTests: 20 
+			},
+			{ 
+				id: 5, 
+				name: "Billing", 
+				files: [
+					"tests/user-billing/user-billing.spec.ts",
+					"tests/team-billing/team-billing.spec.ts"
+				],
+				expectedTests: 4 
+			},
+			{ 
+				id: 6, 
+				name: "Accessibility", 
+				files: [
+					"tests/accessibility/accessibility-hybrid.spec.ts",
+					"tests/accessibility/accessibility-hybrid-simple.spec.ts"
+				],
+				expectedTests: 25 
+			},
+			{ 
+				id: 7, 
+				name: "Configuration & Health", 
+				files: [
+					"tests/test-configuration-verification.spec.ts",
+					"tests/healthcheck.spec.ts"
+				],
+				expectedTests: 16 
+			}
 		];
-		this.shards = [...this.allShards];
+		
+		// For backward compatibility with existing code that references this.shards
+		this.shards = this.testGroups;
+		this.allShards = [...this.testGroups];
 
 		// Smart retry patterns
 		this.retryPatterns = {
@@ -1168,6 +1225,76 @@ class E2ETestRunner {
 		log(`⚙️  Max concurrent shards: ${this.maxConcurrentShards}`);
 
 		this.serverProcess = null;
+		
+		// Track completed groups and their results for dependency validation
+		this.completedGroups = new Map();
+	}
+	
+	loadTestDependencies() {
+		try {
+			const depPath = path.join(__dirname, '../../data/test-dependencies.json');
+			// Use fsSync for synchronous file reading
+			if (fsSync.existsSync(depPath)) {
+				const deps = JSON.parse(fsSync.readFileSync(depPath, 'utf8'));
+				this.testDependencies = deps.testGroupDependencies;
+				log("📋 Test dependencies loaded successfully");
+			} else {
+				log("📋 Test dependencies file not found, using default execution order");
+			}
+		} catch (error) {
+			log(`⚠️ Could not load test dependencies: ${error.message}`);
+		}
+	}
+	
+	canRunGroup(groupName) {
+		// If no dependencies loaded, allow all groups to run
+		if (!this.testDependencies) return true;
+		
+		const group = this.testDependencies[groupName];
+		if (!group) return true;
+		
+		// Check if all required dependencies have completed successfully
+		for (const requiredGroup of group.requires || []) {
+			const result = this.completedGroups.get(requiredGroup);
+			if (!result) {
+				log(`   ⚠️ Skipping ${groupName}: requires ${requiredGroup} to complete first`);
+				return false;
+			}
+			if (result.failed > 0 && result.failed !== result.intentionalFailures) {
+				log(`   ⚠️ Skipping ${groupName}: dependency ${requiredGroup} had failures`);
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
+	async checkServersReady() {
+		// Quick health check for test servers
+		try {
+			// Check frontend server
+			const frontendResponse = await fetch('http://localhost:3000/api/health', { 
+				signal: AbortSignal.timeout(2000) 
+			}).catch(() => null);
+			
+			// Check backend server (use /api/health endpoint)
+			const backendResponse = await fetch('http://localhost:3020/api/health', {
+				signal: AbortSignal.timeout(2000)
+			}).catch(() => null);
+			
+			const frontendReady = frontendResponse && frontendResponse.ok;
+			const backendReady = backendResponse && backendResponse.ok;
+			
+			if (!frontendReady || !backendReady) {
+				log(`   ⚠️ Servers not ready - Frontend: ${frontendReady ? '✅' : '❌'}, Backend: ${backendReady ? '✅' : '❌'}`);
+				return false;
+			}
+			
+			return true;
+		} catch (error) {
+			log(`   ⚠️ Server readiness check failed: ${error.message}`);
+			return false;
+		}
 	}
 
 	async startTestServers() {
@@ -1176,15 +1303,15 @@ class E2ETestRunner {
 		// Reset the intentional shutdown flag
 		this.intentionalShutdown = false;
 
+		// Comprehensive port cleanup to ensure clean start
+		await this.cleanupPorts();
+
 		// Always kill any existing processes first to ensure clean start
 		try {
 			log("🧹 Cleaning up any existing server processes...");
 			await execAsync(`pkill -9 -f "next-server" 2>/dev/null || true`);
 			// FIXED: Don't kill our own dev:test processes - only kill orphaned ones
 			// await execAsync(`pkill -9 -f "pnpm.*dev:test" 2>/dev/null || true`);
-			await execAsync(
-				"lsof -ti:3000,3010,3020 | xargs -r kill -9 2>/dev/null || true",
-			);
 			await new Promise((resolve) => setTimeout(resolve, 2000));
 		} catch (e) {
 			// Ignore cleanup errors
@@ -1751,6 +1878,95 @@ class E2ETestRunner {
 		}
 	}
 
+	/**
+	 * Comprehensive port cleanup to ensure test ports are available
+	 * This prevents "Port already in use" errors that cause tests to fail
+	 */
+	async cleanupPorts() {
+		log("🔧 Cleaning up test ports (3000, 3001, 3010, 3020)...");
+		
+		const testPorts = [3000, 3001, 3010, 3020];
+		
+		for (const port of testPorts) {
+			try {
+				// First, try to get PIDs using the port
+				const { stdout: pids } = await execAsync(
+					`lsof -ti:${port} 2>/dev/null || true`
+				);
+				
+				if (pids.trim()) {
+					log(`   Found process on port ${port}, terminating...`);
+					
+					// Try graceful termination first
+					await execAsync(`lsof -ti:${port} | xargs -r kill -15 2>/dev/null || true`);
+					await new Promise(resolve => setTimeout(resolve, 500));
+					
+					// Check if still running and force kill if needed
+					const { stdout: stillRunning } = await execAsync(
+						`lsof -ti:${port} 2>/dev/null || true`
+					);
+					
+					if (stillRunning.trim()) {
+						log(`   Force killing process on port ${port}...`);
+						await execAsync(`lsof -ti:${port} | xargs -r kill -9 2>/dev/null || true`);
+						await new Promise(resolve => setTimeout(resolve, 500));
+					}
+				}
+			} catch (e) {
+				// Ignore errors - port might already be free
+			}
+		}
+		
+		// Additional cleanup for Next.js processes that might be holding ports
+		try {
+			// Kill any Next.js dev servers not managed by us
+			await execAsync(`pkill -9 -f "next dev" 2>/dev/null || true`);
+			await execAsync(`pkill -9 -f "next-server" 2>/dev/null || true`);
+			
+			// Kill any orphaned node processes on our ports
+			for (const port of testPorts) {
+				await execAsync(
+					`netstat -tulpn 2>/dev/null | grep :${port} | awk '{print $7}' | cut -d/ -f1 | xargs -r kill -9 2>/dev/null || true`
+				);
+			}
+		} catch (e) {
+			// Ignore cleanup errors
+		}
+		
+		// Give processes time to release ports
+		await new Promise(resolve => setTimeout(resolve, 1000));
+		
+		// Verify ports are free
+		let allPortsFree = true;
+		for (const port of testPorts) {
+			const isFree = await this.isPortFree(port);
+			if (!isFree) {
+				log(`   ⚠️ Port ${port} still in use after cleanup`);
+				allPortsFree = false;
+			}
+		}
+		
+		if (allPortsFree) {
+			log("✅ All test ports cleaned successfully");
+		} else {
+			log("⚠️ Some ports may still be in use - tests might fail");
+		}
+	}
+	
+	/**
+	 * Check if a port is free
+	 */
+	async isPortFree(port) {
+		try {
+			const { stdout } = await execAsync(
+				`lsof -i:${port} | grep LISTEN | wc -l`
+			);
+			return parseInt(stdout.trim()) === 0;
+		} catch (e) {
+			return true; // Assume free if command fails
+		}
+	}
+
 	async isServerRunning(port) {
 		try {
 			const response = await fetch(`http://127.0.0.1:${port}/api/health`, {
@@ -1910,15 +2126,6 @@ class E2ETestRunner {
 			}
 		}
 
-		// Optimize shard distribution if available
-		if (this.shardOptimizer && process.env.OPTIMIZE_SHARDS !== "false") {
-			try {
-				await this.optimizeShardDistribution();
-			} catch (error) {
-				log(`⚠️ Shard optimization failed: ${error.message}`);
-			}
-		}
-
 		// Pre-flight selector validation
 		const selectorValidation = await this.validateSelectors();
 		if (!selectorValidation.passed && selectorValidation.coverage < 70) {
@@ -1974,6 +2181,7 @@ class E2ETestRunner {
 			passed: 0,
 			failed: 0,
 			skipped: 0,
+			intentionalFailures: 0,
 			infrastructureFailures: 0,
 		};
 
@@ -1988,6 +2196,7 @@ class E2ETestRunner {
 			totals.passed += result.passed;
 			totals.failed += result.failed;
 			totals.skipped += result.skipped;
+			totals.intentionalFailures += result.intentionalFailures || 0;
 			if (result.infrastructureFailure) {
 				totals.infrastructureFailures++;
 			}
@@ -2011,6 +2220,9 @@ class E2ETestRunner {
 		log(`   Total: ${totals.total}`);
 		log(`   Passed: ${totals.passed}`);
 		log(`   Failed: ${totals.failed}`);
+		if (totals.intentionalFailures > 0) {
+			log(`   🎯 Intentional failures: ${totals.intentionalFailures}`);
+		}
 		if (totals.infrastructureFailures > 0) {
 			log(`   ⚠️ Infrastructure failures: ${totals.infrastructureFailures}`);
 		}
@@ -2032,10 +2244,10 @@ class E2ETestRunner {
 		const startTime = Date.now();
 
 		// Smart hybrid progress reporting - tracks both tests and shards efficiently
-		let testStats = { passed: 0, failed: 0, skipped: 0, total: 0 };
+		let testStats = { passed: 0, failed: 0, skipped: 0, intentionalFailures: 0, total: 0 };
 		let lastProgressUpdate = 0;
 		let lastTestUpdate = Date.now();
-		let testBuffer = { passed: 0, failed: 0 }; // Buffer for batching test updates
+		let testBuffer = { passed: 0, failed: 0, intentionalFailures: 0 }; // Buffer for batching test updates
 		
 		// Smart progress reporter - balances feedback with performance
 		const reportProgress = (event, details = {}) => {
@@ -2045,9 +2257,9 @@ class E2ETestRunner {
 			
 			switch(event) {
 				case 'shard-start':
-					// Only log shard start in debug mode
+					// Only log group start in debug mode
 					if (process.env.DEBUG_TEST) {
-						log(`  ▶️  Starting shard ${details.shardId} (${details.shardName})`);
+						log(`  ▶️  Starting test group ${details.shardId} (${details.shardName})`);
 					}
 					break;
 					
@@ -2076,20 +2288,26 @@ class E2ETestRunner {
 					break;
 					
 				case 'shard-complete':
-					// Show cumulative totals when shard completes
+					// Show cumulative totals when test group completes
 					if (testStats.total > 0) {
-						const status = testStats.failed > 0 
+						let status = testStats.failed > 0 
 							? `⚡ ${testStats.passed} passed, ${testStats.failed} failed`
 							: `⚡ ${testStats.passed} passed`;
+						if (testStats.intentionalFailures > 0) {
+							status += `, ${testStats.intentionalFailures} intentional`;
+						}
 						log(`  ${status} (${testStats.total} total, ${timeStr})`);
-						testBuffer = { passed: 0, failed: 0 };
+						testBuffer = { passed: 0, failed: 0, intentionalFailures: 0 };
 					}
 					
-					// Log shard completion
-					const shardInfo = details.failed > 0
+					// Log test group completion
+					let shardInfo = details.failed > 0
 						? `${details.passed}/${details.total} passed, ${details.failed} failed`
 						: `${details.passed}/${details.total} passed`;
-					log(`  ✅ Shard ${details.shardId} complete: ${shardInfo} (${completedShards}/${totalShards} done, ${timeStr})`);
+					if (details.intentionalFailures > 0) {
+						shardInfo += `, ${details.intentionalFailures} intentional`;
+					}
+					log(`  ✅ Test group ${details.shardId} complete: ${shardInfo} (${completedShards}/${totalShards} done, ${timeStr})`);
 					break;
 					
 				case 'milestone':
@@ -2139,6 +2357,21 @@ class E2ETestRunner {
 			) {
 				const shard = shardQueue.shift();
 				
+				// Check if this group can run based on dependencies
+				if (!this.canRunGroup(shard.name)) {
+					// Skip this group due to unmet dependencies
+					results.push({
+						shardId: shard.id,
+						passed: 0,
+						failed: 0,
+						skipped: shard.expectedTests || shard.tests || 0,
+						infrastructureFailure: false,
+						skipReason: 'unmet_dependencies'
+					});
+					completedShards++;
+					continue; // Move to next shard
+				}
+				
 				// Use the new event-driven reporter
 				reportProgress('shard-start', {
 					shardId: shard.id,
@@ -2156,25 +2389,40 @@ class E2ETestRunner {
 					isFirstShard = false;
 					log("  ⏳ Waiting 10s for first shard to start servers...");
 					await new Promise((resolve) => setTimeout(resolve, 10000));
-				} else if (runningShards.size < this.maxConcurrentShards) {
-					// Small delay between subsequent shards
+				}
+				
+				// CRITICAL FIX: For sequential execution (maxConcurrentShards = 1),
+				// wait for the current shard to complete before starting the next one
+				if (this.maxConcurrentShards === 1 && shardQueue.length > 0) {
+					// We just started a shard and there are more to run
+					// Must wait for it to complete before continuing
+					break; // Exit inner loop to wait for completion
+				} else if (!isFirstShard && runningShards.size < this.maxConcurrentShards) {
+					// For parallel execution, add small delay between shards
 					await new Promise((resolve) => setTimeout(resolve, 500));
 				}
 			}
 
-			// Wait for at least one shard to complete if we're at capacity
+			// Wait for at least one shard to complete if we're at capacity or in sequential mode
 			if (runningShards.size > 0) {
 				const result = await waitForNextCompletion();
 				if (result) {
 					results.push(result);
 					completedShards++; // Update progress counter
 					
+					// Track completed group for dependency validation
+					const completedShard = this.shards.find(s => s.id === result.shardId);
+					if (completedShard) {
+						this.completedGroups.set(completedShard.name, result);
+					}
+					
 					// Report shard completion
 					reportProgress('shard-complete', {
 						shardId: result.shardId,
 						passed: result.passed || 0,
 						failed: result.failed || 0,
-						total: (result.passed || 0) + (result.failed || 0)
+						intentionalFailures: result.intentionalFailures || 0,
+						total: (result.passed || 0) + (result.failed || 0) + (result.intentionalFailures || 0)
 					});
 					
 					// Check for milestone progress
@@ -2187,6 +2435,25 @@ class E2ETestRunner {
 
 					// Update status in real-time
 					await status.save();
+					
+					// Add delay between test groups for state settling (only in sequential mode)
+					if (this.maxConcurrentShards === 1 && shardQueue.length > 0) {
+						log("  ⏳ Waiting 5s for state to settle before next group...");
+						await new Promise((resolve) => setTimeout(resolve, 5000));
+						
+						// Check server readiness before proceeding
+						let retries = 3;
+						while (retries > 0) {
+							if (await this.checkServersReady()) {
+								break;
+							}
+							retries--;
+							if (retries > 0) {
+								log(`   🔄 Retrying server readiness check (${retries} attempts left)...`);
+								await new Promise((resolve) => setTimeout(resolve, 2000));
+							}
+						}
+					}
 				}
 			}
 		}
@@ -2195,9 +2462,17 @@ class E2ETestRunner {
 		// clearInterval(progressInterval);
 
 		// Log completion summary
-		log(`\n✅ All ${this.shards.length} shards completed`);
+		log(`\n✅ All ${this.shards.length} test groups completed`);
 		if (failedShards.length > 0) {
-			log(`   ⚠️ Shards with failures: ${failedShards.join(", ")}`);
+			log(`   ⚠️ Test groups with failures: ${failedShards.join(", ")}`);
+		}
+
+		// Run Admin tests separately in serial mode
+		log("\n📊 Running Admin Tests (Serial Mode)");
+		log("───────────────────────────────────");
+		const adminResult = await this.runAdminTests(reportProgress);
+		if (adminResult) {
+			results.adminTests = adminResult;
 		}
 
 		return results;
@@ -2303,19 +2578,24 @@ class E2ETestRunner {
 			// Tell Playwright to use our already-running servers
 			shardEnv.PLAYWRIGHT_BASE_URL = "http://localhost:3000";
 
-			// Check if shard has specific test files (standard mode) or is using generic shard distribution (quick mode)
-			let playwrightArgs;
+			// Use file-based execution for test groups
+			let command, args;
 			
-			// For now, always use the original shard-based distribution
-			// The custom file approach needs more work to handle server connectivity
-			playwrightArgs = [
-				"--filter", "web-e2e", 
-				`test:shard${shard.id}`
-			];
+			if (shard.files && shard.files.length > 0) {
+				// New file-based approach for test groups
+				command = "npx";
+				args = ["playwright", "test", ...shard.files];
+				log(`📁 Running test group ${shard.id} (${shard.name}) with files: ${shard.files.join(", ")}`);
+			} else {
+				// Fallback to old shard-based approach (shouldn't happen with new groups)
+				command = "pnpm";
+				args = ["--filter", "web-e2e", `test:shard${shard.id}`];
+				log(`⚠️ Using fallback shard execution for group ${shard.id}`);
+			}
 			
 			const proc = spawn(
-				"pnpm",
-				playwrightArgs,
+				command,
+				args,
 				{
 					cwd: process.cwd(),
 					stdio: ["inherit", "pipe", "pipe"],
@@ -2461,13 +2741,147 @@ class E2ETestRunner {
 					}
 				}
 
-				const statusIcon = result.failed > 0 ? "❌" : "✅";
+				// Adjust status icon based on whether failures are intentional
+				const realFailures = result.failed;
+				const statusIcon = realFailures > 0 ? "❌" : "✅";
 				const attemptInfo = attempt > 1 ? ` [attempt ${attempt}]` : "";
+				
+				// Build status message including intentional failures if present
+				let statusMsg = `${result.passed}/${result.total}`;
+				if (result.intentionalFailures > 0) {
+					statusMsg += ` (${result.intentionalFailures} intentional failures)`;
+				}
+				
 				log(
-					`  ${statusIcon} Shard ${shard.id} (${shard.name}): ${result.passed}/${result.total} in ${duration}s (exit: ${code})${attemptInfo}`,
+					`  ${statusIcon} Shard ${shard.id} (${shard.name}): ${statusMsg} in ${duration}s (exit: ${code})${attemptInfo}`,
 				);
 
 				resolve(result);
+			});
+		});
+	}
+
+	async runAdminTests(reportProgress = null) {
+		return new Promise((resolve) => {
+			const startTime = Date.now();
+			let output = "";
+			
+			log("  🔐 Running Admin tests in serial mode...");
+			log("     Note: Admin tests require special setup and MFA handling");
+
+			// Create clean environment for admin test execution
+			const adminEnv = { ...process.env };
+			// Remove CI variable to enable reuseExistingServer
+			delete adminEnv.CI;
+			// Disable shard mode for admin tests
+			delete adminEnv.TEST_SHARD_MODE;
+			// Enable serial execution
+			adminEnv.PLAYWRIGHT_PARALLEL = "false";
+			// Force test environment
+			adminEnv.NODE_ENV = "test";
+			// Tell Playwright to use our already-running servers
+			adminEnv.PLAYWRIGHT_BASE_URL = "http://localhost:3000";
+
+			const adminProcess = spawn(
+				"npx",
+				[
+					"playwright",
+					"test",
+					"admin.spec.ts",
+					"--project=chromium",
+					"--reporter=line",
+				],
+				{
+					cwd: path.join(process.cwd(), "apps", "e2e"),
+					env: adminEnv,
+					stdio: ["ignore", "pipe", "pipe"],
+				},
+			);
+
+			const timeout = setTimeout(() => {
+				adminProcess.kill("SIGTERM");
+				log("  ⚠️ Admin tests timed out after 2 minutes");
+				resolve({
+					total: 6,
+					passed: 0,
+					failed: 6,
+					skipped: 0,
+					duration: "120s",
+					exitCode: 1,
+					timedOut: true,
+				});
+			}, 120000); // 2 minutes timeout for admin tests
+
+			adminProcess.stdout.on("data", (data) => {
+				const text = data.toString();
+				output += text;
+				
+				// Report progress if callback provided
+				if (reportProgress) {
+					const passedMatch = text.match(/(\d+) passed/);
+					if (passedMatch) {
+						reportProgress("admin", parseInt(passedMatch[1]), 6);
+					}
+				}
+			});
+
+			adminProcess.stderr.on("data", (data) => {
+				output += data.toString();
+			});
+
+			adminProcess.on("exit", (code) => {
+				clearTimeout(timeout);
+				const duration = Math.round((Date.now() - startTime) / 1000);
+
+				// Parse Playwright output for admin tests
+				const result = {
+					total: 6, // Known number of admin tests
+					passed: 0,
+					failed: 0,
+					skipped: 0,
+					duration: `${duration}s`,
+					exitCode: code,
+				};
+
+				const passedMatch = output.match(/(\d+) passed/);
+				if (passedMatch) {
+					result.passed = parseInt(passedMatch[1]);
+				}
+
+				const failedMatch = output.match(/(\d+) failed/);
+				if (failedMatch) {
+					result.failed = parseInt(failedMatch[1]);
+				}
+
+				const skippedMatch = output.match(/(\d+) skipped/);
+				if (skippedMatch) {
+					result.skipped = parseInt(skippedMatch[1]);
+				}
+
+				const statusIcon = result.failed > 0 ? "❌" : "✅";
+				log(
+					`  ${statusIcon} Admin Tests: ${result.passed}/${result.total} in ${duration}s (exit: ${code})`,
+				);
+
+				if (result.passed > 0 || result.failed > 0) {
+					log(`  ⚡ ${result.passed} passed, ${result.failed} failed (admin tests)`);
+				}
+
+				resolve(result);
+			});
+
+			adminProcess.on("error", (err) => {
+				clearTimeout(timeout);
+				log(`  ❌ Admin test process error: ${err.message}`);
+				resolve({
+					total: 6,
+					passed: 0,
+					failed: 6,
+					skipped: 0,
+					duration: "0s",
+					exitCode: 1,
+					error: err.message,
+				});
 			});
 		});
 	}
@@ -2478,6 +2892,7 @@ class E2ETestRunner {
 			passed: 0,
 			failed: 0,
 			skipped: 0,
+			intentionalFailures: 0,
 			hasTimeoutErrors: false,
 			hasSelectorErrors: false,
 		};
@@ -2496,6 +2911,31 @@ class E2ETestRunner {
 		const skippedMatch = output.match(/(\d+) skipped/);
 		if (skippedMatch) {
 			result.skipped = parseInt(skippedMatch[1]);
+		}
+
+		// Check if this is the configuration verification test with intentional failures
+		if (output.includes("Configuration Verification - Continue on Failure") || 
+			output.includes("test-configuration-verification.spec.ts")) {
+			// This test file has known intentional failures
+			// Parse specific test failures that are intentional
+			const intentionalTestPatterns = [
+				"Test 2: Intentional FAILURE",
+				"Test 4: Another intentional FAILURE",
+				"Test 7: Nested intentional FAILURE"
+			];
+			
+			let intentionalCount = 0;
+			for (const pattern of intentionalTestPatterns) {
+				if (output.includes(pattern)) {
+					intentionalCount++;
+				}
+			}
+			
+			// Move intentional failures from failed to intentionalFailures
+			if (intentionalCount > 0) {
+				result.intentionalFailures = intentionalCount;
+				result.failed = Math.max(0, result.failed - intentionalCount);
+			}
 		}
 
 		// Enhanced error detection for better retry logic
@@ -2569,47 +3009,6 @@ class E2ETestRunner {
 		}
 
 		return { totals, summary };
-	}
-
-	/**
-	 * Optimize shard distribution based on test metrics
-	 */
-	async optimizeShardDistribution() {
-		log("🔧 Optimizing shard distribution...");
-
-		await this.shardOptimizer.loadMetrics();
-		
-		// Skip optimization for single shard configurations (quick mode)
-		if (this.shards.length === 1) {
-			log("✅ Single shard mode - using default configuration");
-			return;
-		}
-		
-		const config = await this.shardOptimizer.generateShardConfig({
-			strategy: process.env.SHARD_STRATEGY || "balanced",
-			shardCount: this.shards.length,
-			maxTestsPerShard: 20, // More realistic maximum
-			minTestsPerShard: 2, // More realistic minimum
-		});
-
-		if (config.validation.valid) {
-			log("✅ Optimized shard configuration generated");
-			log(`   Strategy: ${config.strategy}`);
-			log(
-				`   Max deviation: ${config.validation.stats.maxDeviation.toFixed(1)}%`,
-			);
-
-			// Update shards with optimized configuration
-			this.shards = config.shards.map((shard, _index) => ({
-				id: shard.id,
-				name: shard.name,
-				tests: shard.totalTests,
-				estimatedTime: shard.estimatedTime,
-				files: shard.tests,
-			}));
-		} else {
-			log("⚠️ Shard optimization validation failed, using defaults");
-		}
 	}
 
 	/**
@@ -2838,6 +3237,7 @@ class TestController {
 		const totalPassed = unit.passed + e2e.passed;
 		const totalFailed = unit.failed + e2e.failed;
 		const totalSkipped = unit.skipped + e2e.skipped;
+		const totalIntentionalFailures = (e2e.intentionalFailures || 0);
 
 		// Unit test results
 		if (unit.total > 0) {
@@ -2855,6 +3255,7 @@ class TestController {
 			log(`  Total: ${e2e.total}`);
 			log(`  ✅ Passed: ${e2e.passed}`);
 			if (e2e.failed > 0) log(`  ❌ Failed: ${e2e.failed}`);
+			if (e2e.intentionalFailures > 0) log(`  🎯 Intentional failures: ${e2e.intentionalFailures}`);
 			if (e2e.skipped > 0) log(`  ⏭️ Skipped: ${e2e.skipped}`);
 			if (e2e.duration) log(`  ⏱️ Duration: ${e2e.duration}`);
 
@@ -2876,6 +3277,7 @@ class TestController {
 		log(`  Total Tests: ${totalTests}`);
 		log(`  ✅ Passed: ${totalPassed}`);
 		if (totalFailed > 0) log(`  ❌ Failed: ${totalFailed}`);
+		if (totalIntentionalFailures > 0) log(`  🎯 Intentional failures: ${totalIntentionalFailures}`);
 		if (totalSkipped > 0) log(`  ⏭️ Skipped: ${totalSkipped}`);
 
 		const successRate =
