@@ -53,6 +53,12 @@ apps/*/.env
 # Claude Code local files
 CLAUDE.local.md
 .claude/settings.local.json
+.claude/sessions/
+.claude/scratch/
+.claude/z.archive/
+.claude/HOOK_PATH_ISSUE_SOLUTION.md
+apps/e2e/.claude/
+reports/.claude/
 
 # Temporary and debug files
 temp/
