@@ -12,21 +12,11 @@ This command reads an issue specification and launches a focused debugging sessi
 
 **CRITICAL**: Always review GitHub issue comments for the most current status and implementation progress, as issue descriptions may be outdated.
 
-## 1. Adopt Role
+## 1. Fetch Issue from GitHub (FIRST PRIORITY)
 
-Load the debugging mindset:
+**Always start by fetching the issue to understand what you're debugging:**
 
-```
-/read .claude/context/roles/debug-engineer.md
-```
-
-## 2. Load Issue Specification First
-
-Load and analyze the issue before determining what context documentation to read:
-
-### 2.1 Fetch Issue from GitHub
-
-Fetch the issue directly from GitHub using the gh CLI:
+### 1.1 Direct GitHub Fetch
 
 ```bash
 # Parse the issue reference
@@ -43,20 +33,23 @@ else
   issue_id=$issue_reference
 fi
 
-# Fetch issue details from GitHub
+# Simple, direct fetch with comments included
 if [ -n "$issue_number" ]; then
-  gh issue view $issue_number --json number,title,body,state,labels,assignees,createdAt,updatedAt > /tmp/issue-$issue_number.json
+  gh issue view $issue_number --repo MLorneSmith/2025slideheroes --json number,title,body,state,labels,assignees,createdAt,updatedAt,comments > /tmp/issue-$issue_number.json
   
-  if [ $? -ne 0 ]; then
+  if [ $? -eq 0 ]; then
+    echo "✅ Fetched issue #$issue_number with comments from GitHub"
+    
+    # Display issue summary immediately
+    jq -r '"\n📋 Issue #\(.number): \(.title)\n📊 State: \(.state)\n🏷️ Labels: \(.labels | map(.name) | join(", "))\n💬 Comments: \(.comments | length)"' /tmp/issue-$issue_number.json
+  else
     echo "❌ Failed to fetch issue #$issue_number from GitHub"
     exit 1
   fi
-  
-  echo "✅ Fetched issue #$issue_number from GitHub"
 fi
 ```
 
-### 2.2 Parse Issue Reference
+### 1.2 Parse Issue Reference
 
 The command supports multiple reference formats:
 
@@ -69,7 +62,7 @@ The command supports multiple reference formats:
 /debug-issue ISSUE-1234567-abc  # Legacy local-only format
 ```
 
-### 2.3 Load Issue Content
+### 1.3 Display Issue Content and Comments
 
 Load the issue content from GitHub or local file:
 
@@ -97,7 +90,7 @@ else
 fi
 ```
 
-### 2.4 Read and Parse Issue
+### 1.4 Parse Issue Data
 
 ```typescript
 // For GitHub issues
@@ -124,7 +117,7 @@ if (issueNumber) {
 }
 ```
 
-### 2.5 Review GitHub Issue Comments (Critical Step)
+### 1.5 Review GitHub Issue Comments (Critical Step)
 
 **IMPORTANT**: Always review GitHub issue comments for status updates, implementation progress, and current context:
 
@@ -157,41 +150,35 @@ gh issue view ${issue_number} --repo MLorneSmith/2025slideheroes --comments
 - **Technical Context**: Decisions, approaches, and discoveries
 - **Blockers and Solutions**: Known issues and their resolutions
 
-## 3. Load Context Documentation
+## 2. Adopt Debug Role
 
-Now that you've read and analyzed the issue, load relevant context based on the issue type:
-
-### 3.1 Read Context Documentation Inventory
-
-First, read the inventory to understand available documentation:
+**After understanding the issue, adopt the debugging mindset:**
 
 ```
-/read .claude/docs/.context-docs-inventory.xml
+/read .claude/context/roles/debug-engineer.md
 ```
 
-This XML file contains a complete inventory of all context documentation organized by category:
+## 3. Load Context Documentation (Based on Issue Analysis)
 
-- **AI Integration**: Portkey integration, prompt engineering
-- **Architecture**: Performance optimization, service patterns, state management
-- **CMS**: Payload patterns, content migration, database verification
-- **Data**: Database schema, React Query patterns, Supabase patterns
-- **Debugging**: Common patterns, database/performance/integration debugging
-- **Security**: Authentication and authorization patterns
-- **Testing**: Unit testing strategies, test case templates
-- **UI**: Component patterns, accessibility, responsive design
+**Only load context relevant to the specific issue you're debugging:**
 
-### 3.2 Core Context (Always Load)
+### 3.1 Selective Context Loading
+
+**Based on the issue type from section 1, load ONLY relevant documentation:**
+
+### 3.2 Core Context (Optional)
+
+**Only if needed for the specific issue:**
 
 ```
-# PARALLEL READ these core debugging docs:
-.claude/context/standards/code-standards.md
+# Load if debugging patterns are relevant:
 .claude/docs/debugging/common-patterns.md
 .claude/docs/debugging/debugging-system-overview.md
 ```
 
-### 3.3 Conditional Context (Based on Issue Type)
+### 3.3 Issue-Specific Context
 
-Based on the issue analysis from section 2, identify relevant documentation from the inventory and load it. Here are common patterns:
+**Load documentation based on the actual issue content from section 1:**
 
 ```typescript
 // Based on issue analysis, select relevant docs from the inventory:
@@ -261,21 +248,23 @@ const contextMap = {
 
 ### 3.4 Loading Strategy
 
-1. **Always check the inventory first** - New documentation may have been added
-2. **Load docs in parallel** when possible for efficiency
-3. **Be selective** - Only load documentation relevant to the specific issue identified in section 2
-4. **Check for test cases** - If debugging a specific component, look for its test case documentation in `testing/test-cases/`
+1. **Be highly selective** - Only load what's directly relevant to the issue
+2. **Skip generic documentation** unless specifically needed
+3. **Load in parallel** when loading multiple docs
+4. **Check test cases** only if debugging a specific component with tests
 
-### 3.5 Load Additional Context
+### 3.5 Context Loading Example
 
-After parsing the issue, load specific context based on the issue type:
-
-```bash
-# Based on the parsed issue type, load additional context from section 3.2
-# For example, if issue.type indicates a database problem:
-# PARALLEL READ:
-# .claude/docs/data/supabase-patterns.md
-# .claude/docs/debugging/database-debugging.md
+```typescript
+// Example: Only load what's needed based on issue analysis
+if (issue.labels.includes('database') || issue.body.includes('RLS')) {
+  // Load database-specific docs
+  await parallelRead([
+    '.claude/docs/data/supabase-patterns.md',
+    '.claude/docs/debugging/database-debugging.md'
+  ]);
+}
+// Otherwise, skip unnecessary context loading
 ```
 
 ## 4. Issue Analysis & Planning

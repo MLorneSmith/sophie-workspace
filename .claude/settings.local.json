@@ -20,7 +20,9 @@
       "Bash(DEBUG_TEST=true node .claude/scripts/test/test-controller.cjs --quick --debug)",
       "Bash(DEBUG_TEST=true node .claude/scripts/test/test-controller.cjs --debug)",
       "WebFetch(domain:docs.warp.dev)",
-      "Bash(pnpm lint:*)"
+      "Bash(pnpm lint:*)",
+      "Bash(gh run list:*)",
+      "Bash(git log:*)"
     ],
     "deny": [],
     "ask": [],
