@@ -7,11 +7,14 @@
 
 ## Root Cause
 
-The documentation file `.claude/docs/existing-commands-inventory.md` had become outdated following the CCPM integration work. The file still referenced the deprecated `/build-feature` command that had been removed and didn't include the new `/feature/*` command suite that replaced it.
+The documentation file `.claude/docs/existing-commands-inventory.md` had become outdated following the CCPM
+integration work. The file still referenced the deprecated `/build-feature` command that had been removed and
+didn't include the new `/feature/*` command suite that replaced it.
 
 ## Solution Implemented
 
 Updated the existing-commands-inventory.md file with:
+
 1. Removed all references to the deprecated `/build-feature` command
 2. Added complete documentation for all 8 new `/feature/*` commands
 3. Updated the total command count from 36 to 43
@@ -42,6 +45,7 @@ Updated the existing-commands-inventory.md file with:
 ## Command Audit Summary
 
 ### Total Commands Found: 43
+
 - Root level commands: 19
 - agents-md/: 3 commands
 - checkpoint/: 3 commands
@@ -52,6 +56,7 @@ Updated the existing-commands-inventory.md file with:
 - spec/: 4 commands
 
 ### Changes from Previous Version
+
 - **Removed**: `/build-feature` (deprecated)
 - **Added**: 8 `/feature/*` commands for CCPM integration
 
